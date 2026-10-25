@@ -7,8 +7,9 @@ namespace Tests\Unit\Isds\Fixtures;
 use AA\Isds\Actions;
 
 /**
- * Actions with the core, the logs and post_max_size given here: Continue says what $resume says and
- * records who asked it, a log row is recorded, not written - or fails as $logFails says.
+ * Actions with the core, the logs and post_max_size given here: Continue says what $resume says, Stop
+ * and Abandon what $stop says, each records who asked it; a log row is recorded, not written - or
+ * fails as $logFails says.
  */
 final class FakeActions extends Actions
 {
@@ -17,6 +18,12 @@ final class FakeActions extends Actions
 
     /** @var list<array{string, string}> campaign, uid of each Continue asked of the core */
     public static array $resumed = [];
+
+    /** @var ?\Closure(string, string, bool): string what Stop (false) or Abandon (true) of a campaign by a uid says; null = '' */
+    public static ?\Closure $stop = null;
+
+    /** @var list<array{string, string, bool}> campaign, uid, abandon of each Stop and Abandon asked of the core */
+    public static array $stopped = [];
 
     /** @var list<array{string, string, list<string>}> event, selector, params of each log row */
     public static array $logged = [];
@@ -34,6 +41,8 @@ final class FakeActions extends Actions
     {
         self::$resume      = null;
         self::$resumed     = [];
+        self::$stop        = null;
+        self::$stopped     = [];
         self::$logged      = [];
         self::$failures    = [];
         self::$postMaxSize = 8 * 1024 * 1024;
@@ -51,6 +60,13 @@ final class FakeActions extends Actions
         self::$resumed[] = [$campaign, $uid];
 
         return is_null(self::$resume) ? '' : (self::$resume)($campaign, $uid);
+    }
+
+    protected function stopRun(string $campaign, string $uid, bool $abandon): string
+    {
+        self::$stopped[] = [$campaign, $uid, $abandon];
+
+        return is_null(self::$stop) ? '' : (self::$stop)($campaign, $uid, $abandon);
     }
 
     protected function log(string $event, string $selector, array $params): void

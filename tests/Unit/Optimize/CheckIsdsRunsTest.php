@@ -158,6 +158,19 @@ final class CheckIsdsRunsTest extends TestCase
         self::assertSame(['Campaign item' => '/aa/admin/itemedit.php?id=' . self::CAMPAIGN_ITEM . '&change_id=' . Sending::CAMPAIGN . '&edit=1'], $finding->links);
     }
 
+    // Stop of a run stopped already, or with every message tried, changes nothing: the advice names Abandon then
+    public function test_findings_runInError_adviceByWhatEndsIt(): void
+    {
+        $id = self::failedRun(Schema::CAMPAIGN_STATE_ERROR);
+        self::assertStringContainsString('- or Stop, after which nothing more is sent.', self::only((new TestIsdsRunsCheck())->findings())->advice);
+
+        self::storedSet($id, 'stop_by', Sending::USER);
+        $advice = self::only((new TestIsdsRunsCheck())->findings())->advice;
+
+        self::assertStringContainsString('- or Abandon, which ends it for good', $advice);
+        self::assertStringNotContainsString('Stop', $advice);
+    }
+
     // a run that stopped before it could write the campaign (SETTINGS) leaves it sending: one finding says both
     public function test_findings_runInError_campaignStillSending(): void
     {

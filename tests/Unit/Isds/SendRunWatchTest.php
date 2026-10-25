@@ -563,7 +563,7 @@ final class SendRunWatchTest extends TestCase
 
     // ------------------------------------------------------------ what needs a person
 
-    // the run errs and waits for Continue or Stop; the campaign keeps the end of the sending
+    // the run errs and waits for Continue or Abandon; the campaign keeps the end of the sending
     #[DataProvider('watchFailures')]
     public function test_watch_login_refused_errors_campaign_stays_done(\Closure $fail, string $error): void
     {

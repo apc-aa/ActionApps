@@ -44,7 +44,7 @@ class Gate
     public const RECIPIENTS_EVENT = 'ISDS_RCPT';
 
     /** the actions a form may name - its token binds the action, the binding of the page and the campaign */
-    public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'resume', 'verify', 'fixbox'];
+    public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'abandon', 'resume', 'verify', 'fixbox'];
     /** of ACTIONS those whose shown form is posted again on purpose (autosave): each post acts */
     public const REPOSTED = ['save'];
 
@@ -114,13 +114,17 @@ class Gate
     /**
      * The hidden fields of a form asking for $action on the campaign: the token binds both and the
      * binding of the page, so a form of one action, campaign or page cannot be posted as another.
-     * '' on a page that could not be kept out of frames.
+     * '' on a page that could not be kept out of frames; for abandon '' unless the run is one a stop no
+     * longer ends (SendRun::abandonable()) - the template offers it in place of Stop then.
      * @param string $campaign long id; '' only to save a new campaign
      */
     public function fields(string $action, string $campaign = ''): string
     {
         $campaign = self::campaignOf($action, $campaign);
         if (is_null(self::$open) || !self::$guarded || !in_array($action, self::ACTIONS, true) || is_null($campaign)) {
+            return '';
+        }
+        if (($action === 'abandon') && (($this->progressOf(self::$open, $campaign)['abandon'] ?? '') !== '1')) {
             return '';
         }
 
@@ -218,9 +222,10 @@ class Gate
      * How far the sending of a campaign of the page got, read anew on each request from the record of
      * its newest run (SendRun::progressFigures()), never from the message items or ISDS. state: while
      * the campaign has no run, the state of its item; then the run's - sending (queued, working or
-     * waiting), error (sending waits for Continue), abandoned (sending given up in error); once the
+     * waiting), error (sending waits for Continue - one stopped already or with every message tried
+     * for Continue or Abandon, fields()), abandoned (sending given up in error); once the
      * sending is over (a stopped one too) watching (the delivery is followed, waiting for its rounds
-     * too), watch_error (the following waits for Continue or Stop); done at the end, the following
+     * too), watch_error (the following waits for Continue or Abandon); done at the end, the following
      * given up too. A sending a person stopped is watching first when it sent anything, then done,
      * what it left unsent counted as stopped. total: the recipients frozen, skipped ones too - sent,
      * failed (refused, not found by the lookup, or sent and then not delivered), uncertain, skipped,
@@ -237,10 +242,14 @@ class Gate
         if (is_null($setup) || is_null($id) || !in_array($what, self::PROGRESS, true)) {
             return '';
         }
-        // once a request for all the answers; a closure cannot key the cache itself
-        $progress = \AA::Contentcache()->_get_result(get_hash(self::class . '::progress', $setup, $id), fn(): array => $this->campaignProgress($setup, $id), [], self::class . '>progress');
+        return $this->progressOf($setup, $id)[$what] ?? '';
+    }
 
-        return $progress[$what] ?? '';
+    /** @return array<string, string> campaignProgress(), once a request for all the answers and fields() */
+    private function progressOf(Setup $setup, string $id): array
+    {
+        // a closure cannot key the cache itself
+        return \AA::Contentcache()->_get_result(get_hash(self::class . '::progress', $setup, $id), fn(): array => $this->campaignProgress($setup, $id), [], self::class . '>progress');
     }
 
     /**
@@ -392,7 +401,8 @@ class Gate
     }
 
     /**
-     * @return array<string, string> progress() of each question it answers; [] = not a campaign of the page
+     * @return array<string, string> progress() of each question it answers, and abandon '1' when only
+     *                               Abandon ends the run (fields()); [] = not a campaign of the page
      */
     private function campaignProgress(Setup $setup, string $id): array
     {
@@ -421,15 +431,16 @@ class Gate
             SendRun::ENDED => $watching ? SendRun::DONE : 'abandoned',
             default        => '',
         };
+        $known = ['state' => $state, 'abandon' => $run->abandonable() ? '1' : ''];
         try {
             $counts = $run->progressFigures();
         } catch (\JsonException|BatchFailed) {
             // edited outside AA: no figure can be trusted, the state still can
-            return ['state' => $state];
+            return $known;
         }
         $counts['until'] = ($counts['until'] > 0) ? $counts['until'] : '';
 
-        return ['state' => $state] + array_map('strval', $counts);
+        return $known + array_map('strval', $counts);
     }
 
     // ------------------------------------------------------------ what tests replace

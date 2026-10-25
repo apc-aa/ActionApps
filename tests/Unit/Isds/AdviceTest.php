@@ -34,6 +34,22 @@ final class AdviceTest extends TestCase
         self::assertStringContainsString("than the server takes ($limit).", Advice::text(Actions::TOO_LARGE, [$bytes]));
     }
 
+    /** @return array<string, array{string}> what Continue, Stop and Abandon may answer */
+    public static function runCodes(): array
+    {
+        // literals: a data provider runs before Actions, which reads SendRun, can be loaded
+        $codes = ['RESUMED', 'STOPPING', 'ALL_SENT', 'CONFIRM_ABANDON', 'ABANDONED', 'LEASE', 'WRONG_STATE', 'BUSY', 'FORBIDDEN', 'UNKNOWN'];
+
+        return array_combine($codes, array_map(static fn(string $code): array => [$code], $codes));
+    }
+
+    #[DataProvider('runCodes')]
+    public function test_text_everyCodeOfRunActionsHasText(string $code): void
+    {
+        self::assertNotSame('', Advice::text($code));
+        self::assertContains($code, (new \ReflectionClass(Actions::class))->getConstants(), 'a code of Actions');
+    }
+
     public function test_text_unknownIsEmpty(): void
     {
         self::assertSame('', Advice::text('NO_SUCH_CODE'));

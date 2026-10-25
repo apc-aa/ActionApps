@@ -13,9 +13,12 @@ use AA\Isds\File;
 use AA\Isds\Letter;
 use AA\Isds\Recipient;
 use AA\Isds\Schema;
+use AA\Isds\SendRun;
 use AA\Isds\Snapshot;
+use AA\Isds\StatusSync;
 use AA_Credentials;
 use AA_Perm;
+use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
 use Tests\Unit\Later\Fixtures\BatchRunTables;
 use Tests\Unit\Legacy\Fixtures\FakeFields;
@@ -126,6 +129,36 @@ trait SendRunCase
             self::items()->create($row, Account::TEST, self::SENDER, $now);
         }
         self::items()->writes = [];
+        return $id;
+    }
+
+    /**
+     * Every one of $n messages tried: sent as $first, $first + 1, ..., the cursor past the last recipient
+     * @return array<string, string> own properties of the run
+     */
+    private static function tried(int $n, int $first = 901): array
+    {
+        return ['dm_ids' => json_encode(array_map('strval', range($first, $first + $n - 1)), JSON_FORCE_OBJECT), 'cursor' => (string) $n];
+    }
+
+    /**
+     * Every one of $n messages sent as 1001, 1002, ..., their delivery followed since an hour ago
+     * @return array<string, string> own properties of the run
+     */
+    private static function watched(int $n): array
+    {
+        $from = self::NOW - 3600;
+
+        return self::tried($n, 1001) + ['watch_from' => (string) $from, 'watch_day' => StatusSync::firstWatchDay($from)];
+    }
+
+    /** the run left in $state by an error $code, no step of it queued; its id */
+    private static function leftInError(string $id, string $code = SendRun::ACCOUNT_CHANGED, string $state = SendRun::ERROR): string
+    {
+        self::storedSet($id, 'state', $state);
+        self::storedSet($id, 'error_code', $code);
+        TableDb::$tables['toexecute'] = [];
+
         return $id;
     }
 

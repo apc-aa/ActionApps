@@ -12,7 +12,6 @@ use AA\Isds\Schema;
 use AA\Isds\SendRun;
 use AA\Isds\SentMessage;
 use AA\Isds\Snapshot;
-use AA\Isds\StatusSync;
 use AA\Later\BatchRun;
 use AA\Later\Toexecute;
 use AA_Credentials;
@@ -412,7 +411,7 @@ final class SendRunEndTest extends TestCase
             self::items()->stored[self::message($id, $i)]['fields'][Schema::MESSAGE_STATE] = $state;
         }
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         self::assertSame(Sending::USER, self::stored($id)['stop_by']);
         self::runQueued();
 
@@ -433,7 +432,7 @@ final class SendRunEndTest extends TestCase
             self::items()->stored[self::message($id, $i)]['fields'][Schema::MESSAGE_STATE] = $state;
         }
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         self::runQueued();
 
         self::assertSame([Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_STOPPED, Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_UNCERTAIN], self::states($id));
@@ -444,7 +443,7 @@ final class SendRunEndTest extends TestCase
     {
         $id = self::queued(2, ['dm_ids' => '{"0":null}', 'cursor' => '0'], self::SEND);
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         self::runQueued();
 
         self::assertSame([Schema::MESSAGE_STATE_QUEUED, Schema::MESSAGE_STATE_STOPPED], self::states($id));
@@ -454,7 +453,7 @@ final class SendRunEndTest extends TestCase
     public function test_stop_goes_on_where_time_ran_out(): void
     {
         $id = self::queued(120);
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         TestSendRun::$microNow = (float) self::NOW;
         self::items()->onWrite = static function (): void {
             TestSendRun::$microNow += 1.0;
@@ -472,7 +471,7 @@ final class SendRunEndTest extends TestCase
         self::storedSet($id, 'next_at', (string) (self::NOW + 120));
         self::storedSet($id, 'retry_code', 'ISDS_UNAVAILABLE');
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER), 'no need to wait for the pause');
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false), 'no need to wait for the pause');
         self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([Schema::MESSAGE_STATE_QUEUED, Schema::MESSAGE_STATE_STOPPED, Schema::MESSAGE_STATE_STOPPED], self::states($id));
@@ -485,7 +484,7 @@ final class SendRunEndTest extends TestCase
         TestSendRun::$conf = null;
         self::assertSame('error ' . SendRun::ACCOUNT_CHANGED, self::runQueued());
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         self::assertSame('sending', self::stored($id)['state'], 'Continue at once');
         self::assertSame('watch', self::lookOver($id));
 
@@ -499,7 +498,7 @@ final class SendRunEndTest extends TestCase
     {
         $id = self::queued(4, ['cursor' => ''], ['i' => 1, 'p' => 'prep'], [2 => Schema::BOX_DUPLICATE], 1);
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         self::runQueued();
 
         self::assertSame([Schema::MESSAGE_STATE_STOPPED, Schema::MESSAGE_STATE_STOPPED, Schema::MESSAGE_STATE_SKIPPED, Schema::MESSAGE_STATE_STOPPED], self::states($id));
@@ -516,7 +515,7 @@ final class SendRunEndTest extends TestCase
         $id      = self::queued(3);
         $stopped = null;
         $isds    = self::isds(check: [static function () use (&$stopped): Response {
-            $stopped ??= TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER);
+            $stopped ??= TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false);
             return self::boxIs(1);
         }]);
 
@@ -535,7 +534,7 @@ final class SendRunEndTest extends TestCase
     {
         $id   = self::queued(3);
         $isds = self::isds(create: [static function (): Response {
-            TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER);
+            TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false);
             return self::created('1001');
         }]);
 
@@ -553,7 +552,7 @@ final class SendRunEndTest extends TestCase
     {
         $id   = self::queued(5);
         $isds = self::isds(create: [static function (): Response {
-            TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER);
+            TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false);
             return self::created('1001');
         }], check: [self::boxIs(1), self::boxIs(3)]);
 
@@ -568,7 +567,7 @@ final class SendRunEndTest extends TestCase
     {
         $id = self::queued(3);
         self::isds(create: [static function (): Response {
-            TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER);
+            TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false);
             throw new HttpTransportException('Operation timed out after 300000 milliseconds');
         }]);
 
@@ -582,7 +581,7 @@ final class SendRunEndTest extends TestCase
     {
         $id = self::queued(2, ['dm_ids' => '{"0":"901"}', 'cursor' => '1'], ['i' => 1, 'p' => 'send']);
         self::isds(create: [static function (): Response {
-            TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER);
+            TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false);
             return self::created('1002');
         }]);
         self::assertSame('watch', self::lookOver($id));
@@ -593,7 +592,7 @@ final class SendRunEndTest extends TestCase
     public function test_second_stop_keeps_a_going_run(): void
     {
         $id = self::queued(3, ['dm_ids' => '{"0":"901"}', 'cursor' => '1'], ['i' => 1, 'p' => 'send']);
-        self::assertSame(['', ''], [TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER), TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER)]);
+        self::assertSame(['', ''], [TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false), TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false)]);
         self::assertSame('sending', self::stored($id)['state']);
     }
 
@@ -601,11 +600,11 @@ final class SendRunEndTest extends TestCase
     public function test_second_stop_by_another_keeps_the_first(): void
     {
         $id = self::queued(3, ['dm_ids' => '{"0":"901"}', 'cursor' => '1'], ['i' => 1, 'p' => 'send']);
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         $stopped = self::stored($id);
         FakePerms::install([Sending::USER => [Sending::CAMPAIGN => AA_Perm::ROLES['EDITOR']['id']], 'uid-other' => [Sending::CAMPAIGN => AA_Perm::ROLES['EDITOR']['id']]]);
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, 'uid-other'));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, 'uid-other', false));
 
         self::assertSame($stopped, self::stored($id));
         self::assertSame(Sending::USER, $stopped['stop_by']);
@@ -617,7 +616,7 @@ final class SendRunEndTest extends TestCase
         $id = self::queued(2, ['dm_ids' => '{"0":"901","1":"902"}', 'cursor' => '2', 'stop_by' => Sending::USER], ['i' => 2, 'p' => 'send']);
         $before = self::stored($id);
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
 
         self::assertSame($before, self::stored($id));
     }
@@ -626,7 +625,7 @@ final class SendRunEndTest extends TestCase
     public function test_stop_repeated_adds_no_second_event(): void
     {
         $id = self::queued(2);
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         TestSendRun::$invalidateFails = new \RuntimeException('Pages not invalidated');
         self::assertSame('error INTERNAL', self::runQueued());
         TestSendRun::$invalidateFails = null;
@@ -643,7 +642,7 @@ final class SendRunEndTest extends TestCase
         $leave($id);
         $step = (int) self::stored($id)['step'];
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
 
         $stored = self::stored($id);
         self::assertSame(['sending', (string) ($step + 1), Sending::USER], [$stored['state'], $stored['step'], $stored['stop_by']]);
@@ -682,7 +681,7 @@ final class SendRunEndTest extends TestCase
         self::storedSet($id, 'state', $state);
         $before = self::stored($id);
 
-        self::assertSame($code, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame($code, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
 
         self::assertSame($before, self::stored($id), 'nothing written');
         if ($state !== 'done') {
@@ -707,7 +706,7 @@ final class SendRunEndTest extends TestCase
         $id   = self::queued(3, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 100) . '}', 'cursor' => '2'], ['i' => 2, 'p' => 'send']);
         $isds = self::isds(list: [self::listed([['9002', '4711-2', self::box(1), self::NOW - 50]])]);
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         self::assertSame('watch', self::lookOver($id));
 
         self::assertSame(['GetListOfSentMessages'], $isds->ops());
@@ -717,33 +716,33 @@ final class SendRunEndTest extends TestCase
     }
 
     // the account went away: the run cannot look up what may have gone - a person gives it up
-    public function test_second_stop_abandons_failed_run(): void
+    public function test_abandon_gives_up_run_failed_after_stop(): void
     {
         $id                = self::queued(3, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 100) . '}', 'cursor' => '2'], ['i' => 2, 'p' => 'send']);
         TestSendRun::$conf = null;
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         self::runQueued();
         self::assertSame('error ' . SendRun::ACCOUNT_CHANGED, self::runQueued());
 
-        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, true));
 
         self::assertSame(['stopped', SendRun::ABANDONED], [self::stored($id)['state'], json_decode(self::stored($id)['progress'], true)['note']]);
         self::assertSame('closed', self::runQueued());
         self::assertSame([], self::queue());
         self::assertSame([Schema::MESSAGE_STATE_QUEUED, Schema::MESSAGE_STATE_UNCERTAIN, Schema::MESSAGE_STATE_STOPPED], self::states($id), 'left for a person to verify');
         self::assertSame(Schema::CAMPAIGN_STATE_STOPPED, self::campaign());
-        self::assertSame('WRONG_STATE', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER), 'given up for good');
+        self::assertSame('WRONG_STATE', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false), 'given up for good');
     }
 
-    // looking up failed for good - the account went away, ISDS refuses the list: nothing is left to stop, a stop gives it up
+    // looking up failed for good - the account went away, ISDS refuses the list: nothing is left to stop, it can only be given up
     #[DataProvider('lookupFailures')]
-    public function test_stop_gives_up_run_failed_looking_up(\Closure $fail, string $error): void
+    public function test_abandon_gives_up_run_failed_looking_up(\Closure $fail, string $error): void
     {
         $id = self::queued(2, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 200) . '}', 'cursor' => '2'], self::LOOK);
         $fail();
         self::assertSame("error $error", self::runQueued());
 
-        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, true));
         self::assertSame('closed', self::runQueued());
 
         self::assertSame([Schema::MESSAGE_STATE_QUEUED, Schema::MESSAGE_STATE_UNCERTAIN], self::states($id), 'left for a person to verify');
@@ -768,28 +767,26 @@ final class SendRunEndTest extends TestCase
     {
         self::queued(3, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 100) . '}', 'cursor' => '2'], ['i' => 2, 'p' => 'send'], [2 => Schema::BOX_DUPLICATE]);
         TestSendRun::$conf = null;
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         self::runQueued();
         self::assertSame('error ' . SendRun::ACCOUNT_CHANGED, self::runQueued());
 
-        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, true));
         self::assertSame('closed', self::runQueued());
 
         self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::campaign());
     }
 
-    // a stop ends any run: one whose manifest no step can read is stopped, fails on it, and a second stop gives it up
+    // a stop ends any run: one whose manifest no step can read is stopped, fails on it, and can then be given up
     public function test_stop_ends_run_with_broken_manifest(): void
     {
         $id = self::queued(3, ['dm_ids' => '{"0":"901"}', 'cursor' => '1'], ['i' => 1, 'p' => 'send']);
         self::storedSet($id, 'manifest', '{"rcpt":"lost"}');
-        self::storedSet($id, 'state', 'error');
-        self::storedSet($id, 'error_code', Snapshot::CHANGED);
-        TableDb::$tables['toexecute'] = [];
+        self::leftInError($id, Snapshot::CHANGED);
 
-        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
         self::assertSame('error ' . Snapshot::CHANGED, self::runQueued());
-        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, true));
         self::runQueued();
 
         self::assertSame(['stopped', Sending::USER], [self::stored($id)['state'], self::stored($id)['stop_by']]);
@@ -865,7 +862,7 @@ final class SendRunEndTest extends TestCase
         $id                          = self::queued(2);
         TestSendRun::$lockedByOthers = [self::CAMPAIGN_ITEM];
 
-        self::assertSame(['FORBIDDEN', 'FORBIDDEN'], [TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::READER), TestSendRun::resumeFor(self::CAMPAIGN_ITEM, Sending::READER)]);
+        self::assertSame(['FORBIDDEN', 'FORBIDDEN'], [TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::READER, false), TestSendRun::resumeFor(self::CAMPAIGN_ITEM, Sending::READER)]);
 
         self::assertSame('', self::stored($id)['stop_by']);
     }
@@ -878,7 +875,7 @@ final class SendRunEndTest extends TestCase
             FakePerms::install([]);
         };
 
-        self::assertSame('FORBIDDEN', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('FORBIDDEN', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
 
         self::assertSame('', self::stored($id)['stop_by']);
     }
@@ -888,7 +885,7 @@ final class SendRunEndTest extends TestCase
     {
         $id = self::queued(2);
 
-        self::assertSame('', TestSendRun::stop(strtoupper(self::CAMPAIGN_ITEM), Sending::USER));
+        self::assertSame('', TestSendRun::stop(strtoupper(self::CAMPAIGN_ITEM), Sending::USER, false));
 
         self::assertSame(['lock ' . self::CAMPAIGN_ITEM, 'unlock ' . self::CAMPAIGN_ITEM], TestSendRun::$lockLog, 'released after the commit');
         self::assertSame(Sending::USER, self::stored($id)['stop_by']);
@@ -906,15 +903,15 @@ final class SendRunEndTest extends TestCase
         $id                          = self::queued(2);
         TestSendRun::$lockedByOthers = [self::CAMPAIGN_ITEM];
 
-        self::assertSame(SendRun::BUSY, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame(SendRun::BUSY, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
 
         self::assertSame('', self::stored($id)['stop_by']);
     }
 
     public function test_stop_without_run_is_wrong_state(): void
     {
-        self::assertSame('WRONG_STATE', TestSendRun::stop('ca000000000000000000000000000c02', Sending::USER));
-        self::assertSame('WRONG_STATE', TestSendRun::stop('not a campaign', Sending::USER));
+        self::assertSame('WRONG_STATE', TestSendRun::stop('ca000000000000000000000000000c02', Sending::USER, false));
+        self::assertSame('WRONG_STATE', TestSendRun::stop('not a campaign', Sending::USER, false));
     }
 
     // ------------------------------------------------------------ Continue
@@ -922,9 +919,7 @@ final class SendRunEndTest extends TestCase
     public function test_resumeFor_continues_run_in_error(): void
     {
         $id = self::queued(3, ['dm_ids' => '{"0":"901"}', 'cursor' => '1'], ['i' => 1, 'p' => 'send']);
-        self::storedSet($id, 'state', 'error');
-        self::storedSet($id, 'error_code', SendRun::ACCOUNT_CHANGED);
-        TableDb::$tables['toexecute'] = [];
+        self::leftInError($id, SendRun::ACCOUNT_CHANGED);
 
         self::assertSame('', TestSendRun::resumeFor(self::CAMPAIGN_ITEM, Sending::USER));
 
@@ -990,7 +985,7 @@ final class SendRunEndTest extends TestCase
         $before = self::stored($id);
         $queue  = self::queue();
 
-        self::assertSame(SendRun::ALL_SENT, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame(SendRun::ALL_SENT, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, false));
 
         self::assertSame([$before, $queue], [self::stored($id), self::queue()], 'nothing written, the next round as it was');
         self::assertSame([], self::items()->writes);
@@ -1007,14 +1002,12 @@ final class SendRunEndTest extends TestCase
     }
 
     // a run that cannot follow delivery without a person is given up; the campaign keeps the end of the sending
-    public function test_stop_of_watch_in_error_abandons(): void
+    public function test_abandon_of_watch_in_error(): void
     {
         $id = self::followed();
-        self::storedSet($id, 'state', 'error');
-        self::storedSet($id, 'error_code', SendRun::ACCOUNT_CHANGED);
-        TableDb::$tables['toexecute'] = [];
+        self::leftInError($id, SendRun::ACCOUNT_CHANGED);
 
-        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, true));
         self::assertSame('closed', self::runQueued());
 
         self::assertSame(['stopped', ''], [self::stored($id)['state'], self::stored($id)['stop_by'] ?? '']);
@@ -1032,7 +1025,7 @@ final class SendRunEndTest extends TestCase
         TableDb::$tables['toexecute'] = [];
         self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_STATE]      = Schema::CAMPAIGN_STATE_ERROR;
         self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_ERROR_TEXT] = 'INTERNAL';
-        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, true));
         $record = array_intersect_key(self::stored($id), array_flip(['dm_state', 'dm_dirty', 'watch_last', 'watch_from', 'camp_state']));
 
         self::assertSame('closed', self::runQueued());
@@ -1052,7 +1045,7 @@ final class SendRunEndTest extends TestCase
         self::storedSet($id, 'state', 'error');
         TableDb::$tables['toexecute'] = [];
         self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_STATE] = Schema::CAMPAIGN_STATE_ERROR;
-        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, true));
 
         self::assertSame('closed', self::runQueued());
 
@@ -1070,9 +1063,7 @@ final class SendRunEndTest extends TestCase
     public function test_resume_in_watch_runs_round_now(): void
     {
         $id = self::followed([], ['l' => ['o' => '981'], 'n' => 3, 'p' => 'watch', 'u' => self::NOW + 1800, 'z' => 3600]);
-        self::storedSet($id, 'state', 'error');
-        self::storedSet($id, 'error_code', SendRun::ACCOUNT_CHANGED);
-        TableDb::$tables['toexecute'] = [];
+        self::leftInError($id, SendRun::ACCOUNT_CHANGED);
         $isds = new ScriptedIsds(['GetMessageStateChanges' => [new Response(200, self::fixture('state-changes.xml'))]]);
         TestSendRun::$http = $isds;
 
@@ -1093,13 +1084,9 @@ final class SendRunEndTest extends TestCase
      */
     private static function followed(array $props = [], array $position = self::WATCH): string
     {
-        $id = self::queued(2, $props + [
-            'dm_ids'     => '{"0":"1001","1":"1002"}',
-            'cursor'     => '2',
+        $id = self::queued(2, $props + self::watched(2) + [
             'camp_state' => Schema::CAMPAIGN_STATE_DONE,
-            'watch_from' => (string) (self::NOW - 3600),
             'watch_last' => (string) (self::NOW - 7200),
-            'watch_day'  => StatusSync::firstWatchDay(self::NOW - 3600),
         ], $position);
         foreach (self::rows($id) as $k => $row) {
             self::items()->mark($row['msg'], Schema::MESSAGE_STATE_SENT, Schema::EVENT_SUBMITTED, self::NOW - 7200, (string) (1001 + $k), senderRef: self::SHORT . '-' . ($k + 1));
@@ -1117,10 +1104,8 @@ final class SendRunEndTest extends TestCase
     private static function abandoned(): string
     {
         $id = self::queued(4, ['dm_ids' => '{"0":"901","1":"902"}', 'inflight' => '2', 'inflight_at' => (string) (self::NOW - 50), 'cursor' => '2', 'stop_by' => Sending::USER], ['i' => 2, 'p' => 'send']);
-        self::storedSet($id, 'state', 'error');
-        self::storedSet($id, 'error_code', 'STEP_DIED');
-        TableDb::$tables['toexecute'] = [];
-        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::leftInError($id, 'STEP_DIED');
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, true));
         return $id;
     }
 

@@ -27,7 +27,7 @@ require_once __DIR__ . '/fixtures/FakeActions.php';
 /**
  * The actions of a page of a mass sending: only a POST of this origin with the token of the form the
  * gate gave for the action, the binding of the page and the campaign acts - once a request, with the
- * login of the request. Continue reaches the real run (SendRun over the tables in memory).
+ * login of the request. Continue, Stop and Abandon reach the real run (SendRun over the tables in memory).
  */
 final class ActionsTest extends TestCase
 {
@@ -49,6 +49,7 @@ final class ActionsTest extends TestCase
         $this->caseSetUp();
         FakeActions::reset();
         FakeActions::$resume = static fn(string $campaign, string $uid): string => TestSendRun::resumeFor($campaign, $uid);
+        FakeActions::$stop   = static fn(string $campaign, string $uid, bool $abandon): string => TestSendRun::stop($campaign, $uid, $abandon);
         $this->server        = $_SERVER;
         $this->campaigns     = [self::CAMPAIGN_ITEM => self::item()];
         session_id('actions-test-session');
@@ -107,17 +108,13 @@ final class ActionsTest extends TestCase
     /** a run of the campaign in error, by the binding of $props over the page's */
     private static function inError(array $props = []): string
     {
-        $id = self::queued(3, $props);
-        self::storedSet($id, 'state', SendRun::ERROR);
-        TableDb::$tables['toexecute'] = [];
-
-        return $id;
+        return self::leftInError(self::queued(3, $props));
     }
 
     private static function assertExpired(?ActionResult $result): void
     {
         self::assertEquals(new ActionResult('', ActionResult::EXPIRED, Actions::EXPIRED), $result);
-        self::assertSame([[], []], [FakeActions::$resumed, FakeActions::$logged], 'nothing asked of the core, nothing logged');
+        self::assertSame([[], [], []], [FakeActions::$resumed, FakeActions::$stopped, FakeActions::$logged], 'nothing asked of the core, nothing logged');
     }
 
     // ------------------------------------------------------------ the frame
@@ -536,5 +533,156 @@ final class ActionsTest extends TestCase
         self::post();
 
         self::assertSame(Actions::RESUMED, $this->actions()->run(self::page(), true)?->code);
+    }
+
+    // ------------------------------------------------------------ Stop and Abandon
+
+    /**
+     * The states of a campaign as its page shows them (Gate::progress()), and what Stop and Abandon do in each
+     * @return array<string, array{?\Closure(string): void, string, string, string}> how the run is left (null = no run),
+     *         the login, the code of Stop, the code of Abandon
+     */
+    public static function runStates(): array
+    {
+        $set     = static fn(array $props): \Closure => static function (string $id) use ($props): void {
+            foreach ($props as $property => $value) {
+                self::storedSet($id, $property, $value);
+            }
+            if (($props['state'] ?? '') !== '') {
+                TableDb::$tables['toexecute'] = [];
+            }
+        };
+        $tried   = self::tried(3);
+        $watch   = self::watched(3) + ['position' => '{"p":"watch","n":2}'];
+        $stopped = ['stop_by' => Sending::USER];
+        $error   = ['state' => SendRun::ERROR];
+
+        return [
+            'draft: no run'                     => [null, Sending::USER, Actions::WRONG_STATE, Actions::WRONG_STATE],
+            'sending'                           => [$set([]), Sending::USER, Actions::STOPPING, Actions::WRONG_STATE],
+            'sending, stopped already'          => [$set($stopped), Sending::USER, Actions::STOPPING, Actions::WRONG_STATE],
+            'sending, every message tried'      => [$set($tried), Sending::USER, Actions::ALL_SENT, Actions::WRONG_STATE],
+            'error'                             => [$set($error), Sending::USER, Actions::STOPPING, Actions::WRONG_STATE],
+            'error, its step still working'     => [$set($error + ['lease' => (string) (self::NOW + 100), 'lease_tok' => 'working-step']), Sending::USER, Actions::LEASE, Actions::WRONG_STATE],
+            'error, stopped already'            => [$set($error + $stopped), Sending::USER, Actions::CONFIRM_ABANDON, Actions::ABANDONED],
+            'error, every message tried'        => [$set($error + $tried), Sending::USER, Actions::CONFIRM_ABANDON, Actions::ABANDONED],
+            'watching'                          => [$set($watch), Sending::USER, Actions::ALL_SENT, Actions::WRONG_STATE],
+            'watch_error'                       => [$set($watch + $error), Sending::USER, Actions::CONFIRM_ABANDON, Actions::ABANDONED],
+            'done'                              => [$set(['state' => SendRun::DONE]), Sending::USER, Actions::WRONG_STATE, Actions::WRONG_STATE],
+            'abandoned'                         => [$set(['state' => SendRun::ENDED] + $stopped), Sending::USER, Actions::WRONG_STATE, Actions::WRONG_STATE],
+            'error, another request holds it'   => [static function (string $id) use ($set, $error, $stopped): void {
+                $set($error + $stopped)($id);
+                TestSendRun::$lockedByOthers = [self::CAMPAIGN_ITEM];
+            }, Sending::USER, Actions::BUSY, Actions::BUSY],
+            'error, the right taken away since' => [$set($error + $stopped), Sending::READER, Actions::FORBIDDEN, Actions::FORBIDDEN],
+        ];
+    }
+
+    /** @param ?\Closure(string): void $leave */
+    #[DataProvider('runStates')]
+    public function test_stop_byState(?\Closure $leave, string $login, string $stop, string $abandon): void
+    {
+        $this->assertRunAction('stop', $leave, $login, $stop, Actions::STOPPING);
+    }
+
+    /** @param ?\Closure(string): void $leave */
+    #[DataProvider('runStates')]
+    public function test_abandon_byState(?\Closure $leave, string $login, string $stop, string $abandon): void
+    {
+        $this->assertRunAction('abandon', $leave, $login, $abandon, Actions::ABANDONED);
+    }
+
+    /** @param ?\Closure(string): void $leave */
+    private function assertRunAction(string $action, ?\Closure $leave, string $login, string $code, string $done): void
+    {
+        $id = null;
+        if ($leave) {
+            $leave($id = self::queued(3));
+        }
+        $before = is_null($id) ? null : self::stored($id);
+        self::post($action);
+
+        $status = match ($code) {
+            $done        => ActionResult::DONE,
+            Actions::BUSY => ActionResult::BUSY,
+            default      => ActionResult::REFUSED,
+        };
+        self::assertEquals(new ActionResult($action, $status, $code, self::CAMPAIGN_ITEM), $this->actions($login)->run(self::page(), true));
+        self::assertSame(($code === $done) ? [[SendQueue::LOG_EVENT, "$action:" . self::CAMPAIGN_ITEM, [Sending::USER, $done]]] : [], FakeActions::$logged, 'only an action done is logged');
+        if (!is_null($id) && ($code !== $done)) {
+            self::assertSame($before, self::stored($id), 'refused: nothing written');
+        }
+    }
+
+    // a form of Stop shown before the run fell into error, or in another tab: it asks, it never gives the run up
+    public function test_stop_staleFormNeverAbandons(): void
+    {
+        $id = self::inError(['stop_by' => Sending::USER]);
+        self::post('stop');
+
+        self::assertSame(Actions::CONFIRM_ABANDON, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[self::CAMPAIGN_ITEM, Sending::USER, false]], FakeActions::$stopped);
+        self::assertSame(SendRun::ERROR, self::stored($id)['state']);
+        self::assertSame([], FakeActions::$logged);
+    }
+
+    // the token binds the action: a form of Stop posted as Abandon is no form
+    public function test_abandon_stopTokenExpired(): void
+    {
+        self::inError(['stop_by' => Sending::USER]);
+        self::post('abandon', over: ['isds_token' => FormToken::get(Gate::purpose('stop', self::page(), self::CAMPAIGN_ITEM))]);
+
+        self::assertExpired($this->actions()->run(self::page(), true));
+    }
+
+    // a campaign put in the trash still shows its sending, which must still be stopped and given up
+    public function test_stop_trashedCampaignStillStops(): void
+    {
+        $id              = self::queued(3);
+        $this->campaigns = [self::CAMPAIGN_ITEM => self::item(active: false)];
+        self::post('stop');
+
+        self::assertSame(Actions::STOPPING, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame(Sending::USER, self::stored($id)['stop_by']);
+    }
+
+    public function test_abandon_trashedCampaignStillAbandons(): void
+    {
+        $id              = self::inError(['stop_by' => Sending::USER]);
+        $this->campaigns = [self::CAMPAIGN_ITEM => self::item(active: false)];
+        self::post('abandon');
+
+        self::assertSame(Actions::ABANDONED, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame(SendRun::ENDED, self::stored($id)['state']);
+    }
+
+    // the campaign item put back to draft by hand: the run decides, not the item
+    public function test_abandon_draftWithRunFollowsTheRun(): void
+    {
+        self::inError(['stop_by' => Sending::USER]);
+        $this->campaigns = [self::CAMPAIGN_ITEM => ['state' => 'draft'] + self::item()];
+        self::post('abandon');
+
+        self::assertSame(Actions::ABANDONED, $this->actions()->run(self::page(), true)?->code);
+    }
+
+    /** @param array<string, string> $props */
+    #[DataProvider('runOfOtherBinding')]
+    public function test_abandon_runOfOtherBindingUnknown(array $props): void
+    {
+        $id = self::inError(['stop_by' => Sending::USER] + $props);
+        self::post('abandon');
+
+        self::assertSame(Actions::UNKNOWN, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[], SendRun::ERROR], [FakeActions::$stopped, self::stored($id)['state']]);
+    }
+
+    // a binding switched between test and production: the run of the old environment can still be ended
+    public function test_abandon_runOfAnotherEnvironmentActs(): void
+    {
+        self::inError(['stop_by' => Sending::USER, 'env' => Account::PRODUCTION]);
+        self::post('abandon');
+
+        self::assertSame(Actions::ABANDONED, $this->actions()->run(self::page(), true)?->code);
     }
 }

@@ -14,6 +14,7 @@ use AA\Isds\Gate;
 use AA\Isds\SendRun;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
+use AA\Later\BatchFailed;
 use AA\Util\FormToken;
 use AA_Credentials;
 use AA_Perm;
@@ -350,6 +351,60 @@ final class GateTest extends TestCase
 
         self::assertSame(['resume', self::ITEM], [$inputs['isds_action'], $inputs['isds_campaign']]);
         self::assertTrue(FormToken::check(Gate::purpose('resume', self::page(), self::ITEM), $inputs['isds_token']));
+    }
+
+    /**
+     * The runs of ITEM, and whether the page may offer to give them up
+     * @return array<string, array{array<string, string>, bool, bool}> own properties of the run, [] = no run; offered;
+     *         its recipients can be read
+     */
+    public static function abandonOffered(): array
+    {
+        // the states as literals: a data provider runs before SendRun can be loaded
+        $page = ['site' => self::SITE, 'camp_slice' => self::CAMPAIGN, 'msg_slice' => self::MESSAGE];
+
+        return [
+            'error, stopped already'                  => [$page + ['state' => 'error', 'stop_by' => self::READER], true, true],
+            // no figure can be trusted, giving up is still offered
+            'error, stopped already, figures unknown' => [$page + ['state' => 'error', 'stop_by' => self::READER], true, false],
+            'watch_error'                             => [$page + ['state' => 'error', 'watch_from' => '1700000000'], true, true],
+            'error, a stop still ends it'             => [$page + ['state' => 'error'], false, true],
+            'sending, stopped already'                => [$page + ['state' => 'sending', 'stop_by' => self::READER], false, true],
+            'given up'                                => [$page + ['state' => 'stopped', 'stop_by' => self::READER], false, true],
+            'no run'                                  => [[], false, true],
+            'a run of another message slice'          => [['msg_slice' => Sending::OTHER, 'state' => 'error', 'stop_by' => self::READER] + $page, false, true],
+        ];
+    }
+
+    // Stop of such a run only asks to give it up: the template offers Abandon in its place, and nowhere else
+    /** @param array<string, string> $run */
+    #[DataProvider('abandonOffered')]
+    public function test_fields_abandonOnlyWhereStopNoLongerEnds(array $run, bool $offered, bool $readable): void
+    {
+        session_id('gate-test-session');
+        $gate       = self::actionGate();
+        $gate->runs = ($run === []) ? [] : [self::ITEM => new class ($run, $readable) extends SendRun {
+            /** @param array<string, string> $props */
+            public function __construct(array $props, private bool $readable)
+            {
+                parent::__construct($props);
+            }
+
+            public function recipients(): array
+            {
+                return $this->readable ? [] : throw new BatchFailed('CHANGED');
+            }
+        }];
+
+        [$abandon, $stop, $progress, $total] = self::inside($gate, static fn(): array => [$gate->fields('abandon', self::ITEM), $gate->fields('stop', self::ITEM), $gate->progress(self::ITEM, 'abandon'), $gate->progress(self::ITEM, 'total')]);
+
+        self::assertSame($offered, $abandon !== '');
+        if ($offered) {
+            self::assertTrue(FormToken::check(Gate::purpose('abandon', self::page(), self::ITEM), self::inputs($abandon)['isds_token']));
+            self::assertSame($readable ? '0' : '', $total, 'the figures read, or not');
+        }
+        self::assertSame('stop', self::inputs($stop)['isds_action'], 'Stop is given whatever the run');
+        self::assertSame('', $progress, 'no question of progress');
     }
 
     public function test_fields_newCampaignOnlyToSave(): void

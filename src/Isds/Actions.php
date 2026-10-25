@@ -33,6 +33,14 @@ class Actions
     public const UNKNOWN = 'UNKNOWN';
     /** Continue: the sending goes on */
     public const RESUMED = 'RESUMED';
+    /** Stop: nothing more is sent, what may have gone is still looked up */
+    public const STOPPING = 'STOPPING';
+    /** Abandon: the sending is given up, what may have gone stays uncertain */
+    public const ABANDONED = SendRun::ABANDONED;
+    /** Stop: every message has been tried, nothing is left to stop */
+    public const ALL_SENT = SendRun::ALL_SENT;
+    /** Stop: the sending stands in an error a stop no longer ends - only Abandon would */
+    public const CONFIRM_ABANDON = SendRun::CONFIRM_ABANDON;
     /** what the core refuses with: another request holds the campaign, the user may not control its run,
      *  a step of it may still work, or the run does not wait for the action */
     public const BUSY        = SendRun::BUSY;
@@ -41,7 +49,7 @@ class Actions
     public const WRONG_STATE = 'WRONG_STATE';
 
     /** the actions run here; the form of another one of Gate::ACTIONS is refused as one of no action */
-    private const RUNS = ['resume'];
+    private const RUNS = ['resume', 'stop', 'abandon'];
 
     /** an action ran in this request: a form is acted on once, whichever gate on the page it names */
     private static bool $consumed = false;
@@ -129,26 +137,33 @@ class Actions
         }
 
         return match ($action) {
-            'resume' => $this->resume($setup, $campaign),
-            default  => throw new \LogicException("No action $action"),
+            'resume', 'stop', 'abandon' => $this->onRun($setup, $action, $campaign),
+            default                     => throw new \LogicException("No action $action"),
         };
     }
 
-    /** Continue: a run in error, waiting, hanging or with its step dead goes on now (SendRun::resumeFor()) */
-    private function resume(Setup $setup, string $campaign): ActionResult
+    /** Continue, Stop or Abandon of the run of the campaign, done by the core under the lock of the campaign */
+    private function onRun(Setup $setup, string $action, string $campaign): ActionResult
     {
-        $run = $this->runOfPage($setup, 'resume', $campaign);
+        $run = $this->runOfPage($setup, $action, $campaign);
         if ($run instanceof ActionResult) {
             return $run;
         }
-        $uid  = $this->access->uid();
-        $code = $this->resumeRun($campaign, $uid);
-        if ($code !== '') {
-            return self::refused('resume', $code, $campaign);
+        $uid = $this->access->uid();
+        [$code, $done] = match ($action) {
+            // a run in error, waiting, hanging or with its step dead goes on now
+            'resume' => [$this->resumeRun($campaign, $uid) ?: self::RESUMED, self::RESUMED],
+            // never gives the sending up: a stale form of Stop must not do what cannot be undone
+            'stop'   => [$this->stopRun($campaign, $uid, false) ?: self::STOPPING, self::STOPPING],
+            // only giving up is done - anything else would be told as what cannot be undone
+            default  => [$this->stopRun($campaign, $uid, true) ?: throw new \LogicException('Abandon did not give the sending up'), self::ABANDONED],
+        };
+        if ($code !== $done) {
+            return self::refused($action, $code, $campaign);
         }
-        $this->done = [SendQueue::LOG_EVENT, "resume:$campaign", [$uid, self::RESUMED]];
+        $this->done = [SendQueue::LOG_EVENT, "$action:$campaign", [$uid, $done]];
 
-        return new ActionResult('resume', ActionResult::DONE, self::RESUMED, $campaign);
+        return new ActionResult($action, ActionResult::DONE, $done, $campaign);
     }
 
     /** the run of the campaign, when it sends from the slices of the page (Setup::ownsRun()) */
@@ -188,6 +203,12 @@ class Actions
     protected function resumeRun(string $campaign, string $uid): string
     {
         return SendRun::resumeFor($campaign, $uid);
+    }
+
+    /** @return string what SendRun::stop() says */
+    protected function stopRun(string $campaign, string $uid, bool $abandon): string
+    {
+        return SendRun::stop($campaign, $uid, $abandon);
     }
 
     /** @param list<string> $params */

@@ -10882,13 +10882,15 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        Even inside the gate {dictionary} may serve a copy an earlier request stored in the page cache. Nor may the
  *        page be the page of their item.
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
- *        no campaign id only to save a new campaign. Actions: resume (Continue a sending in error or waiting)
+ *        no campaign id only to save a new campaign. Actions: resume (Continue a sending in error or waiting),
+ *        stop (Stop: nothing more is sent; never gives the sending up), abandon (end a sending in error for good -
+ *        its fields are '' unless Stop can no longer end it, so offer it in place of Stop when they are not)
  *    {datovkabulk:env}    - test | production, as datovka_conf.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
  *    {datovkabulk:result[:text|code|status|action]} - what the posted action did: text to read (default), or
- *        for a condition its code (RESUMED, BUSY, EXPIRED, ...), status (done, refused, busy, expired, failed) or
- *        action. After the action the page is loaded again with isds_campaign and isds_r added to its URL; the
- *        result shows only with that isds_r, for 10 minutes
+ *        for a condition its code (RESUMED, STOPPING, CONFIRM_ABANDON, BUSY, EXPIRED, ...), status (done,
+ *        refused, busy, expired, failed) or action. After the action the page is loaded again with isds_campaign
+ *        and isds_r added to its URL; the result shows only with that isds_r, for 10 minutes
  *    {datovkabulk:recipients:<campaign id>:count|skipped|ids} - of an active campaign by its stored filter, counted
  *        anew: how many get the letter, how many are skipped for their data box, the dash-separated ids of who gets
  *        it (for {view}); a queued or sent campaign keeps its count from then in the campaign. '' on any error, and
@@ -10899,11 +10901,12 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        aside) with no run and for a record that cannot be read. <what>:
  *        state - of the campaign item while it has no run, then one of:
  *            sending      queued, sending or waiting
- *            error        sending stopped by an error, waits for Continue
+ *            error        sending stopped by an error, waits for Continue; one stopped already or with every
+ *                         message tried for Continue or Abandon (fields:abandon), Stop changes nothing
  *            abandoned    sending given up in error
  *            watching     the sending is over (a stopped one too), the delivery is being followed
  *            watch_error  the sending is over, following the delivery stopped by an error: Continue goes on,
- *                         Stop ends it
+ *                         Abandon ends it
  *            done         the end - also of a following given up; a sending a person stopped that sent anything
  *                         is watching first
  *        total|sent|failed|skipped|uncertain|stopped|queued - recipients; the counts add up to total. failed:

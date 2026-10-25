@@ -59,7 +59,9 @@ class SendRun extends BatchRun
     public const BUSY = 'BUSY';
     /** stop(): every message has been tried, nothing is left to stop */
     public const ALL_SENT = 'ALL_SENT';
-    /** stop() of a run in error with nothing left to stop: given up, its note */
+    /** stop() of a run in error that cannot be stopped any more: only giving it up (abandonable()) would end it */
+    public const CONFIRM_ABANDON = 'CONFIRM_ABANDON';
+    /** stop() asked to give a run up, and it did: its note */
     public const ABANDONED = 'ABANDONED';
     /** the states of a run: queued or working, stopped by an error, done, given up (BatchRun::end()) */
     public const SENDING = 'sending';
@@ -226,37 +228,41 @@ class SendRun extends BatchRun
     /**
      * Stop: what was never tried does not go, what may have gone is still looked up - the steps do it,
      * with no account and no ISDS. A run that would not go on by itself (in error, waiting, its step
-     * dead) goes on at once. A run in error that is stopped already, or has nothing left to stop, is
-     * given up: what may have gone stays uncertain for a person to verify. A run following delivery has
-     * nothing left to stop, whatever the stop and the cursor say: it ends by itself, given up only in error.
-     * @return string '' = stopping; ABANDONED; or why not: BUSY, FORBIDDEN, WRONG_STATE (no sending, or
-     *                one that ended), ALL_SENT
+     * dead) goes on at once. A run following delivery has nothing left to stop, whatever the stop and
+     * the cursor say: it ends by itself.
+     * Abandon ($abandon): gives up a run a stop can no longer end (abandonable()) - what may have gone
+     * stays uncertain for a person to verify. Only asked for: a stop never gives a run up, so a stale
+     * Stop form cannot do what cannot be undone.
+     * @return string '' = stopping; ABANDONED; or why not: BUSY, FORBIDDEN, WRONG_STATE (no sending, one
+     *                that ended, or abandon of a run a stop still ends), ALL_SENT, CONFIRM_ABANDON, LEASE (in
+     *                error, its last step may still work)
      */
-    public static function stop(string $campaign, string $uid): string
+    public static function stop(string $campaign, string $uid, bool $abandon): string
     {
-        return self::underLock($campaign, $uid, static function (self $run) use ($uid): string {
+        return self::underLock($campaign, $uid, static function (self $run) use ($uid, $abandon): string {
             $states = static::states();
             if (in_array($run->state(), [$states->done, $states->ended], true)) {
                 return 'WRONG_STATE';
             }
-            if ($run->watching()) {
-                if ($run->state() === $states->error) {
-                    $run->end($uid, self::ABANDONED);
-                    return self::ABANDONED;
+            $finds = $run->stopFinds();
+            if ($finds === self::CONFIRM_ABANDON) {
+                if (!$abandon) {
+                    return self::CONFIRM_ABANDON;
                 }
-                return self::ALL_SENT;
-            }
-            $stopped = ((string) $run->stop_by !== '');
-            // a sending all sent does not end as stopped
-            $allSent = !$stopped && $run->triedAll();
-            if (($run->state() === $states->error) && ($stopped || $allSent)) {
                 $run->end($uid, self::ABANDONED);
                 return self::ABANDONED;
             }
-            if ($allSent) {
+            if ($abandon) {
+                return 'WRONG_STATE';
+            }
+            if ($finds === self::ALL_SENT) {
                 return self::ALL_SENT;
             }
-            if (!$stopped) {
+            // the run stands till Continue can move it: "stopping" would not be true yet
+            if (($run->state() === $states->error) && $run->stepMayStillWork(static::now())) {
+                return 'LEASE';
+            }
+            if ((string) $run->stop_by === '') {
                 $run->stop_by = $uid;
                 $run->update(['stop_by']);
             }
@@ -268,9 +274,33 @@ class SendRun extends BatchRun
     }
 
     /**
+     * A run in error a stop can no longer end - stopped already, every message tried, or following
+     * delivery: Continue, or giving it up. Read without the lock it only tells what to offer.
+     */
+    public function abandonable(): bool
+    {
+        return $this->stopFinds() === self::CONFIRM_ABANDON;
+    }
+
+    /**
+     * What a stop of a run not ended finds: CONFIRM_ABANDON in error with nothing it could stop (abandonable()),
+     * ALL_SENT with nothing left to stop - a sending all sent does not end as stopped -, '' something to stop
+     */
+    private function stopFinds(): string
+    {
+        $stopped = ((string) $this->stop_by !== '');
+        $over    = $this->watching() || (!$stopped && $this->triedAll());
+        if (($this->state() === static::states()->error) && ($over || $stopped)) {
+            return self::CONFIRM_ABANDON;
+        }
+
+        return $over ? self::ALL_SENT : '';
+    }
+
+    /**
      * Every message tried: the cursor past the last recipient. A manifest that does not say how many
-     * there are tells nothing, and the stop goes on - its steps fail on it, and a second stop gives
-     * the run up.
+     * there are tells nothing, and the stop goes on - its steps fail on it, and the run in error can
+     * then be given up.
      */
     private function triedAll(): bool
     {
