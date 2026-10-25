@@ -8,6 +8,8 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA\Isds\Gate;
 use AA\Isds\Schema;
+use AA\Isds\Setup;
+use AA\Upload\UploadDir;
 use AA_Credentials;
 use AA_Dbcondition;
 use AA_Perm;
@@ -191,9 +193,9 @@ final class GateShowsTest extends TestCase
 
     /**
      * include and exclude whole on every page - the draft form stores its hidden fields as the whole
-     * filter; includepage and excludepage a page at a time, for the chips
+     * filter; includepage and excludepage the first 50 on every page of the recipients, for the chips
      */
-    public function test_filter_wholeForTheFormPagedForChips(): void
+    public function test_filter_wholeForTheFormFirstPageForChips(): void
     {
         $items = [];
         foreach (range(1, 120) as $n) {
@@ -208,9 +210,9 @@ final class GateShowsTest extends TestCase
         };
         $dashed = static fn(int $from, int $count): string => implode('-', array_slice($ids, $from, $count));
 
-        self::assertSame([$dashed(0, 60), $dashed(60, 60), $dashed(0, 50), $dashed(60, 50)], $page('1'));
-        self::assertSame([$dashed(0, 60), $dashed(60, 60), $dashed(50, 10), $dashed(110, 10)], $page('2'));
-        self::assertSame([$dashed(0, 60), $dashed(60, 60), '', ''], $page('3'));
+        $first = [$dashed(0, 60), $dashed(60, 60), $dashed(0, 50), $dashed(60, 50)];
+
+        self::assertSame([$first, $first, $first], [$page('1'), $page('2'), $page('3')]);
     }
 
     public function test_filter_foreignIdsLeftOut(): void
@@ -410,6 +412,161 @@ final class GateShowsTest extends TestCase
     {
         self::assertSame('', self::search($text));
         self::assertSame($searched, FakeRecipients::$searches !== []);
+    }
+
+    // ------------------------------------------------------------ param:q
+
+    /** the text search() looks for, for the value of the search field: the same one, escaped */
+    public function test_paramQ_whatSearchLooksForEscaped(): void
+    {
+        $gate = self::gate();
+        $q    = static function (mixed $text) use ($gate): string {
+            $_GET = ['isds_q' => $text];
+
+            return self::inside($gate, static fn(): string => $gate->param('q'));
+        };
+
+        self::assertSame('{datovkabulk:env}:x)} &#35;1 _&#35;HEADLINE &lt;i&gt;&quot;', $q(' {datovkabulk:env}:x)} #1 _#HEADLINE <i>" '));
+        self::assertSame(str_repeat('ě', 100), $q(str_repeat('ě', 100)));
+        self::assertSame(['', '', '', ''], [$q(str_repeat('ě', 101)), $q(['Adamov']), $q("Ad\xE8"), $q("  \n")], 'none search() would look for');
+        $_GET = ['isds_q' => 'Adamov'];
+        self::assertSame('', $gate->param('q'), 'outside the UI');
+    }
+
+    // ------------------------------------------------------------ members
+
+    public function test_members_onlyWithMemberField(): void
+    {
+        $with    = self::gate();
+        $without = self::gate(memberField: '');
+
+        self::assertSame(['1', ''], [self::inside($with, static fn(): string => $with->members()), self::inside($without, static fn(): string => $without->members())]);
+        self::assertSame('', $with->members(), 'outside the UI');
+    }
+
+    // ------------------------------------------------------------ types
+
+    /** @return string the rows of types() of $campaign, each expanded by AA::Un(), as the page shows them */
+    private static function types(FakeGate $gate, string $campaign, string $row = '_#TYPE"_#CHECKED;'): string
+    {
+        // the page takes the colons and brackets of values for text only at its end
+        return DeQuoteColons(self::inside($gate, static fn(): string => $gate->types($campaign, $row, static fn(string $text): string => AA::Un($text))));
+    }
+
+    public function test_types_ofThePageCheckedByTheFilter(): void
+    {
+        $gate = self::gate([
+            self::ITEM  => Sending::filter(['types' => ['mestocast', 'mesto']]),
+            self::ITEM2 => '{"types":',
+        ]);
+
+        self::assertSame('mesto" checked;mestostatut";mestocast" checked;', self::types($gate, strtoupper(self::ITEM)), 'in the order of the settings');
+        self::assertSame('mesto" checked;mestostatut";mestocast";', self::types($gate, ''), 'a new campaign');
+        self::assertSame('mesto";mestostatut";mestocast";', self::types($gate, self::ITEM2), 'a filter that cannot be read: none checked');
+        self::assertSame('Cities|Statutory cities|City districts|', self::types($gate, '', '_#LABEL|'));
+        self::assertSame('', $gate->types(self::ITEM, '_#TYPE', static fn(string $text): string => $text), 'outside the UI');
+    }
+
+    /** @return array<string, array{string|array{slice: string, active: bool, filter: string, state: string}, string}> */
+    public static function notActiveCampaigns(): array
+    {
+        return [
+            'a campaign in the bin' => [['slice' => Sending::CAMPAIGN, 'active' => false, 'filter' => Sending::filter(), 'state' => 'draft'], self::ITEM],
+            'an item of messages'   => [['slice' => Sending::MESSAGE, 'active' => true, 'filter' => Sending::filter(), 'state' => 'sent'], self::ITEM],
+            'no such item'          => [Sending::filter(), self::ITEM2],
+            'not an id'             => [Sending::filter(), self::ITEM . '"'],
+        ];
+    }
+
+    /** @param string|array{slice: string, active: bool, filter: string, state: string} $stored */
+    #[DataProvider('notActiveCampaigns')]
+    public function test_types_onlyOfAnActiveCampaignOfThePage(string|array $stored, string $campaign): void
+    {
+        self::assertSame('', self::types(self::gate([self::ITEM => $stored]), $campaign));
+    }
+
+    // a label of the settings shows as written - no command, alias or markup of it acts
+    public function test_types_escapedNeverExpanded(): void
+    {
+        $gate        = self::gate();
+        $gate->setup = Setup::fromSnapshot(Sending::SITE, Sending::CAMPAIGN, Sending::MESSAGE, Sending::SOURCE, ['12' => '<b>{datovkabulk:env}:x)} {(y)} _#HEADLINE</b>', 'mesto' => 'Cities'], ['12']);
+
+        self::assertSame(
+            '<i>12" checked: &lt;b&gt;{datovkabulk:env}:x)} {(y)} _&#35;HEADLINE&lt;/b&gt;</i><i>mesto": Cities</i>',
+            self::types($gate, '', '<i>_#TYPE"_#CHECKED: _#LABEL</i>'),
+        );
+    }
+
+    // ------------------------------------------------------------ letterhead
+
+    public function test_letterhead_partedAsTheLetterEscaped(): void
+    {
+        $gate        = self::gate();
+        $gate->setup = Setup::fromSnapshot(Sending::SITE, Sending::CAMPAIGN, Sending::MESSAGE, Sending::SOURCE, ['mesto' => 'Cities'], letterhead: " Síť <b>zdravých</b> měst\r\nKancelář: {datovkabulk:env} _#HEADLINE\n \n\nPraha #1 ");
+
+        self::assertSame("<p>Síť &lt;b&gt;zdravých&lt;/b&gt; měst<br>\nKancelář: {datovkabulk:env} _&#35;HEADLINE</p>\n<p>Praha &#35;1</p>", self::inside($gate, static fn(): string => $gate->letterhead()));
+        self::assertSame("<p>Síť &lt;b&gt;zdravých&lt;/b&gt; měst<br>\nKancelář: {datovkabulk:env} _&#35;HEADLINE</p>\n<p>Praha &#35;1</p>", self::inside($gate, static fn(): string => AA::Un('{datovkabulk:letterhead}')), 'in a template');
+        self::assertSame('', $gate->letterhead(), 'outside the UI');
+        $gate->setup = Sending::page();
+        self::assertSame('', self::inside($gate, static fn(): string => $gate->letterhead()), 'none');
+    }
+
+    // ------------------------------------------------------------ files
+
+    private const UPLOADS = 'https://example.org/upload/' . Sending::CAMPAIGN;
+
+    /** ITEM with the values of its field of attachments; the campaign slice keeps its files in UPLOADS */
+    private static function filesGate(string ...$values): FakeGate
+    {
+        $gate          = self::gate([self::ITEM => Sending::filter()]);
+        $gate->items  += [
+            self::ITEM   => ['slice' => Sending::CAMPAIGN, 'fields' => [Schema::CAMPAIGN_FILES => $values]],
+            self::LETTER => ['slice' => Sending::MESSAGE, 'fields' => [Schema::CAMPAIGN_FILES => $values]],
+        ];
+        $gate->uploads = new UploadDir(self::UPLOADS, '/nonexistent/upload/' . Sending::CAMPAIGN);
+
+        return $gate;
+    }
+
+    /** @return string the rows of files() of $campaign, each expanded by AA::Un(), as the page shows them */
+    private static function files(FakeGate $gate, string $row, string $campaign = self::ITEM): string
+    {
+        return DeQuoteColons(self::inside($gate, static fn(): string => $gate->files($campaign, $row, static fn(string $text): string => AA::Un($text))));
+    }
+
+    public function test_files_nameUrlExtensionInTheOrderTheyGo(): void
+    {
+        $gate = self::filesGate(self::UPLOADS . '/Pozv%C3%A1nka.PDF', ' ', self::UPLOADS . '/tabulka.xlsx');
+
+        self::assertSame(
+            '<li>Pozvánka.PDF|pdf|' . self::UPLOADS . '/Pozv%C3%A1nka.PDF</li><li>tabulka.xlsx|xlsx|' . self::UPLOADS . '/tabulka.xlsx</li>',
+            self::files($gate, '<li>_#NAME|_#EXT|_#URL</li>'),
+        );
+        self::assertSame(['2', '0'], [self::files($gate, ''), self::files(self::filesGate(), '')], 'without a row how many - an empty value is none');
+        self::assertSame('', $gate->files(self::ITEM, '_#NAME', static fn(string $text): string => $text), 'outside the UI');
+    }
+
+    // a value written by hand in the editor of the slice: shown whole, so that it can be removed - never acting
+    public function test_files_valueEscapedNeverExpanded(): void
+    {
+        $value = 'https://evil.example/x?a=1&b=<i>"{datovkabulk:env}:x)} {(y)} _#HEADLINE#.PDF';
+        $gate  = self::filesGate($value);
+        $shown = 'https://evil.example/x?a=1&amp;b=&lt;i&gt;&quot;{datovkabulk:env}:x)} {(y)} _&#35;HEADLINE&#35;.PDF';
+
+        self::assertSame("<li><input value=\"$shown\">$shown|pdf</li>", self::files($gate, '<li><input value="_#URL">_#NAME|_#EXT</li>'));
+        self::assertSame('_#NAMES___ ' . $shown . ' _#URL_', self::files($gate, '_#NAMES___ _#NAME _#URL_'), 'an alias that only begins so stays');
+        self::assertSame("test: $shown", self::files($gate, '{datovkabulk:env}: _#NAME'), 'the row expands, the value in it does not');
+        self::assertSame('tabulka.xlsx', self::files(self::filesGate(self::UPLOADS . '/tabulka.xlsx'), '_#NAME'));
+        $noDir          = self::filesGate(self::UPLOADS . '/tabulka.xlsx');
+        $noDir->uploads = null;
+        self::assertSame(self::UPLOADS . '/tabulka.xlsx', self::files($noDir, '_#NAME'), 'no upload directory: the whole value');
+    }
+
+    public function test_files_onlyOfACampaignOfThePage(): void
+    {
+        $gate = self::filesGate(self::UPLOADS . '/tabulka.xlsx');
+
+        self::assertSame(['', '', '', ''], [self::files($gate, '_#NAME', self::LETTER), self::files($gate, '', self::LETTER), self::files($gate, '_#NAME', self::ITEM2), self::files($gate, '_#NAME', self::ITEM . 'x')]);
     }
 
     // ------------------------------------------------------------ message

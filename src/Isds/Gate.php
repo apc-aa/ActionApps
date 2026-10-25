@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\IO\DB\DB_AA;
+use AA\Isds\Body\HtmlBody;
 use AA\Isds\Registry\Sync;
 use AA\Later\BatchFailed;
+use AA\Upload\UploadDir;
 use AA\Util\FormToken;
 use AA\Util\LogOnce;
 use AA_Credentials;
 use AA_Items;
 use AA_Module_Site;
 use AA_Set;
+use AA_Slice;
 use ItemContent;
 use zids;
 
@@ -318,7 +321,7 @@ class Gate
         if ($group === 'test') {
             $ids = $this->once('tests', fn(): array => $this->testMessages($setup, $id), $setup, $id);
         } else {
-            $ids = $this->once('messages', fn(): ?array => $this->campaignMessages($setup, $id), $setup, $id)[$group] ?? null;
+            $ids = $this->groupsOf($setup, $id)[$group] ?? null;
             if (is_null($ids)) {
                 // '' tells no count from 0, as progress()
                 return '';
@@ -331,10 +334,17 @@ class Gate
         return in_array($group, ['recent', 'test'], true) ? safe(implode('-', $ids)) : self::pageOf($ids, self::PAGE_SIZE);
     }
 
+    /** @return ?array<string, list<string>> campaignMessages(), once a request for messages() and message() */
+    private function groupsOf(Setup $setup, string $id): ?array
+    {
+        return $this->once('messages', fn(): ?array => $this->campaignMessages($setup, $id), $setup, $id);
+    }
+
     /**
      * A value of the URL of the page the template may branch on: isds_<name> when it is one of PARAMS,
-     * else ''; page - the page of a list, a number of up to four digits, 1 for anything else. The
-     * template never reads the URL itself ({qs}): it could put anything there.
+     * else ''; page - the page of a list, a number of up to four digits, 1 for anything else; q - the
+     * text search() looks for, trimmed and escaped (text()), '' when it looks for none - for the value
+     * of the search field. The template never reads the URL itself ({qs}): it could put anything there.
      */
     public function param(string $name): string
     {
@@ -343,6 +353,9 @@ class Gate
         }
         if ($name === 'page') {
             return (string) self::pageNumber();
+        }
+        if ($name === 'q') {
+            return self::text(self::query() ?? '');
         }
         $value = $_GET["isds_$name"] ?? null;
 
@@ -482,12 +495,13 @@ class Gate
      * The recipient filter of a campaign of the page in the active bin, as recipients() takes it:
      * types - comma-separated (Setup takes no comma in a type) -, membership; include, exclude - all
      * their ids, dash-separated, for the hidden fields of the draft form (isds_include, isds_exclude):
-     * saving the form stores them as the whole filter; includepage, excludepage - only the page of them
-     * param:page shows, 50 a page, for the chips of a {datovkabulk:view}. Ids only of the active items of
-     * the source slice: a stored id of another item is left out. Of no campaign ('') the filter a new
-     * one starts with. '' for another item or question, and for a stored filter that cannot be read
-     * (logged as by recipients()) - '' then never means the filter a new campaign starts with: show the
-     * controls of the filter unchecked (membership '' tells it), a choice made anew replaces it.
+     * saving the form stores them as the whole filter; includepage, excludepage - only the first 50 of
+     * them, for the chips of a {datovkabulk:view}: param:page pages the list of recipients beside them,
+     * not them. Ids only of the active items of the source slice: a stored id of another item is left
+     * out. Of no campaign ('') the filter a new one starts with. '' for another item or question, and
+     * for a stored filter that cannot be read (logged as by recipients()) - '' then never means the
+     * filter a new campaign starts with: show the controls of the filter unchecked (membership '' tells
+     * it), a choice made anew replaces it.
      * @param string $campaign long id; '' = a new campaign
      */
     public function filter(string $campaign, string $what): string
@@ -507,8 +521,8 @@ class Gate
             'membership'  => safe($filter->membership),
             'include'     => safe(implode('-', $this->ofSource($setup, $filter->include))),
             'exclude'     => safe(implode('-', $this->ofSource($setup, $filter->exclude))),
-            'includepage' => self::pageOf($this->ofSource($setup, $filter->include), self::PAGE_SIZE),
-            default       => self::pageOf($this->ofSource($setup, $filter->exclude), self::PAGE_SIZE),
+            'includepage' => safe(implode('-', array_slice($this->ofSource($setup, $filter->include), 0, self::PAGE_SIZE))),
+            default       => safe(implode('-', array_slice($this->ofSource($setup, $filter->exclude), 0, self::PAGE_SIZE))),
         };
     }
 
@@ -553,12 +567,11 @@ class Gate
     public function search(): string
     {
         $setup = self::$open;
-        $text  = $_GET['isds_q'] ?? null;
-        if (is_null($setup) || !is_string($text) || !mb_check_encoding($text, 'UTF-8') || (mb_strlen($text) > self::QUERY_LENGTH) || (trim($text) === '')) {
+        $text  = self::query();
+        if (is_null($setup) || is_null($text)) {
             return '';
         }
-        $text = trim($text);
-        $ids  = $this->once('search', function () use ($setup, $text): array {
+        $ids = $this->once('search', function () use ($setup, $text): array {
             $config = $this->rules()->registryConfig($setup->sourceSlice);
 
             return is_null($config) ? [] : $this->resolver()->named($setup->sourceSlice, $config, array_map('strval', array_keys($setup->types)), $text, self::FOUND);
@@ -567,16 +580,37 @@ class Gate
         return safe(implode('-', $ids));
     }
 
+    /** isds_q of the URL trimmed, as search() looks for it; null for none, one longer than QUERY_LENGTH or not UTF-8 */
+    private static function query(): ?string
+    {
+        $text = $_GET['isds_q'] ?? null;
+        if (!is_string($text) || !mb_check_encoding($text, 'UTF-8') || (mb_strlen($text) > self::QUERY_LENGTH) || (trim($text) === '')) {
+            return null;
+        }
+
+        return trim($text);
+    }
+
     /**
      * The message the page shows (isds_msg of its URL), when it is an item of the message slice of the
-     * campaign the page shows (campaign()); '' otherwise
+     * campaign the page shows (campaign()); '' otherwise. resend - '1' when the letter may go to its
+     * recipient again (clone with isds_scope one): it is in the group resend of messages(), which a
+     * template cannot search past its page.
+     * @param string $what '' the id, resend
      */
-    public function message(): string
+    public function message(string $what = ''): string
     {
         $setup = self::$open;
         $id    = ModuleId::normalize(is_string($_GET['isds_msg'] ?? null) ? $_GET['isds_msg'] : '');
+        if (is_null($setup) || is_null($id) || !in_array($what, ['', 'resend'], true) || is_null($this->pageMessage($setup, $id))) {
+            return '';
+        }
+        if ($what === '') {
+            return safe($id);
+        }
+        $resend = $this->groupsOf($setup, (string) $this->pageCampaign())['resend'] ?? [];
 
-        return (is_null($setup) || is_null($id) || is_null($this->pageMessage($setup, $id))) ? '' : safe($id);
+        return in_array($id, array_map('strtolower', $resend), true) ? '1' : '';
     }
 
     /**
@@ -606,16 +640,115 @@ class Gate
         $timeline = SendItems::timeline($item['values'][Schema::MESSAGE_EVENTS][0] ?? '');
         // usort() keeps the order of equal ones
         usort($timeline, static fn(array $a, array $b): int => (($at($a) === 0) <=> ($at($b) === 0)) ?: ($at($b) <=> $at($a)));
-        $out = '';
+        $entries = [];
         foreach ($timeline as $entry) {
-            $values         = array_map(static fn(string $key): string => (string) ($entry[$key] ?? ''), self::EVENT_KEYS);
-            $values['AT']   = ($at($entry) === 0) ? '' : (string) $at($entry);
-            $values['BY']   = self::verifiedBy($values['BY']);
-            $values         = array_map(static fn(string $v): string => QuoteColons(self::text($v)), $values);
-            $out           .= $expand((string) preg_replace_callback('/_#(AT|KIND|CODE|TEXT|DMID|BY)(?![A-Za-z0-9_])/', static fn(array $m): string => $values[$m[1]], $row));
+            $values       = array_map(static fn(string $key): string => (string) ($entry[$key] ?? ''), self::EVENT_KEYS);
+            $values['AT'] = ($at($entry) === 0) ? '' : (string) $at($entry);
+            $values['BY'] = self::verifiedBy($values['BY']);
+            $entries[]    = $values;
+        }
+
+        return self::rows($entries, $row, $expand);
+    }
+
+    /**
+     * $row expanded for each entry, its values put in for _#<key> in one pass - an alias that only begins
+     * so (_#TEXTO___) stays. Escaped (text(), QuoteColons()), so that nothing of them expands.
+     * @param list<array<string, string>> $entries
+     * @param callable(string): string    $expand
+     */
+    private static function rows(array $entries, string $row, callable $expand): string
+    {
+        $out = '';
+        foreach ($entries as $values) {
+            $values = array_map(static fn(string $v): string => QuoteColons(self::text($v)), $values);
+            $names  = implode('|', array_map(static fn(string $key): string => preg_quote($key, '/'), array_keys($values)));
+            $out   .= $expand((string) preg_replace_callback("/_#($names)(?![A-Za-z0-9_])/", static fn(array $m): string => $values[$m[1]], $row));
         }
 
         return $out;
+    }
+
+    /**
+     * The attachments of a campaign of the page (an item of its campaign slice, in any bin), in the order
+     * they go: $row expanded for each, as events() does, with _#URL (the value of the field - for
+     * isds_remove[]), _#NAME (the name the recipient sees; the whole value when it is no file of the
+     * upload directory of the slice, which sending refuses) and _#EXT (its extension in small letters)
+     * put in. Without $row how many there are. Their sizes would need every file read from the disk -
+     * not told. '' for another item.
+     * @param string                   $campaign long id
+     * @param callable(string): string $expand   expands a row - AA::Un() in the context of the template
+     */
+    public function files(string $campaign, string $row, callable $expand): string
+    {
+        $setup = self::$open;
+        $id    = ModuleId::normalize($campaign);
+        $item  = (is_null($setup) || is_null($id)) ? null : $this->item($id);
+        if (is_null($setup) || is_null($item) || ($item['slice'] !== $setup->campaignSlice)) {
+            return '';
+        }
+        $urls = Drafts::attachments($item['values'][Schema::CAMPAIGN_FILES] ?? []);
+        if ($row === '') {
+            return (string) count($urls);
+        }
+        $uploads = $urls ? $this->uploads($setup) : null;
+        $entries = [];
+        foreach ($urls as $url) {
+            $name      = (!is_null($uploads) && $uploads->contains($url)) ? $uploads->name($url) : $url;
+            $entries[] = ['URL' => $url, 'NAME' => $name, 'EXT' => strtolower(pathinfo($name, PATHINFO_EXTENSION))];
+        }
+
+        return self::rows($entries, $row, $expand);
+    }
+
+    /**
+     * The item types the page offers (Setup::$types), in their order: $row expanded for each, as events()
+     * does, with _#TYPE (for isds_types[]), _#LABEL and _#CHECKED (" checked" when the filter of the
+     * campaign has the type) put in. Of no campaign ('') the filter a new one starts with; of a filter
+     * that cannot be read (filter() '') none checked. '' for any item but an active campaign of the page.
+     * @param string                   $campaign long id; '' = a new campaign
+     * @param callable(string): string $expand   expands a row - AA::Un() in the context of the template
+     */
+    public function types(string $campaign, string $row, callable $expand): string
+    {
+        $setup = self::$open;
+        $id    = ($campaign === '') ? '' : ModuleId::normalize($campaign);
+        if (is_null($setup) || is_null($id) || (($id !== '') && !($this->campaignOfPage($setup, $id)['active'] ?? false))) {
+            return '';
+        }
+        $chosen  = (($id === '') ? self::filterOf($setup, '') : $this->storedFilter($setup, $id))->types ?? [];
+        $entries = [];
+        foreach ($setup->types as $type => $label) {
+            $entries[] = ['TYPE' => (string) $type, 'LABEL' => $label, 'CHECKED' => in_array((string) $type, $chosen, true) ? ' checked' : ''];
+        }
+
+        return self::rows($entries, $row, $expand);
+    }
+
+    /**
+     * The letterhead of the page (Setup::$letterhead) as the letter shows it above its text - paragraphs
+     * and lines as HtmlBody parts them -, escaped: a preview that does not differ from the PDF. '' for none.
+     */
+    public function letterhead(): string
+    {
+        $text = self::$open->letterhead ?? '';
+        if (trim($text) === '') {
+            return '';
+        }
+        try {
+            $paragraphs = HtmlBody::paragraphs($text);
+        } catch (\InvalidArgumentException) {
+            // the letter fails on it too, and says why
+            return '';
+        }
+
+        return implode("\n", array_map(static fn(array $lines): string => '<p>' . implode("<br>\n", array_map(self::text(...), $lines)) . '</p>', $paragraphs));
+    }
+
+    /** '1' when the page tells members (Setup::$memberField) - only then does the choice of membership count */
+    public function members(): string
+    {
+        return ((self::$open->memberField ?? '') === '') ? '' : '1';
     }
 
     /**
@@ -1313,6 +1446,17 @@ class Gate
     protected function resolver(): Recipients
     {
         return new Recipients();
+    }
+
+    /** where the campaign slice keeps its files; null when it is not set right - sending says so */
+    protected function uploads(Setup $setup): ?UploadDir
+    {
+        $slice = AA_Slice::getOwnModule($setup->campaignSlice);
+        try {
+            return $slice ? UploadDir::forSlice($slice) : null;
+        } catch (\InvalidArgumentException) {
+            return null;
+        }
     }
 
     /** @return list<int|string> ids of the views of the two slices of the page named $name */

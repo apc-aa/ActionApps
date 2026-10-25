@@ -70,17 +70,14 @@ final readonly class Letter
         unset($document);
         $bytes  = $files[0]->size();
         $policy = new AttachmentPolicy($uploads);
-        foreach ($campaign->getValuesArray(Schema::CAMPAIGN_FILES) as $url) {
-            $url = trim((string) $url);
+        foreach (Drafts::attachments($campaign->getValuesArray(Schema::CAMPAIGN_FILES)) as $url) {
             // past one message the trial refuses it anyway: read no more of up to 20 MB each
             if ((count($files) > Message::MAX_FILES) || ($bytes > Message::MAX_BYTES)) {
                 break;
             }
-            if ($url !== '') {
-                $file    = $policy->fromUrl($url);
-                $files[] = $file;
-                $bytes  += $file->size();
-            }
+            $file    = $policy->fromUrl($url);
+            $files[] = $file;
+            $bytes  += $file->size();
         }
         return new self($subject, $files, (string) $campaign->getValue(Schema::CAMPAIGN_TO_HANDS), $source);
     }

@@ -478,13 +478,27 @@ final class HtmlBody
         if (8 + 4 * (int) preg_match_all('~\R~u', $text) + self::escapedLength($text) > Message::MAX_BYTES) {
             throw new \InvalidArgumentException('The letter is larger than a data message may be');
         }
-        $html   = '';
-        $blocks = preg_split('~\R\s*\R~u', trim($text));
-        foreach (($blocks === false) ? self::pcreFailed() : $blocks as $block) {
-            $lines = preg_replace('~\R~u', "\n", trim($block)) ?? self::pcreFailed();
-            $html .= '<p>' . str_replace("\n", "<br>\n", self::escape($lines)) . "</p>\n";
+        $html = '';
+        foreach (self::paragraphs($text) as $lines) {
+            $html .= '<p>' . implode("<br>\n", array_map(self::escape(...), $lines)) . "</p>\n";
         }
         return $html;
+    }
+
+    /**
+     * Plain text as the letter shows it - a blank line parts paragraphs, a line end breaks a line -, so
+     * that a preview of it (the letterhead on the page) parts it the same way
+     * @return list<list<string>> the lines of each paragraph, unescaped
+     * @throws \InvalidArgumentException PCRE gave up on it
+     */
+    public static function paragraphs(string $text): array
+    {
+        $blocks = preg_split('~\R\s*\R~u', trim($text));
+        $parts  = [];
+        foreach (($blocks === false) ? self::pcreFailed() : $blocks as $block) {
+            $parts[] = preg_split('~\R~u', trim($block)) ?: self::pcreFailed();
+        }
+        return $parts;
     }
 
     /** a text PCRE cannot split - a run of a million spaces - would vanish from the letter without a word */

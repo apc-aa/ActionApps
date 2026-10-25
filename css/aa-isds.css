@@ -445,6 +445,8 @@ aa-isds-campaign { display: block; }
 }
 .aa-isds .cmp-head strong { display: block; font-size: 16px; color: var(--ai-ink); }
 .aa-isds :is(.cmp-head__from, .cmp-head__to) > span { display: block; }
+.aa-isds .cmp-head__from p { margin: 0; }
+.aa-isds .cmp-head__from p + p { margin-top: 6px; }
 .aa-isds .cmp-head__to { text-align: right; }
 .aa-isds .cmp-rows { display: grid; gap: 4px; margin-bottom: 22px; }
 .aa-isds .cmp-row { display: grid; grid-template-columns: 78px minmax(0, 1fr); align-items: baseline; gap: 0 12px; }

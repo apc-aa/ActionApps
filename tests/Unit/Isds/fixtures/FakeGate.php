@@ -13,6 +13,7 @@ use AA\Isds\SendRun;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
 use AA\Isds\SliceRules;
+use AA\Upload\UploadDir;
 
 require_once __DIR__ . '/FakeActions.php';
 
@@ -82,6 +83,9 @@ final class FakeGate extends Gate
     /** @var list<list<string>> the ids of each readItems() */
     public array $reads = [];
 
+    /** where the campaign slice keeps its files; null = not set right */
+    public ?UploadDir $uploads = null;
+
     /**
      * @param ?string $site the site whose page is rendered; null = no site page (view.php, cron)
      */
@@ -146,6 +150,11 @@ final class FakeGate extends Gate
     protected function run(string $campaign): ?SendRun
     {
         return $this->runs[$campaign] ?? null;
+    }
+
+    protected function uploads(Setup $setup): ?UploadDir
+    {
+        return $this->uploads;
     }
 
     protected function resolver(): Recipients

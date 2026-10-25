@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds;
 
 use AA;
+use AA\Isds\Schema;
 use AA\Isds\SendRun;
 use AA\Isds\Snapshot;
 use AA\Later\BatchFailed;
@@ -105,10 +106,11 @@ final class GateProgressTest extends TestCase
      * skipped - or the failure of reading them
      * @param array<string, string|array<array-key, mixed>> $props own properties; an array is the JSON of a map or the position
      * @param list<string>                                  $reasons
+     * @param string                                        $msg     the message item of recipient k is $msg . k
      */
-    private static function sendRun(array $props, array $reasons, ?\Throwable $unreadable = null): SendRun
+    private static function sendRun(array $props, array $reasons, ?\Throwable $unreadable = null, string $msg = 'm'): SendRun
     {
-        $rows = array_map(static fn(int $k, string $reason): array => array_combine(Snapshot::ROW, ["m$k", "s$k", "box$k", "Town $k", $reason]), array_keys($reasons), $reasons);
+        $rows = array_map(static fn(int $k, string $reason): array => array_combine(Snapshot::ROW, ["$msg$k", "s$k", "box$k", "Town $k", $reason]), array_keys($reasons), $reasons);
         $props = array_map(static fn(string|array $v): string => is_array($v) ? json_encode($v, JSON_FORCE_OBJECT) : $v, $props + ['camp_slice' => Sending::CAMPAIGN, 'msg_slice' => Sending::MESSAGE, 'state' => SendRun::SENDING]);
 
         return new class ($props, $rows, $unreadable) extends SendRun {
@@ -179,7 +181,7 @@ final class GateProgressTest extends TestCase
      * 7 skipped (its frozen reason), 8 never tried, 9 uncertain
      * @param array<string, string|array<array-key, mixed>> $props
      */
-    private static function watchedRun(array $props = []): SendRun
+    private static function watchedRun(array $props = [], string $msg = 'm'): SendRun
     {
         $t = self::NOW - 86400;
 
@@ -192,7 +194,7 @@ final class GateProgressTest extends TestCase
             'uncertain'  => ['9' => 1700000000],
             'watch_from' => (string) (self::NOW - 3600),
             'position'   => ['p' => 'watch', 'i' => 0],
-        ], ['', '', '', '', '', '', '', 'duplicate', '', '']);
+        ], ['', '', '', '', '', '', '', 'duplicate', '', ''], null, $msg);
     }
 
     private static function settings(): string
@@ -730,6 +732,40 @@ final class GateProgressTest extends TestCase
         $gate = self::gate([self::ITEM => self::campaign('done')], [self::ITEM => self::watchedRun()]);
 
         self::assertSame(['problem' => 'm2-m3-m6-m9', 'stopped' => 'm8', 'resend' => 'm2-m3-m6-m8'], self::messagesOf($gate, ['problem', 'stopped', 'resend']));
+    }
+
+    // the detail of a message offers the copy by it, whatever page messages:resend would show it on
+    public function test_message_resendPastAnyPage(): void
+    {
+        $msg  = substr(self::LETTER, 0, 31);
+        $gate = self::gate([self::ITEM => self::campaign('done')], [self::ITEM => self::watchedRun(msg: $msg)]);
+        foreach (range(0, 9) as $k) {
+            $gate->items["$msg$k"] = ['slice' => Sending::MESSAGE, 'fields' => [Schema::MESSAGE_CAMPAIGN => self::ITEM]];
+        }
+        $gate->items[self::LETTER] = ['slice' => Sending::MESSAGE, 'fields' => [Schema::MESSAGE_CAMPAIGN => 'ca00000000000000000000000000000c']];
+        $asked = static function (string $id, string $what = 'resend') use ($gate): array {
+            $_GET = ['isds_campaign' => self::ITEM, 'isds_msg' => $id, 'isds_page' => '2'];
+            $got  = null;
+            $gate->page(self::settings(), 'UI', 'refused', static function () use ($gate, $what, &$got): string {
+                $got = [$gate->message($what), $gate->messages('resend')];
+
+                return '';
+            });
+            self::assertIsArray($got, 'the gate opens');
+
+            return $got;
+        };
+
+        // failed after sending (2, 3), refused when sent (6) and stopped (8) - never the uncertain 9
+        self::assertSame(
+            ['', '', '1', '1', '', '', '1', '', '1', ''],
+            array_map(static fn(int $k): string => $asked(strtoupper("$msg$k"))[0], range(0, 9)),
+        );
+        self::assertSame('', $asked("{$msg}2")[1], 'the second page of resend holds none of them');
+        self::assertSame('', $asked(self::LETTER)[0], 'a message of another campaign');
+        self::assertSame('', $asked("{$msg}2", 'ok')[0], 'an unknown question');
+        self::assertSame("{$msg}2", $asked("{$msg}2", '')[0]);
+        self::assertSame('', $gate->message('resend'), 'outside the UI');
     }
 
     /**

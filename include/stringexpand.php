@@ -10934,8 +10934,9 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        the recipients its sending left unsent, once nothing sends them any more (a stopped or ended sending,
  *        in the trash too) - WRONG_STATE before, NONE_STOPPED when it left none; one for its letter to the
  *        recipient of one message - the form adds isds_message, the id of its message item, and one form shown
- *        may serve every row; offer it by messages:resend - once the message failed (verified too) or the
- *        sending stopped before it, NOT_RESENDABLE otherwise, UNKNOWN_MESSAGE for no message of the sending,
+ *        may serve every row; offer it by messages:resend (message:resend on the page of one) - once the
+ *        message failed (verified too) or the sending stopped before it, NOT_RESENDABLE otherwise,
+ *        UNKNOWN_MESSAGE for no message of the sending,
  *        WRONG_STATE for a campaign never queued. The letter is taken from the
  *        campaign item as it is now, not as the sending froze it; the copy shares the files of the
  *        attachments), resume (Continue a sending in error or waiting),
@@ -10994,10 +10995,11 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        stopped, also in problem and stopped: offer the copy by it, not by the state of the message item);
  *        recent (the last six the sending got to, the one in flight too, the last first) and test (its test messages, the newest first) whole on every page. '' with no
  *        sending (test aside)
- *    {datovkabulk:param:tab|show|step|part|list|page} - isds_<name> of the URL when it is one the page knows
+ *    {datovkabulk:param:tab|show|step|part|list|page|q} - isds_<name> of the URL when it is one the page knows
  *        (tab: history, check; show: a group of messages; step: test, send, search, files; part: progress,
- *        search; list: get, skip), else ''; page - the page of a list, 1 unless the URL names one. Branch on
- *        these, never on the URL itself ({qs})
+ *        search; list: get, skip), else ''; page - the page of a list, 1 unless the URL names one; q - the
+ *        text search looks for, trimmed and escaped (no {safe:}), '' when it looks for none - the value of
+ *        the field isds_q. Branch on these, never on the URL itself ({qs})
  *    {datovkabulk:progress:<campaign id>:<what>} - how far its sending got, from the record of the run; '' (state
  *        aside) with no run and for a record that cannot be read. <what>:
  *        state - of the campaign item while it has no run, then one of:
@@ -11036,8 +11038,9 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *    {datovkabulk:filter:<campaign id>:types|membership|include|exclude|includepage|excludepage} - the recipient
  *        filter a campaign of the page stores: types comma-separated; include and exclude all the ids of the active
  *        items of the source slice - for the hidden fields isds_include and isds_exclude of the draft form, which
- *        store them whole; includepage and excludepage only 50 a page (param:page) - for the chips of a
- *        {datovkabulk:view}. Without the id the filter a new campaign starts with;
+ *        store them whole; includepage and excludepage only the first 50 - for the chips of a
+ *        {datovkabulk:view}, whatever page of the recipients param:page shows (count include or exclude
+ *        to tell there are more). Without the id the filter a new campaign starts with;
  *        '' for a stored filter that cannot be read (logged) - never take it for the one a new campaign starts with:
  *        show the controls of the filter unchecked then (membership '' tells it); a choice made anew replaces it
  *    {datovkabulk:source:<item id>:name|box|type|member|reason} - what to show of an active item of the source slice,
@@ -11046,12 +11049,31 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *    {datovkabulk:search} - the ids of up to 20 active items of the source slice of the types the page offers
  *        whose name holds isds_q of the URL (% and _ as typed, a backslash left out), by name; '' for no text or
  *        one longer than 100
- *    {datovkabulk:message} - isds_msg of the URL, when it is a message of {datovkabulk:campaign}; '' otherwise
+ *    {datovkabulk:message[:resend]} - isds_msg of the URL, when it is a message of {datovkabulk:campaign}; ''
+ *        otherwise. resend - 1 when clone with isds_scope one takes it (it is in messages:resend, whose
+ *        page may not hold it), else ''
  *    {datovkabulk:events:<message id>:{(<row>)}} - the timeline of a message of {datovkabulk:campaign}, the newest
  *        first, those of unknown time at the end: <row> for each entry with _#AT (unix time, '' unknown), _#KIND,
  *        _#CODE, _#TEXT, _#DMID and _#BY (who verified it) in it - escaped (no {safe:}), they never expand. A {(...)}
  *        inside <row> hides them - use {-...} or _#1 of {ifset}; {date:...:_#AT} shows today for an unknown time -
  *        give it the third parameter: {date:j. n. Y H\:i:_#AT:unknown}
+ *    {datovkabulk:files:<campaign id>[:{(<row>)}]} - the attachments of a campaign of the page, as they go:
+ *        <row> for each with _#URL (the value of the field, for isds_remove[] only - never an href or src: an
+ *        editor of the slice may write any text in it), _#NAME (the file name the
+ *        recipient sees; the whole value when it is no file of the upload directory of the slice - sending
+ *        refuses it) and _#EXT (its extension, small letters) in it, escaped as in events; without <row>
+ *        how many there are. No size: it would mean reading every file. Use it, never the field itself:
+ *        {foreach} expands what it puts in
+ *    {datovkabulk:types:<campaign id>:{(<row>)}} - the types the page offers, in the order of its settings:
+ *        <row> for each with _#TYPE (for isds_types[]), _#LABEL and _#CHECKED (" checked" when the filter
+ *        of the campaign has it) in it, escaped as in events - _#TYPE_#CHECKED side by side reads as one
+ *        alias, keep the closing quote between them. No campaign id: the filter a new campaign
+ *        starts with; none checked for a filter that cannot be read; '' for another item
+ *    {datovkabulk:letterhead} - the letterhead of the settings as the letter shows it above its text,
+ *        escaped: <p> for each paragraph, <br> between its lines; '' for none
+ *    {datovkabulk:members} - 1 when the page tells members (member_field), else '': offer the choice of
+ *        membership only then, else post isds_membership all - but not while the stored filter cannot be
+ *        read: then the choice waits for the editor
  *  All but page give nothing outside the UI of the page. AA\Isds\Gate tells more.
  */
 class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
@@ -11079,8 +11101,12 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'filter'     => $gate->filter((string)$settings, (string)$ui),
             'source'     => $gate->source((string)$settings, (string)$ui),
             'search'     => $gate->search(),
-            'message'    => $gate->message(),
+            'message'    => $gate->message((string)$settings),
             'events'     => $gate->events((string)$settings, (string)$ui, $expand),
+            'files'      => $gate->files((string)$settings, (string)$ui, $expand),
+            'types'      => $gate->types((string)$settings, (string)$ui, $expand),
+            'letterhead' => $gate->letterhead(),
+            'members'    => $gate->members(),
             default      => '',
         };
     }

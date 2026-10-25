@@ -397,14 +397,21 @@ class Drafts
         return [array_diff_key($fields, [Schema::CAMPAIGN_FILTER => true]), ((string) $posted->getValue() === $stored) ? self::SAVED : self::FILTER_CHANGED];
     }
 
-    /**
-     * The URLs of the attachments of a campaign; an empty value - of a field left empty in the editor of
-     * the slice - is no attachment
-     * @return list<string>
-     */
+    /** @return list<string> attachments() of the campaign */
     private static function attachmentsOf(ItemContent $item): array
     {
-        return array_values(array_filter(array_map(static fn(mixed $url): string => trim((string) $url), $item->getValuesArray(Schema::CAMPAIGN_FILES)), static fn(string $url): bool => $url !== ''));
+        return self::attachments($item->getValuesArray(Schema::CAMPAIGN_FILES));
+    }
+
+    /**
+     * The URLs of the attachments of a campaign, of the values of its field; an empty value - of a field
+     * left empty in the editor of the slice - is no attachment
+     * @param array<array-key, mixed> $values
+     * @return list<string>
+     */
+    public static function attachments(array $values): array
+    {
+        return array_values(array_filter(array_map(static fn(mixed $url): string => trim((string) $url), $values), static fn(string $url): bool => $url !== ''));
     }
 
     /**
