@@ -10929,7 +10929,11 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        campaign as a new draft, which the page gets in {datovkabulk:campaign} - the form adds isds_scope: all
  *        for its letter and recipients, of a campaign in any state, not in the trash; unsent for its letter to
  *        the recipients its sending left unsent, once nothing sends them any more (a stopped or ended sending,
- *        in the trash too) - WRONG_STATE before, NONE_STOPPED when it left none. The letter is taken from the
+ *        in the trash too) - WRONG_STATE before, NONE_STOPPED when it left none; one for its letter to the
+ *        recipient of one message - the form adds isds_message, the id of its message item, and one form shown
+ *        may serve every row; offer it by messages:resend - once the message failed (verified too) or the
+ *        sending stopped before it, NOT_RESENDABLE otherwise, UNKNOWN_MESSAGE for no message of the sending,
+ *        WRONG_STATE for a campaign never queued. The letter is taken from the
  *        campaign item as it is now, not as the sending froze it; the copy shares the files of the
  *        attachments), resume (Continue a sending in error or waiting),
  *        stop (Stop: nothing more is sent; never gives the sending up), abandon (end a sending in error for good -
@@ -10980,8 +10984,9 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        From the same reading of the sending as progress, so they match it: problem (failed, with verify
  *        uncertain too - attention), checking (uncertain before verify), wait (queued, and while the delivery is
  *        followed sent not delivered yet - queued + pending), sent (sent while the delivery is not followed),
- *        ok (delivered), stopped, skip (skipped); recent (the last six the sending got to, the one in flight
- *        too, the last first) and test (its test messages, the newest first) whole on every page. '' with no
+ *        ok (delivered), stopped, skip (skipped); resend (those clone with isds_scope one takes - failed and
+ *        stopped, also in problem and stopped: offer the copy by it, not by the state of the message item);
+ *        recent (the last six the sending got to, the one in flight too, the last first) and test (its test messages, the newest first) whole on every page. '' with no
  *        sending (test aside)
  *    {datovkabulk:param:tab|show|step|part|list|page} - isds_<name> of the URL when it is one the page knows
  *        (tab: history, check; show: a group of messages; step: test, send, search, files; part: progress,

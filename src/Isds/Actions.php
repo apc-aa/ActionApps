@@ -71,6 +71,8 @@ class Actions
     public const CLONED = Drafts::CLONED;
     /** Copy of the unsent: the sending left no recipient unsent */
     public const NONE_STOPPED = 'NONE_STOPPED';
+    /** Copy to one recipient: its message went, may still go or may have gone, or was skipped */
+    public const NOT_RESENDABLE = 'NOT_RESENDABLE';
     /** Verify: the message of unknown fate is recorded as not sent - now, or by the same verification before */
     public const VERIFIED = SendRun::VERIFIED;
     /** Verify: the message is not of unknown fate (any more) */
@@ -220,45 +222,76 @@ class Actions
     }
 
     /**
-     * Copy: a new draft of the letter of the campaign (isds_scope all), or of the letter to the recipients
-     * its sending left unsent (unsent) - once nothing sends them any more (SendRun::isOver())
+     * Copy: a new draft of the letter of the campaign (isds_scope all), of the letter to the recipients
+     * its sending left unsent (unsent) - once nothing sends them any more (SendRun::isOver()) -, or to the
+     * recipient of one message (one, isds_message) - once it may get the letter again (SendRun::resendable())
      * @param bool $active the campaign is in the active bin
      */
     private function copy(Setup $setup, string $campaign, bool $active): ActionResult
     {
-        $scope  = self::posted('isds_scope');
-        $unsent = [];
-        if (!in_array($scope, Drafts::SCOPES, true)) {
-            return self::refused('clone', self::INPUT, $campaign);
-        }
-        if ($scope === Drafts::UNSENT) {
-            $run = $this->runOfPage($setup, 'clone', $campaign);
-            if ($run instanceof ActionResult) {
-                return $run;
-            }
-            // before, a recipient never tried may still be sent: the copy would send it twice
-            if (!$run->isOver()) {
-                return self::refused('clone', self::WRONG_STATE, $campaign);
-            }
-            $unsent = $run->unsentSources();
-            if ($unsent === []) {
-                return self::refused('clone', self::NONE_STOPPED, $campaign);
-            }
-        } elseif (!$active) {
+        $copy = match (self::posted('isds_scope')) {
             // a draft in the trash is no campaign of the page to copy; its sending still is
-            return self::refused('clone', self::UNKNOWN, '');
+            Drafts::ALL    => $active ? [Drafts::ALL, []] : self::refused('clone', self::UNKNOWN, ''),
+            Drafts::UNSENT => $this->unsent($setup, $campaign),
+            Drafts::ONE    => $this->toOne($setup, $campaign),
+            default        => self::refused('clone', self::INPUT, $campaign),
+        };
+        if ($copy instanceof ActionResult) {
+            return $copy;
         }
-        ['code' => $code, 'campaign' => $id, 'made' => $made] = $this->copyDraft($setup, $campaign, $scope, $_POST, $unsent);
+        [$scope, $items] = $copy;
+        ['code' => $code, 'campaign' => $id, 'made' => $made] = $this->copyDraft($setup, $campaign, $scope, $_POST, $items);
         if ($code !== self::CLONED) {
             // the page goes on with the copy the core names - one being made, queued -, else with the source
             return self::refused('clone', $code, (($id !== '') || ($code === self::UNKNOWN)) ? $id : $campaign);
         }
-        // a double click makes no second copy, nor a second row
+        // a double click makes no second copy, nor a second row; the uid last - a row cut to its column
+        // loses the end of a long one (LDAP), not the message
         if ($made) {
-            $this->done = [SendQueue::LOG_EVENT, "clone:$id", [$this->access->uid(), $campaign, $scope]];
+            $this->done = [SendQueue::LOG_EVENT, "clone:$id", [$campaign, $scope, $this->access->uid()]];
         }
 
         return new ActionResult('clone', ActionResult::DONE, self::CLONED, $id);
+    }
+
+    /**
+     * The copy of the unsent: the scope and the source items of those never tried
+     * @return array{string, list<string>}|ActionResult
+     */
+    private function unsent(Setup $setup, string $campaign): array|ActionResult
+    {
+        $run = $this->runOfPage($setup, 'clone', $campaign);
+        if ($run instanceof ActionResult) {
+            return $run;
+        }
+        // before, a recipient never tried may still be sent: the copy would send it twice
+        if (!$run->isOver()) {
+            return self::refused('clone', self::WRONG_STATE, $campaign);
+        }
+        $unsent = $run->unsentSources();
+
+        return ($unsent === []) ? self::refused('clone', self::NONE_STOPPED, $campaign) : [Drafts::UNSENT, $unsent];
+    }
+
+    /**
+     * The copy to the recipient of the message isds_message: the scope and its source item
+     * (SendRun::resendSource(), without the lock of the campaign)
+     * @return array{string, list<string>}|ActionResult
+     */
+    private function toOne(Setup $setup, string $campaign): array|ActionResult
+    {
+        $run = $this->runOfPage($setup, 'clone', $campaign);
+        if ($run instanceof ActionResult) {
+            return $run;
+        }
+        $msg    = ModuleId::normalize(self::posted('isds_message'));
+        $source = is_null($msg) ? null : $run->resendSource($msg);
+
+        return match ($source) {
+            null    => self::refused('clone', self::UNKNOWN_MESSAGE, $campaign),
+            ''      => self::refused('clone', self::NOT_RESENDABLE, $campaign),
+            default => [Drafts::one((string) $msg), [$source]],
+        };
     }
 
     /** Send: the core queues the campaign, or says why not; it logs the sending queued itself */
@@ -492,12 +525,12 @@ class Actions
     /**
      * Drafts::copy()
      * @param array<array-key, mixed> $post
-     * @param list<string>            $unsent
+     * @param list<string>            $items
      * @return array{code: string, campaign: string, made: bool}
      */
-    protected function copyDraft(Setup $setup, string $source, string $scope, array $post, array $unsent): array
+    protected function copyDraft(Setup $setup, string $source, string $scope, array $post, array $items): array
     {
-        return (new Drafts($this->resolver))->copy($setup, $source, $scope, $post, $unsent);
+        return (new Drafts($this->resolver))->copy($setup, $source, $scope, $post, $items);
     }
 
     /**

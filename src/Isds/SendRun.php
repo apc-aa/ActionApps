@@ -353,8 +353,8 @@ class SendRun extends BatchRun
         $by   = ($name === $uid) ? $uid : "$uid $name";
         // the recipients are frozen and the rules of the slices change by hand: read before the locks
         $index = static function (self $run) use ($msg): int|string {
-            $k = array_search($msg, array_map(static fn(array $row): string => strtolower($row['msg']), $run->recipients()), true);
-            if ($k === false) {
+            $k = $run->indexOf($msg);
+            if (is_null($k)) {
                 return self::UNKNOWN_MESSAGE;
             }
             // nothing is stored into slices that break a rule, as in work()
@@ -931,6 +931,55 @@ class SendRun extends BatchRun
         $rows = $this->recipients();
 
         return array_map(static fn(int $k): string => $rows[$k]['src'], array_keys($this->maps()->fatesOf($rows, $this->isOver()), Schema::MESSAGE_STATE_STOPPED, true));
+    }
+
+    /**
+     * Whether the letter may go once more to a recipient of $fate (SendMaps::fatesOf()), alone: only a
+     * fate no step of the sending changes any more - failed (verified by a person and not found by the
+     * lookup too) and stopped. The one rule the copy to one recipient and the page share.
+     */
+    public static function resendable(string $fate): bool
+    {
+        return in_array($fate, [Schema::MESSAGE_STATE_FAILED, Schema::MESSAGE_STATE_STOPPED], true);
+    }
+
+    /**
+     * The source item of the recipient of message $msg, when the letter may go to it once more
+     * (resendable()) - from the recipients frozen and the record, never what the item of the message
+     * shows now. Needs no lock of the campaign, as unsentSources(): the record is only read, a fate it
+     * accepts is final, and a reading in the middle of a write gives at most the fate of before -
+     * queued or uncertain, refused -, never one who may still get the letter.
+     * @param string $msg long id of the message item
+     * @return ?string long id; '' = its recipient may get the letter or was left out; null = no message of the sending
+     * @throws \JsonException|BatchFailed a record edited into no JSON, recipients not as frozen
+     */
+    public function resendSource(string $msg): ?string
+    {
+        $rows = $this->recipients();
+        $k    = self::indexIn($rows, $msg);
+        if (is_null($k)) {
+            return null;
+        }
+
+        return self::resendable($this->maps()->fatesOf($rows, $this->isOver())[$k] ?? '') ? $rows[$k]['src'] : '';
+    }
+
+    /**
+     * The index of message $msg among the recipients frozen; null = no message of the sending
+     * @param string $msg long id of the message item, in any case
+     * @throws BatchFailed recipients not as frozen
+     */
+    private function indexOf(string $msg): ?int
+    {
+        return self::indexIn($this->recipients(), $msg);
+    }
+
+    /** @param list<array<string, string>> $rows recipients() */
+    private static function indexIn(array $rows, string $msg): ?int
+    {
+        $k = array_search(strtolower($msg), array_map(static fn(array $row): string => strtolower($row['msg']), $rows), true);
+
+        return ($k === false) ? null : $k;
     }
 
     /**

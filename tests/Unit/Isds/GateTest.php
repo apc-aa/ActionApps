@@ -1462,6 +1462,20 @@ final class GateTest extends TestCase
         self::assertSame([self::ADAMOV, self::BENESOV], array_column(FakeActions::$fixed, 1), 'the same recipient again only shows what was done');
     }
 
+    // one shown form of Verify, or of a copy to one recipient, may serve each message of a list: another message is another post
+    public function test_result_ofAnotherMessageActsAgain(): void
+    {
+        self::postResume();
+        $form = ['isds_action' => 'verify', 'isds_token' => FormToken::get(Gate::purpose('verify', self::page(), self::ITEM))] + $_POST;
+        foreach ([self::ADAMOV, self::BENESOV, self::ADAMOV] as $message) {
+            Actions::forget();
+            $_POST = ['isds_message' => $message] + $form;
+            $this->redirectOf(self::actionGate());
+        }
+
+        self::assertSame([self::ADAMOV, self::BENESOV], array_column(FakeActions::$verified, 2), 'the same message again only shows what was done');
+    }
+
     /** @return array<string, array{\Closure(): string}> what the core says to the first click */
     public static function didNotRun(): array
     {

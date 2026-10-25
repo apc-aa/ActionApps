@@ -58,6 +58,27 @@ final class AdviceTest extends TestCase
         self::assertContains($code, (new \ReflectionClass(Actions::class))->getConstants(), 'a code of Actions');
     }
 
+    /** @return array<string, array{string}> what Copy may answer of its own */
+    public static function cloneCodes(): array
+    {
+        $codes = ['CLONED', 'NONE_STOPPED', 'NOT_RESENDABLE', 'UNKNOWN_MESSAGE', 'WRONG_STATE', 'UNKNOWN', 'INPUT', 'EXPIRED', 'BUSY'];
+
+        return array_combine($codes, array_map(static fn(string $code): array => [$code], $codes));
+    }
+
+    #[DataProvider('cloneCodes')]
+    public function test_text_everyCodeOfCloneHasText(string $code): void
+    {
+        self::assertNotSame('', Advice::text($code));
+        self::assertContains($code, (new \ReflectionClass(Actions::class))->getConstants(), 'a code of Actions');
+    }
+
+    // a message of unknown fate may be sent again only once verified - and verify waits for the lookup
+    public function test_text_notResendableTellsToVerifyFirst(): void
+    {
+        self::assertStringContainsString('verify it once the page offers it', Advice::text(Actions::NOT_RESENDABLE));
+    }
+
     /** @return array<string, array{string}> what Fix box may answer */
     public static function fixCodes(): array
     {

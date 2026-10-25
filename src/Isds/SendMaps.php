@@ -146,7 +146,7 @@ final readonly class SendMaps
      * What became of each recipient: the fate the record has (fates()) - of an index it names beyond
      * the recipients too, so that every index counts once -, else skipped for its frozen reason; one
      * never tried is stopped once nothing sends it any more ($over), queued till then. The one reading
-     * of a fate the page, the end of the run and a copy of the unsent share.
+     * of a fate the page, the end of the run, a copy of the unsent and a copy to one recipient share.
      * @param list<array<string, string>> $rows Snapshot::recipients()
      * @return array<int, string> index => Schema::MESSAGE_STATE_SENT, FAILED, UNCERTAIN, SKIPPED, STOPPED or QUEUED
      */

@@ -1262,6 +1262,21 @@ final class DraftsTest extends TestCase
         self::assertSame(['1', 'Výzva', self::ITEM], [$this->drafts->field($id, 'status_code.....'), $this->drafts->field($id, Schema::CAMPAIGN_SUBJECT), $this->drafts->field($id, Schema::CAMPAIGN_TEMPLATE)]);
     }
 
+    // the one recipient of a message alone, a copy of its own for each message - the source in any bin
+    public function test_copy_oneFilterOfTheRecipient(): void
+    {
+        $this->sentCampaign(status: 3);
+        $one = Drafts::one('d0000000000000000000000000000001');
+
+        $result = $this->copy($one, [self::ADAMOV]);
+
+        $id = self::copyId($one);
+        self::assertSame(['code' => Drafts::CLONED, 'campaign' => $id, 'made' => true], $result);
+        self::assertNotContains($id, [self::copyId(), self::copyId(Drafts::UNSENT), self::copyId(Drafts::one('d0000000000000000000000000000002'))], 'another message, another copy');
+        self::assertSame(json_encode(['types' => [], 'membership' => 'all', 'include' => [self::ADAMOV], 'exclude' => []]), $this->drafts->field($id, Schema::CAMPAIGN_FILTER));
+        self::assertSame(['Výzva', self::ITEM], [$this->drafts->field($id, Schema::CAMPAIGN_SUBJECT), $this->drafts->field($id, Schema::CAMPAIGN_TEMPLATE)]);
+    }
+
     // the thousands a large sending may leave unsent: none is cut
     public function test_copy_unsentOfMaxRecipients(): void
     {
@@ -1370,7 +1385,15 @@ final class DraftsTest extends TestCase
     /** @return array<string, array{string, string}> */
     public static function badCopyForms(): array
     {
-        return ['no scope' => ['', self::NONCE], 'another scope' => ['one', self::NONCE], 'a short nonce' => [Drafts::ALL, 'abc'], 'capitals' => [Drafts::ALL, strtoupper(self::NONCE)]];
+        return [
+            'no scope'            => ['', self::NONCE],
+            'another scope'       => ['some', self::NONCE],
+            'one of no message'   => [Drafts::ONE, self::NONCE],
+            'one of no id'        => [Drafts::ONE . ':4711-2', self::NONCE],
+            'one in capitals'     => [Drafts::ONE . ':' . strtoupper(self::ADAMOV), self::NONCE],
+            'a short nonce'       => [Drafts::ALL, 'abc'],
+            'capitals'            => [Drafts::ALL, strtoupper(self::NONCE)],
+        ];
     }
 
     #[DataProvider('badCopyForms')]

@@ -711,6 +711,27 @@ final class GateProgressTest extends TestCase
         self::assertCount(10, $listed, 'each once');
     }
 
+    // the button a template shows by resend and the copy to one recipient agree: one rule, of the same reading
+    /** @param \Closure(): SendRun $run */
+    #[DataProvider('runs')]
+    public function test_messages_resendIsWhatCloneOneTakes(\Closure $run): void
+    {
+        $sending = $run();
+        $listed  = self::messagesOf(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => $sending]), ['resend'])['resend'];
+
+        $takes = array_filter(array_map(static fn(int $k): string => "m$k", range(0, 9)), static fn(string $msg): bool => ($sending->resendSource($msg) ?? '') !== '');
+        self::assertNotSame([], $takes, 'each run has some');
+        self::assertSame(implode('-', $takes), $listed);
+    }
+
+    // failed after sending (2, 3), refused when sent (6) and stopped (8); never the uncertain 9
+    public function test_messages_resendFailedAndStopped(): void
+    {
+        $gate = self::gate([self::ITEM => self::campaign('done')], [self::ITEM => self::watchedRun()]);
+
+        self::assertSame(['problem' => 'm2-m3-m6-m9', 'stopped' => 'm8', 'resend' => 'm2-m3-m6-m8'], self::messagesOf($gate, ['problem', 'stopped', 'resend']));
+    }
+
     /**
      * @param list<string> $ids
      * @return list<string>

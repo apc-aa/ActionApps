@@ -64,6 +64,7 @@ final class Advice
             Actions::FILTER_CHANGED  => _m('The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed.'),
             Actions::CLONED          => _m('The copy is ready as a new draft.'),
             Actions::NONE_STOPPED    => _m('The sending left no recipient unsent - there is nothing to copy.'),
+            Actions::NOT_RESENDABLE  => _m('The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again.'),
             Actions::VERIFIED        => _m('Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign.'),
             Actions::NOT_UNCERTAIN   => _m('The fate of this message is known - there is nothing to verify.'),
             Actions::UNKNOWN_MESSAGE => _m('This message does not belong to the sending.'),

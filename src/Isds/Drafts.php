@@ -30,8 +30,9 @@ use zids;
  * upload it (UploadPolicy) and a data message carries it (AttachmentPolicy), by its content, never
  * by what the browser says; and only into a draft that may change - checked first, before a file is
  * read. Removing one drops its URL from the draft only: a copy of the draft may share the file.
- * A copy (copy()) is a new draft of the letter of any campaign of the page - to send it again, or to
- * those its sending left unsent -, made once for the form shown as a new draft is.
+ * A copy (copy()) is a new draft of the letter of any campaign of the page - to send it again, to
+ * those its sending left unsent, or to one recipient once more -, made once for the form shown as a new
+ * draft is.
  */
 class Drafts
 {
@@ -46,10 +47,11 @@ class Drafts
     /** the copy is made - or was, by the same form before */
     public const CLONED = 'CLONED';
 
-    /** what a copy takes: the whole campaign, or only the recipients its sending left unsent */
+    /** what a copy takes: the whole campaign, only the recipients its sending left unsent, or one
+     *  recipient - copy() takes ONE as one(), naming the message */
     public const ALL    = 'all';
     public const UNSENT = 'unsent';
-    public const SCOPES = [self::ALL, self::UNSENT];
+    public const ONE    = 'one';
 
     /** what INPUT names: the field of the form that cannot be taken; NONCE, a hidden one, is told as none */
     public const SUBJECT    = 'subject';
@@ -170,27 +172,37 @@ class Drafts
         return self::derivedId("clone:{$setup->bindingKey()}:$source:$scope:$nonce");
     }
 
+    /** the scope of copy() to the recipient of message $msg (a long id in small letters) alone */
+    public static function one(string $msg): string
+    {
+        return self::ONE . ":$msg";
+    }
+
     /**
      * A copy of the campaign $source as a new draft of the page: its letter - subject, "to hands", the
      * body, the attachments, whose files it shares with the source - and whom it goes to: the filter the
-     * source stores, or for UNSENT the items $unsent. It names its source (Schema::CAMPAIGN_TEMPLATE);
+     * source stores, or for UNSENT and one() the items $items. It names its source (Schema::CAMPAIGN_TEMPLATE);
      * nothing of a sending is copied - the state, the fields a run writes. Its id comes from the nonce of
      * the form (copyId()): a double click makes the one copy; a stale form makes none again - of a copy
-     * queued since it tells so, as a save does.
-     * The source of ALL is an active item, of UNSENT one in any bin - a campaign put in the trash still
-     * shows its sending. Not logged here: the caller logs the copy made.
+     * queued since it tells so, as a save does. A copy to one recipient takes its message into the id: one
+     * form shown may copy for each message of a list.
+     * The source of ALL is an active item, of UNSENT and one() one in any bin - a campaign put in the trash
+     * still shows its sending. Not logged here: the caller logs the copy made.
      * @param string                  $source long id in small letters of an item of the campaign slice
+     * @param string                  $scope  ALL, UNSENT or one()
      * @param array<array-key, mixed> $post   the form as posted: isds_nonce (32 hexadecimal digits)
-     * @param list<string>            $unsent UNSENT: the source items of the recipients the sending left unsent (SendRun::unsentSources())
+     * @param list<string>            $items  UNSENT: the source items of the recipients the sending left unsent
+     *                                        (SendRun::unsentSources()); one(): the source item of the recipient
      * @return array{code: string, campaign: string, made: bool} code: CLONED, Actions::INPUT (the scope or
      *         the nonce), Actions::EXPIRED (no session), SendStart::UNKNOWN, NOT_DRAFT, ALREADY or BUSY;
      *         campaign: the copy, '' for UNKNOWN, INPUT and EXPIRED; made: written now, not by the same form before
-     * @throws \RuntimeException|\InvalidArgumentException not stored; $unsent no filter can hold
+     * @throws \RuntimeException|\InvalidArgumentException not stored; $items no filter can hold
      */
-    public function copy(Setup $setup, string $source, string $scope, array $post, array $unsent = []): array
+    public function copy(Setup $setup, string $source, string $scope, array $post, array $items = []): array
     {
-        $nonce = $post['isds_nonce'] ?? null;
-        if (!in_array($scope, self::SCOPES, true) || !is_string($nonce) || (preg_match('/^[0-9a-f]{32}\z/', $nonce) !== 1)) {
+        $nonce  = $post['isds_nonce'] ?? null;
+        $scoped = in_array($scope, [self::ALL, self::UNSENT], true) || (preg_match('/^' . self::ONE . ':[0-9a-f]{32}\z/', $scope) === 1);
+        if (!$scoped || !is_string($nonce) || (preg_match('/^[0-9a-f]{32}\z/', $nonce) !== 1)) {
             return self::copied(Actions::INPUT, '');
         }
         $id = self::copyId($setup, $source, $scope, $nonce);
@@ -201,7 +213,7 @@ class Drafts
             return self::copied(SendStart::BUSY, $id);
         }
         try {
-            return $this->whileOpen($setup->campaignSlice, fn(): array => $this->writeCopy($setup, $source, $scope, $id, $unsent));
+            return $this->whileOpen($setup->campaignSlice, fn(): array => $this->writeCopy($setup, $source, $scope, $id, $items));
         } finally {
             $this->unlock(SendRun::lockName($id));
         }
@@ -316,10 +328,10 @@ class Drafts
 
     /**
      * Under the lock of the copy: the copy stored, or what became of the one the same form made before
-     * @param list<string> $unsent
+     * @param list<string> $items
      * @return array{code: string, campaign: string, made: bool}
      */
-    private function writeCopy(Setup $setup, string $source, string $scope, string $id, array $unsent): array
+    private function writeCopy(Setup $setup, string $source, string $scope, string $id, array $items): array
     {
         $queuedOnce = fn(): bool => $this->runExists($id);
         $made       = $this->campaign($id);
@@ -341,7 +353,7 @@ class Drafts
         if (is_null($item) || (strtolower($item->getSliceID()) !== $setup->campaignSlice) || (($scope === self::ALL) && !$item->isActive())) {
             return self::copied(SendStart::UNKNOWN, '');
         }
-        $filter = ($scope === self::ALL) ? (string) $item->getValue(Schema::CAMPAIGN_FILTER) : RecipientFilter::ofItems($unsent)->toJson();
+        $filter = ($scope === self::ALL) ? (string) $item->getValue(Schema::CAMPAIGN_FILTER) : RecipientFilter::ofItems($items)->toJson();
         $letter = array_filter([
             Schema::CAMPAIGN_SUBJECT  => $item->getAaValue(Schema::CAMPAIGN_SUBJECT),
             Schema::CAMPAIGN_TO_HANDS => $item->getAaValue(Schema::CAMPAIGN_TO_HANDS),

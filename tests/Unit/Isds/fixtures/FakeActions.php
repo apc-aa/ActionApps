@@ -57,7 +57,7 @@ final class FakeActions extends Actions
     /** @var ?\Closure(Setup, string, string, array<array-key, mixed>, list<string>): array{code: string, campaign: string, made: bool} what Copy of a campaign in a scope says; null = the test asks none */
     public static ?\Closure $copy = null;
 
-    /** @var list<array{string, string, list<string>}> source, scope and the items unsent of each Copy asked of the core */
+    /** @var list<array{string, string, list<string>}> source, scope and the items of each Copy asked of the core */
     public static array $copied = [];
 
     /** @var ?\Closure(Setup, string, string, string): array{code: string, old: string, new: string} what Fix box of an item by a uid to a box says; null = the real one over $rules */
@@ -154,11 +154,11 @@ final class FakeActions extends Actions
         return (self::$save ?? throw new \LogicException('This test saves nothing'))($setup, $campaign, $post, $files);
     }
 
-    protected function copyDraft(Setup $setup, string $source, string $scope, array $post, array $unsent): array
+    protected function copyDraft(Setup $setup, string $source, string $scope, array $post, array $items): array
     {
-        self::$copied[] = [$source, $scope, $unsent];
+        self::$copied[] = [$source, $scope, $items];
 
-        return (self::$copy ?? throw new \LogicException('This test copies nothing'))($setup, $source, $scope, $post, $unsent);
+        return (self::$copy ?? throw new \LogicException('This test copies nothing'))($setup, $source, $scope, $post, $items);
     }
 
     protected function fixRecipientBox(Setup $setup, string $uid, string $item, string $box): array

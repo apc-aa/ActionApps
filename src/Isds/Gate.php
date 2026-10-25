@@ -53,7 +53,7 @@ class Gate
     public const ENTRY_VIEW = 'isdscampainer';
 
     /** the groups messages() sorts the messages of a campaign into */
-    public const GROUPS = ['problem', 'checking', 'wait', 'sent', 'ok', 'stopped', 'skip', 'recent', 'test'];
+    public const GROUPS = ['problem', 'checking', 'wait', 'sent', 'ok', 'stopped', 'skip', 'resend', 'recent', 'test'];
 
     /** the actions a form may name - its token binds the action, the binding of the page and the campaign */
     public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'abandon', 'resume', 'verify', 'fixbox'];
@@ -173,8 +173,8 @@ class Gate
      * unless the page could take a box from the register (fixable()) - the form adds isds_recipient and,
      * as isds_box, regbox() of the row.
      * The form of a new campaign and of a copy carries a nonce of its own: every post of the form shown
-     * makes the one draft (Drafts::newId(), copyId()). The form of save tells the filter stored as the
-     * page read it (isds_filter_seen, filterSeenField()): Drafts writes the recipients only when that
+     * makes the one draft (Drafts::newId(), copyId()) - of a copy to one recipient one for each message.
+     * The form of save tells the filter stored as the page read it (isds_filter_seen, filterSeenField()): Drafts writes the recipients only when that
      * is the one stored then, else it saves the letter and tells FILTER_CHANGED. A form saved without
      * loading the page again (autosave) must take from the answer both its hidden fields and the
      * controls of the filter: a new isds_filter_seen beside the choice of before would let that choice
@@ -298,6 +298,8 @@ class Gate
      * - wait: queued, and while the delivery is followed sent not delivered yet (queued + pending);
      * - sent: sent while the delivery is not followed (sent; pending is '' then);
      * - ok: delivered (delivered); stopped; skip: skipped for the box (skipped);
+     * - resend: those the letter may go to again one by one (clone one, SendRun::resendable()) - failed
+     *   and stopped, of problem and stopped; a template offers the copy by it, never by the message item;
      * - recent: the last six the sending got to, the one in flight too, the last first - never paged;
      * - test: the test messages of the campaign in the active bin, the newest first - a run does not
      *   know them; never paged, a page shows them beside a paged list.
@@ -799,18 +801,21 @@ class Gate
 
     /**
      * the form shown once (fields()), as the session keeps it - a hash, not its token; '' = none told.
-     * With the recipient of Fix box: a script may fill one shown form for each row.
+     * With the recipient of Fix box and the message of Verify or of a copy to one recipient: a script may
+     * fill one shown form for each row.
      */
     private static function postedForm(): string
     {
         $token     = $_POST['isds_token'] ?? '';
         $form      = $_POST['isds_form'] ?? '';
         $recipient = $_POST['isds_recipient'] ?? '';
-        if (!is_string($token) || !is_string($form) || !is_string($recipient) || (preg_match('/^[0-9a-f]{16}\z/', $form) !== 1)) {
+        $message   = $_POST['isds_message'] ?? '';
+        if (!is_string($token) || !is_string($form) || !is_string($recipient) || !is_string($message) || (preg_match('/^[0-9a-f]{16}\z/', $form) !== 1)) {
             return '';
         }
 
-        return hash('sha256', ($recipient === '') ? "$token:$form" : "$token:$form:$recipient");
+        // the recipient and the message keep their places: neither is taken for the other
+        return hash('sha256', ($recipient . $message === '') ? "$token:$form" : "$token:$form:$recipient:$message");
     }
 
     /**
@@ -1011,6 +1016,9 @@ class Gate
                 default                         => 'skip',
             };
             $groups[$group][] = $rows[$k]['msg'];
+            if (SendRun::resendable($fate)) {
+                $groups['resend'][] = $rows[$k]['msg'];
+            }
         }
         for ($k = min($run->tried(), count($rows)) - 1; ($k >= 0) && (count($groups['recent']) < self::RECENT); --$k) {
             $groups['recent'][] = $rows[$k]['msg'];
