@@ -49,14 +49,25 @@ test('a failing setup does not stop the others', (t) => {
     assert.equal(errors[0][1].message, 'broken hook');
 });
 
-test('in a browser the element is defined once and set up on its first attach only', async () => {
+test('in a browser the element is defined once and set up on its first attach only', async (t) => {
     const defined = new Map();
+    // a root with no hooks: every setup finds nothing to do
     globalThis.HTMLElement = class {
         attrs = new Map();
         setAttribute(name, value) {
             this.attrs.set(name, value);
         }
+        addEventListener() {}
+        querySelector() {
+            return null;
+        }
+        querySelectorAll() {
+            return [];
+        }
     };
+    globalThis.addEventListener = () => {};
+    const errors = [];
+    t.mock.method(console, 'error', (...args) => errors.push(args));
     globalThis.customElements = {
         get:    (name) => defined.get(name),
         define: (name, cls) => {
@@ -81,8 +92,10 @@ test('in a browser the element is defined once and set up on its first attach on
         root.connectedCallback();                                // moved in the page
         assert.equal(writes, 1);
         assert.equal(root.attrs.get('ready'), '');
+        assert.deepEqual(errors, []);
     } finally {
         delete globalThis.customElements;
         delete globalThis.HTMLElement;
+        delete globalThis.addEventListener;
     }
 });

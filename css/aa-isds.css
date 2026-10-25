@@ -54,7 +54,8 @@ aa-isds-campaign { display: block; }
   --ai-focus: #1b4fd8;
 
   /* sticky offsets */
-  --ai-sticky-top: 32px;
+  --ai-env-h: 32px;
+  --ai-sticky-top: var(--ai-env-h);
   --ai-sticky-head: var(--ai-sticky-top);
   --ai-sticky-bottom: 96px;
 
@@ -74,7 +75,7 @@ aa-isds-campaign { display: block; }
 /* the one place the root class becomes a colour */
 .aa-isds.aa-isds--env-test { --ai-env: var(--ai-env-test); --ai-env-ink: var(--ai-env-test-ink); }
 .aa-isds.aa-isds--env-production {
-  --ai-env: var(--ai-env-prod); --ai-env-ink: var(--ai-env-prod-ink); --ai-sticky-top: 44px;
+  --ai-env: var(--ai-env-prod); --ai-env-ink: var(--ai-env-prod-ink); --ai-env-h: 44px;
   --ai-go: var(--ai-env-prod); --ai-go-hover: var(--ai-env-prod-hover);
 }
 .aa-isds *, .aa-isds *::before, .aa-isds *::after { box-sizing: border-box; }
@@ -216,7 +217,7 @@ aa-isds-campaign { display: block; }
   container-type: inline-size;
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; gap: 4px 14px;
-  min-height: var(--ai-sticky-top); margin: 0 0 8px; padding: 4px 14px 4px 12px;
+  min-height: var(--ai-env-h); margin: 0 0 8px; padding: 4px 14px 4px 12px;
   background: var(--ai-ink); color: var(--ai-ink-inverse);
   font-size: 14px; line-height: 1.3;
   box-shadow: 0 2px 6px rgb(0 0 0 / .18);
@@ -347,7 +348,7 @@ aa-isds-campaign { display: block; }
 .aa-isds .aud-search { display: flex; gap: 8px; max-width: 640px; }
 .aa-isds .aud-search .ai-input { flex: 1 1 auto; min-width: 0; }
 
-/* one row in every list; the list shows its button (hits: .aud-rows.aud-hits).
+/* one row in every list; the list shows its button.
    Save goes first: Enter takes the first button, even a hidden one */
 .aa-isds :is(.aud-rows, .aud-plist) { margin: 0; padding: 0; list-style: none; }
 .aa-isds .aud-row__pick { display: none; }
