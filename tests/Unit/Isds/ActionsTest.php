@@ -9,10 +9,12 @@ use AA\Isds\Account;
 use AA\Isds\AuthException;
 use AA\Isds\ActionResult;
 use AA\Isds\Actions;
+use AA\Isds\Advice;
 use AA\Isds\Drafts;
 use AA\Isds\Gate;
 use AA\Isds\IsdsException;
 use AA\Isds\Outcome;
+use AA\Isds\Registry\Sync;
 use AA\Isds\Schema;
 use AA\Isds\SendQueue;
 use AA\Isds\SendResult;
@@ -58,6 +60,9 @@ final class ActionsTest extends TestCase
     }
 
     private const OTHER_ITEM = 'ca000000000000000000000000000c02';
+
+    /** an item of the source slice */
+    private const RECIPIENT = '50000000000000000000000000000e01';
 
     /** @var array<string, array{slice: string, active: bool, filter: string, state: string}> what the gate reads of an item */
     private array $campaigns = [];
@@ -212,15 +217,6 @@ final class ActionsTest extends TestCase
     {
         self::inError();
         self::post('delete');
-
-        self::assertExpired($this->actions()->run(self::page(), true));
-    }
-
-    // a form of an action this page does not run yet is no action either
-    public function test_run_actionNotRunYetExpired(): void
-    {
-        self::inError();
-        self::post('fixbox');
 
         self::assertExpired($this->actions()->run(self::page(), true));
     }
@@ -842,6 +838,10 @@ final class ActionsTest extends TestCase
 
         self::assertEquals(new ActionResult('verify', ActionResult::FAILED, Actions::INTERNAL, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
         self::assertSame([], FakeActions::$logged);
+        self::assertCount(1, FakeActions::$failures, 'the State Check counts it as any internal failure');
+        [$selector, $params] = FakeActions::$failures[0];
+        self::assertSame('verify:' . self::CAMPAIGN_ITEM, $selector);
+        self::assertMatchesRegularExpression('/^#' . Sending::SITE . ' UnexpectedValueException .*Actions\.php:\d+$/', $params);
     }
 
     // a campaign put in the trash still shows its sending, and its messages of unknown fate
@@ -1516,5 +1516,159 @@ final class ActionsTest extends TestCase
         self::assertEquals([new ActionResult('clone', ActionResult::DONE, Actions::CLONED, $copy)], array_values(array_unique([$first, $second], SORT_REGULAR)));
         self::assertSame([self::CAMPAIGN_ITEM, $copy], array_keys($drafts->items));
         self::assertSame([[SendQueue::LOG_EVENT, "clone:$copy", [Sending::USER, self::CAMPAIGN_ITEM, Drafts::ALL]]], FakeActions::$logged);
+    }
+
+    // ------------------------------------------------------------ Fix box
+
+    /** Fix box of the recipient posted from the page in $environment: the item, the box it showed */
+    private static function postFix(string $environment = Account::PRODUCTION, string $campaign = self::CAMPAIGN_ITEM, string $recipient = self::RECIPIENT, string $box = '7C6BY6U'): void
+    {
+        self::post('fixbox', self::page($environment), $campaign, ['isds_recipient' => $recipient, 'isds_box' => $box]);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function campaignsOfTestPage(): array
+    {
+        return ['of the page' => [self::CAMPAIGN_ITEM], 'of no page' => [self::OTHER_ITEM]];
+    }
+
+    // the source slice of a test page is that of production: a test writes no recipient, whatever it posts
+    #[DataProvider('campaignsOfTestPage')]
+    public function test_fixbox_neverInTestEnvironment(string $campaign): void
+    {
+        FakeActions::$fixbox = static fn(): array => ['code' => Sync::FIXED, 'old' => '', 'new' => '7c6by6u'];
+        self::postFix(Account::TEST, $campaign);
+
+        self::assertEquals(new ActionResult('fixbox', ActionResult::REFUSED, Actions::TEST_ENV, $campaign), $this->actions()->run(self::page(Account::TEST), true));
+        self::assertSame([[], []], [FakeActions::$fixed, FakeActions::$logged], 'nothing asked of the core');
+    }
+
+    public function test_fixbox_logsOldAndNewUnderIsdsReg(): void
+    {
+        FakeActions::$fixbox = static fn(): array => ['code' => Sync::FIXED, 'old' => " x2pbqzq\n", 'new' => '7c6by6u'];
+        self::postFix(recipient: strtoupper(self::RECIPIENT));
+        $_POST['uid'] = Sending::READER;
+
+        self::assertEquals(new ActionResult('fixbox', ActionResult::DONE, Actions::FIXED, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(Account::PRODUCTION), true));
+        self::assertSame([[Sending::USER, self::RECIPIENT, '7C6BY6U']], FakeActions::$fixed, 'the login, never a uid the form posts');
+        self::assertSame([[Sync::LOG_EVENT, 'fixbox:' . self::RECIPIENT, [Sending::USER, 'x2pbqzq', '7c6by6u']]], FakeActions::$logged);
+    }
+
+    // the box was there already - the same form again, or set by hand: done, nothing to log
+    public function test_fixbox_boxThereAlreadyNotLogged(): void
+    {
+        FakeActions::$fixbox = static fn(): array => ['code' => Sync::FIXED, 'old' => '7c6by6u', 'new' => ''];
+        self::postFix();
+
+        self::assertSame(Actions::FIXED, $this->actions()->run(self::page(Account::PRODUCTION), true)?->code);
+        self::assertSame([], FakeActions::$logged);
+    }
+
+    /** @return array<string, array{string, string}> the box the item had, as logged */
+    public static function oldBoxes(): array
+    {
+        return [
+            'long text'              => [str_repeat('ž', 100), str_repeat('ž', 16)],
+            'colons, escaped by log' => [str_repeat(':', 40), str_repeat(':', 16)],
+            'control characters'     => ["a7k\tbr\x00rn\r\n", 'a7kbrrn'],
+            'not UTF-8'              => ["a7k\xffbrrn", ''],
+        ];
+    }
+
+    // the item's text: the row must fit log.params after AA_Log escapes its colons
+    #[DataProvider('oldBoxes')]
+    public function test_fixbox_logCutsTheOldBox(string $old, string $logged): void
+    {
+        FakeActions::$fixbox = static fn(): array => ['code' => Sync::FIXED, 'old' => $old, 'new' => '7c6by6u'];
+        self::postFix();
+
+        $this->actions()->run(self::page(Account::PRODUCTION), true);
+
+        self::assertSame($logged, FakeActions::$logged[0][2][1] ?? null);
+        self::assertLessThanOrEqual(32, strlen(str_replace(':', '#:', $logged)));
+    }
+
+    /** @return array<string, array{string}> what the core refuses with - a code of Actions too */
+    public static function fixRefusals(): array
+    {
+        $codes = [Sync::NOT_OFFERED, Sync::NO_REGISTER, Sync::FORBIDDEN, Sync::UNKNOWN_RECIPIENT, Sync::SETTINGS];
+
+        return array_combine($codes, array_map(static fn(string $code): array => [$code], $codes));
+    }
+
+    #[DataProvider('fixRefusals')]
+    public function test_fixbox_refusalNotLogged(string $code): void
+    {
+        FakeActions::$fixbox = static fn(): array => ['code' => $code, 'old' => '', 'new' => ''];
+        self::postFix();
+
+        self::assertEquals(new ActionResult('fixbox', ActionResult::REFUSED, $code, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(Account::PRODUCTION), true));
+        self::assertSame([[], []], [FakeActions::$logged, FakeActions::$failures]);
+        self::assertNotSame('', Advice::text($code));
+    }
+
+    public function test_fixbox_busy(): void
+    {
+        FakeActions::$fixbox = static fn(): array => ['code' => Sync::BUSY, 'old' => '', 'new' => ''];
+        self::postFix();
+
+        self::assertEquals(new ActionResult('fixbox', ActionResult::BUSY, Actions::BUSY, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(Account::PRODUCTION), true));
+    }
+
+    public function test_fixbox_recipientNoItemIdUnknown(): void
+    {
+        self::postFix(recipient: self::RECIPIENT . '"');
+
+        self::assertEquals(new ActionResult('fixbox', ActionResult::REFUSED, Actions::UNKNOWN_RECIPIENT, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(Account::PRODUCTION), true));
+        self::assertSame([], FakeActions::$fixed);
+    }
+
+    // a campaign of no page here: nothing fixed, whatever token the form carries
+    public function test_fixbox_campaignOfOtherSliceUnknown(): void
+    {
+        $this->campaigns[self::OTHER_ITEM] = self::item(Sending::MESSAGE);
+        self::postFix(campaign: self::OTHER_ITEM);
+
+        self::assertEquals(new ActionResult('fixbox', ActionResult::REFUSED, Actions::UNKNOWN, self::OTHER_ITEM), $this->actions()->run(self::page(Account::PRODUCTION), true));
+        self::assertSame([], FakeActions::$fixed);
+    }
+
+    // Setup checked the settings of data boxes of the source slice; gone since, it is a fault, which the State Check counts
+    public function test_fixbox_sourceWithoutSettingsInternal(): void
+    {
+        FakeActions::$rules = new FakeSliceRules();
+        self::postFix();
+
+        self::assertEquals(new ActionResult('fixbox', ActionResult::FAILED, Actions::INTERNAL, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(Account::PRODUCTION), true));
+        self::assertSame([], FakeActions::$logged);
+        self::assertSame('fixbox:' . self::CAMPAIGN_ITEM, FakeActions::$failures[0][0] ?? null);
+        self::assertMatchesRegularExpression('/^#' . Sending::SITE . ' RuntimeException .*SliceRules\.php:\d+$/', FakeActions::$failures[0][1]);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function everyAction(): array
+    {
+        // a literal list: a data provider runs before Gate can be loaded
+        $actions = ['save', 'clone', 'test', 'send', 'stop', 'abandon', 'resume', 'verify', 'fixbox'];
+
+        return array_combine($actions, array_map(static fn(string $action): array => [$action], $actions));
+    }
+
+    // every action a form may name has its own way: none ends in the fallback of act()
+    #[DataProvider('everyAction')]
+    public function test_run_everyActionOfTheGateRuns(string $action): void
+    {
+        self::assertEqualsCanonicalizing(Gate::ACTIONS, array_keys(self::everyAction()), 'the list is that of the gate');
+        self::inError();
+        FakeActions::$stop   = static fn(string $c, string $u, bool $abandon): string => $abandon ? Actions::ABANDONED : '';
+        FakeActions::$fixbox = static fn(): array => ['code' => Sync::NOT_OFFERED, 'old' => '', 'new' => ''];
+        self::post($action, self::page(Account::PRODUCTION));
+
+        $this->actions()->run(self::page(Account::PRODUCTION), true);
+
+        // the core of save, test and send is not given: a failure, yet in the fake, past the fallback
+        foreach (FakeActions::$failures as [, $params]) {
+            self::assertDoesNotMatchRegularExpression('~ LogicException \S*(?<!Fake)Actions\.php:\d+$~', $params);
+        }
     }
 }

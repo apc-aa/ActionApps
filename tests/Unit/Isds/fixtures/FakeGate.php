@@ -18,7 +18,7 @@ require_once __DIR__ . '/FakeActions.php';
 
 /**
  * The gate on a page given here: the site rendered, the slices (FakeSliceRules), the accounts of
- * datovka_conf.php, the login (Access over the rights of FakePerms), the campaigns, their runs and the recipients,
+ * datovka_conf.php, the login (Access over the rights of FakePerms), the campaigns, their runs and the recipients, the register of data boxes,
  * the actions (FakeActions), the clock and whether output went out. A redirect throws Redirected.
  * The slices open in the real AA_Credentials.
  */
@@ -50,6 +50,18 @@ final class FakeGate extends Gate
 
     /** the settings as checked; null = checked from the template over $rules and $conf */
     public ?Setup $setup = null;
+
+    /** @var ?array{state: string, time: int, size: int, sha256: string} Sync::registerInfo(); null = none downloaded */
+    public ?array $register = null;
+
+    /** what Sync::registerInfo() throws; null = it answers $register */
+    public ?\RuntimeException $registerFails = null;
+
+    /** @var array<string, string>|\RuntimeException Sync::offered() of the source slice, or what it throws */
+    public array|\RuntimeException $offered = [];
+
+    /** how many times the register was paired with the source slice */
+    public int $offeredReads = 0;
 
     /**
      * @param ?string $site the site whose page is rendered; null = no site page (view.php, cron)
@@ -98,6 +110,18 @@ final class FakeGate extends Gate
     protected function stored(string $id): ?array
     {
         return $this->campaigns[$id] ?? null;
+    }
+
+    protected function registerInfo(): ?array
+    {
+        return $this->registerFails ? throw $this->registerFails : $this->register;
+    }
+
+    protected function offered(Setup $setup): array
+    {
+        ++$this->offeredReads;
+
+        return ($this->offered instanceof \RuntimeException) ? throw $this->offered : $this->offered;
     }
 
     protected function run(string $campaign): ?SendRun

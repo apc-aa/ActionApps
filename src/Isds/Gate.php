@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Isds;
 
+use AA\Isds\Registry\Sync;
 use AA\Later\BatchFailed;
 use AA\Util\FormToken;
 use AA\Util\LogOnce;
@@ -116,7 +117,9 @@ class Gate
      * The hidden fields of a form asking for $action on the campaign: the token binds both and the
      * binding of the page, so a form of one action, campaign or page cannot be posted as another.
      * '' on a page that could not be kept out of frames; for abandon '' unless the run is one a stop no
-     * longer ends (SendRun::abandonable()) - the template offers it in place of Stop then.
+     * longer ends (SendRun::abandonable()) - the template offers it in place of Stop then; for fixbox ''
+     * unless the page could take a box from the register (fixable()) - the form adds isds_recipient and,
+     * as isds_box, regbox() of the row.
      * The form of a new campaign and of a copy carries a nonce of its own: every post of the form shown
      * makes the one draft (Drafts::newId(), copyId()).
      * @param string $campaign long id; '' only to save a new campaign
@@ -128,6 +131,9 @@ class Gate
             return '';
         }
         if (($action === 'abandon') && (($this->progressOf(self::$open, $campaign)['abandon'] ?? '') !== '1')) {
+            return '';
+        }
+        if (($action === 'fixbox') && !$this->fixable(self::$open)) {
             return '';
         }
 
@@ -276,6 +282,54 @@ class Gate
     }
 
     /**
+     * The value of isds_box for Fix box of a recipient - an item of the source slice: the box the
+     * register offers for it as surely as Fix box takes it, with a hash of the box the item has (Sync::
+     * offered()). '' where fields:fixbox gives no form, the register offers nothing that sure, or the
+     * item has the box. Put the form of Fix box only on rows that get a value. The first call of a
+     * request reads the register and every item of the source slice; the rest reuse it.
+     * @param string $item long id
+     */
+    public function regbox(string $item): string
+    {
+        $setup = self::$open;
+        $id    = ModuleId::normalize($item);
+        if (is_null($setup) || !self::$guarded || is_null($id) || !$this->fixable($setup)) {
+            return '';
+        }
+        // a closure cannot key the cache itself
+        $offered = \AA::Contentcache()->_get_result(get_hash(self::class . '::regbox', $setup), function () use ($setup): array {
+            try {
+                return $this->offered($setup);
+            } catch (\RuntimeException) {
+                // the page of the register and the State Check tell what is wrong
+                return [];
+            }
+        }, [], self::class . '>regbox');
+
+        return safe($offered[$id] ?? '');
+    }
+
+    /**
+     * Fix box can take a box: a page in production - a test one shares the source slice of production -,
+     * whose source slice has its settings of data boxes, with a usable register. Once a request: a page
+     * may offer the form on every row of its recipients.
+     */
+    private function fixable(Setup $setup): bool
+    {
+        return \AA::Contentcache()->_get_result(get_hash(self::class . '::fixable', $setup), function () use ($setup): bool {
+            if (($setup->environment !== Account::PRODUCTION) || is_null($this->rules()->registryConfig($setup->sourceSlice))) {
+                return false;
+            }
+            try {
+                return Sync::usableRegister($this->registerInfo(), $this->now());
+            } catch (\RuntimeException) {
+                // no upload directory, or one PHP cannot look into: the page of the register says so
+                return false;
+            }
+        }, [], self::class . '>fixable');
+    }
+
+    /**
      * Keeps the result in the session for the page the browser is sent to. Of the results kept before,
      * those older than FLASH_SECONDS go, and the oldest beyond FLASH_MAX - first those that guard no form
      * posted again (answered()): autosaves add one every few seconds, and must not push out the one that
@@ -346,16 +400,20 @@ class Gate
         );
     }
 
-    /** the form shown once (fields()), as the session keeps it - a hash, not its token; '' = none told */
+    /**
+     * the form shown once (fields()), as the session keeps it - a hash, not its token; '' = none told.
+     * With the recipient of Fix box: a script may fill one shown form for each row.
+     */
     private static function postedForm(): string
     {
-        $token = $_POST['isds_token'] ?? '';
-        $form  = $_POST['isds_form'] ?? '';
-        if (!is_string($token) || !is_string($form) || (preg_match('/^[0-9a-f]{16}\z/', $form) !== 1)) {
+        $token     = $_POST['isds_token'] ?? '';
+        $form      = $_POST['isds_form'] ?? '';
+        $recipient = $_POST['isds_recipient'] ?? '';
+        if (!is_string($token) || !is_string($form) || !is_string($recipient) || (preg_match('/^[0-9a-f]{16}\z/', $form) !== 1)) {
             return '';
         }
 
-        return hash('sha256', "$token:$form");
+        return hash('sha256', ($recipient === '') ? "$token:$form" : "$token:$form:$recipient");
     }
 
     /**
@@ -425,7 +483,7 @@ class Gate
             // a campaign stored without a filter only previews the default audience; sending must refuse
             // it, never widen it to the default, so the fallback stays here, not in fromJson()
             $filter = (trim($stored['filter']) === '') ? RecipientFilter::default($setup) : RecipientFilter::fromJson($stored['filter'], $setup);
-            $config = $this->rules()->registryConfig($setup->sourceSlice) ?? throw new \RuntimeException('The source slice has no settings of data boxes');
+            $config = $this->rules()->sourceConfig($setup->sourceSlice);
 
             return $this->resolver()->resolve($setup, $filter, $config);
         } catch (\InvalidArgumentException|\RuntimeException $e) {
@@ -544,6 +602,24 @@ class Gate
         $item = AA_Items::getItem(new zids($id, 'l'));
 
         return $item ? ['slice' => $item->getSliceID(), 'active' => $item->isActive(), 'filter' => (string) $item->getval(Schema::CAMPAIGN_FILTER), 'state' => (string) $item->getval(Schema::CAMPAIGN_STATE)] : null;
+    }
+
+    /**
+     * @return ?array{state: string, time: int, size: int, sha256: string} Sync::registerInfo()
+     * @throws \RuntimeException see Sync::registerInfo()
+     */
+    protected function registerInfo(): ?array
+    {
+        return Sync::registerInfo();
+    }
+
+    /**
+     * @return array<string, string> Sync::offered() of the source slice
+     * @throws \RuntimeException see Sync::offered() and SliceRules::sourceConfig()
+     */
+    protected function offered(Setup $setup): array
+    {
+        return (new Sync($this->rules()->sourceConfig($setup->sourceSlice)))->offered();
     }
 
     /** the newest run of the campaign, read-only; null = never queued */

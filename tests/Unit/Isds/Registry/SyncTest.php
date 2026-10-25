@@ -24,8 +24,13 @@ use Tests\Unit\Isds\Registry\Fixtures\DownloadSync;
 use Tests\Unit\Isds\Registry\Fixtures\MemoryDownloadedRegister;
 use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
 use Tests\Unit\Isds\Registry\Fixtures\RecordingSync;
+use Tests\Unit\Isds\Fixtures\FakePerms;
+use Tests\Unit\Isds\Fixtures\Sending;
 use Tests\Unit\Legacy\Fixtures\FakeFields;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
+
+// data providers read its ids before setUpBeforeClass()
+require_once __DIR__ . '/../fixtures/Sending.php';
 
 /** The items come from RecordingSync, the boxes from the 31 real ones of the SdsList fixture. */
 final class SyncTest extends TestCase
@@ -63,6 +68,7 @@ final class SyncTest extends TestCase
         require_once __DIR__ . '/fixtures/MemoryDownloadedRegister.php';
         require_once __DIR__ . '/fixtures/PropertySlice.php';
         require_once __DIR__ . '/../../fixtures/FakeHttp.php';
+        require_once __DIR__ . '/../fixtures/FakePerms.php';
         if (!defined('CACHE_TTL')) {
             define('CACHE_TTL', 600);                                           // AA::Pagecache()
         }
@@ -82,6 +88,7 @@ final class SyncTest extends TestCase
             self::removeTree($this->scratch);
         }
         RecordingDb::reset();
+        FakePerms::uninstall();
         $GLOBALS['spareDBs'] = [];
         PropertySlice::forget(self::REAL_SLICE);
         (new \ReflectionProperty(AA_Credentials::class, 'instance'))->setValue(null, null);    // the slice passwords it knows
@@ -748,6 +755,315 @@ final class SyncTest extends TestCase
         self::assertSame(['spwd' => []], \AA_Stringexpand_Encrypt::decrypt_time_token(AA_Credentials::singleton()->getAsToken(), 'slice-pwd'));
     }
 
+    // ------------------------------------------------------------ fixBox
+
+    public function test_fixBox_writesOnlyBoxField(): void
+    {
+        $sync = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY), 2 => self::item('Liberec', '00262978', 'x2pbqzq', self::CITY)]);
+
+        self::assertSame(['code' => Sync::FIXED, 'old' => 'x2pbqzq', 'new' => '7c6by6u'], $sync->fixBox(Sending::READER, Sending::CAMPAIGN, strtoupper(self::id(2)), self::tick('7c6by6u', 'x2pbqzq')));
+        self::assertCount(1, $sync->stored, 'that item only');
+        $content = $sync->stored[0]['content'];
+        ksort($content);
+        self::assertSame(['id..............', 'slice_id........', self::DS, 'unpacked_id.....'], array_keys($content));
+        self::assertSame(['7c6by6u', self::id(2)], [$content[self::DS][0]['value'], $content['unpacked_id.....'][0]['value']]);
+        self::assertSame(['update_silent', [false, false, false, false]], [$sync->stored[0]['mode'], $sync->stored[0]['flags']]);
+        self::assertSame([1, 1, ['lock', 'unlock']], [$sync->invalidated, $sync->readingAllowed, $sync->fixLocks]);
+    }
+
+    // what a page may post: exactly the rows a page of the register ticks before a person looks
+    public function test_offered_theTickValuesOfTheRowsTickedUnseen(): void
+    {
+        $sync = $this->fixing([
+            1 => self::item('Brno', '44992785', '', self::CITY),               // new by IČO
+            2 => self::item('Liberec', '00262978', 'x2pbqzq', self::CITY),     // changed by IČO
+            3 => self::item('Cerhenice', '00235300', 'eerak7a', self::CITY),   // same
+            4 => self::item('Praha', '', '', self::CITY),                      // by name
+            5 => self::item('Adamov', '00581160', '', self::CITY),             // shared
+            6 => self::item('Adamov', '581160', '', self::CITY),
+        ]);
+
+        self::assertSame([self::id(1) => self::tick('a7kbrrn'), self::id(2) => self::tick('7c6by6u', 'x2pbqzq')], $sync->offered());
+        MemoryDownloadedRegister::$record['time'] = (string) (time() - Sync::OLD_DAYS * 86400 - 60);
+        self::assertSame([], $sync->offered(), 'an old register offers nothing');
+    }
+
+    /** @return array<string, array{array<string, mixed>, string}> the item, the isds_box posted */
+    public static function notOffered(): array
+    {
+        return [
+            'another box of the register' => [self::item('Brno', '44992785', '', self::CITY), self::tick('x2pbqzq')],
+            'the box without its hash'    => [self::item('Brno', '44992785', '', self::CITY), 'a7kbrrn'],
+            'no box id'                   => [self::item('Brno', '44992785', '', self::CITY), 'a7kbrrn"><b>|' . substr(md5(''), 0, 12)],
+            'none found'                  => [self::item('Nikde', '', '', self::CITY), self::tick('a7kbrrn')],
+            'another box the item had'    => [self::item('Liberec', '00262978', 'x2pbqzq', self::CITY), self::tick('7c6by6u')],
+        ];
+    }
+
+    /** @param array<string, mixed> $item */
+    #[DataProvider('notOffered')]
+    public function test_fixBox_boxNotOfferedByRegisterRefused(array $item, string $tick): void
+    {
+        $sync = $this->fixing([1 => $item]);
+
+        self::assertSame(['code' => Sync::NOT_OFFERED, 'old' => '', 'new' => ''], $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), $tick));
+        self::assertSame([], $sync->stored);
+    }
+
+    // another editor gave the item a box since the page showed it
+    public function test_fixBox_itemChangedSinceThePageRefused(): void
+    {
+        $sync = $this->fixing([1 => self::item('Liberec', '00262978', 'x2pbqzq', self::CITY)]);
+        $tick = $sync->offered()[self::id(1)];
+        $sync->content[self::id(1)] = self::item('Liberec', '00262978', 'abcdefg', self::CITY);
+
+        self::assertSame(Sync::NOT_OFFERED, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), $tick)['code']);
+        self::assertSame([], $sync->stored);
+    }
+
+    // the same form again, or a box set by hand meanwhile: done, nothing to write
+    public function test_fixBox_boxThereAlreadyFixedWithoutWriting(): void
+    {
+        $sync = $this->fixing([1 => self::item('Cerhenice', '00235300', 'eerak7a', self::CITY)]);
+
+        self::assertSame(['code' => Sync::FIXED, 'old' => 'eerak7a', 'new' => ''], $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('eerak7a')));
+        self::assertSame([[], 0], [$sync->stored, $sync->invalidated]);
+    }
+
+    // a box of a part of an authority (13) or of a school acting as one (15) is in the register, yet offered to none
+    public function test_fixBox_nonOvmBoxRefused(): void
+    {
+        $sync = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY), 2 => self::item('Škola', '70673683', '', self::CITY)]);
+
+        self::assertSame(Sync::NOT_OFFERED, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('scedv36'))['code']);
+        self::assertSame(Sync::NOT_OFFERED, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(2), self::tick('3th5n6b'))['code']);
+        self::assertSame([], $sync->stored);
+    }
+
+    // a name match - an IČO of another box too - only a person who compares the names takes
+    public function test_fixBox_nameMatchRefused(): void
+    {
+        $sync = $this->fixing([1 => self::item('Praha', '', '', self::CITY), 2 => self::item('Plzeň', '05282446', '', self::CITY)]);
+        $rows = $sync->report(self::$boxes)->rows;
+        self::assertSame([MatchRow::BY_NAME, MatchRow::BY_NAME], array_column($rows, 'method'));
+        self::assertSame([MatchRow::NEW, MatchRow::NEW], array_column($rows, 'status'));
+
+        foreach ($rows as $row) {
+            self::assertSame(Sync::NOT_OFFERED, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, (string) $row->itemId, Sync::tickValue($row))['code']);
+        }
+        self::assertSame([], $sync->stored);
+    }
+
+    // the matcher sets it on name matches only; fixBox() does not count on that
+    public function test_fixBox_icoMismatchRefused(): void
+    {
+        $sync = new class (Config::fromValues(self::SLICE, ['name_field' => self::NAME, 'ico_field' => self::ICO, 'ds_field' => self::DS, 'type_field' => self::TYPE]), $this->register()) extends RecordingSync {
+            public function report(iterable $boxes): MatchReport
+            {
+                $rows = array_map(static fn(MatchRow $r): MatchRow => new MatchRow($r->itemId, $r->name, $r->type, $r->oldDs, $r->box, $r->method, $r->status, $r->candidates, true, $r->ico), parent::report($boxes)->rows);
+
+                return new MatchReport($rows);
+            }
+        };
+        $sync->fields               = self::fields();
+        $sync->content[self::id(1)] = self::item('Brno', '44992785', '', self::CITY);
+        MemoryDownloadedRegister::genuine($this->register());
+        self::grant();
+
+        self::assertSame(Sync::NOT_OFFERED, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn'))['code']);
+        self::assertSame([], $sync->stored);
+    }
+
+    // two items for one place, or a box another item holds already: writing would hide it
+    public function test_fixBox_sharedBoxRefused(): void
+    {
+        $sync = $this->fixing([
+            1 => self::item('Adamov', '00581160', '', self::CITY),
+            2 => self::item('Adamov', '581160', '', self::CITY),
+            3 => self::item('Nehvizdy', '00240524', '', self::CITY),
+            4 => self::item('Nikde', '', 'BGXBR7U', self::CITY),
+        ]);
+
+        foreach ([[1, 'q7bb677'], [2, 'q7bb677'], [3, 'bgxbr7u']] as [$n, $box]) {
+            self::assertSame(Sync::NOT_OFFERED, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id($n), self::tick($box))['code'], "item $n");
+        }
+        self::assertSame([], $sync->stored);
+    }
+
+    /** @return array<string, array{\Closure(string): void, list<string>}> what happened to the register at its path, what is logged */
+    public static function noRegister(): array
+    {
+        return [
+            'none downloaded'           => [static function (string $file): void {
+                MemoryDownloadedRegister::reset();
+                unlink($file);
+            }, []],
+            'not downloaded by this AA' => [static function (string $file): void {
+                MemoryDownloadedRegister::reset();
+            }, []],
+            'gone'                      => [static function (string $file): void {
+                unlink($file);
+            }, []],
+            'another file in its place' => [static function (string $file): void {
+                MemoryDownloadedRegister::swap($file);
+            }, []],
+            // downloaded, recorded, yet no list of boxes
+            'damaged'                   => [static function (string $file): void {
+                file_put_contents($file, '<html>Service unavailable</html>');
+                MemoryDownloadedRegister::download($file);
+            }, ['read']],
+        ];
+    }
+
+    /**
+     * @param \Closure(string): void $change
+     * @param list<string>           $logged
+     */
+    #[DataProvider('noRegister')]
+    public function test_fixBox_registerMissingRefused(\Closure $change, array $logged): void
+    {
+        $sync = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY)]);
+        $change($this->register());
+
+        self::assertSame(['code' => Sync::NO_REGISTER, 'old' => '', 'new' => ''], $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn')));
+        self::assertSame([[], [], ['lock', 'unlock']], [$sync->chunks, $sync->stored, $sync->fixLocks], 'no item read');
+        self::assertSame($logged, array_column($sync->logged, 0));
+    }
+
+    // authorities get new boxes and merge: a page offers to download it again after OLD_DAYS
+    public function test_fixBox_registerOldRefused(): void
+    {
+        $sync = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY)]);
+        MemoryDownloadedRegister::$record['time'] = (string) (time() - Sync::OLD_DAYS * 86400 - 60);
+
+        self::assertSame(Sync::NO_REGISTER, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn'))['code']);
+        self::assertSame([], $sync->stored);
+        MemoryDownloadedRegister::$record['time'] = (string) (time() - Sync::OLD_DAYS * 86400 + 60);
+        self::assertSame(Sync::FIXED, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn'))['code']);
+    }
+
+    // the fields changed since the settings were saved, or PHP cannot look into the upload directory
+    public function test_fixBox_settingsThatNoLongerWorkRefused(): void
+    {
+        $sync         = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY)]);
+        $sync->fields = self::changedFields([self::DS], []);
+
+        self::assertSame(Sync::SETTINGS, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn'))['code']);
+        self::assertSame([[], [], []], [$sync->chunks, $sync->stored, $sync->logged]);
+
+        if (!function_exists('posix_geteuid') || (posix_geteuid() === 0)) {
+            self::markTestSkipped('root searches every directory');
+        }
+        $sync->fields = self::fields();
+        chmod($this->scratch, 0o600);
+        self::assertSame(Sync::SETTINGS, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn'))['code']);
+        self::assertSame(['look'], array_column($sync->logged, 0));
+        self::assertSame([], $sync->stored);
+    }
+
+    // storeItem() would move the item into this slice
+    public function test_fixBox_itemOfOtherSliceUnknown(): void
+    {
+        $sync = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY)]);
+
+        self::assertSame(['code' => Sync::UNKNOWN_RECIPIENT, 'old' => '', 'new' => ''], $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(2), self::tick('a7kbrrn')));
+        self::assertSame(['code' => Sync::UNKNOWN_RECIPIENT, 'old' => '', 'new' => ''], $sync->fixBox(Sending::READER, Sending::CAMPAIGN, '', self::tick('a7kbrrn')));
+        self::assertSame([], $sync->stored);
+    }
+
+    // GetItemContent() reads an item in any bin: only the ids of the active bin pair
+    public function test_fixBox_inactiveItemUnknown(): void
+    {
+        $sync         = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY), 2 => self::item('Liberec', '00262978', '', self::CITY)]);
+        $sync->listed = [self::id(2)];
+
+        self::assertSame(Sync::UNKNOWN_RECIPIENT, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn'))['code']);
+        self::assertSame([], $sync->stored);
+    }
+
+    // another item could get the same box between the report and the write
+    public function test_fixBox_busyWhileAnotherFixes(): void
+    {
+        $sync            = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY)]);
+        $sync->fixLocked = true;
+
+        self::assertSame(['code' => Sync::BUSY, 'old' => '', 'new' => ''], $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn')));
+        self::assertSame([[], [], ['lock']], [$sync->chunks, $sync->stored, $sync->fixLocks]);
+    }
+
+    // waiting would not help: an internal failure, not BUSY
+    public function test_fixBox_noLockWithoutDatabaseFails(): void
+    {
+        $sync             = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY)]);
+        $sync->fixLocked  = true;
+        $sync->noDatabase = true;
+
+        $this->expectException(\RuntimeException::class);
+        $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn'));
+    }
+
+    public function test_fixBox_lockReleasedWhenTheStoreFails(): void
+    {
+        $sync         = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY)]);
+        $sync->refuse = [self::id(1) => 'Bad Item Id'];
+
+        try {
+            $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn'));
+            self::fail('a box not stored passed for written');
+        } catch (\RuntimeException) {
+            self::assertSame(['lock', 'unlock'], $sync->fixLocks);
+        }
+    }
+
+    /** @return array<string, array{string, string}> the login, the campaign slice */
+    public static function mayNot(): array
+    {
+        return [
+            // an administrator of the source slice: its page of the register is open to them, the sending is not
+            'a user of AA without the right' => [Sending::USER, Sending::CAMPAIGN],
+            'not logged in'                  => ['', Sending::CAMPAIGN],
+            'nobody'                         => ['nobody', Sending::CAMPAIGN],
+            'the right on another slice'     => [Sending::READER, Sending::MESSAGE],
+        ];
+    }
+
+    // the login the caller gives, against the rights stored now - not the session's
+    #[DataProvider('mayNot')]
+    public function test_fixBox_uidCheckedInsideFixBox(string $uid, string $campaignSlice): void
+    {
+        $sync = $this->fixing([1 => self::item('Brno', '44992785', '', self::CITY)]);
+        FakePerms::install([Sending::SET => [Sending::CAMPAIGN => \AA_Perm::ROLES['EDITOR']['id']], Sending::USER => [self::SLICE => \AA_Perm::ROLES['ADMINISTRATOR']['id']]], [Sending::READER => [Sending::READERS, Sending::SET]]);
+
+        self::assertSame(['code' => Sync::FORBIDDEN, 'old' => '', 'new' => ''], $sync->fixBox($uid, $campaignSlice, self::id(1), self::tick('a7kbrrn')));
+        self::assertSame([[], [], []], [$sync->chunks, $sync->stored, $sync->fixLocks], 'nothing read, no lock');
+        self::assertSame(Sync::FIXED, $sync->fixBox(Sending::READER, Sending::CAMPAIGN, self::id(1), self::tick('a7kbrrn'))['code'], 'the reader in the set');
+    }
+
+    /**
+     * A source slice with $items and the register of the fixture, downloaded now; the reader of
+     * Sending may send from its campaign slice through a set
+     * @param array<int, array<string, mixed>> $items number => content
+     */
+    private function fixing(array $items): RecordingSync
+    {
+        $sync = self::sync($items, register: $this->register());
+        MemoryDownloadedRegister::genuine($this->register());
+        self::grant();
+
+        return $sync;
+    }
+
+    /** the register at its path in a directory of the test's own */
+    private function register(): string
+    {
+        return (($this->scratch === '') ? $this->scratch() : $this->scratch) . '/register.xml';
+    }
+
+    private static function grant(): void
+    {
+        FakePerms::install([Sending::SET => [Sending::CAMPAIGN => \AA_Perm::ROLES['EDITOR']['id']]], [Sending::READER => [Sending::READERS, Sending::SET]]);
+    }
+
     /**
      * Writes the box of Liberec (x2pbqzq -> 7c6by6u) through the real storeItem() into a slice with
      * the settings $props, two item-table fields and a field the settings do not name.
@@ -793,11 +1109,11 @@ final class SyncTest extends TestCase
      * @param array<int, array<string, mixed>> $items number => content, see id()
      * @param array<string, mixed>             $over  config values in place of the defaults
      */
-    private static function sync(array $items = [], array $over = [], string $slice = self::SLICE): RecordingSync
+    private static function sync(array $items = [], array $over = [], string $slice = self::SLICE, ?string $register = null): RecordingSync
     {
         $sync = new RecordingSync(Config::fromValues($slice, $over + [
             'name_field' => self::NAME, 'ico_field' => self::ICO, 'ds_field' => self::DS, 'type_field' => self::TYPE,
-        ]));
+        ]), $register);
         $sync->fields = self::fields();
         foreach ($items as $n => $content) {
             $sync->content[self::id($n)] = $content;

@@ -1396,6 +1396,25 @@ final class BatchRunControlTest extends TestCase
         }
     }
 
+    /** A worker claimed the close row of priority 0 (its lease ahead): afterClose() is running, so the
+     *  run stays; once the lease is over, no worker takes the row again and the run goes. */
+    public function test_cleanup_keeps_a_run_whose_close_row_of_priority_0_runs(): void
+    {
+        $closing = self::finished(self::NOW + 110, 'ended');
+        (new Toexecute())->later(new BatchStep(ScriptedBatchRun::class, $closing, BatchRun::CLOSE_ROW), [], 'BatchClose_' . $closing, 0, self::NOW);
+        $row = array_search('BatchClose_' . $closing, array_column(TableDb::$tables['toexecute'], 'selector'), true);
+        $this->assertIsInt($row);
+        TableDb::$tables['toexecute'][$row]['execute_after'] = self::NOW + Toexecute::CLAIM_LEASE;
+        ScriptedBatchRun::$now = self::NOW;
+
+        ScriptedBatchRun::cleanup(self::SUBJECT, 0);
+        $this->assertNotNull(ScriptedBatchRun::get($closing), 'claimed, still running');
+
+        ScriptedBatchRun::$now = self::NOW + Toexecute::CLAIM_LEASE + 1;
+        ScriptedBatchRun::cleanup(self::SUBJECT, 0);
+        $this->assertNull(ScriptedBatchRun::get($closing), 'the lease over');
+    }
+
     public function test_of_subject_newest_first_limited(): void
     {
         $first  = self::finished(self::NOW + 100);

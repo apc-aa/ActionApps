@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\Central\ResponderPolicy;
+use AA\Isds\Registry\Sync;
 use AA\Later\BatchRun;
 use AA\Later\Toexecute;
 use AA\Util\FormToken;
@@ -73,9 +74,23 @@ class Actions
     public const NOT_UNCERTAIN = SendRun::NOT_UNCERTAIN;
     /** Verify: no message of the sending has the id the form posts */
     public const UNKNOWN_MESSAGE = SendRun::UNKNOWN_MESSAGE;
+    /** Fix box: the data box of the recipient is taken from the register, or it had it already */
+    public const FIXED = Sync::FIXED;
+    /** Fix box: the register does not offer that box for the recipient as surely as to take it unseen,
+     *  or the recipient changed since the page showed it */
+    public const NOT_OFFERED = Sync::NOT_OFFERED;
+    /** Fix box: no register of data boxes downloaded, an old one, or one that cannot be read */
+    public const NO_REGISTER = Sync::NO_REGISTER;
+    /** Fix box: no recipient the register is paired with has that id */
+    public const UNKNOWN_RECIPIENT = Sync::UNKNOWN_RECIPIENT;
+    /** Fix box: a page in the test environment changes no recipient - its slices are those of production */
+    public const TEST_ENV = 'TEST_ENV';
 
-    /** the actions run here; the form of another one of Gate::ACTIONS is refused as one of no action */
-    private const RUNS = ['save', 'clone', 'resume', 'stop', 'abandon', 'verify', 'test', 'send'];
+    /** what Fix box may answer; SETTINGS: the settings of data boxes no longer fit the source slice */
+    private const FIX_CODES = [self::FIXED, self::NOT_OFFERED, self::NO_REGISTER, self::UNKNOWN_RECIPIENT, self::FORBIDDEN, self::BUSY, Sync::SETTINGS];
+
+    /** bytes of the old box in the log row of Fix box */
+    private const LOGGED_BOX = 32;
 
     /** an action ran in this request: a form is acted on once, whichever gate on the page it names */
     private static bool $consumed = false;
@@ -119,7 +134,7 @@ class Actions
         $action   = self::posted('isds_action');
         $campaign = Gate::campaignOf($action, self::posted('isds_campaign'));
         $token    = self::posted('isds_token');
-        if (!in_array($action, self::RUNS, true) || is_null($campaign) || !FormToken::checkPost(Gate::purpose($action, $setup, $campaign), $token, $server)) {
+        if (!in_array($action, Gate::ACTIONS, true) || is_null($campaign) || !FormToken::checkPost(Gate::purpose($action, $setup, $campaign), $token, $server)) {
             return new ActionResult('', ActionResult::EXPIRED, self::EXPIRED);
         }
         self::$consumed = true;
@@ -155,6 +170,10 @@ class Actions
 
     private function act(Setup $setup, string $action, string $campaign): ActionResult
     {
+        // whatever the campaign: a test page may share the source slice of production
+        if (($action === 'fixbox') && ($setup->environment !== Account::PRODUCTION)) {
+            return self::refused($action, self::TEST_ENV, $campaign);
+        }
         // the id comes from the form: only an item of the campaign slice of the page, in any bin - a
         // sending of a campaign put in the trash still shows, so it must still be stopped
         $stored = ($campaign === '') ? null : ($this->campaignOfPage)($setup, $campaign);
@@ -175,6 +194,7 @@ class Actions
             'verify'                    => $this->verify($setup, $campaign),
             'test'                      => $this->test($setup, $campaign),
             'send'                      => $this->send($setup, $campaign),
+            'fixbox'                    => $this->fixBox($setup, $campaign),
             default                     => throw new \LogicException("No action $action"),
         };
     }
@@ -347,8 +367,8 @@ class Actions
         $uid  = $this->access->uid();
         $code = $this->verifyRun($campaign, $uid, $msg);
         if ($code === Snapshot::CHANGED) {
-            // the frozen recipients do not read back as frozen: nothing an editor can fix
-            return new ActionResult('verify', ActionResult::FAILED, self::INTERNAL, $campaign);
+            // nothing an editor can fix: an internal failure, which the State Check counts
+            throw new \UnexpectedValueException('The frozen recipients of the sending do not read back as frozen');
         }
         if (!in_array($code, ['', self::VERIFIED], true)) {
             return self::refused('verify', $code, $campaign);
@@ -358,6 +378,48 @@ class Actions
         }
 
         return new ActionResult('verify', ActionResult::DONE, self::VERIFIED, $campaign);
+    }
+
+    /**
+     * Fix box: the data box the register offers for a recipient (isds_recipient, an item of the source
+     * slice) goes into its item, when it is the one the page showed (isds_box, Gate::regbox()) - the core
+     * checks the right, the register and the box itself; logged with the box before and after
+     */
+    private function fixBox(Setup $setup, string $campaign): ActionResult
+    {
+        $item = ModuleId::normalize(self::posted('isds_recipient'));
+        if (is_null($item)) {
+            return self::refused('fixbox', self::UNKNOWN_RECIPIENT, $campaign);
+        }
+        $uid = $this->access->uid();
+        ['code' => $code, 'old' => $old, 'new' => $new] = $this->fixRecipientBox($setup, $uid, $item, self::posted('isds_box'));
+        if (!in_array($code, self::FIX_CODES, true)) {
+            throw new \LogicException("Fix box answered $code");
+        }
+        if ($code !== self::FIXED) {
+            return self::refused('fixbox', $code, $campaign);
+        }
+        // the box was there already: nothing written, nothing to log
+        if ($new !== '') {
+            $this->done = [Sync::LOG_EVENT, "fixbox:$item", [$uid, self::loggedBox($old), $new]];
+        }
+
+        return new ActionResult('fixbox', ActionResult::DONE, self::FIXED, $campaign);
+    }
+
+    /**
+     * The box an item had, as its log row keeps it: the item's text without control characters, at
+     * most LOGGED_BOX bytes once AA_Log escapes its colons - the row must fit log.params
+     */
+    private static function loggedBox(string $old): string
+    {
+        // a box field may hold a long note; cutting first keeps the loop below short
+        $old = (string) preg_replace('/\p{Cc}+/u', '', mb_strcut(trim($old), 0, self::LOGGED_BOX));
+        while (strlen(str_replace(':', '#:', $old)) > self::LOGGED_BOX) {
+            $old = mb_substr($old, 0, -1);
+        }
+
+        return $old;
     }
 
     /** the run of the campaign, when it sends from the slices of the page (Setup::ownsRun()) */
@@ -432,6 +494,21 @@ class Actions
     protected function copyDraft(Setup $setup, string $source, string $scope, array $post, array $unsent): array
     {
         return (new Drafts())->copy($setup, $source, $scope, $post, $unsent);
+    }
+
+    /**
+     * Sync::fixBox() over the source slice of the page
+     * @return array{code: string, old: string, new: string}
+     * @throws \RuntimeException the source slice has no settings of data boxes; see Sync::fixBox()
+     */
+    protected function fixRecipientBox(Setup $setup, string $uid, string $item, string $box): array
+    {
+        return (new Sync($this->rules()->sourceConfig($setup->sourceSlice)))->fixBox($uid, $setup->campaignSlice, $item, $box);
+    }
+
+    protected function rules(): SliceRules
+    {
+        return new SliceRules();
     }
 
     /** SendQueue::queue() */

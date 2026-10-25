@@ -56,6 +56,21 @@ final class AdviceTest extends TestCase
         self::assertContains($code, (new \ReflectionClass(Actions::class))->getConstants(), 'a code of Actions');
     }
 
+    /** @return array<string, array{string}> what Fix box may answer */
+    public static function fixCodes(): array
+    {
+        $codes = ['FIXED', 'NOT_OFFERED', 'NO_REGISTER', 'UNKNOWN_RECIPIENT', 'TEST_ENV', 'FORBIDDEN', 'BUSY'];
+
+        return array_combine($codes, array_map(static fn(string $code): array => [$code], $codes));
+    }
+
+    #[DataProvider('fixCodes')]
+    public function test_text_everyCodeOfFixBoxHasText(string $code): void
+    {
+        self::assertNotSame('', Advice::text($code));
+        self::assertContains($code, (new \ReflectionClass(Actions::class))->getConstants(), 'a code of Actions');
+    }
+
     public function test_text_unknownIsEmpty(): void
     {
         self::assertSame('', Advice::text('NO_SUCH_CODE'));

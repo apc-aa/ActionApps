@@ -15,6 +15,8 @@ use AA\Isds\SendResult;
 use AA\Isds\SendRun;
 use AA\Isds\SendStart;
 use AA\Isds\Outcome;
+use AA\Isds\Registry\DownloadedRegister;
+use AA\Isds\Registry\Sync;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
 use AA\Isds\TestResult;
@@ -438,6 +440,111 @@ final class GateTest extends TestCase
         }
         self::assertSame($nonces, array_unique($nonces), 'each form shown makes its own draft or copy');
         self::assertSame([[], [], []], array_map(static fn(array $f): array => array_intersect_key($f, ['isds_nonce' => 1]), array_slice($fields, 4)));
+    }
+
+    /** @return array<string, array{\Closure(FakeGate): void}> what keeps a page from taking a box of the register */
+    public static function notFixable(): array
+    {
+        return [
+            'the test environment'      => [static function (FakeGate $gate): void {
+                $gate->setup = self::page();
+            }],
+            // removed since the settings of the page were checked
+            'no settings of data boxes' => [static function (FakeGate $gate): void {
+                unset(self::rulesOf($gate)->configs[self::SOURCE]);
+            }],
+            'no register downloaded'    => [static function (FakeGate $gate): void {
+                $gate->register = null;
+            }],
+            'a register AA has no record of' => [static function (FakeGate $gate): void {
+                $gate->register = ['state' => DownloadedRegister::UNRECORDED, 'time' => 0, 'size' => 0, 'sha256' => ''];
+            }],
+            'the register gone'         => [static function (FakeGate $gate): void {
+                $gate->register = ['state' => DownloadedRegister::REPLACED] + $gate->register;
+            }],
+            'an old register'           => [static function (FakeGate $gate): void {
+                $gate->register = ['time' => $gate->now - Sync::OLD_DAYS * 86400 - 1] + $gate->register;
+            }],
+            'no upload directory'       => [static function (FakeGate $gate): void {
+                $gate->registerFails = new \RuntimeException('IMG_UPLOAD_PATH is not set');
+            }],
+        ];
+    }
+
+    /** the production page of the slices, a register downloaded */
+    private static function fixGate(string $login = self::READER): FakeGate
+    {
+        $gate           = self::gate(login: $login);
+        $gate->setup    = Setup::fromSnapshot(self::SITE, self::CAMPAIGN, self::MESSAGE, self::SOURCE, ['mesto' => 'Cities'], environment: Account::PRODUCTION);
+        $gate->register = ['state' => DownloadedRegister::RECORDED, 'time' => $gate->now - 3600, 'size' => 17, 'sha256' => str_repeat('a', 64)];
+
+        return $gate;
+    }
+
+    private static function rulesOf(FakeGate $gate): FakeSliceRules
+    {
+        return (new ReflectionProperty(FakeGate::class, 'rules'))->getValue($gate);
+    }
+
+    // a form whose action could only refuse is not offered; the gate gives none to who may not send
+    public function test_fields_fixboxOnlyForWhoMay(): void
+    {
+        session_id('gate-test-session');
+        $gate   = self::fixGate();
+        $inputs = self::inputs(self::inside($gate, static fn(): string => $gate->fields('fixbox', self::ITEM)));
+
+        self::assertSame(['fixbox', self::ITEM], [$inputs['isds_action'], $inputs['isds_campaign']]);
+        self::assertTrue(FormToken::check(Gate::purpose('fixbox', $gate->setup, self::ITEM), $inputs['isds_token']));
+        self::assertArrayNotHasKey('isds_nonce', $inputs);
+
+        $refused = self::fixGate(login: Sending::USER);
+        self::assertNull(self::inside($refused, static fn(): string => $refused->fields('fixbox', self::ITEM)), 'no UI');
+        self::assertSame('', $refused->fields('fixbox', self::ITEM), 'outside the UI');
+    }
+
+    /** @param \Closure(FakeGate): void $change */
+    #[DataProvider('notFixable')]
+    public function test_fields_fixboxOnlyWhereTheRegisterOffersBoxes(Closure $change): void
+    {
+        $gate = self::fixGate();
+        $change($gate);
+
+        self::assertSame(['', 'stop'], self::inside($gate, static fn(): array => [$gate->fields('fixbox', self::ITEM), self::inputs($gate->fields('stop', self::ITEM))['isds_action'] ?? '']));
+    }
+
+    // the value of the form of Fix box, for the rows the register offers a box for - read once a request
+    public function test_regbox_onlyWhatTheRegisterOffers(): void
+    {
+        $gate          = self::fixGate();
+        $gate->offered = [self::ADAMOV => 'a7kbrrn|0123456789ab', self::BENESOV => '<b>|"x'];
+
+        $values = self::inside($gate, static fn(): array => [$gate->regbox(strtoupper(self::ADAMOV)), $gate->regbox(self::BENESOV), $gate->regbox(self::CHEB), $gate->regbox('x')]);
+
+        self::assertSame(['a7kbrrn|0123456789ab', '&lt;b&gt;|&quot;x', '', ''], $values);
+        self::assertSame(1, $gate->offeredReads);
+        self::assertSame('', $gate->regbox(self::ADAMOV), 'outside the UI');
+    }
+
+    /** @param \Closure(FakeGate): void $change */
+    #[DataProvider('notFixable')]
+    public function test_regbox_onlyWhereFixBoxIsOffered(Closure $change): void
+    {
+        $gate          = self::fixGate();
+        $gate->offered = [self::ADAMOV => 'a7kbrrn|0123456789ab'];
+        $change($gate);
+
+        self::assertSame('', self::inside($gate, static fn(): string => $gate->regbox(self::ADAMOV)));
+        self::assertSame(0, $gate->offeredReads, 'the register not paired');
+    }
+
+    // settings that no longer fit, a register that cannot be read: the page of the register says what
+    public function test_regbox_failureGivesNothing(): void
+    {
+        $gate          = self::fixGate();
+        $gate->offered = new \RuntimeException('The register is damaged');
+
+        self::assertSame(['', ''], self::inside($gate, static fn(): array => [$gate->regbox(self::ADAMOV), $gate->regbox(self::BENESOV)]));
+        self::assertSame(1, $gate->offeredReads, 'not tried again on every row');
     }
 
     public function test_fields_unknownActionOrCampaign(): void
@@ -870,6 +977,27 @@ final class GateTest extends TestCase
         self::assertNotSame($first, $second);
         self::getAfter($second);
         self::assertSame(['The sending goes on.', Actions::RESUMED, ActionResult::DONE, 'resume'], self::shown(self::actionGate()));
+    }
+
+    // a script may fill one shown form of Fix box for each row: another recipient is another post
+    public function test_result_fixboxOfAnotherRecipientActsAgain(): void
+    {
+        FakeActions::$fixbox = static fn(): array => ['code' => Sync::FIXED, 'old' => '', 'new' => 'a7kbrrn'];
+        $gate                = static function (): FakeGate {
+            $gate        = self::actionGate();
+            $gate->setup = self::fixGate()->setup;
+
+            return $gate;
+        };
+        self::postResume();
+        $form = ['isds_action' => 'fixbox', 'isds_token' => FormToken::get(Gate::purpose('fixbox', $gate()->setup, self::ITEM)), 'isds_recipient' => self::ADAMOV, 'isds_box' => 'a7kbrrn|0123456789ab'] + $_POST;
+        foreach ([self::ADAMOV, self::BENESOV, self::ADAMOV] as $recipient) {
+            Actions::forget();
+            $_POST = ['isds_recipient' => $recipient] + $form;
+            $this->redirectOf($gate());
+        }
+
+        self::assertSame([self::ADAMOV, self::BENESOV], array_column(FakeActions::$fixed, 1), 'the same recipient again only shows what was done');
     }
 
     /** @return array<string, array{\Closure(): string}> what the core says to the first click */

@@ -4,16 +4,34 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds\Registry\Fixtures;
 
+use AA\Isds\Registry\DownloadedRegister;
 use AA\Isds\Registry\Sync;
 use ItemContent;
 
+require_once __DIR__ . '/MemoryDownloadedRegister.php';
+
 /** Sync over the items in $content and the fields in $fields instead of the slice's; its store records
  *  the item instead of writing it (unless $realStore), the page cache and the reading password are
- *  only counted. */
+ *  only counted. The register's record is MemoryDownloadedRegister's; fixBox() takes its lock unless
+ *  another holds it ($fixLocked), and records what it would log. */
 class RecordingSync extends Sync
 {
     /** @var array<string, array<string, mixed>> item id => content as GetItemContent() returns it, in the slice's order */
     public array $content = [];
+
+    /** @var ?list<string> the ids the active bin of the slice holds, in its order; null = all of $content */
+    public ?array $listed = null;
+
+    /** another fixBox() holds the lock; with $noDatabase there is no lock at all */
+    public bool $fixLocked = false;
+
+    public bool $noDatabase = false;
+
+    /** @var list<string> lockFix(), unlockFix() as called */
+    public array $fixLocks = [];
+
+    /** @var list<array{string, string}> what failed and its message, as logFailure() logs it */
+    public array $logged = [];
 
     /** @var list<int> how many ids each loadContent() asked for */
     public array $chunks = [];
@@ -36,7 +54,30 @@ class RecordingSync extends Sync
 
     protected function itemIds(): array
     {
-        return array_map('strval', array_keys($this->content));
+        return $this->listed ?? array_map('strval', array_keys($this->content));
+    }
+
+    protected function lockFix(?int &$holder = null): bool
+    {
+        $this->fixLocks[] = 'lock';
+        $holder           = $this->noDatabase ? null : 17;
+
+        return !$this->fixLocked;
+    }
+
+    protected function unlockFix(): void
+    {
+        $this->fixLocks[] = 'unlock';
+    }
+
+    protected function logFailure(string $what, \Throwable $e): void
+    {
+        $this->logged[] = [$what, $e->getMessage()];
+    }
+
+    protected static function downloadedRegister(string $file): DownloadedRegister
+    {
+        return new MemoryDownloadedRegister($file);
     }
 
     protected function loadContent(array $ids): array

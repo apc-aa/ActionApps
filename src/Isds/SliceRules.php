@@ -442,6 +442,15 @@ class SliceRules
     }
 
     /**
+     * registryConfig() of the source slice of a page, whose settings Setup checked
+     * @throws \RuntimeException the slice has none since
+     */
+    final public function sourceConfig(string $slice): Config
+    {
+        return $this->registryConfig($slice) ?? throw new \RuntimeException('The source slice has no settings of data boxes');
+    }
+
+    /**
      * @return array<value-of<self::OUTLETS>, bool> feeds_out: a feed from the slice; feeds_in: a feed into it;
      *                                              export: other slices may import from it; notify: notification addresses
      */

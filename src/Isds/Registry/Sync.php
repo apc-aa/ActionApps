@@ -6,6 +6,8 @@ namespace AA\Isds\Registry;
 
 use AA\Http\ClientInterface;
 use AA\IO\DB\DB_AA;
+use AA\Isds\Access;
+use AA\Util\LogOnce;
 use AA_Set;
 use AA_Value;
 use Files;
@@ -19,8 +21,11 @@ use zids;
  *
  * It reads the items past the slice's reading password. Call it only from the slice's admin page,
  * after checking PS_EDIT_ALL_ITEMS (write() changes items for whoever runs it), and from the State
- * Check - never from a template command, a view, the API or any other public entry. State Check
- * findings and their mail give counts, never item names.
+ * Check - never from a view, the API or any other public entry. A template command may call only
+ * fixBox() - it checks the right itself and writes no box but one the register offers for sure -,
+ * offered() and registerInfo(), which give no item's text; the command takes the slice from the
+ * source slice of its Setup, never from the template. State Check findings and their mail give
+ * counts, never item names.
  * Item values and messages go out raw (see MatchReport) - escape them (safe()).
  */
 class Sync
@@ -51,8 +56,36 @@ class Sync
     /** AA log type of the download attempts and of what failed with the register */
     public const LOG_EVENT = 'ISDS_REG';
 
+    /** fixBox(): the box is written, or the item has it already */
+    public const FIXED = 'FIXED';
+
+    /** fixBox(): the register does not offer that box for the item as surely as defaultTicked(), or
+     *  the item or its row changed since the page showed it - a person takes such a box on the page of
+     *  the register, or types it into the item */
+    public const NOT_OFFERED = 'NOT_OFFERED';
+
+    /** fixBox(): no register AA downloaded, an old one, or one that cannot be read */
+    public const NO_REGISTER = 'NO_REGISTER';
+
+    /** fixBox(): the slice pairs no such item - another slice's, not in the active bin, of another type */
+    public const UNKNOWN_RECIPIENT = 'UNKNOWN_RECIPIENT';
+
+    /** fixBox(): the user may not send from the campaign slice */
+    public const FORBIDDEN = 'FORBIDDEN';
+
+    /** fixBox(): another fixBox() of the slice is running */
+    public const BUSY = 'BUSY';
+
+    /** fixBox(): the settings no longer fit the slice's fields, or the install has no usable upload
+     *  directory for the register */
+    public const SETTINGS = 'SETTINGS';
+
     /** DB_AA::lock() of the downloads - one at a time for all servers of the database */
     private const DOWNLOAD_LOCK = 'isds-register-download';
+
+    /** DB_AA::lock() of fixBox(), with the slice id: one fix at a time per slice, so that two items
+     *  cannot each take a box the report saw as held by none */
+    private const FIX_LOCK = 'isds-fixbox:';
 
     /** items GetItemContent() reads at once */
     private const CHUNK = 500;
@@ -72,8 +105,11 @@ class Sync
     /** @var array<string, true> the items the last items() read - write() changes no other */
     private array $loaded = [];
 
-    /** @param Config $config one errors() accepts for the slice's fields as they are now */
-    public function __construct(private readonly Config $config) {}
+    /**
+     * @param Config  $config   one errors() accepts for the slice's fields as they are now
+     * @param ?string $register the register fixBox() and offered() read; registerFile() when null
+     */
+    public function __construct(private readonly Config $config, private readonly ?string $register = null) {}
 
     /**
      * Where the register is, in the directory of Files::aadestinationDir() - without creating it: only
@@ -120,6 +156,16 @@ class Sync
     public static function registerInfo(?string $file = null): ?array
     {
         return static::downloadedRegister($file ?? self::registerFile())->info();
+    }
+
+    /**
+     * registerInfo() vouches for a register this AA downloaded, not older than OLD_DAYS
+     * @param ?array{state: string, time: int, size: int, sha256: string} $info
+     * @phpstan-assert-if-true !null $info
+     */
+    public static function usableRegister(?array $info, int $now): bool
+    {
+        return ($info !== null) && ($info['state'] === DownloadedRegister::RECORDED) && !self::isOld($info['time'], $now);
     }
 
     /** a register downloaded at $downloaded (registerInfo()) is older than OLD_DAYS */
@@ -414,6 +460,110 @@ class Sync
     }
 
     /**
+     * Writes into the item's data box field the box the register offers for it as surely as a page
+     * ticks it before a person looks (defaultTicked()) - only when $tick is the tickValue() of its row
+     * as offered() gave it, so neither the item nor the register changed since. No box a person typed,
+     * no name match: those stay with the page of the register and the item's editor. For a page of a
+     * mass sending, whose Setup binds this slice as the source of $campaignSlice: the right to send
+     * from that slice is checked here, for $uid.
+     * @param string $item long id
+     * @param string $tick as posted
+     * @return array{code: string, old: string, new: string} code FIXED, NOT_OFFERED, NO_REGISTER,
+     *         UNKNOWN_RECIPIENT, FORBIDDEN, BUSY or SETTINGS; for FIXED old: the item's box before, raw,
+     *         and new: the box written, '' when the item had it already
+     * @throws \RuntimeException the database gives no lock; storeItem() failed
+     */
+    public function fixBox(string $uid, string $campaignSlice, string $item, string $tick): array
+    {
+        if (!Access::userMay($uid, $campaignSlice)) {
+            return ['code' => self::FORBIDDEN, 'old' => '', 'new' => ''];
+        }
+        if (!$this->lockFix($holder)) {
+            // no holder: no lock at all (no connection) - BUSY would tell to wait for nothing
+            return ($holder === null) ? throw new \RuntimeException('The database gave no lock for fixing a data box') : ['code' => self::BUSY, 'old' => '', 'new' => ''];
+        }
+        try {
+            return $this->fixBoxLocked(strtolower($item), $tick);
+        } finally {
+            $this->unlockFix();
+        }
+    }
+
+    /**
+     * What fixBox() may take: item id => tickValue() of each row defaultTicked() takes, from a usable
+     * register; [] without one. Reads the register and every item of the slice.
+     * @return array<string, string>
+     * @throws \RuntimeException see registerInfo(), registerBoxes() and report()
+     */
+    public function offered(): array
+    {
+        $info  = static::registerInfo($this->register);
+        $boxes = self::usableRegister($info, time()) ? self::registerBoxes($info['sha256'], $this->register) : null;
+        if ($boxes === null) {
+            return [];
+        }
+        $report = $this->report($boxes);
+        $ticked = array_fill_keys(self::defaultTicked($report), true);
+        $values = [];
+        foreach ($report->rows as $row) {
+            if (isset($ticked[(string) $row->itemId])) {
+                $values[(string) $row->itemId] = self::tickValue($row);
+            }
+        }
+        return $values;
+    }
+
+    /** @return array{code: string, old: string, new: string} as fixBox() */
+    private function fixBoxLocked(string $item, string $tick): array
+    {
+        $refused = static fn(string $code): array => ['code' => $code, 'old' => '', 'new' => ''];
+        try {
+            $info = static::registerInfo($this->register);
+        } catch (\RuntimeException $e) {
+            // no upload directory, or one PHP cannot look into: the message names it
+            $this->logFailure('look', $e);
+            return $refused(self::SETTINGS);
+        }
+        if (!self::usableRegister($info, time())) {
+            return $refused(self::NO_REGISTER);
+        }
+        try {
+            $boxes = self::registerBoxes($info['sha256'], $this->register);
+        } catch (\RuntimeException $e) {
+            $this->logFailure('read', $e);
+            return $refused(self::NO_REGISTER);
+        }
+        if ($boxes === null) {
+            return $refused(self::NO_REGISTER);
+        }
+        try {
+            $report = $this->report($boxes);
+        } catch (\RuntimeException) {
+            // the fields changed since the settings were saved: the page of the register tells which
+            return $refused(self::SETTINGS);
+        }
+        $found = array_values(array_filter($report->rows, static fn(MatchRow $r): bool => (string) $r->itemId === $item));
+        if ($found === []) {
+            return $refused(self::UNKNOWN_RECIPIENT);
+        }
+        // the item has the offered box already - written by the same form before, or by hand meanwhile
+        if (($found[0]->status === MatchRow::SAME) && (explode('|', $tick, 2)[0] === $found[0]->newDs)) {
+            return ['code' => self::FIXED, 'old' => $found[0]->oldDs, 'new' => ''];
+        }
+        // stale or no tick at all: either way not what the page offered
+        $rows = self::toWrite($report, [$item => $tick], 1)['rows'];
+        if (($rows === []) || !in_array($item, self::defaultTicked($report), true)) {
+            return $refused(self::NOT_OFFERED);
+        }
+        $done = $this->write($rows);
+        if ($done['written'] !== 1) {
+            throw new \RuntimeException('The data box was not stored: ' . implode(' ', $done['failed']));
+        }
+
+        return ['code' => self::FIXED, 'old' => $rows[0]->oldDs, 'new' => $rows[0]->newDs];
+    }
+
+    /**
      * @param ?int $holder when not got: the connection that holds it, null = no lock at all (DB_AA::lock())
      * @return bool got it - unlockDownload() then
      */
@@ -443,6 +593,26 @@ class Sync
     protected static function recordAttempt(): void
     {
         \AA_Log::write(self::LOG_EVENT, 'download', (string) constant('AA_ID'));
+    }
+
+    /**
+     * @param ?int $holder when not got: the connection that holds it, null = no lock at all (DB_AA::lock())
+     * @return bool got it - unlockFix() then
+     */
+    protected function lockFix(?int &$holder = null): bool
+    {
+        return DB_AA::lock(self::FIX_LOCK . $this->config->sliceId(), 0, $holder);
+    }
+
+    protected function unlockFix(): void
+    {
+        DB_AA::unlock(self::FIX_LOCK . $this->config->sliceId());
+    }
+
+    /** as the page of the register logs it: the message may name a server path - once a day */
+    protected function logFailure(string $what, \Throwable $e): void
+    {
+        LogOnce::daily(self::LOG_EVENT, $what . ': ' . $e->getMessage(), $this->config->sliceId());
     }
 
     /** @return list<string> long ids of the slice's active items, by name */

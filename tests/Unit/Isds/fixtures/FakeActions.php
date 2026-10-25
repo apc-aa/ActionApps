@@ -7,11 +7,13 @@ namespace Tests\Unit\Isds\Fixtures;
 use AA\Isds\Actions;
 use AA\Isds\SendStart;
 use AA\Isds\Setup;
+use AA\Isds\SliceRules;
 use AA\Isds\TestResult;
 
 /**
  * Actions with the core, the logs and post_max_size given here: Continue says what $resume says, Stop
- * and Abandon what $stop says, Verify what $verify says, Send what $queue, Test what $test, Save what $save, Copy what $copy, each records who asked it; a log row
+ * and Abandon what $stop says, Verify what $verify says, Send what $queue, Test what $test, Save what $save, Copy what $copy,
+ * Fix box what $fixbox, each records who asked it; a log row
  * is recorded, not written - or fails as $logFails says.
  */
 final class FakeActions extends Actions
@@ -58,6 +60,15 @@ final class FakeActions extends Actions
     /** @var list<array{string, string, list<string>}> source, scope and the items unsent of each Copy asked of the core */
     public static array $copied = [];
 
+    /** @var ?\Closure(Setup, string, string, string): array{code: string, old: string, new: string} what Fix box of an item by a uid to a box says; null = the real one over $rules */
+    public static ?\Closure $fixbox = null;
+
+    /** @var list<array{string, string, string}> uid, item, box of each Fix box asked of the core */
+    public static array $fixed = [];
+
+    /** the slices the real Fix box reads the settings of data boxes from; null = the test reads none */
+    public static ?SliceRules $rules = null;
+
     /** @var list<array{string, string, list<string>}> event, selector, params of each log row */
     public static array $logged = [];
 
@@ -86,6 +97,9 @@ final class FakeActions extends Actions
         self::$saved       = [];
         self::$copy        = null;
         self::$copied      = [];
+        self::$fixbox      = null;
+        self::$fixed       = [];
+        self::$rules       = null;
         self::$logged      = [];
         self::$failures    = [];
         self::$postMaxSize = 8 * 1024 * 1024;
@@ -145,6 +159,18 @@ final class FakeActions extends Actions
         self::$copied[] = [$source, $scope, $unsent];
 
         return (self::$copy ?? throw new \LogicException('This test copies nothing'))($setup, $source, $scope, $post, $unsent);
+    }
+
+    protected function fixRecipientBox(Setup $setup, string $uid, string $item, string $box): array
+    {
+        self::$fixed[] = [$uid, $item, $box];
+
+        return is_null(self::$fixbox) ? parent::fixRecipientBox($setup, $uid, $item, $box) : (self::$fixbox)($setup, $uid, $item, $box);
+    }
+
+    protected function rules(): SliceRules
+    {
+        return self::$rules ?? throw new \LogicException('This test reads no slice');
     }
 
     protected function log(string $event, string $selector, array $params): void

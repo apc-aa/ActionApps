@@ -10905,10 +10905,21 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        test (one test message of a draft at once - the form adds isds_box, one of testboxes; may be left out
  *        with one test box), send (queue a draft - the form adds isds_confirm, the recipients count the page
  *        showed: a count changed since is refused; with a count of 0 offer no Send - 0 is refused as a form
- *        that cannot be taken, not as no recipients)
+ *        that cannot be taken, not as no recipients), verify (record that a message of unknown fate did not go -
+ *        the form adds isds_message, the id of its message item; only once the sending is over), fixbox (take
+ *        the data box of a recipient from the register of data boxes into its item in the source slice - the
+ *        form adds isds_recipient, the item id, and isds_box, the regbox of the row. Only a box the register
+ *        finds by the IČO of an active item of a type the source slice pairs, whose IČO the box has too, and
+ *        which no other item holds or would get; NOT_OFFERED otherwise or when the item changed since the page,
+ *        NO_REGISTER for a register not downloaded or old. Its fields are '' in the test environment, without
+ *        settings of data boxes of the source slice and without a usable register)
  *    {datovkabulk:env}    - test | production, as datovka_conf.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
  *    {datovkabulk:testboxes} - the test boxes of the page, dash-separated: the options of isds_box
+ *    {datovkabulk:regbox:<item id>} - the isds_box of the form of fixbox for an item of the source slice: the box
+ *        the register offers for it, with a hash of the box it has; '' where fields:fixbox is '', the register
+ *        offers nothing that sure or the item has the box - put the form only on rows that get a value. The
+ *        first one of a request reads the whole register (some 8 MB of boxes) and every item of the source slice
  *    {datovkabulk:campaign} - the campaign the page was loaded with after an action (isds_campaign of its URL), when
  *        it is an item of the campaign slice of the page - a draft saved new too; '' otherwise
  *    {datovkabulk:result[:text|code|status|action|charge]} - what the posted action did: text to read (default),
@@ -10963,6 +10974,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'sender'     => $gate->sender(),
             'result'     => $gate->result((string)$settings),
             'testboxes'  => $gate->testBoxes(),
+            'regbox'     => $gate->regbox((string)$settings),
             'campaign'   => $gate->campaign(),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),
             'progress'   => $gate->progress((string)$settings, (string)$ui),
