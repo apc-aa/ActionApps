@@ -8158,6 +8158,8 @@ class AA_Requires {
             'aa-editable@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-editable.js', ['v'=>AA_JS_VERSION],false).' module'),
             'aa-speech@1'                 => new AA_Req_Lib(get_aa_url('javascript/aa-speech/aa-speech.js', ['v'=>AA_JS_VERSION],false), '', ['_css-aa-speech@1']),
             '_css-aa-speech@1'            => new AA_Req_Css(get_aa_url('javascript/aa-speech/aa-speech.css', ['v'=>AA_JS_VERSION],false)),
+            'aa-isds@1'                   => new AA_Req_Lib(get_aa_url('javascript/aa-isds.js', ['v'=>AA_JS_VERSION],false).' module', '', ['_css-aa-isds@1', 'aa-richtext@1']),
+            '_css-aa-isds@1'              => new AA_Req_Css(get_aa_url('css/aa-isds.css', ['v'=>AA_JS_VERSION],false)),
             'aa-jslib@3'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js', ['v'=>AA_JS_VERSION],false), '', ['jquery@3']),
             'aa-jslib@2'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php', ['v'=>AA_JS_VERSION],false), '', ['jquery@3']),
             'aa-jslib@1'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-legacy.min.js', ['v'=>AA_JS_VERSION],false)),
