@@ -47,7 +47,8 @@ class Actions
     public const FORBIDDEN   = BatchRun::FORBIDDEN;
     public const LEASE       = 'LEASE';
     public const WRONG_STATE = 'WRONG_STATE';
-    /** a field of the form holds a value the action cannot take; the param is the field (Drafts), if any */
+    /** a field of the form holds a value the action cannot take; the params are the field (Drafts), if any,
+     *  and for an attachment the name of the file */
     public const INPUT = 'INPUT';
     /** Send: the sending is queued and goes on by itself; the param is the recipients confirmed */
     public const QUEUED = 'QUEUED';
@@ -172,12 +173,12 @@ class Actions
      */
     private function save(Setup $setup, string $campaign): ActionResult
     {
-        // Drafts reads only its own fields of the form; storeItem() takes the author from the login
-        ['code' => $code, 'campaign' => $id, 'field' => $field] = $this->saveDraft($setup, $campaign, $_POST);
+        // Drafts reads only its own fields and files of the form; storeItem() takes the author from the login
+        ['code' => $code, 'campaign' => $id, 'field' => $field, 'file' => $file] = $this->saveDraft($setup, $campaign, $_POST, $_FILES);
 
         return match ($code) {
             self::SAVED => new ActionResult('save', ActionResult::DONE, self::SAVED, $id),
-            self::INPUT => self::refused('save', self::INPUT, $id, params: ($field === '') ? [] : [$field]),
+            self::INPUT => self::refused('save', self::INPUT, $id, params: array_values(array_filter([$field, $file], static fn(string $p): bool => $p !== ''))),
             default     => self::refused('save', $code, $id),
         };
     }
@@ -324,11 +325,12 @@ class Actions
     /**
      * Drafts::save()
      * @param array<array-key, mixed> $post
-     * @return array{code: string, campaign: string, field: string}
+     * @param array<array-key, mixed> $files
+     * @return array{code: string, campaign: string, field: string, file: string}
      */
-    protected function saveDraft(Setup $setup, string $campaign, array $post): array
+    protected function saveDraft(Setup $setup, string $campaign, array $post, array $files): array
     {
-        return (new Drafts())->save($setup, $campaign, $post);
+        return (new Drafts())->save($setup, $campaign, $post, $files);
     }
 
     /** SendQueue::queue() */

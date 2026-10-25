@@ -116,6 +116,7 @@ final class GateTest extends TestCase
         $_SERVER     = $this->server;
         $_POST       = [];
         $_GET        = [];
+        $_FILES      = [];
         $_SESSION    = [];
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_id('');
@@ -935,6 +936,34 @@ final class GateTest extends TestCase
         self::assertNull($answered());
     }
 
+    // a Save with files would attach them again: the same form posted again shows what the first post did
+    public function test_result_saveWithFilesNotRepeated(): void
+    {
+        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => ''];
+        self::postResume();
+        $_POST  = ['isds_action' => 'save', 'isds_token' => FormToken::get(Gate::purpose('save', self::page(), self::ITEM))] + $_POST;
+        $form   = $_POST;
+        $_FILES = ['isds_files' => ['name' => ['a.pdf'], 'type' => ['application/pdf'], 'tmp_name' => ['/tmp/php1'], 'error' => [UPLOAD_ERR_OK], 'size' => [10]]];
+        $this->redirectOf(self::actionGate());
+        Actions::forget();
+        $_POST = $form;
+
+        self::getAfter($this->redirectOf(self::actionGate()));
+
+        self::assertCount(1, FakeActions::$saved);
+        self::assertSame(Actions::SAVED, self::shown(self::actionGate())[1]);
+
+        // the same form with its file input left empty is an autosave again: each post saves
+        $_SERVER['REQUEST_METHOD']     = 'POST';
+        $_POST                         = $form;
+        $_FILES['isds_files']['error'] = [UPLOAD_ERR_NO_FILE];
+        foreach ([1, 2] as $post) {
+            Actions::forget();
+            $this->redirectOf(self::actionGate());
+        }
+        self::assertCount(3, FakeActions::$saved);
+    }
+
     /** @return array<string, array{\Closure(array<string, string>, FakeGate): void}> */
     public static function notTheSameForm(): array
     {
@@ -1158,7 +1187,7 @@ final class GateTest extends TestCase
     // a new draft: the browser goes to the page of its id, which the template then reads
     public function test_save_newDraftRedirectsToIt(): void
     {
-        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => ''];
+        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => ''];
         self::postResume();
         $_POST = ['isds_action' => 'save', 'isds_campaign' => '', 'isds_token' => FormToken::get(Gate::purpose('save', self::page(), '')), 'isds_nonce' => str_repeat('a', 32), 'isds_subject' => 'Výzva'];
 
@@ -1174,7 +1203,7 @@ final class GateTest extends TestCase
     public function test_result_autosavesKeepTheGuardOfATest(): void
     {
         FakeActions::$test = static fn(): TestResult => TestResult::of(Outcome::of(new SendResult('1835603', '0000', 'OK')), 'msg', 'dj7j6mk', '4711-T2', true, true);
-        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => ''];
+        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => ''];
         self::postAction('test', ['isds_box' => 'dj7j6mk']);
         $test = $_POST;
         $this->redirectOf(self::actionGate());

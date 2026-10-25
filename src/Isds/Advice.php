@@ -34,7 +34,7 @@ final class Advice
             Actions::ALL_SENT        => _m('Every message has been sent or tried already - there is nothing left to stop.'),
             Actions::ABANDONED       => _m('The sending has been ended for good. Any message of unknown fate stays for you to verify.'),
             Actions::CONFIRM_ABANDON => _m('The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up.'),
-            Actions::INPUT           => self::input((string) $first),
+            Actions::INPUT           => self::input((string) $first, (string) $second),
             Actions::SAVED           => _m('The draft is saved.'),
             Actions::QUEUED          => _m('The sending is queued - recipients: %1. It goes on by itself, you may close the page.', [$first]),
             Actions::TEST_SENT       => _m('The test message has gone (ID %1 in ISDS, reference number %2).', [$first, $second]),
@@ -95,8 +95,11 @@ final class Advice
         return ($status === '') ? '' : (self::isds($status, $test) ?: _m('ISDS answered with status %1.', [$status]));
     }
 
-    /** what to fix in a field of the form (Drafts) */
-    private static function input(string $field): string
+    /**
+     * what to fix in a field of the form (Drafts)
+     * @param string $file the attachment refused, in safe letters
+     */
+    private static function input(string $field, string $file): string
     {
         return match ($field) {
             Drafts::SUBJECT    => _m('The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved.', [Message::MAX_ANNOTATION]),
@@ -104,6 +107,12 @@ final class Advice
             Drafts::BODY       => _m('The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved.', [self::size(Drafts::MAX_BODY)]),
             Drafts::RECIPIENTS => _m('The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it.'),
             Drafts::TOO_MANY   => _m('The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved.', [Setup::MAX_RECIPIENTS]),
+            Drafts::TOO_MANY_FILES => _m('A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first.', [Message::MAX_FILES - 1]),
+            Drafts::FILE_TYPE    => _m('The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved.', [$file, implode(', ', Drafts::attachable())]),
+            Drafts::FILE_CONTENT => _m('The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved.', [$file]),
+            Drafts::FILE_SIZE    => _m('The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that.', [$file, self::size(Drafts::maxFileBytes()), self::size(Message::MAX_BYTES)]),
+            Drafts::FILE_EMPTY   => _m('The file %1 is empty. Nothing of the draft was saved.', [$file]),
+            Drafts::FILE_LOST    => _m('The file %1 did not arrive whole. Try it again. Nothing of the draft was saved.', [$file]),
             default            => _m('A value of the form cannot be taken. Load the page again and try it once more.'),
         };
     }

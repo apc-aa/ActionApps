@@ -92,6 +92,7 @@ final class ActionsTest extends TestCase
         $_GET     = [];
         $_COOKIE  = [];
         $_REQUEST = [];
+        $_FILES   = [];
         FakeActions::reset();
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_id('');
@@ -996,7 +997,7 @@ final class ActionsTest extends TestCase
 
     // ------------------------------------------------------------ Save
 
-    /** @param array{code: string, campaign: string, field: string} $told what the core says */
+    /** @param array{code: string, campaign: string, field: string, file: string} $told what the core says */
     private static function saves(array $told): void
     {
         FakeActions::$save = static fn(): array => $told;
@@ -1006,7 +1007,7 @@ final class ActionsTest extends TestCase
     public function test_save_formToTheCore(): void
     {
         $this->draftOfPage();
-        self::saves(['code' => Drafts::SAVED, 'campaign' => self::CAMPAIGN_ITEM, 'field' => '']);
+        self::saves(['code' => Drafts::SAVED, 'campaign' => self::CAMPAIGN_ITEM, 'field' => '', 'file' => '']);
         self::post('save', over: ['isds_subject' => 'Výzva', 'isds_uid' => Sending::READER]);
 
         self::assertEquals(new ActionResult('save', ActionResult::DONE, Actions::SAVED, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
@@ -1017,17 +1018,17 @@ final class ActionsTest extends TestCase
     // the page learns the id of the new draft from the result: the browser is sent to it
     public function test_save_newDraftNamesItsId(): void
     {
-        self::saves(['code' => Drafts::SAVED, 'campaign' => self::OTHER_ITEM, 'field' => '']);
+        self::saves(['code' => Drafts::SAVED, 'campaign' => self::OTHER_ITEM, 'field' => '', 'file' => '']);
         self::post('save', campaign: '', over: ['isds_nonce' => str_repeat('a', 32)]);
 
         self::assertEquals(new ActionResult('save', ActionResult::DONE, Actions::SAVED, self::OTHER_ITEM), $this->actions()->run(self::page(), true));
         self::assertSame('', FakeActions::$saved[0][0]);
     }
 
-    /** @return array<string, array{array{code: string, campaign: string, field: string}, ActionResult}> */
+    /** @return array<string, array{array{code: string, campaign: string, field: string, file: string}, ActionResult}> */
     public static function saveRefusals(): array
     {
-        $told = static fn(string $code, string $campaign = self::CAMPAIGN_ITEM, string $field = ''): array => ['code' => $code, 'campaign' => $campaign, 'field' => $field];
+        $told = static fn(string $code, string $campaign = self::CAMPAIGN_ITEM, string $field = ''): array => ['code' => $code, 'campaign' => $campaign, 'field' => $field, 'file' => ''];
 
         return [
             'a field'          => [$told(Actions::INPUT, field: Drafts::SUBJECT), new ActionResult('save', ActionResult::REFUSED, Actions::INPUT, self::CAMPAIGN_ITEM, params: [Drafts::SUBJECT])],
@@ -1039,7 +1040,19 @@ final class ActionsTest extends TestCase
         ];
     }
 
-    /** @param array{code: string, campaign: string, field: string} $told */
+    // the files go to the core as PHP received them; a file refused is named by the result, never by its text
+    public function test_save_filesToTheCoreRefusalNamesTheFile(): void
+    {
+        $this->draftOfPage();
+        self::saves(['code' => Actions::INPUT, 'campaign' => self::CAMPAIGN_ITEM, 'field' => Drafts::FILE_TYPE, 'file' => 'logo.svg']);
+        self::post('save');
+        $_FILES = ['isds_files' => ['name' => ['logo.svg'], 'type' => ['image/svg+xml'], 'tmp_name' => ['/tmp/php1'], 'error' => [UPLOAD_ERR_OK], 'size' => [10]]];
+
+        self::assertEquals(new ActionResult('save', ActionResult::REFUSED, Actions::INPUT, self::CAMPAIGN_ITEM, params: [Drafts::FILE_TYPE, 'logo.svg']), $this->actions()->run(self::page(), true));
+        self::assertSame($_FILES, FakeActions::$saved[0][2]);
+    }
+
+    /** @param array{code: string, campaign: string, field: string, file: string} $told */
     #[DataProvider('saveRefusals')]
     public function test_save_refusal(array $told, ActionResult $expected): void
     {
@@ -1078,7 +1091,7 @@ final class ActionsTest extends TestCase
     public function test_save_realDraftsOneItemForTheForm(): void
     {
         $drafts = new MemoryDrafts();
-        FakeActions::$save = static fn(Setup $setup, string $campaign, array $post): array => $drafts->save($setup, $campaign, $post);
+        FakeActions::$save = static fn(Setup $setup, string $campaign, array $post, array $files): array => $drafts->save($setup, $campaign, $post, $files);
         $nonce  = str_repeat('b', 32);
 
         self::post('save', campaign: '', over: ['isds_nonce' => $nonce, 'isds_subject' => 'Výzva']);

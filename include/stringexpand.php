@@ -10887,7 +10887,14 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        isds_exclude, item ids separated by "-"; a field left out stays as it is, the recipients only with
  *        isds_membership. Every save of the form of a new campaign - autosaves too - writes the one new draft,
  *        whose id the page gets in {datovkabulk:campaign} after the save. The body is stored as posted HTML:
- *        a template must escape it wherever it shows it, in a <textarea> too), resume (Continue a sending in error or waiting),
+ *        a template must escape it wherever it shows it, in a <textarea> too. Attachments: a form with
+ *        enctype="multipart/form-data" adds files as isds_files[] and drops attachments by their URLs in
+ *        isds_remove[]; at most 99, of the types both the editor uploads and a data message carries, and none
+ *        is saved if one is refused. They go into the upload directory of the slice, public to whoever knows
+ *        the URL - say so on the page: they are not secret. PHP takes at most max_file_uploads files a
+ *        request (20 by default) and drops more unseen. An autosave never posts isds_files[]: a form with
+ *        files is acted on once - posted again, it only shows what the first post did), resume (Continue
+ *        a sending in error or waiting),
  *        stop (Stop: nothing more is sent; never gives the sending up), abandon (end a sending in error for good -
  *        its fields are '' unless Stop can no longer end it, so offer it in place of Stop when they are not),
  *        test (one test message of a draft at once - the form adds isds_box, one of testboxes; may be left out

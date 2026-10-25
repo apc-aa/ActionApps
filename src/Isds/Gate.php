@@ -45,7 +45,8 @@ class Gate
 
     /** the actions a form may name - its token binds the action, the binding of the page and the campaign */
     public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'abandon', 'resume', 'verify', 'fixbox'];
-    /** of ACTIONS those whose shown form is posted again on purpose (autosave): each post acts */
+    /** of ACTIONS those whose shown form is posted again on purpose (autosave): each post acts - unless
+     *  it carries files, which a post again would attach again (reposted()) */
     public const REPOSTED = ['save'];
 
     /** $_SESSION key of the results kept for the page after an action, by their key */
@@ -288,7 +289,7 @@ class Gate
         $kept = is_array($_SESSION[self::FLASH] ?? null) ? $_SESSION[self::FLASH] : [];
         $kept = array_filter($kept, static fn(mixed $entry): bool => is_array($entry) && ((int) ($entry['at'] ?? 0) > $now - self::FLASH_SECONDS));
         // only what ran is repeated to the same form again: a refusal or BUSY may not hold the next click
-        $ran        = in_array($result->status, [ActionResult::DONE, ActionResult::FAILED], true) && !in_array($result->action, self::REPOSTED, true);
+        $ran        = in_array($result->status, [ActionResult::DONE, ActionResult::FAILED], true) && !self::reposted($result->action);
         $kept[$key] = ['binding' => $setup->bindingKey(), 'uid' => $uid, 'at' => $now, 'form' => $ran ? self::postedForm() : '', 'result' => $result->toArray()];
         while (count($kept) > self::FLASH_MAX) {
             $guardsNone = array_filter(array_diff_key($kept, [$key => true]), static fn(array $entry): bool => ($entry['form'] ?? '') === '');
@@ -317,7 +318,8 @@ class Gate
      */
     protected function answered(Setup $setup, string $uid): ?ActionResult
     {
-        $form = in_array($_POST['isds_action'] ?? '', self::REPOSTED, true) ? '' : self::postedForm();
+        $action = $_POST['isds_action'] ?? '';
+        $form   = (is_string($action) && self::reposted($action)) ? '' : self::postedForm();
         foreach (($form === '') ? [] : $this->keptFor($setup, $uid) as $entry) {
             if (($entry['form'] ?? '') === $form) {
                 return ActionResult::fromArray($entry['result'] ?? null);
@@ -325,6 +327,12 @@ class Gate
         }
 
         return null;
+    }
+
+    /** $action posted now acts on each post of its form: one of REPOSTED, with no file */
+    private static function reposted(string $action): bool
+    {
+        return in_array($action, self::REPOSTED, true) && !Drafts::carriesFile($_FILES['isds_files'] ?? null);
     }
 
     /** @return array<array-key, array<string, mixed>> the results kept for the user under the binding, not too old, the oldest first */

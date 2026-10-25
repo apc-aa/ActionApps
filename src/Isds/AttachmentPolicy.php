@@ -171,12 +171,13 @@ final readonly class AttachmentPolicy
      * A file of the message, checked against the ISDS list: $name must have an allowed extension,
      * and finfo must find the content to be of that format. The declared MIME type is the detected
      * one when ISDS lists it for the extension, else the first of TYPES.
+     * @param ?string $detected detect() of $content, when the caller asked it already
      * @throws \InvalidArgumentException
      */
-    public static function file(string $name, string $content, string $metaType = File::ENCLOSURE): File
+    public static function file(string $name, string $content, string $metaType = File::ENCLOSURE, ?string $detected = null): File
     {
         [$name, $extension] = self::checkName($name);
-        return new File($name, self::type($name, $extension, $content), $metaType, $content);
+        return new File($name, self::type($name, $extension, $content, $detected), $metaType, $content);
     }
 
     /** MIME type of $content by what it is (finfo), not by its name */
@@ -199,6 +200,12 @@ final readonly class AttachmentPolicy
         return new File($name, self::type($name, $extension, $content), $metaType, $content);
     }
 
+    /** a file of $extension (lower case) may be attached, if its content is of that type: listed, and no archive or HTML */
+    public static function allows(string $extension): bool
+    {
+        return isset(self::TYPES[$extension]) && !in_array($extension, [...self::ARCHIVES, ...self::HTML], true);
+    }
+
     /**
      * @return array{string, string} the name trimmed, its extension in lower case
      * @throws \InvalidArgumentException
@@ -211,14 +218,12 @@ final readonly class AttachmentPolicy
         }
         $dot       = strrpos($name, '.');
         $extension = ($dot === false) ? '' : strtolower(substr($name, $dot + 1));
-        if (($dot === 0) || !isset(self::TYPES[$extension])) {
-            throw new \InvalidArgumentException("The file \"$name\" is not of a type a data message may carry");
-        }
-        if (in_array($extension, self::ARCHIVES, true)) {
-            throw new \InvalidArgumentException("The archive \"$name\" cannot be checked before sending - attach the files in it one by one");
-        }
-        if (in_array($extension, self::HTML, true)) {
-            throw new \InvalidArgumentException("The HTML file \"$name\" cannot be attached - put its text into the letter, or attach it as a PDF");
+        if (($dot === 0) || !self::allows($extension)) {
+            throw new \InvalidArgumentException(match (true) {
+                ($dot !== 0) && in_array($extension, self::ARCHIVES, true) => "The archive \"$name\" cannot be checked before sending - attach the files in it one by one",
+                ($dot !== 0) && in_array($extension, self::HTML, true)     => "The HTML file \"$name\" cannot be attached - put its text into the letter, or attach it as a PDF",
+                default                                                    => "The file \"$name\" is not of a type a data message may carry",
+            });
         }
         return [$name, $extension];
     }
@@ -227,7 +232,7 @@ final readonly class AttachmentPolicy
      * The MIME type to declare for $content
      * @throws \InvalidArgumentException
      */
-    private static function type(string $name, string $extension, string $content): string
+    private static function type(string $name, string $extension, string $content, ?string $detected = null): string
     {
         if ($content === '') {
             throw new \InvalidArgumentException("The file \"$name\" is empty");
@@ -235,8 +240,8 @@ final readonly class AttachmentPolicy
         if (strlen($content) > Message::MAX_BYTES) {
             throw new \InvalidArgumentException("The file \"$name\" is larger than a data message may be");
         }
-        $listed   = self::TYPES[$extension];
-        $detected = self::detect($content);
+        $listed     = self::TYPES[$extension];
+        $detected ??= self::detect($content);
         if (in_array($detected, $listed, true)) {
             return $detected;
         }

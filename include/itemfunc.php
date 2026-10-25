@@ -1546,8 +1546,8 @@ class AA_Inserter_Fil extends AA_Inserter
             }
             $mode = 'thumb';
         } else {
-            // old version of input form
-            $up_file = $_FILES["v" . unpack_id($fid) . "x"];
+            // old version of input form; a value stored by code comes with no upload
+            $up_file = $_FILES["v" . unpack_id($fid) . "x"] ?? ['name' => ''];
             $mode = 'upload';
         }
 

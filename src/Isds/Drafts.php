@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\IO\DB\DB_AA;
+use AA\Upload\UploadPolicy;
 use AA\Util\FormToken;
 use AA_Items;
+use AA_Slice;
 use AA_Value;
+use Files;
 use ItemContent;
 use zids;
 
@@ -22,6 +25,11 @@ use zids;
  * login of the request: storeItem() writes it.
  * Two saves of one draft at once - an autosave and a click, two tabs - do not wait for each other: the
  * second gets BUSY, as queueing does.
+ * Attachments go into the upload directory of the campaign slice, as the editor of the slice puts
+ * them there: public to whoever knows the URL. A file is taken only when both the editor would
+ * upload it (UploadPolicy) and a data message carries it (AttachmentPolicy), by its content, never
+ * by what the browser says; and only into a draft that may change - checked first, before a file is
+ * read. Removing one drops its URL from the draft only: a copy of the draft may share the file.
  */
 class Drafts
 {
@@ -40,6 +48,20 @@ class Drafts
     /** more items chosen or left out one by one than Setup::MAX_RECIPIENTS */
     public const TOO_MANY   = 'too_many';
     public const NONCE      = '';
+    /** the attachments are not posted as isds_files[] and isds_remove[] (URLs) */
+    public const FILES          = 'files';
+    /** more attachments than a data message carries beside the letter */
+    public const TOO_MANY_FILES = 'too_many_files';
+    /** what INPUT names of one file, with its name: a type the editor does not upload or a data message
+     *  does not carry (archives, web pages, XML) */
+    public const FILE_TYPE      = 'file_type';
+    /** its content is not of the type its extension names */
+    public const FILE_CONTENT   = 'file_content';
+    /** larger than PHP takes or than a data message carries */
+    public const FILE_SIZE      = 'file_size';
+    public const FILE_EMPTY     = 'file_empty';
+    /** it did not arrive whole */
+    public const FILE_LOST      = 'file_lost';
 
     /** storeItem(): invalidate the pages of the campaign slice, no feeding, no events */
     private const FLAGS = [true, false, false, false];
@@ -49,20 +71,23 @@ class Drafts
      * post stays as it is; the recipients are written only with isds_membership.
      * Fields: isds_subject, isds_to_hands, isds_body (HTML, stored as posted - escape it wherever shown),
      * isds_membership, isds_types[], isds_include and isds_exclude (item ids separated by "-": thousands
-     * of fields would be cut by max_input_vars), and for a new draft isds_nonce (32 hexadecimal digits).
+     * of fields would be cut by max_input_vars), isds_remove[] (URLs of attachments to drop), and for a
+     * new draft isds_nonce (32 hexadecimal digits). Files: isds_files[], added to the attachments; a
+     * file posted under another name is refused - the insert function of the field (fil) would take
+     * it by rules of its own -, an empty file input of another name is not.
+     * Anything refused writes nothing and leaves no file.
      * @param string                  $campaign long id in small letters of an item of the campaign slice;
      *                                            '' = a new draft
      * @param array<array-key, mixed> $post     the form as posted
-     * @return array{code: string, campaign: string, field: string} code: SAVED, Actions::INPUT (field: what
-     *                                                              cannot be taken), Actions::EXPIRED (no
-     *                                                              session), SendStart::UNKNOWN, NOT_DRAFT,
-     *                                                              ALREADY or BUSY; campaign: the draft -
-     *                                                              of a new one too, so that the page goes
-     *                                                              on with it -, '' for UNKNOWN and with no
-     *                                                              id known
-     * @throws \RuntimeException not stored
+     * @param array<array-key, mixed> $files    the files as posted ($_FILES)
+     * @return array{code: string, campaign: string, field: string, file: string} code: SAVED,
+     *         Actions::INPUT (field: what cannot be taken; file: the name of the file refused, as it
+     *         would be stored, '' for none), Actions::EXPIRED (no session), SendStart::UNKNOWN, NOT_DRAFT, ALREADY or
+     *         BUSY; campaign: the draft - of a new one too, so that the page goes on with it -, '' for
+     *         UNKNOWN and with no id known
+     * @throws \RuntimeException not stored; an upload the server could not take
      */
-    public function save(Setup $setup, string $campaign, array $post): array
+    public function save(Setup $setup, string $campaign, array $post, array $files = []): array
     {
         $id = $campaign;
         if ($campaign === '') {
@@ -79,11 +104,15 @@ class Drafts
         if (is_string($fields)) {
             return self::told(Actions::INPUT, $id, $fields);
         }
+        $attached = self::attached($post, $files);
+        if ($attached['field'] !== '') {
+            return self::told(Actions::INPUT, $id, $attached['field'], $attached['file']);
+        }
         if (!$this->lock(SendRun::lockName($id))) {
             return self::told(SendStart::BUSY, $id);
         }
         try {
-            return $this->whileOpen($setup->campaignSlice, fn(): array => $this->write($setup, $id, $campaign === '', $fields));
+            return $this->whileOpen($setup->campaignSlice, fn(): array => $this->write($setup, $id, $campaign === '', $fields, $attached));
         } finally {
             $this->unlock(SendRun::lockName($id));
         }
@@ -134,28 +163,37 @@ class Drafts
     /**
      * Under the lock: a new draft stored, or the draft checked as stored now and its changes written
      * @param array<string, AA_Value> $fields
-     * @return array{code: string, campaign: string, field: string}
+     * @param array{remove: list<string>, uploads: list<array{name: string, tmp: string}>, field: string, file: string} $attached
+     * @return array{code: string, campaign: string, field: string, file: string}
      */
-    private function write(Setup $setup, string $id, bool $new, array $fields): array
+    private function write(Setup $setup, string $id, bool $new, array $fields, array $attached): array
     {
         $queuedOnce = fn(): bool => $this->runExists($id);
+        $uploads    = $attached['uploads'];
         // a stale form of a draft queued makes nothing: not the draft again, deleted for good under its run
         $queued = $new && $queuedOnce();
-        if ($new && !$queued) {
+        // files go only into a draft that takes them: the form that made it already saves as into any draft
+        $made = ($new && !$queued && ($uploads !== [])) ? $this->campaign($id) : null;
+        if ($new && !$queued && is_null($made)) {
+            $refused = $this->refusal([], $uploads);
+            if ($refused) {
+                return self::told(Actions::INPUT, $id, ...$refused);
+            }
+            $moved   = $this->moveIn($setup, $uploads);
             $content = self::content($setup, $id, [
                 'status_code.....'    => new AA_Value(\SC_ACTIVE),
                 Schema::CAMPAIGN_STATE => new AA_Value(Schema::CAMPAIGN_STATE_DRAFT),
-            ] + $fields);
-            if ($this->store($content, 'insert_if_new', self::FLAGS)) {
+            ] + $fields + (($moved === []) ? [] : [Schema::CAMPAIGN_FILES => new AA_Value(array_values($moved))]));
+            if ($this->storeWith($content, 'insert_if_new', $moved)) {
                 return self::told(self::SAVED, $id);
             }
-            if (ItemContent::lastErr() !== \ITEMCONTENT_ERROR_DUPLICATE) {
+            if ((ItemContent::lastErr() !== \ITEMCONTENT_ERROR_DUPLICATE) || ($moved !== [])) {
                 throw new \RuntimeException("Draft $id not stored, error " . ItemContent::lastErr());
             }
             // saved by this form before: changed as a draft of the page, never moved into its slice
             // from another, nor revived from the trash or from a sending
         }
-        $stored = $this->campaign($id);
+        $stored = $made ?? $this->campaign($id);
         // in the trash it is told as any other draft there
         if ($queued && is_null($stored)) {
             return self::told(SendStart::ALREADY, $id);
@@ -165,17 +203,211 @@ class Drafts
             // no draft of the page under this id: the page shows none
             return self::told($item, ($item === SendStart::UNKNOWN) ? '' : $id);
         }
+        // an empty value - of a field left empty in the editor of the slice - is no attachment
+        $had     = array_values(array_filter(array_map(static fn(mixed $url): string => trim((string) $url), $item->getValuesArray(Schema::CAMPAIGN_FILES)), static fn(string $url): bool => $url !== ''));
+        $kept    = array_values(array_diff($had, $attached['remove']));
+        $refused = $this->refusal($kept, $uploads);
+        if ($refused) {
+            return self::told(Actions::INPUT, $id, ...$refused);
+        }
         $changed = array_filter($fields, static function (AA_Value $value, string $field) use ($item): bool {
             $had = $item->getAaValue($field);
             // a body the admin stored as plain text would go as plain text
             $plain = ($field === Schema::CAMPAIGN_BODY) && (($had->getFlag() & FLAG_HTML) === 0);
             return ((string) $had->getValue() !== (string) $value->getValue()) || $plain;
         }, ARRAY_FILTER_USE_BOTH);
-        if (($changed !== []) && !$this->store(self::content($setup, $id, $changed), 'update', self::FLAGS)) {
+        $moved = $this->moveIn($setup, $uploads);
+        if (($kept !== $had) || ($moved !== [])) {
+            $changed[Schema::CAMPAIGN_FILES] = new AA_Value([...$kept, ...array_values($moved)]);
+        }
+        if (($changed !== []) && !$this->storeWith(self::content($setup, $id, $changed), 'update', $moved)) {
             throw new \RuntimeException("Draft $id not stored, error " . ItemContent::lastErr());
         }
 
         return self::told(self::SAVED, $id);
+    }
+
+    /**
+     * store(), the files moved in for it removed again when it does not store - also when it throws
+     * @param array<string, string> $moved moveIn()
+     */
+    private function storeWith(ItemContent $content, string $mode, array $moved): bool
+    {
+        try {
+            $stored = $this->store($content, $mode, self::FLAGS);
+        } catch (\Throwable $e) {
+            $this->discard(array_keys($moved));
+            throw $e;
+        }
+        if (!$stored) {
+            $this->discard(array_keys($moved));
+        }
+
+        return $stored;
+    }
+
+    /**
+     * The extensions of the files a draft takes: what the editor of the slice uploads and a data message carries
+     * @return list<string>
+     */
+    public static function attachable(): array
+    {
+        return array_values(array_filter(array_keys(UploadPolicy::USER_TYPES), AttachmentPolicy::allows(...)));
+    }
+
+    /** bytes one attachment may have: what PHP takes of a file and of a request, and what a data message carries */
+    public static function maxFileBytes(): int
+    {
+        $limits = [ini_parse_quantity((string) ini_get('upload_max_filesize')), ini_parse_quantity((string) ini_get('post_max_size')), Message::MAX_BYTES];
+
+        // 0 = no limit of PHP
+        return min(array_filter($limits, static fn(int $bytes): bool => $bytes > 0));
+    }
+
+    /**
+     * A field of $_FILES holds an upload - an <input type="file"> left empty holds none
+     * @param mixed $posted one entry of $_FILES
+     */
+    public static function carriesFile(mixed $posted): bool
+    {
+        $errors = is_array($posted) ? ($posted['error'] ?? null) : UPLOAD_ERR_NO_FILE;
+        if (!is_array($errors)) {
+            return $errors !== UPLOAD_ERR_NO_FILE;
+        }
+        $carries = false;
+        array_walk_recursive($errors, static function (mixed $error) use (&$carries): void {
+            $carries = $carries || ($error !== UPLOAD_ERR_NO_FILE);
+        });
+
+        return $carries;
+    }
+
+    /**
+     * The files the form posts and the attachments it drops, checked as far as no file is read
+     * @param array<array-key, mixed> $post
+     * @param array<array-key, mixed> $files
+     * @return array{remove: list<string>, uploads: list<array{name: string, tmp: string}>, field: string, file: string}
+     *         field: what INPUT names, '' = taken; file: the name of the file refused
+     * @throws \RuntimeException the server could not take an upload - no temporary directory, a full disk
+     */
+    private static function attached(array $post, array $files): array
+    {
+        $refused = static fn(string $field, string $file = ''): array => ['remove' => [], 'uploads' => [], 'field' => $field, 'file' => $file];
+        $remove  = $post['isds_remove'] ?? [];
+        if (!is_array($remove) || (array_filter($remove, static fn(mixed $url): bool => !is_string($url)) !== [])) {
+            return $refused(self::FILES);
+        }
+        // the insert function of the field (fil) would take a file posted under another name by rules of its own
+        foreach (array_diff_key($files, ['isds_files' => true]) as $other) {
+            if (self::carriesFile($other)) {
+                return $refused(self::FILES);
+            }
+        }
+        // isds_files[] as PHP gives it: each part a list; isds_files without [] gives single values
+        $columns = [];
+        foreach (['name', 'tmp_name', 'error', 'size'] as $part) {
+            $value          = $files['isds_files'][$part] ?? [];
+            $columns[$part] = is_array($value) ? $value : [$value];
+        }
+        $uploads = [];
+        foreach ($columns['name'] as $i => $name) {
+            [$tmp, $error, $size] = [$columns['tmp_name'][$i] ?? null, $columns['error'][$i] ?? null, $columns['size'][$i] ?? null];
+            if (!is_string($name) || !is_string($tmp) || !is_int($error) || !is_int($size)) {
+                return $refused(self::FILES);
+            }
+            // a file input left empty
+            if ($error === UPLOAD_ERR_NO_FILE) {
+                continue;
+            }
+            // as the file would be stored and named to the recipient - and as INPUT names it, in safe letters
+            $stored = UploadPolicy::safeName(Files::escape($name));
+            if (in_array($error, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true) || ($size > self::maxFileBytes())) {
+                return $refused(self::FILE_SIZE, $stored);
+            }
+            if ($error === UPLOAD_ERR_PARTIAL) {
+                return $refused(self::FILE_LOST, $stored);
+            }
+            if ($error !== UPLOAD_ERR_OK) {
+                throw new \RuntimeException("The server could not take an upload, error $error");
+            }
+            if (!in_array(strtolower(pathinfo($stored, PATHINFO_EXTENSION)), self::attachable(), true)) {
+                return $refused(self::FILE_TYPE, $stored);
+            }
+            $uploads[] = ['name' => $stored, 'tmp' => $tmp];
+        }
+        if (count($uploads) >= Message::MAX_FILES) {
+            return $refused(self::TOO_MANY_FILES);
+        }
+
+        return ['remove' => array_values($remove), 'uploads' => $uploads, 'field' => '', 'file' => ''];
+    }
+
+    /**
+     * Why the uploads cannot be attached beside the attachments the draft keeps - each read once and
+     * checked by its content
+     * @param list<string>                             $kept
+     * @param list<array{name: string, tmp: string}> $uploads
+     * @return array{string, string}|null the field and the file INPUT names; null = all may be attached
+     */
+    private function refusal(array $kept, array $uploads): ?array
+    {
+        // the letter is the first file of the message
+        if (count($kept) + count($uploads) >= Message::MAX_FILES) {
+            return [self::TOO_MANY_FILES, ''];
+        }
+        foreach ($uploads as ['name' => $name, 'tmp' => $tmp]) {
+            $content = $this->uploaded($tmp);
+            $why     = match (true) {
+                is_null($content) => self::FILE_LOST,
+                $content === ''   => self::FILE_EMPTY,
+                default           => self::contentRefusal($name, $content),
+            };
+            if ($why !== '') {
+                return [$why, $name];
+            }
+        }
+
+        return null;
+    }
+
+    /** FILE_CONTENT when the editor would not upload $content as $name, or a data message would not carry it; '' = it may go */
+    private static function contentRefusal(string $name, string $content): string
+    {
+        $detected = AttachmentPolicy::detect($content);
+        if (UploadPolicy::refusal(UploadPolicy::USER, $name, $detected, strlen($content)) !== null) {
+            return self::FILE_CONTENT;
+        }
+        try {
+            AttachmentPolicy::file($name, $content, detected: $detected);
+        } catch (\InvalidArgumentException) {
+            return self::FILE_CONTENT;
+        }
+
+        return '';
+    }
+
+    /**
+     * The uploads moved into the upload directory of the campaign slice, under a name no other file has
+     * @param list<array{name: string, tmp: string}> $uploads
+     * @return array<string, string> path => URL
+     * @throws \RuntimeException none moved then
+     */
+    private function moveIn(Setup $setup, array $uploads): array
+    {
+        $moved = [];
+        try {
+            foreach ($uploads as ['name' => $name, 'tmp' => $tmp]) {
+                $path = $this->move($setup->campaignSlice, $tmp, $name);
+                // listed before its URL is asked: removed again when that fails
+                $moved[$path] = '';
+                $moved[$path] = $this->urlOf($setup->campaignSlice, $path);
+            }
+        } catch (\Throwable $e) {
+            $this->discard(array_keys($moved));
+            throw $e;
+        }
+
+        return $moved;
     }
 
     /**
@@ -267,10 +499,10 @@ class Drafts
         return $content;
     }
 
-    /** @return array{code: string, campaign: string, field: string} */
-    private static function told(string $code, string $campaign, string $field = ''): array
+    /** @return array{code: string, campaign: string, field: string, file: string} */
+    private static function told(string $code, string $campaign, string $field = '', string $file = ''): array
     {
-        return ['code' => $code, 'campaign' => $campaign, 'field' => $field];
+        return ['code' => $code, 'campaign' => $campaign, 'field' => $field, 'file' => $file];
     }
 
     // ------------------------------------------------------------ what tests replace
@@ -302,6 +534,41 @@ class Drafts
     protected function unlock(string $name): void
     {
         DB_AA::unlock($name);
+    }
+
+    /** the bytes of a file uploaded in this request; null when PHP did not receive it so, or it cannot be read */
+    protected function uploaded(string $tmp): ?string
+    {
+        $content = is_uploaded_file($tmp) ? file_get_contents($tmp) : false;
+
+        return is_string($content) ? $content : null;
+    }
+
+    /**
+     * An upload moved into the upload directory of $slice - as $name, or with a number added when a file has it
+     * @return string the path it got
+     * @throws \RuntimeException not moved
+     */
+    protected function move(string $slice, string $tmp, string $name): string
+    {
+        $dir  = Files::destinationDir(AA_Slice::getModule($slice));
+        $path = ($dir === false) ? false : Files::uploadFile(['name' => $name, 'tmp_name' => $tmp], $dir, '', 'new', $name);
+        // its message names paths of the server
+        return ($path === false) ? throw new \RuntimeException('An attachment could not be moved into the upload directory') : $path;
+    }
+
+    /** the URL of a file of the upload directory of $slice, as an upload field stores it */
+    protected function urlOf(string $slice, string $path): string
+    {
+        return (AA_Slice::getModule($slice) ?? throw new \RuntimeException("No slice $slice"))->getUrlFromPath($path);
+    }
+
+    /** @param list<string> $paths files moved in for a save that did not happen */
+    protected function discard(array $paths): void
+    {
+        foreach ($paths as $path) {
+            @unlink($path);
+        }
     }
 
     /**

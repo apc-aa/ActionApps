@@ -33,7 +33,8 @@ final readonly class ActionResult
      * @param string           $campaign long id the action was on; '' = none
      * @param list<int|string> $params   what the text of the code names: numbers, ids AA or ISDS gave - a
      *                                   status of ISDS, a reference number AA checked -, and a field of the
-     *                                   form (Drafts), never stored text
+     *                                   form (Drafts) with the name of a file refused, in safe letters
+     *                                   (UploadPolicy::safeName()), never stored text
      * @param string           $charge   what a test message cost (TestResult::charge()), a second code
      *                                   Advice tells beside the first; '' = nothing
      */
