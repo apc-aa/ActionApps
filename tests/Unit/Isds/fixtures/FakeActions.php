@@ -11,7 +11,7 @@ use AA\Isds\TestResult;
 
 /**
  * Actions with the core, the logs and post_max_size given here: Continue says what $resume says, Stop
- * and Abandon what $stop says, Send what $queue, Test what $test, Save what $save, each records who asked it; a log row
+ * and Abandon what $stop says, Send what $queue, Test what $test, Save what $save, Copy what $copy, each records who asked it; a log row
  * is recorded, not written - or fails as $logFails says.
  */
 final class FakeActions extends Actions
@@ -46,6 +46,12 @@ final class FakeActions extends Actions
     /** @var list<array{string, array<array-key, mixed>, array<array-key, mixed>}> campaign, form and files of each Save asked of the core */
     public static array $saved = [];
 
+    /** @var ?\Closure(Setup, string, string, array<array-key, mixed>, list<string>): array{code: string, campaign: string, made: bool} what Copy of a campaign in a scope says; null = the test asks none */
+    public static ?\Closure $copy = null;
+
+    /** @var list<array{string, string, list<string>}> source, scope and the items unsent of each Copy asked of the core */
+    public static array $copied = [];
+
     /** @var list<array{string, string, list<string>}> event, selector, params of each log row */
     public static array $logged = [];
 
@@ -70,6 +76,8 @@ final class FakeActions extends Actions
         self::$tested      = [];
         self::$save        = null;
         self::$saved       = [];
+        self::$copy        = null;
+        self::$copied      = [];
         self::$logged      = [];
         self::$failures    = [];
         self::$postMaxSize = 8 * 1024 * 1024;
@@ -115,6 +123,13 @@ final class FakeActions extends Actions
         self::$saved[] = [$campaign, $post, $files];
 
         return (self::$save ?? throw new \LogicException('This test saves nothing'))($setup, $campaign, $post, $files);
+    }
+
+    protected function copyDraft(Setup $setup, string $source, string $scope, array $post, array $unsent): array
+    {
+        self::$copied[] = [$source, $scope, $unsent];
+
+        return (self::$copy ?? throw new \LogicException('This test copies nothing'))($setup, $source, $scope, $post, $unsent);
     }
 
     protected function log(string $event, string $selector, array $params): void

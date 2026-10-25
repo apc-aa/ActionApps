@@ -373,7 +373,7 @@ final class SendRunEndTest extends TestCase
         self::assertSame('done', self::finish());
 
         self::assertSame([Schema::CAMPAIGN_STATE_DONE, (string) (self::NOW + 61)], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)]);
-        self::assertSame(['sent' => 0, 'failed' => 2, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 0, 'delivered' => 0, 'accepted' => 0], json_decode(self::stored($id)['report'], true));
+        self::assertSame(['sent' => 0, 'failed' => 2, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 0, 'queued' => 0, 'delivered' => 0, 'accepted' => 0], json_decode(self::stored($id)['report'], true));
     }
 
     // an end of look repeated after its campaign was written keeps the time the sending finished
@@ -391,7 +391,7 @@ final class SendRunEndTest extends TestCase
     {
         $id = self::queued(3, ['dm_ids' => '{"0":"901"}', 'skips' => '{"2":"inactive"}', 'cursor' => '3'], self::LOOK, [1 => Schema::BOX_DUPLICATE]);
         self::assertSame('watch', self::lookOver($id));
-        self::assertSame(['sent' => 1, 'failed' => 0, 'uncertain' => 0, 'skipped' => 2, 'stopped' => 0], self::tally($id));
+        self::assertSame(['sent' => 1, 'failed' => 0, 'uncertain' => 0, 'skipped' => 2, 'stopped' => 0, 'queued' => 0], self::tally($id));
         self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::campaign());
     }
 
@@ -490,7 +490,7 @@ final class SendRunEndTest extends TestCase
 
         self::assertSame([Schema::MESSAGE_STATE_STOPPED, Schema::MESSAGE_STATE_STOPPED], [self::state($id, 1), self::state($id, 2)]);
         self::assertSame([Schema::CAMPAIGN_STATE_STOPPED, (string) self::NOW], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)]);
-        self::assertSame(['sent' => 1, 'failed' => 0, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 2], self::tally($id));
+        self::assertSame(['sent' => 1, 'failed' => 0, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 2, 'queued' => 0], self::tally($id));
     }
 
     // prep had made one item: the others are made stopped, or skipped for their reason

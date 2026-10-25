@@ -117,8 +117,8 @@ class Gate
      * binding of the page, so a form of one action, campaign or page cannot be posted as another.
      * '' on a page that could not be kept out of frames; for abandon '' unless the run is one a stop no
      * longer ends (SendRun::abandonable()) - the template offers it in place of Stop then.
-     * The form of a new campaign carries a nonce of its own: every save of the form shown makes the one
-     * draft (Drafts::newId()).
+     * The form of a new campaign and of a copy carries a nonce of its own: every post of the form shown
+     * makes the one draft (Drafts::newId(), copyId()).
      * @param string $campaign long id; '' only to save a new campaign
      */
     public function fields(string $action, string $campaign = ''): string
@@ -136,8 +136,8 @@ class Gate
             . getFrmHiddenEasy('isds_token', FormToken::get(self::purpose($action, self::$open, $campaign)))
             // the token is the same in every form of the action: this tells one shown form from another
             . getFrmHiddenEasy('isds_form', bin2hex(random_bytes(8)))
-            // only a save of a new campaign names none
-            . (($campaign === '') ? getFrmHiddenEasy('isds_nonce', bin2hex(random_bytes(16))) : '');
+            // a new draft and a copy take their id from it; any other form names its campaign
+            . ((($campaign === '') || ($action === 'clone')) ? getFrmHiddenEasy('isds_nonce', bin2hex(random_bytes(16))) : '');
     }
 
     /**

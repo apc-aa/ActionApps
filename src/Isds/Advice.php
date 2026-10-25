@@ -36,6 +36,8 @@ final class Advice
             Actions::CONFIRM_ABANDON => _m('The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up.'),
             Actions::INPUT           => self::input((string) $first, (string) $second),
             Actions::SAVED           => _m('The draft is saved.'),
+            Actions::CLONED          => _m('The copy is ready as a new draft.'),
+            Actions::NONE_STOPPED    => _m('The sending left no recipient unsent - there is nothing to copy.'),
             Actions::QUEUED          => _m('The sending is queued - recipients: %1. It goes on by itself, you may close the page.', [$first]),
             Actions::TEST_SENT       => _m('The test message has gone (ID %1 in ISDS, reference number %2).', [$first, $second]),
             Actions::TEST_UNCERTAIN  => _m('It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1.', [$first]),

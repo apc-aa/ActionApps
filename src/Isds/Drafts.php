@@ -30,6 +30,8 @@ use zids;
  * upload it (UploadPolicy) and a data message carries it (AttachmentPolicy), by its content, never
  * by what the browser says; and only into a draft that may change - checked first, before a file is
  * read. Removing one drops its URL from the draft only: a copy of the draft may share the file.
+ * A copy (copy()) is a new draft of the letter of any campaign of the page - to send it again, or to
+ * those its sending left unsent -, made once for the form shown as a new draft is.
  */
 class Drafts
 {
@@ -38,6 +40,13 @@ class Drafts
 
     /** the draft is saved - or was already as posted */
     public const SAVED = 'SAVED';
+    /** the copy is made - or was, by the same form before */
+    public const CLONED = 'CLONED';
+
+    /** what a copy takes: the whole campaign, or only the recipients its sending left unsent */
+    public const ALL    = 'all';
+    public const UNSENT = 'unsent';
+    public const SCOPES = [self::ALL, self::UNSENT];
 
     /** what INPUT names: the field of the form that cannot be taken; NONCE, a hidden one, is told as none */
     public const SUBJECT    = 'subject';
@@ -126,7 +135,59 @@ class Drafts
      */
     public static function newId(Setup $setup, string $nonce): string
     {
-        $key = FormToken::get("isds-id:new:{$setup->bindingKey()}:$nonce");
+        return self::derivedId("new:{$setup->bindingKey()}:$nonce");
+    }
+
+    /**
+     * The id of the copy of $source the form with $nonce makes - the same for a double click, another
+     * for another source, scope or session; as newId()
+     */
+    public static function copyId(Setup $setup, string $source, string $scope, string $nonce): string
+    {
+        return self::derivedId("clone:{$setup->bindingKey()}:$source:$scope:$nonce");
+    }
+
+    /**
+     * A copy of the campaign $source as a new draft of the page: its letter - subject, "to hands", the
+     * body, the attachments, whose files it shares with the source - and whom it goes to: the filter the
+     * source stores, or for UNSENT the items $unsent. It names its source (Schema::CAMPAIGN_TEMPLATE);
+     * nothing of a sending is copied - the state, the fields a run writes. Its id comes from the nonce of
+     * the form (copyId()): a double click makes the one copy; a stale form makes none again - of a copy
+     * queued since it tells so, as a save does.
+     * The source of ALL is an active item, of UNSENT one in any bin - a campaign put in the trash still
+     * shows its sending. Not logged here: the caller logs the copy made.
+     * @param string                  $source long id in small letters of an item of the campaign slice
+     * @param array<array-key, mixed> $post   the form as posted: isds_nonce (32 hexadecimal digits)
+     * @param list<string>            $unsent UNSENT: the source items of the recipients the sending left unsent (SendRun::unsentSources())
+     * @return array{code: string, campaign: string, made: bool} code: CLONED, Actions::INPUT (the scope or
+     *         the nonce), Actions::EXPIRED (no session), SendStart::UNKNOWN, NOT_DRAFT, ALREADY or BUSY;
+     *         campaign: the copy, '' for UNKNOWN, INPUT and EXPIRED; made: written now, not by the same form before
+     * @throws \RuntimeException|\InvalidArgumentException not stored; $unsent no filter can hold
+     */
+    public function copy(Setup $setup, string $source, string $scope, array $post, array $unsent = []): array
+    {
+        $nonce = $post['isds_nonce'] ?? null;
+        if (!in_array($scope, self::SCOPES, true) || !is_string($nonce) || (preg_match('/^[0-9a-f]{32}\z/', $nonce) !== 1)) {
+            return self::copied(Actions::INPUT, '');
+        }
+        $id = self::copyId($setup, $source, $scope, $nonce);
+        if ($id === '') {
+            return self::copied(Actions::EXPIRED, '');
+        }
+        if (!$this->lock(SendRun::lockName($id))) {
+            return self::copied(SendStart::BUSY, $id);
+        }
+        try {
+            return $this->whileOpen($setup->campaignSlice, fn(): array => $this->writeCopy($setup, $source, $scope, $id, $unsent));
+        } finally {
+            $this->unlock(SendRun::lockName($id));
+        }
+    }
+
+    /** an id as AA makes them (string2id()), from the key of the session; '' without a session */
+    private static function derivedId(string $purpose): string
+    {
+        $key = FormToken::get("isds-id:$purpose");
 
         return ($key === '') ? '' : string2id($key);
     }
@@ -203,8 +264,7 @@ class Drafts
             // no draft of the page under this id: the page shows none
             return self::told($item, ($item === SendStart::UNKNOWN) ? '' : $id);
         }
-        // an empty value - of a field left empty in the editor of the slice - is no attachment
-        $had     = array_values(array_filter(array_map(static fn(mixed $url): string => trim((string) $url), $item->getValuesArray(Schema::CAMPAIGN_FILES)), static fn(string $url): bool => $url !== ''));
+        $had     = self::attachmentsOf($item);
         $kept    = array_values(array_diff($had, $attached['remove']));
         $refused = $this->refusal($kept, $uploads);
         if ($refused) {
@@ -225,6 +285,65 @@ class Drafts
         }
 
         return self::told(self::SAVED, $id);
+    }
+
+    /**
+     * Under the lock of the copy: the copy stored, or what became of the one the same form made before
+     * @param list<string> $unsent
+     * @return array{code: string, campaign: string, made: bool}
+     */
+    private function writeCopy(Setup $setup, string $source, string $scope, string $id, array $unsent): array
+    {
+        $queuedOnce = fn(): bool => $this->runExists($id);
+        $made       = $this->campaign($id);
+        if (!is_null($made)) {
+            // an item that only shares the id is never told as the copy
+            if (strtolower((string) $made->getValue(Schema::CAMPAIGN_TEMPLATE)) !== $source) {
+                return self::copied(SendStart::UNKNOWN, '');
+            }
+            // a double click, or a stale form of a copy queued or put in the trash since: nothing made again
+            $draft = self::draftOf($setup, $made, $queuedOnce);
+
+            return is_string($draft) ? self::copied($draft, ($draft === SendStart::UNKNOWN) ? '' : $id) : self::copied(self::CLONED, $id);
+        }
+        // queued, then deleted for good: not made again under its run
+        if ($queuedOnce()) {
+            return self::copied(SendStart::ALREADY, $id);
+        }
+        $item = $this->campaign($source);
+        if (is_null($item) || (strtolower($item->getSliceID()) !== $setup->campaignSlice) || (($scope === self::ALL) && !$item->isActive())) {
+            return self::copied(SendStart::UNKNOWN, '');
+        }
+        $filter = ($scope === self::ALL) ? (string) $item->getValue(Schema::CAMPAIGN_FILTER) : RecipientFilter::ofItems($unsent)->toJson();
+        $letter = array_filter([
+            Schema::CAMPAIGN_SUBJECT  => $item->getAaValue(Schema::CAMPAIGN_SUBJECT),
+            Schema::CAMPAIGN_TO_HANDS => $item->getAaValue(Schema::CAMPAIGN_TO_HANDS),
+            // with its flag: a body stored as plain text goes as plain text
+            Schema::CAMPAIGN_BODY     => $item->getAaValue(Schema::CAMPAIGN_BODY),
+            Schema::CAMPAIGN_FILES    => new AA_Value(self::attachmentsOf($item)),
+            // none stored: the copy too is refused sending till its recipients are chosen
+            Schema::CAMPAIGN_FILTER   => ($filter === '') ? new AA_Value() : new AA_Value($filter),
+        ], static fn(AA_Value $value): bool => !$value->isEmpty());
+        $content = self::content($setup, $id, [
+            'status_code.....'       => new AA_Value(\SC_ACTIVE),
+            Schema::CAMPAIGN_STATE    => new AA_Value(Schema::CAMPAIGN_STATE_DRAFT),
+            Schema::CAMPAIGN_TEMPLATE => new AA_Value($source),
+        ] + $letter);
+        if (!$this->store($content, 'insert_if_new', self::FLAGS)) {
+            throw new \RuntimeException("Copy $id not stored, error " . ItemContent::lastErr());
+        }
+
+        return self::copied(self::CLONED, $id, true);
+    }
+
+    /**
+     * The URLs of the attachments of a campaign; an empty value - of a field left empty in the editor of
+     * the slice - is no attachment
+     * @return list<string>
+     */
+    private static function attachmentsOf(ItemContent $item): array
+    {
+        return array_values(array_filter(array_map(static fn(mixed $url): string => trim((string) $url), $item->getValuesArray(Schema::CAMPAIGN_FILES)), static fn(string $url): bool => $url !== ''));
     }
 
     /**
@@ -497,6 +616,12 @@ class Drafts
         ItemContent::lastErr(0, '');
 
         return $content;
+    }
+
+    /** @return array{code: string, campaign: string, made: bool} */
+    private static function copied(string $code, string $campaign, bool $made = false): array
+    {
+        return ['code' => $code, 'campaign' => $campaign, 'made' => $made];
     }
 
     /** @return array{code: string, campaign: string, field: string, file: string} */

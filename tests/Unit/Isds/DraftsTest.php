@@ -935,4 +935,268 @@ final class DraftsTest extends TestCase
         $this->assertFileRefused(Drafts::FILES, '', $this->drafts->save(Sending::page(), self::ITEM, $post + ['isds_subject' => 'Výzva'], $files($this)));
         self::assertSame([], $this->drafts->lockLog);
     }
+
+    // ------------------------------------------------------------ a copy
+
+    /**
+     * A campaign of the page sent and done: its letter with two attachments, its filter, and the fields
+     * its sending wrote
+     */
+    private function sentCampaign(int $status = 1): void
+    {
+        $this->drafts->draft(self::ITEM, status: $status, state: Schema::CAMPAIGN_STATE_DONE);
+        $this->drafts->items[self::ITEM]['fields'] += [
+            Schema::CAMPAIGN_SUBJECT       => ['Výzva', 0],
+            Schema::CAMPAIGN_TO_HANDS      => ['starosta', 0],
+            Schema::CAMPAIGN_BODY          => ['<p>Vážení</p>', FLAG_HTML],
+            Schema::CAMPAIGN_FILES         => [self::url('a.pdf'), 0],
+            Schema::CAMPAIGN_FILTER        => [Sending::filter(['exclude' => [self::ADAMOV]]), 0],
+            Schema::CAMPAIGN_TEMPLATE      => ['ca000000000000000000000000000c00', 0],
+            Schema::CAMPAIGN_ERROR_TEXT    => ['ISDS_LOGIN', 0],
+            Schema::CAMPAIGN_ENVIRONMENT   => ['test', 0],
+            Schema::CAMPAIGN_SENDER_BOX    => ['kv62bqf', 0],
+            Schema::CAMPAIGN_RECIPIENTS    => ['3', 0],
+            Schema::CAMPAIGN_SENT_BY       => ['1', 0],
+            Schema::CAMPAIGN_SENT_BY_NAME  => ['Jan Novák', 0],
+            Schema::CAMPAIGN_STARTED_AT    => ['1900000000', 0],
+            Schema::CAMPAIGN_FINISHED_AT   => ['1900003600', 0],
+            'posted_by.......'             => ['1', 0],
+        ];
+        $this->drafts->items[self::ITEM]['values'][Schema::CAMPAIGN_FILES] = [self::url('a.pdf'), '', self::url('b.pdf')];
+    }
+
+    /**
+     * @param list<string> $unsent
+     * @return array{code: string, campaign: string, made: bool}
+     */
+    private function copy(string $scope = Drafts::ALL, array $unsent = [], string $nonce = self::NONCE): array
+    {
+        return $this->drafts->copy(Sending::page(), self::ITEM, $scope, ['isds_nonce' => $nonce], $unsent);
+    }
+
+    private static function copyId(string $scope = Drafts::ALL): string
+    {
+        return Drafts::copyId(Sending::page(), self::ITEM, $scope, self::NONCE);
+    }
+
+    // the letter as it is, the recipients by the filter the source stores, its attachments by the same URLs
+    public function test_copy_wholeKeepsFilterText(): void
+    {
+        $this->sentCampaign();
+
+        $result = $this->copy();
+
+        $id = self::copyId();
+        self::assertSame(['code' => Drafts::CLONED, 'campaign' => $id, 'made' => true], $result);
+        self::assertSame([['insert_if_new', $id, Sending::CAMPAIGN, true, [true, false, false, false]]], array_map(static fn(array $w): array => [$w['mode'], $w['id'], $w['slice'], $w['open'], $w['flags']], $this->drafts->writes));
+        self::assertSame(['1', 'draft', 'Výzva', 'starosta', Sending::filter(['exclude' => [self::ADAMOV]])], [
+            $this->drafts->field($id, 'status_code.....'),
+            $this->drafts->field($id, Schema::CAMPAIGN_STATE),
+            $this->drafts->field($id, Schema::CAMPAIGN_SUBJECT),
+            $this->drafts->field($id, Schema::CAMPAIGN_TO_HANDS),
+            $this->drafts->field($id, Schema::CAMPAIGN_FILTER),
+        ]);
+        self::assertSame(['<p>Vážení</p>', FLAG_HTML], $this->drafts->items[$id]['fields'][Schema::CAMPAIGN_BODY], 'the body with its flag');
+        self::assertSame([self::url('a.pdf'), self::url('b.pdf')], $this->drafts->values($id, Schema::CAMPAIGN_FILES), 'the same files, none copied');
+        self::assertSame(['lock ' . SendRun::lockName($id), 'unlock ' . SendRun::lockName($id)], $this->drafts->lockLog);
+    }
+
+    // a plain-text body stays plain text: as HTML it would lose its lines
+    public function test_copy_plainBodyStaysPlain(): void
+    {
+        $this->sentCampaign();
+        $this->drafts->items[self::ITEM]['fields'][Schema::CAMPAIGN_BODY] = ["Vážení\nstarosto", 0];
+
+        $this->copy();
+
+        self::assertSame(["Vážení\nstarosto", 0], $this->drafts->items[self::copyId()]['fields'][Schema::CAMPAIGN_BODY]);
+    }
+
+    // a copy is a draft: nothing of the sending of its source, nor its author - storeItem() writes the login
+    public function test_copy_neverCopiesStateOrRunFields(): void
+    {
+        $this->sentCampaign();
+
+        $this->copy();
+
+        self::assertSame(
+            ['status_code.....', Schema::CAMPAIGN_STATE, Schema::CAMPAIGN_TEMPLATE, Schema::CAMPAIGN_SUBJECT, Schema::CAMPAIGN_TO_HANDS, Schema::CAMPAIGN_BODY, Schema::CAMPAIGN_FILES, Schema::CAMPAIGN_FILTER],
+            $this->lastWritten(),
+        );
+        self::assertSame(Schema::CAMPAIGN_STATE_DRAFT, $this->drafts->field(self::copyId(), Schema::CAMPAIGN_STATE));
+    }
+
+    // the copy names its source, not the source of its source
+    public function test_copy_templateIsTheSource(): void
+    {
+        $this->sentCampaign();
+
+        $this->copy();
+
+        self::assertSame(self::ITEM, $this->drafts->field(self::copyId(), Schema::CAMPAIGN_TEMPLATE));
+    }
+
+    // a source with no filter stored: none in the copy either - sending refuses it till they are chosen
+    public function test_copy_noFilterStoresNone(): void
+    {
+        $this->sentCampaign();
+        unset($this->drafts->items[self::ITEM]['fields'][Schema::CAMPAIGN_FILTER]);
+
+        $this->copy();
+
+        self::assertNotContains(Schema::CAMPAIGN_FILTER, $this->lastWritten());
+    }
+
+    // only those the sending left unsent, by their items; the letter as in a whole copy
+    public function test_copy_unsentFilterOfTheItems(): void
+    {
+        $this->sentCampaign(status: 3);
+        $unsent = [self::ADAMOV, 'a0000000000000000000000000000002'];
+
+        $result = $this->copy(Drafts::UNSENT, $unsent);
+
+        $id = self::copyId(Drafts::UNSENT);
+        self::assertSame(['code' => Drafts::CLONED, 'campaign' => $id, 'made' => true], $result);
+        self::assertNotSame(self::copyId(), $id, 'another scope, another copy');
+        self::assertSame(json_encode(['types' => [], 'membership' => 'all', 'include' => $unsent, 'exclude' => []]), $this->drafts->field($id, Schema::CAMPAIGN_FILTER));
+        self::assertSame(['1', 'Výzva', self::ITEM], [$this->drafts->field($id, 'status_code.....'), $this->drafts->field($id, Schema::CAMPAIGN_SUBJECT), $this->drafts->field($id, Schema::CAMPAIGN_TEMPLATE)]);
+    }
+
+    // the thousands a large sending may leave unsent: none is cut
+    public function test_copy_unsentOfMaxRecipients(): void
+    {
+        $this->sentCampaign();
+        $unsent = array_map(static fn(int $i): string => sprintf('a%031x', $i), range(1, Setup::MAX_RECIPIENTS));
+
+        $this->copy(Drafts::UNSENT, $unsent);
+
+        self::assertSame($unsent, RecipientFilter::fromJson($this->drafts->field(self::copyId(Drafts::UNSENT), Schema::CAMPAIGN_FILTER), Sending::page())->include);
+    }
+
+    // a double click, or the same form posted again: the one copy, told as made once
+    public function test_copy_doubleClickOneCopy(): void
+    {
+        $this->sentCampaign();
+
+        $first  = $this->copy();
+        $second = $this->copy();
+
+        self::assertSame(['code' => Drafts::CLONED, 'campaign' => self::copyId(), 'made' => false], $second);
+        self::assertTrue($first['made']);
+        self::assertSame([self::ITEM, self::copyId()], array_keys($this->drafts->items));
+        self::assertSame(['insert_if_new'], array_column($this->drafts->writes, 'mode'), 'nothing written again');
+    }
+
+    /** @return array<string, array{string, bool, string}> the state of the copy since, whether it has a run, the code */
+    public static function copiesQueued(): array
+    {
+        return [
+            'queued'                => [Schema::CAMPAIGN_STATE_QUEUED, true, SendStart::NOT_DRAFT],
+            'sent'                  => [Schema::CAMPAIGN_STATE_DONE, true, SendStart::NOT_DRAFT],
+            'put back to draft'     => [Schema::CAMPAIGN_STATE_DRAFT, true, SendStart::ALREADY],
+        ];
+    }
+
+    // the form shown before the copy was queued: told as a save of it is, never made or changed again
+    #[DataProvider('copiesQueued')]
+    public function test_copy_staleFormAfterCopyQueued(string $state, bool $run, string $code): void
+    {
+        $this->sentCampaign();
+        $this->copy();
+        $this->drafts->items[self::copyId()]['fields'][Schema::CAMPAIGN_STATE] = [$state, 0];
+        $this->drafts->runs = $run ? [self::copyId()] : [];
+        $before             = $this->drafts->items[self::copyId()];
+
+        self::assertSame(['code' => $code, 'campaign' => self::copyId(), 'made' => false], $this->copy());
+        self::assertSame([['insert_if_new'], $before], [array_column($this->drafts->writes, 'mode'), $this->drafts->items[self::copyId()]]);
+    }
+
+    // queued, then deleted for good: a stale form does not make it again under its run
+    public function test_copy_staleFormAfterDeletedWithRun(): void
+    {
+        $this->sentCampaign();
+        $this->copy();
+        $this->drafts->runs = [self::copyId()];
+        unset($this->drafts->items[self::copyId()]);
+
+        self::assertSame(['code' => SendStart::ALREADY, 'campaign' => self::copyId(), 'made' => false], $this->copy());
+        self::assertSame([[self::ITEM], 1], [array_keys($this->drafts->items), count($this->drafts->writes)]);
+    }
+
+    /** @return array<string, array{\Closure(MemoryDrafts, string): void}> an item under the id of the copy that is no copy of the source made by the page */
+    public static function notOwnCopies(): array
+    {
+        return [
+            'of another slice'       => [static fn(MemoryDrafts $d, string $id) => $d->items[$id] = ['slice' => Sending::OTHER, 'fields' => [Schema::CAMPAIGN_TEMPLATE => [self::ITEM, 0]]]],
+            'of another source'      => [static fn(MemoryDrafts $d, string $id) => $d->items[$id] = ['slice' => Sending::CAMPAIGN, 'fields' => ['status_code.....' => ['1', 0], Schema::CAMPAIGN_TEMPLATE => ['ca000000000000000000000000000c09', 0]]]],
+            'of no source'           => [static fn(MemoryDrafts $d, string $id) => $d->draft($id)],
+            'the copy in the trash'  => [static fn(MemoryDrafts $d, string $id) => $d->items[$id] = ['slice' => Sending::CAMPAIGN, 'fields' => ['status_code.....' => ['3', 0], Schema::CAMPAIGN_TEMPLATE => [self::ITEM, 0]]]],
+        ];
+    }
+
+    // the id of an item that only shares it is never told, nor the item changed
+    #[DataProvider('notOwnCopies')]
+    public function test_copy_duplicateReturnsOnlyOwnCopy(\Closure $item): void
+    {
+        $this->sentCampaign();
+        $item($this->drafts, self::copyId());
+        $before = $this->drafts->items[self::copyId()];
+
+        self::assertSame(['code' => SendStart::UNKNOWN, 'campaign' => '', 'made' => false], $this->copy());
+        self::assertSame($before, $this->drafts->items[self::copyId()]);
+        self::assertSame([], $this->drafts->writes);
+    }
+
+    /** @return array<string, array{\Closure(MemoryDrafts): void, string}> */
+    public static function sourcesNotOfThePage(): array
+    {
+        return [
+            'none'                    => [static fn(MemoryDrafts $d) => null, Drafts::ALL],
+            'of another slice'        => [static fn(MemoryDrafts $d) => $d->draft(self::ITEM, Sending::OTHER), Drafts::ALL],
+            'of another slice, unsent' => [static fn(MemoryDrafts $d) => $d->draft(self::ITEM, Sending::OTHER), Drafts::UNSENT],
+            'in the trash'            => [static fn(MemoryDrafts $d) => $d->draft(self::ITEM, status: 3), Drafts::ALL],
+        ];
+    }
+
+    #[DataProvider('sourcesNotOfThePage')]
+    public function test_copy_sourceNotOfThePageUnknown(\Closure $source, string $scope): void
+    {
+        $source($this->drafts);
+
+        self::assertSame(['code' => SendStart::UNKNOWN, 'campaign' => '', 'made' => false], $this->copy($scope, [self::ADAMOV]));
+        self::assertSame([], $this->drafts->writes);
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function badCopyForms(): array
+    {
+        return ['no scope' => ['', self::NONCE], 'another scope' => ['one', self::NONCE], 'a short nonce' => [Drafts::ALL, 'abc'], 'capitals' => [Drafts::ALL, strtoupper(self::NONCE)]];
+    }
+
+    #[DataProvider('badCopyForms')]
+    public function test_copy_badScopeOrNonceIsInput(string $scope, string $nonce): void
+    {
+        $this->sentCampaign();
+
+        self::assertSame(['code' => Actions::INPUT, 'campaign' => '', 'made' => false], $this->copy($scope, nonce: $nonce));
+        self::assertSame([[], []], [$this->drafts->writes, $this->drafts->lockLog]);
+    }
+
+    public function test_copy_noSessionRefused(): void
+    {
+        $this->sentCampaign();
+        session_id('');
+
+        self::assertSame(Actions::EXPIRED, $this->copy()['code']);
+        self::assertSame([[], []], [$this->drafts->writes, $this->drafts->lockLog]);
+    }
+
+    public function test_copy_busyWhileLocked(): void
+    {
+        $this->sentCampaign();
+        $this->drafts->lockedByOther = true;
+
+        self::assertSame(['code' => SendStart::BUSY, 'campaign' => self::copyId(), 'made' => false], $this->copy());
+        self::assertSame([], $this->drafts->writes);
+    }
 }

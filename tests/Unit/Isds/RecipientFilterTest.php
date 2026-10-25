@@ -111,4 +111,36 @@ final class RecipientFilterTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         RecipientFilter::fromJson(Sending::filter(['membership' => 'members']), Sending::page(''));
     }
+
+    // only these items, whatever the page offers: a page without members reads it back too
+    public function test_ofItems_readBackByAnyPage(): void
+    {
+        $filter = RecipientFilter::ofItems([strtoupper(self::A), self::A, self::B]);
+
+        self::assertSame(['types' => [], 'membership' => 'all', 'include' => [self::A, self::B], 'exclude' => []], (array) $filter);
+        self::assertEquals($filter, RecipientFilter::fromJson($filter->toJson(), Sending::page('')));
+    }
+
+    /** @return array<string, array{list<string>}> */
+    public static function notItems(): array
+    {
+        return ['no id' => [['adamov']], 'an id too short' => [[substr(self::A, 1)]]];
+    }
+
+    /** @param list<string> $ids */
+    #[DataProvider('notItems')]
+    public function test_ofItems_refused(array $ids): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        RecipientFilter::ofItems($ids);
+    }
+
+    public function test_ofItems_noMoreThanTheLimit(): void
+    {
+        $ids = array_map(static fn(int $i): string => sprintf('a%031x', $i), range(0, Setup::MAX_RECIPIENTS));
+
+        self::assertCount(Setup::MAX_RECIPIENTS, RecipientFilter::ofItems(array_slice($ids, 1))->include);
+        $this->expectException(\InvalidArgumentException::class);
+        RecipientFilter::ofItems($ids);
+    }
 }

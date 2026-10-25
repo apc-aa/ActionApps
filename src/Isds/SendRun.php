@@ -780,11 +780,11 @@ class SendRun extends BatchRun
 
     /**
      * How far the sending got - from the record and the frozen recipients, no message item, no ISDS.
-     * Each recipient counts as the end of the run counts it (SendMaps::tally()), by the maps and the
+     * Each recipient counts as the end of the run counts it (SendMaps::fatesOf()), by the maps and the
      * frozen reasons, not by the cursor: a message in flight is uncertain, a recipient skipped by its
-     * reason is skipped before the cursor gets to it too. One never tried is stopped once a stop or
-     * the end of the run leaves it so - nothing sends it any more -, otherwise queued. The counts add
-     * up to total; until is the end of a pause, 0 = none - following delivery waits for its rounds, not
+     * reason is skipped before the cursor gets to it too. One never tried is stopped once nothing sends
+     * it any more (isOver()), otherwise queued. The counts add up to total unless a hand-edited record
+     * names indexes beyond the recipients; until is the end of a pause, 0 = none - following delivery waits for its rounds, not
      * for ISDS. delivered and accepted as SendMaps::delivery().
      * Public for the page of a sending (Gate::progress()); a progressExtra() of this run must call it
      * too, so that both show the same figures.
@@ -795,16 +795,34 @@ class SendRun extends BatchRun
     {
         $now   = static::now();
         $rows  = $this->recipients();
-        $tally = $this->maps()->tally($rows);
-        $over  = ((string) $this->stop_by !== '') || in_array($this->state(), [self::DONE, self::ENDED], true);
         // a position left by a run in error waits for nothing
         $until = (($this->state() === self::SENDING) && !$this->watching()) ? SendPace::pauseEnd($this->position(), $now) : 0;
-        return array_merge($tally, $this->maps()->delivery(), [
-            'total'   => count($rows),
-            'stopped' => $over ? $tally['stopped'] : 0,
-            'queued'  => $over ? 0 : $tally['stopped'],
-            'until'   => ($until > $now) ? $until : 0,
+        return array_merge($this->maps()->tally($rows, $this->isOver()), $this->maps()->delivery(), [
+            'total' => count($rows),
+            'until' => ($until > $now) ? $until : 0,
         ]);
+    }
+
+    /**
+     * The source items of the recipients the sending left unsent - never tried, stopped as the page
+     * counts them (progressFigures()); never one that may have gone, failed or was skipped
+     * @return list<string> long ids
+     * @throws \JsonException|BatchFailed a record edited into no JSON, recipients not as frozen
+     */
+    public function unsentSources(): array
+    {
+        $rows = $this->recipients();
+
+        return array_map(static fn(int $k): string => $rows[$k]['src'], array_keys($this->maps()->fatesOf($rows, $this->isOver()), Schema::MESSAGE_STATE_STOPPED, true));
+    }
+
+    /**
+     * Nothing sends a recipient never tried any more: a person stopped the run, its sending is over
+     * (following delivery sends nothing), or it ended
+     */
+    public function isOver(): bool
+    {
+        return ((string) $this->stop_by !== '') || $this->watching() || in_array($this->state(), [self::DONE, self::ENDED], true);
     }
 
     /**

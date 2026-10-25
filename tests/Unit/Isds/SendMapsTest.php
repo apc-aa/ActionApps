@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds;
 
+use AA\Isds\Schema;
 use AA\Isds\SendMaps;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -74,10 +75,47 @@ final class SendMapsTest extends TestCase
     public static function tallies(): array
     {
         return [
-            'sent over refused and uncertain' => [new SendMaps('{"0":"901","1":"902"}', '{"1":1700}', '{"0":"1233"}'), ['sent' => 2, 'failed' => 0, 'uncertain' => 0, 'skipped' => 1, 'stopped' => 3]],
-            'refused, skipped, in flight'     => [new SendMaps('', '', '{"0":"1233"}', '{"1":"inactive"}', '2', 1800), ['sent' => 0, 'failed' => 1, 'uncertain' => 1, 'skipped' => 2, 'stopped' => 2]],
-            'all decided'                     => [new SendMaps('{"0":"901","1":"902","2":"903"}', '{"3":1700}', '{"5":"notfound"}'), ['sent' => 3, 'failed' => 1, 'uncertain' => 1, 'skipped' => 1, 'stopped' => 0]],
+            'sent over refused and uncertain' => [new SendMaps('{"0":"901","1":"902"}', '{"1":1700}', '{"0":"1233"}'), ['sent' => 2, 'failed' => 0, 'uncertain' => 0, 'skipped' => 1, 'stopped' => 3, 'queued' => 0]],
+            'refused, skipped, in flight'     => [new SendMaps('', '', '{"0":"1233"}', '{"1":"inactive"}', '2', 1800), ['sent' => 0, 'failed' => 1, 'uncertain' => 1, 'skipped' => 2, 'stopped' => 2, 'queued' => 0]],
+            'all decided'                     => [new SendMaps('{"0":"901","1":"902","2":"903"}', '{"3":1700}', '{"5":"notfound"}'), ['sent' => 3, 'failed' => 1, 'uncertain' => 1, 'skipped' => 1, 'stopped' => 0, 'queued' => 0]],
         ];
+    }
+
+    /**
+     * Before nothing sends them any more, the recipients never tried are queued, not stopped; each
+     * recipient has one fate, by its index
+     * @param array{sent: int, failed: int, uncertain: int, skipped: int, stopped: int, queued: int} $expected
+     */
+    #[DataProvider('tallies')]
+    public function test_fatesOf_countsEqualTally(SendMaps $maps, array $expected): void
+    {
+        $rows = array_map(static fn(string $reason): array => ['reason' => $reason], ['', '', '', '', 'duplicate', '']);
+
+        self::assertSame(array_replace($expected, ['stopped' => 0, 'queued' => $expected['stopped']]), $maps->tally($rows, false));
+        self::assertSame(range(0, 5), array_keys($maps->fatesOf($rows, true)));
+        self::assertSame($expected, array_merge(array_fill_keys(array_keys($expected), 0), array_count_values($maps->fatesOf($rows, true))));
+    }
+
+    // a message that may be on its way may have gone: never stopped, never queued, never sent again
+    public function test_fatesOf_inflightIsUncertain(): void
+    {
+        $rows = [['reason' => ''], ['reason' => ''], ['reason' => '']];
+        $maps = new SendMaps('{"0":"901"}', '', '', '', '1', 1800);
+
+        foreach ([true, false] as $over) {
+            self::assertSame(Schema::MESSAGE_STATE_UNCERTAIN, $maps->fatesOf($rows, $over)[1]);
+        }
+        self::assertSame([0 => 'sent', 1 => 'uncertain', 2 => 'stopped'], $maps->fatesOf($rows, true));
+    }
+
+    // only a recipient never tried is stopped - once nothing sends it any more; one skipped stays skipped
+    public function test_fatesOf_neverTriedStoppedOnlyWhenOver(): void
+    {
+        $rows = [['reason' => ''], ['reason' => 'duplicate'], ['reason' => ''], ['reason' => '']];
+        $maps = new SendMaps('', '', '', '{"2":"inactive"}');
+
+        self::assertSame([0 => 'queued', 1 => 'skipped', 2 => 'skipped', 3 => 'queued'], $maps->fatesOf($rows, false));
+        self::assertSame([0 => 'stopped', 1 => 'skipped', 2 => 'skipped', 3 => 'stopped'], $maps->fatesOf($rows, true));
     }
 
     // the antivirus check refused it or the box was closed after it was sent: it reached no one
@@ -97,7 +135,7 @@ final class SendMapsTest extends TestCase
 
         $tally = $maps->tally($rows);
 
-        self::assertSame(['sent' => 2, 'failed' => 2, 'uncertain' => 1, 'skipped' => 1, 'stopped' => 1], $tally);
+        self::assertSame(['sent' => 2, 'failed' => 2, 'uncertain' => 1, 'skipped' => 1, 'stopped' => 1, 'queued' => 0], $tally);
         self::assertSame(count($rows), array_sum($tally));
     }
 
@@ -136,7 +174,7 @@ final class SendMapsTest extends TestCase
         $maps = new SendMaps('{"0":"901","1":"902"}', dmState: $dmState);
 
         self::assertSame([0 => 'sent', 1 => 'sent'], $maps->fates());
-        self::assertSame(['sent' => 2, 'failed' => 0, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 0], $maps->tally([['reason' => ''], ['reason' => '']]));
+        self::assertSame(['sent' => 2, 'failed' => 0, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 0, 'queued' => 0], $maps->tally([['reason' => ''], ['reason' => '']]));
         self::assertSame(['delivered' => 0, 'accepted' => 0], $maps->delivery());
         self::assertSame([], $maps->failures());
     }
@@ -221,7 +259,7 @@ final class SendMapsTest extends TestCase
 
         $tally = (new SendMaps('{"0":null,"1":"902"}'))->tally($rows);
 
-        self::assertSame(['sent' => 2, 'failed' => 0, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 1], $tally);
+        self::assertSame(['sent' => 2, 'failed' => 0, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 1, 'queued' => 0], $tally);
         self::assertSame(count($rows), array_sum($tally));
     }
 
@@ -231,7 +269,7 @@ final class SendMapsTest extends TestCase
         $maps = new SendMaps('', '', '{"0":null,"1":"1233"}');
 
         self::assertSame([0 => '', 1 => '1233'], $maps->failures());
-        self::assertSame(['sent' => 0, 'failed' => 2, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 0], $maps->tally([['reason' => ''], ['reason' => '']]));
+        self::assertSame(['sent' => 0, 'failed' => 2, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 0, 'queued' => 0], $maps->tally([['reason' => ''], ['reason' => '']]));
     }
 
     /**

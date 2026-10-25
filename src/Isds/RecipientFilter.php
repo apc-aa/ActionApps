@@ -43,6 +43,16 @@ final readonly class RecipientFilter
     }
 
     /**
+     * Just these items of the source slice: of no type, members or not
+     * @param list<string> $ids long ids
+     * @throws \InvalidArgumentException not long ids, or more than Setup::MAX_RECIPIENTS
+     */
+    public static function ofItems(array $ids): self
+    {
+        return new self([], self::ALL, self::ids($ids, 'include'), []);
+    }
+
+    /**
      * @throws \InvalidArgumentException not a filter the page offers
      */
     public static function fromJson(string $json, Setup $setup): self

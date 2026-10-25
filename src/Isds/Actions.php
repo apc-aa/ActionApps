@@ -63,9 +63,13 @@ class Actions
     public const TEST_BUSY = 'TEST_BUSY';
     /** Save: the draft is saved; the campaign of the result is the draft, a new one too */
     public const SAVED = Drafts::SAVED;
+    /** Copy: the copy is a new draft; the campaign of the result is the copy */
+    public const CLONED = Drafts::CLONED;
+    /** Copy of the unsent: the sending left no recipient unsent */
+    public const NONE_STOPPED = 'NONE_STOPPED';
 
     /** the actions run here; the form of another one of Gate::ACTIONS is refused as one of no action */
-    private const RUNS = ['save', 'resume', 'stop', 'abandon', 'test', 'send'];
+    private const RUNS = ['save', 'clone', 'resume', 'stop', 'abandon', 'test', 'send'];
 
     /** an action ran in this request: a form is acted on once, whichever gate on the page it names */
     private static bool $consumed = false;
@@ -160,6 +164,7 @@ class Actions
 
         return match ($action) {
             'save'                      => $this->save($setup, $campaign),
+            'clone'                     => $this->copy($setup, $campaign, $stored['active'] ?? false),
             'resume', 'stop', 'abandon' => $this->onRun($setup, $action, $campaign),
             'test'                      => $this->test($setup, $campaign),
             'send'                      => $this->send($setup, $campaign),
@@ -181,6 +186,48 @@ class Actions
             self::INPUT => self::refused('save', self::INPUT, $id, params: array_values(array_filter([$field, $file], static fn(string $p): bool => $p !== ''))),
             default     => self::refused('save', $code, $id),
         };
+    }
+
+    /**
+     * Copy: a new draft of the letter of the campaign (isds_scope all), or of the letter to the recipients
+     * its sending left unsent (unsent) - once nothing sends them any more (SendRun::isOver())
+     * @param bool $active the campaign is in the active bin
+     */
+    private function copy(Setup $setup, string $campaign, bool $active): ActionResult
+    {
+        $scope  = self::posted('isds_scope');
+        $unsent = [];
+        if (!in_array($scope, Drafts::SCOPES, true)) {
+            return self::refused('clone', self::INPUT, $campaign);
+        }
+        if ($scope === Drafts::UNSENT) {
+            $run = $this->runOfPage($setup, 'clone', $campaign);
+            if ($run instanceof ActionResult) {
+                return $run;
+            }
+            // before, a recipient never tried may still be sent: the copy would send it twice
+            if (!$run->isOver()) {
+                return self::refused('clone', self::WRONG_STATE, $campaign);
+            }
+            $unsent = $run->unsentSources();
+            if ($unsent === []) {
+                return self::refused('clone', self::NONE_STOPPED, $campaign);
+            }
+        } elseif (!$active) {
+            // a draft in the trash is no campaign of the page to copy; its sending still is
+            return self::refused('clone', self::UNKNOWN, '');
+        }
+        ['code' => $code, 'campaign' => $id, 'made' => $made] = $this->copyDraft($setup, $campaign, $scope, $_POST, $unsent);
+        if ($code !== self::CLONED) {
+            // the page goes on with the copy the core names - one being made, queued -, else with the source
+            return self::refused('clone', $code, (($id !== '') || ($code === self::UNKNOWN)) ? $id : $campaign);
+        }
+        // a double click makes no second copy, nor a second row
+        if ($made) {
+            $this->done = [SendQueue::LOG_EVENT, "clone:$id", [$this->access->uid(), $campaign, $scope]];
+        }
+
+        return new ActionResult('clone', ActionResult::DONE, self::CLONED, $id);
     }
 
     /** Send: the core queues the campaign, or says why not; it logs the sending queued itself */
@@ -331,6 +378,17 @@ class Actions
     protected function saveDraft(Setup $setup, string $campaign, array $post, array $files): array
     {
         return (new Drafts())->save($setup, $campaign, $post, $files);
+    }
+
+    /**
+     * Drafts::copy()
+     * @param array<array-key, mixed> $post
+     * @param list<string>            $unsent
+     * @return array{code: string, campaign: string, made: bool}
+     */
+    protected function copyDraft(Setup $setup, string $source, string $scope, array $post, array $unsent): array
+    {
+        return (new Drafts())->copy($setup, $source, $scope, $post, $unsent);
     }
 
     /** SendQueue::queue() */

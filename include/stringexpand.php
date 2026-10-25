@@ -10893,8 +10893,13 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        is saved if one is refused. They go into the upload directory of the slice, public to whoever knows
  *        the URL - say so on the page: they are not secret. PHP takes at most max_file_uploads files a
  *        request (20 by default) and drops more unseen. An autosave never posts isds_files[]: a form with
- *        files is acted on once - posted again, it only shows what the first post did), resume (Continue
- *        a sending in error or waiting),
+ *        files is acted on once - posted again, it only shows what the first post did), clone (a copy of the
+ *        campaign as a new draft, which the page gets in {datovkabulk:campaign} - the form adds isds_scope: all
+ *        for its letter and recipients, of a campaign in any state, not in the trash; unsent for its letter to
+ *        the recipients its sending left unsent, once nothing sends them any more (a stopped or ended sending,
+ *        in the trash too) - WRONG_STATE before, NONE_STOPPED when it left none. The letter is taken from the
+ *        campaign item as it is now, not as the sending froze it; the copy shares the files of the
+ *        attachments), resume (Continue a sending in error or waiting),
  *        stop (Stop: nothing more is sent; never gives the sending up), abandon (end a sending in error for good -
  *        its fields are '' unless Stop can no longer end it, so offer it in place of Stop when they are not),
  *        test (one test message of a draft at once - the form adds isds_box, one of testboxes; may be left out
@@ -10907,7 +10912,8 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *    {datovkabulk:campaign} - the campaign the page was loaded with after an action (isds_campaign of its URL), when
  *        it is an item of the campaign slice of the page - a draft saved new too; '' otherwise
  *    {datovkabulk:result[:text|code|status|action|charge]} - what the posted action did: text to read (default),
- *        or for a condition its code (RESUMED, STOPPING, CONFIRM_ABANDON, QUEUED, TEST_SENT, BUSY, EXPIRED, ...),
+ *        or for a condition its code (RESUMED, STOPPING, CONFIRM_ABANDON, QUEUED, TEST_SENT, CLONED, NONE_STOPPED,
+ *        WRONG_STATE, BUSY, EXPIRED, ...),
  *        status (done, refused, busy, expired, failed), action, or charge - what a test message cost (CHARGED,
  *        MAY_BE_CHARGED, '' nothing). After the action the page is loaded again with isds_campaign
  *        and isds_r added to its URL; the result shows only with that isds_r, for 10 minutes

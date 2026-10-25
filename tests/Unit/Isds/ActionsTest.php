@@ -1106,4 +1106,254 @@ final class ActionsTest extends TestCase
         self::assertSame([$first?->campaign], array_keys($drafts->items));
         self::assertSame('Výzva 2', $drafts->field((string) $first?->campaign, Schema::CAMPAIGN_SUBJECT));
     }
+
+    // ------------------------------------------------------------ Copy
+
+    /** the source item of recipient $i of a run queued(): the item the copy of the unsent goes to */
+    private static function source(int $i): string
+    {
+        return sprintf('b%031x', $i);
+    }
+
+    /** the core copies: CLONED, a copy of the id $copy made now */
+    private static function copies(string $copy = self::OTHER_ITEM, bool $made = true): void
+    {
+        FakeActions::$copy = static fn(): array => ['code' => Drafts::CLONED, 'campaign' => $copy, 'made' => $made];
+    }
+
+    /** @param array<string, mixed> $over */
+    private static function postCopy(string $scope, array $over = []): void
+    {
+        self::post('clone', over: ['isds_scope' => $scope, 'isds_nonce' => str_repeat('c', 32)] + $over);
+    }
+
+    /**
+     * A sending a person stopped once 2 of 5 messages were tried, then followed the delivery of the one
+     * sent: recipients 2, 3 and 4 never tried
+     * @return array<string, string>
+     */
+    private static function stoppedWatching(): array
+    {
+        return ['dm_ids' => '{"0":"1001"}', 'failed' => '{"1":"1233"}', 'cursor' => '2', 'stop_by' => Sending::USER, 'watch_from' => (string) (self::NOW - 3600)];
+    }
+
+    /**
+     * The states of a campaign as its page shows them, and what a copy of the unsent does in each
+     * @return array<string, array{?\Closure(): string, string, list<int>}> the run (null = none), the code,
+     *         the recipients the copy goes to
+     */
+    public static function cloneStates(): array
+    {
+        $run     = static fn(array $props, string $state = SendRun::SENDING, int $n = 5): \Closure => static function () use ($props, $state, $n): string {
+            $id = self::queued($n, $props);
+            if ($state !== SendRun::SENDING) {
+                self::leftInError($id, state: $state);
+            }
+            return $id;
+        };
+        $stopped = ['dm_ids' => '{"0":"1001"}', 'cursor' => '1', 'stop_by' => Sending::USER];
+        $watch   = ['watch_from' => (string) (self::NOW - 3600)];
+
+        return [
+            'draft: no run'                  => [null, Actions::WRONG_STATE, []],
+            'sending'                        => [$run(['dm_ids' => '{"0":"1001"}', 'cursor' => '1']), Actions::WRONG_STATE, []],
+            'error'                          => [$run(['dm_ids' => '{"0":"1001"}', 'cursor' => '1'], SendRun::ERROR), Actions::WRONG_STATE, []],
+            // nothing sends one never tried once a person stopped the sending, whatever its step does now
+            'sending, stopped'               => [$run($stopped), Actions::CLONED, [1, 2, 3, 4]],
+            'error, stopped'                 => [$run($stopped, SendRun::ERROR), Actions::CLONED, [1, 2, 3, 4]],
+            'watching, stopped'              => [$run($stopped + $watch), Actions::CLONED, [1, 2, 3, 4]],
+            'watching, every message tried'  => [$run(self::watched(5)), Actions::NONE_STOPPED, []],
+            'watch_error, stopped'           => [$run($stopped + $watch, SendRun::ERROR), Actions::CLONED, [1, 2, 3, 4]],
+            'done, stopped'                  => [$run($stopped, SendRun::DONE), Actions::CLONED, [1, 2, 3, 4]],
+            'done, every message tried'      => [$run(self::tried(5), SendRun::DONE), Actions::NONE_STOPPED, []],
+            'abandoned'                      => [$run(['dm_ids' => '{"0":"1001"}', 'cursor' => '1'], SendRun::ENDED), Actions::CLONED, [1, 2, 3, 4]],
+        ];
+    }
+
+    /**
+     * @param ?\Closure(): string $run
+     * @param list<int>            $unsent
+     */
+    #[DataProvider('cloneStates')]
+    public function test_clone_unsentByState(?\Closure $run, string $code, array $unsent): void
+    {
+        $run && $run();
+        self::copies();
+        self::postCopy(Drafts::UNSENT);
+
+        $result = $this->actions()->run(self::page(), true);
+
+        $cloned = $code === Actions::CLONED;
+        self::assertEquals($cloned ? new ActionResult('clone', ActionResult::DONE, Actions::CLONED, self::OTHER_ITEM) : new ActionResult('clone', ActionResult::REFUSED, $code, self::CAMPAIGN_ITEM), $result);
+        self::assertSame($cloned ? [[self::CAMPAIGN_ITEM, Drafts::UNSENT, array_map(self::source(...), $unsent)]] : [], FakeActions::$copied);
+        self::assertSame($cloned ? [[SendQueue::LOG_EVENT, 'clone:' . self::OTHER_ITEM, [Sending::USER, self::CAMPAIGN_ITEM, Drafts::UNSENT]]] : [], FakeActions::$logged);
+    }
+
+    // never one that may have gone, failed or was skipped for its box or its reason: only those never tried
+    public function test_clone_unsentOnlyStopped(): void
+    {
+        self::queued(7, ['uncertain' => '{"2":' . (self::NOW - 600) . '}', 'skips' => '{"3":"inactive"}', 'cursor' => '5'] + self::stoppedWatching(), reasons: [4 => 'duplicate']);
+        self::copies();
+        self::postCopy(Drafts::UNSENT);
+
+        self::assertSame(Actions::CLONED, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[self::CAMPAIGN_ITEM, Drafts::UNSENT, [self::source(5), self::source(6)]]], FakeActions::$copied);
+    }
+
+    // while it sends, those not tried yet may still go: a copy now could send a recipient twice
+    public function test_clone_unsentWhileSendingWrongState(): void
+    {
+        $id = self::queued(5, ['dm_ids' => '{"0":"1001"}', 'cursor' => '1']);
+        self::copies();
+        self::postCopy(Drafts::UNSENT);
+
+        self::assertSame(Actions::WRONG_STATE, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[], [], SendRun::SENDING], [FakeActions::$copied, FakeActions::$logged, self::stored($id)['state']]);
+    }
+
+    // stopped while a message was on its way: that one may still go, so the copy never takes it
+    public function test_clone_unsentOfStoppedSendingLeavesInflight(): void
+    {
+        self::queued(5, ['dm_ids' => '{"0":"1001"}', 'inflight' => '1', 'inflight_at' => (string) (self::NOW - 5), 'cursor' => '2', 'stop_by' => Sending::USER]);
+        self::copies();
+        self::postCopy(Drafts::UNSENT);
+
+        self::assertSame(Actions::CLONED, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[self::CAMPAIGN_ITEM, Drafts::UNSENT, [self::source(2), self::source(3), self::source(4)]]], FakeActions::$copied);
+    }
+
+    // given up: what the record says, never the items - the one in flight may have gone though its item says stopped
+    public function test_clone_unsentAbandonedFromRecord(): void
+    {
+        $id = self::leftInError(self::queued(5, ['dm_ids' => '{"0":"1001"}', 'inflight' => '1', 'inflight_at' => (string) (self::NOW - 600), 'cursor' => '2']), state: SendRun::ENDED);
+        self::items()->mark(self::message($id, 1), Schema::MESSAGE_STATE_STOPPED, Schema::EVENT_STOPPED, self::NOW);
+        self::items()->mark(self::message($id, 3), Schema::MESSAGE_STATE_SENT, Schema::EVENT_STOPPED, self::NOW);
+        self::copies();
+        self::postCopy(Drafts::UNSENT);
+
+        self::assertSame(Actions::CLONED, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[self::CAMPAIGN_ITEM, Drafts::UNSENT, [self::source(2), self::source(3), self::source(4)]]], FakeActions::$copied);
+    }
+
+    public function test_clone_unsentNoneStopped(): void
+    {
+        self::queued(3, self::watched(3));
+        self::copies();
+        self::postCopy(Drafts::UNSENT);
+
+        self::assertEquals(new ActionResult('clone', ActionResult::REFUSED, Actions::NONE_STOPPED, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame([[], []], [FakeActions::$copied, FakeActions::$logged]);
+    }
+
+    // a campaign put in the trash still shows its sending, and those it left unsent may still be sent
+    public function test_clone_unsentOfTrashedCampaign(): void
+    {
+        self::queued(5, self::stoppedWatching());
+        $this->campaigns = [self::CAMPAIGN_ITEM => self::item(active: false)];
+        self::copies();
+        self::postCopy(Drafts::UNSENT);
+
+        self::assertSame(Actions::CLONED, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[self::CAMPAIGN_ITEM, Drafts::UNSENT, [self::source(2), self::source(3), self::source(4)]]], FakeActions::$copied);
+    }
+
+    /** @param array<string, string> $props */
+    #[DataProvider('runOfOtherBinding')]
+    public function test_clone_unsentOfRunOfOtherBindingUnknown(array $props): void
+    {
+        self::queued(5, self::stoppedWatching() + $props);
+        self::copies();
+        self::postCopy(Drafts::UNSENT);
+
+        self::assertSame(Actions::UNKNOWN, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([], FakeActions::$copied);
+    }
+
+    /** @return array<string, array{string, bool}> the state of the campaign item, whether it has a run */
+    public static function anyState(): array
+    {
+        return ['draft' => [Schema::CAMPAIGN_STATE_DRAFT, false], 'draft with a run' => [Schema::CAMPAIGN_STATE_DRAFT, true], 'sending' => [Schema::CAMPAIGN_STATE_SENDING, true], 'done' => [Schema::CAMPAIGN_STATE_DONE, true]];
+    }
+
+    // the whole letter is copied whatever the campaign went through; the page goes on with the copy
+    #[DataProvider('anyState')]
+    public function test_clone_allOfAnyState(string $state, bool $run): void
+    {
+        $run && self::queued(3);
+        $this->campaigns = [self::CAMPAIGN_ITEM => ['state' => $state] + self::item()];
+        self::copies();
+        self::postCopy(Drafts::ALL, ['isds_uid' => Sending::READER]);
+
+        self::assertEquals(new ActionResult('clone', ActionResult::DONE, Actions::CLONED, self::OTHER_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame([[self::CAMPAIGN_ITEM, Drafts::ALL, []]], FakeActions::$copied);
+        self::assertSame([[SendQueue::LOG_EVENT, 'clone:' . self::OTHER_ITEM, [Sending::USER, self::CAMPAIGN_ITEM, Drafts::ALL]]], FakeActions::$logged);
+    }
+
+    // a campaign in the trash is no letter of the page to copy whole
+    public function test_clone_allOfTrashedCampaignUnknown(): void
+    {
+        $this->campaigns = [self::CAMPAIGN_ITEM => self::item(active: false)];
+        self::copies();
+        self::postCopy(Drafts::ALL);
+
+        self::assertEquals(new ActionResult('clone', ActionResult::REFUSED, Actions::UNKNOWN), $this->actions()->run(self::page(), true));
+        self::assertSame([], FakeActions::$copied);
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function badScopes(): array
+    {
+        return ['none' => [null], 'another' => ['one'], 'a list' => [['all']]];
+    }
+
+    #[DataProvider('badScopes')]
+    public function test_clone_badScopeIsInput(mixed $scope): void
+    {
+        self::copies();
+        self::post('clone', over: ['isds_scope' => $scope, 'isds_nonce' => str_repeat('c', 32)]);
+
+        self::assertEquals(new ActionResult('clone', ActionResult::REFUSED, Actions::INPUT, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame([], FakeActions::$copied);
+    }
+
+    /** @return array<string, array{array{code: string, campaign: string, made: bool}, ActionResult}> */
+    public static function copyRefusals(): array
+    {
+        return [
+            'the nonce'           => [['code' => Actions::INPUT, 'campaign' => '', 'made' => false], new ActionResult('clone', ActionResult::REFUSED, Actions::INPUT, self::CAMPAIGN_ITEM)],
+            'no session'          => [['code' => Actions::EXPIRED, 'campaign' => '', 'made' => false], new ActionResult('clone', ActionResult::REFUSED, Actions::EXPIRED, self::CAMPAIGN_ITEM)],
+            'being copied'        => [['code' => SendStart::BUSY, 'campaign' => self::OTHER_ITEM, 'made' => false], new ActionResult('clone', ActionResult::BUSY, SendStart::BUSY, self::OTHER_ITEM)],
+            'the copy queued'     => [['code' => SendStart::NOT_DRAFT, 'campaign' => self::OTHER_ITEM, 'made' => false], new ActionResult('clone', ActionResult::REFUSED, SendStart::NOT_DRAFT, self::OTHER_ITEM)],
+            'not its own copy'    => [['code' => SendStart::UNKNOWN, 'campaign' => '', 'made' => false], new ActionResult('clone', ActionResult::REFUSED, Actions::UNKNOWN)],
+        ];
+    }
+
+    /** @param array{code: string, campaign: string, made: bool} $told */
+    #[DataProvider('copyRefusals')]
+    public function test_clone_refusal(array $told, ActionResult $expected): void
+    {
+        FakeActions::$copy = static fn(): array => $told;
+        self::postCopy(Drafts::ALL);
+
+        self::assertEquals($expected, $this->actions()->run(self::page(), true));
+        self::assertSame([], FakeActions::$logged);
+    }
+
+    // the real core: the same form posted twice - a double click past the gate - makes one copy, logged once
+    public function test_clone_realDraftsOneCopyLoggedOnce(): void
+    {
+        $drafts = new MemoryDrafts();
+        $drafts->draft(self::CAMPAIGN_ITEM, state: Schema::CAMPAIGN_STATE_DONE);
+        FakeActions::$copy = static fn(Setup $setup, string $source, string $scope, array $post, array $unsent): array => $drafts->copy($setup, $source, $scope, $post, $unsent);
+
+        self::postCopy(Drafts::ALL);
+        $first = $this->actions()->run(self::page(), true);
+        Actions::forget();
+        $second = $this->actions()->run(self::page(), true);
+
+        $copy = Drafts::copyId(self::page(), self::CAMPAIGN_ITEM, Drafts::ALL, str_repeat('c', 32));
+        self::assertEquals([new ActionResult('clone', ActionResult::DONE, Actions::CLONED, $copy)], array_values(array_unique([$first, $second], SORT_REGULAR)));
+        self::assertSame([self::CAMPAIGN_ITEM, $copy], array_keys($drafts->items));
+        self::assertSame([[SendQueue::LOG_EVENT, "clone:$copy", [Sending::USER, self::CAMPAIGN_ITEM, Drafts::ALL]]], FakeActions::$logged);
+    }
 }

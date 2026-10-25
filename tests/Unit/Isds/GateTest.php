@@ -422,22 +422,22 @@ final class GateTest extends TestCase
         self::assertSame(['', ''], [$fields[1], $fields[2]]);
     }
 
-    // the form of a new draft names it by a nonce of its own, new each time it is shown
-    public function test_fields_nonceOnlyForNewDraft(): void
+    // the form of a new draft and of a copy names it by a nonce of its own, new each time it is shown
+    public function test_fields_nonceOnlyForNewAndClone(): void
     {
         session_id('gate-test-session');
         $gate   = self::gate();
         $fields = self::inside($gate, static fn(): array => array_map(
             static fn(array $f): array => self::inputs($gate->fields(...$f)),
-            [['save'], ['save'], ['save', self::ITEM], ['send', self::ITEM], ['resume', self::ITEM]],
+            [['save'], ['save'], ['clone', self::ITEM], ['clone', self::ITEM], ['save', self::ITEM], ['send', self::ITEM], ['resume', self::ITEM]],
         ));
 
-        [$new, $again] = array_map(static fn(array $f): string => $f['isds_nonce'] ?? '', $fields);
-        foreach ([$new, $again] as $nonce) {
+        $nonces = array_map(static fn(array $f): string => $f['isds_nonce'] ?? '', array_slice($fields, 0, 4));
+        foreach ($nonces as $nonce) {
             self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $nonce);
         }
-        self::assertNotSame($new, $again, 'each form shown makes its own draft');
-        self::assertSame([[], [], []], array_map(static fn(array $f): array => array_intersect_key($f, ['isds_nonce' => 1]), array_slice($fields, 2)));
+        self::assertSame($nonces, array_unique($nonces), 'each form shown makes its own draft or copy');
+        self::assertSame([[], [], []], array_map(static fn(array $f): array => array_intersect_key($f, ['isds_nonce' => 1]), array_slice($fields, 4)));
     }
 
     public function test_fields_unknownActionOrCampaign(): void

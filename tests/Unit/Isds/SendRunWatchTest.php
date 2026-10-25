@@ -1279,7 +1279,7 @@ final class SendRunWatchTest extends TestCase
 
         self::assertSame('done', self::runQueued());
 
-        self::assertSame(['sent' => 2, 'failed' => 1, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 0, 'delivered' => 2, 'accepted' => 2], json_decode(self::stored($id)['report'], true));
+        self::assertSame(['sent' => 2, 'failed' => 1, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 0, 'queued' => 0, 'delivered' => 2, 'accepted' => 2], json_decode(self::stored($id)['report'], true));
     }
 
     // ------------------------------------------------------------ what it asks, what it reads

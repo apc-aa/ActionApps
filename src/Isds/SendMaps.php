@@ -132,25 +132,45 @@ final readonly class SendMaps
     }
 
     /**
-     * What became of each recipient
+     * What became of each recipient: the fate the record has (fates()) - of an index it names beyond
+     * the recipients too, so that every index counts once -, else skipped for its frozen reason; one
+     * never tried is stopped once nothing sends it any more ($over), queued till then. The one reading
+     * of a fate the page, the end of the run and a copy of the unsent share.
      * @param list<array<string, string>> $rows Snapshot::recipients()
-     * @return array{sent: int, failed: int, uncertain: int, skipped: int, stopped: int}
+     * @return array<int, string> index => Schema::MESSAGE_STATE_SENT, FAILED, UNCERTAIN, SKIPPED, STOPPED or QUEUED
      */
-    public function tally(array $rows): array
+    public function fatesOf(array $rows, bool $over): array
     {
-        $sent   = self::entries($this->dmIds);
-        $failed = $this->failures();
-        $open   = $this->unsettled();
-        $skips  = self::entries($this->skips);
-        $tally  = ['sent' => count(array_diff_key($sent, $failed)), 'failed' => count($failed), 'uncertain' => count($open), 'skipped' => 0, 'stopped' => 0];
+        $fates = $this->fates();
         foreach ($rows as $k => $row) {
-            // a dmID edited into null is still a message sent
-            if (!array_key_exists($k, $sent) && !isset($failed[$k]) && !isset($open[$k])) {
-                // never tried: only a stop leaves one so
-                ++$tally[(($row['reason'] !== '') || isset($skips[$k])) ? 'skipped' : 'stopped'];
-            }
+            $fates[$k] ??= match (true) {
+                $row['reason'] !== '' => Schema::MESSAGE_STATE_SKIPPED,
+                $over                 => Schema::MESSAGE_STATE_STOPPED,
+                default               => Schema::MESSAGE_STATE_QUEUED,
+            };
         }
-        return $tally;
+        ksort($fates);
+
+        return $fates;
+    }
+
+    /**
+     * How many recipients have each fate (fatesOf()); the end of the run counts with $over
+     * @param list<array<string, string>> $rows Snapshot::recipients()
+     * @return array{sent: int, failed: int, uncertain: int, skipped: int, stopped: int, queued: int}
+     */
+    public function tally(array $rows, bool $over = true): array
+    {
+        $counts = array_count_values($this->fatesOf($rows, $over));
+
+        return [
+            'sent'      => $counts[Schema::MESSAGE_STATE_SENT] ?? 0,
+            'failed'    => $counts[Schema::MESSAGE_STATE_FAILED] ?? 0,
+            'uncertain' => $counts[Schema::MESSAGE_STATE_UNCERTAIN] ?? 0,
+            'skipped'   => $counts[Schema::MESSAGE_STATE_SKIPPED] ?? 0,
+            'stopped'   => $counts[Schema::MESSAGE_STATE_STOPPED] ?? 0,
+            'queued'    => $counts[Schema::MESSAGE_STATE_QUEUED] ?? 0,
+        ];
     }
 
     /**
