@@ -9,6 +9,8 @@ use AA\Isds\Advice;
 use AA\Isds\IsdsException;
 use AA\Isds\Outcome;
 use AA\Isds\SendResult;
+use AA\Isds\SendRun;
+use AA\Isds\SendStart;
 use AA\Isds\TestResult;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -88,6 +90,90 @@ final class AdviceTest extends TestCase
         self::assertSame($code, $charge);
         if ($code !== '') {
             self::assertStringContainsString('paid postal data message', Advice::text($charge));
+        }
+    }
+
+    /**
+     * Every code a page of a mass sending may be told: of the actions, of queueing (SendStart), of a
+     * test (TestResult) and of ISDS asked (Outcome) - read from the classes, so a code added there
+     * fails here until it has a text
+     * @return array<string, string>
+     */
+    private static function everyCode(): array
+    {
+        $constants = static fn(string $class): array => (new \ReflectionClass($class))->getConstants(\ReflectionClassConstant::IS_PUBLIC);
+        $codes     = [
+            ...array_diff_key($constants(Actions::class), ['LOG_EVENT' => 1]),
+            ...array_filter($constants(SendStart::class), static fn(string $name): bool => !str_starts_with($name, 'STATUS_'), ARRAY_FILTER_USE_KEY),
+            ...array_filter($constants(TestResult::class), static fn(string $name): bool => !str_starts_with($name, 'STATUS_'), ARRAY_FILTER_USE_KEY),
+            // the codes of the run, not what it does next
+            ...array_diff_key($constants(Outcome::class), array_flip(['NEXT', 'PAUSE', 'FAIL', 'RETHROW'])),
+            'REFUSED' => SendRun::REFUSED,
+        ];
+
+        return array_combine(array_values($codes), array_values($codes));
+    }
+
+    public function test_text_everyCodeOfSendStartTestResultOutcomeHasText(): void
+    {
+        $codes = self::everyCode();
+        self::assertContains('ISDS_LOGIN', $codes);
+        self::assertContains('NO_TRANSACTION', $codes);
+        self::assertContains('SAME_LETTER', $codes);
+
+        self::assertSame([], array_keys(array_filter($codes, static fn(string $code): bool => Advice::text($code) === '')), 'codes without a text');
+    }
+
+    /** @return array<string, array{string, string, string}> the status in the detail of the core, what the text says, what it must not */
+    public static function refusedStatuses(): array
+    {
+        return [
+            'known'   => ['1201', 'made inaccessible', 'status 1201'],
+            'unknown' => ['1214', 'ISDS answered with status 1214.', 'inaccessible'],
+            'none'    => ['', 'whose the login of the account is, nothing was sent.', 'status'],
+        ];
+    }
+
+    #[DataProvider('refusedStatuses')]
+    public function test_text_isdsRefusedMapsStatus(string $status, string $says, string $not): void
+    {
+        $text = Advice::text(SendRun::REFUSED, [$status]);
+
+        self::assertStringStartsWith('ISDS refused to tell whose the login', $text);
+        self::assertStringContainsString($says, $text);
+        self::assertStringNotContainsString($not, $text);
+    }
+
+    // a test is better made to an authority; a sending to such a box only fails
+    public function test_text_1233TestAddsHint(): void
+    {
+        $hint = 'Test with the data box of an authority.';
+
+        self::assertStringEndsWith($hint, Advice::text(Actions::TEST_FAILED, ['1233']));
+        self::assertStringContainsString('only paid postal data messages', Advice::isds('1233'));
+        self::assertStringNotContainsString($hint, Advice::isds('1233'));
+        self::assertSame('', Advice::isds('9999'));
+    }
+
+    public function test_text_testNamesItsIds(): void
+    {
+        self::assertSame('The test message has gone (ID 1835603 in ISDS, reference number 4711-T2).', Advice::text(Actions::TEST_SENT, ['1835603', '4711-T2']));
+        self::assertStringContainsString('reference number 4711-T2', Advice::text(Actions::TEST_UNCERTAIN, ['4711-T2']));
+        self::assertStringContainsString('on ' . date('Y-m-d H:i', 1_800_000_000) . ' (reference number 4711-T1)', Advice::text(TestResult::SAME_LETTER, ['4711-T1', 1_800_000_000]));
+        self::assertStringNotContainsString(' on ', Advice::text(TestResult::SAME_LETTER, ['4711-T1', 0]), 'when unknown');
+        self::assertStringContainsString('until ' . date('Y-m-d H:i', 1_800_003_600), Advice::text(TestResult::MAINTENANCE, [1_800_003_600]));
+        self::assertStringContainsString('(300 MB needed)', Advice::text(SendStart::MEMORY, [300]));
+        self::assertStringContainsString('you confirmed 41', Advice::text(SendStart::COUNT_CHANGED, [41]));
+    }
+
+    // an editor reads it: never where AA keeps the account, nor a password - the params are ids at most
+    public function test_text_noPathOrPasswordInAnyText(): void
+    {
+        foreach (self::everyCode() as $code) {
+            foreach ([[], ['1233', 1_800_000_000], [8 * 1024 * 1024, '4711-T2']] as $params) {
+                $text = Advice::text($code, $params);
+                self::assertDoesNotMatchRegularExpression('~/\w|\\\\\w|\.php|datovka_conf|config|password:|heslo~i', $text, $code);
+            }
         }
     }
 }

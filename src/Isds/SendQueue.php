@@ -6,6 +6,7 @@ namespace AA\Isds;
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA\Isds\Body\ServerException;
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
 use AA\Later\BatchFailed;
@@ -440,14 +441,25 @@ class SendQueue
         }
     }
 
-    /** the letter of the campaign item; refused CONTENT with what to fix, or MEMORY for its PDF */
+    /**
+     * The letter of the campaign item; refused CONTENT with what to fix, MEMORY for its PDF, SERVER when
+     * the server could not make it, SETTINGS when the campaign slice has no upload directory
+     */
     protected function letter(Setup $setup, ItemContent $item): Letter|SendStart
     {
         $this->timeForLetter();
         try {
-            return Letter::of($item, $setup->letterhead, $this->uploads($setup->campaignSlice), fn(int $bytes): string => $this->memoryFor($bytes, 1));
+            $uploads = $this->uploads($setup->campaignSlice);
+        } catch (\InvalidArgumentException) {
+            // its message names include/config.php: what an editor reads tells only whom to ask
+            return SendStart::refused(SendStart::SETTINGS, _m('The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it.'));
+        }
+        try {
+            return Letter::of($item, $setup->letterhead, $uploads, fn(int $bytes): string => $this->memoryFor($bytes, 1));
         } catch (\OverflowException $e) {
             return SendStart::refused(SendStart::MEMORY, $e->getMessage());
+        } catch (ServerException $e) {
+            return SendStart::refused(SendStart::SERVER, $e->getMessage());
         } catch (\InvalidArgumentException|\RuntimeException $e) {
             // what to fix in the campaign: it reads the uploads, never the database
             return SendStart::refused(SendStart::CONTENT, $e->getMessage());

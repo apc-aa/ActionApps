@@ -11,6 +11,7 @@ use AA\IO\DB\DB_AA;
 use AA\Isds\Account;
 use AA\Isds\Body\HtmlBody;
 use AA\Isds\Body\PdfBody;
+use AA\Isds\Body\ServerException;
 use AA\Isds\Client;
 use AA\Isds\Message;
 use AA\Isds\Outcome;
@@ -580,6 +581,41 @@ final class SendQueueTest extends TestCase
                 return [];
             }, SendRun::REFUSED, 'status:1214'],
         ];
+    }
+
+    /** @return array<string, array{\Closure(TestSendQueue): void, string}> how making the letter fails, the code */
+    public static function letterFailures(): array
+    {
+        return [
+            'no upload directory'       => [static function (TestSendQueue $q): void {
+                $q->beforeLetter = static fn(): never => throw new \InvalidArgumentException('The upload directory is not set - set IMG_UPLOAD_URL (an absolute http(s) URL) and IMG_UPLOAD_PATH in include/config.php, or the upload URL in the settings of the slice');
+            }, SendStart::SETTINGS],
+            'a file gone from the disk' => [static function (TestSendQueue $q): void {
+                $q->files = [TestSendQueue::UPLOAD_URL . '/chybi.pdf'];
+            }, SendStart::CONTENT],
+            'a file of another server'  => [static function (TestSendQueue $q): void {
+                $q->files = ['https://elsewhere.example.org/x.pdf'];
+            }, SendStart::CONTENT],
+            'no temporary directory'    => [static function (TestSendQueue $q): void {
+                $q->letterFails = new ServerException('There is no temporary directory for the PDF letter');
+            }, SendStart::SERVER],
+        ];
+    }
+
+    // an editor reads the detail: never where the files lie on the disk, nor a setting of the server
+    /** @param \Closure(TestSendQueue): void $fail */
+    #[DataProvider('letterFailures')]
+    public function test_queue_letterRefusalNamesNoPathNorSetting(\Closure $fail, string $code): void
+    {
+        $fail($this->sending);
+
+        $start = $this->send();
+
+        self::assertSame($code, $start->code);
+        self::assertNotSame('', $start->detail);
+        foreach ([$this->dir, 'config.php', 'IMG_UPLOAD'] as $hidden) {
+            self::assertStringNotContainsString($hidden, $start->detail);
+        }
     }
 
     /** @return array<string, mixed> */

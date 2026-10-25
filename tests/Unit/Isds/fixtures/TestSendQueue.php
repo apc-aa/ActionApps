@@ -53,6 +53,8 @@ final class TestSendQueue extends SendQueue
     public ?\Closure $beforeLetter = null;
     /** appended to the main file of each letter made, its source kept - as a PDF of the same draft differs */
     public string $mainTail = '';
+    /** thrown once while the letter is made - where it asks for room for its PDF -, as dompdf or PCRE would */
+    public ?\Throwable $letterFails = null;
     /** memory_get_usage(true) when memory_limit was asked for - right after the need was counted */
     public int $usageAtCheck = 0;
     /** @var list<int> each memory_limit asked for, in bytes */
@@ -145,6 +147,10 @@ final class TestSendQueue extends SendQueue
 
     protected function memoryLimit(): int
     {
+        if ($this->letterFails) {
+            [$fails, $this->letterFails] = [$this->letterFails, null];
+            throw $fails;
+        }
         $this->usageAtCheck = memory_get_usage(true);
         return TestSendRun::$memoryLimit;
     }

@@ -11,9 +11,13 @@ use AA\Isds\ActionResult;
 use AA\Isds\Actions;
 use AA\Isds\DatovkaConf;
 use AA\Isds\Gate;
+use AA\Isds\SendResult;
 use AA\Isds\SendRun;
+use AA\Isds\SendStart;
+use AA\Isds\Outcome;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
+use AA\Isds\TestResult;
 use AA\Later\BatchFailed;
 use AA\Util\FormToken;
 use AA_Credentials;
@@ -1062,5 +1066,81 @@ final class GateTest extends TestCase
         self::assertStringStartsWith('This sending is not on this page. &lt;b&gt;žž', $text, 'escaped');
         self::assertTrue(mb_check_encoding(htmlspecialchars_decode($text), 'UTF-8'));
         self::assertSame(ActionResult::DETAIL_MAX - 1, strlen(htmlspecialchars_decode($text)) - strlen('This sending is not on this page. '), 'cut whole characters');
+    }
+
+    // ------------------------------------------------------------ Send and Test
+
+    /**
+     * $action of ITEM posted from the page, with the fields the template adds to its form
+     * @param array<string, string> $fields
+     */
+    private static function postAction(string $action, array $fields): void
+    {
+        self::postResume();
+        $_POST = ['isds_action' => $action, 'isds_token' => FormToken::get(Gate::purpose($action, self::page(), self::ITEM))] + $fields + $_POST;
+    }
+
+    public function test_send_queuedRedirects(): void
+    {
+        FakeActions::$queue = static fn(): SendStart => SendStart::queued('run-1');
+        self::postAction('send', ['isds_confirm' => '2']);
+
+        $url = $this->redirectOf(self::actionGate());
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?tab=2&isds_campaign=' . self::ITEM . '&isds_r=[0-9a-f]{16}$~', $url);
+        self::getAfter($url);
+        self::assertSame(['The sending is queued - recipients: 2. It goes on by itself, you may close the page.', Actions::QUEUED, ActionResult::DONE, 'send'], self::shown(self::actionGate()));
+    }
+
+    // a double click on Send: the core asked once, the second click shows what the first did
+    public function test_send_doubleClickQueuesOnce(): void
+    {
+        FakeActions::$queue = static fn(): SendStart => SendStart::queued('run-1');
+        self::postAction('send', ['isds_confirm' => '2']);
+        $form = $_POST;
+        $this->redirectOf(self::actionGate());
+        Actions::forget();
+        FakeActions::$queue = static fn(): SendStart => SendStart::refused(SendStart::NOT_DRAFT);
+        $_POST              = $form;
+
+        self::getAfter($this->redirectOf(self::actionGate()));
+
+        self::assertCount(1, FakeActions::$queued);
+        self::assertSame(Actions::QUEUED, self::shown(self::actionGate())[1]);
+    }
+
+    // the detail may quote the draft or a file name: it reaches the page escaped, after what to do
+    public function test_result_sendDetailEscaped(): void
+    {
+        FakeActions::$queue = static fn(): SendStart => SendStart::refused(SendStart::CONTENT, 'The file <img src=x onerror=alert(1)>.pdf cannot be read');
+        self::postAction('send', ['isds_confirm' => '2']);
+
+        self::getAfter($this->redirectOf(self::actionGate()));
+
+        self::assertSame('The letter cannot go as a data message: The file &lt;img src=x onerror=alert(1)&gt;.pdf cannot be read', self::shown(self::actionGate())[0]);
+    }
+
+    // what a test cost goes across the redirect as a second code, and the page tells it after the result
+    public function test_result_testChargeSurvivesRedirect(): void
+    {
+        FakeActions::$test = static fn(): TestResult => TestResult::of(Outcome::of(new SendResult('1835603', '0000', 'OK')), 'msg', 'dj7j6mk', '4711-T2', true, true);
+        self::postAction('test', ['isds_box' => 'dj7j6mk']);
+
+        self::getAfter($this->redirectOf(self::actionGate()));
+        $gate = self::actionGate();
+
+        self::assertSame(
+            ['The test message has gone (ID 1835603 in ISDS, reference number 4711-T2). The test message went as a paid postal data message.', TestResult::CHARGED],
+            self::inside($gate, static fn(): array => [$gate->result(), $gate->result('charge')]),
+        );
+    }
+
+    public function test_testboxes_escapedDashSeparated(): void
+    {
+        $gate        = self::gate();
+        $gate->setup = Setup::fromSnapshot(self::SITE, self::CAMPAIGN, self::MESSAGE, self::SOURCE, ['mesto' => 'Cities'], testBoxes: ['dj7j6mk', 'ab12cde', '<b>']);
+
+        self::assertSame('dj7j6mk-ab12cde-&lt;b&gt;', self::inside($gate, static fn(): string => $gate->testBoxes()));
+        self::assertSame('', $gate->testBoxes(), 'outside the UI');
     }
 }

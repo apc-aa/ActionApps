@@ -4,30 +4,47 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds;
 
+use AA;
 use AA\Isds\Account;
+use AA\Isds\AuthException;
 use AA\Isds\ActionResult;
 use AA\Isds\Actions;
 use AA\Isds\Gate;
+use AA\Isds\IsdsException;
+use AA\Isds\Outcome;
+use AA\Isds\Schema;
 use AA\Isds\SendQueue;
+use AA\Isds\SendResult;
 use AA\Isds\SendRun;
+use AA\Isds\SendStart;
 use AA\Isds\Setup;
+use AA\Isds\TestResult;
+use AA\Http\Response;
 use AA\Util\FormToken;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Isds\Fixtures\FakeActions;
 use Tests\Unit\Isds\Fixtures\FakePerms;
+use Tests\Unit\Isds\Fixtures\FakeRecipients;
+use Tests\Unit\Isds\Fixtures\FakeSliceRules;
+use Tests\Unit\Isds\Fixtures\ScriptedIsds;
 use Tests\Unit\Isds\Fixtures\SendRunCase;
 use Tests\Unit\Isds\Fixtures\Sending;
+use Tests\Unit\Isds\Fixtures\TestSendQueue;
 use Tests\Unit\Isds\Fixtures\TestSendRun;
 
 require_once __DIR__ . '/fixtures/SendRunCase.php';
 require_once __DIR__ . '/fixtures/FakeActions.php';
+require_once __DIR__ . '/fixtures/FakeSliceRules.php';
+require_once __DIR__ . '/fixtures/FakeRecipients.php';
+require_once __DIR__ . '/fixtures/TestSendQueue.php';
 
 /**
  * The actions of a page of a mass sending: only a POST of this origin with the token of the form the
  * gate gave for the action, the binding of the page and the campaign acts - once a request, with the
- * login of the request. Continue, Stop and Abandon reach the real run (SendRun over the tables in memory).
+ * login of the request. Continue, Stop and Abandon reach the real run (SendRun over the tables in memory);
+ * Send and Test a core given by each test, two tabs sending the real SendQueue.
  */
 final class ActionsTest extends TestCase
 {
@@ -44,6 +61,9 @@ final class ActionsTest extends TestCase
     /** @var array<string, mixed> $_SERVER before the test */
     private array $server = [];
 
+    /** the upload directory of the campaign slice, when a test sends through the real SendQueue */
+    private string $uploads = '';
+
     protected function setUp(): void
     {
         $this->caseSetUp();
@@ -57,6 +77,13 @@ final class ActionsTest extends TestCase
 
     protected function tearDown(): void
     {
+        if ($this->uploads !== '') {
+            array_map('unlink', glob("$this->uploads/*") ?: []);
+            rmdir($this->uploads);
+            FakeSliceRules::forget();
+            FakeRecipients::forget();
+            AA::Contentcache()->clear();
+        }
         $_SERVER  = $this->server;
         $_POST    = [];
         $_GET     = [];
@@ -684,5 +711,283 @@ final class ActionsTest extends TestCase
         self::post('abandon');
 
         self::assertSame(Actions::ABANDONED, $this->actions()->run(self::page(), true)?->code);
+    }
+
+    // ------------------------------------------------------------ Send and Test
+
+    /** a draft of the page: the core decides, not the item the gate reads */
+    private function draftOfPage(bool $active = true): void
+    {
+        $this->campaigns = [self::CAMPAIGN_ITEM => ['state' => Schema::CAMPAIGN_STATE_DRAFT] + self::item(active: $active)];
+    }
+
+    public function test_send_queued(): void
+    {
+        $this->draftOfPage();
+        FakeActions::$queue = static fn(): SendStart => SendStart::queued('run-1');
+        self::post('send', over: ['isds_confirm' => '2']);
+
+        self::assertEquals(new ActionResult('send', ActionResult::DONE, Actions::QUEUED, self::CAMPAIGN_ITEM, params: [2]), $this->actions()->run(self::page(), true));
+        self::assertSame([[self::CAMPAIGN_ITEM, Sending::USER, 2]], FakeActions::$queued);
+        self::assertSame([], FakeActions::$logged, 'the core logs the sending queued');
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function notACount(): array
+    {
+        return [
+            'none'          => [null],
+            'empty'         => [''],
+            'zero'          => ['0'],
+            'negative'      => ['-1'],
+            'a fraction'    => ['2.5'],
+            'an exponent'   => ['1e3'],
+            'a space'       => [' 2'],
+            'a leading 0'   => ['02'],
+            'text'          => ['two'],
+            'an array'      => [['2']],
+            'too large'     => ['9999999999'],
+        ];
+    }
+
+    // the count is what the user saw: a form that tells none sends nothing
+    #[DataProvider('notACount')]
+    public function test_send_confirmNotNumberIsInput(mixed $confirm): void
+    {
+        $this->draftOfPage();
+        self::post('send', over: ['isds_confirm' => $confirm]);
+
+        self::assertEquals(new ActionResult('send', ActionResult::REFUSED, Actions::INPUT, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame([], FakeActions::$queued);
+    }
+
+    public function test_send_countChangedKeepsConfirmed(): void
+    {
+        $this->draftOfPage();
+        FakeActions::$queue = static fn(): SendStart => SendStart::refused(SendStart::COUNT_CHANGED);
+        self::post('send', over: ['isds_confirm' => '41']);
+
+        self::assertEquals(new ActionResult('send', ActionResult::REFUSED, SendStart::COUNT_CHANGED, self::CAMPAIGN_ITEM, params: [41]), $this->actions()->run(self::page(), true));
+    }
+
+    public function test_send_tooManyNamesTheLimitOfThePage(): void
+    {
+        $this->draftOfPage();
+        FakeActions::$queue = static fn(): SendStart => SendStart::refused(SendStart::TOO_MANY);
+        self::post('send', over: ['isds_confirm' => '41']);
+
+        self::assertSame([Setup::DEFAULT_RECIPIENTS], $this->actions()->run(self::page(), true)?->params);
+    }
+
+    /**
+     * What a refusal of the core leaves for the page: a detail only where it says what to fix
+     * @return array<string, array{SendStart, string, string, list<int|string>}> the refusal, status, detail kept, params
+     */
+    public static function refusals(): array
+    {
+        return [
+            'busy'                       => [SendStart::refused(SendStart::BUSY), ActionResult::BUSY, '', []],
+            'settings: what to fix'      => [SendStart::refused(SendStart::SETTINGS, 'Slice "Rozesílky" has no field X'), ActionResult::REFUSED, 'Slice "Rozesílky" has no field X', []],
+            'content: what to fix'       => [SendStart::refused(SendStart::CONTENT, 'The letter is empty'), ActionResult::REFUSED, 'The letter is empty', []],
+            'account: of datovka_conf'   => [SendStart::refused(SendStart::ACCOUNT, "Fix accounts['NSZM']['password'] in datovka_conf.php first"), ActionResult::REFUSED, '', []],
+            'a filter as stored'         => [SendStart::refused(SendStart::BAD_FILTER, 'type "<script>" is not offered'), ActionResult::REFUSED, '', []],
+            'a table'                    => [SendStart::refused(SendStart::NO_TRANSACTION, 'content'), ActionResult::REFUSED, '', []],
+            'the server: for a developer' => [SendStart::refused(SendStart::SERVER, 'There is no temporary directory for the PDF letter'), ActionResult::REFUSED, '', []],
+            'memory: the MB'             => [SendStart::refused(SendStart::MEMORY, 'mb:300'), ActionResult::REFUSED, '', [300]],
+            'memory, no MB told'         => [SendStart::refused(SendStart::MEMORY, 'a lot'), ActionResult::REFUSED, '', []],
+            'ISDS refused: the status'   => [SendStart::refused(SendRun::REFUSED, 'status:1201'), ActionResult::REFUSED, '', ['1201']],
+            'ISDS refused, no status'    => [SendStart::refused(SendRun::REFUSED), ActionResult::REFUSED, '', ['']],
+            'ISDS refused, a bad status' => [SendStart::refused(SendRun::REFUSED, 'status:12<b>'), ActionResult::REFUSED, '', ['']],
+            'the login refused'          => [SendStart::refused(Outcome::LOGIN), ActionResult::REFUSED, '', []],
+        ];
+    }
+
+    /** @param list<int|string> $params */
+    #[DataProvider('refusals')]
+    public function test_send_refusalTellsWhatToFix(SendStart $start, string $status, string $detail, array $params): void
+    {
+        $this->draftOfPage();
+        FakeActions::$queue = static fn(): SendStart => $start;
+        self::post('send', over: ['isds_confirm' => '2']);
+
+        self::assertEquals(new ActionResult('send', $status, $start->code, self::CAMPAIGN_ITEM, $detail, $params), $this->actions()->run(self::page(), true));
+    }
+
+    // the detail may quote stored data: the page escapes it (GateTest), no log ever holds it
+    public function test_send_detailNeverLogged(): void
+    {
+        $this->draftOfPage();
+        FakeActions::$queue = static fn(): SendStart => SendStart::refused(SendStart::CONTENT, 'The file https://example.org/img_upload/abc/tajne-heslo.pdf cannot be read');
+        self::post('send', over: ['isds_confirm' => '2']);
+
+        self::assertStringContainsString('tajne-heslo', $this->actions()->run(self::page(), true)->detail ?? '');
+        self::assertSame([[], []], [FakeActions::$logged, FakeActions::$failures]);
+    }
+
+    public function test_send_exceptionInternal(): void
+    {
+        $this->draftOfPage();
+        FakeActions::$queue = static fn(): SendStart => throw new \RuntimeException('SQL with Test-Pa55-never-shown');
+        self::post('send', over: ['isds_confirm' => '2']);
+
+        self::assertEquals(new ActionResult('send', ActionResult::FAILED, Actions::INTERNAL, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertStringNotContainsString('never-shown', FakeActions::$failures[0][1]);
+    }
+
+    /** @return array<string, array{string, array<string, string>}> */
+    public static function sendAndTest(): array
+    {
+        return ['send' => ['send', ['isds_confirm' => '2']], 'test' => ['test', ['isds_box' => 'dj7j6mk']]];
+    }
+
+    // a draft put in the trash is no campaign of the page to send
+    /** @param array<string, string> $fields */
+    #[DataProvider('sendAndTest')]
+    public function test_send_trashedCampaignUnknown(string $action, array $fields): void
+    {
+        $this->draftOfPage(active: false);
+        self::post($action, over: $fields);
+
+        self::assertEquals(new ActionResult($action, ActionResult::REFUSED, Actions::UNKNOWN, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame([[], []], [FakeActions::$queued, FakeActions::$tested]);
+    }
+
+    /** @param array<string, string> $fields */
+    #[DataProvider('sendAndTest')]
+    public function test_send_campaignOfOtherSliceUnknown(string $action, array $fields): void
+    {
+        $this->campaigns = [self::CAMPAIGN_ITEM => self::item(Sending::MESSAGE)];
+        self::post($action, over: $fields);
+
+        self::assertSame(Actions::UNKNOWN, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[], []], [FakeActions::$queued, FakeActions::$tested]);
+    }
+
+    /** @param array<string, string> $fields */
+    #[DataProvider('sendAndTest')]
+    public function test_send_uidFromLoginNotRequest(string $action, array $fields): void
+    {
+        $this->draftOfPage();
+        FakeActions::$queue = static fn(): SendStart => SendStart::refused(SendStart::FORBIDDEN);
+        FakeActions::$test  = static fn(): TestResult => TestResult::refused(TestResult::FORBIDDEN);
+        self::post($action, over: $fields + ['uid' => Sending::USER, 'isds_uid' => Sending::USER]);
+
+        self::assertSame(Actions::FORBIDDEN, $this->actions(Sending::READER)->run(self::page(), true)?->code);
+        self::assertSame([Sending::READER], array_column([...FakeActions::$queued, ...FakeActions::$tested], 1));
+    }
+
+    /** the real core: the campaign a draft to two cities with a box, ISDS telling the login is the sender's */
+    private function realQueue(): TestSendQueue
+    {
+        TableDb::$engines += ['item' => 'InnoDB', 'content' => 'InnoDB'];
+        $this->uploads = sys_get_temp_dir() . '/isds-actions-' . bin2hex(random_bytes(6));
+        mkdir($this->uploads);
+        file_put_contents("$this->uploads/pozvanka.pdf", "%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n");
+        $queue = new TestSendQueue(
+            FakeSliceRules::ready(Sending::SITE, Sending::CAMPAIGN, Sending::MESSAGE)->withSource(Sending::SITE, Sending::SOURCE),
+            new FakeRecipients([
+                'a0000000000000000000000000000001' => Sending::item('Adamov', 'mesto', '0', 'aaa0001'),
+                'c0000000000000000000000000000003' => Sending::item('Cheb', 'mesto', '0', 'ccc0003'),
+            ]),
+            $this->uploads,
+        );
+        $queue->files = [TestSendQueue::UPLOAD_URL . '/pozvanka.pdf'];
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'] = [
+            Schema::CAMPAIGN_STATE    => Schema::CAMPAIGN_STATE_DRAFT,
+            Schema::CAMPAIGN_SUBJECT  => 'Pozvánka',
+            Schema::CAMPAIGN_BODY     => '<p>Zveme Vás</p>',
+            Schema::CAMPAIGN_TO_HANDS => 'starosta',
+            Schema::CAMPAIGN_FILTER   => Sending::filter(),
+        ];
+        TestSendRun::$http = new ScriptedIsds(['GetOwnerInfoFromLogin2' => [new Response(200, self::fixture('owner-info.xml'))]]);
+        FakeActions::$queue = static fn(Setup $setup, string $campaign, string $uid, int $confirmed): SendStart => $queue->queue($setup, $campaign, $uid, $confirmed);
+
+        return $queue;
+    }
+
+    // two tabs of one user - another person alike: one run; the tab whose request finds the campaign
+    // locked is told it is busy, a later one that the campaign is queued already
+    public function test_send_twoTabsOneRun(): void
+    {
+        $this->draftOfPage();
+        $queue = $this->realQueue();
+        $page  = Setup::fromSnapshot(Sending::SITE, Sending::CAMPAIGN, Sending::MESSAGE, Sending::SOURCE, ['mesto' => 'Cities'], ['mesto'], Sending::MEMBER);
+        $tab   = function () use ($page): ?string {
+            Actions::forget();
+            self::post('send', $page, over: ['isds_confirm' => '2', 'isds_form' => bin2hex(random_bytes(8))]);
+
+            return $this->actions()->run($page, true)?->code;
+        };
+
+        $queue->lockedByOther = true;
+        self::assertSame(Actions::BUSY, $tab(), 'while another request queues it');
+        $queue->lockedByOther = false;
+        self::assertSame(Actions::QUEUED, $tab());
+        self::assertSame(SendStart::NOT_DRAFT, $tab(), 'queued since');
+        self::assertCount(1, TestSendRun::recordsOfAll(['state']), 'one run');
+    }
+
+    public function test_test_boxFromPost(): void
+    {
+        $this->draftOfPage();
+        FakeActions::$test = static fn(): TestResult => TestResult::refused(TestResult::NOT_TEST_BOX);
+        self::post('test', over: ['isds_box' => 'ab12cde']);
+
+        self::assertSame(TestResult::NOT_TEST_BOX, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[self::CAMPAIGN_ITEM, Sending::USER, 'ab12cde']], FakeActions::$tested);
+    }
+
+    // the core chooses the only test box; a box that is no text is no box
+    public function test_test_noBoxPostedLeftToTheCore(): void
+    {
+        $this->draftOfPage();
+        FakeActions::$test = static fn(): TestResult => TestResult::refused(TestResult::NOT_TEST_BOX);
+        self::post('test', over: ['isds_box' => ['dj7j6mk']]);
+
+        $this->actions()->run(self::page(), true);
+
+        self::assertSame([[self::CAMPAIGN_ITEM, Sending::USER, '']], FakeActions::$tested);
+    }
+
+    /**
+     * Each way a test ends, as the page tells it after the redirect: codes and ids, the words of ISDS
+     * only where AA has no text of its status
+     * @return array<string, array{\Closure(): TestResult, ActionResult}>
+     */
+    public static function endingsOfATest(): array
+    {
+        $of = static fn(SendResult|\Throwable $result, ?bool $charges = false): \Closure => static fn(): TestResult => TestResult::of(Outcome::of($result), 'msg', 'dj7j6mk', '4711-T2', $charges, $charges);
+        $c  = 'ca000000000000000000000000000c01';
+
+        return [
+            'sent'                   => [$of(new SendResult('1835603', '0000', 'OK')), new ActionResult('test', ActionResult::DONE, Actions::TEST_SENT, $c, params: ['1835603', '4711-T2'])],
+            'sent, paid'             => [$of(new SendResult('1835603', '0000', 'OK'), true), new ActionResult('test', ActionResult::DONE, Actions::TEST_SENT, $c, params: ['1835603', '4711-T2'], charge: TestResult::CHARGED)],
+            'uncertain'              => [$of(new \RuntimeException('the answer got lost')), new ActionResult('test', ActionResult::DONE, Actions::TEST_UNCERTAIN, $c, params: ['4711-T2'])],
+            'uncertain, price unknown' => [$of(new \RuntimeException('the answer got lost'), null), new ActionResult('test', ActionResult::DONE, Actions::TEST_UNCERTAIN, $c, params: ['4711-T2'], charge: TestResult::MAY_BE_CHARGED)],
+            'refused, status known'  => [$of(new IsdsException('Schránka přijímá jen PDZ', '1233'), true), new ActionResult('test', ActionResult::FAILED, Actions::TEST_FAILED, $c, params: ['1233'])],
+            'refused, status unknown' => [$of(new IsdsException('Něco <divného>', '1214')), new ActionResult('test', ActionResult::FAILED, Actions::TEST_FAILED, $c, 'Něco <divného>', ['1214'])],
+            // nothing sent: refused as when queueing, so the same form may try again
+            'login refused'          => [static fn(): TestResult => TestResult::of(Outcome::of(new AuthException('refused')), '', 'dj7j6mk', '', null, false), new ActionResult('test', ActionResult::REFUSED, Outcome::LOGIN, $c)],
+            'busy'                   => [static fn(): TestResult => TestResult::refused(TestResult::BUSY), new ActionResult('test', ActionResult::BUSY, Actions::TEST_BUSY, $c)],
+            'the server'             => [static fn(): TestResult => TestResult::refused(SendStart::SERVER, 'There is no temporary directory for the PDF letter'), new ActionResult('test', ActionResult::REFUSED, SendStart::SERVER, $c)],
+            'the same letter'        => [static fn(): TestResult => TestResult::refused(TestResult::SAME_LETTER, msg: 'msg', ref: '4711-T1', dmId: '1835600', at: 1_800_000_000), new ActionResult('test', ActionResult::REFUSED, TestResult::SAME_LETTER, $c, params: ['4711-T1', 1_800_000_000])],
+            'paid unknown'           => [static fn(): TestResult => TestResult::refused(TestResult::PAID_UNKNOWN, isdsCode: '5001'), new ActionResult('test', ActionResult::REFUSED, TestResult::PAID_UNKNOWN, $c, params: ['5001'])],
+            'maintenance'            => [static fn(): TestResult => TestResult::refused(TestResult::MAINTENANCE, '1800003600'), new ActionResult('test', ActionResult::REFUSED, TestResult::MAINTENANCE, $c, params: [1_800_003_600])],
+            'content'                => [static fn(): TestResult => TestResult::refused(SendStart::CONTENT, 'The subject is longer than 255 characters'), new ActionResult('test', ActionResult::REFUSED, SendStart::CONTENT, $c, 'The subject is longer than 255 characters')],
+            'account'                => [static fn(): TestResult => TestResult::refused(SendStart::ACCOUNT, 'Set accounts[NSZM][login] in datovka_conf.php'), new ActionResult('test', ActionResult::REFUSED, SendStart::ACCOUNT, $c)],
+            'not a draft'            => [static fn(): TestResult => TestResult::refused(TestResult::NOT_DRAFT), new ActionResult('test', ActionResult::REFUSED, TestResult::NOT_DRAFT, $c)],
+        ];
+    }
+
+    /** @param \Closure(): TestResult $test */
+    #[DataProvider('endingsOfATest')]
+    public function test_test_resultOfEachStatus(\Closure $test, ActionResult $expected): void
+    {
+        $this->draftOfPage();
+        FakeActions::$test = $test;
+        self::post('test', over: ['isds_box' => 'dj7j6mk']);
+
+        self::assertEquals($expected, $this->actions()->run(self::page(), true));
+        self::assertSame([], FakeActions::$logged, 'the core logs the test');
     }
 }

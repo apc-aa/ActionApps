@@ -100,7 +100,7 @@ final class PdfTables
      * @param string $document of HtmlBody::document()
      * @return array{string, list<int>} the document and the number of each table it keeps, as check() counts them
      *                                  in $document - a refusal names the table the editor sees
-     * @throws \RuntimeException PCRE or libxml failed, or a link or image did not come back
+     * @throws ServerException PCRE or libxml failed, or a link or image did not come back
      */
     public static function flow(string $document): array
     {
@@ -116,7 +116,7 @@ final class PdfTables
             return " $m[1]=\"$token" . (count($values) - 1) . '"';
         }, $document);
         if ($markup === null) {
-            throw new \RuntimeException('The letter cannot be measured for a PDF');
+            throw new ServerException('The letter cannot be measured for a PDF');
         }
         [$dom, $xpath] = Libxml::run(static function () use ($markup): array {
             $dom = new \DOMDocument();
@@ -141,7 +141,7 @@ final class PdfTables
         $html   = $dom->saveHTML();
         $flowed = ($html === false) ? null : preg_replace_callback('~ (src|href)="' . $token . '(\d+)"~', static fn(array $m): string => " $m[1]=\"" . $values[(int) $m[2]] . '"', $html, -1, $count);
         if (($flowed === null) || ($count !== count($values))) {
-            throw new \RuntimeException('The links and images of the letter cannot be laid out as a PDF');
+            throw new ServerException('The links and images of the letter cannot be laid out as a PDF');
         }
         return [$flowed, array_reverse($kept)];
     }

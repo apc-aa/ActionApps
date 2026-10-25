@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds\Fixtures;
 
 use AA\Isds\Actions;
+use AA\Isds\SendStart;
+use AA\Isds\Setup;
+use AA\Isds\TestResult;
 
 /**
  * Actions with the core, the logs and post_max_size given here: Continue says what $resume says, Stop
- * and Abandon what $stop says, each records who asked it; a log row is recorded, not written - or
- * fails as $logFails says.
+ * and Abandon what $stop says, Send what $queue, Test what $test, each records who asked it; a log row
+ * is recorded, not written - or fails as $logFails says.
  */
 final class FakeActions extends Actions
 {
@@ -24,6 +27,18 @@ final class FakeActions extends Actions
 
     /** @var list<array{string, string, bool}> campaign, uid, abandon of each Stop and Abandon asked of the core */
     public static array $stopped = [];
+
+    /** @var ?\Closure(Setup, string, string, int): SendStart what Send of a campaign by a uid with the count confirmed says; null = the test asks none */
+    public static ?\Closure $queue = null;
+
+    /** @var list<array{string, string, int}> campaign, uid, count confirmed of each Send asked of the core */
+    public static array $queued = [];
+
+    /** @var ?\Closure(Setup, string, string, string): TestResult what Test of a campaign by a uid to a box says; null = the test asks none */
+    public static ?\Closure $test = null;
+
+    /** @var list<array{string, string, string}> campaign, uid, box of each Test asked of the core */
+    public static array $tested = [];
 
     /** @var list<array{string, string, list<string>}> event, selector, params of each log row */
     public static array $logged = [];
@@ -43,6 +58,10 @@ final class FakeActions extends Actions
         self::$resumed     = [];
         self::$stop        = null;
         self::$stopped     = [];
+        self::$queue       = null;
+        self::$queued      = [];
+        self::$test        = null;
+        self::$tested      = [];
         self::$logged      = [];
         self::$failures    = [];
         self::$postMaxSize = 8 * 1024 * 1024;
@@ -67,6 +86,20 @@ final class FakeActions extends Actions
         self::$stopped[] = [$campaign, $uid, $abandon];
 
         return is_null(self::$stop) ? '' : (self::$stop)($campaign, $uid, $abandon);
+    }
+
+    protected function queueRun(Setup $setup, string $campaign, string $uid, int $confirmed): SendStart
+    {
+        self::$queued[] = [$campaign, $uid, $confirmed];
+
+        return (self::$queue ?? throw new \LogicException('This test sends nothing'))($setup, $campaign, $uid, $confirmed);
+    }
+
+    protected function testRun(Setup $setup, string $campaign, string $uid, string $box): TestResult
+    {
+        self::$tested[] = [$campaign, $uid, $box];
+
+        return (self::$test ?? throw new \LogicException('This test sends no test message'))($setup, $campaign, $uid, $box);
     }
 
     protected function log(string $event, string $selector, array $params): void

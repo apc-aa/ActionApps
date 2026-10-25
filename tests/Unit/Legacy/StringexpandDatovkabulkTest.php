@@ -88,7 +88,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_subcommands_outsideTheUiGiveNothing(): void
         {
-            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:progress:ca00000000000000000000000000000b:state}{datovkabulk:delete}{datovkabulk}'));
+            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:testboxes}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:progress:ca00000000000000000000000000000b:state}{datovkabulk:delete}{datovkabulk}'));
         }
 
         public function test_recipients_campaignAndQuestionToTheGate(): void
@@ -123,6 +123,23 @@ namespace Tests\Unit\Legacy {
             };
 
             self::assertSame(['result|code', 'result|'], [$command->expand('result', 'code'), $command->expand('result')]);
+        }
+
+        public function test_testboxes_fromTheGate(): void
+        {
+            $command = new class ([]) extends AA_Stringexpand_Datovkabulk {
+                protected function gate(): Gate
+                {
+                    return new class extends Gate {
+                        public function testBoxes(): string
+                        {
+                            return 'dj7j6mk-ab12cde';
+                        }
+                    };
+                }
+            };
+
+            self::assertSame('dj7j6mk-ab12cde', $command->expand('testboxes'));
         }
 
         public function test_progress_campaignAndQuestionToTheGate(): void

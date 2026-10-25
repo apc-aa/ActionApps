@@ -165,9 +165,9 @@ class Gate
 
     /**
      * What the action did, escaped: text - in the language of the page, how to go on, with what the
-     * core said -, or its code, status or action for the conditions of a template. '' with no result:
-     * after the redirect only the page with its key (isds_r) shows it, a reload of the progress or
-     * another tab does not.
+     * core said and what a test message cost -, or its code, status, action or charge (what a test
+     * message cost) for the conditions of a template. '' with no result: after the redirect only the
+     * page with its key (isds_r) shows it, a reload of the progress or another tab does not.
      */
     public function result(string $what = 'text'): string
     {
@@ -177,12 +177,19 @@ class Gate
         }
 
         return safe(match ($what) {
-            '', 'text' => trim(Advice::text($result->code, $result->params) . ' ' . $result->detail),
+            '', 'text' => Advice::join(Advice::text($result->code, $result->params), trim($result->detail), Advice::text($result->charge)),
             'code'     => $result->code,
             'status'   => $result->status,
             'action'   => $result->action,
+            'charge'   => $result->charge,
             default    => '',
         });
+    }
+
+    /** the test boxes of the page, dash-separated for a <select> of the test form (its field isds_box) */
+    public function testBoxes(): string
+    {
+        return safe(implode('-', self::$open->testBoxes ?? []));
     }
 
     /**

@@ -10884,12 +10884,18 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
  *        no campaign id only to save a new campaign. Actions: resume (Continue a sending in error or waiting),
  *        stop (Stop: nothing more is sent; never gives the sending up), abandon (end a sending in error for good -
- *        its fields are '' unless Stop can no longer end it, so offer it in place of Stop when they are not)
+ *        its fields are '' unless Stop can no longer end it, so offer it in place of Stop when they are not),
+ *        test (one test message of a draft at once - the form adds isds_box, one of testboxes; may be left out
+ *        with one test box), send (queue a draft - the form adds isds_confirm, the recipients count the page
+ *        showed: a count changed since is refused; with a count of 0 offer no Send - 0 is refused as a form
+ *        that cannot be taken, not as no recipients)
  *    {datovkabulk:env}    - test | production, as datovka_conf.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
- *    {datovkabulk:result[:text|code|status|action]} - what the posted action did: text to read (default), or
- *        for a condition its code (RESUMED, STOPPING, CONFIRM_ABANDON, BUSY, EXPIRED, ...), status (done,
- *        refused, busy, expired, failed) or action. After the action the page is loaded again with isds_campaign
+ *    {datovkabulk:testboxes} - the test boxes of the page, dash-separated: the options of isds_box
+ *    {datovkabulk:result[:text|code|status|action|charge]} - what the posted action did: text to read (default),
+ *        or for a condition its code (RESUMED, STOPPING, CONFIRM_ABANDON, QUEUED, TEST_SENT, BUSY, EXPIRED, ...),
+ *        status (done, refused, busy, expired, failed), action, or charge - what a test message cost (CHARGED,
+ *        MAY_BE_CHARGED, '' nothing). After the action the page is loaded again with isds_campaign
  *        and isds_r added to its URL; the result shows only with that isds_r, for 10 minutes
  *    {datovkabulk:recipients:<campaign id>:count|skipped|ids} - of an active campaign by its stored filter, counted
  *        anew: how many get the letter, how many are skipped for their data box, the dash-separated ids of who gets
@@ -10936,6 +10942,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'env'        => $gate->env(),
             'sender'     => $gate->sender(),
             'result'     => $gate->result((string)$settings),
+            'testboxes'  => $gate->testBoxes(),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),
             'progress'   => $gate->progress((string)$settings, (string)$ui),
             default      => '',

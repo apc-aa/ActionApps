@@ -247,6 +247,7 @@ final class HtmlBody
      * @param string $css        appended to the style of the letter: the code's own, never a user's (PdfBody::CSS)
      * @throws \InvalidArgumentException not UTF-8, cut off by libxml, empty, larger than a message may be, or
      *                                   of too many pixels; a message may quote the letter - escape it when shown
+     * @throws ServerException no temporary directory for the images
      * @throws \RuntimeException an image among the uploads cannot be read; the message names it
      */
     public function document(string $subject, string $body, bool $html = true, string $letterhead = '', string $css = ''): string
@@ -834,7 +835,7 @@ final class HtmlBody
         }
         $dir = sys_get_temp_dir() . '/aa-letter-' . bin2hex(random_bytes(8));
         if (!@mkdir($dir, 0o700)) {
-            throw new \RuntimeException('There is no temporary directory for the images of the letter');
+            throw new ServerException('There is no temporary directory for the images of the letter');
         }
         $remove = static function () use ($dir): void {
             @unlink("$dir/in");
@@ -845,7 +846,7 @@ final class HtmlBody
         register_shutdown_function($remove);
         try {
             if (file_put_contents("$dir/in", $bytes) !== strlen($bytes)) {
-                throw new \RuntimeException('The images of the letter cannot be stored for a while');
+                throw new ServerException('The images of the letter cannot be stored for a while');
             }
             $error = Imgfunc::reencode("$dir/in", "$dir/out", self::IMAGE_PX, UploadPolicy::ANON_MAX_PIXELS, $background);
             if ($error !== null) {

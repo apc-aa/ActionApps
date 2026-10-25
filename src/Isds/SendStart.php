@@ -46,6 +46,8 @@ final readonly class SendStart
     public const SETTINGS = SendRun::SETTINGS;
     /** the letter cannot go as a data message; the detail says why */
     public const CONTENT = 'CONTENT';
+    /** the server could not make the letter now (Body\ServerException): nothing in the campaign to fix; the detail is for a developer */
+    public const SERVER = 'SERVER';
     /** memory_limit is too low to freeze the files and cannot be raised; the detail is the MB needed */
     public const MEMORY = SendRun::MEMORY;
     /** a table the sending writes in one transaction is not InnoDB, or the database gave no transaction; the detail is the table */

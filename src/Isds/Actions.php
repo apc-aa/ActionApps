@@ -47,9 +47,22 @@ class Actions
     public const FORBIDDEN   = BatchRun::FORBIDDEN;
     public const LEASE       = 'LEASE';
     public const WRONG_STATE = 'WRONG_STATE';
+    /** a field of the form holds a value the action cannot take */
+    public const INPUT = 'INPUT';
+    /** Send: the sending is queued and goes on by itself; the param is the recipients confirmed */
+    public const QUEUED = 'QUEUED';
+    /** Test: the test message went; the params are the id ISDS gave it and its reference number */
+    public const TEST_SENT = 'TEST_SENT';
+    /** Test: whether the test message went is not known; the param is its reference number */
+    public const TEST_UNCERTAIN = 'TEST_UNCERTAIN';
+    /** Test: ISDS refused the test message; the param is the status it refused with, '' = none; the
+     *  detail the words of ISDS, only when Advice has no text of the status */
+    public const TEST_FAILED = 'TEST_FAILED';
+    /** Test: another test message of the pair of slices is on its way, or one died a moment ago */
+    public const TEST_BUSY = 'TEST_BUSY';
 
     /** the actions run here; the form of another one of Gate::ACTIONS is refused as one of no action */
-    private const RUNS = ['resume', 'stop', 'abandon'];
+    private const RUNS = ['resume', 'stop', 'abandon', 'test', 'send'];
 
     /** an action ran in this request: a form is acted on once, whichever gate on the page it names */
     private static bool $consumed = false;
@@ -135,11 +148,86 @@ class Actions
         if (($campaign !== '') && is_null($stored)) {
             return self::refused($action, self::UNKNOWN, $campaign);
         }
+        // a draft in the trash is no campaign of the page to send; the core asks again under its lock
+        if (in_array($action, ['test', 'send'], true) && !($stored['active'] ?? false)) {
+            return self::refused($action, self::UNKNOWN, $campaign);
+        }
 
         return match ($action) {
             'resume', 'stop', 'abandon' => $this->onRun($setup, $action, $campaign),
+            'test'                      => $this->test($setup, $campaign),
+            'send'                      => $this->send($setup, $campaign),
             default                     => throw new \LogicException("No action $action"),
         };
+    }
+
+    /** Send: the core queues the campaign, or says why not; it logs the sending queued itself */
+    private function send(Setup $setup, string $campaign): ActionResult
+    {
+        // the count the page showed when the user confirmed it - a hidden field, never typed
+        $posted = self::posted('isds_confirm');
+        if (preg_match('/^[1-9]\d{0,8}\z/', $posted) !== 1) {
+            return self::refused('send', self::INPUT, $campaign);
+        }
+        $confirmed = (int) $posted;
+        $start     = $this->queueRun($setup, $campaign, $this->access->uid(), $confirmed);
+        if ($start->status === SendStart::STATUS_QUEUED) {
+            return new ActionResult('send', ActionResult::DONE, self::QUEUED, $campaign, params: [$confirmed]);
+        }
+
+        return match ($start->code) {
+            SendStart::COUNT_CHANGED => self::refused('send', $start->code, $campaign, params: [$confirmed]),
+            SendStart::TOO_MANY      => self::refused('send', $start->code, $campaign, params: [$setup->maxRecipients]),
+            default                  => self::refused('send', $start->code, $campaign, ...self::told($start->code, $start->detail)),
+        };
+    }
+
+    /** Test: one test message of the draft to the test box the form names, now; the core logs it itself */
+    private function test(Setup $setup, string $campaign): ActionResult
+    {
+        // any text: the core takes only a test box of the page
+        $test   = $this->testRun($setup, $campaign, $this->access->uid(), self::posted('isds_box'));
+        $status = self::isdsStatus($test->isdsCode);
+
+        return match (true) {
+            $test->status === TestResult::STATUS_SENT      => new ActionResult('test', ActionResult::DONE, self::TEST_SENT, $campaign, params: [$test->dmId, $test->ref], charge: $test->charge()),
+            $test->status === TestResult::STATUS_UNCERTAIN => new ActionResult('test', ActionResult::DONE, self::TEST_UNCERTAIN, $campaign, params: [$test->ref], charge: $test->charge()),
+            // nothing sent: the login, the settings or ISDS unavailable - refused as when queueing
+            ($test->status === TestResult::STATUS_FAILED) && ($test->code !== '') => self::refused('test', $test->code, $campaign),
+            // the message went to ISDS: the same form again must not send another; the words of ISDS only
+            // where AA has no text of its status
+            $test->status === TestResult::STATUS_FAILED => new ActionResult('test', ActionResult::FAILED, self::TEST_FAILED, $campaign, (Advice::isds($status, true) === '') ? $test->detail : '', [$status]),
+            // not the campaign another works with: a test of any campaign of the pair of slices holds the lock
+            $test->code === TestResult::BUSY            => new ActionResult('test', ActionResult::BUSY, self::TEST_BUSY, $campaign),
+            $test->code === TestResult::SAME_LETTER     => self::refused('test', $test->code, $campaign, params: [$test->ref, $test->at]),
+            $test->code === TestResult::PAID_UNKNOWN    => self::refused('test', $test->code, $campaign, params: [$status]),
+            default                                     => self::refused('test', $test->code, $campaign, ...self::told($test->code, $test->detail)),
+        };
+    }
+
+    /**
+     * What a refusal of the core tells the page: the numbers its text names, and its detail only where
+     * that says what to fix - other details may name datovka_conf.php, a table or a filter as stored
+     * @return array{detail: string, params: list<int|string>}
+     */
+    private static function told(string $code, string $detail): array
+    {
+        return match ($code) {
+            SendStart::SETTINGS, SendStart::CONTENT => ['detail' => $detail, 'params' => []],
+            // the MB needed, as SendQueue gives them
+            SendStart::MEMORY      => ['detail' => '', 'params' => (preg_match('/^mb:(\d{1,9})\z/', $detail, $m) === 1) ? [(int) $m[1]] : []],
+            // the unix time the maintenance ends
+            TestResult::MAINTENANCE => ['detail' => '', 'params' => (preg_match('/^\d{1,12}\z/', $detail) === 1) ? [(int) $detail] : []],
+            // SendPace::refusalDetail(): the status ISDS refused with
+            SendRun::REFUSED       => ['detail' => '', 'params' => [self::isdsStatus(str_starts_with($detail, 'status:') ? substr($detail, 7) : '')]],
+            default                => ['detail' => '', 'params' => []],
+        };
+    }
+
+    /** a status ISDS answered with, as Advice reads it; '' for none and for anything else */
+    private static function isdsStatus(string $status): string
+    {
+        return (preg_match('/^\d{1,5}\z/', $status) === 1) ? $status : '';
     }
 
     /** Continue, Stop or Abandon of the run of the campaign, done by the core under the lock of the campaign */
@@ -178,9 +266,10 @@ class Actions
         return $setup->ownsRun($run) ? $run : self::refused($action, self::UNKNOWN, $campaign);
     }
 
-    private static function refused(string $action, string $code, string $campaign): ActionResult
+    /** @param list<int|string> $params */
+    private static function refused(string $action, string $code, string $campaign, string $detail = '', array $params = []): ActionResult
     {
-        return new ActionResult($action, ($code === self::BUSY) ? ActionResult::BUSY : ActionResult::REFUSED, $code, $campaign);
+        return new ActionResult($action, ($code === self::BUSY) ? ActionResult::BUSY : ActionResult::REFUSED, $code, $campaign, $detail, $params);
     }
 
     /** a text the form posts; '' for none, and for an array */
@@ -209,6 +298,18 @@ class Actions
     protected function stopRun(string $campaign, string $uid, bool $abandon): string
     {
         return SendRun::stop($campaign, $uid, $abandon);
+    }
+
+    /** SendQueue::queue() */
+    protected function queueRun(Setup $setup, string $campaign, string $uid, int $confirmed): SendStart
+    {
+        return (new SendQueue())->queue($setup, $campaign, $uid, $confirmed);
+    }
+
+    /** SendQueue::test() */
+    protected function testRun(Setup $setup, string $campaign, string $uid, string $box): TestResult
+    {
+        return (new SendQueue())->test($setup, $campaign, $uid, $box);
     }
 
     /** @param list<string> $params */

@@ -6,6 +6,7 @@ namespace AA\Isds;
 
 use AA\Isds\Body\HtmlBody;
 use AA\Isds\Body\PdfBody;
+use AA\Isds\Body\ServerException;
 use AA\Upload\UploadDir;
 
 /**
@@ -49,6 +50,7 @@ final readonly class Letter
      * @param \Closure(int): string $makeRoom   memory for the PDF, given the bytes it needs: '' = there is
      *                                          room, else why not - the message of \OverflowException
      * @throws \OverflowException no memory for the PDF
+     * @throws ServerException the server could not make it - no temporary directory, a limit of PCRE
      * @throws \InvalidArgumentException|\RuntimeException what to fix in the campaign; the message
      *                                   quotes file names and URLs - escape it when shown
      */

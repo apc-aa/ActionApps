@@ -116,7 +116,7 @@ final class PdfBody
     /**
      * @param string $document of HtmlBody::document() with CSS
      * @throws \InvalidArgumentException a letter that is no PDF whole; the message says what to change
-     * @throws \RuntimeException no directory for dompdf, PCRE failed to measure the letter or lost an image of it
+     * @throws ServerException no directory for dompdf, PCRE failed to measure the letter or lost an image of it
      */
     public function render(string $document): File
     {
@@ -128,7 +128,7 @@ final class PdfBody
         [$document, $this->numbers] = PdfTables::flow($document);
         $dir = sys_get_temp_dir() . '/aa-pdf-' . bin2hex(random_bytes(8));
         if (!@mkdir($dir, 0o700)) {
-            throw new \RuntimeException('There is no temporary directory for the PDF letter');
+            throw new ServerException('There is no temporary directory for the PDF letter');
         }
         // a fatal error - memory, time - skips finally
         register_shutdown_function(self::remove(...), $dir);
@@ -232,7 +232,7 @@ final class PdfBody
 
     /**
      * Bytes render() may take of the document, at most
-     * @throws \RuntimeException PCRE failed to measure the letter
+     * @throws ServerException PCRE failed to measure the letter
      */
     public static function memory(string $document): int
     {
@@ -262,7 +262,7 @@ final class PdfBody
         $found  = preg_match_all('~<(td|th|col|colgroup)\b([^>]*+)>~', $markup, $tags, PREG_SET_ORDER);
         if (($markup === '') || ($lines === false) || ($found === false)) {
             // a limit of PCRE: a letter not measured would pass every limit
-            throw new \RuntimeException('The letter cannot be measured for a PDF');
+            throw new ServerException('The letter cannot be measured for a PDF');
         }
         $cells = 0;
         foreach ($tags as [, $tag, $attributes]) {

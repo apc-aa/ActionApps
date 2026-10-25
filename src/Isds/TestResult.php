@@ -44,7 +44,7 @@ final readonly class TestResult
      *  may be refused; $isdsCode is the status ISDS answered with, if any - with paid_tests only such a
      *  status refuses. Check the box and try again */
     public const PAID_UNKNOWN = 'PAID_UNKNOWN';
-    // and as SendStart: ACCOUNT, SETTINGS, CONTENT, MEMORY
+    // and as SendStart: ACCOUNT, SETTINGS, CONTENT, SERVER, MEMORY
 
     /** what a test sent or uncertain cost (charge()), as a code that goes across a redirect: a paid message
      *  went - only paid_tests of the account lets one go -, or one may have, of which ISDS did not say */
