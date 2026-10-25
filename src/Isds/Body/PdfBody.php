@@ -131,7 +131,7 @@ final class PdfBody
             throw new ServerException('There is no temporary directory for the PDF letter');
         }
         // a fatal error - memory, time - skips finally
-        register_shutdown_function(self::remove(...), $dir);
+        register_shutdown_function(TempDir::remove(...), $dir);
         // thrown by the callbacks, known by itself: anything else thrown inside dompdf says only that it failed
         $limit            = new \LengthException();
         $this->pages      = 0;
@@ -178,7 +178,7 @@ final class PdfBody
             Cache::clear();
             unset($dompdf);
             gc_collect_cycles();
-            self::remove($dir);
+            TempDir::remove($dir);
         }
         $refusal = $this->refusal($warnings);
         if ($refusal !== null) {
@@ -488,20 +488,5 @@ final class PdfBody
             'logOutputFile'           => '',
             'debugKeepTemp'           => false,
         ]);
-    }
-
-    /** $dir and the files dompdf left in it, never what a link leads to */
-    private static function remove(string $dir): void
-    {
-        clearstatcache(true, $dir);
-        if (!is_dir($dir) || is_link($dir)) {
-            return;
-        }
-        foreach (scandir($dir) ?: [] as $name) {
-            if (($name !== '.') && ($name !== '..')) {
-                @unlink("$dir/$name");
-            }
-        }
-        @rmdir($dir);
     }
 }

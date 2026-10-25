@@ -281,9 +281,15 @@ final class HtmlBodyTest extends TestCase
 
     // what escape() and the line ends would make of it is refused before it is built: at most one copy of
     // the text, never the 6 times larger HTML
+    /** @param 'body'|'letterhead'|'HTML' $place */
     #[DataProvider('growing')]
-    public function test_document_refusesWhatGrowsPastMessageSize(string $text, string $place): void
+    public function test_document_refusesWhatGrowsPastMessageSize(string $what, int $grows, string $place): void
     {
+        // built here: PHPUnit exports the data of a provider to describe the case, and at 128 MB ran out of memory
+        $text = str_repeat($what, intdiv(Message::MAX_BYTES, $grows) + 1);
+        if ($place === 'HTML') {
+            $text = "<p>$text</p>";
+        }
         memory_reset_peak_usage();
         $before = memory_get_usage();
         try {
@@ -301,17 +307,17 @@ final class HtmlBodyTest extends TestCase
 
     public static function growing(): array
     {
-        $over = static fn(string $what, int $grows): string => str_repeat($what, intdiv(Message::MAX_BYTES, $grows) + 1);
+        // what, how many times escape() or the line ends grow it, where
         return [
-            'quotes in the body'           => [$over('"', 6), 'body'],
-            'apostrophes in the body'      => [$over("'", 6), 'body'],
-            'ampersands in the body'       => [$over('&', 5), 'body'],
-            'angle brackets in the body'   => [$over('<', 4), 'body'],
-            'line ends in the body'        => [$over("a\n", 3), 'body'],
-            'line tabulations in the body' => [$over("a\v", 3), 'body'],
-            'quotes in the letterhead'     => [$over('"', 6), 'letterhead'],
-            'line ends in the letterhead'  => [$over("a\n", 3), 'letterhead'],
-            'quotes in a text of HTML'     => ['<p>' . $over('"', 6) . '</p>', 'HTML'],
+            'quotes in the body'           => ['"', 6, 'body'],
+            'apostrophes in the body'      => ["'", 6, 'body'],
+            'ampersands in the body'       => ['&', 5, 'body'],
+            'angle brackets in the body'   => ['<', 4, 'body'],
+            'line ends in the body'        => ["a\n", 3, 'body'],
+            'line tabulations in the body' => ["a\v", 3, 'body'],
+            'quotes in the letterhead'     => ['"', 6, 'letterhead'],
+            'line ends in the letterhead'  => ["a\n", 3, 'letterhead'],
+            'quotes in a text of HTML'     => ['"', 6, 'HTML'],
         ];
     }
 
@@ -965,15 +971,39 @@ final class HtmlBodyTest extends TestCase
         self::assertStringStartsWith('<p>a</p>', self::body($html, $letter), 'the second letter is not refused');
     }
 
-    // drawn or not, an image leaves no file behind
+    // drawn or refused by Imgfunc, an image leaves no file behind and its removal no warning; over MAX_PIXELS none is made
     public function test_document_leavesNoTemporaryFiles(): void
     {
         self::needsGd();
-        $before = glob(sys_get_temp_dir() . '/aa-letter-*') ?: [];
-
-        self::body('<p><img src="data:image/png;base64,' . self::PNG . '"><img src="' . self::header(20, 20) . '"></p>');
+        $before   = glob(sys_get_temp_dir() . '/aa-letter-*') ?: [];
+        $warnings = [];
+        // silenced ones too: an error handler gets them all
+        $previous = null;
+        $previous = set_error_handler(static function (int $level, string $text, string $file, int $line) use (&$warnings, &$previous): bool {
+            if (str_ends_with($file, 'TempDir.php')) {
+                $warnings[] = $text;
+                return true;
+            }
+            return is_callable($previous) ? (bool) $previous($level, $text, $file, $line) : false;
+        });
+        $over = '<p>a</p>';
+        for ($i = 0; $i < intdiv(HtmlBody::MAX_PIXELS, 4000 * 3990) + 1; $i++) {
+            $over .= '<p><img src="' . self::header(4000, 3990 + $i) . '"></p>';
+        }
+        try {
+            self::body('<p><img src="data:image/png;base64,' . self::PNG . '"><img src="' . self::header(20, 20) . '"></p>');
+            try {
+                (new HtmlBody())->document('Pozvánka', $over);
+                self::fail('accepted');
+            } catch (\InvalidArgumentException $e) {
+                self::assertStringContainsString('million pixels together', $e->getMessage());
+            }
+        } finally {
+            restore_error_handler();
+        }
 
         self::assertSame($before, glob(sys_get_temp_dir() . '/aa-letter-*') ?: []);
+        self::assertSame([], $warnings);
     }
 
     public function test_document_refusesOverMessageSize(): void

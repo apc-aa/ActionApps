@@ -837,13 +837,8 @@ final class HtmlBody
         if (!@mkdir($dir, 0o700)) {
             throw new ServerException('There is no temporary directory for the images of the letter');
         }
-        $remove = static function () use ($dir): void {
-            @unlink("$dir/in");
-            @unlink("$dir/out");
-            @rmdir($dir);
-        };
         // GD out of memory is a fatal error, which skips finally
-        register_shutdown_function($remove);
+        register_shutdown_function(TempDir::remove(...), $dir);
         try {
             if (file_put_contents("$dir/in", $bytes) !== strlen($bytes)) {
                 throw new ServerException('The images of the letter cannot be stored for a while');
@@ -860,7 +855,7 @@ final class HtmlBody
             }
             return $uri;
         } finally {
-            $remove();
+            TempDir::remove($dir);
         }
     }
 
