@@ -20,6 +20,9 @@ final class FakePerms extends AA_Permsystem
     /** AA::$perm before install(); the outer array tells it was saved */
     private static array $saved = [];
 
+    /** @var array<string, string> login => the name AA shows of it; a login named here is of this system */
+    public array $names = [];
+
     /**
      * @param array<string, array<string, string>> $grants subject (a login, a group) => slice => letters or a role id
      * @param array<string, list<string>>          $groups login => the groups it is a member of
@@ -99,7 +102,12 @@ final class FakePerms extends AA_Permsystem
 
     public function getIDsInfo($uid): false|array
     {
-        return false;
+        return isset($this->names[$uid]) ? ['name' => $this->names[$uid]] : false;
+    }
+
+    public function userIdFormatMatches($uid): bool
+    {
+        return isset($this->names[$uid]);
     }
 
     public function getGroupMembers($group_id): array

@@ -149,7 +149,10 @@ class CheckIsdsRuns extends AbstractOptimize
         if ($run->watching() && !$finished) {
             $run->unshown();
         }
-        $failed   = count(array_keys($fates, Schema::MESSAGE_STATE_FAILED, true));
+        // one a person verified as not gone never reached ISDS: no failure ISDS told, nothing to fix
+        $all      = $maps->failures();
+        $failures = array_diff($all, [Schema::VERIFIED]);
+        $failed   = count(array_keys($fates, Schema::MESSAGE_STATE_FAILED, true)) - (count($all) - count($failures));
         $open     = $maps->unsettled();
         // following delivery: every message was tried, the sending is over
         $over     = $finished || $run->watching();
@@ -179,12 +182,11 @@ class CheckIsdsRuns extends AbstractOptimize
             if ($over && $open) {
                 $refs       = array_map($run->senderRef(...), array_slice(array_keys($open), 0, self::EXAMPLES));
                 $title      = $finished ? _m('A finished mass sending left messages of unknown fate: %1', [count($open)]) : _m('A mass sending being followed has messages of unknown fate: %1', [count($open)]);
-                $findings[] = $this->ofRun(Finding::WARNING, $title, $id, $r, $shown, [_m('Examples') => safe(implode(', ', $refs))], _m('They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal, and send the letter again only to a recipient whose message is not there.'), 'unknown', min($open), count($open));
+                $findings[] = $this->ofRun(Finding::WARNING, $title, $id, $r, $shown, [_m('Examples') => safe(implode(', ', $refs))], _m('They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign.'), 'unknown', min($open), count($open));
             }
         }
         $tried = count(array_diff($fates, [Schema::MESSAGE_STATE_SKIPPED]));
         if ($failed && ($over || ($tried >= self::FAILED_SAMPLE)) && ($failed > self::FAILED_SHARE * $tried)) {
-            $failures = $maps->failures();
             $codes    = array_count_values($failures);
             arsort($codes);
             $listed     = implode(', ', array_map(static fn(string|int $code, int $n): string => "$code ×$n", array_keys($codes), $codes));

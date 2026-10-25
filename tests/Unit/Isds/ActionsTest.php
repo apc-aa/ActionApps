@@ -19,6 +19,7 @@ use AA\Isds\SendResult;
 use AA\Isds\SendRun;
 use AA\Isds\SendStart;
 use AA\Isds\Setup;
+use AA\Isds\Snapshot;
 use AA\Isds\TestResult;
 use AA\Http\Response;
 use AA\Util\FormToken;
@@ -73,6 +74,7 @@ final class ActionsTest extends TestCase
         FakeActions::reset();
         FakeActions::$resume = static fn(string $campaign, string $uid): string => TestSendRun::resumeFor($campaign, $uid);
         FakeActions::$stop   = static fn(string $campaign, string $uid, bool $abandon): string => TestSendRun::stop($campaign, $uid, $abandon);
+        FakeActions::$verify = static fn(string $campaign, string $uid, string $msg): string => TestSendRun::verify($campaign, $uid, $msg);
         $this->server        = $_SERVER;
         $this->campaigns     = [self::CAMPAIGN_ITEM => self::item()];
         session_id('actions-test-session');
@@ -218,7 +220,7 @@ final class ActionsTest extends TestCase
     public function test_run_actionNotRunYetExpired(): void
     {
         self::inError();
-        self::post('verify');
+        self::post('fixbox');
 
         self::assertExpired($this->actions()->run(self::page(), true));
     }
@@ -715,6 +717,165 @@ final class ActionsTest extends TestCase
         self::post('abandon');
 
         self::assertSame(Actions::ABANDONED, $this->actions()->run(self::page(), true)?->code);
+    }
+
+    // ------------------------------------------------------------ Verify
+
+    /**
+     * The states of a campaign as its page shows them (Gate::progress()), and what Verify of the message
+     * of recipient 1 does in each
+     * @return array<string, array{?\Closure(): string, string, string}> the run (null = none), the login, the code
+     */
+    public static function verifyStates(): array
+    {
+        $run   = static fn(array $props = [], array $position = self::SEND, string $state = SendRun::SENDING): \Closure => static function () use ($props, $position, $state): string {
+            $id = self::queued(3, $props + ['dm_ids' => '{"0":"1001"}', 'uncertain' => '{"1":' . (self::NOW - 7200) . '}', 'cursor' => '2'], $position);
+            self::items()->mark(self::message($id, 1), Schema::MESSAGE_STATE_UNCERTAIN, Schema::EVENT_TIMEOUT, self::NOW - 7200);
+            self::items()->writes = [];
+
+            return ($state === SendRun::SENDING) ? $id : self::leftInError($id, state: $state);
+        };
+        $watch = ['cursor' => '3', 'watch_from' => (string) (self::NOW - 3600)];
+
+        return [
+            'draft: no run'                     => [null, Sending::USER, Actions::WRONG_STATE],
+            'sending'                           => [$run(), Sending::USER, Actions::WRONG_STATE],
+            'sending, stopped: looking it up'   => [$run(['stop_by' => Sending::USER], self::LOOK), Sending::USER, Actions::WRONG_STATE],
+            'error'                             => [$run([], self::SEND, SendRun::ERROR), Sending::USER, Actions::WRONG_STATE],
+            'watching'                          => [$run($watch, self::WATCH), Sending::USER, Actions::VERIFIED],
+            'watch_error'                       => [$run($watch, self::WATCH, SendRun::ERROR), Sending::USER, Actions::VERIFIED],
+            'done'                              => [$run(['cursor' => '3'], self::LOOK, SendRun::DONE), Sending::USER, Actions::VERIFIED],
+            // its end, which marks such messages uncertain, still waits in the queue
+            'abandoned, its end not run'        => [static function () use ($run): string {
+                $id = $run(['stop_by' => Sending::USER], self::SEND, SendRun::ERROR)();
+                TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, true);
+                return $id;
+            }, Sending::USER, Actions::WRONG_STATE],
+            'abandoned, its end run'            => [static function () use ($run): string {
+                $id = $run(['stop_by' => Sending::USER], self::SEND, SendRun::ERROR)();
+                TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER, true);
+                self::runQueued();
+                return $id;
+            }, Sending::USER, Actions::VERIFIED],
+            'watching, the message known'       => [$run($watch + ['failed' => '{"1":"1214"}'], self::WATCH), Sending::USER, Actions::NOT_UNCERTAIN],
+            'watching, another request holds it' => [static function () use ($run, $watch): string {
+                TestSendRun::$lockedByOthers = [self::CAMPAIGN_ITEM];
+                return $run($watch, self::WATCH)();
+            }, Sending::USER, Actions::BUSY],
+            'watching, the right taken away'    => [$run($watch, self::WATCH), Sending::READER, Actions::FORBIDDEN],
+        ];
+    }
+
+    /** @param ?\Closure(): string $run */
+    #[DataProvider('verifyStates')]
+    public function test_verify_byState(?\Closure $run, string $login, string $code): void
+    {
+        $id     = $run ? $run() : null;
+        $msg    = is_null($id) ? 'a0000000000000000000000000000001' : self::message($id, 1);
+        $before = is_null($id) ? null : self::stored($id);
+        self::post('verify', over: ['isds_message' => $msg]);
+
+        $status = match ($code) {
+            Actions::VERIFIED => ActionResult::DONE,
+            Actions::BUSY     => ActionResult::BUSY,
+            default           => ActionResult::REFUSED,
+        };
+        self::assertEquals(new ActionResult('verify', $status, $code, self::CAMPAIGN_ITEM), $this->actions($login)->run(self::page(), true));
+        $verified = ($code === Actions::VERIFIED);
+        self::assertSame($verified ? [[SendQueue::LOG_EVENT, 'verify:' . self::CAMPAIGN_ITEM, [Sending::USER, $msg]]] : [], FakeActions::$logged, 'only a verification done is logged');
+        if (!is_null($id)) {
+            self::assertSame($verified ? Schema::MESSAGE_STATE_FAILED : Schema::MESSAGE_STATE_UNCERTAIN, self::state($id, 1));
+            if (!$verified) {
+                self::assertSame($before, self::stored($id), 'refused: nothing written');
+            }
+        }
+    }
+
+    // a double click past the gate's memory, another tab: told it is done, nothing written nor logged again
+    public function test_verify_againDoneNotLogged(): void
+    {
+        $id = self::verifiable();
+        self::post('verify', over: ['isds_message' => self::message($id, 1)]);
+        $this->actions()->run(self::page(), true);
+        FakeActions::reset();
+        FakeActions::$verify = static fn(string $campaign, string $uid, string $msg): string => TestSendRun::verify($campaign, $uid, $msg);
+        $before              = self::stored($id);
+        self::items()->writes = [];
+
+        self::assertEquals(new ActionResult('verify', ActionResult::DONE, Actions::VERIFIED, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+
+        self::assertSame([$before, [], []], [self::stored($id), self::items()->writes, FakeActions::$logged]);
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function notAMessage(): array
+    {
+        return ['none' => [null], 'no id' => ['4711-2'], 'an array' => [['a0000000000000000000000000000001']]];
+    }
+
+    #[DataProvider('notAMessage')]
+    public function test_verify_notAMessageUnknownMessage(mixed $msg): void
+    {
+        self::verifiable();
+        self::post('verify', over: ['isds_message' => $msg]);
+
+        self::assertEquals(new ActionResult('verify', ActionResult::REFUSED, Actions::UNKNOWN_MESSAGE, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame([], FakeActions::$verified, 'the core not asked');
+    }
+
+    // the message id is read from the form in any case, and the core gets the login of the request
+    public function test_verify_uidFromLoginMessageNormalized(): void
+    {
+        $id = self::verifiable();
+        self::post('verify', over: ['isds_message' => strtoupper(self::message($id, 1)), 'uid' => Sending::READER]);
+
+        self::assertSame(Actions::VERIFIED, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[self::CAMPAIGN_ITEM, Sending::USER, strtolower(self::message($id, 1))]], FakeActions::$verified);
+    }
+
+    // frozen recipients that do not read back as frozen: no text an editor could act on, nothing written
+    public function test_verify_snapshotChangedInternal(): void
+    {
+        $id                  = self::verifiable();
+        FakeActions::$verify = static fn(): string => Snapshot::CHANGED;
+        self::post('verify', over: ['isds_message' => self::message($id, 1)]);
+
+        self::assertEquals(new ActionResult('verify', ActionResult::FAILED, Actions::INTERNAL, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame([], FakeActions::$logged);
+    }
+
+    // a campaign put in the trash still shows its sending, and its messages of unknown fate
+    public function test_verify_trashedCampaignStillVerifies(): void
+    {
+        $id              = self::verifiable();
+        $this->campaigns = [self::CAMPAIGN_ITEM => self::item(active: false)];
+        self::post('verify', over: ['isds_message' => self::message($id, 1)]);
+
+        self::assertSame(Actions::VERIFIED, $this->actions()->run(self::page(), true)?->code);
+    }
+
+    /** @param array<string, string> $props */
+    #[DataProvider('runOfOtherBinding')]
+    public function test_verify_runOfOtherBindingUnknown(array $props): void
+    {
+        $id = self::verifiable($props);
+        self::post('verify', over: ['isds_message' => self::message($id, 1)]);
+
+        self::assertSame(Actions::UNKNOWN, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([[], Schema::MESSAGE_STATE_UNCERTAIN], [FakeActions::$verified, self::state($id, 1)]);
+    }
+
+    /**
+     * A run following delivery, recipient 1 of unknown fate
+     * @param array<string, string> $props
+     */
+    private static function verifiable(array $props = []): string
+    {
+        $id = self::queued(3, $props + ['dm_ids' => '{"0":"1001","2":"1003"}', 'uncertain' => '{"1":' . (self::NOW - 7200) . '}', 'cursor' => '3', 'watch_from' => (string) (self::NOW - 3600)], self::WATCH);
+        self::items()->mark(self::message($id, 1), Schema::MESSAGE_STATE_UNCERTAIN, Schema::EVENT_TIMEOUT, self::NOW - 7200);
+        self::items()->writes = [];
+
+        return $id;
     }
 
     // ------------------------------------------------------------ Send and Test

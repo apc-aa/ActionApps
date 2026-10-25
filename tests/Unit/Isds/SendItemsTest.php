@@ -303,6 +303,23 @@ final class SendItemsTest extends TestCase
         self::assertFalse($items->mark('a0000000000000000000000000000009', Schema::MESSAGE_STATE_STOPPED, Schema::EVENT_STOPPED, self::AT, once: true), 'no such item');
     }
 
+    // who verified it stays in the timeline through later writes; a name is a line, cut to fit an entry
+    public function test_mark_verifiedKeepsBy(): void
+    {
+        $items = self::uncertain();
+        $name  = "17 Jana\tNováková\n" . str_repeat('ž', 200);
+
+        self::assertTrue($items->mark(self::MSG, Schema::MESSAGE_STATE_FAILED, Schema::EVENT_VERIFIED, self::AT + 30, code: Schema::VERIFIED, by: $name));
+        self::assertTrue($items->mark(self::MSG, Schema::MESSAGE_STATE_FAILED, Schema::EVENT_FAILED, self::AT + 40, code: Schema::VERIFIED));
+
+        $verified = self::timeline($items)[2];
+        self::assertSame(['at' => self::AT + 30, 'kind' => 'verified', 'code' => 'verified'], array_diff_key($verified, ['by' => 1]));
+        self::assertStringStartsWith('17 Jana Nováková žž', $verified['by']);
+        self::assertLessThanOrEqual(Soap::QUOTE + 3, strlen($verified['by']));
+        self::assertSame(['verified', 'failed'], array_column(array_slice(self::timeline($items), 2), 'kind'), 'the entry kept by the next write');
+        self::assertSame([Schema::MESSAGE_STATE => Schema::MESSAGE_STATE_FAILED, Schema::MESSAGE_ERROR_CODE => Schema::VERIFIED], self::fields($items, [Schema::MESSAGE_STATE, Schema::MESSAGE_ERROR_CODE]));
+    }
+
     // sent since it was tried - ISDS took it within CreateMessage; the list tells its delivery
     public function test_markFound_sentSinceTriedWithDelivery(): void
     {

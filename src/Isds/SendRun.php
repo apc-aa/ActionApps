@@ -63,6 +63,12 @@ class SendRun extends BatchRun
     public const CONFIRM_ABANDON = 'CONFIRM_ABANDON';
     /** stop() asked to give a run up, and it did: its note */
     public const ABANDONED = 'ABANDONED';
+    /** verify(): the message is failed as verified - now, or before */
+    public const VERIFIED = 'VERIFIED';
+    /** verify(): the fate of the message is known, or it was never tried */
+    public const NOT_UNCERTAIN = 'NOT_UNCERTAIN';
+    /** verify(): no recipient of the run has that message */
+    public const UNKNOWN_MESSAGE = 'UNKNOWN_MESSAGE';
     /** the states of a run: queued or working, stopped by an error, done, given up (BatchRun::end()) */
     public const SENDING = 'sending';
     public const ERROR   = 'error';
@@ -323,7 +329,75 @@ class SendRun extends BatchRun
         });
     }
 
-    /** the name of the DB_AA::lock() of a campaign: queueing, stopping and Continue take it, one at a time */
+    /**
+     * A person found a message of unknown fate not among the sent ones of the box: the record fails it
+     * as verified (Schema::VERIFIED), then its item - so it counts as not sent and may be sent again.
+     * Only once the sending is over: following delivery, done, or given up and its end run. A stop
+     * alone (isOver()) is not enough: the run still looks up a message that may have gone, and the end
+     * of a run given up marks such messages uncertain - over a verification it did not read.
+     * The item is written again on a repeat, as the record says it: a write that failed leaves it uncertain.
+     * @param string $msg long id of the message item
+     * @return string '' = verified now; VERIFIED = before, the record unchanged; or why not: BUSY,
+     *                FORBIDDEN, WRONG_STATE, UNKNOWN_MESSAGE, NOT_UNCERTAIN, SETTINGS, Snapshot::CHANGED
+     */
+    public static function verify(string $campaign, string $uid, string $msg): string
+    {
+        $msg  = strtolower($msg);
+        $name = AA::$perm->getUserName($uid);
+        $by   = ($name === $uid) ? $uid : "$uid $name";
+        // the recipients are frozen and the rules of the slices change by hand: read before the locks
+        $index = static function (self $run) use ($msg): int|string {
+            $k = array_search($msg, array_map(static fn(array $row): string => strtolower($row['msg']), $run->recipients()), true);
+            if ($k === false) {
+                return self::UNKNOWN_MESSAGE;
+            }
+            // nothing is stored into slices that break a rule, as in work()
+            $run->requireSliceRules();
+            return $k;
+        };
+        return self::underLock($campaign, $uid, static function (self $run, int $k): string {
+            if (!$run->verifiable()) {
+                return 'WRONG_STATE';
+            }
+            if ((SendMaps::entries((string) $run->failed)[$k] ?? null) === Schema::VERIFIED) {
+                // the record decides: one edited since into another fate is not written over
+                return (($run->maps()->fates()[$k] ?? null) === Schema::MESSAGE_STATE_FAILED) ? self::VERIFIED : self::NOT_UNCERTAIN;
+            }
+            if (!array_key_exists($k, $run->maps()->unsettled())) {
+                return self::NOT_UNCERTAIN;
+            }
+            // the record first: an item written and then lost to a failure would never be sent again
+            $run->failed = SendMaps::with((string) $run->failed, $k, Schema::VERIFIED);
+            $run->update(['failed']);
+            return '';
+        }, $index, static function (self $run, string $said) use ($msg, $by): void {
+            if (!in_array($said, ['', self::VERIFIED], true)) {
+                return;
+            }
+            try {
+                $run->items()->mark($msg, Schema::MESSAGE_STATE_FAILED, Schema::EVENT_VERIFIED, static::now(), code: Schema::VERIFIED, once: $said === self::VERIFIED, by: $by);
+            } catch (\Throwable $e) {
+                // the record says it, a repeat writes the item; the verification itself is done and is logged
+                AA_Log::write(Toexecute::FAILED_EVENT, $run->selector(), Toexecute::failureParams($run->getId(), $e));
+            }
+        });
+    }
+
+    /**
+     * Nothing looks up a message of unknown fate any more, nor marks it: following delivery (in error
+     * too) - not while a repeated look still runs -, done, or given up once its end ran, or failed
+     * (after_close) and a person must not wait for it for ever
+     */
+    private function verifiable(): bool
+    {
+        return match ($this->state()) {
+            self::DONE  => true,
+            self::ENDED => !$this->closeWaits() || $this->closeFailed(),
+            default     => $this->watching() && (($this->position()['p'] ?? null) === self::WATCH),
+        };
+    }
+
+    /** the name of the DB_AA::lock() of a campaign: queueing, stopping, Continue and verifying take it, one at a time */
     public static function lockName(string $campaign): string
     {
         return 'isds-campaign:' . strtolower($campaign);
@@ -333,32 +407,51 @@ class SendRun extends BatchRun
      * $do with the run of $campaign locked, under the lock of the campaign - released after the
      * commit, so whoever waits for it sees what $do wrote. Only for $uid that may control the run,
      * asked before the locks too: no one else holds them up.
-     * @param \Closure(self): string $do
+     * @param \Closure(self, mixed): string     $do      with what $prepare gave
+     * @param ?\Closure(self): (int|string)     $prepare before the locks, with the run as stored: a
+     *                                                   string refuses, anything else goes to $do
+     * @param ?\Closure(self, string): void     $then    with the run and what $do said, after the commit,
+     *                                                   still under the lock of the campaign
      * @return string what $do says; BUSY, or the code it was refused with
      */
-    private static function underLock(string $campaign, string $uid, \Closure $do): string
+    private static function underLock(string $campaign, string $uid, \Closure $do, ?\Closure $prepare = null, ?\Closure $then = null): string
     {
         if (DB_AA::inTransaction()) {
-            throw new \LogicException('A sending is stopped or continued outside any transaction');
+            throw new \LogicException('A sending is stopped, continued or verified outside any transaction');
         }
         $campaign = strtolower($campaign);
         $id       = (preg_match('/^[0-9a-f]{32}\z/', $campaign) === 1) ? array_key_first(self::recordsOfSubject($campaign)) : null;
         if (is_null($id)) {
             return 'WRONG_STATE';
         }
-        if (!(static::get((string) $id)?->mayControl($uid) ?? false)) {
+        $stored = static::get((string) $id);
+        if (!($stored?->mayControl($uid) ?? false)) {
             return self::FORBIDDEN;
+        }
+        try {
+            $prepared = $prepare ? $prepare($stored) : null;
+        } catch (BatchFailed $e) {
+            return $e->reason;
+        }
+        if (is_string($prepared)) {
+            return $prepared;
         }
         if (!static::lockCampaign($campaign)) {
             return self::BUSY;
         }
         try {
-            return DB_AA::transaction(static function () use ($id, $uid, $do): string {
-                $run = static::lockForUpdate((string) $id) ?? throw new BatchFailed('WRONG_STATE');
-                return $run->mayControl($uid) ? $do($run) : self::FORBIDDEN;
-            });
-        } catch (BatchFailed $e) {
-            return $e->reason;
+            try {
+                [$run, $said] = DB_AA::transaction(static function () use ($id, $uid, $do, $prepared): array {
+                    $run = static::lockForUpdate((string) $id) ?? throw new BatchFailed('WRONG_STATE');
+                    return [$run, $run->mayControl($uid) ? $do($run, $prepared) : self::FORBIDDEN];
+                });
+            } catch (BatchFailed $e) {
+                return $e->reason;
+            }
+            if ($then) {
+                $then($run, $said);
+            }
+            return $said;
         } finally {
             static::unlockCampaign($campaign);
         }

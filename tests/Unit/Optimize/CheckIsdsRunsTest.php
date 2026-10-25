@@ -203,6 +203,7 @@ final class CheckIsdsRunsTest extends TestCase
 
         self::assertSame([Finding::WARNING, "unknown:$id", 7, self::NOW - 900], [$finding->severity, $finding->key, $finding->count, $finding->since]);
         self::assertSame('4711-2, 4711-3, 4711-4, 4711-5, 4711-6', $finding->evidence[0]['Examples'], 'by the sender references a person finds them in ISDS');
+        self::assertStringContainsString('choose Verify on the page of the sending', $finding->advice, 'how a person records one that did not go');
     }
 
     /** @return iterable<string, array{int, int, array<string, string|int>, string, ?string}> */
@@ -219,6 +220,9 @@ final class CheckIsdsRunsTest extends TestCase
         yield 'uncertain ones were tried' => [20, 17, ['uncertain' => '{"17":' . (self::NOW - 60) . '}', 'failed' => '{"18":"1233","19":"1233"}'], SendRun::SENDING, '2 of 20|1233 ×2'];
         yield 'one of three, running' => [3, 2, ['failed' => '{"2":"1233"}'], SendRun::SENDING, null];
         yield 'one of three, done' => [3, 2, ['failed' => '{"2":"1233"}'], SendRun::DONE, '1 of 3|1233 ×1'];
+        // a message a person verified as not gone never reached ISDS
+        yield 'verified ones are no failure' => [20, 17, ['failed' => '{"17":"verified","18":"1233","19":"1233"}'], SendRun::SENDING, '2 of 20|1233 ×2'];
+        yield 'only verified ones' => [20, 17, ['failed' => '{"17":"verified","18":"verified","19":"verified"}'], SendRun::DONE, null];
         yield 'a box skipped was not tried' => [20, 18, ['failed' => '{"18":"1233"}', 'skips' => '{"19":"inactive"}'], SendRun::DONE, '1 of 19|1233 ×1'];
     }
 

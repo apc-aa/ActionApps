@@ -89,6 +89,7 @@ ISDS_SEND       queued:campaign_id              uid:run_id                     /
 ISDS_SEND       resume:campaign_id              uid:RESUMED                    // a sending in error or waiting continued from its page by the user (AA\Isds\Actions)
 ISDS_SEND       stop:campaign_id                uid:STOPPING                   // a sending stopped from its page by the user: nothing more is sent (AA\Isds\Actions)
 ISDS_SEND       abandon:campaign_id             uid:ABANDONED                  // a sending in error given up from its page by the user (AA\Isds\Actions)
+ISDS_SEND       verify:campaign_id              uid:message_id                 // a message of unknown fate recorded by the user as not gone, from the page of its sending: it fails as verified (AA\Isds\Actions)
 ISDS_SEND       clone:copy_id                   uid:campaign_id:all|unsent     // a campaign copied from its page by the user as a new draft - its whole letter, or for the recipients its sending left unsent (AA\Isds\Actions)
 ISDS_ACT        action:campaign_id              #site_id Class file:line       // an action of a page of a mass sending failed on an internal error - never the message; once a day, State Check lists them (AA\Isds\Actions, LogOnce, CheckIsdsAccounts)
 ISDS_TEST       test:campaign_id                uid:message_id:checksum        // a test message of a draft sent by the user, then a row of each file (AA\Isds\SendQueue::test())

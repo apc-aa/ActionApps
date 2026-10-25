@@ -45,8 +45,9 @@ class SendItems
      *  timeline written here, and decoding it could take more memory than a step has */
     private const LONGEST_TIMELINE = 256 * 1024;
 
-    /** the keys of a timeline entry; sum and files only in the sending of a test message */
-    private const ENTRY_KEYS = ['at', 'kind', 'dmID', 'code', 'message', 'sum', 'files'];
+    /** the keys of a timeline entry; sum and files only in the sending of a test message, by only in
+     *  the entry of a person who verified a message */
+    private const ENTRY_KEYS = ['at', 'kind', 'dmID', 'code', 'message', 'sum', 'files', 'by'];
 
     /** the checksum of the letter of a test message (SendQueue) */
     private const SUM = '/^[0-9a-f]{32}\z/';
@@ -141,13 +142,14 @@ class SendItems
      * @param string $senderRef CODE letters, at most Message::MAX_REF
      * @param bool   $once      nothing written when the item shows $state already: a stop or a lookup
      *                          repeated after its step died adds no second entry
+     * @param string $by        the person the entry is of, "uid name"; one line, cut to fit the entry
      * @return bool false = no such message item of this campaign, deleted by hand - nothing written
      * @throws \RuntimeException not stored
      */
-    public function mark(string $msg, string $state, string $event, int $at, string $dmId = '', string $code = '', string $senderRef = '', bool $once = false): bool
+    public function mark(string $msg, string $state, string $event, int $at, string $dmId = '', string $code = '', string $senderRef = '', bool $once = false, string $by = ''): bool
     {
         self::checkWords($dmId, $code, $senderRef);
-        return $this->write($msg, $state, $event, $at, $dmId, $code, '', $senderRef, once: $once);
+        return $this->write($msg, $state, $event, $at, $dmId, $code, '', $senderRef, once: $once, more: ($by === '') ? [] : self::given(['by' => Soap::quote($by)]));
     }
 
     /**

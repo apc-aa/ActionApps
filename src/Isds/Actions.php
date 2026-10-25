@@ -67,9 +67,15 @@ class Actions
     public const CLONED = Drafts::CLONED;
     /** Copy of the unsent: the sending left no recipient unsent */
     public const NONE_STOPPED = 'NONE_STOPPED';
+    /** Verify: the message of unknown fate is recorded as not sent - now, or by the same verification before */
+    public const VERIFIED = SendRun::VERIFIED;
+    /** Verify: the message is not of unknown fate (any more) */
+    public const NOT_UNCERTAIN = SendRun::NOT_UNCERTAIN;
+    /** Verify: no message of the sending has the id the form posts */
+    public const UNKNOWN_MESSAGE = SendRun::UNKNOWN_MESSAGE;
 
     /** the actions run here; the form of another one of Gate::ACTIONS is refused as one of no action */
-    private const RUNS = ['save', 'clone', 'resume', 'stop', 'abandon', 'test', 'send'];
+    private const RUNS = ['save', 'clone', 'resume', 'stop', 'abandon', 'verify', 'test', 'send'];
 
     /** an action ran in this request: a form is acted on once, whichever gate on the page it names */
     private static bool $consumed = false;
@@ -166,6 +172,7 @@ class Actions
             'save'                      => $this->save($setup, $campaign),
             'clone'                     => $this->copy($setup, $campaign, $stored['active'] ?? false),
             'resume', 'stop', 'abandon' => $this->onRun($setup, $action, $campaign),
+            'verify'                    => $this->verify($setup, $campaign),
             'test'                      => $this->test($setup, $campaign),
             'send'                      => $this->send($setup, $campaign),
             default                     => throw new \LogicException("No action $action"),
@@ -323,6 +330,36 @@ class Actions
         return new ActionResult($action, ActionResult::DONE, $done, $campaign);
     }
 
+    /**
+     * Verify: a person found the message of unknown fate (isds_message) not among the sent ones, so the
+     * core records it did not go; logged only when it did - the same verification again changes nothing
+     */
+    private function verify(Setup $setup, string $campaign): ActionResult
+    {
+        $run = $this->runOfPage($setup, 'verify', $campaign);
+        if ($run instanceof ActionResult) {
+            return $run;
+        }
+        $msg = ModuleId::normalize(self::posted('isds_message'));
+        if (is_null($msg)) {
+            return self::refused('verify', self::UNKNOWN_MESSAGE, $campaign);
+        }
+        $uid  = $this->access->uid();
+        $code = $this->verifyRun($campaign, $uid, $msg);
+        if ($code === Snapshot::CHANGED) {
+            // the frozen recipients do not read back as frozen: nothing an editor can fix
+            return new ActionResult('verify', ActionResult::FAILED, self::INTERNAL, $campaign);
+        }
+        if (!in_array($code, ['', self::VERIFIED], true)) {
+            return self::refused('verify', $code, $campaign);
+        }
+        if ($code === '') {
+            $this->done = [SendQueue::LOG_EVENT, "verify:$campaign", [$uid, $msg]];
+        }
+
+        return new ActionResult('verify', ActionResult::DONE, self::VERIFIED, $campaign);
+    }
+
     /** the run of the campaign, when it sends from the slices of the page (Setup::ownsRun()) */
     private function runOfPage(Setup $setup, string $action, string $campaign): SendRun|ActionResult
     {
@@ -367,6 +404,12 @@ class Actions
     protected function stopRun(string $campaign, string $uid, bool $abandon): string
     {
         return SendRun::stop($campaign, $uid, $abandon);
+    }
+
+    /** @return string what SendRun::verify() says */
+    protected function verifyRun(string $campaign, string $uid, string $msg): string
+    {
+        return SendRun::verify($campaign, $uid, $msg);
     }
 
     /**

@@ -11,7 +11,7 @@ use AA\Isds\TestResult;
 
 /**
  * Actions with the core, the logs and post_max_size given here: Continue says what $resume says, Stop
- * and Abandon what $stop says, Send what $queue, Test what $test, Save what $save, Copy what $copy, each records who asked it; a log row
+ * and Abandon what $stop says, Verify what $verify says, Send what $queue, Test what $test, Save what $save, Copy what $copy, each records who asked it; a log row
  * is recorded, not written - or fails as $logFails says.
  */
 final class FakeActions extends Actions
@@ -27,6 +27,12 @@ final class FakeActions extends Actions
 
     /** @var list<array{string, string, bool}> campaign, uid, abandon of each Stop and Abandon asked of the core */
     public static array $stopped = [];
+
+    /** @var ?\Closure(string, string, string): string what Verify of a message of a campaign by a uid says; null = '' (verified now) */
+    public static ?\Closure $verify = null;
+
+    /** @var list<array{string, string, string}> campaign, uid, message of each Verify asked of the core */
+    public static array $verified = [];
 
     /** @var ?\Closure(Setup, string, string, int): SendStart what Send of a campaign by a uid with the count confirmed says; null = the test asks none */
     public static ?\Closure $queue = null;
@@ -70,6 +76,8 @@ final class FakeActions extends Actions
         self::$resumed     = [];
         self::$stop        = null;
         self::$stopped     = [];
+        self::$verify      = null;
+        self::$verified    = [];
         self::$queue       = null;
         self::$queued      = [];
         self::$test        = null;
@@ -102,6 +110,13 @@ final class FakeActions extends Actions
         self::$stopped[] = [$campaign, $uid, $abandon];
 
         return is_null(self::$stop) ? '' : (self::$stop)($campaign, $uid, $abandon);
+    }
+
+    protected function verifyRun(string $campaign, string $uid, string $msg): string
+    {
+        self::$verified[] = [$campaign, $uid, $msg];
+
+        return is_null(self::$verify) ? '' : (self::$verify)($campaign, $uid, $msg);
     }
 
     protected function queueRun(Setup $setup, string $campaign, string $uid, int $confirmed): SendStart
