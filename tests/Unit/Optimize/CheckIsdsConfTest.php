@@ -221,6 +221,30 @@ final class CheckIsdsConfTest extends TestCase
         self::assertStringNotContainsString('ECN', serialize($findings), 'the database of its sites names it');
     }
 
+    // paid_tests AA cannot read allows no paid test - a warning by its key, of the production accounts of this database only
+    public function test_findings_paidTestsAaCannotRead(): void
+    {
+        $this->write(DatovkaConf::FILE, "<?php\nconst DATOVKA_CONF = [];\n", 0o640);
+        $this->write('include/config.php', '<?php', 0o640);
+        $check       = $this->check(['accounts' => [
+            'NSZM' => ['sites' => [Sending::SITE], 'paid_tests' => self::SECRET],
+            'ECN'  => ['sites' => [Sending::SITE2], 'paid_tests' => 1],
+            'TEST' => ['environment' => 'test', 'sites' => [Sending::SITE], 'paid_tests' => 'yes'],
+            'GOOD' => ['sites' => [Sending::SITE], 'paid_tests' => true],
+            'NOT'  => ['sites' => [Sending::SITE], 'paid_tests' => false],
+        ]]);
+        $check->here = [Sending::SITE];
+
+        $findings = $check->findings();
+
+        self::assertSame(['paid-tests'], self::keys($findings));
+        self::assertSame([Finding::WARNING, 'Paid tests of ISDS accounts AA cannot read: 1'], [$findings[0]->severity, $findings[0]->title]);
+        self::assertSame([['Setting' => Txt::safe("DATOVKA_CONF['accounts']['NSZM']['paid_tests']")]], $findings[0]->evidence);
+        self::assertStringContainsString('Write paid_tests as true', $findings[0]->advice);
+        self::assertStringNotContainsString(self::SECRET, serialize($findings));
+        self::assertStringNotContainsString('ECN', serialize($findings), 'the database of its sites names it');
+    }
+
     // the tokens of a long file would take a basic check too long - not checked, and it says so
     public function test_findings_longFileNotCheckedForKeysWrittenTwice(): void
     {

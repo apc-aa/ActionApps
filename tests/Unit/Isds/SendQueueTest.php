@@ -694,12 +694,13 @@ final class SendQueueTest extends TestCase
      * @param list<string> $asked
      * @param string       $page        PDZSendInfo answers with this fixture and $code instead
      * @param string       $certificate the PEM of the account; '' = a sound one
+     * @param mixed        $paidTests   paid_tests of the account; null leaves it out
      */
-    private function production(array $testBoxes, string $paid, array &$asked, string $status = '0000', string $page = '', int $code = 200, string $certificate = ''): void
+    private function production(array $testBoxes, string $paid, array &$asked, string $status = '0000', string $page = '', int $code = 200, string $certificate = '', mixed $paidTests = null): void
     {
         $this->certificates  = Certificates::directory();
         [$sound, $key]       = Certificates::make();
-        $over                = ['environment' => 'production', 'auth' => 'hosted', 'login' => null, 'password' => null, 'box' => self::SENDER, 'cert' => Certificates::file($this->certificates, 'both.pem', ($certificate === '') ? $sound . $key : $certificate), 'test_boxes' => $testBoxes];
+        $over                = ['environment' => 'production', 'auth' => 'hosted', 'login' => null, 'password' => null, 'box' => self::SENDER, 'cert' => Certificates::file($this->certificates, 'both.pem', ($certificate === '') ? $sound . $key : $certificate), 'test_boxes' => $testBoxes] + (is_null($paidTests) ? [] : ['paid_tests' => $paidTests]);
         TestSendRun::$conf   = Sending::conf(['NSZM' => Sending::account(over: $over)]);
         $paidXml             = ($page === '') ? self::paidAnswer($paid, $status) : self::fixture($page);
         $created             = self::fixture('create-message-ok.xml');
@@ -845,6 +846,38 @@ final class SendQueueTest extends TestCase
         self::assertSame([], self::testItems());
     }
 
+    /** @return array<string, array{mixed}> paid_tests that is not true */
+    public static function notTrue(): array
+    {
+        return ['false' => [false], 'a text' => ['yes'], 'a number' => [1]];
+    }
+
+    // only true of paid_tests lets a paid test go
+    #[DataProvider('notTrue')]
+    public function test_test_paidRefusedUnlessPaidTestsIsTrue(mixed $flag): void
+    {
+        $asked = [];
+        $this->production([self::TEST_BOX], 'true', $asked, paidTests: $flag);
+
+        $result = $this->test(self::testPage(environment: Account::PRODUCTION, senderBox: self::SENDER));
+
+        self::assertSame([TestResult::STATUS_REFUSED, TestResult::PAID, ['PDZSendInfo']], [$result->status, $result->code, $asked]);
+        self::assertSame([], self::testItems());
+    }
+
+    // the administrator allowed paid tests: it goes, and the result tells it cost money
+    public function test_test_paidGoesWithPaidTests(): void
+    {
+        $asked = [];
+        $this->production([self::TEST_BOX], 'true', $asked, paidTests: true);
+
+        $result = $this->test(self::testPage(environment: Account::PRODUCTION, senderBox: self::SENDER));
+
+        self::assertSame([TestResult::STATUS_SENT, '1835603', true, TestResult::CHARGED], [$result->status, $result->dmId, $result->paid, $result->charge()]);
+        self::assertSame(['PDZSendInfo', 'CreateMessage'], $asked);
+        self::assertSame([self::TEST_BOX], array_column(self::testItems(), Schema::MESSAGE_BOX));
+    }
+
     /** @return array<string, array{0: string, 1: string, 2: string, 3?: int}> the result PDZSendInfo answers with, its status, the status the refusal names, HTTP */
     public static function unknownPaid(): array
     {
@@ -868,6 +901,37 @@ final class SendQueueTest extends TestCase
         self::assertSame([TestResult::STATUS_REFUSED, TestResult::PAID_UNKNOWN, $code], [$result->status, $result->code, $result->isdsCode]);
         self::assertSame(['PDZSendInfo'], $asked);
         self::assertSame([], self::testItems());
+    }
+
+    // with paid tests allowed a price ISDS did not answer does not stop it - it may cost money, and the result
+    // says so; a status ISDS refused with (no such box) stops it as before
+    #[DataProvider('unknownPaid')]
+    public function test_test_paidUnknownGoesWithPaidTests(string $paid, string $status, string $code, int $http = 200): void
+    {
+        $asked = [];
+        $this->production([self::TEST_BOX], $paid, $asked, $status, code: $http, paidTests: true);
+
+        $result = $this->test(self::testPage(environment: Account::PRODUCTION, senderBox: self::SENDER));
+
+        if ($code === '') {
+            self::assertSame([TestResult::STATUS_SENT, null, TestResult::MAY_BE_CHARGED], [$result->status, $result->paid, $result->charge()]);
+            self::assertSame(['PDZSendInfo', 'CreateMessage'], $asked);
+        } else {
+            self::assertSame([TestResult::STATUS_REFUSED, TestResult::PAID_UNKNOWN, $code, ''], [$result->status, $result->code, $result->isdsCode, $result->charge()]);
+            self::assertSame(['PDZSendInfo'], $asked);
+            self::assertSame([], self::testItems());
+        }
+    }
+
+    // paid tests allowed, a free one costs nothing
+    public function test_test_freeWithPaidTestsCostsNothing(): void
+    {
+        $asked = [];
+        $this->production([self::TEST_BOX], 'false', $asked, paidTests: true);
+
+        $result = $this->test(self::testPage(environment: Account::PRODUCTION, senderBox: self::SENDER));
+
+        self::assertSame([TestResult::STATUS_SENT, false, false, ''], [$result->status, $result->paid, $result->charged, $result->charge()]);
     }
 
     /** @return array<string, array{string, string, string}> the page PDZSendInfo answers with, its HTTP status - or a certificate that cannot work -, the run's code */
@@ -913,7 +977,7 @@ final class SendQueueTest extends TestCase
 
         $result = $this->test(self::testPage(environment: Account::PRODUCTION, senderBox: self::SENDER));
 
-        self::assertSame([TestResult::STATUS_SENT, '1835603', false], [$result->status, $result->dmId, $result->paid]);
+        self::assertSame([TestResult::STATUS_SENT, '1835603', false, ''], [$result->status, $result->dmId, $result->paid, $result->charge()]);
         self::assertSame(['PDZSendInfo', 'CreateMessage'], $asked);
         self::assertSame([Account::PRODUCTION, self::SENDER], [self::items()->field($result->msg, Schema::MESSAGE_ENVIRONMENT), self::items()->field($result->msg, Schema::MESSAGE_SENDER_BOX)]);
     }
@@ -925,7 +989,19 @@ final class SendQueueTest extends TestCase
 
         $result = $this->test();
 
-        self::assertSame([TestResult::STATUS_SENT, true], [$result->status, $result->paid]);
+        self::assertSame([TestResult::STATUS_SENT, true, ''], [$result->status, $result->paid, $result->charge()]);
+    }
+
+    // paid_tests means nothing in the test ISDS
+    public function test_test_paidTestsOfTestAccountChangesNothing(): void
+    {
+        TestSendRun::$conf = Sending::conf(['NSZM' => Sending::account(over: ['paid_tests' => true])]);
+        $isds              = self::testIsds('true');
+
+        $result = $this->test();
+
+        self::assertSame([TestResult::STATUS_SENT, true, false, ''], [$result->status, $result->paid, $result->charged, $result->charge()]);
+        self::assertSame(['PDZSendInfo', 'CreateMessage'], $isds->ops());
     }
 
     // the page's list again, as datovka_conf.php has it: a page settled before the file changed, a template's box

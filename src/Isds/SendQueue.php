@@ -106,8 +106,10 @@ class SendQueue
      * One test message of the draft, now, to a test box of the page - the letter as stored, with
      * TEST_SUBJECT before its subject. Each letter goes to a box once: one that went or may have gone
      * there is not sent again until the draft changes (its checksum, sum()). In production a message
-     * that would be paid, or of which ISDS does not say, is refused. Only the test action of
-     * {datovkabulk} calls it, after Access, the form token and the check of a foreign origin.
+     * that would be paid, or of which ISDS does not say, is refused - unless paid_tests of the account
+     * allows it (Accounts); the result then tells what it cost (TestResult::charge()). A box ISDS refused
+     * when asked the price is refused all the same. Only the test action of {datovkabulk} calls it,
+     * after Access, the form token and the check of a foreign origin.
      * CONTENT also when the subject with TEST_SUBJECT is longer than ISDS takes.
      * @param string $uid as queue()
      * @param string $box the box the user chose; '' = the only test box of the page
@@ -211,19 +213,21 @@ class SendQueue
         $this->keepRunning(Client::TIMEOUT + Client::CREATE_TIMEOUT + 60);
         $client     = $this->client($account);
         $production = ($binding->environment === Account::PRODUCTION);
+        $freeOnly   = $production && !$binding->paidTests;
         try {
             $paid = $client->wouldBePaid($box);
         } catch (AuthException|ConfigException $e) {
             // the login cannot work: CreateMessage would fail alike, nothing is sent, nothing paid
-            return TestResult::of(Outcome::of($e), '', $box, '', null);
+            return TestResult::of(Outcome::of($e), '', $box, '', null, false);
         } catch (\Exception $e) {
-            // a box ISDS does not know too: whatever ISDS did not answer is no "free"
-            if ($production) {
-                return TestResult::refused(TestResult::PAID_UNKNOWN, isdsCode: ($e instanceof IsdsException) ? $e->isdsCode() : '');
+            // whatever ISDS did not answer is no "free"; a status it refused with (5001: no such box) stops paid tests too
+            $isdsCode = ($e instanceof IsdsException) ? $e->isdsCode() : '';
+            if ($freeOnly || ($production && ($isdsCode !== ''))) {
+                return TestResult::refused(TestResult::PAID_UNKNOWN, isdsCode: $isdsCode);
             }
             $paid = null;
         }
-        if ($production && $paid) {
+        if ($freeOnly && $paid) {
             return TestResult::refused(TestResult::PAID);
         }
         $msg = new_id();
@@ -252,7 +256,7 @@ class SendQueue
         if (($outcome->then === Outcome::RETHROW) && ($result instanceof \Throwable)) {
             throw $result;
         }
-        return TestResult::of($outcome, $msg, $box, $ref, $paid);
+        return TestResult::of($outcome, $msg, $box, $ref, $paid, $production ? $paid : false);
     }
 
     /** the box asked for among the test boxes of the page, as ISDS knows it; null = none of them */

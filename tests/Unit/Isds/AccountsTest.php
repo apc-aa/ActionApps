@@ -702,7 +702,7 @@ final class AccountsTest extends TestCase
         $production = ['environment' => Account::PRODUCTION, 'auth' => Account::HOSTED, 'sites' => [self::SITE], 'slices' => self::PAIR, 'box' => 'kv62bqf', 'cert' => '/etc/aa-isds/hosting.pem'];
         $other      = self::testAccount('OTHER', self::PAIR2, 'other-login', sites: [self::SITE2])['OTHER'];
         $cases      = [];
-        foreach (['environment', 'auth', 'sites', 'slices', 'test_boxes', 'login', 'password', 'box', 'cert', 'key', 'passphrase'] as $key) {
+        foreach (['environment', 'auth', 'sites', 'slices', 'test_boxes', 'paid_tests', 'login', 'password', 'box', 'cert', 'key', 'passphrase'] as $key) {
             $cases["under $key of a test account, by name"]   = [[DatovkaConf::ACCOUNTS => ['OTHER' => [$key => ['NSZM' => $production]] + $other]]];
             $cases["under $key of a test account, by number"] = [[DatovkaConf::ACCOUNTS => ['OTHER' => [$key => ['x', $production]] + $other]]];
         }
@@ -868,11 +868,13 @@ final class AccountsTest extends TestCase
         self::assertSame("DATOVKA_CONF['accounts']['NSZM']", Accounts::setting('NSZM'));
         self::assertSame(self::key('login'), Accounts::setting('NSZM', Accounts::LOGIN));
         self::assertSame(['environment', 'auth', 'sites', 'slices', 'test_boxes', 'login', 'password'], Accounts::keys(Account::TEST, Account::BASIC));
-        self::assertSame(['environment', 'auth', 'sites', 'slices', 'test_boxes', 'box', 'cert', 'key', 'passphrase'], Accounts::keys(Account::PRODUCTION, Account::HOSTED));
+        self::assertSame(['environment', 'auth', 'sites', 'slices', 'test_boxes', 'paid_tests', 'box', 'cert', 'key', 'passphrase'], Accounts::keys(Account::PRODUCTION, Account::HOSTED));
         self::assertSame(Accounts::keys(Account::PRODUCTION, Account::HOSTED), Accounts::keys(Account::PRODUCTION, Account::BASIC), 'production never lists a name and a password');
         self::assertSame(['environment', 'auth', 'sites', 'slices', 'test_boxes', 'cert', 'key', 'passphrase'], Accounts::keys(Account::TEST, Account::CERT));
         self::assertCount(11, Accounts::keys(Account::TEST), 'of any login');
         self::assertSame(Accounts::keys(Account::TEST), Accounts::keys(Account::TEST, ''), 'auth not known');
+        self::assertNotContains('paid_tests', Accounts::keys(Account::TEST), 'production only');
+        self::assertSame(['environment', 'auth', 'sites', 'slices', 'test_boxes', 'paid_tests', 'login', 'password', 'box', 'cert', 'key', 'passphrase'], Accounts::keys(''), 'of either environment and any login');
     }
 
     public function test_strays_whatIsNoAccount(): void
@@ -909,6 +911,29 @@ final class AccountsTest extends TestCase
             self::assertSame(['NSZM'], Accounts::brokenTestBoxes(self::conf($with($boxes) + $with(['dj7j6mk'], 'ECN'))), $what);
         }
         self::assertSame([], Accounts::brokenTestBoxes(self::conf(self::testAccount() + ['nszm' => ['test_boxes' => 'x'], 'BARE' => 'x'])), 'only accounts AA reads');
+    }
+
+    // only true lets a test message of production be paid; a value AA cannot read allows nothing and is told
+    public function test_bindings_paidTests(): void
+    {
+        $with = static fn(mixed $flag, string $name = 'NSZM'): array => [$name => ['paid_tests' => $flag] + self::withAuth(Account::PRODUCTION, Account::HOSTED, ['box' => 'kv62bqf', 'cert' => '/etc/aa-isds/hosting.pem'], $name)[$name]];
+        $plain = self::withAuth(Account::PRODUCTION, Account::HOSTED, ['box' => 'kv62bqf', 'cert' => '/etc/aa-isds/hosting.pem']);
+
+        self::assertTrue(self::binding($with(true))->paidTests);
+        self::assertSame([], Accounts::brokenPaidTests(self::conf($with(true))));
+        self::assertFalse(self::binding($plain)->paidTests, 'not set: free tests only');
+        self::assertSame([], Accounts::brokenPaidTests(self::conf($plain)));
+        self::assertFalse(self::binding($with(false))->paidTests);
+        self::assertSame([], Accounts::brokenPaidTests(self::conf($with(false))), 'false is read');
+        foreach (['a text' => 'yes', 'a number' => 1, 'true quoted' => 'true', 'a list' => [true]] as $what => $flag) {
+            $binding = self::binding($with($flag));
+            self::assertSame([[], false, true], [$binding->problems, $binding->paidTests, $binding->usable()], $what);
+            self::assertSame(['NSZM'], Accounts::brokenPaidTests(self::conf($with($flag) + $with(true, 'ECN'))), $what);
+        }
+        self::assertSame([], Accounts::brokenPaidTests(self::conf(['NSZM' => ['paid_tests' => 'yes'] + self::testAccount()['NSZM'], 'nszm' => ['paid_tests' => 'yes'], 'BARE' => 'x'])), 'production accounts AA reads only');
+        self::assertSame([], Accounts::strays(self::conf($with(true))), 'a key AA reads');
+        self::assertSame([self::key('paid_tests')], Accounts::strays(self::conf(['NSZM' => ['paid_tests' => true] + self::testAccount()['NSZM']])), 'none in a test account');
+        self::assertSame([], self::binding($with('yes'))->problems, 'the account sends');
     }
 
     // the entry of an account is an array of its keys

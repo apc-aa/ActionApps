@@ -20,7 +20,8 @@ use AA_Field;
  * the settings. environment can only narrow to the test ISDS - production comes from datovka_conf.php.
  * test_box can only narrow the test_boxes of a production account too: a template must not send a
  * letter of the sender to anyone the administrator of the server did not allow. A box beyond them is
- * left out, not refused: tests are no reason to stop the page.
+ * left out, not refused: tests are no reason to stop the page. Whether a test in production may be paid
+ * only the account says (paid_tests, Accounts), never the template.
  */
 final readonly class Setup
 {

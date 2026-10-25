@@ -37,12 +37,19 @@ final readonly class TestResult
     public const MAINTENANCE = SendRun::MAINTENANCE;
     /** this letter went, or may have gone, to this box already; $msg, $ref, $dmId and $at are those of that test */
     public const SAME_LETTER = 'SAME_LETTER';
-    /** production: the message would be a postal data message, which someone pays for */
+    /** production: the message would be a postal data message, which someone pays for, and paid_tests of
+     *  the account does not allow it */
     public const PAID = 'PAID';
     /** production: ISDS did not say whether the message would be paid - the box may not exist, the login
-     *  may be refused; $isdsCode is the status ISDS answered with, if any. Check the box and try again */
+     *  may be refused; $isdsCode is the status ISDS answered with, if any - with paid_tests only such a
+     *  status refuses. Check the box and try again */
     public const PAID_UNKNOWN = 'PAID_UNKNOWN';
     // and as SendStart: ACCOUNT, SETTINGS, CONTENT, MEMORY
+
+    /** what a test sent or uncertain cost (charge()), as a code that goes across a redirect: a paid message
+     *  went - only paid_tests of the account lets one go -, or one may have, of which ISDS did not say */
+    public const CHARGED        = 'CHARGED';
+    public const MAY_BE_CHARGED = 'MAY_BE_CHARGED';
 
     /**
      * @param string $status   STATUS_*
@@ -56,6 +63,7 @@ final readonly class TestResult
      * @param string $detail   what to fix, or the words of ISDS - escape it
      * @param ?bool  $paid     whether the message would be paid in production; null = not known
      * @param int    $at       SAME_LETTER: when the earlier test was sent, 0 = not known
+     * @param ?bool  $charged  whether the message cost money: null = it may have; false for any that did not go
      */
     private function __construct(
         public string $status,
@@ -68,6 +76,7 @@ final readonly class TestResult
         public string $detail = '',
         public ?bool $paid = null,
         public int $at = 0,
+        public ?bool $charged = false,
     ) {}
 
     /** @param string $code BUSY or a code of refusal */
@@ -79,8 +88,11 @@ final readonly class TestResult
         return new self(($code === self::BUSY) ? self::STATUS_BUSY : self::STATUS_REFUSED, $code, $msg, ref: $ref, dmId: $dmId, isdsCode: $isdsCode, detail: $detail, at: $at);
     }
 
-    /** the test as its message item was marked: nothing left (queued) is failed with the run's code */
-    public static function of(Outcome $outcome, string $msg, string $box, string $ref, ?bool $paid): self
+    /**
+     * the test as its message item was marked: nothing left (queued) is failed with the run's code
+     * @param ?bool $charges whether the message costs money if it goes: production and paid; null = not known
+     */
+    public static function of(Outcome $outcome, string $msg, string $box, string $ref, ?bool $paid, ?bool $charges): self
     {
         $status = match ($outcome->state) {
             Schema::MESSAGE_STATE_SENT      => self::STATUS_SENT,
@@ -89,6 +101,17 @@ final readonly class TestResult
         };
         // an uncertain one may say ISDS did not answer: no matter, it is not sent again either way
         $code = ($status === self::STATUS_FAILED) ? $outcome->code : '';
-        return new self($status, $code, $msg, $box, $ref, $outcome->dmId, $outcome->isdsCode, $outcome->text, $paid);
+        $charged = ($status === self::STATUS_FAILED) ? false : $charges;
+        return new self($status, $code, $msg, $box, $ref, $outcome->dmId, $outcome->isdsCode, $outcome->text, $paid, charged: $charged);
+    }
+
+    /** CHARGED, MAY_BE_CHARGED - an uncertain one may not have gone -, or '' when it cost nothing */
+    public function charge(): string
+    {
+        return match (true) {
+            $this->charged === false                                           => '',
+            ($this->charged === true) && ($this->status === self::STATUS_SENT) => self::CHARGED,
+            default                                                            => self::MAY_BE_CHARGED,
+        };
     }
 }

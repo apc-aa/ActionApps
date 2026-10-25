@@ -16,8 +16,8 @@ use AA_Log;
  * databases, so shown in each - whether PHP reads it and AA can use all of it, keys AA does not read or
  * that are written twice, its permissions next to those of include/config.php, copies of it in the
  * directory of AA, and of the last week the problems other requests met reading it and the answers of
- * ISDS service.php refused for an installation it does not list (both logged once a day), test_boxes AA
- * cannot read. Names of keys
+ * ISDS service.php refused for an installation it does not list (both logged once a day), test_boxes and
+ * paid_tests AA cannot read. Names of keys
  * and files only, never a value; an account written twice by its name only in the database of its sites.
  * Its accounts CheckIsdsAccounts checks.
  */
@@ -56,9 +56,10 @@ class CheckIsdsConf extends AbstractOptimize
     public function findings(): array
     {
         $conf     = $this->conf();
+        $unread   = $this->unreadableHere($conf);
         $findings = [
             ...$this->fileFindings($conf),
-            ...array_filter([$this->repeatedFinding($conf), $this->testBoxesFinding($conf), $this->accessFinding($conf), $this->copiesFinding()]),
+            ...array_filter([$this->repeatedFinding($conf), $this->testBoxesFinding($unread[Accounts::TEST_BOXES]), $this->paidTestsFinding($unread[Accounts::PAID_TESTS]), $this->accessFinding($conf), $this->copiesFinding()]),
             ...$this->loggedFindings($conf),
             ...$this->instanceFindings(),
         ];
@@ -201,15 +202,10 @@ class CheckIsdsConf extends AbstractOptimize
     /**
      * test_boxes AA cannot read: the account sends, only no test message goes from it. Of the accounts of
      * the sites of this database only, as repeatedFinding() names them; the key, never its value.
+     * @param list<string> $settings as unreadableHere()
      */
-    private function testBoxesFinding(DatovkaConf $conf): ?Finding
+    private function testBoxesFinding(array $settings): ?Finding
     {
-        $names = Accounts::brokenTestBoxes($conf);
-        if (!$names) {
-            return null;
-        }
-        $bindings = array_values(array_filter(Accounts::bindings($conf), static fn(Binding $b): bool => in_array($b->name, $names, true)));
-        $settings = array_map(static fn(Binding $b): string => Accounts::setting($b->name, Accounts::TEST_BOXES), Accounts::here($bindings, $this->modulesHere(Accounts::moduleIds($bindings))));
         if (!$settings) {
             return null;
         }
@@ -222,6 +218,48 @@ class CheckIsdsConf extends AbstractOptimize
             advice: _m("Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it."),
             key: 'test-boxes',
         );
+    }
+
+    /**
+     * paid_tests of production accounts AA cannot read: no paid test goes from them. As testBoxesFinding().
+     * @param list<string> $settings as unreadableHere()
+     */
+    private function paidTestsFinding(array $settings): ?Finding
+    {
+        if (!$settings) {
+            return null;
+        }
+
+        return new Finding(
+            Finding::WARNING,
+            _m('Paid tests of ISDS accounts AA cannot read: %1', [count($settings)]),
+            count: count($settings),
+            evidence: array_map(static fn(string $setting): array => [_m('Setting') => safe($setting)], $settings),
+            advice: _m('Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge.'),
+            key: 'paid-tests',
+        );
+    }
+
+    /**
+     * test_boxes and paid_tests AA cannot read, of the accounts that send for a site of this database - one
+     * query of the sites for both
+     * @return array<string, list<string>> key => settings, as DATOVKA_CONF['accounts']['NSZM']['test_boxes']
+     */
+    private function unreadableHere(DatovkaConf $conf): array
+    {
+        $broken = [Accounts::TEST_BOXES => Accounts::brokenTestBoxes($conf), Accounts::PAID_TESTS => Accounts::brokenPaidTests($conf)];
+        $names  = array_merge(...array_values($broken));
+        $here   = [];
+        if ($names) {
+            $bindings = array_values(array_filter(Accounts::bindings($conf), static fn(Binding $b): bool => in_array($b->name, $names, true)));
+            $here     = array_map(static fn(Binding $b): string => $b->name, Accounts::here($bindings, $this->modulesHere(Accounts::moduleIds($bindings))));
+        }
+        $settings = [];
+        foreach ($broken as $key => $accounts) {
+            $settings[$key] = array_values(array_map(static fn(string $name): string => Accounts::setting($name, $key), array_intersect($here, $accounts)));
+        }
+
+        return $settings;
     }
 
     /**

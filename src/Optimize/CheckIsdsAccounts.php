@@ -100,7 +100,7 @@ class CheckIsdsAccounts extends AbstractOptimize
                 _m('misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1', [count($strays)]),
                 count: count($strays),
                 evidence: array_map(static fn(string $name): array => [_m('Setting') => safe($name)], $strays),
-                advice: _m('An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2. Correct the names, or remove what AA does not read.', [DatovkaConf::key(DatovkaConf::ACCOUNTS), implode(', ', Accounts::keys(Account::TEST))]),
+                advice: _m('An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read.', [DatovkaConf::key(DatovkaConf::ACCOUNTS), implode(', ', Accounts::keys(Account::TEST)), implode(', ', array_diff(Accounts::keys(''), Accounts::keys(Account::TEST)))]),
                 key: 'strays',
             );
         }

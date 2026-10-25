@@ -30,6 +30,8 @@ final class Advice
             Actions::ALL_SENT        => _m('Every message has been sent or tried already - there is nothing left to stop.'),
             Actions::ABANDONED       => _m('The sending has been ended for good. Any message of unknown fate stays for you to verify.'),
             Actions::CONFIRM_ABANDON => _m('The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up.'),
+            TestResult::CHARGED      => _m('The test message went as a paid postal data message.'),
+            TestResult::MAY_BE_CHARGED => _m('The test message may have cost money: it may have gone as a paid postal data message.'),
             default                  => '',
         };
     }

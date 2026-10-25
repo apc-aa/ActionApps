@@ -6,6 +6,10 @@ namespace Tests\Unit\Isds;
 
 use AA\Isds\Actions;
 use AA\Isds\Advice;
+use AA\Isds\IsdsException;
+use AA\Isds\Outcome;
+use AA\Isds\SendResult;
+use AA\Isds\TestResult;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -53,5 +57,37 @@ final class AdviceTest extends TestCase
     public function test_text_unknownIsEmpty(): void
     {
         self::assertSame('', Advice::text('NO_SUCH_CODE'));
+    }
+
+    /** @return array<string, array{string, ?bool, string}> how the test ended, whether it costs money if it goes, the code of what it cost */
+    public static function charges(): array
+    {
+        return [
+            'paid, sent'               => ['sent', true, 'CHARGED'],
+            'price unknown, sent'      => ['sent', null, 'MAY_BE_CHARGED'],
+            'paid, uncertain'          => ['uncertain', true, 'MAY_BE_CHARGED'],
+            'price unknown, uncertain' => ['uncertain', null, 'MAY_BE_CHARGED'],
+            'free'                     => ['sent', false, ''],
+            'paid, refused by ISDS'    => ['failed', true, ''],
+            'unknown, refused by ISDS' => ['failed', null, ''],
+        ];
+    }
+
+    // a test that cost money says so by a code, which goes across the redirect; one that cost nothing says nothing
+    #[DataProvider('charges')]
+    public function test_text_whatTheTestCost(string $how, ?bool $charges, string $code): void
+    {
+        $outcome = Outcome::of(match ($how) {
+            'sent'      => new SendResult('1835603', '0000', 'OK'),
+            'uncertain' => new \RuntimeException('the answer got lost'),
+            default     => new IsdsException('refused', '1214'),
+        });
+
+        $charge = TestResult::of($outcome, 'msg', 'dj7j6mk', '4711-T2', $charges, $charges)->charge();
+
+        self::assertSame($code, $charge);
+        if ($code !== '') {
+            self::assertStringContainsString('paid postal data message', Advice::text($charge));
+        }
     }
 }
