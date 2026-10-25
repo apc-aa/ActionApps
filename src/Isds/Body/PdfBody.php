@@ -43,7 +43,14 @@ final class PdfBody
         . 'img{vertical-align:top !important;max-height:' . self::IMAGE_HEIGHT . 'pt}';
 
     /** raised with every change of how a letter looks - a test message of the same draft goes again */
-    public const FORMAT = 1;
+    public const FORMAT = 2;
+
+    /** the page number of a letter of more pages, small and grey: its top this many points above the bottom edge, in the 20 mm margin */
+    private const NUMBER_SIZE        = 8.0;
+    private const NUMBER_COLOR       = [0.4, 0.4, 0.4];
+    private const NUMBER_FROM_BOTTOM = 32.0;
+    /** Czech, not _m(): ISDS is Czech, the letter goes to a Czech box - and the page of a site sending it would not translate it anyway */
+    private const NUMBER_TEXT = 'strana %1/%2';
 
     public const MAX_PAGES   = 50;
     /** processor time, checked also while a line is measured: the slowest letter measured stopped at 5.1 s */
@@ -153,6 +160,7 @@ final class PdfBody
             $dompdf->setCallbacks($this->callbacks($limit, $clock));
             $dompdf->loadHtml($document, 'UTF-8');
             $dompdf->render();
+            self::numberPages($dompdf->getCanvas());
             $pdf          = (string) $dompdf->output();
             $warnings     = self::warnings($GLOBALS['_dompdf_warnings'] ?? []);
             $this->spanAt = $this->spanSplit();
@@ -202,6 +210,24 @@ final class PdfBody
     {
         $dompdf = InstalledVersions::getPrettyVersion('dompdf/dompdf') . '@' . InstalledVersions::getReference('dompdf/dompdf');
         return hash('xxh128', self::FORMAT . "\0$dompdf\0$document");
+    }
+
+    /**
+     * "strana 1/3" in the middle of the bottom margin of each page, a page of one left as it is. Drawn
+     * after the layout, it is no frame of the letter: what lies off the page is never looked for in it
+     */
+    private static function numberPages(Canvas $canvas): void
+    {
+        if ($canvas->get_page_count() < 2) {
+            return;
+        }
+        $canvas->page_script(static function (int $page, int $count, Canvas $canvas, FontMetrics $metrics): void {
+            // the font of the letter, DejaVu Sans, or what dompdf lays the letter out in without it
+            $font  = $metrics->getFont(null);
+            $text  = strtr(self::NUMBER_TEXT, ['%1' => (string) $page, '%2' => (string) $count]);
+            $width = $metrics->getTextWidth($text, $font, self::NUMBER_SIZE);
+            $canvas->text(($canvas->get_width() - $width) / 2, $canvas->get_height() - self::NUMBER_FROM_BOTTOM, $text, $font, self::NUMBER_SIZE, self::NUMBER_COLOR);
+        });
     }
 
     /**

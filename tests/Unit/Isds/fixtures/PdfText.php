@@ -51,10 +51,11 @@ final class PdfText
     /** @return list<string> the content streams, inflated */
     private static function streams(string $pdf): array
     {
-        preg_match_all('~stream\r?\n(.*?)\r?\nendstream~s', $pdf, $m);
+        // by its length: a stream ending with a CR byte lost it to a pattern of "\r?\nendstream"
+        preg_match_all('~/Length (\d+)\b.*?\bstream\r?\n~s', $pdf, $m, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
         $streams = [];
-        foreach ($m[1] as $stream) {
-            $inflated = @gzuncompress($stream);
+        foreach ($m as [[$head, $at], [$length]]) {
+            $inflated = @gzuncompress(substr($pdf, $at + strlen($head), (int) $length));
             if (is_string($inflated)) {
                 $streams[] = $inflated;
             }

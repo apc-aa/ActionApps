@@ -125,6 +125,32 @@ final class PdfBodyTest extends TestCase
         self::assertSame(hash('xxh128', PdfBody::FORMAT . "\0$dompdf\0$doc"), PdfBody::source($doc), 'the look and the dompdf in it');
     }
 
+    public function test_render_onePageUnnumbered(): void
+    {
+        $pdf = self::render(self::doc(self::paragraphs(10)))->content;
+
+        self::assertSame(10, self::numbered($pdf));
+        self::assertSame('', self::refusal(self::doc(self::paragraphs(10)), 1), 'a page of one');
+        self::assertSame([], array_filter(array_column(PdfText::shown($pdf), 2), static fn(float $y): bool => $y < 20 / 25.4 * 72), 'nothing in the bottom margin');
+    }
+
+    // in the bottom margin, below the text: frame() never sees it, so it is no part of the letter off the page
+    public function test_render_pagesNumbered(): void
+    {
+        $pdf     = self::render(self::doc(self::paragraphs(40)))->content;
+        $numbers = array_values(array_filter(PdfText::shown($pdf), static fn(array $shown): bool => str_starts_with($shown[0], 'strana ')));
+
+        self::assertSame(40, self::numbered($pdf));
+        self::assertSame(['strana 1/3', 'strana 2/3', 'strana 3/3'], array_column($numbers, 0));
+        foreach ($numbers as [, $x, $y]) {
+            self::assertEqualsWithDelta(275.0, $x, 5.0, 'in the middle');
+            self::assertGreaterThan(10.0, $y);
+            self::assertLessThan(20 / 25.4 * 72, $y, 'within the margin of 20 mm');
+        }
+        self::assertSame('', self::refusal(self::doc(self::paragraphs(40)), 3), 'the pages counted as before');
+        self::assertSame(PdfBody::TOO_LONG, self::refusal(self::doc(self::paragraphs(40)), 2));
+    }
+
     /** @param string $body refused before dompdf lays it out */
     #[DataProvider('tooLong')]
     public function test_render_tooLong(string $body): void
@@ -338,7 +364,7 @@ final class PdfBodyTest extends TestCase
 
         self::assertSame(150, self::numbered($pdf));
         self::assertStringStartsWith("Hlavička\nOdstavec1 ", $text);
-        self::assertStringEndsWith("\nPatička\n", $text);
+        self::assertMatchesRegularExpression('~\nPatička\nstrana (\d+)/\1\n$~', $text);
     }
 
     // a line dompdf would draw past the right edge of the page
