@@ -107,17 +107,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Správa filtrov", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Chyba: chýba heslo na čítanie", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 // modules/links/check_url.php, row 52
 "Back" => "Spät",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Znovu sa prihlásiť", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114

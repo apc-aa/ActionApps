@@ -13,43 +13,43 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// admin/param_wizard.php, row 111
+// admin/param_wizard.php, row 110
 "field&nbsp;id" => "id&nbsp;položky", // ai 2026-06
 
-// admin/param_wizard.php, row 114
+// admin/param_wizard.php, row 113
 "boolean:&nbsp;0=false,1=true" => "boolean:&nbsp;0=nepravda,1=pravda", // ai 2026-06
 
-// admin/param_wizard.php, row 138
+// admin/param_wizard.php, row 137
 "Wizard" => "Sprievodca", // ai 2026-06
 
-// admin/param_wizard.php, row 227
+// admin/param_wizard.php, row 220
 "This is an undocumented %s. We don't recommend using it." => "Toto je nezdokumentovaný %s. Neodporúčame ho používať.", // ai 2026-06
 
-// admin/param_wizard.php, row 228
+// admin/param_wizard.php, row 221
 "Close the wizard" => "Zavrieť sprievodcu", // ai 2026-06
 
-// admin/param_wizard.php, row 242
+// admin/param_wizard.php, row 235
 "Available parameters: " => "Dostupné parametre: ", // ai 2026-06
 
-// admin/param_wizard.php, row 262
+// admin/param_wizard.php, row 255
 "This %s has no parameters." => "Tento %s nemá žiadne parametre.", // ai 2026-06
 
-// admin/param_wizard.php, row 272
+// admin/param_wizard.php, row 265
 "Have a look at these examples of parameters sets:" => "Pozrite si tieto príklady sád parametrov:", // ai 2026-06
 
-// admin/param_wizard.php, row 279
+// admin/param_wizard.php, row 272
 "Show" => "Zobraziť",
 
-// admin/param_wizard.php, row 290
+// admin/param_wizard.php, row 283
 "OK - Save" => "OK - Uložiť", // ai 2026-06
 
-// admin/param_wizard.php, row 291
+// admin/param_wizard.php, row 284
 "Cancel" => "Zrušiť",
 
-// admin/param_wizard.php, row 292
+// admin/param_wizard.php, row 285
 "Show example params" => "Zobraziť príklady parametrov", // ai 2026-06
 
-// admin/param_wizard.php, row 296
+// admin/param_wizard.php, row 289
 "OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68

@@ -140,43 +140,43 @@ return [
 // "boolean: 0=false,1=true" => "booleova algebra: 0=neistinito,1=istinito",
 // End of unused messages
 
-// admin/param_wizard.php, row 111
+// admin/param_wizard.php, row 110
 "field&nbsp;id" => "oznaka datoteke",
 
-// admin/param_wizard.php, row 114
+// admin/param_wizard.php, row 113
 "boolean:&nbsp;0=false,1=true" => "Booleova algebra:&nbsp; 0=neistinito,1=istinito",
 
-// admin/param_wizard.php, row 138
+// admin/param_wizard.php, row 137
 "Wizard" => "\xE8arobnjak",
 
-// admin/param_wizard.php, row 227
+// admin/param_wizard.php, row 220
 "This is an undocumented %s. We don't recommend using it." => "Ovo je nedokumentiran %s. Ne preporu\xE8amo kori\x9Atenje!",
 
-// admin/param_wizard.php, row 228
+// admin/param_wizard.php, row 221
 "Close the wizard" => "Zatvorite \xE8arobnjaka",
 
-// admin/param_wizard.php, row 242
+// admin/param_wizard.php, row 235
 "Available parameters: " => "Dostupni parametri",
 
-// admin/param_wizard.php, row 262
+// admin/param_wizard.php, row 255
 "This %s has no parameters." => "Ovaj %s nema parametara.",
 
-// admin/param_wizard.php, row 272
+// admin/param_wizard.php, row 265
 "Have a look at these examples of parameters sets:" => "Pogledajte primjere postavki parametara:",
 
-// admin/param_wizard.php, row 279
+// admin/param_wizard.php, row 272
 "Show" => "Prika\x9Ei",
 
-// admin/param_wizard.php, row 290
+// admin/param_wizard.php, row 283
 "OK - Save" => "U redu - spremi",
 
-// admin/param_wizard.php, row 291
+// admin/param_wizard.php, row 284
 "Cancel" => "Poni\x9Ati",
 
-// admin/param_wizard.php, row 292
+// admin/param_wizard.php, row 285
 "Show example params" => "Poka\x9Eite parametre primjera",
 
-// admin/param_wizard.php, row 296
+// admin/param_wizard.php, row 289
 "OK" => "U redu ",
 
 // include/constants_param_wizard.php, row 68

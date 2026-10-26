@@ -31,38 +31,38 @@ return [
 // modules/site/index.php, row 151
 "Editor window - site code manager" => "Вікно редагування - менеджер коду сайту", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 163
 "Add&nbsp;spot" => "Додати&nbsp;спот", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 164
 "Add&nbsp;choice" => "Додати&nbsp;вибір", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 167
 "Move&nbsp;up" => "Перемістити&nbsp;вгору", // ai 2026-06
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 168
 "Move&nbsp;down" => "Перемістити&nbsp;вниз", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 171
 "Move&nbsp;left" => "Перемістити&nbsp;ліворуч", // ai 2026-06
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 172
 "Move&nbsp;right" => "Перемістити&nbsp;праворуч", // ai 2026-06
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Видалити", // ai 2026-06
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 "Are you sure you want to delete the spot?" => "Ви дійсно хочете видалити цей спот?", // ai 2026-06
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 178
 "Enable" => "Увімкнути", // ai 2026-06
 
-// modules/site/index.php, row 187
+// modules/site/index.php, row 179
 "Disable" => "Вимкнути", // ai 2026-06
 
-// modules/site/index.php, row 208
+// modules/site/index.php, row 200
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Можливі системні require - &lcub;require:...&rcub; або &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

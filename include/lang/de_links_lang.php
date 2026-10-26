@@ -107,17 +107,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Filter verwalten", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Fehler: Lesepasswort fehlt", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Meldung der Anwendung", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 // modules/links/check_url.php, row 52
 "Back" => "Zur\xFCck",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Erneut anmelden", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114

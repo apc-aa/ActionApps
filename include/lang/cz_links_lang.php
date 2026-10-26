@@ -14,7 +14,6 @@ return [
 // Unused messages - no longer found in the sources; kept commented for reference.
 // "Are you sure you want to empty trash?" => "Opravdu chcete vysypat ko\x9A?",
 // "ActionApps - Link Edit" => "Editace odkazu",
-// "Changed" => "Zm\xECn\xECno",
 // "Bookmark" => "P\xF8idej k obl\xEDben\xFDm",
 // "Type" => "Obecn\xE1 kategorie",
 // "Up" => "Posun vybran\xE9 kategorie v seznamu o jeden stupe\xF2 v\xFD\x9Ae",
@@ -165,17 +164,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Spr\xE1va filtr\xF9",
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Chyba: chyb\xED heslo pro \xE8ten\xED",
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Vzkaz z Toolkitu",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 // modules/links/check_url.php, row 52
 "Back" => "Zp\xECt",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Znovu p\xF8ihl\xE1sit",
 
 // modules/links/actions.php, row 48, 90, 114

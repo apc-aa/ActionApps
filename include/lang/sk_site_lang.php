@@ -28,38 +28,38 @@ return [
 // modules/site/index.php, row 151
 "Editor window - site code manager" => "Edita\xE8n\xE9 okno - spr\xE1vca k\xF3du webu", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 163
 "Add&nbsp;spot" => "Prida\x9D&nbsp;spot", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 164
 "Add&nbsp;choice" => "Prida\x9D&nbsp;vo\xBEbu", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 167
 "Move&nbsp;up" => "Posun\xFA\x9D&nbsp;nahor", // ai 2026-06
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 168
 "Move&nbsp;down" => "Posun\xFA\x9D&nbsp;nadol", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 171
 "Move&nbsp;left" => "Posun\xFA\x9D&nbsp;do\xBEava", // ai 2026-06
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 172
 "Move&nbsp;right" => "Posun\xFA\x9D&nbsp;doprava", // ai 2026-06
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Vymaza\x9D",
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 "Are you sure you want to delete the spot?" => "Naozaj chcete tento spot vymaza\x9D?", // ai 2026-06
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 178
 "Enable" => "Povoli\x9D", // ai 2026-06
 
-// modules/site/index.php, row 187
+// modules/site/index.php, row 179
 "Disable" => "Zak\xE1za\x9D", // ai 2026-06
 
-// modules/site/index.php, row 208
+// modules/site/index.php, row 200
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Mo\x9En\xE9 syst\xE9mov\xE9 require - &lcub;require:...&rcub; alebo &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

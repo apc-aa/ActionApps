@@ -10,29 +10,29 @@ $mgettext_lang = "de";
 
 return [
 
-// ./slice.php, row 237
+// ./slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Ung\xFCltiger inc-Parameter - die eingebundene Datei darf nur alphanumerische Zeichen enthalten", // ai 2026-06
 
-// ./slice.php, row 241
+// ./slice.php, row 243
 "No such file" => "Datei nicht gefunden", // ai 2026-06
 
-// ./slice.php, row 262
+// ./slice.php, row 264
 "Invalid slice number or slice was deleted" => "Ung\xFCltige Rubrik-Nummer oder Rubrik wurde gel\xF6scht", // ai 2026-06
 
-// ./slice.php, row 265
+// ./slice.php, row 267
 "slice.php output forbidden for this slice" => "slice.php-Ausgabe ist f\xFCr diese Rubrik nicht erlaubt", // ai 2026-06
 
-// ./slice.php, row 320
+// ./slice.php, row 322
 "session id" => "Session-ID", // ai 2026-06
 
-// ./slice.php, row 573
+// ./slice.php, row 585
 "number of current page (on pagescroller)" => "Nummer der aktuellen Seite (im Pagescroller)", // ai 2026-06
 
-// ./slice.php, row 574
+// ./slice.php, row 586
 "page length (number of items)" => "Seitenl\xE4nge (Anzahl der Artikel)", // ai 2026-06
 
-// ./slice.php, row 609
-// include/view.php, row 390
+// ./slice.php, row 621
+// include/view.php, row 373
 "No item found" => "Kein Artikel gefunden", // ai 2026-06
 
 // include/discussion.php, row 211
@@ -173,16 +173,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Fehler: falsche Alias-Funktion %1 f\xFCr %2", // ai 2026-06
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "Ausgew\xE4hlter Artikel", // ai 2026-06
 
-// include/itemview.php, row 129
+// include/itemview.php, row 130
 "number of found items" => "Anzahl der gefundenen Artikel", // ai 2026-06
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "Es wurde kein Kommentar ausgew\xE4hlt", // ai 2026-06
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "exakter Gruppenname", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -209,16 +209,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Alle Kategorien", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Fehler: Lesepasswort fehlt", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Meldung der Anwendung", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "Zur\xFCck",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Erneut anmelden", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -227,6 +227,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Verarbeitet die vom Formular gesendeten Daten zu Artikel-Verkn\xFCpfungen (POST)", // ai 2026-06
 
-// modules/site/site.php, row 304
+// modules/site/site.php, row 308
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Die Website ist falsch konfiguriert: %1 existiert nicht oder ist nicht lesbar. Legen Sie diese Datei an oder korrigieren Sie die Einstellung ,,Statusdatei\" dieses Site-Moduls.", // ai 2026-10
 ];

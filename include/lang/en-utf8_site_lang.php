@@ -27,38 +27,38 @@ return [
 // modules/site/index.php, row 151
 "Editor window - site code manager" => "",
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 163
 "Add&nbsp;spot" => "",
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 164
 "Add&nbsp;choice" => "",
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 167
 "Move&nbsp;up" => "",
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 168
 "Move&nbsp;down" => "",
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 171
 "Move&nbsp;left" => "",
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 172
 "Move&nbsp;right" => "",
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "",
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 "Are you sure you want to delete the spot?" => "",
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 178
 "Enable" => "",
 
-// modules/site/index.php, row 187
+// modules/site/index.php, row 179
 "Disable" => "",
 
-// modules/site/index.php, row 208
+// modules/site/index.php, row 200
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "",
 
 // modules/site/menu.php, row 47

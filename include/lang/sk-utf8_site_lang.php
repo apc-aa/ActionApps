@@ -31,38 +31,38 @@ return [
 // modules/site/index.php, row 151
 "Editor window - site code manager" => "Editačné okno - správca kódu webu", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 163
 "Add&nbsp;spot" => "Pridať&nbsp;spot", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 164
 "Add&nbsp;choice" => "Pridať&nbsp;voľbu", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 167
 "Move&nbsp;up" => "Posunúť&nbsp;nahor", // ai 2026-06
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 168
 "Move&nbsp;down" => "Posunúť&nbsp;nadol", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 171
 "Move&nbsp;left" => "Posunúť&nbsp;doľava", // ai 2026-06
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 172
 "Move&nbsp;right" => "Posunúť&nbsp;doprava", // ai 2026-06
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Vymazať",
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 "Are you sure you want to delete the spot?" => "Naozaj chcete tento spot vymazať?", // ai 2026-06
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 178
 "Enable" => "Povoliť", // ai 2026-06
 
-// modules/site/index.php, row 187
+// modules/site/index.php, row 179
 "Disable" => "Zakázať", // ai 2026-06
 
-// modules/site/index.php, row 208
+// modules/site/index.php, row 200
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Možné systémové require - &lcub;require:...&rcub; alebo &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

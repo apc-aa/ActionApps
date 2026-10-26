@@ -31,38 +31,38 @@ return [
 // modules/site/index.php, row 151
 "Editor window - site code manager" => "編集ウィンドウ - サイトコード管理", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 163
 "Add&nbsp;spot" => "スポットを追加", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 164
 "Add&nbsp;choice" => "選択肢を追加", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 167
 "Move&nbsp;up" => "上へ移動", // ai 2026-06
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 168
 "Move&nbsp;down" => "下へ移動", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 171
 "Move&nbsp;left" => "左へ移動", // ai 2026-06
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 172
 "Move&nbsp;right" => "右へ移動", // ai 2026-06
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "削除", // ai 2026-06
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 "Are you sure you want to delete the spot?" => "このスポットを削除してもよろしいですか？", // ai 2026-06
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 178
 "Enable" => "有効にする", // ai 2026-06
 
-// modules/site/index.php, row 187
+// modules/site/index.php, row 179
 "Disable" => "無効にする", // ai 2026-06
 
-// modules/site/index.php, row 208
+// modules/site/index.php, row 200
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "使用可能なシステムrequire - &lcub;require:...&rcub; または &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

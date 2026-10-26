@@ -13,43 +13,43 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// admin/param_wizard.php, row 111
+// admin/param_wizard.php, row 110
 "field&nbsp;id" => "mező&nbsp;id", // ai 2026-06
 
-// admin/param_wizard.php, row 114
+// admin/param_wizard.php, row 113
 "boolean:&nbsp;0=false,1=true" => "logikai érték:&nbsp;0=hamis,1=igaz", // ai 2026-06
 
-// admin/param_wizard.php, row 138
+// admin/param_wizard.php, row 137
 "Wizard" => "Varázsló", // ai 2026-06
 
-// admin/param_wizard.php, row 227
+// admin/param_wizard.php, row 220
 "This is an undocumented %s. We don't recommend using it." => "Ez egy nem dokumentált %s. Használatát nem javasoljuk.", // ai 2026-06
 
-// admin/param_wizard.php, row 228
+// admin/param_wizard.php, row 221
 "Close the wizard" => "Varázsló bezárása", // ai 2026-06
 
-// admin/param_wizard.php, row 242
+// admin/param_wizard.php, row 235
 "Available parameters: " => "Elérhető paraméterek:", // ai 2026-06
 
-// admin/param_wizard.php, row 262
+// admin/param_wizard.php, row 255
 "This %s has no parameters." => "A(z) %s nem tartalmaz paramétereket.", // ai 2026-06
 
-// admin/param_wizard.php, row 272
+// admin/param_wizard.php, row 265
 "Have a look at these examples of parameters sets:" => "Nézze meg az alábbi paraméterkészlet-példákat:", // ai 2026-06
 
-// admin/param_wizard.php, row 279
+// admin/param_wizard.php, row 272
 "Show" => "Megjelenítés", // ai 2026-06
 
-// admin/param_wizard.php, row 290
+// admin/param_wizard.php, row 283
 "OK - Save" => "OK - Mentés", // ai 2026-06
 
-// admin/param_wizard.php, row 291
+// admin/param_wizard.php, row 284
 "Cancel" => "Mégse", // ai 2026-06
 
-// admin/param_wizard.php, row 292
+// admin/param_wizard.php, row 285
 "Show example params" => "Példaparaméterek megjelenítése", // ai 2026-06
 
-// admin/param_wizard.php, row 296
+// admin/param_wizard.php, row 289
 "OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68

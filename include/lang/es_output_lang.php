@@ -47,29 +47,29 @@ return [
 // "Constant level (used for hierachical constants)" => "Nivel jer\xE1rquico (para constantes jer\xE1rquicas)",
 // End of unused messages
 
-// ./slice.php, row 237
+// ./slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Error en par\xE1metro - el archivo a incluir debe estar en la misma carpeta que este .shtml y debe contener \xFAnicamente caracteres alfanum\xE9ricos",
 
-// ./slice.php, row 241
+// ./slice.php, row 243
 "No such file" => "No se encontr\xF3 el archivo",
 
-// ./slice.php, row 262
+// ./slice.php, row 264
 "Invalid slice number or slice was deleted" => "Identificador de canal no v\xE1lido, o el canal fu\xE9 borrado",
 
-// ./slice.php, row 265
+// ./slice.php, row 267
 "slice.php output forbidden for this slice" => "Salida de slice.php prohibida para este canal",
 
-// ./slice.php, row 320
+// ./slice.php, row 322
 "session id" => "id de sesi\xF3n",
 
-// ./slice.php, row 573
+// ./slice.php, row 585
 "number of current page (on pagescroller)" => "n\xFAmero de p\xE1gina actual (en numerador de p\xE1gina)",
 
-// ./slice.php, row 574
+// ./slice.php, row 586
 "page length (number of items)" => "longitud de la p\xE1gina (n\xFAmero de \xEDtems)",
 
-// ./slice.php, row 609
-// include/view.php, row 390
+// ./slice.php, row 621
+// include/view.php, row 373
 "No item found" => "No se encontraron items",
 
 // include/discussion.php, row 211
@@ -210,16 +210,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Error: funci\xF3n de alias %1 incorrecta para %2",
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "\xCDtem seleccionado",
 
-// include/itemview.php, row 129
+// include/itemview.php, row 130
 "number of found items" => "n\xFAmero de registros encontrados",
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "No hay ning\xFAn comentario seleccionado",
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "nombre exacto del grupo",
 
 // include/scroller.php, row 86
@@ -246,16 +246,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Todas las categor\xEDas",
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Error: falta la contrase\xF1a de lectura",
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Mensaje de noticias del Toolkit",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "Atr\xE1s",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Volver a iniciar sesi\xF3n",
 
 // misc/proposefieldchange.php, row 110
@@ -264,6 +264,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Obtiene los datos de relaciones de \xEDtems enviados por POST desde el formulario",
 
-// modules/site/site.php, row 304
+// modules/site/site.php, row 308
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "El sitio est\xE1 mal configurado: %1 no existe o no se puede leer. A\xF1ada ese archivo o corrija la opci\xF3n \"Archivo de estado\" de este m\xF3dulo de sitio.", // ai 2026-10
 ];

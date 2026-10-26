@@ -33,29 +33,29 @@ return [
 // "Alias used on admin page index.php3 for edit discussion url" => "Alias používaný v administratívnych stránkách index.php3 pre URL discedit.php3",
 // End of unused messages
 
-// ./slice.php, row 237
+// ./slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Chybný parameter inc - vkladaný súbor musí obsahovať iba alfanumerické znaky", // ai 2026-06
 
-// ./slice.php, row 241
+// ./slice.php, row 243
 "No such file" => "Súbor neexistuje", // ai 2026-06
 
-// ./slice.php, row 262
+// ./slice.php, row 264
 "Invalid slice number or slice was deleted" => "Neplatné číslo modulu alebo bol modul vymazaný", // ai 2026-06
 
-// ./slice.php, row 265
+// ./slice.php, row 267
 "slice.php output forbidden for this slice" => "výstup slice.php je pre tento modul zakázaný", // ai 2026-06
 
-// ./slice.php, row 320
+// ./slice.php, row 322
 "session id" => "ID session", // ai 2026-06
 
-// ./slice.php, row 573
+// ./slice.php, row 585
 "number of current page (on pagescroller)" => "číslo aktuálnej stránky (v stránkovaní)", // ai 2026-06
 
-// ./slice.php, row 574
+// ./slice.php, row 586
 "page length (number of items)" => "dĺžka stránky (počet správ)", // ai 2026-06
 
-// ./slice.php, row 609
-// include/view.php, row 390
+// ./slice.php, row 621
+// include/view.php, row 373
 "No item found" => "Nenalezena žádná zpráva",
 
 // include/discussion.php, row 211
@@ -196,16 +196,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: nesprávna funkcia aliasu %1 pre %2", // ai 2026-06
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "Vybraná správa", // ai 2026-06
 
-// include/itemview.php, row 129
+// include/itemview.php, row 130
 "number of found items" => "počet nalezených článků",
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "Nebol vybraný žiaden príspevok",
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "presný názov skupiny", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -232,16 +232,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Všetky kategórie", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Chyba: chýba heslo pre čítanie", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "Spät",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Znovu prihlásiť", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -250,6 +250,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Spracuje údaje o väzbách správy odoslané formulárom (POST)", // ai 2026-06
 
-// modules/site/site.php, row 304
+// modules/site/site.php, row 308
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Web je chybne nastavený: %1 neexistuje alebo ho nemožno čítať. Pridajte tento súbor, alebo opravte nastavenie „Stavový súbor“ tohto webu.", // ai 2026-10
 ];

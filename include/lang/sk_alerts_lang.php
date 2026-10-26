@@ -23,34 +23,40 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Nem\xE1te pr\xE1vo prid\xE1va\x9D modul",
 
-// modules/alerts/acf.php, row 107
+// modules/alerts/acf.php, row 109
 "Alerts Selections" => "Zasielanie - V\xFDbery", // ai 2026-06
 
-// modules/alerts/acf.php, row 111
+// modules/alerts/acf.php, row 113
 "Choose selections which form the Alert email." => "Zvo\xBEte v\xFDbery, ktor\xE9 tvoria zasielan\xFD e-mail.", // ai 2026-06
 
-// modules/alerts/acf.php, row 115, 142
+// modules/alerts/acf.php, row 117, 149
 "order" => "poradie", // ai 2026-06
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "selection" => "v\xFDber", // ai 2026-06
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "remove" => "odstr\xE1ni\x9D", // ai 2026-10
 
+// modules/alerts/acf.php, row 123
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+
 // modules/alerts/acf.php, row 124
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+
+// modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Zatia\xBE nie s\xFA zvolen\xE9 \x9Eiadne v\xFDbery.", // ai 2026-10
 
-// modules/alerts/acf.php, row 127
+// modules/alerts/acf.php, row 134
 "Save order" => "Ulo\x9Ei\x9D poradie", // ai 2026-10
 
-// modules/alerts/acf.php, row 128
+// modules/alerts/acf.php, row 135
 "Remove checked" => "Odstr\xE1ni\x9D ozna\xE8en\xE9", // ai 2026-10
 
-// modules/alerts/acf.php, row 143
+// modules/alerts/acf.php, row 150
 "Add selection" => "Prida\x9D v\xFDber", // ai 2026-10
 
-// modules/alerts/acf.php, row 145
+// modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Nie s\xFA definovan\xE9 \x9Eiadne v\xFDbery. Mus\xEDte nejak\xE9 definova\x9D.", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 505

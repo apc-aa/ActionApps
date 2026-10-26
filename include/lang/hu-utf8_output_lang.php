@@ -13,29 +13,29 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// ./slice.php, row 237
+// ./slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Hibás inc paraméter - a beillesztendő fájl neve csak alfanumerikus karaktereket tartalmazhat", // ai 2026-06
 
-// ./slice.php, row 241
+// ./slice.php, row 243
 "No such file" => "A fájl nem található", // ai 2026-06
 
-// ./slice.php, row 262
+// ./slice.php, row 264
 "Invalid slice number or slice was deleted" => "Érvénytelen rovatszám, vagy a rovatot törölték", // ai 2026-06
 
-// ./slice.php, row 265
+// ./slice.php, row 267
 "slice.php output forbidden for this slice" => "A slice.php kimenet ennél a rovatnál tiltott", // ai 2026-06
 
-// ./slice.php, row 320
+// ./slice.php, row 322
 "session id" => "munkamenet-azonosító", // ai 2026-06
 
-// ./slice.php, row 573
+// ./slice.php, row 585
 "number of current page (on pagescroller)" => "az aktuális oldal száma (a lapozóban)", // ai 2026-06
 
-// ./slice.php, row 574
+// ./slice.php, row 586
 "page length (number of items)" => "oldalhossz (cikkek száma)", // ai 2026-06
 
-// ./slice.php, row 609
-// include/view.php, row 390
+// ./slice.php, row 621
+// include/view.php, row 373
 "No item found" => "Nem található cikk", // ai 2026-06
 
 // include/discussion.php, row 211
@@ -176,16 +176,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Hiba: hibás %1 aliasfüggvény ehhez: %2", // ai 2026-06
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "Kijelölt cikk", // ai 2026-06
 
-// include/itemview.php, row 129
+// include/itemview.php, row 130
 "number of found items" => "a megtalált cikkek száma", // ai 2026-06
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "Nincs kijelölt hozzászólás", // ai 2026-06
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "pontos csoportnév", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -212,16 +212,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Minden kategória", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Hiba: hiányzik az olvasási jelszó", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Toolkit hírüzenet", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "Vissza", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Újra bejelentkezés", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -230,6 +230,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Feldolgozza az űrlap által POST-tal küldött cikk-kapcsolati adatokat", // ai 2026-06
 
-// modules/site/site.php, row 304
+// modules/site/site.php, row 308
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "A webhely hibásan van beállítva: a(z) %1 nem létezik vagy nem olvasható. Hozza létre ezt a fájlt, vagy javítsa ki a webhelymodul „Állapotfájl” beállítását.", // ai 2026-10
 ];

@@ -10,29 +10,29 @@ $mgettext_lang = "hu";
 
 return [
 
-// ./slice.php, row 237
+// ./slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Hib\xE1s inc param\xE9ter - a beillesztend\xF5 f\xE1jl neve csak alfanumerikus karaktereket tartalmazhat", // ai 2026-06
 
-// ./slice.php, row 241
+// ./slice.php, row 243
 "No such file" => "A f\xE1jl nem tal\xE1lhat\xF3", // ai 2026-06
 
-// ./slice.php, row 262
+// ./slice.php, row 264
 "Invalid slice number or slice was deleted" => "\xC9rv\xE9nytelen rovatsz\xE1m, vagy a rovatot t\xF6r\xF6lt\xE9k", // ai 2026-06
 
-// ./slice.php, row 265
+// ./slice.php, row 267
 "slice.php output forbidden for this slice" => "A slice.php kimenet enn\xE9l a rovatn\xE1l tiltott", // ai 2026-06
 
-// ./slice.php, row 320
+// ./slice.php, row 322
 "session id" => "munkamenet-azonos\xEDt\xF3", // ai 2026-06
 
-// ./slice.php, row 573
+// ./slice.php, row 585
 "number of current page (on pagescroller)" => "az aktu\xE1lis oldal sz\xE1ma (a lapoz\xF3ban)", // ai 2026-06
 
-// ./slice.php, row 574
+// ./slice.php, row 586
 "page length (number of items)" => "oldalhossz (cikkek sz\xE1ma)", // ai 2026-06
 
-// ./slice.php, row 609
-// include/view.php, row 390
+// ./slice.php, row 621
+// include/view.php, row 373
 "No item found" => "Nem tal\xE1lhat\xF3 cikk", // ai 2026-06
 
 // include/discussion.php, row 211
@@ -173,16 +173,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Hiba: hib\xE1s %1 aliasf\xFCggv\xE9ny ehhez: %2", // ai 2026-06
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "Kijel\xF6lt cikk", // ai 2026-06
 
-// include/itemview.php, row 129
+// include/itemview.php, row 130
 "number of found items" => "a megtal\xE1lt cikkek sz\xE1ma", // ai 2026-06
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "Nincs kijel\xF6lt hozz\xE1sz\xF3l\xE1s", // ai 2026-06
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "pontos csoportn\xE9v", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -209,16 +209,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Minden kateg\xF3ria", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Hiba: hi\xE1nyzik az olvas\xE1si jelsz\xF3", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Toolkit h\xEDr\xFCzenet", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "Vissza", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "\xDAjra bejelentkez\xE9s", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -227,6 +227,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Feldolgozza az \xFBrlap \xE1ltal POST-tal k\xFCld\xF6tt cikk-kapcsolati adatokat", // ai 2026-06
 
-// modules/site/site.php, row 304
+// modules/site/site.php, row 308
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "A webhely hib\xE1san van be\xE1ll\xEDtva: a(z) %1 nem l\xE9tezik vagy nem olvashat\xF3. Hozza l\xE9tre ezt a f\xE1jlt, vagy jav\xEDtsa ki a webhelymodul ,,\xC1llapotf\xE1jl\" be\xE1ll\xEDt\xE1s\xE1t.", // ai 2026-10
 ];

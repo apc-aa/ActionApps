@@ -107,17 +107,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Gerir filtros", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Erro: Falta a palavra-passe de leitura", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Mensagem das aplicações", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 // modules/links/check_url.php, row 52
 "Back" => "Voltar", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Voltar a iniciar sessão", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114

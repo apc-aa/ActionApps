@@ -23,34 +23,40 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xE4\xEE\xE1\xE0\xE2\xFF\xF2\xE5 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
-// modules/alerts/acf.php, row 107
+// modules/alerts/acf.php, row 109
 "Alerts Selections" => "\xC8\xE7\xE2\xE5\xF1\xF2\xE8\xFF - \xC8\xE7\xE1\xEE\xF0\xE8", // ai 2026-06
 
-// modules/alerts/acf.php, row 111
+// modules/alerts/acf.php, row 113
 "Choose selections which form the Alert email." => "\xC8\xE7\xE1\xE5\xF0\xE5\xF2\xE5 \xE8\xE7\xE1\xEE\xF0\xE8\xF2\xE5, \xEA\xEE\xE8\xF2\xEE \xF4\xEE\xF0\xEC\xE8\xF0\xE0\xF2 \xE8\xEC\xE5\xE9\xEB\xE0 \xF1 \xE8\xE7\xE2\xE5\xF1\xF2\xE8\xFF.", // ai 2026-06
 
-// modules/alerts/acf.php, row 115, 142
+// modules/alerts/acf.php, row 117, 149
 "order" => "\xF0\xE5\xE4", // ai 2026-06
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "selection" => "\xE8\xE7\xE1\xEE\xF0", // ai 2026-06
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "remove" => "\xEF\xF0\xE5\xEC\xE0\xF5\xED\xE8", // ai 2026-10
 
+// modules/alerts/acf.php, row 123
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+
 // modules/alerts/acf.php, row 124
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+
+// modules/alerts/acf.php, row 131
 "No selections chosen yet." => "\xC2\xF1\xE5 \xEE\xF9\xE5 \xED\xE5 \xF1\xE0 \xE8\xE7\xE1\xF0\xE0\xED\xE8 \xF1\xE5\xEB\xE5\xEA\xF6\xE8\xE8.", // ai 2026-10
 
-// modules/alerts/acf.php, row 127
+// modules/alerts/acf.php, row 134
 "Save order" => "\xC7\xE0\xEF\xE0\xE7\xE8 \xF0\xE5\xE4\xE0", // ai 2026-10
 
-// modules/alerts/acf.php, row 128
+// modules/alerts/acf.php, row 135
 "Remove checked" => "\xCF\xF0\xE5\xEC\xE0\xF5\xED\xE8 \xEE\xF2\xEC\xE5\xF2\xED\xE0\xF2\xE8\xF2\xE5", // ai 2026-10
 
-// modules/alerts/acf.php, row 143
+// modules/alerts/acf.php, row 150
 "Add selection" => "\xC4\xEE\xE1\xE0\xE2\xE8 \xF1\xE5\xEB\xE5\xEA\xF6\xE8\xFF", // ai 2026-10
 
-// modules/alerts/acf.php, row 145
+// modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "\xCD\xFF\xEC\xE0 \xE4\xE5\xF4\xE8\xED\xE8\xF0\xE0\xED\xE8 \xE8\xE7\xE1\xEE\xF0\xE8. \xD2\xF0\xFF\xE1\xE2\xE0 \xE4\xE0 \xE4\xE5\xF4\xE8\xED\xE8\xF0\xE0\xF2\xE5 \xED\xFF\xEA\xEE\xE8.", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 505

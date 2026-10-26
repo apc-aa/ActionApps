@@ -84,34 +84,40 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Nem\xE1te pr\xE1va pro p\xF8id\xE1n\xED web\xEDku",
 
-// modules/alerts/acf.php, row 107
+// modules/alerts/acf.php, row 109
 "Alerts Selections" => "Zas\xEDl\xE1n\xED - V\xFDb\xECry",
 
-// modules/alerts/acf.php, row 111
+// modules/alerts/acf.php, row 113
 "Choose selections which form the Alert email." => "Zvolte v\xFDb\xECry, kter\xE9 tvo\xF8\xED zas\xEDlan\xFD email.",
 
-// modules/alerts/acf.php, row 115, 142
+// modules/alerts/acf.php, row 117, 149
 "order" => "po\xF8ad\xED",
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "selection" => "v\xFDb\xECr",
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "remove" => "odstranit", // ai 2026-10
 
+// modules/alerts/acf.php, row 123
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "Jeho pohled byl smaz\xE1n \x96 \xE8ten\xE1\xF8i z tohoto v\xFDb\xECru nedostanou nic. Odeberte ho a p\xF8idejte existuj\xEDc\xED.", // ai 2026-10
+
 // modules/alerts/acf.php, row 124
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Tento v\xFDb\xECr byl smaz\xE1n \x96 \xE8ten\xE1\xF8i z n\xECj nedostanou nic. Odeberte ho a p\xF8idejte existuj\xEDc\xED.", // ai 2026-10
+
+// modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Zat\xEDm nejsou zvoleny \x9E\xE1dn\xE9 v\xFDb\xECry.", // ai 2026-10
 
-// modules/alerts/acf.php, row 127
+// modules/alerts/acf.php, row 134
 "Save order" => "Ulo\x9Eit po\xF8ad\xED", // ai 2026-10
 
-// modules/alerts/acf.php, row 128
+// modules/alerts/acf.php, row 135
 "Remove checked" => "Odstranit ozna\xE8en\xE9", // ai 2026-10
 
-// modules/alerts/acf.php, row 143
+// modules/alerts/acf.php, row 150
 "Add selection" => "P\xF8idat v\xFDb\xECr", // ai 2026-10
 
-// modules/alerts/acf.php, row 145
+// modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "\x8E\xE1dn\xE9 v\xFDb\xECry nejsou definovan\xE9.",
 
 // modules/alerts/alerts_sending.php, row 505

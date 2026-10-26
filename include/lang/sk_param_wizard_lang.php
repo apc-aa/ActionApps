@@ -10,43 +10,43 @@ $mgettext_lang = "sk";
 
 return [
 
-// admin/param_wizard.php, row 111
+// admin/param_wizard.php, row 110
 "field&nbsp;id" => "id&nbsp;polo\x9Eky", // ai 2026-06
 
-// admin/param_wizard.php, row 114
+// admin/param_wizard.php, row 113
 "boolean:&nbsp;0=false,1=true" => "boolean:&nbsp;0=nepravda,1=pravda", // ai 2026-06
 
-// admin/param_wizard.php, row 138
+// admin/param_wizard.php, row 137
 "Wizard" => "Sprievodca", // ai 2026-06
 
-// admin/param_wizard.php, row 227
+// admin/param_wizard.php, row 220
 "This is an undocumented %s. We don't recommend using it." => "Toto je nezdokumentovan\xFD %s. Neodpor\xFA\xE8ame ho pou\x9E\xEDva\x9D.", // ai 2026-06
 
-// admin/param_wizard.php, row 228
+// admin/param_wizard.php, row 221
 "Close the wizard" => "Zavrie\x9D sprievodcu", // ai 2026-06
 
-// admin/param_wizard.php, row 242
+// admin/param_wizard.php, row 235
 "Available parameters: " => "Dostupn\xE9 parametre: ", // ai 2026-06
 
-// admin/param_wizard.php, row 262
+// admin/param_wizard.php, row 255
 "This %s has no parameters." => "Tento %s nem\xE1 \x9Eiadne parametre.", // ai 2026-06
 
-// admin/param_wizard.php, row 272
+// admin/param_wizard.php, row 265
 "Have a look at these examples of parameters sets:" => "Pozrite si tieto pr\xEDklady s\xE1d parametrov:", // ai 2026-06
 
-// admin/param_wizard.php, row 279
+// admin/param_wizard.php, row 272
 "Show" => "Zobrazi\x9D",
 
-// admin/param_wizard.php, row 290
+// admin/param_wizard.php, row 283
 "OK - Save" => "OK - Ulo\x9Ei\x9D", // ai 2026-06
 
-// admin/param_wizard.php, row 291
+// admin/param_wizard.php, row 284
 "Cancel" => "Zru\x9Ai\x9D",
 
-// admin/param_wizard.php, row 292
+// admin/param_wizard.php, row 285
 "Show example params" => "Zobrazi\x9D pr\xEDklady parametrov", // ai 2026-06
 
-// admin/param_wizard.php, row 296
+// admin/param_wizard.php, row 289
 "OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68

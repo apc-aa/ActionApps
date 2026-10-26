@@ -41,38 +41,38 @@ return [
 // modules/site/index.php, row 151
 "Editor window - site code manager" => "Prozor za ure\xF0ivanje koda stranice",
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 163
 "Add&nbsp;spot" => "Dodajte to\xE8ku",
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 164
 "Add&nbsp;choice" => "Dodajte",
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 167
 "Move&nbsp;up" => "Preselite",
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 168
 "Move&nbsp;down" => "Pomaknite dolje",
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 171
 "Move&nbsp;left" => "Pomaknite&nbsp;ulijevo", // ai 2026-06
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 172
 "Move&nbsp;right" => "Pomaknite&nbsp;udesno", // ai 2026-06
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Obri\x9Aite",
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 "Are you sure you want to delete the spot?" => "Jeste li sigurni da \x9Eelite obrisati ovaj spot?", // ai 2026-06
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 178
 "Enable" => "Omogu\xE6ite", // ai 2026-06
 
-// modules/site/index.php, row 187
+// modules/site/index.php, row 179
 "Disable" => "Onemogu\xE6ite", // ai 2026-06
 
-// modules/site/index.php, row 208
+// modules/site/index.php, row 200
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Mogu\xE6i sustavski require - &lcub;require:...&rcub; ili &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

@@ -13,29 +13,29 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// ./slice.php, row 237
+// ./slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Tham số inc không hợp lệ - tệp được chèn chỉ được chứa các ký tự chữ và số", // ai 2026-06
 
-// ./slice.php, row 241
+// ./slice.php, row 243
 "No such file" => "Không có tệp như vậy", // ai 2026-06
 
-// ./slice.php, row 262
+// ./slice.php, row 264
 "Invalid slice number or slice was deleted" => "Số chuyên mục không hợp lệ hoặc chuyên mục đã bị xóa", // ai 2026-06
 
-// ./slice.php, row 265
+// ./slice.php, row 267
 "slice.php output forbidden for this slice" => "Đầu ra qua slice.php bị cấm đối với chuyên mục này", // ai 2026-06
 
-// ./slice.php, row 320
+// ./slice.php, row 322
 "session id" => "id phiên", // ai 2026-06
 
-// ./slice.php, row 573
+// ./slice.php, row 585
 "number of current page (on pagescroller)" => "số trang hiện tại (trong phân trang)", // ai 2026-06
 
-// ./slice.php, row 574
+// ./slice.php, row 586
 "page length (number of items)" => "độ dài trang (số bài viết)", // ai 2026-06
 
-// ./slice.php, row 609
-// include/view.php, row 390
+// ./slice.php, row 621
+// include/view.php, row 373
 "No item found" => "Không tìm thấy bài viết nào", // ai 2026-06
 
 // include/discussion.php, row 211
@@ -176,16 +176,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Lỗi: hàm bí danh %1 không đúng cho %2", // ai 2026-06
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "Bài viết đã chọn", // ai 2026-06
 
-// include/itemview.php, row 129
+// include/itemview.php, row 130
 "number of found items" => "số bài viết tìm thấy", // ai 2026-06
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "Không có bình luận nào được chọn", // ai 2026-06
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "tên nhóm chính xác", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -212,16 +212,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Tất cả danh mục", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Lỗi: Thiếu mật khẩu đọc", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Thông báo tin tức Toolkit", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "Quay lại", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Đăng nhập lại", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -230,6 +230,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Lấy dữ liệu quan hệ bài viết được gửi bằng POST từ biểu mẫu", // ai 2026-06
 
-// modules/site/site.php, row 304
+// modules/site/site.php, row 308
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Trang web bị cấu hình sai: %1 không tồn tại hoặc không đọc được. Hãy thêm tệp đó hoặc sửa thiết lập \"Tệp trạng thái\" của mô-đun trang web này.", // ai 2026-10
 ];

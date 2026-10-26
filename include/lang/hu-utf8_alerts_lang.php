@@ -26,34 +26,40 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Nincs jogosultsága rovat hozzáadásához", // ai 2026-06
 
-// modules/alerts/acf.php, row 107
+// modules/alerts/acf.php, row 109
 "Alerts Selections" => "Értesítések – válogatások", // ai 2026-06
 
-// modules/alerts/acf.php, row 111
+// modules/alerts/acf.php, row 113
 "Choose selections which form the Alert email." => "Válassza ki a válogatásokat, amelyek az értesítő e-mailt alkotják.", // ai 2026-06
 
-// modules/alerts/acf.php, row 115, 142
+// modules/alerts/acf.php, row 117, 149
 "order" => "sorrend", // ai 2026-06
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "selection" => "válogatás", // ai 2026-06
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "remove" => "eltávolítás", // ai 2026-10
 
+// modules/alerts/acf.php, row 123
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+
 // modules/alerts/acf.php, row 124
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+
+// modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Még nincs kiválasztott szűrés.", // ai 2026-10
 
-// modules/alerts/acf.php, row 127
+// modules/alerts/acf.php, row 134
 "Save order" => "Sorrend mentése", // ai 2026-10
 
-// modules/alerts/acf.php, row 128
+// modules/alerts/acf.php, row 135
 "Remove checked" => "Kijelöltek eltávolítása", // ai 2026-10
 
-// modules/alerts/acf.php, row 143
+// modules/alerts/acf.php, row 150
 "Add selection" => "Válogatás hozzáadása", // ai 2026-10
 
-// modules/alerts/acf.php, row 145
+// modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Nincsenek definiált válogatások. Definiálnia kell legalább egyet.", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 505
