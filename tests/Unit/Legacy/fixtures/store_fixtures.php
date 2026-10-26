@@ -322,6 +322,8 @@ final class FakeSlice extends AA_Slice
     public bool $deleted = false;
     /** the slice type (AA_Slice::type()) - 'ReaderManagement' for a reader slice */
     public ?string $type = null;
+    /** the reading password as AA_Slice keeps it - hashed (AA_Credentials::encrypt()) */
+    public ?string $reading_password = null;
 
     public function __construct(string $slice_id)
     {
@@ -372,13 +374,14 @@ final class FakeSlice extends AA_Slice
         return ['path' => sys_get_temp_dir() . '/aa-upload-' . $this->module_id, 'url' => 'https://example.org/upload/' . $this->module_id, 'perms' => 0o775];
     }
 
-    /** slice settings storeItem() reads - history logging off, the type, nothing else set */
+    /** slice settings storeItem() and the reading check read - history logging off, the type, the reading password, nothing else set */
     public function getProperty($prop)
     {
         return match ($prop) {
-            'historylog' => '0',
-            'type'       => $this->type,
-            default      => null,
+            'historylog'       => '0',
+            'type'             => $this->type,
+            'reading_password' => $this->reading_password,
+            default            => null,
         };
     }
 }

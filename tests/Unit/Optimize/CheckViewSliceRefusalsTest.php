@@ -6,6 +6,7 @@ namespace Tests\Unit\Optimize;
 
 use AA\Optimize\CheckViewSliceRefusals;
 use AA\Optimize\Finding;
+use AA\Security\ViewSlices;
 use PHPUnit\Framework\TestCase;
 
 final class CheckViewSliceRefusalsTest extends TestCase
@@ -37,6 +38,8 @@ final class CheckViewSliceRefusalsTest extends TestCase
         $this->assertSame(2, $finding->count);
         $this->assertSame($row['selector'], $finding->key);
         $this->assertSame('example.org/news', $finding->evidence[0][_m('Page asked for')]);
+        $this->assertSame('View 42', $finding->evidence[0][_m('Listed by')]);
+        $this->assertSame('Slice left out', $finding->kind);
     }
 
     /** a bare view.php?vid= or a banner over the slice is refused too - the advice must not send the reader after slice parameters only */
@@ -68,6 +71,22 @@ final class CheckViewSliceRefusalsTest extends TestCase
         [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Members'], [], []);
 
         $this->assertStringStartsWith('slice.php ', $finding->title);
+    }
+
+    /** a condition on related items is no view - the finding says so and advises the template, not the URL parameters */
+    public function test_findingsFor_refusedCondition_namesTheConditionAndSlice(): void
+    {
+        $row = ['selector' => ParamImplode([ViewSlices::CONDITION, self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => 'example.org/<b>'];
+
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Messages'], [], []);
+
+        $this->assertSame(Finding::WARNING, $finding->severity);
+        $this->assertSame('A condition on related items matched nothing in slice Messages: its reading password was not known', $finding->title);
+        $this->assertSame($row['selector'], $finding->key);
+        $this->assertSame('example.org/&lt;b&gt;', $finding->evidence[0][_m('Page asked for')]);
+        $this->assertStringContainsString('{credentials:...}', $finding->advice);
+        $this->assertSame('Condition refused', $finding->kind);
+        $this->assertArrayNotHasKey(_m('Listed by'), $finding->evidence[0]);
     }
 
     public function test_findingsFor_unknownSlice_isNamedByItsId(): void

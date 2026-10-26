@@ -26,6 +26,7 @@
  */
 
 use AA\IO\DB\DB_AA;
+use AA\Security\ViewSlices;
 use AA\Util\Langs;
 
 require_once __DIR__ . "/sql_parser.php";
@@ -1828,36 +1829,42 @@ class QueryZidsHelper
                             AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$rel_fld' is not relation field.");
                             continue;            // bad field_id or not defined condition - skip
                         }
-                        $rel_fld = "'$rel_fld'";
-                        if ($cf === 'all_fields') {
-                            $tbl           = 'c' . $this->tbl_count++;
-                            $tbl2          = 'c' . $this->tbl_count++;
-                            $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
-                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text))";
-                            $cur_cond      = (new AA_Dbcondition($tbl2, 'text', $cond['operator'], $cond['value']))->getWhereExp();
-                        } else {
-                            $cond_field = AA_Slice::getModule($rel_f_slice)->getField($cf);
-                            if (!is_object($cond_field)) {
-                                AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$fid' is not field.");
-                                continue;            // bad field_id or not defined condition - skip
-                            }
-
-                            $cond_flds = "'$cf'";
-                            $tbl       = 'c' . $this->tbl_count++;
-                            $tbl2      = 'c' . $this->tbl_count++;
-                            if ($cond_field->storageTable() === 'item') {   // field is stored in table 'item'
-                                // Long ID in conds should be specified as unpacked, but in db it is packed
-                                $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
-                                                  LEFT JOIN item as $tbl2 ON ($tbl2.id=UNHEX($tbl.text))";
-                            } else {
-                                $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
-                                                  LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
-                            }
-                            $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
-                            //                            if (in_array($cf, ['id..............', 'slice_id........'])) {
-                            //                                $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
-                            //                            }
+                        // the values come only from items of the declared slice, as the stored ids may point anywhere;
+                        // without that slice, or its password, the condition matches nothing - left out, it would list more
+                        $rel_slice = AA_Slice::getOwnModule($rel_f_slice);
+                        if (!is_object($rel_slice)) {
+                            AA::$debug && AA::$dbg->warn("Nothing matches '$fid' in conds[]: '$rel_fld' does not point to a slice.");
+                            $this->select_conds[] = '1=0';
+                            continue;
                         }
+                        if (!ViewSlices::conditionMayRead($rel_f_slice)) {
+                            $this->select_conds[] = '1=0';
+                            continue;
+                        }
+                        $all_fields = ($cf === 'all_fields');   // any field of the related items
+                        $cond_field = $all_fields ? null : $rel_slice->getField($cf);
+                        if (!$all_fields && !is_object($cond_field)) {
+                            AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$fid' is not field.");
+                            continue;            // bad field_id or not defined condition - skip
+                        }
+
+                        $rel_fld = "'$rel_fld'";
+                        $tbl     = 'c' . $this->tbl_count++;
+                        $tbl2    = 'c' . $this->tbl_count++;
+                        $packed  = xpack_id($rel_f_slice);
+                        if ($cond_field?->storageTable() === 'item') {   // field is stored in table 'item'
+                            // Long ID in conds should be specified as unpacked, but in db it is packed
+                            $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=UNHEX($tbl.text) AND $tbl2.slice_id=$packed)";
+                        } else {
+                            $one_field = $all_fields ? '' : " AND ($tbl2.field_id='$cf' OR $tbl2.field_id is NULL)";
+                            // EXISTS, not a JOIN of item: with the JOIN MariaDB reorders the plan to millions of rows (NSZM)
+                            $rtbl = 'r' . substr($tbl2, 1);
+                            $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text)$one_field
+                                                                     AND EXISTS (SELECT 1 FROM item AS $rtbl WHERE $rtbl.id=$tbl2.item_id AND $rtbl.slice_id=$packed))";
+                        }
+                        $cur_cond = (new AA_Dbcondition($tbl2, $cond_field?->storageColumn() ?? 'text', $cond['operator'], $cond['value']))->getWhereExp();
                         $this->select_conds[] = $cur_cond;
                         $this->sortable[$cf]  = $tbl;  // @todo - test if it works
                         $cond_flds      = '';
@@ -1878,10 +1885,17 @@ class QueryZidsHelper
                         $rel_bins     = AA_BIN_ALL;
                         $rel_slice_id = trim($rel_slice_id, '+');
                     }
-                    $rel_slice = AA_Slice::getModule($rel_slice_id);
+                    // without the slice, or its password, the condition matches nothing, as in the first case;
+                    // checked before the fields, so a refusal does not tell which fields the slice has
+                    $rel_slice = AA_Slice::getOwnModule($rel_slice_id);
                     if (!is_object($rel_slice)) {
-                        AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $rel_slice_id is not slice.");
-                        continue;            // bad field_id or not defined condition - skip
+                        AA::$debug && AA::$dbg->warn("Nothing matches $fid in conds[]: $rel_slice_id is not slice.");
+                        $this->select_conds[] = '1=0';
+                        continue;
+                    }
+                    if (!ViewSlices::conditionMayRead($rel_slice_id)) {
+                        $this->select_conds[] = '1=0';
+                        continue;
                     }
                     $cond_field = $rel_slice->getField($cond_fld_id);
                     if (!is_object($cond_field)) {
@@ -1897,14 +1911,17 @@ class QueryZidsHelper
                     $rel_fld   = "'$rel_fld_id'";
                     $tbl       = 'c' . $this->tbl_count++;
                     $tbl2      = 'c' . $this->tbl_count++;
+                    // the relation field id alone matches items of any slice - only the named slice and its bins count,
+                    // already for the relation row, as the sort orders by it
+                    $rtbl          = 'r' . substr($tbl2, 1);
+                    $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? " AND " . CreateBinCondition($rel_bins, $rtbl) : '';
+                    $rel_join      = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text
+                                                     AND EXISTS (SELECT 1 FROM item AS $rtbl WHERE $rtbl.id=$tbl.item_id AND $rtbl.slice_id=" . xpack_id($rel_slice_id) . "$rel_bins_cond))";
                     if ($cond_field->storageTable() === 'item') {   // field is stored in table 'item'
-                        $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? " AND " . CreateBinCondition($rel_bins, $tbl2) : '';
                         // Long ID in conds should be specified as unpacked, but in db it is packed
-                        $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
-                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=" . xpack_id($rel_slice_id) . "$rel_bins_cond)";
+                        $this->select_tabs[] = "$rel_join LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id)";
                     } else {
-                        $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
-                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
+                        $this->select_tabs[] = "$rel_join LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                     }
                     $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
                     //                        if (in_array($cond_flds, ['id..............', 'slice_id........'])) {

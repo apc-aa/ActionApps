@@ -28,9 +28,12 @@ use zids;
  * and its own narrow() gets the same answer, as the gate is one for the request (forRequest()). A view
  * the URL calls draws only the banners the URL chose, not those a template call in the request left to it.
  *
+ * A condition on a field of a related item (d-<field>@<relation>, d-<field>@<slice>/<relation>) reads only
+ * the declared or named slice, and only when the request knows its password (conditionMayRead()); sorting
+ * by its field orders by the relation row, of the listed item or of the named slice.
+ *
  * What stays open: the main slice of slice.php, which the request chooses; the single items of
- * slice.php (x=, o=, sh_itm=, items[]); a condition on a remote field (d-<field>@<slice>/<relation>), or
- * sorting by one, reaches a protected slice through a related public one; discussions (discus views);
+ * slice.php (x=, o=, sh_itm=, items[]); discussions (discus views);
  * the banners the URL chose stay on the view for its later calls in the request (AA_View keeps them,
  * setBannerParam()), so a template call of the same view decides those its first call did not draw only
  * during the rows of that first call; the hit of a refused x- item; an {expression} in noitem from the
@@ -42,6 +45,9 @@ final class ViewSlices
 {
     /** log.type of the slices left out - selector vid:slice_id (or slice.php:slice_id), params the page without its query */
     public const EVENT = 'VIEW_DENY';
+
+    /** the lister of a log row for a condition on a field of a related item (conditionMayRead()) */
+    public const CONDITION = 'conds';
 
     /** the view types that list items - the only ones narrowed */
     public const LISTINGS = ['full', 'seetoo', 'calendar', 'digest', 'list', 'rss', 'urls', 'script'];
@@ -202,6 +208,21 @@ final class ViewSlices
             }
         }
         return $this->known_memo[$slice_id];
+    }
+
+    /**
+     * Whether a condition on a field of a related item (<field>@<relation>, <field>@<slice>/<relation> in
+     * QueryZids()) may read that slice; a refusal is logged once a day per slice, under the lister CONDITION.
+     * Asked for templates too, not only for the URL: the condition compares values GetItemContent() would
+     * hide, and cmd[]=d-... of the URL reaches the views of a template as well.
+     */
+    public static function conditionMayRead(string $slice_id): bool
+    {
+        if (self::knownToRequest($slice_id)) {
+            return true;
+        }
+        LogOnce::daily(self::EVENT, ParamImplode([self::CONDITION, strtolower($slice_id)]), ProtectionLog::requested());
+        return false;
     }
 
     /** AA_Slice keeps the reading password hashed, as AA_Credentials compares it - never read the column itself */

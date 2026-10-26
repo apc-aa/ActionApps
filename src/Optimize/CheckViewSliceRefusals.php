@@ -13,7 +13,8 @@ use AA_Views;
 
 /** Slices that views and slice.php left out in the last 30 days, as the page did not know their reading
  *  password: a view called from the URL over such a slice, or parameters that named such a slice, or items
- *  of it (AA\Security\ViewSlices) - logged once a day per view and slice. And the charsets a request named
+ *  of it, or a condition on a field of related items in it (AA\Security\ViewSlices) - logged once a day
+ *  per view (or condition) and slice. And the charsets a request named
  *  for converting a view, discussion, poll or form that were ignored (AA\Security\RequestCharset) - logged
  *  once a day per script and parameter. Index-only.
  */
@@ -36,6 +37,7 @@ class CheckViewSliceRefusals extends AbstractOptimize
     public static function description(): string
     {
         return _m('Lists the views that left out a slice in the last 30 days because the page did not know the slice\'s reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it.')
+            . ' ' . _m('And the conditions on fields of related items in such a slice, which matched nothing.')
             . ' ' . _m('Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored.');
     }
 
@@ -130,31 +132,41 @@ class CheckViewSliceRefusals extends AbstractOptimize
             if (is_long_id($slice_id)) {
                 $links[_m('Slice settings (reading password)')] = get_admin_url('slicedit.php', ['change_id' => $slice_id]);
             }
-            $lister     = ctype_digit($lister) ? _m('View %1', [$lister]) : $lister;   // or slice.php
             $slice_name = ($slice_names[$slice_id] ?? '') ?: $slice_id;
+            if ($lister === ViewSlices::CONDITION) {
+                $title    = _m('A condition on related items matched nothing in slice %1: its reading password was not known', [$slice_name]);
+                $listed   = [];
+                $advice   = _m('A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice\'s reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change.');
+                $kind     = _m('Condition refused');
+            } else {
+                $lister   = ctype_digit($lister) ? _m('View %1', [$lister]) : $lister;   // or slice.php
+                $title    = _m('%1 left out slice %2: its reading password was not known', [$lister, $slice_name]);
+                $listed   = [_m('Listed by') => safe($lister)];
+                $advice   = _m('The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice\'s reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change.');
+                $kind     = _m('Slice left out');
+            }
             $findings[] = new Finding(
                 Finding::WARNING,
-                _m('%1 left out slice %2: its reading password was not known', [$lister, $slice_name]),
+                $title,
                 count: (int) $row['days'],
                 since: (int) $row['first'],
-                evidence: [[
-                    _m('Listed by')      => safe($lister),
+                evidence: [$listed + [
                     _m('Slice')          => safe($slice_name),
                     _m('Page asked for') => safe((string) $row['params']),
                     _m('Days seen')      => (string) (int) $row['days'],
                     _m('Last')           => date('Y-m-d', (int) $row['last']),
                 ]],
-                advice: _m('The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice\'s reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change.'),
+                advice: $advice,
                 links: $links + [_m('Log rows') => AA_Log::getAdminUrl(ViewSlices::EVENT, $selector)],
                 key: $selector,
                 last: (int) $row['last'],
-                kind: _m('Slice left out'),
+                kind: $kind,
             );
         }
         foreach ($charset_rows as $row) {
             $findings[] = self::charsetFinding($row);
         }
-        return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No slice was left out of a view and no charset was ignored in the last 30 days'))];
+        return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No slice was left out of a view or a condition and no charset was ignored in the last 30 days'))];
     }
 
     /** @param array<string, mixed> $row */
