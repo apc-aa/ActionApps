@@ -199,8 +199,6 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         height,
         license_key: 'gpl',
         disabled,
-        // the page's handlers hear focus / blur on the hidden named textarea - that is not leaving the editor
-        custom_ui_selector: 'aa-richtext > textarea[hidden]',
         branding: false,
         promotion: false,
         menubar: false,
@@ -252,7 +250,13 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         paste_data_images: !!upload,
         ...(upload ? uploadOptions(upload, onEdit) : {}),
         setup: (ed) => {
-            ed.on('PreInit', () => guardEditView(ed));
+            ed.on('PreInit', () => {
+                guardEditView(ed);
+                // the page's handlers hear focus / blur on the hidden named textarea - that is not leaving
+                // the editor. Set only now: TinyMCE's focusin handler on the page tests this selector with
+                // editor.dom, which a starting editor does not have yet - a click elsewhere would throw.
+                ed.options.set('custom_ui_selector', 'aa-richtext > textarea[hidden]');
+            });
             if (inline) {
                 makeRoomForToolbar(ed);
             }
