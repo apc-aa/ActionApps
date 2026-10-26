@@ -545,6 +545,9 @@ if ($slices && !$listed_slices) {
 } else {
     $zids = QueryZids(($listed_slices ?: [$slice_id]), $conds, $sort, "ACTIVE", $neverAllItems, null, $defaultCondsOperator);
 }
+if ($group_by || $iview) {   // the grouping the request chose
+    $slice_info['group_by'] = ViewSlices::requestGroupBy('group_by', (string) $slice_info['group_by'], $listed_slices ?: [$slice_id]);
+}
 
 if ($mlxslice) {
     $mlxView->postQueryZIDs($zids, $mlxslice, $slice_id);

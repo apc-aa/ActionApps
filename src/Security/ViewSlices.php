@@ -7,7 +7,11 @@ namespace AA\Security;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA\Util\LogOnce;
+use AA_Alias;
 use AA_Credentials;
+use AA_Field;
+use AA_Fields;
+use AA_Slice;
 use Closure;
 use zids;
 
@@ -238,6 +242,33 @@ final class ViewSlices
     public static function protectedFieldRefused(string $slice_id, string $field_id): void
     {
         LogOnce::daily(self::EVENT, ParamImplode([self::PROTECTED_FIELD, strtolower($slice_id), $field_id]), ProtectionLog::requested());
+    }
+
+    /**
+     * The group_by a request gave a listing (set[<vid>]=group_by-... of a view the URL calls, group_by= or
+     * iview= of slice.php). The heading reads the item value in PHP, so a field AA never shows groups
+     * nothing (logged as protectedFieldRefused()); another field or an _#ALIAS stays; anything else would
+     * run as a template, so it is text, as noitem (UrlValue::template()).
+     * @param string[]|zids $listed the slices whose items the listing shows, or the items, when the
+     *                              listing is not bound to slices - their slices are read only for a field
+     */
+    public static function requestGroupBy(string $param, string $group_by, array|zids $listed): string
+    {
+        if (!AA_Field::isValidFieldId($group_by)) {
+            return (($group_by === '') || AA_Alias::isAliasLike($group_by, true)) ? $group_by : UrlValue::template($param, $group_by);
+        }
+        $slice_ids = ($listed instanceof zids)
+            ? ($listed->isEmpty() ? [] : array_unique(AA::Contentcache()->get_result([self::class, 'itemSlicesFromDb'], [$listed->onetype(), $listed->getArray()])))
+            : $listed;
+        foreach ($slice_ids as $slice_id) {
+            if (isset(AA_Slice::getOwnModule((string) $slice_id)?->protectedFieldIds()[$group_by])) {
+                self::protectedFieldRefused((string) $slice_id, $group_by);
+                return '';
+            }
+        }
+        // a field of a protected type has its value in the item even where the slice does not define it;
+        // not logged - the URL would choose the id, and so the number of log rows
+        return AA_Field::isProtectedType(AA_Fields::getFieldType($group_by)) ? '' : $group_by;
     }
 
     /** AA_Slice keeps the reading password hashed, as AA_Credentials compares it - never read the column itself */

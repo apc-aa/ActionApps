@@ -97,7 +97,7 @@ final class CheckViewSliceRefusalsTest extends TestCase
         [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Readers'], [], []);
 
         $this->assertSame(Finding::WARNING, $finding->severity);
-        $this->assertSame('A condition or sort on field password........ of slice Readers was left out: AA never shows its values', $finding->title);
+        $this->assertSame('A condition, sort or grouping on field password........ of slice Readers was left out: AA never shows its values', $finding->title);
         $this->assertSame(3, $finding->count);
         $this->assertSame($row['selector'], $finding->key);
         $this->assertSame('password........', $finding->evidence[0][_m('Field')]);

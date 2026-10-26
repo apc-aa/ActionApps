@@ -136,9 +136,9 @@ class CheckViewSliceRefusals extends AbstractOptimize
             }
             $slice_name = ($slice_names[$slice_id] ?? '') ?: $slice_id;
             if ($lister === ViewSlices::PROTECTED_FIELD) {
-                $title    = _m('A condition or sort on field %1 of slice %2 was left out: AA never shows its values', [$field_id, $slice_name]);
+                $title    = _m('A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values', [$field_id, $slice_name]);
                 $listed   = [_m('Field') => safe($field_id)];
-                $advice   = _m('A view, {ids} or a search on the page had a condition or sort on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[] or set[]=sort-... in the URL). The condition matched nothing and the sort was dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change.');
+                $advice   = _m('A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change.');
                 $kind     = _m('Protected field refused');
             } elseif ($lister === ViewSlices::CONDITION) {
                 $title    = _m('A condition on related items matched nothing in slice %1: its reading password was not known', [$slice_name]);

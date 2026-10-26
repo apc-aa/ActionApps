@@ -666,7 +666,10 @@ class AA_Showview
                 $format['calendar_month'] = $month;
                 $format['calendar_year']  = $year;
                 if (isset($this->_view_param['group_by'])) {
-                    $format['group_by'] = $this->_view_param['group_by'];
+                    // items listed by their ids may come from any slice (set[]=sort- can drop the sort that binds them to one)
+                    $format['group_by'] = $this->from_request
+                        ? ViewSlices::requestGroupBy("set[$vid]=group_by-", (string) $this->_view_param['group_by'], $zids ? $zids2 : (is_array($slices) ? $slices : [$slice_id]))
+                        : $this->_view_param['group_by'];
                 }
                 if (isset($view_info['group_by2'])) {
                     $format['group_by2']    = $view_info['group_by2'];
