@@ -238,7 +238,34 @@ final class DraftsTest extends TestCase
     {
         $this->saveNew(['posted_by.......' => '666', 'isds_posted_by' => '666']);
 
-        self::assertSame(['status_code.....', Schema::CAMPAIGN_STATE], $this->lastWritten());
+        self::assertSame(['status_code.....', Schema::CAMPAIGN_STATE, 'last_edit.......', 'edited_by.......'], $this->lastWritten());
+    }
+
+    // storeItem() dates and signs only an update: a new draft would show no time it was saved and sort last
+    public function test_save_newDraftDatedAndSigned(): void
+    {
+        $before = time();
+        $this->saveNew(['isds_subject' => 'Výzva', 'last_edit.......' => '1', 'edited_by.......' => '666']);
+
+        $this->assertDatedAndSigned(self::newId(), $before);
+    }
+
+    // the update of a draft is dated by storeItem() itself
+    public function test_save_updateLeavesTheDateToStoreItem(): void
+    {
+        $this->saveNew(['isds_subject' => 'Výzva']);
+        $this->saveNew(['isds_subject' => 'Výzva 2']);
+
+        self::assertSame([Schema::CAMPAIGN_SUBJECT], $this->lastWritten());
+    }
+
+    private function assertDatedAndSigned(string $id, int $before): void
+    {
+        $edited = (int) $this->drafts->field($id, 'last_edit.......');
+        self::assertGreaterThanOrEqual($before, $edited);
+        self::assertLessThanOrEqual(time(), $edited);
+        // the identity storeItem() gives the author
+        self::assertSame(\AA_Generator::factoryByString('uid')->generate()->getValue(), $this->drafts->field($id, 'edited_by.......'));
     }
 
     // feeding would spread an unfinished letter to other slices, events would run planned tasks of a draft
@@ -1282,10 +1309,22 @@ final class DraftsTest extends TestCase
         $this->copy();
 
         self::assertSame(
-            ['status_code.....', Schema::CAMPAIGN_STATE, Schema::CAMPAIGN_TEMPLATE, Schema::CAMPAIGN_SUBJECT, Schema::CAMPAIGN_TO_HANDS, Schema::CAMPAIGN_BODY, Schema::CAMPAIGN_FILES, Schema::CAMPAIGN_FILTER],
+            ['status_code.....', Schema::CAMPAIGN_STATE, Schema::CAMPAIGN_TEMPLATE, 'last_edit.......', 'edited_by.......', Schema::CAMPAIGN_SUBJECT, Schema::CAMPAIGN_TO_HANDS, Schema::CAMPAIGN_BODY, Schema::CAMPAIGN_FILES, Schema::CAMPAIGN_FILTER],
             $this->lastWritten(),
         );
         self::assertSame(Schema::CAMPAIGN_STATE_DRAFT, $this->drafts->field(self::copyId(), Schema::CAMPAIGN_STATE));
+    }
+
+    // dated as made now, not as its source: the list shows it first, the page the time it was saved
+    public function test_copy_datedAndSigned(): void
+    {
+        $this->sentCampaign();
+        $this->drafts->items[self::ITEM]['fields']['last_edit.......'] = ['1000', 0];
+        $before = time();
+
+        $this->copy();
+
+        $this->assertDatedAndSigned(self::copyId(), $before);
     }
 
     // the copy names its source, not the source of its source

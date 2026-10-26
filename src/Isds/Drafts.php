@@ -7,6 +7,7 @@ namespace AA\Isds;
 use AA\IO\DB\DB_AA;
 use AA\Upload\UploadPolicy;
 use AA\Util\FormToken;
+use AA_Generator;
 use AA_Items;
 use AA_Slice;
 use AA_Value;
@@ -283,7 +284,7 @@ class Drafts
             $content          = self::content($setup, $id, [
                 'status_code.....'    => new AA_Value(\SC_ACTIVE),
                 Schema::CAMPAIGN_STATE => new AA_Value(Schema::CAMPAIGN_STATE_DRAFT),
-            ] + $written + (($moved === []) ? [] : [Schema::CAMPAIGN_FILES => new AA_Value(array_values($moved))]));
+            ] + self::dated() + $written + (($moved === []) ? [] : [Schema::CAMPAIGN_FILES => new AA_Value(array_values($moved))]));
             if ($this->storeWith($content, 'insert_if_new', $moved)) {
                 return self::told($code, $id, refiltered: true);
             }
@@ -372,7 +373,7 @@ class Drafts
             'status_code.....'       => new AA_Value(\SC_ACTIVE),
             Schema::CAMPAIGN_STATE    => new AA_Value(Schema::CAMPAIGN_STATE_DRAFT),
             Schema::CAMPAIGN_TEMPLATE => new AA_Value($source),
-        ] + $letter);
+        ] + self::dated() + $letter);
         if (!$this->store($content, 'insert_if_new', self::FLAGS)) {
             throw new \RuntimeException("Copy $id not stored, error " . ItemContent::lastErr());
         }
@@ -685,6 +686,19 @@ class Drafts
             // deleted or put in the trash since the page showed it: the letter is still saved
             return self::FILTER_CHANGED;
         }
+    }
+
+    /**
+     * The time and login of a new item: storeItem() writes them only on an update, and the item would
+     * show no time it was saved and sort last among the campaigns
+     * @return array<string, AA_Value>
+     */
+    private static function dated(): array
+    {
+        return [
+            'last_edit.......' => AA_Generator::factoryByString('now')->generate(),
+            'edited_by.......' => AA_Generator::factoryByString('uid')->generate(),
+        ];
     }
 
     /** @param array<string, AA_Value> $fields */
