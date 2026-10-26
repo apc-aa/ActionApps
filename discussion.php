@@ -69,6 +69,7 @@ require_once __DIR__ . "/include/searchlib.php";
 require_once __DIR__ . "/include/slice.php";
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
+pageOpenForDebug();   // ?debug of a logged-in superadmin
 
 add_vars();
 

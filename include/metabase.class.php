@@ -1494,13 +1494,10 @@ class AA_Metabase
      *                          - there we store also BINs conditions, since each
      *                            table/module can use different Bins AND for other
      *                            the idea of BINs makes no sense at all
-     * @global bool  $debug =1       - many debug messages
      * @return zids
      */
     public function queryZids($settings, $set): zids
     {
-        global $debug;                 // displays debug messages
-
         $tablename = $settings['table'];
 
         if ($this->isColumn($tablename, 'status_code')) {
@@ -1511,7 +1508,7 @@ class AA_Metabase
         $conds     = $set->getConds();
         $sort      = $set->getSort();
 
-        if ($debug) {
+        if (AA::$debug) {
             huhl("<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
         }
 

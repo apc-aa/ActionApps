@@ -477,8 +477,8 @@ function nanotime(): int
  */
 function debug(...$messages): void
 {
-    // could be toggled from Item Manager left menu 'debug' (by Superadmins!)
-    if ($_COOKIE['aa_debug'] != 1) {
+    // Set Debug ON in the admin menu; AA::$debug is 0 unless DebugAccess allowed the cookie
+    if (($_COOKIE['aa_debug'] ?? '') != 1 || !AA::$debug) {
         return;
     }
     foreach ($messages as $msg) {

@@ -199,6 +199,7 @@ require_once __DIR__ . "/include/mlx.php";
 // from slice.php completely. It doesn-t work because of Cookies vs. SSI.
 //    Honza 2016-07-12
 pageOpen('noauth');
+pageOpenForDebug();   // ?debug of a logged-in superadmin
 
 $sess->register('r_packed_state_vars');
 $sess->register('slices');
@@ -494,7 +495,7 @@ if ($order) {
     $order          = key($orderarr);
 }
 
-if ($debug) {
+if (AA::$debug) {
     echo "<br>Group by: - " . safe($group_by) . " - <br>Slice_info[category_sort] - " . safe($slice_info['category_sort']) . " -<br>slice_info[group_by] - " . safe($slice_info['group_by']) . " -";
 }
 
@@ -621,7 +622,7 @@ if ($searchlog) {
     PutSearchLog($searchlog, $zids->count());
 }
 
-if ($debug) {
+if (AA::$debug) {
     echo "<br><br>Page generation time: " . timestartdiff();
 }
 

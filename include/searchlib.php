@@ -1648,7 +1648,6 @@ function QueryZidsSet(AA_Set $set): zids
  *
  * @return zids - A zids object with a list of the ids that match the query.
  *
- * @global  bool      $debug         (in) many debug messages
  * @global  bool      $debugfields   (in) useful mainly for multiple slices mode -- views info about field_ids
  *                                used in conds[] but not existing in some of the slices
  * @global  int       $QueryIDsCount (out) is set to the count of IDs returned

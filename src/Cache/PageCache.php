@@ -36,6 +36,7 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA\Later\PagecachePurge;
 use AA\Later\Toexecute;
+use AA\Util\DebugAccess;
 use AA\Util\InputVars;
 use AA\Util\Url;
 use Cvarset;
@@ -587,7 +588,7 @@ class PageCache
 
         AA::$debug & 2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:' . implode(',', $str2find->getStrings()), 'Pagecache content (length):' . strlen($content), 'Pagecache cache_nostore:' . $this->cache_nostore);
 
-        if ($force || (ENABLE_PAGE_CACHE && !$this->cache_nostore)) {  // $this->cache_nostore used if {user:xxxx} alias is used
+        if ($this->mayStore((bool) $force)) {
             AA::$debug & 2 && AA::$dbg->log("Pagecache->store(): - storing");
             $row = ['id' => $key, 'content' => $content, 'stored' => time(), 'flag' => $flag];
 
@@ -747,6 +748,16 @@ class PageCache
     {
         DB_AA::delete('pagecache_str2find');
         DB_AA::delete('pagecache');
+    }
+
+    /** A debug render of the request carries timings and traces and view.php and others do not have
+     *  debug in the key, so it is never stored. The level the request was granted counts, not
+     *  AA::$debug: {debug:N} left in a template must not stop the caching of a site.
+     *  cache_nostore is set e.g. by {user:xxxx}; $force stores even with ENABLE_PAGE_CACHE off.
+     */
+    public function mayStore(bool $force = false): bool
+    {
+        return !DebugAccess::granted() && ($force || (ENABLE_PAGE_CACHE && !$this->cache_nostore));
     }
 
     /** the page is not stored in the cache */

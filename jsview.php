@@ -88,6 +88,7 @@ require_once __DIR__ . "/include/view.php";
 require_once __DIR__ . "/include/discussion.php";
 require_once __DIR__ . "/include/searchlib.php";
 require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
+pageOpenForDebug();   // ?debug of a logged-in superadmin
 
 // we tried to remove all global $db, so let's try to comment out following global object
 // honza 2017-04-19

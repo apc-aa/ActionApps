@@ -220,10 +220,14 @@ class InputVars
         'rusr', 'rgrp', 'r_wm_state', 'r_userstate', 'r_sr_state', 'recover', 'r_packed_state_vars', 'scr',
     ];
 
-    /** a request variable must never become this global - superglobals and the session-backed ones */
+    /** ?debug counts only through AA::$debug, which DebugAccess grants; errcheck and mlxdbg print
+     *  backtraces (huhe(), huhl()), so the request must not switch them on either */
+    private const DEBUG_GLOBALS = ['debug', 'errcheck', 'mlxdbg'];
+
+    /** a request variable must never become this global - superglobals, the session-backed ones and debug */
     public static function isProtectedGlobal(string $name): bool
     {
-        return str_starts_with($name, '_') || ($name === 'GLOBALS') || in_array($name, self::SESSION_GLOBALS, true);
+        return str_starts_with($name, '_') || ($name === 'GLOBALS') || in_array($name, self::SESSION_GLOBALS, true) || in_array($name, self::DEBUG_GLOBALS, true);
     }
 
     /** function for processing posted or get variables

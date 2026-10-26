@@ -840,7 +840,6 @@ class AA_Object extends AA_Storable implements AA_iEditable
     // *   @param zids          $restrict_zids - use it if you want to choose only from a set of ids
     // *   @return A zids object with a list of the ids that match the query.
     // *
-    // *   @global  bool $debug (in) many debug messages
     // *   @global  bool $nocache (in) do not use cache, even if use_cache is set
     // */
     //    // @todo !!! - rewrite it.
@@ -1483,7 +1482,6 @@ class AA_Components
      *                          - there we store also BINs conditions, since each
      *                            table/module can use different Bins AND for other
      *                            the idea of BINs makes no sense at all
-     * @global bool  $debug =1       - many debug messages
      * @return zids
      */
     public static function querySet($settings, $set): zids

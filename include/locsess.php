@@ -36,6 +36,7 @@
 use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 use AA\IO\DB\DB_PDO;
+use AA\Util\DebugAccess;
 use AA\Util\Langs;
 use AA\Util\Txt;
 
@@ -584,7 +585,8 @@ class AA {
 
 }
 
-AA::$debug = (int)($_REQUEST['debug'] ?: $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
+// aa_debug is the Set Debug ON switch of the admin menu; a superadmin gets the level later, in pageOpen()
+AA::$debug = DebugAccess::fromRequest($_REQUEST['debug'] ?? null, $_COOKIE['aa_debug'] ?? null, DebugAccess::givenKey($_SERVER), DebugAccess::configuredKey());
 AA::$dbg   = new AA_Debug_Console();   // AA_Debug_Firephp removed 2026-09-07 (never shipped, AA::$debug is int so the 'f' branch was unreachable)
 
 // This pair of functions remove the guessing about which of $db $db2
@@ -771,17 +773,44 @@ class AA_Session extends Session
 
 function pageOpen($type = ''): void
 {
-    global $sess, $auth;
+    global $sess;
 
     $sess = new AA_Session;
 
     if ($type !== 'noauth') {
-        if (!is_object($auth)) {
-            $auth = new AA_Auth;
-        }
-        $auth->set_nobody($type==='nobody');
-        $auth->start();
+        authStart($type === 'nobody');
     }
+}
+
+/** the login of the session; a superadmin gets the ?debug level asked for */
+function authStart(bool $nobody): void
+{
+    global $auth;
+
+    if (!is_object($auth)) {
+        $auth = new AA_Auth;
+    }
+    $auth->set_nobody($nobody);
+    $auth->start();
+    AA::$debug = DebugAccess::grant((int) AA::$debug, static fn(): bool => !in_array(AuthGetUid(), ['', 'nobody'], true) && IsSuperadmin());
+}
+
+/** ?debug of a logged-in superadmin on pages that do not open the login themselves. Only when debug
+ *  waits for a superadmin and the browser has a session - the page then depends on the user, so it
+ *  is not stored for everyone.
+ */
+function pageOpenForDebug(): void
+{
+    global $sess, $auth;
+
+    if (!DebugAccess::pending() || empty($_COOKIE['AA_Session']) || is_object($auth)) {
+        return;
+    }
+    AA::Pagecache()->switchCacheNostore();
+    if (!is_object($sess)) {
+        $sess = new AA_Session;
+    }
+    authStart(true);
 }
 
 // Self-healing scheduled-tasks trigger (no-op when OS cron is healthy).
