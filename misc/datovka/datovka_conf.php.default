@@ -32,7 +32,11 @@
 // in: 'basic' - login and password, in the test environment only; 'cert' - cert, the system certificate
 // of the data box; 'hosted' - box and cert, the certificate of a hosted filing service the data box
 // allowed. key names the private key when cert does not hold it, passphrase opens an encrypted key.
-// The State Check (ISDS accounts) tells what to fix. For example:
+// test_boxes lists the data boxes a test message of a draft may go to; in production a page may narrow
+// the list, never add to it, and a test goes only free of charge - in practice to the box of an authority
+// that agreed to it -, unless 'paid_tests' => true allows a paid one too (and one of which ISDS does not
+// say whether it is paid): each such test may cost money, so list only boxes you mean to pay for. Only
+// true allows it. The State Check (ISDS accounts, ISDS settings file) tells what to fix. For example:
 //
 //     'accounts' => [
 //         'ECNTEST' => [
@@ -50,6 +54,7 @@
 //             'slices'      => ['<campaign slice id>', '<message slice id>'],
 //             'box'         => '<data box id>',
 //             'cert'        => '/etc/aa-isds/hosting.pem',
+//             'test_boxes'  => ['<data box id>'],
 //         ],
 //     ],
 

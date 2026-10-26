@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
+use AA\Util\Adminlink;
 use AA\IO\DB\DB_AA;
 use AA\Util\LogOnce;
 use AA_Log;
@@ -59,18 +60,19 @@ class CheckAlertitemRefusals extends AbstractOptimize
                 $slices[$slice] = $slice;
             }
         }
-        $collection_names = $collections ? DB_AA::select(['id' => 'name'], 'SELECT c.id, m.name FROM `alerts_collection` AS c JOIN `module` AS m ON m.id = c.module_id', [['c.id', array_values($collections)]]) : [];
+        $collection_rows  = $collections ? DB_AA::select(['id' => []], 'SELECT c.id, m.name, LOWER(HEX(c.module_id)) AS module_id FROM `alerts_collection` AS c JOIN `module` AS m ON m.id = c.module_id', [['c.id', array_values($collections)]]) : [];
         $slice_names      = $slices ? DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', [['id', array_values($slices), 'l']]) : [];
-        return self::findingsFor($rows, $collection_names, $slice_names);
+        return self::findingsFor($rows, array_column($collection_rows, 'name', 'id'), $slice_names, array_column($collection_rows, 'module_id', 'id'));
     }
 
     /**
      * @param list<array<string, ?string>> $rows              LogOnce::recent() rows
      * @param array<string, string>        $collection_names  collection id => name of its Alerts module
      * @param array<string, string>        $slice_names       slice id => name
+     * @param array<string, string>        $collection_modules collection id => id of its Alerts module
      * @return Finding[]
      */
-    public static function findingsFor(array $rows, array $collection_names, array $slice_names): array
+    public static function findingsFor(array $rows, array $collection_names, array $slice_names, array $collection_modules): array
     {
         $findings = [];
         foreach ($rows as $row) {
@@ -78,6 +80,14 @@ class CheckAlertitemRefusals extends AbstractOptimize
             [$collection, $slice_id, $user] = array_pad(ParamExplode($selector), 3, '');
             $collection_name = (string) ($collection_names[$collection] ?? '') ?: $collection;
             $slice_name      = (string) ($slice_names[$slice_id] ?? '') ?: $slice_id;
+            $item_id         = (string) $row['params'];
+            $links           = [];
+            if (isset($collection_modules[$collection])) {
+                $links[_m('Selections of the collection')] = get_aa_url('modules/alerts/acf.php', ['module_id' => $collection_modules[$collection]]);
+            }
+            if (is_long_id($item_id) && is_long_id($slice_id)) {
+                $links[_m('Item')] = Adminlink::itemUrl($item_id, $slice_id);
+            }
             $findings[] = new Finding(
                 Finding::WARNING,
                 _m('Alert send of an item of slice %1 through collection %2 was refused', [$slice_name, $collection_name]),
@@ -87,12 +97,12 @@ class CheckAlertitemRefusals extends AbstractOptimize
                     _m('Collection') => safe($collection_name),
                     _m('Slice')      => safe($slice_name),
                     _m('User')       => safe($user),
-                    _m('Item')       => safe((string) $row['params']),   // an example: MAX over the days
+                    _m('Item')       => safe($item_id),   // an example: MAX over the days
                     _m('Days seen')  => (string) (int) $row['days'],
                     _m('Last')       => date('Y-m-d', (int) $row['last']),
                 ]],
                 advice: _m('An editor of the slice sent an item through a collection that has no filter on the slice, whose reader slice is not the slice and that shares no site with it. If the send is meant, add a filter on the slice to the collection (a real send to the readers needs one anyway) or add the slice and the collection\'s reader slice to one site. Otherwise fix the send button in the slice templates, or find out who tried to mail the readers of another collection.'),
-                links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $selector)],
+                links: $links + [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $selector)],
                 key: $selector,
                 last: (int) $row['last'],
             );

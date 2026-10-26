@@ -68,34 +68,40 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Nemate dozvolu za dodati stranicu",
 
-// modules/alerts/acf.php, row 107
+// modules/alerts/acf.php, row 109
 "Alerts Selections" => "Selekcije upozorenja",
 
-// modules/alerts/acf.php, row 111
+// modules/alerts/acf.php, row 113
 "Choose selections which form the Alert email." => "Odaberite selekcije koje \xE8ine mail upozorenja",
 
-// modules/alerts/acf.php, row 115, 142
+// modules/alerts/acf.php, row 117, 149
 "order" => "Redoslijed",
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "selection" => "Selekcija",
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "remove" => "ukloni", // ai 2026-10
 
+// modules/alerts/acf.php, row 123
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+
 // modules/alerts/acf.php, row 124
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+
+// modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Jo\x9A nije odabran nijedan izbor.", // ai 2026-10
 
-// modules/alerts/acf.php, row 127
+// modules/alerts/acf.php, row 134
 "Save order" => "Spremite redoslijed", // ai 2026-10
 
-// modules/alerts/acf.php, row 128
+// modules/alerts/acf.php, row 135
 "Remove checked" => "Uklonite ozna\xE8ene", // ai 2026-10
 
-// modules/alerts/acf.php, row 143
+// modules/alerts/acf.php, row 150
 "Add selection" => "Dodajte izbor", // ai 2026-10
 
-// modules/alerts/acf.php, row 145
+// modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Nema definiranih selekcija. Morate definirati neke",
 
 // modules/alerts/alerts_sending.php, row 505

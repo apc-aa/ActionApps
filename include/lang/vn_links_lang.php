@@ -107,17 +107,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Quản lý bộ lọc", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Lỗi: Thiếu mật khẩu đọc", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Thông báo tin tức Toolkit", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 // modules/links/check_url.php, row 52
 "Back" => "Quay lại", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Đăng nhập lại", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114

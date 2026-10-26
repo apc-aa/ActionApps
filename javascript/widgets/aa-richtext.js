@@ -5,7 +5,7 @@
  *   <aa-richtext mode="rich|code|plain" editor switch-name="…" switch-html="1"
  *                upload="user|anon" upload-url="…" upload-token="…" slice="…"
  *                upload-images="jpg,png,…" upload-types='[…]'
- *                ui-lang="cs" l10n='{"editor":"Editor","source":"Zdroj",…}'>
+ *                ui-lang="cs" l10n='{"editor":"Editor","source":"Zdroj",…}' toolbar="letter">
  *     <textarea name="…">…</textarea>
  *   </aa-richtext>
  *
@@ -17,6 +17,7 @@
  * textarea. The HTML / Plain text radios (switch-name, switch-html = the value meaning
  * HTML) pick code or plain; the "Edit in Editor" link ([data-aa-editor-for=<textarea id>])
  * and the Editor button of the source view pick rich; TinyMCE's Source button picks code.
+ * toolbar="letter" = a short toolbar for a data-message letter; missing or any other value = the full one.
  */
 
 // Carry our own ?v= over, so one AA_JS_VERSION bump busts every module loaded from here.
@@ -356,6 +357,7 @@ class AaRichtextElement extends HTMLElement {
                 },
                 upload: this.#uploadOptions(),
                 disabled: this.#textarea.matches(':disabled'),
+                toolbar: this.getAttribute('toolbar') ?? '',
             });
         } catch (e) {
             // the bundle did not load, or TinyMCE refused the page (quirks mode)

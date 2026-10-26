@@ -59,6 +59,7 @@ https://www.apc.org/
  */
 
 use AA\IO\DB\DB_AA;
+use AA\Security\RequestCharset;
 use AA\Security\SignedExpression;
 use AA\Util\InputVars;
 use AA\Widget\FilWidget;
@@ -96,14 +97,14 @@ require_once __DIR__ . "/include/util.php";
 // not sure if the line bellow works...
 $_REQUEST['slice_id'] = trim($_REQUEST['slice_id']);
 
-AA::$debug = (int)$_REQUEST['debug'];
-
 if ($_REQUEST['context'] ?? '') {
     AA_Credentials::singleton()->importFromToken($_REQUEST['context']);
 }
 
-if ($_REQUEST['convertfrom'] || $_REQUEST['convertto']) {
-    $_POST   = ConvertEncodingDeep($_POST, $_REQUEST['convertfrom'], $_REQUEST['convertto']);
+$convertfrom = RequestCharset::fromRequest($_REQUEST['convertfrom'] ?? '', 'convertfrom', 'filler.php');
+$convertto   = RequestCharset::fromRequest($_REQUEST['convertto'] ?? '', 'convertto', 'filler.php');
+if ($convertfrom || $convertto) {
+    $_POST   = ConvertEncodingDeep($_POST, $convertfrom, $convertto);
 } elseif ($_REQUEST['inline']) {
     if ($_REQUEST['slice_id']) {
         $slice = AA_Slice::getModule($_REQUEST['slice_id']);

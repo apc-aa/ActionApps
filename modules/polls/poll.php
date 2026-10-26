@@ -64,6 +64,10 @@ $encap = (array_key_exists('encap', $_REQUEST) && $_REQUEST['encap'] === "false"
 
 require_once __DIR__ . "/../../include/locsess.php";
 
-echo AA_Poll::processPoll($_REQUEST);
+$request = $_REQUEST;
+foreach (['convertfrom', 'convertto'] as $param) {
+    $request[$param] = AA\Security\RequestCharset::fromRequest($request[$param] ?? '', $param, 'poll.php');
+}
+echo AA_Poll::processPoll($request);
 
 exit;

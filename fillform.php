@@ -117,6 +117,7 @@ require_once __DIR__ . "/include/formutil.php";
 require_once __DIR__ . "/include/fillform.php";
 
 pageOpen('noauth');
+pageOpenForDebug();   // ?debug of a logged-in superadmin
 
 if (is_array($tmp_state_vars = unserialize($r_packed_state_vars, ['allowed_classes' => false]))) {
     RestoreVariables($tmp_state_vars);

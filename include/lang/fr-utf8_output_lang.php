@@ -16,29 +16,29 @@ return [
 // "August" => "AoÅ±t",
 // End of unused messages
 
-// ./slice.php, row 237
+// ./slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Paramètre inc incorrect - le fichier inclus ne doit contenir que des caractères alphanumériques", // ai 2026-06
 
-// ./slice.php, row 241
+// ./slice.php, row 243
 "No such file" => "Fichier introuvable", // ai 2026-06
 
-// ./slice.php, row 262
+// ./slice.php, row 264
 "Invalid slice number or slice was deleted" => "Numéro de section invalide ou section supprimée", // ai 2026-06
 
-// ./slice.php, row 265
+// ./slice.php, row 267
 "slice.php output forbidden for this slice" => "La sortie via slice.php est interdite pour cette section", // ai 2026-06
 
-// ./slice.php, row 320
+// ./slice.php, row 322
 "session id" => "id de session", // ai 2026-06
 
-// ./slice.php, row 573
+// ./slice.php, row 585
 "number of current page (on pagescroller)" => "numéro de la page actuelle (dans la pagination)", // ai 2026-06
 
-// ./slice.php, row 574
+// ./slice.php, row 586
 "page length (number of items)" => "longueur de page (nombre d'items)", // ai 2026-06
 
-// ./slice.php, row 609
-// include/view.php, row 390
+// ./slice.php, row 621
+// include/view.php, row 373
 "No item found" => "Pas d'item trouvé", // ai 2026-10
 
 // include/discussion.php, row 211
@@ -179,16 +179,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Erreur : fonction d'alias %1 incorrecte pour %2", // ai 2026-06
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "Item sélectionné", // ai 2026-06
 
-// include/itemview.php, row 129
+// include/itemview.php, row 130
 "number of found items" => "Nombre d'items trouvés", // ai 2026-10
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "Aucun commentaire sélectionné", // ai 2026-10
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "nom exact du groupe", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -215,16 +215,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Toute les categories",
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Erreur: mot de passe de lecture manquant",
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "message de Kit d'outils de nouvelles",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "Retour",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Se reconnecter", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -233,6 +233,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Récupère les données de relations d'items envoyées par le formulaire (POST)", // ai 2026-06
 
-// modules/site/site.php, row 304
+// modules/site/site.php, row 308
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Le site est mal configuré : %1 n'existe pas ou n'est pas lisible. Ajoutez ce fichier ou corrigez le paramètre « Fichier d'état » de ce module Site.", // ai 2026-10
 ];

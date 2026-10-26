@@ -3231,17 +3231,42 @@ class AA_Stringexpand_View extends AA_Stringexpand {
      */
     function expand($vid=null, $ids=null, $settings=null): string
     {
+        return self::output($vid, $ids, $settings);
+    }
+
+    /**
+     * What {view} shows - {datovkabulk:view} shows a view through it too
+     * @param int|string|null $vid      the id or the name of the view
+     * @param ?string         $ids      dash-separated item ids; none lists by the conditions of the view
+     * @param ?string         $settings as set[<vid>] of view.php: listlen-3,sort-headline........-
+     * @param bool            $only_ids a listing shows all of $ids and nothing else, in their order: none
+     *                                  for no ids, never the slice by its conditions; settings that would
+     *                                  page, group, sort or pick from them do not count
+     */
+    public static function output($vid, ?string $ids = null, ?string $settings = null, bool $only_ids = false): string
+    {
         if (!$vid) {
             return '';
         }
         $view_param = ['vid' => $vid];
-        if (strlen($ids)) {
+        if (!$only_ids && strlen((string) $ids)) {
             $zids = new zids();
-            $zids->addDirty(explode_ids($ids));
+            $zids->addDirty(explode_ids((string) $ids));
             $view_param['zids'] = $zids;
         }
         if (isset($settings)) {
             $view_param = array_merge($view_param, AA_View::parseSettings([$settings]));
+        }
+        if ($only_ids) {
+            $zids = (new zids())->addDirty(explode_ids((string) $ids));
+            // listlen of the view would cut the list, xpage of a scroller page it again, group_by1 reorder it
+            $view_param = array_merge(array_diff_key($view_param, array_flip(['from', 'to', 'random', 'group_limit'])), [
+                'zids'     => $zids,
+                'sort'     => 'AAnoSORT',
+                'group_by' => '',
+                'listlen'  => max(1, $zids->count()),
+                'page'     => '1',
+            ]);
         }
         // do not pagecache the view
         return (new AA_Showview($view_param))->getViewOutput();
@@ -8129,6 +8154,8 @@ class AA_Requires {
             'aa-fillform@1'               => new AA_Req_Lib(get_aa_url('javascript/fillform.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-constedit@1'              => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-code@1'                   => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-code.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
+            'aa-isds@1'                   => new AA_Req_Lib(get_aa_url('javascript/aa-isds.js', ['v'=>AA_JS_VERSION],false).' module', '', ['_css-aa-isds@1', 'aa-richtext@1']),
+            '_css-aa-isds@1'              => new AA_Req_Css(get_aa_url('css/aa-isds.css', ['v'=>AA_JS_VERSION],false)),
             'aa-richtext@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-richtext.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
             'aa-editable@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-editable.js', ['v'=>AA_JS_VERSION],false).' module'),
             'aa-speech@1'                 => new AA_Req_Lib(get_aa_url('javascript/aa-speech/aa-speech.js', ['v'=>AA_JS_VERSION],false), '', ['_css-aa-speech@1']),
@@ -10882,35 +10909,215 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        Even inside the gate {dictionary} may serve a copy an earlier request stored in the page cache. Nor may the
  *        page be the page of their item.
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
- *        no campaign id only to save a new campaign
+ *        no campaign id only to save a new campaign. Actions: save (a draft - the form adds isds_subject,
+ *        isds_to_hands, isds_body, and for its recipients isds_membership, isds_types[], isds_include and
+ *        isds_exclude, item ids separated by "-"; a field left out stays as it is, the recipients only with
+ *        isds_membership and only when the filter stored is still the one the page read - the fields carry
+ *        it. Else the letter is saved, the choice is not: FILTER_CHANGED - as for a pick of an item gone
+ *        since. An autosave must take from the answer both the hidden fields and the controls of the
+ *        filter. A button isds_pick (include-<id>, exclude-<id>, unpick-<id>) picks one item of the source
+ *        slice into the lists posted. A button isds_step (test, send, search, files) goes into the URL of
+ *        the page after the save, for param:step - and with search isds_q, for search -, only after SAVED;
+ *        after FILTER_CHANGED the page stays at the step of its URL. Enter in a text field posts the first
+ *        button of its form: put Save first, before any isds_pick or isds_step button. Every save of the
+ *        form of a new campaign - autosaves too - writes the one new draft, whose id the page gets in
+ *        {datovkabulk:campaign} after the save. The body is stored as posted HTML: a template must escape
+ *        it wherever it shows it, in a <textarea> too.
+ *        Attachments: a form with enctype="multipart/form-data" adds files as isds_files[] and drops attachments by their URLs in
+ *        isds_remove[]; at most 99, of the types both the editor uploads and a data message carries, and none
+ *        is saved if one is refused. They go into the upload directory of the slice, public to whoever knows
+ *        the URL - say so on the page: they are not secret. PHP takes at most max_file_uploads files a
+ *        request (20 by default) and drops more unseen. An autosave never posts isds_files[]: a form with
+ *        files is acted on once - posted again, it only shows what the first post did), discard (move a
+ *        draft never queued to the trash - restorable in the Item Manager; its fields are '' for any other
+ *        campaign and for a user without the right to move items to the trash, and the page after it shows
+ *        none: {datovkabulk:campaign} is ''), clone (a copy of the
+ *        campaign as a new draft, which the page gets in {datovkabulk:campaign} - the form adds isds_scope: all
+ *        for its letter and recipients, of a campaign in any state, not in the trash; unsent for its letter to
+ *        the recipients its sending left unsent, once nothing sends them any more (a stopped or ended sending,
+ *        in the trash too) - WRONG_STATE before, NONE_STOPPED when it left none; one for its letter to the
+ *        recipient of one message - the form adds isds_message, the id of its message item, and one form shown
+ *        may serve every row; offer it by messages:resend (message:resend on the page of one) - once the
+ *        message failed (verified too) or the sending stopped before it, NOT_RESENDABLE otherwise,
+ *        UNKNOWN_MESSAGE for no message of the sending,
+ *        WRONG_STATE for a campaign never queued. The letter is taken from the
+ *        campaign item as it is now, not as the sending froze it; the copy shares the files of the
+ *        attachments), resume (Continue a sending in error or waiting),
+ *        stop (Stop: nothing more is sent; never gives the sending up), abandon (end a sending in error for good -
+ *        its fields are '' unless Stop can no longer end it, so offer it in place of Stop when they are not),
+ *        test (one test message of a draft at once - the form adds isds_box, one of testboxes; may be left out
+ *        with one test box), send (queue a draft - the form adds isds_confirm, the recipients count the page
+ *        showed: a count changed since is refused; with a count of 0 offer no Send - 0 is refused as a form
+ *        that cannot be taken, not as no recipients), verify (record that a message of unknown fate did not go -
+ *        the form adds isds_message, the id of its message item; only once the sending is over), fixbox (take
+ *        the data box of a recipient from the register of data boxes into its item in the source slice - the
+ *        form adds isds_recipient, the item id, and isds_box, the regbox of the row. Only a box the register
+ *        finds by the IČO of an active item of a type the source slice pairs, whose IČO the box has too, and
+ *        which no other item holds or would get; NOT_OFFERED otherwise or when the item changed since the page,
+ *        NO_REGISTER for a register not downloaded or old. Its fields are '' in the test environment, without
+ *        settings of data boxes of the source slice and without a usable register)
  *    {datovkabulk:env}    - test | production, as datovka_conf.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
- *    {datovkabulk:result} - what the posted action did
- *    {datovkabulk:recipients:<campaign id>:count|skipped|ids} - of an active campaign by its stored filter, counted
- *        anew: how many get the letter, how many are skipped for their data box, the dash-separated ids of who gets
- *        it (for {view}); a queued or sent campaign keeps its count from then in the campaign. '' on any error, and
- *        ids '' for no recipients - {view} with no ids lists the whole slice, so guard it (not with _#1 - AA
- *        expands the inner command first; so the inner {view} still runs once over the slice, the guard only
- *        hides it): {ifset:{datovkabulk:recipients:<id>:ids}:{view:N:{datovkabulk:recipients:<id>:ids}}}
- *    {datovkabulk:progress:<campaign id>:state|total|sent|failed|skipped|uncertain|stopped|queued|until} - how far its
- *        sending got, from the record of the run: state of the campaign item while it has no run, then sending,
- *        error, done or abandoned (given up in error; a sending a person stopped ends done, its unsent counted as
- *        stopped); the counts add up to total, '' with no run; until - the unix time a pause waits till, or ''
+ *    {datovkabulk:testboxes} - the test boxes of the page, dash-separated: the options of isds_box
+ *    {datovkabulk:regbox:<item id>} - the isds_box of the form of fixbox for an item of the source slice: the box
+ *        the register offers for it, with a hash of the box it has; '' where fields:fixbox is '', the register
+ *        offers nothing that sure or the item has the box - put the form only on rows that get a value. The
+ *        first one of a request reads the whole register (some 8 MB of boxes) and every item of the source slice
+ *    {datovkabulk:campaign} - the campaign the page was loaded with after an action (isds_campaign of its URL), when
+ *        it is an item of the campaign slice of the page - a draft saved new too; '' otherwise, and for an item in
+ *        the trash that never started a sending of the page (result then tells DISCARDED)
+ *    {datovkabulk:result[:text|code|status|action|charge]} - what the posted action did: text to read (default),
+ *        or for a condition its code (RESUMED, STOPPING, CONFIRM_ABANDON, QUEUED, TEST_SENT, CLONED, NONE_STOPPED,
+ *        WRONG_STATE, BUSY, EXPIRED, ...),
+ *        status (done, refused, busy, expired, failed), action, or charge - what a test message cost (CHARGED,
+ *        MAY_BE_CHARGED, '' nothing). After the action the page is loaded again with isds_campaign
+ *        and isds_r added to its URL; the result shows only with that isds_r, for 10 minutes. isds_part
+ *        goes from the URL; after SAVED isds_step and isds_q are those of its form, after FILTER_CHANGED
+ *        the step stays that of the URL. After a save isds_page stays only while the list is the same: the
+ *        stored filter is the one the form showed and the step is that of the URL - so an autosave keeps
+ *        the page of a list. After another action done isds_step and isds_q go, isds_page stays; after one
+ *        refused or failed all stay
+ *    {datovkabulk:recipients:<campaign id>:count|skipped|ids|skippedids} - of an active campaign by its stored
+ *        filter, counted anew: how many get the letter, how many are skipped for their data box, the dash-separated
+ *        ids of who gets it or who is skipped - of the page param:page shows, 50 a page, in the order they are sent
+ *        in (for {datovkabulk:view}); a queued or sent campaign keeps its count from then in the campaign. '' on any
+ *        error
+ *    {datovkabulk:view:<name>[:<ids>[:<settings>]]} - the view of the two slices of the page with that name (field3),
+ *        as {view} shows it; a view of another slice of the site is never found, and a name two of their views
+ *        have shows nothing (State Check names them). A listing shows all of <ids> and nothing else - ids a
+ *        subcommand gives -, in their order: none for no ids, never the slice by its conditions. <settings> as
+ *        in {view}, written in the template, never taken from the URL; listlen, sort, group_by, from, to and
+ *        page in them do not count. Show every view of the page this way, not by {view}
+ *    {datovkabulk:campaigns[:count]} - the ids of the campaigns of the page in the active bin, the last edited
+ *        first, 30 a page (param:page); count - how many
+ *    {datovkabulk:messages:<group>[:count]} - the ids of the message items of a group of the campaign the page
+ *        shows ({datovkabulk:campaign}), 50 a page (param:page), by the name of the recipient; count - how many.
+ *        From the same reading of the sending as progress, so they match it: problem (failed, with verify
+ *        uncertain too - attention), checking (uncertain before verify), wait (queued, and while the delivery is
+ *        followed sent not delivered yet - queued + pending), sent (sent while the delivery is not followed),
+ *        ok (delivered), stopped, skip (skipped); resend (those clone with isds_scope one takes - failed and
+ *        stopped, also in problem and stopped: offer the copy by it, not by the state of the message item);
+ *        recent (the last six the sending got to, the one in flight too, the last first) and test (its test messages, the newest first) whole on every page. '' with no
+ *        sending (test aside)
+ *    {datovkabulk:param:tab|show|step|part|list|page|q} - isds_<name> of the URL when it is one the page knows
+ *        (tab: history, check; show: a group of messages; step: test, send, search, files; part: progress,
+ *        search; list: get, skip), else ''; page - the page of a list, 1 unless the URL names one; q - the
+ *        text search looks for, trimmed and escaped (no {safe:}), '' when it looks for none - the value of
+ *        the field isds_q. Branch on these, never on the URL itself ({qs})
+ *    {datovkabulk:progress:<campaign id>:<what>} - how far its sending got, from the record of the run; '' (state
+ *        aside) with no run and for a record that cannot be read. <what>:
+ *        state - of the campaign item while it has no run, then one of:
+ *            sending      queued, sending or waiting
+ *            error        sending stopped by an error, waits for Continue; one stopped already or with every
+ *                         message tried for Continue or Abandon (fields:abandon), Stop changes nothing
+ *            abandoned    sending given up in error
+ *            watching     the sending is over (a stopped one too), the delivery is being followed - not that
+ *                         every message went: the figures tell
+ *            watch_error  the sending is over, following the delivery stopped by an error: Continue goes on,
+ *                         Abandon ends it
+ *            done         the end - also of a following given up; a sending a person stopped that sent anything
+ *                         is watching first
+ *        total|sent|failed|skipped|uncertain|stopped|queued - recipients; the counts add up to total. failed:
+ *            refused by ISDS, not found by the lookup (never left), or taken and then not delivered (it leaves
+ *            sent then)
+ *        delivered - messages sent that reached the box; to a public authority (OVM) this is delivery in law
+ *        accepted  - of those delivered, accepted by a login or by fiction 10 days after delivery
+ *            Both are part of sent, not of the sum to total, and 0 while the delivery is not followed (an
+ *            older sending that never followed it too).
+ *        until - the unix time a pause of sending waits till; '' when none, and while the delivery is followed
+ *        Counted of the same, so that the template counts nothing (AA\Isds\Gate::progress() tells more):
+ *        messages - recipients the letter goes to; pending - sent, not delivered yet ('' while not followed);
+ *        verify - 1 when a message of unknown fate may be verified; attention - failed, with verify uncertain too;
+ *        checking - uncertain before verify; stop_by - who stopped the sending, escaped (no {safe:});
+ *        error - the code of what the sending waits or stopped with, for {datovkabulk:advice:<code>:run}
+ *        A copy "for the unsent" (clone with isds_scope unsent): offer it when stopped > 0, in any state.
+ *        stopped counts only recipients nothing sends any more (a sending stopped or over), from the record of
+ *        the run, not from the message items - the copy takes the same ones; before that the core refuses the
+ *        copy with WRONG_STATE. It never takes uncertain recipients - they may have got the letter -, failed
+ *        or queued ones.
+ *    {datovkabulk:advice:<code>[:run]} - what a code means and how to go on, in the language of the page; run for
+ *        progress error (not the error a campaign item keeps - it outlives its state). {datovkabulk:advice:isds:<status>}
+ *        - a status ISDS refused a message with (the error code of a message item when it is digits). '' for a code
+ *        AA has no text for, and without run for one whose text names a count or an id (AA\Isds\Gate::advice())
+ *    {datovkabulk:filter:<campaign id>:types|membership|include|exclude|includepage|excludepage} - the recipient
+ *        filter a campaign of the page stores: types comma-separated; include and exclude all the ids of the active
+ *        items of the source slice - for the hidden fields isds_include and isds_exclude of the draft form, which
+ *        store them whole; includepage and excludepage only the first 50 - for the chips of a
+ *        {datovkabulk:view}, whatever page of the recipients param:page shows (count include or exclude
+ *        to tell there are more). Without the id the filter a new campaign starts with;
+ *        '' for a stored filter that cannot be read (logged) - never take it for the one a new campaign starts with:
+ *        show the controls of the filter unchecked then (membership '' tells it); a choice made anew replaces it
+ *    {datovkabulk:source:<item id>:name|box|type|member|reason} - what to show of an active item of the source slice,
+ *        escaped (no {safe:}): its name, data box, the label of its type, member (1, 0, '' without member_field),
+ *        reason - why the campaign of the page skips it (missing, format, duplicate; '' when it gets the letter)
+ *    {datovkabulk:search} - the ids of up to 20 active items of the source slice of the types the page offers
+ *        whose name holds isds_q of the URL (% and _ as typed, a backslash left out), by name; '' for no text or
+ *        one longer than 100
+ *    {datovkabulk:message[:resend]} - isds_msg of the URL, when it is a message of {datovkabulk:campaign}; ''
+ *        otherwise. resend - 1 when clone with isds_scope one takes it (it is in messages:resend, whose
+ *        page may not hold it), else ''
+ *    {datovkabulk:events:<message id>:{(<row>)}} - the timeline of a message of {datovkabulk:campaign}, the newest
+ *        first, those of unknown time at the end: <row> for each entry with _#AT (unix time, '' unknown), _#KIND,
+ *        _#CODE, _#TEXT, _#DMID and _#BY (who verified it) in it - escaped (no {safe:}), they never expand. A {(...)}
+ *        inside <row> hides them - use {-...} or _#1 of {ifset}; {date:...:_#AT} shows today for an unknown time -
+ *        give it the third parameter: {date:j. n. Y H\:i:_#AT:unknown}
+ *    {datovkabulk:files:<campaign id>[:{(<row>)}]} - the attachments of a campaign of the page, as they go:
+ *        <row> for each with _#URL (the value of the field, for isds_remove[] only - never an href or src: an
+ *        editor of the slice may write any text in it), _#NAME (the file name the
+ *        recipient sees; the whole value when it is no file of the upload directory of the slice - sending
+ *        refuses it) and _#EXT (its extension, small letters) in it, escaped as in events; without <row>
+ *        how many there are. No size: it would mean reading every file. Use it, never the field itself:
+ *        {foreach} expands what it puts in
+ *    {datovkabulk:types:<campaign id>:{(<row>)}} - the types the page offers, in the order of its settings:
+ *        <row> for each with _#TYPE (for isds_types[]), _#LABEL and _#CHECKED (" checked" when the filter
+ *        of the campaign has it) in it, escaped as in events - _#TYPE_#CHECKED side by side reads as one
+ *        alias, keep the closing quote between them. No campaign id: the filter a new campaign
+ *        starts with; none checked for a filter that cannot be read; '' for another item
+ *    {datovkabulk:letterhead} - the letterhead of the settings as the letter shows it above its text,
+ *        escaped: <p> for each paragraph, <br> between its lines; '' for none
+ *    {datovkabulk:members} - 1 when the page tells members (member_field), else '': offer the choice of
+ *        membership only then, else post isds_membership all - but not while the stored filter cannot be
+ *        read: then the choice waits for the editor
+ *    {datovkabulk:url:<pairs>[#<fragment>]} - the href of a link to the page, escaped (no {safe:}):
+ *        {datovkabulk:url:isds_campaign={datovkabulk:campaign}&isds_show=ok#isds-msgs}. Its path and query
+ *        stay (site_id of site.php too), every isds_ pair of the URL goes and <pairs> - isds_<name>=<value>
+ *        joined by & - take their place; a pair of no value is left out. A bare href="?..." would drop the
+ *        query of the page. Values only plain tokens (ids, numbers, fixed words): a ":" ends the argument,
+ *        escaped text ("&quot;") splits at its "&"
  *  All but page give nothing outside the UI of the page. AA\Isds\Gate tells more.
  */
 class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
 
     function expand($subcommand='', $settings='', $ui='', $refusal=''): string
     {
-        $gate = $this->gate();
+        $gate   = $this->gate();
+        $expand = fn(string $text): string => AA::Un($text, '', $this->item, true, $this->itemview);
         return match ((string)$subcommand) {
-            'page'       => $gate->page((string)$settings, (string)$ui, (string)$refusal, fn(string $text): string => AA::Un($text, '', $this->item, true, $this->itemview)),
+            'page'       => $gate->page((string)$settings, (string)$ui, (string)$refusal, $expand),
             'fields'     => $gate->fields((string)$settings, (string)$ui),
             'env'        => $gate->env(),
             'sender'     => $gate->sender(),
-            'result'     => $gate->result(),
+            'result'     => $gate->result((string)$settings),
+            'testboxes'  => $gate->testBoxes(),
+            'regbox'     => $gate->regbox((string)$settings),
+            'campaign'   => $gate->campaign(),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),
+            'view'       => $gate->view((string)$settings, (string)$ui, (string)$refusal),
+            'campaigns'  => $gate->campaigns((string)$settings),
+            'messages'   => $gate->messages((string)$settings, (string)$ui),
+            'param'      => $gate->param((string)$settings),
             'progress'   => $gate->progress((string)$settings, (string)$ui),
+            'advice'     => $gate->advice((string)$settings, (string)$ui),
+            'filter'     => $gate->filter((string)$settings, (string)$ui),
+            'source'     => $gate->source((string)$settings, (string)$ui),
+            'search'     => $gate->search(),
+            'message'    => $gate->message((string)$settings),
+            'events'     => $gate->events((string)$settings, (string)$ui, $expand),
+            'files'      => $gate->files((string)$settings, (string)$ui, $expand),
+            'types'      => $gate->types((string)$settings, (string)$ui, $expand),
+            'letterhead' => $gate->letterhead(),
+            'members'    => $gate->members(),
+            'url'        => $gate->url((string)$settings),
             default      => '',
         };
     }

@@ -193,6 +193,9 @@ class Imgfunc
     /** GD needs ~4 bytes a pixel: 40 Mpx is 160 MB, bigger canvases are refused before decoding */
     public const REENCODE_MAX_PIXELS = 40_000_000;
 
+    /** a flattened image up to this size may stay PNG: 30 of them take a PDF renderer 0.2 s */
+    private const FLAT_PNG_MAX_PIXELS = 150_000;
+
     /** GD reads and writes AVIF only when PHP was built with libavif */
     public static function avifSupported(): bool
     {
@@ -204,16 +207,17 @@ class Imgfunc
      * Decoding and encoding drops EXIF (the GPS position of a phone photo) and anything
      * hidden after the image data - what an anonymous upload must not keep.
      *
-     * @param bool $portable write what every viewer shows - JPEG, or PNG when the image has
-     *                       transparency - and take GIF too; otherwise the type of $src
+     * @param ?int $flatten_on 0xRRGGBB to draw transparency on - a PDF renderer reads alpha slowly - and write
+     *                         what every viewer shows, taking GIF too: JPEG stays JPEG, the rest becomes JPEG or,
+     *                         when small and sharp, PNG without alpha; null = the type of $src, transparency kept
      * @return ?string null on success, otherwise the error
      */
-    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS, bool $portable = false): ?string
+    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS, ?int $flatten_on = null): ?string
     {
         $info  = @getimagesize($src);
         $type  = is_array($info) ? (int) $info[2] : 0;
         $types = self::avifSupported() ? [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_AVIF] : [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
-        if ($portable) {
+        if ($flatten_on !== null) {
             $types[] = IMAGETYPE_GIF;
         }
         if (!is_array($info) || !in_array($type, $types, true)) {
@@ -250,16 +254,17 @@ class Imgfunc
                 $out = $rotated;
             }
         }
-        $as = match (true) {
-            !$portable                  => $type,
-            $type === IMAGETYPE_JPEG    => IMAGETYPE_JPEG,
-            self::hasTransparency($out) => IMAGETYPE_PNG,
-            default                     => IMAGETYPE_JPEG,
-        };
-        if (($as === IMAGETYPE_JPEG) && ($type !== IMAGETYPE_JPEG)) {
-            $out = self::onWhite($out);
+        if (($flatten_on !== null) && ($type !== IMAGETYPE_JPEG)) {
+            $out  = self::onColor($out, $flatten_on);
+            $data = self::encoded($out, IMAGETYPE_JPEG);
+            // a logo, an icon or a signature stays sharp as PNG at about the size of JPEG; a photo would be ~9 times bigger
+            if (imagesx($out) * imagesy($out) <= self::FLAT_PNG_MAX_PIXELS) {
+                $png  = self::encoded($out, IMAGETYPE_PNG);
+                $data = (($png !== '') && (strlen($png) <= 2 * strlen($data))) ? $png : $data;
+            }
+            return (($data !== '') && (file_put_contents($dest, $data) === strlen($data))) ? null : _m('Cannot write %1', [$dest]);
         }
-        $ok = match ($as) {
+        $ok = match ($type) {
             IMAGETYPE_JPEG => imagejpeg($out, $dest, 85),
             IMAGETYPE_PNG  => imagepng($out, $dest),
             IMAGETYPE_AVIF => imageavif($out, $dest),
@@ -268,30 +273,20 @@ class Imgfunc
         return $ok ? null : _m('Cannot write %1', [$dest]);
     }
 
-    /**
-     * Any transparent part, judged from a 32 px copy: the averaging hides a few transparent pixels,
-     * which then turn white - as they look on a white page anyway.
-     */
-    private static function hasTransparency(\GdImage $img): bool
+    /** the bytes of $img as JPEG or PNG, '' when GD cannot write it */
+    private static function encoded(\GdImage $img, int $as): string
     {
-        $small = imagecreatetruecolor(min(32, imagesx($img)), min(32, imagesy($img)));
-        imagealphablending($small, false);
-        imagecopyresampled($small, $img, 0, 0, 0, 0, imagesx($small), imagesy($small), imagesx($img), imagesy($img));
-        for ($x = 0; $x < imagesx($small); $x++) {
-            for ($y = 0; $y < imagesy($small); $y++) {
-                if (((imagecolorat($small, $x, $y) >> 24) & 0x7F) > 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        ob_start();
+        $ok   = ($as === IMAGETYPE_PNG) ? imagepng($img) : imagejpeg($img, null, 85);
+        $data = (string) ob_get_clean();
+        return $ok ? $data : '';
     }
 
-    /** JPEG has no transparency: what was see-through becomes white, not black */
-    private static function onWhite(\GdImage $img): \GdImage
+    /** what was see-through gets the colour $rgb (0xRRGGBB) behind it */
+    private static function onColor(\GdImage $img, int $rgb): \GdImage
     {
         $flat = imagecreatetruecolor(imagesx($img), imagesy($img));
-        imagefill($flat, 0, 0, (int) imagecolorallocate($flat, 255, 255, 255));
+        imagefill($flat, 0, 0, (int) imagecolorallocate($flat, ($rgb >> 16) & 0xFF, ($rgb >> 8) & 0xFF, $rgb & 0xFF));
         imagecopy($flat, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
         return $flat;
     }

@@ -85,7 +85,10 @@ final class DatovkaConf
     private const PLAIN = [Accounts::ENVIRONMENT, Accounts::AUTH, Accounts::CERT, Accounts::KEY, Accounts::BOX, Accounts::LOGIN];
 
     /** the keys of an account whose list of texts is read as it is */
-    private const LISTS = [Accounts::SITES, Accounts::SLICES];
+    private const LISTS = [Accounts::SITES, Accounts::SLICES, Accounts::TEST_BOXES];
+
+    /** the keys of an account whose true or false is read as it is */
+    private const FLAGS = [Accounts::PAID_TESTS];
 
     /** an instance id is the last four digits of the token ISDS hands back */
     private const MAX_INSTANCE = 9999;
@@ -395,7 +398,7 @@ final class DatovkaConf
     /**
      * An account with all AA does not read as it is - a misspelt key of a password, a list where a text
      * belongs - as Secret; a password or a passphrase that is neither a text nor a list as false: a number
-     * without quotes may be a password, 0123 even an octal one.
+     * without quotes may be a password, 0123 even an octal one. true or false of paid_tests stays as it is.
      *
      * @param array<array-key, mixed> $fields
      * @return array<array-key, mixed>
@@ -414,6 +417,8 @@ final class DatovkaConf
                 foreach ($value as $i => $item) {
                     $fields[$key][$i] = (is_int($i) && is_string($item)) ? $item : self::secret($item);
                 }
+            } elseif (in_array($key, self::FLAGS, true) && is_bool($value)) {
+                continue;
             } elseif (!in_array($key, self::PLAIN, true) || !is_string($value)) {
                 $fields[$key] = self::secret($value);
             }
@@ -465,9 +470,10 @@ final class DatovkaConf
 
     /**
      * The accounts of mass sending as the file writes them, name => their keys. Password and passphrase
-     * are Secret, or false when they are neither a text nor a list. Only the texts of environment, auth, cert, key, box and
-     * login and the texts listed in sites and slices by number are as written; the rest is Secret - an
-     * account that is no array too. Accounts reads them.
+     * are Secret, or false when they are neither a text nor a list. Only the texts of environment, auth,
+     * cert, key, box and login, the texts listed in sites, slices and test_boxes by number and true or
+     * false of paid_tests are as written; the rest is Secret - an account that is no array too. Accounts
+     * reads them.
      *
      * @return array<array-key, mixed>
      */

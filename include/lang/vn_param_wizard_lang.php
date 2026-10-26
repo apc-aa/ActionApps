@@ -13,43 +13,43 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// admin/param_wizard.php, row 111
+// admin/param_wizard.php, row 110
 "field&nbsp;id" => "id&nbsp;trường", // ai 2026-06
 
-// admin/param_wizard.php, row 114
+// admin/param_wizard.php, row 113
 "boolean:&nbsp;0=false,1=true" => "boolean:&nbsp;0=sai,1=đúng", // ai 2026-06
 
-// admin/param_wizard.php, row 138
+// admin/param_wizard.php, row 137
 "Wizard" => "Trình hướng dẫn", // ai 2026-06
 
-// admin/param_wizard.php, row 227
+// admin/param_wizard.php, row 220
 "This is an undocumented %s. We don't recommend using it." => "Đây là %s không có tài liệu. Chúng tôi không khuyến nghị sử dụng.", // ai 2026-06
 
-// admin/param_wizard.php, row 228
+// admin/param_wizard.php, row 221
 "Close the wizard" => "Đóng trình hỗ trợ", // ai 2026-06
 
-// admin/param_wizard.php, row 242
+// admin/param_wizard.php, row 235
 "Available parameters: " => "Tham số khả dụng:", // ai 2026-06
 
-// admin/param_wizard.php, row 262
+// admin/param_wizard.php, row 255
 "This %s has no parameters." => "%s này không có tham số.", // ai 2026-06
 
-// admin/param_wizard.php, row 272
+// admin/param_wizard.php, row 265
 "Have a look at these examples of parameters sets:" => "Hãy xem các ví dụ về bộ tham số sau:", // ai 2026-06
 
-// admin/param_wizard.php, row 279
+// admin/param_wizard.php, row 272
 "Show" => "Hiển thị", // ai 2026-06
 
-// admin/param_wizard.php, row 290
+// admin/param_wizard.php, row 283
 "OK - Save" => "OK - Lưu", // ai 2026-06
 
-// admin/param_wizard.php, row 291
+// admin/param_wizard.php, row 284
 "Cancel" => "Hủy", // ai 2026-06
 
-// admin/param_wizard.php, row 292
+// admin/param_wizard.php, row 285
 "Show example params" => "Hiển thị tham số mẫu", // ai 2026-06
 
-// admin/param_wizard.php, row 296
+// admin/param_wizard.php, row 289
 "OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68

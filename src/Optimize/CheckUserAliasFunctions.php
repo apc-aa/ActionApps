@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
+use AA\Util\Adminlink;
 use AA\IO\DB\DB_AA;
 use AA\Util\UserAliasFunction;
 
@@ -84,7 +85,7 @@ class CheckUserAliasFunctions extends AbstractOptimize
                 $groups[$key] ??= ['verdict' => $verdict, 'name' => $name, 'fields' => []];
                 $groups[$key]['fields'][] = [
                     _m('Slice')      => safe((string) ($row['name'] ?? '') ?: (string) $row['slice_id']),
-                    _m('Field')      => a_href(get_admin_url('se_inputform.php', ['change_id' => (string) $row['slice_id'], 'fid' => (string) $row['id']]), safe((string) $row['id'])),
+                    _m('Field')      => a_href(Adminlink::fieldUrl((string) $row['slice_id'], (string) $row['id']), safe((string) $row['id'])),
                     _m('Alias')      => safe(substr($slot, 0, 6)),
                     _m('Definition') => safe(mb_substr((string) $row[$slot], 0, 120)),
                 ];

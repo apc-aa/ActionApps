@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
+use AA\Util\Adminlink;
 use AA\IO\DB\DB_AA;
 use AA\Util\LogOnce;
 use AA\Util\UserAliasFunction;
@@ -73,7 +74,7 @@ class CheckUserAliasFunctionLog extends AbstractOptimize
             $slice    = (string) ($names[$call['slice_id']] ?? '') ?: $call['slice_id'];
             $links    = [_m('Log rows') => AA_Log::getAdminUrl(UserAliasFunction::LOG_EVENT, $selector)];
             if (is_long_id($call['slice_id']) && $call['field_id'] !== '') {
-                $links[_m('Field settings')] = get_admin_url('se_inputform.php', ['change_id' => $call['slice_id'], 'fid' => $call['field_id']]);
+                $links[_m('Field settings')] = Adminlink::fieldUrl((string) $call['slice_id'], (string) $call['field_id']);
             }
             $findings[] = new Finding(
                 CheckUserAliasFunctions::severity($call['level'], $reason),

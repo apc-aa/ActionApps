@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Isds;
 
+use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException as HttpTransportException;
 
 /**
@@ -28,6 +29,12 @@ final class TransportException extends IsdsException
     public function answered(): bool
     {
         return $this->answered;
+    }
+
+    /** the answer was longer than the client reads: a question over a shorter time may fit */
+    public function tooLarge(): bool
+    {
+        return $this->getPrevious() instanceof ResponseTooLargeException;
     }
 
     /**

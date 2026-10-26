@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
+use AA\Util\Adminlink;
 use AA\IO\DB\DB_AA;
 use AA\Util\LogOnce;
 use AA\Widget\AjaxSignature;
@@ -83,7 +84,7 @@ class CheckAjaxUnsigned extends AbstractOptimize
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
                 ]],
                 advice: _m('The page sent a widget type or widget properties (5th and 6th parameter of {ajax}) without the signature AA adds since this version, so the field was edited with its own widget. Pages in the page cache stay unsigned until regenerated - flush the cache of the site. If the rows go on after that, someone sends forged requests - or, for a bad signature, the page is in another charset than the slice.'),
-                links: [_m('Log rows') => AA_Log::getAdminUrl(AjaxSignature::EVENT, $selector)],
+                links: array_filter([_m('Field settings') => Adminlink::fieldUrl($slice_id, $field_id), _m('Log rows') => AA_Log::getAdminUrl(AjaxSignature::EVENT, $selector)]),
                 key: $selector,
                 last: (int) $row['last'],
             );

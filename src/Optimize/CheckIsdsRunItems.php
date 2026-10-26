@@ -9,9 +9,10 @@ use AA\Later\BatchFailed;
 
 /**
  * The message items of the sendings CheckIsdsRuns reads whole, against the records of their runs: an
- * item that does not show the fate the record has for its message (SendMaps::fates()) - a write of the
- * item failed after the record's, and nothing writes it again - or shows sending with no message on
- * its way. The frozen recipients name the items, which are read by id, never searched for by value.
+ * item that does not show the fate the record has for its message (SendMaps::fates()) or, of a sending
+ * that followed delivery, its dmMessageStatus (dm_state) - a write of the item failed after the
+ * record's, and nothing writes it again - or shows sending with no message on its way. The frozen
+ * recipients name the items, which are read by id, never searched for by value.
  */
 class CheckIsdsRunItems extends CheckIsdsRuns
 {
@@ -43,9 +44,13 @@ class CheckIsdsRunItems extends CheckIsdsRuns
             if ($run->stepMayStillWork($class::clock()) || self::closing($r, $class::clock())) {
                 continue;
             }
+            $finished = self::isFinished($run->state());
             try {
-                $rows  = $run->recipients();
-                $fates = $run->maps()->fates();
+                $rows     = $run->recipients();
+                $fates    = $run->maps()->fates();
+                $delivery = $run->watching() ? array_filter(self::deliveries($run->maps()), is_int(...)) : [];
+                // a step of following still writes these; once it ended, an item that does not show the record is wrong
+                $unshown  = ($run->watching() && !$finished) ? $run->unshown() : [];
             } catch (BatchFailed) {
                 $findings[] = $this->unreadable($id, $r, $shown[$r['subject'] ?? ''] ?? null);
                 continue;
@@ -54,14 +59,16 @@ class CheckIsdsRunItems extends CheckIsdsRuns
                 continue;
             }
             $states = $this->fieldOf($r['msg_slice'] ?? '', array_column($rows, 'msg'), Schema::MESSAGE_STATE);
+            $dm     = $delivery ? $this->fieldOf($r['msg_slice'] ?? '', array_column(array_diff_key(array_intersect_key($rows, $delivery), $unshown), 'msg'), Schema::MESSAGE_DM_STATUS) : [];
             // a step that claimed the run meanwhile may have written the items after the record was read
             $again = $class::get($id);
             if (is_null($again) || $again->stepMayStillWork($class::clock()) || ($again->step() !== $run->step())) {
                 continue;
             }
-            $finished = self::isFinished($run->state());
+            // following delivery looks up nothing any more
+            $over = $finished || $run->watching();
             [$n, $examples] = [0, []];
-            foreach ($rows as $k => $row) {
+            foreach (array_diff_key($rows, $unshown) as $k => $row) {
                 $shows  = $states[$row['msg']] ?? null;
                 $should = $fates[$k] ?? Schema::MESSAGE_STATE_QUEUED;
                 $wrong  = match (true) {
@@ -70,9 +77,14 @@ class CheckIsdsRunItems extends CheckIsdsRuns
                     !isset($fates[$k]) => $shows === Schema::MESSAGE_STATE_SENDING,
                     // of unknown fate: a running sending looks it up and writes the item itself, and an item
                     // set sent or failed is a person's answer from the ISDS portal
-                    $should === Schema::MESSAGE_STATE_UNCERTAIN => $finished && in_array($shows, [Schema::MESSAGE_STATE_QUEUED, Schema::MESSAGE_STATE_SENDING], true),
+                    $should === Schema::MESSAGE_STATE_UNCERTAIN => $over && in_array($shows, [Schema::MESSAGE_STATE_QUEUED, Schema::MESSAGE_STATE_SENDING], true),
                     default => $shows !== $should,
                 };
+                $status = $dm[$row['msg']] ?? null;
+                // named: the item shows a word of MESSAGE_STATE too
+                if (!$wrong && !is_null($status) && ($status !== (string) $delivery[$k])) {
+                    [$wrong, $shows, $should] = [true, 'dmMessageStatus ' . (($status === '') ? '–' : $status), (string) $delivery[$k]];
+                }
                 if ($wrong && (++$n <= self::EXAMPLES)) {
                     $examples[] = $run->senderRef($k) . " ({$row['msg']}): $shows → $should";
                 }

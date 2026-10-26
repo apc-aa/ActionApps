@@ -23,34 +23,40 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Nincs jogosults\xE1ga rovat hozz\xE1ad\xE1s\xE1hoz", // ai 2026-06
 
-// modules/alerts/acf.php, row 107
+// modules/alerts/acf.php, row 109
 "Alerts Selections" => "\xC9rtes\xEDt\xE9sek - v\xE1logat\xE1sok", // ai 2026-06
 
-// modules/alerts/acf.php, row 111
+// modules/alerts/acf.php, row 113
 "Choose selections which form the Alert email." => "V\xE1lassza ki a v\xE1logat\xE1sokat, amelyek az \xE9rtes\xEDt\xF5 e-mailt alkotj\xE1k.", // ai 2026-06
 
-// modules/alerts/acf.php, row 115, 142
+// modules/alerts/acf.php, row 117, 149
 "order" => "sorrend", // ai 2026-06
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "selection" => "v\xE1logat\xE1s", // ai 2026-06
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "remove" => "elt\xE1vol\xEDt\xE1s", // ai 2026-10
 
+// modules/alerts/acf.php, row 123
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+
 // modules/alerts/acf.php, row 124
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+
+// modules/alerts/acf.php, row 131
 "No selections chosen yet." => "M\xE9g nincs kiv\xE1lasztott sz\xFBr\xE9s.", // ai 2026-10
 
-// modules/alerts/acf.php, row 127
+// modules/alerts/acf.php, row 134
 "Save order" => "Sorrend ment\xE9se", // ai 2026-10
 
-// modules/alerts/acf.php, row 128
+// modules/alerts/acf.php, row 135
 "Remove checked" => "Kijel\xF6ltek elt\xE1vol\xEDt\xE1sa", // ai 2026-10
 
-// modules/alerts/acf.php, row 143
+// modules/alerts/acf.php, row 150
 "Add selection" => "V\xE1logat\xE1s hozz\xE1ad\xE1sa", // ai 2026-10
 
-// modules/alerts/acf.php, row 145
+// modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Nincsenek defini\xE1lt v\xE1logat\xE1sok. Defini\xE1lnia kell legal\xE1bb egyet.", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 505

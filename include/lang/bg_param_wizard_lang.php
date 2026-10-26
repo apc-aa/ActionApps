@@ -10,43 +10,43 @@ $mgettext_lang = "bg";
 
 return [
 
-// admin/param_wizard.php, row 111
+// admin/param_wizard.php, row 110
 "field&nbsp;id" => "id&nbsp;\xED\xE0 \xEF\xEE\xEB\xE5\xF2\xEE", // ai 2026-06
 
-// admin/param_wizard.php, row 114
+// admin/param_wizard.php, row 113
 "boolean:&nbsp;0=false,1=true" => "\xE1\xF3\xEB\xE5\xE2\xE0 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2:&nbsp;0=\xED\xE5\xE2\xFF\xF0\xED\xEE,1=\xE2\xFF\xF0\xED\xEE", // ai 2026-06
 
-// admin/param_wizard.php, row 138
+// admin/param_wizard.php, row 137
 "Wizard" => "\xD1\xFA\xE2\xE5\xF2\xED\xE8\xEA", // ai 2026-06
 
-// admin/param_wizard.php, row 227
+// admin/param_wizard.php, row 220
 "This is an undocumented %s. We don't recommend using it." => "\xD2\xEE\xE2\xE0 \xE5 \xED\xE5\xE4\xEE\xEA\xF3\xEC\xE5\xED\xF2\xE8\xF0\xE0\xED %s. \xCD\xE5 \xEF\xF0\xE5\xEF\xEE\xF0\xFA\xF7\xE2\xE0\xEC\xE5 \xE4\xE0 \xE3\xEE \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5.", // ai 2026-06
 
-// admin/param_wizard.php, row 228
+// admin/param_wizard.php, row 221
 "Close the wizard" => "\xC7\xE0\xF2\xE2\xE0\xF0\xFF\xED\xE5 \xED\xE0 \xF1\xFA\xE2\xE5\xF2\xED\xE8\xEA\xE0", // ai 2026-06
 
-// admin/param_wizard.php, row 242
+// admin/param_wizard.php, row 235
 "Available parameters: " => "\xCD\xE0\xEB\xE8\xF7\xED\xE8 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8:", // ai 2026-06
 
-// admin/param_wizard.php, row 262
+// admin/param_wizard.php, row 255
 "This %s has no parameters." => "\xD2\xEE\xE7\xE8 %s \xED\xFF\xEC\xE0 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8.", // ai 2026-06
 
-// admin/param_wizard.php, row 272
+// admin/param_wizard.php, row 265
 "Have a look at these examples of parameters sets:" => "\xD0\xE0\xE7\xE3\xEB\xE5\xE4\xE0\xE9\xF2\xE5 \xF2\xE5\xE7\xE8 \xEF\xF0\xE8\xEC\xE5\xF0\xE8 \xE7\xE0 \xED\xE0\xE1\xEE\xF0\xE8 \xEE\xF2 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8:", // ai 2026-06
 
-// admin/param_wizard.php, row 279
+// admin/param_wizard.php, row 272
 "Show" => "\xCF\xEE\xEA\xE0\xE6\xE8", // ai 2026-06
 
-// admin/param_wizard.php, row 290
+// admin/param_wizard.php, row 283
 "OK - Save" => "OK - \xC7\xE0\xEF\xE8\xF1", // ai 2026-06
 
-// admin/param_wizard.php, row 291
+// admin/param_wizard.php, row 284
 "Cancel" => "\xCE\xF2\xEA\xE0\xE7", // ai 2026-06
 
-// admin/param_wizard.php, row 292
+// admin/param_wizard.php, row 285
 "Show example params" => "\xCF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xEF\xF0\xE8\xEC\xE5\xF0\xED\xE8 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8", // ai 2026-06
 
-// admin/param_wizard.php, row 296
+// admin/param_wizard.php, row 289
 "OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68

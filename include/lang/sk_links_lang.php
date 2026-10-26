@@ -104,17 +104,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Spr\xE1va filtrov", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Chyba: ch\xFDba heslo na \xE8\xEDtanie", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 // modules/links/check_url.php, row 52
 "Back" => "Sp\xE4t",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Znovu sa prihl\xE1si\x9D", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114

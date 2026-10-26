@@ -34,6 +34,12 @@ class Access
         return self::has($uid, $campaignSlice, PS_EDIT_ALL_ITEMS);
     }
 
+    /** may move an item of the campaign slice to the trash - the right the Item Manager asks for it (PS_ITEMS2TRASH) */
+    public function mayTrash(string $campaignSlice): bool
+    {
+        return self::has($this->uid(), $campaignSlice, PS_ITEMS2TRASH);
+    }
+
     /** a user who could fix the settings of the page: one who may send, or edit the code of the site */
     public function mayFix(string $site, string $campaignSlice): bool
     {
@@ -53,7 +59,8 @@ class Access
 
     // ------------------------------------------------------------ what tests replace
 
-    protected function uid(): string
+    /** the login of the request - the only user an action of the page hands to the core */
+    public function uid(): string
     {
         return AuthGetUid();
     }

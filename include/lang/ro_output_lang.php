@@ -32,29 +32,29 @@ return [
 // "Alias used on admin page index.php3 for edit discussion url" => "Pseudonim folosit \xEEn pagina admin index.php3 pentru editare url discu\xFEii",
 // End of unused messages
 
-// ./slice.php, row 237
+// ./slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Parametru inc gresit - fisierul inclus trebuie s\xE3 contin\xE3 doar caractere alfanumerice", // ai 2026-06
 
-// ./slice.php, row 241
+// ./slice.php, row 243
 "No such file" => "Fisierul nu exist\xE3", // ai 2026-06
 
-// ./slice.php, row 262
+// ./slice.php, row 264
 "Invalid slice number or slice was deleted" => "Num\xE3r de sectiune invalid sau sectiunea a fost stears\xE3", // ai 2026-06
 
-// ./slice.php, row 265
+// ./slice.php, row 267
 "slice.php output forbidden for this slice" => "Afisarea prin slice.php este interzis\xE3 pentru aceast\xE3 sectiune", // ai 2026-06
 
-// ./slice.php, row 320
+// ./slice.php, row 322
 "session id" => "id sesiune", // ai 2026-06
 
-// ./slice.php, row 573
+// ./slice.php, row 585
 "number of current page (on pagescroller)" => "num\xE3rul paginii curente (\xEEn pagescroller)", // ai 2026-06
 
-// ./slice.php, row 574
+// ./slice.php, row 586
 "page length (number of items)" => "lungimea paginii (num\xE3r de articole)", // ai 2026-06
 
-// ./slice.php, row 609
-// include/view.php, row 390
+// ./slice.php, row 621
+// include/view.php, row 373
 "No item found" => "Nu am g\xE3sit nici un articol",
 
 // include/discussion.php, row 211
@@ -195,16 +195,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Eroare: functie de alias %1 gresit\xE3 pentru %2", // ai 2026-06
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "Articol selectat", // ai 2026-06
 
-// include/itemview.php, row 129
+// include/itemview.php, row 130
 "number of found items" => "num\xE3rul articolelor g\xE3site",
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "Nu a fost selectat nici un comentariu",
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "numele exact al grupului", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -231,16 +231,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Toate categoriile",
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Eroare: Lipseste parola de citire", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Mesaj stiri toolkit",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "\xCEnapoi",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Reautentificare", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -249,6 +249,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Preia datele despre relatiile articolului trimise de formular (POST)", // ai 2026-06
 
-// modules/site/site.php, row 304
+// modules/site/site.php, row 308
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Site-ul este configurat gresit: %1 nu exist\xE3 sau nu poate fi citit. Ad\xE3ugati acest fisier sau corectati setarea ,,State file\" a acestui modul Site.", // ai 2026-10
 ];

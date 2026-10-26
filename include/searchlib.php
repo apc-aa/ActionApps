@@ -26,6 +26,7 @@
  */
 
 use AA\IO\DB\DB_AA;
+use AA\Security\ViewSlices;
 use AA\Util\Langs;
 
 require_once __DIR__ . "/sql_parser.php";
@@ -1058,14 +1059,7 @@ class AA_Dbcondition
 
         $this->field = ($table ? "$table." : '') . trim((string) $field);
 
-        // normalize operator
-        // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
-        // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
-        $this->operator = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<','&'], trim((string) $operator)); // #: - fix mistaken escaping of d#:>...
-        if (strlen($this->operator) < 4) {
-            $this->operator = AA_Operators::normalize($this->operator);  // d-highlight.......-lt-5  - lt, gt, le, ge, ne are allowed as well
-        }
-
+        $this->operator    = self::normalizeOperator($operator);
         $this->querystring = $querystring;
         $this->type        = $type;
         $this->joined      = $joined;
@@ -1079,6 +1073,24 @@ class AA_Dbcondition
         //  an escaped apostrophe inside a literal never starts one
         $this->condition = ($table === 'item' && AA_Metabase::isPacked('item', $field)) ? preg_replace("/(?<!\\\\)'([0-9a-f]{32})'/i", "0x\\1", $arr[2]) : $arr[2];
         $this->table = $table;
+    }
+
+    /** the operator as the condition reads it */
+    public static function normalizeOperator($operator): string
+    {
+        // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
+        // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
+        $operator = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<','&'], trim((string) $operator)); // #: - fix mistaken escaping of d#:>...
+        if (strlen($operator) < 4) {
+            $operator = AA_Operators::normalize($operator);  // d-highlight.......-lt-5  - lt, gt, le, ge, ne are allowed as well
+        }
+        return $operator;
+    }
+
+    /** the operator asks only whether the field is filled, never for its value */
+    public static function asksFilled($operator): bool
+    {
+        return in_array(self::normalizeOperator($operator), ['ISNULL', 'NOTNULL'], true);
     }
 
     public function getWhereExp(): string
@@ -1647,7 +1659,6 @@ function QueryZidsSet(AA_Set $set): zids
  *
  * @return zids - A zids object with a list of the ids that match the query.
  *
- * @global  bool      $debug         (in) many debug messages
  * @global  bool      $debugfields   (in) useful mainly for multiple slices mode -- views info about field_ids
  *                                used in conds[] but not existing in some of the slices
  * @global  int       $QueryIDsCount (out) is set to the count of IDs returned
@@ -1711,7 +1722,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     AA::$debug & 2 && AA::$dbg->log("QueryZids: Conds=", $conds, "Sort=", $sort, "Slices=", implode('-', $slices));
 
-    $query_helper = new QueryZidsHelper($fields, $conds, $sort, $restrict_zids);
+    $query_helper = new QueryZidsHelper($fields, $conds, $sort, $restrict_zids, $slices);
 
     $SQL = $query_helper->constructSQL($restrict_zids, $type, $limit, $slices, $slice);
 
@@ -1741,10 +1752,14 @@ class QueryZidsHelper
 
     private ?AA_Fields $fields;
 
+    /** @var string[] the listed slices - the first one describes the fields */
+    private array $slices;
 
-    public function __construct(?AA_Fields $fields, $conds, $sort, ?zids $restrict_zids)
+
+    public function __construct(?AA_Fields $fields, $conds, $sort, ?zids $restrict_zids, array $slices)
     {
         $this->fields = $fields;
+        $this->slices = $slices;
 
         if (is_array($conds)) {
             $this->prepareConds($conds);
@@ -1766,6 +1781,8 @@ class QueryZidsHelper
             $field_count = 0;
             $cond_flds   = '';
             $fid_langs   = [];
+            // whether a password or 2FA secret is set may be asked - the value never
+            $asks_filled = AA_Dbcondition::asksFilled($cond['operator'] ?? '');
             foreach ($cond as $fid => $v) {
                 // search in all content table fields (new in AA v2.8)
                 $lowerfid = strtolower($fid);
@@ -1828,36 +1845,47 @@ class QueryZidsHelper
                             AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$rel_fld' is not relation field.");
                             continue;            // bad field_id or not defined condition - skip
                         }
-                        $rel_fld = "'$rel_fld'";
-                        if ($cf === 'all_fields') {
-                            $tbl           = 'c' . $this->tbl_count++;
-                            $tbl2          = 'c' . $this->tbl_count++;
-                            $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
-                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text))";
-                            $cur_cond      = (new AA_Dbcondition($tbl2, 'text', $cond['operator'], $cond['value']))->getWhereExp();
-                        } else {
-                            $cond_field = AA_Slice::getModule($rel_f_slice)->getField($cf);
-                            if (!is_object($cond_field)) {
-                                AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$fid' is not field.");
-                                continue;            // bad field_id or not defined condition - skip
-                            }
-
-                            $cond_flds = "'$cf'";
-                            $tbl       = 'c' . $this->tbl_count++;
-                            $tbl2      = 'c' . $this->tbl_count++;
-                            if ($cond_field->storageTable() === 'item') {   // field is stored in table 'item'
-                                // Long ID in conds should be specified as unpacked, but in db it is packed
-                                $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
-                                                  LEFT JOIN item as $tbl2 ON ($tbl2.id=UNHEX($tbl.text))";
-                            } else {
-                                $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
-                                                  LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
-                            }
-                            $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
-                            //                            if (in_array($cf, ['id..............', 'slice_id........'])) {
-                            //                                $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
-                            //                            }
+                        // the values come only from items of the declared slice, as the stored ids may point anywhere;
+                        // without that slice, or its password, the condition matches nothing - left out, it would list more
+                        $rel_slice = AA_Slice::getOwnModule($rel_f_slice);
+                        if (!is_object($rel_slice)) {
+                            AA::$debug && AA::$dbg->warn("Nothing matches '$fid' in conds[]: '$rel_fld' does not point to a slice.");
+                            $this->select_conds[] = '1=0';
+                            continue;
                         }
+                        if (!ViewSlices::conditionMayRead($rel_f_slice)) {
+                            $this->select_conds[] = '1=0';
+                            continue;
+                        }
+                        $all_fields = ($cf === 'all_fields');   // any field of the related items
+                        $cond_field = $all_fields ? null : $rel_slice->getField($cf);
+                        if (!$all_fields && !is_object($cond_field)) {
+                            AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$fid' is not field.");
+                            continue;            // bad field_id or not defined condition - skip
+                        }
+                        if (!$asks_filled && isset($rel_slice->protectedFieldIds()[$cf])) {
+                            ViewSlices::protectedFieldRefused($rel_f_slice, $cf);
+                            $this->select_conds[] = '1=0';
+                            continue;
+                        }
+
+                        $rel_fld = "'$rel_fld'";
+                        $tbl     = 'c' . $this->tbl_count++;
+                        $tbl2    = 'c' . $this->tbl_count++;
+                        $packed  = xpack_id($rel_f_slice);
+                        if ($cond_field?->storageTable() === 'item') {   // field is stored in table 'item'
+                            // Long ID in conds should be specified as unpacked, but in db it is packed
+                            $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=UNHEX($tbl.text) AND $tbl2.slice_id=$packed)";
+                        } else {
+                            $one_field = $all_fields ? ' AND ' . self::unprotectedSql($tbl2, [$rel_f_slice]) : " AND ($tbl2.field_id='$cf' OR $tbl2.field_id is NULL)";
+                            // EXISTS, not a JOIN of item: with the JOIN MariaDB reorders the plan to millions of rows (NSZM)
+                            $rtbl = 'r' . substr($tbl2, 1);
+                            $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text)$one_field
+                                                                     AND EXISTS (SELECT 1 FROM item AS $rtbl WHERE $rtbl.id=$tbl2.item_id AND $rtbl.slice_id=$packed))";
+                        }
+                        $cur_cond = (new AA_Dbcondition($tbl2, $cond_field?->storageColumn() ?? 'text', $cond['operator'], $cond['value']))->getWhereExp();
                         $this->select_conds[] = $cur_cond;
                         $this->sortable[$cf]  = $tbl;  // @todo - test if it works
                         $cond_flds      = '';
@@ -1878,10 +1906,17 @@ class QueryZidsHelper
                         $rel_bins     = AA_BIN_ALL;
                         $rel_slice_id = trim($rel_slice_id, '+');
                     }
-                    $rel_slice = AA_Slice::getModule($rel_slice_id);
+                    // without the slice, or its password, the condition matches nothing, as in the first case;
+                    // checked before the fields, so a refusal does not tell which fields the slice has
+                    $rel_slice = AA_Slice::getOwnModule($rel_slice_id);
                     if (!is_object($rel_slice)) {
-                        AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $rel_slice_id is not slice.");
-                        continue;            // bad field_id or not defined condition - skip
+                        AA::$debug && AA::$dbg->warn("Nothing matches $fid in conds[]: $rel_slice_id is not slice.");
+                        $this->select_conds[] = '1=0';
+                        continue;
+                    }
+                    if (!ViewSlices::conditionMayRead($rel_slice_id)) {
+                        $this->select_conds[] = '1=0';
+                        continue;
                     }
                     $cond_field = $rel_slice->getField($cond_fld_id);
                     if (!is_object($cond_field)) {
@@ -1893,18 +1928,29 @@ class QueryZidsHelper
                         AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $rel_fld_id is not field of $rel_slice_id.");
                         continue;            // bad field_id or not defined condition - skip
                     }
+                    // the relation field is compared with the id of the listed item, so it may be no protected one either
+                    $protected_ids = $rel_slice->protectedFieldIds();
+                    $protected     = (!$asks_filled && isset($protected_ids[$cond_fld_id])) ? $cond_fld_id : (isset($protected_ids[$rel_fld_id]) ? $rel_fld_id : '');
+                    if ($protected !== '') {
+                        ViewSlices::protectedFieldRefused($rel_slice_id, $protected);
+                        $this->select_conds[] = '1=0';
+                        continue;
+                    }
                     $cond_flds = "'$cond_fld_id'";
                     $rel_fld   = "'$rel_fld_id'";
                     $tbl       = 'c' . $this->tbl_count++;
                     $tbl2      = 'c' . $this->tbl_count++;
+                    // the relation field id alone matches items of any slice - only the named slice and its bins count,
+                    // already for the relation row, as the sort orders by it
+                    $rtbl          = 'r' . substr($tbl2, 1);
+                    $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? " AND " . CreateBinCondition($rel_bins, $rtbl) : '';
+                    $rel_join      = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text
+                                                     AND EXISTS (SELECT 1 FROM item AS $rtbl WHERE $rtbl.id=$tbl.item_id AND $rtbl.slice_id=" . xpack_id($rel_slice_id) . "$rel_bins_cond))";
                     if ($cond_field->storageTable() === 'item') {   // field is stored in table 'item'
-                        $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? " AND " . CreateBinCondition($rel_bins, $tbl2) : '';
                         // Long ID in conds should be specified as unpacked, but in db it is packed
-                        $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
-                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=" . xpack_id($rel_slice_id) . "$rel_bins_cond)";
+                        $this->select_tabs[] = "$rel_join LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id)";
                     } else {
-                        $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
-                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
+                        $this->select_tabs[] = "$rel_join LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                     }
                     $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
                     //                        if (in_array($cond_flds, ['id..............', 'slice_id........'])) {
@@ -1927,6 +1973,13 @@ class QueryZidsHelper
                 if (is_null($field) || $v == "") {
                     AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: not known.");
                     continue;            // bad field_id or not defined condition - skip
+                }
+                if (!$asks_filled && ($protected_in = $this->protectedIn($field)) !== '') {
+                    // the whole condition, as with any other field it would still tell about this one
+                    ViewSlices::protectedFieldRefused($protected_in, $fid);
+                    $this->select_conds[] = '1=0';
+                    $cond_flds = '';
+                    break;
                 }
 
                 if ($field->storageTable() === 'item') {   // field is stored in table 'item'
@@ -1985,7 +2038,7 @@ class QueryZidsHelper
             }
 
             if (str_contains($cond_flds, 'all_fields')) {  // we are searching all fields in content table
-                $on = "$tbl.item_id=item.id $addjoincond$langcond";
+                $on = "$tbl.item_id=item.id AND " . self::unprotectedSql($tbl, $this->slices) . " $addjoincond$langcond";
             } elseif (str_contains($cond_flds, ',')) {     // $field_count > 1
                 $on = "$tbl.item_id=item.id$langcond AND ($tbl.field_id IN ($cond_flds) $selcondadd)$addjoincond";
             } else {
@@ -1996,6 +2049,40 @@ class QueryZidsHelper
             $this->select_tabs[$tbl] = "$selprefix JOIN content as $tbl ON ($on)";
             $this->semijoins[$tbl]   = [$on, $dbcjointype === 'LEFT' && $dbcond->matchesMissing()];
         }
+    }
+
+    /** The listed slice in which the field is protected (AA_Field::isProtected()), '' - in none. All the
+     *  slices are asked: the first one describes the fields, but the values come from all of them. A field
+     *  of the item table is no password. */
+    private function protectedIn(AA_Field $field): string
+    {
+        if ($field->storageTable() === 'item') {
+            return '';
+        }
+        foreach ($this->slices as $slice_id) {
+            if (isset(AA_Slice::getOwnModule($slice_id)?->protectedFieldIds()[$field->getId()])) {
+                return (string) $slice_id;
+            }
+        }
+        return '';
+    }
+
+    /** SQL leaving out of a content join what GetItemContent() never gives: the protected fields of the
+     *  slices, and any field of a protected type, also one the slice does not define
+     *  @param string[] $slice_ids */
+    private static function unprotectedSql(string $tbl, array $slice_ids): string
+    {
+        $protected = [];
+        foreach ($slice_ids as $slice_id) {
+            $protected += AA_Slice::getOwnModule($slice_id)?->protectedFieldIds() ?? [];
+        }
+        $protected = array_values(array_filter(array_map('strval', array_keys($protected)), static fn(string $id): bool => !AA_Field::isProtectedType(AA_Fields::getFieldType($id))));
+        sort($protected);   // the same SQL for the same fields
+        $where = [["$tbl.field_id", AA_Field::PROTECTED_TYPES, 'NOT BEGIN']];
+        if ($protected) {
+            $where[] = ["$tbl.field_id", $protected, 's<>'];
+        }
+        return substr(DB_AA::makeWhere($where), strlen('WHERE '));
     }
 
     /** select_tabs, select_conds and DISTINCT; with a LIMIT, content joined only for a condition
@@ -2073,6 +2160,10 @@ class QueryZidsHelper
                 $field = $this->fields->getField($fid);
                 if (is_null($field)) { // bad field_id - skip
                     AA::$debug && AA::$dbg->warn("Skipping sort[x][$fid], don't know '$fid'.");
+                    continue;
+                }
+                if (($protected_in = $this->protectedIn($field)) !== '') {   // the order would tell the values
+                    ViewSlices::protectedFieldRefused($protected_in, $fid);
                     continue;
                 }
 

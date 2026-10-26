@@ -827,14 +827,40 @@ abstract class BatchRun extends AA_Object
         uksort($finished, static fn($a, $b): int => self::newerFirst((string) $a, $finished[$a], (string) $b, $finished[$b]));
         $old = array_values(array_diff(array_map('strval', array_slice(array_keys($finished), max(0, $keep))), $alsoKept));
         if ($old) {
-            // a row of priority 0 never runs again - it must not hold the run for ever
-            $rows    = DB_AA::select([], 'SELECT selector, priority FROM `toexecute`', [['selector', array_map(self::closeSelector(...), $old)]]);
-            $closing = array_map(static fn(array $r): string => (string) $r['selector'], array_filter($rows, static fn(array $r): bool => (int) $r['priority'] > 0));
-            $old     = array_values(array_filter($old, static fn(string $id): bool => !in_array(self::closeSelector($id), $closing, true)));
+            $old = array_values(array_diff($old, self::closesWaiting($old, $now)));
         }
         if ($old) {
             self::deleteObjects($old);
         }
+    }
+
+    /** An ended run whose afterClose() has yet to run, or runs now: its close row waits in the queue */
+    final public function closeWaits(): bool
+    {
+        return self::closesWaiting([(string) $this->getId()], static::now()) !== [];
+    }
+
+    /** afterClose() failed: what it should have written may never be */
+    final public function closeFailed(): bool
+    {
+        try {
+            return ($this->json('progress')['warning'] ?? null) === 'after_close';
+        } catch (\JsonException) {
+            return false;
+        }
+    }
+
+    /**
+     * @param list<string> $ids runs
+     * @return list<string> those whose close row waits in the queue, or runs now (claimed: its lease
+     *                      still ahead). A row of priority 0 not running never runs again - it must not
+     *                      hold anything for ever.
+     */
+    private static function closesWaiting(array $ids, int $now): array
+    {
+        $rows    = DB_AA::select([], 'SELECT selector, priority, execute_after FROM `toexecute`', [['selector', array_map(self::closeSelector(...), $ids)]]);
+        $waiting = array_map(static fn(array $r): string => (string) $r['selector'], array_filter($rows, static fn(array $r): bool => ((int) $r['priority'] > 0) || ((int) $r['execute_after'] > $now)));
+        return array_values(array_filter($ids, static fn(string $id): bool => in_array(self::closeSelector($id), $waiting, true)));
     }
 
     /** Deletes every run of $subject whatever its state, with the queued steps of the unfinished ones

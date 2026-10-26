@@ -28,38 +28,38 @@ return [
 // modules/site/index.php, row 151
 "Editor window - site code manager" => "\xCA\xD4\xBD\xB8\xA5\xA6\xA5\xA3\xA5\xF3\xA5\xC9\xA5\xA6 - \xA5\xB5\xA5\xA4\xA5\xC8\xA5\xB3\xA1\xBC\xA5\xC9\xB4\xC9\xCD\xFD", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 163
 "Add&nbsp;spot" => "\xA5\xB9\xA5\xDD\xA5\xC3\xA5\xC8\xA4\xF2\xC4\xC9\xB2\xC3", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 164
 "Add&nbsp;choice" => "\xC1\xAA\xC2\xF2\xBB\xE8\xA4\xF2\xC4\xC9\xB2\xC3", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 167
 "Move&nbsp;up" => "\xBE\xE5\xA4\xD8\xB0\xDC\xC6\xB0", // ai 2026-06
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 168
 "Move&nbsp;down" => "\xB2\xBC\xA4\xD8\xB0\xDC\xC6\xB0", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 171
 "Move&nbsp;left" => "\xBA\xB8\xA4\xD8\xB0\xDC\xC6\xB0", // ai 2026-06
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 172
 "Move&nbsp;right" => "\xB1\xA6\xA4\xD8\xB0\xDC\xC6\xB0", // ai 2026-06
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "\xBA\xEF\xBD\xFC", // ai 2026-06
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 "Are you sure you want to delete the spot?" => "\xA4\xB3\xA4\xCE\xA5\xB9\xA5\xDD\xA5\xC3\xA5\xC8\xA4\xF2\xBA\xEF\xBD\xFC\xA4\xB7\xA4\xC6\xA4\xE2\xA4\xE8\xA4\xED\xA4\xB7\xA4\xA4\xA4\xC7\xA4\xB9\xA4\xAB\xA1\xA9", // ai 2026-06
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 178
 "Enable" => "\xCD\xAD\xB8\xFA\xA4\xCB\xA4\xB9\xA4\xEB", // ai 2026-06
 
-// modules/site/index.php, row 187
+// modules/site/index.php, row 179
 "Disable" => "\xCC\xB5\xB8\xFA\xA4\xCB\xA4\xB9\xA4\xEB", // ai 2026-06
 
-// modules/site/index.php, row 208
+// modules/site/index.php, row 200
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "\xBB\xC8\xCD\xD1\xB2\xC4\xC7\xBD\xA4\xCA\xA5\xB7\xA5\xB9\xA5\xC6\xA5\xE0require - &lcub;require:...&rcub; \xA4\xDE\xA4\xBF\xA4\xCF &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

@@ -424,7 +424,7 @@ class SliceRules
     }
 
     /** @return list<string> the modules the site uses, out of the trash */
-    protected function relatedModules(string $site): array
+    public function relatedModules(string $site): array
     {
         return array_values(AA_Module_Site::getRelatedModules([$site]));
     }
@@ -439,6 +439,15 @@ class SliceRules
     public function registryConfig(string $slice): ?Config
     {
         return Config::forSlice($slice);
+    }
+
+    /**
+     * registryConfig() of the source slice of a page, whose settings Setup checked
+     * @throws \RuntimeException the slice has none since
+     */
+    final public function sourceConfig(string $slice): Config
+    {
+        return $this->registryConfig($slice) ?? throw new \RuntimeException('The source slice has no settings of data boxes');
     }
 
     /**

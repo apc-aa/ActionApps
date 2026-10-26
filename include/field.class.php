@@ -41,6 +41,10 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
 {
     use AA\Util\DataArrayAccessTrait;
 
+    /** field types whose values AA never shows (isProtected()) - a field id starting so is protected also
+     *  where the slice does not define it */
+    public const PROTECTED_TYPES = ['password', 'secret'];
+
     /** @var string[] list of field table rows manager by this class - other are unused */
     public const USED_FIELDS = ['id', 'slice_id', 'name', 'input_pri', 'input_help', 'input_morehlp', 'input_default', 'required', 'feed', 'multiple', 'input_show_func', 'search_pri', 'alias1', 'alias1_func', 'alias1_help', 'alias2', 'alias2_func', 'alias2_help', 'alias3', 'alias3_func', 'alias3_help', 'input_before', 'content_edit', 'html_default', 'html_show', 'in_item_tbl', 'input_validate', 'input_insert_func', 'input_show', 'text_stored'];
 
@@ -129,16 +133,54 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
     public function isSafeStored(): bool
     {
         // the content_edit is not yet used - we plan to make able the field to be secured
-        return (($this->data['content_edit'] & FIELD_UNREADABLE) || (AA_Fields::getFieldType($this->getId()) === 'secret'));     // @todo add also password
+        // (int): a field built from an array, not read from the db, may have '' there
+        return (((int) $this->data['content_edit'] & FIELD_UNREADABLE) || (AA_Fields::getFieldType($this->getId()) === 'secret'));     // @todo add also password
         // @todo mark all secure and password fields as FIELD_UNREADABLE
     }
 
     /** password, 2FA secret, a copy of a password or an unreadable field - its value never goes into a widget */
     public function isProtected(): bool
     {
+        return $this->isProtectedItself() || $this->isPasswordCopy();
+    }
+
+    /** isProtected() without the copy of a password, which only the other fields of the slice tell */
+    private function isProtectedItself(): bool
+    {
         $type     = AA_Fields::getFieldType($this->getId());
         [$insert] = explode(':', strtolower((string) $this->data['input_insert_func']), 2);
-        return str_starts_with($type, 'password') || str_starts_with($type, 'secret') || in_array($insert, ['pwd', '2fa'], true) || $this->isSafeStored() || $this->isPasswordCopy();
+        return self::isProtectedType($type) || in_array($insert, ['pwd', '2fa'], true) || $this->isSafeStored();
+    }
+
+    /**
+     * Ids of the protected fields (isProtected()) among these fields of one slice, as keys - one pass, where
+     * isProtected() of each field would read all the others.
+     * @param iterable<AA_Field> $fields
+     * @return array<string, true>
+     */
+    public static function protectedIds(iterable $fields): array
+    {
+        $ids = [];
+        foreach ($fields as $field) {
+            if ($field->isProtectedItself()) {
+                $ids[$field->getId()] = true;
+            }
+            if (($copy = $field->passwordCopyField()) !== '') {
+                $ids[$copy] = true;
+            }
+        }
+        return $ids;
+    }
+
+    /** the type (AA_Fields::getFieldType()) is one of PROTECTED_TYPES */
+    public static function isProtectedType(string $type): bool
+    {
+        foreach (self::PROTECTED_TYPES as $protected) {
+            if (str_starts_with($type, $protected)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** the form checks a unique value before the insert function, the store not at all */
@@ -195,12 +237,18 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
     protected function isPasswordCopy(): bool
     {
         foreach (AA_Slice::getModule($this->getSliceId())?->getFields() ?? [] as $field) {
-            $insert = (string) $field->getProperty('input_insert_func');
-            if (str_starts_with(strtolower($insert), 'pwd:') && ((AA_Inserter::parseClassProperties($insert)['bck_field'] ?? '') === $this->getId())) {
+            if ($field->passwordCopyField() === $this->getId()) {
                 return true;
             }
         }
         return false;
+    }
+
+    /** the field where the pwd insert function of this field stores a copy of the password (bck_field), '' - none */
+    private function passwordCopyField(): string
+    {
+        $insert = (string) $this->getProperty('input_insert_func');
+        return str_starts_with(strtolower($insert), 'pwd:') ? (string) (AA_Inserter::parseClassProperties($insert)['bck_field'] ?? '') : '';
     }
 
     /** getProperty function

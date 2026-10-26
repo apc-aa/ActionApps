@@ -60,12 +60,22 @@ class Item_MoveItem extends AbstractManageraction
         return $updated_items;
     }
 
+    /**
+     * Moves the items of $zids that are in slice $slice_id to bin $to_bin - the one way items change their bin,
+     * for the Item Manager and for any other page that moves them; the caller checks the right
+     * @return int the items moved
+     */
+    public static function move(zids $zids, int $to_bin, string $slice_id): int
+    {
+        $moved = self::doMove($zids->itemFilter([$slice_id]), $to_bin, $slice_id);
+        AA::Pagecache()->invalidateFor($slice_id);
+        return $moved;
+    }
+
     /** @inheritDoc */
     public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
-        $sid = $manager->getModuleId();
-        self::doMove($item_zids->itemFilter([$sid]), $this->to_bin, $sid);
-        AA::Pagecache()->invalidateFor($sid);
+        self::move($item_zids, (int) $this->to_bin, $manager->getModuleId());
         return false;                                     // OK - no error
     }
 

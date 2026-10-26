@@ -51,29 +51,29 @@ return [
 // "Alias used on admin page index.php3 for edit discussion url" => "Alias pou\x9E\xEDvan\xFD v administrativn\xEDch str\xE1nk\xE1ch index.php3 pro URL discedit.php3",
 // End of unused messages
 
-// ./slice.php, row 237
+// ./slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Chybn\xFD parametr inc - n\xE1zev vkl\xE1dan\xE9ho souboru sm\xED obsahovat pouze alfanumerick\xE9 znaky",
 
-// ./slice.php, row 241
+// ./slice.php, row 243
 "No such file" => "Soubor nenalezen",
 
-// ./slice.php, row 262
+// ./slice.php, row 264
 "Invalid slice number or slice was deleted" => "Web\xEDk s dan\xFDm \xE8\xEDslem nenalezen. Mo\x9En\xE1 \x9Ee byl vymaz\xE1n.",
 
-// ./slice.php, row 265
+// ./slice.php, row 267
 "slice.php output forbidden for this slice" => "V\xFDstup p\xF8es slice.php je pro tento web\xEDk zak\xE1z\xE1n",
 
-// ./slice.php, row 320
+// ./slice.php, row 322
 "session id" => "ID session",
 
-// ./slice.php, row 573
+// ./slice.php, row 585
 "number of current page (on pagescroller)" => "\xE8\xEDslo aktu\xE1ln\xED str\xE1nky (ve str\xE1nkov\xE1n\xED)",
 
-// ./slice.php, row 574
+// ./slice.php, row 586
 "page length (number of items)" => "d\xE9lka str\xE1nky (po\xE8et \xE8l\xE1nk\xF9)",
 
-// ./slice.php, row 609
-// include/view.php, row 390
+// ./slice.php, row 621
+// include/view.php, row 373
 "No item found" => "Nenalezena \x9E\xE1dn\xE1 zpr\xE1va",
 
 // include/discussion.php, row 211
@@ -214,16 +214,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: chybn\xE1 funkce aliasu %1 pro %2",
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "Vybran\xFD \xE8l\xE1nek",
 
-// include/itemview.php, row 129
+// include/itemview.php, row 130
 "number of found items" => "po\xE8et nalezen\xFDch \xE8l\xE1nk\xF9",
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "Nebyl vybr\xE1n \x9E\xE1dn\xFD p\xF8\xEDsp\xECvek",
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "p\xF8esn\xFD n\xE1zev skupiny",
 
 // include/scroller.php, row 86
@@ -250,16 +250,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "V\x9Aechny kategorie",
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Chyba: chyb\xED heslo pro \xE8ten\xED",
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Zpr\xE1va s novinkami Toolkitu",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "Zp\xECt",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Znovu p\xF8ihl\xE1sit",
 
 // misc/proposefieldchange.php, row 110
@@ -268,6 +268,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Zpracuje data o vazb\xE1ch \xE8l\xE1nku odeslan\xE1 formul\xE1\xF8em (POST)",
 
-// modules/site/site.php, row 304
+// modules/site/site.php, row 308
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Web je chybn\xEC nastaven: %1 neexistuje nebo jej nelze \xE8\xEDst. P\xF8idejte tento soubor, nebo opravte nastaven\xED \x84Stavov\xFD soubor\x93 tohoto webu.", // ai 2026-10
 ];

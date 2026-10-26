@@ -36,6 +36,7 @@
 use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 use AA\IO\DB\DB_PDO;
+use AA\Util\DebugAccess;
 use AA\Util\Langs;
 use AA\Util\Txt;
 
@@ -452,12 +453,44 @@ class AA {
         if (isset(AA::$headers['disposition'])) {
             $ret['disposition'] = 'Content-Disposition: '.AA::$headers['disposition'];
         }
-        foreach (['CSP','CSP-RO','RT','NEL','XSS','XCTO','RP','CORS','CORSH'] as $possibleheader) {  // @todo CORS
+        foreach (['CSP','CSP-RO','RT','NEL','XSS','XCTO','RP','CORS','CORSH','XFO'] as $possibleheader) {  // @todo CORS
             if (isset(AA::$headers[$possibleheader])) {
                 $ret[$possibleheader] = AA::$headers[$possibleheader];
             }
         }
+        if (isset(AA::$headers['frame-ancestors'])) {
+            $ret['CSP'] = self::withFrameAncestors($ret['CSP'] ?? '', AA::$headers['frame-ancestors']);
+        }
         return $ret;
+    }
+
+    /** The CSP header with frame-ancestors set to $sources in each of its policies (a comma parts them).
+     *  Within the one header: a second one of the name would replace the template's, and a browser takes
+     *  the first frame-ancestors of a policy and, once there is one, ignores X-Frame-Options. A policy
+     *  of the template that lets no frame in at all ('none') keeps it. */
+    private static function withFrameAncestors(string $header, string $sources): string {
+        $space    = " \t\n\f\r";   // the white space of CSP, \f included
+        $policies = [];
+        foreach (explode(',', ($header === '') ? '' : substr($header, strlen('Content-Security-Policy:'))) as $policy) {
+            $directives = [];
+            $first      = null;   // the frame-ancestors the browser takes
+            foreach (explode(';', $policy) as $directive) {
+                $words = preg_split("/[$space]+/", trim($directive, $space), -1, PREG_SPLIT_NO_EMPTY);
+                if (!$words) {
+                    continue;
+                }
+                if (strcasecmp($words[0], 'frame-ancestors') === 0) {
+                    $first ??= strtolower(implode(' ', array_slice($words, 1)));
+                } else {
+                    $directives[] = implode(' ', $words);
+                }
+            }
+            if ($directives || !is_null($first) || !$policies) {
+                $directives[] = 'frame-ancestors ' . (($first === "'none'") ? "'none'" : $sources);
+                $policies[]   = implode('; ', $directives);
+            }
+        }
+        return 'Content-Security-Policy: ' . implode(', ', $policies);
     }
 
     /** @usage AA::setEncoding($module->getCharset());
@@ -552,7 +585,8 @@ class AA {
 
 }
 
-AA::$debug = (int)($_REQUEST['debug'] ?: $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
+// aa_debug is the Set Debug ON switch of the admin menu; a superadmin gets the level later, in pageOpen()
+AA::$debug = DebugAccess::fromRequest($_REQUEST['debug'] ?? null, $_COOKIE['aa_debug'] ?? null, DebugAccess::givenKey($_SERVER), DebugAccess::configuredKey());
 AA::$dbg   = new AA_Debug_Console();   // AA_Debug_Firephp removed 2026-09-07 (never shipped, AA::$debug is int so the 'f' branch was unreachable)
 
 // This pair of functions remove the guessing about which of $db $db2
@@ -739,17 +773,45 @@ class AA_Session extends Session
 
 function pageOpen($type = ''): void
 {
-    global $sess, $auth;
+    global $sess;
 
     $sess = new AA_Session;
 
     if ($type !== 'noauth') {
-        if (!is_object($auth)) {
-            $auth = new AA_Auth;
-        }
-        $auth->set_nobody($type==='nobody');
-        $auth->start();
+        authStart($type === 'nobody');
     }
+}
+
+/** the login of the session; a superadmin gets the ?debug level asked for */
+function authStart(bool $nobody): void
+{
+    global $auth;
+
+    if (!is_object($auth)) {
+        $auth = new AA_Auth;
+    }
+    $auth->set_nobody($nobody);
+    $auth->start();
+    AA::$debug = DebugAccess::grant((int) AA::$debug, static fn(): bool => !in_array(AuthGetUid(), ['', 'nobody'], true) && IsSuperadmin());
+}
+
+/** ?debug of a logged-in superadmin on pages that do not open the login themselves - call it only
+ *  there. Only when debug waits for a superadmin and the browser has a session - the page then
+ *  depends on the user, so it is not stored for everyone.
+ *  $auth may be an object already: pageOpen('noauth') restores it from the session without starting it.
+ */
+function pageOpenForDebug(): void
+{
+    global $sess;
+
+    if (!DebugAccess::opensLogin($_COOKIE)) {
+        return;
+    }
+    AA::Pagecache()->switchCacheNostore();
+    if (!is_object($sess)) {
+        $sess = new AA_Session;
+    }
+    authStart(true);
 }
 
 // Self-healing scheduled-tasks trigger (no-op when OS cron is healthy).

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
+use AA\Util\Adminlink;
 use AA\IO\DB\DB_AA;
 use AA\Util\LogOnce;
 use AA_Log;
@@ -99,7 +100,7 @@ class CheckCkeditorUse extends AbstractOptimize
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
                 ]],
                 advice: _m('A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode="rich"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value.'),
-                links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $module_id)],
+                links: [_m('Templates with ckeditor') => Adminlink::searchUrl('ckeditor'), _m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $module_id)],
                 key: $module_id ?: 'none',
                 last: (int) $row['last'],
                 place: (string) ($names[$module_id] ?? '') ?: $page,

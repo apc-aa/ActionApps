@@ -568,6 +568,9 @@ class AA_Slice extends AA_Module
     // computed values form slice fields
     public $show_func_used; // used show functions in the input form
 
+    /** @var ?array<string, true> see protectedFieldIds() */
+    private ?array $protected_field_ids = null;
+
     /**
      * @param  string  $module_id
      */
@@ -812,6 +815,12 @@ class AA_Slice extends AA_Module
     public function getField($field_id): ?AA_Field
     {
         return $this->fields->getField($field_id);
+    }
+
+    /** @return array<string, true> ids of the fields whose values AA never shows (AA_Field::isProtected()) as keys */
+    public function protectedFieldIds(): array
+    {
+        return $this->protected_field_ids ??= AA_Field::protectedIds($this->getFields());
     }
 
     /**
@@ -1626,18 +1635,18 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
         return [ //                             id             name                                                type     multi  persist validator, required, help, morehelp, example
             'translate_slice' => new AA_Property('translate_slice', _m("Slice with translations"), 'string', false, true, ['enum', static fn() => AA_Module::getUserModules('S')], false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
             'add_aliases'     => new AA_Property('add_aliases', _m("Additional aliases"), 'string', true, true, ['enum',   static fn() => AA_Module::getUserModules('W')], false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),
-            'web_languages'   => new AA_Property('web_languages', _m("Languages on website"), 'string', true, true, ['regexp', ['pattern' => '/^[a-z]{2}$/','maxlength' => 2]], false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>')),
-            'xcat_pattern'    => new AA_Property('xcat_pattern', _m("Allowed {xcat} values"), 'string', false, true, ['pattern', ['maxlength' => 255]], false, _m('Regular expression the {xcat} part of the URL must match as a whole (no ^ or $ needed), otherwise the page answers 404. {xcat} is everything after the first "-" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but "/".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without "=".<br><b>^$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing')),
-            'xflag_pattern'   => new AA_Property('xflag_pattern', _m("Allowed {xflag} values"), 'string', false, true, ['pattern', ['maxlength' => 255]], false, _m('Regular expression the {xflag} part of the URL must match as a whole (no ^ or $ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or "-" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without "=".<br><b>^$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - "t" or "p", or nothing<br>(print|pdf)? - one of the listed words, or nothing')),
-            'check_xseo'      => new AA_Property('check_xseo', _m("Check the page path"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m('Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when "Page not Found" is set to "Do not care".')),
-            'page404'         => new AA_Property('page404', _m("Page not Found (404)"), 'string', false, true, ['enum',   [1 => _m('Do not care'),2 => _m('Send standard 404 page, when {xid} is empty'),3 => _m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
-            'page404_code'    => new AA_Property('page404_code', _m("HTML code for \"Page not Found\" (404)"), 'text', false, true),
             'sitemap_alias'   => new AA_Property('sitemap_alias', _m("sitemap.xml alias"), 'string', false, true, '', false, _m('The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown.')),
             'perm_alias'      => new AA_Property('perm_alias', _m("Permission alias"), 'string', false, true, '', false, _m('You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word "Valid", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule.')),
             'loginpage_code'  => new AA_Property('loginpage_code', _m("HTML code for \"Login page\""), 'text', false, true),
             'perm_mode'       => new AA_Property('perm_mode', _m("User login databases"), 'string', false, true, ['enum',  [1 => _m('first Reader Management slice listed in Uses slices'),2 => _m('all Reader Management slices listed in Uses slices'),3 => _m('AA + all Reader Management slices in AA (old behavior)')]], false, _m("First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used.")),
             'ga_id'           => new AA_Property('ga_id', _m("Google analytics tracking id"), 'string', false, true, ['text', ['maxlength' => 20]], false, _m("If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site.")),
             'alternate_url'   => new AA_Property('alternate_url', _m("Alternate URL"), 'string', true, true, '', false, _m("Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly.")),
+            'web_languages'   => new AA_Property('web_languages', _m("Languages on website"), 'string', true, true, ['regexp', ['pattern' => '/^[a-z]{2}$/','maxlength' => 2]], false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>')),
+            'xflag_pattern'   => new AA_Property('xflag_pattern', _m("Allowed {xflag} values"), 'string', false, true, ['pattern', ['maxlength' => 255]], false, _m('Regular expression the {xflag} part of the URL must match as a whole (no ^ or $ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or "-" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without "=".<br><b>^$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - "t" or "p", or nothing<br>(print|pdf)? - one of the listed words, or nothing')),
+            'xcat_pattern'    => new AA_Property('xcat_pattern', _m("Allowed {xcat} values"), 'string', false, true, ['pattern', ['maxlength' => 255]], false, _m('Regular expression the {xcat} part of the URL must match as a whole (no ^ or $ needed), otherwise the page answers 404. {xcat} is everything after the first "-" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but "/".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without "=".<br><b>^$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing')),
+            'check_xseo'      => new AA_Property('check_xseo', _m("Check the page path"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m('Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when "Page not Found" is set to "Do not care".')),
+            'page404'         => new AA_Property('page404', _m("Page not Found (404)"), 'string', false, true, ['enum',   [1 => _m('Do not care'),2 => _m('Send standard 404 page, when {xid} is empty'),3 => _m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
+            'page404_code'    => new AA_Property('page404_code', _m("HTML code for \"Page not Found\" (404)"), 'text', false, true),
             // '1' or '' - a string, so loading the settings on every page still reads object_text only
             'app_publish'     => new AA_Property('app_publish', _m("Publish in the app store"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m("Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too.")),
             'app_description' => new AA_Property('app_description', _m("App description"), 'text', false, true, ['text', ['maxlength' => self::APP_DESCRIPTION_MAX]], false, _m("What the app does, for the list of the app store.")),
@@ -1650,7 +1659,12 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
     /** the generic form of the settings - without the app store settings (APP_PROPERTIES) */
     public static function addFormrows(AA_Form $form): void
     {
-        foreach (array_diff_key(static::getClassProperties(), array_flip(self::APP_PROPERTIES)) as $property) {
+        foreach (array_diff_key(static::getClassProperties(), array_flip(self::APP_PROPERTIES)) as $id => $property) {
+            if ($id === 'web_languages') {
+                $form->addRow(new AA_Formrow_Html(getFrmTabSeparator(_m('Page address (URL)')) . '<tr><td colspan="2">'
+                    . _m('<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first "-" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka')
+                    . '</td></tr>'));
+            }
             $property->addPropertyFormrows($form);
         }
     }

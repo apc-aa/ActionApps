@@ -104,17 +104,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xA4\xCE\xB4\xC9\xCD\xFD", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "\xA5\xA8\xA5\xE9\xA1\xBC: \xC6\xC9\xA4\xDF\xBC\xE8\xA4\xEA\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "\xA5\xA2\xA5\xD7\xA5\xEA\xA5\xB1\xA1\xBC\xA5\xB7\xA5\xE7\xA5\xF3\xA4\xCE\xA4\xAA\xC3\xCE\xA4\xE9\xA4\xBB", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 // modules/links/check_url.php, row 52
 "Back" => "\xCC\xE1\xA4\xEB", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "\xBA\xC6\xA5\xED\xA5\xB0\xA5\xA4\xA5\xF3", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114

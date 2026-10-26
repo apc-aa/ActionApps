@@ -12,29 +12,29 @@ setlocale(LC_ALL, 'en_US.utf8', 'en_US');  // sort, date, uppercase, ..
 
 return [
 
-// ./slice.php, row 237
+// ./slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "",
 
-// ./slice.php, row 241
+// ./slice.php, row 243
 "No such file" => "",
 
-// ./slice.php, row 262
+// ./slice.php, row 264
 "Invalid slice number or slice was deleted" => "",
 
-// ./slice.php, row 265
+// ./slice.php, row 267
 "slice.php output forbidden for this slice" => "",
 
-// ./slice.php, row 320
+// ./slice.php, row 322
 "session id" => "",
 
-// ./slice.php, row 573
+// ./slice.php, row 585
 "number of current page (on pagescroller)" => "",
 
-// ./slice.php, row 574
+// ./slice.php, row 586
 "page length (number of items)" => "",
 
-// ./slice.php, row 609
-// include/view.php, row 390
+// ./slice.php, row 621
+// include/view.php, row 373
 "No item found" => "",
 
 // include/discussion.php, row 211
@@ -162,16 +162,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "",
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "",
 
-// include/itemview.php, row 129
+// include/itemview.php, row 130
 "number of found items" => "",
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "",
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "",
 
 // include/scroller.php, row 86
@@ -198,16 +198,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "",
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "",
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "",
 
 // misc/proposefieldchange.php, row 110
@@ -216,6 +216,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "",
 
-// modules/site/site.php, row 304
+// modules/site/site.php, row 308
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];

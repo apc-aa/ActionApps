@@ -42,6 +42,7 @@ define('AA_NO_CRON_FALLBACK_THIS_REQUEST', true);
 require_once __DIR__ . "/../include/config.php";
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/../include/locsess.php";
+pageOpenForDebug();   // ?debug of a logged-in superadmin
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/util.php";
 

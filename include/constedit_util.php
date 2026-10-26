@@ -487,7 +487,7 @@ function hcUpdate(): void
  */
 function CopyConstants($slice_id): bool
 {
-    global $err, $debug;
+    global $err;
 
     // max. length of the group_id field
     $max_group_id_len = 16;
@@ -516,7 +516,7 @@ function CopyConstants($slice_id): bool
         }
         $group_list[] = $new_id;
 
-        if ($debug) {
+        if (AA::$debug) {
             echo "Changing $old_id to $new_id.<br>";
         }
 

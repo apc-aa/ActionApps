@@ -50,7 +50,7 @@ final class SafeFile
      * The whole of $path, read once through one handle when it is a regular file of at most $maxBytes at
      * the open. It may grow later: it returns at most $maxBytes, reading at most a chunk more to tell.
      * @throws \UnexpectedValueException see open(); also a file larger than $maxBytes
-     * @throws \RuntimeException          see open(); also a failed read
+     * @throws \RuntimeException          see open(); also a failed read, or a file shorter than at the open
      */
     public static function read(string $path, int $maxBytes): string
     {
@@ -60,14 +60,24 @@ final class SafeFile
             if (($stat === false) || ($stat['size'] > $maxBytes)) {
                 throw new \UnexpectedValueException("$path is not a regular file of at most $maxBytes bytes");
             }
-            $bytes = stream_get_contents($file, $maxBytes + 1);
+            // asked for by the size, not the limit: PHP 8.2 allocates the whole length asked for before it reads;
+            // false comes only from a failed seek, a failed read gives a part - the size tells it below
+            $bytes = (string) stream_get_contents($file, $stat['size'] + 1);
+            // a byte past the size: it grew since fstat() (or fstat() tells 0), so read on to a byte past the limit
+            while ((strlen($bytes) > $stat['size']) && (strlen($bytes) <= $maxBytes)) {
+                $part = (string) stream_get_contents($file, min(1 << 20, $maxBytes + 1 - strlen($bytes)));
+                if ($part === '') {
+                    break;
+                }
+                $bytes .= $part;
+            }
         } finally {
             fclose($file);
         }
-        if ($bytes === false) {
-            throw new \RuntimeException("Cannot read $path");
+        if (strlen($bytes) < $stat['size']) {
+            throw new \RuntimeException("Cannot read $path whole: a read failed, or it got shorter");
         }
-        // it may have grown since fstat()
+        // it grew past the limit since fstat()
         if (strlen($bytes) > $maxBytes) {
             throw new \UnexpectedValueException("Cannot read $path whole, at most $maxBytes bytes");
         }

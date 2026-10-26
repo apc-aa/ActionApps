@@ -11,7 +11,8 @@ namespace AA\Isds;
  * message as an entry "s:t:d:a" - dmMessageStatus, the time of that status, the time it was delivered
  * to the box and the time it was accepted (by a login, or 10 days after delivery), unix seconds, 0 =
  * not known. Local time (Europe/Prague) serves only for the morning, the day and where a window is
- * cut. Pure: the time comes as a parameter.
+ * cut. What the state changes never tell - the antivirus check, a window ISDS no longer keeps, the
+ * end - comes from the list of sent messages (due()). Pure: the time comes as a parameter.
  */
 final class StatusSync
 {
@@ -146,16 +147,43 @@ final class StatusSync
 
     /**
      * The windows a round reads state changes in, oldest first: from OVERLAP before $watchLast to
-     * boundary(), in calls as cut()
-     * @param int $span the longest call: MAX_SPAN, or less after ISDS answered one too large (halve())
+     * boundary(), in calls as cut(). Every call ends past $watchLast: a step that makes one call only
+     * still moves on, also over a local midnight. None when the first would start more than CHANGES_KEPT
+     * before now: ISDS keeps no more, and what it no longer gives the list of sent messages tells (due()).
+     * @param int $span the longest call, the overlap included: MAX_SPAN, or less after ISDS answered one
+     *                  too large (halve()) - an hour it refused must be tried as an hour
      * @param int $max  the windows to give at most: a step reads no more, and a $watchLast long past
      *                  would make a list of thousands
      * @return list<array{int, int}> from, to; none until boundary() is past $watchLast
      */
     public static function windows(int $watchLast, int $now, int $span, int $max = self::MAX_CALLS): array
     {
-        $to = self::boundary($now);
-        return ($to <= $watchLast) ? [] : self::cut($watchLast - self::OVERLAP, $to, $span, $max);
+        return self::lost($watchLast, $now) ? [] : self::cut($watchLast, self::boundary($now), $span, $max, self::OVERLAP);
+    }
+
+    /**
+     * The next call of a step, and where the reading stands once ISDS answers it; null = nothing to read
+     * now. The window of changes first (windows()), then the first day to read whole (days()) from where
+     * a step got in it: in short calls a day takes more of them than a step makes.
+     * @param array{last: int, day: string, at: int, span: int} $read where the reading stands: watch_last,
+     *        watch_day, how far the first day of days() is read (0 = not begun; a time out of that day
+     *        reads it from its start) and the longest call
+     * @return ?array{from: int, to: int, read: array{last: int, day: string, at: int, span: int}}
+     */
+    public static function nextCall(array $read, int $now): ?array
+    {
+        $window = self::windows($read['last'], $now, $read['span'], 1)[0] ?? null;
+        if (!is_null($window)) {
+            return ['from' => $window[0], 'to' => $window[1], 'read' => array_replace($read, ['last' => $window[1]])];
+        }
+        $day = self::days($read['day'], $now)[0] ?? null;
+        if (is_null($day)) {
+            return null;
+        }
+        $start         = self::day($day) ?? throw new \LogicException('days() gives days only');
+        [$begin, $end] = [$start->getTimestamp(), $start->add(new \DateInterval('P1D'))->getTimestamp()];
+        [$from, $to]   = self::cut((($read['at'] > $begin) && ($read['at'] < $end)) ? $read['at'] : $begin, $end, $read['span'], 1)[0];
+        return ['from' => $from, 'to' => $to, 'read' => array_replace($read, ($to === $end) ? ['day' => $day, 'at' => 0] : ['at' => $to])];
     }
 
     /**
@@ -174,7 +202,8 @@ final class StatusSync
      * before today - edited by hand, or a clock set back - gives yesterday, so that the record has a day
      * again.
      * @param string $watchDay the last day read whole, Y-m-d
-     * @return list<string> Y-m-d; read each in dayWindows()
+     * @return list<string> Y-m-d; each is read from its local midnight to the next one, 23 to 25 h - an
+     *                      acceptance after 10 days, dated 23:59:59.999 of the day, lies inside
      */
     public static function days(string $watchDay, int $now): array
     {
@@ -187,20 +216,6 @@ final class StatusSync
             $days[] = $day->format('Y-m-d');
         }
         return $days;
-    }
-
-    /**
-     * The calls a day is read whole in: from its local midnight to the next one, 23 to 25 h, in pieces
-     * of $span. An acceptance after 10 days, dated 23:59:59.999 of the day, lies inside.
-     * @param string $day  Y-m-d
-     * @param int    $span as windows()
-     * @return list<array{int, int}>
-     * @throws \InvalidArgumentException $day is no day
-     */
-    public static function dayWindows(string $day, int $span): array
-    {
-        $at = self::day($day) ?? throw new \InvalidArgumentException('A day is Y-m-d');
-        return self::cut($at->getTimestamp(), $at->add(new \DateInterval('P1D'))->getTimestamp(), $span, PHP_INT_MAX);
     }
 
     /**
@@ -218,46 +233,203 @@ final class StatusSync
         return in_array($s, self::FINAL, true);
     }
 
-    /** when following that started at $watchFrom may end without every message in a final status */
+    /** when following that started at $watchFrom may end without every message in a final status - after
+     *  the list of sent messages was read once more (due()) */
     public static function deadline(int $watchFrom): int
     {
         return $watchFrom + self::WATCH_DAYS * 86400;
     }
 
+    /** Following that started at $watchFrom calls ISDS no more and ends: ISDS no longer keeps the state
+     *  changes up to its deadline(). Else an ISDS down for good, or a datovka_conf.php never readable
+     *  again, would put the end off for ever. */
+    public static function over(int $watchFrom, int $now): bool
+    {
+        return $now >= self::deadline($watchFrom) + self::CHANGES_KEPT;
+    }
+
+    /**
+     * Why the list of sent messages is to be read now - what the state changes never tell: 'a' a message
+     * the antivirus check may have refused (ISDS records no change 2 -> 3), once boundary() is GRACE past
+     * the start of following; 'b' state changes ISDS no longer keeps (windows()); 'c' once at the
+     * deadline() while a message is not final. '' = none, and none past over().
+     * @param array<string, mixed> $w watch_from and watch_last (times), watch_rec (the time the list was read
+     *                                last, null none), dm_state (index => entry) and indexOf of the messages sent
+     * @return ''|'a'|'b'|'c'
+     */
+    public static function due(array $w, int $now): string
+    {
+        $since = self::time($w['watch_from'] ?? null);
+        $last  = self::time($w['watch_last'] ?? null);
+        if (is_null($since) || is_null($last) || self::over($since, $now)) {
+            return '';
+        }
+        $rec     = self::time($w['watch_rec'] ?? null);
+        $state   = is_array($w['dm_state'] ?? null) ? $w['dm_state'] : [];
+        $indexOf = is_array($w['indexOf'] ?? null) ? $w['indexOf'] : [];
+        $end     = self::deadline($since);
+        if (self::lost($last, $now)) {
+            return 'b';
+        }
+        if (($now >= $end) && (is_null($rec) || ($rec < $end))) {
+            return self::allFinal($state, $indexOf) ? '' : 'c';
+        }
+        return ((self::boundary($now) >= $since + Lookup::GRACE) && is_null($rec) && self::unchecked($state, $indexOf)) ? 'a' : '';
+    }
+
+    /**
+     * The window a reading of the list of sent messages reads, the same for every reason and over all its
+     * steps: from the start of the run to GRACE past the start of following - each message was delivered
+     * by then -, no further than $h, the boundary() when the reading started. Nothing is read past over(),
+     * so the window lies within Lookup::KEPT, the time ISDS surely keeps sent messages.
+     * @return array{int, int}
+     */
+    public static function listWindow(int $started, int $watchFrom, int $h): array
+    {
+        $from = max(0, $started - Lookup::SKEW);
+        return [$from, max($from, min($h, $watchFrom + Lookup::GRACE))];
+    }
+
+    /**
+     * The reading of the list a step goes on with: $l of a step before when SentList takes it, in the
+     * window listWindow() gives its h, that h no later than boundary() - edited by hand, it would skip what
+     * it never read -; else one started now when due(). null = none to read. Past changes ISDS no longer
+     * keeps, watch_last stands till the reading is done and h is no sooner. Else the windows move
+     * watch_last past h, and a reading ISDS breaks off again and again would start anew each hour; such
+     * a reading started GRACE past the start of following at the soonest, so its window is whole.
+     * @param mixed                $l as the position keeps it
+     * @param array<string, mixed> $w as due(), with started
+     * @return ?array<string, mixed> SentList's cursor with h
+     */
+    public static function listCursor(mixed $l, array $w, int $now): ?array
+    {
+        $started = self::time($w['started'] ?? null) ?? 0;
+        $since   = self::time($w['watch_from'] ?? null);
+        $last    = self::time($w['watch_last'] ?? null);
+        $h       = is_array($l) ? ($l['h'] ?? null) : null;
+        if (is_array($l) && is_int($h) && !is_null($since) && !is_null($last) && ($h <= self::boundary($now))
+            && (self::lost($last, $now) ? ($last <= $h) : ($h >= $since + Lookup::GRACE))) {
+            [$f, $t] = self::listWindow($started, $since, $h);
+            if (SentList::fits($l, $f, $t) && ($l['t'] === $t)) {
+                return $l;
+            }
+        }
+        if (is_null($since) || (self::due($w, $now) === '')) {
+            return null;
+        }
+        $h = self::boundary($now);
+        return SentList::fresh(...self::listWindow($started, $since, $h)) + ['h' => $h];
+    }
+
+    /** watch_last once a reading that started at $h is done: past changes ISDS no longer keeps (windows())
+     *  the list told what they would have, so the changes are read on from $h. The changes of the last
+     *  14 days are not read then: the list gives the times of delivery and acceptance, not of a login or
+     *  of a box made inaccessible, which stay 0. */
+    public static function afterList(int $watchLast, int $h, int $now): int
+    {
+        return self::lost($watchLast, $now) ? max($watchLast, $h) : $watchLast;
+    }
+
+    /**
+     * Every message sent is in a final status: nothing ISDS may still tell changes what became of it
+     * @param array<array-key, mixed> $state   index => entry, the record's dm_state
+     * @param array<array-key, int>   $indexOf indexOf() of the messages sent
+     */
+    public static function allFinal(array $state, array $indexOf): bool
+    {
+        foreach ($indexOf as $k) {
+            $entry = self::at($state, $k);
+            if (is_null($entry) || !self::isFinal($entry['s'])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Following ends: no work a step can do now (pending(), the list due() too), and every message sent in
+     * a final status or the deadline() past - only from MORNING on, though: in the night yesterday is not
+     * read whole yet, and an end then would lose the time of an acceptance after 10 days that only that
+     * reading tells. Past over() it ends once the items are written, whatever is unread.
+     * @param array<string, mixed>    $w       as pending()
+     * @param array<array-key, mixed> $state   as allFinal()
+     * @param array<array-key, int>   $indexOf as allFinal()
+     * @throws \JsonException as pending()
+     */
+    public static function ends(array $w, array $state, array $indexOf, int $watchFrom, int $now): bool
+    {
+        $w = array_replace($w, ['watch_from' => $watchFrom, 'dm_state' => $state, 'indexOf' => $indexOf]);
+        if (self::over($watchFrom, $now)) {
+            return !self::dirty($w['dm_dirty'] ?? null);
+        }
+        return self::isMorning($now) && !self::pending($w, $now) && (($now >= self::deadline($watchFrom)) || self::allFinal($state, $indexOf));
+    }
+
     /**
      * Is there work a step can do now, rather than wait for the next round: items still to write, the
-     * list of sent messages read in part, a window of changes or a day not read. In the night days()
-     * has none, so a night with yesterday unread waits for the next hour. Whatever the values, it builds
-     * no list and throws no TypeError: a watch_last that is no time means windows from the start.
+     * list of sent messages read in part or due(), a window of changes or a day not read. In the night
+     * days() has none, so a night with yesterday unread waits for the next hour. Whatever the values, it
+     * throws no TypeError and builds no list of windows - due() goes over the messages sent once: a
+     * watch_last that is no time means windows from the start.
      * @param array<string, mixed> $w watch_last, watch_day and dm_dirty as the record keeps them (text,
-     *                                JSON) or as read from it (a number, the decoded map), l of the position
+     *                                JSON) or as read from it (a number, the decoded map), l of the position,
+     *                                and what due() reads
      * @throws \JsonException dm_dirty edited by hand into no JSON
      */
     public static function pending(array $w, int $now): bool
     {
-        $last      = $w['watch_last'] ?? null;
-        $known     = (is_int($last) || is_string($last)) && (preg_match('/^\d{1,10}\z/', (string) $last) === 1);
+        $last      = self::time($w['watch_last'] ?? null);
         $day       = is_string($w['watch_day'] ?? null) ? $w['watch_day'] : '';
         $yesterday = self::yesterday($now);
         return self::dirty($w['dm_dirty'] ?? null) || (is_array($w['l'] ?? null) && ($w['l'] !== []))
-            || !$known || (self::boundary($now) > (int) $last)
-            || (self::isMorning($now) && (self::firstDay($day, $yesterday, $now) <= $yesterday));
+            || is_null($last) || (self::boundary($now) > $last)
+            || (self::isMorning($now) && (self::firstDay($day, $yesterday, $now) <= $yesterday))
+            || (self::due($w, $now) !== '');
     }
 
     /**
-     * [$from, $to] in calls of $span at most - less than ROUND counts as ROUND, a position edited to 0
-     * would never end - and cut at each local midnight, so that no call spans more than a local day
+     * [$from - $back, $to] in calls of $span at most - less than ROUND counts as ROUND, a position edited
+     * to 0 would never end - and cut at each local midnight after $from, so that no call spans more than
+     * a local day and the first ends past $from
      * @return list<array{int, int}> the first $max calls
      */
-    private static function cut(int $from, int $to, int $span, int $max): array
+    private static function cut(int $from, int $to, int $span, int $max, int $back = 0): array
     {
         $span  = max(self::ROUND, $span);
         $calls = [];
-        for (; ($from < $to) && (count($calls) < $max); $from = $end) {
-            $end     = min($to, $from + $span, self::local($from)->setTime(0, 0)->add(new \DateInterval('P1D'))->getTimestamp());
-            $calls[] = [$from, $end];
+        for ($start = $from - $back; ($from < $to) && (count($calls) < $max); $start = $from = $end) {
+            $end     = min($to, $start + $span, self::local($from)->setTime(0, 0)->add(new \DateInterval('P1D'))->getTimestamp());
+            $calls[] = [$start, $end];
         }
         return $calls;
+    }
+
+    /** the window of changes from OVERLAP before $watchLast starts sooner than ISDS keeps them */
+    private static function lost(int $watchLast, int $now): bool
+    {
+        return $watchLast - self::OVERLAP < $now - self::CHANGES_KEPT;
+    }
+
+    /**
+     * A message sent has no status the antivirus check gives or follows: none known, submitted or
+     * timestamped only
+     * @param array<array-key, mixed> $state
+     * @param array<array-key, int>   $indexOf
+     */
+    private static function unchecked(array $state, array $indexOf): bool
+    {
+        foreach ($indexOf as $k) {
+            if ((self::at($state, $k)['s'] ?? 0) < 3) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** a time as the record keeps it, text or number of up to 10 digits; null = none */
+    private static function time(mixed $value): ?int
+    {
+        return ((is_int($value) || is_string($value)) && (preg_match('/^\d{1,10}\z/', (string) $value) === 1)) ? (int) $value : null;
     }
 
     /**
@@ -292,6 +464,7 @@ final class StatusSync
         return false;
     }
 
+    /** from MORNING on, yesterday can be read whole: ISDS has recorded its acceptances after 10 days */
     private static function isMorning(int $now): bool
     {
         return (int) self::local($now)->format('G') >= self::MORNING;

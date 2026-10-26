@@ -729,7 +729,7 @@ final class InstallRun extends BatchRun
     /** the caches of the new modules were not cleared at the end (afterClose()) */
     public function cachesLeft(): bool
     {
-        return (self::decoded((string) $this->progress)['warning'] ?? '') === 'after_close';
+        return $this->closeFailed();
     }
 
     /** @return array<string, mixed> the final check's report; [] = none */

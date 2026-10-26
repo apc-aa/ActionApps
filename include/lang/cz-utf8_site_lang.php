@@ -31,38 +31,38 @@ return [
 // modules/site/index.php, row 151
 "Editor window - site code manager" => "Editační okno - správce kódu webu",
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 163
 "Add&nbsp;spot" => "Přidat&nbsp;spot",
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 164
 "Add&nbsp;choice" => "Přidat&nbsp;volbu",
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 167
 "Move&nbsp;up" => "Posunout&nbsp;nahoru",
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 168
 "Move&nbsp;down" => "Posunout&nbsp;dolů",
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 171
 "Move&nbsp;left" => "Posunout&nbsp;doleva",
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 172
 "Move&nbsp;right" => "Posunout&nbsp;doprava",
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Smazat",
 
-// modules/site/index.php, row 183
+// modules/site/index.php, row 175
 "Are you sure you want to delete the spot?" => "Opravdu chcete tento spot smazat?",
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 178
 "Enable" => "Povolit",
 
-// modules/site/index.php, row 187
+// modules/site/index.php, row 179
 "Disable" => "Zakázat",
 
-// modules/site/index.php, row 208
+// modules/site/index.php, row 200
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Možné systémové require - &lcub;require:...&rcub; nebo &lcub;require:[\"...\",\"...\"]&rcub;",
 
 // modules/site/menu.php, row 47

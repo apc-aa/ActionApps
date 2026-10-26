@@ -85,34 +85,40 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Nemáte práva pro přidání webíku",
 
-// modules/alerts/acf.php, row 107
+// modules/alerts/acf.php, row 109
 "Alerts Selections" => "Zasílání - Výběry",
 
-// modules/alerts/acf.php, row 111
+// modules/alerts/acf.php, row 113
 "Choose selections which form the Alert email." => "Zvolte výběry, které tvoří zasílaný email.",
 
-// modules/alerts/acf.php, row 115, 142
+// modules/alerts/acf.php, row 117, 149
 "order" => "pořadí",
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "selection" => "výběr",
 
-// modules/alerts/acf.php, row 115
+// modules/alerts/acf.php, row 117
 "remove" => "odstranit", // ai 2026-10
 
+// modules/alerts/acf.php, row 123
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "Jeho pohled byl smazán – čtenáři z tohoto výběru nedostanou nic. Odeberte ho a přidejte existující.", // ai 2026-10
+
 // modules/alerts/acf.php, row 124
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Tento výběr byl smazán – čtenáři z něj nedostanou nic. Odeberte ho a přidejte existující.", // ai 2026-10
+
+// modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Zatím nejsou zvoleny žádné výběry.", // ai 2026-10
 
-// modules/alerts/acf.php, row 127
+// modules/alerts/acf.php, row 134
 "Save order" => "Uložit pořadí", // ai 2026-10
 
-// modules/alerts/acf.php, row 128
+// modules/alerts/acf.php, row 135
 "Remove checked" => "Odstranit označené", // ai 2026-10
 
-// modules/alerts/acf.php, row 143
+// modules/alerts/acf.php, row 150
 "Add selection" => "Přidat výběr", // ai 2026-10
 
-// modules/alerts/acf.php, row 145
+// modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Žádné výběry nejsou definované.",
 
 // modules/alerts/alerts_sending.php, row 505

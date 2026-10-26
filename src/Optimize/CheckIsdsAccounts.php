@@ -7,6 +7,7 @@ namespace AA\Optimize;
 use AA\Http\ClientCertificate;
 use AA\Isds\Account;
 use AA\Isds\Accounts;
+use AA\Isds\Actions;
 use AA\Isds\Binding;
 use AA\Isds\ConfigException;
 use AA\Isds\DatovkaConf;
@@ -21,8 +22,8 @@ use AA_Module;
  * The ISDS accounts misc/datovka/datovka_conf.php sets up (AA\Isds\Accounts): what to fix in their
  * settings, what of them AA does not read, whether the site and the slices each account is bound to are
  * ready (SliceRules - the rules the page that sends applies), the files of a certificate, the pages whose
- * settings of the sending were not ready and the campaigns whose recipients could not be told (Gate logs
- * both). Only the accounts of the sites of this database (Accounts::here()). Names of settings and files
+ * settings of the sending were not ready, the campaigns whose recipients could not be told (Gate logs
+ * both) and the actions of such pages that failed on an internal error (Actions logs them). Only the accounts of the sites of this database (Accounts::here()). Names of settings and files
  * only, never a password, a key or a passphrase. No network: CheckIsds logs in. The file itself -
  * whether AA can use it, its keys outside the accounts, its permissions and copies - CheckIsdsConf checks.
  */
@@ -34,7 +35,7 @@ class CheckIsdsAccounts extends AbstractOptimize
     /** fewer are an error: registering a new certificate takes days */
     private const CERTIFICATE_ERROR_DAYS = 7;
 
-    /** a page or a campaign logged that long ago is likely fixed - Gate logs it once a day while it is not */
+    /** a page, a campaign or an action logged that long ago is likely fixed - each is logged once a day while it is not */
     private const LOG_WINDOW_SECONDS = 7 * 86400;
     private const LOG_ROWS           = 50;
 
@@ -45,7 +46,7 @@ class CheckIsdsAccounts extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, or whose campaigns could not tell their recipients, in the last week.');
+        return _m('Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week.');
     }
 
     public static function types(): array
@@ -73,7 +74,7 @@ class CheckIsdsAccounts extends AbstractOptimize
         // a misspelt key of an account of another database is for that one to show
         $strays   = Accounts::strays($conf, array_map(static fn(Binding $b): string => $b->name, $bindings));
         $rules    = $this->sliceRules();
-        $pages    = [...$this->pageFindings($rules), ...$this->recipientFindings($rules)];
+        $pages    = [...$this->pageFindings($rules), ...$this->recipientFindings($rules), ...$this->actionFindings($rules)];
         if (!$bindings && !$strays) {
             // a file AA cannot use has no account read: no OK then
             return [...$pages, ...CheckIsdsConf::notChecked($conf)] ?: [new Finding(Finding::OK, _m('No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database'))];
@@ -99,7 +100,7 @@ class CheckIsdsAccounts extends AbstractOptimize
                 _m('misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1', [count($strays)]),
                 count: count($strays),
                 evidence: array_map(static fn(string $name): array => [_m('Setting') => safe($name)], $strays),
-                advice: _m('An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2. Correct the names, or remove what AA does not read.', [DatovkaConf::key(DatovkaConf::ACCOUNTS), implode(', ', Accounts::keys(Account::TEST))]),
+                advice: _m('An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read.', [DatovkaConf::key(DatovkaConf::ACCOUNTS), implode(', ', Accounts::keys(Account::TEST)), implode(', ', array_diff(Accounts::keys(''), Accounts::keys(Account::TEST)))]),
                 key: 'strays',
             );
         }
@@ -172,6 +173,42 @@ class CheckIsdsAccounts extends AbstractOptimize
                 advice: _m('The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice.'),
                 links: [_m('Log rows') => AA_Log::getAdminUrl(Gate::RECIPIENTS_EVENT, $selector)],
                 key: "recipients:$selector",
+                last: (int) $row['last'],
+                place: $siteName,
+            );
+        }
+
+        return $findings;
+    }
+
+    /**
+     * Actions of pages of a mass sending that failed on an internal error - a fault of AA, the place in
+     * the code in the evidence. What the action did, the page of the campaign shows.
+     * @return list<Finding>
+     */
+    private function actionFindings(SliceRules $rules): array
+    {
+        $findings = [];
+        foreach ($this->failedActions() as $row) {
+            $selector            = (string) $row['selector'];
+            [$action, $campaign] = array_pad(explode(':', $selector, 2), 2, '');
+            // Actions logs the site as the id of Toexecute::failureParams()
+            $siteName            = preg_match('/^#([0-9a-f]{32}) /', (string) $row['params'], $m) ? $rules->name($m[1]) : '';
+            $findings[]          = new Finding(
+                Finding::WARNING,
+                _m('An action of a page of a mass sending failed on an internal error: %1', [$action]),
+                count: (int) $row['days'],
+                since: (int) $row['first'],
+                evidence: [[
+                    _m('Action')    => safe($action),
+                    _m('Campaign')  => safe(($campaign === '') ? '-' : $campaign),
+                    _m('Where')     => safe((string) $row['params']),
+                    _m('Days seen') => (string) (int) $row['days'],
+                    _m('Last')      => date('Y-m-d', (int) $row['last']),
+                ]],
+                advice: _m('A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page.'),
+                links: [_m('Log rows') => AA_Log::getAdminUrl(Actions::LOG_EVENT, $selector)],
+                key: "action:$selector",
                 last: (int) $row['last'],
                 place: $siteName,
             );
@@ -420,6 +457,12 @@ class CheckIsdsAccounts extends AbstractOptimize
     protected function unresolvedCampaigns(): array
     {
         return LogOnce::recent(Gate::RECIPIENTS_EVENT, $this->now() - self::LOG_WINDOW_SECONDS, self::LOG_ROWS);
+    }
+
+    /** @return list<array<string, ?string>> LogOnce::recent() rows of Actions::LOG_EVENT */
+    protected function failedActions(): array
+    {
+        return LogOnce::recent(Actions::LOG_EVENT, $this->now() - self::LOG_WINDOW_SECONDS, self::LOG_ROWS);
     }
 
     /** the PHP_SAPI of the requests that read the key: apache2handler is PHP inside the web server */

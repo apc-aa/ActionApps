@@ -7,7 +7,11 @@ namespace AA\Security;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA\Util\LogOnce;
+use AA_Alias;
 use AA_Credentials;
+use AA_Field;
+use AA_Fields;
+use AA_Slice;
 use Closure;
 use zids;
 
@@ -28,9 +32,14 @@ use zids;
  * and its own narrow() gets the same answer, as the gate is one for the request (forRequest()). A view
  * the URL calls draws only the banners the URL chose, not those a template call in the request left to it.
  *
+ * A condition on a field of a related item (d-<field>@<relation>, d-<field>@<slice>/<relation>) reads only
+ * the declared or named slice, and only when the request knows its password (conditionMayRead()); sorting
+ * by its field orders by the relation row, of the listed item or of the named slice. A condition never
+ * compares, and a sort never orders by, a field AA never shows (protectedFieldRefused()) - whether it is
+ * filled may be asked (ISNULL, NOTNULL).
+ *
  * What stays open: the main slice of slice.php, which the request chooses; the single items of
- * slice.php (x=, o=, sh_itm=, items[]); a condition on a remote field (d-<field>@<slice>/<relation>), or
- * sorting by one, reaches a protected slice through a related public one; discussions (discus views);
+ * slice.php (x=, o=, sh_itm=, items[]); discussions (discus views);
  * the banners the URL chose stay on the view for its later calls in the request (AA_View keeps them,
  * setBannerParam()), so a template call of the same view decides those its first call did not draw only
  * during the rows of that first call; the hit of a refused x- item; an {expression} in noitem from the
@@ -42,6 +51,12 @@ final class ViewSlices
 {
     /** log.type of the slices left out - selector vid:slice_id (or slice.php:slice_id), params the page without its query */
     public const EVENT = 'VIEW_DENY';
+
+    /** the lister of a log row for a condition on a field of a related item (conditionMayRead()) */
+    public const CONDITION = 'conds';
+
+    /** the lister of a log row for a condition or sort on a protected field (protectedFieldRefused()) */
+    public const PROTECTED_FIELD = 'field';
 
     /** the view types that list items - the only ones narrowed */
     public const LISTINGS = ['full', 'seetoo', 'calendar', 'digest', 'list', 'rss', 'urls', 'script'];
@@ -202,6 +217,58 @@ final class ViewSlices
             }
         }
         return $this->known_memo[$slice_id];
+    }
+
+    /**
+     * Whether a condition on a field of a related item (<field>@<relation>, <field>@<slice>/<relation> in
+     * QueryZids()) may read that slice; a refusal is logged once a day per slice, under the lister CONDITION.
+     * Asked for templates too, not only for the URL: the condition compares values GetItemContent() would
+     * hide, and cmd[]=d-... of the URL reaches the views of a template as well.
+     */
+    public static function conditionMayRead(string $slice_id): bool
+    {
+        if (self::knownToRequest($slice_id)) {
+            return true;
+        }
+        LogOnce::daily(self::EVENT, ParamImplode([self::CONDITION, strtolower($slice_id)]), ProtectionLog::requested());
+        return false;
+    }
+
+    /**
+     * Logs a condition (matched nothing) or a sort (dropped) on a field AA never shows (AA_Field::isProtected())
+     * in QueryZids(), once a day per slice and field. Only fields the slice defines come here, so the rows
+     * stay as few as such fields.
+     */
+    public static function protectedFieldRefused(string $slice_id, string $field_id): void
+    {
+        LogOnce::daily(self::EVENT, ParamImplode([self::PROTECTED_FIELD, strtolower($slice_id), $field_id]), ProtectionLog::requested());
+    }
+
+    /**
+     * The group_by a request gave a listing (set[<vid>]=group_by-... of a view the URL calls, group_by= or
+     * iview= of slice.php). The heading reads the item value in PHP, so a field AA never shows groups
+     * nothing (logged as protectedFieldRefused()); another field or an _#ALIAS stays; anything else would
+     * run as a template, so it is text, as noitem (UrlValue::template()).
+     * @param string[]|zids $listed the slices whose items the listing shows, or the items, when the
+     *                              listing is not bound to slices - their slices are read only for a field
+     */
+    public static function requestGroupBy(string $param, string $group_by, array|zids $listed): string
+    {
+        if (!AA_Field::isValidFieldId($group_by)) {
+            return (($group_by === '') || AA_Alias::isAliasLike($group_by, true)) ? $group_by : UrlValue::template($param, $group_by);
+        }
+        $slice_ids = ($listed instanceof zids)
+            ? ($listed->isEmpty() ? [] : array_unique(AA::Contentcache()->get_result([self::class, 'itemSlicesFromDb'], [$listed->onetype(), $listed->getArray()])))
+            : $listed;
+        foreach ($slice_ids as $slice_id) {
+            if (isset(AA_Slice::getOwnModule((string) $slice_id)?->protectedFieldIds()[$group_by])) {
+                self::protectedFieldRefused((string) $slice_id, $group_by);
+                return '';
+            }
+        }
+        // a field of a protected type has its value in the item even where the slice does not define it;
+        // not logged - the URL would choose the id, and so the number of log rows
+        return AA_Field::isProtectedType(AA_Fields::getFieldType($group_by)) ? '' : $group_by;
     }
 
     /** AA_Slice keeps the reading password hashed, as AA_Credentials compares it - never read the column itself */

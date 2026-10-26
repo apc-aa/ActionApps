@@ -48,6 +48,7 @@ https://www.apc.org/
 
 use AA\IO\DB\DB_AA;
 use AA\Later\Toexecute;
+use AA\Util\DebugAccess;
 
 // Real cron entry — suppress the post-response fallback in locsess.php.
 define('AA_NO_CRON_FALLBACK_THIS_REQUEST', true);
@@ -63,7 +64,16 @@ require_once __DIR__ . "/include/varset.php";
 // AA's own periodic jobs are queue tasks (AA\Later\ScheduleAaTasks) - run the
 // queue first, within its own time limit (TOEXECUTE_ALLOWED_TIME); the cron
 // table below only carries scripts the admin added by hand.
-if (empty($_GET['debug'])) {
+pageOpenForDebug();   // ?debug of a logged-in superadmin
+// ?debug only lists what would run; asked for without the right, nothing runs - a dry run must stay dry
+$dry_run = DebugAccess::dryRunLevel($_GET['debug'] ?? null, (int) AA::$debug);
+if ($dry_run === null) {
+    http_response_code(403);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo "Debug is allowed only to a superadmin or with the debug key. Nothing was run.\n";
+    exit;
+}
+if (!$dry_run) {
     Toexecute::runQueue('cron.php');
 }
 
@@ -76,11 +86,12 @@ MoreTimeLimit(3600); // set_time_limit to 1 hour (at least)
  * DOCUMENTATION: See cron.php documentation in {@link https://actionapps.org/faq/#401 FAQ pages}.
  * @param int $time the UNIX timestamp to simulate behaviour on a given date
  *                  - if omitted, uses the current time
+ * @param int $dry_run 1 = only list what would run, 2 = also the times compared
  */
-function cron($time = 0): void
+function cron($time = 0, int $dry_run = 0): void
 {
 
-    if ($_GET['debug']) {
+    if ($dry_run) {
         echo "<html><body>";
         echo "DEBUGGING. I don't run any script!<br>";
     }
@@ -93,7 +104,7 @@ function cron($time = 0): void
     }
 
     $parts = ["mon" => 12,"wday" => 7,"mday" => 31,"hours" => 24,"minutes" => 60];
-    if ($_GET['debug']) {
+    if ($dry_run) {
         echo "<b>" . date("d.m.y H:i", $time) . "</b><br>";
     }
 
@@ -124,7 +135,7 @@ function cron($time = 0): void
 
             $realnow = getdate($time);
 
-            if ($_GET['debug'] > 1) {
+            if ($dry_run > 1) {
                 echo "<br>lastrun: ";
                 print_r($last_run);
                 echo "<br>now: ";
@@ -192,7 +203,7 @@ function cron($time = 0): void
 
         $url = AA_INSTAL_URL . $row["script"] . "?" . $row["params"];
 
-        if ($_GET['debug']) {
+        if ($dry_run) {
             if ($nearest_part > -1 && $nearest_time > $row["last_run"]) {
                 echo "<br><b>" . safe($url) . "</b> will be run now<br>";
             } else {
@@ -205,7 +216,7 @@ function cron($time = 0): void
             fopen($url, 'rb');
         }
     }
-    if ($_GET['debug']) {
+    if ($dry_run) {
         echo "</body></html>";
     }
 }
@@ -224,4 +235,4 @@ for ($i = 0; $i < 50; $i++) {
 }
 */
 
-cron();
+cron(0, $dry_run);

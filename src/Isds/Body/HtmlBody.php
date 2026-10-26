@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace AA\Isds\Body;
 
-use AA\Isds\File;
 use AA\Isds\Message;
 use AA\Isds\Text;
 use AA\Upload\UploadDir;
@@ -13,19 +12,17 @@ use AA\Util\Imgfunc;
 use AA\Util\Libxml;
 
 /**
- * The letter of a data message as an HTML file: a whole UTF-8 document that loads nothing and runs
- * nothing. Its body comes from a rich-text field and goes to thousands of filing systems, so it is
- * rebuilt from an allow-list rather than cleaned of known dangers: an element not in ELEMENTS gives
- * only its own cleaned content (a DROPPED or UNSEEN one nothing), an attribute not listed is left out, every
- * text and value is escaped anew and every image is drawn again. What a reader would miss - an
- * image, a link, an embedded object - omitted() lists, for the sender to see before sending.
+ * The letter of a data message as an HTML document, which PdfBody lays out as Dopis.pdf: a whole UTF-8
+ * document that loads nothing and runs nothing. Its body comes from a rich-text field and goes to
+ * thousands of filing systems, so it is rebuilt from an allow-list rather than cleaned of known
+ * dangers: an element not in ELEMENTS gives only its own cleaned content (a DROPPED or UNSEEN one
+ * nothing), an attribute not listed is left out, every text and value is escaped anew and every image
+ * is drawn again. What a reader would miss - an image, a link, an embedded object - omitted() lists,
+ * for the sender to see before sending.
  * Entities only HTML5 knows (&colon;, &NewLine;) stay as they are written: libxml reads HTML 4.
- * ISDS refuses HTML containing "<object", "<iframe" or "<script" (WS_manipulace_s_datovymi_zpravami.pdf 3).
  */
 final class HtmlBody
 {
-    public const NAME = 'Dopis.html';
-
     /** pixels of all images of a letter together: each is decoded whole before it is drawn smaller */
     public const MAX_PIXELS = 200_000_000;
 
@@ -36,11 +33,52 @@ final class HtmlBody
      *  0.9 GB); a letter has a few hundred */
     private const MAX_TAGS = 200_000;
 
-    /** what is no visible text: spaces and the invisible characters editors leave - format characters
-     *  (zero-width space, BOM, soft hyphen, word joiner), the Hangul fillers and the blank Braille cell */
-    private const INVISIBLE = '\s\x{A0}\p{Cf}\x{115F}\x{1160}\x{3164}\x{FFA0}\x{2800}';
+    /** attributes of one tag: libxml compares each with all before it, outside memory_limit - 100 000 in
+     *  one <p> took 22 s */
+    private const MAX_ATTRIBUTES = 1000;
+    /** attributes of the whole letter: 6 000 tags of 1000 attributes each still took 15 s */
+    private const MAX_ALL_ATTRIBUTES = 200_000;
 
-    private const FORBIDDEN = ['<object', '<iframe', '<script'];
+    private const LETTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    /** the bytes of a name of libxml 2.9-2.13, and those it may begin with */
+    private const NAME_BYTES = self::LETTERS . '0123456789_:.-';
+    private const NAME_START = self::LETTERS . '_:.';
+    private const BLANK      = " \t\n\r";
+    private const WHITE      = " \t\n\r\f";
+    /**
+     * The states of checkAttributes(), each with the bytes it passes over: strspn() of them (true, at most
+     * the third number of bytes) or strcspn() (false). "l" reads a tag as libxml 2.9-2.13 does, "h" as HTML5
+     * and libxml 2.14: they part on "/", "\f" and the names the older one cannot read
+     */
+    private const SCAN = [
+        // libxml 2.9-2.13 reads 100 bytes of a name, the rest is the next attribute
+        'lTag'    => [true, self::NAME_BYTES, 100],
+        'lBefore' => [true, self::BLANK],
+        'lBogus'  => [false, self::BLANK . '>'],
+        // the first byte was read on entering
+        'lName'   => [true, self::NAME_BYTES, 99],
+        'lAfter'  => [true, self::BLANK],
+        'lEq'     => [true, self::BLANK],
+        'lDq'     => [false, '"'],
+        'lSq'     => [false, "'"],
+        'lUnq'    => [false, self::BLANK . '>'],
+        'hSlash'  => [true, ''],
+        'hTag'    => [false, self::WHITE . '/>'],
+        'hBefore' => [true, self::WHITE . '/'],
+        'hName'   => [false, self::WHITE . '/>='],
+        'hAfter'  => [true, self::WHITE],
+        'hEq'     => [true, self::WHITE],
+        'hDq'     => [false, '"'],
+        'hSq'     => [false, "'"],
+        'hUnq'    => [false, self::WHITE . '>'],
+        'hQuoted' => [true, ''],
+    ];
+
+    /** what is no visible text: spaces and the invisible characters editors leave - format characters
+     *  (zero-width space, BOM, soft hyphen, word joiner), the combining grapheme joiner, variation selectors
+     *  (also the Mongolian ones), C1 control characters, the Khmer inherent vowels, the Hangul fillers and the
+     *  blank Braille cell */
+    private const INVISIBLE = '\s\x{A0}\p{Cf}\x{34F}\x{80}-\x{9F}\x{FE00}-\x{FE0F}\x{E0100}-\x{E01EF}\x{180B}-\x{180D}\x{180F}\x{17B4}\x{17B5}\x{115F}\x{1160}\x{3164}\x{FFA0}\x{2800}';
 
     private const ALIGN  = ['left', 'right', 'center', 'justify'];
     private const VALIGN = ['top', 'middle', 'bottom', 'baseline'];
@@ -117,9 +155,36 @@ final class HtmlBody
         'margin', 'margin-bottom', 'margin-left', 'margin-right', 'margin-top', 'padding', 'padding-left', 'text-align',
         'text-decoration', 'text-indent', 'vertical-align', 'width',
     ];
+    /** the display a letter needs: table-cell and the like would make a table cell of a <p>, dompdf throws on that */
+    private const DISPLAY = ['block', 'inline', 'inline-block', 'list-item', 'none'];
+    /** a table and its rows: dompdf throws on any display of them but none */
+    private const TABLE_PARTS = ['table', 'thead', 'tbody', 'tfoot', 'tr'];
+    /**
+     * The smallest length of a property by its unit ('' = a number alone): dompdf cannot stop within a page, and
+     * a page of lines of no height or one letter wide took it 38 s. A smaller value is left out, a smaller
+     * font-size raised to it: text of an editor's 5 pt stays small.
+     */
+    private const MIN_LENGTH = [
+        'font-size'   => ['pt' => 6, 'px' => 8, 'em' => 0.5, '%' => 50],
+        'line-height' => ['' => 1, '%' => 100, 'em' => 1, 'pt' => 6, 'px' => 8],
+        'width'       => ['pt' => 15, 'px' => 20, 'em' => 2, '%' => 1],
+        'height'      => ['pt' => 15, 'px' => 20, 'em' => 2, '%' => 1],
+    ];
+    /** points of the smallest text, however its font-size is nested: the font-size of the elements below is raised to it */
+    private const MIN_FONT_PT = 6;
+    /** the font-size of the text of a letter, and what dompdf makes of it in these elements */
+    private const FONT_PT   = 11;
+    private const TAG_FONTS = ['h1' => 2, 'h2' => 1.5, 'h3' => 1.17, 'h5' => 0.83, 'h6' => 0.67, 'small' => 8 / 9, 'sub' => 8 / 9, 'sup' => 8 / 9];
     /** words, numbers with units, #colours and rgb()/hsl() - no url(), quotes, escapes or comments */
     private const STYLE_VALUE = '~^(?:[a-z0-9#%.,\s-]|(?:rgba?|hsla?)\([0-9.,%\s/]*\))+$~i';
     private const COLOUR      = '~^(?:#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z]{3,20})$~i';
+    /** the colours HTML 4 named; a background of another name is looked for further up */
+    private const COLOUR_NAMES = [
+        'black' => 0x000000, 'silver' => 0xC0C0C0, 'gray' => 0x808080, 'white' => 0xFFFFFF, 'maroon' => 0x800000,
+        'red' => 0xFF0000, 'purple' => 0x800080, 'fuchsia' => 0xFF00FF, 'green' => 0x008000, 'lime' => 0x00FF00,
+        'olive' => 0x808000, 'yellow' => 0xFFFF00, 'navy' => 0x000080, 'blue' => 0x0000FF, 'teal' => 0x008080,
+        'aqua' => 0x00FFFF,
+    ];
 
     /**
      * libxml errors after which the rest of the letter is missing: 1 (internal) is the depth limit on
@@ -129,7 +194,7 @@ final class HtmlBody
 
     private const HEAD = "<!DOCTYPE html>\n<html lang=\"cs\">\n<head>\n<meta charset=\"utf-8\">\n"
         . "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n"
-        // the browser's own guard, should anything active get through
+        // the guard of a browser that shows the document, should anything active get through
         . "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; img-src data:; style-src 'unsafe-inline'\">\n"
         // a link followed from the letter does not tell the site where it came from
         . "<meta name=\"referrer\" content=\"no-referrer\">\n";
@@ -144,8 +209,14 @@ final class HtmlBody
     private int $paragraphs = 0;
     private bool $visible   = false;
     private int $pixels     = 0;
-    /** @var array<string, ?string> the data: URI of an image by the hash of its src, null = left out */
+    /** @var array<string, ?string> the data: URI of an image by the hash of its background and src, null = left out */
     private array $images = [];
+    /** @var non-empty-list<int> 0xRRGGBB behind the element being written and each around it; the page is white */
+    private array $backgrounds = [0xFFFFFF];
+    /** @var non-empty-list<float> points of the font of the element being written and each around it */
+    private array $fonts = [self::FONT_PT];
+    /** @var array<string, array{int, int}> pixels of each image drawn, by the xxh128 of its data: URI */
+    private array $sizes = [];
     /** @var array<string, true> */
     private array $omitted = [];
 
@@ -170,31 +241,16 @@ final class HtmlBody
     }
 
     /**
-     * Dopis.html, the main file of a message
-     * @throws \InvalidArgumentException see document()
-     * @throws \RuntimeException an image among the uploads cannot be read
-     */
-    public function render(string $subject, string $body, bool $html = true, string $letterhead = ''): File
-    {
-        $document = $this->document($subject, $body, $html, $letterhead);
-        foreach (self::FORBIDDEN as $tag) {
-            // every "<" of the letter is escaped, so only a bug here could write one
-            if (stripos($document, $tag) !== false) {
-                throw new \LogicException("The letter came out with $tag");
-            }
-        }
-        return new File(self::NAME, 'text/html', File::MAIN, $document);
-    }
-
-    /**
      * The whole HTML document of the letter
      * @param bool   $html       false: $body is plain text - a blank line parts paragraphs, a line end breaks a line
      * @param string $letterhead plain text above the body, in the same way - the sender, an address
+     * @param string $css        appended to the style of the letter: the code's own, never a user's (PdfBody::CSS)
      * @throws \InvalidArgumentException not UTF-8, cut off by libxml, empty, larger than a message may be, or
      *                                   of too many pixels; a message may quote the letter - escape it when shown
+     * @throws ServerException no temporary directory for the images
      * @throws \RuntimeException an image among the uploads cannot be read; the message names it
      */
-    public function document(string $subject, string $body, bool $html = true, string $letterhead = ''): string
+    public function document(string $subject, string $body, bool $html = true, string $letterhead = '', string $css = ''): string
     {
         // before anything copies or splits them
         if (strlen($letterhead) + strlen($body) > Message::MAX_BYTES) {
@@ -210,9 +266,12 @@ final class HtmlBody
         $this->paragraphs = 0;
         $this->visible    = false;
         $this->pixels     = 0;
-        $this->images     = [];
-        $this->omitted    = [];
-        $this->append(self::HEAD . '<title>' . self::escape($title) . "</title>\n<style>" . self::CSS . "</style>\n</head>\n<body>\n");
+        $this->images      = [];
+        $this->backgrounds = [0xFFFFFF];
+        $this->fonts       = [self::FONT_PT];
+        $this->sizes       = [];
+        $this->omitted     = [];
+        $this->append(self::HEAD . '<title>' . self::escape($title) . "</title>\n<style>" . self::CSS . $css . "</style>\n</head>\n<body>\n");
         if (trim($letterhead) !== '') {
             $this->children(self::parse(self::plainText($letterhead)));
             // a letterhead alone is no letter
@@ -248,6 +307,7 @@ final class HtmlBody
         if (substr_count($html, '<') > self::MAX_TAGS) {
             throw new \InvalidArgumentException('The letter has more than ' . self::MAX_TAGS . ' tags or lines - attach a long table as a file');
         }
+        self::checkAttributes($html);
         return Libxml::run(static function () use ($html): \DOMElement {
             $dom = new \DOMDocument();
             // the charset first: a <meta> in the letter declaring another one comes too late
@@ -269,6 +329,146 @@ final class HtmlBody
     }
 
     /**
+     * Refuses too many attributes before libxml reads them. A tag is taken to begin at every "<" before
+     * a letter (for older libxml also before "_", ":" or "."), also in a comment, a <script> or a quoted value: what libxml reads as text there differs
+     * among its versions, so nothing may hide a tag from the scan - and no letter has a tag of a thousand
+     * attributes in a comment. The count is an upper bound: a lone quote in a comment followed by a paragraph
+     * of over 1000 words without a tag refuses a letter libxml would read. Of the tags in one state of SCAN
+     * only the one of the most attributes is followed, so every byte is read a bounded number of times.
+     * @throws \InvalidArgumentException
+     */
+    private static function checkAttributes(string $html): void
+    {
+        $length = strlen($html);
+        $states = [];   // state => attributes of the tag read through it
+        $stops  = [];   // state => the next byte it reads
+        $all   = ['l' => 0, 'h' => 0];
+        $lt    = strpos($html, '<');
+        while (($i = min([...$stops, ($lt === false) ? $length : $lt])) < $length) {
+            $byte    = $html[$i];
+            $next    = $html[$i + 1] ?? '';
+            $entered = [];
+            foreach (array_keys($stops, $i, true) as $state) {
+                $count = $states[$state];
+                $model = $state[0];
+                unset($states[$state], $stops[$state]);
+                do {
+                    [$state, $begun, $again] = self::step($state, $byte, $next);
+                    $count += $begun;
+                } while ($again);
+                if ($state === null) {
+                    $all[$model] += $count;
+                } else {
+                    $entered[$state] = max($entered[$state] ?? 0, $count);
+                }
+            }
+            if ($i === $lt) {
+                if (strspn($html, self::LETTERS, $i + 1, 1) === 1) {
+                    $entered += ['lTag' => 0, 'hTag' => 0];
+                } elseif (strspn($html, self::NAME_START, $i + 1, 1) === 1) {
+                    // libxml 2.9.14 reads these as text, an older one may begin a tag
+                    $entered += ['lTag' => 0];
+                } elseif (($next === '/') && (strspn($html, self::LETTERS, $i + 2, 1) === 1)) {
+                    $entered += ['hSlash' => 0];
+                }
+                $lt = strpos($html, '<', $i + 1);
+            }
+            foreach ($entered as $state => $count) {
+                if ($count > self::MAX_ATTRIBUTES) {
+                    throw new \InvalidArgumentException('The letter has a tag of more than ' . self::MAX_ATTRIBUTES . ' attributes - paste the text without its formatting');
+                }
+                $states[$state] = max($states[$state] ?? 0, $count);
+                [$spn, $bytes, $max] = self::SCAN[$state] + [2 => null];
+                // a state already followed passes over the same bytes from here
+                $stops[$state] ??= $i + 1 + ($spn ? strspn($html, $bytes, $i + 1, $max) : strcspn($html, $bytes, $i + 1));
+            }
+            if (max($all) > self::MAX_ALL_ATTRIBUTES) {
+                break;
+            }
+        }
+        foreach ($states as $state => $count) {
+            $all[$state[0]] += $count;
+        }
+        if (max($all) > self::MAX_ALL_ATTRIBUTES) {
+            throw new \InvalidArgumentException('The letter has more than ' . self::MAX_ALL_ATTRIBUTES . ' attributes - paste the text without its formatting');
+        }
+    }
+
+    /**
+     * $byte read in $state of SCAN
+     * @return array{?string, int, bool} the next state (null: the tag ends), attributes begun, whether the
+     *                                   next state reads $byte again
+     */
+    private static function step(string $state, string $byte, string $next): array
+    {
+        $white = str_contains(self::WHITE, $byte);
+        $blank = $white && ($byte !== "\f");
+        $end   = [null, 0, false];
+        return match ($state) {
+            'lTag'           => ['lBefore', 0, true],
+            // a word libxml 2.9-2.13 cannot read as a name is no attribute there, here it is one: a tag of
+            // such words alone would otherwise cost a step each without a bound
+            'lBefore'        => match (true) {
+                $blank                                                  => ['lBefore', 0, false],
+                ($byte === '>') || (($byte === '/') && ($next === '>')) => $end,
+                str_contains(self::NAME_START, $byte)                  => ['lName', 1, false],
+                default                                                => ['lBogus', 1, false],
+            },
+            'lBogus', 'lUnq' => match (true) {
+                $byte === '>' => $end,
+                $blank        => ['lBefore', 0, false],
+                default       => [$state, 0, false],
+            },
+            'lName'          => match (true) {
+                $blank        => ['lAfter', 0, false],
+                $byte === '=' => ['lEq', 0, false],
+                default       => ['lBefore', 0, true],
+            },
+            'lAfter'         => ($byte === '=') ? ['lEq', 0, false] : ['lBefore', 0, true],
+            'lEq'            => match ($byte) {
+                '"'     => ['lDq', 0, false],
+                "'"     => ['lSq', 0, false],
+                default => ['lUnq', 0, true],
+            },
+            'lDq', 'lSq'     => ['lBefore', 0, false],
+            'hSlash'         => ['hTag', 0, false],
+            'hTag'           => ($byte === '>') ? $end : ['hBefore', 0, false],
+            // HTML5: "/" outside a value parts attributes, or ends the tag before ">"
+            'hBefore'        => match (true) {
+                $byte === '>'              => $end,
+                $white || ($byte === '/') => ['hBefore', 0, false],
+                default                    => ['hName', 1, false],
+            },
+            'hName'          => match (true) {
+                $byte === '>' => $end,
+                $byte === '=' => ['hEq', 0, false],
+                $byte === '/' => ['hBefore', 0, false],
+                default       => ['hAfter', 0, false],
+            },
+            'hAfter'         => match ($byte) {
+                '>'     => $end,
+                '='     => ['hEq', 0, false],
+                '/'     => ['hBefore', 0, false],
+                default => ['hName', 1, false],
+            },
+            'hEq'            => match ($byte) {
+                '"'     => ['hDq', 0, false],
+                "'"     => ['hSq', 0, false],
+                '>'     => $end,
+                default => ['hUnq', 0, true],
+            },
+            'hDq', 'hSq'     => ['hQuoted', 0, false],
+            'hUnq'           => match (true) {
+                $byte === '>' => $end,
+                $white        => ['hBefore', 0, false],
+                default       => ['hUnq', 0, false],
+            },
+            'hQuoted'        => ($byte === '>') ? $end : ['hBefore', 0, true],
+            default          => throw new \LogicException("No state $state of the scan"),
+        };
+    }
+
+    /**
      * plain text as HTML: a blank line parts paragraphs, a line end breaks a line
      * @throws \InvalidArgumentException as HTML, larger than a message may be; or PCRE gave up on it
      */
@@ -278,13 +478,27 @@ final class HtmlBody
         if (8 + 4 * (int) preg_match_all('~\R~u', $text) + self::escapedLength($text) > Message::MAX_BYTES) {
             throw new \InvalidArgumentException('The letter is larger than a data message may be');
         }
-        $html   = '';
-        $blocks = preg_split('~\R\s*\R~u', trim($text));
-        foreach (($blocks === false) ? self::pcreFailed() : $blocks as $block) {
-            $lines = preg_replace('~\R~u', "\n", trim($block)) ?? self::pcreFailed();
-            $html .= '<p>' . str_replace("\n", "<br>\n", self::escape($lines)) . "</p>\n";
+        $html = '';
+        foreach (self::paragraphs($text) as $lines) {
+            $html .= '<p>' . implode("<br>\n", array_map(self::escape(...), $lines)) . "</p>\n";
         }
         return $html;
+    }
+
+    /**
+     * Plain text as the letter shows it - a blank line parts paragraphs, a line end breaks a line -, so
+     * that a preview of it (the letterhead on the page) parts it the same way
+     * @return list<list<string>> the lines of each paragraph, unescaped
+     * @throws \InvalidArgumentException PCRE gave up on it
+     */
+    public static function paragraphs(string $text): array
+    {
+        $blocks = preg_split('~\R\s*\R~u', trim($text));
+        $parts  = [];
+        foreach (($blocks === false) ? self::pcreFailed() : $blocks as $block) {
+            $parts[] = preg_split('~\R~u', trim($block)) ?: self::pcreFailed();
+        }
+        return $parts;
     }
 
     /** a text PCRE cannot split - a run of a million spaces - would vanish from the letter without a word */
@@ -352,6 +566,10 @@ final class HtmlBody
         if (($tag === 'img') && !isset($attributes['src'])) {
             return;
         }
+        if ($tag === 'img') {
+            $attributes = $this->imageWidth($attributes);
+        }
+        $font = $this->font($tag, $attributes);
         if (($tag === 'a') && !isset($attributes['href'])) {
             $this->children($element);
             return;
@@ -363,10 +581,91 @@ final class HtmlBody
         if (in_array($tag, self::VOID, true)) {
             return;
         }
-        $this->paragraphs += ($tag === 'p') ? 1 : 0;
+        $this->backgrounds[] = self::background($attributes) ?? $this->backgrounds[array_key_last($this->backgrounds)];
+        $this->fonts[]       = $font;
+        $this->paragraphs   += ($tag === 'p') ? 1 : 0;
         $this->children($element);
         $this->paragraphs -= ($tag === 'p') ? 1 : 0;
+        array_pop($this->backgrounds);
+        array_pop($this->fonts);
         $this->append("</$tag>");
+    }
+
+    /**
+     * Points of the font of a <$tag> as dompdf counts them, raised to MIN_FONT_PT by its style: nested
+     * <small> or font-size: 50% each above its minimum would make text of no size
+     * @param array<string, string> $attributes those it keeps; its style gets the font-size raised
+     */
+    private function font(string $tag, array &$attributes): float
+    {
+        $parent = $this->fonts[array_key_last($this->fonts)];
+        $font   = $parent * (self::TAG_FONTS[$tag] ?? 1);
+        $kept   = [];
+        foreach (explode('; ', $attributes['style'] ?? '') as $declaration) {
+            [$property, $value] = explode(': ', $declaration, 2) + [1 => ''];
+            if ($property === 'font-size') {
+                preg_match('~^([0-9.]+)([a-z%]+)$~', $value, $m);
+                $number = (float) $m[1];
+                $font   = match ($m[2]) {
+                    'pt'    => $number,
+                    'px'    => $number * 0.75,
+                    'em'    => $number * $parent,
+                    default => $number * $parent / 100,
+                };
+            } elseif ($declaration !== '') {
+                $kept[] = $declaration;
+            }
+        }
+        if ($font >= self::MIN_FONT_PT) {
+            return $font;
+        }
+        $kept[]              = 'font-size: ' . self::MIN_FONT_PT . 'pt';
+        $attributes['style'] = implode('; ', $kept);
+        return self::MIN_FONT_PT;
+    }
+
+    /**
+     * dompdf makes an image no higher than a page (PdfBody::IMAGE_HEIGHT) by its height alone: a width it is
+     * given, by the attribute or the style, is made narrower instead, in the proportions of the image. A width
+     * in % or em is counted at most as wide as it can come out.
+     * @param array<string, string> $attributes of an <img>
+     * @return array<string, string>
+     */
+    private function imageWidth(array $attributes): array
+    {
+        [$w, $h] = $this->sizes[hash('xxh128', $attributes['src'])] ?? [0, 0];
+        if ($w === 0) {
+            return $attributes;
+        }
+        $max   = PdfBody::IMAGE_HEIGHT * $w / max(1, $h);
+        $width = $attributes['width'] ?? '';
+        if (($width !== '') && ($this->points($width . (ctype_digit($width) ? 'px' : '')) > $max)) {
+            $attributes['width'] = (string) max(1, (int) floor($max / 0.75));
+        }
+        if (isset($attributes['style'])) {
+            $declarations = explode('; ', $attributes['style']);
+            foreach ($declarations as $i => $declaration) {
+                [$property, $value] = explode(': ', $declaration, 2) + [1 => ''];
+                if (($property === 'width') && ($this->points($value) > $max)) {
+                    $declarations[$i] = 'width: ' . max(1, floor($max)) . 'pt';
+                }
+            }
+            $attributes['style'] = implode('; ', $declarations);
+        }
+        return $attributes;
+    }
+
+    /** points of a width of style(), within a line of the page */
+    private function points(string $length): float
+    {
+        preg_match('~^([0-9.]+)([a-z%]+)$~', $length, $m);
+        $number = (float) ($m[1] ?? 0);
+        return match ($m[2] ?? '') {
+            'pt'    => $number,
+            'px'    => $number * 0.75,
+            'em'    => min($number * $this->fonts[array_key_last($this->fonts)], PdfBody::LINE_WIDTH),
+            default => min($number, 100) / 100 * PdfBody::LINE_WIDTH,
+        };
     }
 
     /** @return array<string, string> name => value, escaped */
@@ -376,7 +675,7 @@ final class HtmlBody
         foreach ($element->attributes as $attribute) {
             $name = $attribute->nodeName;
             if (in_array($name, self::ELEMENTS[$tag], true) || in_array($name, self::GLOBAL, true)) {
-                $value = $this->value($name, trim((string) $attribute->nodeValue));
+                $value = $this->value($name, trim((string) $attribute->nodeValue), $tag);
                 if ($value !== null) {
                     // the data: URI of an image is made here, of base64 only
                     $kept[$name] = ($name === 'src') ? $value : self::escape($value);
@@ -386,13 +685,13 @@ final class HtmlBody
         return $kept;
     }
 
-    /** $value of the attribute $name as it may stay, null = left out */
-    private function value(string $name, string $value): ?string
+    /** $value of the attribute $name of a <$tag> as it may stay, null = left out */
+    private function value(string $name, string $value, string $tag): ?string
     {
         return match ($name) {
             'href'            => $this->href($value),
             'src'             => $this->image($value),
-            'style'           => self::style($value),
+            'style'           => self::style($value, $tag),
             // an empty alt marks an image that only decorates
             'alt'             => $value,
             'title'           => ($value === '') ? null : $value,
@@ -404,8 +703,16 @@ final class HtmlBody
             'valign'          => self::oneOf($value, self::VALIGN),
             'bgcolor'         => (preg_match(self::COLOUR, $value) === 1) ? $value : null,
             'width', 'height' => (preg_match('~^\d{1,5}%?$~', $value) === 1) ? $value : null,
+            'colspan', 'span' => self::span($value, 1000),
+            'rowspan'         => self::span($value, 65534),
             default           => (preg_match('~^\d{1,5}$~', $value) === 1) ? $value : null,
         };
+    }
+
+    /** a span of cells within the bounds of HTML, 1 to $max; 0 (a rowspan to the end of the table) is left out */
+    private static function span(string $value, int $max): ?string
+    {
+        return ((preg_match('~^\d+$~', $value) === 1) && ((int) $value > 0)) ? (string) min((int) $value, $max) : null;
     }
 
     /**
@@ -467,35 +774,73 @@ final class HtmlBody
         return $origin . (implode('/', $kept) ?: '/') . substr($href, $cut);
     }
 
-    /** the image as a data: URI, drawn once however often the letter shows it; null = left out */
+    /** the image as a data: URI, drawn once on each background however often the letter shows it; null = left out */
     private function image(string $src): ?string
     {
-        $key = hash('sha256', $src);
+        $background = $this->backgrounds[array_key_last($this->backgrounds)];
+        $key        = hash('sha256', "$background $src");
         if (!array_key_exists($key, $this->images)) {
-            $this->images[$key] = $this->inline($src);
+            $this->images[$key] = $this->inline($src, $background);
         }
         return $this->images[$key];
     }
 
     /** @throws \RuntimeException an image among the uploads cannot be read */
-    private function inline(string $src): ?string
+    private function inline(string $src, int $background): ?string
     {
         if (preg_match('~^data:[^,]*;base64,~i', $src, $m) === 1) {
             $bytes = base64_decode(substr($src, strlen($m[0])), true);
-            return ($bytes === false) ? $this->omit('an image written into the letter is broken') : $this->drawn($bytes, 'an image written into the letter');
+            return ($bytes === false) ? $this->omit('an image written into the letter is broken') : $this->drawn($bytes, 'an image written into the letter', $background);
         }
         if (($this->uploads === null) || !$this->uploads->contains($src)) {
             return $this->omit('the image ' . self::short($src) . ' is not stored with the letter');
         }
-        return $this->drawn($this->uploads->read($src, Message::MAX_BYTES), 'the image ' . self::short($src));
+        return $this->drawn($this->uploads->read($src, Message::MAX_BYTES), 'the image ' . self::short($src), $background);
     }
 
     /**
-     * $bytes drawn again (Imgfunc::reencode()), as JPEG or PNG, at most IMAGE_PX on the longer side: the
-     * EXIF of a phone photo (its GPS position) and anything hidden after the image do not reach thousands of offices
+     * @param array<string, string> $attributes those an element keeps
+     * @return ?int 0xRRGGBB of its background; null = see-through or a colour not read, the one around shows
+     */
+    private static function background(array $attributes): ?int
+    {
+        $colour = isset($attributes['bgcolor']) ? self::rgb($attributes['bgcolor']) : null;
+        // a style wins over bgcolor and its last background counts, as in CSS; a shorthand without a colour is transparent
+        foreach (explode('; ', $attributes['style'] ?? '') as $declaration) {
+            [$property, $value] = explode(': ', $declaration, 2) + [1 => ''];
+            if (in_array($property, ['background', 'background-color'], true)) {
+                $colour = self::rgb($value);
+            }
+        }
+        return $colour;
+    }
+
+    /** the first colour among the words of a CSS value as 0xRRGGBB: #rgb, #rrggbb, rgb() of numbers or a name of COLOUR_NAMES */
+    private static function rgb(string $value): ?int
+    {
+        preg_match_all('~(?:rgba?|hsla?)\([^)]*\)|[^\s,]+~i', strtolower($value), $words);
+        foreach ($words[0] as $word) {
+            if (preg_match('~^#(?:[0-9a-f]{3}){1,2}$~', $word) === 1) {
+                $hex = substr($word, 1);
+                return (int) hexdec((strlen($hex) === 3) ? $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2] : $hex);
+            }
+            if ((preg_match('~^rgb\(\s*(\d{1,3})[\s,]+(\d{1,3})[\s,]+(\d{1,3})\s*\)$~', $word, $m) === 1) && (max($m[1], $m[2], $m[3]) <= 255)) {
+                return ((int) $m[1] << 16) | ((int) $m[2] << 8) | (int) $m[3];
+            }
+            if (isset(self::COLOUR_NAMES[$word])) {
+                return self::COLOUR_NAMES[$word];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * $bytes drawn again (Imgfunc::reencode()), on $background, at most IMAGE_PX on the longer side: the EXIF of
+     * a phone photo (its GPS position) and anything hidden after the image do not reach thousands of offices, and
+     * a PDF of the letter does not wait for the transparency of a PNG
      * @throws \InvalidArgumentException the images of the letter have more than MAX_PIXELS together
      */
-    private function drawn(string $bytes, string $what): ?string
+    private function drawn(string $bytes, string $what, int $background): ?string
     {
         $size          = @getimagesizefromstring($bytes);
         $this->pixels += is_array($size) ? $size[0] * $size[1] : 0;
@@ -504,38 +849,74 @@ final class HtmlBody
         }
         $dir = sys_get_temp_dir() . '/aa-letter-' . bin2hex(random_bytes(8));
         if (!@mkdir($dir, 0o700)) {
-            throw new \RuntimeException('There is no temporary directory for the images of the letter');
+            throw new ServerException('There is no temporary directory for the images of the letter');
         }
+        // GD out of memory is a fatal error, which skips finally
+        register_shutdown_function(TempDir::remove(...), $dir);
         try {
             if (file_put_contents("$dir/in", $bytes) !== strlen($bytes)) {
-                throw new \RuntimeException('The images of the letter cannot be stored for a while');
+                throw new ServerException('The images of the letter cannot be stored for a while');
             }
-            $error = Imgfunc::reencode("$dir/in", "$dir/out", self::IMAGE_PX, UploadPolicy::ANON_MAX_PIXELS, true);
+            $error = Imgfunc::reencode("$dir/in", "$dir/out", self::IMAGE_PX, UploadPolicy::ANON_MAX_PIXELS, $background);
             if ($error !== null) {
                 return $this->omit("$what: $error");
             }
             $image = (string) file_get_contents("$dir/out");
             $info  = getimagesizefromstring($image);
-            return 'data:' . (is_array($info) ? $info['mime'] : 'image/jpeg') . ';base64,' . base64_encode($image);
+            $uri   = 'data:' . (is_array($info) ? $info['mime'] : 'image/jpeg') . ';base64,' . base64_encode($image);
+            if (is_array($info)) {
+                $this->sizes[hash('xxh128', $uri)] = [$info[0], $info[1]];
+            }
+            return $uri;
         } finally {
-            @unlink("$dir/in");
-            @unlink("$dir/out");
-            @rmdir($dir);
+            TempDir::remove($dir);
         }
     }
 
-    /** declarations of STYLES with plain values only */
-    private static function style(string $css): ?string
+    /** declarations of STYLES with plain values only, for a <$tag> */
+    private static function style(string $css, string $tag): ?string
     {
         $kept = [];
         foreach (explode(';', $css) as $declaration) {
             [$property, $value] = array_map('trim', explode(':', $declaration, 2)) + [1 => ''];
             $property           = strtolower($property);
             if (in_array($property, self::STYLES, true) && (strlen($value) <= 100) && (preg_match(self::STYLE_VALUE, $value) === 1)) {
-                $kept[] = "$property: $value";
+                if ($property === 'display') {
+                    $value = self::oneOf($value, in_array($tag, self::TABLE_PARTS, true) ? ['none'] : self::DISPLAY);
+                }
+                if (isset(self::MIN_LENGTH[$property])) {
+                    $value = self::length($value, self::MIN_LENGTH[$property], $property === 'font-size');
+                }
+                if ($value !== null) {
+                    $kept[] = "$property: $value";
+                }
             }
         }
         return ($kept === []) ? null : implode('; ', $kept);
+    }
+
+    /**
+     * A number of at most 4 digits and decimals with a unit of $min, not smaller than its minimum
+     * @param array<string, float|int> $min the smallest number by its unit, '' = without one
+     * @param bool $raise a smaller number made the minimum instead of left out
+     */
+    private static function length(string $value, array $min, bool $raise = false): ?string
+    {
+        $value = strtolower($value);
+        if (($value === 'normal') && isset($min[''])) {
+            return $value;
+        }
+        if (preg_match('~^(\d{1,4}(?:\.\d{1,4})?|\.\d{1,4})(px|pt|em|%)?$~', $value, $m) !== 1) {
+            return null;
+        }
+        $unit = $m[2] ?? '';
+        if (!isset($min[$unit])) {
+            return null;
+        }
+        if ((float) $m[1] >= $min[$unit]) {
+            return $value;
+        }
+        return $raise ? $min[$unit] . $unit : null;
     }
 
     /** @param list<string> $allowed lower case */
@@ -571,7 +952,7 @@ final class HtmlBody
         return strlen($text) + 5 * (substr_count($text, '"') + substr_count($text, "'")) + 4 * substr_count($text, '&') + 3 * (substr_count($text, '<') + substr_count($text, '>'));
     }
 
-    /** like safe(), but &#039; for an apostrophe: the HTML 4 viewers of some filing systems show &apos; as it is */
+    /** like safe(), but &#039; for an apostrophe: a reference every HTML parser reads, &apos; HTML 4 does not know */
     private static function escape(string $text): string
     {
         return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8');

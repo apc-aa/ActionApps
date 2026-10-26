@@ -120,37 +120,68 @@ final readonly class SendMaps
      */
     public function delivery(): array
     {
-        $counts = ['delivered' => 0, 'accepted' => 0];
-        foreach ($this->states() as $e) {
-            // StatusSync::FAILED is none of DELIVERED; an acceptance counts only of a message delivered
-            if (!is_null($e) && in_array($e['s'], self::DELIVERED, true)) {
-                ++$counts['delivered'];
-                $counts['accepted'] += (int) (($e['a'] > 0) || in_array($e['s'], self::ACCEPTED, true));
-            }
-        }
-        return $counts;
+        $reached = $this->reached();
+
+        return ['delivered' => count($reached), 'accepted' => count(array_filter($reached))];
     }
 
     /**
-     * What became of each recipient
-     * @param list<array<string, string>> $rows Snapshot::recipients()
-     * @return array{sent: int, failed: int, uncertain: int, skipped: int, stopped: int}
+     * The messages sent that reached the recipient's box, as delivery() counts them
+     * @return array<int, bool> index => accepted
+     * @throws \JsonException dm_ids edited into no JSON
      */
-    public function tally(array $rows): array
+    public function reached(): array
     {
-        $sent   = self::entries($this->dmIds);
-        $failed = $this->failures();
-        $open   = $this->unsettled();
-        $skips  = self::entries($this->skips);
-        $tally  = ['sent' => count(array_diff_key($sent, $failed)), 'failed' => count($failed), 'uncertain' => count($open), 'skipped' => 0, 'stopped' => 0];
-        foreach ($rows as $k => $row) {
-            // a dmID edited into null is still a message sent
-            if (!array_key_exists($k, $sent) && !isset($failed[$k]) && !isset($open[$k])) {
-                // never tried: only a stop leaves one so
-                ++$tally[(($row['reason'] !== '') || isset($skips[$k])) ? 'skipped' : 'stopped'];
+        $reached = [];
+        foreach ($this->states() as $k => $e) {
+            // StatusSync::FAILED is none of DELIVERED; an acceptance counts only of a message delivered
+            if (!is_null($e) && in_array($e['s'], self::DELIVERED, true)) {
+                $reached[$k] = ($e['a'] > 0) || in_array($e['s'], self::ACCEPTED, true);
             }
         }
-        return $tally;
+        return $reached;
+    }
+
+    /**
+     * What became of each recipient: the fate the record has (fates()) - of an index it names beyond
+     * the recipients too, so that every index counts once -, else skipped for its frozen reason; one
+     * never tried is stopped once nothing sends it any more ($over), queued till then. The one reading
+     * of a fate the page, the end of the run, a copy of the unsent and a copy to one recipient share.
+     * @param list<array<string, string>> $rows Snapshot::recipients()
+     * @return array<int, string> index => Schema::MESSAGE_STATE_SENT, FAILED, UNCERTAIN, SKIPPED, STOPPED or QUEUED
+     */
+    public function fatesOf(array $rows, bool $over): array
+    {
+        $fates = $this->fates();
+        foreach ($rows as $k => $row) {
+            $fates[$k] ??= match (true) {
+                $row['reason'] !== '' => Schema::MESSAGE_STATE_SKIPPED,
+                $over                 => Schema::MESSAGE_STATE_STOPPED,
+                default               => Schema::MESSAGE_STATE_QUEUED,
+            };
+        }
+        ksort($fates);
+
+        return $fates;
+    }
+
+    /**
+     * How many recipients have each fate (fatesOf()); the end of the run counts with $over
+     * @param list<array<string, string>> $rows Snapshot::recipients()
+     * @return array{sent: int, failed: int, uncertain: int, skipped: int, stopped: int, queued: int}
+     */
+    public function tally(array $rows, bool $over = true): array
+    {
+        $counts = array_count_values($this->fatesOf($rows, $over));
+
+        return [
+            'sent'      => $counts[Schema::MESSAGE_STATE_SENT] ?? 0,
+            'failed'    => $counts[Schema::MESSAGE_STATE_FAILED] ?? 0,
+            'uncertain' => $counts[Schema::MESSAGE_STATE_UNCERTAIN] ?? 0,
+            'skipped'   => $counts[Schema::MESSAGE_STATE_SKIPPED] ?? 0,
+            'stopped'   => $counts[Schema::MESSAGE_STATE_STOPPED] ?? 0,
+            'queued'    => $counts[Schema::MESSAGE_STATE_QUEUED] ?? 0,
+        ];
     }
 
     /**

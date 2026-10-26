@@ -98,6 +98,14 @@ define("AA_ID", "990111222333444555666777888999A9");
  */
 // define('AA_TRUSTED_PROXIES', ['127.0.0.1', '::1']);
 
+/** Key for ?debug from outside. Debug output (SQL, templates, timings) is shown only to
+ *  a logged-in superadmin, or to a request with the HTTP header X-AA-Debug-Key: <this key>
+ *  - for measuring pages without a login (curl -H, Playwright extraHTTPHeaders). The key
+ *  in the URL is ignored. At least 16 characters, a shorter one is ignored; without it
+ *  only superadmins get ?debug.
+ */
+// define('AA_DEBUG_KEY', '');  // any long random string, e.g. bin2hex(random_bytes(16))
+
 /** Organization name
  *  It should be also world unique - it is important to have it unique mainly
  *  if you plan exchange articles between servers

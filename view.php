@@ -84,6 +84,7 @@ require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 add_vars();
 
 pageOpen('noauth');   // just to start $sess with right parameters
+pageOpenForDebug();   // ?debug of a logged-in superadmin
 
 if (ctype_digit((string) $time_limit)) {
     MoreTimeLimit((int) $time_limit); // set_time_limit
@@ -115,6 +116,7 @@ $view_param = AA_View::parseViewParameters();
 $_hits = $view_param['hits'];
 unset($view_param['hits']);
 
+// AA_Showview takes only the charsets of AA\Security\RequestCharset
 if ($convertfrom) {
     $view_param['convertfrom'] = $convertfrom;
 }

@@ -18,6 +18,8 @@ final class Binding
      * @param string       $messageSlice  as $campaignSlice
      * @param list<string> $problems      what to fix in the file, naming its keys; [] = usable
      * @param string       $kind          the login auth names: Account::BASIC, CERT or HOSTED; '' = none of them
+     * @param list<string> $testBoxes     test_boxes, box ids as ISDS knows them; [] when missing or broken
+     * @param bool         $paidTests     paid_tests is true: a test message of production may be paid
      */
     public function __construct(
         public readonly string $name,
@@ -27,6 +29,8 @@ final class Binding
         public readonly string $messageSlice,
         public readonly array $problems,
         public readonly string $kind,
+        public readonly array $testBoxes = [],
+        public readonly bool $paidTests = false,
     ) {}
 
     public function usable(): bool

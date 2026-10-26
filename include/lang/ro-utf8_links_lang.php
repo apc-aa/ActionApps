@@ -107,17 +107,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Administrare filtre", // ai 2026-06
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Eroare: Lipsește parola de citire", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Mesaj stiri toolkit",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 // modules/links/check_url.php, row 52
 "Back" => "Înapoi",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Reautentificare", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114

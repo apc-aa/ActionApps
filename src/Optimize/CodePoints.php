@@ -55,6 +55,20 @@ final class CodePoints
         }
     }
 
+    /** Is $needle anywhere in the code - containing() with one LIMIT 1 probe per column, for a yes/no */
+    public static function contains(string $needle): bool
+    {
+        foreach (self::TABLES as $table => $ids) {
+            foreach (self::columns($table) as $column) {
+                if (DB_AA::test($table, [["`$column`", $needle, 'CONTAIN']])) {
+                    return true;
+                }
+            }
+        }
+        $code_slices = DB_AA::select('lid', 'SELECT LOWER(HEX(`id`)) AS lid FROM `slice`', [['type', '___Code', 'BEGIN']]);
+        return $code_slices && DB_AA::test(['content', 'item'], [['content.text', $needle, 'CONTAIN'], ['content.item_id', 'item.id', 'j'], ['item.slice_id', $code_slices, 'l']]);
+    }
+
     /** the code values containing $needle which $keep accepts
      *  @param callable(string): bool $keep
      *  @return list<array{table: string, column: string, iid: string, sid?: string, txt: string}> */

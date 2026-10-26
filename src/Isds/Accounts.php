@@ -20,6 +20,8 @@ use AA\Isds\Registry\Box;
  *             'slices'      => ['<campaign slice id>', '<message slice id>'],
  *             'box'         => '<data box id>',
  *             'cert'        => '/etc/aa-isds/nszm.pem',      // outside the directory of AA
+ *             'test_boxes'  => ['<data box id>'],
+ *             'paid_tests'  => true,                         // optional: each test may cost money
  *         ],
  *     ],
  * NSZM names the account: one word of capital letters and digits, the first a letter - so one name has
@@ -30,8 +32,13 @@ use AA\Isds\Registry\Box;
  * system certificate of the data box; hosted - the certificate of a hosted filing service, sending from
  * box. cert holds the key too unless key names a file of its own; passphrase opens an encrypted key. A
  * relative path starts in DatovkaConf::CERT_DIR, which the web server serves - a key belongs outside it.
+ * test_boxes lists the only boxes a test message of a production account may go to: a template of the site
+ * may narrow them, never add one (Setup). A list AA cannot read leaves the account sending, without tests.
+ * A test message of a production account goes only free of charge, unless paid_tests is true: then also a
+ * paid one, and one of which ISDS does not say. Anything but true - false, or a value AA cannot read, which
+ * State Check tells - allows no paid test. A test account has no paid_tests: State Check names it there.
  *
- * @phpstan-type Found array{name: string, environment: string, sites: list<string>, slices: array{string, string}, problems: list<string>, kind: string}
+ * @phpstan-type Found array{name: string, environment: string, sites: list<string>, slices: array{string, string}, problems: list<string>, kind: string, testBoxes: list<string>, paidTests: bool}
  */
 final class Accounts
 {
@@ -46,9 +53,14 @@ final class Accounts
     public const CERT        = 'cert';
     public const KEY         = 'key';
     public const PASSPHRASE  = 'passphrase';
+    public const TEST_BOXES  = 'test_boxes';
+    public const PAID_TESTS  = 'paid_tests';
 
     /** the keys of every account */
-    private const COMMON = [self::ENVIRONMENT, self::AUTH, self::SITES, self::SLICES];
+    private const COMMON = [self::ENVIRONMENT, self::AUTH, self::SITES, self::SLICES, self::TEST_BOXES];
+
+    /** the keys of a production account beyond COMMON and its login */
+    private const PRODUCTION_ONLY = [self::PAID_TESTS];
 
     /** the keys of each login - the values of auth -, in the order the file shows them */
     private const LOGINS = [
@@ -58,23 +70,10 @@ final class Accounts
     ];
 
     /** the keys AA reads */
-    private const KEYS = [...self::COMMON, self::LOGIN, self::PASSWORD, self::BOX, self::CERT, self::KEY, self::PASSPHRASE];
+    private const KEYS = [...self::COMMON, ...self::PRODUCTION_ONLY, self::LOGIN, self::PASSWORD, self::BOX, self::CERT, self::KEY, self::PASSPHRASE];
 
     /** one word: the name labels the account in State Check */
     private const NAME = '/^[A-Z][A-Z0-9]*\z/';
-
-    /**
-     * The account bound to the site and the pair of slices.
-     *
-     * @throws ConfigException as binding()
-     * @throws \InvalidArgumentException as binding()
-     */
-    public static function forSlices(string $site, string $campaignSlice, string $messageSlice, string $environment, #[\SensitiveParameter] ?DatovkaConf $conf = null): Account
-    {
-        $conf ??= DatovkaConf::load();
-
-        return self::account(self::binding($site, $campaignSlice, $messageSlice, $environment, $conf), $conf);
-    }
 
     /**
      * The usable binding of the site and the pair of slices; account() gives its login.
@@ -155,7 +154,7 @@ final class Accounts
         $shared   = self::shared($found);
         $bindings = [];
         foreach ($found as $i => $f) {
-            $bindings[] = new Binding($f['name'], $f['environment'], $f['sites'], $f['slices'][0], $f['slices'][1], [...$f['problems'], ...($shared[$i] ?? [])], $f['kind']);
+            $bindings[] = new Binding($f['name'], $f['environment'], $f['sites'], $f['slices'][0], $f['slices'][1], [...$f['problems'], ...($shared[$i] ?? [])], $f['kind'], $f['testBoxes'], $f['paidTests']);
         }
 
         return $bindings;
@@ -163,7 +162,7 @@ final class Accounts
 
     /**
      * What of the accounts AA never reads: an account whose name is not one word of capital letters and
-     * digits, a misspelt key of an account.
+     * digits, a misspelt key of an account, a key of production in a test account.
      *
      * @param ?list<string> $names the accounts whose keys to look at; null = all. Each account of a name AA
      *                             does not read is named.
@@ -180,8 +179,9 @@ final class Accounts
             if (!is_null($names) && !in_array($name, $names, true)) {
                 continue;
             }
+            $unread = (self::environment($fields) === Account::TEST) ? self::PRODUCTION_ONLY : [];
             foreach (is_array($fields) ? array_keys($fields) : [] as $key) {
-                if (!in_array($key, self::KEYS, true)) {
+                if (!in_array($key, self::KEYS, true) || in_array($key, $unread, true)) {
                     $strays[] = DatovkaConf::key(DatovkaConf::ACCOUNTS, $name, $key);
                 }
             }
@@ -233,7 +233,7 @@ final class Accounts
     /** @return Found */
     private static function read(string $name, #[\SensitiveParameter] mixed $fields): array
     {
-        $found = ['name' => $name, 'environment' => self::environment($fields), 'sites' => [], 'slices' => ['', ''], 'problems' => [], 'kind' => ''];
+        $found = ['name' => $name, 'environment' => self::environment($fields), 'sites' => [], 'slices' => ['', ''], 'problems' => [], 'kind' => '', 'testBoxes' => [], 'paidTests' => false];
         if (!is_array($fields)) {
             $found['problems'][] = self::setting($name) . ' is not an array - give the account its keys in one';
 
@@ -259,6 +259,9 @@ final class Accounts
         } catch (ConfigException $e) {
             $found['problems'][] = $e->getMessage();
         }
+        // only for tests of a draft: a mistake there must not stop a sending (brokenTestBoxes())
+        $found['testBoxes'] = self::testBoxes($fields) ?? [];
+        $found['paidTests'] = self::paidTests($fields) ?? false;
         // an environment misspelt is to fix first: which keys belong is not known before
         if ($written) {
             array_push($found['problems'], ...self::mixed($found['environment'] === Account::PRODUCTION, $name, $found['kind'], $fields));
@@ -299,7 +302,7 @@ final class Accounts
         if ($kind === '') {
             return [];
         }
-        $set      = array_values(array_filter(array_diff(self::KEYS, self::COMMON), static fn(string $key): bool => self::isSet($fields[$key] ?? null)));
+        $set      = array_values(array_filter(array_diff(self::KEYS, self::COMMON, self::PRODUCTION_ONLY), static fn(string $key): bool => self::isSet($fields[$key] ?? null)));
         $settings = static fn(array $keys): string => implode(' and ', array_map(static fn(string $key): string => self::setting($name, $key), $keys));
         if ($production && ($kind === Account::BASIC)) {
             $named = array_values(array_intersect($set, self::LOGINS[Account::BASIC]));
@@ -376,6 +379,69 @@ final class Accounts
         }
 
         return [$ids[0], $ids[1]];
+    }
+
+    /**
+     * @param array<array-key, mixed> $fields
+     * @return ?list<string> box ids as ISDS knows them, [] when not set; null = no list of box ids
+     */
+    private static function testBoxes(#[\SensitiveParameter] array $fields): ?array
+    {
+        $list = $fields[self::TEST_BOXES] ?? [];
+        if (!is_array($list)) {
+            return null;
+        }
+        try {
+            // DatovkaConf keeps what is no text of the list as Secret
+            return array_values(array_unique(array_map(static fn(mixed $box): string => Box::normalizeId(is_string($box) ? $box : ''), $list)));
+        } catch (\InvalidArgumentException) {
+            return null;
+        }
+    }
+
+    /**
+     * @param array<array-key, mixed> $fields
+     * @return ?bool paid_tests, false when not set; null = neither true nor false
+     */
+    private static function paidTests(#[\SensitiveParameter] array $fields): ?bool
+    {
+        $flag = $fields[self::PAID_TESTS] ?? false;
+
+        return is_bool($flag) ? $flag : null;
+    }
+
+    /**
+     * The production accounts whose paid_tests AA cannot read - no paid test message goes from them
+     * @return list<string> names of the accounts
+     */
+    public static function brokenPaidTests(#[\SensitiveParameter] ?DatovkaConf $conf = null): array
+    {
+        return self::broken($conf, static fn(array $fields): bool => (self::environment($fields) === Account::PRODUCTION) && is_null(self::paidTests($fields)));
+    }
+
+    /**
+     * The accounts whose test_boxes AA cannot read - they send, but no test message goes from them
+     * @return list<string> names of the accounts
+     */
+    public static function brokenTestBoxes(#[\SensitiveParameter] ?DatovkaConf $conf = null): array
+    {
+        return self::broken($conf, static fn(array $fields): bool => is_null(self::testBoxes($fields)));
+    }
+
+    /**
+     * @param \Closure(array<array-key, mixed>): bool $unreadable whether the keys of an account hold a value AA cannot read
+     * @return list<string> names of the accounts AA reads whose keys $unreadable
+     */
+    private static function broken(#[\SensitiveParameter] ?DatovkaConf $conf, \Closure $unreadable): array
+    {
+        $broken = [];
+        foreach (($conf ?? DatovkaConf::load())->accounts() as $name => $fields) {
+            if ((preg_match(self::NAME, (string) $name) === 1) && is_array($fields) && $unreadable($fields)) {
+                $broken[] = (string) $name;
+            }
+        }
+
+        return $broken;
     }
 
     /**
@@ -626,8 +692,9 @@ final class Accounts
     }
 
     /**
-     * @param string $login Account::BASIC, CERT or HOSTED; '' = of any login. Production never lists
-     *                      login and password: it lets an application in with a certificate only
+     * @param string $environment Account::TEST or PRODUCTION; '' = of either
+     * @param string $login       Account::BASIC, CERT or HOSTED; '' = of any login. Production never lists
+     *                            login and password: it lets an application in with a certificate only
      * @return list<string> the keys of an account, in the order the file shows them
      */
     public static function keys(string $environment, string $login = ''): array
@@ -635,9 +702,8 @@ final class Accounts
         if (($environment === Account::PRODUCTION) && in_array($login, ['', Account::BASIC], true)) {
             $login = Account::HOSTED;
         }
+        $keys = self::LOGINS[$login] ?? array_values(array_diff(self::KEYS, self::COMMON, self::PRODUCTION_ONLY));
 
-        $keys = self::LOGINS[$login] ?? null;
-
-        return is_null($keys) ? self::KEYS : [...self::COMMON, ...$keys];
+        return [...self::COMMON, ...(($environment === Account::TEST) ? [] : self::PRODUCTION_ONLY), ...$keys];
     }
 }

@@ -15,7 +15,6 @@ return [
 // Unused messages — no longer found in the sources; kept commented for reference.
 // "Are you sure you want to empty trash?" => "Opravdu chcete vysypat koš?",
 // "ActionApps - Link Edit" => "Editace odkazu",
-// "Changed" => "Změněno",
 // "Bookmark" => "Přidej k oblíbeným",
 // "Type" => "Obecná kategorie",
 // "Up" => "Posun vybrané kategorie v seznamu o jeden stupeň výše",
@@ -166,17 +165,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Správa filtrů",
 
-// include/util.php, row 992
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Chyba: chybí heslo pro čtení",
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Vzkaz z Toolkitu",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 // modules/links/check_url.php, row 52
 "Back" => "Zpět",
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Znovu přihlásit",
 
 // modules/links/actions.php, row 48, 90, 114

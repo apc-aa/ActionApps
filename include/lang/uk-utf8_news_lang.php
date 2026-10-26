@@ -18,6 +18,7 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "als[] and the state of site pages, taken from the URL" => "als[] і стан сторінок сайту, узяті з URL", // ai 2026-10
 // "The index %1 of the content table does not contain the field" => "Індекс %1 таблиці content не містить поля", // ai 2026-10
 // "Adds the index (field_id, text) to the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes and about as much disk as the other indexes of the table - run it when the traffic is low." => "Додає до таблиці content індекс (field_id, text), щоб значення в одному полі знаходилося без читання того самого значення в усіх інших полях. На великій базі даних це триває кілька хвилин і займає на диску приблизно стільки ж, скільки інші індекси таблиці, - запускайте, коли навантаження низьке.", // ai 2026-10
 // "The index %1 is missing in the content table" => "У таблиці content бракує індексу %1", // ai 2026-10
@@ -113,7 +114,6 @@ return [
 // "RSS feeds testing page." => "Сторінка для тестування RSS-каналів.", // ai 2026-06
 // "No RSS Feeds set." => "Не налаштовано жодного RSS-каналу.", // ai 2026-06
 // "Messages" => "Повідомлення", // ai 2026-06
-// "Write" => "Записати", // ai 2026-06
 // "update database" => "оновити базу даних", // ai 2026-06
 // "Feed url" => "URL каналу", // ai 2026-06
 // "Ok : file deleted " => "Ok: файл видалено", // ai 2026-06
@@ -147,7 +147,7 @@ return [
 "never" => "ніколи", // ai 2026-06
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 714
+// include/field.class.php, row 762
 // src/Util/Adminlink.php, row 31
 "disabled" => "вимкнено", // ai 2026-06
 
@@ -161,7 +161,7 @@ return [
 "For a new periodic task prefer %1 - they run from the queue too, with no system cron row to keep." => "Для нового періодичного завдання краще використовуйте %1 — вони теж виконуються з черги й не потребують рядка в системному cron.", // ai 2026-10
 
 // admin/aa_cron.php, row 104
-// include/menu.php, row 171
+// include/menu.php, row 174
 // include/menu_util.php, row 75
 "Planned Tasks" => "Заплановані завдання", // ai 2026-06
 
@@ -213,14 +213,15 @@ return [
 
 // admin/aa_note.php, row 58
 // admin/aa_security.php, row 64, 72
-// admin/aa_statecheck.php, row 197
+// admin/aa_statecheck.php, row 197, 259
 // admin/aafinder.php, row 98
-// admin/console.php, row 78
+// admin/console.php, row 73
 // admin/fileman.php, row 110
 // admin/slicedel2.php, row 70
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
+// src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Термін дії форми минув; оновіть сторінку й спробуйте ще раз.", // ai 2026-10
 
 // admin/aa_optimize.php, row 50
@@ -278,11 +279,11 @@ return [
 // admin/aa_statecheck.php, row 177
 // admin/aa_statistics.php, row 91
 // admin/anonym_wizard.php, row 223
-// admin/console.php, row 71
+// admin/console.php, row 66
 // admin/se_fields.php, row 303
 // admin/se_statistics.php, row 69
 // admin/se_views.php, row 148
-// include/formutil.php, row 1427, 1430, 2016
+// include/formutil.php, row 1431, 1434, 2020
 // src/Widget/FilWidget.php, row 154, 233
 // src/Widget/FldWidget.php, row 156
 "Show" => "Показати", // ai 2026-06
@@ -291,12 +292,12 @@ return [
 "No failed login of %1 in the last 12 hours. If the login is refused all the same, other names failed from the same address; letting %1 in lets it through as well." => "За останні 12 годин немає жодного невдалого входу під іменем %1. Якщо вхід усе ж відхиляється, з тієї самої адреси невдало входили під іншими іменами; дозвіл входу для %1 пропустить його й тоді.", // ai 2026-10
 
 // admin/aa_security.php, row 96
-// src/Optimize/CheckHttp.php, row 82, 91
+// src/Optimize/CheckHttp.php, row 85, 94, 103
 // src/Optimize/CheckLoginAddresses.php, row 88, 101
 // src/Optimize/CheckSessionidUse.php, row 99
 // src/Optimize/CheckTrustedProxies.php, row 103
-// src/Optimize/CheckUploadRefusals.php, row 86
-// src/Security/Protection.php, row 92
+// src/Optimize/CheckUploadRefusals.php, row 89
+// src/Security/Protection.php, row 93
 "Address" => "Адреса", // ai 2026-10
 
 // admin/aa_security.php, row 96
@@ -333,13 +334,17 @@ return [
 "Last %1 days: %2 refused, %3 run (counted once per page and day)." => "Останні дні (%1): відхилено %2, виконано %3 (рахується один раз на сторінку й день).", // ai 2026-10
 
 // admin/aa_security.php, row 133
-// src/Optimize/CheckAjaxUnsigned.php, row 86
-// src/Optimize/CheckAlertitemRefusals.php, row 95
-// src/Optimize/CheckAnonymousEditRefusals.php, row 93
+// src/Optimize/CheckAjaxUnsigned.php, row 87
+// src/Optimize/CheckAlertitemRefusals.php, row 105
+// src/Optimize/CheckAnonymousEditRefusals.php, row 94
 // src/Optimize/CheckBlockedRequests.php, row 94
-// src/Optimize/CheckCkeditorUse.php, row 102
+// src/Optimize/CheckCkeditorUse.php, row 103
+// src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 96
+// src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
+// src/Optimize/CheckIsdsConf.php, row 160, 193
+// src/Optimize/CheckIsdsViews.php, row 132
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 97
 // src/Optimize/CheckLoginAddresses.php, row 90, 103
 // src/Optimize/CheckObjectFormRefusals.php, row 106
 // src/Optimize/CheckPhpFatals.php, row 68
@@ -348,8 +353,9 @@ return [
 // src/Optimize/CheckSecurityProtections.php, row 106
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckTrustedProxies.php, row 109
-// src/Optimize/CheckUploadRefusals.php, row 98
-// src/Optimize/CheckUserAliasFunctionLog.php, row 74
+// src/Optimize/CheckUploadRefusals.php, row 101
+// src/Optimize/CheckUserAliasFunctionLog.php, row 75
+// src/Optimize/CheckViewSliceRefusals.php, row 167, 199
 "Log rows" => "Записи журналу", // ai 2026-10
 
 // admin/aa_security.php, row 140
@@ -385,7 +391,7 @@ return [
 // admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 392
 // include/searchbar.class.php, row 769
-// src/Widget/MflWidget.php, row 120
+// src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 110
 // src/Widget/Widget.php, row 445
@@ -395,6 +401,7 @@ return [
 "You do not have permissions to see State Check" => "Ви не маєте прав переглядати «Перевірку стану»", // ai 2026-10
 
 // admin/aa_statecheck.php, row 88
+// src/Optimize/CheckIsds.php, row 224
 // src/Optimize/CheckSecurityProtections.php, row 82
 "unknown" => "невідомо", // ai 2026-10
 
@@ -406,7 +413,9 @@ return [
 
 // admin/aa_statecheck.php, row 133
 // central/installapp.php, row 1343
-// src/Optimize/CheckUniversalAnalytics.php, row 109
+// src/Optimize/CheckIsdsAccounts.php, row 205
+// src/Optimize/CheckPerVisitorReads.php, row 72
+// src/Optimize/CheckUniversalAnalytics.php, row 97
 // src/Optimize/ImgMeasuring.php, row 53
 "Where" => "Де", // ai 2026-10
 
@@ -423,53 +432,56 @@ return [
 // admin/aa_statecheck.php, row 201
 "%1 has no repair action" => "%1 не має дії для виправлення", // ai 2026-10
 
-// admin/aa_statecheck.php, row 206
+// admin/aa_statecheck.php, row 213
 "Repair of %1 done." => "Виправлення %1 виконано.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 206
+// admin/aa_statecheck.php, row 213
 "Repair of %1 failed." => "Виправлення %1 не вдалося.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 246
-"Checked again at %1: still there. %2" => "Повторно перевірено о %1: проблема залишається. %2", // ai 2026-10
-
-// admin/aa_statecheck.php, row 247
+// admin/aa_statecheck.php, row 253
 "Checked again at %1: the problem is gone." => "Повторно перевірено о %1: проблему усунуто.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 254
+// admin/aa_statecheck.php, row 255
+"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "",
+
+// admin/aa_statecheck.php, row 256
+"Checked again at %1: still there. %2" => "Повторно перевірено о %1: проблема залишається. %2", // ai 2026-10
+
+// admin/aa_statecheck.php, row 266
 // include/menu_util.php, row 81
 "State Check" => "Перевірка стану", // ai 2026-10
 
-// admin/aa_statecheck.php, row 372
+// admin/aa_statecheck.php, row 384
 "Basic checks ran now in %1 s." => "Базові перевірки щойно виконано за %1 с.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 373
+// admin/aa_statecheck.php, row 385
 "Extended checks ran now in %1 s." => "Розширені перевірки щойно виконано за %1 с.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 373
+// admin/aa_statecheck.php, row 385
 "Extended checks were not run." => "Розширені перевірки не запускалися.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 374
+// admin/aa_statecheck.php, row 386
 "Slow checks ran now in %1 s." => "Повільні перевірки щойно виконано за %1 с.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 375
+// admin/aa_statecheck.php, row 387
 "The daily snapshot last ran %1." => "Щоденний знімок востаннє зроблено %1.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 375
+// admin/aa_statecheck.php, row 387
 "No daily snapshot yet." => "Щоденного знімка ще немає.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 379
+// admin/aa_statecheck.php, row 391
 "No problems found. %1 checks passed at %2." => "Проблем не знайдено. Успішні перевірки: %1, о %2.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 382
+// admin/aa_statecheck.php, row 394
 "Full scans of the database; they take seconds to minutes on a large installation. Their findings are merged into the sections above once run." => "Повне сканування бази даних; на великій інсталяції триває від секунд до хвилин. Після запуску виявлення додаються до розділів вище.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 383
+// admin/aa_statecheck.php, row 395
 "Run extended checks now" => "Запустити розширені перевірки", // ai 2026-10
 
-// admin/aa_statecheck.php, row 384
+// admin/aa_statecheck.php, row 396
 "Full scans of the largest tables; on a big installation they take many minutes and load the database server, so they are not part of the daily snapshot. Run them now and then, preferably outside peak hours. Their findings are merged into the sections above once run." => "Повне сканування найбільших таблиць; на великій інсталяції триває багато хвилин і навантажує сервер бази даних, тому не входить до щоденного знімка. Запускайте їх час від часу, бажано поза годинами пік. Після запуску виявлення додаються до розділів вище.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 385
+// admin/aa_statecheck.php, row 397
 "Run slow checks now" => "Запустити повільні перевірки", // ai 2026-10
 
 // admin/aa_statistics.php, row 58
@@ -578,9 +590,9 @@ return [
 
 // admin/aa_statistics.php, row 135
 // admin/aafinder.php, row 484, 497
-// admin/se_inputform.php, row 285
+// admin/se_inputform.php, row 294
 // central/appstore.php, row 164
-// include/searchlib.php, row 1015
+// include/searchlib.php, row 1016
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Рубрики", // ai 2026-06
 
@@ -659,7 +671,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1703
+// include/metabase.class.php, row 1700
 "Manage %1" => "Керування %1", // ai 2026-06
 
 // admin/aa_tasks.php, row 46
@@ -694,7 +706,8 @@ return [
 "Show results with string" => "Показати результати з рядком", // ai 2026-06
 
 // admin/aafinder.php, row 111
-// src/Optimize/CheckAlertitemRefusals.php, row 90
+// src/Isds/Registry/Page.php, row 510
+// src/Optimize/CheckAlertitemRefusals.php, row 89, 100
 "Item" => "Стаття", // ai 2026-06
 
 // admin/aafinder.php, row 135
@@ -703,26 +716,31 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1193
-// include/menu.php, row 133
-// include/slice.class.php, row 587
+// include/logs.php, row 1213
+// include/menu.php, row 134
+// include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
 // src/Central/FindingText.php, row 496
-// src/Optimize/CheckAjaxUnsigned.php, row 79
-// src/Optimize/CheckAlertitemRefusals.php, row 88
-// src/Optimize/CheckAnonymousEditRefusals.php, row 84
+// src/Optimize/CheckAjaxUnsigned.php, row 80
+// src/Optimize/CheckAlertitemRefusals.php, row 98
+// src/Optimize/CheckAnonymousEditRefusals.php, row 85
+// src/Optimize/CheckDiscussionRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 86
-// src/Optimize/CheckUploadRefusals.php, row 84
-// src/Optimize/CheckUserAliasFunctionLog.php, row 84
-// src/Optimize/CheckUserAliasFunctions.php, row 86
+// src/Optimize/CheckIsdsRegistry.php, row 179
+// src/Optimize/CheckIsdsViews.php, row 163
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 87
+// src/Optimize/CheckRelatedSlices.php, row 76
+// src/Optimize/CheckUploadRefusals.php, row 87
+// src/Optimize/CheckUserAliasFunctionLog.php, row 85
+// src/Optimize/CheckUserAliasFunctions.php, row 87
+// src/Optimize/CheckViewSliceRefusals.php, row 161
 // src/Optimize/Convert2innodb.php, row 69
 "Slice" => "Рубрика", // ai 2026-06
 
 // admin/aafinder.php, row 139
 // central/installapp.php, row 1271
 // src/AA_Plannedtask.php, row 182
-// src/Optimize/CheckCkeditorUse.php, row 97
+// src/Optimize/CheckCkeditorUse.php, row 98
 // src/Optimize/CheckObjectFormRefusals.php, row 96
 "Module" => "Модуль", // ai 2026-06
 
@@ -733,7 +751,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 338
+// include/logs.php, row 358
 // src/AA_Plannedtask.php, row 204
 "Log" => "Журнал", // ai 2026-06
 
@@ -747,7 +765,7 @@ return [
 // admin/aafinder.php, row 451, 503
 // admin/itemhistory.php, row 47
 // include/itemfunc.php, row 82, 83, 286, 408
-// include/menu.php, row 163
+// include/menu.php, row 164
 // include/menu_util.php, row 84
 "History" => "Історія", // ai 2026-06
 
@@ -782,15 +800,16 @@ return [
 
 // admin/aafinder.php, row 483, 496
 // include/itemfunc.php, row 195
-// include/menu.php, row 144
+// include/menu.php, row 145
 "Views" => "Вигляди", // ai 2026-06
 
 // admin/aafinder.php, row 485, 498
 // admin/anonym_wizard.php, row 217
 // include/exporter.class.php, row 550
 // include/itemfunc.php, row 383
-// include/menu.php, row 134
-// include/searchlib.php, row 171
+// include/menu.php, row 135
+// include/searchlib.php, row 172
+// src/Isds/SliceRules.php, row 176
 "Fields" => "Поля", // ai 2026-06
 
 // admin/aafinder.php, row 486, 499
@@ -831,12 +850,12 @@ return [
 
 // admin/aafinder.php, row 526
 // include/searchbar.class.php, row 576
-// include/searchlib.php, row 48, 49, 127, 136
+// include/searchlib.php, row 49, 50, 128, 137
 "contains" => "містить", // ai 2026-06
 
 // admin/aafinder.php, row 527
 // include/searchbar.class.php, row 584
-// include/searchlib.php, row 127, 136
+// include/searchlib.php, row 128, 137
 "is" => "дорівнює", // ai 2026-06
 
 // admin/aafinder.php, row 528
@@ -871,7 +890,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 9956, 10035
+// include/stringexpand.php, row 10284, 10363
 "Send" => "Надіслати", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -920,19 +939,21 @@ return [
 // admin/anonym_wizard.php, row 221
 // admin/se_fieldid.php, row 296
 // admin/se_fields.php, row 299
-// admin/se_javascript.php, row 92
+// admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1332, 1336
+// include/field.class.php, row 1380, 1384
 // include/form.class.php, row 211
-// include/searchlib.php, row 367
-// src/Optimize/CheckAjaxUnsigned.php, row 80
-// src/Optimize/CheckAnonymousEditRefusals.php, row 85
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 88
+// include/searchlib.php, row 368
+// src/Optimize/CheckAjaxUnsigned.php, row 81
+// src/Optimize/CheckAnonymousEditRefusals.php, row 86
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 89
+// src/Optimize/CheckRelatedSlices.php, row 77
 // src/Optimize/CheckRequiredSettings.php, row 69
-// src/Optimize/CheckUserAliasFunctionLog.php, row 85
-// src/Optimize/CheckUserAliasFunctions.php, row 87
+// src/Optimize/CheckUserAliasFunctionLog.php, row 86
+// src/Optimize/CheckUserAliasFunctions.php, row 88
+// src/Optimize/CheckViewSliceRefusals.php, row 140
 // src/Util/ChangesMonitor.php, row 450
 "Field" => "Поле", // ai 2026-06
 
@@ -940,7 +961,7 @@ return [
 // admin/se_fieldid.php, row 296
 // admin/se_fields.php, row 300
 // admin/se_history.php, row 140
-// admin/se_javascript.php, row 92
+// admin/se_javascript.php, row 86
 // admin/slicedit.php, row 282
 // central/installapp.php, row 1271
 // include/constants.php, row 458
@@ -960,24 +981,24 @@ return [
 // admin/console.php, row 49
 "You do not have permissions to access Console" => "Ви не маєте права доступу до Консолі", // ai 2026-06
 
-// admin/console.php, row 66
+// admin/console.php, row 62
 "ActionApps Console" => "Консоль ActionApps", // ai 2026-06
 
-// admin/console.php, row 74
+// admin/console.php, row 69
 // include/menu_util.php, row 86
 "Console" => "Консоль", // ai 2026-06
 
-// admin/console.php, row 75
-// admin/se_javascript.php, row 81
-// include/stringexpand.php, row 97
+// admin/console.php, row 70
+// admin/se_javascript.php, row 75
+// include/stringexpand.php, row 96
 // src/Import/DetailPage.php, row 1025, 1091
 // src/Optimize/CheckImports.php, row 236, 238
 "Code" => "Код", // ai 2026-06
 
-// admin/console.php, row 76
+// admin/console.php, row 71
 "HTML output" => "Вивід HTML", // ai 2026-06
 
-// admin/console.php, row 78, 80
+// admin/console.php, row 73, 75
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "Результат", // ai 2026-06
 
@@ -1028,7 +1049,7 @@ return [
 "Author" => "Автор", // ai 2026-06
 
 // admin/discedit.php, row 133
-// include/logs.php, row 878
+// include/logs.php, row 898, 1309
 "IP Address" => "IP-адреса", // ai 2026-06
 
 // admin/discedit.php, row 134
@@ -1052,12 +1073,12 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 265
-// include/field.class.php, row 696
+// include/field.class.php, row 744
 // include/filedit.php, row 113
-// include/formutil.php, row 1773, 3379
-// include/metabase.class.php, row 1645
+// include/formutil.php, row 1777, 3394
+// include/metabase.class.php, row 1642
 // include/mlx.php, row 373
-// include/statestore.php, row 1139
+// include/statestore.php, row 1138
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
 "Edit" => "Редагувати", // ai 2026-06
@@ -1073,8 +1094,8 @@ return [
 // admin/um_gedit.php, row 225
 // admin/um_uedit.php, row 267
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 700
-// include/formutil.php, row 1784, 1921
+// include/field.class.php, row 748
+// include/formutil.php, row 1788, 1925
 // include/menu_util.php, row 61
 // include/profile.php, row 69
 // include/searchbar.class.php, row 1126
@@ -1088,7 +1109,7 @@ return [
 // admin/discedit.php, row 172
 // include/adminpage.class.php, row 345
 // include/se_users.php, row 128
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Back" => "Назад", // ai 2026-06
 
 // admin/discedit.php, row 173
@@ -1102,8 +1123,9 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1040
+// include/logs.php, row 1060
 // include/mail.php, row 663
+// src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Тема", // ai 2026-06
 
 // admin/discedit2.php, row 94, 148
@@ -1154,7 +1176,7 @@ return [
 // admin/se_filters.php, row 183
 // admin/slicedit.php, row 141, 147
 // include/exporter.class.php, row 511
-// include/menu.php, row 189
+// include/menu.php, row 192
 // include/menu_util.php, row 122
 // src/Central/FindingText.php, row 416
 // src/Module/Poll/Menu.php, row 61
@@ -1186,7 +1208,7 @@ return [
 
 // admin/fileman.php, row 129
 // include/filedit.php, row 67
-// include/menu.php, row 167
+// include/menu.php, row 170
 "File Manager" => "Файловий менеджер", // ai 2026-06
 
 // admin/fileman.php, row 131
@@ -1223,28 +1245,28 @@ return [
 // admin/index.php, row 182
 "ActionApps - Item Manager" => "ActionApps - Менеджер статей", // ai 2026-06
 
-// admin/itemedit.php, row 310
+// admin/itemedit.php, row 236, 326
+"Error: You have no rights to edit item." => "Помилка: Ви не маєте права редагувати статтю.", // ai 2026-06
+
+// admin/itemedit.php, row 318
 // include/date.php, row 189
-// include/field.class.php, row 1332
+// include/field.class.php, row 1380
 // include/validate.php, row 54, 58
 "Error in" => "Помилка в", // ai 2026-06
 
-// admin/itemedit.php, row 354
+// admin/itemedit.php, row 369
 // admin/slicefieldsedit.php, row 131
 "Error: no fields." => "Помилка: немає полів.", // ai 2026-06
 
-// admin/itemedit.php, row 362
+// admin/itemedit.php, row 377
 // admin/slicefieldsedit.php, row 139
 "Bad item ID id=%1" => "Хибний ID статті id=%1", // ai 2026-06
 
-// admin/itemedit.php, row 374
-"Error: You have no rights to edit item." => "Помилка: Ви не маєте права редагувати статтю.", // ai 2026-06
-
-// admin/itemedit.php, row 409, 410
+// admin/itemedit.php, row 414, 415
 "Edit Item" => "Редагувати статтю", // ai 2026-06
 
-// admin/itemedit.php, row 409, 410
-// include/menu.php, row 83
+// admin/itemedit.php, row 414, 415
+// include/menu.php, row 84
 "Add Item" => "Додати статтю", // ai 2026-06
 
 // admin/itemhistory.php, row 32
@@ -1267,9 +1289,9 @@ return [
 
 // admin/itemstats.php, row 41
 // include/itemfunc.php, row 87, 492
-// include/menu.php, row 164
+// include/menu.php, row 165
 // include/menu_util.php, row 83
-// src/Util/Adminlink.php, row 124
+// src/Util/Adminlink.php, row 137
 "Statistics" => "Статистика", // ai 2026-06
 
 // admin/mailman_create_list.php, row 74
@@ -1334,31 +1356,31 @@ return [
 // admin/se_admin.php, row 74
 "You have no permission to set configuration parameters of this slice" => "Ви не маєте права налаштовувати конфігураційні параметри цієї рубрики", // ai 2026-06
 
-// admin/se_admin.php, row 82, 178
-// admin/se_compact.php, row 93, 235
+// admin/se_admin.php, row 82, 170
+// admin/se_compact.php, row 93, 222
 // include/constants.php, row 654, 704, 724, 778, 813, 844, 868, 911, 940, 966, 1000
 "Top HTML" => "Верхній HTML", // ai 2026-06
 
-// admin/se_admin.php, row 83, 190
+// admin/se_admin.php, row 83, 183
 "Item format" => "Формат статті", // ai 2026-06
 
-// admin/se_admin.php, row 84, 202
-// admin/se_compact.php, row 94, 245
+// admin/se_admin.php, row 84, 196
+// admin/se_compact.php, row 94, 232
 // include/constants.php, row 659, 706, 726, 782, 815, 846, 871, 916, 942, 971, 1005
 "Bottom HTML" => "Нижній HTML", // ai 2026-06
 
-// admin/se_admin.php, row 85, 214
-// admin/se_compact.php, row 95, 273
-// admin/se_fulltext.php, row 70, 197
+// admin/se_admin.php, row 85, 209
+// admin/se_compact.php, row 95, 260
+// admin/se_fulltext.php, row 70, 193
 // include/constants.php, row 660, 707, 783, 872, 917, 943, 972, 1006, 1038
 "Remove strings" => "Рядки для видалення", // ai 2026-06
 
-// admin/se_admin.php, row 86, 223
+// admin/se_admin.php, row 86, 218
 // include/constants.php, row 694, 717, 804, 830, 861, 894, 928, 958, 992, 1026
 "HTML code for \"No item found\" message" => "HTML-код для повідомлення \"Статтю не знайдено\"", // ai 2026-06
 
 // admin/se_admin.php, row 87
-// admin/se_fulltext.php, row 71, 205, 209
+// admin/se_fulltext.php, row 71, 201, 205
 "Show discussion" => "Показати обговорення", // ai 2026-06
 
 // admin/se_admin.php, row 101
@@ -1370,130 +1392,130 @@ return [
 // admin/se_admin.php, row 113
 "Admin fields update successful" => "Поля адміністрування успішно оновлено", // ai 2026-06
 
-// admin/se_admin.php, row 162
+// admin/se_admin.php, row 155
 "Admin - design Item Manager view" => "Адміністрування - вигляд Менеджера статей", // ai 2026-06
 
-// admin/se_admin.php, row 171
-// admin/se_compact.php, row 225
-// admin/se_fulltext.php, row 153
-// admin/se_inputform.php, row 189, 432
+// admin/se_admin.php, row 163
+// admin/se_compact.php, row 212
+// admin/se_fulltext.php, row 146
+// admin/se_inputform.php, row 189, 426
 // src/Util/UiPrefs.php, row 56
 "Default" => "За замовчуванням", // ai 2026-06
 
-// admin/se_admin.php, row 174
+// admin/se_admin.php, row 166
 "Listing of items in Admin interface" => "Перелік статей в інтерфейсі адміністрування", // ai 2026-06
 
-// admin/se_admin.php, row 183
-// admin/se_compact.php, row 236, 265
-// admin/se_fulltext.php, row 166
+// admin/se_admin.php, row 175
+// admin/se_compact.php, row 223, 252
+// admin/se_fulltext.php, row 159
 "HTML code which appears at the top of slice area" => "HTML-код, який з'являється над областю рубрики", // ai 2026-06
 
-// admin/se_admin.php, row 195
-// admin/se_compact.php, row 239, 268
-// admin/se_fulltext.php, row 178
+// admin/se_admin.php, row 188
+// admin/se_compact.php, row 226, 255
+// admin/se_fulltext.php, row 172
 "Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"
  => "Розмістіть тут HTML-код у поєднанні з аліасами, наведеними внизу сторінки\n"
    ."                     <br>Аліаси під час публікації на сторінку будуть замінені реальними значеннями з бази даних", // ai 2026-06
 
-// admin/se_admin.php, row 207
-// admin/se_compact.php, row 246, 271
-// admin/se_fulltext.php, row 190
+// admin/se_admin.php, row 201
+// admin/se_compact.php, row 233, 258
+// admin/se_fulltext.php, row 185
 "HTML code which appears at the bottom of slice area" => "HTML-код, який з'являється під областю рубрики", // ai 2026-06
 
-// admin/se_admin.php, row 219
-// admin/se_compact.php, row 274
-// admin/se_fulltext.php, row 202
+// admin/se_admin.php, row 214
+// admin/se_compact.php, row 261
+// admin/se_fulltext.php, row 198
 "Removes empty brackets etc. Use ## as delimiter." => "Видаляє порожні дужки тощо. Використовуйте ## як роздільник.", // ai 2026-06
 
-// admin/se_admin.php, row 228
+// admin/se_admin.php, row 223
 "Code to be printed when no item is filled (or user has no permission to any item in the slice)" => "Код, який виводиться, коли не заповнено жодної статті (або користувач не має права на жодну статтю в рубриці)", // ai 2026-06
 
-// admin/se_admin.php, row 235
+// admin/se_admin.php, row 231
 "Use special view" => "Використати спеціальний вигляд", // ai 2026-06
 
-// admin/se_admin.php, row 239
+// admin/se_admin.php, row 235
 "You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)" => "Спеціальний вигляд - шаблон для вхідної форми - можна задати на сторінці \"Дизайн\" -> \"Вигляд\" (вигляд типу inputform)", // ai 2026-06
 
-// admin/se_admin.php, row 245
-// admin/se_compact.php, row 282
-// admin/se_fulltext.php, row 214
-// admin/se_view.php, row 580
+// admin/se_admin.php, row 241
+// admin/se_compact.php, row 269
+// admin/se_fulltext.php, row 210
+// admin/se_view.php, row 572
 "Use these aliases for database fields" => "Використовуйте ці аліаси для полів бази даних", // ai 2026-06
 
 // admin/se_compact.php, row 84
 "You do not have permissions to change compact view formatting" => "Ви не маєте права змінювати форматування компактного вигляду", // ai 2026-06
 
-// admin/se_compact.php, row 92, 238
+// admin/se_compact.php, row 92, 225
 // include/constants.php, row 655, 705, 779, 814, 845, 912, 967, 1001
 "Odd Rows" => "Непарні рядки", // ai 2026-06
 
-// admin/se_compact.php, row 96, 275
+// admin/se_compact.php, row 96, 262
 "'No item found' message" => "Повідомлення 'Не знайдено жодної статті'", // ai 2026-06
 
-// admin/se_compact.php, row 98, 242
+// admin/se_compact.php, row 98, 229
 // include/constants.php, row 657, 780, 914, 969, 1003
 "Even Rows" => "Парні рядки", // ai 2026-06
 
-// admin/se_compact.php, row 101, 264
+// admin/se_compact.php, row 101, 251
 "Category top HTML" => "Верхній HTML-код для рубрики", // ai 2026-06
 
-// admin/se_compact.php, row 102, 267
+// admin/se_compact.php, row 102, 254
 "Category Headline" => "Заголовок рубрики", // ai 2026-06
 
-// admin/se_compact.php, row 103, 270
+// admin/se_compact.php, row 103, 257
 "Category bottom HTML" => "Нижній HTML-код для рубрики", // ai 2026-06
 
 // admin/se_compact.php, row 135
 "Design of compact design successfully changed" => "Дизайн компактного вигляду успішно змінено", // ai 2026-06
 
-// admin/se_compact.php, row 212
+// admin/se_compact.php, row 199
 "Admin - design Index view" => "Адміністрування - вигляд переліку", // ai 2026-06
 
-// admin/se_compact.php, row 213
+// admin/se_compact.php, row 200
 "Use these boxes ( and the tags listed below ) to control what appears on summary page" => "Використовуйте ці поля ( та теги, наведені нижче ) для керування тим, що з'являється на сторінці переліку", // ai 2026-06
 
-// admin/se_compact.php, row 230
+// admin/se_compact.php, row 217
 "HTML code for index view" => "HTML-код для вигляду переліку", // ai 2026-06
 
-// admin/se_compact.php, row 241
+// admin/se_compact.php, row 228
 // include/constants.php, row 656, 805, 913, 968, 1002
 "Use different HTML code for even rows" => "Використати інший HTML-код для парних рядків", // ai 2026-06
 
-// admin/se_compact.php, row 243
+// admin/se_compact.php, row 230
 "You can define different code for odd and even rows\n"
    ."                         <br>first red, second black, for example"
  => "Ви можете задати різний код для непарних і парних рядків\n"
    ."                         <br>наприклад, перший червоний, другий чорний", // ai 2026-06
 
-// admin/se_compact.php, row 248
+// admin/se_compact.php, row 235
 // include/constants.php, row 673, 789, 922, 977, 1011
 "Group by" => "Згрупувати за", // ai 2026-06
 
-// admin/se_compact.php, row 255
+// admin/se_compact.php, row 242
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 "Ascending" => "За зростанням", // ai 2026-06
 
-// admin/se_compact.php, row 256
+// admin/se_compact.php, row 243
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 368
+// include/searchlib.php, row 369
 "Descending" => "За спаданням", // ai 2026-06
 
-// admin/se_compact.php, row 257
+// admin/se_compact.php, row 244
 // admin/se_view.php, row 189
 "Ascending by Priority" => "За зростанням пріоритету", // ai 2026-06
 
-// admin/se_compact.php, row 258
+// admin/se_compact.php, row 245
 // admin/se_view.php, row 189
 "Descending by Priority" => "За спаданням пріоритету", // ai 2026-06
 
-// admin/se_compact.php, row 261
+// admin/se_compact.php, row 248
 "'by Priority' is usable just for fields using constants (like category)" => "'за пріоритетом' можна використати лише для полів, що використовують константи (як-от рубрика)", // ai 2026-06
 
-// admin/se_compact.php, row 276
+// admin/se_compact.php, row 263
 "message to show in place of slice.php, if no item matches the query" => "повідомлення, яке показується замість slice.php, якщо жодна стаття не відповідає запиту", // ai 2026-06
 
 // admin/se_constant.php, row 95, 186
@@ -1511,7 +1533,7 @@ return [
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1180
+// include/logs.php, row 1200
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1526,17 +1548,17 @@ return [
 // admin/se_profile.php, row 209
 // include/constants.php, row 453
 // include/constedit.php, row 76
-// include/searchlib.php, row 175
+// include/searchlib.php, row 176
 // src/Central/FindingText.php, row 94, 98
 "Value" => "Значення", // ai 2026-06
 
 // admin/se_constant.php, row 177, 379
-// admin/se_inputform.php, row 521
+// admin/se_inputform.php, row 515
 // admin/se_view.php, row 153
 // admin/um_gedit.php, row 299, 302
 // include/constants.php, row 459
 // include/constedit.php, row 84
-// include/stringexpand.php, row 98
+// include/stringexpand.php, row 97
 // include/um_gedit.php, row 33
 // src/Manageraction/Central_Linkcheck.php, row 31
 // src/Optimize/AbstractOptimize.php, row 174
@@ -1546,13 +1568,13 @@ return [
 // admin/se_fields.php, row 301
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1336
+// include/field.class.php, row 1384
 // src/Optimize/AbstractOptimize.php, row 177
 "Priority" => "Пріоритет", // ai 2026-06
 
 // admin/se_constant.php, row 184, 327
 // admin/se_constant_import.php, row 74, 126
-// admin/se_inputform.php, row 275
+// admin/se_inputform.php, row 284
 // include/constants.php, row 784
 "Constant Group" => "Група констант", // ai 2026-06
 
@@ -1584,7 +1606,7 @@ return [
 
 // admin/se_constant.php, row 319
 // admin/se_constant_import.php, row 75, 125, 136
-// admin/se_inputform.php, row 411
+// admin/se_inputform.php, row 405
 "Constants" => "Константи", // ai 2026-06
 
 // admin/se_constant.php, row 333
@@ -1672,9 +1694,11 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1210
+// include/logs.php, row 1230
 // src/Optimize/CheckCookieReads.php, row 55
-// src/Optimize/CheckUserAliasFunctionLog.php, row 86
+// src/Optimize/CheckIsdsAccounts.php, row 262, 331
+// src/Optimize/CheckIsdsConf.php, row 342, 372
+// src/Optimize/CheckUserAliasFunctionLog.php, row 87
 "File" => "Файл", // ai 2026-06
 
 // admin/se_csv_import.php, row 239, 244
@@ -1683,7 +1707,7 @@ return [
 "URL" => "",
 
 // admin/se_csv_import.php, row 240, 245
-// admin/se_inputform.php, row 464, 465
+// admin/se_inputform.php, row 458, 459
 // include/itemfunc.php, row 668, 777, 806
 // src/Util/Note.php, row 63
 "Text" => "Текст", // ai 2026-06
@@ -1747,11 +1771,12 @@ return [
 
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
-// include/metabase.class.php, row 1670
-// include/statestore.php, row 1077, 1414
+// include/metabase.class.php, row 1667
+// include/statestore.php, row 1076, 1413
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
+// src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Дія", // ai 2026-06
 
 // admin/se_csv_import2.php, row 413
@@ -1835,7 +1860,7 @@ return [
 "Import: %1" => "Імпорт: %1", // ai 2026-10
 
 // admin/se_dataimports.php, row 40
-// include/menu.php, row 156
+// include/menu.php, row 157
 // include/menu_util.php, row 92
 // src/Optimize/CheckImports.php, row 35
 "Imports" => "Імпорти", // ai 2026-10
@@ -1861,6 +1886,7 @@ return [
 // admin/se_export.php, row 118
 // include/exporter.class.php, row 510
 // include/scroller.php, row 88
+// src/Isds/Registry/Page.php, row 532
 "All" => "Усі", // ai 2026-06
 
 // admin/se_export.php, row 120
@@ -1909,8 +1935,9 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 533
+// include/logs.php, row 553
 // include/se_users.php, row 180
+// src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
 "Type" => "Тип", // ai 2026-06
 
@@ -1928,7 +1955,7 @@ return [
 
 // admin/se_export.php, row 154
 // include/exporter.class.php, row 553
-// include/searchlib.php, row 1011
+// include/searchlib.php, row 1012
 "Conditions" => "Умови", // ai 2026-06
 
 // admin/se_export.php, row 154
@@ -1937,7 +1964,7 @@ return [
 
 // admin/se_export.php, row 155
 // include/exporter.class.php, row 554
-// include/searchlib.php, row 1013
+// include/searchlib.php, row 1014
 "Sort" => "Сортування", // ai 2026-06
 
 // admin/se_export.php, row 155
@@ -2008,7 +2035,7 @@ return [
 "Alias moved OK" => "Аліас успішно переміщено", // ai 2026-06
 
 // admin/se_fields.php, row 184
-// admin/se_inputform.php, row 269
+// admin/se_inputform.php, row 278
 "Fields update successful" => "Налаштування полів успішно змінено", // ai 2026-06
 
 // admin/se_fields.php, row 204
@@ -2021,7 +2048,7 @@ return [
 "Do you really want to delete this field from this slice?" => "Ви дійсно бажаєте видалити це поле з цієї рубрики?", // ai 2026-06
 
 // admin/se_fields.php, row 249
-// admin/se_inputform.php, row 379
+// admin/se_inputform.php, row 374
 "Admin - configure Fields" => "Адміністрування - налаштування полів", // ai 2026-06
 
 // admin/se_fields.php, row 281
@@ -2034,7 +2061,7 @@ return [
 "Required" => "Обов'язкове", // ai 2026-06
 
 // admin/se_fields.php, row 305
-// include/stringexpand.php, row 111
+// include/stringexpand.php, row 110
 "Aliases" => "Аліаси", // ai 2026-06
 
 // admin/se_filters.php, row 83
@@ -2053,7 +2080,7 @@ return [
 // admin/um_gedit.php, row 280
 // admin/um_uedit.php, row 388
 // central/include/actionapps.class.php, row 279
-// include/formutil.php, row 190, 2925
+// include/formutil.php, row 190, 2940
 // modules/jump/modedit.php, row 179
 // src/Import/DetailCatalog.php, row 151
 "Update" => "Змінити", // ai 2026-06
@@ -2091,34 +2118,34 @@ return [
 // admin/se_forms.php, row 37
 "You do not have permissions to manage forms" => "Ви не маєте права керувати формами", // ai 2026-06
 
-// admin/se_fulltext.php, row 67, 161
+// admin/se_fulltext.php, row 67, 154
 "Top HTML code" => "Верхній HTML-код", // ai 2026-06
 
-// admin/se_fulltext.php, row 68, 173
+// admin/se_fulltext.php, row 68, 167
 "Fulltext HTML code" => "HTML-код повного тексту", // ai 2026-06
 
-// admin/se_fulltext.php, row 69, 185
+// admin/se_fulltext.php, row 69, 180
 "Bottom HTML code" => "Нижній HTML-код", // ai 2026-06
 
 // admin/se_fulltext.php, row 99
 "Fulltext format update successful" => "Формат повного тексту успішно змінено", // ai 2026-06
 
-// admin/se_fulltext.php, row 133
+// admin/se_fulltext.php, row 127
 "Admin - design Fulltext view" => "Адміністрування - оформлення вигляду повного тексту", // ai 2026-06
 
-// admin/se_fulltext.php, row 134
+// admin/se_fulltext.php, row 128
 "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item" => "Використовуйте ці поля ( з наведеними нижче тегами ) для керування тим, що з'являється у вигляді повного тексту кожної статті", // ai 2026-06
 
-// admin/se_fulltext.php, row 158
+// admin/se_fulltext.php, row 151
 "HTML code for fulltext view" => "HTML-код для вигляду повного тексту", // ai 2026-06
 
-// admin/se_fulltext.php, row 205, 209
+// admin/se_fulltext.php, row 201, 205
 "The template for discussion you can set on \"Design\" -> \"View\" page" => "Шаблон для обговорення можна налаштувати на сторінці \"Оформлення\" -> \"Вигляд\"", // ai 2026-06
 
-// admin/se_fulltext.php, row 206
+// admin/se_fulltext.php, row 202
 "Use HTML tags" => "Використовувати HTML-теги", // ai 2026-06
 
-// admin/se_fulltext.php, row 207
+// admin/se_fulltext.php, row 203
 "New comments disabled" => "Нові коментарі вимкнено", // ai 2026-06
 
 // admin/se_history.php, row 57
@@ -2137,7 +2164,7 @@ return [
 // admin/um_uedit.php, row 262
 // admin/usershow.php, row 89
 // include/perm_sql.php, row 384, 426
-// src/Optimize/CheckAlertitemRefusals.php, row 89
+// src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
 "User" => "Користувач", // ai 2026-06
@@ -2196,13 +2223,13 @@ return [
 // src/Optimize/CheckImports.php, row 176, 178, 287, 367
 "Import" => "Імпортувати", // ai 2026-06
 
-// admin/se_inputform.php, row 186, 487
+// admin/se_inputform.php, row 186, 481
 "Before HTML code" => "HTML-код перед полем", // ai 2026-06
 
-// admin/se_inputform.php, row 187, 485
+// admin/se_inputform.php, row 187, 479
 "Help for this field" => "Довідка для цього поля", // ai 2026-06
 
-// admin/se_inputform.php, row 188, 486
+// admin/se_inputform.php, row 188, 480
 "More help" => "Більше довідки", // ai 2026-06
 
 // admin/se_inputform.php, row 190
@@ -2211,134 +2238,137 @@ return [
 // admin/se_inputform.php, row 192
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "Аліас завжди має бути _# + 8 ВЕЛИКИХ літер, напр. _#<b>SOMTHING</b>.", // ai 2026-06
 
-// admin/se_inputform.php, row 197, 518
-// include/stringexpand.php, row 96
-// src/Optimize/CheckUserAliasFunctions.php, row 88
+// admin/se_inputform.php, row 197, 512
+// include/stringexpand.php, row 95
+// src/Optimize/CheckUserAliasFunctions.php, row 89
 "Alias" => "Аліас", // ai 2026-06
 
-// admin/se_inputform.php, row 201, 519
+// admin/se_inputform.php, row 201, 513
 // admin/se_profile.php, row 208
 "Function" => "Функція", // ai 2026-06
 
-// admin/se_inputform.php, row 296
+// admin/se_inputform.php, row 257
+"You can relate only to a slice where you may edit all items" => "",
+
+// admin/se_inputform.php, row 305
 "No field found" => "Поле не знайдено", // ai 2026-06
 
-// admin/se_inputform.php, row 355
+// admin/se_inputform.php, row 352
 "You selected slice and not constant group. It is impossible to create slice from here." => "Ви вибрали рубрику, а не групу констант. Звідси неможливо створити рубрику.", // ai 2026-06
 
-// admin/se_inputform.php, row 380
+// admin/se_inputform.php, row 375
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "УВАГА: Не змінюйте це налаштування, якщо не впевнені, що робите!", // ai 2026-06
 
-// admin/se_inputform.php, row 394
+// admin/se_inputform.php, row 388
 // include/formutil.php, row 191
 "Update & Edit" => "Змінити та редагувати", // ai 2026-06
 
-// admin/se_inputform.php, row 395
-// admin/se_view.php, row 493
-// include/slice.class.php, row 1300
+// admin/se_inputform.php, row 389
+// admin/se_view.php, row 485
+// include/slice.class.php, row 1324
 "Show History" => "Показати історію", // ai 2026-06
 
-// admin/se_inputform.php, row 399
+// admin/se_inputform.php, row 393
 "Field properties" => "Властивості поля", // ai 2026-06
 
-// admin/se_inputform.php, row 407
+// admin/se_inputform.php, row 401
 // src/Widget/Widget.php, row 765
 "Input type" => "Тип введення", // ai 2026-06
 
-// admin/se_inputform.php, row 410
+// admin/se_inputform.php, row 404
 "Input field type in Add / Edit item." => "Тип поля введення при додаванні / редагуванні статті.", // ai 2026-06
 
-// admin/se_inputform.php, row 414
+// admin/se_inputform.php, row 408
 "Edit|Use as new|New" => "Редагувати|Використати як нову|Нова", // ai 2026-06
 
-// admin/se_inputform.php, row 416
+// admin/se_inputform.php, row 410
 "Choose a Constant Group or a Slice." => "Виберіть групу констант або рубрику.", // ai 2026-06
 
-// admin/se_inputform.php, row 430
+// admin/se_inputform.php, row 424
 "Allow translation" => "Дозволити переклад", // ai 2026-06
 
-// admin/se_inputform.php, row 430
+// admin/se_inputform.php, row 424
 "Only Text Area and Text Field widgets allow translation. Languages should be set on Slice Setting page." => "Переклад дозволяють лише віджети Text Area та Text Field. Мови слід задати на сторінці налаштувань рубрики.", // ai 2026-06
 
-// admin/se_inputform.php, row 439
+// admin/se_inputform.php, row 433
 "How to generate the default value" => "Як генерувати типове значення", // ai 2026-06
 
-// admin/se_inputform.php, row 446
+// admin/se_inputform.php, row 440
 // include/feeding.php, row 453
 "Validate" => "Перевірити", // ai 2026-06
 
-// admin/se_inputform.php, row 457
+// admin/se_inputform.php, row 451
 "Stored as" => "Зберігається як", // ai 2026-06
 
-// admin/se_inputform.php, row 460
+// admin/se_inputform.php, row 454
 "Stored in <em>item</em> table - it is not possible to change store method" => "Зберігається в таблиці <em>item</em> - спосіб зберігання змінити неможливо", // ai 2026-06
 
-// admin/se_inputform.php, row 464, 465
+// admin/se_inputform.php, row 458, 459
 // src/Central/FindingText.php, row 176, 186
 "Number" => "Число", // ai 2026-06
 
-// admin/se_inputform.php, row 473
+// admin/se_inputform.php, row 467
 // admin/sliceimp.php, row 425
 // include/form.class.php, row 474, 476
-// include/formutil.php, row 209, 2936
+// include/formutil.php, row 209, 2951
 "Insert" => "Вставити", // ai 2026-06
 
-// admin/se_inputform.php, row 476
+// admin/se_inputform.php, row 470
 "Defines how value is stored in database." => "Визначає, як значення зберігається в базі даних.", // ai 2026-06
 
-// admin/se_inputform.php, row 483
+// admin/se_inputform.php, row 477
 "Show 'HTML' / 'plain text' option" => "Показувати опцію 'HTML' / 'звичайний текст'", // ai 2026-06
 
-// admin/se_inputform.php, row 484
+// admin/se_inputform.php, row 478
 "'HTML' as default" => "'HTML' за замовчуванням", // ai 2026-06
 
-// admin/se_inputform.php, row 484
+// admin/se_inputform.php, row 478
 "HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least." => "Опція HTML означає, що поле виводиться точно так, як заповнено, за допомогою аліаса {field...........}. Звичайний текст означає, що нові рядки перетворюються на &lt;br&gt; тощо. HTML — принаймні хороший вибір для будь-яких нетекстових даних.", // ai 2026-06
 
-// admin/se_inputform.php, row 485
+// admin/se_inputform.php, row 479
 "Shown help for this field" => "Довідка, що показується для цього поля", // ai 2026-06
 
-// admin/se_inputform.php, row 486
+// admin/se_inputform.php, row 480
 "Text shown after user click on '?' in input form" => "Текст, який показується після натискання '?' у вхідній формі", // ai 2026-06
 
-// admin/se_inputform.php, row 487
+// admin/se_inputform.php, row 481
 "Code shown in input form before this field" => "Код, що показується у вхідній формі перед цим полем", // ai 2026-06
 
-// admin/se_inputform.php, row 489
+// admin/se_inputform.php, row 483
 "Searchable in AA Item Manager" => "Можливість пошуку в Менеджері статей AA", // ai 2026-06
 
-// admin/se_inputform.php, row 489
+// admin/se_inputform.php, row 483
 "The field is shown in Search box in Item Manager." => "Поле показується в полі пошуку Менеджера статей.", // ai 2026-06
 
-// admin/se_inputform.php, row 490
+// admin/se_inputform.php, row 484
 "Feeding mode" => "Режим передавання", // ai 2026-06
 
-// admin/se_inputform.php, row 490
+// admin/se_inputform.php, row 484
 "Should the content of this field be copied to another slice if it is fed?" => "Чи має вміст цього поля копіюватися до іншої рубрики при передаванні?", // ai 2026-06
 
-// admin/se_inputform.php, row 492
+// admin/se_inputform.php, row 486
 "ALIASES used in views to print field content (%1)" => "АЛІАСИ, що використовуються у виглядах для виводу вмісту поля (%1)", // ai 2026-06
 
-// admin/se_inputform.php, row 512
+// admin/se_inputform.php, row 506
 "8 CHARS" => "8 ЗНАКІВ", // ai 2026-06
 
-// admin/se_inputform.php, row 512
+// admin/se_inputform.php, row 506
 "8 UPPERCASE letters or _" => "8 ВЕЛИКИХ літер або _", // ai 2026-06
 
-// admin/se_inputform.php, row 513
+// admin/se_inputform.php, row 507
 // src/Import/DetailPage.php, row 604
 // src/Import/RunView.php, row 188
 "Disabled" => "Вимкнено", // ai 2026-06
 
-// admin/se_inputform.php, row 514
+// admin/se_inputform.php, row 508
 // src/Util/ChangesMonitor.php, row 509
 "Copy to clipboard" => "Копіювати до буфера обміну", // ai 2026-06
 
-// admin/se_inputform.php, row 515
+// admin/se_inputform.php, row 509
 "Reset" => "Скинути", // ai 2026-06
 
-// admin/se_inputform.php, row 520
-// include/logs.php, row 613
+// admin/se_inputform.php, row 514
+// include/logs.php, row 633
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Параметри", // ai 2026-06
 
@@ -2385,9 +2415,10 @@ return [
 "Node" => "Вузол", // ai 2026-06
 
 // admin/se_inter_import.php, row 96
-// misc/datovka/datovka.php, row 119
+// misc/datovka/datovka.php, row 158
 // src/Import/DetailConfig.php, row 291
 // src/Import/DetailPage.php, row 377
+// src/Optimize/CheckIsdsRuns.php, row 310
 // src/Util/Note.php, row 64
 "State" => "Стан", // ai 2026-06
 
@@ -2398,7 +2429,7 @@ return [
 "No remote imports into the slice" => "Немає віддалених імпортів до рубрики", // ai 2026-06
 
 // admin/se_inter_import.php, row 104
-// include/menu.php, row 153
+// include/menu.php, row 154
 "Inter Node Import" => "Імпорт між вузлами", // ai 2026-06
 
 // admin/se_inter_import.php, row 105
@@ -2443,38 +2474,47 @@ return [
 // admin/se_inter_import3.php, row 118
 "The import was successfully created" => "Імпорт успішно створено", // ai 2026-06
 
-// admin/se_javascript.php, row 73
-// include/menu.php, row 166
+// admin/se_isds_registry.php, row 54
+"You do not have permissions to pair the items of this slice with the register of data boxes" => "",
+
+// admin/se_isds_registry.php, row 66
+// include/menu.php, row 167
+// src/Isds/SliceRules.php, row 180
+// src/Optimize/CheckIsdsRegistry.php, row 167
+"Data boxes from the register" => "",
+
+// admin/se_javascript.php, row 68
+// include/menu.php, row 169
 "Field Triggers" => "Тригери полів", // ai 2026-06
 
-// admin/se_javascript.php, row 80
+// admin/se_javascript.php, row 74
 "JavaScript for fields" => "JavaScript для полів", // ai 2026-06
 
-// admin/se_javascript.php, row 81
+// admin/se_javascript.php, row 75
 "Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)." => "Введіть код мовою JavaScript. Він буде включений на сторінку Додати / Редагувати статтю (itemedit.php).", // ai 2026-06
 
-// admin/se_javascript.php, row 96
+// admin/se_javascript.php, row 90
 "Field IDs" => "ID полів", // ai 2026-06
 
-// admin/se_javascript.php, row 98
+// admin/se_javascript.php, row 92
 "Write trigger functions like" => "Пишіть функції-тригери, наприклад", // ai 2026-06
 
-// admin/se_javascript.php, row 98
+// admin/se_javascript.php, row 92
 "see FAQ</a> for more details and examples" => "докладніше та приклади див. у FAQ</a>", // ai 2026-06
 
-// admin/se_javascript.php, row 99
+// admin/se_javascript.php, row 93
 "You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}." => "Ви можете розмістити {require:...} будь-де в коді, щоб завантажити будь-яку js-бібліотеку. Якщо ви не використовуєте жодного {require:...}, AA використає типове {require:aa-fillform@1} {require:aa-jslib@1}. Можете спокійно використати лише {require:aa-fillform}, якщо вам не потрібне старе {require:aa-jslib@1}.", // ai 2026-06
 
-// admin/se_javascript.php, row 100
+// admin/se_javascript.php, row 94
 "If you want to use javascript without any library, use {require:} or // {require:}." => "Якщо ви хочете використати javascript без жодної бібліотеки, використайте {require:} або // {require:}.", // ai 2026-06
 
-// admin/se_javascript.php, row 101
+// admin/se_javascript.php, row 95
 "Field Type" => "Тип поля", // ai 2026-06
 
-// admin/se_javascript.php, row 101
+// admin/se_javascript.php, row 95
 "Triggers Available -- see some JavaScript help for when a trigger is run" => "Доступні тригери -- у довідці JavaScript дізнаєтеся, коли який тригер запускається", // ai 2026-06
 
-// admin/se_javascript.php, row 105
+// admin/se_javascript.php, row 99
 "Triggers" => "Тригери", // ai 2026-06
 
 // admin/se_mapping.php, row 124, 196
@@ -2518,31 +2558,31 @@ return [
 // include/slicedit.php, row 146
 "You do not have permissions to edit this slice" => "Ви не маєте прав на редагування цієї рубрики", // ai 2026-06
 
-// admin/se_notify.php, row 233, 245
+// admin/se_notify.php, row 225, 236
 "Email Notifications of Events" => "Email-сповіщення про події", // ai 2026-06
 
-// admin/se_notify.php, row 247
+// admin/se_notify.php, row 238
 "E-mail is sent only if body is not empty.<br>You can use this for selective e-mails. For example: {ifset:{category........}:e-mail text}" => "E-mail надсилається, лише якщо тіло не порожнє.<br>Це можна використати для вибіркових e-mailів. Наприклад: {ifset:{category........}:текст e-mail}", // ai 2026-06
 
-// admin/se_notify.php, row 249
+// admin/se_notify.php, row 240
 "<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>Нова стаття в Резерві</h4> Користувачів можна сповіщати електронною поштою, коли стаття створена та поміщена до Резерву. Якщо ви хочете скористатися цією можливістю, введіть нижче адреси отримувачів. У наступних полях ви можете налаштувати формат листа, який вони отримають.", // ai 2026-06
 
-// admin/se_notify.php, row 250, 255, 260, 265
+// admin/se_notify.php, row 241, 246, 251, 256
 "Email addresses, one per line" => "Адреси email, по одній на рядок", // ai 2026-06
 
-// admin/se_notify.php, row 251, 256, 261, 266
+// admin/se_notify.php, row 242, 247, 252, 257
 "Subject of the Email message" => "Тема email-повідомлення", // ai 2026-06
 
-// admin/se_notify.php, row 252, 257, 262, 267
+// admin/se_notify.php, row 243, 248, 253, 258
 "Body of the Email message" => "Тіло email-повідомлення", // ai 2026-06
 
-// admin/se_notify.php, row 254
+// admin/se_notify.php, row 245
 "<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>Стаття змінена в Резерві</h4> Користувачів можна сповіщати електронною поштою, коли стаття в Резерві змінюється. Якщо ви хочете скористатися цією можливістю, введіть нижче адреси отримувачів. У наступних полях ви можете налаштувати формат листа, який вони отримають.", // ai 2026-06
 
-// admin/se_notify.php, row 259
+// admin/se_notify.php, row 250
 "<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>Нова стаття серед Затверджених</h4> Користувачів можна сповіщати електронною поштою, коли стаття створена та поміщена до Затверджених. Якщо ви хочете скористатися цією можливістю, введіть нижче адреси отримувачів. У наступних полях ви можете налаштувати формат листа, який вони отримають.", // ai 2026-06
 
-// admin/se_notify.php, row 264
+// admin/se_notify.php, row 255
 "<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>Стаття змінена серед Затверджених</h4> Користувачів можна сповіщати електронною поштою, коли стаття серед Затверджених змінюється. Якщо ви хочете скористатися цією можливістю, введіть нижче адреси отримувачів. У наступних полях ви можете налаштувати формат листа, який вони отримають.", // ai 2026-06
 
 // admin/se_profile.php, row 60
@@ -2762,7 +2802,7 @@ return [
 "Rule" => "Правило", // ai 2026-06
 
 // admin/se_profile.php, row 210
-// include/formutil.php, row 1225
+// include/formutil.php, row 1226
 // include/transformation.class.php, row 192, 381, 454, 548, 738
 // include/widget.class.php, row 657
 "HTML" => "",
@@ -2861,7 +2901,7 @@ return [
 // admin/se_sets.php, row 131
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 471, 528
-// include/statestore.php, row 1077
+// include/statestore.php, row 1076
 // src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 172
 "ID" => "",
@@ -2932,7 +2972,7 @@ return [
 // admin/se_users.php, row 126, 185
 // admin/slicewiz.php, row 81
 // include/se_users.php, row 109, 180
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 87
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 88
 "Editor" => "Редактор", // ai 2026-06
 
 // admin/se_users.php, row 127, 185
@@ -3001,39 +3041,39 @@ return [
 // admin/se_view.php, row 358
 "View successfully changed" => "Вигляд успішно змінено", // ai 2026-06
 
-// admin/se_view.php, row 481
+// admin/se_view.php, row 475
 // admin/se_views.php, row 103
 "Admin - design View" => "Адмін - оформлення вигляду", // ai 2026-06
 
-// admin/se_view.php, row 494
+// admin/se_view.php, row 486
 "Save as new" => "Зберегти як новий", // ai 2026-06
 
-// admin/se_view.php, row 502
+// admin/se_view.php, row 494
 "Defined Views" => "Визначені вигляди", // ai 2026-06
 
-// admin/se_view.php, row 538
+// admin/se_view.php, row 530
 // admin/se_views.php, row 148
 "show this view" => "показати цей вигляд", // ai 2026-06
 
-// admin/se_view.php, row 553
+// admin/se_view.php, row 545
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1620
-// include/stringexpand.php, row 1876
+// include/slice.class.php, row 1647, 1651
+// include/stringexpand.php, row 1882
 "No" => "Ні", // ai 2026-06
 
-// admin/se_view.php, row 553
+// admin/se_view.php, row 545
 "Accept {xpage}" => "Приймати {xpage}", // ai 2026-06
 
-// admin/se_view.php, row 553
+// admin/se_view.php, row 545
 "Use infinite scrolling" => "Використовувати нескінченне прокручування", // ai 2026-06
 
-// admin/se_view.php, row 596
+// admin/se_view.php, row 588
 "To include view in your sitemodule webpage use" => "Щоб включити вигляд до сторінки модуля сайту, використайте", // ai 2026-06
 
-// admin/se_view.php, row 602
+// admin/se_view.php, row 594
 "See documentation" => "Див. документацію", // ai 2026-06
 
-// admin/se_view.php, row 606
+// admin/se_view.php, row 598
 "Last from log" => "Останнє з журналу", // ai 2026-06
 
 // admin/se_views.php, row 70
@@ -3046,8 +3086,9 @@ return [
 "Create new view from this one" => "Створити новий вигляд з цього", // ai 2026-06
 
 // admin/se_views.php, row 149, 203, 223
-// include/formutil.php, row 1770, 1777
+// include/formutil.php, row 1774, 1781
 // src/Import/DetailPage.php, row 329, 666
+// src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
 "New" => "Новий", // ai 2026-06
 
@@ -3077,7 +3118,7 @@ return [
 
 // admin/search_replace.php, row 167
 // central/installapp.php, row 832
-// include/slice.class.php, row 674
+// include/slice.class.php, row 677
 // src/Optimize/SeoDuplicates.php, row 148
 "Items" => "Статті", // ai 2026-06
 
@@ -3135,7 +3176,7 @@ return [
 "Password" => "Пароль", // ai 2026-06
 
 // admin/setup.php, row 101, 243
-// include/formutil.php, row 2196
+// include/formutil.php, row 2200
 "Retype Password" => "Повторіть пароль", // ai 2026-06
 
 // admin/setup.php, row 102, 245
@@ -3209,7 +3250,7 @@ return [
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
 // admin/um_uedit.php, row 378
-// include/formutil.php, row 1767
+// include/formutil.php, row 1771
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
@@ -3255,6 +3296,7 @@ return [
 "Slice successfully deleted, tables are optimized" => "Рубрику успішно видалено, таблиці оптимізовано", // ai 2026-06
 
 // admin/slicedit.php, row 139, 146, 153
+// src/Isds/SliceRules.php, row 399, 400
 "Not allowed" => "Заборонено", // ai 2026-06
 
 // admin/slicedit.php, row 140
@@ -3262,14 +3304,14 @@ return [
 "Active with antiSPAM tokens" => "Активні з antiSPAM токенами", // ai 2026-06
 
 // admin/slicedit.php, row 142, 148
-// include/menu.php, row 192
+// include/menu.php, row 195
 // include/menu_util.php, row 123
 // src/Central/FindingText.php, row 416
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "Резерв", // ai 2026-06
 
 // admin/slicedit.php, row 154
-// include/formutil.php, row 3293
+// include/formutil.php, row 3308
 // src/Central/FindingText.php, row 417
 "All items" => "Усі статті", // ai 2026-06
 
@@ -3318,11 +3360,13 @@ return [
 // admin/slicedit.php, row 269
 // include/slicedit.php, row 193
 // src/Central/FindingText.php, row 430
+// src/Isds/SliceRules.php, row 399
 "Allow anonymous posting of items" => "Дозволити анонімне додавання статей", // ai 2026-06
 
 // admin/slicedit.php, row 270
 // include/slicedit.php, row 194
 // src/Central/FindingText.php, row 431
+// src/Isds/SliceRules.php, row 400
 "Allow anonymous editing of items" => "Дозволити анонімне редагування статей", // ai 2026-06
 
 // admin/slicedit.php, row 271
@@ -3356,6 +3400,7 @@ return [
 // admin/slicedit.php, row 294
 // include/constants.php, row 688, 803, 829, 860, 893, 957, 991, 1025
 // include/slicedit.php, row 198
+// src/Isds/SliceRules.php, row 398
 // src/Widget/Widget.php, row 810
 "Listing length" => "Кількість статей у списку", // ai 2026-06
 
@@ -3565,7 +3610,7 @@ return [
 "Level of Access" => "Рівень доступу", // ai 2026-06
 
 // admin/slicewiz.php, row 81
-// include/constants.php, row 1194
+// include/constants.php, row 1197
 "Slice Administrator" => "Адміністратор рубрики", // ai 2026-06
 
 // admin/slicewiz.php, row 86
@@ -3659,7 +3704,7 @@ return [
 
 // admin/um_gedit.php, row 312
 // admin/um_uedit.php, row 230, 241
-// include/logs.php, row 891
+// include/logs.php, row 911
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -3784,7 +3829,7 @@ return [
 "Write email to users" => "Написати e-mail користувачам", // ai 2026-06
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1039
+// include/logs.php, row 1059
 "Recipients" => "Одержувачі", // ai 2026-06
 
 // admin/write_mail.php, row 238
@@ -3858,14 +3903,14 @@ return [
 "App" => "Застосунок", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1181
+// include/logs.php, row 1201
 "Version" => "Версія", // ai 2026-10
 
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
-// include/menu.php, row 232
+// include/menu.php, row 235
 // include/menu_util.php, row 448, 758
-// include/slice.class.php, row 1387
+// include/slice.class.php, row 1412
 // src/Central/FindingText.php, row 496
 "Alerts" => "Сповіщення", // ai 2026-06
 
@@ -4001,7 +4046,7 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1182
+// include/logs.php, row 1202
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
@@ -4030,8 +4075,9 @@ return [
 "slices and Alerts" => "рубрики та сповіщення", // ai 2026-10
 
 // central/installapp.php, row 484, 1357
-// include/slice.class.php, row 1138
+// include/slice.class.php, row 1147
 // src/Central/FindingText.php, row 496
+// src/Optimize/CheckIsdsRegistry.php, row 88
 // src/Optimize/SeoDuplicates.php, row 66
 "Site" => "Сайт", // ai 2026-06
 
@@ -4045,7 +4091,7 @@ return [
 "Hold Ctrl to choose more of them." => "Щоб вибрати кілька, утримуйте Ctrl.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 770, 1224
+// include/logs.php, row 790, 1244
 "Mode" => "Режим", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4280,6 +4326,8 @@ return [
 "what to compare with. Capitals count. A dash inside a value is written doubled, see below." => "з чим порівнювати. Регістр літер має значення. Дефіс усередині значення пишеться подвоєним, див. нижче.", // ai 2026-10
 
 // central/installapp.php, row 1087
+// src/Optimize/CheckIsdsRunItems.php, row 93
+// src/Optimize/CheckIsdsRuns.php, row 185, 206
 "Examples" => "Приклади", // ai 2026-10
 
 // central/installapp.php, row 1088
@@ -4289,7 +4337,7 @@ return [
 "Operators" => "Оператори", // ai 2026-10
 
 // central/installapp.php, row 1089
-// include/searchlib.php, row 173
+// include/searchlib.php, row 174
 "Operator" => "Оператор", // ai 2026-06
 
 // central/installapp.php, row 1089
@@ -4343,8 +4391,8 @@ return [
 "keep the value of the app" => "залишити значення застосунку", // ai 2026-10
 
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1620
-// include/stringexpand.php, row 1876
+// include/slice.class.php, row 1647, 1651
+// include/stringexpand.php, row 1882
 "Yes" => "Так", // ai 2026-06
 
 // central/installapp.php, row 1178
@@ -4352,13 +4400,16 @@ return [
 "(empty)" => "(порожньо)", // ai 2026-06
 
 // central/installapp.php, row 1183
+// src/Isds/SliceRules.php, row 175
 "Slice settings" => "Налаштування рубрики", // ai 2026-10
 
 // central/installapp.php, row 1183
 "Values that hold for the whole slice, not for single items. Leave a field empty to keep the value of the app; you can change them later in the slice under Setting." => "Значення, що діють для всієї рубрики, а не для окремих статей. Залиште поле порожнім, щоб зберегти значення застосунку; пізніше їх можна змінити в рубриці в розділі «Налаштування».", // ai 2026-10
 
 // central/installapp.php, row 1184
-// include/menu.php, row 219
+// include/menu.php, row 222
+// src/Optimize/CheckIsdsAccounts.php, row 102, 262, 331
+// src/Optimize/CheckIsdsConf.php, row 115, 122, 217, 237, 306, 307
 // src/Optimize/CheckRequiredSettings.php, row 71
 "Setting" => "Налаштування", // ai 2026-06
 
@@ -4418,6 +4469,7 @@ return [
 "in conditions" => "в умовах", // ai 2026-10
 
 // central/installapp.php, row 1343
+// src/Isds/Registry/Page.php, row 514
 // src/Optimize/CheckNightly.php, row 145, 153
 "Found" => "Знайдено", // ai 2026-10
 
@@ -4429,7 +4481,7 @@ return [
 "Stopped by an error" => "Зупинено через помилку", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 772
+// include/logs.php, row 792
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "Завершено", // ai 2026-10
@@ -4606,7 +4658,7 @@ return [
 "%1 synchronization actions planned. See" => "Заплановано %1 дій синхронізації. Див.", // ai 2026-06
 
 // central/synchronize3.php, row 110
-// include/menu.php, row 170
+// include/menu.php, row 173
 // include/menu_util.php, row 74
 // src/Optimize/CheckAlerts.php, row 50
 // src/Optimize/CheckQueue.php, row 58
@@ -4631,45 +4683,45 @@ return [
 // central/synchronize3.php, row 183
 "Compared and Updated ActionApps" => "Порівняні та оновлені ActionApps", // ai 2026-06
 
-// filldisc.php, row 104, 154
-// filler.php, row 416
+// filldisc.php, row 106, 156
+// filler.php, row 423
 "Not accepted, sorry. Looks like spam." => "Не прийнято, перепрошуємо. Схоже на спам.", // ai 2026-06
 
-// filldisc.php, row 111
-// filler.php, row 300
+// filldisc.php, row 113
+// filler.php, row 301
 "Wrong result, not possible to post comments." => "Хибний результат, додавати коментарі неможливо.", // ai 2026-06
 
-// filldisc.php, row 120
+// filldisc.php, row 122
 "Comment to wrong item - item's slice not found." => "Коментар до хибної статті - рубрику статті не знайдено.", // ai 2026-06
 
-// filldisc.php, row 124, 131
+// filldisc.php, row 126, 133
 "New comments disabled." => "Нові коментарі вимкнено.", // ai 2026-06
 
-// filldisc.php, row 195
+// filldisc.php, row 197
 "Not accepted, your IP address is banned." => "Не прийнято, вашу IP-адресу заблоковано.", // ai 2026-06
 
-// filldisc.php, row 205
+// filldisc.php, row 207
 "Not accepted, item is not published or does not exist." => "Не прийнято, статтю не опубліковано або вона не існує.", // ai 2026-06
 
-// filler.php, row 294
+// filler.php, row 295
 "Not allowed to post comments" => "Додавання коментарів не дозволено", // ai 2026-06
 
-// filler.php, row 335, 378
+// filler.php, row 336, 382
 "Bad Token. Not allowed to post comments" => "Хибний токен. Додавання коментарів не дозволено", // ai 2026-06
 
-// filler.php, row 361
+// filler.php, row 362
 "Slice ID not defined" => "ID рубрики не визначено", // ai 2026-06
 
-// filler.php, row 367
+// filler.php, row 368
 "Bad slice ID" => "Хибне ID рубрики", // ai 2026-06
 
-// filler.php, row 437
-"Anonymous posting not admitted." => "Анонімне додавання не дозволено.", // ai 2026-06
-
-// filler.php, row 479
+// filler.php, row 397, 486
 "You are not allowed to update this item." => "Ви не маєте права редагувати цю статтю.", // ai 2026-06
 
-// filler.php, row 490
+// filler.php, row 444
+"Anonymous posting not admitted." => "Анонімне додавання не дозволено.", // ai 2026-06
+
+// filler.php, row 499
 "Some error in store item." => "Помилка під час збереження статті.", // ai 2026-06
 
 // include/adminpage.class.php, row 68
@@ -4679,7 +4731,7 @@ return [
 "Short Id" => "Коротке ID", // ai 2026-06
 
 // include/constants.php, row 456
-// include/logs.php, row 930, 962
+// include/logs.php, row 950, 982
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Клас", // ai 2026-06
 
@@ -4688,7 +4740,7 @@ return [
 "Level" => "Рівень", // ai 2026-06
 
 // include/constants.php, row 509
-// include/logs.php, row 1141
+// include/logs.php, row 1161
 "Feed" => "Копіювати вміст", // ai 2026-06
 
 // include/constants.php, row 510
@@ -4965,7 +5017,7 @@ return [
 // include/constants.php, row 1127
 "Calendar: Year number of processed cell" => "Календар: Рік опрацьовуваної комірки", // ai 2026-06
 
-// include/constants.php, row 1192
+// include/constants.php, row 1195
 "Superadmin" => "Суперадміністратор", // ai 2026-06
 
 // include/constedit.php, row 55
@@ -4984,6 +5036,7 @@ return [
 "Save all changes to database" => "Зберегти всі зміни в базі даних", // ai 2026-06
 
 // include/constedit.php, row 96
+// src/Optimize/CheckViewSliceRefusals.php, row 132
 "View settings" => "Перегляд", // ai 2026-06
 
 // include/constedit.php, row 96
@@ -5105,81 +5158,81 @@ return [
 // include/feeding.php, row 525
 "Remote node" => "Віддалений вузол", // ai 2026-06
 
-// include/field.class.php, row 162
+// include/field.class.php, row 204
 "unique value - it is checked before it is trimmed, so a duplicate could slip through" => "унікальне значення – перевіряється до обрізання пробілів, тож дублікат може проскочити", // ai 2026-10
 
-// include/field.class.php, row 167
+// include/field.class.php, row 209
 "code - its indentation and the last new line are kept on purpose" => "код – його відступи й останній перехід на новий рядок зберігаються навмисно", // ai 2026-10
 
-// include/field.class.php, row 174
+// include/field.class.php, row 216
 "stores the text of the selected items" => "зберігає текст вибраних пунктів", // ai 2026-10
 
-// include/field.class.php, row 180
+// include/field.class.php, row 222
 "constants of a group" => "константи групи", // ai 2026-10
 
-// include/field.class.php, row 187
+// include/field.class.php, row 229
 "the constant \"%1\" has spaces or new lines around - trim the constants first" => "константа «%1» має довкола пробіли або переходи на новий рядок – спершу обріжте константи", // ai 2026-10
 
-// include/field.class.php, row 709
+// include/field.class.php, row 757
 "Move to another field" => "Перемістити в інше поле", // ai 2026-06
 
-// include/field.class.php, row 1084
-// include/itemview.php, row 129
+// include/field.class.php, row 1132
+// include/itemview.php, row 130
 "number of found items" => "кількість знайдених статей", // ai 2026-06
 
-// include/field.class.php, row 1085
+// include/field.class.php, row 1133
 "index of item within whole listing (begins with 0)" => "порядок статті в усьому списку (нумерація з 0)", // ai 2026-06
 
-// include/field.class.php, row 1086
+// include/field.class.php, row 1134
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "порядок статті на сторінці (на кожній сторінці, виведеній pagescroller-ом, починається з 0)", // ai 2026-06
 
-// include/field.class.php, row 1087
+// include/field.class.php, row 1135
 "index of a group on page (it begins from 0 on each page)" => "індекс групи на сторінці (на кожній сторінці починається з 0)", // ai 2026-06
 
-// include/field.class.php, row 1088
+// include/field.class.php, row 1136
 "index of item within a group on page (it begins from 0 on each group)" => "індекс статті в групі на сторінці (у кожній групі починається з 0)", // ai 2026-06
 
-// include/field.class.php, row 1089
+// include/field.class.php, row 1137
 "alias for Item ID" => "аліас для ID статті", // ai 2026-06
 
-// include/field.class.php, row 1090
+// include/field.class.php, row 1138
 "alias for Short Item ID" => "аліас для скороченого ID статті", // ai 2026-06
 
-// include/field.class.php, row 1098, 1099
+// include/field.class.php, row 1146, 1147
 "alias used on admin page index.php for itemedit url" => "аліас, що використовується на адмін-сторінці index.php для URL itemedit", // ai 2026-06
 
-// include/field.class.php, row 1100
+// include/field.class.php, row 1148
 "Alias used on admin page index.php for edit discussion url" => "Аліас, що використовується на адмін-сторінці index.php для URL редагування обговорення", // ai 2026-06
 
-// include/field.class.php, row 1101
+// include/field.class.php, row 1149
 "Title of Slice for RSS" => "Назва рубрики для RSS", // ai 2026-06
 
-// include/field.class.php, row 1102
+// include/field.class.php, row 1150
 "Link to the Slice for RSS" => "Посилання на рубрику для RSS", // ai 2026-06
 
-// include/field.class.php, row 1103
+// include/field.class.php, row 1151
 "Short description (owner and name) of slice for RSS" => "Короткий опис (власник і назва) рубрики для RSS", // ai 2026-06
 
-// include/field.class.php, row 1104
+// include/field.class.php, row 1152
 "Date RSS information is generated, in RSS date format" => "Дата генерації RSS-інформації у форматі дати RSS", // ai 2026-06
 
-// include/field.class.php, row 1105
+// include/field.class.php, row 1153
 "Slice name" => "Назва рубрики", // ai 2026-06
 
-// include/field.class.php, row 1107
+// include/field.class.php, row 1155
 "Current MLX language" => "Поточна мова MLX", // ai 2026-06
 
-// include/field.class.php, row 1108
+// include/field.class.php, row 1156
 "HTML markup direction tag (e.g. DIR=RTL)" => "HTML-тег напрямку розмітки (напр. DIR=RTL)", // ai 2026-06
 
-// include/field.class.php, row 1191, 1472
+// include/field.class.php, row 1239, 1520
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- будь-яке текстове поле --", // ai 2026-06
 
-// include/field.class.php, row 1300
+// include/field.class.php, row 1348
 " (this)" => " (це)", // ai 2026-06
 
-// include/field.class.php, row 1354, 1367, 1380
+// include/field.class.php, row 1402, 1415, 1428
 "Can't copy field" => "Не вдалося скопіювати поле", // ai 2026-10
 
 // include/filedit.php, row 82
@@ -5329,6 +5382,7 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
+// include/logs.php, row 1294
 // src/Manageraction/Item_Move2Slice.php, row 52
 "Slice ID" => "ID рубрики", // ai 2026-06
 
@@ -5347,7 +5401,7 @@ return [
 "Rows" => "Рядки", // ai 2026-06
 
 // include/form.class.php, row 343
-// include/menu.php, row 147
+// include/menu.php, row 148
 "Forms" => "Форми", // ai 2026-06
 
 // include/formutil.php, row 193
@@ -5356,10 +5410,10 @@ return [
 // include/formutil.php, row 200
 "Insert as new" => "Вставити як нову", // ai 2026-06
 
-// include/formutil.php, row 204, 2957
+// include/formutil.php, row 204, 2972
 "Reset form" => "Очистити форму", // ai 2026-06
 
-// include/formutil.php, row 207, 212, 2949, 2953
+// include/formutil.php, row 207, 212, 2964, 2968
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Скасувати", // ai 2026-06
@@ -5376,108 +5430,108 @@ return [
 // include/formutil.php, row 367
 "No fields defined for this slice" => "Для цієї рубрики не визначено жодного поля", // ai 2026-06
 
-// include/formutil.php, row 918
+// include/formutil.php, row 919
 "set" => "увімкнено", // ai 2026-06
 
-// include/formutil.php, row 918
+// include/formutil.php, row 919
 "unset" => "вимкнено", // ai 2026-06
 
-// include/formutil.php, row 1048
+// include/formutil.php, row 1049
 "Unable to find tagprefix table %1" => "Не вдалося знайти таблицю tagprefix %1", // ai 2026-06
 
-// include/formutil.php, row 1200
+// include/formutil.php, row 1201
 "import" => "імпортувати", // ai 2026-06
 
-// include/formutil.php, row 1215
+// include/formutil.php, row 1216
 // src/Widget/RichtextMarkup.php, row 70
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Редагувати в редакторі", // ai 2026-06
 
-// include/formutil.php, row 1228
+// include/formutil.php, row 1229
 // include/transformation.class.php, row 193, 382, 455, 549, 739
 // include/widget.class.php, row 658
 "Plain text" => "Звичайний текст", // ai 2026-06
 
-// include/formutil.php, row 1270
+// include/formutil.php, row 1271
 // include/transformation.class.php, row 661
 "Translate" => "Перекласти", // ai 2026-06
 
-// include/formutil.php, row 1777, 1781
+// include/formutil.php, row 1781, 1785
 "Enter the value" => "Введіть значення", // ai 2026-06
 
-// include/formutil.php, row 1781
-// include/menu.php, row 140
+// include/formutil.php, row 1785
+// include/menu.php, row 141
 // src/Import/DetailCatalog.php, row 124
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Змінити", // ai 2026-06
 
-// include/formutil.php, row 1924, 2111
+// include/formutil.php, row 1928, 2115
 // src/Widget/MchWidget.php, row 135
 // src/Widget/Widget.php, row 837
 "Selected" => "Вибрані", // ai 2026-06
 
-// include/formutil.php, row 2110
+// include/formutil.php, row 2114
 "Offer" => "Пропоновані", // ai 2026-06
 
-// include/formutil.php, row 2175
-// include/stringexpand.php, row 10948, 10971
+// include/formutil.php, row 2179
+// include/stringexpand.php, row 11505, 11528
 // src/Import/DetailCatalog.php, row 150
-// src/Widget/MflWidget.php, row 166
+// src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 287
 "new" => "нова", // ai 2026-06
 
-// include/formutil.php, row 2195
+// include/formutil.php, row 2199
 "Change Password" => "Зміна пароля", // ai 2026-06
 
-// include/formutil.php, row 2197
+// include/formutil.php, row 2201
 "Delete Password" => "Видалити пароль", // ai 2026-06
 
-// include/formutil.php, row 2206
-// include/searchlib.php, row 59, 127, 130, 133, 136, 139
+// include/formutil.php, row 2210
+// include/searchlib.php, row 60, 128, 131, 134, 137, 140
 // src/Central/FindingText.php, row 412
-// src/Import/Credential/Store.php, row 54
+// src/Credential/Store.php, row 53
 "not set" => "не задано", // ai 2026-06
 
-// include/formutil.php, row 2960
+// include/formutil.php, row 2975
 "Submit" => "Надіслати", // ai 2026-06
 
-// include/formutil.php, row 3279
+// include/formutil.php, row 3294
 "Group Name" => "Назва групи", // ai 2026-06
 
-// include/formutil.php, row 3280
-// include/logs.php, row 727, 827, 1091
+// include/formutil.php, row 3295
+// include/logs.php, row 747, 847, 1111
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Кількість", // ai 2026-06
 
-// include/formutil.php, row 3281
+// include/formutil.php, row 3296
 "Created on" => "Створено", // ai 2026-06
 
-// include/formutil.php, row 3282
+// include/formutil.php, row 3297
 "Created by" => "Створив", // ai 2026-06
 
-// include/formutil.php, row 3283
+// include/formutil.php, row 3298
 "Last updated" => "Востаннє оновлено", // ai 2026-06
 
-// include/formutil.php, row 3284
+// include/formutil.php, row 3299
 "Updated by" => "Оновив", // ai 2026-06
 
-// include/formutil.php, row 3285
+// include/formutil.php, row 3300
 "Last used" => "Востаннє використано", // ai 2026-06
 
-// include/formutil.php, row 3292
+// include/formutil.php, row 3307
 "All active items" => "Усі активні статті", // ai 2026-06
 
-// include/formutil.php, row 3294
+// include/formutil.php, row 3309
 "All pending items" => "Усі підготовлювані статті", // ai 2026-06
 
-// include/formutil.php, row 3295
+// include/formutil.php, row 3310
 "All expired items" => "Усі застарілі статті", // ai 2026-06
 
-// include/formutil.php, row 3296
+// include/formutil.php, row 3311
 "All items in holding bin" => "Усі статті в Резерві", // ai 2026-06
 
-// include/formutil.php, row 3297
+// include/formutil.php, row 3312
 "All items in trash bin" => "Усі статті в кошику", // ai 2026-06
 
 // include/init_page.php, row 84
@@ -5616,25 +5670,25 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Помилка: неправильна функція аліасу %1 для %2", // ai 2026-06
 
-// include/item_content.php, row 1127, 1185
+// include/item_content.php, row 1133, 1191
 "No Slice Id specified" => "Не вказано Id рубрики", // ai 2026-06
 
-// include/item_content.php, row 1173
+// include/item_content.php, row 1179
 "No Permission to insert Item for user %1" => "Користувач %1 не має права додавати статтю", // ai 2026-06
 
-// include/item_content.php, row 1189
+// include/item_content.php, row 1195
 "Bad Item Id" => "Неправильний Id статті", // ai 2026-06
 
-// include/item_content.php, row 1330
+// include/item_content.php, row 1336
 "No Id specified (%1 - %2)" => "Не вказано Id (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1335
+// include/item_content.php, row 1341
 "Duplicated ID - skipped (%1 - %2)" => "Дубльований Id - пропущено (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1360
+// include/item_content.php, row 1366
 "StoreItem for slice %1 - failed parameter check for id = '%2'" => "StoreItem для рубрики %1 - не пройшла перевірка параметра для id = '%2'", // ai 2026-06
 
-// include/item_content.php, row 1370
+// include/item_content.php, row 1376
 "No Status code" => "Відсутній код стану", // ai 2026-06
 
 // include/itemfunc.php, row 67
@@ -5790,6 +5844,7 @@ return [
 "Delimiter" => "Роздільник", // ai 2026-06
 
 // include/itemfunc.php, row 982
+// src/Isds/SliceRules.php, row 303, 382
 "Text = don't modify" => "Текст = не змінювати", // ai 2026-06
 
 // include/itemfunc.php, row 986
@@ -5972,13 +6027,13 @@ return [
 // include/itemfunc.php, row 1742
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Пароль, який буде застосовано для шифрування значення цього поля. Може містити вирази AA або аліаси (для статті користувача в рубриці Управління читачами)", // ai 2026-06
 
-// include/itemview.php, row 122
+// include/itemview.php, row 123
 "Selected item" => "Вибрана стаття", // ai 2026-06
 
-// include/itemview.php, row 377
+// include/itemview.php, row 378
 "No comment was selected" => "Не вибрано жодного коментаря", // ai 2026-06
 
-// include/itemview.php, row 712, 720
+// include/itemview.php, row 723, 731
 "exact group name" => "точна назва групи", // ai 2026-06
 
 // include/locauth.php, row 102
@@ -5987,238 +6042,248 @@ return [
 // include/locauth.php, row 103
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Якщо ви впевнені, що ввели правильний пароль, напишіть, будь ласка, на <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 521
+// include/logs.php, row 541
 "Created time" => "Час створення", // ai 2026-06
 
-// include/logs.php, row 522
+// include/logs.php, row 542
 "Readers to be emailed" => "Читачі, яким слід надіслати e-mail", // ai 2026-06
 
-// include/logs.php, row 534
-// src/Optimize/CheckCkeditorUse.php, row 96
+// include/logs.php, row 554
+// src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
 "Page" => "Сторінка", // ai 2026-06
 
-// include/logs.php, row 609, 653, 668
+// include/logs.php, row 629, 673, 688
 "Time [s]" => "Час [с]", // ai 2026-06
 
-// include/logs.php, row 610, 655
+// include/logs.php, row 630, 675
 "Memory usage [MB]" => "Використання пам'яті [МБ]", // ai 2026-06
 
-// include/logs.php, row 611
+// include/logs.php, row 631
 "Memory peak [MB]" => "Пік пам'яті [МБ]", // ai 2026-06
 
-// include/logs.php, row 612
+// include/logs.php, row 632
 "Return code" => "Код повернення", // ai 2026-06
 
-// include/logs.php, row 628
+// include/logs.php, row 648
 "Tasks done" => "Завдань виконано", // ai 2026-06
 
-// include/logs.php, row 629
+// include/logs.php, row 649
 "Tasks started" => "Завдань розпочато", // ai 2026-06
 
-// include/logs.php, row 630
+// include/logs.php, row 650
 "Duration [s]" => "Тривалість [с]", // ai 2026-06
 
-// include/logs.php, row 631
+// include/logs.php, row 651
 "Allowed [s]" => "Дозволено [с]", // ai 2026-06
 
-// include/logs.php, row 651
+// include/logs.php, row 671
 "Cached" => "З кешу", // ai 2026-06
 
-// include/logs.php, row 652
+// include/logs.php, row 672
 "Not Modified (304)" => "Не змінено (304)", // ai 2026-06
 
-// include/logs.php, row 654
+// include/logs.php, row 674
 "Time + Cached + 304" => "Час + кеш + 304", // ai 2026-06
 
-// include/logs.php, row 656, 669, 879, 1065
+// include/logs.php, row 676, 689, 899, 1085
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "",
 
-// include/logs.php, row 696
+// include/logs.php, row 716
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 697
+// include/logs.php, row 717
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 698
+// include/logs.php, row 718
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 699
+// include/logs.php, row 719
 "DB" => "",
 
-// include/logs.php, row 700
+// include/logs.php, row 720
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Пам'ять", // ai 2026-06
 
-// include/logs.php, row 701
+// include/logs.php, row 721
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 702
+// include/logs.php, row 722
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Налаштування сервера", // ai 2026-10
 
-// include/logs.php, row 726, 825
+// include/logs.php, row 746, 845
 "Severity" => "Важливість", // ai 2026-10
 
-// include/logs.php, row 728, 823, 852
+// include/logs.php, row 748, 843, 872
 "Finding" => "Результат", // ai 2026-10
 
-// include/logs.php, row 746
+// include/logs.php, row 766
 "Problems" => "Проблеми", // ai 2026-10
 
-// include/logs.php, row 747
+// include/logs.php, row 767
 "Warnings" => "Попередження", // ai 2026-10
 
-// include/logs.php, row 748
+// include/logs.php, row 768
 "Recommendations" => "Рекомендації", // ai 2026-10
 
-// include/logs.php, row 749
+// include/logs.php, row 769
 "Checks" => "Перевірки", // ai 2026-10
 
-// include/logs.php, row 769, 800
+// include/logs.php, row 789, 820
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
+// src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Запустити", // ai 2026-10
 
-// include/logs.php, row 771
+// include/logs.php, row 791
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
+// src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "Початок", // ai 2026-10
 
-// include/logs.php, row 773
+// include/logs.php, row 793
 "Last full run" => "Останній повний запуск", // ai 2026-10
 
-// include/logs.php, row 774
+// include/logs.php, row 794
 "Last full run started" => "Початок останнього повного запуску", // ai 2026-10
 
-// include/logs.php, row 799, 824
+// include/logs.php, row 819, 844
 "Pair" => "Пара", // ai 2026-10
 
-// include/logs.php, row 801
+// include/logs.php, row 821
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Запущено", // ai 2026-10
 
-// include/logs.php, row 802, 826
+// include/logs.php, row 822, 846
 "Known issue" => "Відома проблема", // ai 2026-10
 
-// include/logs.php, row 828
+// include/logs.php, row 848
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Уперше виявлено", // ai 2026-10
 
-// include/logs.php, row 829
+// include/logs.php, row 849
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "Запусків поспіль", // ai 2026-10
 
-// include/logs.php, row 853
+// include/logs.php, row 873
 "Evidence" => "Докази", // ai 2026-10
 
-// include/logs.php, row 876
+// include/logs.php, row 896
 "Identifier" => "Ідентифікатор", // ai 2026-06
 
-// include/logs.php, row 877, 1241, 1256
+// include/logs.php, row 897, 1261, 1276
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "ID модуля", // ai 2026-06
 
-// include/logs.php, row 890
+// include/logs.php, row 910
 "Template id" => "ID шаблону", // ai 2026-06
 
-// include/logs.php, row 892
+// include/logs.php, row 912
 "Emails sent" => "Надіслано e-mail", // ai 2026-06
 
-// include/logs.php, row 931
+// include/logs.php, row 951
 "Object id" => "Id об'єкта", // ai 2026-10
 
-// include/logs.php, row 963
+// include/logs.php, row 983
 "Mail template" => "Шаблон листа", // ai 2026-10
 
-// include/logs.php, row 964
+// include/logs.php, row 984
 "Reader item" => "Стаття читача", // ai 2026-10
 
-// include/logs.php, row 965
+// include/logs.php, row 985
 "Origin" => "Походження", // ai 2026-10
 
-// include/logs.php, row 1036
+// include/logs.php, row 1056
 "Transport" => "Спосіб надсилання", // ai 2026-10
 
-// include/logs.php, row 1037
+// include/logs.php, row 1057
 "Recipients sent" => "Надіслано одержувачам", // ai 2026-10
 
-// include/logs.php, row 1038
+// include/logs.php, row 1058
 "Server response" => "Відповідь сервера", // ai 2026-10
 
-// include/logs.php, row 1051
+// include/logs.php, row 1071
 "Items selected" => "Вибрано записів", // ai 2026-06
 
-// include/logs.php, row 1052
+// include/logs.php, row 1072
 "Items updated" => "Оновлено записів", // ai 2026-06
 
-// include/logs.php, row 1053
+// include/logs.php, row 1073
 "Items planned" => "Заплановано записів", // ai 2026-06
 
-// include/logs.php, row 1064
+// include/logs.php, row 1084
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Повідомлення", // ai 2026-06
 
-// include/logs.php, row 1066
+// include/logs.php, row 1086
 "Referer" => "Сторінка-джерело", // ai 2026-10
 
-// include/logs.php, row 1077
+// include/logs.php, row 1097
 "New name" => "Нова назва", // ai 2026-06
 
-// include/logs.php, row 1078
+// include/logs.php, row 1098
 "Old name" => "Стара назва", // ai 2026-06
 
-// include/logs.php, row 1089, 1154
+// include/logs.php, row 1109, 1174
+// src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Фаза", // ai 2026-06
 
-// include/logs.php, row 1090
-// src/Optimize/CheckAlertitemRefusals.php, row 87
-// src/Optimize/CheckAlerts.php, row 72
+// include/logs.php, row 1110
+// src/Optimize/CheckAlertitemRefusals.php, row 97
+// src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Колекція", // ai 2026-06
 
-// include/logs.php, row 1092, 1143, 1155
+// include/logs.php, row 1112, 1163, 1175, 1310
 // src/Import/Definition.php, row 154
-// src/Optimize/CheckUploadRefusals.php, row 87
+// src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "Деталі", // ai 2026-06
 
-// include/logs.php, row 1142
+// include/logs.php, row 1162
 // src/Import/Definition.php, row 135, 162
+// src/Isds/Registry/Page.php, row 514
 "Status" => "Стан", // ai 2026-06
 
-// include/logs.php, row 1194
+// include/logs.php, row 1214
 "Processed" => "Оброблено", // ai 2026-06
 
-// include/logs.php, row 1195
+// include/logs.php, row 1215
 "Stored" => "Збережено", // ai 2026-06
 
-// include/logs.php, row 1196
+// include/logs.php, row 1216
 "Errors" => "Помилки", // ai 2026-06
 
-// include/logs.php, row 1209
+// include/logs.php, row 1229
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Результат", // ai 2026-06
 
-// include/logs.php, row 1225
+// include/logs.php, row 1245
 "Flags" => "Прапорці", // ai 2026-06
 
-// include/logs.php, row 1226
+// include/logs.php, row 1246
 "Context" => "Контекст", // ai 2026-06
 
-// include/logs.php, row 1242
+// include/logs.php, row 1262
 "Feed counterpart" => "Відповідник подачі", // ai 2026-06
 
-// include/logs.php, row 1257
+// include/logs.php, row 1277
 "Field ID" => "ID поля", // ai 2026-06
+
+// include/logs.php, row 1295
+// src/Optimize/CheckAjaxUnsigned.php, row 82
+// src/Optimize/CheckHttp.php, row 62
+// src/Optimize/CheckUploadRefusals.php, row 88
+"Reason" => "Причина", // ai 2026-10
 
 // include/mail.php, row 657
 "Email type" => "Тип e-mailу", // ai 2026-06
@@ -6229,7 +6294,7 @@ return [
 // include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
-// include/statestore.php, row 1077
+// include/statestore.php, row 1076
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Власник", // ai 2026-06
 
@@ -6243,146 +6308,150 @@ return [
 "Envelop sender (email)" => "Відправник конверта (e-mail)", // ai 2026-06
 
 // include/mail.php, row 671
-// misc/datovka/datovka.php, row 117
+// misc/datovka/datovka.php, row 156
 "Attachments" => "Вкладення", // ai 2026-06
 
-// include/menu.php, row 66
+// include/menu.php, row 67
 "View site" => "Переглянути сайт", // ai 2026-06
 
-// include/menu.php, row 91, 92, 143
+// include/menu.php, row 92, 93, 144
 "Item Manager" => "Менеджер статей", // ai 2026-06
 
-// include/menu.php, row 100
+// include/menu.php, row 101
 "Slice Admin" => "Налаштування рубрики", // ai 2026-06
 
-// include/menu.php, row 101
+// include/menu.php, row 102
 "Slice Administration" => "Адміністрування рубрики", // ai 2026-06
 
-// include/menu.php, row 132
+// include/menu.php, row 133
 // src/Module/Poll/Menu.php, row 82
 "Main settings" => "Основні налаштування", // ai 2026-06
 
-// include/menu.php, row 135
+// include/menu.php, row 136
 "Slice Fields" => "Поля рубрики", // ai 2026-06
 
-// include/menu.php, row 136
+// include/menu.php, row 137
+// src/Isds/SliceRules.php, row 178
 "Email Notification" => "Сповіщення e-mailом", // ai 2026-06
 
-// include/menu.php, row 138
+// include/menu.php, row 139
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
+// src/Optimize/CheckIsdsAccounts.php, row 331
+// src/Optimize/CheckIsdsConf.php, row 342
 "Permissions" => "Права", // ai 2026-06
 
-// include/menu.php, row 139
+// include/menu.php, row 140
 "Assign" => "Призначити", // ai 2026-06
 
-// include/menu.php, row 142
+// include/menu.php, row 143
 "Design" => "Вигляд", // ai 2026-06
 
-// include/menu.php, row 145
+// include/menu.php, row 146
 "Fulltext" => "Повний текст", // ai 2026-06
 
-// include/menu.php, row 146
+// include/menu.php, row 147
 "Index" => "Перелік статей", // ai 2026-06
 
-// include/menu.php, row 148
+// include/menu.php, row 149
 "Sets of Items" => "Набори статей", // ai 2026-06
 
-// include/menu.php, row 150
+// include/menu.php, row 151
 "Content Pooling" => "Обмін вмістом", // ai 2026-06
 
-// include/menu.php, row 151
+// include/menu.php, row 152
 "Nodes" => "Вузли", // ai 2026-06
 
-// include/menu.php, row 152
+// include/menu.php, row 153
+// src/Isds/SliceRules.php, row 177
 "Inner Node Feeding" => "Внутрішнє передавання вузлів", // ai 2026-06
 
-// include/menu.php, row 154
+// include/menu.php, row 155
 "Inter Node Export" => "Експорт між вузлами", // ai 2026-06
 
-// include/menu.php, row 155
+// include/menu.php, row 156
 "RSS Feeds" => "RSS-канали", // ai 2026-06
 
-// include/menu.php, row 157
+// include/menu.php, row 158
 "Filters" => "Фільтри", // ai 2026-06
 
-// include/menu.php, row 158
+// include/menu.php, row 159
 // src/Import/Definition.php, row 87
 // src/Import/DetailConfig.php, row 359
 "Mapping" => "Зіставлення", // ai 2026-06
 
-// include/menu.php, row 159, 221
+// include/menu.php, row 160, 224
 "Import CSV" => "Імпорт CSV", // ai 2026-06
 
-// include/menu.php, row 160
+// include/menu.php, row 161
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "Експорт до файлу", // ai 2026-06
 
-// include/menu.php, row 162, 218
+// include/menu.php, row 163, 221
 // include/menu_util.php, row 73, 126
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "Різне", // ai 2026-06
 
-// include/menu.php, row 165
+// include/menu.php, row 168
 "Change field IDs" => "Зміна ID полів", // ai 2026-06
 
-// include/menu.php, row 168
+// include/menu.php, row 171
 "Anonymous Form Wizard" => "Майстер анонімної форми", // ai 2026-06
 
-// include/menu.php, row 169
+// include/menu.php, row 172
 "Email templates" => "Шаблони e-mail", // ai 2026-06
 
-// include/menu.php, row 179
+// include/menu.php, row 182
 "Mailman: create list" => "Mailman: створити список", // ai 2026-06
 
-// include/menu.php, row 187
+// include/menu.php, row 190
 // include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "Теки", // ai 2026-06
 
-// include/menu.php, row 190
+// include/menu.php, row 193
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "... очікують", // ai 2026-06
 
-// include/menu.php, row 191
+// include/menu.php, row 194
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "... завершені", // ai 2026-06
 
-// include/menu.php, row 193
+// include/menu.php, row 196
 // include/menu_util.php, row 124
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "Кошик", // ai 2026-06
 
-// include/menu.php, row 209
+// include/menu.php, row 212
 "Bookmarks" => "Закладки", // ai 2026-06
 
-// include/menu.php, row 220
+// include/menu.php, row 223
 // include/menu_util.php, row 130
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Очистити кошик", // ai 2026-06
 
-// include/menu.php, row 222
+// include/menu.php, row 225
 "Set Debug OFF" => "Вимкнути debug", // ai 2026-06
 
-// include/menu.php, row 222
+// include/menu.php, row 225
 "Set Debug ON" => "Увімкнути debug", // ai 2026-06
 
-// include/menu.php, row 232
+// include/menu.php, row 235
 "List of Alerts modules using this slice as Reader Management." => "Список модулів Сповіщення, які використовують цю рубрику для керування читачами.", // ai 2026-06
 
-// include/menu.php, row 234
+// include/menu.php, row 237
 "Bulk Emails" => "Масові e-mail", // ai 2026-06
 
-// include/menu.php, row 234
+// include/menu.php, row 237
 "Send bulk email to selected users or to users in Stored searches" => "Надіслати масовий e-mail вибраним користувачам або користувачам зі збережених пошуків", // ai 2026-06
 
-// include/menu.php, row 238
+// include/menu.php, row 241
 "Send emails" => "Надіслати e-mail", // ai 2026-06
 
-// include/menu.php, row 247
+// include/menu.php, row 250
 "Alerts Sent" => "Надіслано через сповіщення", // ai 2026-06
 
-// include/menu.php, row 247
+// include/menu.php, row 250
 "List of Alerts modules sending items from this slice." => "Список модулів Сповіщення, які надсилають статті з цієї рубрики.", // ai 2026-06
 
 // include/menu_util.php, row 46
@@ -6462,7 +6531,7 @@ return [
 "Jump inside control panel" => "Перехід у панелі керування", // ai 2026-06
 
 // include/menu_util.php, row 450
-// include/slice.class.php, row 1422
+// include/slice.class.php, row 1447
 // src/Central/FindingText.php, row 311
 "Links" => "Посилання", // ai 2026-06
 
@@ -6502,7 +6571,7 @@ return [
 "Feedback" => "Відгук", // ai 2026-06
 
 // include/menu_util.php, row 762
-// include/slice.class.php, row 675
+// include/slice.class.php, row 678
 "Reader management" => "Керування читачами", // ai 2026-06
 
 // include/menu_util.php, row 774
@@ -6517,7 +6586,7 @@ return [
 // include/menu_util.php, row 871
 "Collapse / expand menu" => "Згорнути / розгорнути меню", // ai 2026-06
 
-// include/metabase.class.php, row 1665
+// include/metabase.class.php, row 1662
 "More" => "Більше", // ai 2026-06
 
 // include/mlx.php, row 387
@@ -6551,10 +6620,10 @@ return [
 // include/modutils.php, row 251
 "Select owner" => "Вибрати власника", // ai 2026-06
 
-// include/perm_core.php, row 1202, 1229
+// include/perm_core.php, row 1273, 1300
 "Reader Slice" => "Рубрика читачів", // ai 2026-06
 
-// include/perm_core.php, row 1214, 1231
+// include/perm_core.php, row 1285, 1302
 "Reader Set" => "Набір читачів", // ai 2026-06
 
 // include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
@@ -6618,7 +6687,7 @@ return [
 "And" => "і водночас", // ai 2026-06
 
 // include/searchbar.class.php, row 580
-// include/searchlib.php, row 51, 54, 127, 136
+// include/searchlib.php, row 52, 55, 128, 137
 "begins with" => "починається з", // ai 2026-06
 
 // include/searchbar.class.php, row 608
@@ -6669,222 +6738,248 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Керування фільтрами", // ai 2026-06
 
-// include/searchlib.php, row 55
+// include/searchlib.php, row 56
 "LLIKE" => "",
 
-// include/searchlib.php, row 56
+// include/searchlib.php, row 57
 "XLIKE" => "",
 
-// include/searchlib.php, row 57
+// include/searchlib.php, row 58
 "BETWEEN" => "",
 
-// include/searchlib.php, row 58
+// include/searchlib.php, row 59
 "bit is set" => "біт встановлено", // ai 2026-06
 
-// include/searchlib.php, row 60, 127, 130, 133, 136, 139
+// include/searchlib.php, row 61, 128, 131, 134, 137, 140
 "is set" => "заповнено", // ai 2026-06
 
-// include/searchlib.php, row 61, 127
+// include/searchlib.php, row 62, 128
 "is e-mail" => "є e-mail", // ai 2026-06
 
-// include/searchlib.php, row 62, 127
+// include/searchlib.php, row 63, 128
 "not e-mail" => "не є e-mail", // ai 2026-06
 
-// include/searchlib.php, row 63, 127, 136
+// include/searchlib.php, row 64, 128, 137
 "match (RegExp)" => "відповідає (RegExp)", // ai 2026-06
 
-// include/searchlib.php, row 64, 127, 136
+// include/searchlib.php, row 65, 128, 137
 "not match (RegExp)" => "не відповідає (RegExp)", // ai 2026-06
 
-// include/searchlib.php, row 127, 136
+// include/searchlib.php, row 128, 137
 "is not" => "не є", // ai 2026-06
 
-// include/searchlib.php, row 136, 139
-// include/statestore.php, row 1363
+// include/searchlib.php, row 137, 140
+// include/statestore.php, row 1362
 "select ..." => "виберіть...", // ai 2026-06
 
-// include/searchlib.php, row 369
+// include/searchlib.php, row 370
 "Limit" => "Ліміт", // ai 2026-06
 
 // include/slice.class.php, row 428
 "Error while loading module settings form:" => "Помилка під час завантаження форми налаштувань модуля:", // ai 2026-06
 
-// include/slice.class.php, row 676
+// include/slice.class.php, row 679
 "Code - Pages" => "Код - Сторінки", // ai 2026-06
 
-// include/slice.class.php, row 677
+// include/slice.class.php, row 680
 "Code - Views / Snippets" => "Код - Вигляди / Сніпети", // ai 2026-06
 
-// include/slice.class.php, row 678
+// include/slice.class.php, row 681
 // src/Optimize/CheckImports.php, row 272
 "Constant" => "Константа", // ai 2026-06
 
-// include/slice.class.php, row 679
+// include/slice.class.php, row 682
 // include/transformation.class.php, row 752
 "Translations" => "Переклади", // ai 2026-06
 
-// include/slice.class.php, row 680
+// include/slice.class.php, row 683
 "Field definitions" => "Визначення полів", // ai 2026-06
 
-// include/slice.class.php, row 905
-// include/util.php, row 992
+// include/slice.class.php, row 914
+// include/util.php, row 995
 "Error: Missing Reading Password" => "Помилка: відсутній пароль для читання", // ai 2026-06
 
-// include/slice.class.php, row 1290
+// include/slice.class.php, row 1314
 "Spot ID" => "ID споту", // ai 2026-06
 
-// include/slice.class.php, row 1290
+// include/slice.class.php, row 1314
 "You can include this spot code in another spot by using {sitespot:%1}" => "Код цього споту можна вставити в інший спот за допомогою {sitespot:%1}", // ai 2026-06
 
-// include/slice.class.php, row 1308
+// include/slice.class.php, row 1332
 "Spot name" => "Назва споту", // ai 2026-06
 
-// include/slice.class.php, row 1450
+// include/slice.class.php, row 1475
 "Jump inside AA control panel" => "Перехід усередині панелі керування AA", // ai 2026-06
 
-// include/slice.class.php, row 1475
+// include/slice.class.php, row 1500
 "Polls for AA" => "Опитування для AA", // ai 2026-06
 
-// include/slice.class.php, row 1544
+// include/slice.class.php, row 1569
 "Languages for translation" => "Мови для перекладу", // ai 2026-06
 
-// include/slice.class.php, row 1544
+// include/slice.class.php, row 1569
 "specify language codes in which you want to translate content - small caps, two letters - like: en, es, de, ..." => "вкажіть коди мов, якими ви хочете перекладати вміст - малими літерами, дві літери - наприклад: en, es, de, ...", // ai 2026-06
 
-// include/slice.class.php, row 1545
+// include/slice.class.php, row 1570
 "Automatic field creation" => "Автоматичне створення полів", // ai 2026-06
 
-// include/slice.class.php, row 1545
+// include/slice.class.php, row 1570
 "If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template." => "Якщо позначено, рубрика дозволяє зберігати значення в поле text....*, навіть якщо відповідне text....* не визначене в рубриці. Поле буде створене з використанням поля text............ як шаблону.", // ai 2026-06
 
-// include/slice.class.php, row 1546
+// include/slice.class.php, row 1571
 "Fields defined by another slice" => "Поля, визначені іншою рубрикою", // ai 2026-06
 
-// include/slice.class.php, row 1546
+// include/slice.class.php, row 1571
 "You can use special slice for additional fields definition. There you can write slice ID, which defines the fields.<br>Could be used for data slice, which stores values for user created forms." => "Для визначення додаткових полів можна використати спеціальну рубрику. Сюди впишіть ID рубрики, яка визначає поля.<br>Можна використати для рубрики даних, яка зберігає значення створених користувачами форм.", // ai 2026-06
 
-// include/slice.class.php, row 1547
+// include/slice.class.php, row 1572
 "Store item history for N days" => "Зберігати історію статей N днів", // ai 2026-06
 
-// include/slice.class.php, row 1547
+// include/slice.class.php, row 1572
 "ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted" => "ALL - не видаляти журнал історії (за замовчуванням)<br>0 - не зберігати історію статей (ані подій ITEM_UPD/ITEM_NEW у Журналі)<br><em>число</em> - кількість днів, після яких історію статей буде видалено", // ai 2026-06
 
-// include/slice.class.php, row 1548
+// include/slice.class.php, row 1573
 "No pending items" => "Без підготовлюваних статей", // ai 2026-06
 
-// include/slice.class.php, row 1548
+// include/slice.class.php, row 1573
 "1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - повністю вимкнути резерв підготовлюваних у цій рубриці (поле publish_date працює як звичайне)<br>{aa-expression} - якщо обчислюється як 1, вимикає перевірку підготовлюваних (для вигляду, рубрики, {ids...}) (використайте тут вирази {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
-// include/slice.class.php, row 1549
+// include/slice.class.php, row 1574
 "No expired items" => "Без застарілих статей", // ai 2026-06
 
-// include/slice.class.php, row 1549
+// include/slice.class.php, row 1574
 "1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - повністю вимкнути резерв застарілих у цій рубриці (поле expiry_date працює як звичайне)<br>{aa-expression} - якщо обчислюється як 1, вимикає перевірку дати застарівання (для вигляду, рубрики, {ids...}) (використайте тут вирази {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
-// include/slice.class.php, row 1608
+// include/slice.class.php, row 1636
 "Slice with translations" => "Рубрика з перекладами", // ai 2026-06
 
-// include/slice.class.php, row 1608
+// include/slice.class.php, row 1636
 "the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')" => "рубрика, що використовується для перекладів {tr:text...} (рубрика повинна мати лише поле headline........ з налаштуванням 'Allow translation')", // ai 2026-06
 
-// include/slice.class.php, row 1609
+// include/slice.class.php, row 1637
 "Additional aliases" => "Додаткові аліаси", // ai 2026-06
 
-// include/slice.class.php, row 1609
+// include/slice.class.php, row 1637
 "Select sitemodule, where we have to look for additional {_:...} aliases" => "Виберіть sitemodule, у якому треба шукати додаткові аліаси {_:...}", // ai 2026-06
 
-// include/slice.class.php, row 1610
-"Languages on website" => "Мови на вебсайті", // ai 2026-06
-
-// include/slice.class.php, row 1610
-"List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Перелічіть усі мови, для яких ви хочете використовувати sitemodule - en, es, cz, ..<br>Будь ласка, <b>зробіть це</b>, навіть якщо ви використовуєте 1 мову. <br>Це конче потрібно, якщо ви хочете викликати sitemodule новішим способом з Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
-
-// include/slice.class.php, row 1611
-"Page not Found (404)" => "Сторінку не знайдено (404)", // ai 2026-06
-
-// include/slice.class.php, row 1611
-"Do not care" => "Не зважати", // ai 2026-06
-
-// include/slice.class.php, row 1611
-"Send standard 404 page, when {xid} is empty" => "Надсилати стандартну сторінку 404, коли {xid} порожній", // ai 2026-06
-
-// include/slice.class.php, row 1611
-"Send code below" => "Надсилати код нижче", // ai 2026-06
-
-// include/slice.class.php, row 1611
-"When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "Якщо вибрано першу опцію \"Не зважати\" (стара поведінка), ви маєте самостійно перевіряти незаповнений {xid} у своєму sitemodule", // ai 2026-06
-
-// include/slice.class.php, row 1612
-"HTML code for \"Page not Found\" (404)" => "HTML код для \"Сторінку не знайдено\" (404)", // ai 2026-06
-
-// include/slice.class.php, row 1613
+// include/slice.class.php, row 1638
 "sitemap.xml alias" => "Аліас для sitemap.xml", // ai 2026-06
 
-// include/slice.class.php, row 1613
+// include/slice.class.php, row 1638
 "The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown." => "Файл sitemap.xml буде згенеровано з усіх рубрик (у порядку вище), у яких існує вказаний аліас (наприклад _#SMAP_URL). Аліас має генерувати повний URL статті в кожній рубриці. Для приватних/прихованих статей він має генерувати порожній рядок, щоб URL не показувався.", // ai 2026-06
 
-// include/slice.class.php, row 1614
+// include/slice.class.php, row 1639
 "Permission alias" => "Аліас для прав", // ai 2026-06
 
-// include/slice.class.php, row 1614
+// include/slice.class.php, row 1639
 "You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word \"Valid\", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule." => "Ви можете визначити аліас, який буде перевірятися для всіх показуваних {xid} (=сторінок). Якщо значенням буде слово \"Valid\", сторінка буде показана. Інакше буде показано форму входу (див. нижче). Звичайно, ви не зобов'язані використовувати цю функцію і можете зробити це старим способом - прямо в дереві sitemodule.", // ai 2026-06
 
-// include/slice.class.php, row 1615
+// include/slice.class.php, row 1640
 "HTML code for \"Login page\"" => "HTML код для \"Сторінки входу\"", // ai 2026-06
 
-// include/slice.class.php, row 1616
+// include/slice.class.php, row 1641
 // src/Central/FindingText.php, row 434
 "User login databases" => "Бази даних для входу користувачів", // ai 2026-06
 
-// include/slice.class.php, row 1616
+// include/slice.class.php, row 1641
 // src/Central/FindingText.php, row 409
 "first Reader Management slice listed in Uses slices" => "перша рубрика Керування читачами, наведена в Використовує рубрики", // ai 2026-06
 
-// include/slice.class.php, row 1616
+// include/slice.class.php, row 1641
 // src/Central/FindingText.php, row 410
 "all Reader Management slices listed in Uses slices" => "усі рубрики Керування читачами, наведені в Використовує рубрики", // ai 2026-06
 
-// include/slice.class.php, row 1616
+// include/slice.class.php, row 1641
 // src/Central/FindingText.php, row 411
+// src/Isds/SliceRules.php, row 99
+// src/Optimize/CheckIsdsAccounts.php, row 137
 "AA + all Reader Management slices in AA (old behavior)" => "AA + усі рубрики Керування читачами в AA (стара поведінка)", // ai 2026-06
 
-// include/slice.class.php, row 1616
+// include/slice.class.php, row 1641
 "First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used." => "Рекомендованою опцією є перша рубрика Керування читачами - тоді на публічні сторінки можуть входити лише люди з цієї рубрики. Якщо не вибрано, використовується опція \"AA + усі рубрики Керування читачами\".", // ai 2026-06
 
-// include/slice.class.php, row 1617
+// include/slice.class.php, row 1642
 "Google analytics tracking id" => "Ідентифікатор відстеження Google Analytics", // ai 2026-06
 
-// include/slice.class.php, row 1617
+// include/slice.class.php, row 1642
 "If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site." => "Якщо у коді sitemodule ви використовуєте {generate:HEAD} і {generate:FOOT}, то код Google Analytics генерується з цим ідентифікатором відстеження. Згенерований код може в майбутньому змінитися, коли Google змінить свій сніпет.<br>Щоб використати панель згоди користувача, додайте на сторінку {eucookies} або {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top}.", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1643
 "Alternate URL" => "Альтернативний URL", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1643
 "Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "Інший домен (домени), на якому має бути видимий вебсайт. Однак радше розгляньте можливість використання серверного перенаправлення на єдиний домен, що краще для SEO.", // ai 2026-06
 
-// include/slice.class.php, row 1620
+// include/slice.class.php, row 1644
+"Languages on website" => "Мови на вебсайті", // ai 2026-06
+
+// include/slice.class.php, row 1644
+"List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Перелічіть усі мови, для яких ви хочете використовувати sitemodule - en, es, cz, ..<br>Будь ласка, <b>зробіть це</b>, навіть якщо ви використовуєте 1 мову. <br>Це конче потрібно, якщо ви хочете викликати sitemodule новішим способом з Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
+
+// include/slice.class.php, row 1645
+"Allowed {xflag} values" => "",
+
+// include/slice.class.php, row 1645
+"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "",
+
+// include/slice.class.php, row 1646
+"Allowed {xcat} values" => "",
+
+// include/slice.class.php, row 1646
+"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "",
+
+// include/slice.class.php, row 1647
+"Check the page path" => "",
+
+// include/slice.class.php, row 1647
+"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "",
+
+// include/slice.class.php, row 1648
+"Page not Found (404)" => "Сторінку не знайдено (404)", // ai 2026-06
+
+// include/slice.class.php, row 1648
+"Do not care" => "Не зважати", // ai 2026-06
+
+// include/slice.class.php, row 1648
+"Send standard 404 page, when {xid} is empty" => "Надсилати стандартну сторінку 404, коли {xid} порожній", // ai 2026-06
+
+// include/slice.class.php, row 1648
+"Send code below" => "Надсилати код нижче", // ai 2026-06
+
+// include/slice.class.php, row 1648
+"When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "Якщо вибрано першу опцію \"Не зважати\" (стара поведінка), ви маєте самостійно перевіряти незаповнений {xid} у своєму sitemodule", // ai 2026-06
+
+// include/slice.class.php, row 1649
+"HTML code for \"Page not Found\" (404)" => "HTML код для \"Сторінку не знайдено\" (404)", // ai 2026-06
+
+// include/slice.class.php, row 1651
 "Publish in the app store" => "Опублікувати в каталозі застосунків", // ai 2026-10
 
-// include/slice.class.php, row 1620
+// include/slice.class.php, row 1651
 "Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too." => "Будь-яке AA зможе тоді встановити цей сайт разом з рубриками та Сповіщеннями, які він використовує, – їхні шаблони, поля й вигляди, ніколи статті. Групи констант інших рубрик також мають належати до опублікованого сайту.", // ai 2026-10
 
-// include/slice.class.php, row 1621
+// include/slice.class.php, row 1652
 "App description" => "Опис застосунку", // ai 2026-10
 
-// include/slice.class.php, row 1621
+// include/slice.class.php, row 1652
 "What the app does, for the list of the app store." => "Що застосунок робить – для переліку в каталозі застосунків.", // ai 2026-10
 
-// include/slice.class.php, row 1622
+// include/slice.class.php, row 1653
 "App version" => "Версія застосунку", // ai 2026-10
 
-// include/slice.class.php, row 1622
+// include/slice.class.php, row 1653
 "Like 1.2.0." => "Наприклад 1.2.0.", // ai 2026-10
 
-// include/slice.class.php, row 1624
+// include/slice.class.php, row 1655
 "Published modules" => "Опубліковані модулі", // ai 2026-10
 
-// include/slice.class.php, row 1671
+// include/slice.class.php, row 1664
+"Page address (URL)" => "",
+
+// include/slice.class.php, row 1665
+"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "",
+
+// include/slice.class.php, row 1707
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "Версія застосунку – щонайбільше 32 літери, цифри та знаки . + - (наприклад 1.2.0), опис – щонайбільше %1 символів.", // ai 2026-10
 
 // include/slice.php, row 69
@@ -6955,132 +7050,132 @@ return [
 // include/slicedit.php, row 372
 "Internal error when changing user role." => "Внутрішня помилка під час зміни ролі користувача.", // ai 2026-06
 
-// include/statestore.php, row 1077
+// include/statestore.php, row 1076
 "Owner ID" => "ID власника", // ai 2026-06
 
-// include/statestore.php, row 1171
+// include/statestore.php, row 1170
 "No object found" => "Об'єкт не знайдено", // ai 2026-06
 
-// include/statestore.php, row 1445
+// include/statestore.php, row 1444
 "Manage components" => "Керування компонентами", // ai 2026-06
 
-// include/stringexpand.php, row 96
+// include/stringexpand.php, row 95
 "Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "Аліас викликається як {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}", // ai 2026-06
 
-// include/stringexpand.php, row 97
+// include/stringexpand.php, row 96
 "Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "Код, що виводиться аліасом. Аліас може мати параметри, доступні через змінні _#P1, _#P2, ...", // ai 2026-06
 
-// include/stringexpand.php, row 99
+// include/stringexpand.php, row 98
 "Usage example" => "Приклад використання", // ai 2026-06
 
-// include/stringexpand.php, row 927
+// include/stringexpand.php, row 933
 "Jabber Online Status Indicator" => "Індикатор онлайн-статусу Jabber", // ai 2026-06
 
-// include/stringexpand.php, row 5464
+// include/stringexpand.php, row 5507
 "save changes" => "зберегти зміни", // ai 2026-06
 
-// include/stringexpand.php, row 5680
+// include/stringexpand.php, row 5726
 "No item ID" => "Немає ID статті", // ai 2026-06
 
-// include/stringexpand.php, row 5687
+// include/stringexpand.php, row 5733
 "No transformations" => "Немає перетворень", // ai 2026-06
 
-// include/stringexpand.php, row 5701
+// include/stringexpand.php, row 5747
 "No slice for item" => "Немає рубрики для статті", // ai 2026-06
 
-// include/stringexpand.php, row 5702
+// include/stringexpand.php, row 5748
 "No current slice(s)" => "Немає поточної рубрики (рубрик)", // ai 2026-06
 
-// include/stringexpand.php, row 5703
+// include/stringexpand.php, row 5749
 "Item slice is not in list of allowed slices" => "Рубрика статті не входить до списку дозволених рубрик", // ai 2026-06
 
-// include/stringexpand.php, row 5708
+// include/stringexpand.php, row 5754
 "No permit_anonymous_edit permission for the slice" => "Рубрика не має права permit_anonymous_edit", // ai 2026-06
 
-// include/stringexpand.php, row 6103
+// include/stringexpand.php, row 6149
 "No dictionaries specified for {dictionary}" => "Для {dictionary} не вказано жодного словника", // ai 2026-06
 
-// include/stringexpand.php, row 6233
+// include/stringexpand.php, row 6279
 "No module for dictionary slice" => "Немає модуля для словникової рубрики", // ai 2026-06
 
-// include/stringexpand.php, row 7881
+// include/stringexpand.php, row 8195
 "version" => "версія", // ai 2026-06
 
-// include/stringexpand.php, row 8065
+// include/stringexpand.php, row 8383
 "show" => "показати", // ai 2026-06
 
-// include/stringexpand.php, row 8066
+// include/stringexpand.php, row 8384
 "hide" => "сховати", // ai 2026-06
 
-// include/stringexpand.php, row 8067
+// include/stringexpand.php, row 8385
 "loading" => "завантаження", // ai 2026-06
 
-// include/stringexpand.php, row 9198
+// include/stringexpand.php, row 9516
 "E-mail confirmed." => "E-mail підтверджено.", // ai 2026-06
 
-// include/stringexpand.php, row 9202
+// include/stringexpand.php, row 9520
 "E-mail unsubscribed" => "E-mail відписано", // ai 2026-06
 
-// include/stringexpand.php, row 9951
+// include/stringexpand.php, row 10279
 "Forgot your password? Fill in your email." => "Забули пароль? Вкажіть свою електронну пошту.", // ai 2026-06
 
-// include/stringexpand.php, row 9953
+// include/stringexpand.php, row 10281
 // src/Central/FindingText.php, row 457
 "e-mail" => "е-пошта", // ai 2026-06
 
-// include/stringexpand.php, row 9971, 9975
+// include/stringexpand.php, row 10299, 10303
 "Unable to find user - please check if it has been misspelled." => "Не вдалося знайти користувача — перевірте, чи немає помилки в написанні.", // ai 2026-06
 
-// include/stringexpand.php, row 9989
+// include/stringexpand.php, row 10317
 "Password link" => "Посилання для пароля", // ai 2026-06
 
-// include/stringexpand.php, row 9990
+// include/stringexpand.php, row 10318
 "Password change url parameter" => "URL-параметр зміни пароля", // ai 2026-06
 
-// include/stringexpand.php, row 10002
+// include/stringexpand.php, row 10330
 "Password change" => "Зміна пароля", // ai 2026-06
 
-// include/stringexpand.php, row 10003
+// include/stringexpand.php, row 10331
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Щоб змінити пароль, відвідайте таку адресу:<br>%1<br>Зміна буде можлива протягом двох годин — інакше ключ втратить чинність і вам доведеться запросити новий.", // ai 2026-06
 
-// include/stringexpand.php, row 10012
+// include/stringexpand.php, row 10340
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail із ключем для зміни пароля щойно надіслано на адресу: %1", // ai 2026-06
 
-// include/stringexpand.php, row 10023, 10052
+// include/stringexpand.php, row 10351, 10380
 "Bad or expired key." => "Хибний або застарілий ключ.", // ai 2026-06
 
-// include/stringexpand.php, row 10028
+// include/stringexpand.php, row 10356
 "Fill in the new password" => "Введіть новий пароль", // ai 2026-06
 
-// include/stringexpand.php, row 10030
+// include/stringexpand.php, row 10358
 "New password" => "Новий пароль", // ai 2026-06
 
-// include/stringexpand.php, row 10031
+// include/stringexpand.php, row 10359
 "Retype New Password" => "Повторіть новий пароль", // ai 2026-06
 
-// include/stringexpand.php, row 10055
+// include/stringexpand.php, row 10383
 "Passwords do not match - please try again." => "Паролі не збігаються — спробуйте ще раз.", // ai 2026-06
 
-// include/stringexpand.php, row 10058
+// include/stringexpand.php, row 10386
 "The password must be at least 6 characters long." => "Пароль повинен містити щонайменше 6 символів.", // ai 2026-06
 
-// include/stringexpand.php, row 10064
+// include/stringexpand.php, row 10392
 "Password changed." => "Пароль змінено.", // ai 2026-06
 
-// include/stringexpand.php, row 10066
+// include/stringexpand.php, row 10394
 "An error occurred during password change - please contact: %1." => "Під час зміни пароля сталася помилка — зверніться до: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 10945, 10968
+// include/stringexpand.php, row 11502, 11525
 "Are you sure you want to permanently DELETE this record?" => "Ви справді хочете назавжди ВИДАЛИТИ цей запис?", // ai 2026-06
 
-// include/stringexpand.php, row 10951, 10954, 10974, 10977
+// include/stringexpand.php, row 11508, 11511, 11531, 11534
 // src/Widget/RimWidget.php, row 270
 "edit" => "редагувати", // ai 2026-06
 
-// include/stringexpand.php, row 10957, 10980
+// include/stringexpand.php, row 11514, 11537
 "back" => "назад", // ai 2026-06
 
-// include/stringexpand.php, row 10960, 10983
+// include/stringexpand.php, row 11517, 11540
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "перетягніть файли сюди або клацніть, щоб завантажити", // ai 2026-06
 
@@ -7204,118 +7299,121 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Неможливо змінити дані користувача", // ai 2026-06
 
-// include/util.php, row 1347
+// include/util.php, row 1353
 "Toolkit news message" => "Повідомлення застосунку", // ai 2026-06
 
-// include/util.php, row 1361
+// include/util.php, row 1367
 "Relogin" => "Увійти знову", // ai 2026-06
 
 // include/validate.php, row 54
 "it must be filled" => "має бути заповнене", // ai 2026-06
 
-// include/validate.php, row 175
+// include/validate.php, row 187
 "Bad validator type: %1" => "Хибний тип валідатора: %1", // ai 2026-06
 
-// include/validate.php, row 268, 573, 626
+// include/validate.php, row 280, 585, 638
 "Allowed minimum value" => "Дозволене мінімальне значення", // ai 2026-06
 
-// include/validate.php, row 269, 574, 627
+// include/validate.php, row 281, 586, 639
 "Allowed maximum value" => "Дозволене максимальне значення", // ai 2026-06
 
-// include/validate.php, row 270
+// include/validate.php, row 282
 "Step" => "Крок", // ai 2026-06
 
-// include/validate.php, row 271, 407, 899
+// include/validate.php, row 283, 419, 911
 "Maximum length" => "Максимальна довжина", // ai 2026-06
 
-// include/validate.php, row 284
+// include/validate.php, row 296
 "No integer value" => "Не ціле число", // ai 2026-06
 
-// include/validate.php, row 288, 591, 644
+// include/validate.php, row 300, 603, 656
 "Out of range - too big" => "Поза діапазоном - надто велике", // ai 2026-06
 
-// include/validate.php, row 291, 594, 647
+// include/validate.php, row 303, 606, 659
 "Out of range - too small" => "Поза діапазоном - надто мале", // ai 2026-06
 
-// include/validate.php, row 405
+// include/validate.php, row 417
 "Regular expression" => "Регулярний вираз", // ai 2026-06
 
-// include/validate.php, row 406
+// include/validate.php, row 418
 "Empty expression" => "Порожній вираз", // ai 2026-06
 
-// include/validate.php, row 420, 704, 734, 912
+// include/validate.php, row 432, 716, 746, 924
 "Too long" => "Надто довге", // ai 2026-06
 
-// include/validate.php, row 425
+// include/validate.php, row 437
 "Do not match the pattern" => "Не відповідає шаблону", // ai 2026-06
 
-// include/validate.php, row 518, 551
+// include/validate.php, row 530, 563
 "No ID value" => "Значення не є ID", // ai 2026-06
 
-// include/validate.php, row 535
+// include/validate.php, row 547
 "No packed ID value" => "Значення не є packed ID", // ai 2026-06
 
-// include/validate.php, row 587
+// include/validate.php, row 599
 "No float value" => "Значення не є числом з плаваючою комою (float)", // ai 2026-06
 
-// include/validate.php, row 640
+// include/validate.php, row 652
 "No decimal value" => "Значення не є десятковим числом (decimal)", // ai 2026-06
 
-// include/validate.php, row 672
+// include/validate.php, row 684
 "Possible values" => "Можливі значення", // ai 2026-06
 
-// include/validate.php, row 684
+// include/validate.php, row 696
 "Out of range - not in the list" => "Поза діапазоном - немає у списку", // ai 2026-06
 
-// include/validate.php, row 701, 731
+// include/validate.php, row 713, 743
 "Too short" => "Надто коротке", // ai 2026-06
 
-// include/validate.php, row 706
+// include/validate.php, row 718
 "Wrong characters - you should use a-z, A-Z and 0-9 characters" => "Неприпустимі символи - використовуйте лише символи a-z, A-Z та 0-9", // ai 2026-06
 
-// include/validate.php, row 772, 857
+// include/validate.php, row 784, 869
 "Field id" => "ID поля", // ai 2026-06
 
-// include/validate.php, row 773, 858
+// include/validate.php, row 785, 870
 "Scope" => "Область дії", // ai 2026-06
 
-// include/validate.php, row 773
+// include/validate.php, row 785
 "username | slice | allslices" => "",
 
-// include/validate.php, row 774, 859
+// include/validate.php, row 786, 871
 "Item id which we do not count" => "ID статті, яку не рахуємо", // ai 2026-06
 
-// include/validate.php, row 800
+// include/validate.php, row 812
 "Username is not unique" => "Ім'я користувача не унікальне", // ai 2026-06
 
-// include/validate.php, row 807, 815
+// include/validate.php, row 819, 827
 "Wrong parameter field_id for unique check" => "Хибний параметр field_id для перевірки унікальності", // ai 2026-06
 
-// include/validate.php, row 827
+// include/validate.php, row 839
 "Not unique - value already used" => "Не унікальне - значення вже використовується", // ai 2026-06
 
-// include/validate.php, row 858
+// include/validate.php, row 870
 "username | slice | <b>allslices</b>" => "",
 
-// include/validate.php, row 964
+// include/validate.php, row 957
+"Not a valid regular expression" => "",
+
+// include/validate.php, row 992
 "This field is required." => "Це поле є обовʼязковим.", // ai 2026-06
 
-// include/validate.php, row 964
+// include/validate.php, row 992
 "This field is required (marked by *)." => "Це поле є обовʼязковим (позначене *).", // ai 2026-06
 
-// include/validate.php, row 971
+// include/validate.php, row 999
 "Not a valid integer number." => "Недійсне ціле число.", // ai 2026-06
 
-// include/validate.php, row 974
+// include/validate.php, row 1002
 "Not a valid file name." => "Недійсна назва файлу.", // ai 2026-06
 
-// include/validate.php, row 978
+// include/validate.php, row 1006
 "Not a valid email address." => "Недійсна адреса електронної пошти.", // ai 2026-06
 
-// include/validate.php, row 981
+// include/validate.php, row 1009
 "The two password copies differ." => "Дві копії пароля відрізняються.", // ai 2026-06
 
-// include/view.class.php, row 321
+// include/view.class.php, row 326
 "Jump to view:" => "Перейти до вигляду:", // ai 2026-06
 
 // include/widget.class.php, row 179
@@ -7368,79 +7466,79 @@ return [
 // include/widget.class.php, row 470
 "Not filled (%1)" => "Не заповнено (%1)", // ai 2026-06
 
-// misc/datovka/datovka.php, row 115
+// misc/datovka/datovka.php, row 154
 "Datovka ID" => "ID Datovka", // ai 2026-06
 
-// misc/datovka/datovka.php, row 116
+// misc/datovka/datovka.php, row 155
 "Return URL" => "URL повернення", // ai 2026-06
 
-// misc/datovka/datovka.php, row 118
+// misc/datovka/datovka.php, row 157
 "Configuration" => "Конфігурація", // ai 2026-06
 
-// misc/datovka/datovka.php, row 118
+// misc/datovka/datovka.php, row 157
 "standard|test" => "",
 
-// misc/datovka/datovka.php, row 120
+// misc/datovka/datovka.php, row 159
 "State text" => "Текст стану", // ai 2026-06
 
-// misc/datovka/datovka.php, row 121
+// misc/datovka/datovka.php, row 160
 "State time" => "Час стану", // ai 2026-06
 
-// misc/datovka/datovka.php, row 122
+// misc/datovka/datovka.php, row 161
 "Related to" => "Стосується", // ai 2026-06
 
-// misc/datovka/datovka.php, row 124
+// misc/datovka/datovka.php, row 163
 "Recipient ID" => "ID отримувача", // ai 2026-06
 
-// misc/datovka/datovka.php, row 125
+// misc/datovka/datovka.php, row 164
 "Annotation" => "Анотація", // ai 2026-06
 
-// misc/datovka/datovka.php, row 126
+// misc/datovka/datovka.php, row 165
 "To hands" => "До рук", // ai 2026-06
 
-// misc/datovka/datovka.php, row 127
+// misc/datovka/datovka.php, row 166
 "Recipient reference number" => "Реєстраційний номер отримувача", // ai 2026-06
 
-// misc/datovka/datovka.php, row 128
+// misc/datovka/datovka.php, row 167
 "Recipient identifier" => "Ідентифікатор отримувача", // ai 2026-06
 
-// misc/datovka/datovka.php, row 129
+// misc/datovka/datovka.php, row 168
 "Recipient org unit" => "Організаційний підрозділ отримувача", // ai 2026-06
 
-// misc/datovka/datovka.php, row 130
+// misc/datovka/datovka.php, row 169
 "Recipient org unit number" => "Номер організаційного підрозділу отримувача", // ai 2026-06
 
-// misc/datovka/datovka.php, row 131
+// misc/datovka/datovka.php, row 170
 "Sender reference number" => "Реєстраційний номер відправника", // ai 2026-06
 
-// misc/datovka/datovka.php, row 132
+// misc/datovka/datovka.php, row 171
 "Sender identifier" => "Ідентифікатор відправника", // ai 2026-06
 
-// misc/datovka/datovka.php, row 133
+// misc/datovka/datovka.php, row 172
 "Sender org unit" => "Організаційний підрозділ відправника", // ai 2026-06
 
-// misc/datovka/datovka.php, row 134
+// misc/datovka/datovka.php, row 173
 "Sender org unit number" => "Номер організаційного підрозділу відправника", // ai 2026-06
 
-// misc/datovka/datovka.php, row 135
+// misc/datovka/datovka.php, row 174
 "Legal title law" => "Правова підстава - закон", // ai 2026-06
 
-// misc/datovka/datovka.php, row 136
+// misc/datovka/datovka.php, row 175
 "Legal title year" => "Правова підстава - рік", // ai 2026-06
 
-// misc/datovka/datovka.php, row 137
+// misc/datovka/datovka.php, row 176
 "Legal title section" => "Правова підстава - розділ", // ai 2026-06
 
-// misc/datovka/datovka.php, row 138
+// misc/datovka/datovka.php, row 177
 "Legal title paragraph" => "Правова підстава - параграф", // ai 2026-06
 
-// misc/datovka/datovka.php, row 139
+// misc/datovka/datovka.php, row 178
 "Legal title point" => "Правова підстава - пункт", // ai 2026-06
 
-// misc/datovka/datovka.php, row 140
+// misc/datovka/datovka.php, row 179
 "Personal delivery" => "Особисте вручення", // ai 2026-06
 
-// misc/datovka/datovka.php, row 141
+// misc/datovka/datovka.php, row 180
 "Allow substitute delivery" => "Дозволити вручення заміннику", // ai 2026-06
 
 // misc/msconvert/index.php, row 36
@@ -7476,28 +7574,28 @@ return [
 // modules/jump/modedit.php, row 161
 "Jump to slice" => "Перейти до рубрики", // ai 2026-06
 
-// slice.php, row 237
+// slice.php, row 239
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Хибний параметр inc - включений файл може містити лише буквено-цифрові символи", // ai 2026-06
 
-// slice.php, row 241
+// slice.php, row 243
 "No such file" => "Такого файлу немає", // ai 2026-06
 
-// slice.php, row 262
+// slice.php, row 264
 "Invalid slice number or slice was deleted" => "Недійсний номер рубрики або рубрику видалено", // ai 2026-06
 
-// slice.php, row 265
+// slice.php, row 267
 "slice.php output forbidden for this slice" => "Вивід через slice.php для цієї рубрики заборонено", // ai 2026-06
 
-// slice.php, row 320
+// slice.php, row 322
 "session id" => "id сесії", // ai 2026-06
 
-// slice.php, row 573
+// slice.php, row 585
 "number of current page (on pagescroller)" => "номер поточної сторінки (у посторінковому перегляді)", // ai 2026-06
 
-// slice.php, row 574
+// slice.php, row 586
 "page length (number of items)" => "довжина сторінки (кількість статей)", // ai 2026-06
 
-// slice.php, row 609
+// slice.php, row 621
 // src/Manager.php, row 881
 "No item found" => "Жодної статті не знайдено", // ai 2026-06
 
@@ -7580,76 +7678,79 @@ return [
 // src/AA_Plannedtask.php, row 457
 "next run" => "наступний запуск", // ai 2026-06
 
-// src/Api/Controller/FilesController.php, row 51, 72
+// src/Api/Controller/FilesController.php, row 54, 75
 "The file is too big" => "Файл завеликий", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 64
+// src/Api/Controller/FilesController.php, row 67
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "Ви не можете завантажувати сюди файли. Якщо Ви редагували, термін Вашого входу міг минути – перезавантажте сторінку.", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 67
+// src/Api/Controller/FilesController.php, row 70
 "Too many uploads - try again in an hour" => "Забагато завантажень – спробуйте знову за годину", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 75, 240
+// src/Api/Controller/FilesController.php, row 78, 243
 "No file received" => "Файл не отримано", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 83
+// src/Api/Controller/FilesController.php, row 86
 "Files of this type cannot be uploaded here: %1" => "Файли цього типу не можна сюди завантажити: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 86
+// src/Api/Controller/FilesController.php, row 89
 "The content of the file does not match its extension %1" => "Вміст файлу не відповідає його розширенню %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 89
+// src/Api/Controller/FilesController.php, row 92
 "The image is bigger than %1 MB" => "Зображення більше за %1 МБ", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 92
+// src/Api/Controller/FilesController.php, row 95
 "The image has more than %1 megapixels" => "Зображення має понад %1 мегапікселів", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 97
+// src/Api/Controller/FilesController.php, row 100
 "The upload directory of the slice is not writable" => "До каталогу завантажених файлів рубрики не можна записувати", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 107
+// src/Api/Controller/FilesController.php, row 110
 "The file could not be stored" => "Не вдалося зберегти файл", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 129
+// src/Api/Controller/FilesController.php, row 132
 "Only editors of the slice can browse its files" => "Переглядати файли рубрики можуть лише її редактори", // ai 2026-10
 
-// src/Central/Actionapps.php, row 179
+// src/Central/Actionapps.php, row 178
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Цей PHP не має AES-GCM (sodium) – токен входу не можна зберегти зашифрованим", // ai 2026-10
 
-// src/Central/Actionapps.php, row 207
+// src/Central/Actionapps.php, row 206
 "Not configured" => "Не налаштовано", // ai 2026-06
 
-// src/Central/Actionapps.php, row 207
+// src/Central/Actionapps.php, row 206
 "Not authenticated - get a token" => "Не автентифіковано – отримайте токен", // ai 2026-10
 
-// src/Central/Actionapps.php, row 210
+// src/Central/Actionapps.php, row 209
 "Authenticated until %1" => "Автентифіковано до %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 210
+// src/Central/Actionapps.php, row 209
 "Expired - get a token" => "Термін минув – отримайте токен", // ai 2026-10
 
 // src/Central/Actionapps.php, row 234
+"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "",
+
+// src/Central/Actionapps.php, row 236
 "The remote AA gave no login token - update it" => "Віддалене AA не видало токен входу – оновіть його", // ai 2026-10
 
-// src/Central/Actionapps.php, row 235
+// src/Central/Actionapps.php, row 237
 "The remote AA gave a token for longer than a day - update the remote AA" => "Віддалене AA видало токен довше ніж на день – оновіть віддалене AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 271
+// src/Central/Actionapps.php, row 273
 "Can't get org_name - " => "Не вдалося отримати org_name —", // ai 2026-06
 
-// src/Central/Actionapps.php, row 337
+// src/Central/Actionapps.php, row 339
 "the update may still be running on the remote AA - wait, then run Test before retrying" => "оновлення на віддаленому AA, можливо, ще триває – зачекайте й перед повторною спробою запустіть «Тест»", // ai 2026-10
 
-// src/Central/Actionapps.php, row 348
+// src/Central/Actionapps.php, row 350
 "Unexpected response from remote AA" => "Неочікувана відповідь віддаленого AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 351
+// src/Central/Actionapps.php, row 353
 "This AA does not support this command (update it first)" => "Це AA не підтримує цю команду (спершу оновіть його)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 362
+// src/Central/Actionapps.php, row 364
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Збережений токен входу не можна використати (змінився AA_SECRET, пароль до бази даних або адреса цього AA) – знову автентифікуйте це AA на сторінці ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 363
+// src/Central/Actionapps.php, row 365
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Для цього AA немає токена входу – автентифікуйте це AA на сторінці ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -7881,6 +7982,7 @@ return [
 "Usually nothing." => "Зазвичай нічого.", // ai 2026-10
 
 // src/Central/FindingText.php, row 114
+// src/Optimize/CheckViewSliceRefusals.php, row 153
 "Slice left out" => "Пропущена рубрика", // ai 2026-10
 
 // src/Central/FindingText.php, row 115
@@ -8711,6 +8813,12 @@ return [
 // src/Central/TransferText.php, row 166
 "item %1" => "стаття %1", // ai 2026-10
 
+// src/Credential/Store.php, row 54
+"damaged (a line break or NUL in %1)" => "пошкоджено (розрив рядка або NUL у %1)", // ai 2026-10
+
+// src/Credential/Store.php, row 55
+"set (%1)" => "встановлено (%1)", // ai 2026-10
+
 // src/IO/Grabber/AARSS.php, row 118
 "AA RSS" => "",
 
@@ -8900,12 +9008,6 @@ return [
 // src/IO/OnPageChanger.php, row 55
 "No permission - no user is authenticated. Try to relogin, please." => "Немає прав - жоден користувач не автентифікований. Спробуйте, будь ласка, увійти знову.", // ai 2026-06
 
-// src/Import/Credential/Store.php, row 55
-"damaged (a line break or NUL in %1)" => "пошкоджено (розрив рядка або NUL у %1)", // ai 2026-10
-
-// src/Import/Credential/Store.php, row 56
-"set (%1)" => "встановлено (%1)", // ai 2026-10
-
 // src/Import/Definition.php, row 88
 // src/Import/DetailConfig.php, row 390
 "Key fields" => "Ключові поля", // ai 2026-10
@@ -9090,6 +9192,7 @@ return [
 "The settings are the same as stored - nothing changed." => "Налаштування такі самі, як збережені – нічого не змінилося.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 142
+// src/Isds/Registry/Page.php, row 326
 "The settings were not saved:" => "Налаштування не було збережено:", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 144
@@ -9141,6 +9244,7 @@ return [
 "Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "Зберегти налаштування? Якщо вони змінилися, відкритий запуск завершиться, те, що імпорт знає про потоки, буде відкинуто, а зіставлення буде знову налаштовано з джерела.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 238
+// src/Isds/Registry/Page.php, row 617
 "Save the settings" => "Зберегти налаштування", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 272
@@ -10007,16 +10111,702 @@ return [
 // src/Import/Source/CsvurlSource.php, row 56
 "The column that identifies the item; it must be one of the columns" => "Стовпець, що ідентифікує статтю; має бути одним зі стовпців", // ai 2026-10
 
+// src/Isds/Advice.php, row 47
+"The form has expired, or it does not belong to this page. Load the page again." => "",
+
+// src/Isds/Advice.php, row 49
+"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "",
+
+// src/Isds/Advice.php, row 50
+"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "",
+
+// src/Isds/Advice.php, row 51
+"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "",
+
+// src/Isds/Advice.php, row 52
+"Someone else, or another window, is working with this now. Try it again in a while." => "",
+
+// src/Isds/Advice.php, row 53
+"You may not do this." => "",
+
+// src/Isds/Advice.php, row 54
+"This sending is not on this page." => "",
+
+// src/Isds/Advice.php, row 55
+"The sending does not wait for this now." => "",
+
+// src/Isds/Advice.php, row 56
+"A step of the sending is still running. Try it again in a few minutes." => "",
+
+// src/Isds/Advice.php, row 57
+"The sending goes on." => "",
+
+// src/Isds/Advice.php, row 58
+"The sending is stopping - no further message will go." => "",
+
+// src/Isds/Advice.php, row 59
+"Every message has been sent or tried already - there is nothing left to stop." => "",
+
+// src/Isds/Advice.php, row 60
+"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "",
+
+// src/Isds/Advice.php, row 61
+"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "",
+
+// src/Isds/Advice.php, row 63
+"The draft is saved." => "",
+
+// src/Isds/Advice.php, row 64
+"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "",
+
+// src/Isds/Advice.php, row 65
+"The copy is ready as a new draft." => "",
+
+// src/Isds/Advice.php, row 66
+"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "",
+
+// src/Isds/Advice.php, row 67
+"The sending of this campaign has started, so it stays - its messages must remain traceable." => "",
+
+// src/Isds/Advice.php, row 68
+"The sending left no recipient unsent - there is nothing to copy." => "",
+
+// src/Isds/Advice.php, row 69
+"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "",
+
+// src/Isds/Advice.php, row 70
+"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "",
+
+// src/Isds/Advice.php, row 71
+"The fate of this message is known - there is nothing to verify." => "",
+
+// src/Isds/Advice.php, row 72
+"This message does not belong to the sending." => "",
+
+// src/Isds/Advice.php, row 73
+"The data box of the recipient is taken from the register." => "",
+
+// src/Isds/Advice.php, row 74
+"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "",
+
+// src/Isds/Advice.php, row 75
+"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "",
+
+// src/Isds/Advice.php, row 76
+"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "",
+
+// src/Isds/Advice.php, row 77
+"A page in the test environment changes no recipient." => "",
+
+// src/Isds/Advice.php, row 78
+"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "",
+
+// src/Isds/Advice.php, row 79
+"The test message has gone (ID %1 in ISDS, reference number %2)." => "",
+
+// src/Isds/Advice.php, row 80
+"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "",
+
+// src/Isds/Advice.php, row 81
+"ISDS refused the test message." => "",
+
+// src/Isds/Advice.php, row 82
+"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "",
+
+// src/Isds/Advice.php, row 83
+"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "",
+
+// src/Isds/Advice.php, row 84
+"Choose the recipients and save the draft." => "",
+
+// src/Isds/Advice.php, row 85
+"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "",
+
+// src/Isds/Advice.php, row 86
+"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "",
+
+// src/Isds/Advice.php, row 87
+"There are more recipients than this page may send to (%1). Narrow the choice." => "",
+
+// src/Isds/Advice.php, row 88
+"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "",
+
+// src/Isds/Advice.php, row 89
+"No data box account is set up for this page. Ask the administrator." => "",
+
+// src/Isds/Advice.php, row 90
+"This page or its slices are not ready to send. Ask the administrator." => "",
+
+// src/Isds/Advice.php, row 91
+"The letter cannot go as a data message:" => "",
+
+// src/Isds/Advice.php, row 92
+"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "",
+
+// src/Isds/Advice.php, row 93
+"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "",
+
+// src/Isds/Advice.php, row 93
+"The server has too little memory for the letter and its attachments. Ask the administrator." => "",
+
+// src/Isds/Advice.php, row 94
+"The database cannot queue a sending safely. Ask the administrator." => "",
+
+// src/Isds/Advice.php, row 95
+"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "",
+
+// src/Isds/Advice.php, row 96
+"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "",
+
+// src/Isds/Advice.php, row 97
+"The settings of the account are not complete, nothing was sent. Ask the administrator." => "",
+
+// src/Isds/Advice.php, row 98
+"ISDS does not answer, nothing was sent. Try it again in a while." => "",
+
+// src/Isds/Advice.php, row 99
+"ISDS refused to tell whose the login of the account is, nothing was sent." => "",
+
+// src/Isds/Advice.php, row 100
+"No test data box is set up for this page - in production the administrator of the server sets it." => "",
+
+// src/Isds/Advice.php, row 101
+"Choose one of the test data boxes of this page." => "",
+
+// src/Isds/Advice.php, row 102
+"A test message cannot go to the data box it is sent from. Choose another test box." => "",
+
+// src/Isds/Advice.php, row 103
+"ISDS is being maintained until %1. Try it again then." => "",
+
+// src/Isds/Advice.php, row 103
+"ISDS is being maintained. Try it again later." => "",
+
+// src/Isds/Advice.php, row 105
+"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "",
+
+// src/Isds/Advice.php, row 106
+"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "",
+
+// src/Isds/Advice.php, row 107
+"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "",
+
+// src/Isds/Advice.php, row 108
+"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "",
+
+// src/Isds/Advice.php, row 109
+"The test message went as a paid postal data message." => "",
+
+// src/Isds/Advice.php, row 110
+"The test message may have cost money: it may have gone as a paid postal data message." => "",
+
+// src/Isds/Advice.php, row 141
+"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "",
+
+// src/Isds/Advice.php, row 142
+"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "",
+
+// src/Isds/Advice.php, row 144
+"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "",
+
+// src/Isds/Advice.php, row 145
+"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "",
+
+// src/Isds/Advice.php, row 146
+"ISDS is being maintained. The sending waits till the end and goes on by itself." => "",
+
+// src/Isds/Advice.php, row 147
+"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "",
+
+// src/Isds/Advice.php, row 148
+"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "",
+
+// src/Isds/Advice.php, row 149
+"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "",
+
+// src/Isds/Advice.php, row 150
+"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "",
+
+// src/Isds/Advice.php, row 151
+"The settings of the account are not complete. Ask the administrator." => "",
+
+// src/Isds/Advice.php, row 152
+"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "",
+
+// src/Isds/Advice.php, row 153
+"The database cannot record the sending safely. Ask the administrator." => "",
+
+// src/Isds/Advice.php, row 154
+"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "",
+
+// src/Isds/Advice.php, row 155
+"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+
+// src/Isds/Advice.php, row 156
+"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+
+// src/Isds/Advice.php, row 157
+"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "",
+
+// src/Isds/Advice.php, row 173
+"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "",
+
+// src/Isds/Advice.php, row 173
+"Test with the data box of an authority." => "",
+
+// src/Isds/Advice.php, row 174
+"The sending data box has been made inaccessible - no message can go from it now." => "",
+
+// src/Isds/Advice.php, row 175
+"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "",
+
+// src/Isds/Advice.php, row 183
+"ISDS answered with status %1." => "",
+
+// src/Isds/Advice.php, row 193
+"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+
+// src/Isds/Advice.php, row 194
+"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+
+// src/Isds/Advice.php, row 195
+"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "",
+
+// src/Isds/Advice.php, row 196
+"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "",
+
+// src/Isds/Advice.php, row 197
+"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "",
+
+// src/Isds/Advice.php, row 198
+"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "",
+
+// src/Isds/Advice.php, row 199
+"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "",
+
+// src/Isds/Advice.php, row 200
+"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "",
+
+// src/Isds/Advice.php, row 201
+"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "",
+
+// src/Isds/Advice.php, row 202
+"The file %1 is empty. Nothing of the draft was saved." => "",
+
+// src/Isds/Advice.php, row 203
+"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "",
+
+// src/Isds/Advice.php, row 204
+"A value of the form cannot be taken. Load the page again and try it once more." => "",
+
+// src/Isds/Gate.php, row 1139
+"The mass sending on this page is not ready - fix this first:" => "",
+
+// src/Isds/Gate.php, row 1140
+"Where to fix it:" => "",
+
+// src/Isds/Registry/Config.php, row 53
+"Name field" => "",
+
+// src/Isds/Registry/Config.php, row 53
+"The name the register is searched by when the IČO finds no box" => "",
+
+// src/Isds/Registry/Config.php, row 54
+"IČO field" => "",
+
+// src/Isds/Registry/Config.php, row 54
+"The IČO finds the box for sure; without it only names are matched, and a person checks those" => "",
+
+// src/Isds/Registry/Config.php, row 55
+"Data box field" => "",
+
+// src/Isds/Registry/Config.php, row 55
+"The field the data box id is written to - the only field the pairing changes" => "",
+
+// src/Isds/Registry/Config.php, row 56
+"Type field" => "",
+
+// src/Isds/Registry/Config.php, row 56
+"The type of the item, needed for the two lists below" => "",
+
+// src/Isds/Registry/Config.php, row 57
+"Types to pair" => "",
+
+// src/Isds/Registry/Config.php, row 57
+"Only items of these types are paired; none = all items" => "",
+
+// src/Isds/Registry/Config.php, row 58
+"Types of city districts" => "",
+
+// src/Isds/Registry/Config.php, row 58
+"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "",
+
+// src/Isds/Registry/Config.php, row 123
+"Choose the field with the name" => "",
+
+// src/Isds/Registry/Config.php, row 123
+"Choose the field the data box is written to" => "",
+
+// src/Isds/Registry/Config.php, row 132
+"The slice has no field %1" => "",
+
+// src/Isds/Registry/Config.php, row 139
+"The data box needs a field of its own - writing it would overwrite the name, IČO or type" => "",
+
+// src/Isds/Registry/Config.php, row 142
+"The lists of types need the type field" => "",
+
+// src/Isds/Registry/Config.php, row 147
+"The types of city districts must be among the types to pair too: %1" => "",
+
+// src/Isds/Registry/Config.php, row 160
+"The field %1 is protected - it is neither shown nor written here" => "",
+
+// src/Isds/Registry/Config.php, row 164
+"The data box cannot be written to %1, a column of the item table" => "",
+
+// src/Isds/Registry/MatchRow.php, row 86
+"Changed" => "",
+
+// src/Isds/Registry/MatchRow.php, row 87
+"Same" => "",
+
+// src/Isds/Registry/MatchRow.php, row 88
+// src/Isds/Registry/Page.php, row 567
+"Not found" => "",
+
+// src/Isds/Registry/MatchRow.php, row 89
+"Several candidates" => "",
+
+// src/Isds/Registry/Page.php, row 151
+"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by IČO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "",
+
+// src/Isds/Registry/Page.php, row 169
+"The form sent values this page does not send. Reload the page and try again." => "",
+
+// src/Isds/Registry/Page.php, row 324
+"You do not have permissions to do this in this slice." => "",
+
+// src/Isds/Registry/Page.php, row 325
+"The settings are saved." => "",
+
+// src/Isds/Registry/Page.php, row 327
+"The register is downloaded." => "",
+
+// src/Isds/Registry/Page.php, row 329
+"The register is being downloaded right now. Reload the page in a minute." => "",
+
+// src/Isds/Registry/Page.php, row 330
+"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+
+// src/Isds/Registry/Page.php, row 331
+"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+
+// src/Isds/Registry/Page.php, row 332
+"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "",
+
+// src/Isds/Registry/Page.php, row 333
+"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "",
+
+// src/Isds/Registry/Page.php, row 334
+"Nothing was written. Download the register again." => "",
+
+// src/Isds/Registry/Page.php, row 335
+"Choose the fields of the pairing first." => "",
+
+// src/Isds/Registry/Page.php, row 336
+"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "",
+
+// src/Isds/Registry/Page.php, row 337
+"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "",
+
+// src/Isds/Registry/Page.php, row 347
+"The last download attempt was at %1. Another one is possible from %2." => "",
+
+// src/Isds/Registry/Page.php, row 355
+"Data boxes written: %1." => "",
+
+// src/Isds/Registry/Page.php, row 356
+"Nothing was written: no row was ticked, or the ticked ones have their box already." => "",
+
+// src/Isds/Registry/Page.php, row 358
+"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "",
+
+// src/Isds/Registry/Page.php, row 361
+"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "",
+
+// src/Isds/Registry/Page.php, row 364
+"These items were not written:" => "",
+
+// src/Isds/Registry/Page.php, row 386, 465
+"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "",
+
+// src/Isds/Registry/Page.php, row 388
+"The register has not been downloaded yet. Download it to see the report." => "",
+
+// src/Isds/Registry/Page.php, row 388
+"The register has not been downloaded yet." => "",
+
+// src/Isds/Registry/Page.php, row 390
+"Download the register again." => "",
+
+// src/Isds/Registry/Page.php, row 390
+"Ask someone who manages the settings to download the register again." => "",
+
+// src/Isds/Registry/Page.php, row 392
+"Size: %1 MB." => "",
+
+// src/Isds/Registry/Page.php, row 394
+"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "",
+
+// src/Isds/Registry/Page.php, row 398
+"Download the register now" => "",
+
+// src/Isds/Registry/Page.php, row 399
+"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "",
+
+// src/Isds/Registry/Page.php, row 401
+"Register of data boxes" => "",
+
+// src/Isds/Registry/Page.php, row 411
+"AA has no record of downloading this copy of the register" => "",
+
+// src/Isds/Registry/Page.php, row 411
+"The register of data boxes is not the one AA downloaded" => "",
+
+// src/Isds/Registry/Page.php, row 426
+"Downloaded: %1 (today)." => "",
+
+// src/Isds/Registry/Page.php, row 427
+"Downloaded: %1 (yesterday)." => "",
+
+// src/Isds/Registry/Page.php, row 428
+"Downloaded: %1." => "",
+
+// src/Isds/Registry/Page.php, row 469
+"Items and their data boxes" => "",
+
+// src/Isds/Registry/Page.php, row 482
+"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "",
+
+// src/Isds/Registry/Page.php, row 485
+"The slice has no items to pair." => "",
+
+// src/Isds/Registry/Page.php, row 490
+"No row has this status." => "",
+
+// src/Isds/Registry/Page.php, row 510
+"Write" => "Записати", // ai 2026-06
+
+// src/Isds/Registry/Page.php, row 514
+"Stored data box" => "",
+
+// src/Isds/Registry/Page.php, row 514
+"Data box in the register" => "",
+
+// src/Isds/Registry/Page.php, row 520
+"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "",
+
+// src/Isds/Registry/Page.php, row 523
+"Write the ticked data boxes" => "",
+
+// src/Isds/Registry/Page.php, row 524
+"Writes only the data box field of the ticked items. Their history records the change." => "",
+
+// src/Isds/Registry/Page.php, row 536
+"Show the rows of" => "",
+
+// src/Isds/Registry/Page.php, row 542
+"(no name)" => "",
+
+// src/Isds/Registry/Page.php, row 546
+"Write the data box %1 into %2" => "",
+
+// src/Isds/Registry/Page.php, row 555, 653
+// src/Optimize/MissCacheRouting.php, row 98, 129
+"none" => "немає", // ai 2026-10
+
+// src/Isds/Registry/Page.php, row 571
+"IČO %1" => "",
+
+// src/Isds/Registry/Page.php, row 580
+"by IČO" => "",
+
+// src/Isds/Registry/Page.php, row 581
+"by name, check it" => "",
+
+// src/Isds/Registry/Page.php, row 585
+"IČO of the item %1, of the box %2" => "",
+
+// src/Isds/Registry/Page.php, row 588
+"Another item has or would get this data box too. Check that it is not one place twice." => "",
+
+// src/Isds/Registry/Page.php, row 599
+"Settings of the pairing" => "",
+
+// src/Isds/Registry/Page.php, row 616
+"Saving changes only these settings, never the items." => "",
+
+// src/Isds/Registry/Page.php, row 626
+"Choose a field" => "",
+
+// src/Isds/Registry/Page.php, row 626
+"None" => "",
+
+// src/Isds/Registry/Page.php, row 639
+"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "",
+
+// src/Isds/Registry/Sync.php, row 450
+"The item was not stored" => "",
+
+// src/Isds/SendQueue.php, row 448
+"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "",
+
+// src/Isds/Setup.php, row 107
+"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "",
+
+// src/Isds/Setup.php, row 115
+"Unknown settings of the mass sending: %1 - the settings are %2" => "",
+
+// src/Isds/Setup.php, row 130
+"default_types names types that are not among types: %1" => "",
+
+// src/Isds/Setup.php, row 133
+"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "",
+
+// src/Isds/Setup.php, row 136
+"Set letterhead to a text" => "",
+
+// src/Isds/Setup.php, row 146
+"The settings of data boxes cannot be read now - ask the administrator of the server" => "",
+
+// src/Isds/Setup.php, row 240
+"Set %1 to the id of a slice - 32 hexadecimal digits" => "",
+
+// src/Isds/Setup.php, row 258
+"Set %1 to the id of a field - 16 characters like text...........1" => "",
+
+// src/Isds/Setup.php, row 283
+"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "",
+
+// src/Isds/Setup.php, row 288
+"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "",
+
+// src/Isds/Setup.php, row 303
+"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "",
+
+// src/Isds/Setup.php, row 321
+"test_box: %1 is not the id of a data box - 7 letters or digits" => "",
+
+// src/Isds/Setup.php, row 351
+"Set max_recipients to a number from 1 to %1" => "",
+
+// src/Isds/SliceRules.php, row 67
+"The campaign slice and the message slice must be two slices" => "",
+
+// src/Isds/SliceRules.php, row 94
+"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "",
+
+// src/Isds/SliceRules.php, row 95
+"There is no site %1" => "",
+
+// src/Isds/SliceRules.php, row 99
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "",
+
+// src/Isds/SliceRules.php, row 140
+"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "",
+
+// src/Isds/SliceRules.php, row 144
+"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "",
+
+// src/Isds/SliceRules.php, row 151
+"Slice \"%1\", its settings of data boxes: %2" => "",
+
+// src/Isds/SliceRules.php, row 154
+"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "",
+
+// src/Isds/SliceRules.php, row 156
+"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "",
+
+// src/Isds/SliceRules.php, row 162
+"Slice \"%1\" has no field %2 - name the field that tells a member" => "",
+
+// src/Isds/SliceRules.php, row 164
+"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "",
+
+// src/Isds/SliceRules.php, row 179
+// src/Optimize/CheckSiteStateFiles.php, row 72
+// src/Optimize/CheckUniversalAnalytics.php, row 71
+"Site settings" => "Налаштування сайту", // ai 2026-10
+
+// src/Isds/SliceRules.php, row 225
+"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "",
+
+// src/Isds/SliceRules.php, row 226
+"There is no slice %1" => "",
+
+// src/Isds/SliceRules.php, row 237
+"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "",
+
+// src/Isds/SliceRules.php, row 250
+"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "",
+
+// src/Isds/SliceRules.php, row 254
+"Close slice \"%1\" - set in its settings %2" => "",
+
+// src/Isds/SliceRules.php, row 257
+"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "",
+
+// src/Isds/SliceRules.php, row 274
+"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "",
+
+// src/Isds/SliceRules.php, row 277
+"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "",
+
+// src/Isds/SliceRules.php, row 281
+"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "",
+
+// src/Isds/SliceRules.php, row 284
+"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "",
+
+// src/Isds/SliceRules.php, row 303
+"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "",
+
+// src/Isds/SliceRules.php, row 318
+"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "",
+
+// src/Isds/SliceRules.php, row 330
+"Slice \"%1\" lacks fields of a campaign slice: %2" => "",
+
+// src/Isds/SliceRules.php, row 331
+"Slice \"%1\" lacks fields of a message slice: %2" => "",
+
+// src/Isds/SliceRules.php, row 337
+"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "",
+
+// src/Isds/SliceRules.php, row 343
+"Slice \"%1\": set the Default of the field %2 to %3" => "",
+
+// src/Isds/SliceRules.php, row 382
+"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "",
+
+// src/Isds/SliceRules.php, row 385
+"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "",
+
+// src/Isds/SliceRules.php, row 385
+// src/Widget/Widget.php, row 786
+"Add to Constant" => "Додати до константи", // ai 2026-06
+
 // src/Later/ComputedfieldsUpdater.php, row 84
 "Planned %1 chunks with %2 items" => "Заплановано %1 партій з %2 статтями", // ai 2026-06
 
-// src/Later/Toexecute.php, row 361
+// src/Later/Toexecute.php, row 362
 "task is no longer in the queue" => "завдання вже немає в черзі", // ai 2026-10
 
-// src/Later/Toexecute.php, row 365
+// src/Later/Toexecute.php, row 366
 "skipped - the task changed meanwhile (reload the list)" => "пропущено - завдання тим часом змінилося (оновіть список)", // ai 2026-10
 
-// src/Later/Toexecute.php, row 461
+// src/Later/Toexecute.php, row 462
 "the task failed with %1" => "завдання не вдалося, виняток %1", // ai 2026-10
 
 // src/Manager.php, row 430
@@ -10623,71 +11413,85 @@ return [
 // src/Optimize/ChangeQte2Trm.php, row 145
 "%1 keeps \"Text = don't modify\": %2" => "%1 зберігає «Текст = не змінювати»: %2", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 24
+// src/Optimize/CheckAjaxUnsigned.php, row 25
 "Unsigned {ajax} widget settings" => "Непідписані налаштування віджетів {ajax}", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 29
+// src/Optimize/CheckAjaxUnsigned.php, row 30
 "Lists the fields whose {ajax} edits came without a valid signature of their widget type and properties in the last 30 days, so AA used the field's own widget instead." => "Показує поля, редагування яких через {ajax} за останні 30 днів надійшли без дійсного підпису типу й властивостей віджета, тож AA використала власний віджет поля.", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 75
+// src/Optimize/CheckAjaxUnsigned.php, row 76
 "{ajax} edit of field %1 in slice %2 came without a valid signature" => "Редагування поля %1 у рубриці %2 через {ajax} надійшло без дійсного підпису", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 81
-// src/Optimize/CheckHttp.php, row 62
-// src/Optimize/CheckUploadRefusals.php, row 85
-"Reason" => "Причина", // ai 2026-10
-
-// src/Optimize/CheckAjaxUnsigned.php, row 82
-// src/Optimize/CheckAlertitemRefusals.php, row 91
-// src/Optimize/CheckAnonymousEditRefusals.php, row 89
+// src/Optimize/CheckAjaxUnsigned.php, row 83
+// src/Optimize/CheckAlertitemRefusals.php, row 101
+// src/Optimize/CheckAnonymousEditRefusals.php, row 90
 // src/Optimize/CheckBlockedRequests.php, row 90
-// src/Optimize/CheckCkeditorUse.php, row 98
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 92
+// src/Optimize/CheckCkeditorUse.php, row 99
+// src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
+// src/Optimize/CheckIsdsConf.php, row 156, 189
+// src/Optimize/CheckIsdsViews.php, row 128
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 93
 // src/Optimize/CheckObjectFormRefusals.php, row 102
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckTrustedProxies.php, row 104
-// src/Optimize/CheckUploadRefusals.php, row 88
-// src/Optimize/CheckUserAliasFunctionLog.php, row 87
+// src/Optimize/CheckUploadRefusals.php, row 91
+// src/Optimize/CheckUserAliasFunctionLog.php, row 88
+// src/Optimize/CheckViewSliceRefusals.php, row 163, 195
 "Days seen" => "Днів із випадками", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 83
-// src/Optimize/CheckAlertitemRefusals.php, row 92
-// src/Optimize/CheckAnonymousEditRefusals.php, row 90
+// src/Optimize/CheckAjaxUnsigned.php, row 84
+// src/Optimize/CheckAlertitemRefusals.php, row 102
+// src/Optimize/CheckAnonymousEditRefusals.php, row 91
 // src/Optimize/CheckBlockedRequests.php, row 91
-// src/Optimize/CheckCkeditorUse.php, row 99
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 93
+// src/Optimize/CheckCkeditorUse.php, row 100
+// src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
+// src/Optimize/CheckIsdsConf.php, row 156, 158, 189
+// src/Optimize/CheckIsdsViews.php, row 129
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 94
 // src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckTrustedProxies.php, row 105
-// src/Optimize/CheckUploadRefusals.php, row 89
-// src/Optimize/CheckUserAliasFunctionLog.php, row 88
+// src/Optimize/CheckUploadRefusals.php, row 92
+// src/Optimize/CheckUserAliasFunctionLog.php, row 89
+// src/Optimize/CheckViewSliceRefusals.php, row 164, 196
 // src/Optimize/StateCheckModel.php, row 270
 "Last" => "Востаннє", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 85
+// src/Optimize/CheckAjaxUnsigned.php, row 86
 "The page sent a widget type or widget properties (5th and 6th parameter of {ajax}) without the signature AA adds since this version, so the field was edited with its own widget. Pages in the page cache stay unsigned until regenerated - flush the cache of the site. If the rows go on after that, someone sends forged requests - or, for a bad signature, the page is in another charset than the slice." => "Сторінка надіслала тип або властивості віджета (5-й і 6-й параметр {ajax}) без підпису, який AA додає починаючи з цієї версії, тож поле було відредаговано його власним віджетом. Сторінки в кеші сторінок залишаються непідписаними, доки їх не буде згенеровано знову - очистьте кеш сайту. Якщо рядки з'являються й після цього, хтось надсилає підроблені запити - або, у разі хибного підпису, сторінка має інше кодування, ніж рубрика.", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 91
+// src/Optimize/CheckAjaxUnsigned.php, row 87
+// src/Optimize/CheckAnonymousEditRefusals.php, row 94
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 97
+// src/Optimize/CheckUserAliasFunctionLog.php, row 77
+"Field settings" => "Налаштування поля", // ai 2026-10
+
+// src/Optimize/CheckAjaxUnsigned.php, row 92
 "No unsigned {ajax} widget settings in the last 30 days" => "За останні 30 днів немає непідписаних налаштувань віджетів {ajax}", // ai 2026-10
 
-// src/Optimize/CheckAlertitemRefusals.php, row 28
+// src/Optimize/CheckAlertitemRefusals.php, row 29
 "Refused alert sends" => "Відхилені надсилання сповіщень", // ai 2026-10
 
-// src/Optimize/CheckAlertitemRefusals.php, row 33
+// src/Optimize/CheckAlertitemRefusals.php, row 34
 "Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "Показує надсилання статей через сповіщення, відхилені за останні 30 днів, бо колекція не пов'язана з рубрикою статті (немає фільтра на рубрику, рубрика не є її рубрикою читачів, немає спільного сайту).", // ai 2026-10
 
-// src/Optimize/CheckAlertitemRefusals.php, row 83
+// src/Optimize/CheckAlertitemRefusals.php, row 86
+"Selections of the collection" => "",
+
+// src/Optimize/CheckAlertitemRefusals.php, row 93
 "Alert send of an item of slice %1 through collection %2 was refused" => "Надсилання статті з рубрики %1 через колекцію %2 відхилено", // ai 2026-10
 
-// src/Optimize/CheckAlertitemRefusals.php, row 94
+// src/Optimize/CheckAlertitemRefusals.php, row 104
 "An editor of the slice sent an item through a collection that has no filter on the slice, whose reader slice is not the slice and that shares no site with it. If the send is meant, add a filter on the slice to the collection (a real send to the readers needs one anyway) or add the slice and the collection's reader slice to one site. Otherwise fix the send button in the slice templates, or find out who tried to mail the readers of another collection." => "Редактор рубрики надіслав статтю через колекцію, яка не має фільтра на цю рубрику, чия рубрика читачів не є цією рубрикою і яка не має з нею спільного сайту. Якщо надсилання задумане, додайте до колекції фільтр на рубрику (справжня розсилка читачам його однаково потребує) або додайте рубрику й рубрику читачів колекції до одного сайту. Інакше виправте кнопку надсилання в шаблонах рубрики або з'ясуйте, хто намагався написати читачам іншої колекції.", // ai 2026-10
 
-// src/Optimize/CheckAlertitemRefusals.php, row 100
+// src/Optimize/CheckAlertitemRefusals.php, row 110
 "No alert send was refused in the last 30 days" => "За останні 30 днів жодне надсилання сповіщень не було відхилено", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 23
@@ -10696,64 +11500,102 @@ return [
 // src/Optimize/CheckAlerts.php, row 28
 "Checks that every frequency readers can subscribe to is really swept, and that no collection is so far behind that the next sweep would skip items instead of mailing them." => "Перевіряє, що кожна частота, на яку можуть підписатися читачі, справді розсилається і що жодна колекція не відстає настільки, що наступне розсилання пропустило б статті замість їх надсилання.", // ai 2026-10
 
-// src/Optimize/CheckAlerts.php, row 73
+// src/Optimize/CheckAlerts.php, row 77
 "Frequency" => "Частота", // ai 2026-10
 
-// src/Optimize/CheckAlerts.php, row 74
+// src/Optimize/CheckAlerts.php, row 78
 "Last sent" => "Востаннє надіслано", // ai 2026-10
 
-// src/Optimize/CheckAlerts.php, row 75
+// src/Optimize/CheckAlerts.php, row 79
 "Would skip" => "Було б пропущено", // ai 2026-10
 
-// src/Optimize/CheckAlerts.php, row 75
+// src/Optimize/CheckAlerts.php, row 79
 "up to %1 days" => "до %1 дн.", // ai 2026-10
 
-// src/Optimize/CheckAlerts.php, row 83
+// src/Optimize/CheckAlerts.php, row 87
 "%1 alert collections are so far behind that the next sweep will skip items" => "Колекцій сповіщень, які відстають настільки, що наступне розсилання пропустить статті: %1", // ai 2026-10
 
-// src/Optimize/CheckAlerts.php, row 86
+// src/Optimize/CheckAlerts.php, row 90
 "A sweep never reaches back more than two of its periods, so everything older is dropped, not mailed. Check that the task queue plans this frequency and decide whether to let the gap go or to send it by hand from the module." => "Розсилання ніколи не сягає назад далі, ніж на два свої періоди, тож усе старіше відкидається, а не надсилається. Перевірте, що черга завдань планує цю частоту, і вирішіть, чи змиритися з прогалиною, чи надіслати її вручну з модуля.", // ai 2026-10
 
-// src/Optimize/CheckAlerts.php, row 97
+// src/Optimize/CheckAlerts.php, row 101
 "Readers can subscribe to a frequency nothing sweeps: %1" => "Читачі можуть підписатися на частоту, яку ніщо не розсилає: %1", // ai 2026-10
 
-// src/Optimize/CheckAlerts.php, row 99
+// src/Optimize/CheckAlerts.php, row 103
 "AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "AlertsSweep::SCHEDULE не має для неї запису, тож жодне завдання не планується і ці читачі нічого не отримують.", // ai 2026-10
 
-// src/Optimize/CheckAnonymousEditRefusals.php, row 26
+// src/Optimize/CheckAlerts.php, row 110
+"Every alert collection is swept on time and all its selections exist" => "",
+
+// src/Optimize/CheckAlerts.php, row 144
+"Selection" => "",
+
+// src/Optimize/CheckAlerts.php, row 145
+// src/Optimize/CheckIsds.php, row 142, 154
+// src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
+// src/Optimize/CheckIsdsConf.php, row 104, 107, 156
+// src/Optimize/CheckIsdsRegistry.php, row 119, 172
+// src/Optimize/StateCheckModel.php, row 219
+"Problem" => "Проблема", // ai 2026-10
+
+// src/Optimize/CheckAlerts.php, row 146
+"the selection was deleted" => "",
+
+// src/Optimize/CheckAlerts.php, row 147
+"its view %1 was deleted" => "",
+
+// src/Optimize/CheckAlerts.php, row 153
+"Alerts \"%1\" use a selection that no longer exists" => "",
+
+// src/Optimize/CheckAlerts.php, row 154
+"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "",
+
+// src/Optimize/CheckAlerts.php, row 157
+"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "",
+
+// src/Optimize/CheckAlerts.php, row 159
+"Selections" => "Вибірки", // ai 2026-06
+
+// src/Optimize/CheckAlerts.php, row 160
+"Alerts settings" => "",
+
+// src/Optimize/CheckAlerts.php, row 163
+"Alert selection no longer exists" => "",
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 27
 "Forms without login changing accounts or authors" => "Форми без входу, що змінюють облікові записи або авторів", // ai 2026-10
 
-// src/Optimize/CheckAnonymousEditRefusals.php, row 31
+// src/Optimize/CheckAnonymousEditRefusals.php, row 32
 "Lists the fields of existing items a form tried to change in the last 30 days with no user logged in, although they hold the flags or the author of the item, the password, 2FA secret or login of a reader, or the slice of the item. The fields were left as stored." => "Показує поля наявних статей, які за останні 30 днів намагалася змінити форма без увійшлого користувача, хоча вони містять прапорці або автора статті, пароль, секрет 2FA чи логін читача, або рубрику статті. Поля залишилися такими, як були збережені.", // ai 2026-10
 
-// src/Optimize/CheckAnonymousEditRefusals.php, row 70
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
+// src/Optimize/CheckAnonymousEditRefusals.php, row 71
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 73
 "replace" => "замінити", // ai 2026-10
 
-// src/Optimize/CheckAnonymousEditRefusals.php, row 70
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
+// src/Optimize/CheckAnonymousEditRefusals.php, row 71
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 73
 "add" => "додати", // ai 2026-06
 
-// src/Optimize/CheckAnonymousEditRefusals.php, row 70
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
+// src/Optimize/CheckAnonymousEditRefusals.php, row 71
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 73
 "remove" => "вилучити", // ai 2026-10
 
-// src/Optimize/CheckAnonymousEditRefusals.php, row 80
+// src/Optimize/CheckAnonymousEditRefusals.php, row 81
 "A form without login tried to change the field %1 of an item in slice %2 (last %3)" => "Форма без входу намагалася змінити поле %1 статті в рубриці %2 (востаннє %3)", // ai 2026-10
 
-// src/Optimize/CheckAnonymousEditRefusals.php, row 87
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 90
+// src/Optimize/CheckAnonymousEditRefusals.php, row 88
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 91
 "Item mode" => "Режим статті", // ai 2026-10
 
-// src/Optimize/CheckAnonymousEditRefusals.php, row 88
+// src/Optimize/CheckAnonymousEditRefusals.php, row 89
 // src/Optimize/CheckCron.php, row 68
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 91
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 92
 "Script" => "Скрипт", // ai 2026-10
 
-// src/Optimize/CheckAnonymousEditRefusals.php, row 92
+// src/Optimize/CheckAnonymousEditRefusals.php, row 93
 "The field was left as stored, the rest of the item was saved. Either a form of the site sends this field without a login - then the site must let the reader log in before the form is sent - or the request was forged to take over a reader's account or the item." => "Поле залишилося таким, як було збережене, решту статті збережено. Або форма сайту надсилає це поле без входу - тоді сайт має дати читачеві увійти до надсилання форми, - або запит було підроблено, щоб заволодіти обліковим записом читача чи статтею.", // ai 2026-10
 
-// src/Optimize/CheckAnonymousEditRefusals.php, row 98
+// src/Optimize/CheckAnonymousEditRefusals.php, row 99
 "No form without login tried to change an account or author field in the last 30 days" => "За останні 30 днів жодна форма без входу не намагалася змінити поле облікового запису чи автора", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 42
@@ -10795,19 +11637,22 @@ return [
 // src/Optimize/CheckCentralCredentials.php, row 62
 "Central never sends them. Press Get Token for that AA on the ActionApps Central page (it overwrites the value)." => "Central їх ніколи не надсилає. На сторінці ActionApps Central натисніть для цієї AA «Отримати токен» (значення буде перезаписано).", // ai 2026-10
 
-// src/Optimize/CheckCkeditorUse.php, row 41
+// src/Optimize/CheckCkeditorUse.php, row 42
 "CKEditor 4 use" => "Використання CKEditor 4", // ai 2026-10
 
-// src/Optimize/CheckCkeditorUse.php, row 46
+// src/Optimize/CheckCkeditorUse.php, row 47
 "Lists the pages that loaded the old CKEditor 4 by {require:ckeditor} in the last 30 days. AA edits text with TinyMCE now; CKEditor 4 will be removed once no template asks for it." => "Показує сторінки, які за останні 30 днів завантажили старий CKEditor 4 через {require:ckeditor}. AA тепер редагує текст за допомогою TinyMCE; CKEditor 4 буде вилучено, щойно жоден шаблон його не вимагатиме.", // ai 2026-10
 
-// src/Optimize/CheckCkeditorUse.php, row 92
+// src/Optimize/CheckCkeditorUse.php, row 93
 "CKEditor 4 loaded on %1" => "CKEditor 4 завантажено: %1", // ai 2026-10
 
-// src/Optimize/CheckCkeditorUse.php, row 101
+// src/Optimize/CheckCkeditorUse.php, row 102
 "A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "Шаблон сторінки містить {require:ckeditor} (і CKEDITOR.replace()). Натомість обгорніть textarea в <aa-richtext mode=\"rich\"> з {require:aa-richtext@1} - textarea зберігає своє ім'я та значення, тож форма й скрипти, що читають textarea.value, працюють без змін; CKEDITOR.instances[...].getData() стає значенням textarea.", // ai 2026-10
 
-// src/Optimize/CheckCkeditorUse.php, row 108
+// src/Optimize/CheckCkeditorUse.php, row 103
+"Templates with ckeditor" => "",
+
+// src/Optimize/CheckCkeditorUse.php, row 109
 "No page loaded CKEditor 4 in the last 30 days" => "За останні 30 днів жодна сторінка не завантажила CKEditor 4", // ai 2026-10
 
 // src/Optimize/CheckCookieReads.php, row 16
@@ -10864,6 +11709,24 @@ return [
 // src/Optimize/CheckCron.php, row 81
 "%1 cron rows, all readable and running on schedule" => "Рядків cron: %1, усі читабельні й виконуються за розкладом", // ai 2026-10
 
+// src/Optimize/CheckDiscussionRefusals.php, row 26
+"Refused comments" => "",
+
+// src/Optimize/CheckDiscussionRefusals.php, row 31
+"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "",
+
+// src/Optimize/CheckDiscussionRefusals.php, row 70
+"New comments to items of slice %1 were refused" => "",
+
+// src/Optimize/CheckDiscussionRefusals.php, row 78
+"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "",
+
+// src/Optimize/CheckDiscussionRefusals.php, row 80
+"Fulltext design" => "",
+
+// src/Optimize/CheckDiscussionRefusals.php, row 85
+"No comment was refused in the last 30 days" => "",
+
 // src/Optimize/CheckEnvironment.php, row 18
 // src/Optimize/StateCheckModel.php, row 295
 "Environment" => "Системне середовище", // ai 2026-10
@@ -10913,20 +11776,27 @@ return [
 // src/Optimize/CheckHttp.php, row 73
 "Set AA_INSTAL_URL in config.php to the address the server actually serves. Every extra hop is paid on each local request, and a redirect that drops the session cookie breaks included pages." => "Встановіть AA_INSTAL_URL у config.php на адресу, яку сервер справді обслуговує. Кожен зайвий перехід сплачується при кожному локальному запиті, а переадресація, що втрачає cookie сесії, ламає вставлені сторінки.", // ai 2026-10
 
-// src/Optimize/CheckHttp.php, row 81
+// src/Optimize/CheckHttp.php, row 84, 102
+"The server reaches its own address (HTTP %1)" => "Сервер досягає власної адреси (HTTP %1)", // ai 2026-10
+
+// src/Optimize/CheckHttp.php, row 85
+// src/Util/Note.php, row 47
+"Note" => "Примітка", // ai 2026-06
+
+// src/Optimize/CheckHttp.php, row 85
+"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "",
+
+// src/Optimize/CheckHttp.php, row 93
 "This installation's own address answers HTTP %1" => "Власна адреса цієї інсталяції відповідає HTTP %1", // ai 2026-10
 
-// src/Optimize/CheckHttp.php, row 82
+// src/Optimize/CheckHttp.php, row 94
 // src/Optimize/MissCacheRouting.php, row 98, 129
 "Answer" => "Відповідь", // ai 2026-10
 
-// src/Optimize/CheckHttp.php, row 83
+// src/Optimize/CheckHttp.php, row 95
 "AA can reach the network, but AA_INSTAL_URL does not lead to this installation. Included local pages will render the error instead of the page." => "AA має доступ до мережі, але AA_INSTAL_URL не веде до цієї інсталяції. Вставлені локальні сторінки замість вмісту показуватимуть помилку.", // ai 2026-10
 
-// src/Optimize/CheckHttp.php, row 90
-"The server reaches its own address (HTTP %1)" => "Сервер досягає власної адреси (HTTP %1)", // ai 2026-10
-
-// src/Optimize/CheckHttp.php, row 103
+// src/Optimize/CheckHttp.php, row 126
 "curl" => "",
 
 // src/Optimize/CheckImportStores.php, row 19
@@ -10968,6 +11838,8 @@ return [
 
 // src/Optimize/CheckImports.php, row 150, 287
 // src/Optimize/CheckInstallRuns.php, row 62
+// src/Optimize/CheckIsdsRegistry.php, row 142
+// src/Optimize/CheckIsdsRuns.php, row 163, 200
 // src/Optimize/CheckQueue.php, row 88, 98
 "Error" => "Помилка", // ai 2026-10
 
@@ -10978,6 +11850,7 @@ return [
 "An import has not moved on for %1 hours" => "Імпорт не просувається вже %1 год", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 154
+// src/Optimize/CheckIsdsRuns.php, row 175
 "Idle since" => "Неактивний від", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 154
@@ -11076,6 +11949,9 @@ return [
 // src/Optimize/CheckImports.php, row 272
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "Ключ містить розрив рядка або NUL, тож жодне джерело імпорту не може його використовувати. Виправте константу в config.php.", // ai 2026-10
 
+// src/Optimize/CheckImports.php, row 272
+"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "",
+
 // src/Optimize/CheckImports.php, row 291
 "Imports logged %1 failures in the last 7 days" => "Помилки імпортів у журналі за останні 7 днів: %1", // ai 2026-10
 
@@ -11124,28 +12000,671 @@ return [
 // src/Optimize/CheckInstallRuns.php, row 80
 "No app transfer is stuck" => "Жодне перенесення застосунку не зависло", // ai 2026-10
 
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 27
+// src/Optimize/CheckIsds.php, row 49
+"ISDS login" => "",
+
+// src/Optimize/CheckIsds.php, row 54
+"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "",
+
+// src/Optimize/CheckIsds.php, row 79
+"No usable ISDS account to log in with" => "",
+
+// src/Optimize/CheckIsds.php, row 121
+"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "",
+
+// src/Optimize/CheckIsds.php, row 122
+"ISDS accounts not tried, as ISDS did not answer: %1" => "",
+
+// src/Optimize/CheckIsds.php, row 123
+"Wait - each attempt from this server extends the block." => "",
+
+// src/Optimize/CheckIsds.php, row 123
+"Check again later." => "",
+
+// src/Optimize/CheckIsds.php, row 128
+"ISDS accounts log in to their data boxes: %1" => "",
+
+// src/Optimize/CheckIsds.php, row 142
+"ISDS account %1 not tried, as its certificate cannot be used" => "",
+
+// src/Optimize/CheckIsds.php, row 142
+"The check of ISDS accounts tells more." => "",
+
+// src/Optimize/CheckIsds.php, row 153
+"The TLS library of this server refuses the certificate of ISDS account %1" => "",
+
+// src/Optimize/CheckIsds.php, row 154
+"Reason of OpenSSL" => "",
+
+// src/Optimize/CheckIsds.php, row 155
+"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "",
+
+// src/Optimize/CheckIsds.php, row 188, 290
+"ISDS" => "",
+
+// src/Optimize/CheckIsds.php, row 195, 226
+"ISDS did not tell the rights of the user of account %1" => "",
+
+// src/Optimize/CheckIsds.php, row 202
+"The password of ISDS account %1 expires on %2" => "",
+
+// src/Optimize/CheckIsds.php, row 203
+"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "",
+
+// src/Optimize/CheckIsds.php, row 211
+"ISDS did not tell when the password of account %1 expires" => "",
+
+// src/Optimize/CheckIsds.php, row 211
+"Check the password of the user in the ISDS portal." => "",
+
+// src/Optimize/CheckIsds.php, row 224
+"Rights" => "",
+
+// src/Optimize/CheckIsds.php, row 224
+"User type" => "",
+
+// src/Optimize/CheckIsds.php, row 239
+"The user of ISDS account %1 lacks the rights %2" => "",
+
+// src/Optimize/CheckIsds.php, row 241
+"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "",
+
+// src/Optimize/CheckIsds.php, row 250
+"The user of ISDS account %1 has rights AA must not have: %2" => "",
+
+// src/Optimize/CheckIsds.php, row 252
+"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "",
+
+// src/Optimize/CheckIsds.php, row 268
+"ISDS blocked logins from the address of this server" => "",
+
+// src/Optimize/CheckIsds.php, row 269
+"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "",
+
+// src/Optimize/CheckIsds.php, row 274
+"ISDS refused the login of account %1" => "",
+
+// src/Optimize/CheckIsds.php, row 277
+"ISDS asked account %1 to come back later" => "",
+
+// src/Optimize/CheckIsds.php, row 277
+"ISDS is in an outage or busy. Check again later." => "",
+
+// src/Optimize/CheckIsds.php, row 281
+"ISDS gave account %1 no answer" => "",
+
+// src/Optimize/CheckIsds.php, row 282
+"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "",
+
+// src/Optimize/CheckIsds.php, row 284
+"ISDS gave account %1 an answer AA cannot read" => "",
+
+// src/Optimize/CheckIsds.php, row 284
+"Check again later. If it repeats, the evidence gives the answer of ISDS." => "",
+
+// src/Optimize/CheckIsds.php, row 285
+"ISDS refused account %1" => "",
+
+// src/Optimize/CheckIsds.php, row 285
+"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "",
+
+// src/Optimize/CheckIsds.php, row 298
+"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+
+// src/Optimize/CheckIsds.php, row 299
+"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+
+// src/Optimize/CheckIsds.php, row 300
+"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "",
+
+// src/Optimize/CheckIsds.php, row 327
+"Check in the ISDS portal that the user has the rights %1 and none of %2." => "",
+
+// src/Optimize/CheckIsds.php, row 356
+"read received messages" => "",
+
+// src/Optimize/CheckIsds.php, row 357
+"read received messages to own hands" => "",
+
+// src/Optimize/CheckIsds.php, row 358
+"send messages" => "",
+
+// src/Optimize/CheckIsds.php, row 359
+"lists of messages and delivery info" => "",
+
+// src/Optimize/CheckIsds.php, row 360
+"search for data boxes" => "",
+
+// src/Optimize/CheckIsds.php, row 361
+"manage the data box" => "",
+
+// src/Optimize/CheckIsds.php, row 362
+"erase the vault" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 44
+"ISDS accounts" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 49
+"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 80
+"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 100
+"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 103
+"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 108
+"ISDS accounts ready to send: %1" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 127
+"A page of site %1 has a mass sending whose settings are not ready" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 131, 167
+"Campaign slice" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 137
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 138
+"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 163
+"A campaign of a mass sending on site %1 cannot tell its recipients" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 168, 204
+"Campaign" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 173
+"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 199
+"An action of a page of a mass sending failed on an internal error: %1" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 209
+"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 225
+"ISDS account %1 cannot be used" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 227
+"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 261
+"PHP cannot read the certificate of ISDS account %1" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 263
+"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 268
+"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 268
+"Install the openssl extension of PHP - a login with a certificate needs it." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 272
+"Serial number" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 272
+"Valid until" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 274
+"%1 names a file with no PEM certificate" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 275
+"The private key in %1 does not open: it is missing, or %2 does not fit" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 276
+"The private key in %1 does not belong to the certificate in %2" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 277
+"The private key is shorter than %1 bits, which the secure connection refuses" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 278
+"The certificate is valid from %1 only" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 282
+"The certificate of ISDS account %1 cannot be used" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 282
+"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 288
+"The certificate of ISDS account %1 expired on %2" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 288
+"The certificate of ISDS account %1 expires on %2" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 290
+"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 340
+"The web server may serve the private key of ISDS account %1" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 340
+"Other users of the server may read the private key of ISDS account %1" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 343
+"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 344
+"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 345
+"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 403
+"The slices of ISDS account %1 are not ready for sending" => "",
+
+// src/Optimize/CheckIsdsAccounts.php, row 406
+"Fix what the evidence names before sending from these slices." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 32
+"ISDS settings file" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 37
+"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 70
+"AA reads all of misc/datovka/datovka_conf.php" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 70
+"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 84
+"ISDS accounts not checked: %1" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 84
+"The check \"%1\" tells what to fix." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 100
+"PHP cannot read misc/datovka/datovka_conf.php" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 101
+"AA cannot use misc/datovka/datovka_conf.php" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 101
+"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 102
+"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 107
+"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 107
+"Correct each key as its problem says." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 113
+"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 116
+"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 122
+"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 122
+"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 149
+"Other requests met a problem in misc/datovka/datovka_conf.php" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 150
+"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 151
+"Other requests could not use misc/datovka/datovka_conf.php" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 156
+"Site, one of them" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 158
+"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 159
+"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 186
+"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 186
+"Answers of ISDS refused: the installation in their token is not in %1" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 189
+"Installation id" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 189
+"Installation id, one of them" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 191
+"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 192
+"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 215
+"Test boxes of ISDS accounts AA cannot read: %1" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 218
+"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 235
+"Paid tests of ISDS accounts AA cannot read: %1" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 238
+"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 274
+"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 274
+"The settings of one installation take a few kilobytes - check what else the file holds." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 303
+"misc/datovka/datovka_conf.php writes keys twice: %1" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 307
+"ISDS accounts of the sites of other databases: %1" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 309
+"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 310
+"An account of the sites of another database: the State Check of the database of its sites names it." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 341
+"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 343
+"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 370
+"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 373
+"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "",
+
+// src/Optimize/CheckIsdsConf.php, row 393
+"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "",
+
+// src/Optimize/CheckIsdsConf.php, row 398
+"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "",
+
+// src/Optimize/CheckIsdsPdf.php, row 37
+"Letters to data boxes as a PDF" => "",
+
+// src/Optimize/CheckIsdsPdf.php, row 42
+"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "",
+
+// src/Optimize/CheckIsdsPdf.php, row 81
+"AA makes letters to data boxes into a PDF" => "",
+
+// src/Optimize/CheckIsdsPdf.php, row 86
+"A letter to a data box cannot be made into a PDF" => "",
+
+// src/Optimize/CheckIsdsPdf.php, row 87
+"Until then no campaign can be sent to data boxes." => "",
+
+// src/Optimize/CheckIsdsPdf.php, row 88
+"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "",
+
+// src/Optimize/CheckIsdsPdf.php, row 89
+"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "",
+
+// src/Optimize/CheckIsdsPdf.php, row 90
+"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 30
+"Data boxes of the items" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 35
+"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 60
+"No slice pairs its items with the register of data boxes" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 63
+"Paired slices whose items have the data boxes of the register: %1" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 88
+"ISDS account" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 94
+"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 97
+"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 112
+"Data boxes of %1" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 114
+"Download it on the page Data boxes from the register of a paired slice." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 119
+"The directory of the register of data boxes cannot be used" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 119
+"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 122
+"The register of data boxes has not been downloaded" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 122
+"The items are compared with it." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 127
+"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 134
+"The downloaded register of data boxes is older than %1 days" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 134
+"Downloaded" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 134
+"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 140
+"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 141
+"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 142
+"The downloaded register of data boxes cannot be read" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 172
+"The pairing of slice \"%1\" with the register no longer fits its fields" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 172
+"Choose the fields again in the settings on the page Data boxes from the register." => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 187
+"Slice \"%1\": items without a data box: %2, items with another box than the register by IČO: %3" => "",
+
+// src/Optimize/CheckIsdsRegistry.php, row 190
+"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "",
+
+// src/Optimize/CheckIsdsRunItems.php, row 21
+"Message items of mass sendings" => "",
+
+// src/Optimize/CheckIsdsRunItems.php, row 26
+"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "",
+
+// src/Optimize/CheckIsdsRunItems.php, row 93
+"Message items of a mass sending do not show what its record says: %1" => "",
+
+// src/Optimize/CheckIsdsRunItems.php, row 93
+"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "",
+
+// src/Optimize/CheckIsdsRunItems.php, row 96
+// src/Optimize/CheckIsdsRuns.php, row 90
+// src/Optimize/CheckIsdsViews.php, row 106
+// src/Optimize/CheckNightly.php, row 87
+"%1: nothing found" => "%1: нічого не знайдено", // ai 2026-10
+
+// src/Optimize/CheckIsdsRuns.php, row 51
+"Mass sendings to data boxes" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 56
+"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 112
+"The campaign of a finished mass sending does not show its end" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 112
+"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 121
+"Mass sendings to data boxes whose campaign item is gone: %1" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 125
+"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 160
+"Messages of unknown fate" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 166
+"Following the delivery of a mass sending to data boxes stopped by an error" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 166
+"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 167
+"A mass sending to data boxes stopped by an error" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 169
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 170
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 175
+"A mass sending to data boxes has not moved on for %1 hours" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 175
+"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 184
+"A finished mass sending left messages of unknown fate: %1" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 184
+"A mass sending being followed has messages of unknown fate: %1" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 185
+"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 193
+"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 195
+"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 198
+"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 200
+"%1 of %2 messages of a mass sending to data boxes failed" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 206
+"A mass sending to data boxes ended with messages not known to be delivered: %1" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 206
+"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 235
+"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 236
+"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 237
+"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 238
+"ISDS did not answer when AA read the delivery of the messages." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 242
+"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 243
+"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 244
+"Read up to" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 244
+"Last wait" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 245
+"Following the delivery of a mass sending to data boxes has stalled" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 251
+"The record of a mass sending to data boxes cannot be read" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 251
+"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 264, 309
+"Campaign item" => "",
+
+// src/Optimize/CheckIsdsRuns.php, row 309
+"Campaign state" => "",
+
+// src/Optimize/CheckIsdsViews.php, row 35
+"Views of mass sendings" => "",
+
+// src/Optimize/CheckIsdsViews.php, row 40
+"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "",
+
+// src/Optimize/CheckIsdsViews.php, row 79
+"Views of the slices of ISDS account %1 share the name %2" => "",
+
+// src/Optimize/CheckIsdsViews.php, row 82
+"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "",
+
+// src/Optimize/CheckIsdsViews.php, row 95
+"Site %1 has the entry view isdscampainer more than once" => "",
+
+// src/Optimize/CheckIsdsViews.php, row 98
+"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "",
+
+// src/Optimize/CheckIsdsViews.php, row 123
+"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "",
+
+// src/Optimize/CheckIsdsViews.php, row 127, 163
+// src/Util/ChangesMonitor.php, row 444
+"View" => "Переглянути", // ai 2026-06
+
+// src/Optimize/CheckIsdsViews.php, row 131
+"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "",
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 28
 "Item edits without the edit permission" => "Редагування статей без права на редагування", // ai 2026-10
 
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 32
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 33
 "Lists the slices whose existing items were changed in the last 30 days through a form of the site by visitors without login, by readers or by users without the permission to edit the items. Such edits are allowed for now; the list shows which forms rely on them." => "Перелічує рубрики, чиї наявні статті за останні 30 днів змінили через форму сайту відвідувачі без входу, читачі або користувачі без права редагувати статті. Такі зміни поки що дозволені; перелік показує, які форми на них покладаються.", // ai 2026-10
 
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 71
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
 "visitor without login" => "відвідувач без входу", // ai 2026-10
 
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 71
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
 "reader or author of the item" => "читач або автор статті", // ai 2026-10
 
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 71
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
 "user without permission" => "користувач без права", // ai 2026-10
 
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 82
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 83
 "Field %1 of items in slice %2 changed by: %3 (last %4)" => "Поле %1 статей у рубриці %2 змінив: %3 (востаннє %4)", // ai 2026-10
 
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 95
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 96
 "A future version will let only users with the permission to edit the item change it. If this is a form of the site, note it - it will need a login or a signed edit link." => "Майбутня версія дозволить змінювати статтю лише користувачам із правом її редагувати. Якщо це форма сайту, занотуйте це - знадобиться вхід або підписане посилання для редагування.", // ai 2026-10
 
-// src/Optimize/CheckItemEditsWithoutPermission.php, row 101
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 102
 "No item was changed without the edit permission in the last 30 days" => "За останні 30 днів жодну статтю не змінено без права на редагування", // ai 2026-10
 
 // src/Optimize/CheckLoginAddresses.php, row 25
@@ -11183,9 +12702,6 @@ return [
 
 // src/Optimize/CheckNightly.php, row 35
 "What the nightly test (test4update) found in its last run of each check: PHP errors, broken or unescaped output, missing pages, failing Expression Reference examples. Shown only on installations the nightly test reports to." => "Що знайшов нічний тест (test4update) під час останнього запуску кожної перевірки: помилки PHP, зламаний або неекранований вивід, відсутні сторінки, приклади Довідника виразів, що не проходять. Показується лише в інсталяціях, яким нічний тест надсилає звіти.", // ai 2026-10
-
-// src/Optimize/CheckNightly.php, row 87
-"%1: nothing found" => "%1: нічого не знайдено", // ai 2026-10
 
 // src/Optimize/CheckNightly.php, row 89
 "Check" => "Перевірка", // ai 2026-10
@@ -11409,6 +12925,24 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "За останні 30 днів жодну форму об'єкта не відхилено", // ai 2026-10
 
+// src/Optimize/CheckPerVisitorReads.php, row 18
+"Pages left out of the page cache by {server:...}" => "",
+
+// src/Optimize/CheckPerVisitorReads.php, row 23
+"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "",
+
+// src/Optimize/CheckPerVisitorReads.php, row 72
+"Reads" => "",
+
+// src/Optimize/CheckPerVisitorReads.php, row 78
+"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "",
+
+// src/Optimize/CheckPerVisitorReads.php, row 81
+"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "",
+
+// src/Optimize/CheckPerVisitorReads.php, row 86
+"No template reads a value of the visitor's own by {server:...}" => "",
+
 // src/Optimize/CheckPhpFatals.php, row 24
 "PHP fatal errors" => "Фатальні помилки PHP", // ai 2026-10
 
@@ -11519,6 +13053,30 @@ return [
 
 // src/Optimize/CheckQueuedClassMissing.php, row 77
 "No queued task with a missing class in the last 30 days" => "За останні 30 днів немає завдань у черзі з відсутнім класом", // ai 2026-10
+
+// src/Optimize/CheckRelatedSlices.php, row 20
+"Related slices of another website" => "",
+
+// src/Optimize/CheckRelatedSlices.php, row 25
+"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "",
+
+// src/Optimize/CheckRelatedSlices.php, row 78
+"Related slice" => "",
+
+// src/Optimize/CheckRelatedSlices.php, row 79
+"Its websites" => "",
+
+// src/Optimize/CheckRelatedSlices.php, row 85
+"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "",
+
+// src/Optimize/CheckRelatedSlices.php, row 86
+"Every related-item field points to a slice of its own website" => "",
+
+// src/Optimize/CheckRelatedSlices.php, row 90
+"%1 related-item fields point to a slice of another website" => "",
+
+// src/Optimize/CheckRelatedSlices.php, row 92
+"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "",
 
 // src/Optimize/CheckRequiredSettings.php, row 17
 "Required slice settings" => "Обов'язкові налаштування рубрик", // ai 2026-10
@@ -11632,10 +13190,6 @@ return [
 // src/Optimize/CheckSiteStateFiles.php, row 71
 "Every public page of that site answers HTTP 500 (logged as SITE_CONF). Add the file, or fix the \"State file\" setting of the site module." => "Кожна публічна сторінка цього сайту відповідає HTTP 500 (записано до журналу як SITE_CONF). Додайте файл або виправте налаштування «Файл стану» модуля сайту.", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 72
-// src/Optimize/CheckUniversalAnalytics.php, row 83
-"Site settings" => "Налаштування сайту", // ai 2026-10
-
 // src/Optimize/CheckSiteStateFiles.php, row 77
 "All %1 site state files are in place" => "Усі файли стану сайтів (%1) на місці", // ai 2026-10
 
@@ -11687,143 +13241,213 @@ return [
 // src/Optimize/CheckTrustedProxies.php, row 135
 "No proxy outside AA_TRUSTED_PROXIES sent requests in the last 30 days" => "За останні 30 днів жоден проксі поза AA_TRUSTED_PROXIES не надсилав запитів", // ai 2026-10
 
-// src/Optimize/CheckUniversalAnalytics.php, row 26
+// src/Optimize/CheckUniversalAnalytics.php, row 23
 "Old Google Analytics (Universal Analytics)" => "Старий Google Analytics (Universal Analytics)", // ai 2026-10
 
-// src/Optimize/CheckUniversalAnalytics.php, row 31
+// src/Optimize/CheckUniversalAnalytics.php, row 28
 "Lists the sites and slices whose templates or settings still use a Universal Analytics id (UA-...). Google stopped collecting its data on 1 July 2023, so such code measures no visits." => "Перелічує сайти й рубрики, шаблони або налаштування яких досі використовують id Universal Analytics (UA-...). Google припинив збирати його дані 1 липня 2023 року, тож такий код не вимірює жодних відвідувань.", // ai 2026-10
 
-// src/Optimize/CheckUniversalAnalytics.php, row 110
+// src/Optimize/CheckUniversalAnalytics.php, row 98
 "Old id (UA)" => "Старий id (UA)", // ai 2026-10
 
-// src/Optimize/CheckUniversalAnalytics.php, row 111
+// src/Optimize/CheckUniversalAnalytics.php, row 99
 "New id (GA4, Tag Manager)" => "Новий id (GA4, Tag Manager)", // ai 2026-10
 
-// src/Optimize/CheckUniversalAnalytics.php, row 121
+// src/Optimize/CheckUniversalAnalytics.php, row 109
 "%1 still uses the old Google Analytics (UA-...) - no visits are measured" => "%1 досі використовує старий Google Analytics (UA-...) — відвідування не вимірюються", // ai 2026-10
 
-// src/Optimize/CheckUniversalAnalytics.php, row 124
+// src/Optimize/CheckUniversalAnalytics.php, row 112
 "Google stopped collecting Universal Analytics data on 1 July 2023. 1. In Google Analytics open Admin > the GA4 property of the site > Data streams > the web stream and copy its Measurement ID (G-...); if the site has no GA4 property, create one. 2. In the places listed: in gtag code write the G-... id instead of the UA-... one (in gtag/js?id= and in gtag('config', ...)) and keep the consent settings; delete the _gaq, ga.js, analytics.js and _gat blocks; where no gtag code is left, paste in the standard GA4 snippet. Replace a UA-... id in the site settings (Google Analytics tracking id) by the G-... id. 3. The next day check GA4 > Reports > Realtime that visits come in." => "Google припинив збирати дані Universal Analytics 1 липня 2023 року. 1. У Google Analytics відкрийте Адміністратор > ресурс GA4 цього сайту > Потоки даних > вебпотік і скопіюйте його Ідентифікатор показника (G-...); якщо сайт не має ресурсу GA4, створіть його. 2. У наведених місцях: у коді gtag напишіть id G-... замість id UA-... (у gtag/js?id= і в gtag('config', ...)) і збережіть налаштування згоди; видаліть блоки _gaq, ga.js, analytics.js і _gat; де не залишилося коду gtag, вставте стандартний фрагмент GA4. Id UA-... у налаштуваннях сайту (ідентифікатор відстеження Google Analytics) замініть на id G-.... 3. Наступного дня перевірте в GA4 > Звіти > У реальному часі, що відвідування надходять.", // ai 2026-10
 
-// src/Optimize/CheckUniversalAnalytics.php, row 129
+// src/Optimize/CheckUniversalAnalytics.php, row 117
 "%1 still has the old Google Analytics code (UA-...) next to the new one - it can be removed" => "%1 досі має старий код Google Analytics (UA-...) поруч із новим — його можна вилучити", // ai 2026-10
 
-// src/Optimize/CheckUniversalAnalytics.php, row 132
+// src/Optimize/CheckUniversalAnalytics.php, row 120
 "The new code (%1) is there already; the UA-... lines only load a script that measures nothing. Delete the _gaq, ga.js, analytics.js and _gat blocks and gtag('config', 'UA-...'); where the gtag/js?id= address carries the UA-... id, write the G-... id there instead of deleting the line. Clear a UA-... id in the site settings (Google Analytics tracking id) or replace it by the G-... id. A GTM-... container measures only with a GA4 tag inside - check that in Tag Manager. Then check GA4 > Reports > Realtime that visits still come in." => "Новий код (%1) уже є; рядки UA-... лише завантажують скрипт, який нічого не вимірює. Видаліть блоки _gaq, ga.js, analytics.js і _gat та gtag('config', 'UA-...'); де адреса gtag/js?id= містить id UA-..., не видаляйте рядок, а напишіть у ній id G-.... Id UA-... у налаштуваннях сайту (ідентифікатор відстеження Google Analytics) очистьте або замініть на id G-.... Контейнер GTM-... вимірює лише з тегом GA4 усередині — перевірте це в Tag Manager. Потім перевірте в GA4 > Звіти > У реальному часі, що відвідування й далі надходять.", // ai 2026-10
 
-// src/Optimize/CheckUniversalAnalytics.php, row 136
+// src/Optimize/CheckUniversalAnalytics.php, row 124
 "No template uses the old Google Analytics (Universal Analytics)" => "Жоден шаблон не використовує старий Google Analytics (Universal Analytics)", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 23
+// src/Optimize/CheckUploadRefusals.php, row 25
 "Refused uploads" => "Відхилені завантаження", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 28
+// src/Optimize/CheckUploadRefusals.php, row 30
 "Lists the uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason, and the slices whose upload directory is not writable." => "Перелічує завантаження з редактора форматованого тексту, які AA відхилила за останні 30 днів, за рубрикою і причиною, а також рубрики, каталог завантажень яких недоступний для запису.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 77
+// src/Optimize/CheckUploadRefusals.php, row 80
 "Slice %1 cannot store uploads - its directory is not writable" => "Рубрика %1 не може зберігати завантажені файли — її каталог недоступний для запису", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 78
+// src/Optimize/CheckUploadRefusals.php, row 81
 "Slice %1 could not store an upload" => "Рубрика %1 не змогла зберегти завантажений файл", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 79
+// src/Optimize/CheckUploadRefusals.php, row 82
 "Uploads to slice %1 refused: %2" => "Завантаження до рубрики %1 відхилено: %2", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 92
+// src/Optimize/CheckUploadRefusals.php, row 95
 "PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server." => "PHP не може записувати до каталогу завантажень рубрики (IMG_UPLOAD_PATH/<slice id> або каталог її менеджера файлів). Виправте власника чи права доступу на сервері.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 93
+// src/Optimize/CheckUploadRefusals.php, row 96
 "An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log." => "Одна адреса завантажила за годину більше анонімних зображень, ніж дозволяє AA (%1 на адресу, %2 на рубрику). Найімовірніше, робот — адреса є в журналі.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 94
+// src/Optimize/CheckUploadRefusals.php, row 97
 "Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address." => "Хтось намагався завантажити файл без права на це: редактор, чий вхід закінчився (допоможе перезавантажити сторінку), або зондування — багато днів з однієї адреси.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 95
+// src/Optimize/CheckUploadRefusals.php, row 98
 "Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP." => "Анонімні відвідувачі можуть завантажувати зображення до %1 МБ; редакторів обмежують upload_max_filesize і post_max_size PHP.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 96
+// src/Optimize/CheckUploadRefusals.php, row 99
 "The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\\Upload\\UploadPolicy; nothing a browser or PHP would run ever passes." => "Редактор відхилив тип файлу або файл, вміст якого не відповідав розширенню. Дозволені типи жорстко задано в AA\\Upload\\UploadPolicy; ніщо, що запустив би браузер чи PHP, ніколи не пройде.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 103
+// src/Optimize/CheckUploadRefusals.php, row 106
 "No refused uploads in the last 30 days" => "За останні 30 днів відхилених завантажень немає", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctionLog.php, row 24
+// src/Optimize/CheckUserAliasFunctionLog.php, row 25
 "f_u calls on pages" => "Виклики f_u на сторінках", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctionLog.php, row 29
+// src/Optimize/CheckUserAliasFunctionLog.php, row 30
 "Lists the f_u alias calls of the last 30 days that AA refused (PHP or AA functions, undefined ones) or still made only for compatibility (installation functions without the usr_ prefix), by field and slice." => "Перелічує виклики аліасів f_u за останні 30 днів, які AA відхилила (функції PHP чи AA, невизначені) або ще виконала лише заради сумісності (функції інсталяції без префікса usr_), за полем і рубрикою.", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctionLog.php, row 76
-"Field settings" => "Налаштування поля", // ai 2026-10
-
-// src/Optimize/CheckUserAliasFunctionLog.php, row 80
+// src/Optimize/CheckUserAliasFunctionLog.php, row 81
 "field %1 of slice %2" => "поле %1 рубрики %2", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctionLog.php, row 91
+// src/Optimize/CheckUserAliasFunctionLog.php, row 92
 "The call is in the definition of the field or in a template using {alias:<field>:f_u:..}." => "Виклик міститься у визначенні поля або в шаблоні, що використовує {alias:<field>:f_u:..}.", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctionLog.php, row 97
+// src/Optimize/CheckUserAliasFunctionLog.php, row 98
 "Every f_u call of the last 30 days called a usr_* function" => "Кожен виклик f_u за останні 30 днів викликав функцію usr_*", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 31
+// src/Optimize/CheckUserAliasFunctions.php, row 32
 "f_u functions in field definitions" => "Функції f_u у визначеннях полів", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 36
+// src/Optimize/CheckUserAliasFunctions.php, row 37
 "Lists the field alias definitions using f_u whose function AA does not call (PHP or AA functions, undefined ones) or still calls only for compatibility (installation functions without the usr_ prefix)." => "Перелічує визначення аліасів полів з f_u, функцію яких AA не викликає (функції PHP чи AA, невизначені) або ще викликає лише заради сумісності (функції інсталяції без префікса usr_).", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 89
+// src/Optimize/CheckUserAliasFunctions.php, row 90
 "Definition" => "Визначення", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 109
+// src/Optimize/CheckUserAliasFunctions.php, row 110
 "All %1 f_u field definitions call usr_* functions" => "Усі визначення полів з f_u (%1) викликають функції usr_*", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 109
+// src/Optimize/CheckUserAliasFunctions.php, row 110
 "No field definition uses f_u" => "Жодне визначення поля не використовує f_u", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 131
+// src/Optimize/CheckUserAliasFunctions.php, row 132
 "f_u calls %1, an installation function without the usr_ prefix" => "f_u викликає %1 — функцію інсталяції без префікса usr_", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 132
+// src/Optimize/CheckUserAliasFunctions.php, row 133
 "f_u without a function name" => "f_u без назви функції", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 133
+// src/Optimize/CheckUserAliasFunctions.php, row 134
 "f_u names %1, which is not defined" => "f_u вказує функцію %1, яку не визначено", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 134
+// src/Optimize/CheckUserAliasFunctions.php, row 135
 "f_u names %1, a PHP function - not called" => "f_u вказує %1 — функцію PHP, її не викликано", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 135
+// src/Optimize/CheckUserAliasFunctions.php, row 136
 "f_u names %1, a function of AA itself (%2) - not called" => "f_u вказує %1 — функцію самої AA (%2), її не викликано", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 136
+// src/Optimize/CheckUserAliasFunctions.php, row 137
 "f_u names %1, defined outside AA in %2 - not called" => "f_u вказує функцію %1, визначену поза AA в %2, — її не викликано", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 137
+// src/Optimize/CheckUserAliasFunctions.php, row 138
 "f_u call of %1 failed" => "Виклик %1 через f_u не вдався", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 138
+// src/Optimize/CheckUserAliasFunctions.php, row 139
 "f_u names \"%1\", which is not a function name - not called" => "f_u вказує «%1», що не є назвою функції, — не викликано", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 146
+// src/Optimize/CheckUserAliasFunctions.php, row 147
 "AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "AA досі викликає її, щоб старі сайти й далі працювали, але f_u призначено лише для функцій usr_*. Перейменуйте функцію на usr_%1 (визначена в %2) і змініть визначення.", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 147
+// src/Optimize/CheckUserAliasFunctions.php, row 148
 "The alias shows nothing (it never did). Remove it or name a usr_* function." => "Аліас нічого не показує (і ніколи не показував). Вилучіть його або вкажіть функцію usr_*.", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 148
+// src/Optimize/CheckUserAliasFunctions.php, row 149
 "The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Функцію не визначено на цій сторінці адміністрування. Сайт усе ж може її визначати (керівний файл сайту, файл, який завантажують лише його сторінки) — що сторінки справді викликали, показує перевірка «Виклики f_u на сторінках»; довіряйте їй. Якщо і там її немає, визначте usr_%1 в include/usr_aliasfnc.php або вилучіть аліас.", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 149
+// src/Optimize/CheckUserAliasFunctions.php, row 150
 "The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Сторінка не мала такої функції, аліас нічого не показав. Визначте usr_%1 в include/usr_aliasfnc.php або вилучіть аліас.", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 150
+// src/Optimize/CheckUserAliasFunctions.php, row 151
 "Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "Викликаються лише функції інсталяції: usr_*, функції, визначені в include/usr_aliasfnc.php (і файлах, які він підключає), include/custom/ або modules/site/sites/. Визначте там функцію як usr_%1.", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 151
+// src/Optimize/CheckUserAliasFunctions.php, row 152
 "The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "Виклик не вдався: %1. Або функція не приймає те, що передає f_u (масив вмісту, рядок id поля, рядок параметрів), або вона збоїть усередині. Доки це не виправлено, аліас нічого не показує.", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 152
+// src/Optimize/CheckUserAliasFunctions.php, row 153
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "Аліас нічого не показує: f_u викликає лише функції інсталяції (usr_* в include/usr_aliasfnc.php), ніколи функції PHP чи AA. Напишіть функцію usr_*, яка робить потрібне, або використайте натомість вираз AA.", // ai 2026-10
+
+// src/Optimize/CheckViewSliceRefusals.php, row 35
+"Slices left out of views, charsets ignored" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 40
+"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 41
+"And the conditions on fields of related items in such a slice, which matched nothing." => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 42
+"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 43
+"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 135
+"Slice settings (reading password)" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 139
+"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 141
+"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 142
+"Protected field refused" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 144
+"A condition on related items matched nothing in slice %1: its reading password was not known" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 146
+"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 147
+"Condition refused" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 149
+"View %1" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 150
+"%1 left out slice %2: its reading password was not known" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 151
+"Listed by" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 152
+"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 162, 193
+"Page asked for" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 176
+"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 187
+"%1 ignored a charset in %2" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 191
+// src/Security/Protection.php, row 92
+"Parameter" => "Параметр", // ai 2026-10
+
+// src/Optimize/CheckViewSliceRefusals.php, row 192
+"Latest charsets" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 194
+"Link on page" => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 198
+"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+
+// src/Optimize/CheckViewSliceRefusals.php, row 202
+"Charset ignored" => "",
 
 // src/Optimize/ClearPagecache.php, row 13
 "Clear Pagecache" => "Очистити pagecache", // ai 2026-06
@@ -12042,19 +13666,19 @@ return [
 // src/Optimize/DbInconsistencyConstants.php, row 37
 "Test constant table for never used constants groups" => "Перевіряє таблицю constant на ніколи не використані групи констант", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 94
+// src/Optimize/DbInconsistencyConstants.php, row 97
 "Non ASCII chars in group_id" => "Не-ASCII символи в group_id", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 99
+// src/Optimize/DbInconsistencyConstants.php, row 102
 "Found %1 Non ASCII" => "Знайдено %1 не-ASCII", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 104
+// src/Optimize/DbInconsistencyConstants.php, row 107
 "Not used constant group" => "Невикористана група констант", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 109
+// src/Optimize/DbInconsistencyConstants.php, row 112
 "Found %1 unused constant groups" => "Знайдено %1 невикористаних груп констант", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 122
+// src/Optimize/DbInconsistencyConstants.php, row 125
 "Deleted %1 constants in %2 (%3) unused constant groups" => "Видалено %1 констант у %2 (%3) невикористаних групах констант", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 23
@@ -12076,13 +13700,13 @@ return [
 // src/Optimize/DbRelationStartsxy.php, row 30
 "Testing if relations between slices are OK (without x or y chars on the beginning)" => "Перевіряє, чи зв'язки між рубриками правильні (без символів x або y на початку)", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 42, 57
+// src/Optimize/DbRelationStartsxy.php, row 58, 73
 "%1 bad relation records found" => "Знайдено %1 помилкових записів зв'язків", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 45
+// src/Optimize/DbRelationStartsxy.php, row 61
 "No bad relation records found" => "Помилкових записів зв'язків не знайдено", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 59
+// src/Optimize/DbRelationStartsxy.php, row 79
 "repair value: %1 with item_id: %2" => "виправлення значення: %1 з item_id: %2", // ai 2026-06
 
 // src/Optimize/DebuglogLeftover.php, row 23
@@ -12345,7 +13969,7 @@ return [
 "AA_INSTAL_PATH %1 cannot go into a rewrite rule" => "AA_INSTAL_PATH %1 не можна використати в правилі rewrite", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 78
-// src/Util/Imgfunc.php, row 252
+// src/Util/Imgfunc.php, row 265, 273
 "Cannot write %1" => "Не вдається записати %1", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 87
@@ -12353,9 +13977,6 @@ return [
 
 // src/Optimize/MissCacheRouting.php, row 97
 "Probe" => "Тест", // ai 2026-10
-
-// src/Optimize/MissCacheRouting.php, row 98, 129
-"none" => "немає", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 99
 ".htaccess" => "",
@@ -12752,9 +14373,6 @@ return [
 // src/Optimize/StateCheckItem.php, row 73
 "now" => "щойно", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 219
-"Problem" => "Проблема", // ai 2026-10
-
 // src/Optimize/StateCheckModel.php, row 220
 "Warning" => "Попередження", // ai 2026-10
 
@@ -12978,7 +14596,7 @@ return [
 "ret_code and ok_url sent to filler.php" => "ret_code та ok_url, що надсилаються до filler.php", // ai 2026-10
 
 // src/Security/Protection.php, row 32
-"als[] and the state of site pages, taken from the URL" => "als[] і стан сторінок сайту, узяті з URL", // ai 2026-10
+"als[], noitem of views and the state of site pages, taken from the URL" => "",
 
 // src/Security/Protection.php, row 33
 "Logins to the administration and to reader accounts, counted per address of the visitor" => "Входи до адміністрування та до облікових записів читачів, що рахуються за адресою відвідувача", // ai 2026-10
@@ -12999,54 +14617,54 @@ return [
 "Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it." => "Текст, числа, ідентифікатори й _#ALIASES в als[] та в стані сторінок сайту й далі працюють; {expression} там показується як текст. Запишіть вираз у шаблоні, що будує посилання, щоб він виконався там іще до надсилання посилання, або передайте ідентифікатор і обчисліть решту на сторінці, яка його отримує.", // ai 2026-10
 
 // src/Security/Protection.php, row 56
+"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "",
+
+// src/Security/Protection.php, row 57
 "After 20 failed logins from one address in 12 hours, or 5 with one user name, the next login waits half a minute to a minute, twice as long after each further failure, at most an hour. A script that keeps logging in with an old password waits too: find its address in the Log (event LOGIN) and give it the current password. If every visitor seems to come from one address, AA runs behind a proxy missing in AA_TRUSTED_PROXIES - State Check names it; add it in config.php rather than switching this protection off." => "Після 20 невдалих входів з однієї адреси за 12 годин або 5 з одним іменем користувача наступний вхід чекає від пів хвилини до хвилини, після кожної наступної невдачі вдвічі довше, щонайбільше годину. Скрипт, що постійно входить зі старим паролем, теж чекає: знайдіть його адресу в Журналі (подія LOGIN) і дайте йому чинний пароль. Якщо всі відвідувачі ніби приходять з однієї адреси, AA працює за проксі, якого бракує в AA_TRUSTED_PROXIES, - «Перевірка стану» його назве; додайте його в config.php замість вимикання цього захисту.", // ai 2026-10
 
-// src/Security/Protection.php, row 64
+// src/Security/Protection.php, row 65
 "Unsigned expression refused" => "Непідписаний вираз відхилено", // ai 2026-10
 
-// src/Security/Protection.php, row 64
+// src/Security/Protection.php, row 65
 "Unsigned expression ran, protection off" => "Непідписаний вираз виконано, захист вимкнено", // ai 2026-10
 
-// src/Security/Protection.php, row 65
+// src/Security/Protection.php, row 66
 "Expression in a link shown as text" => "Вираз у посиланні показано як текст", // ai 2026-10
 
-// src/Security/Protection.php, row 65
+// src/Security/Protection.php, row 66
 "Expression in a link ran, protection off" => "Вираз у посиланні виконано, захист вимкнено", // ai 2026-10
 
-// src/Security/Protection.php, row 66
+// src/Security/Protection.php, row 67
 "Logins slowed down" => "Входи уповільнено", // ai 2026-10
 
-// src/Security/Protection.php, row 66
+// src/Security/Protection.php, row 67
 "Repeated failed logins, protection off" => "Повторні невдалі входи, захист вимкнено", // ai 2026-10
 
-// src/Security/Protection.php, row 73
+// src/Security/Protection.php, row 74
 "an unknown page" => "невідомій сторінці", // ai 2026-10
 
-// src/Security/Protection.php, row 76
+// src/Security/Protection.php, row 77
 "A form on %1 sent an unsigned expression in %2; it was refused" => "Форма на %1 надіслала непідписаний вираз у %2; його відхилено", // ai 2026-10
 
-// src/Security/Protection.php, row 77
+// src/Security/Protection.php, row 78
 "A form on %1 sent an unsigned expression in %2; it ran because the protection was off" => "Форма на %1 надіслала непідписаний вираз у %2; його виконано, бо захист було вимкнено", // ai 2026-10
 
-// src/Security/Protection.php, row 79
+// src/Security/Protection.php, row 80
 "A link to %1 sent an expression in %2; it was shown as text" => "Посилання на %1 надіслало вираз у %2; його показано як текст", // ai 2026-10
 
-// src/Security/Protection.php, row 80
+// src/Security/Protection.php, row 81
 "A link to %1 sent an expression in %2; it ran because the protection was off" => "Посилання на %1 надіслало вираз у %2; його виконано, бо захист було вимкнено", // ai 2026-10
 
-// src/Security/Protection.php, row 82
+// src/Security/Protection.php, row 83
 "Logins from %1 were slowed down after repeated failures" => "Входи з %1 уповільнено після повторних невдач", // ai 2026-10
 
-// src/Security/Protection.php, row 83
+// src/Security/Protection.php, row 84
 "Logins from %1 failed repeatedly; they were not slowed down because the protection was off" => "Входи з %1 повторно не вдавалися; їх не уповільнено, бо захист було вимкнено", // ai 2026-10
 
-// src/Security/Protection.php, row 91
-"Parameter" => "Параметр", // ai 2026-10
-
-// src/Security/Protection.php, row 109
+// src/Security/Protection.php, row 110
 "If you do not know the page, the request did not come from your pages and nothing needs to change." => "Якщо Ви не знаєте цієї сторінки, запит надійшов не з Ваших сторінок і нічого змінювати не треба.", // ai 2026-10
 
-// src/Security/Protection.php, row 110
+// src/Security/Protection.php, row 111
 "An address you do not know needs nothing: only its own logins are slowed down." => "Адреса, яку Ви не знаєте, не потребує жодних дій: уповільнюються лише її власні входи.", // ai 2026-10
 
 // src/Util/ChangesMonitor.php, row 92
@@ -13076,9 +14694,6 @@ return [
 // src/Util/ChangesMonitor.php, row 392
 "change %1 | uid %2 | %3 ns | resource %4" => "зміна %1 | uid %2 | %3 нс | ресурс %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 444
-"View" => "Переглянути", // ai 2026-06
-
 // src/Util/ChangesMonitor.php, row 445
 "Diff" => "Відмінності", // ai 2026-06
 
@@ -13100,17 +14715,14 @@ return [
 // src/Util/Imgfunc.php, row 178
 "ResampleImage unable to %1" => "ResampleImage: не вдалося викликати %1", // ai 2026-06
 
-// src/Util/Imgfunc.php, row 215
+// src/Util/Imgfunc.php, row 224
 "This type of image cannot be uploaded here" => "Цей тип зображення сюди не можна завантажити", // ai 2026-10
 
-// src/Util/Imgfunc.php, row 218
+// src/Util/Imgfunc.php, row 227
 "The image has too many pixels" => "Зображення має забагато пікселів", // ai 2026-10
 
-// src/Util/Imgfunc.php, row 222
+// src/Util/Imgfunc.php, row 231
 "The image cannot be read" => "Зображення не вдається прочитати", // ai 2026-10
-
-// src/Util/Note.php, row 47
-"Note" => "Примітка", // ai 2026-06
 
 // src/Util/Note.php, row 52
 "A note on an admin page, a view or a State Check finding" => "Примітка на сторінці адміністрування, у вигляді або до виявлення Перевірки стану", // ai 2026-10
@@ -13263,13 +14875,13 @@ return [
 // src/Widget/MchWidget.php, row 41
 "Multiple Checkboxes" => "Кілька прапорців", // ai 2026-06
 
-// src/Widget/MflWidget.php, row 40
+// src/Widget/MflWidget.php, row 37
 "Multiple Text Field" => "Кілька текстових полів", // ai 2026-06
 
-// src/Widget/MflWidget.php, row 82
+// src/Widget/MflWidget.php, row 65
 "if 1 (default), textfield used. for rows>1 textareas are used" => "якщо 1 (за замовчуванням), використовується textfield. для rows>1 використовуються textarea", // ai 2026-06
 
-// src/Widget/MflWidget.php, row 120
+// src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 110
 // src/Widget/Widget.php, row 445
@@ -13406,9 +15018,6 @@ return [
 
 // src/Widget/Widget.php, row 783
 "field_id of another text field, where value of this selectbox will be propagated too (in main text area will be text and there will be value)" => "field_id іншого текстового поля, куди також буде передано значення цього selectbox (у головній текстовій області буде текст, а там буде значення)", // ai 2026-06
-
-// src/Widget/Widget.php, row 786
-"Add to Constant" => "Додати до константи", // ai 2026-06
 
 // src/Widget/Widget.php, row 786
 "if set to 1, user typed value in inputform is stored into constants (only if the value is not already there)" => "якщо встановлено 1, значення, введене користувачем у формі, зберігається до констант (лише якщо такого значення там ще немає)", // ai 2026-06
