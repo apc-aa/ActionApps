@@ -30,6 +30,12 @@ namespace {
         Tests\Unit\Legacy\StringexpandDatovkabulkTest::$probed++;
         return 'probed';
     }
+
+    /** {datovkabulkecho:...} - the arguments as AA splits them */
+    function stringexpand_datovkabulkecho(string ...$args): string
+    {
+        return implode('|', $args);
+    }
 }
 
 namespace Tests\Unit\Legacy {
@@ -88,7 +94,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_subcommands_outsideTheUiGiveNothing(): void
         {
-            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:testboxes}{datovkabulk:campaign}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:progress:ca00000000000000000000000000000b:state}{datovkabulk:advice:ISDS_REFUSED:run}{datovkabulk:advice:isds:1233}{datovkabulk:view:isds_history}{datovkabulk:view:isds_messages:ca00000000000000000000000000000b}{datovkabulk:campaigns}{datovkabulk:campaigns:count}{datovkabulk:messages:problem}{datovkabulk:messages:test:count}{datovkabulk:param:page}{datovkabulk:param:tab}{datovkabulk:filter::types}{datovkabulk:filter:ca00000000000000000000000000000b:include}{datovkabulk:source:a0000000000000000000000000000001:name}{datovkabulk:search}{datovkabulk:message}{datovkabulk:message:resend}{datovkabulk:events:be00000000000000000000000000000d:{(_#KIND)}}{datovkabulk:files:ca00000000000000000000000000000b}{datovkabulk:files:ca00000000000000000000000000000b:{(_#NAME)}}{datovkabulk:types::{(_#TYPE)}}{datovkabulk:letterhead}{datovkabulk:members}{datovkabulk:param:q}{datovkabulk:delete}{datovkabulk}'));
+            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:testboxes}{datovkabulk:campaign}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:progress:ca00000000000000000000000000000b:state}{datovkabulk:advice:ISDS_REFUSED:run}{datovkabulk:advice:isds:1233}{datovkabulk:view:isds_history}{datovkabulk:view:isds_messages:ca00000000000000000000000000000b}{datovkabulk:campaigns}{datovkabulk:campaigns:count}{datovkabulk:messages:problem}{datovkabulk:messages:test:count}{datovkabulk:param:page}{datovkabulk:param:tab}{datovkabulk:filter::types}{datovkabulk:filter:ca00000000000000000000000000000b:include}{datovkabulk:source:a0000000000000000000000000000001:name}{datovkabulk:search}{datovkabulk:message}{datovkabulk:message:resend}{datovkabulk:events:be00000000000000000000000000000d:{(_#KIND)}}{datovkabulk:files:ca00000000000000000000000000000b}{datovkabulk:files:ca00000000000000000000000000000b:{(_#NAME)}}{datovkabulk:types::{(_#TYPE)}}{datovkabulk:letterhead}{datovkabulk:members}{datovkabulk:url:isds_tab=history}{datovkabulk:param:q}{datovkabulk:delete}{datovkabulk}'));
         }
 
         // the name, the ids and the settings as written; no ids reach the gate as none
@@ -107,6 +113,29 @@ namespace Tests\Unit\Legacy {
             };
 
             self::assertSame(['isds_messages|ca00000000000000000000000000000b|listlen-50', 'isds_history||'], [$command->expand('view', 'isds_messages', 'ca00000000000000000000000000000b', 'listlen-50'), $command->expand('view', 'isds_history')]);
+        }
+
+        public function test_url_pairsToTheGate(): void
+        {
+            $command = new class ([]) extends AA_Stringexpand_Datovkabulk {
+                protected function gate(): Gate
+                {
+                    return new class extends Gate {
+                        public function url(string $pairs): string
+                        {
+                            return "url|$pairs";
+                        }
+                    };
+                }
+            };
+
+            self::assertSame('url|isds_campaign=x&isds_show=ok#isds-msgs', $command->expand('url', 'isds_campaign=x&isds_show=ok#isds-msgs'));
+        }
+
+        // the pairs, the fragment and a computed value reach the command as its one argument
+        public function test_url_pairsAreOneArgument(): void
+        {
+            self::assertSame('isds_campaign=x&isds_page=2#isds-msgs', AA::Un('{datovkabulkecho:isds_campaign=x&isds_page={math:1+1}#isds-msgs}'));
         }
 
         public function test_lists_questionsToTheGate(): void

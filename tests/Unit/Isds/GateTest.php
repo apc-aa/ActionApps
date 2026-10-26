@@ -1017,6 +1017,63 @@ final class GateTest extends TestCase
         self::assertSame($got, self::inside($gate, static fn(): string => $gate->param('page')));
     }
 
+    /** what url($pairs) gives the UI of the page at $uri */
+    private static function urlAt(string $uri, string $pairs): string
+    {
+        $_SERVER['REQUEST_URI'] = $uri;
+        parse_str((string) parse_url($uri, PHP_URL_QUERY), $_GET);
+        $gate = self::gate();
+
+        return self::inside($gate, static fn(): string => $gate->url($pairs));
+    }
+
+    /** @return array<string, array{string, string, string}> the page, the pairs of the link, its href as the template prints it */
+    public static function urls(): array
+    {
+        $item = self::ITEM;
+
+        return [
+            // a page with its own query: the bare "?isds_..." of before lost site_id
+            'the query of the page stays' => ['/aadev/modules/site/site.php?site_id=b6519d506ccc9e604b40d84b5fa09f91', "isds_campaign=$item&isds_tab=check", "/aadev/modules/site/site.php?site_id=b6519d506ccc9e604b40d84b5fa09f91&amp;isds_campaign=$item&amp;isds_tab=check"],
+            'a routed page'               => ['/cz/rozesilka', 'isds_tab=history', '/cz/rozesilka?isds_tab=history'],
+            // each link says all it wants of the page: nothing isds_ of the URL stays, as PHP reads the names
+            'the pairs of the page go'    => ["/cz/rozesilka?isds_tab=history&a=1&isds_r=0123456789abcdef&isds.step=send&isds_page%5B%5D=2&isds_Q=y&q=a%26b&isds_campaign=$item#top", 'isds_page=2', '/cz/rozesilka?a=1&amp;q=a%26b&amp;isds_page=2'],
+            'no pairs'                    => ["/cz/rozesilka?a=1&isds_campaign=$item", '', '/cz/rozesilka?a=1'],
+            'nothing left'                => ["/cz/rozesilka?isds_campaign=$item", '', '/cz/rozesilka'],
+            'a fragment'                  => ['/cz/rozesilka?a=1', 'isds_show=ok#isds-msgs', '/cz/rozesilka?a=1&amp;isds_show=ok#isds-msgs'],
+            'only a fragment'             => ['/cz/rozesilka', '#isds-list', '/cz/rozesilka#isds-list'],
+            'a fragment of anything'      => ['/cz/rozesilka', 'isds_tab=history#a"b', '/cz/rozesilka?isds_tab=history'],
+            // a value with no value says nothing: {ifset} need not guard {datovkabulk:campaign} of a new campaign
+            'an empty value'              => ['/cz/rozesilka', 'isds_campaign=&isds_tab=history', '/cz/rozesilka?isds_tab=history'],
+            // a value adds no pair nor path of its own
+            'a value encoded'             => ['/cz/rozesilka', 'isds_q=a?b/c', '/cz/rozesilka?isds_q=a%3Fb%2Fc'],
+            'only names of the page'      => ['/cz/rozesilka', 'site_id=x&isds_tab=history&isds_TAB=x&isds_=x&=x&isds_tab[]=x', '/cz/rozesilka?isds_tab=history'],
+            // the browser sent it so, the attribute must hold it
+            'the query escaped'           => ['/cz/rozesilka?a="><b>&c=\'', 'isds_tab=history', '/cz/rozesilka?a=&quot;&gt;&lt;b&gt;&amp;c=&apos;&amp;isds_tab=history'],
+            'the path escaped'            => ['/cz/"x"', '', '/cz/&quot;x&quot;'],
+        ];
+    }
+
+    #[DataProvider('urls')]
+    public function test_url_keepsTheQueryOfThePage(string $uri, string $pairs, string $href): void
+    {
+        self::assertSame($href, self::urlAt($uri, $pairs));
+    }
+
+    // the same rule as the redirect after an action
+    #[DataProvider('foreignPaths')]
+    public function test_url_neverLeavesTheHost(string $uri): void
+    {
+        self::assertSame('/?isds_tab=history', self::urlAt($uri, 'isds_tab=history'));
+    }
+
+    public function test_url_outsideTheUiNothing(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/cz/rozesilka?a=1';
+
+        self::assertSame('', self::gate()->url('isds_tab=history'));
+    }
+
     // ------------------------------------------------------------ actions
 
     /** the settings of the page as the gate checks them */

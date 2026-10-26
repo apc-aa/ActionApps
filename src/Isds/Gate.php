@@ -362,6 +362,33 @@ class Gate
         return (is_string($value) && in_array($value, self::PARAMS[$name] ?? [], true)) ? $value : '';
     }
 
+    /**
+     * A link to this page, for its href: the path and query of the request without any isds_ pair, then
+     * $pairs - "isds_<name>=<value>" joined by "&", an optional "#<fragment>" at the end. No isds_ pair of
+     * the URL stays, so a link states all the page should show. A pair of another name or of no value, and
+     * a fragment of other than letters, digits, "_" and "-", is left out; the values are encoded and the
+     * whole is escaped for an attribute. Never another host (requestUrl()).
+     * Values only plain tokens (ids, numbers, fixed words): escaped text ("&quot;") would split at its "&".
+     */
+    public function url(string $pairs): string
+    {
+        if (is_null(self::$open)) {
+            return '';
+        }
+        [$own, $fragment] = explode('#', $pairs, 2) + [1 => ''];
+        [$path, $kept]    = self::requestUrl();
+        $kept             = array_filter($kept, static fn(string $pair): bool => !str_starts_with(self::nameOf($pair), 'isds_'));
+        foreach (explode('&', $own) as $pair) {
+            [$name, $value] = explode('=', $pair, 2) + [1 => ''];
+            if (($value !== '') && (preg_match('/^isds_[a-z]+\z/', $name) === 1)) {
+                $kept[] = $name . '=' . rawurlencode($value);
+            }
+        }
+        $url = ($kept === []) ? $path : $path . '?' . implode('&', $kept);
+
+        return safe((preg_match('/^[\w-]+\z/', $fragment) === 1) ? "$url#$fragment" : $url);
+    }
+
     /** the page of a list the URL asks for (isds_page), the first one unless it names one */
     private static function pageNumber(): int
     {
@@ -964,17 +991,12 @@ class Gate
      * the first page. After another action that ran (done) the step and search go, the page of the list
      * stays; after one that did not, all stay, so the page shows the card it failed on. Names as PHP
      * reads them: "isds.step" is isds_step to it.
-     * Never another host: "//host/..." and "/\host/..." lead to the host they name (the router reads
-     * "//host/cz/x" as "/cz/x"), so such a path, or one with a control character, leads to "/".
+     * Never another host (requestUrl()).
      */
     private static function afterAction(ActionResult $result, string $key): string
     {
-        $uri            = (string) ($_SERVER['REQUEST_URI'] ?? '');
-        [$path, $query] = explode('?', explode('#', $uri, 2)[0], 2) + [1 => ''];
-        if ((preg_match('~^/(?![/\\\\])~', $path) !== 1) || (preg_match('/[\x00-\x20\x7f]/', $uri) === 1)) {
-            [$path, $query] = ['/', ''];
-        }
-        parse_str($query, $read);
+        [$path, $pairs] = self::requestUrl();
+        parse_str(implode('&', $pairs), $read);
         $shown = self::stepOf($read['isds_step'] ?? null);
         $asked = self::stepOf($_POST['isds_step'] ?? null);
         $saved = ($result->action === 'save') && in_array($result->code, [Actions::SAVED, Actions::FILTER_CHANGED], true);
@@ -985,10 +1007,7 @@ class Gate
             $result->status === ActionResult::DONE => ['isds_step', 'isds_q'],
             default                                => [],
         }];
-        $pairs = array_filter(explode('&', $query), static function (string $pair) use ($gone): bool {
-            parse_str($pair, $read);
-            return ($pair !== '') && !in_array((string) array_key_first($read), $gone, true);
-        });
+        $pairs = array_filter($pairs, static fn(string $pair): bool => !in_array(self::nameOf($pair), $gone, true));
         if ($result->campaign !== '') {
             $pairs[] = 'isds_campaign=' . $result->campaign;
         }
@@ -998,6 +1017,31 @@ class Gate
         $pairs[] = 'isds_r=' . $key;
 
         return $path . '?' . implode('&', $pairs);
+    }
+
+    /**
+     * The path of this request and the pairs of its query as the browser sent them, for an address of the
+     * same page (afterAction(), url()). "//host/..." and "/\host/..." lead to the host they name (the router
+     * reads "//host/cz/x" as "/cz/x"), so for such a path, or a control character anywhere, "/" and no pairs.
+     * @return array{string, list<string>}
+     */
+    private static function requestUrl(): array
+    {
+        $uri            = (string) ($_SERVER['REQUEST_URI'] ?? '');
+        [$path, $query] = explode('?', explode('#', $uri, 2)[0], 2) + [1 => ''];
+        if ((preg_match('~^/(?![/\\\\])~', $path) !== 1) || (preg_match('/[\x00-\x20\x7f]/', $uri) === 1)) {
+            return ['/', []];
+        }
+
+        return [$path, array_values(array_filter(explode('&', $query), static fn(string $pair): bool => $pair !== ''))];
+    }
+
+    /** the name of a pair as PHP reads it: "isds.step=x" and "isds_step[]=x" are isds_step */
+    private static function nameOf(string $pair): string
+    {
+        parse_str($pair, $read);
+
+        return (string) array_key_first($read);
     }
 
     /** $step when it is a step the page knows, else '' */

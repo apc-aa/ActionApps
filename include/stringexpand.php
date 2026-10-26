@@ -11074,6 +11074,12 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *    {datovkabulk:members} - 1 when the page tells members (member_field), else '': offer the choice of
  *        membership only then, else post isds_membership all - but not while the stored filter cannot be
  *        read: then the choice waits for the editor
+ *    {datovkabulk:url:<pairs>[#<fragment>]} - the href of a link to the page, escaped (no {safe:}):
+ *        {datovkabulk:url:isds_campaign={datovkabulk:campaign}&isds_show=ok#isds-msgs}. Its path and query
+ *        stay (site_id of site.php too), every isds_ pair of the URL goes and <pairs> - isds_<name>=<value>
+ *        joined by & - take their place; a pair of no value is left out. A bare href="?..." would drop the
+ *        query of the page. Values only plain tokens (ids, numbers, fixed words): a ":" ends the argument,
+ *        escaped text ("&quot;") splits at its "&"
  *  All but page give nothing outside the UI of the page. AA\Isds\Gate tells more.
  */
 class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
@@ -11107,6 +11113,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'types'      => $gate->types((string)$settings, (string)$ui, $expand),
             'letterhead' => $gate->letterhead(),
             'members'    => $gate->members(),
+            'url'        => $gate->url((string)$settings),
             default      => '',
         };
     }
