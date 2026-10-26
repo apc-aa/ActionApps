@@ -56,6 +56,27 @@ final class DebugAccessTest extends TestCase
         $this->assertSame(0, DebugAccess::pending());
     }
 
+    public function test_opensLogin_debugWaitsAndSessionCookie(): void
+    {
+        DebugAccess::fromRequest('150', null, '', self::KEY);
+
+        $this->assertTrue(DebugAccess::opensLogin(['AA_Session' => 'abc']));
+    }
+
+    public function test_opensLogin_notWithoutSessionCookie(): void
+    {
+        DebugAccess::fromRequest('150', null, '', self::KEY);
+
+        $this->assertFalse(DebugAccess::opensLogin([]));
+    }
+
+    public function test_opensLogin_notWhenNothingWaits(): void
+    {
+        DebugAccess::fromRequest('150', null, self::KEY, self::KEY);
+
+        $this->assertFalse(DebugAccess::opensLogin(['AA_Session' => 'abc']));
+    }
+
     public function test_granted_levelOfTheKey(): void
     {
         DebugAccess::fromRequest('6', null, self::KEY, self::KEY);

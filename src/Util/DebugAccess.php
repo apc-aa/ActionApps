@@ -55,6 +55,12 @@ final class DebugAccess
         return self::$pending;
     }
 
+    /** pageOpenForDebug(): open the login when debug waits for a superadmin and the browser has a session */
+    public static function opensLogin(array $cookie): bool
+    {
+        return (self::$pending !== 0) && !empty($cookie['AA_Session']);
+    }
+
     /** The level waiting since fromRequest(), once the login shows a superadmin. $is_superadmin is
      *  called only when a level waits, so a request without ?debug never asks for permissions. */
     public static function grant(int $current, callable $is_superadmin): int

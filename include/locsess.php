@@ -795,15 +795,16 @@ function authStart(bool $nobody): void
     AA::$debug = DebugAccess::grant((int) AA::$debug, static fn(): bool => !in_array(AuthGetUid(), ['', 'nobody'], true) && IsSuperadmin());
 }
 
-/** ?debug of a logged-in superadmin on pages that do not open the login themselves. Only when debug
- *  waits for a superadmin and the browser has a session - the page then depends on the user, so it
- *  is not stored for everyone.
+/** ?debug of a logged-in superadmin on pages that do not open the login themselves - call it only
+ *  there. Only when debug waits for a superadmin and the browser has a session - the page then
+ *  depends on the user, so it is not stored for everyone.
+ *  $auth may be an object already: pageOpen('noauth') restores it from the session without starting it.
  */
 function pageOpenForDebug(): void
 {
-    global $sess, $auth;
+    global $sess;
 
-    if (!DebugAccess::pending() || empty($_COOKIE['AA_Session']) || is_object($auth)) {
+    if (!DebugAccess::opensLogin($_COOKIE)) {
         return;
     }
     AA::Pagecache()->switchCacheNostore();
