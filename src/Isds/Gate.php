@@ -59,10 +59,14 @@ class Gate
     public const GROUPS = ['problem', 'checking', 'wait', 'sent', 'ok', 'stopped', 'skip', 'resend', 'recent', 'test'];
 
     /** the actions a form may name - its token binds the action, the binding of the page and the campaign */
-    public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'abandon', 'resume', 'verify', 'fixbox'];
+    public const ACTIONS = ['save', 'discard', 'clone', 'test', 'send', 'stop', 'abandon', 'resume', 'verify', 'fixbox'];
     /** of ACTIONS those whose shown form is posted again on purpose (autosave): each post acts - unless
      *  it carries files, which a post again would attach again (reposted()) */
     public const REPOSTED = ['save'];
+    /** of ACTIONS those that act only on a campaign in the active bin: a draft in the trash is none to change or send */
+    public const ACTIVE_ONLY = ['save', 'discard', 'test', 'send'];
+    /** of ACTIONS those after which the page goes on with no campaign when the campaign posted is none of the page */
+    public const NO_CAMPAIGN_AFTER = ['save', 'discard'];
 
     /** $_SESSION key of the results kept for the page after an action, by their key */
     private const FLASH = 'aa_isds_result';
@@ -158,7 +162,7 @@ class Gate
         }
         $outer         = [self::$open, self::$shown, self::$guarded, self::$items];
         self::$open    = $setup;
-        self::$shown   = $result ?? $this->kept($setup, $access->uid());
+        self::$shown   = $result ?? $this->kept($setup, $access->uid()) ?? $this->trashedNotice($setup);
         self::$guarded = $guarded;
         self::$items   = [];
         try {
@@ -174,7 +178,9 @@ class Gate
      * '' on a page that could not be kept out of frames; for abandon '' unless the run is one a stop no
      * longer ends (SendRun::abandonable()) - the template offers it in place of Stop then; for fixbox ''
      * unless the page could take a box from the register (fixable()) - the form adds isds_recipient and,
-     * as isds_box, regbox() of the row.
+     * as isds_box, regbox() of the row; for discard '' unless the campaign is a draft in the active bin
+     * never queued (progress state draft) - the core asks again under its lock - and the user may move
+     * items of the campaign slice to the trash (Access::mayTrash()).
      * The form of a new campaign and of a copy carries a nonce of its own: every post of the form shown
      * makes the one draft (Drafts::newId(), copyId()) - of a copy to one recipient one for each message.
      * The form of save tells the filter stored as the page read it (isds_filter_seen, filterSeenField()):
@@ -196,6 +202,9 @@ class Gate
             return '';
         }
         if (($action === 'fixbox') && !$this->fixable(self::$open)) {
+            return '';
+        }
+        if (($action === 'discard') && !$this->discardable(self::$open, $campaign)) {
             return '';
         }
 
@@ -229,7 +238,8 @@ class Gate
 
     /**
      * The campaign the page was sent to after an action (isds_campaign of its URL), when it is an item
-     * of the campaign slice of the page: the template learns the id of a draft saved new. '' otherwise.
+     * of the campaign slice of the page: the template learns the id of a draft saved new. '' otherwise,
+     * and for a draft in the trash (trashedDraft()).
      */
     public function campaign(): string
     {
@@ -239,9 +249,38 @@ class Gate
     /** campaign() unescaped, in small letters; null = none */
     private function pageCampaign(): ?string
     {
-        $id = ModuleId::normalize(is_string($_GET['isds_campaign'] ?? null) ? $_GET['isds_campaign'] : '');
+        $id = self::urlCampaign();
 
-        return (is_null(self::$open) || is_null($id) || is_null($this->campaignOfPage(self::$open, $id))) ? null : $id;
+        return (is_null(self::$open) || is_null($id) || is_null($this->campaignOfPage(self::$open, $id)) || $this->trashedDraft(self::$open, $id)) ? null : $id;
+    }
+
+    /** isds_campaign of the URL, in small letters; null = none */
+    private static function urlCampaign(): ?string
+    {
+        return ModuleId::normalize(is_string($_GET['isds_campaign'] ?? null) ? $_GET['isds_campaign'] : '');
+    }
+
+    /**
+     * A campaign of the page in the trash that never started a sending of the page: no campaign to show -
+     * its editor would save nothing (Back after Discard, another tab). One with a sending still shows: it
+     * must stay stoppable; one in another bin that is not active - holding, pending, expired - shows too.
+     */
+    private function trashedDraft(Setup $setup, string $id): bool
+    {
+        if (!($this->campaignOfPage($setup, $id)['trashed'] ?? false)) {
+            return false;
+        }
+        $run = $this->sending($setup, $id)['run'];
+
+        return is_null($run) || !$setup->ownsRun($run);
+    }
+
+    /** the URL names a draft in the trash (trashedDraft()): told as after Discard, else the page would show a new draft unexplained */
+    private function trashedNotice(Setup $setup): ?ActionResult
+    {
+        $id = self::urlCampaign();
+
+        return (!is_null($id) && $this->trashedDraft($setup, $id)) ? new ActionResult('', ActionResult::DONE, Actions::DISCARDED) : null;
     }
 
     /**
@@ -871,6 +910,25 @@ class Gate
     }
 
     /**
+     * fields() of discard: an active draft of the page that never started a sending, for a user who may
+     * move its items to the trash - the item first, the run only of a draft, the right once a request
+     */
+    private function discardable(Setup $setup, string $id): bool
+    {
+        $stored = $this->campaignOfPage($setup, $id);
+        if (!($stored['active'] ?? false) || ($stored['state'] !== Schema::CAMPAIGN_STATE_DRAFT)) {
+            return false;
+        }
+        // an item edited back to draft keeps its run
+        if (($this->progressOf($setup, $id)['state'] ?? '') !== Schema::CAMPAIGN_STATE_DRAFT) {
+            return false;
+        }
+        $access = $this->access();
+
+        return $this->once('trash', fn(): bool => $access->mayTrash($setup->campaignSlice), $setup, $access->uid());
+    }
+
+    /**
      * Fix box can take a box: a page in production - a test one shares the source slice of production -,
      * whose source slice has its settings of data boxes, with a usable register. Once a request: a page
      * may offer the form on every row of its recipients.
@@ -1085,7 +1143,7 @@ class Gate
     /**
      * The item $id names, when it is a campaign of the page - an item of its campaign slice, in any bin.
      * The id comes from the page or a form.
-     * @return ?array{slice: string, active: bool, filter: string, state: string} as stored()
+     * @return ?array{slice: string, active: bool, filter: string, state: string, trashed?: bool} as stored()
      */
     protected function campaignOfPage(Setup $setup, string $id): ?array
     {
@@ -1433,14 +1491,14 @@ class Gate
 
     /**
      * The item through the item cache of the request: its slice, whether it is in the active bin, the
-     * recipient filter and the state it stores
-     * @return ?array{slice: string, active: bool, filter: string, state: string} null = no such item
+     * recipient filter and the state it stores, and whether it is in the trash - not only not active
+     * @return ?array{slice: string, active: bool, filter: string, state: string, trashed?: bool} null = no such item
      */
     protected function stored(string $id): ?array
     {
         $item = AA_Items::getItem(new zids($id, 'l'));
 
-        return $item ? ['slice' => $item->getSliceID(), 'active' => $item->isActive(), 'filter' => (string) $item->getval(Schema::CAMPAIGN_FILTER), 'state' => (string) $item->getval(Schema::CAMPAIGN_STATE)] : null;
+        return $item ? ['slice' => $item->getSliceID(), 'active' => $item->isActive(), 'filter' => (string) $item->getval(Schema::CAMPAIGN_FILTER), 'state' => (string) $item->getval(Schema::CAMPAIGN_STATE), 'trashed' => ((int) $item->getval('status_code.....') === Drafts::TRASH)] : null;
     }
 
     /**

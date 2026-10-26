@@ -119,6 +119,26 @@ final class MemoryDrafts extends Drafts
         return true;
     }
 
+    // as Item_MoveItem::move() does it: only an item of the slice given, its bin alone; recorded as a write of mode move
+    protected function moveToTrash(string $slice, string $id): bool
+    {
+        $this->writes[] = ['mode' => 'move', 'id' => $id, 'slice' => $slice, 'fields' => ['status_code.....' => ['3', 0]], 'flags' => [], 'open' => $this->open];
+        if ($this->storeThrows) {
+            throw new \RuntimeException('not committed');
+        }
+        if ($this->storeFails) {
+            ItemContent::lastErr(1, 'not stored');
+
+            return false;
+        }
+        if (($this->items[$id]['slice'] ?? '') !== $slice) {
+            return false;
+        }
+        $this->items[$id]['fields']['status_code.....'] = ['3', 0];
+
+        return true;
+    }
+
     // as AA_Items gives it, with the dates of an active item
     protected function campaign(string $id): ?ItemContent
     {

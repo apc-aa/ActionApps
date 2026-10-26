@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\IO\DB\DB_AA;
+use AA\Manageraction\Item_MoveItem;
 use AA\Upload\UploadPolicy;
 use AA\Util\FormToken;
 use AA_Generator;
@@ -33,7 +34,7 @@ use zids;
  * read. Removing one drops its URL from the draft only: a copy of the draft may share the file.
  * A copy (copy()) is a new draft of the letter of any campaign of the page - to send it again, to
  * those its sending left unsent, or to one recipient once more -, made once for the form shown as a new
- * draft is.
+ * draft is. A draft may also go to the trash (trash()) while it may change.
  */
 class Drafts
 {
@@ -47,6 +48,8 @@ class Drafts
     public const FILTER_CHANGED = 'FILTER_CHANGED';
     /** the copy is made - or was, by the same form before */
     public const CLONED = 'CLONED';
+    /** the draft is moved to the trash now */
+    public const DISCARDED = 'DISCARDED';
 
     /** what a copy takes: the whole campaign, only the recipients its sending left unsent, or one
      *  recipient - copy() takes ONE as one(), naming the message */
@@ -80,6 +83,9 @@ class Drafts
 
     /** storeItem(): invalidate the pages of the campaign slice, no feeding, no events */
     private const FLAGS = [true, false, false, false];
+
+    /** status_code of the trash - AA has no constant of it */
+    public const TRASH = 3;
 
     /** @param \Closure(): Recipients $resolver as Gate::resolver() - tells a pick of an active item of the source slice */
     public function __construct(private \Closure $resolver) {}
@@ -218,6 +224,39 @@ class Drafts
             return $this->whileOpen($setup->campaignSlice, fn(): array => $this->writeCopy($setup, $source, $scope, $id, $items));
         } finally {
             $this->unlock(SendRun::lockName($id));
+        }
+    }
+
+    /**
+     * Moves the draft $campaign to the trash the way the Item Manager does (Item_MoveItem::move()) -
+     * restored there, it is the draft again. Only a draft of the page that may change (draftOf()): a
+     * campaign once queued keeps its sending in view. Under the lock of the campaign, so that queueing
+     * cannot freeze a draft going to the trash. Not logged here: the caller logs the move.
+     * @param string $campaign long id in small letters of an item of the campaign slice
+     * @return string DISCARDED, SendStart::UNKNOWN (in the trash already too), NOT_DRAFT, ALREADY or BUSY
+     * @throws \RuntimeException not stored
+     */
+    public function trash(Setup $setup, string $campaign): string
+    {
+        if (!$this->lock(SendRun::lockName($campaign))) {
+            return SendStart::BUSY;
+        }
+        try {
+            return $this->whileOpen($setup->campaignSlice, function () use ($setup, $campaign): string {
+                $item = self::draftOf($setup, $this->campaign($campaign), fn(): bool => $this->runExists($campaign));
+                if (is_string($item)) {
+                    return $item;
+                }
+                // storeItem() leaves the error of an earlier call
+                ItemContent::lastErr(0, '');
+                if (!$this->moveToTrash($setup->campaignSlice, $campaign)) {
+                    throw new \RuntimeException("Draft $campaign not moved to the trash, error " . ItemContent::lastErr());
+                }
+
+                return self::DISCARDED;
+            });
+        } finally {
+            $this->unlock(SendRun::lockName($campaign));
         }
     }
 
@@ -735,6 +774,12 @@ class Drafts
     protected function store(ItemContent $content, string $mode, array $flags): bool
     {
         return $content->storeItem($mode, $flags) !== false;
+    }
+
+    /** Item_MoveItem::move() of the one item: whatever moves an item between bins goes there */
+    protected function moveToTrash(string $slice, string $id): bool
+    {
+        return Item_MoveItem::move(new zids($id, 'l'), self::TRASH, $slice) === 1;
     }
 
     /** stored() */

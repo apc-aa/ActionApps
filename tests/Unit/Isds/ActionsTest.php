@@ -1285,6 +1285,149 @@ final class ActionsTest extends TestCase
         self::assertSame('Výzva 2', $drafts->field((string) $first?->campaign, Schema::CAMPAIGN_SUBJECT));
     }
 
+    // ------------------------------------------------------------ Discard
+
+    /** the real core over a draft of the page in memory, $before done to it first */
+    private function discardsInMemory(?\Closure $before = null): MemoryDrafts
+    {
+        $this->draftOfPage();
+        $drafts = new MemoryDrafts();
+        $drafts->draft(self::CAMPAIGN_ITEM);
+        if ($before) {
+            $before($drafts);
+        }
+        FakeActions::$discard = static fn(Setup $setup, string $campaign): string => $drafts->trash($setup, $campaign);
+
+        return $drafts;
+    }
+
+    // the page goes on with no campaign; the editor finds the draft in the trash of the slice
+    public function test_discard_draftTrashedAndLogged(): void
+    {
+        $drafts = $this->discardsInMemory();
+        self::post('discard', over: ['isds_uid' => Sending::READER]);
+
+        self::assertEquals(new ActionResult('discard', ActionResult::DONE, Actions::DISCARDED), $this->actions()->run(self::page(), true));
+        self::assertSame('3', $drafts->field(self::CAMPAIGN_ITEM, 'status_code.....'));
+        self::assertSame([[SendQueue::LOG_EVENT, 'discard:' . self::CAMPAIGN_ITEM, [Sending::USER]]], FakeActions::$logged);
+    }
+
+    // sending lets a user change drafts; the trash takes the right the Item Manager asks for it
+    public function test_discard_withoutTheRightToTrashForbidden(): void
+    {
+        $drafts = $this->discardsInMemory();
+        FakePerms::install([Sending::USER => [Sending::CAMPAIGN => PS_EDIT_ALL_ITEMS]]);
+        self::post('discard');
+
+        self::assertEquals(new ActionResult('discard', ActionResult::REFUSED, Actions::FORBIDDEN, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame([[], [], []], [FakeActions::$discarded, $drafts->writes, FakeActions::$logged]);
+    }
+
+    /** @return array<string, array{\Closure(MemoryDrafts): void, string}> a campaign of the page that is no draft to discard, what the core says of it */
+    public static function notDiscardable(): array
+    {
+        return [
+            'with a run'         => [static fn(MemoryDrafts $d) => $d->runs = [self::CAMPAIGN_ITEM], SendStart::ALREADY],
+            'sent'               => [static fn(MemoryDrafts $d) => $d->draft(self::CAMPAIGN_ITEM, state: Schema::CAMPAIGN_STATE_DONE), SendStart::NOT_DRAFT],
+            'stopped, no run'    => [static fn(MemoryDrafts $d) => $d->draft(self::CAMPAIGN_ITEM, state: Schema::CAMPAIGN_STATE_STOPPED), SendStart::NOT_DRAFT],
+        ];
+    }
+
+    // a campaign once queued keeps its sending in view: nothing moved, nothing logged, the page shows it on -
+    // told in words of its own, not as a save refused (no copy to make)
+    #[DataProvider('notDiscardable')]
+    public function test_discard_campaignWithSendingRefused(\Closure $sending, string $core): void
+    {
+        $drafts = $this->discardsInMemory($sending);
+        $before = $drafts->items;
+        self::post('discard');
+
+        self::assertEquals(new ActionResult('discard', ActionResult::REFUSED, Actions::NOT_DISCARDABLE, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertNotSame(Advice::text($core), Advice::text(Actions::NOT_DISCARDABLE));
+        self::assertSame([[], $before, []], [$drafts->writes, $drafts->items, FakeActions::$logged]);
+    }
+
+    public function test_discard_busyWhileQueued(): void
+    {
+        $drafts                = $this->discardsInMemory();
+        $drafts->lockedByOther = true;
+        self::post('discard');
+
+        self::assertEquals(new ActionResult('discard', ActionResult::BUSY, SendStart::BUSY, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame([[], []], [$drafts->writes, FakeActions::$logged]);
+    }
+
+    /** @return array<string, array{array<string, array{slice: string, active: bool, filter: string, state: string}>}> what the gate reads of the campaign posted */
+    public static function notDraftsOfThePage(): array
+    {
+        $draft = ['slice' => Sending::CAMPAIGN, 'active' => true, 'filter' => '', 'state' => 'draft'];
+
+        return [
+            'in the trash'     => [[self::CAMPAIGN_ITEM => ['active' => false] + $draft]],
+            'of another slice' => [[self::CAMPAIGN_ITEM => ['slice' => Sending::MESSAGE] + $draft]],
+            'no such item'     => [[]],
+        ];
+    }
+
+    // no campaign of the page to discard: the core is not asked, the page goes on with none
+    /** @param array<string, array{slice: string, active: bool, filter: string, state: string}> $campaigns */
+    #[DataProvider('notDraftsOfThePage')]
+    public function test_discard_notADraftOfThePageUnknown(array $campaigns): void
+    {
+        $this->campaigns = $campaigns;
+        self::post('discard');
+
+        self::assertEquals(new ActionResult('discard', ActionResult::REFUSED, Actions::UNKNOWN), $this->actions()->run(self::page(), true));
+        self::assertSame([[], []], [FakeActions::$discarded, FakeActions::$logged]);
+    }
+
+    // the core finds it gone meanwhile - in the trash already, by another window: told as above
+    public function test_discard_trashedMeanwhileUnknown(): void
+    {
+        $drafts = $this->discardsInMemory(static fn(MemoryDrafts $d) => $d->draft(self::CAMPAIGN_ITEM, status: 3));
+        self::post('discard');
+
+        self::assertEquals(new ActionResult('discard', ActionResult::REFUSED, Actions::UNKNOWN), $this->actions()->run(self::page(), true));
+        self::assertSame([[], []], [$drafts->writes, FakeActions::$logged]);
+    }
+
+    // a double click: the first result, the draft not moved nor logged again - past the gate too
+    public function test_discard_twiceMovesAndLogsOnce(): void
+    {
+        $drafts = $this->discardsInMemory();
+        self::post('discard');
+        $first = $this->actions()->run(self::page(), true);
+
+        Actions::forget();
+        self::assertSame($first, $this->actions(answered: static fn(): ActionResult => $first)->run(self::page(), true), 'what the first did');
+        Actions::forget();
+        $this->campaigns[self::CAMPAIGN_ITEM]['active'] = false;
+        self::assertSame(Actions::UNKNOWN, $this->actions()->run(self::page(), true)?->code, 'the result kept gone: in the trash now');
+
+        self::assertSame([[self::CAMPAIGN_ITEM], 1, 1], [FakeActions::$discarded, count($drafts->writes), count(FakeActions::$logged)]);
+    }
+
+    /** @return array<string, array{string, string}> the purpose a token was given for: action, campaign */
+    public static function otherForms(): array
+    {
+        return [
+            'of Save'           => ['save', self::CAMPAIGN_ITEM],
+            'of Copy'           => ['clone', self::CAMPAIGN_ITEM],
+            'of another draft'  => ['discard', self::OTHER_ITEM],
+            'of a new draft'    => ['save', ''],
+        ];
+    }
+
+    #[DataProvider('otherForms')]
+    public function test_discard_tokenOfAnotherFormExpired(string $action, string $campaign): void
+    {
+        $this->discardsInMemory();
+        self::post('discard', over: ['isds_token' => FormToken::get(Gate::purpose($action, self::page(), $campaign))]);
+
+        self::assertExpired($this->actions()->run(self::page(), true));
+        self::assertSame([], FakeActions::$discarded);
+    }
+
     // ------------------------------------------------------------ Copy
 
     /** the source item of recipient $i of a run queued(): the item the copy of the unsent goes to */
@@ -1874,7 +2017,7 @@ final class ActionsTest extends TestCase
     public static function everyAction(): array
     {
         // a literal list: a data provider runs before Gate can be loaded
-        $actions = ['save', 'clone', 'test', 'send', 'stop', 'abandon', 'resume', 'verify', 'fixbox'];
+        $actions = ['save', 'discard', 'clone', 'test', 'send', 'stop', 'abandon', 'resume', 'verify', 'fixbox'];
 
         return array_combine($actions, array_map(static fn(string $action): array => [$action], $actions));
     }
@@ -1891,7 +2034,7 @@ final class ActionsTest extends TestCase
 
         $this->actions()->run(self::page(Account::PRODUCTION), true);
 
-        // the core of save, test and send is not given: a failure, yet in the fake, past the fallback
+        // the core of save, discard, test and send is not given: a failure, yet in the fake, past the fallback
         foreach (FakeActions::$failures as [, $params]) {
             self::assertDoesNotMatchRegularExpression('~ LogicException \S*(?<!Fake)Actions\.php:\d+$~', $params);
         }

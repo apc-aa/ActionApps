@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
     Autosave, BUSY_AGAIN, LONGEST, QUIET, QUIET_SLOW, confirmed, filterUpdates, mergeHidden, pageUrl, payload,
-    payloadSize, reaction, retryDelay, saveDelay, sameOrigin,
+    payloadSize, reaction, retryDelay, saveDelay, sameOrigin, UNSAVED_OK,
 } from '../../javascript/aa-isds.js';
 
 /** time that moves only when told, with the timers due by then */
@@ -526,4 +526,11 @@ test('a page left with a form posted saves nothing more', async () => {
     draft.leaving = true;
     await clock.advance(LONGEST);
     assert.equal(server.jobs.length, 0);
+});
+
+test('only discard goes without saving the draft first: a save refused would keep it from going', () => {
+    assert.deepEqual(UNSAVED_OK, ['discard']);
+    for (const action of ['save', 'clone', 'test', 'send', 'stop', 'abandon', 'resume', 'verify', 'fixbox']) {
+        assert.equal(UNSAVED_OK.includes(action), false, action);
+    }
 });

@@ -40,6 +40,12 @@ export const FILTER = Object.freeze(['isds_membership', 'isds_types[]', 'isds_in
 /** the steps a page shows as an open card - Gate::PARAMS step */
 export const STEPS = Object.freeze(['test', 'send', 'search', 'files']);
 
+/**
+ * the forms that go without saving the draft first: a draft thrown away needs none of its changes, and a
+ * save refused would keep it from going
+ */
+export const UNSAVED_OK = Object.freeze(['discard']);
+
 /** ms: a pause in typing that saves, the longest typing that goes unsaved, slower when a save takes over 1 s */
 export const QUIET = 15_000;
 export const QUIET_SLOW = 30_000;
@@ -1124,7 +1130,7 @@ const setupForms = (root) => {
                 markCount();
                 return;
             }
-            if (draft && (step ? (draft.running || !stepOk()) : ((target !== form) && draft.dirty))) {
+            if (draft && (step ? (draft.running || !stepOk()) : ((target !== form) && draft.dirty && !UNSAVED_OK.includes(target.dataset.aaIsdsForm)))) {
                 e.preventDefault();
                 const sig   = signature(target);
                 const ready = step

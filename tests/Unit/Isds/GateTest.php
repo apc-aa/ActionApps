@@ -503,6 +503,101 @@ final class GateTest extends TestCase
         self::assertSame('', $progress, 'no question of progress');
     }
 
+    /**
+     * A run with $props, whose frozen recipients and queue are not here: its state alone decides
+     * @param array<string, string> $props
+     */
+    private static function quietRun(array $props): SendRun
+    {
+        return new class ($props) extends SendRun {
+            public function recipients(): array
+            {
+                return [];
+            }
+
+            public function verifiable(): bool
+            {
+                return false;
+            }
+        };
+    }
+
+    /**
+     * @return array<string, array{array{slice: string, active: bool, filter: string, state: string}, array<string, string>, bool}> what the gate
+     *         reads of ITEM, own properties of its run ([] = none), whether Discard is offered
+     */
+    public static function discardOffered(): array
+    {
+        $draft = ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => '', 'state' => 'draft'];
+        $run   = ['site' => self::SITE, 'camp_slice' => self::CAMPAIGN, 'msg_slice' => self::MESSAGE];
+
+        return [
+            'a draft'                        => [$draft, [], true],
+            'a draft in the trash'           => [['active' => false] + $draft, [], false],
+            'queued, its record deleted'     => [['state' => 'queued'] + $draft, [], false],
+            'a draft with a run given up'    => [$draft, $run + ['state' => 'stopped', 'stop_by' => self::READER], false],
+            'a draft with a run that ended'  => [$draft, $run + ['state' => 'done'], false],
+            'a draft run by another binding' => [$draft, ['msg_slice' => Sending::OTHER, 'state' => 'error'] + $run, false],
+        ];
+    }
+
+    // only a draft never queued may go to the trash: the template offers Discard only where the gate gives its form
+    /**
+     * @param array{slice: string, active: bool, filter: string, state: string} $campaign
+     * @param array<string, string>                                              $run
+     */
+    #[DataProvider('discardOffered')]
+    public function test_fields_discardOnlyOfADraftNeverQueued(array $campaign, array $run, bool $offered): void
+    {
+        session_id('gate-test-session');
+        $gate            = self::gate();
+        $gate->campaigns = [self::ITEM => $campaign];
+        $gate->runs      = ($run === []) ? [] : [self::ITEM => self::quietRun($run)];
+
+        $discard = self::inside($gate, static fn(): string => $gate->fields('discard', self::ITEM));
+
+        self::assertSame($offered, $discard !== '');
+        if ($offered) {
+            $inputs = self::inputs($discard);
+            self::assertSame(['discard', self::ITEM], [$inputs['isds_action'], $inputs['isds_campaign']]);
+            self::assertTrue(FormToken::check(Gate::purpose('discard', self::page(), self::ITEM), $inputs['isds_token']));
+            self::assertArrayNotHasKey('isds_nonce', $inputs);
+        }
+        self::assertSame('', self::inside($gate, static fn(): string => $gate->fields('discard')), 'no form of a new draft');
+    }
+
+    // one who may send but not move items to the trash gets no form of Discard - the rest of the page stays
+    public function test_fields_discardOnlyWithTheRightToTrash(): void
+    {
+        session_id('gate-test-session');
+        FakePerms::install([Sending::SET => [self::CAMPAIGN => PS_EDIT_ALL_ITEMS]], [self::READER => [Sending::READERS, Sending::SET]]);
+        $gate            = self::gate();
+        $gate->campaigns = [self::ITEM => ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => '', 'state' => 'draft']];
+
+        [$discard, $save] = self::inside($gate, static fn(): array => [$gate->fields('discard', self::ITEM), $gate->fields('save', self::ITEM)]);
+
+        self::assertSame('', $discard);
+        self::assertSame('save', self::inputs((string) $save)['isds_action']);
+    }
+
+    // the template asks twice - the right is read once a request
+    public function test_fields_discardRightReadOnce(): void
+    {
+        session_id('gate-test-session');
+        $perms           = FakePerms::install([Sending::SET => [self::CAMPAIGN => AA_Perm::ROLES['EDITOR']['id']]], [self::READER => [Sending::READERS, Sending::SET]]);
+        $gate            = self::gate();
+        $gate->campaigns = [self::ITEM => ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => '', 'state' => 'draft']];
+
+        $forms = self::inside($gate, static function () use ($gate, $perms): array {
+            $first = $gate->fields('discard', self::ITEM);
+            $perms->grants[Sending::SET][self::CAMPAIGN] = PS_EDIT_ALL_ITEMS;
+
+            return [$first, $gate->fields('discard', self::ITEM)];
+        });
+
+        self::assertSame(['discard', 'discard'], array_map(static fn(string $f): string => self::inputs($f)['isds_action'] ?? '', $forms));
+    }
+
     public function test_fields_newCampaignOnlyToSave(): void
     {
         session_id('gate-test-session');
@@ -1373,6 +1468,22 @@ final class GateTest extends TestCase
         self::assertMatchesRegularExpression('~^/cz/rozesilka\?tab=2&isds_campaign=' . self::ITEM . '&isds_r=[0-9a-f]{16}\z~', $this->redirectOf(self::actionGate()));
     }
 
+    // the draft in the trash is no campaign to show: the page goes on with none, and tells what became of it
+    public function test_redirect_noCampaignAfterDiscard(): void
+    {
+        FakeActions::$discard = static fn(): string => Actions::DISCARDED;
+        self::postResume(uri: '/cz/rozesilka?tab=2&isds_campaign=' . self::ITEM . '&isds_step=files');
+        $_POST = ['isds_action' => 'discard', 'isds_token' => FormToken::get(Gate::purpose('discard', self::page(), self::ITEM))] + $_POST;
+        $gate  = self::actionGate();
+
+        $url = $this->redirectOf($gate);
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?tab=2&isds_r=[0-9a-f]{16}\z~', $url);
+        self::getAfter($url);
+        self::assertSame([Actions::DISCARDED, ActionResult::DONE, 'discard'], array_slice(self::shown($gate), 1));
+        self::assertSame('', self::inside($gate, static fn(): string => $gate->campaign()));
+    }
+
     // the search field of the draft form is posted by every save: the source is searched only for Search
     public function test_redirect_queryOnlyForSearch(): void
     {
@@ -1971,7 +2082,13 @@ final class GateTest extends TestCase
         return [
             'a campaign of the page'   => [self::ITEM, self::ITEM],
             'in capitals'              => [strtoupper(self::ITEM), self::ITEM],
-            'in the trash'             => ['ca00000000000000000000000000000e', 'ca00000000000000000000000000000e'],
+            // a draft discarded: Back, another tab - its editor would save nothing
+            'a draft in the trash'     => ['ca00000000000000000000000000000e', ''],
+            // its sending must stay stoppable
+            'in the trash, sending'    => ['ca00000000000000000000000000000d', 'ca00000000000000000000000000000d'],
+            'in the trash, sent by another binding' => ['ca00000000000000000000000000000c', ''],
+            // holding bin, pending, expired: not in the trash, shown as before
+            'a draft not active, not in the trash' => ['ca00000000000000000000000000000b', 'ca00000000000000000000000000000b'],
             'an item of another slice' => [self::LETTER, ''],
             'no item'                  => ['ca00000000000000000000000000000f', ''],
             'not an id'                => [self::ITEM . '"><b>', ''],
@@ -1986,13 +2103,51 @@ final class GateTest extends TestCase
         $gate            = self::gate();
         $gate->campaigns = [
             self::ITEM                         => ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => '', 'state' => 'draft'],
-            'ca00000000000000000000000000000e' => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '', 'state' => 'draft'],
+            'ca00000000000000000000000000000e' => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '', 'state' => 'draft', 'trashed' => true],
+            'ca00000000000000000000000000000d' => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '', 'state' => 'sending', 'trashed' => true],
+            'ca00000000000000000000000000000c' => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '', 'state' => 'sending', 'trashed' => true],
+            'ca00000000000000000000000000000b' => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '', 'state' => 'draft', 'trashed' => false],
             self::LETTER                       => ['slice' => self::MESSAGE, 'active' => true, 'filter' => '', 'state' => ''],
+        ];
+        $run        = ['site' => self::SITE, 'camp_slice' => self::CAMPAIGN, 'msg_slice' => self::MESSAGE, 'state' => 'sending'];
+        $gate->runs = [
+            'ca00000000000000000000000000000d' => self::quietRun($run),
+            'ca00000000000000000000000000000c' => self::quietRun(['msg_slice' => Sending::OTHER] + $run),
         ];
         $_GET = is_null($campaign) ? [] : ['isds_campaign' => $campaign];
 
         self::assertSame($read, self::inside($gate, static fn(): string => $gate->campaign()));
         self::assertSame('', $gate->campaign(), 'outside the UI');
+    }
+
+    /** @return array<string, array{string, string}> isds_campaign of the URL, the code the page is told with no action */
+    public static function trashedNotices(): array
+    {
+        return [
+            'a draft in the trash'  => ['ca00000000000000000000000000000e', 'DISCARDED'],
+            'in the trash, sending' => ['ca00000000000000000000000000000d', ''],
+            'an active draft'       => [self::ITEM, ''],
+            'a draft in the holding bin' => ['ca00000000000000000000000000000b', ''],
+            'no item'               => ['ca00000000000000000000000000000f', ''],
+        ];
+    }
+
+    // the page opened on a draft in the trash says what became of it, as after Discard - not a new draft unexplained
+    #[DataProvider('trashedNotices')]
+    public function test_result_draftInTheTrashToldAsDiscarded(string $campaign, string $code): void
+    {
+        $gate            = self::gate();
+        $gate->campaigns = [
+            self::ITEM                         => ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => '', 'state' => 'draft'],
+            'ca00000000000000000000000000000e' => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '', 'state' => 'draft', 'trashed' => true],
+            'ca00000000000000000000000000000d' => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '', 'state' => 'sending', 'trashed' => true],
+            'ca00000000000000000000000000000b' => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '', 'state' => 'draft', 'trashed' => false],
+        ];
+        $gate->runs      = ['ca00000000000000000000000000000d' => self::quietRun(['site' => self::SITE, 'camp_slice' => self::CAMPAIGN, 'msg_slice' => self::MESSAGE, 'state' => 'sending'])];
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_GET                      = ['isds_campaign' => $campaign];
+
+        self::assertSame([$code, ($code === '') ? '' : ActionResult::DONE], array_slice(self::shown($gate), 1, 2));
     }
 
     public function test_testboxes_escapedDashSeparated(): void

@@ -10928,7 +10928,10 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        is saved if one is refused. They go into the upload directory of the slice, public to whoever knows
  *        the URL - say so on the page: they are not secret. PHP takes at most max_file_uploads files a
  *        request (20 by default) and drops more unseen. An autosave never posts isds_files[]: a form with
- *        files is acted on once - posted again, it only shows what the first post did), clone (a copy of the
+ *        files is acted on once - posted again, it only shows what the first post did), discard (move a
+ *        draft never queued to the trash - restorable in the Item Manager; its fields are '' for any other
+ *        campaign and for a user without the right to move items to the trash, and the page after it shows
+ *        none: {datovkabulk:campaign} is ''), clone (a copy of the
  *        campaign as a new draft, which the page gets in {datovkabulk:campaign} - the form adds isds_scope: all
  *        for its letter and recipients, of a campaign in any state, not in the trash; unsent for its letter to
  *        the recipients its sending left unsent, once nothing sends them any more (a stopped or ended sending,
@@ -10961,7 +10964,8 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        offers nothing that sure or the item has the box - put the form only on rows that get a value. The
  *        first one of a request reads the whole register (some 8 MB of boxes) and every item of the source slice
  *    {datovkabulk:campaign} - the campaign the page was loaded with after an action (isds_campaign of its URL), when
- *        it is an item of the campaign slice of the page - a draft saved new too; '' otherwise
+ *        it is an item of the campaign slice of the page - a draft saved new too; '' otherwise, and for an item in
+ *        the trash that never started a sending of the page (result then tells DISCARDED)
  *    {datovkabulk:result[:text|code|status|action|charge]} - what the posted action did: text to read (default),
  *        or for a condition its code (RESUMED, STOPPING, CONFIRM_ABANDON, QUEUED, TEST_SENT, CLONED, NONE_STOPPED,
  *        WRONG_STATE, BUSY, EXPIRED, ...),

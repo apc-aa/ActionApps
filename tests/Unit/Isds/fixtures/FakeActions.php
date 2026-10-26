@@ -13,7 +13,7 @@ use AA\Isds\TestResult;
 /**
  * Actions with the core, the logs and post_max_size given here: Continue says what $resume says, Stop
  * and Abandon what $stop says, Verify what $verify says, Send what $queue, Test what $test, Save what $save, Copy what $copy,
- * Fix box what $fixbox, each records who asked it; a log row
+ * Discard what $discard, Fix box what $fixbox, each records who asked it; a log row
  * is recorded, not written - or fails as $logFails says.
  */
 final class FakeActions extends Actions
@@ -53,6 +53,12 @@ final class FakeActions extends Actions
 
     /** @var list<array{string, array<array-key, mixed>, array<array-key, mixed>}> campaign, form and files of each Save asked of the core */
     public static array $saved = [];
+
+    /** @var ?\Closure(Setup, string): string what Discard of a campaign says; null = the test asks none */
+    public static ?\Closure $discard = null;
+
+    /** @var list<string> the campaign of each Discard asked of the core */
+    public static array $discarded = [];
 
     /** @var ?\Closure(Setup, string, string, array<array-key, mixed>, list<string>): array{code: string, campaign: string, made: bool} what Copy of a campaign in a scope says; null = the test asks none */
     public static ?\Closure $copy = null;
@@ -97,6 +103,8 @@ final class FakeActions extends Actions
         self::$saved       = [];
         self::$copy        = null;
         self::$copied      = [];
+        self::$discard     = null;
+        self::$discarded   = [];
         self::$fixbox      = null;
         self::$fixed       = [];
         self::$rules       = null;
@@ -159,6 +167,13 @@ final class FakeActions extends Actions
         self::$copied[] = [$source, $scope, $items];
 
         return (self::$copy ?? throw new \LogicException('This test copies nothing'))($setup, $source, $scope, $post, $items);
+    }
+
+    protected function trashDraft(Setup $setup, string $campaign): string
+    {
+        self::$discarded[] = $campaign;
+
+        return (self::$discard ?? throw new \LogicException('This test discards nothing'))($setup, $campaign);
     }
 
     protected function fixRecipientBox(Setup $setup, string $uid, string $item, string $box): array

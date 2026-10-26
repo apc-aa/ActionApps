@@ -113,6 +113,22 @@ final class AccessTest extends TestCase
         self::assertFalse($access->may(Sending::CAMPAIGN));
     }
 
+    // the right the Item Manager asks to move an item to the trash: an editor has it, sending alone gives none
+    public function test_mayTrash_editorOrTheLetterOnTheCampaignSlice(): void
+    {
+        FakePerms::install([
+            Sending::USER => [Sending::CAMPAIGN => PS_EDIT_ALL_ITEMS, Sending::MESSAGE => PS_ITEMS2TRASH],
+            'trasher'     => [Sending::CAMPAIGN => PS_EDIT_ALL_ITEMS . PS_ITEMS2TRASH],
+            Sending::SET  => [Sending::CAMPAIGN => self::role('EDITOR')],
+        ], self::readerInSet());
+
+        self::assertTrue(FakePerms::login(Sending::USER)->may(Sending::CAMPAIGN));
+        self::assertFalse(FakePerms::login(Sending::USER)->mayTrash(Sending::CAMPAIGN), 'the right is on another slice');
+        self::assertTrue(FakePerms::login('trasher')->mayTrash(Sending::CAMPAIGN));
+        self::assertTrue(FakePerms::login(Sending::READER)->mayTrash(Sending::CAMPAIGN), 'an editor through a set');
+        self::assertFalse(FakePerms::login('nobody')->mayTrash(Sending::CAMPAIGN));
+    }
+
     public function test_mayFix_whoMaySendOrEditTheCodeOfTheSite(): void
     {
         FakePerms::install([Sending::USER => [Sending::CAMPAIGN => self::role('EDITOR')], 'coder' => [Sending::SITE => PS_MODW_EDIT_CODE]]);

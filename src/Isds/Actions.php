@@ -43,7 +43,8 @@ class Actions
     /** Stop: the sending stands in an error a stop no longer ends - only Abandon would */
     public const CONFIRM_ABANDON = SendRun::CONFIRM_ABANDON;
     /** what the core refuses with: another request holds the campaign, the user may not control its run,
-     *  a step of it may still work, or the run does not wait for the action */
+     *  a step of it may still work, or the run does not wait for the action; FORBIDDEN also for Discard
+     *  without the right to move items of the campaign slice to the trash */
     public const BUSY        = SendRun::BUSY;
     public const FORBIDDEN   = BatchRun::FORBIDDEN;
     public const LEASE       = 'LEASE';
@@ -69,6 +70,10 @@ class Actions
     public const FILTER_CHANGED = Drafts::FILTER_CHANGED;
     /** Copy: the copy is a new draft; the campaign of the result is the copy */
     public const CLONED = Drafts::CLONED;
+    /** Discard: the draft is in the trash; the result names no campaign - the page has none to show */
+    public const DISCARDED = Drafts::DISCARDED;
+    /** Discard: the campaign started a sending - queued, sent, stopped or given up - so it stays */
+    public const NOT_DISCARDABLE = 'NOT_DISCARDABLE';
     /** Copy of the unsent: the sending left no recipient unsent */
     public const NONE_STOPPED = 'NONE_STOPPED';
     /** Copy to one recipient: its message went, may still go or may have gone, or was skipped */
@@ -183,18 +188,19 @@ class Actions
         // the id comes from the form: only an item of the campaign slice of the page, in any bin - a
         // sending of a campaign put in the trash still shows, so it must still be stopped
         $stored = ($campaign === '') ? null : ($this->campaignOfPage)($setup, $campaign);
-        // the page goes on with no campaign after a save it refused so: the core does alike
-        $unknown = self::refused($action, self::UNKNOWN, ($action === 'save') ? '' : $campaign);
+        // the page goes on with no campaign after a save or discard it refused so: the core does alike
+        $unknown = self::refused($action, self::UNKNOWN, in_array($action, Gate::NO_CAMPAIGN_AFTER, true) ? '' : $campaign);
         if (($campaign !== '') && is_null($stored)) {
             return $unknown;
         }
         // a draft in the trash is no campaign of the page to change or send; the core asks again under its lock
-        if (in_array($action, ['save', 'test', 'send'], true) && !is_null($stored) && !$stored['active']) {
+        if (in_array($action, Gate::ACTIVE_ONLY, true) && !is_null($stored) && !$stored['active']) {
             return $unknown;
         }
 
         return match ($action) {
             'save'                      => $this->save($setup, $campaign),
+            'discard'                   => $this->discard($setup, $campaign),
             'clone'                     => $this->copy($setup, $campaign, $stored['active'] ?? false),
             'resume', 'stop', 'abandon' => $this->onRun($setup, $action, $campaign),
             'verify'                    => $this->verify($setup, $campaign),
@@ -219,6 +225,28 @@ class Actions
             self::INPUT => self::refused('save', self::INPUT, $id, params: array_values(array_filter([$field, $file], static fn(string $p): bool => $p !== ''))),
             default     => self::refused('save', $code, $id),
         };
+    }
+
+    /**
+     * Discard: a draft never queued goes to the trash (Drafts::trash()); logged only when it went now -
+     * the same form again finds it there and moves nothing
+     */
+    private function discard(Setup $setup, string $campaign): ActionResult
+    {
+        // sending lets a user change drafts, not put items in the trash
+        if (!$this->access->mayTrash($setup->campaignSlice)) {
+            return self::refused('discard', self::FORBIDDEN, $campaign);
+        }
+        $code = $this->trashDraft($setup, $campaign);
+        if ($code !== self::DISCARDED) {
+            // not the text of a save refused so: there is no copy to make, the campaign simply stays
+            $code = in_array($code, [SendStart::NOT_DRAFT, SendStart::ALREADY], true) ? self::NOT_DISCARDABLE : $code;
+
+            return self::refused('discard', $code, ($code === self::UNKNOWN) ? '' : $campaign);
+        }
+        $this->done = [SendQueue::LOG_EVENT, "discard:$campaign", [$this->access->uid()]];
+
+        return new ActionResult('discard', ActionResult::DONE, self::DISCARDED);
     }
 
     /**
@@ -531,6 +559,12 @@ class Actions
     protected function copyDraft(Setup $setup, string $source, string $scope, array $post, array $items): array
     {
         return (new Drafts($this->resolver))->copy($setup, $source, $scope, $post, $items);
+    }
+
+    /** @return string what Drafts::trash() says */
+    protected function trashDraft(Setup $setup, string $campaign): string
+    {
+        return (new Drafts($this->resolver))->trash($setup, $campaign);
     }
 
     /**

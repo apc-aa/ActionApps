@@ -1523,4 +1523,87 @@ final class DraftsTest extends TestCase
         self::assertSame(['code' => SendStart::BUSY, 'campaign' => self::copyId(), 'made' => false], $this->copy());
         self::assertSame([], $this->drafts->writes);
     }
+
+    // ------------------------------------------------------------ to the trash
+
+    // only the bin changes - restored in the Item Manager it is the draft it was; under the lock, the slice open
+    public function test_trash_draftMovedToTheTrash(): void
+    {
+        $this->drafts->draft(self::ITEM);
+        $this->save(['isds_subject' => 'Výzva'], self::ITEM);
+        $this->drafts->writes  = [];
+        $this->drafts->lockLog = [];
+
+        self::assertSame(Drafts::DISCARDED, $this->drafts->trash(Sending::page(), self::ITEM));
+        self::assertSame(['3', 'Výzva', Schema::CAMPAIGN_STATE_DRAFT], [$this->drafts->field(self::ITEM, 'status_code.....'), $this->drafts->field(self::ITEM, Schema::CAMPAIGN_SUBJECT), $this->drafts->field(self::ITEM, Schema::CAMPAIGN_STATE)]);
+        self::assertSame([['move', self::ITEM, Sending::CAMPAIGN, true]], array_map(static fn(array $w): array => [$w['mode'], $w['id'], $w['slice'], $w['open']], $this->drafts->writes), 'the move of the Item Manager, the slice open');
+        self::assertSame(['lock ' . SendRun::lockName(self::ITEM), 'unlock ' . SendRun::lockName(self::ITEM)], $this->drafts->lockLog);
+        self::assertSame([], $this->drafts->readUnlocked, 'read under the lock');
+    }
+
+    /** @return array<string, array{\Closure(MemoryDrafts): void, string}> a campaign that is no draft to discard, and what trash() says */
+    public static function notDiscardable(): array
+    {
+        return [
+            'queued'              => [static fn(MemoryDrafts $d) => $d->draft(self::ITEM, state: Schema::CAMPAIGN_STATE_QUEUED), SendStart::NOT_DRAFT],
+            'sent'                => [static fn(MemoryDrafts $d) => $d->draft(self::ITEM, state: Schema::CAMPAIGN_STATE_DONE), SendStart::NOT_DRAFT],
+            // edited back to draft: its sending is a record still, which a stopped or abandoned one is too
+            'a draft with a run'  => [static function (MemoryDrafts $d): void {
+                $d->draft(self::ITEM);
+                $d->runs = [self::ITEM];
+            }, SendStart::ALREADY],
+            'in the trash'        => [static fn(MemoryDrafts $d) => $d->draft(self::ITEM, status: 3), SendStart::UNKNOWN],
+            'in the holding bin'  => [static fn(MemoryDrafts $d) => $d->draft(self::ITEM, status: 2), SendStart::UNKNOWN],
+            'of another slice'    => [static fn(MemoryDrafts $d) => $d->draft(self::ITEM, Sending::OTHER), SendStart::UNKNOWN],
+            'none'                => [static fn(MemoryDrafts $d) => null, SendStart::UNKNOWN],
+        ];
+    }
+
+    #[DataProvider('notDiscardable')]
+    public function test_trash_onlyADraftOfThePage(\Closure $item, string $code): void
+    {
+        $item($this->drafts);
+        $before = $this->drafts->items;
+
+        self::assertSame($code, $this->drafts->trash(Sending::page(), self::ITEM));
+        self::assertSame([[], $before], [$this->drafts->writes, $this->drafts->items]);
+    }
+
+    // queueing holds the lock while it freezes the letter: the draft is not moved under it
+    public function test_trash_busyWhileQueued(): void
+    {
+        $this->drafts->draft(self::ITEM);
+        $this->drafts->lockedByOther = true;
+
+        self::assertSame(SendStart::BUSY, $this->drafts->trash(Sending::page(), self::ITEM));
+        self::assertSame([[], []], [$this->drafts->writes, $this->drafts->readUnlocked], 'nothing read, nothing written');
+        self::assertSame('1', $this->drafts->field(self::ITEM, 'status_code.....'));
+    }
+
+    // one way between bins: the draft goes as the Item Manager moves items, with its feeding, events and invalidation
+    public function test_trash_throughTheMoveOfTheItemManager(): void
+    {
+        $body = static function (string $class, string $method): string {
+            $m = new \ReflectionMethod($class, $method);
+
+            return implode('', array_slice(file((string) $m->getFileName()) ?: [], $m->getStartLine() - 1, $m->getEndLine() - $m->getStartLine() + 1));
+        };
+
+        self::assertStringContainsString('Item_MoveItem::move(', $body(Drafts::class, 'moveToTrash'));
+        self::assertStringContainsString('self::move(', $body(\AA\Manageraction\Item_MoveItem::class, 'perform'), 'the Item Manager moves the same way');
+    }
+
+    public function test_trash_notStoredThrows(): void
+    {
+        $this->drafts->draft(self::ITEM);
+        $this->drafts->storeFails = true;
+        \ItemContent::lastErr(7, 'of an earlier call');
+
+        $this->expectExceptionObject(new \RuntimeException('Draft ' . self::ITEM . ' not moved to the trash, error 1'));
+        try {
+            $this->drafts->trash(Sending::page(), self::ITEM);
+        } finally {
+            self::assertSame(['lock ' . SendRun::lockName(self::ITEM), 'unlock ' . SendRun::lockName(self::ITEM)], $this->drafts->lockLog, 'the lock let go');
+        }
+    }
 }
