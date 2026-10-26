@@ -88,7 +88,8 @@ namespace Tests\Unit\Legacy {
             if (preg_match('/FROM `slice` WHERE id = 0x([0-9a-f]{32})/', $sql, $m)) {
                 return [array_merge(array_fill_keys(AA::Metabase()->getColumnNames('slice'), ''), ['id' => pack_id($m[1]), 'type' => 'ReaderManagement', 'name' => 'Readers'])];
             }
-            if (preg_match('/FROM `field` WHERE slice_id = 0x([0-9a-f]{32})/', $sql, $m)) {
+            // one field, or all of them - QueryZids() asks whether a field of a listed slice is a password copy
+            if (preg_match('/FROM `field` WHERE `?slice_id`? = 0x([0-9a-f]{32})/', $sql, $m)) {
                 return [array_merge(array_fill_keys(AA::Metabase()->getColumnNames('field'), ''), ['id' => FIELDID_USERNAME, 'slice_id' => pack_id($m[1]), 'text_stored' => '1'])];
             }
             if (str_contains($sql, 'as itemid')) {

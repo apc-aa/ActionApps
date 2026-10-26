@@ -89,6 +89,26 @@ final class CheckViewSliceRefusalsTest extends TestCase
         $this->assertArrayNotHasKey(_m('Listed by'), $finding->evidence[0]);
     }
 
+    /** a protected field names the field and advises the presence test, not a password */
+    public function test_findingsFor_refusedProtectedField_namesTheFieldAndSlice(): void
+    {
+        $row = ['selector' => ParamImplode([ViewSlices::PROTECTED_FIELD, self::SLICE, 'password........']), 'days' => '3', 'first' => '1790000000', 'last' => '1790172800', 'params' => 'example.org/readers'];
+
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Readers'], [], []);
+
+        $this->assertSame(Finding::WARNING, $finding->severity);
+        $this->assertSame('A condition or sort on field password........ of slice Readers was left out: AA never shows its values', $finding->title);
+        $this->assertSame(3, $finding->count);
+        $this->assertSame($row['selector'], $finding->key);
+        $this->assertSame('password........', $finding->evidence[0][_m('Field')]);
+        $this->assertSame('Readers', $finding->evidence[0][_m('Slice')]);
+        $this->assertSame('example.org/readers', $finding->evidence[0][_m('Page asked for')]);
+        $this->assertStringContainsString('(ISNULL, NOTNULL)', $finding->advice);
+        $this->assertStringNotContainsString('{credentials', $finding->advice);
+        $this->assertSame('Protected field refused', $finding->kind);
+        $this->assertArrayNotHasKey(_m('Listed by'), $finding->evidence[0]);
+    }
+
     public function test_findingsFor_unknownSlice_isNamedByItsId(): void
     {
         $row = ['selector' => ParamImplode(['42', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];

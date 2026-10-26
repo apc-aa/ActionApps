@@ -6,7 +6,8 @@ declare(strict_types=1);
  * QueryZids() conditions and sorting on protected fields (AA_Field::isProtected()): a password, its
  * copy, a 2FA secret, a field with the pwd or 2fa insert function - values GetItemContent() never gives.
  *
- * Pins today's SQL: each such condition and sort compares the stored value.
+ * Pins: a condition comparing such a value matches nothing, a sort by it is dropped, both logged for State
+ * Check (VIEW_DENY); all_fields leaves the fields out; whether the field is filled may still be asked.
  */
 
 namespace {
@@ -29,6 +30,7 @@ namespace {
 
 namespace Tests\Unit\Legacy {
 
+    use AA\Security\ViewSlices;
     use AA\Util\LogOnce;
     use AA_Field;
     use AA_Module;
@@ -49,6 +51,8 @@ namespace Tests\Unit\Legacy {
 
         /** the listing part of the SQL: the own slice in the active bin */
         private const WHERE = ' WHERE item.slice_id = 0x' . self::OWN . " AND item.status_code=1 AND item.publish_date <= '%NOW%' AND item.expiry_date > '%NOW%'";
+        /** the condition alone, no join - an item of the listing never matches */
+        private const NOTHING = 'SELECT DISTINCT item.id as itemid FROM item' . self::WHERE . ' AND (1=0) ORDER BY item.publish_date DESC';
 
         /** @var array<string, FakeSlice> */
         private array $modules = [];
@@ -111,10 +115,10 @@ namespace Tests\Unit\Legacy {
         }
 
         /** the SQL QueryZids() sends, without the debug comment and quoted as by MySQL (the test db is SQLite) */
-        private static function sql(array $conds, array $sort = [], array $slices = [self::OWN]): string
+        private static function sql(array $conds, array $sort = [], array|false $slices = [self::OWN], ?\zids $restrict = null): string
         {
             RecordingDb::$log = [];
-            QueryZids($slices, $conds, $sort, 'ACTIVE');
+            QueryZids($slices, $conds, $sort, 'ACTIVE', 0, $restrict);
             $selects = array_values(array_filter(RecordingDb::$log, static fn($s) => str_contains($s, 'as itemid')));
             self::assertCount(1, $selects);
 
@@ -128,62 +132,48 @@ namespace Tests\Unit\Legacy {
             return [$field => 1, 'operator' => $operator, 'value' => $value];
         }
 
-        /** the join of one own content field, as an INNER JOIN for a condition its rows must match */
-        private static function join(string $field): string
+        /** the log rows written, as SQL */
+        private static function logInserts(): array
         {
-            return "SELECT DISTINCT item.id as itemid FROM item INNER JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='$field' ))";
+            return array_values(array_filter(RecordingDb::$log, static fn($s) => str_starts_with(ltrim($s), 'INSERT INTO `log`')));
         }
 
-        public function test_ownField_password(): void
+        public function test_ownField_password_matchesNothing(): void
+        {
+            self::assertSame(self::NOTHING, self::sql([self::cond('password........')]));
+        }
+
+        public function test_ownField_secret_matchesNothing(): void
+        {
+            self::assertSame(self::NOTHING, self::sql([self::cond('secret..........', 'LIKE', 'A*')]));
+            self::assertSame(self::NOTHING, self::sql([self::cond('secret..........', '==', 'JBSWY3DPEHPK3PXP')]));
+        }
+
+        /** a password under another id, and the copy of a password, are protected as well */
+        public function test_ownField_pwdInsertAndPasswordCopy_matchNothing(): void
+        {
+            self::assertSame(self::NOTHING, self::sql([self::cond('text...........1')]));
+            self::assertSame(self::NOTHING, self::sql([self::cond('text...........2')]));
+        }
+
+        /** with another field the condition would still tell about the protected one - it matches nothing as a whole */
+        public function test_ownField_withAnotherField_matchesNothing(): void
+        {
+            self::assertSame(self::NOTHING, self::sql([['headline........' => 1, 'password........' => 1, 'operator' => 'BEGIN', 'value' => 'x']]));
+        }
+
+        /** the first listed slice describes the fields, but the values come from all of them */
+        public function test_ownField_protectedInAnotherListedSlice_matchesNothing(): void
+        {
+            self::assertStringEndsWith(' AND (1=0) ORDER BY item.publish_date DESC', self::sql([self::cond('text...........1')], [], [self::SOURCE, self::OWN]));
+        }
+
+        /** whether a password is set may be asked - the reader slices of NSZM list who may log in so */
+        public function test_ownField_presence_kept(): void
         {
             self::assertSame(
-                self::join('password........') . self::WHERE . " AND ((`c0`.`text` LIKE '\$2y\$10\$a%')) ORDER BY item.publish_date DESC",
-                self::sql([self::cond('password........')]),
-            );
-        }
-
-        public function test_ownField_secret(): void
-        {
-            self::assertSame(
-                self::join('secret..........') . self::WHERE . " AND ((`c0`.`text`LIKE '%A%%')) ORDER BY item.publish_date DESC",
-                self::sql([self::cond('secret..........', 'LIKE', 'A*')]),
-            );
-        }
-
-        /** a password under another id, and the copy of a password, are compared as any field */
-        public function test_ownField_pwdInsertAndPasswordCopy(): void
-        {
-            foreach (['text...........1', 'text...........2'] as $field) {
-                self::assertSame(
-                    self::join($field) . self::WHERE . " AND ((`c0`.`text` LIKE '\$2y\$10\$a%')) ORDER BY item.publish_date DESC",
-                    self::sql([self::cond($field)]),
-                );
-            }
-        }
-
-        public function test_ownField_withAnotherField(): void
-        {
-            self::assertSame(
-                "SELECT DISTINCT item.id as itemid FROM item INNER JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id IN ('headline........','password........') ))"
-                . self::WHERE . " AND ((`c0`.`text` LIKE 'x%')) ORDER BY item.publish_date DESC",
-                self::sql([['headline........' => 1, 'password........' => 1, 'operator' => 'BEGIN', 'value' => 'x']]),
-            );
-        }
-
-        /** the first listed slice describes the fields - a plain field there, the password of another slice */
-        public function test_ownField_protectedInAnotherListedSlice(): void
-        {
-            self::assertStringContainsString(
-                "INNER JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='text...........1' ))",
-                self::sql([self::cond('text...........1')], [], [self::SOURCE, self::OWN]),
-            );
-        }
-
-        /** whether a password is set - the reader slices of NSZM list who may log in so */
-        public function test_ownField_presence(): void
-        {
-            self::assertSame(
-                self::join('password........') . self::WHERE . " AND (((`c0`.`text` IS NOT NULL) AND (`c0`.`text`<>''))) ORDER BY item.publish_date DESC",
+                "SELECT DISTINCT item.id as itemid FROM item INNER JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='password........' ))"
+                . self::WHERE . " AND (((`c0`.`text` IS NOT NULL) AND (`c0`.`text`<>''))) ORDER BY item.publish_date DESC",
                 self::sql([self::cond('password........', 'NOTNULL', '1')]),
             );
             self::assertSame(
@@ -191,65 +181,96 @@ namespace Tests\Unit\Legacy {
                 . self::WHERE . " AND (((`c0`.`text` IS NULL) OR (`c0`.`text`=''))) ORDER BY item.publish_date DESC",
                 self::sql([self::cond('password........', 'ISNULL', '1')]),
             );
+            self::assertSame([], self::logInserts());
         }
 
-        public function test_sort(): void
+        /** the order would tell the values - the sort is dropped, the others stay */
+        public function test_sort_protectedFieldDropped(): void
         {
+            self::assertSame('SELECT DISTINCT item.id as itemid FROM item' . self::WHERE . ' ', self::sql([], [['password........' => 'a', 'limit' => 0]]));
             self::assertSame(
-                "SELECT DISTINCT item.id as itemid FROM item LEFT JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='password........' OR c0.field_id is NULL))"
+                "SELECT DISTINCT item.id as itemid FROM item LEFT JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='headline........' OR c0.field_id is NULL))"
                 . self::WHERE . ' ORDER BY c0.text',
-                self::sql([], [['password........' => 'a', 'limit' => 0]]),
-            );
-            self::assertSame(
-                "SELECT DISTINCT item.id as itemid FROM item LEFT JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='headline........' OR c0.field_id is NULL)) LEFT JOIN content as c1 ON (c1.item_id=item.id AND (c1.field_id='secret..........' OR c1.field_id is NULL))"
-                . self::WHERE . ' ORDER BY c0.text,c1.text DESC',
                 self::sql([], [['headline........' => 'a', 'limit' => 0], ['secret..........' => 'd', 'limit' => 0]]),
             );
         }
 
-        public function test_allFields(): void
+        /** all_fields leaves out the protected fields of the slice and any field of a protected type */
+        public function test_allFields_leavesProtectedFieldsOut(): void
         {
             self::assertSame(
-                'SELECT DISTINCT item.id as itemid FROM item INNER JOIN content as c0 ON (c0.item_id=item.id )'
+                "SELECT DISTINCT item.id as itemid FROM item INNER JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id NOT LIKE 'password%' AND c0.field_id NOT LIKE 'secret%') AND c0.field_id NOT IN ('text...........1','text...........2') )"
                 . self::WHERE . " AND ((`c0`.`text`LIKE '%A%%')) ORDER BY item.publish_date DESC",
                 self::sql([self::cond('all_fields', 'LIKE', 'A*')]),
             );
+            self::assertSame([], self::logInserts());
         }
 
-        public function test_relationForm(): void
+        public function test_relationForm_protectedField_matchesNothing(): void
         {
-            foreach (['password........', 'text...........1'] as $field) {
-                self::assertSame(
-                    "SELECT DISTINCT item.id as itemid FROM item LEFT JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='relation.......1' OR c0.field_id is NULL)) LEFT JOIN content as c1 ON (c1.item_id=UNHEX(c0.text) AND (c1.field_id='$field' OR c1.field_id is NULL) AND EXISTS (SELECT 1 FROM item AS r1 WHERE r1.id=c1.item_id AND r1.slice_id=0x" . self::TARGET . '))'
-                    . self::WHERE . " AND ((`c1`.`text` LIKE '\$2y\$10\$a%')) ORDER BY item.publish_date DESC",
-                    self::sql([self::cond("$field@relation.......1")]),
-                );
-            }
+            self::assertSame(self::NOTHING, self::sql([self::cond('password........@relation.......1')]));
+            self::assertSame(self::NOTHING, self::sql([self::cond('text...........1@relation.......1')]));   // 2fa insert function
         }
 
-        public function test_relationForm_allFields(): void
+        public function test_relationForm_presence_kept(): void
+        {
+            self::assertStringContainsString("(c1.field_id='password........' OR c1.field_id is NULL)", self::sql([self::cond('password........@relation.......1', 'NOTNULL', '1')]));
+        }
+
+        public function test_relationForm_allFields_leavesProtectedFieldsOut(): void
         {
             self::assertSame(
-                "SELECT DISTINCT item.id as itemid FROM item LEFT JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='relation.......1' OR c0.field_id is NULL)) LEFT JOIN content as c1 ON (c1.item_id=UNHEX(c0.text) AND EXISTS (SELECT 1 FROM item AS r1 WHERE r1.id=c1.item_id AND r1.slice_id=0x" . self::TARGET . '))'
+                "SELECT DISTINCT item.id as itemid FROM item LEFT JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='relation.......1' OR c0.field_id is NULL)) LEFT JOIN content as c1 ON (c1.item_id=UNHEX(c0.text) AND (c1.field_id NOT LIKE 'password%' AND c1.field_id NOT LIKE 'secret%') AND c1.field_id <> 'text...........1' AND EXISTS (SELECT 1 FROM item AS r1 WHERE r1.id=c1.item_id AND r1.slice_id=0x" . self::TARGET . '))'
                 . self::WHERE . " AND ((`c1`.`text`LIKE '%A%%')) ORDER BY item.publish_date DESC",
                 self::sql([self::cond('all_fields@relation.......1', 'LIKE', 'A*')]),
             );
         }
 
-        public function test_sliceForm(): void
+        /** the protected field compared, or the relation field compared with the listed item's id */
+        public function test_sliceForm_protectedField_matchesNothing(): void
         {
-            $source_row = static fn(string $rel): string => "LEFT JOIN content as c0 ON (c0.field_id='$rel' AND HEX(item.id)=c0.text AND EXISTS (SELECT 1 FROM item AS r1 WHERE r1.id=c0.item_id AND r1.slice_id=0x" . self::SOURCE . " AND r1.status_code=1 AND r1.publish_date <= '%NOW%' AND r1.expiry_date > '%NOW%' ))";
-            self::assertSame(
-                'SELECT DISTINCT item.id as itemid FROM item ' . $source_row('relation.......2') . " LEFT JOIN content as c1 ON (c1.item_id=c0.item_id AND (c1.field_id='secret..........' OR c1.field_id is NULL))"
-                . self::WHERE . " AND ((`c1`.`text` LIKE '\$2y\$10\$a%')) ORDER BY item.publish_date DESC",
-                self::sql([self::cond('secret..........@' . self::SOURCE . '/relation.......2')]),
-            );
-            // the secret as the relation field
-            self::assertSame(
-                'SELECT DISTINCT item.id as itemid FROM item ' . $source_row('secret..........') . " LEFT JOIN content as c1 ON (c1.item_id=c0.item_id AND (c1.field_id='headline........' OR c1.field_id is NULL))"
-                . self::WHERE . " AND ((`c1`.`text` LIKE '\$2y\$10\$a%')) ORDER BY item.publish_date DESC",
-                self::sql([self::cond('headline........@' . self::SOURCE . '/secret..........')]),
-            );
+            self::assertSame(self::NOTHING, self::sql([self::cond('secret..........@' . self::SOURCE . '/relation.......2')]));
+            self::assertSame(self::NOTHING, self::sql([self::cond('headline........@' . self::SOURCE . '/secret..........')]));
+            self::assertSame(self::NOTHING, self::sql([self::cond('headline........@' . self::SOURCE . '/secret..........', 'NOTNULL', '1')]));
+        }
+
+        /** a listing by item ids (cmd[]=x-...) lists only the slice of the first item, so a field of the
+         *  others is never compared - an item of the reader slice cannot match by its password copy */
+        public function test_listingByIds_onlyTheFirstItemsSlice(): void
+        {
+            $first = '1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c';   // in SOURCE, where text...........1 is plain
+            $other = '1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a';   // in OWN, where it holds a password
+            RecordingDb::$answer = static fn(string $q): array => str_starts_with($q, 'SELECT slice_id FROM item') ? [['slice_id' => pack_id(self::SOURCE)]] : [];
+
+            $sql = self::sql([self::cond('text...........1')], [], false, new \zids([$first, $other], 'l'));
+
+            self::assertStringContainsString(' WHERE item.slice_id = 0x' . self::SOURCE . ' AND item.id IN (0x' . $first . ',0x' . $other . ')', $sql);
+            self::assertStringContainsString("c0.field_id='text...........1'", $sql);
+        }
+
+        public function test_refusal_loggedOncePerSliceAndFieldForStateCheck(): void
+        {
+            $_SERVER['HTTP_HOST'] = 'example.org';
+            $_SERVER['REQUEST_URI'] = '/ctenari?cmd[1]=d-password........-BEGIN-x';
+
+            self::sql([self::cond('password........'), self::cond('password........', 'LIKE', 'y')], [['password........' => 'a', 'limit' => 0]]);
+            $inserts = self::logInserts();
+            self::sql([self::cond('secret..........@' . self::SOURCE . '/relation.......2')]);
+            $inserts = [...$inserts, ...self::logInserts()];
+
+            self::assertCount(2, $inserts);
+            self::assertStringContainsString("'" . ViewSlices::EVENT . "'", $inserts[0]);
+            self::assertStringContainsString("'" . ParamImplode([ViewSlices::PROTECTED_FIELD, self::OWN, 'password........']) . "'", $inserts[0]);
+            self::assertStringContainsString("'example.org/ctenari'", $inserts[0]);
+            self::assertStringContainsString("'" . ParamImplode([ViewSlices::PROTECTED_FIELD, self::SOURCE, 'secret..........']) . "'", $inserts[1]);
+        }
+
+        /** the row names the slice in which the field is protected, not the one describing the fields */
+        public function test_refusal_namesTheSliceProtectingTheField(): void
+        {
+            self::sql([self::cond('text...........1')], [], [self::SOURCE, self::OWN]);
+
+            self::assertStringContainsString("'" . ParamImplode([ViewSlices::PROTECTED_FIELD, self::OWN, 'text...........1']) . "'", self::logInserts()[0]);
         }
     }
 }

@@ -30,7 +30,9 @@ use zids;
  *
  * A condition on a field of a related item (d-<field>@<relation>, d-<field>@<slice>/<relation>) reads only
  * the declared or named slice, and only when the request knows its password (conditionMayRead()); sorting
- * by its field orders by the relation row, of the listed item or of the named slice.
+ * by its field orders by the relation row, of the listed item or of the named slice. A condition never
+ * compares, and a sort never orders by, a field AA never shows (protectedFieldRefused()) - whether it is
+ * filled may be asked (ISNULL, NOTNULL).
  *
  * What stays open: the main slice of slice.php, which the request chooses; the single items of
  * slice.php (x=, o=, sh_itm=, items[]); discussions (discus views);
@@ -48,6 +50,9 @@ final class ViewSlices
 
     /** the lister of a log row for a condition on a field of a related item (conditionMayRead()) */
     public const CONDITION = 'conds';
+
+    /** the lister of a log row for a condition or sort on a protected field (protectedFieldRefused()) */
+    public const PROTECTED_FIELD = 'field';
 
     /** the view types that list items - the only ones narrowed */
     public const LISTINGS = ['full', 'seetoo', 'calendar', 'digest', 'list', 'rss', 'urls', 'script'];
@@ -223,6 +228,16 @@ final class ViewSlices
         }
         LogOnce::daily(self::EVENT, ParamImplode([self::CONDITION, strtolower($slice_id)]), ProtectionLog::requested());
         return false;
+    }
+
+    /**
+     * Logs a condition (matched nothing) or a sort (dropped) on a field AA never shows (AA_Field::isProtected())
+     * in QueryZids(), once a day per slice and field. Only fields the slice defines come here, so the rows
+     * stay as few as such fields.
+     */
+    public static function protectedFieldRefused(string $slice_id, string $field_id): void
+    {
+        LogOnce::daily(self::EVENT, ParamImplode([self::PROTECTED_FIELD, strtolower($slice_id), $field_id]), ProtectionLog::requested());
     }
 
     /** AA_Slice keeps the reading password hashed, as AA_Credentials compares it - never read the column itself */

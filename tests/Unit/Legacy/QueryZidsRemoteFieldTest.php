@@ -180,7 +180,7 @@ namespace Tests\Unit\Legacy {
         public function test_relationForm_allFields(): void
         {
             self::assertSame(
-                "SELECT DISTINCT item.id as itemid FROM item LEFT JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='relation.......1' OR c0.field_id is NULL)) LEFT JOIN content as c1 ON (c1.item_id=UNHEX(c0.text) AND EXISTS (SELECT 1 FROM item AS r1 WHERE r1.id=c1.item_id AND r1.slice_id=0x" . self::TARGET . "))"
+                "SELECT DISTINCT item.id as itemid FROM item LEFT JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='relation.......1' OR c0.field_id is NULL)) LEFT JOIN content as c1 ON (c1.item_id=UNHEX(c0.text) AND (c1.field_id NOT LIKE 'password%' AND c1.field_id NOT LIKE 'secret%') AND EXISTS (SELECT 1 FROM item AS r1 WHERE r1.id=c1.item_id AND r1.slice_id=0x" . self::TARGET . "))"
                 . self::WHERE . " AND ((`c1`.`text` = 'x')) ORDER BY item.publish_date DESC",
                 self::sql([self::cond('all_fields@relation.......1')]),
             );

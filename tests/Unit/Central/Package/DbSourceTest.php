@@ -70,12 +70,12 @@ namespace Tests\Unit\Central\Package {
         private static function filteredSlice(): void
         {
             require_once __DIR__ . '/../../fixtures/util_shims.php';
-            $field = static fn(string $id, array $data = []): AA_Field => new AA_Field($data + ['id' => $id, 'text_stored' => 1, 'in_item_tbl' => '', 'input_show_func' => 'fld', 'multiple' => 0]);
+            $field = static fn(string $id, array $data = [], string $slice = self::FILTERED): AA_Field => new AA_Field($data + ['id' => $id, 'slice_id' => pack_id($slice), 'text_stored' => 1, 'in_item_tbl' => '', 'input_show_func' => 'fld', 'multiple' => 0] + array_fill_keys(AA_Field::USED_FIELDS, ''));
             (new FakeSlice(self::FILTERED))->setFields(new FakeFields(self::FILTERED, [
                 $field('headline........'), $field('status_code.....', ['in_item_tbl' => 'status_code']), $field('publish_date....', ['in_item_tbl' => 'publish_date']),
                 $field('relation.......1', ['input_show_func' => 'mse:#sLiCe-' . self::RELATED . ':']),
             ]));
-            (new FakeSlice(self::RELATED))->setFields(new FakeFields(self::RELATED, [$field('headline........')]));
+            (new FakeSlice(self::RELATED))->setFields(new FakeFields(self::RELATED, [$field('headline........', [], self::RELATED)]));
             foreach (['slice_info', 'vid', 'view_info'] as $global) {         // the comment QueryZids() adds to its SQL
                 $GLOBALS[$global] ??= null;
             }

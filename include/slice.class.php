@@ -568,6 +568,9 @@ class AA_Slice extends AA_Module
     // computed values form slice fields
     public $show_func_used; // used show functions in the input form
 
+    /** @var ?array<string, true> see protectedFieldIds() */
+    private ?array $protected_field_ids = null;
+
     /**
      * @param  string  $module_id
      */
@@ -812,6 +815,12 @@ class AA_Slice extends AA_Module
     public function getField($field_id): ?AA_Field
     {
         return $this->fields->getField($field_id);
+    }
+
+    /** @return array<string, true> ids of the fields whose values AA never shows (AA_Field::isProtected()) as keys */
+    public function protectedFieldIds(): array
+    {
+        return $this->protected_field_ids ??= AA_Field::protectedIds($this->getFields());
     }
 
     /**

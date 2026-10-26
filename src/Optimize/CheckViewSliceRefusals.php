@@ -14,7 +14,8 @@ use AA_Views;
 /** Slices that views and slice.php left out in the last 30 days, as the page did not know their reading
  *  password: a view called from the URL over such a slice, or parameters that named such a slice, or items
  *  of it, or a condition on a field of related items in it (AA\Security\ViewSlices) - logged once a day
- *  per view (or condition) and slice. And the charsets a request named
+ *  per view (or condition) and slice; also conditions and sorts on fields AA never shows, once a day per
+ *  slice and field. And the charsets a request named
  *  for converting a view, discussion, poll or form that were ignored (AA\Security\RequestCharset) - logged
  *  once a day per script and parameter. Index-only.
  */
@@ -38,6 +39,7 @@ class CheckViewSliceRefusals extends AbstractOptimize
     {
         return _m('Lists the views that left out a slice in the last 30 days because the page did not know the slice\'s reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it.')
             . ' ' . _m('And the conditions on fields of related items in such a slice, which matched nothing.')
+            . ' ' . _m('And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out.')
             . ' ' . _m('Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored.');
     }
 
@@ -124,7 +126,7 @@ class CheckViewSliceRefusals extends AbstractOptimize
         $findings = [];
         foreach ($rows as $row) {
             $selector = (string) $row['selector'];
-            [$lister, $slice_id] = array_pad(ParamExplode($selector), 2, '');
+            [$lister, $slice_id, $field_id] = array_pad(ParamExplode($selector), 3, '');
             $links = [];
             if (isset($view_urls[$lister])) {
                 $links[_m('View settings')] = $view_urls[$lister];
@@ -133,7 +135,12 @@ class CheckViewSliceRefusals extends AbstractOptimize
                 $links[_m('Slice settings (reading password)')] = get_admin_url('slicedit.php', ['change_id' => $slice_id]);
             }
             $slice_name = ($slice_names[$slice_id] ?? '') ?: $slice_id;
-            if ($lister === ViewSlices::CONDITION) {
+            if ($lister === ViewSlices::PROTECTED_FIELD) {
+                $title    = _m('A condition or sort on field %1 of slice %2 was left out: AA never shows its values', [$field_id, $slice_name]);
+                $listed   = [_m('Field') => safe($field_id)];
+                $advice   = _m('A view, {ids} or a search on the page had a condition or sort on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[] or set[]=sort-... in the URL). The condition matched nothing and the sort was dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change.');
+                $kind     = _m('Protected field refused');
+            } elseif ($lister === ViewSlices::CONDITION) {
                 $title    = _m('A condition on related items matched nothing in slice %1: its reading password was not known', [$slice_name]);
                 $listed   = [];
                 $advice   = _m('A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice\'s reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change.');
@@ -166,7 +173,7 @@ class CheckViewSliceRefusals extends AbstractOptimize
         foreach ($charset_rows as $row) {
             $findings[] = self::charsetFinding($row);
         }
-        return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No slice was left out of a view or a condition and no charset was ignored in the last 30 days'))];
+        return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days'))];
     }
 
     /** @param array<string, mixed> $row */
