@@ -486,6 +486,9 @@ class AA_Scroller_Router extends AA_Scroller {
         $ret  = "<div data-aa-part=\"$hash\" data-aa-part-update=add  class='aa-div-infinite'>$html</div><nav id='aapg-nav-$hash' style='visibility: hidden' class='aa-nav-infinite'>$nav</nav>";
 
         AA::Stringexpander()->setDependentParts([$cmdvar], $hash, $html);
+        if ($nav === '') {
+            return $ret;   // one page only - nothing to load
+        }
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_SiteEdit, ...
 
         $js = <<<JS
@@ -502,8 +505,8 @@ class AA_Scroller_Router extends AA_Scroller {
                         if (entry.isIntersecting) {
                             const nav = entry.target;
                             // const nav = document.getElementById('aapg-nav-$hash');
-                            const current = nav.querySelector('.active'); 
-                            const next = current.nextElementSibling;
+                            const current = nav.querySelector('.active');
+                            const next = current?.nextElementSibling;   // no current page when the url asks for a page past the end
                             // move class=active and aria-current=page to the next 
                             if (next) {
                                 current.classList.remove('active');
