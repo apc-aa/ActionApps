@@ -391,6 +391,7 @@ return array(
     'AA\\Optimize\\CheckCron' => $baseDir . '/src/Optimize/CheckCron.php',
     'AA\\Optimize\\CheckDiscussionRefusals' => $baseDir . '/src/Optimize/CheckDiscussionRefusals.php',
     'AA\\Optimize\\CheckEnvironment' => $baseDir . '/src/Optimize/CheckEnvironment.php',
+    'AA\\Optimize\\CheckFormRobotRefusals' => $baseDir . '/src/Optimize/CheckFormRobotRefusals.php',
     'AA\\Optimize\\CheckHttp' => $baseDir . '/src/Optimize/CheckHttp.php',
     'AA\\Optimize\\CheckImportStores' => $baseDir . '/src/Optimize/CheckImportStores.php',
     'AA\\Optimize\\CheckImports' => $baseDir . '/src/Optimize/CheckImports.php',

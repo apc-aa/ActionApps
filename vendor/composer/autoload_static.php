@@ -561,6 +561,7 @@ class ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018
         'AA\\Optimize\\CheckCron' => __DIR__ . '/../..' . '/src/Optimize/CheckCron.php',
         'AA\\Optimize\\CheckDiscussionRefusals' => __DIR__ . '/../..' . '/src/Optimize/CheckDiscussionRefusals.php',
         'AA\\Optimize\\CheckEnvironment' => __DIR__ . '/../..' . '/src/Optimize/CheckEnvironment.php',
+        'AA\\Optimize\\CheckFormRobotRefusals' => __DIR__ . '/../..' . '/src/Optimize/CheckFormRobotRefusals.php',
         'AA\\Optimize\\CheckHttp' => __DIR__ . '/../..' . '/src/Optimize/CheckHttp.php',
         'AA\\Optimize\\CheckImportStores' => __DIR__ . '/../..' . '/src/Optimize/CheckImportStores.php',
         'AA\\Optimize\\CheckImports' => __DIR__ . '/../..' . '/src/Optimize/CheckImports.php',
