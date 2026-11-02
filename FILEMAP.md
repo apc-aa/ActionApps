@@ -316,6 +316,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Optimize/CheckAlertitemRefusals.php | State Check: alert sends refused as unrelated to the item's slice | CheckAlertitemRefusals | S |
 | Optimize/CheckAlerts.php | State Check: every alert frequency is swept, no collection far behind | CheckAlerts | S |
 | Optimize/CheckAnonymousEditRefusals.php | State Check: anonymous forms refused for changing accounts or authors | CheckAnonymousEditRefusals | S |
+| Optimize/CheckFormRobotRefusals.php | State Check: aa[...] forms refused as robots (empty slice_id) | CheckFormRobotRefusals | S |
 | Optimize/CheckBlockedRequests.php | State Check: fetches refused because they lead to the local network | CheckBlockedRequests | S |
 | Optimize/CheckCentralCredentials.php | State Check: Central keeps logins only as encrypted tokens | CheckCentralCredentials | S |
 | Optimize/CheckCkeditorUse.php | State Check: where CKEditor 4 is still required | CheckCkeditorUse | S |

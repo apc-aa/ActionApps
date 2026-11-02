@@ -11,6 +11,7 @@ namespace AA\IO\Grabber;
 
 use AA\FormArray;
 use AA\Optimize\CheckAnonymousEditRefusals;
+use AA\Optimize\CheckFormRobotRefusals;
 use AA\Optimize\CheckItemEditsWithoutPermission;
 use AA\Util\LogOnce;
 use AA\Widget\PwdWidget;
@@ -127,14 +128,38 @@ class Form extends AbstractGrabber
     private static function getNewItemSlices(): array
     {
         $slices = [];
-        $aa_ops = array_merge(array_keys($_POST['aa'] ?? []), array_keys($_FILES['aa'] ?? []));
-        foreach ($aa_ops as $dirty_item_id) {
-            if ($dirty_item_id[0] === 'n' or $dirty_item_id[0] === 'f') {
-                [$letter, $sid] = explode('_', $dirty_item_id);
-                $slices[$sid] = true;
+        // $_FILES is left out: the drop-file uploads (aa[f_<slice_id>] of RimWidget, {manager}) send no form
+        // token, and its keys are name, type, tmp_name, ... - never item ids
+        $posted = is_array($_POST['aa'] ?? null) ? $_POST['aa'] : [];
+        foreach (array_keys($posted) as $dirty_item_id) {
+            $dirty_item_id = (string) $dirty_item_id;
+            if ((($dirty_item_id[0] ?? '') === 'n' || ($dirty_item_id[0] ?? '') === 'f') && str_contains($dirty_item_id, '_')) {
+                $slices[explode('_', $dirty_item_id, 2)[1]] = true;
             }
         }
-        return array_keys($slices);
+        return array_map('strval', array_keys($slices));
+    }
+
+    /** True when the form adds items and posted an empty slice_id. {formantispam:<slice_id>} and hand-made
+     *  forms leave it empty and fill it by JS on the visitor's first move of the mouse or key, which robots
+     *  do not do; the old-style form refuses an empty slice_id as well. Only new items count - the item
+     *  history posts an empty slice_id when the item is gone. Logged once a day per slice.
+     */
+    public static function postedByRobot(): bool
+    {
+        $posted = $_POST['slice_id'] ?? null;
+        if (!is_string($posted) || (trim($posted) !== '') || !($slices = self::getNewItemSlices())) {
+            return false;
+        }
+        $referer = parse_url((string) ($_SERVER['HTTP_REFERER'] ?? '')) ?: [];
+        foreach ($slices as $sid) {
+            // the slices come from the request - only real ones, one spelling each, get a log row
+            $sid = strtolower($sid);
+            if (is_long_id($sid) && AA_Slice::getOwnModule($sid)?->isValid()) {
+                LogOnce::daily(CheckFormRobotRefusals::EVENT, $sid, ($referer['host'] ?? '') . ($referer['path'] ?? ''));
+            }
+        }
+        return true;
     }
 
     /** If any of the slices used by new items requires form tokens, return true

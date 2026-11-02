@@ -307,6 +307,10 @@ if (ctype_digit((string)$_REQUEST['respuesta'])) {
 //      aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
 if ( isset($_POST['aa']) || isset($_FILES['aa']) ) {
 
+    if (AA\IO\Grabber\Form::postedByRobot()) {
+        SendErrorPage(["spam" => _m("Not accepted, sorry. Looks like spam.")]);
+    }
+
     if ($_COOKIE['AA_Session']) {
         // this defines $auth object so, the "Last Changed By" is set to correct user
         pageOpen('nobody');
