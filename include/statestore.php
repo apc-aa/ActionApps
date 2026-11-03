@@ -651,19 +651,24 @@ class AA_Object extends AA_Storable implements AA_iEditable
     /** getNameArray function
      * @param $obj_type
      * @param $owner
+     * @param string $name_like  only the objects whose name contains it (LIKE wildcards work)
      */
-    public static function getNameArray($obj_type, $owner): array
+    public static function getNameArray($obj_type, $owner, string $name_like = ''): array
     {
         if (empty($owner)) {
             return [];
         }
-        return DB_AA::select(['object_id' => 'value'], 'SELECT o1.object_id, o3.value FROM object_text as o1 INNER JOIN object_text as o2 ON o2.object_id=o1.object_id INNER JOIN object_text as o3 ON o3.object_id=o1.object_id', [
+        $where = [
             ['o1.property', 'aa_type'],
             ['o1.value', $obj_type],
             ['o2.property', 'aa_owner'],
             ['o2.value', array_filter((array) $owner, static fn($x) => $x != '')],
             ['o3.property', 'aa_name'],
-        ]);
+        ];
+        if ($name_like !== '') {
+            $where[] = ['o3.value', "%$name_like", 'RLIKE'];
+        }
+        return DB_AA::select(['object_id' => 'value'], 'SELECT o1.object_id, o3.value FROM object_text as o1 INNER JOIN object_text as o2 ON o2.object_id=o1.object_id INNER JOIN object_text as o3 ON o3.object_id=o1.object_id', $where);
     }
 
     public static function loadProperty($id, $property)

@@ -1281,9 +1281,12 @@ class AA_Permsystem_Reader extends AA_Permsystem {
             $groups[unpack_id($row['id'])] = ['name' => "$prefix: ". $row['name']];
         }
 
-        // get all ReaderSets
+        // the sets whose own name matches go first - the listing is cut after MAX_ENTRIES_SHOWN;
+        // an empty pattern found every slice, so the sets of the found slices are all of them
+        $sets = (((string) $pattern === '') ? [] : AA_Object::getNameArray('AA_Set', AA_Reader::getReaderSlices(), (string) $pattern))
+            + AA_Object::getNameArray('AA_Set', array_keys($groups));
         $prefix = _m('Reader Set');
-        foreach ( AA_Object::getNameArray('AA_Set', array_keys($groups)) as $set_id => $name ) {
+        foreach ($sets as $set_id => $name) {
             $groups[$set_id] = ['name' => "$prefix: $name"];
         }
         return $groups;
