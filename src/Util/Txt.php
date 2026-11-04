@@ -144,9 +144,10 @@ class Txt
 
     /** Base64url decode. Tolerant: accepts missing padding and mixed +/-_ alphabets.
      *  Returns false on undecodable input (matches base64_decode semantics).
+     *  @param bool $strict false also for a character outside the alphabet - for data an outsider sends
      */
-    public static function url2bin(string $data): false|string
+    public static function url2bin(string $data, bool $strict = false): false|string
     {
-        return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '='));
+        return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '='), $strict);
     }
 }
