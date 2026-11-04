@@ -698,6 +698,12 @@ function AuthGetUname(): string {
     return is_object($auth) ? $auth->getUname() : '';
 }
 
+/** the user logged in a moment ago - AA_Auth::isFresh() */
+function AuthIsFresh(): bool {
+    global $auth;
+    return ($auth instanceof AA_Auth) && $auth->isFresh();
+}
+
 class AA_Session extends Session
 {
     private const AA_FORM_TOKEN_LIFETIME = 172800; // 2 days = 2*24*60*60 seconds =  172800 seconds

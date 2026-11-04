@@ -37,6 +37,7 @@
 */
 
 
+use AA\Passkey\Store;
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
@@ -312,6 +313,16 @@ if ( $usr_edit || $submit_action === "update_submit" ) {
     FrmTabCaption(_m("Edit User"));
     FrmStaticText(_m("Login name"), $user_data['login']);
     FrmStaticText(_m("User Id"), $user_data['id']);
+    // the way back in for someone who lost the passkeys: deleting them lets the password in again
+    try {
+        $passkey_key = AA::$perm->passkeyId((string) $user_data['id']);
+    } catch (RuntimeException) {
+        $passkey_key = null;   // the directory does not answer - the passkey page says so
+    }
+    if ($passkey_key !== null) {
+        $passkey_count = (new Store())->count($passkey_key);
+        FrmStaticText(_m("Passkeys"), a_href(get_admin_url('um_passkeys.php', ['usr' => (string) $user_data['id']]), $passkey_count ? _m("%1 - the account logs in only by them", [$passkey_count]) : _m("none")), '', '', false);
+    }
 } else {
     FrmTabCaption(_m("New user"));
     FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);

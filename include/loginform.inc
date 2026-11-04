@@ -28,6 +28,21 @@
 
 require_once __DIR__ . "/util.php";
 
+use AA\Passkey\Ceremony;
+use AA\Passkey\Store;
+
+// a passkey works only on the host it was made on: here the passkeys of this host log in, and the hosts of the
+// others are offered - the same page there
+$passkey_hosts    = (new Store())->hosts();
+$passkey_ceremony = $passkey_hosts ? Ceremony::here() : null;
+$passkey_here     = $passkey_ceremony && in_array($passkey_ceremony->rpId(), $passkey_hosts, true);
+$passkey_away     = array_slice(array_diff($passkey_hosts, [$passkey_ceremony?->rpId()]), 0, 3);
+try {
+    $passkey_options = $passkey_here ? $passkey_ceremony->loginOptions() : '';
+} catch (Throwable) {   // no curve or hash in this PHP's openssl - the password form still works
+    $passkey_options = '';
+}
+
 HtmlPageBegin();
 
 echo '<title>ActionApps - '.ORG_NAME.'</title>';
@@ -73,6 +88,14 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
         font-size: inherit;
         opacity: 0.8;
     }
+    .aa-login-passkey {
+        display: block;
+        margin-top: 15px;
+    }
+    .aa-login-passkey [role="status"] {
+        display: block;
+        margin-top: 5px;
+    }
 </style>
 
 <div class="aa-login-welcome">
@@ -85,7 +108,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
 
     <div class="aa-login-row">
       <label for="username"><?php echo _m("Username:") ?></label>
-      <input type="text" name="username" value="<?php if (isset($this->auth["uname"])) { echo safe($this->auth["uname"]); }?>" size="32" maxlength="255" autocomplete="username">
+      <input type="text" name="username" value="<?php if (isset($this->auth["uname"])) { echo safe($this->auth["uname"]); }?>" size="32" maxlength="255" autocomplete="<?php echo ($passkey_options !== '') ? 'username webauthn' : 'username' ?>">
     </div>
     <div class="aa-login-row">
       <label for="password"><?php echo _m("Password:") ?></label>
@@ -103,11 +126,27 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
    <div class="aa-login-submit">
         <input type="submit" value="<?php echo _m("Login now") ?>" class="btn-l">
     </div>
-
+    <?php
+    if ($passkey_options !== '') {
+        echo '<input type="hidden" name="' . Ceremony::LOGIN_FIELD . '" value="">
+        <aa-passkey class="aa-login-passkey" mode="get" field="' . Ceremony::LOGIN_FIELD . '" autofill expires="' . Ceremony::TIMEOUT . '" options="' . safe($passkey_options) . '"
+            text-cancelled="' . safe(_m('No passkey was used.')) . '" text-failed="' . safe(_m('The browser could not use a passkey.')) . '">
+            <button type="button" class="btn-l" hidden>' . safe(_m('Log in with a passkey')) . '</button><span role="status"></span>
+        </aa-passkey>' . AA_Requires::systemDefinitions()['aa-passkey@1']->getCode();
+    }
+    foreach ($passkey_away as $passkey_host) {
+        echo '<div class="aa-login-row">' . a_href("https://$passkey_host$qs", safe(_m('Log in with a passkey made on %1', [$passkey_host]))) . '</div>';
+    }
+    ?>
 </form>
 
 <div class="aa-login-msg mt-2" style="text-align: center;">
-    <?php echo $login_msg; ?>
+    <?php
+    echo $login_msg;
+    if ($login_msg && $passkey_hosts) {
+        echo '<div>' . safe(_m('An account with a passkey logs in only by it - the password alone is not enough.')) . '</div>';
+    }
+    ?>
 </div>
 
 <script>

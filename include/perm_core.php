@@ -32,6 +32,8 @@
 //
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\CheckPasskeys;
+use AA\Passkey\Store;
 use AA\Security\LoginThrottle;
 
 const MAX_GROUPS_DEEP   = 16;   // Maximum number of nested groups (user belongs to group1, group1 to group2 ...)
@@ -559,6 +561,12 @@ class AA_Perm {
         $started = hrtime(true);
         foreach ($this->perm_systems as $perm_sys) {
             if ($user_id = $perm_sys->authenticateUsername($username, $password, $code2fa)) {
+                // an account with a passkey logs in only by it - the free login (?free=) takes any account, too.
+                // The right password must look like a wrong one, or the guesser would learn it is right
+                if ($refusal = $this->passkeyOnly((string) $user_id)) {
+                    CheckPasskeys::record($refusal, $username);
+                    break;
+                }
                 return $user_id;
             }
         }
@@ -667,12 +675,47 @@ class AA_Perm {
         return false;
     }
 
+    /** The id the account's passkeys are kept under - the same however the person logs in (an LDAP login gives
+     *  the DN as the name was typed). null for an account without passkeys: a group, an unknown id, a reader
+     *  (no passkey login on the sites)
+     *  @throws RuntimeException the backend cannot tell now - the directory did not answer */
+    public function passkeyId($uid): ?string
+    {
+        if ($uid && ($ps = $this->_whichUsersystem($uid))) {
+            return $ps->passkeyId((string) $uid);
+        }
+        return null;
+    }
+
+    /** the account logs in only by its passkey */
+    public function hasPasskey(string $uid): bool
+    {
+        return $this->passkeyOnly($uid) !== null;
+    }
+
+    /** why the password does not log this account in (CheckPasskeys::PASSWORD|DIRECTORY), null: it does */
+    private function passkeyOnly(string $uid): ?string
+    {
+        $store = new Store();
+        if (!$store->available()) {
+            return null;
+        }
+        try {
+            $key = $this->passkeyId($uid);
+        } catch (RuntimeException) {
+            // its passkey may be kept under the DN the directory would give - refusing beats letting the password in
+            return $store->hosts() ? CheckPasskeys::DIRECTORY : null;
+        }
+        return (($key !== null) && $store->has($key)) ? CheckPasskeys::PASSWORD : null;
+    }
+
     /** What changes when the user's password changes, from the backend the id belongs to
-     *  @return ?string null for an id no backend knows as a user, or whose backend cannot tell */
+     *  @return ?string null for an id no backend knows as a user, or whose backend cannot tell - and for an
+     *  account with a passkey: a token was issued for the password, which no longer logs it in */
     public function credentialStamp($uid): ?string
     {
         if ($uid && ($ps = $this->_whichUsersystem($uid))) {
-            return $ps->credentialStamp((string) $uid);
+            return $this->hasPasskey((string) $uid) ? null : $ps->credentialStamp((string) $uid);
         }
         return null;
     }
@@ -1077,6 +1120,10 @@ abstract class AA_Permsystem {
     /** What changes when the user's password changes - a long-lived login (AA\Util\LoginToken) dies with it.
      *  @return ?string null: not a user of this backend, or the backend cannot tell */
     public function credentialStamp(string $uid): ?string { return null; }
+
+    /** see AA_Perm::passkeyId() - null: this backend's accounts have no passkeys
+     *  @throws RuntimeException */
+    public function passkeyId(string $uid): ?string { return null; }
 
     /** getGroup function
      * @param $group_id

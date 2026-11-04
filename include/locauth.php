@@ -29,6 +29,9 @@
 
 use AA\Central\AppStore;
 use AA\IO\DB\DB_AA;
+use AA\Optimize\CheckPasskeys;
+use AA\Passkey\Ceremony;
+use AA\Passkey\Refused;
 use AA\Security\LoginThrottle;
 use AA\Util\LoginToken;
 use AA\Util\LogOnce;
@@ -42,8 +45,10 @@ require_once __DIR__ . "/perm_" . PERM_LIB . ".php";
 
 class AA_Auth extends Auth
 {
-    /** how this request logged in: 'password', 'token', 'bad-token' (refused) or '' - static, as the object itself is saved in the session */
+    /** how this request logged in: 'password', 'passkey', 'token', 'bad-passkey' and 'bad-token' (refused) or '' - static, as the object itself is saved in the session */
     private static string $login = '';
+    /** seconds a login counts as one of a moment ago (isFresh()) */
+    public const FRESH_SECONDS = 600;
     /** the scope of the token of this request (LoginToken::SCOPE_*); '' for any other login */
     private static string $scope = '';
 
@@ -95,7 +100,9 @@ class AA_Auth extends Auth
 
         bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 
-        if (!$login_msg && $username) {
+        if (!$login_msg && (self::$login === 'bad-passkey')) {
+            $login_msg = '<div style="color:red;" class="aa-err-login"><b>' . _m("The login by the passkey did not succeed. Try it again.") . '</b></div>';
+        } elseif (!$login_msg && $username) {
             $refused   = LoginThrottle::refuse();
             $login_msg = '<div style="color:red;" class="aa-err-login"><b>' . ($refused ?? _m("Either your username or your password is not valid")) . '</b></div>';
             if (is_null($refused)) {
@@ -140,21 +147,84 @@ class AA_Auth extends Auth
         if ($uid && !defined('AA_TOKEN_ENTRY') && AppStore::isPublic((string) $uid)) {
             $uid = false;
         }
+        if (!$uid) {   // failures are logged by AA_Perm::authenticateUsername(), which counts them
+            $this->auth['uname'] = '';
+            $this->auth['uid']   = '';
+            return false;
+        }
+        $this->loginUid((string) $uid, (string) $username, $free ? 'free' : 'password');
+        return $uid;
+    }
+
+    /** The login of this request by the answer of the browser's passkey (the login form's passkey_login)
+     *  @return false|string uid */
+    private function passkeyLogin(string $answer): false|string
+    {
+        if (!($ceremony = Ceremony::here())) {
+            return false;
+        }
+        try {
+            $uid = $ceremony->login($answer)->uid;
+            // the account may be gone since, or be a group now
+            if (AA::$perm->passkeyId($uid) !== $uid) {
+                throw new Refused(Refused::UNKNOWN, 'account');
+            }
+        } catch (Refused $e) {
+            CheckPasskeys::record($e->reason, in_array($e->reason, [Refused::ORIGIN, Refused::UNKNOWN], true) ? $e->detail : '');
+            return false;
+        } catch (RuntimeException) {
+            CheckPasskeys::record(CheckPasskeys::DIRECTORY, $uid ?? '');
+            return false;
+        }
+        $login = AA::$perm->getUserLoginName($uid);
+        if ($ceremony->counterWentBack()) {
+            CheckPasskeys::record(Refused::COUNTER, $login);
+        }
+        $this->loginUid($uid, $login, 'passkey');
+        return $uid;
+    }
+
+    /** The one way a checked login becomes the session's: the LOGIN row, a new session id, when and how it happened
+     *  @param string $method password|passkey|free */
+    private function loginUid(string $uid, string $uname, string $method): void
+    {
         $before = $this->auth['uid'] ?? '';
-        $this->auth['uname'] = $uid ? $username : '';
-        $this->auth['uid']   = $uid ?: '';
-        if ($free && $uid) {
+        $this->auth['uname'] = $uname;
+        $this->auth['uid']   = $uid;
+        $this->auth['at']    = time();
+        $this->auth['via']   = $method;
+        if ($method === 'free') {
             // crawlers follow the free links, a row each visit would bury the real logins - a row a day shows it is used
-            LogOnce::daily('FREE_LOGIN', (string) $username);
-        } elseif ($uid) {   // failures are logged by AA_Perm::authenticateUsername(), which counts them
-            AA_Log::write('LOGIN', AA_Log::context($uid, false), LoginThrottle::stored((string) $username));
+            LogOnce::daily('FREE_LOGIN', $uname);
+        } else {
+            AA_Log::write('LOGIN', AA_Log::context($uid, false), LoginThrottle::stored($uname));
         }
         // a session id known before the login (planted cookie, a shared device) must not become the logged-in one;
         // the free login of init_page.php repeats on every request - a new id each time would break parallel requests
-        if ($uid && ($uid !== $before) && (session_status() === PHP_SESSION_ACTIVE) && !headers_sent()) {
+        if (($uid !== $before) && (session_status() === PHP_SESSION_ACTIVE) && !headers_sent()) {
             session_regenerate_id(true);
         }
-        return $uid;
+    }
+
+    /** The user logged in on this session by a password or a passkey a moment ago (FRESH_SECONDS) - a change of
+     *  the account's passkeys asks for it, so a stolen session or a computer left open cannot add one */
+    public function isFresh(): bool
+    {
+        return $this->is_user() && in_array($this->auth['via'] ?? '', ['password', 'passkey'], true) && ((int) ($this->auth['at'] ?? 0) >= time() - self::FRESH_SECONDS);
+    }
+
+    /** a login whose password anyone may know: the app store account, or an account of the free links (?free=)
+     *  - a passkey there would lock the others out */
+    public static function publicPassword(string $uid): bool
+    {
+        return AppStore::isPublic($uid) || DB_AA::test('log', [['type', 'FREE_LOGIN'], ['selector', AA::$perm->getUserLoginName($uid)]]);
+    }
+
+    /** the time and way of the login go with it - a later login form must not inherit them */
+    public function unauth($nobody = false): void
+    {
+        parent::unauth($nobody);
+        unset($this->auth['at'], $this->auth['via']);
     }
 
     public static function use2FA(): bool
@@ -173,6 +243,15 @@ class AA_Auth extends Auth
     {
         self::$login = '';
         self::$scope = '';
+        $answer = $_POST[Ceremony::LOGIN_FIELD] ?? null;
+        if (is_string($answer) && ($answer !== '')) {
+            $uid = $this->passkeyLogin($answer);
+            self::$login = $uid ? 'passkey' : 'bad-passkey';
+            if (!$uid) {   // so the name and password the browser filled in are not tried as well
+                $this->unauth();
+            }
+            return $uid;
+        }
         if (isset($_POST['username']) && isset($_POST['password'])) {
             $uid = $this->_validatelogin($_POST['username'], $_POST['password'], $_POST['code2fa'] ?? '');
             self::$login = $uid ? 'password' : '';
@@ -201,6 +280,7 @@ class AA_Auth extends Auth
 
     protected function _validateJwt(string $jwt): false|string
     {
+        unset($this->auth['at'], $this->auth['via']);
         try {
             [$this->auth['uid'], $this->auth['uname'], self::$scope] = LoginToken::verify($jwt);
             return $this->auth['uid'];

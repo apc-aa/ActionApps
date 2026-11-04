@@ -35,6 +35,8 @@ class LdapPermsToSql extends AbstractOptimize
     public const REWRITE_COLUMNS = [
         ['table' => 'item', 'col' => 'posted_by'],
         ['table' => 'item', 'col' => 'edited_by'],
+        // the passkeys of an account (AA_Perm::passkeyId()) - left on the DN they would log in nobody
+        ['table' => 'authenticator', 'col' => 'uid'],
     ];
 
     /** @var bool - true during test(), suppresses all writes */
@@ -52,7 +54,7 @@ class LdapPermsToSql extends AbstractOptimize
     /** Description function */
     public static function description(): string
     {
-        return _m("Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything.");
+        return _m("Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by and the owners of passkeys from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything.");
     }
 
     public static function actions(): array
@@ -392,6 +394,9 @@ class LdapPermsToSql extends AbstractOptimize
         foreach (self::REWRITE_COLUMNS as $spec) {
             $t = $spec['table'];
             $c = $spec['col'];
+            if (!DB_AA::exists_table($t)) {   // the table of passkeys comes with sql_update
+                continue;
+            }
             $changed = 0;
             foreach ($pairs as $row) {
                 $cnt = DB_AA::count($t, [[$c, $row['ldap_dn']]]);
@@ -422,6 +427,9 @@ class LdapPermsToSql extends AbstractOptimize
         foreach (self::REWRITE_COLUMNS as $spec) {
             $t = $spec['table'];
             $c = $spec['col'];
+            if (!DB_AA::exists_table($t)) {   // the table of passkeys comes with sql_update
+                continue;
+            }
             $changed = 0;
             foreach ($pairs as $row) {
                 $cnt = DB_AA::count($t, [[$c, (string) $row['sql_id']]]);

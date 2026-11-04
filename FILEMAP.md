@@ -240,6 +240,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Optimize/AddMsgBannedFieldTemplate.php | Add message banned field template | AddMsgBannedFieldTemplate | S |
 | Optimize/AddMsgSpamFieldTemplate.php | Add message spam field template | AddMsgSpamFieldTemplate | S |
 | Optimize/AddNameFieldTemplate.php | Add name field template | AddNameFieldTemplate | S |
+| Optimize/AddPasskeyTable.php | sql_update: creates the table authenticator of passkeys | AddPasskeyTable | S |
 | Optimize/AddPhoneFieldTemplate.php | Add phone field template | AddPhoneFieldTemplate | S |
 | Optimize/AddPolls.php | Add polls module tables | AddPolls | S |
 | Optimize/AddRangeFieldTemplate.php | Add range field template | AddRangeFieldTemplate | S |
@@ -319,6 +320,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Optimize/CheckFormRobotRefusals.php | State Check: aa[...] forms refused as robots (empty slice_id) | CheckFormRobotRefusals | S |
 | Optimize/CheckBlockedRequests.php | State Check: fetches refused because they lead to the local network | CheckBlockedRequests | S |
 | Optimize/CheckCentralCredentials.php | State Check: Central keeps logins only as encrypted tokens | CheckCentralCredentials | S |
+| Optimize/CheckPasskeys.php | State Check: passkey logins refused, right passwords of passkey-only accounts | CheckPasskeys::record(), findingsFor() | S |
 | Optimize/CheckCkeditorUse.php | State Check: where CKEditor 4 is still required | CheckCkeditorUse | S |
 | Optimize/CheckCron.php | State Check: cron table rows unreadable, doubled, stale or belonging to the queue | CheckCron | S |
 | Optimize/CheckEnvironment.php | State Check: AA, PHP and database versions and when they changed | CheckEnvironment | S |
@@ -423,6 +425,20 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 |------|---------|---------|------|
 | Credential/Secret.php | Key/password/token wrapped so it cannot leak by accident | Secret::reveal(), hint() | S |
 | Credential/Store.php | Keys from AA_APIKEY_* constants in config.php; one line each, damaged ones refused | Store::resolve(), describe(), damagedIn() | S |
+
+### Passkey (WebAuthn login)
+
+Exact host as RP ID; an account with a passkey no longer logs in by password alone (AA_Perm::authenticateUsername). UI: admin/um_passkeys.php, javascript/aa-passkey.js.
+
+| File | Purpose | Key API | Size |
+|------|---------|---------|------|
+| Passkey/Ceremony.php | Login and registration ceremonies over report-uri/passkeys-php | Ceremony::here(), loginOptions(), login(), registrationOptions(), register() | M |
+| Passkey/Challenges.php | Single-use challenges in the session, 6 min, 5 per purpose | Challenges::session(), issue(), take() | S |
+| Passkey/Store.php | The only access to table authenticator | Store::available(), find(), forUid(), hosts(), rename(), delete() | S |
+| Passkey/Credential.php | A stored passkey | Credential::cleanName() | S |
+| Passkey/Credentials.php | What Ceremony needs of the store | interface | S |
+| Passkey/Notice.php | Log row + mail to the owner on add/delete/reset | Notice::added(), deleted(), reset() | S |
+| Passkey/Refused.php | Why a ceremony failed - a word for the log | Refused::$reason | S |
 
 ### Isds (data boxes)
 
@@ -557,6 +573,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | sliceimp_xml.php | XML import parser | sliceimp_xml_parse(), import_views() | L |
 | slicewiz.php | Slice creation wizard | Procedural | M |
 | um_gedit.php | Group editor (LDAP) | UpdateGroup(), SetRole() | L |
+| um_passkeys.php | Passkeys of the account: add, rename, delete; a user manager deletes another's | Procedural | M |
 | um_passwd.php | User password change | Procedural | M |
 | um_uedit.php | User account editor | Procedural | L |
 | usershow.php | User information display | Procedural | M |

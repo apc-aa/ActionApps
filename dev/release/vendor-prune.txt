@@ -5,6 +5,7 @@
 tests
 test
 Tests
+_test
 docs
 doc
 examples

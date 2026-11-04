@@ -27,6 +27,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Passkey\Store;
 
 require_once __DIR__ . "/perm_core.php";
 
@@ -95,6 +96,8 @@ function DelUser($user_id, $flags = 3): bool {
          // cancel direct permissions
          DB_AA::delete('perms', [['userid', $user_id]]);
      }
+     // a later account of the same id would log in by them
+     (new Store())->deleteAll((string) AA::$perm?->passkeyId($user_id));
      // cancel the user
      DB_AA::delete('users', [['id', $user_id]]);
      return true;
@@ -433,6 +436,13 @@ class AA_Permsystem_Sql extends AA_Permsystem {
             return $user;
         }
         return false;
+    }
+
+    /** users.id of a user - one id whatever login (name or e-mail) was typed */
+    public function passkeyId(string $uid): ?string
+    {
+        $info = $this->getIDsInfo($uid);
+        return (is_array($info) && ($info['type'] === 'User')) ? (string) $info['id'] : null;
     }
 
     /** getGroupMembers function

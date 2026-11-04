@@ -27,6 +27,7 @@
  *
 */
 
+use AA\Passkey\Store;
 
 //#############################################################################
 // API functions
@@ -91,6 +92,8 @@ function DelUser($user_id, $flags = 3): bool
     if (!($ds = InitLDAP())) {
         return false;
     }
+    // a new account of the same login gets the same DN - and would log in by them
+    (new Store())->deleteAll((string) AA::$perm?->passkeyId($user_id));
 
     // To keep integrity of LDAP DB, we should also delete all references
     // to this user in other LDAP entries (e.g. member=.., apcaci=..).
@@ -792,6 +795,29 @@ class AA_Permsystem_Ldap extends AA_Permsystem
         return $res;
     }
 
+
+    /** The DN of a user as the directory keeps it. The DN of a login is built from the name as typed, so one
+     *  person comes as uid=Kalen01 and uid=kalen01 - a passkey kept under one would not hold back the other.
+     *  null for a group or an unknown DN
+     *  @throws RuntimeException the server did not answer - "no passkey" would let a password in */
+    public function passkeyId(string $uid): ?string
+    {
+        if (!$this->userIdFormatMatches($uid)) {
+            return null;
+        }
+        if (!($ds = InitLDAP())) {
+            throw new RuntimeException('LDAP server unreachable');
+        }
+        $result = @ldap_read($ds, $uid, '(objectclass=inetOrgPerson)', ['1.1']);   // 1.1: no attributes, the DN only
+        $error  = $result ? 0 : ldap_errno($ds);
+        $entry  = $result ? ldap_first_entry($ds, $result) : false;
+        $dn     = $entry ? ldap_get_dn($ds, $entry) : false;
+        ldap_unbind($ds);
+        if ($error && ($error !== 32)) {   // 32: no such object - not an account
+            throw new RuntimeException("LDAP read failed ($error)");
+        }
+        return (is_string($dn) && ($dn !== '')) ? $dn : null;
+    }
 
     /** @return ?string null for a group, an unknown DN or an unreachable server - see AA\Util\LdapStamp */
     public function credentialStamp(string $uid): ?string
