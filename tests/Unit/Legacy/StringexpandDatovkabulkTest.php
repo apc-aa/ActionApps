@@ -289,9 +289,9 @@ namespace Tests\Unit\Legacy {
                             return "types|$campaign|" . $expand(str_replace('_#TYPE', 'mesto', $row));
                         }
 
-                        public function letterhead(): string
+                        public function previous(): string
                         {
-                            return 'letterhead';
+                            return 'previous';
                         }
 
                         public function members(): string
@@ -308,8 +308,8 @@ namespace Tests\Unit\Legacy {
             };
 
             self::assertSame(
-                ['filter||types', 'source|a1|reason', 'search', 'message|', 'message|resend', 'letterhead', 'members'],
-                [$command->expand('filter', '', 'types'), $command->expand('source', 'a1', 'reason'), $command->expand('search'), $command->expand('message'), $command->expand('message', 'resend'), $command->expand('letterhead'), $command->expand('members')],
+                ['filter||types', 'source|a1|reason', 'search', 'message|', 'message|resend', 'previous', 'members'],
+                [$command->expand('filter', '', 'types'), $command->expand('source', 'a1', 'reason'), $command->expand('search'), $command->expand('message'), $command->expand('message', 'resend'), $command->expand('previous'), $command->expand('members')],
             );
             // the row reaches the gate as written and expands in the template after its values are in
             self::assertSame('m1|<i>5probed</i>', $command->expand('events', 'm1', '<i>_#AT{datovkabulkprobe}</i>'));

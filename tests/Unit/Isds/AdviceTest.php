@@ -106,6 +106,8 @@ final class AdviceTest extends TestCase
             'subject'    => [['subject'], 'The subject cannot be saved: it may have at most 255 characters'],
             'to hands'   => [['to_hands'], '"To hands" cannot be saved: it may have at most 30 characters'],
             'body'       => [['body'], 'it is larger than 8 MB'],
+            'header'     => [['header'], 'The header cannot be saved: it is larger than 8 MB'],
+            'footer'     => [['footer'], 'The footer cannot be saved: it may have at most 4 lines of at most 200 characters each'],
             'recipients' => [['recipients'], 'this page does not offer it. Nothing of the draft was saved'],
             'too many'   => [['too_many'], 'at most 5000 of them may be chosen'],
             'too many files' => [['too_many_files'], 'at most 99 attachments beside the letter'],

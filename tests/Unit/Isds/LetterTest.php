@@ -46,19 +46,19 @@ final class LetterTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $over field => its value, or a list of values; $html: FLAG_HTML on the body
+     * @param array<string, mixed> $over field => its value, or a list of values; $html: FLAG_HTML on the body and the header
      * @param ?\Closure(int): string $makeRoom memory for the PDF, there always is by default
      */
-    private function letter(array $over = [], string $letterhead = '', bool $html = true, ?\Closure $makeRoom = null): Letter
+    private function letter(array $over = [], bool $html = true, ?\Closure $makeRoom = null): Letter
     {
         $fields  = $over + [Schema::CAMPAIGN_SUBJECT => ' Pozvánka ', Schema::CAMPAIGN_BODY => '<p>Vážení, <b>zveme</b> Vás</p>', Schema::CAMPAIGN_TO_HANDS => 'starosta', Schema::CAMPAIGN_FILES => self::URL . '/pozvanka.pdf'];
         $content = [];
         foreach ($fields as $field => $values) {
             foreach ((array) $values as $value) {
-                $content[$field][] = ['value' => $value, 'flag' => (($field === Schema::CAMPAIGN_BODY) && $html) ? FLAG_HTML : 0];
+                $content[$field][] = ['value' => $value, 'flag' => (in_array($field, [Schema::CAMPAIGN_BODY, Schema::CAMPAIGN_HEADER], true) && $html) ? FLAG_HTML : 0];
             }
         }
-        return Letter::of(new ItemContent($content), $letterhead, new UploadDir(self::URL, $this->dir), $makeRoom ?? static fn(int $bytes): string => '');
+        return Letter::of(new ItemContent($content), new UploadDir(self::URL, $this->dir), $makeRoom ?? static fn(int $bytes): string => '');
     }
 
     /** the text of the letter as its PDF shows it, a line of each run of text */
@@ -78,12 +78,14 @@ final class LetterTest extends TestCase
         self::assertSame("Vážení, \nzveme\n Vás\n", self::body($letter));
     }
 
-    // what a test message compares: the document the PDF was made of, not its bytes
+    // what a test message compares: the document the PDF was made of and the footer, not its bytes
     public function test_of_sourceOfTheDocument(): void
     {
-        $document = (new HtmlBody(new UploadDir(self::URL, $this->dir)))->document('Pozvánka', '<p>Vážení, <b>zveme</b> Vás</p>', true, 'NSZM', PdfBody::CSS);
+        $footer   = ['NSZM, Praha'];
+        $document = (new HtmlBody(new UploadDir(self::URL, $this->dir)))->document('Pozvánka', '<p>Vážení, <b>zveme</b> Vás</p>', true, '<p>NSZM</p>', PdfBody::css($footer));
 
-        self::assertSame(PdfBody::source($document), $this->letter([], 'NSZM')->source);
+        self::assertSame(PdfBody::source($document, $footer), $this->letter([Schema::CAMPAIGN_HEADER => '<p>NSZM</p>', Schema::CAMPAIGN_FOOTER => ' NSZM, Praha '])->source);
+        self::assertNotSame(PdfBody::source($document, $footer), $this->letter([Schema::CAMPAIGN_HEADER => '<p>NSZM</p>', Schema::CAMPAIGN_FOOTER => 'NSZM, Brno'])->source, 'another footer');
     }
 
     // the memory dompdf will take is asked for before it starts, from the document
@@ -117,17 +119,19 @@ final class LetterTest extends TestCase
         return ['empty' => [''], 'space' => [' ']];
     }
 
-    // lines of text in either format of the body, escaped, above it
-    public function test_of_letterheadAboveTheBody(): void
+    // the header above the body in its format, the footer below it on the page
+    public function test_of_headerAboveFooterBelowTheBody(): void
     {
-        self::assertSame("Zdravá města & obce\nPalackého 1\nVážení, \nzveme\n Vás\n", self::body($this->letter([], "Zdravá města & obce\nPalackého 1")));
-        self::assertSame("<b>NSZM</b>\nVážení,\nzveme Vás\n", self::body($this->letter([Schema::CAMPAIGN_BODY => "Vážení,\nzveme Vás"], '<b>NSZM</b>', false)));
+        $over = [Schema::CAMPAIGN_HEADER => '<p><b>Zdravá města</b> &amp; obce</p>', Schema::CAMPAIGN_FOOTER => "Palackého 1\nPraha"];
+
+        self::assertSame("Zdravá města\n & obce\nVážení, \nzveme\n Vás\nPalackého 1\nPraha\n", self::body($this->letter($over)));
+        self::assertSame("<b>NSZM</b>\nVážení,\nzveme Vás\n", self::body($this->letter([Schema::CAMPAIGN_HEADER => '<b>NSZM</b>', Schema::CAMPAIGN_BODY => "Vážení,\nzveme Vás"], false)), 'plain text');
     }
 
     #[DataProvider('flags')]
     public function test_of_bodyFormatByFlag(bool $html, string $body): void
     {
-        self::assertSame($body, self::body($this->letter([Schema::CAMPAIGN_BODY => "Vážení,\n<b>zveme</b> Vás"], '', $html)));
+        self::assertSame($body, self::body($this->letter([Schema::CAMPAIGN_BODY => "Vážení,\n<b>zveme</b> Vás"], $html)));
     }
 
     public static function flags(): array
@@ -159,11 +163,11 @@ final class LetterTest extends TestCase
     }
 
     #[DataProvider('limits')]
-    public function test_of_refusesOverLimits(array $over, string $message, string $letterhead = '', bool $html = true): void
+    public function test_of_refusesOverLimits(array $over, string $message, bool $html = true): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage($message);
-        $this->letter($over, $letterhead, $html);
+        $this->letter($over, $html);
     }
 
     public static function limits(): array
@@ -174,11 +178,15 @@ final class LetterTest extends TestCase
             'long subject'         => [[Schema::CAMPAIGN_SUBJECT => str_repeat('ř', Message::MAX_ANNOTATION + 1)], 'The subject is longer'],
             'long to hands'        => [[Schema::CAMPAIGN_TO_HANDS => str_repeat('ž', Message::MAX_TO_HANDS + 1)], 'To hands is longer'],
             'no body'              => [[Schema::CAMPAIGN_BODY => '<p> </p>'], 'The letter is empty'],
-            // the letterhead alone is no letter
-            'no body, letterhead'  => [[Schema::CAMPAIGN_BODY => '<p> </p>'], 'The letter is empty', 'NSZM'],
-            'no text, letterhead'  => [[Schema::CAMPAIGN_BODY => ''], 'The letter is empty', 'NSZM', false],
-            'no field, letterhead' => [[Schema::CAMPAIGN_BODY => []], 'The letter is empty', 'NSZM'],
-            'text not UTF-8'       => [[Schema::CAMPAIGN_BODY => "Vá\xE9ení"], 'The letter is not UTF-8', 'NSZM', false],
+            // the header alone is no letter
+            'no body, header'      => [[Schema::CAMPAIGN_BODY => '<p> </p>', Schema::CAMPAIGN_HEADER => '<p>NSZM</p>'], 'The letter is empty'],
+            'no text, header'      => [[Schema::CAMPAIGN_BODY => '', Schema::CAMPAIGN_HEADER => 'NSZM'], 'The letter is empty', false],
+            'no field, header'     => [[Schema::CAMPAIGN_BODY => [], Schema::CAMPAIGN_HEADER => '<p>NSZM</p>'], 'The letter is empty'],
+            'text not UTF-8'       => [[Schema::CAMPAIGN_BODY => "Vá\xE9ení", Schema::CAMPAIGN_HEADER => 'NSZM'], 'The letter is not UTF-8', false],
+            'header not UTF-8'     => [[Schema::CAMPAIGN_HEADER => "<p>Vá\xE9ení</p>"], 'The header is not UTF-8'],
+            'footer of 5 lines'    => [[Schema::CAMPAIGN_FOOTER => "a\nb\nc\nd\ne"], PdfBody::FOOTER_TOO_LONG],
+            'footer too wide'      => [[Schema::CAMPAIGN_FOOTER => str_repeat('Národní síť ', 15)], PdfBody::FOOTER_TOO_WIDE],
+            'footer of control'    => [[Schema::CAMPAIGN_FOOTER => "NSZM\x01"], 'A line of the footer is not plain UTF-8 text'],
             'too many files'       => [[Schema::CAMPAIGN_FILES => array_fill(0, Message::MAX_FILES, self::URL . '/pozvanka.pdf')], 'A message has 1 to'],
         ];
     }

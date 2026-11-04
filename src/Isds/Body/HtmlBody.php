@@ -243,20 +243,21 @@ final class HtmlBody
     /**
      * The whole HTML document of the letter
      * @param bool   $html       false: $body is plain text - a blank line parts paragraphs, a line end breaks a line
-     * @param string $letterhead plain text above the body, in the same way - the sender, an address
-     * @param string $css        appended to the style of the letter: the code's own, never a user's (PdfBody::CSS)
+     * @param string $header     above the body - the sender, a logo; cleaned as the body is
+     * @param string $css        appended to the style of the letter: the code's own, never a user's (PdfBody::css())
+     * @param bool   $headerHtml as $html, of $header
      * @throws \InvalidArgumentException not UTF-8, cut off by libxml, empty, larger than a message may be, or
      *                                   of too many pixels; a message may quote the letter - escape it when shown
      * @throws ServerException no temporary directory for the images
      * @throws \RuntimeException an image among the uploads cannot be read; the message names it
      */
-    public function document(string $subject, string $body, bool $html = true, string $letterhead = '', string $css = ''): string
+    public function document(string $subject, string $body, bool $html = true, string $header = '', string $css = '', bool $headerHtml = true): string
     {
         // before anything copies or splits them
-        if (strlen($letterhead) + strlen($body) > Message::MAX_BYTES) {
+        if (strlen($header) + strlen($body) > Message::MAX_BYTES) {
             throw new \InvalidArgumentException('The letter is larger than a data message may be');
         }
-        foreach (['The letterhead' => $letterhead, 'The letter' => $body] as $what => $text) {
+        foreach (['The header' => $header, 'The letter' => $body] as $what => $text) {
             if (!mb_check_encoding($text, 'UTF-8') || str_contains($text, "\0")) {
                 throw new \InvalidArgumentException("$what is not UTF-8 text");
             }
@@ -272,9 +273,9 @@ final class HtmlBody
         $this->sizes       = [];
         $this->omitted     = [];
         $this->append(self::HEAD . '<title>' . self::escape($title) . "</title>\n<style>" . self::CSS . $css . "</style>\n</head>\n<body>\n");
-        if (trim($letterhead) !== '') {
-            $this->children(self::parse(self::plainText($letterhead)));
-            // a letterhead alone is no letter
+        if (trim($header) !== '') {
+            $this->children(self::parse($headerHtml ? $header : self::plainText($header)));
+            // a header alone is no letter
             $this->visible = false;
         }
         $this->children(self::parse($html ? $body : self::plainText($body)));
@@ -486,12 +487,11 @@ final class HtmlBody
     }
 
     /**
-     * Plain text as the letter shows it - a blank line parts paragraphs, a line end breaks a line -, so
-     * that a preview of it (the letterhead on the page) parts it the same way
+     * Plain text as the letter shows it - a blank line parts paragraphs, a line end breaks a line
      * @return list<list<string>> the lines of each paragraph, unescaped
      * @throws \InvalidArgumentException PCRE gave up on it
      */
-    public static function paragraphs(string $text): array
+    private static function paragraphs(string $text): array
     {
         $blocks = preg_split('~\R\s*\R~u', trim($text));
         $parts  = [];

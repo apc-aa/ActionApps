@@ -29,6 +29,10 @@ final class Schema
     public const CAMPAIGN_SENT_BY_NAME = 'text...........7';
     public const CAMPAIGN_STARTED_AT   = 'date...........1';
     public const CAMPAIGN_FINISHED_AT  = 'date...........2';
+    /** above the letter on its first page - rich text, as the letter */
+    public const CAMPAIGN_HEADER       = 'text...........9';
+    /** lines of plain text at the bottom of every page */
+    public const CAMPAIGN_FOOTER       = 'text..........10';
 
     // one item = one recipient of one sending, a test message too
     public const MESSAGE_NAME         = 'headline........';
@@ -66,6 +70,8 @@ final class Schema
         self::CAMPAIGN_SENT_BY_NAME,
         self::CAMPAIGN_STARTED_AT,
         self::CAMPAIGN_FINISHED_AT,
+        self::CAMPAIGN_HEADER,
+        self::CAMPAIGN_FOOTER,
     ];
     public const MESSAGE_FIELDS = [
         self::MESSAGE_NAME,

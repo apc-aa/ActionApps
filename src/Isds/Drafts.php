@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\IO\DB\DB_AA;
+use AA\Isds\Body\PdfBody;
 use AA\Manageraction\Item_MoveItem;
 use AA\Upload\UploadPolicy;
 use AA\Util\FormToken;
@@ -61,6 +62,8 @@ class Drafts
     public const SUBJECT    = 'subject';
     public const TO_HANDS   = 'to_hands';
     public const BODY       = 'body';
+    public const HEADER     = 'header';
+    public const FOOTER     = 'footer';
     /** a choice of recipients the page does not offer */
     public const RECIPIENTS = 'recipients';
     /** more items chosen or left out one by one than Setup::MAX_RECIPIENTS */
@@ -96,7 +99,8 @@ class Drafts
      * carries the filter stored now as the page read it (isds_filter_seen, filterSeen()): a page that
      * could not read it shows it empty, a stale one shows another - the letter is saved then, the
      * filter stays and the save tells FILTER_CHANGED, as for a pick of an item gone since.
-     * Fields: isds_subject, isds_to_hands, isds_body (HTML, stored as posted - escape it wherever shown),
+     * Fields: isds_subject, isds_to_hands, isds_body and isds_header (HTML, stored as posted - escape it wherever
+     * shown), isds_footer (lines of plain text, as PdfBody::footer() takes them),
      * isds_membership, isds_types[], isds_include and isds_exclude (item ids separated by "-": thousands
      * of fields would be cut by max_input_vars), isds_pick (one item picked by a button into the lists
      * posted, RecipientFilter::picked() - only with isds_membership), isds_filter_seen, isds_remove[]
@@ -188,7 +192,7 @@ class Drafts
 
     /**
      * A copy of the campaign $source as a new draft of the page: its letter - subject, "to hands", the
-     * body, the attachments, whose files it shares with the source - and whom it goes to: the filter the
+     * header, the body, the footer, the attachments, whose files it shares with the source - and whom it goes to: the filter the
      * source stores, or for UNSENT and one() the items $items. It names its source (Schema::CAMPAIGN_TEMPLATE);
      * nothing of a sending is copied - the state, the fields a run writes. Its id comes from the nonce of
      * the form (copyId()): a double click makes the one copy; a stale form makes none again - of a copy
@@ -353,7 +357,7 @@ class Drafts
         $changed         = array_filter($fields, static function (AA_Value $value, string $field) use ($item): bool {
             $had = $item->getAaValue($field);
             // a body the admin stored as plain text would go as plain text
-            $plain = ($field === Schema::CAMPAIGN_BODY) && (($had->getFlag() & FLAG_HTML) === 0);
+            $plain = in_array($field, [Schema::CAMPAIGN_BODY, Schema::CAMPAIGN_HEADER], true) && (($had->getFlag() & FLAG_HTML) === 0);
             return ((string) $had->getValue() !== (string) $value->getValue()) || $plain;
         }, ARRAY_FILTER_USE_BOTH);
         $moved = $this->moveIn($setup, $uploads);
@@ -403,7 +407,9 @@ class Drafts
             Schema::CAMPAIGN_SUBJECT  => $item->getAaValue(Schema::CAMPAIGN_SUBJECT),
             Schema::CAMPAIGN_TO_HANDS => $item->getAaValue(Schema::CAMPAIGN_TO_HANDS),
             // with its flag: a body stored as plain text goes as plain text
+            Schema::CAMPAIGN_HEADER   => $item->getAaValue(Schema::CAMPAIGN_HEADER),
             Schema::CAMPAIGN_BODY     => $item->getAaValue(Schema::CAMPAIGN_BODY),
+            Schema::CAMPAIGN_FOOTER   => $item->getAaValue(Schema::CAMPAIGN_FOOTER),
             Schema::CAMPAIGN_FILES    => new AA_Value(self::attachmentsOf($item)),
             // none stored: the copy too is refused sending till its recipients are chosen
             Schema::CAMPAIGN_FILTER   => ($filter === '') ? new AA_Value() : new AA_Value($filter),
@@ -661,13 +667,26 @@ class Drafts
                 return $name;
             }
         }
-        if (array_key_exists('isds_body', $post)) {
-            $body = $post['isds_body'];
-            if (!is_string($body) || (strlen($body) > self::MAX_BODY) || !mb_check_encoding($body, 'UTF-8')) {
-                return self::BODY;
+        foreach ([self::BODY => Schema::CAMPAIGN_BODY, self::HEADER => Schema::CAMPAIGN_HEADER] as $name => $field) {
+            if (!array_key_exists("isds_$name", $post)) {
+                continue;
+            }
+            $html = $post["isds_$name"];
+            if (!is_string($html) || (strlen($html) > self::MAX_BODY) || !mb_check_encoding($html, 'UTF-8')) {
+                return $name;
             }
             // HtmlBody cleans it when the letter is made
-            $fields[Schema::CAMPAIGN_BODY] = new AA_Value($body, FLAG_HTML);
+            $fields[$field] = new AA_Value($html, FLAG_HTML);
+        }
+        if (array_key_exists('isds_footer', $post)) {
+            $footer = $post['isds_footer'];
+            try {
+                // the width of a line only the font tells, when the letter is made
+                PdfBody::footer(is_string($footer) ? $footer : throw new \InvalidArgumentException());
+            } catch (\InvalidArgumentException) {
+                return self::FOOTER;
+            }
+            $fields[Schema::CAMPAIGN_FOOTER] = new AA_Value($footer);
         }
         $lost = false;
         if (array_key_exists('isds_membership', $post)) {

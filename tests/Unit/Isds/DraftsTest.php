@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds;
 
+use AA\Isds\Body\PdfBody;
 use AA\Isds\Actions;
 use AA\Isds\Drafts;
 use AA\Isds\Message;
@@ -122,6 +123,16 @@ final class DraftsTest extends TestCase
             $this->drafts->field($id, Schema::CAMPAIGN_BODY),
         ]);
         self::assertSame(['lock ' . SendRun::lockName($id), 'unlock ' . SendRun::lockName($id)], $this->drafts->lockLog);
+    }
+
+    // the header as rich text, the footer as plain text, each stored as posted
+    public function test_save_headerAndFooter(): void
+    {
+        $this->saveNew(['isds_subject' => 'Výzva', 'isds_header' => '<p><img src="logo.png"> NSZM</p>', 'isds_footer' => " NSZM\r\nPraha "]);
+
+        $id = self::newId();
+        self::assertSame(['<p><img src="logo.png"> NSZM</p>', FLAG_HTML], $this->drafts->items[$id]['fields'][Schema::CAMPAIGN_HEADER]);
+        self::assertSame([" NSZM\r\nPraha ", 0], $this->drafts->items[$id]['fields'][Schema::CAMPAIGN_FOOTER]);
     }
 
     // autosaves and a double click of the form shown: one item, each save into it
@@ -693,6 +704,11 @@ final class DraftsTest extends TestCase
             'body'         => [static fn(): array => ['isds_body' => str_repeat('a', Drafts::MAX_BODY + 1)], Drafts::BODY],
             'subject list' => [static fn(): array => ['isds_subject' => ['Výzva']], Drafts::SUBJECT],
             'body list'    => [static fn(): array => ['isds_body' => ['x']], Drafts::BODY],
+            'header'       => [static fn(): array => ['isds_header' => str_repeat('a', Drafts::MAX_BODY + 1)], Drafts::HEADER],
+            'header list'  => [static fn(): array => ['isds_header' => ['x']], Drafts::HEADER],
+            'footer lines' => [static fn(): array => ['isds_footer' => str_repeat("a\n", PdfBody::FOOTER_LINES + 1)], Drafts::FOOTER],
+            'footer line'  => [static fn(): array => ['isds_footer' => str_repeat('a', PdfBody::FOOTER_CHARS + 1)], Drafts::FOOTER],
+            'footer list'  => [static fn(): array => ['isds_footer' => ['x']], Drafts::FOOTER],
         ];
     }
 
@@ -722,6 +738,9 @@ final class DraftsTest extends TestCase
             'a tab in the subject'    => [['isds_subject' => "Vý\tzva"], Drafts::SUBJECT],
             'cp1250 to hands'         => [['isds_to_hands' => "starosta \x9Aance"], Drafts::TO_HANDS],
             'body cut in a letter'    => [['isds_body' => "<p>\xC3\x28</p>"], Drafts::BODY],
+            'header cut in a letter'  => [['isds_header' => "<p>\xC3\x28</p>"], Drafts::HEADER],
+            'footer cut in a letter'  => [['isds_footer' => "NSZM \xC3\x28"], Drafts::FOOTER],
+            'control in the footer'   => [['isds_footer' => "NSZM\x07"], Drafts::FOOTER],
         ];
     }
 
@@ -1238,6 +1257,8 @@ final class DraftsTest extends TestCase
             Schema::CAMPAIGN_SUBJECT       => ['Výzva', 0],
             Schema::CAMPAIGN_TO_HANDS      => ['starosta', 0],
             Schema::CAMPAIGN_BODY          => ['<p>Vážení</p>', FLAG_HTML],
+            Schema::CAMPAIGN_HEADER        => ['<p>NSZM</p>', FLAG_HTML],
+            Schema::CAMPAIGN_FOOTER        => ["NSZM\nPraha", 0],
             Schema::CAMPAIGN_FILES         => [self::url('a.pdf'), 0],
             Schema::CAMPAIGN_FILTER        => [Sending::filter(['exclude' => [self::ADAMOV]]), 0],
             Schema::CAMPAIGN_TEMPLATE      => ['ca000000000000000000000000000c00', 0],
@@ -1286,6 +1307,8 @@ final class DraftsTest extends TestCase
             $this->drafts->field($id, Schema::CAMPAIGN_FILTER),
         ]);
         self::assertSame(['<p>Vážení</p>', FLAG_HTML], $this->drafts->items[$id]['fields'][Schema::CAMPAIGN_BODY], 'the body with its flag');
+        self::assertSame(['<p>NSZM</p>', FLAG_HTML], $this->drafts->items[$id]['fields'][Schema::CAMPAIGN_HEADER], 'the header');
+        self::assertSame(["NSZM\nPraha", 0], $this->drafts->items[$id]['fields'][Schema::CAMPAIGN_FOOTER], 'the footer');
         self::assertSame([self::url('a.pdf'), self::url('b.pdf')], $this->drafts->values($id, Schema::CAMPAIGN_FILES), 'the same files, none copied');
         self::assertSame(['lock ' . SendRun::lockName($id), 'unlock ' . SendRun::lockName($id)], $this->drafts->lockLog);
     }
@@ -1309,7 +1332,7 @@ final class DraftsTest extends TestCase
         $this->copy();
 
         self::assertSame(
-            ['status_code.....', Schema::CAMPAIGN_STATE, Schema::CAMPAIGN_TEMPLATE, 'last_edit.......', 'edited_by.......', Schema::CAMPAIGN_SUBJECT, Schema::CAMPAIGN_TO_HANDS, Schema::CAMPAIGN_BODY, Schema::CAMPAIGN_FILES, Schema::CAMPAIGN_FILTER],
+            ['status_code.....', Schema::CAMPAIGN_STATE, Schema::CAMPAIGN_TEMPLATE, 'last_edit.......', 'edited_by.......', Schema::CAMPAIGN_SUBJECT, Schema::CAMPAIGN_TO_HANDS, Schema::CAMPAIGN_HEADER, Schema::CAMPAIGN_BODY, Schema::CAMPAIGN_FOOTER, Schema::CAMPAIGN_FILES, Schema::CAMPAIGN_FILTER],
             $this->lastWritten(),
         );
         self::assertSame(Schema::CAMPAIGN_STATE_DRAFT, $this->drafts->field(self::copyId(), Schema::CAMPAIGN_STATE));

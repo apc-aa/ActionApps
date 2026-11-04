@@ -67,9 +67,9 @@ final class HtmlBodyTest extends TestCase
     }
 
     /** what the letter keeps of $body, between <body> and </body> */
-    private static function body(string $body, ?HtmlBody $letter = null, bool $html = true, string $letterhead = ''): string
+    private static function body(string $body, ?HtmlBody $letter = null, bool $html = true, string $header = '', bool $headerHtml = true): string
     {
-        $document = ($letter ?? new HtmlBody())->document('Pozvánka', $body, $html, $letterhead);
+        $document = ($letter ?? new HtmlBody())->document('Pozvánka', $body, $html, $header, headerHtml: $headerHtml);
         $start    = strpos($document, "<body>\n") + strlen("<body>\n");
         return substr($document, $start, strrpos($document, "\n</body>") - $start);
     }
@@ -128,39 +128,45 @@ final class HtmlBodyTest extends TestCase
         return ['HTML' => [true], 'plain text' => [false]];
     }
 
-    // lines of text above the body in either of its formats, escaped
+    // the header above the body in either format of its own, cleaned as the body is
     #[DataProvider('modes')]
-    public function test_document_letterheadAboveTheBody(bool $html): void
+    public function test_document_headerAboveTheBody(bool $html): void
     {
         self::assertSame(
+            '<p>Zdravá města &amp; <b>obce</b></p><p>Palackého 1</p><p>Vážení</p>',
+            self::body('<p>Vážení</p>', null, true, '<p onclick="x()">Zdravá města &amp; <b>obce</b></p><script>x()</script><p>Palackého 1</p>'),
+            'HTML',
+        );
+        self::assertSame(
             "<p>Zdravá města &amp; &lt;b&gt;obce&lt;/b&gt;<br>\nPalackého 1</p>\n<p>Vážení</p>" . ($html ? '' : "\n"),
-            self::body($html ? '<p>Vážení</p>' : 'Vážení', null, $html, " Zdravá města & <b>obce</b>\nPalackého 1\n"),
+            self::body($html ? '<p>Vážení</p>' : 'Vážení', null, $html, " Zdravá města & <b>obce</b>\nPalackého 1\n", false),
+            'plain text',
         );
     }
 
     #[DataProvider('empty')]
-    public function test_document_letterheadAloneIsNoLetter(string $html): void
+    public function test_document_headerAloneIsNoLetter(string $html): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('empty');
-        (new HtmlBody())->document('Pozvánka', $html, true, "Zdravá města\nPalackého 1");
+        (new HtmlBody())->document('Pozvánka', $html, true, '<p>Zdravá města<br>Palackého 1</p>');
     }
 
-    #[DataProvider('notUtf8Letterheads')]
-    public function test_document_refusesLetterheadNotUtf8(string $letterhead): void
+    #[DataProvider('notUtf8Headers')]
+    public function test_document_refusesHeaderNotUtf8(string $header): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The letterhead is not UTF-8 text');
-        (new HtmlBody())->document('Pozvánka', '<p>Vážení</p>', true, $letterhead);
+        $this->expectExceptionMessage('The header is not UTF-8 text');
+        (new HtmlBody())->document('Pozvánka', '<p>Vážení</p>', true, $header);
     }
 
-    public static function notUtf8Letterheads(): array
+    public static function notUtf8Headers(): array
     {
         return ['latin 1' => ["Zdrav\xE1 m\xECsta"], 'NUL' => ["NSZM\0"]];
     }
 
-    // checked before the UTF-8 of the body, so the letterhead counts in the size
-    public function test_document_refusesLetterheadAndLetterOverMessageSize(): void
+    // checked before the UTF-8 of the body, so the header counts in the size
+    public function test_document_refusesHeaderAndLetterOverMessageSize(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('larger than a data message may be');
@@ -169,11 +175,11 @@ final class HtmlBodyTest extends TestCase
 
     // libxml builds its tree outside memory_limit: 20 MB of tags or of lines would take gigabytes
     #[DataProvider('tagged')]
-    public function test_document_refusesTooManyTags(string $body, bool $html, string $letterhead): void
+    public function test_document_refusesTooManyTags(string $body, bool $html, string $header, bool $headerHtml = true): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('tags or lines');
-        (new HtmlBody())->document('Pozvánka', $body, $html, $letterhead);
+        (new HtmlBody())->document('Pozvánka', $body, $html, $header, headerHtml: $headerHtml);
     }
 
     public static function tagged(): array
@@ -182,7 +188,8 @@ final class HtmlBodyTest extends TestCase
         return [
             'HTML'       => [str_repeat('<br>', 200_000) . '<p>a</p>', true, ''],
             'plain text' => [$lines, false, ''],
-            'letterhead' => ['<p>a</p>', true, $lines],
+            'header'     => ['<p>a</p>', true, str_repeat('<br>', 200_001)],
+            'plain header' => ['<p>a</p>', true, $lines, false],
         ];
     }
 
@@ -281,7 +288,7 @@ final class HtmlBodyTest extends TestCase
 
     // what escape() and the line ends would make of it is refused before it is built: at most one copy of
     // the text, never the 6 times larger HTML
-    /** @param 'body'|'letterhead'|'HTML' $place */
+    /** @param 'body'|'header'|'HTML' $place */
     #[DataProvider('growing')]
     public function test_document_refusesWhatGrowsPastMessageSize(string $what, int $grows, string $place): void
     {
@@ -294,7 +301,7 @@ final class HtmlBodyTest extends TestCase
         $before = memory_get_usage();
         try {
             match ($place) {
-                'letterhead' => (new HtmlBody())->document('Pozvánka', '<p>a</p>', true, $text),
+                'header'     => (new HtmlBody())->document('Pozvánka', '<p>a</p>', true, $text, headerHtml: false),
                 'body'       => (new HtmlBody())->document('Pozvánka', $text, false),
                 'HTML'       => (new HtmlBody())->document('Pozvánka', $text),
             };
@@ -315,15 +322,15 @@ final class HtmlBodyTest extends TestCase
             'angle brackets in the body'   => ['<', 4, 'body'],
             'line ends in the body'        => ["a\n", 3, 'body'],
             'line tabulations in the body' => ["a\v", 3, 'body'],
-            'quotes in the letterhead'     => ['"', 6, 'letterhead'],
-            'line ends in the letterhead'  => ["a\n", 3, 'letterhead'],
+            'quotes in the header'         => ['"', 6, 'header'],
+            'line ends in the header'      => ["a\n", 3, 'header'],
             'quotes in a text of HTML'     => ['"', 6, 'HTML'],
         ];
     }
 
     // a text PCRE gives up on must not vanish from the letter
     #[DataProvider('places')]
-    public function test_document_refusesTextPcreCannotSplit(bool $letterhead): void
+    public function test_document_refusesTextPcreCannotSplit(bool $header): void
     {
         $text  = "a\n" . str_repeat(' ', 10_000) . 'b';
         $limit = (string) ini_get('pcre.backtrack_limit');
@@ -331,7 +338,7 @@ final class HtmlBodyTest extends TestCase
         try {
             $this->expectException(\InvalidArgumentException::class);
             $this->expectExceptionMessage('cannot be split');
-            $letterhead ? (new HtmlBody())->document('Pozvánka', '<p>a</p>', true, $text) : (new HtmlBody())->document('Pozvánka', $text, false);
+            $header ? (new HtmlBody())->document('Pozvánka', '<p>a</p>', true, $text, headerHtml: false) : (new HtmlBody())->document('Pozvánka', $text, false);
         } finally {
             ini_set('pcre.backtrack_limit', $limit);
         }
@@ -339,7 +346,7 @@ final class HtmlBodyTest extends TestCase
 
     public static function places(): array
     {
-        return ['letterhead' => [true], 'body' => [false]];
+        return ['header' => [true], 'body' => [false]];
     }
 
     public function test_document_refusesSubjectOverLimit(): void

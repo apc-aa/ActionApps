@@ -497,18 +497,20 @@ final class GateShowsTest extends TestCase
         );
     }
 
-    // ------------------------------------------------------------ letterhead
+    // ------------------------------------------------------------ previous
 
-    public function test_letterhead_partedAsTheLetterEscaped(): void
+    public function test_previous_lastSentCampaignOncePerRequest(): void
     {
-        $gate        = self::gate();
-        $gate->setup = Setup::fromSnapshot(Sending::SITE, Sending::CAMPAIGN, Sending::MESSAGE, Sending::SOURCE, ['mesto' => 'Cities'], letterhead: " Síť <b>zdravých</b> měst\r\nKancelář: {datovkabulk:env} _#HEADLINE\n \n\nPraha #1 ");
+        $gate           = self::gate();
+        $gate->lastSent = self::ITEM;
 
-        self::assertSame("<p>Síť &lt;b&gt;zdravých&lt;/b&gt; měst<br>\nKancelář: {datovkabulk:env} _&#35;HEADLINE</p>\n<p>Praha &#35;1</p>", self::inside($gate, static fn(): string => $gate->letterhead()));
-        self::assertSame("<p>Síť &lt;b&gt;zdravých&lt;/b&gt; měst<br>\nKancelář: {datovkabulk:env} _&#35;HEADLINE</p>\n<p>Praha &#35;1</p>", self::inside($gate, static fn(): string => AA::Un('{datovkabulk:letterhead}')), 'in a template');
-        self::assertSame('', $gate->letterhead(), 'outside the UI');
-        $gate->setup = Sending::page();
-        self::assertSame('', self::inside($gate, static fn(): string => $gate->letterhead()), 'none');
+        self::assertSame([self::ITEM, self::ITEM], self::inside($gate, static fn(): array => [$gate->previous(), AA::Un('{datovkabulk:previous}')]), 'in a template too');
+        self::assertSame(1, $gate->lastSentSearches, 'searched once');
+        self::assertSame('', $gate->previous(), 'outside the UI');
+        // the next request
+        AA::Contentcache()->clear();
+        $gate->lastSent = '';
+        self::assertSame('', self::inside($gate, static fn(): string => $gate->previous()), 'none');
     }
 
     // ------------------------------------------------------------ files

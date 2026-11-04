@@ -73,6 +73,12 @@ final class FakeGate extends Gate
     /** how many times the campaigns were searched for */
     public int $campaignSearches = 0;
 
+    /** the campaign whose sending started last, '' = none */
+    public string $lastSent = '';
+
+    /** how many times it was searched for */
+    public int $lastSentSearches = 0;
+
     /** @var array<string, list<string>> campaign => its test messages, the newest first */
     public array $tests = [];
 
@@ -185,6 +191,13 @@ final class FakeGate extends Gate
         ++$this->campaignSearches;
 
         return $this->campaignList;
+    }
+
+    protected function lastSent(Setup $setup): string
+    {
+        ++$this->lastSentSearches;
+
+        return $this->lastSent;
     }
 
     protected function testMessages(Setup $setup, string $campaign): array

@@ -28,6 +28,8 @@ final class SchemaTest extends TestCase
         'CAMPAIGN_SENT_BY_NAME'   => 'text...........7',
         'CAMPAIGN_STARTED_AT'     => 'date...........1',
         'CAMPAIGN_FINISHED_AT'    => 'date...........2',
+        'CAMPAIGN_HEADER'         => 'text...........9',
+        'CAMPAIGN_FOOTER'         => 'text..........10',
         'MESSAGE_NAME'            => 'headline........',
         'MESSAGE_CAMPAIGN'        => 'relation........',
         'MESSAGE_RECIPIENT'       => 'relation.......1',

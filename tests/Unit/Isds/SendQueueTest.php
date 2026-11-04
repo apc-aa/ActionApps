@@ -119,7 +119,9 @@ final class SendQueueTest extends TestCase
         self::items()->stored[self::CAMPAIGN_ITEM]['fields'] = [
             Schema::CAMPAIGN_STATE    => Schema::CAMPAIGN_STATE_DRAFT,
             Schema::CAMPAIGN_SUBJECT  => 'Pozvánka',
+            Schema::CAMPAIGN_HEADER   => '<p>Národní síť<br>Praha</p>',
             Schema::CAMPAIGN_BODY     => '<p>Vážení, <b>zveme</b> Vás</p>',
+            Schema::CAMPAIGN_FOOTER   => 'NSZM, Praha',
             Schema::CAMPAIGN_TO_HANDS => 'starosta',
             Schema::CAMPAIGN_FILTER   => Sending::filter(),
         ];
@@ -148,7 +150,7 @@ final class SendQueueTest extends TestCase
     /** the settings of the page as its gate checked them, datovka_conf.php binding the test account */
     private static function page(int $max = Setup::DEFAULT_RECIPIENTS, string $senderBox = ''): Setup
     {
-        return Setup::fromSnapshot(Sending::SITE, Sending::CAMPAIGN, Sending::MESSAGE, Sending::SOURCE, ['mesto' => 'Cities', 'mestocast' => 'City districts'], ['mesto'], Sending::MEMBER, [], $max, Account::TEST, $senderBox, "Národní síť\nPraha");
+        return Setup::fromSnapshot(Sending::SITE, Sending::CAMPAIGN, Sending::MESSAGE, Sending::SOURCE, ['mesto' => 'Cities', 'mestocast' => 'City districts'], ['mesto'], Sending::MEMBER, [], $max, Account::TEST, $senderBox);
     }
 
     /** ISDS says the login is $box's; $status other than 0000 refuses the question */
@@ -220,7 +222,7 @@ final class SendQueueTest extends TestCase
 
         self::assertSame(['Pozvánka', 'starosta'], [$letter->annotation, $letter->toHands]);
         self::assertSame(self::PDF, $letter->files[1]->content);
-        self::assertStringStartsWith("Národní síť\nPraha\n", PdfText::of($letter->files[0]->content), 'the letterhead of the page');
+        self::assertSame("Národní síť\nPraha\nVážení, \nzveme\n Vás\nNSZM, Praha\n", PdfText::of($letter->files[0]->content), 'the header and the footer of the campaign');
     }
 
     // a campaign id in capitals is the same campaign
@@ -1335,17 +1337,17 @@ final class SendQueueTest extends TestCase
 
         $sent = self::sentLetter($isds->calls[1]['body']);
         $rows = $this->sending->testLogged[0][3];
-        self::assertSame('1:' . strlen($sent) . ':' . hash('xxh128', $sent) . ':' . PdfBody::source($this->document()) . ':Dopis.pdf', $rows[0]);
+        self::assertSame('1:' . strlen($sent) . ':' . hash('xxh128', $sent) . ':' . PdfBody::source($this->document(), ['NSZM, Praha']) . ':Dopis.pdf', $rows[0]);
         self::assertSame('2:' . strlen(self::PDF) . ':' . hash('xxh128', self::PDF) . ':pozvanka.pdf', $rows[1]);
         self::assertStringStartsWith('3:' . strlen(self::PDF) . ':' . hash('xxh128', self::PDF) . ':příloha-', $rows[2]);
         self::assertLessThanOrEqual(255, strlen($rows[2]), 'a long name cut');
         self::assertTrue(mb_check_encoding($rows[2], 'UTF-8'));
     }
 
-    /** the letter of the campaign item as Letter::of() makes its document, with the letterhead of the page */
+    /** the letter of the campaign item as Letter::of() makes its document, with its header and room for its footer */
     private function document(): string
     {
-        return (new HtmlBody(new UploadDir(TestSendQueue::UPLOAD_URL, $this->dir)))->document('Pozvánka', '<p>Vážení, <b>zveme</b> Vás</p>', true, "Národní síť\nPraha", PdfBody::CSS);
+        return (new HtmlBody(new UploadDir(TestSendQueue::UPLOAD_URL, $this->dir)))->document('Pozvánka', '<p>Vážení, <b>zveme</b> Vás</p>', true, '<p>Národní síť<br>Praha</p>', PdfBody::css(['NSZM, Praha']));
     }
 
     /** the main file of the message in the body of CreateMessage */
@@ -1434,7 +1436,7 @@ final class SendQueueTest extends TestCase
         self::assertSame(TestResult::STATUS_SENT, $this->test()->status, 'the same letter may go: none went');
     }
 
-    // the letter as stored, the letterhead of the page and the prefix: nothing of the request but the box
+    // the letter as stored, with its header and footer, and the prefix: nothing of the request but the box
     public function test_test_sendsStoredDraftNotRequest(): void
     {
         $isds = self::testIsds();
@@ -1446,7 +1448,7 @@ final class SendQueueTest extends TestCase
         self::assertSame(['starosta'], $isds->sent('dmToHands'));
         self::assertStringContainsString('dmFileDescr="pozvanka.pdf"', $body);
         self::assertStringContainsString('<isds:dmEncodedContent>' . base64_encode(self::PDF) . '<', $body);
-        self::assertSame("Národní síť\nPraha\nVážení, \nzveme\n Vás\n", PdfText::of(self::sentLetter($body)), 'the letterhead of the page and the draft');
+        self::assertSame("Národní síť\nPraha\nVážení, \nzveme\n Vás\nNSZM, Praha\n", PdfText::of(self::sentLetter($body)), 'the draft');
     }
 
     public function test_test_insideATransaction_throws(): void

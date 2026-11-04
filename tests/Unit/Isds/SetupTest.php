@@ -59,7 +59,6 @@ final class SetupTest extends TestCase
             'default_types'  => ['mesto'],
             'member_field'   => Sending::MEMBER,
             'test_box'       => [' DJ7J6MK '],
-            'letterhead'     => "Národní síť Zdravých měst ČR\nPalackého 1, Praha",
         ];
     }
 
@@ -99,7 +98,6 @@ final class SetupTest extends TestCase
         self::assertSame(Setup::DEFAULT_RECIPIENTS, $setup->maxRecipients);
         self::assertSame(Account::TEST, $setup->environment);
         self::assertSame('', $setup->senderBox, 'a name and a password do not tell the box');
-        self::assertSame("Národní síť Zdravých měst ČR\nPalackého 1, Praha", $setup->letterhead);
     }
 
     public function test_fromTemplate_idsInCapitals(): void
@@ -114,13 +112,13 @@ final class SetupTest extends TestCase
     {
         $settings = AA::Un('{jsonasoc:campaign_slice:' . self::CAMPAIGN . ':message_slice:' . self::MESSAGE . ':source_slice:' . self::SOURCE
             . ':types:{jsonasoc:mesto:Cities:mestocast:City districts}:default_types:["mesto","mestocast"]:member_field::test_box:["dj7j6mk","abc1234"]'
-            . ':max_recipients::environment:test:letterhead:NSZM ČR}');
+            . ':max_recipients::environment:test}');
         $setup    = self::build($settings);
 
         self::assertSame(['mesto' => 'Cities', 'mestocast' => 'City districts'], $setup->types);
         self::assertSame(['mesto', 'mestocast'], $setup->defaultTypes);
         self::assertSame(['dj7j6mk', 'abc1234'], $setup->testBoxes);
-        self::assertSame(['', Setup::DEFAULT_RECIPIENTS, 'NSZM ČR'], [$setup->memberField, $setup->maxRecipients, $setup->letterhead], 'an empty value is no value');
+        self::assertSame(['', Setup::DEFAULT_RECIPIENTS], [$setup->memberField, $setup->maxRecipients], 'an empty value is no value');
     }
 
     public function test_fromTemplate_nestedAsJsonText(): void
@@ -152,10 +150,10 @@ final class SetupTest extends TestCase
     #[DataProvider('unset')]
     public function test_fromTemplate_emptyIsNotSet(mixed $empty): void
     {
-        $settings = array_fill_keys(['default_types', 'member_field', 'test_box', 'max_recipients', 'environment', 'letterhead'], $empty) + self::settings();
+        $settings = array_fill_keys(['default_types', 'member_field', 'test_box', 'max_recipients', 'environment'], $empty) + self::settings();
         $setup    = self::build($settings);
 
-        self::assertSame([[], '', [], Setup::DEFAULT_RECIPIENTS, Account::TEST, ''], [$setup->defaultTypes, $setup->memberField, $setup->testBoxes, $setup->maxRecipients, $setup->environment, $setup->letterhead]);
+        self::assertSame([[], '', [], Setup::DEFAULT_RECIPIENTS, Account::TEST], [$setup->defaultTypes, $setup->memberField, $setup->testBoxes, $setup->maxRecipients, $setup->environment]);
         self::assertSame(['Set source_slice to the id of a slice - 32 hexadecimal digits'], self::problems(['source_slice' => $empty] + self::settings()));
     }
 

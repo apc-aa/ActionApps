@@ -21,10 +21,13 @@ require_once __DIR__ . '/../fixtures/PdfText.php';
 /** The letter as dompdf lays it out: whole, or refused with what to change - never sent short */
 final class PdfBodyTest extends TestCase
 {
-    /** the document of $body as Letter::of() makes it */
-    private static function doc(string $body, string $subject = 'Pozvánka'): string
+    /**
+     * the document of $body as Letter::of() makes it, with room for $footer
+     * @param list<string> $footer
+     */
+    private static function doc(string $body, string $subject = 'Pozvánka', array $footer = []): string
     {
-        return (new HtmlBody())->document($subject, $body, true, '', PdfBody::CSS);
+        return (new HtmlBody())->document($subject, $body, true, '', PdfBody::css($footer));
     }
 
     /** a document HtmlBody would never write: what dompdf does with it */
@@ -33,16 +36,20 @@ final class PdfBodyTest extends TestCase
         return "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><style>" . PdfBody::CSS . "</style>$head</head><body>$body</body></html>";
     }
 
-    private static function render(string $document, int $pages = PdfBody::MAX_PAGES, float $seconds = PdfBody::MAX_SECONDS): File
+    /** @param list<string> $footer */
+    private static function render(string $document, int $pages = PdfBody::MAX_PAGES, float $seconds = PdfBody::MAX_SECONDS, array $footer = []): File
     {
-        return (new PdfBody($pages, $seconds))->render($document);
+        return (new PdfBody($pages, $seconds))->render($document, $footer);
     }
 
-    /** the message render() refuses $document with, '' = none */
-    private static function refusal(string $document, int $pages = PdfBody::MAX_PAGES, float $seconds = PdfBody::MAX_SECONDS): string
+    /**
+     * the message render() refuses $document with, '' = none
+     * @param list<string> $footer
+     */
+    private static function refusal(string $document, int $pages = PdfBody::MAX_PAGES, float $seconds = PdfBody::MAX_SECONDS, array $footer = []): string
     {
         try {
-            self::render($document, $pages, $seconds);
+            self::render($document, $pages, $seconds, $footer);
             return '';
         } catch (\InvalidArgumentException $e) {
             return $e->getMessage();
@@ -122,7 +129,81 @@ final class PdfBodyTest extends TestCase
         self::assertSame(PdfBody::source($doc), PdfBody::source(self::doc('<p>Vážení,</p>')));
         self::assertNotSame(PdfBody::source($doc), PdfBody::source(self::doc('<p>Vážení!</p>')));
         $dompdf = InstalledVersions::getPrettyVersion('dompdf/dompdf') . '@' . InstalledVersions::getReference('dompdf/dompdf');
-        self::assertSame(hash('xxh128', PdfBody::FORMAT . "\0$dompdf\0$doc"), PdfBody::source($doc), 'the look and the dompdf in it');
+        self::assertSame(hash('xxh128', PdfBody::FORMAT . "\0$dompdf\0$doc\0"), PdfBody::source($doc), 'the look and the dompdf in it');
+        self::assertSame(PdfBody::source($doc, ['NSZM', 'Praha']), PdfBody::source($doc, ['NSZM', 'Praha']));
+        self::assertNotSame(PdfBody::source($doc), PdfBody::source($doc, ['NSZM']), 'the footer in it');
+        self::assertNotSame(PdfBody::source($doc, ['NSZM', 'Praha']), PdfBody::source($doc, ['NSZM Praha']));
+    }
+
+    // ------------------------------------------------------------ footer
+
+    public function test_footer_linesOfPlainText(): void
+    {
+        self::assertSame([], PdfBody::footer(" \r\n \n"));
+        self::assertSame(['NSZM', '', 'Praha  1'], PdfBody::footer("\n NSZM \r\n\nPraha\t 1\n"), 'a blank line stays, a tab is a space');
+        self::assertSame(array_fill(0, PdfBody::FOOTER_LINES, 'a'), PdfBody::footer(implode("\n", array_fill(0, PdfBody::FOOTER_LINES, 'a'))));
+        self::assertSame([str_repeat('ž', PdfBody::FOOTER_CHARS)], PdfBody::footer(str_repeat('ž', PdfBody::FOOTER_CHARS)));
+    }
+
+    #[DataProvider('badFooters')]
+    public function test_footer_refused(string $text, string $message): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage($message);
+        PdfBody::footer($text);
+    }
+
+    public static function badFooters(): array
+    {
+        return [
+            'too many lines'   => [implode("\n", array_fill(0, PdfBody::FOOTER_LINES + 1, 'a')), PdfBody::FOOTER_TOO_LONG],
+            'a line too long'  => [str_repeat('ž', PdfBody::FOOTER_CHARS + 1), 'A line of the footer is longer than ' . PdfBody::FOOTER_CHARS],
+            'control'          => ["NSZM\x07", 'A line of the footer is not plain UTF-8 text'],
+            'not UTF-8'        => ["Zdrav\xE1", 'The footer is not plain UTF-8 text'],
+        ];
+    }
+
+    // the bottom margin grows by the lines of the footer, never below the 20 mm of CSS
+    public function test_css_roomForTheFooter(): void
+    {
+        self::assertSame(PdfBody::CSS, PdfBody::css([]));
+        self::assertSame(PdfBody::CSS . '@page{margin-bottom:65pt}', PdfBody::css(['a']));
+        self::assertSame(PdfBody::CSS . '@page{margin-bottom:87pt}', PdfBody::css(['a', '', 'c']));
+    }
+
+    // each line to the right edge of the text, below the letter and above the page number, on every page
+    public function test_render_footerOnEveryPage(): void
+    {
+        $footer  = ['Národní síť Zdravých měst ČR', 'datová schránka: msx89nm | IČ: 61385247 | Na Poříčí 1041/12, 110 00 Praha 1'];
+        $pdf     = self::render(self::doc(self::paragraphs(40), footer: $footer), footer: $footer)->content;
+        $shown   = PdfText::shown($pdf);
+        $lines   = array_values(array_filter($shown, static fn(array $s): bool => in_array($s[0], $footer, true)));
+        $numbers = array_values(array_filter($shown, static fn(array $s): bool => str_starts_with($s[0], 'strana ')));
+        $letter  = array_filter($shown, static fn(array $s): bool => !in_array($s[0], $footer, true) && !str_starts_with($s[0], 'strana '));
+
+        self::assertSame(40, self::numbered($pdf), 'the letter whole');
+        self::assertCount(count($numbers) * 2, $lines, 'on each page');
+        self::assertGreaterThan(1, count($numbers));
+        self::assertGreaterThan(max(array_column($numbers, 2)), min(array_column($lines, 2)), 'above the page number');
+        self::assertGreaterThan(max(array_column($lines, 2)) + 10, min(array_column($letter, 2)), 'below the letter');
+        self::assertLessThan(20 / 25.4 * 72, $lines[1][2], 'the last line within the margin of 20 mm');
+        self::assertEqualsWithDelta($lines[0][2] - $lines[1][2], 11.0, 0.01, 'line under line');
+    }
+
+    public function test_render_footerOfOnePageUnnumbered(): void
+    {
+        $pdf = self::render(self::doc('<p>Vážení,</p>', footer: ['NSZM']), footer: ['NSZM'])->content;
+
+        self::assertSame(['NSZM'], array_values(array_filter(array_column(PdfText::shown($pdf), 0), static fn(string $t): bool => $t !== 'Vážení,')));
+    }
+
+    // drawn after the layout, a line wider than the page would run off it unseen
+    public function test_render_refusesFooterWiderThanThePage(): void
+    {
+        $wide = [str_repeat('Národní síť ', 15)];
+
+        self::assertSame(PdfBody::FOOTER_TOO_WIDE, self::refusal(self::doc('<p>Vážení,</p>', footer: $wide), footer: $wide));
+        self::assertSame('', self::refusal(self::doc('<p>Vážení,</p>', footer: [str_repeat('Národní síť ', 7)]), footer: [str_repeat('Národní síť ', 7)]));
     }
 
     public function test_render_onePageUnnumbered(): void

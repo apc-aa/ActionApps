@@ -31,7 +31,7 @@ final readonly class Setup
     /** what a template may set - a name fits object_text.property, 16 bytes */
     public const SETTINGS = [
         'campaign_slice', 'message_slice', 'source_slice', 'types', 'default_types', 'member_field',
-        'test_box', 'max_recipients', 'environment', 'letterhead',
+        'test_box', 'max_recipients', 'environment',
     ];
 
     /**
@@ -45,8 +45,6 @@ final readonly class Setup
      * @param string                   $environment  Account::TEST or Account::PRODUCTION, as datovka_conf.php binds it
      * @param string                   $senderBox    the box a hosted filing service sends from; '' = ISDS tells it
      *                                               when asked, which a page never does
-     * @param string                   $letterhead   plain text above every letter, one line a row - the sender,
-     *                                               an address; HTML in it shows as written
      */
     private function __construct(
         public string $site,
@@ -60,7 +58,6 @@ final readonly class Setup
         public int $maxRecipients,
         public string $environment,
         public string $senderBox,
-        public string $letterhead,
     ) {}
 
     /**
@@ -82,9 +79,8 @@ final readonly class Setup
         int $maxRecipients = self::DEFAULT_RECIPIENTS,
         string $environment = Account::TEST,
         string $senderBox = '',
-        string $letterhead = '',
     ): self {
-        return new self($site, $campaignSlice, $messageSlice, $sourceSlice, $types, $defaultTypes, $memberField, $testBoxes, $maxRecipients, $environment, $senderBox, $letterhead);
+        return new self($site, $campaignSlice, $messageSlice, $sourceSlice, $types, $defaultTypes, $memberField, $testBoxes, $maxRecipients, $environment, $senderBox);
     }
 
     /**
@@ -123,7 +119,6 @@ final readonly class Setup
         $testBoxes   = self::boxes($values['test_box'] ?? [], $problems);
         $max         = self::max($values['max_recipients'] ?? self::DEFAULT_RECIPIENTS, $problems);
         $environment = $values['environment'] ?? '';
-        $letterhead  = $values['letterhead'] ?? '';
 
         $typeIds = array_map('strval', array_keys($types));
         if ($types && ($unchosen = array_diff($defaults, $typeIds))) {
@@ -131,9 +126,6 @@ final readonly class Setup
         }
         if (!in_array($environment, ['', Account::TEST], true)) {
             $problems[] = new SliceProblem(_m('environment may only be "%1" - misc/datovka/datovka_conf.php decides when production is used', [Account::TEST]));
-        }
-        if (!is_string($letterhead)) {
-            $problems[] = new SliceProblem(_m('Set letterhead to a text'));
         }
 
         $account = null;
@@ -167,7 +159,7 @@ final readonly class Setup
             throw new SetupException($problems, $campaign);
         }
 
-        return new self($site, $campaign, $message, $source, $types, $defaults, $memberField, $testBoxes, $max, $account->environment, ($account->kind === Account::HOSTED) ? $account->login : '', (string) $letterhead);
+        return new self($site, $campaign, $message, $source, $types, $defaults, $memberField, $testBoxes, $max, $account->environment, ($account->kind === Account::HOSTED) ? $account->login : '');
     }
 
     /**

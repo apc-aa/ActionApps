@@ -24,9 +24,10 @@ class CheckIsdsPdf extends AbstractOptimize
 {
     /**
      * Czech letters, a table, <pre> in the other font and an image: what each sending letter may hold; in the frame
-     * of an e-mail wider than the page, which the PDF makes blocks of and narrower
+     * of an e-mail wider than the page, which the PDF makes blocks of and narrower; a header and a footer
      */
-    private const LETTERHEAD = "Obec Zkušební\nNáměstí 1, 123 45 Zkušebná";
+    private const HEADER = '<p>Obec Zkušební<br>Náměstí 1, 123 45 Zkušebná</p>';
+    private const FOOTER = ['Obec Zkušební, Náměstí 1, 123 45 Zkušebná'];
     private const BODY = '<table width="700"><tr><td><p>Příliš žluťoučký kůň úpěl ďábelské ódy.</p>'
         . '<table border="1"><tr><td width="200">Pondělí</td><td>9:00</td></tr></table>'
         . '<pre>Čj. 42/2026</pre><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQI12NkiFrAgA0wMeAAg1MCAMfEAQqHEKHXAAAAAElFTkSuQmCC" alt=""></p>'
@@ -69,7 +70,7 @@ class CheckIsdsPdf extends AbstractOptimize
         }
         try {
             $html = new HtmlBody();
-            $pdf  = $this->render($html->document('Zkouška', $this->body(), true, self::LETTERHEAD, PdfBody::CSS));
+            $pdf  = $this->render($html->document('Zkouška', $this->body(), true, self::HEADER, PdfBody::css(self::FOOTER)));
             // without its fonts dompdf falls back to Helvetica, which has no Czech; without GD the image is left out
             preg_match_all('~/BaseFont /(?:[A-Z]{6}\+)?(DejaVuSans(?:Mono)?)\b~', $pdf->content, $fonts);
             $made = !$html->omitted() && str_starts_with($pdf->content, '%PDF-') && (count(array_unique($fonts[1])) === 2)
@@ -115,7 +116,7 @@ class CheckIsdsPdf extends AbstractOptimize
 
     protected function render(string $document): File
     {
-        return (new PdfBody())->render($document);
+        return (new PdfBody())->render($document, self::FOOTER);
     }
 
     /** @return string what the server lacks for certain: 'dompdf', 'gd', '' = neither */

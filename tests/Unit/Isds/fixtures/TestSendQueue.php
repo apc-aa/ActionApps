@@ -110,7 +110,7 @@ final class TestSendQueue extends SendQueue
             'expiry_date.....' => [['value' => 4_000_000_000]],
         ];
         foreach ($item['fields'] as $field => $value) {
-            $content[$field] = [['value' => $value, 'flag' => ($field === Schema::CAMPAIGN_BODY) ? FLAG_HTML : 0]];
+            $content[$field] = [['value' => $value, 'flag' => in_array($field, [Schema::CAMPAIGN_BODY, Schema::CAMPAIGN_HEADER], true) ? FLAG_HTML : 0]];
         }
         $content[Schema::CAMPAIGN_FILES] = array_map(static fn(string $url): array => ['value' => $url, 'flag' => 0], $this->files);
         return new ItemContent($content);

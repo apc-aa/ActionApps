@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\IO\DB\DB_AA;
-use AA\Isds\Body\HtmlBody;
 use AA\Isds\Registry\Sync;
 use AA\Later\BatchFailed;
 use AA\Upload\UploadDir;
@@ -792,23 +791,14 @@ class Gate
     }
 
     /**
-     * The letterhead of the page (Setup::$letterhead) as the letter shows it above its text - paragraphs
-     * and lines as HtmlBody parts them -, escaped: a preview that does not differ from the PDF. '' for none.
+     * The campaign of the page whose sending started last, in the active bin: a template takes the header and
+     * footer of a new campaign from it. '' for none
      */
-    public function letterhead(): string
+    public function previous(): string
     {
-        $text = self::$open->letterhead ?? '';
-        if (trim($text) === '') {
-            return '';
-        }
-        try {
-            $paragraphs = HtmlBody::paragraphs($text);
-        } catch (\InvalidArgumentException) {
-            // the letter fails on it too, and says why
-            return '';
-        }
+        $setup = self::$open;
 
-        return implode("\n", array_map(static fn(array $lines): string => '<p>' . implode("<br>\n", array_map(self::text(...), $lines)) . '</p>', $paragraphs));
+        return is_null($setup) ? '' : safe($this->once('previous', fn(): string => $this->lastSent($setup), $setup));
     }
 
     /** '1' when the page tells members (Setup::$memberField) - only then does the choice of membership count */
@@ -1577,6 +1567,15 @@ class Gate
     protected function campaignIds(Setup $setup): array
     {
         return array_map('strval', (new AA_Set([$setup->campaignSlice], null, [['last_edit.......' => 'd']], \AA_BIN_ACTIVE))->query()->longids());
+    }
+
+    /** @return string long id of the campaign whose sending started last, in the active bin; '' for none */
+    protected function lastSent(Setup $setup): string
+    {
+        $started = [[Schema::CAMPAIGN_STARTED_AT => 1, 'operator' => '>', 'value' => '0']];
+        $ids     = (new AA_Set([$setup->campaignSlice], $started, [[Schema::CAMPAIGN_STARTED_AT => 'd']], \AA_BIN_ACTIVE))->query()->longids();
+
+        return strtolower((string) ($ids[0] ?? ''));
     }
 
     /** @return list<string> long ids of the test messages of the campaign in the active bin, the newest first */
