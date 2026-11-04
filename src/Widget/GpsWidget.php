@@ -76,7 +76,7 @@ class GpsWidget extends Widget
                  position: 'bottomright',
                  edit: { featureGroup: drawnItems$js_id, poly: { allowIntersection: false }, remove: false, edit: false },
                  draw: { ";
-            $drawComponent .= str_contains($shapes, 'M') ? 'marker: true' : ', marker: false';
+            $drawComponent .= str_contains($shapes, 'M') ? 'marker: true' : 'marker: false';
             $drawComponent .= str_contains($shapes, 'L') ? ', polyline: true' : ', polyline: false';
             $drawComponent .= str_contains($shapes, 'P') ? ', polygon: true' : ', polygon: false';
             $drawComponent .= str_contains($shapes, 'R') ? ', rectangle: true' : ', rectangle: false';
