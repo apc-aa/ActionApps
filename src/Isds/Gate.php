@@ -791,8 +791,8 @@ class Gate
     }
 
     /**
-     * The campaign of the page whose sending started last, in the active bin: a template takes the header and
-     * footer of a new campaign from it. '' for none
+     * The campaign of the page whose sending started last in its environment, in the active bin: a template takes
+     * the header and footer of a new campaign from it. '' for none
      */
     public function previous(): string
     {
@@ -1569,11 +1569,17 @@ class Gate
         return array_map('strval', (new AA_Set([$setup->campaignSlice], null, [['last_edit.......' => 'd']], \AA_BIN_ACTIVE))->query()->longids());
     }
 
-    /** @return string long id of the campaign whose sending started last, in the active bin; '' for none */
+    /**
+     * @return string long id of the campaign whose sending started last, in the active bin, in the environment of
+     *                the page - a test sending is no letter of production; '' for none
+     */
     protected function lastSent(Setup $setup): string
     {
-        $started = [[Schema::CAMPAIGN_STARTED_AT => 1, 'operator' => '>', 'value' => '0']];
-        $ids     = (new AA_Set([$setup->campaignSlice], $started, [[Schema::CAMPAIGN_STARTED_AT => 'd']], \AA_BIN_ACTIVE))->query()->longids();
+        $started = [
+            [Schema::CAMPAIGN_STARTED_AT => 1, 'operator' => '>', 'value' => '0'],
+            [Schema::CAMPAIGN_ENVIRONMENT => 1, 'operator' => '==', 'value' => $setup->environment],
+        ];
+        $ids = (new AA_Set([$setup->campaignSlice], $started, [[Schema::CAMPAIGN_STARTED_AT => 'd']], \AA_BIN_ACTIVE))->query(limit: 1)->longids();
 
         return strtolower((string) ($ids[0] ?? ''));
     }

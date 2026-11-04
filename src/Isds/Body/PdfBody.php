@@ -26,8 +26,9 @@ final class PdfBody
 {
     public const NAME = 'Dopis.pdf';
 
-    /** points of the highest image, with room for a line of text or the padding of a cell on its page */
-    public const IMAGE_HEIGHT = 700;
+    /** points of the highest image, with room for a line of text or the padding of a cell on its page - also above a
+     *  footer of FOOTER_LINES */
+    public const IMAGE_HEIGHT = 655;
     /** points of a line of A4 within the margins of CSS */
     public const LINE_WIDTH = 481;
 
@@ -46,10 +47,10 @@ final class PdfBody
     /** raised with every change of how a letter looks - a test message of the same draft goes again */
     public const FORMAT = 3;
 
-    /** the footer (footer()): lines and characters of a line at most */
+    /** the footer (footer()): lines at most, and characters of a line - at most: a wide letter fills the line sooner */
     public const FOOTER_LINES = 4;
-    public const FOOTER_CHARS = 200;
-    public const FOOTER_TOO_LONG = 'The footer has more than 4 lines - shorten it';
+    public const FOOTER_CHARS = 120;
+    public const FOOTER_TOO_LONG = 'The footer has more than ' . self::FOOTER_LINES . ' lines - shorten it';
     public const FOOTER_TOO_WIDE = 'A line of the footer is wider than the page - shorten it or split it into two lines';
 
     /** the page number of a letter of more pages, small and grey: its top this many points above the bottom edge, in the 20 mm margin */
@@ -136,8 +137,8 @@ final class PdfBody
     public function __construct(private readonly int $maxPages = self::MAX_PAGES, private readonly float $maxSeconds = self::MAX_SECONDS) {}
 
     /**
-     * @param string       $document of HtmlBody::document() with css() of the same footer
-     * @param list<string> $footer   footer(): drawn on every page
+     * @param string       $document of HtmlBody::document() with CSS
+     * @param list<string> $footer   footer(): drawn on every page, the bottom margin made room for it
      * @throws \InvalidArgumentException a letter that is no PDF whole; the message says what to change
      * @throws ServerException no directory for dompdf, PCRE failed to measure the letter or lost an image of it
      */
@@ -148,7 +149,7 @@ final class PdfBody
             throw new \InvalidArgumentException(self::TOO_LONG);
         }
         unset($size);
-        [$document, $this->numbers] = PdfTables::flow($document);
+        [$document, $this->numbers] = PdfTables::flow(self::withFooterRoom($document, $footer));
         $dir = sys_get_temp_dir() . '/aa-pdf-' . bin2hex(random_bytes(8));
         if (!@mkdir($dir, 0o700)) {
             throw new ServerException('There is no temporary directory for the PDF letter');
@@ -252,13 +253,17 @@ final class PdfBody
      */
     public static function footer(string $text): array
     {
-        $text = trim(str_replace("\t", ' ', $text), " \r\n");
-        if ($text === '') {
-            return [];
-        }
-        $lines = preg_split('~\R~u', $text);
+        // a blank line around the text - also of a no-break space or another invisible character - draws only the rule
+        $lines = preg_split('~\R~u', str_replace("\t", ' ', $text));
         if ($lines === false) {
             throw new \InvalidArgumentException('The footer is not plain UTF-8 text');
+        }
+        $blank = static fn(string $line): bool => preg_match('~^[\s\p{Z}\p{Cf}]*+$~u', $line) === 1;
+        while (($lines !== []) && $blank($lines[0])) {
+            array_shift($lines);
+        }
+        while (($lines !== []) && $blank($lines[array_key_last($lines)])) {
+            array_pop($lines);
         }
         if (count($lines) > self::FOOTER_LINES) {
             throw new \InvalidArgumentException(self::FOOTER_TOO_LONG);
@@ -267,17 +272,21 @@ final class PdfBody
     }
 
     /**
-     * The CSS of a letter for HtmlBody::document(): CSS, with the bottom margin made room for the footer
+     * $document with the bottom margin made room for the footer, after CSS: whoever lays out the letter knows the
+     * footer, the document need not
      * @param list<string> $footer footer()
      */
-    public static function css(array $footer): string
+    private static function withFooterRoom(string $document, array $footer): string
     {
         if ($footer === []) {
-            return self::CSS;
+            return $document;
         }
         $margin = self::FOOTER_FROM_BOTTOM + (count($footer) - 1) * self::FOOTER_LEADING + self::FOOTER_RULE_GAP + self::FOOTER_SPACE;
+        $style  = '<style>@page{margin-bottom:' . max(self::MARGIN, $margin) . 'pt}</style>';
+        // HtmlBody writes one </head>, before the letter
+        $at = strpos($document, '</head>');
 
-        return self::CSS . '@page{margin-bottom:' . max(self::MARGIN, $margin) . 'pt}';
+        return ($at === false) ? $style . $document : substr_replace($document, $style, $at, 0);
     }
 
     /**

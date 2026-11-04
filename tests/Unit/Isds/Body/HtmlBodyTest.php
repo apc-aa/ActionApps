@@ -733,13 +733,13 @@ final class HtmlBodyTest extends TestCase
     public static function imageWidths(): array
     {
         return [
-            'width'        => ['<img width="2000" src="SRC">', 'width="233"'],
-            'width in %'   => ['<img width="100%" src="SRC">', 'width="233"'],
+            'width'        => ['<img width="2000" src="SRC">', 'width="218"'],
+            'width in %'   => ['<img width="100%" src="SRC">', 'width="218"'],
             'narrow width' => ['<img width="100" src="SRC">', 'width="100"'],
             'narrow %'     => ['<img width="10%" src="SRC">', 'width="10%"'],
-            'style'        => ['<img style="width: 2000px" src="SRC">', 'style="width: 175pt"'],
-            'style in %'   => ['<img style="width: 100%" src="SRC">', 'style="width: 175pt"'],
-            'style in em'  => ['<img style="color: red; width: 40em" src="SRC">', 'style="color: red; width: 175pt"'],
+            'style'        => ['<img style="width: 2000px" src="SRC">', 'style="width: 163pt"'],
+            'style in %'   => ['<img style="width: 100%" src="SRC">', 'style="width: 163pt"'],
+            'style in em'  => ['<img style="color: red; width: 40em" src="SRC">', 'style="color: red; width: 163pt"'],
             'narrow style' => ['<img style="width: 100pt" src="SRC">', 'style="width: 100pt"'],
         ];
     }

@@ -244,7 +244,7 @@ final class HtmlBody
      * The whole HTML document of the letter
      * @param bool   $html       false: $body is plain text - a blank line parts paragraphs, a line end breaks a line
      * @param string $header     above the body - the sender, a logo; cleaned as the body is
-     * @param string $css        appended to the style of the letter: the code's own, never a user's (PdfBody::css())
+     * @param string $css        appended to the style of the letter: the code's own, never a user's (PdfBody::CSS)
      * @param bool   $headerHtml as $html, of $header
      * @throws \InvalidArgumentException not UTF-8, cut off by libxml, empty, larger than a message may be, or
      *                                   of too many pixels; a message may quote the letter - escape it when shown

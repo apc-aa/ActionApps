@@ -58,7 +58,7 @@ final readonly class Letter
         $subject  = (string) $campaign->getValue(Schema::CAMPAIGN_SUBJECT);
         $html     = self::isHtml($campaign, Schema::CAMPAIGN_BODY);
         $footer   = PdfBody::footer((string) $campaign->getValue(Schema::CAMPAIGN_FOOTER));
-        $document = (new HtmlBody($uploads))->document($subject, (string) $campaign->getValue(Schema::CAMPAIGN_BODY), $html, (string) $campaign->getValue(Schema::CAMPAIGN_HEADER), PdfBody::css($footer), self::isHtml($campaign, Schema::CAMPAIGN_HEADER));
+        $document = (new HtmlBody($uploads))->document($subject, (string) $campaign->getValue(Schema::CAMPAIGN_BODY), $html, (string) $campaign->getValue(Schema::CAMPAIGN_HEADER), PdfBody::CSS, self::isHtml($campaign, Schema::CAMPAIGN_HEADER));
         $short    = $makeRoom(PdfBody::memory($document));
         if ($short !== '') {
             throw new \OverflowException($short);

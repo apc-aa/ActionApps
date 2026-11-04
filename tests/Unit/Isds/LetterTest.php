@@ -82,7 +82,7 @@ final class LetterTest extends TestCase
     public function test_of_sourceOfTheDocument(): void
     {
         $footer   = ['NSZM, Praha'];
-        $document = (new HtmlBody(new UploadDir(self::URL, $this->dir)))->document('Pozvánka', '<p>Vážení, <b>zveme</b> Vás</p>', true, '<p>NSZM</p>', PdfBody::css($footer));
+        $document = (new HtmlBody(new UploadDir(self::URL, $this->dir)))->document('Pozvánka', '<p>Vážení, <b>zveme</b> Vás</p>', true, '<p>NSZM</p>', PdfBody::CSS);
 
         self::assertSame(PdfBody::source($document, $footer), $this->letter([Schema::CAMPAIGN_HEADER => '<p>NSZM</p>', Schema::CAMPAIGN_FOOTER => ' NSZM, Praha '])->source);
         self::assertNotSame(PdfBody::source($document, $footer), $this->letter([Schema::CAMPAIGN_HEADER => '<p>NSZM</p>', Schema::CAMPAIGN_FOOTER => 'NSZM, Brno'])->source, 'another footer');
@@ -185,7 +185,7 @@ final class LetterTest extends TestCase
             'text not UTF-8'       => [[Schema::CAMPAIGN_BODY => "Vá\xE9ení", Schema::CAMPAIGN_HEADER => 'NSZM'], 'The letter is not UTF-8', false],
             'header not UTF-8'     => [[Schema::CAMPAIGN_HEADER => "<p>Vá\xE9ení</p>"], 'The header is not UTF-8'],
             'footer of 5 lines'    => [[Schema::CAMPAIGN_FOOTER => "a\nb\nc\nd\ne"], PdfBody::FOOTER_TOO_LONG],
-            'footer too wide'      => [[Schema::CAMPAIGN_FOOTER => str_repeat('Národní síť ', 15)], PdfBody::FOOTER_TOO_WIDE],
+            'footer too wide'      => [[Schema::CAMPAIGN_FOOTER => str_repeat('MW', 40)], PdfBody::FOOTER_TOO_WIDE],
             'footer of control'    => [[Schema::CAMPAIGN_FOOTER => "NSZM\x01"], 'A line of the footer is not plain UTF-8 text'],
             'too many files'       => [[Schema::CAMPAIGN_FILES => array_fill(0, Message::MAX_FILES, self::URL . '/pozvanka.pdf')], 'A message has 1 to'],
         ];

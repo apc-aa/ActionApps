@@ -681,12 +681,12 @@ class Drafts
         if (array_key_exists('isds_footer', $post)) {
             $footer = $post['isds_footer'];
             try {
-                // the width of a line only the font tells, when the letter is made
-                PdfBody::footer(is_string($footer) ? $footer : throw new \InvalidArgumentException());
+                // the lines as checked, so that no more is stored; the width of a line only the font tells, when the letter is made
+                $lines = PdfBody::footer(is_string($footer) ? $footer : throw new \InvalidArgumentException());
             } catch (\InvalidArgumentException) {
                 return self::FOOTER;
             }
-            $fields[Schema::CAMPAIGN_FOOTER] = new AA_Value($footer);
+            $fields[Schema::CAMPAIGN_FOOTER] = new AA_Value(implode("\n", $lines));
         }
         $lost = false;
         if (array_key_exists('isds_membership', $post)) {

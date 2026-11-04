@@ -677,7 +677,7 @@ final class SendQueueTest extends TestCase
     /** the page with its test boxes, its account in $environment */
     private static function testPage(array $boxes = [self::TEST_BOX], string $environment = Account::TEST, string $senderBox = ''): Setup
     {
-        return Setup::fromSnapshot(Sending::SITE, Sending::CAMPAIGN, Sending::MESSAGE, Sending::SOURCE, ['mesto' => 'Cities'], ['mesto'], Sending::MEMBER, $boxes, Setup::DEFAULT_RECIPIENTS, $environment, $senderBox, "Národní síť\nPraha");
+        return Setup::fromSnapshot(Sending::SITE, Sending::CAMPAIGN, Sending::MESSAGE, Sending::SOURCE, ['mesto' => 'Cities'], ['mesto'], Sending::MEMBER, $boxes, Setup::DEFAULT_RECIPIENTS, $environment, $senderBox);
     }
 
     /** PDZSendInfo as ISDS answers it: $paid the result, $status the status of the answer */
@@ -1347,7 +1347,7 @@ final class SendQueueTest extends TestCase
     /** the letter of the campaign item as Letter::of() makes its document, with its header and room for its footer */
     private function document(): string
     {
-        return (new HtmlBody(new UploadDir(TestSendQueue::UPLOAD_URL, $this->dir)))->document('Pozvánka', '<p>Vážení, <b>zveme</b> Vás</p>', true, '<p>Národní síť<br>Praha</p>', PdfBody::css(['NSZM, Praha']));
+        return (new HtmlBody(new UploadDir(TestSendQueue::UPLOAD_URL, $this->dir)))->document('Pozvánka', '<p>Vážení, <b>zveme</b> Vás</p>', true, '<p>Národní síť<br>Praha</p>', PdfBody::CSS);
     }
 
     /** the main file of the message in the body of CreateMessage */

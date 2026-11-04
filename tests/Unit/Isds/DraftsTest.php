@@ -125,14 +125,14 @@ final class DraftsTest extends TestCase
         self::assertSame(['lock ' . SendRun::lockName($id), 'unlock ' . SendRun::lockName($id)], $this->drafts->lockLog);
     }
 
-    // the header as rich text, the footer as plain text, each stored as posted
+    // the header as rich text stored as posted, the footer as the lines of plain text it was checked as
     public function test_save_headerAndFooter(): void
     {
         $this->saveNew(['isds_subject' => 'Výzva', 'isds_header' => '<p><img src="logo.png"> NSZM</p>', 'isds_footer' => " NSZM\r\nPraha "]);
 
         $id = self::newId();
         self::assertSame(['<p><img src="logo.png"> NSZM</p>', FLAG_HTML], $this->drafts->items[$id]['fields'][Schema::CAMPAIGN_HEADER]);
-        self::assertSame([" NSZM\r\nPraha ", 0], $this->drafts->items[$id]['fields'][Schema::CAMPAIGN_FOOTER]);
+        self::assertSame(["NSZM\nPraha", 0], $this->drafts->items[$id]['fields'][Schema::CAMPAIGN_FOOTER], 'its lines as checked');
     }
 
     // autosaves and a double click of the form shown: one item, each save into it

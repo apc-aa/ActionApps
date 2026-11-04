@@ -70,7 +70,7 @@ class CheckIsdsPdf extends AbstractOptimize
         }
         try {
             $html = new HtmlBody();
-            $pdf  = $this->render($html->document('Zkouška', $this->body(), true, self::HEADER, PdfBody::css(self::FOOTER)));
+            $pdf  = $this->render($html->document('Zkouška', $this->body(), true, self::HEADER, PdfBody::CSS));
             // without its fonts dompdf falls back to Helvetica, which has no Czech; without GD the image is left out
             preg_match_all('~/BaseFont /(?:[A-Z]{6}\+)?(DejaVuSans(?:Mono)?)\b~', $pdf->content, $fonts);
             $made = !$html->omitted() && str_starts_with($pdf->content, '%PDF-') && (count(array_unique($fonts[1])) === 2)

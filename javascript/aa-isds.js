@@ -969,7 +969,8 @@ const setupForms = (root) => {
         } else {
             announce(root, box?.textContent.trim() ?? '');
         }
-        if (box && (entries.find(([name]) => name === 'isds_body')?.[1].length > BIG_BODY)) {
+        // the header may hold pasted images as the body does
+        if (box && (entries.filter(([name]) => ['isds_header', 'isds_body'].includes(name)).reduce((n, [, value]) => n + value.length, 0) > BIG_BODY)) {
             sources.delete(box);
             box.append(Object.assign(document.createElement('p'), { className: 'ai-help', textContent: text(root, 'big') }));
         }

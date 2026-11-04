@@ -21,13 +21,10 @@ require_once __DIR__ . '/../fixtures/PdfText.php';
 /** The letter as dompdf lays it out: whole, or refused with what to change - never sent short */
 final class PdfBodyTest extends TestCase
 {
-    /**
-     * the document of $body as Letter::of() makes it, with room for $footer
-     * @param list<string> $footer
-     */
-    private static function doc(string $body, string $subject = 'Pozvánka', array $footer = []): string
+    /** the document of $body as Letter::of() makes it */
+    private static function doc(string $body, string $subject = 'Pozvánka'): string
     {
-        return (new HtmlBody())->document($subject, $body, true, '', PdfBody::css($footer));
+        return (new HtmlBody())->document($subject, $body, true, '', PdfBody::CSS);
     }
 
     /** a document HtmlBody would never write: what dompdf does with it */
@@ -140,6 +137,8 @@ final class PdfBodyTest extends TestCase
     public function test_footer_linesOfPlainText(): void
     {
         self::assertSame([], PdfBody::footer(" \r\n \n"));
+        self::assertSame([], PdfBody::footer("\v\u{A0}\u{2028} \u{200B}"), 'invisible only');
+        self::assertSame(['NSZM'], PdfBody::footer("\u{A0}\nNSZM\n\u{2029}"), 'blank lines around it');
         self::assertSame(['NSZM', '', 'Praha  1'], PdfBody::footer("\n NSZM \r\n\nPraha\t 1\n"), 'a blank line stays, a tab is a space');
         self::assertSame(array_fill(0, PdfBody::FOOTER_LINES, 'a'), PdfBody::footer(implode("\n", array_fill(0, PdfBody::FOOTER_LINES, 'a'))));
         self::assertSame([str_repeat('ž', PdfBody::FOOTER_CHARS)], PdfBody::footer(str_repeat('ž', PdfBody::FOOTER_CHARS)));
@@ -163,19 +162,27 @@ final class PdfBodyTest extends TestCase
         ];
     }
 
-    // the bottom margin grows by the lines of the footer, never below the 20 mm of CSS
-    public function test_css_roomForTheFooter(): void
+    // the footer takes room from the page, not from an image as high as a page holds: no page left with the footer alone
+    public function test_render_tallImageAboveTheLongestFooter(): void
     {
-        self::assertSame(PdfBody::CSS, PdfBody::css([]));
-        self::assertSame(PdfBody::CSS . '@page{margin-bottom:65pt}', PdfBody::css(['a']));
-        self::assertSame(PdfBody::CSS . '@page{margin-bottom:87pt}', PdfBody::css(['a', '', 'c']));
+        $doc    = self::doc('<p>' . self::img(10, 1000, 'png') . '</p>');
+        $footer = PdfBody::footer(implode("\n", array_fill(0, PdfBody::FOOTER_LINES, 'NSZM')));
+        $plain  = self::render($doc)->content;
+        $footed = self::render($doc, footer: $footer)->content;
+
+        $pages = static fn(string $pdf): int => (int) preg_match_all('~/Type\s*/Page\b(?!s)~', $pdf);
+        self::assertSame($pages($plain), $pages($footed), 'as many pages');
+        self::assertSame(1, $pages($footed), 'one');
+        [, $h, , $y] = PdfText::images($footed)[0];
+        self::assertGreaterThan(98.0, $y, 'above the footer');
+        self::assertLessThanOrEqual(PdfBody::IMAGE_HEIGHT + 0.5, $h);
     }
 
     // each line to the right edge of the text, below the letter and above the page number, on every page
     public function test_render_footerOnEveryPage(): void
     {
         $footer  = ['Národní síť Zdravých měst ČR', 'datová schránka: msx89nm | IČ: 61385247 | Na Poříčí 1041/12, 110 00 Praha 1'];
-        $pdf     = self::render(self::doc(self::paragraphs(40), footer: $footer), footer: $footer)->content;
+        $pdf     = self::render(self::doc(self::paragraphs(40)), footer: $footer)->content;
         $shown   = PdfText::shown($pdf);
         $lines   = array_values(array_filter($shown, static fn(array $s): bool => in_array($s[0], $footer, true)));
         $numbers = array_values(array_filter($shown, static fn(array $s): bool => str_starts_with($s[0], 'strana ')));
@@ -192,7 +199,7 @@ final class PdfBodyTest extends TestCase
 
     public function test_render_footerOfOnePageUnnumbered(): void
     {
-        $pdf = self::render(self::doc('<p>Vážení,</p>', footer: ['NSZM']), footer: ['NSZM'])->content;
+        $pdf = self::render(self::doc('<p>Vážení,</p>'), footer: ['NSZM'])->content;
 
         self::assertSame(['NSZM'], array_values(array_filter(array_column(PdfText::shown($pdf), 0), static fn(string $t): bool => $t !== 'Vážení,')));
     }
@@ -200,10 +207,10 @@ final class PdfBodyTest extends TestCase
     // drawn after the layout, a line wider than the page would run off it unseen
     public function test_render_refusesFooterWiderThanThePage(): void
     {
-        $wide = [str_repeat('Národní síť ', 15)];
+        $wide = [str_repeat('MW', 40)];
 
-        self::assertSame(PdfBody::FOOTER_TOO_WIDE, self::refusal(self::doc('<p>Vážení,</p>', footer: $wide), footer: $wide));
-        self::assertSame('', self::refusal(self::doc('<p>Vážení,</p>', footer: [str_repeat('Národní síť ', 7)]), footer: [str_repeat('Národní síť ', 7)]));
+        self::assertSame(PdfBody::FOOTER_TOO_WIDE, self::refusal(self::doc('<p>Vážení,</p>'), footer: $wide));
+        self::assertSame('', self::refusal(self::doc('<p>Vážení,</p>'), footer: [str_repeat('Národní síť ', 7)]));
     }
 
     public function test_render_onePageUnnumbered(): void
