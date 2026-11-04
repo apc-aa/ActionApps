@@ -68,6 +68,11 @@ namespace {
             return \Tests\Unit\Legacy\LdapStub::call(__FUNCTION__, $args);
         }
 
+        function ldap_get_dn(mixed ...$args): mixed
+        {
+            return \Tests\Unit\Legacy\LdapStub::call(__FUNCTION__, $args);
+        }
+
         function ldap_get_attributes(mixed ...$args): mixed
         {
             return \Tests\Unit\Legacy\LdapStub::call(__FUNCTION__, $args);
@@ -125,6 +130,7 @@ namespace Tests\Unit\Legacy {
             'ldap_first_entry'    => 'entry',
             'ldap_get_entries'    => ['count' => 0],
             'ldap_get_attributes' => ['count' => 0],
+            'ldap_get_dn'         => false,   // no such account - no passkeys to look for
         ];
 
         /** @param list<mixed> $args */
@@ -184,6 +190,12 @@ namespace Tests\Unit\Legacy {
             self::assertTrue((new AA_Permsystem_Ldap())->delUser(self::USER, 3));
             self::assertSame([
                 ...self::CONNECT,
+                // passkeyId() - the DN its passkeys are kept under, on a connection of its own
+                ...self::CONNECT,
+                'ldap_read ["ds","uid=jan,ou=People,ou=AA","(objectclass=inetOrgPerson)",["1.1"]]',
+                'ldap_first_entry ["ds","read"]',
+                'ldap_get_dn ["ds","entry"]',
+                'ldap_unbind ["ds"]',
                 'ldap_search ["ds","ou=AA","(&(objectclass=groupOfNames)(member=uid=jan,ou=People,ou=AA))",[""]]',
                 'ldap_get_entries ["ds","search"]',
                 // delGroupMember() - on a connection of its own

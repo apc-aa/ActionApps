@@ -234,6 +234,8 @@ namespace Tests\Unit\Legacy {
                 'DelUser' => [static fn() => AA::$perm->delUser('7'), [
                     "DELETE FROM `membership`  WHERE memberid = '7'",
                     "DELETE FROM `perms`  WHERE userid = '7'",
+                    // whose passkeys to delete
+                    'SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users` WHERE id = 7 LIMIT  1',
                     "DELETE FROM `users`  WHERE id = '7'",
                 ], true],
                 'ChangeUser' => [static fn() => AA::$perm->changeUser(['uid' => '7', 'mail' => ['jan@example.org'], 'givenname' => 'Jan', 'sn' => 'Novak', 'userpassword' => '']), [
@@ -291,6 +293,7 @@ namespace Tests\Unit\Legacy {
                 'DelUser users'      => [static fn() => AA::$perm->delUser('7'), 'DELETE FROM `users`', [
                     "DELETE FROM `membership`  WHERE memberid = '7'",
                     "DELETE FROM `perms`  WHERE userid = '7'",
+                    'SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users` WHERE id = 7 LIMIT  1',
                 ]],
                 'DelGroup members'   => [static fn() => AA::$perm->delGroup('9'), "DELETE FROM `membership`  WHERE groupid", []],
                 'DelGroup users'     => [static fn() => AA::$perm->delGroup('9'), 'DELETE FROM `users`', [

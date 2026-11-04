@@ -82,6 +82,8 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
                 'SELECT id, type FROM users ORDER BY id',
                 "DELETE FROM `membership`  WHERE memberid = '1'",
                 "DELETE FROM `perms`  WHERE userid = '1'",
+                // whose passkeys to delete
+                'SELECT id, name, givenname, uid AS login, sn, mail, type FROM `users` WHERE id = 1 LIMIT  1',
                 "DELETE FROM `users`  WHERE id = '1'",
                 "DELETE FROM `membership`  WHERE groupid = '2'",
                 "DELETE FROM `membership`  WHERE memberid = '2'",
