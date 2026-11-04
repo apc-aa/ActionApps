@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * File contains definitions of functions which corresponds with actions
  * on Item Manager page (admin/index.php) - manipulates with polls
