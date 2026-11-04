@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AA\Optimize;
 
 /** Replaces the f_t: alias (without parameter) by f_1, where f_1 prints every stored value of the field the same way */

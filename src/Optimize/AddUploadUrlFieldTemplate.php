@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AA\Optimize;
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) */

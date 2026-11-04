@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AA\Optimize;
 
 /** Whole pagecache will be invalidated and deleted */

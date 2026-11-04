@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AA\Optimize;
 
 /** Add mandtory fields to each slice where missing */
