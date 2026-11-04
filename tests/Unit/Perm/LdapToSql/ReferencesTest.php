@@ -61,7 +61,7 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
             self::assertSame(336, References::firstFreeId());
 
             $maxima = $this->queries('SELECT MAX(');
-            self::assertCount(14, $maxima, '13 reference columns and users.id');
+            self::assertCount(count(References::COLUMNS) + 1, $maxima, 'every reference column and users.id');
             foreach ($maxima as $sql) {
                 if (str_contains($sql, DB_AA::quoteIdentifier('users'))) {
                     continue;
@@ -132,13 +132,20 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
             ], References::dnValues(), 'each exact spelling once');
 
             $selects = $this->queries('SELECT DISTINCT');
-            self::assertCount(13, $selects);
+            self::assertCount(count(References::COLUMNS), $selects);
             $c = DB_AA::quoteIdentifier('posted_by');
             self::assertSame(
                 "SELECT DISTINCT CONVERT($c USING utf8mb4) COLLATE utf8mb4_bin AS v FROM " . DB_AA::quoteIdentifier('item') . " WHERE $c LIKE '%=%,%'",
                 $selects[0],
                 'compared as remap() compares, so a *_ci DISTINCT cannot merge spellings; not only uid=% matches',
             );
+        }
+
+        public function test_dnValuesByColumn_passkeyOwners(): void
+        {
+            $this->answer(fn(string $sql) => str_contains($sql, DB_AA::quoteIdentifier('authenticator')) ? [['v' => 'uid=a,ou=People,ou=AA']] : []);
+
+            self::assertSame(['authenticator.uid' => ['uid=a,ou=People,ou=AA']], References::dnValuesByColumn());
         }
 
         public function test_dnValuesByColumn_onlyColumnsWithADn(): void
@@ -158,7 +165,7 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
 
         public function test_dnValues_skipsMissingColumns(): void
         {
-            $this->answer(fn() => [], ['links_links', 'toexecute', 'object_text']);
+            $this->answer(fn() => [], ['links_links', 'toexecute', 'object_text', 'authenticator']);
 
             References::dnValues();
 
@@ -181,8 +188,8 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
 
             $changed = DB_AA::transaction(fn() => References::rewrite(self::MAP));
 
-            self::assertSame(13, RecordingDb::count('UPDATE'));
-            self::assertCount(13, $changed);
+            self::assertSame(count(References::COLUMNS), RecordingDb::count('UPDATE'));
+            self::assertCount(count(References::COLUMNS), $changed);
             self::assertSame(7, $changed['item.posted_by']);
             self::assertSame(0, $changed['object_text.value']);
             self::assertSame('COMMIT', end(RecordingDb::$log));
@@ -221,7 +228,7 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
 
             $counts = References::count(self::MAP);
 
-            self::assertCount(13, $counts);
+            self::assertCount(count(References::COLUMNS), $counts);
             self::assertSame(4, $counts['item.edited_by']['rows']);
             self::assertSame(0, $counts['change.user']['rows']);
             self::assertIsFloat($counts['item.edited_by']['seconds']);

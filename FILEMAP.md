@@ -454,7 +454,7 @@ Exact host as RP ID; an account with a passkey no longer logs in by password alo
 | Perm/LdapToSql/Directory.php | Snapshot of ou=AA people, groups and ACLs, split past the LDAP sizelimit | Directory::fromConfig(), people(), groups(), acls() | M |
 | Perm/LdapToSql/Plan.php | Numeric ids, rows to import, DN → id remap and findings; applies ACI spellings as LDAP does | Plan::build(), applied(), finding(), blocking() | M |
 | Perm/LdapToSql/Importer.php | Wipes the SQL perm tables and imports a Plan through the backend, inside a transaction | Importer::run() | S |
-| Perm/LdapToSql/References.php | DN references in 13 columns: list, first free id, count, one-pass rewrite, other mentions | References::dnValues(), firstFreeId(), count(), rewrite(), mentions() | M |
+| Perm/LdapToSql/References.php | DN references in 14 columns (passkey owners too): list, first free id, count, one-pass rewrite, other mentions | References::dnValues(), firstFreeId(), count(), rewrite(), mentions() | M |
 | Perm/LdapToSql/Parity.php | Gate: SQL must answer every right, membership and superadmin LDAP gave | Parity::ask(), compare() | M |
 
 ### Expand

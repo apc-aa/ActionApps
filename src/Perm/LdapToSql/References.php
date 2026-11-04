@@ -18,7 +18,9 @@ final class References
 {
     public const COLUMNS = [['item', 'posted_by'], ['item', 'edited_by'], ['change', 'user'], ['log', 'user'],
         ['profile', 'uid'], ['links_links', 'created_by'], ['links_links', 'edited_by'], ['links_links', 'checked_by'],
-        ['module', 'created_by'], ['slice', 'created_by'], ['searchlog', 'user'], ['toexecute', 'aa_user'], ['object_text', 'value']];
+        ['module', 'created_by'], ['slice', 'created_by'], ['searchlog', 'user'], ['toexecute', 'aa_user'], ['object_text', 'value'],
+        // left on the DN, a passkey would neither log its owner in nor hold back the password (AA_Perm::passkeyId())
+        ['authenticator', 'uid']];
 
     /** the user of imported items - never a person, so its number stays out of the id range */
     private const IMPORTER = '9999999999';
