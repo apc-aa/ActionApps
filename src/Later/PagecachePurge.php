@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * File contains definition of inputform class - used for displaying input form
  * for item add/edit and other form utility functions

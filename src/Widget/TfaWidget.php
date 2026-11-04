@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /** 2FA - how to
  * The 2FA field on AA login page is shown when the first user in the AA installation use 2FA.
  *
