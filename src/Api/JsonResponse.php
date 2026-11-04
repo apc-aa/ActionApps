@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Small helper for typed JSON responses from AA API controllers.
  *
