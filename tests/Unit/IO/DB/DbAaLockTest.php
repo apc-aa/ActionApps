@@ -158,5 +158,17 @@ namespace Tests\Unit\IO\DB {
             self::assertFalse(DB_AA::lock('aa_test_job', 0, $holder));
             self::assertNull($holder);
         }
+
+        public function test_lock_whenNoConnectionCanBeMade_isNotGot(): void
+        {
+            // the real connect(): a driver PDO does not know fails like a server at max_connections
+            $none = new DB_PDO(['type' => 'db_pdo:aa_no_such_driver', 'host' => 'localhost', 'database' => 'aa_test']);
+            $none->set_halt('no');
+            self::assertFalse($none->connect(), 'a failed connect() answers false, not a TypeError');
+
+            self::lockDb($none);
+            self::assertFalse(DB_AA::lock('aa_test_job', 0, $holder));
+            self::assertNull($holder);
+        }
     }
 }
