@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace AA\Upload;
 
 use AA\Util\Imgfunc;
+use AA\Widget\CodWidget;
+use AA\Widget\EdtWidget;
+use AA\Widget\TxtWidget;
 use AA_Auth;
 use AA_Slice;
 
@@ -188,7 +191,29 @@ final class UploadPolicy
         $auth = $GLOBALS['auth'] ?? null;
         return [
             'editor'    => ($auth instanceof AA_Auth) && $auth->is_user() && (IfSlPerm(PS_EDIT_SELF_ITEMS, $slice_id) || IfSlPerm(PS_EDIT_ALL_ITEMS, $slice_id)),
-            'anonymous' => self::anonymousAllowed((int) $slice->getProperty('permit_anonymous_post'), (int) $slice->getProperty('permit_anonymous_edit')),
+            'anonymous' => self::anonymousAllowed((int) $slice->getProperty('permit_anonymous_post'), (int) $slice->getProperty('permit_anonymous_edit'))
+                && self::offersEditor($slice),
         ];
+    }
+
+    /**
+     * Some field of the slice is edited in the rich-text editor. Only then a visitor of a form of
+     * the slice uploads - a registration or a contact form of plain inputs takes no file from anybody.
+     */
+    public static function offersEditor(AA_Slice $slice): bool
+    {
+        foreach ($slice->getFields() as $field) {
+            $widget = $field->getWidget();
+            if (($widget !== null) && self::richWidget($widget::class, (bool) $field->getProperty('html_show'))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** TinyMCE (edt), or a text area with the HTML / plain text switch - not the code editor (cod) */
+    public static function richWidget(string $class, bool $html_switch): bool
+    {
+        return is_a($class, EdtWidget::class, true) || ($html_switch && is_a($class, TxtWidget::class, true) && !is_a($class, CodWidget::class, true));
     }
 }

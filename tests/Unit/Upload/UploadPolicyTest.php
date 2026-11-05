@@ -6,6 +6,10 @@ namespace Tests\Unit\Upload;
 
 use AA\Upload\UploadPolicy;
 use AA\Util\Imgfunc;
+use AA\Widget\CodWidget;
+use AA\Widget\EdtWidget;
+use AA\Widget\FldWidget;
+use AA\Widget\TxtWidget;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -113,5 +117,26 @@ final class UploadPolicyTest extends TestCase
         $this->assertContains(['mimeType' => 'application/pdf', 'extensions' => ['pdf']], $types);
         $this->assertContains(['mimeType' => 'application/vnd.ms-excel', 'extensions' => ['xls']], $types);
         $this->assertNotContains('jpg', array_merge(...array_column($types, 'extensions')));
+    }
+
+    /** @return array<string, array{0: string, 1: bool, 2: bool}> */
+    public static function richWidgets(): array
+    {
+        return [
+            'TinyMCE'                   => [EdtWidget::class, false, true],
+            'text area with the switch' => [TxtWidget::class, true, true],
+            'text area, plain only'     => [TxtWidget::class, false, false],
+            'code editor with a switch' => [CodWidget::class, true, false],
+            'text field with a switch'  => [FldWidget::class, true, false],
+        ];
+    }
+
+    #[DataProvider('richWidgets')]
+    public function test_rich_widget_is_tinymce_or_a_text_area_with_the_switch(string $class, bool $html_switch, bool $expected): void
+    {
+        if (!defined('AA_INSTAL_URL')) {
+            define('AA_INSTAL_URL', 'http://localhost/');   // widget autoload pulls include/constants.php
+        }
+        $this->assertSame($expected, UploadPolicy::richWidget($class, $html_switch));
     }
 }
