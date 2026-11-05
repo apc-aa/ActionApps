@@ -27,10 +27,16 @@ final class FakeFilesController extends FilesController
     /** @var list<array{selector: string, params: string}> */
     public array $anonLastHour = [];
     public bool $storeFails = false;
+    /** the slice of every readable item; null = no such item */
+    public ?string $itemSlice = null;
 
     protected function viewer(string $slice_id): ?array
     {
         return $this->viewer;
+    }
+    protected function sliceOfItem(string $item_id): ?string
+    {
+        return $this->itemSlice;
     }
     protected function uid(): string
     {
@@ -95,6 +101,14 @@ final class FilesControllerTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/util_shims.php';   // _m(), Secret::key() constants
+        if (!defined('CACHE_TTL')) {
+            define('CACHE_TTL', 600);                               // AA::Pagecache() an editor's token switches off
+        }
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        (new \ReflectionProperty(\AA::class, 'pagecache'))->setValue(null, null);   // no nostore left for other tests
     }
 
     protected function setUp(): void
@@ -108,7 +122,7 @@ final class FilesControllerTest extends TestCase
         $_FILES = [];
         $_SERVER['HTTP_HOST']   = 'aa.example';
         $_SERVER['HTTP_ORIGIN'] = 'https://aa.example';
-        unset($_SERVER['CONTENT_LENGTH'], $_SERVER['HTTP_REFERER']);
+        unset($_SERVER['CONTENT_LENGTH'], $_SERVER['HTTP_REFERER'], $_SERVER['HTTP_SEC_FETCH_SITE'], $_SERVER['HTTP_X_AA_UPLOAD_ASK']);
         $this->token(UploadPolicy::USER);
     }
 
@@ -331,5 +345,71 @@ final class FilesControllerTest extends TestCase
         $this->token(UploadPolicy::ANON);
         $_GET = ['slice' => self::SLICE];
         $this->assertSame(403, $this->read($this->c->list())['status']);
+    }
+
+    /** @return array{status: int, body: array<mixed>} */
+    private function ask(array $get, string $fetch_site = 'same-origin'): array
+    {
+        $_GET = ['ask' => '1'] + $get;
+        $_SERVER['HTTP_X_AA_UPLOAD_ASK'] = '1';
+        $_SERVER['HTTP_SEC_FETCH_SITE']  = $fetch_site;
+        return $this->read($this->c->ask());
+    }
+
+    public function test_ask_gives_an_editor_the_attributes_and_a_token_the_upload_accepts(): void
+    {
+        $r = $this->ask(['slice' => self::SLICE]);
+        $this->assertSame(200, $r['status']);
+        $attrs = $r['body']['attrs'];
+        $this->assertSame(['user', self::SLICE], [$attrs['upload'], $attrs['upload-slice']]);
+        $this->assertSame(UploadPolicy::USER, UploadToken::verify($attrs['upload-token'], self::SLICE, 'u1', time()));
+        $this->assertArrayHasKey('upload', json_decode($attrs['l10n'], true));
+
+        $_SERVER['HTTP_X_AA_UPLOAD_TOKEN'] = $attrs['upload-token'];
+        $this->file('a.pdf', self::PDF);
+        $this->assertSame(200, $this->read($this->c->upload())['status']);
+    }
+
+    public function test_ask_gives_an_anonymous_visitor_images_only_where_the_slice_takes_anonymous_items(): void
+    {
+        $this->c->viewer = ['editor' => false, 'anonymous' => true];
+        $attrs = $this->ask(['slice' => self::SLICE])['body']['attrs'];
+        $this->assertSame(UploadPolicy::ANON, UploadToken::verify($attrs['upload-token'], self::SLICE, '', time()));
+        $this->assertArrayNotHasKey('upload-types', $attrs);
+
+        $this->c->viewer = ['editor' => false, 'anonymous' => false];
+        $this->assertSame(['attrs' => []], $this->ask(['slice' => self::SLICE])['body']);
+    }
+
+    public function test_ask_finds_the_slice_of_an_item(): void
+    {
+        $this->c->itemSlice = self::SLICE;
+        $this->assertSame(self::SLICE, $this->ask(['item' => str_repeat('a', 32)])['body']['attrs']['upload-slice']);
+
+        $this->c->itemSlice = null;
+        $this->assertSame(404, $this->ask(['item' => str_repeat('a', 32)])['status']);
+    }
+
+    public function test_ask_refuses_an_unknown_slice_and_bad_ids(): void
+    {
+        $this->c->viewer = null;
+        $this->assertSame(404, $this->ask(['slice' => self::SLICE])['status']);
+        $this->assertSame(400, $this->ask(['slice' => 'x'])['status']);
+        $this->assertSame(400, $this->ask([])['status']);
+    }
+
+    public function test_ask_answers_only_a_script_of_this_host(): void
+    {
+        $this->assertSame(401, $this->ask(['slice' => self::SLICE], 'cross-site')['status']);
+        $this->assertSame(401, $this->ask(['slice' => self::SLICE], 'same-site')['status']);
+
+        unset($_SERVER['HTTP_SEC_FETCH_SITE'], $_SERVER['HTTP_X_AA_UPLOAD_ASK']);
+        $_GET = ['ask' => '1', 'slice' => self::SLICE];
+        $this->assertSame(401, $this->read($this->c->ask())['status']);     // no X-AA-Upload-Ask: a link or <script src>
+        $_SERVER['HTTP_X_AA_UPLOAD_ASK'] = '1';
+        $this->assertSame(200, $this->read($this->c->ask())['status']);     // a browser without Sec-Fetch-Site
+
+        $_SERVER['HTTP_ORIGIN'] = 'https://evil.example';
+        $this->assertSame(401, $this->read($this->c->ask())['status']);
     }
 }

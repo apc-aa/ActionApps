@@ -43,7 +43,7 @@ final class RichtextMarkupTest extends TestCase
     public function test_an_editor_gets_a_token_the_api_accepts_and_the_document_types(): void
     {
         $attrs = RichtextMarkup::uploadAttrs(self::SLICE, UploadPolicy::USER, 'u1', self::NOW, '/aa/api/files.php');
-        $this->assertSame(['user', '/aa/api/files.php', self::SLICE], [$attrs['upload'], $attrs['upload-url'], $attrs['slice']]);
+        $this->assertSame(['user', '/aa/api/files.php', self::SLICE], [$attrs['upload'], $attrs['upload-url'], $attrs['upload-slice']]);
         $this->assertSame(UploadPolicy::USER, UploadToken::verify($attrs['upload-token'], self::SLICE, 'u1', self::NOW + 60));
         $this->assertSame(UploadPolicy::documentTypes(), json_decode($attrs['upload-types'], true));
         $this->assertSame('jpg,jpeg,png,gif,webp,avif', $attrs['upload-images']);

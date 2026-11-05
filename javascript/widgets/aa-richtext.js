@@ -3,7 +3,7 @@
  * source in CodeMirror 6 (<aa-code>).
  *
  *   <aa-richtext mode="rich|code|plain" editor switch-name="…" switch-html="1"
- *                upload="user|anon" upload-url="…" upload-token="…" slice="…"
+ *                upload="user|anon" upload-url="…" upload-token="…" upload-slice="…"
  *                upload-images="jpg,png,…" upload-types='[…]'
  *                ui-lang="cs" l10n='{"editor":"Editor","source":"Zdroj",…}' toolbar="letter">
  *     <textarea name="…">…</textarea>
@@ -18,6 +18,8 @@
  * HTML) pick code or plain; the "Edit in Editor" link ([data-aa-editor-for=<textarea id>])
  * and the Editor button of the source view pick rich; TinyMCE's Source button picks code.
  * toolbar="letter" = a short toolbar for a data-message letter; missing or any other value = the full one.
+ * Without upload-token (a form written in a template) the editor asks AA for the upload-* attributes
+ * of upload-slice, or of the slice in the AA name of the textarea (aa-richtext-upload.js).
  */
 
 // Carry our own ?v= over, so one AA_JS_VERSION bump busts every module loaded from here.
@@ -120,11 +122,7 @@ class AaRichtextElement extends HTMLElement {
         this.#abort = new AbortController();
         // Reset puts the format radios back without a change event
         textarea.form?.addEventListener('reset', () => setTimeout(() => this.#afterReset()), { signal: this.#abort.signal });
-        try {
-            this.#l10n = JSON.parse(this.getAttribute('l10n') || '{}');
-        } catch {
-            this.#l10n = {};
-        }
+        this.#readL10n();
         this.#bindSwitch();
         this.#bindEditorLinks();
         if (this.#editorAsked) {
@@ -135,6 +133,40 @@ class AaRichtextElement extends HTMLElement {
             await this.#setMode(this.getAttribute('mode') || 'plain');
         }
         this.setAttribute('ready', '');
+    }
+
+    #readL10n() {
+        try {
+            this.#l10n = JSON.parse(this.getAttribute('l10n') || '{}');
+        } catch {
+            this.#l10n = {};
+        }
+    }
+
+    /** the upload-* attributes AA did not write: asked for before TinyMCE starts, the page's own ones stay */
+    async #askUpload() {
+        if (this.hasAttribute('upload-token')) {
+            return;
+        }
+        try {
+            const { uploadTarget, askUpload } = await import(sibling('./aa-richtext-upload.js'));
+            const target = uploadTarget(this.getAttribute('upload-slice'), this.#textarea?.name);
+            if (!target) {
+                return;
+            }
+            const attrs = await askUpload(new URL('../../api/files.php', import.meta.url), target);
+            const l10n  = !this.hasAttribute('l10n');
+            for (const [name, value] of Object.entries(attrs)) {
+                if (!this.hasAttribute(name)) {
+                    this.setAttribute(name, value);
+                }
+            }
+            if (l10n) {
+                this.#readL10n();
+            }
+        } catch (e) {
+            console.error('aa-richtext: could not ask for uploads', e);   // the editor works, without uploads
+        }
     }
 
     disconnectedCallback() {
@@ -336,7 +368,7 @@ class AaRichtextElement extends HTMLElement {
         this.#rich = state;
         let api;
         try {
-            const { createRichEditor } = await import(sibling('../tinymce8.min.js'));
+            const [{ createRichEditor }] = await Promise.all([import(sibling('../tinymce8.min.js')), this.#askUpload()]);
             if (this.#rich !== state) {
                 return;                         // left while loading - never start on a removed copy
             }
@@ -416,7 +448,7 @@ class AaRichtextElement extends HTMLElement {
             return null;
         }
         const token = this.getAttribute('upload-token') ?? '';
-        const slice = this.getAttribute('slice') ?? '';
+        const slice = this.getAttribute('upload-slice') ?? '';
         const send  = async (blob, name) => {
             const body = new FormData();
             body.append('file', blob, name);

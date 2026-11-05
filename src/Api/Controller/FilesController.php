@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Files of a slice for the rich-text editor: upload one, list them for the picker.
+ * Files of a slice for the rich-text editor: upload one, list them for the picker, and hand
+ * an editor written in a template the token AA would have rendered with it.
  * Who may do what decides AA\Upload\UploadPolicy; the X-AA-Upload-Token header (AA\Upload\UploadToken)
- * proves AA rendered the editor.
+ * proves the request comes from a page of this AA.
  *
  * @package Api
  */
@@ -18,11 +19,13 @@ use AA\IO\DB\DB_AA;
 use AA\Upload\UploadPolicy;
 use AA\Upload\UploadToken;
 use AA\Util\Imgfunc;
+use AA\Widget\RichtextMarkup;
 use AA\Util\LogOnce;
 use AA_Log;
 use AA_Logentry;
 use AA_Logentry_Un;
 use AA_Logentry_Unv;
+use AA_Items;
 use AA_Slice;
 use AA_Stringexpand_Img;
 use Files;
@@ -143,6 +146,35 @@ class FilesController
     }
 
     /**
+     * The upload-* attributes for an <aa-richtext> AA did not render (a form in a template); none
+     * when this viewer may not upload. GET ask, slice - or item, for its slice. Only a script of a
+     * page of this AA gets them: it sends X-AA-Upload-Ask, a foreign page cannot without the
+     * browser asking first (CORS), and could not read the answer.
+     */
+    public function ask(): JsonResponse
+    {
+        $fetch_site = (string) ($_SERVER['HTTP_SEC_FETCH_SITE'] ?? 'same-origin');    // older browsers do not send it
+        if (!$this->sameHostRequest() || (($_SERVER['HTTP_X_AA_UPLOAD_ASK'] ?? '') !== '1') || ($fetch_site !== 'same-origin')) {
+            return JsonResponse::error(401, 'Unauthorized');
+        }
+        $slice = (string) ($_GET['slice'] ?? '');
+        $item  = (string) ($_GET['item'] ?? '');
+        if (!is_long_id($slice) && !is_long_id($item)) {
+            return JsonResponse::error(400, 'Bad request');
+        }
+        $slice_id = is_long_id($slice) ? $slice : $this->sliceOfItem($item);
+        $viewer   = ($slice_id === null) ? null : $this->viewer($slice_id);
+        if (($slice_id === null) || ($viewer === null)) {
+            return JsonResponse::error(404, 'Unknown slice');
+        }
+        $attrs = RichtextMarkup::uploadAttrs($slice_id, UploadPolicy::mode($viewer['editor'], $viewer['anonymous']), $this->uid(), time(), RichtextMarkup::apiUrl());
+        if ($attrs) {
+            $attrs['l10n'] = (string) json_encode(RichtextMarkup::labels(), JSON_UNESCAPED_UNICODE);
+        }
+        return JsonResponse::ok(['attrs' => $attrs]);
+    }
+
+    /**
      * Files in $dir, newest first - no dot files, no directories.
      * @return list<array{name: string, size: int, mtime: int, type: string}>
      */
@@ -198,6 +230,12 @@ class FilesController
     protected function viewer(string $slice_id): ?array
     {
         return UploadPolicy::viewer($slice_id);
+    }
+
+    /** null for an item that does not exist or the visitor may not read */
+    protected function sliceOfItem(string $item_id): ?string
+    {
+        return AA_Items::getItem(new \zids($item_id, 'l'))?->getSliceID();
     }
 
     protected function uid(): string
