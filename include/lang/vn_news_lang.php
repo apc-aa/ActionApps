@@ -18,6 +18,34 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Migrate LDAP perms to SQL perms" => "Chuyển quyền từ LDAP sang SQL", // ai 2026-06
+// "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Sao chép tất cả người dùng, nhóm, thành viên và quyền từ backend LDAP vào các bảng backend SQL (users, membership, perms), và viết lại item.posted_by / item.edited_by từ dạng LDAP DN (uid=...,ou=...) sang các id số SQL mới. Chạy một lần cho mỗi bản cài đặt, sau đó chuyển PERM_LIB sang 'sql' trong config. 'Test' là lần chạy thử chỉ đọc. 'Repair' thực hiện việc chuyển đổi và có thể chạy lại nhiều lần. 'Revert' dùng bảng đối chiếu để hoàn tác mọi thứ.", // ai 2026-06
+// "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Trình tối ưu hóa này chỉ chạy khi PERM_LIB='ldap'. PERM_LIB hiện tại='%1'.", // ai 2026-06
+// "Would create mapping table `%1`" => "Sẽ tạo bảng đối chiếu `%1`", // ai 2026-06
+// "Test finished (dry run - no changes made)." => "Test hoàn tất (chạy thử - không có thay đổi nào).", // ai 2026-06
+// "Repair failed: %1" => "Sửa chữa thất bại: %1", // ai 2026-06
+// "Repair finished." => "Hoàn tất sửa chữa.", // ai 2026-06
+// "Revert failed: %1" => "Hoàn tác thất bại: %1", // ai 2026-06
+// "Revert finished." => "Hoàn tất hoàn tác.", // ai 2026-06
+// "LDAP findUsernames failed or returned: %1" => "LDAP findUsernames thất bại hoặc trả về: %1", // ai 2026-06
+// "LDAP users found: %1" => "Số người dùng LDAP tìm thấy: %1", // ai 2026-06
+// "Skipping user %1 - cannot determine login" => "Bỏ qua người dùng %1 - không xác định được tên đăng nhập", // ai 2026-06
+// "User %1 already exists in SQL (id %2), reusing" => "Người dùng %1 đã tồn tại trong SQL (id %2), dùng lại", // ai 2026-06
+// "Would create SQL user: %1 (from %2)" => "Sẽ tạo người dùng SQL: %1 (từ %2)", // ai 2026-06
+// "Failed to create SQL user %1" => "Không tạo được người dùng SQL %1", // ai 2026-06
+// "Users: created=%1 reused=%2 failed=%3" => "Người dùng: đã tạo=%1 dùng lại=%2 thất bại=%3", // ai 2026-06
+// "LDAP groups found: %1" => "Số nhóm LDAP tìm thấy: %1", // ai 2026-06
+// "Group %1 already exists in SQL (id %2), reusing" => "Nhóm %1 đã tồn tại trong SQL (id %2), dùng lại", // ai 2026-06
+// "Would create SQL group: %1 (from %2)" => "Sẽ tạo nhóm SQL: %1 (từ %2)", // ai 2026-06
+// "Failed to create SQL group %1" => "Không tạo được nhóm SQL %1", // ai 2026-06
+// "Groups: created=%1 reused=%2 failed=%3" => "Nhóm: đã tạo=%1 dùng lại=%2 thất bại=%3", // ai 2026-06
+// "Memberships: added=%1 skipped_unmapped=%2" => "Thành viên: đã thêm=%1 bỏ qua_chưa đối chiếu=%2", // ai 2026-06
+// "Permission rows migrated: %1" => "Số dòng quyền đã chuyển: %1", // ai 2026-06
+// "No mapping entries - nothing to rewrite." => "Không có mục đối chiếu - không có gì để ghi lại.", // ai 2026-06
+// "Rewrite %1.%2: %3 rows" => "Ghi lại %1.%2: %3 dòng", // ai 2026-06
+// "Mapping table is empty - nothing to revert." => "Bảng đối chiếu trống - không có gì để hoàn tác.", // ai 2026-06
+// "Revert %1.%2: %3 rows" => "Hoàn tác %1.%2: %3 dòng", // ai 2026-06
+// "Deleted SQL users=%1 groups=%2" => "Đã xóa người dùng SQL=%1 nhóm=%2", // ai 2026-06
 // "als[] and the state of site pages, taken from the URL" => "als[] và trạng thái các trang của trang web, lấy từ URL", // ai 2026-10
 // "The index %1 of the content table does not contain the field" => "Chỉ mục %1 của bảng content không chứa trường", // ai 2026-10
 // "Adds the index (field_id, text) to the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes and about as much disk as the other indexes of the table - run it when the traffic is low." => "Thêm chỉ mục (field_id, text) vào bảng content, để tìm một giá trị trong một trường mà không phải đọc cùng giá trị đó ở mọi trường khác. Trên cơ sở dữ liệu lớn, việc này mất vài phút và chiếm dung lượng đĩa xấp xỉ các chỉ mục khác của bảng - hãy chạy khi lưu lượng truy cập thấp.", // ai 2026-10
@@ -218,6 +246,8 @@ return [
 // admin/console.php, row 73
 // admin/fileman.php, row 110
 // admin/slicedel2.php, row 70
+// admin/um_passkeys.php, row 73
+// admin/um_passwd.php, row 80
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
@@ -269,8 +299,8 @@ return [
 // admin/aa_security.php, row 85
 // admin/setup.php, row 99, 240
 // admin/slicewiz.php, row 84
-// admin/um_passwd.php, row 111
-// admin/um_uedit.php, row 313, 317
+// admin/um_passwd.php, row 128
+// admin/um_uedit.php, row 314, 328
 // include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "Tên đăng nhập", // ai 2026-06
@@ -341,12 +371,14 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 103
 // src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckFormRobotRefusals.php, row 80
 // src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
 // src/Optimize/CheckIsdsConf.php, row 160, 193
 // src/Optimize/CheckIsdsViews.php, row 132
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 97
 // src/Optimize/CheckLoginAddresses.php, row 90, 103
 // src/Optimize/CheckObjectFormRefusals.php, row 106
+// src/Optimize/CheckPasskeys.php, row 89
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
@@ -442,7 +474,7 @@ return [
 "Checked again at %1: the problem is gone." => "Đã kiểm tra lại lúc %1: vấn đề đã hết.", // ai 2026-10
 
 // admin/aa_statecheck.php, row 255
-"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "",
+"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "Đã kiểm tra lại lúc %1: vẫn còn trong danh sách, thấy lần cuối %2. %3 Phát hiện này được tính từ những gì đã xảy ra (các dòng nhật ký, lần chạy gần nhất), nên việc khắc phục sẽ không hiện ra ở đây ngay - phát hiện sẽ biến mất khi các bản ghi đó cũ đi hoặc lần chạy tiếp theo thành công. Sau khi khắc phục, hãy đánh dấu là đã giải quyết; nếu sự cố lặp lại, phát hiện sẽ xuất hiện lại.", // ai 2026-11
 
 // admin/aa_statecheck.php, row 256
 "Checked again at %1: still there. %2" => "Đã kiểm tra lại lúc %1: vẫn còn. %2", // ai 2026-10
@@ -716,7 +748,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1213
+// include/logs.php, row 1218
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -725,6 +757,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
+// src/Optimize/CheckFormRobotRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
@@ -751,7 +784,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 358
+// include/logs.php, row 363
 // src/AA_Plannedtask.php, row 204
 "Log" => "Nhật ký", // ai 2026-06
 
@@ -783,13 +816,13 @@ return [
 
 // admin/aafinder.php, row 478, 508
 // admin/um_gedit.php, row 207, 324
-// admin/um_uedit.php, row 248
+// admin/um_uedit.php, row 249
 // include/se_users.php, row 138, 143
 // include/searchbar.class.php, row 566, 567, 607
 // include/transformation.class.php, row 829, 910
 // include/um_gsrch.php, row 47
 // src/Widget/GpsWidget.php, row 434
-// src/Widget/RichtextMarkup.php, row 72
+// src/Widget/RichtextMarkup.php, row 85
 "Search" => "Tìm kiếm", // ai 2026-06
 
 // admin/aafinder.php, row 481
@@ -890,7 +923,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 10284, 10363
+// include/stringexpand.php, row 10285, 10364
 "Send" => "Gửi", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -1049,7 +1082,7 @@ return [
 "Author" => "Tác giả", // ai 2026-06
 
 // admin/discedit.php, row 133
-// include/logs.php, row 898, 1309
+// include/logs.php, row 903, 1314
 "IP Address" => "Địa chỉ IP", // ai 2026-06
 
 // admin/discedit.php, row 134
@@ -1072,13 +1105,13 @@ return [
 // admin/prev_navigation.php, row 47
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
-// admin/um_uedit.php, row 265
+// admin/um_uedit.php, row 266
 // include/field.class.php, row 744
 // include/filedit.php, row 113
 // include/formutil.php, row 1777, 3394
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
-// include/statestore.php, row 1138
+// include/statestore.php, row 1143
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
 "Edit" => "Sửa", // ai 2026-06
@@ -1092,7 +1125,8 @@ return [
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
-// admin/um_uedit.php, row 267
+// admin/um_passkeys.php, row 158
+// admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
 // include/field.class.php, row 748
 // include/formutil.php, row 1788, 1925
@@ -1101,7 +1135,7 @@ return [
 // include/searchbar.class.php, row 1126
 // include/um_gsrch.php, row 53
 // src/Manageraction/Import_Delete.php, row 25
-// src/Manageraction/Object_Delete.php, row 24
+// src/Manageraction/Object_Delete.php, row 26
 // src/Manageraction/Table_Row_Delete.php, row 23
 // src/Widget/FilWidget.php, row 201
 "Delete" => "Xóa", // ai 2026-06
@@ -1123,7 +1157,7 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1060
+// include/logs.php, row 1065
 // include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Chủ đề", // ai 2026-06
@@ -1131,8 +1165,8 @@ return [
 // admin/discedit2.php, row 94, 148
 // admin/setup.php, row 104, 247
 // admin/slicewiz.php, row 89
-// admin/um_passwd.php, row 118
-// admin/um_uedit.php, row 325
+// admin/um_passwd.php, row 140
+// admin/um_uedit.php, row 336
 // include/um_util.php, row 308, 309, 310
 // src/Central/FindingText.php, row 106
 "E-mail" => "Email", // ai 2026-06
@@ -1529,11 +1563,12 @@ return [
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
+// admin/um_passkeys.php, row 149, 153
 // central/installapp.php, row 831, 846
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1200
+// include/logs.php, row 1205
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1694,7 +1729,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1230
+// include/logs.php, row 1235
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
 // src/Optimize/CheckIsdsConf.php, row 342, 372
@@ -1718,7 +1753,7 @@ return [
 // admin/se_csv_import.php, row 277
 // admin/se_csv_import2.php, row 382
 // central/installapp.php, row 434, 558, 1368
-// src/Manageraction/Item_Preview.php, row 11
+// src/Manageraction/Item_Preview.php, row 13
 "Preview" => "Xem trước", // ai 2026-06
 
 // admin/se_csv_import.php, row 278
@@ -1772,7 +1807,7 @@ return [
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
 // include/metabase.class.php, row 1667
-// include/statestore.php, row 1076, 1413
+// include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
@@ -1909,7 +1944,7 @@ return [
 // admin/se_export.php, row 124
 // include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
-// src/Manageraction/Central_MoveItem.php, row 43
+// src/Manageraction/Central_MoveItem.php, row 45
 "Trash" => "Thùng rác", // ai 2026-06
 
 // admin/se_export.php, row 134
@@ -1935,7 +1970,7 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 553
+// include/logs.php, row 558
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
@@ -2078,7 +2113,7 @@ return [
 // admin/se_import.php, row 131
 // admin/se_mapping.php, row 158
 // admin/um_gedit.php, row 280
-// admin/um_uedit.php, row 388
+// admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 190, 2940
 // modules/jump/modedit.php, row 179
@@ -2161,9 +2196,9 @@ return [
 "Resource ID" => "ID tài nguyên", // ai 2026-06
 
 // admin/se_history.php, row 143, 165, 166
-// admin/um_uedit.php, row 262
+// admin/um_uedit.php, row 263
 // admin/usershow.php, row 89
-// include/perm_sql.php, row 384, 426
+// include/perm_sql.php, row 381, 440, 482
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
@@ -2248,7 +2283,7 @@ return [
 "Function" => "Hàm", // ai 2026-06
 
 // admin/se_inputform.php, row 257
-"You can relate only to a slice where you may edit all items" => "",
+"You can relate only to a slice where you may edit all items" => "Bạn chỉ có thể liên kết với chuyên mục mà bạn được phép sửa mọi bài viết", // ai 2026-11
 
 // admin/se_inputform.php, row 305
 "No field found" => "Không tìm thấy trường nào", // ai 2026-06
@@ -2368,7 +2403,7 @@ return [
 "Reset" => "Đặt lại", // ai 2026-06
 
 // admin/se_inputform.php, row 514
-// include/logs.php, row 633
+// include/logs.php, row 638
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Tham số", // ai 2026-06
 
@@ -2475,13 +2510,13 @@ return [
 "The import was successfully created" => "Bản nhập đã được tạo thành công", // ai 2026-06
 
 // admin/se_isds_registry.php, row 54
-"You do not have permissions to pair the items of this slice with the register of data boxes" => "",
+"You do not have permissions to pair the items of this slice with the register of data boxes" => "Bạn không có quyền ghép nối các bài viết của chuyên mục này với sổ đăng ký hộp dữ liệu", // ai 2026-11
 
 // admin/se_isds_registry.php, row 66
 // include/menu.php, row 167
 // src/Isds/SliceRules.php, row 180
 // src/Optimize/CheckIsdsRegistry.php, row 167
-"Data boxes from the register" => "",
+"Data boxes from the register" => "Hộp dữ liệu từ sổ đăng ký", // ai 2026-11
 
 // admin/se_javascript.php, row 68
 // include/menu.php, row 169
@@ -2901,7 +2936,7 @@ return [
 // admin/se_sets.php, row 131
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 471, 528
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 172
 "ID" => "",
@@ -2995,7 +3030,7 @@ return [
 // admin/se_users.php, row 185
 // central/index.php, row 139
 // include/se_users.php, row 180
-// src/Widget/TfaWidget.php, row 71
+// src/Widget/TfaWidget.php, row 73
 "Username" => "Tên đăng nhập", // ai 2026-06
 
 // admin/se_users.php, row 185
@@ -3151,7 +3186,7 @@ return [
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
 // admin/write_mail.php, row 269
-// src/Widget/RichtextMarkup.php, row 74
+// src/Widget/RichtextMarkup.php, row 87
 "Close" => "Đóng", // ai 2026-06
 
 // admin/setup.php, row 61, 64
@@ -3161,18 +3196,18 @@ return [
 "This script can't be used on a configured system." => "Không thể dùng script này trên hệ thống đã được cấu hình.", // ai 2026-06
 
 // admin/setup.php, row 95
-// admin/um_uedit.php, row 330
+// admin/um_uedit.php, row 341
 "Superadmin account" => "Tài khoản superadmin", // ai 2026-06
 
 // admin/setup.php, row 100, 241
 // admin/slicewiz.php, row 85
-// admin/um_passwd.php, row 114
-// admin/um_uedit.php, row 321
+// admin/um_passwd.php, row 136
+// admin/um_uedit.php, row 332
 // central/index.php, row 140
 // central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
-// src/Widget/TfaWidget.php, row 75
+// src/Widget/TfaWidget.php, row 77
 "Password" => "Mật khẩu", // ai 2026-06
 
 // admin/setup.php, row 101, 243
@@ -3181,8 +3216,8 @@ return [
 
 // admin/setup.php, row 102, 245
 // admin/slicewiz.php, row 87
-// admin/um_passwd.php, row 116
-// admin/um_uedit.php, row 323
+// admin/um_passwd.php, row 138
+// admin/um_uedit.php, row 334
 // include/um_util.php, row 298
 "First name" => "Tên", // ai 2026-06
 
@@ -3249,7 +3284,7 @@ return [
 
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
-// admin/um_uedit.php, row 378
+// admin/um_uedit.php, row 389
 // include/formutil.php, row 1771
 // include/mlx.php, row 377
 // include/profile.php, row 170
@@ -3614,14 +3649,14 @@ return [
 "Slice Administrator" => "Quản trị viên chuyên mục", // ai 2026-06
 
 // admin/slicewiz.php, row 86
-// admin/um_passwd.php, row 115
-// admin/um_uedit.php, row 322
+// admin/um_passwd.php, row 137
+// admin/um_uedit.php, row 333
 // include/um_util.php, row 302
 "Retype password" => "Nhập lại mật khẩu", // ai 2026-06
 
 // admin/slicewiz.php, row 88
-// admin/um_passwd.php, row 117
-// admin/um_uedit.php, row 324
+// admin/um_passwd.php, row 139
+// admin/um_uedit.php, row 335
 // include/um_util.php, row 297
 "Surname" => "Họ", // ai 2026-06
 
@@ -3635,25 +3670,25 @@ return [
 "Go: Add Slice" => "Thực hiện: Thêm chuyên mục", // ai 2026-06
 
 // admin/um_gedit.php, row 95
-// admin/um_uedit.php, row 110
+// admin/um_uedit.php, row 111
 "No permission to create new user" => "Không có quyền tạo người dùng mới", // ai 2026-06
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137, 154
+// admin/um_uedit.php, row 135, 138, 155
 "Too many groups found." => "Tìm thấy quá nhiều nhóm.", // ai 2026-06
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137
+// admin/um_uedit.php, row 135, 138
 "No groups found" => "Không tìm thấy nhóm nào", // ai 2026-06
 
 // admin/um_gedit.php, row 120, 128
-// admin/um_uedit.php, row 128, 143, 167
+// admin/um_uedit.php, row 129, 144, 168
 // include/se_users.php, row 175
 // include/um_gsrch.php, row 31
 "Too many users or groups found." => "Tìm thấy quá nhiều người dùng hoặc nhóm.", // ai 2026-06
 
 // admin/um_gedit.php, row 120
-// admin/um_uedit.php, row 128, 143
+// admin/um_uedit.php, row 129, 144
 // include/se_users.php, row 177
 // include/um_gsrch.php, row 34
 "No user (group) found" => "Không tìm thấy người dùng (nhóm) nào", // ai 2026-06
@@ -3669,7 +3704,7 @@ return [
 "Are you sure you want to delete selected group from whole permission system?" => "Bạn có chắc muốn xóa nhóm đã chọn khỏi toàn bộ hệ thống phân quyền không?", // ai 2026-06
 
 // admin/um_gedit.php, row 189, 199
-// admin/um_uedit.php, row 336, 342
+// admin/um_uedit.php, row 347, 353
 // include/menu_util.php, row 71
 // include/se_users.php, row 141
 // include/um_gsrch.php, row 41
@@ -3686,7 +3721,7 @@ return [
 
 // admin/um_gedit.php, row 220
 // include/constants.php, row 455
-// include/perm_sql.php, row 403
+// include/perm_sql.php, row 459
 // include/um_gsrch.php, row 50
 "Group" => "Nhóm", // ai 2026-06
 
@@ -3703,8 +3738,8 @@ return [
 "Superadmin group" => "Nhóm quản trị tối cao", // ai 2026-06
 
 // admin/um_gedit.php, row 312
-// admin/um_uedit.php, row 230, 241
-// include/logs.php, row 911
+// admin/um_uedit.php, row 231, 242
+// include/logs.php, row 916
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -3716,57 +3751,216 @@ return [
 // admin/um_gedit.php, row 322
 "Group's Users" => "Người dùng của nhóm", // ai 2026-06
 
-// admin/um_passwd.php, row 61
+// admin/um_passkeys.php, row 58
+"The directory of the accounts does not answer now - try it again later" => "Thư mục tài khoản hiện không phản hồi - vui lòng thử lại sau", // ai 2026-11
+
+// admin/um_passkeys.php, row 62
+"You do not have permissions to manage the passkeys of this account" => "Bạn không có quyền quản lý khóa truy cập của tài khoản này", // ai 2026-11
+
+// admin/um_passkeys.php, row 105
+"The passkey is stored. From now on this account logs in only by a passkey." => "Khóa truy cập đã được lưu. Từ nay tài khoản này chỉ đăng nhập bằng khóa truy cập.", // ai 2026-11
+
+// admin/um_passkeys.php, row 106
+"The passkey is renamed." => "Khóa truy cập đã được đổi tên.", // ai 2026-11
+
+// admin/um_passkeys.php, row 107
+"The passkey is deleted." => "Khóa truy cập đã được xóa.", // ai 2026-11
+
+// admin/um_passkeys.php, row 108
+"All passkeys of the account are deleted - its password logs in again." => "Đã xóa mọi khóa truy cập của tài khoản - mật khẩu lại dùng được để đăng nhập.", // ai 2026-11
+
+// admin/um_passkeys.php, row 109
+"Log in again first - adding or deleting a passkey needs a login of the last %1 minutes." => "Hãy đăng nhập lại trước - việc thêm hoặc xóa khóa truy cập cần một lần đăng nhập trong %1 phút gần nhất.", // ai 2026-11
+
+// admin/um_passkeys.php, row 110
+"This passkey is stored already." => "Khóa truy cập này đã được lưu từ trước.", // ai 2026-11
+
+// admin/um_passkeys.php, row 111
+"The page waited too long. Try it again." => "Trang đã chờ quá lâu. Vui lòng thử lại.", // ai 2026-11
+
+// admin/um_passkeys.php, row 112
+"The passkey could not be stored. Try it again, or another device." => "Không thể lưu khóa truy cập. Vui lòng thử lại, hoặc dùng thiết bị khác.", // ai 2026-11
+
+// admin/um_passkeys.php, row 116
+// admin/um_passwd.php, row 130
+// admin/um_uedit.php, row 324
+"Passkeys" => "Khóa truy cập", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of your account %1" => "Khóa truy cập của tài khoản %1 của bạn", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of the account %1" => "Khóa truy cập của tài khoản %1", // ai 2026-11
+
+// admin/um_passkeys.php, row 131
+"This account cannot have passkeys - only the users of the permission system of AA can." => "Tài khoản này không thể có khóa truy cập - chỉ người dùng thuộc hệ thống phân quyền của AA mới có.", // ai 2026-11
+
+// admin/um_passkeys.php, row 137
+"A passkey logs you in without a password - by the fingerprint, face or PIN of your phone or computer. Nobody can steal it by a fake page or guess it." => "Khóa truy cập cho phép bạn đăng nhập không cần mật khẩu - bằng vân tay, khuôn mặt hoặc mã PIN của điện thoại hay máy tính. Không ai có thể đánh cắp nó qua trang giả mạo hay đoán ra nó.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Once the account has a passkey, the password alone no longer logs it in" => "Khi tài khoản đã có khóa truy cập, chỉ mật khẩu thôi sẽ không còn đăng nhập được", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"neither here, nor for Central or scripts that log in by it." => "cả ở đây, lẫn cho Central hay các tập lệnh đăng nhập bằng mật khẩu đó.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Add two passkeys - say in your phone and in your computer - so you keep the access when you lose one. If you lose all of them, a user manager of this AA deletes them and you log in by your password again." => "Hãy thêm hai khóa truy cập - chẳng hạn trên điện thoại và trên máy tính - để vẫn giữ được quyền truy cập khi mất một khóa. Nếu bạn mất tất cả, người quản lý người dùng của AA này sẽ xóa chúng và bạn lại đăng nhập bằng mật khẩu.", // ai 2026-11
+
+// admin/um_passkeys.php, row 140
+"Delete the passkeys only when their owner asks for it - lost or stolen device. The account then logs in by its password again, and its owner gets a mail about it." => "Chỉ xóa khóa truy cập khi chủ sở hữu yêu cầu - thiết bị bị mất hoặc bị đánh cắp. Khi đó tài khoản lại đăng nhập bằng mật khẩu, và chủ sở hữu sẽ nhận được thư thông báo về việc này.", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Works on" => "Dùng trên", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Added" => "Ngày thêm", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+// include/formutil.php, row 3300
+"Last used" => "Dùng lần cuối", // ai 2026-06
+
+// admin/um_passkeys.php, row 149
+"Copies" => "Bản sao", // ai 2026-11
+
+// admin/um_passkeys.php, row 153
+// include/searchbar.class.php, row 1124
+"Rename" => "Đổi tên", // ai 2026-06
+
+// admin/um_passkeys.php, row 156
+"not yet" => "chưa dùng", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"in your other devices too" => "cả trên các thiết bị khác của bạn", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"only in this device" => "chỉ trên thiết bị này", // ai 2026-11
+
+// admin/um_passkeys.php, row 162
+"Delete all passkeys of the account" => "Xóa mọi khóa truy cập của tài khoản", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"You have no passkey yet." => "Bạn chưa có khóa truy cập nào.", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"The account has no passkey." => "Tài khoản chưa có khóa truy cập nào.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"To add or delete a passkey, log in again: it needs a login of the last %1 minutes." => "Để thêm hoặc xóa khóa truy cập, hãy đăng nhập lại: việc này cần một lần đăng nhập trong %1 phút gần nhất.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"Log in again" => "Đăng nhập lại", // ai 2026-11
+
+// admin/um_passkeys.php, row 171
+"A passkey cannot be added to this account: you may not change its data, or its password is public (the free links of a module log in by it)." => "Không thể thêm khóa truy cập cho tài khoản này: bạn không được phép thay đổi dữ liệu của tài khoản, hoặc mật khẩu của tài khoản là công khai (các liên kết tự do của một mô-đun đăng nhập bằng mật khẩu đó).", // ai 2026-11
+
+// admin/um_passkeys.php, row 173
+"A passkey can be added only on a page reached by https and by an address of this AA or of one of its sites, not an IP address." => "Chỉ có thể thêm khóa truy cập trên trang được mở qua https và qua địa chỉ của AA này hoặc của một trong các trang web của nó, không phải địa chỉ IP.", // ai 2026-11
+
+// admin/um_passkeys.php, row 180, 191
+"Add a passkey" => "Thêm khóa truy cập", // ai 2026-11
+
+// admin/um_passkeys.php, row 182
+"This server cannot make passkeys." => "Máy chủ này không thể tạo khóa truy cập.", // ai 2026-11
+
+// admin/um_passkeys.php, row 184
+"The passkey will work on %1. On the other addresses of this AA the login page sends you here." => "Khóa truy cập sẽ dùng được trên %1. Trên các địa chỉ khác của AA này, trang đăng nhập sẽ chuyển bạn đến đây.", // ai 2026-11
+
+// admin/um_passkeys.php, row 185
+"Name of the passkey" => "Tên khóa truy cập", // ai 2026-11
+
+// admin/um_passkeys.php, row 186
+"e.g. My phone" => "vd. Điện thoại của tôi", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"No passkey was made." => "Chưa tạo khóa truy cập nào.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"This device keeps a passkey of the account already." => "Thiết bị này đã lưu một khóa truy cập của tài khoản.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"The browser could not make a passkey." => "Trình duyệt không thể tạo khóa truy cập.", // ai 2026-11
+
+// admin/um_passkeys.php, row 190
+"This browser cannot make passkeys." => "Trình duyệt này không thể tạo khóa truy cập.", // ai 2026-11
+
+// admin/um_passkeys.php, row 192
+"Adding a passkey needs JavaScript." => "Việc thêm khóa truy cập cần JavaScript.", // ai 2026-11
+
+// admin/um_passwd.php, row 64
 "You do not have permissions to change user data" => "Bạn không có quyền thay đổi dữ liệu người dùng", // ai 2026-06
 
-// admin/um_passwd.php, row 71, 113
+// admin/um_passwd.php, row 83
+"Log in again first - a change of the account needs a login of the last %1 minutes" => "Hãy đăng nhập lại trước - việc thay đổi tài khoản cần một lần đăng nhập trong %1 phút gần nhất", // ai 2026-11
+
+// admin/um_passwd.php, row 86, 132, 134
 // src/Widget/PwdWidget.php, row 66
 "Current password" => "Mật khẩu hiện tại", // ai 2026-06
 
-// admin/um_passwd.php, row 73
+// admin/um_passwd.php, row 88
 "Error in current password - password is not changed" => "Lỗi ở mật khẩu hiện tại - mật khẩu chưa được thay đổi", // ai 2026-06
 
-// admin/um_passwd.php, row 82
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 98
+// admin/um_uedit.php, row 184
 "User data modified" => "Đã thay đổi dữ liệu người dùng", // ai 2026-06
 
-// admin/um_passwd.php, row 101
+// admin/um_passwd.php, row 117
 "Change user data" => "Thay đổi dữ liệu người dùng", // ai 2026-06
 
-// admin/um_passwd.php, row 110
-// admin/um_uedit.php, row 312
+// admin/um_passwd.php, row 127
+// admin/um_uedit.php, row 313
 "Edit User" => "Sửa người dùng", // ai 2026-06
 
-// admin/um_passwd.php, row 112
-// admin/um_uedit.php, row 314
+// admin/um_passwd.php, row 129
+// admin/um_uedit.php, row 315
 "User Id" => "ID người dùng", // ai 2026-06
 
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 130
+"The account logs in by a passkey" => "Tài khoản đăng nhập bằng khóa truy cập", // ai 2026-11
+
+// admin/um_passwd.php, row 130
+"Log in without a password" => "Đăng nhập không cần mật khẩu", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed - you logged in a moment ago" => "Không cần - bạn vừa đăng nhập", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed, but log in again first: a change needs a login of the last %1 minutes" => "Không cần, nhưng hãy đăng nhập lại trước: việc thay đổi cần một lần đăng nhập trong %1 phút gần nhất", // ai 2026-11
+
+// admin/um_uedit.php, row 184
 // include/um_util.php, row 344
 "User successfully added to permission system" => "Đã thêm người dùng vào hệ thống phân quyền thành công", // ai 2026-06
 
-// admin/um_uedit.php, row 198
+// admin/um_uedit.php, row 199
 "Are you sure you want to delete selected user from whole permission system?" => "Bạn có chắc muốn xóa người dùng đã chọn khỏi toàn bộ hệ thống phân quyền không?", // ai 2026-06
 
-// admin/um_uedit.php, row 230
+// admin/um_uedit.php, row 231
 "Add new user" => "Thêm người dùng mới", // ai 2026-06
 
-// admin/um_uedit.php, row 238
+// admin/um_uedit.php, row 239
 "Add user" => "Thêm người dùng", // ai 2026-06
 
-// admin/um_uedit.php, row 247
+// admin/um_uedit.php, row 248
 "Find user" => "Tìm người dùng", // ai 2026-06
 
-// admin/um_uedit.php, row 316
+// admin/um_uedit.php, row 324
+"%1 - the account logs in only by them" => "%1 - tài khoản chỉ đăng nhập bằng các khóa này", // ai 2026-11
+
+// admin/um_uedit.php, row 324
+// src/Isds/Registry/Page.php, row 555, 653
+// src/Optimize/MissCacheRouting.php, row 98, 129
+"none" => "không có", // ai 2026-10
+
+// admin/um_uedit.php, row 327
 "New user" => "Người dùng mới", // ai 2026-06
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "All Writable Groups" => "Tất cả nhóm có quyền ghi", // ai 2026-06
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "User's Groups" => "Nhóm của người dùng", // ai 2026-06
 
-// admin/um_uedit.php, row 347
+// admin/um_uedit.php, row 358
 "Member of Unwritable Groups" => "Thành viên của các nhóm không có quyền ghi", // ai 2026-06
 
 // admin/usershow.php, row 76
@@ -3829,7 +4023,7 @@ return [
 "Write email to users" => "Gửi e-mail tới người dùng", // ai 2026-06
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1059
+// include/logs.php, row 1064
 "Recipients" => "Người nhận", // ai 2026-06
 
 // admin/write_mail.php, row 238
@@ -3903,7 +4097,7 @@ return [
 "App" => "Ứng dụng", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1201
+// include/logs.php, row 1206
 "Version" => "Phiên bản", // ai 2026-10
 
 // central/appstore.php, row 164
@@ -4046,11 +4240,11 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1202
+// include/logs.php, row 1207
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
-// src/Widget/RichtextMarkup.php, row 71
+// src/Widget/RichtextMarkup.php, row 84
 "Source" => "Nguồn", // ai 2026-06
 
 // central/installapp.php, row 452
@@ -4091,7 +4285,7 @@ return [
 "Hold Ctrl to choose more of them." => "Giữ Ctrl để chọn nhiều mục.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 790, 1244
+// include/logs.php, row 795, 1249
 "Mode" => "Chế độ", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4481,7 +4675,7 @@ return [
 "Stopped by an error" => "Đã dừng do lỗi", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 792
+// include/logs.php, row 797
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "Đã hoàn tất", // ai 2026-10
@@ -4684,7 +4878,7 @@ return [
 "Compared and Updated ActionApps" => "ActionApps đã so sánh và cập nhật", // ai 2026-06
 
 // filldisc.php, row 106, 156
-// filler.php, row 423
+// filler.php, row 311, 427
 "Not accepted, sorry. Looks like spam." => "Không được chấp nhận, rất tiếc. Trông giống thư rác.", // ai 2026-06
 
 // filldisc.php, row 113
@@ -4706,22 +4900,22 @@ return [
 // filler.php, row 295
 "Not allowed to post comments" => "Không được phép gửi bình luận", // ai 2026-06
 
-// filler.php, row 336, 382
+// filler.php, row 340, 386
 "Bad Token. Not allowed to post comments" => "Token sai. Không được phép gửi bình luận", // ai 2026-06
 
-// filler.php, row 362
+// filler.php, row 366
 "Slice ID not defined" => "Chưa xác định ID chuyên mục", // ai 2026-06
 
-// filler.php, row 368
+// filler.php, row 372
 "Bad slice ID" => "ID chuyên mục sai", // ai 2026-06
 
-// filler.php, row 397, 486
+// filler.php, row 401, 490
 "You are not allowed to update this item." => "Bạn không có quyền cập nhật bài viết này.", // ai 2026-06
 
-// filler.php, row 444
+// filler.php, row 448
 "Anonymous posting not admitted." => "Không cho phép gửi bài ẩn danh.", // ai 2026-06
 
-// filler.php, row 499
+// filler.php, row 503
 "Some error in store item." => "Có lỗi khi lưu bài viết.", // ai 2026-06
 
 // include/adminpage.class.php, row 68
@@ -4731,7 +4925,7 @@ return [
 "Short Id" => "ID ngắn", // ai 2026-06
 
 // include/constants.php, row 456
-// include/logs.php, row 950, 982
+// include/logs.php, row 955, 987
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Lớp", // ai 2026-06
 
@@ -4740,7 +4934,7 @@ return [
 "Level" => "Cấp độ", // ai 2026-06
 
 // include/constants.php, row 509
-// include/logs.php, row 1161
+// include/logs.php, row 1166
 "Feed" => "Nạp", // ai 2026-06
 
 // include/constants.php, row 510
@@ -5381,8 +5575,8 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1294
-// src/Manageraction/Item_Move2Slice.php, row 52
+// include/logs.php, row 1299
+// src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID chuyên mục", // ai 2026-06
 
 // include/form.class.php, row 232
@@ -5442,7 +5636,7 @@ return [
 "import" => "nhập vào", // ai 2026-06
 
 // include/formutil.php, row 1216
-// src/Widget/RichtextMarkup.php, row 70
+// src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Sửa trong Trình soạn thảo", // ai 2026-06
 
@@ -5473,7 +5667,7 @@ return [
 "Offer" => "Có sẵn", // ai 2026-06
 
 // include/formutil.php, row 2179
-// include/stringexpand.php, row 11505, 11528
+// include/stringexpand.php, row 11506, 11529
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 287
@@ -5498,7 +5692,7 @@ return [
 "Group Name" => "Tên nhóm", // ai 2026-06
 
 // include/formutil.php, row 3295
-// include/logs.php, row 747, 847, 1111
+// include/logs.php, row 752, 852, 1116
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Số lượng", // ai 2026-06
@@ -5514,9 +5708,6 @@ return [
 
 // include/formutil.php, row 3299
 "Updated by" => "Người cập nhật", // ai 2026-06
-
-// include/formutil.php, row 3300
-"Last used" => "Dùng lần cuối", // ai 2026-06
 
 // include/formutil.php, row 3307
 "All active items" => "Tất cả bài viết đang hoạt động", // ai 2026-06
@@ -5534,7 +5725,7 @@ return [
 "All items in trash bin" => "Tất cả bài viết trong thùng rác", // ai 2026-06
 
 // include/init_page.php, row 84
-// include/locauth.php, row 100
+// include/locauth.php, row 137
 "Either your username or your password is not valid" => "Tên đăng nhập hoặc mật khẩu của bạn không hợp lệ", // ai 2026-06
 
 // include/init_page.php, row 136
@@ -6035,252 +6226,258 @@ return [
 // include/itemview.php, row 723, 731
 "exact group name" => "tên nhóm chính xác", // ai 2026-06
 
-// include/locauth.php, row 102
+// include/locauth.php, row 134
+"The login by the passkey did not succeed. Try it again." => "Đăng nhập bằng khóa truy cập không thành công. Vui lòng thử lại.", // ai 2026-11
+
+// include/locauth.php, row 139
 "Please try again!" => "Vui lòng thử lại!", // ai 2026-06
 
-// include/locauth.php, row 103
+// include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Nếu bạn chắc chắn đã nhập đúng mật khẩu, vui lòng gửi e-mail đến <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 541
+// include/logs.php, row 546
 "Created time" => "Thời gian tạo", // ai 2026-06
 
-// include/logs.php, row 542
+// include/logs.php, row 547
 "Readers to be emailed" => "Người đọc sẽ được gửi e-mail", // ai 2026-06
 
-// include/logs.php, row 554
+// include/logs.php, row 559
 // src/Optimize/CheckCkeditorUse.php, row 97
+// src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
 "Page" => "Trang", // ai 2026-06
 
-// include/logs.php, row 629, 673, 688
+// include/logs.php, row 634, 678, 693
 "Time [s]" => "Thời gian [s]", // ai 2026-06
 
-// include/logs.php, row 630, 675
+// include/logs.php, row 635, 680
 "Memory usage [MB]" => "Dung lượng bộ nhớ [MB]", // ai 2026-06
 
-// include/logs.php, row 631
+// include/logs.php, row 636
 "Memory peak [MB]" => "Đỉnh bộ nhớ [MB]", // ai 2026-06
 
-// include/logs.php, row 632
+// include/logs.php, row 637
 "Return code" => "Mã trả về", // ai 2026-06
 
-// include/logs.php, row 648
+// include/logs.php, row 653
 "Tasks done" => "Tác vụ đã hoàn thành", // ai 2026-06
 
-// include/logs.php, row 649
+// include/logs.php, row 654
 "Tasks started" => "Tác vụ đã bắt đầu", // ai 2026-06
 
-// include/logs.php, row 650
+// include/logs.php, row 655
 "Duration [s]" => "Thời lượng [giây]", // ai 2026-06
 
-// include/logs.php, row 651
+// include/logs.php, row 656
 "Allowed [s]" => "Cho phép [giây]", // ai 2026-06
 
-// include/logs.php, row 671
+// include/logs.php, row 676
 "Cached" => "Từ bộ nhớ đệm", // ai 2026-06
 
-// include/logs.php, row 672
+// include/logs.php, row 677
 "Not Modified (304)" => "Không sửa đổi (304)", // ai 2026-06
 
-// include/logs.php, row 674
+// include/logs.php, row 679
 "Time + Cached + 304" => "Thời gian + Bộ nhớ đệm + 304", // ai 2026-06
 
-// include/logs.php, row 676, 689, 899, 1085
+// include/logs.php, row 681, 694, 904, 1090
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 716
+// include/logs.php, row 721
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 717
+// include/logs.php, row 722
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 718
+// include/logs.php, row 723
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 719
+// include/logs.php, row 724
 "DB" => "",
 
-// include/logs.php, row 720
+// include/logs.php, row 725
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Bộ nhớ", // ai 2026-06
 
-// include/logs.php, row 721
+// include/logs.php, row 726
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 722
+// include/logs.php, row 727
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Cài đặt máy chủ", // ai 2026-10
 
-// include/logs.php, row 746, 845
+// include/logs.php, row 751, 850
 "Severity" => "Mức độ", // ai 2026-10
 
-// include/logs.php, row 748, 843, 872
+// include/logs.php, row 753, 848, 877
 "Finding" => "Phát hiện", // ai 2026-10
 
-// include/logs.php, row 766
+// include/logs.php, row 771
 "Problems" => "Vấn đề", // ai 2026-10
 
-// include/logs.php, row 767
+// include/logs.php, row 772
 "Warnings" => "Cảnh báo", // ai 2026-10
 
-// include/logs.php, row 768
+// include/logs.php, row 773
 "Recommendations" => "Khuyến nghị", // ai 2026-10
 
-// include/logs.php, row 769
+// include/logs.php, row 774
 "Checks" => "Lượt kiểm tra", // ai 2026-10
 
-// include/logs.php, row 789, 820
+// include/logs.php, row 794, 825
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Chạy", // ai 2026-10
 
-// include/logs.php, row 791
+// include/logs.php, row 796
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "Bắt đầu", // ai 2026-10
 
-// include/logs.php, row 793
+// include/logs.php, row 798
 "Last full run" => "Lần chạy đầy đủ gần nhất", // ai 2026-10
 
-// include/logs.php, row 794
+// include/logs.php, row 799
 "Last full run started" => "Lần chạy đầy đủ gần nhất bắt đầu lúc", // ai 2026-10
 
-// include/logs.php, row 819, 844
+// include/logs.php, row 824, 849
 "Pair" => "Cặp", // ai 2026-10
 
-// include/logs.php, row 821
+// include/logs.php, row 826
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Chạy lúc", // ai 2026-10
 
-// include/logs.php, row 822, 846
+// include/logs.php, row 827, 851
 "Known issue" => "Vấn đề đã biết", // ai 2026-10
 
-// include/logs.php, row 848
+// include/logs.php, row 853
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Thấy lần đầu", // ai 2026-10
 
-// include/logs.php, row 849
+// include/logs.php, row 854
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "Số lần chạy liên tiếp", // ai 2026-10
 
-// include/logs.php, row 873
+// include/logs.php, row 878
 "Evidence" => "Bằng chứng", // ai 2026-10
 
-// include/logs.php, row 896
+// include/logs.php, row 901
 "Identifier" => "Định danh", // ai 2026-06
 
-// include/logs.php, row 897, 1261, 1276
+// include/logs.php, row 902, 1266, 1281
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "ID mô-đun", // ai 2026-06
 
-// include/logs.php, row 910
+// include/logs.php, row 915
 "Template id" => "ID mẫu", // ai 2026-06
 
-// include/logs.php, row 912
+// include/logs.php, row 917
 "Emails sent" => "Email đã gửi", // ai 2026-06
 
-// include/logs.php, row 951
+// include/logs.php, row 956
 "Object id" => "ID đối tượng", // ai 2026-10
 
-// include/logs.php, row 983
+// include/logs.php, row 988
 "Mail template" => "Mẫu e-mail", // ai 2026-10
 
-// include/logs.php, row 984
+// include/logs.php, row 989
 "Reader item" => "Bài viết người đọc", // ai 2026-10
 
-// include/logs.php, row 985
+// include/logs.php, row 990
 "Origin" => "Nguồn gốc", // ai 2026-10
 
-// include/logs.php, row 1056
+// include/logs.php, row 1061
 "Transport" => "Cách gửi", // ai 2026-10
 
-// include/logs.php, row 1057
+// include/logs.php, row 1062
 "Recipients sent" => "Số người nhận đã được gửi", // ai 2026-10
 
-// include/logs.php, row 1058
+// include/logs.php, row 1063
 "Server response" => "Phản hồi máy chủ", // ai 2026-10
 
-// include/logs.php, row 1071
+// include/logs.php, row 1076
 "Items selected" => "Mục đã chọn", // ai 2026-06
 
-// include/logs.php, row 1072
+// include/logs.php, row 1077
 "Items updated" => "Mục đã cập nhật", // ai 2026-06
 
-// include/logs.php, row 1073
+// include/logs.php, row 1078
 "Items planned" => "Mục đã lên kế hoạch", // ai 2026-06
 
-// include/logs.php, row 1084
+// include/logs.php, row 1089
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Thông báo", // ai 2026-06
 
-// include/logs.php, row 1086
+// include/logs.php, row 1091
 "Referer" => "Nguồn giới thiệu", // ai 2026-06
 
-// include/logs.php, row 1097
+// include/logs.php, row 1102
 "New name" => "Tên mới", // ai 2026-06
 
-// include/logs.php, row 1098
+// include/logs.php, row 1103
 "Old name" => "Tên cũ", // ai 2026-06
 
-// include/logs.php, row 1109, 1174
+// include/logs.php, row 1114, 1179
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Giai đoạn", // ai 2026-06
 
-// include/logs.php, row 1110
+// include/logs.php, row 1115
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Bộ sưu tập", // ai 2026-06
 
-// include/logs.php, row 1112, 1163, 1175, 1310
+// include/logs.php, row 1117, 1168, 1180, 1315
 // src/Import/Definition.php, row 154
+// src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "Chi tiết", // ai 2026-06
 
-// include/logs.php, row 1162
+// include/logs.php, row 1167
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Trạng thái", // ai 2026-06
 
-// include/logs.php, row 1214
+// include/logs.php, row 1219
 "Processed" => "Đã xử lý", // ai 2026-06
 
-// include/logs.php, row 1215
+// include/logs.php, row 1220
 "Stored" => "Đã lưu", // ai 2026-06
 
-// include/logs.php, row 1216
+// include/logs.php, row 1221
 "Errors" => "Lỗi", // ai 2026-06
 
-// include/logs.php, row 1229
+// include/logs.php, row 1234
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Kết quả", // ai 2026-06
 
-// include/logs.php, row 1245
+// include/logs.php, row 1250
 "Flags" => "Cờ", // ai 2026-06
 
-// include/logs.php, row 1246
+// include/logs.php, row 1251
 "Context" => "Ngữ cảnh", // ai 2026-06
 
-// include/logs.php, row 1262
+// include/logs.php, row 1267
 "Feed counterpart" => "Đối tác nạp", // ai 2026-06
 
-// include/logs.php, row 1277
+// include/logs.php, row 1282
 "Field ID" => "ID trường", // ai 2026-06
 
-// include/logs.php, row 1295
+// include/logs.php, row 1300
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckHttp.php, row 62
+// src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 88
 "Reason" => "Lý do", // ai 2026-10
 
@@ -6293,7 +6490,7 @@ return [
 // include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Chủ sở hữu", // ai 2026-06
 
@@ -6619,10 +6816,10 @@ return [
 // include/modutils.php, row 251
 "Select owner" => "Chọn chủ sở hữu", // ai 2026-06
 
-// include/perm_core.php, row 1273, 1300
+// include/perm_core.php, row 1414, 1444
 "Reader Slice" => "Chuyên mục người đọc", // ai 2026-06
 
-// include/perm_core.php, row 1285, 1302
+// include/perm_core.php, row 1429, 1446
 "Reader Set" => "Tập hợp người đọc", // ai 2026-06
 
 // include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
@@ -6731,9 +6928,6 @@ return [
 // include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Bộ lọc cá nhân (nhấn để áp dụng)", // ai 2026-06
 
-// include/searchbar.class.php, row 1124
-"Rename" => "Đổi tên", // ai 2026-06
-
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Quản lý bộ lọc", // ai 2026-06
 
@@ -6768,7 +6962,7 @@ return [
 "is not" => "không phải là", // ai 2026-06
 
 // include/searchlib.php, row 137, 140
-// include/statestore.php, row 1362
+// include/statestore.php, row 1367
 "select ..." => "chọn ...", // ai 2026-06
 
 // include/searchlib.php, row 370
@@ -6916,22 +7110,22 @@ return [
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Liệt kê tất cả ngôn ngữ mà bạn muốn dùng sitemodule - en, es, cz, ..<br>Vui lòng <b>thực hiện</b>, ngay cả khi bạn chỉ dùng 1 ngôn ngữ. <br>Điều này khá cần thiết nếu bạn muốn gọi sitemodule theo cách mới hơn từ Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
 // include/slice.class.php, row 1645
-"Allowed {xflag} values" => "",
+"Allowed {xflag} values" => "Giá trị {xflag} được phép", // ai 2026-11
 
 // include/slice.class.php, row 1645
-"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "",
+"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "Biểu thức chính quy mà phần {xflag} của URL phải khớp toàn bộ (không cần ^ hay \$), nếu không trang sẽ trả về 404. {xflag} là các ký tự ngay sau ngôn ngữ và số trang tùy chọn {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... Nó không bao giờ chứa chữ số hay “-” - các ký tự đó kết thúc nó.<br>Các trang không có {xflag} cũng phải khớp - hãy kết thúc mẫu bằng ? hoặc thêm một lựa chọn rỗng.<br><b>Để trống</b> - mọi giá trị không chứa “=”.<br><b>^\$</b> - không dùng {xflag}, chỉ các trang không có nó.<br>Ví dụ:<br>[a-z]? - một chữ cái, hoặc không gì<br>[tp]? - “t” hoặc “p”, hoặc không gì<br>(print|pdf)? - một trong các từ liệt kê, hoặc không gì", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Allowed {xcat} values" => "",
+"Allowed {xcat} values" => "Giá trị {xcat} được phép", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "",
+"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "Biểu thức chính quy mà phần {xcat} của URL phải khớp toàn bộ (không cần ^ hay \$), nếu không trang sẽ trả về 404. {xcat} là toàn bộ phần sau dấu “-” đầu tiên trong thư mục đầu tiên: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... Nó có thể chứa bất cứ gì trừ “/”.<br>Các trang không có {xcat} cũng phải khớp - hãy kết thúc mẫu bằng ? hoặc thêm một lựa chọn rỗng.<br><b>Để trống</b> - mọi giá trị không chứa “=”.<br><b>^\$</b> - không dùng {xcat}, chỉ các trang không có nó.<br>Ví dụ:<br>[a-z0-9-]* - chữ thường, chữ số và dấu gạch ngang, hoặc không gì<br>([0-9]+)? - một số, hoặc không gì<br>(bioplyn|kompost)? - một trong các từ liệt kê, hoặc không gì", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Check the page path" => "",
+"Check the page path" => "Kiểm tra đường dẫn trang", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "",
+"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "Trả về 404 khi bất kỳ phần nào của đường dẫn ({xseo1}, {xseo2}, ...) không phải là bài viết đã công bố, để /cz/nonsense/about-us không hiển thị trang about-us. Trang cũng trả về 404 khi “Không tìm thấy trang” được đặt là “Không xử lý”.", // ai 2026-11
 
 // include/slice.class.php, row 1648
 "Page not Found (404)" => "Không tìm thấy trang (404)", // ai 2026-06
@@ -6973,10 +7167,10 @@ return [
 "Published modules" => "Mô-đun đã công bố", // ai 2026-10
 
 // include/slice.class.php, row 1664
-"Page address (URL)" => "",
+"Page address (URL)" => "Địa chỉ trang (URL)", // ai 2026-11
 
 // include/slice.class.php, row 1665
-"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "",
+"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} là một số, {xflag} là các chữ cái sau nó, {xcat} là toàn bộ phần sau dấu “-” đầu tiên - cả ba đều tùy chọn. Có thể bỏ {xlang} khi đã thiết lập “Ngôn ngữ trên trang web”.<br>Ví dụ /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka", // ai 2026-11
 
 // include/slice.class.php, row 1707
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "Phiên bản ứng dụng gồm tối đa 32 chữ cái, chữ số và . + - (ví dụ 1.2.0), phần mô tả tối đa %1 ký tự.", // ai 2026-10
@@ -7049,13 +7243,13 @@ return [
 // include/slicedit.php, row 372
 "Internal error when changing user role." => "Lỗi nội bộ khi thay đổi vai trò người dùng.", // ai 2026-06
 
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 "Owner ID" => "ID chủ sở hữu", // ai 2026-06
 
-// include/statestore.php, row 1170
+// include/statestore.php, row 1175
 "No object found" => "Không tìm thấy đối tượng", // ai 2026-06
 
-// include/statestore.php, row 1444
+// include/statestore.php, row 1449
 "Manage components" => "Quản lý thành phần", // ai 2026-06
 
 // include/stringexpand.php, row 95
@@ -7097,84 +7291,84 @@ return [
 // include/stringexpand.php, row 6279
 "No module for dictionary slice" => "Không có mô-đun cho chuyên mục từ điển", // ai 2026-06
 
-// include/stringexpand.php, row 8195
+// include/stringexpand.php, row 8196
 "version" => "phiên bản", // ai 2026-06
 
-// include/stringexpand.php, row 8383
+// include/stringexpand.php, row 8384
 "show" => "hiển thị", // ai 2026-06
 
-// include/stringexpand.php, row 8384
+// include/stringexpand.php, row 8385
 "hide" => "ẩn", // ai 2026-06
 
-// include/stringexpand.php, row 8385
+// include/stringexpand.php, row 8386
 "loading" => "đang tải", // ai 2026-06
 
-// include/stringexpand.php, row 9516
+// include/stringexpand.php, row 9517
 "E-mail confirmed." => "Đã xác nhận e-mail.", // ai 2026-06
 
-// include/stringexpand.php, row 9520
+// include/stringexpand.php, row 9521
 "E-mail unsubscribed" => "Đã hủy đăng ký e-mail", // ai 2026-06
 
-// include/stringexpand.php, row 10279
+// include/stringexpand.php, row 10280
 "Forgot your password? Fill in your email." => "Quên mật khẩu? Hãy điền e-mail của bạn.", // ai 2026-06
 
-// include/stringexpand.php, row 10281
+// include/stringexpand.php, row 10282
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-mail", // ai 2026-10
 
-// include/stringexpand.php, row 10299, 10303
+// include/stringexpand.php, row 10300, 10304
 "Unable to find user - please check if it has been misspelled." => "Không thể tìm thấy người dùng - vui lòng kiểm tra xem có viết sai chính tả không.", // ai 2026-06
 
-// include/stringexpand.php, row 10317
+// include/stringexpand.php, row 10318
 "Password link" => "Liên kết mật khẩu", // ai 2026-06
 
-// include/stringexpand.php, row 10318
+// include/stringexpand.php, row 10319
 "Password change url parameter" => "Tham số url thay đổi mật khẩu", // ai 2026-06
 
-// include/stringexpand.php, row 10330
+// include/stringexpand.php, row 10331
 "Password change" => "Thay đổi mật khẩu", // ai 2026-06
 
-// include/stringexpand.php, row 10331
+// include/stringexpand.php, row 10332
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Để thay đổi mật khẩu, vui lòng truy cập địa chỉ sau:<br>%1<br>Việc thay đổi có thể thực hiện trong hai giờ - sau đó khóa sẽ hết hạn và bạn cần yêu cầu khóa mới.", // ai 2026-06
 
-// include/stringexpand.php, row 10340
+// include/stringexpand.php, row 10341
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail kèm khóa để thay đổi mật khẩu vừa được gửi đến địa chỉ e-mail: %1", // ai 2026-06
 
-// include/stringexpand.php, row 10351, 10380
+// include/stringexpand.php, row 10352, 10381
 "Bad or expired key." => "Khóa sai hoặc đã hết hạn.", // ai 2026-06
 
-// include/stringexpand.php, row 10356
+// include/stringexpand.php, row 10357
 "Fill in the new password" => "Điền mật khẩu mới", // ai 2026-06
 
-// include/stringexpand.php, row 10358
+// include/stringexpand.php, row 10359
 "New password" => "Mật khẩu mới", // ai 2026-06
 
-// include/stringexpand.php, row 10359
+// include/stringexpand.php, row 10360
 "Retype New Password" => "Nhập lại mật khẩu mới", // ai 2026-06
 
-// include/stringexpand.php, row 10383
+// include/stringexpand.php, row 10384
 "Passwords do not match - please try again." => "Mật khẩu không khớp - vui lòng thử lại.", // ai 2026-06
 
-// include/stringexpand.php, row 10386
+// include/stringexpand.php, row 10387
 "The password must be at least 6 characters long." => "Mật khẩu phải dài ít nhất 6 ký tự.", // ai 2026-06
 
-// include/stringexpand.php, row 10392
+// include/stringexpand.php, row 10393
 "Password changed." => "Đã thay đổi mật khẩu.", // ai 2026-06
 
-// include/stringexpand.php, row 10394
+// include/stringexpand.php, row 10395
 "An error occurred during password change - please contact: %1." => "Đã xảy ra lỗi khi thay đổi mật khẩu - vui lòng liên hệ: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 11502, 11525
+// include/stringexpand.php, row 11503, 11526
 "Are you sure you want to permanently DELETE this record?" => "Bạn có chắc chắn muốn XÓA vĩnh viễn bản ghi này không?", // ai 2026-06
 
-// include/stringexpand.php, row 11508, 11511, 11531, 11534
+// include/stringexpand.php, row 11509, 11512, 11532, 11535
 // src/Widget/RimWidget.php, row 270
 "edit" => "sửa", // ai 2026-06
 
-// include/stringexpand.php, row 11514, 11537
+// include/stringexpand.php, row 11515, 11538
 "back" => "quay lại", // ai 2026-06
 
-// include/stringexpand.php, row 11517, 11540
+// include/stringexpand.php, row 11518, 11541
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "kéo tệp vào đây hoặc nhấp để tải lên", // ai 2026-06
 
@@ -7392,7 +7586,7 @@ return [
 "username | slice | <b>allslices</b>" => "",
 
 // include/validate.php, row 957
-"Not a valid regular expression" => "",
+"Not a valid regular expression" => "Biểu thức chính quy không hợp lệ", // ai 2026-11
 
 // include/validate.php, row 992
 "This field is required." => "Trường này là bắt buộc.", // ai 2026-06
@@ -7677,37 +7871,37 @@ return [
 // src/AA_Plannedtask.php, row 457
 "next run" => "lần chạy kế tiếp", // ai 2026-06
 
-// src/Api/Controller/FilesController.php, row 54, 75
+// src/Api/Controller/FilesController.php, row 56, 77
 "The file is too big" => "Tệp quá lớn", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 67
+// src/Api/Controller/FilesController.php, row 69
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "Bạn không được tải tệp lên tại đây. Nếu bạn đang chỉnh sửa, phiên đăng nhập có thể đã hết hạn - vui lòng tải lại trang.", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 70
+// src/Api/Controller/FilesController.php, row 72
 "Too many uploads - try again in an hour" => "Quá nhiều lượt tải lên - vui lòng thử lại sau một giờ", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 78, 243
+// src/Api/Controller/FilesController.php, row 80, 291
 "No file received" => "Không nhận được tệp nào", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 86
+// src/Api/Controller/FilesController.php, row 88
 "Files of this type cannot be uploaded here: %1" => "Không thể tải lên tệp thuộc loại này tại đây: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 89
+// src/Api/Controller/FilesController.php, row 91
 "The content of the file does not match its extension %1" => "Nội dung của tệp không khớp với phần mở rộng %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 92
+// src/Api/Controller/FilesController.php, row 94
 "The image is bigger than %1 MB" => "Hình ảnh lớn hơn %1 MB", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 95
+// src/Api/Controller/FilesController.php, row 97
 "The image has more than %1 megapixels" => "Hình ảnh có hơn %1 megapixel", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 100
+// src/Api/Controller/FilesController.php, row 102
 "The upload directory of the slice is not writable" => "Không thể ghi vào thư mục tải lên của chuyên mục", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 110
+// src/Api/Controller/FilesController.php, row 112
 "The file could not be stored" => "Không thể lưu tệp", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 132
+// src/Api/Controller/FilesController.php, row 134
 "Only editors of the slice can browse its files" => "Chỉ biên tập viên của chuyên mục mới được duyệt các tệp của nó", // ai 2026-10
 
 // src/Central/Actionapps.php, row 178
@@ -7726,7 +7920,7 @@ return [
 "Expired - get a token" => "Đã hết hạn - hãy lấy token", // ai 2026-10
 
 // src/Central/Actionapps.php, row 234
-"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "",
+"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "AA từ xa đã từ chối đăng nhập: sai tên người dùng hoặc mật khẩu, tài khoản dùng đăng nhập hai bước (Central chưa gửi được mã), hoặc người dùng không phải là quản trị viên cấp cao ở đó", // ai 2026-11
 
 // src/Central/Actionapps.php, row 236
 "The remote AA gave no login token - update it" => "AA từ xa không cấp token đăng nhập - vui lòng cập nhật AA đó", // ai 2026-10
@@ -8891,21 +9085,21 @@ return [
 // src/IO/Grabber/FilesFTP.php, row 106
 "Info to get" => "Thông tin cần lấy", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 75
+// src/IO/Grabber/Form.php, row 76
 // src/IO/Grabber/ObjectForm.php, row 61
 "Form" => "Biểu mẫu", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 83
+// src/IO/Grabber/Form.php, row 84
 // src/IO/Grabber/ObjectForm.php, row 69
 "Grabs data POSTed by AA form" => "Lấy dữ liệu gửi (POST) từ biểu mẫu AA", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 168
+// src/IO/Grabber/Form.php, row 193
 "No slice found: %1" => "Không tìm thấy chuyên mục: %1", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 171
+// src/IO/Grabber/Form.php, row 196
 "No file, img_upload, or img_src field type found in slice %1" => "Không tìm thấy trường kiểu file, img_upload hay img_src trong chuyên mục %1", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 204
+// src/IO/Grabber/Form.php, row 229
 "no POST nor FILES sent" => "không có POST cũng như FILES được gửi", // ai 2026-06
 
 // src/IO/Grabber/Ical.php, row 43
@@ -8932,13 +9126,13 @@ return [
 // src/IO/Grabber/PohodaStocks.php, row 42
 "Imports stock from POHODA accounting system" => "Nhập tồn kho từ hệ thống kế toán POHODA", // ai 2026-06
 
-// src/IO/Grabber/SOAP.php, row 60
+// src/IO/Grabber/SOAP.php, row 62
 "SOAP" => "",
 
-// src/IO/Grabber/SOAP.php, row 68
+// src/IO/Grabber/SOAP.php, row 70
 "General SOAP request" => "Yêu cầu SOAP tổng quát", // ai 2026-06
 
-// src/IO/Grabber/SOAP.php, row 78
+// src/IO/Grabber/SOAP.php, row 80
 "SOAP body request" => "Nội dung yêu cầu SOAP", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 82
@@ -10111,627 +10305,623 @@ return [
 "The column that identifies the item; it must be one of the columns" => "Cột dùng để nhận diện bài viết; phải là một trong các cột", // ai 2026-10
 
 // src/Isds/Advice.php, row 47
-"The form has expired, or it does not belong to this page. Load the page again." => "",
+"The form has expired, or it does not belong to this page. Load the page again." => "Biểu mẫu đã hết hạn, hoặc không thuộc trang này. Vui lòng tải lại trang.", // ai 2026-11
 
 // src/Isds/Advice.php, row 49
-"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "Biểu mẫu đã gửi lớn hơn mức máy chủ chấp nhận (%1). Chưa có gì được lưu - hãy giảm kích thước tệp đính kèm.", // ai 2026-11
 
 // src/Isds/Advice.php, row 50
-"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "Biểu mẫu đã gửi lớn hơn mức máy chủ chấp nhận. Chưa có gì được lưu - hãy giảm kích thước tệp đính kèm.", // ai 2026-11
 
 // src/Isds/Advice.php, row 51
-"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "",
+"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "Thao tác thất bại do lỗi nội bộ của AA và có thể đã thực hiện một phần công việc. Hãy tải lại trang và kiểm tra trước khi thử lại lần nữa.", // ai 2026-11
 
 // src/Isds/Advice.php, row 52
-"Someone else, or another window, is working with this now. Try it again in a while." => "",
+"Someone else, or another window, is working with this now. Try it again in a while." => "Có người khác, hoặc một cửa sổ khác, đang thao tác với mục này. Vui lòng thử lại sau ít phút.", // ai 2026-11
 
 // src/Isds/Advice.php, row 53
-"You may not do this." => "",
+"You may not do this." => "Bạn không được phép thực hiện việc này.", // ai 2026-11
 
 // src/Isds/Advice.php, row 54
-"This sending is not on this page." => "",
+"This sending is not on this page." => "Đợt gửi này không có trên trang này.", // ai 2026-11
 
 // src/Isds/Advice.php, row 55
-"The sending does not wait for this now." => "",
+"The sending does not wait for this now." => "Đợt gửi hiện không chờ thao tác này.", // ai 2026-11
 
 // src/Isds/Advice.php, row 56
-"A step of the sending is still running. Try it again in a few minutes." => "",
+"A step of the sending is still running. Try it again in a few minutes." => "Một bước của đợt gửi vẫn đang chạy. Vui lòng thử lại sau vài phút.", // ai 2026-11
 
 // src/Isds/Advice.php, row 57
-"The sending goes on." => "",
+"The sending goes on." => "Đợt gửi tiếp tục.", // ai 2026-11
 
 // src/Isds/Advice.php, row 58
-"The sending is stopping - no further message will go." => "",
+"The sending is stopping - no further message will go." => "Đợt gửi đang dừng - sẽ không gửi thêm tin nhắn nào nữa.", // ai 2026-11
 
 // src/Isds/Advice.php, row 59
-"Every message has been sent or tried already - there is nothing left to stop." => "",
+"Every message has been sent or tried already - there is nothing left to stop." => "Mọi tin nhắn đều đã được gửi hoặc đã thử gửi - không còn gì để dừng.", // ai 2026-11
 
 // src/Isds/Advice.php, row 60
-"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "",
+"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "Đợt gửi đã được kết thúc hẳn. Các tin nhắn chưa rõ kết quả vẫn chờ bạn xác minh.", // ai 2026-11
 
 // src/Isds/Advice.php, row 61
-"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "",
+"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "Đợt gửi đã dừng do lỗi, nên “Dừng” không thay đổi gì ở đây. Bạn có thể chọn “Tiếp tục”, hoặc kết thúc hẳn đợt gửi - khi đó các tin nhắn chưa rõ kết quả và các lần chuyển phát chưa được đọc sẽ không còn được tra cứu nữa.", // ai 2026-11
 
 // src/Isds/Advice.php, row 63
-"The draft is saved." => "",
+"The draft is saved." => "Bản nháp đã được lưu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 64
-"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "",
+"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "Thư đã được lưu, nhưng lựa chọn người nhận thì chưa: lựa chọn này đã thay đổi trong lúc đó - ở một cửa sổ khác, hoặc một người nhận bạn đã chọn không còn nữa. Trang hiển thị những người nhận hiện đang được lưu; hãy chọn lại nếu cần.", // ai 2026-11
 
 // src/Isds/Advice.php, row 65
-"The copy is ready as a new draft." => "",
+"The copy is ready as a new draft." => "Bản sao đã sẵn sàng dưới dạng bản nháp mới.", // ai 2026-11
 
 // src/Isds/Advice.php, row 66
-"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "",
+"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "Bản nháp đã được chuyển vào thùng rác. Biên tập viên của chuyên mục có thể khôi phục nó trong “Trình quản lý bài viết”.", // ai 2026-11
 
 // src/Isds/Advice.php, row 67
-"The sending of this campaign has started, so it stays - its messages must remain traceable." => "",
+"The sending of this campaign has started, so it stays - its messages must remain traceable." => "Đợt gửi của chiến dịch này đã bắt đầu, nên chiến dịch được giữ lại - các tin nhắn của nó phải luôn tra cứu được.", // ai 2026-11
 
 // src/Isds/Advice.php, row 68
-"The sending left no recipient unsent - there is nothing to copy." => "",
+"The sending left no recipient unsent - there is nothing to copy." => "Đợt gửi không bỏ sót người nhận nào - không có gì để sao chép.", // ai 2026-11
 
 // src/Isds/Advice.php, row 69
-"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "",
+"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "Chỉ có thể gửi lại thư cho người nhận này nếu tin nhắn gửi họ đã thất bại, hoặc đợt gửi đã dừng trước khi đến lượt họ. Tin nhắn này đã đi, có thể vẫn sẽ đi, hoặc đã bị bỏ qua - hoặc chưa rõ nó đã đi hay chưa: hãy xác minh khi trang cho phép (không phải trong lúc AA vẫn đang tra cứu), sau đó mới có thể gửi lại.", // ai 2026-11
 
 // src/Isds/Advice.php, row 70
-"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "",
+"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "Đã ghi nhận: tin nhắn chưa được gửi đi. Có thể gửi lại thư cho người nhận đó trong một chiến dịch mới.", // ai 2026-11
 
 // src/Isds/Advice.php, row 71
-"The fate of this message is known - there is nothing to verify." => "",
+"The fate of this message is known - there is nothing to verify." => "Kết quả của tin nhắn này đã rõ - không có gì để xác minh.", // ai 2026-11
 
 // src/Isds/Advice.php, row 72
-"This message does not belong to the sending." => "",
+"This message does not belong to the sending." => "Tin nhắn này không thuộc đợt gửi.", // ai 2026-11
 
 // src/Isds/Advice.php, row 73
-"The data box of the recipient is taken from the register." => "",
+"The data box of the recipient is taken from the register." => "Hộp dữ liệu của người nhận đã được lấy từ sổ đăng ký.", // ai 2026-11
 
 // src/Isds/Advice.php, row 74
-"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "",
+"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "Sổ đăng ký không đưa ra hộp dữ liệu này cho người nhận với độ chắc chắn đủ để lấy vào đây. Biên tập viên của chuyên mục người nhận sẽ đối chiếu nó trên trang “Hộp dữ liệu từ sổ đăng ký” của chuyên mục đó, hoặc sửa bài viết.", // ai 2026-11
 
 // src/Isds/Advice.php, row 75
-"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "",
+"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "Sổ đăng ký hộp dữ liệu chưa được tải về, hoặc đã cũ. Biên tập viên của chuyên mục người nhận sẽ tải nó về trên trang “Hộp dữ liệu từ sổ đăng ký” của chuyên mục đó.", // ai 2026-11
 
 // src/Isds/Advice.php, row 76
-"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "",
+"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "Người nhận này không nằm trong số những người nhận đã ghép nối với sổ đăng ký: người nhận đã bị xóa, bị chuyển vào thùng rác hoặc đã đổi loại. Vui lòng tải lại trang.", // ai 2026-11
 
 // src/Isds/Advice.php, row 77
-"A page in the test environment changes no recipient." => "",
+"A page in the test environment changes no recipient." => "Trang trong môi trường thử nghiệm không thay đổi người nhận nào.", // ai 2026-11
 
 // src/Isds/Advice.php, row 78
-"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "",
+"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "Đợt gửi đã vào hàng đợi - số người nhận: %1. Đợt gửi tự tiếp tục, bạn có thể đóng trang.", // ai 2026-11
 
 // src/Isds/Advice.php, row 79
-"The test message has gone (ID %1 in ISDS, reference number %2)." => "",
+"The test message has gone (ID %1 in ISDS, reference number %2)." => "Tin nhắn thử nghiệm đã được gửi đi (ID %1 trong ISDS, số hiệu văn bản %2).", // ai 2026-11
 
 // src/Isds/Advice.php, row 80
-"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "",
+"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "Chưa rõ tin nhắn thử nghiệm đã được gửi đi hay chưa. Hãy tìm nó trong các tin nhắn đã gửi của hộp dữ liệu theo số hiệu văn bản %1.", // ai 2026-11
 
 // src/Isds/Advice.php, row 81
-"ISDS refused the test message." => "",
+"ISDS refused the test message." => "ISDS đã từ chối tin nhắn thử nghiệm.", // ai 2026-11
 
 // src/Isds/Advice.php, row 82
-"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "",
+"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "Một tin nhắn thử nghiệm khác của trang này đang được gửi, hoặc vừa dừng cách đây ít phút. Vui lòng thử lại sau vài phút.", // ai 2026-11
 
 // src/Isds/Advice.php, row 83
-"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "",
+"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "Đợt gửi đã vào hàng đợi hoặc đã được gửi, nên không thể thay đổi hay gửi lại. Để gửi thư thêm lần nữa, hãy tạo một bản sao của nó.", // ai 2026-11
 
 // src/Isds/Advice.php, row 84
-"Choose the recipients and save the draft." => "",
+"Choose the recipients and save the draft." => "Hãy chọn người nhận và lưu bản nháp.", // ai 2026-11
 
 // src/Isds/Advice.php, row 85
-"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "",
+"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "Trang này không còn cung cấp những người nhận đã lưu cùng bản nháp, nên không hiển thị lựa chọn người nhận nào. Hãy chọn lại người nhận và lưu bản nháp - lựa chọn mới sẽ thay thế lựa chọn đã lưu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 86
-"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "",
+"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "Số người nhận đã thay đổi kể từ khi bạn xác nhận %1. Hãy kiểm tra lựa chọn và gửi lại.", // ai 2026-11
 
 // src/Isds/Advice.php, row 87
-"There are more recipients than this page may send to (%1). Narrow the choice." => "",
+"There are more recipients than this page may send to (%1). Narrow the choice." => "Số người nhận nhiều hơn mức trang này được phép gửi (%1). Hãy thu hẹp lựa chọn.", // ai 2026-11
 
 // src/Isds/Advice.php, row 88
-"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "",
+"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "Thư sẽ không đến được ai: không người nhận nào được chọn có hộp dữ liệu mà thư có thể gửi tới.", // ai 2026-11
 
 // src/Isds/Advice.php, row 89
-"No data box account is set up for this page. Ask the administrator." => "",
+"No data box account is set up for this page. Ask the administrator." => "Trang này chưa được thiết lập tài khoản hộp dữ liệu nào. Vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 90
-"This page or its slices are not ready to send. Ask the administrator." => "",
+"This page or its slices are not ready to send. Ask the administrator." => "Trang này hoặc các chuyên mục của nó chưa sẵn sàng để gửi. Vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 91
-"The letter cannot go as a data message:" => "",
+"The letter cannot go as a data message:" => "Thư không thể gửi đi dưới dạng tin nhắn dữ liệu:", // ai 2026-11
 
 // src/Isds/Advice.php, row 92
-"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "",
+"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "Máy chủ hiện không thể tạo thư - bản nháp không có gì cần sửa. Vui lòng thử lại sau, hoặc liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "Máy chủ không đủ bộ nhớ cho thư và các tệp đính kèm (cần %1 MB). Vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments. Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments. Ask the administrator." => "Máy chủ không đủ bộ nhớ cho thư và các tệp đính kèm. Vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 94
-"The database cannot queue a sending safely. Ask the administrator." => "",
+"The database cannot queue a sending safely. Ask the administrator." => "Cơ sở dữ liệu không thể đưa đợt gửi vào hàng đợi một cách an toàn. Vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 95
-"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "",
+"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "ISDS đã từ chối đăng nhập của tài khoản, chưa có gì được gửi. Vui lòng đề nghị quản trị viên kiểm tra thông tin đăng nhập.", // ai 2026-11
 
 // src/Isds/Advice.php, row 96
-"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "ISDS đã chặn đăng nhập từ máy chủ này, chưa có gì được gửi. Mật khẩu mới không giúp được gì: AA sẽ thử đăng nhập lại một ngày sau khi bị chặn - vui lòng thử lại vào ngày mai, hoặc liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 97
-"The settings of the account are not complete, nothing was sent. Ask the administrator." => "",
+"The settings of the account are not complete, nothing was sent. Ask the administrator." => "Thiết lập của tài khoản chưa đầy đủ, chưa có gì được gửi. Vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 98
-"ISDS does not answer, nothing was sent. Try it again in a while." => "",
+"ISDS does not answer, nothing was sent. Try it again in a while." => "ISDS không phản hồi, chưa có gì được gửi. Vui lòng thử lại sau ít phút.", // ai 2026-11
 
 // src/Isds/Advice.php, row 99
-"ISDS refused to tell whose the login of the account is, nothing was sent." => "",
+"ISDS refused to tell whose the login of the account is, nothing was sent." => "ISDS đã từ chối cho biết thông tin đăng nhập của tài khoản thuộc về ai, chưa có gì được gửi.", // ai 2026-11
 
 // src/Isds/Advice.php, row 100
-"No test data box is set up for this page - in production the administrator of the server sets it." => "",
+"No test data box is set up for this page - in production the administrator of the server sets it." => "Trang này chưa được thiết lập hộp dữ liệu thử nghiệm nào - trong môi trường vận hành, quản trị viên máy chủ sẽ thiết lập nó.", // ai 2026-11
 
 // src/Isds/Advice.php, row 101
-"Choose one of the test data boxes of this page." => "",
+"Choose one of the test data boxes of this page." => "Hãy chọn một trong các hộp dữ liệu thử nghiệm của trang này.", // ai 2026-11
 
 // src/Isds/Advice.php, row 102
-"A test message cannot go to the data box it is sent from. Choose another test box." => "",
+"A test message cannot go to the data box it is sent from. Choose another test box." => "Tin nhắn thử nghiệm không thể gửi tới chính hộp dữ liệu gửi nó. Hãy chọn hộp thử nghiệm khác.", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained until %1. Try it again then." => "",
+"ISDS is being maintained until %1. Try it again then." => "ISDS đang bảo trì đến %1. Vui lòng thử lại sau thời điểm đó.", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained. Try it again later." => "",
+"ISDS is being maintained. Try it again later." => "ISDS đang bảo trì. Vui lòng thử lại sau.", // ai 2026-11
 
 // src/Isds/Advice.php, row 105
-"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "Thư này đã được gửi, hoặc có thể đã được gửi, tới hộp thử nghiệm này vào %2 (số hiệu văn bản %1). Hãy sửa bản nháp để thử nghiệm lại.", // ai 2026-11
 
 // src/Isds/Advice.php, row 106
-"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "Thư này đã được gửi, hoặc có thể đã được gửi, tới hộp thử nghiệm này (số hiệu văn bản %1). Hãy sửa bản nháp để thử nghiệm lại.", // ai 2026-11
 
 // src/Isds/Advice.php, row 107
-"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "",
+"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "Tin nhắn tới hộp dữ liệu này sẽ mất phí (tin nhắn dữ liệu bưu chính), còn trong môi trường vận hành tin nhắn thử nghiệm chỉ được gửi miễn phí. Hãy thử nghiệm với hộp dữ liệu của một cơ quan nhà nước.", // ai 2026-11
 
 // src/Isds/Advice.php, row 108
-"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "",
+"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "Không thể kiểm tra rằng tin nhắn sẽ miễn phí, chưa có gì được gửi. Hãy kiểm tra hộp thử nghiệm và thử lại sau ít phút.", // ai 2026-11
 
 // src/Isds/Advice.php, row 109
-"The test message went as a paid postal data message." => "",
+"The test message went as a paid postal data message." => "Tin nhắn thử nghiệm đã được gửi đi dưới dạng tin nhắn dữ liệu bưu chính có phí.", // ai 2026-11
 
 // src/Isds/Advice.php, row 110
-"The test message may have cost money: it may have gone as a paid postal data message." => "",
+"The test message may have cost money: it may have gone as a paid postal data message." => "Tin nhắn thử nghiệm có thể đã mất phí: nó có thể đã được gửi đi dưới dạng tin nhắn dữ liệu bưu chính có phí.", // ai 2026-11
 
 // src/Isds/Advice.php, row 141
-"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "",
+"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "ISDS đã từ chối nhiều tin nhắn liên tiếp với cùng một trạng thái, hoặc từ chối một truy vấn của đợt gửi - thông tin đăng nhập của tài khoản thuộc về ai, hoặc những tin nhắn nào đã được gửi.", // ai 2026-11
 
 // src/Isds/Advice.php, row 142
-"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "",
+"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "Sau các tin nhắn bị từ chối, “Tiếp tục” sẽ gửi thêm một tin nhắn, và đợt gửi lại dừng nếu ISDS cũng từ chối tin nhắn đó; sau một truy vấn bị từ chối, “Tiếp tục” sẽ truy vấn lại.", // ai 2026-11
 
 // src/Isds/Advice.php, row 144
-"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "",
+"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "Đang chờ ISDS liệt kê các tin nhắn chưa rõ kết quả. Đợt gửi sẽ tự tra cứu chúng.", // ai 2026-11
 
 // src/Isds/Advice.php, row 145
-"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "",
+"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "Đợt gửi đã kết thúc - điều đó không có nghĩa mọi tin nhắn đều đã đi, các con số sẽ cho biết. Việc chuyển phát được theo dõi theo từng vòng; vòng tiếp theo sẽ tự diễn ra.", // ai 2026-11
 
 // src/Isds/Advice.php, row 146
-"ISDS is being maintained. The sending waits till the end and goes on by itself." => "",
+"ISDS is being maintained. The sending waits till the end and goes on by itself." => "ISDS đang bảo trì. Đợt gửi sẽ chờ đến khi bảo trì xong và tự tiếp tục.", // ai 2026-11
 
 // src/Isds/Advice.php, row 147
-"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "",
+"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "Tài khoản hộp dữ liệu của trang này không còn là tài khoản đã dùng khi đưa đợt gửi vào hàng đợi. Vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 148
-"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "",
+"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "ISDS không phản hồi. AA sẽ tự thử lại; nếu đợt gửi đã dừng vì lý do này, hãy chọn “Tiếp tục” khi ISDS phản hồi trở lại.", // ai 2026-11
 
 // src/Isds/Advice.php, row 149
-"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "",
+"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "ISDS từ chối đăng nhập của tài khoản. Vui lòng đề nghị quản trị viên kiểm tra thông tin đăng nhập, sau đó chọn “Tiếp tục”.", // ai 2026-11
 
 // src/Isds/Advice.php, row 150
-"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "ISDS đã chặn đăng nhập từ máy chủ này. Mật khẩu mới không giúp được gì: hãy chọn “Tiếp tục” vào ngày mai, hoặc liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 151
-"The settings of the account are not complete. Ask the administrator." => "",
+"The settings of the account are not complete. Ask the administrator." => "Thiết lập của tài khoản chưa đầy đủ. Vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 152
-"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "",
+"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "Những gì đã được cố định cho đợt gửi - thư, tệp đính kèm hoặc người nhận - bị thiếu hoặc đã thay đổi, nên đợt gửi không thể tiếp tục. Vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 153
-"The database cannot record the sending safely. Ask the administrator." => "",
+"The database cannot record the sending safely. Ask the administrator." => "Cơ sở dữ liệu không thể ghi nhận đợt gửi một cách an toàn. Vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 154
-"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "",
+"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "Một bước của đợt gửi liên tục không có tiến triển. Hãy chọn “Tiếp tục”; nếu đợt gửi lại dừng, vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 155
-"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Một bước của đợt gửi đã dừng trước khi hoàn tất. AA sẽ tự thử lại; nếu đợt gửi đã dừng vì lý do này, vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 156
-"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Không thể ghi nhận việc kết thúc đợt gửi. AA sẽ tự thử lại; nếu đợt gửi đã dừng vì lý do này, vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 157
-"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "",
+"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "Một bước của đợt gửi thất bại do lỗi nội bộ của AA. Hãy chọn “Tiếp tục”; nếu lại thất bại, vui lòng liên hệ quản trị viên.", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "",
+"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "Hộp dữ liệu của người nhận chỉ nhận tin nhắn dữ liệu bưu chính có phí, và hộp dữ liệu gửi không được phép gửi loại tin nhắn này.", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"Test with the data box of an authority." => "",
+"Test with the data box of an authority." => "Hãy thử nghiệm với hộp dữ liệu của một cơ quan nhà nước.", // ai 2026-11
 
 // src/Isds/Advice.php, row 174
-"The sending data box has been made inaccessible - no message can go from it now." => "",
+"The sending data box has been made inaccessible - no message can go from it now." => "Hộp dữ liệu gửi đã bị khóa truy cập - hiện không thể gửi tin nhắn nào từ hộp này.", // ai 2026-11
 
 // src/Isds/Advice.php, row 175
-"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "",
+"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "Tiêu đề, “Kính gửi” hoặc tên tệp đính kèm chứa ký tự mà ISDS không chấp nhận.", // ai 2026-11
 
 // src/Isds/Advice.php, row 183
-"ISDS answered with status %1." => "",
+"ISDS answered with status %1." => "ISDS đã phản hồi với trạng thái %1.", // ai 2026-11
 
 // src/Isds/Advice.php, row 193
-"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "Không thể lưu tiêu đề: tiêu đề có tối đa %1 ký tự, và không chứa ký tự tab hay ký tự điều khiển khác. Chưa có phần nào của bản nháp được lưu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 194
-"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "Không thể lưu “Kính gửi”: trường này có tối đa %1 ký tự, và không chứa ký tự tab hay ký tự điều khiển khác. Chưa có phần nào của bản nháp được lưu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 195
-"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "",
+"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "Không thể lưu nội dung thư: nội dung lớn hơn %1, hoặc không phải văn bản hợp lệ. Chưa có phần nào của bản nháp được lưu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 196
-"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "",
+"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "Không thể lưu lựa chọn người nhận: trang này không cung cấp lựa chọn đó. Chưa có phần nào của bản nháp được lưu - hãy chọn lại người nhận và lưu bản nháp.", // ai 2026-11
 
 // src/Isds/Advice.php, row 197
-"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "",
+"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "Không thể lưu lựa chọn người nhận: chỉ được chọn tối đa %1 người nhận, và loại trừ từng người một cũng tối đa chừng ấy. Chưa có phần nào của bản nháp được lưu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 198
-"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "",
+"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Một tin nhắn dữ liệu mang tối đa %1 tệp đính kèm ngoài thư. Chưa có phần nào của bản nháp được lưu - hãy bỏ bớt một số tệp trước.", // ai 2026-11
 
 // src/Isds/Advice.php, row 199
-"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "Không thể đính kèm tệp %1: trang này chỉ chấp nhận tệp thuộc các loại %2. Hãy lưu tệp dưới dạng PDF, hoặc đính kèm từng tệp trong tệp nén. Chưa có phần nào của bản nháp được lưu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 200
-"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "Không thể đính kèm tệp %1: nội dung của tệp không thuộc loại mà phần mở rộng của nó cho biết. Chưa có phần nào của bản nháp được lưu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 201
-"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "",
+"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "Tệp %1 lớn hơn mức cho phép cho một tệp ở đây (%2). Chưa có phần nào của bản nháp được lưu. Toàn bộ tệp đính kèm và thư cộng lại có tối đa %3 - tin nhắn thử nghiệm sẽ kiểm tra điều đó.", // ai 2026-11
 
 // src/Isds/Advice.php, row 202
-"The file %1 is empty. Nothing of the draft was saved." => "",
+"The file %1 is empty. Nothing of the draft was saved." => "Tệp %1 trống. Chưa có phần nào của bản nháp được lưu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 203
-"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "",
+"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "Tệp %1 chưa được tải lên đầy đủ. Vui lòng thử lại. Chưa có phần nào của bản nháp được lưu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 204
-"A value of the form cannot be taken. Load the page again and try it once more." => "",
+"A value of the form cannot be taken. Load the page again and try it once more." => "Không thể tiếp nhận một giá trị của biểu mẫu. Hãy tải lại trang và thử thêm lần nữa.", // ai 2026-11
 
 // src/Isds/Gate.php, row 1139
-"The mass sending on this page is not ready - fix this first:" => "",
+"The mass sending on this page is not ready - fix this first:" => "Tính năng gửi hàng loạt trên trang này chưa sẵn sàng - hãy khắc phục điều sau trước:", // ai 2026-11
 
 // src/Isds/Gate.php, row 1140
-"Where to fix it:" => "",
+"Where to fix it:" => "Nơi khắc phục:", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"Name field" => "",
+"Name field" => "Trường tên", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"The name the register is searched by when the IČO finds no box" => "",
+"The name the register is searched by when the IČO finds no box" => "Tên dùng để tìm trong sổ đăng ký khi IČO không tìm thấy hộp nào", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"IČO field" => "",
+"IČO field" => "Trường IČO", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"The IČO finds the box for sure; without it only names are matched, and a person checks those" => "",
+"The IČO finds the box for sure; without it only names are matched, and a person checks those" => "IČO tìm ra hộp một cách chắc chắn; nếu không có IČO thì chỉ so khớp theo tên, và một người sẽ kiểm tra các kết quả đó", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"Data box field" => "",
+"Data box field" => "Trường hộp dữ liệu", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"The field the data box id is written to - the only field the pairing changes" => "",
+"The field the data box id is written to - the only field the pairing changes" => "Trường được ghi ID hộp dữ liệu vào - trường duy nhất mà việc ghép nối thay đổi", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"Type field" => "",
+"Type field" => "Trường loại", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"The type of the item, needed for the two lists below" => "",
+"The type of the item, needed for the two lists below" => "Loại của bài viết, cần cho hai danh sách bên dưới", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Types to pair" => "",
+"Types to pair" => "Các loại cần ghép nối", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Only items of these types are paired; none = all items" => "",
+"Only items of these types are paired; none = all items" => "Chỉ ghép nối bài viết thuộc các loại này; không chọn = mọi bài viết", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Types of city districts" => "",
+"Types of city districts" => "Các loại quận nội thành", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "",
+"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "Bài viết thuộc các loại này được ghép nối với hộp của quận nội thành, các bài viết khác với hộp của đơn vị hành chính cấp xã", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field with the name" => "",
+"Choose the field with the name" => "Hãy chọn trường chứa tên", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field the data box is written to" => "",
+"Choose the field the data box is written to" => "Hãy chọn trường để ghi hộp dữ liệu vào", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 132
-"The slice has no field %1" => "",
+"The slice has no field %1" => "Chuyên mục không có trường %1", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 139
-"The data box needs a field of its own - writing it would overwrite the name, IČO or type" => "",
+"The data box needs a field of its own - writing it would overwrite the name, IČO or type" => "Hộp dữ liệu cần một trường riêng - ghi vào sẽ ghi đè tên, IČO hoặc loại", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 142
-"The lists of types need the type field" => "",
+"The lists of types need the type field" => "Các danh sách loại cần có trường loại", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 147
-"The types of city districts must be among the types to pair too: %1" => "",
+"The types of city districts must be among the types to pair too: %1" => "Các loại quận nội thành cũng phải nằm trong các loại cần ghép nối: %1", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 160
-"The field %1 is protected - it is neither shown nor written here" => "",
+"The field %1 is protected - it is neither shown nor written here" => "Trường %1 được bảo vệ - ở đây không hiển thị cũng không ghi vào trường này", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 164
-"The data box cannot be written to %1, a column of the item table" => "",
+"The data box cannot be written to %1, a column of the item table" => "Không thể ghi hộp dữ liệu vào %1, là một cột của bảng item", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 86
-"Changed" => "",
+"Changed" => "Đã thay đổi", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 87
-"Same" => "",
+"Same" => "Không đổi", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 88
 // src/Isds/Registry/Page.php, row 567
-"Not found" => "",
+"Not found" => "Không tìm thấy", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 89
-"Several candidates" => "",
+"Several candidates" => "Nhiều ứng viên", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 151
-"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by IČO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "",
+"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by IČO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "Trang này tìm hộp dữ liệu của từng bài viết trong sổ đăng ký hộp dữ liệu công khai và ghi nó vào bài viết. Chỉ những dòng bạn đánh dấu mới được ghi, và chỉ trường hộp dữ liệu thay đổi. Hộp tìm thấy theo IČO được đánh dấu sẵn; hộp tìm thấy theo tên chỉ là gợi ý, vì vậy hãy so sánh tên và tự đánh dấu.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 169
-"The form sent values this page does not send. Reload the page and try again." => "",
+"The form sent values this page does not send. Reload the page and try again." => "Biểu mẫu đã gửi những giá trị mà trang này không gửi. Hãy tải lại trang và thử lại.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 324
-"You do not have permissions to do this in this slice." => "",
+"You do not have permissions to do this in this slice." => "Bạn không có quyền thực hiện việc này trong chuyên mục này.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 325
-"The settings are saved." => "",
+"The settings are saved." => "Thiết lập đã được lưu.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 327
-"The register is downloaded." => "",
+"The register is downloaded." => "Sổ đăng ký đã được tải về.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 329
-"The register is being downloaded right now. Reload the page in a minute." => "",
+"The register is being downloaded right now. Reload the page in a minute." => "Sổ đăng ký đang được tải về. Hãy tải lại trang sau một phút.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 330
-"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "Sổ đăng ký chưa tải về được; bản trước đó vẫn được sử dụng. Vui lòng thử lại sau. Quản trị viên có thể xem chi tiết trong nhật ký AA (loại %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 331
-"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "Sổ đăng ký đã được tải về, nhưng AA không ghi nhận được lần tải này, nên chưa thể dùng sổ đăng ký cho đến khi tải về thành công. Vui lòng thử lại sau. Quản trị viên có thể xem chi tiết trong nhật ký AA (loại %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 332
-"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "",
+"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "Sổ đăng ký hoặc thiết lập ghép nối đã thay đổi kể từ khi bạn xem các dòng, nên chưa có gì được ghi. Hãy kiểm tra lại các dòng bên dưới và ghi chúng.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 333
-"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "Không thể đọc bản sao của sổ đăng ký, nên chưa có gì được ghi. Quản trị viên có thể xem chi tiết trong nhật ký AA (loại %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 334
-"Nothing was written. Download the register again." => "",
+"Nothing was written. Download the register again." => "Chưa có gì được ghi. Hãy tải lại sổ đăng ký.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 335
-"Choose the fields of the pairing first." => "",
+"Choose the fields of the pairing first." => "Hãy chọn các trường cho việc ghép nối trước.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 336
-"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "",
+"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "Thiết lập ghép nối không còn phù hợp với các trường của chuyên mục, nên chưa có gì được ghi: %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 337
-"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "",
+"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "Việc ghi đã dừng do lỗi. Các dòng đã ghi trước đó vẫn giữ nguyên; báo cáo bên dưới hiển thị các bài viết theo trạng thái hiện tại. Quản trị viên có thể xem chi tiết trong nhật ký AA (loại %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 347
-"The last download attempt was at %1. Another one is possible from %2." => "",
+"The last download attempt was at %1. Another one is possible from %2." => "Lần thử tải về gần nhất lúc %1. Có thể tải lại từ %2.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 355
-"Data boxes written: %1." => "",
+"Data boxes written: %1." => "Số hộp dữ liệu đã ghi: %1.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 356
-"Nothing was written: no row was ticked, or the ticked ones have their box already." => "",
+"Nothing was written: no row was ticked, or the ticked ones have their box already." => "Chưa có gì được ghi: không dòng nào được đánh dấu, hoặc các dòng được đánh dấu đã có hộp của chúng.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 358
-"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "",
+"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "Số dòng đã đánh dấu nhưng đã thay đổi trong lúc đó và chưa được ghi: %1. Hãy kiểm tra lại chúng bên dưới.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 361
-"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "",
+"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "Số dòng đã đánh dấu còn lại cho lần ghi tiếp theo: %1. Mỗi lần ghi xử lý tối đa %2 dòng.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 364
-"These items were not written:" => "",
+"These items were not written:" => "Các bài viết sau chưa được ghi:", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 386, 465
-"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "Không thể đọc bản sao của sổ đăng ký. Quản trị viên có thể xem chi tiết trong nhật ký AA (loại %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet. Download it to see the report." => "",
+"The register has not been downloaded yet. Download it to see the report." => "Sổ đăng ký chưa được tải về. Hãy tải về để xem báo cáo.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet." => "",
+"The register has not been downloaded yet." => "Sổ đăng ký chưa được tải về.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Download the register again." => "",
+"Download the register again." => "Hãy tải lại sổ đăng ký.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Ask someone who manages the settings to download the register again." => "",
+"Ask someone who manages the settings to download the register again." => "Hãy đề nghị người quản lý thiết lập tải lại sổ đăng ký.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 392
-"Size: %1 MB." => "",
+"Size: %1 MB." => "Kích thước: %1 MB.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 394
-"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "",
+"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "Sổ đăng ký đã cũ hơn %1 ngày. Hãy tải lại trước khi ghi: các cơ quan có thêm hộp mới và được sáp nhập.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 398
-"Download the register now" => "",
+"Download the register now" => "Tải sổ đăng ký ngay", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 399
-"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "",
+"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "Sổ đăng ký công khai các hộp dữ liệu của cơ quan nhà nước, khoảng 17 MB; việc tải về mất tối đa một phút. Mọi chuyên mục của AA này dùng chung một bản sao.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 401
-"Register of data boxes" => "",
+"Register of data boxes" => "Sổ đăng ký hộp dữ liệu", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"AA has no record of downloading this copy of the register" => "",
+"AA has no record of downloading this copy of the register" => "AA không có bản ghi về việc tải bản sao sổ đăng ký này", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"The register of data boxes is not the one AA downloaded" => "",
+"The register of data boxes is not the one AA downloaded" => "Sổ đăng ký hộp dữ liệu không phải là bản AA đã tải về", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 426
-"Downloaded: %1 (today)." => "",
+"Downloaded: %1 (today)." => "Đã tải về: %1 (hôm nay).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 427
-"Downloaded: %1 (yesterday)." => "",
+"Downloaded: %1 (yesterday)." => "Đã tải về: %1 (hôm qua).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 428
-"Downloaded: %1." => "",
+"Downloaded: %1." => "Đã tải về: %1.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 469
-"Items and their data boxes" => "",
+"Items and their data boxes" => "Bài viết và hộp dữ liệu của chúng", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 482
-"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "",
+"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "Thiết lập ghép nối không còn phù hợp với các trường của chuyên mục: %1. Hãy chọn lại các trường trong phần thiết lập bên dưới.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 485
-"The slice has no items to pair." => "",
+"The slice has no items to pair." => "Chuyên mục không có bài viết nào để ghép nối.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 490
-"No row has this status." => "",
+"No row has this status." => "Không có dòng nào ở trạng thái này.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 510
 "Write" => "Ghi", // ai 2026-06
 
 // src/Isds/Registry/Page.php, row 514
-"Stored data box" => "",
+"Stored data box" => "Hộp đã lưu", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 514
-"Data box in the register" => "",
+"Data box in the register" => "Hộp trong sổ đăng ký", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 520
-"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "",
+"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "Mỗi lần ghi xử lý tối đa %1 dòng, và số dòng được đánh dấu sẵn cũng tối đa chừng ấy. Hãy ghi phần còn lại sau.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 523
-"Write the ticked data boxes" => "",
+"Write the ticked data boxes" => "Ghi các hộp đã đánh dấu", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 524
-"Writes only the data box field of the ticked items. Their history records the change." => "",
+"Writes only the data box field of the ticked items. Their history records the change." => "Chỉ ghi trường hộp dữ liệu của các bài viết đã đánh dấu. Lịch sử của bài viết sẽ ghi nhận thay đổi.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 536
-"Show the rows of" => "",
+"Show the rows of" => "Hiển thị các dòng có trạng thái", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 542
-"(no name)" => "",
+"(no name)" => "(không có tên)", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 546
-"Write the data box %1 into %2" => "",
-
-// src/Isds/Registry/Page.php, row 555, 653
-// src/Optimize/MissCacheRouting.php, row 98, 129
-"none" => "không có", // ai 2026-10
+"Write the data box %1 into %2" => "Ghi hộp dữ liệu %1 vào %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 571
-"IČO %1" => "",
+"IČO %1" => "IČO %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 580
-"by IČO" => "",
+"by IČO" => "theo IČO", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 581
-"by name, check it" => "",
+"by name, check it" => "theo tên, hãy kiểm tra", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 585
-"IČO of the item %1, of the box %2" => "",
+"IČO of the item %1, of the box %2" => "IČO của bài viết %1, của hộp %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 588
-"Another item has or would get this data box too. Check that it is not one place twice." => "",
+"Another item has or would get this data box too. Check that it is not one place twice." => "Một bài viết khác cũng có hoặc sẽ nhận hộp dữ liệu này. Hãy kiểm tra để chắc rằng đó không phải cùng một nơi bị lặp hai lần.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 599
-"Settings of the pairing" => "",
+"Settings of the pairing" => "Thiết lập ghép nối", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 616
-"Saving changes only these settings, never the items." => "",
+"Saving changes only these settings, never the items." => "Việc lưu chỉ thay đổi các thiết lập này, không bao giờ thay đổi bài viết.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"Choose a field" => "",
+"Choose a field" => "Chọn trường", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"None" => "",
+"None" => "Không có", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 639
-"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "",
+"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "Việc ghép nối chưa được thiết lập cho chuyên mục này. Người có quyền thay đổi các trường của chuyên mục sẽ thiết lập tại đây.", // ai 2026-11
 
 // src/Isds/Registry/Sync.php, row 450
-"The item was not stored" => "",
+"The item was not stored" => "Bài viết chưa được lưu", // ai 2026-11
 
 // src/Isds/SendQueue.php, row 448
-"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "",
+"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "Chuyên mục chiến dịch không có thư mục tải lên cho các tệp của thư – quản trị viên máy chủ sẽ thiết lập thư mục này.", // ai 2026-11
 
 // src/Isds/Setup.php, row 107
-"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "",
+"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "Thiết lập gửi hàng loạt không phải là đối tượng JSON – hãy viết bằng {jsonasoc:...}", // ai 2026-11
 
 // src/Isds/Setup.php, row 115
-"Unknown settings of the mass sending: %1 - the settings are %2" => "",
+"Unknown settings of the mass sending: %1 - the settings are %2" => "Thiết lập gửi hàng loạt không xác định: %1 – các thiết lập hợp lệ là %2", // ai 2026-11
 
 // src/Isds/Setup.php, row 130
-"default_types names types that are not among types: %1" => "",
+"default_types names types that are not among types: %1" => "default_types nêu các loại không có trong types: %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 133
-"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "",
+"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "environment chỉ được là “%1” – tệp misc/datovka/datovka_conf.php quyết định khi nào dùng môi trường production", // ai 2026-11
 
 // src/Isds/Setup.php, row 136
-"Set letterhead to a text" => "",
+"Set letterhead to a text" => "Hãy đặt letterhead thành một văn bản", // ai 2026-11
 
 // src/Isds/Setup.php, row 146
-"The settings of data boxes cannot be read now - ask the administrator of the server" => "",
+"The settings of data boxes cannot be read now - ask the administrator of the server" => "Hiện không thể đọc thiết lập hộp dữ liệu – vui lòng liên hệ quản trị viên máy chủ", // ai 2026-11
 
 // src/Isds/Setup.php, row 240
-"Set %1 to the id of a slice - 32 hexadecimal digits" => "",
+"Set %1 to the id of a slice - 32 hexadecimal digits" => "Hãy đặt %1 thành ID của một chuyên mục – 32 chữ số thập lục phân", // ai 2026-11
 
 // src/Isds/Setup.php, row 258
-"Set %1 to the id of a field - 16 characters like text...........1" => "",
+"Set %1 to the id of a field - 16 characters like text...........1" => "Hãy đặt %1 thành ID của một trường – 16 ký tự, ví dụ text...........1", // ai 2026-11
 
 // src/Isds/Setup.php, row 283
-"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "",
+"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "Hãy đặt types thành một đối tượng gồm các loại bài viết được cung cấp, mỗi loại kèm nhãn: {jsonasoc:<type>:<label>:...}", // ai 2026-11
 
 // src/Isds/Setup.php, row 288
-"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "",
+"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "Loại bài viết trong types chỉ được chứa chữ cái, chữ số, dấu cách và các ký tự - _ . : %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 303
-"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "",
+"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "Hãy đặt %1 thành một văn bản hoặc một danh sách văn bản: [\"...\",\"...\"]", // ai 2026-11
 
 // src/Isds/Setup.php, row 321
-"test_box: %1 is not the id of a data box - 7 letters or digits" => "",
+"test_box: %1 is not the id of a data box - 7 letters or digits" => "test_box: %1 không phải là ID của hộp dữ liệu – 7 chữ cái hoặc chữ số", // ai 2026-11
 
 // src/Isds/Setup.php, row 351
-"Set max_recipients to a number from 1 to %1" => "",
+"Set max_recipients to a number from 1 to %1" => "Hãy đặt max_recipients thành một số từ 1 đến %1", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 67
-"The campaign slice and the message slice must be two slices" => "",
+"The campaign slice and the message slice must be two slices" => "Chuyên mục chiến dịch và chuyên mục tin nhắn phải là hai chuyên mục khác nhau", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 94
-"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "",
+"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "Trang web “%1” đang nằm trong thùng rác – hãy khôi phục từ thùng rác hoặc chỉ định trang web khác", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 95
-"There is no site %1" => "",
+"There is no site %1" => "Không có trang web %1", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 99
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "Trang web “%1” chỉ cho phép người đọc từ các chuyên mục Quản lý người đọc của mình đăng nhập, vì vậy không ai có quyền gửi – trong thiết lập của trang web, hãy đặt “Cơ sở dữ liệu đăng nhập người dùng” thành “%2”", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 140
-"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "",
+"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "Chuyên mục “%1” có mật khẩu đọc, nên trang không thể đọc danh sách người nhận – hãy xóa “Mật khẩu để đọc” trong thiết lập của chuyên mục, hoặc chỉ định một chuyên mục công khai", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 144
-"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "",
+"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "Chuyên mục “%1” chưa có thiết lập hộp dữ liệu – hãy thiết lập các trường của nó trên trang “Hộp dữ liệu từ sổ đăng ký” của chuyên mục", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 151
-"Slice \"%1\", its settings of data boxes: %2" => "",
+"Slice \"%1\", its settings of data boxes: %2" => "Chuyên mục “%1”, thiết lập hộp dữ liệu: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 154
-"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "",
+"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "Chuyên mục “%1”: hãy chọn trường “Loại” trong thiết lập hộp dữ liệu của nó – người nhận được chọn theo loại", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 156
-"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "",
+"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "Chuyên mục “%1” không ghép nối bài viết nào thuộc các loại %2 với hộp dữ liệu – chỉ cung cấp các “Loại” để ghép nối của nó: %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 162
-"Slice \"%1\" has no field %2 - name the field that tells a member" => "",
+"Slice \"%1\" has no field %2 - name the field that tells a member" => "Chuyên mục “%1” không có trường %2 – hãy chỉ định trường cho biết thành viên", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 164
-"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "",
+"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "Trường %1 của chuyên mục “%2” được bảo vệ – hãy chỉ định trường cho biết thành viên", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 179
 // src/Optimize/CheckSiteStateFiles.php, row 72
@@ -10739,58 +10929,58 @@ return [
 "Site settings" => "Thiết lập trang web", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 225
-"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "",
+"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "Chuyên mục “%1” đang nằm trong thùng rác – hãy khôi phục từ thùng rác hoặc chỉ định chuyên mục khác", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 226
-"There is no slice %1" => "",
+"There is no slice %1" => "Không có chuyên mục %1", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 237
-"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "",
+"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "Trang web “%1” không sử dụng chuyên mục %2 – hãy thêm chuyên mục vào “Mô-đun được sử dụng” trong thiết lập của trang web", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 250
-"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "",
+"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "Chuyên mục “%1” không có mật khẩu đọc – hãy điền “Mật khẩu để đọc” trong thiết lập của chuyên mục", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 254
-"Close slice \"%1\" - set in its settings %2" => "",
+"Close slice \"%1\" - set in its settings %2" => "Hãy đóng chuyên mục “%1” – trong thiết lập của nó, hãy đặt %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 257
-"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "Chuyên mục “%1” cho phép mọi chuyên mục nhập bài viết của nó – hãy tắt “Cho phép xuất sang mọi chuyên mục” trên trang “Nạp nội bộ giữa các nút” của nó", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 274
-"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "Chuyên mục “%1” cho phép các chuyên mục khác nhập bài viết của nó – hãy chuyển các chuyên mục đó sang “Tắt xuất” trên trang “Nạp nội bộ giữa các nút” của nó", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 277
-"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "",
+"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "Bài viết của chuyên mục “%1” được nạp sang các chuyên mục khác – hãy dừng việc nhập tại các chuyên mục mà trang “Nạp nội bộ giữa các nút” của nó liệt kê trong “Hiện đang xuất sang”", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 281
-"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "",
+"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "Chuyên mục “%1” nhập bài viết từ các chuyên mục khác – hãy chuyển các chuyên mục đó sang “Không nhập” trên trang “Nạp nội bộ giữa các nút” của nó", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 284
-"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "",
+"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "Chuyên mục “%1” gửi bài viết của mình qua e-mail tới các địa chỉ trong “Thông báo qua e-mail” – hãy xóa các địa chỉ tại đó", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 303
-"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "Chuyên mục “%1” tính các trường %2 bằng một mẫu mỗi khi bài viết được lưu – trong thiết lập của từng trường, hãy đặt “Chèn” thành “%3”", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 318
-"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "",
+"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "Các chuyên mục “%1” và “%2” bị đảo thứ tự – hãy chỉ định chuyên mục chiến dịch trước", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 330
-"Slice \"%1\" lacks fields of a campaign slice: %2" => "",
+"Slice \"%1\" lacks fields of a campaign slice: %2" => "Chuyên mục “%1” thiếu các trường của chuyên mục chiến dịch: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 331
-"Slice \"%1\" lacks fields of a message slice: %2" => "",
+"Slice \"%1\" lacks fields of a message slice: %2" => "Chuyên mục “%1” thiếu các trường của chuyên mục tin nhắn: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 337
-"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "",
+"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "Chuyên mục “%1”: hãy lưu các trường %2 dưới dạng “Số” (“Lưu dưới dạng” trong thiết lập của từng trường)", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 343
-"Slice \"%1\": set the Default of the field %2 to %3" => "",
+"Slice \"%1\": set the Default of the field %2 to %3" => "Chuyên mục “%1”: hãy đặt “Mặc định” của trường %2 thành %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 382
-"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "Chuyên mục “%1” có thể thay đổi nội dung mà việc gửi lưu vào các trường %2 – trong thiết lập của từng trường, hãy đặt “Chèn” thành “%3”", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
-"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "",
+"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "Chuyên mục “%1” thêm nội dung mà việc gửi lưu vào các trường %2 vào hằng số – hãy tắt “%3” trong thiết lập của từng trường", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
 // src/Widget/Widget.php, row 786
@@ -10876,12 +11066,12 @@ return [
 
 // src/Manageraction/Central_DeleteTrash.php, row 31
 // src/Manageraction/Item_DeleteTrash.php, row 34
-// src/Manageraction/Polls_DeleteTrash.php, row 71
+// src/Manageraction/Polls_DeleteTrash.php, row 73
 "Remove (delete from database)" => "Xóa (xóa khỏi cơ sở dữ liệu)", // ai 2026-06
 
 // src/Manageraction/Central_DeleteTrash.php, row 38
 // src/Manageraction/Item_DeleteTrash.php, row 43
-// src/Manageraction/Taskmanager_Execute.php, row 24
+// src/Manageraction/Taskmanager_Execute.php, row 26
 "You do not have permissions to remove items" => "Bạn không có quyền xóa bài viết", // ai 2026-06
 
 // src/Manageraction/Central_Linkcheck.php, row 17
@@ -10893,28 +11083,28 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 30
 "Status code" => "Mã trạng thái", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 26
-// src/Manageraction/Item_MoveItem.php, row 29
-// src/Manageraction/Links_Move.php, row 26
-// src/Manageraction/Polls_MoveItem.php, row 29
-"Move to Active" => "Chuyển sang Hoạt động", // ai 2026-06
-
-// src/Manageraction/Central_MoveItem.php, row 27
-// src/Manageraction/Item_MoveItem.php, row 30
-// src/Manageraction/Links_Move.php, row 27
-// src/Manageraction/Polls_MoveItem.php, row 30
-"Move to Holding bin" => "Chuyển vào Khu chờ duyệt", // ai 2026-06
-
 // src/Manageraction/Central_MoveItem.php, row 28
 // src/Manageraction/Item_MoveItem.php, row 31
 // src/Manageraction/Links_Move.php, row 28
 // src/Manageraction/Polls_MoveItem.php, row 31
+"Move to Active" => "Chuyển sang Hoạt động", // ai 2026-06
+
+// src/Manageraction/Central_MoveItem.php, row 29
+// src/Manageraction/Item_MoveItem.php, row 32
+// src/Manageraction/Links_Move.php, row 29
+// src/Manageraction/Polls_MoveItem.php, row 32
+"Move to Holding bin" => "Chuyển vào Khu chờ duyệt", // ai 2026-06
+
+// src/Manageraction/Central_MoveItem.php, row 30
+// src/Manageraction/Item_MoveItem.php, row 33
+// src/Manageraction/Links_Move.php, row 30
+// src/Manageraction/Polls_MoveItem.php, row 33
 "Move to Trash" => "Chuyển vào Thùng rác", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 41
+// src/Manageraction/Central_MoveItem.php, row 43
 "Activate" => "Kích hoạt", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 42
+// src/Manageraction/Central_MoveItem.php, row 44
 "Hold" => "Chờ duyệt", // ai 2026-06
 
 // src/Manageraction/Central_OptimizeType.php, row 34
@@ -10924,7 +11114,7 @@ return [
 "Error: %1" => "Lỗi: %1", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 19
-// src/Manageraction/Object_Delete.php, row 17
+// src/Manageraction/Object_Delete.php, row 19
 // src/Manageraction/Table_Row_Delete.php, row 16
 "Delete row" => "Xóa dòng", // ai 2026-06
 
@@ -10933,11 +11123,11 @@ return [
 
 // src/Manageraction/Import_Delete.php, row 38
 // src/Manageraction/Import_Run.php, row 42
-// src/Manageraction/Object_Delete.php, row 43
-// src/Manageraction/Object_Move2slice.php, row 50
+// src/Manageraction/Object_Delete.php, row 45
+// src/Manageraction/Object_Move2slice.php, row 52
 // src/Manageraction/Plannedtask_Runnow.php, row 41
-// src/Manageraction/Polls_DeleteTrash.php, row 83
-// src/Manageraction/Polls_MoveItem.php, row 41
+// src/Manageraction/Polls_DeleteTrash.php, row 85
+// src/Manageraction/Polls_MoveItem.php, row 43
 // src/Manageraction/Table_Row_Delete.php, row 40
 "This action does not work on this page." => "Thao tác này không hoạt động trên trang này.", // ai 2026-10
 
@@ -10945,7 +11135,7 @@ return [
 "Some of the selected imports were not deleted." => "Một số lần nhập đã chọn chưa được xóa.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 64
-// src/Manageraction/Object_Delete.php, row 51
+// src/Manageraction/Object_Delete.php, row 53
 "Some of the selected objects were not deleted - they belong to a module you can not change them in." => "Một số đối tượng đã chọn chưa được xóa - chúng thuộc mô-đun mà Bạn không có quyền thay đổi.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 23
@@ -10972,19 +11162,19 @@ return [
 // src/Manageraction/Import_Run.php, row 101
 "Imports not started: %1 (%2). The import detail tells more." => "Các lần nhập chưa bắt đầu: %1 (%2). Trang chi tiết lần nhập cho biết thêm.", // ai 2026-10
 
-// src/Manageraction/Item_Duplicate.php, row 23
+// src/Manageraction/Item_Duplicate.php, row 25
 "Duplicate Item" => "Nhân bản bài viết", // ai 2026-06
 
-// src/Manageraction/Item_Email.php, row 13
+// src/Manageraction/Item_Email.php, row 15
 "Send email" => "Gửi email", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 31
 "Export to slice" => "Xuất sang chuyên mục", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 38, 58
-// src/Manageraction/Item_Move2Slice.php, row 85
-// src/Manageraction/Object_Move2slice.php, row 33
-// src/Manageraction/View_Move2slice.php, row 31
+// src/Manageraction/Item_Move2Slice.php, row 87
+// src/Manageraction/Object_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 33
 "No slice selected" => "Chưa chọn chuyên mục", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 50
@@ -10996,20 +11186,20 @@ return [
 // src/Manageraction/Item_Feed.php, row 68
 "Some of the selected items were not exported - they are not items of this slice." => "Một số bài viết đã chọn chưa được xuất - chúng không phải bài viết của chuyên mục này.", // ai 2026-10
 
-// src/Manageraction/Item_Modifycontent.php, row 13
+// src/Manageraction/Item_Modifycontent.php, row 15
 "Modify content" => "Thay đổi nội dung hàng loạt", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 37
-// src/Manageraction/Object_Move2slice.php, row 25
+// src/Manageraction/Item_Move2Slice.php, row 39
+// src/Manageraction/Object_Move2slice.php, row 27
 "Move to another slice" => "Chuyển sang chuyên mục khác", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 75
+// src/Manageraction/Item_Move2Slice.php, row 77
 "Move to slice" => "Chuyển vào chuyên mục", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 89
+// src/Manageraction/Item_Move2Slice.php, row 91
 "Items can be moved only to a slice." => "Chỉ có thể chuyển bài viết sang một chuyên mục.", // ai 2026-10
 
-// src/Manageraction/Item_Move2Slice.php, row 93
+// src/Manageraction/Item_Move2Slice.php, row 95
 "You do not have permissions to move items" => "Bạn không có quyền di chuyển bài viết", // ai 2026-06
 
 // src/Manageraction/Links_Add2Cat.php, row 21
@@ -11018,32 +11208,32 @@ return [
 // src/Manageraction/Links_Check.php, row 25
 "Check Link" => "Kiểm tra liên kết", // ai 2026-06
 
-// src/Manageraction/Links_Delete.php, row 20
+// src/Manageraction/Links_Delete.php, row 22
 "Remove from category" => "Gỡ khỏi danh mục", // ai 2026-06
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Highlight Link" => "Làm nổi bật liên kết", // ai 2026-06
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Dehighlight Link" => "Bỏ làm nổi bật liên kết", // ai 2026-06
 
 // src/Manageraction/Links_Move2Cat.php, row 21
 "Move to category" => "Chuyển vào danh mục", // ai 2026-06
 
-// src/Manageraction/Object_Delete.php, row 26
+// src/Manageraction/Object_Delete.php, row 28
 // src/Manageraction/Table_Row_Delete.php, row 25
 "Do you really want to delete this row?" => "Bạn có thực sự muốn xóa dòng này không?", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 37
+// src/Manageraction/Object_Move2slice.php, row 39
 "Tasks can be moved only to a slice." => "Chỉ có thể chuyển tác vụ sang một chuyên mục.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 41
+// src/Manageraction/Object_Move2slice.php, row 43
 "You do not have permissions to move it" => "Bạn không có quyền di chuyển nó", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 54
+// src/Manageraction/Object_Move2slice.php, row 56
 "Some of the selected objects were not moved - they belong to a module you can not change them in." => "Một số đối tượng đã chọn chưa được chuyển - chúng thuộc mô-đun mà Bạn không có quyền thay đổi.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 60
+// src/Manageraction/Object_Move2slice.php, row 62
 "The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "Tác vụ %1 chưa được chuyển - chỉ người dùng quản lý việc nạp của chuyên mục mới được chuyển tác vụ có {import} sang đó.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 20, 27
@@ -11061,34 +11251,34 @@ return [
 // src/Manageraction/Plannedtask_Runnow.php, row 60
 "The task %1 is already waiting in the queue." => "Tác vụ %1 đã đang chờ trong hàng đợi.", // ai 2026-10
 
-// src/Manageraction/Polls_DeleteTrash.php, row 78
+// src/Manageraction/Polls_DeleteTrash.php, row 80
 "You do not have permissions to remove polls" => "Bạn không có quyền xóa cuộc bình chọn", // ai 2026-06
 
-// src/Manageraction/Polls_DeleteTrash.php, row 97
+// src/Manageraction/Polls_DeleteTrash.php, row 99
 "Some of the selected polls were not removed - they belong to another module." => "Một số cuộc bình chọn đã chọn chưa được gỡ bỏ - chúng thuộc mô-đun khác.", // ai 2026-10
 
-// src/Manageraction/Polls_MoveItem.php, row 47
+// src/Manageraction/Polls_MoveItem.php, row 49
 "Some of the selected polls were not moved - they belong to another module." => "Một số cuộc bình chọn đã chọn chưa được chuyển - chúng thuộc mô-đun khác.", // ai 2026-10
 
 // src/Manageraction/Table_Row_Delete.php, row 54
 "Some of the selected rows were not deleted - they belong to another module." => "Một số dòng đã chọn chưa được xóa - chúng thuộc mô-đun khác.", // ai 2026-10
 
-// src/Manageraction/Taskmanager_Delete.php, row 15
+// src/Manageraction/Taskmanager_Delete.php, row 17
 "Remove (cancel task)" => "Gỡ bỏ (hủy tác vụ)", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Delete.php, row 24
+// src/Manageraction/Taskmanager_Delete.php, row 26
 "You do not have permissions to remove tasks" => "Bạn không có quyền xóa tác vụ", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Execute.php, row 15
+// src/Manageraction/Taskmanager_Execute.php, row 17
 "Execute" => "Chạy", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 23
+// src/Manageraction/View_Move2slice.php, row 25
 "Move view to another slice" => "Chuyển khung hiển thị sang chuyên mục khác", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 37
 "Views can be moved only to a slice." => "Chỉ có thể chuyển khung hiển thị sang một chuyên mục.", // ai 2026-10
 
-// src/Manageraction/View_Move2slice.php, row 39
+// src/Manageraction/View_Move2slice.php, row 41
 "You do not have permissions to move views" => "Bạn không có quyền di chuyển khung hiển thị", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 25
@@ -11121,25 +11311,25 @@ return [
 // src/Optimize/AbstractOptimizeById.php, row 42
 "We found %1 problems" => "Đã tìm thấy %1 vấn đề", // ai 2026-06
 
-// src/Optimize/AddAddressFieldTemplate.php, row 10
+// src/Optimize/AddAddressFieldTemplate.php, row 12
 "Add address field template" => "Thêm mẫu trường address", // ai 2026-06
 
-// src/Optimize/AddAuthGroupFieldTemplate.php, row 10
+// src/Optimize/AddAuthGroupFieldTemplate.php, row 12
 "Add auth_group...... field template" => "Thêm mẫu trường auth_group......", // ai 2026-06
 
-// src/Optimize/AddBitsetFieldTemplate.php, row 10
+// src/Optimize/AddBitsetFieldTemplate.php, row 12
 "Add bitset (flags, bitfield) field template" => "Thêm mẫu trường bitset (cờ, trường bit)", // ai 2026-06
 
-// src/Optimize/AddCityFieldTemplate.php, row 10
+// src/Optimize/AddCityFieldTemplate.php, row 12
 "Add city field template" => "Thêm mẫu trường city", // ai 2026-06
 
-// src/Optimize/AddCodeFieldTemplate.php, row 10
+// src/Optimize/AddCodeFieldTemplate.php, row 12
 "Add code field template" => "Thêm mẫu trường code", // ai 2026-06
 
-// src/Optimize/AddComputedNumFieldTemplate.php, row 10
+// src/Optimize/AddComputedNumFieldTemplate.php, row 12
 "Add computed_num field template" => "Thêm mẫu trường computed_num", // ai 2026-06
 
-// src/Optimize/AddComputedTxtFieldTemplate.php, row 10
+// src/Optimize/AddComputedTxtFieldTemplate.php, row 12
 "Add computed_txt field template" => "Thêm mẫu trường computed_txt", // ai 2026-06
 
 // src/Optimize/AddContentFieldIndex.php, row 25
@@ -11160,37 +11350,37 @@ return [
 // src/Optimize/AddContentFieldIndex.php, row 67
 "The index %1 of the content table changed" => "Đã thay đổi chỉ mục %1 của bảng content", // ai 2026-10
 
-// src/Optimize/AddCountryFieldTemplate.php, row 10
+// src/Optimize/AddCountryFieldTemplate.php, row 12
 "Add country field template" => "Thêm mẫu trường country", // ai 2026-06
 
-// src/Optimize/AddDateFieldTemplate.php, row 10
+// src/Optimize/AddDateFieldTemplate.php, row 12
 "Add date field template" => "Thêm mẫu trường date", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 18
+// src/Optimize/AddDurationLog.php, row 20
 "Add hit duration log feature" => "Thêm tính năng ghi nhật ký thời lượng hit", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 26
+// src/Optimize/AddDurationLog.php, row 28
 "Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit" => "Thêm cột 'duration' vào bảng hit_archive để lưu các bản ghi duration/cache/not_modified cho hit", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 47
+// src/Optimize/AddDurationLog.php, row 49
 "The \"duration\" column missing in hit_archive table" => "Thiếu cột \"duration\" trong bảng hit_archive", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 50
+// src/Optimize/AddDurationLog.php, row 52
 "OK - The \"duration\" column found in hit_archive table. Duration evaluated from %1" => "OK - Đã tìm thấy cột \"duration\" trong bảng hit_archive. Thời lượng được tính từ %1", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 60
+// src/Optimize/AddDurationLog.php, row 62
 "Table already has the column \"duration\"" => "Bảng đã có cột \"duration\"", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 63
+// src/Optimize/AddDurationLog.php, row 65
 "Do alter table hit_archive to add duration column" => "Thực hiện alter bảng hit_archive để thêm cột duration", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 65
+// src/Optimize/AddDurationLog.php, row 67
 "Column added" => "Đã thêm cột", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 72
+// src/Optimize/AddDurationLog.php, row 74
 "Do alter table hit_archive to remove duration column - it disables the feature" => "Thực hiện alter bảng hit_archive để gỡ cột duration - việc này tắt tính năng", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 74
+// src/Optimize/AddDurationLog.php, row 76
 "Column deleted" => "Đã xóa cột", // ai 2026-06
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 14
@@ -11206,87 +11396,108 @@ return [
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 77
 "The e-mail templates updated" => "Đã cập nhật các mẫu email", // ai 2026-06
 
-// src/Optimize/AddFaxFieldTemplate.php, row 10
+// src/Optimize/AddFaxFieldTemplate.php, row 12
 "Add fax field template" => "Thêm mẫu trường fax", // ai 2026-06
 
-// src/Optimize/AddHit1FieldTemplate.php, row 10
+// src/Optimize/AddHit1FieldTemplate.php, row 12
 "Add hit_1 field template" => "Thêm mẫu trường hit_1", // ai 2026-06
 
-// src/Optimize/AddHit30FieldTemplate.php, row 10
+// src/Optimize/AddHit30FieldTemplate.php, row 12
 "Add hit_30 field template" => "Thêm mẫu trường hit_30", // ai 2026-06
 
-// src/Optimize/AddHit7FieldTemplate.php, row 10
+// src/Optimize/AddHit7FieldTemplate.php, row 12
 "Add hit_7 field template" => "Thêm mẫu trường hit_7", // ai 2026-06
 
-// src/Optimize/AddIntegerFieldTemplate.php, row 10
+// src/Optimize/AddIntegerFieldTemplate.php, row 12
 "Add integer field template" => "Thêm mẫu trường integer", // ai 2026-06
 
-// src/Optimize/AddIpBannedFieldTemplate.php, row 10
+// src/Optimize/AddIpBannedFieldTemplate.php, row 12
 "Add _ip_banned field template" => "Thêm mẫu trường _ip_banned", // ai 2026-06
 
-// src/Optimize/AddIpFieldTemplate.php, row 10
+// src/Optimize/AddIpFieldTemplate.php, row 12
 "Add ip field template" => "Thêm mẫu trường ip", // ai 2026-06
 
-// src/Optimize/AddLocationFieldTemplate.php, row 10
+// src/Optimize/AddLocationFieldTemplate.php, row 12
 "Add location field template" => "Thêm mẫu trường location", // ai 2026-06
 
-// src/Optimize/AddMailListsFieldTemplate.php, row 10
+// src/Optimize/AddMailListsFieldTemplate.php, row 12
 "Add mail_lists field template" => "Thêm mẫu trường mail_lists", // ai 2026-06
 
-// src/Optimize/AddMandatoryDiscApp.php, row 10
-// src/Optimize/AddMandatoryDiscCount.php, row 10
-// src/Optimize/AddMandatoryDisplayCount.php, row 10
-// src/Optimize/AddMandatoryId.php, row 10
-// src/Optimize/AddMandatoryShortId.php, row 10
-// src/Optimize/AddMandatoryStatusCode.php, row 13
+// src/Optimize/AddMandatoryDiscApp.php, row 12
+// src/Optimize/AddMandatoryDiscCount.php, row 12
+// src/Optimize/AddMandatoryDisplayCount.php, row 12
+// src/Optimize/AddMandatoryId.php, row 12
+// src/Optimize/AddMandatoryShortId.php, row 12
+// src/Optimize/AddMandatoryStatusCode.php, row 15
 "Fixing missing %1 field definitions in slices" => "Đang sửa các định nghĩa trường %1 bị thiếu trong các chuyên mục", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 19
+// src/Optimize/AddMandatoryStatusCode.php, row 21
 "Adds field definitions for slices, where missing" => "Thêm định nghĩa trường vào các chuyên mục nơi còn thiếu", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 45
+// src/Optimize/AddMandatoryStatusCode.php, row 47
 "Missing %1 field definition in some slices - need to repair" => "Thiếu định nghĩa trường %1 trong một số chuyên mục - cần sửa", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 54
+// src/Optimize/AddMandatoryStatusCode.php, row 56
 "Fixing missing %1 fields in slices" => "Đang sửa các trường %1 bị thiếu trong các chuyên mục", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 69
+// src/Optimize/AddMandatoryStatusCode.php, row 71
 "Mandatory field %1 added to all slices" => "Đã thêm trường bắt buộc %1 vào tất cả chuyên mục", // ai 2026-06
 
-// src/Optimize/AddMlxctrlFieldTemplate.php, row 10
+// src/Optimize/AddMlxctrlFieldTemplate.php, row 12
 "Add mlxctrl field template" => "Thêm mẫu trường mlxctrl", // ai 2026-06
 
-// src/Optimize/AddMsgBannedFieldTemplate.php, row 10
+// src/Optimize/AddMsgBannedFieldTemplate.php, row 12
 "Add _msg_banned field template" => "Thêm mẫu trường _msg_banned", // ai 2026-06
 
-// src/Optimize/AddMsgSpamFieldTemplate.php, row 10
+// src/Optimize/AddMsgSpamFieldTemplate.php, row 12
 "Add _msg_spam field template" => "Thêm mẫu trường _msg_spam", // ai 2026-06
 
-// src/Optimize/AddNameFieldTemplate.php, row 10
+// src/Optimize/AddNameFieldTemplate.php, row 12
 "Add name field template" => "Thêm mẫu trường name", // ai 2026-06
 
-// src/Optimize/AddPhoneFieldTemplate.php, row 10
+// src/Optimize/AddPasskeyTable.php, row 15
+"Table of passkeys" => "Bảng khóa truy cập", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 20
+"Creates the table authenticator, where the passkeys of the accounts are kept. Nothing else changes; without it, nobody can add a passkey." => "Tạo bảng authenticator, nơi lưu các khóa truy cập của tài khoản. Không có gì khác thay đổi; thiếu bảng này, không ai có thể thêm khóa truy cập.", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 43
+"The table %1 is missing" => "Thiếu bảng %1", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 46
+"OK - the table %1 exists" => "OK – bảng %1 đã tồn tại", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 54
+"The table %1 exists already" => "Bảng %1 đã tồn tại", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 is created" => "Bảng %1 đã được tạo", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 could not be created" => "Không thể tạo bảng %1", // ai 2026-11
+
+// src/Optimize/AddPhoneFieldTemplate.php, row 12
 "Add phone field template" => "Thêm mẫu trường phone", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 29
+// src/Optimize/AddPolls.php, row 31
 "Add Polls tables" => "Thêm các bảng Cuộc bình chọn", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 37
+// src/Optimize/AddPolls.php, row 39
 "Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "Tạo các bảng cho mô-đun Cuộc bình chọn mới và thêm các cuộc bình chọn mẫu đầu tiên. Thao tác này xóa tất cả các cuộc bình chọn hiện có!", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 60
+// src/Optimize/AddPolls.php, row 62
 "Poll module is not installed" => "Mô-đun Cuộc bình chọn chưa được cài đặt", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 95
+// src/Optimize/AddPolls.php, row 97
 "Polls module created" => "Đã tạo mô-đun Cuộc bình chọn", // ai 2026-06
 
-// src/Optimize/AddRangeFieldTemplate.php, row 10
+// src/Optimize/AddRangeFieldTemplate.php, row 12
 "Add range field template" => "Thêm mẫu trường range", // ai 2026-06
 
-// src/Optimize/AddRealFieldTemplate.php, row 10
+// src/Optimize/AddRealFieldTemplate.php, row 12
 "Add real field template" => "Thêm mẫu trường real", // ai 2026-06
 
-// src/Optimize/AddSecretFieldTemplate.php, row 10
+// src/Optimize/AddSecretFieldTemplate.php, row 12
 "Add secret field template" => "Thêm mẫu trường secret", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 16
@@ -11307,17 +11518,17 @@ return [
 // src/Optimize/AddSeoFieldTemplate.php, row 116
 "New \"%1\" field template added" => "Đã thêm mẫu trường \"%1\" mới", // ai 2026-06
 
-// src/Optimize/AddUploadUrlFieldTemplate.php, row 10
+// src/Optimize/AddUploadUrlFieldTemplate.php, row 12
 "Add _upload_url field template" => "Thêm mẫu trường _upload_url", // ai 2026-06
 
-// src/Optimize/AddUrlPreviewFieldTemplate.php, row 10
+// src/Optimize/AddUrlPreviewFieldTemplate.php, row 12
 "Add _url_preview field template" => "Thêm mẫu trường _url_preview", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 19
 "Backup tables" => "Sao lưu các bảng", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 // src/Optimize/UpdateDbStructure.php, row 31
 "[experimental] " => "[thử nghiệm]", // ai 2026-06
 
@@ -11357,10 +11568,10 @@ return [
 // src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Thay thế bí danh f_h ở trường được đánh dấu là không đa giá trị và là html bằng hàm f_1 nhanh hơn để in trực tiếp nội dung", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 15
+// src/Optimize/ChangeF_t2F_1.php, row 17
 "Optimize f_t alias to f_1" => "Tối ưu hóa bí danh f_t thành f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 23
+// src/Optimize/ChangeF_t2F_1.php, row 25
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Thay thế bí danh f_t ở trường được đánh dấu là không đa giá trị và là html bằng hàm f_1 nhanh hơn để in trực tiếp nội dung", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -11369,22 +11580,22 @@ return [
 // src/Optimize/ChangeF_t2F__.php, row 27
 "Replaces f_t alias used for code by quicker f__ function" => "Thay thế bí danh f_t dùng cho mã bằng hàm f__ nhanh hơn", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 20
+// src/Optimize/ChangeModuleId.php, row 22
 "Change current module ID to new one" => "Đổi ID mô-đun hiện tại thành ID mới", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 28
+// src/Optimize/ChangeModuleId.php, row 30
 "Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "Đôi khi được dùng khi bạn nhân bản cơ sở dữ liệu hoặc sao chép chuyên mục sang cơ sở dữ liệu khác cho một khách hàng khác và không muốn dùng cùng id chuyên mục/site. Bạn có thể cần làm việc này cho tất cả các chuyên mục và mô-đun site.<br>THAO TÁC NÀY ĐỔI ID CHUYÊN MỤC HIỆN TẠI!", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 42
+// src/Optimize/ChangeModuleId.php, row 44
 "Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "Không có gì để kiểm thử ở đây. Chỉ cần cẩn thận - THAO TÁC NÀY ĐỔI ID CHUYÊN MỤC HIỆN TẠI mà không hỏi!", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 63
+// src/Optimize/ChangeModuleId.php, row 65
 "Going to change module_id %1 -> %2 (%3 -> %4)" => "Sắp đổi module_id %1 -> %2 (%3 -> %4)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 76
+// src/Optimize/ChangeModuleId.php, row 78
 "Changing ID for table %1 (%2)" => "Đang đổi ID cho bảng %1 (%2)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 85
+// src/Optimize/ChangeModuleId.php, row 87
 // src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "Đã chuyển đổi %1 bảng", // ai 2026-06
 
@@ -11427,11 +11638,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckFormRobotRefusals.php, row 76
 // src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
 // src/Optimize/CheckIsdsConf.php, row 156, 189
 // src/Optimize/CheckIsdsViews.php, row 128
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 93
 // src/Optimize/CheckObjectFormRefusals.php, row 102
+// src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
 // src/Optimize/CheckSessionidUse.php, row 101
@@ -11447,11 +11660,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 100
 // src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckFormRobotRefusals.php, row 77
 // src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
 // src/Optimize/CheckIsdsViews.php, row 129
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 94
 // src/Optimize/CheckObjectFormRefusals.php, row 103
+// src/Optimize/CheckPasskeys.php, row 86
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
@@ -11482,7 +11697,7 @@ return [
 "Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "Liệt kê các lượt gửi cảnh báo cho bài viết bị từ chối trong 30 ngày qua vì bộ sưu tập không liên quan tới chuyên mục của bài viết (không có bộ lọc theo chuyên mục, không phải chuyên mục người đọc của nó, không có trang web chung).", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 86
-"Selections of the collection" => "",
+"Selections of the collection" => "Lựa chọn của bộ sưu tập", // ai 2026-11
 
 // src/Optimize/CheckAlertitemRefusals.php, row 93
 "Alert send of an item of slice %1 through collection %2 was refused" => "Lượt gửi cảnh báo cho bài viết thuộc chuyên mục %1 qua bộ sưu tập %2 đã bị từ chối", // ai 2026-10
@@ -11524,10 +11739,10 @@ return [
 "AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "AlertsSweep::SCHEDULE không có mục nào cho tần suất này, nên không tác vụ nào được lên lịch và những người đọc đó không nhận được gì.", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 110
-"Every alert collection is swept on time and all its selections exist" => "",
+"Every alert collection is swept on time and all its selections exist" => "Mọi bộ sưu tập cảnh báo đều được gửi đúng hạn và mọi lựa chọn của chúng đều tồn tại", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 144
-"Selection" => "",
+"Selection" => "Lựa chọn", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
@@ -11538,28 +11753,28 @@ return [
 "Problem" => "Vấn đề", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 146
-"the selection was deleted" => "",
+"the selection was deleted" => "lựa chọn đã bị xóa", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 147
-"its view %1 was deleted" => "",
+"its view %1 was deleted" => "khung hiển thị %1 của nó đã bị xóa", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 153
-"Alerts \"%1\" use a selection that no longer exists" => "",
+"Alerts \"%1\" use a selection that no longer exists" => "Cảnh báo “%1” sử dụng một lựa chọn không còn tồn tại", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 154
-"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "",
+"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "Cảnh báo “%1” không gửi gì: mọi lựa chọn của bộ sưu tập đều không còn tồn tại", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 157
-"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "",
+"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "Lựa chọn là một bộ lọc của khung hiển thị thuộc chuyên mục mà cảnh báo lấy bài viết. Khi bộ lọc hoặc khung hiển thị bị xóa, bộ sưu tập vẫn trỏ tới nó và người đọc không nhận được gì từ đó – không có lỗi nào trong nhật ký. Trên trang “Lựa chọn”, hãy xóa lựa chọn được đánh dấu là bị thiếu và thêm một lựa chọn đang tồn tại (bộ lọc được định nghĩa trong khung hiển thị loại “Bộ lựa chọn cảnh báo”). Thay vào đó, có thể xóa mô-đun Cảnh báo không còn ai sử dụng.", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 159
 "Selections" => "Lựa chọn", // ai 2026-06
 
 // src/Optimize/CheckAlerts.php, row 160
-"Alerts settings" => "",
+"Alerts settings" => "Thiết lập cảnh báo", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 163
-"Alert selection no longer exists" => "",
+"Alert selection no longer exists" => "Lựa chọn cảnh báo không còn tồn tại", // ai 2026-11
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 27
 "Forms without login changing accounts or authors" => "Biểu mẫu không đăng nhập thay đổi tài khoản hoặc tác giả", // ai 2026-10
@@ -11649,7 +11864,7 @@ return [
 "A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "Một mẫu của trang có {require:ckeditor} (và CKEDITOR.replace()). Thay vào đó, hãy bọc textarea trong <aa-richtext mode=\"rich\"> với {require:aa-richtext@1} - textarea giữ nguyên tên và giá trị, nên biểu mẫu và các tập lệnh đọc textarea.value vẫn hoạt động như cũ; CKEDITOR.instances[...].getData() trở thành giá trị của textarea.", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 103
-"Templates with ckeditor" => "",
+"Templates with ckeditor" => "Mẫu dùng CKEditor", // ai 2026-11
 
 // src/Optimize/CheckCkeditorUse.php, row 109
 "No page loaded CKEditor 4 in the last 30 days" => "Không có trang nào tải CKEditor 4 trong 30 ngày qua", // ai 2026-10
@@ -11709,22 +11924,22 @@ return [
 "%1 cron rows, all readable and running on schedule" => "Dòng cron: %1, tất cả đều đọc được và chạy đúng lịch", // ai 2026-10
 
 // src/Optimize/CheckDiscussionRefusals.php, row 26
-"Refused comments" => "",
+"Refused comments" => "Bình luận bị từ chối", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 31
-"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "",
+"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "Liệt kê các chuyên mục có bình luận thảo luận mới bị từ chối trong 30 ngày qua vì chuyên mục không hiển thị thảo luận.", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 70
-"New comments to items of slice %1 were refused" => "",
+"New comments to items of slice %1 were refused" => "Bình luận mới cho bài viết của chuyên mục %1 đã bị từ chối", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 78
-"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "",
+"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "Chuyên mục không có khung hiển thị thảo luận và cũng không có khung nào được đặt trong “Hiển thị thảo luận” của thiết kế toàn văn, nên bình luận sẽ không hiển thị ở đâu cả. Nếu trang web hiển thị bình luận qua khung hiển thị thảo luận của chuyên mục khác, hãy chọn khung đó trong “Hiển thị thảo luận”; nếu không, hãy xóa biểu mẫu bình luận khỏi các mẫu của chuyên mục.", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 80
-"Fulltext design" => "",
+"Fulltext design" => "Thiết kế toàn văn", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 85
-"No comment was refused in the last 30 days" => "",
+"No comment was refused in the last 30 days" => "Không có bình luận nào bị từ chối trong 30 ngày qua", // ai 2026-11
 
 // src/Optimize/CheckEnvironment.php, row 18
 // src/Optimize/StateCheckModel.php, row 295
@@ -11750,6 +11965,21 @@ return [
 
 // src/Optimize/CheckEnvironment.php, row 66
 "AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4; không đổi từ %5", // ai 2026-10
+
+// src/Optimize/CheckFormRobotRefusals.php, row 26
+"Forms refused as robots" => "Biểu mẫu bị từ chối do nghi là robot", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 31
+"Lists the slices whose new items from a form were refused in the last 30 days because the form posted an empty slice_id, which its JS fills only for a visitor who moves the mouse or presses a key." => "Liệt kê các chuyên mục có bài viết mới từ biểu mẫu bị từ chối trong 30 ngày qua vì biểu mẫu gửi slice_id trống – JS của biểu mẫu chỉ điền giá trị này khi khách truy cập di chuyển chuột hoặc nhấn phím.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 70
+"A form adding items to slice %1 was refused as a robot" => "Biểu mẫu thêm bài viết vào chuyên mục %1 bị từ chối do nghi là robot", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 79
+"The form posted an empty slice_id. Forms with {formantispam:<slice_id>} or with their own anti-robot JS leave it empty and fill it when the visitor moves the mouse or presses a key, so this is mostly spam and needs no action. If real visitors complain that the form does not save, check that the JS of the form runs on the page (the browser console) and fills slice_id." => "Biểu mẫu đã gửi slice_id trống. Biểu mẫu có {formantispam:<slice_id>} hoặc có JS chống robot riêng để trống giá trị này và điền nó khi khách truy cập di chuyển chuột hoặc nhấn phím, nên đây phần lớn là thư rác và không cần xử lý. Nếu khách truy cập thật phàn nàn rằng biểu mẫu không lưu, hãy kiểm tra xem JS của biểu mẫu có chạy trên trang hay không (bảng điều khiển của trình duyệt) và có điền slice_id hay không.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 85
+"No form was refused as a robot in the last 30 days" => "Không có biểu mẫu nào bị từ chối do nghi là robot trong 30 ngày qua", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 29
 "Outgoing HTTP" => "HTTP đi", // ai 2026-10
@@ -11783,7 +12013,7 @@ return [
 "Note" => "Ghi chú", // ai 2026-06
 
 // src/Optimize/CheckHttp.php, row 85
-"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "",
+"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "Bản thân địa chỉ trả về HTTP %1, %2 trả về 200 – điều thường gặp khi thư mục AA không có trang chỉ mục và máy chủ không liệt kê thư mục.", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 93
 "This installation's own address answers HTTP %1" => "Địa chỉ của chính bản cài đặt này trả về HTTP %1", // ai 2026-10
@@ -11949,7 +12179,7 @@ return [
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "Khóa chứa ký tự xuống dòng hoặc NUL, nên không nguồn bộ nhập nào được dùng nó. Hãy sửa hằng số trong config.php.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 272
-"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "",
+"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "Khóa JSON (tài khoản dịch vụ Google) nằm vừa trên một dòng: hãy dán dòng mà %1 in ra.", // ai 2026-11
 
 // src/Optimize/CheckImports.php, row 291
 "Imports logged %1 failures in the last 7 days" => "Số lỗi các bộ nhập ghi nhận trong 7 ngày qua: %1", // ai 2026-10
@@ -12000,505 +12230,505 @@ return [
 "No app transfer is stuck" => "Không có lần chuyển ứng dụng nào bị treo", // ai 2026-10
 
 // src/Optimize/CheckIsds.php, row 49
-"ISDS login" => "",
+"ISDS login" => "Đăng nhập ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 54
-"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "",
+"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "Đăng nhập vào ISDS bằng từng tài khoản dùng được trong misc/datovka/datovka_conf.php gửi cho một trang web của cơ sở dữ liệu này, và kiểm tra hộp dữ liệu mà tài khoản gửi từ đó; với đăng nhập bằng tên và mật khẩu, kiểm tra thêm quyền của người dùng và thời điểm mật khẩu hết hạn.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 79
-"No usable ISDS account to log in with" => "",
+"No usable ISDS account to log in with" => "Không có tài khoản ISDS dùng được để đăng nhập", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 121
-"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "",
+"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "Chưa thử các tài khoản ISDS vì ISDS đã chặn địa chỉ của máy chủ này: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 122
-"ISDS accounts not tried, as ISDS did not answer: %1" => "",
+"ISDS accounts not tried, as ISDS did not answer: %1" => "Chưa thử các tài khoản ISDS vì ISDS không phản hồi: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Wait - each attempt from this server extends the block." => "",
+"Wait - each attempt from this server extends the block." => "Hãy chờ – mỗi lần thử từ máy chủ này đều kéo dài thời gian bị chặn.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Check again later." => "",
+"Check again later." => "Hãy kiểm tra lại sau.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 128
-"ISDS accounts log in to their data boxes: %1" => "",
+"ISDS accounts log in to their data boxes: %1" => "Các tài khoản ISDS đăng nhập được vào hộp dữ liệu của mình: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"ISDS account %1 not tried, as its certificate cannot be used" => "",
+"ISDS account %1 not tried, as its certificate cannot be used" => "Chưa thử tài khoản ISDS %1 vì không thể dùng chứng chỉ của nó", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"The check of ISDS accounts tells more." => "",
+"The check of ISDS accounts tells more." => "Kiểm tra “Tài khoản ISDS” cho biết thêm chi tiết.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 153
-"The TLS library of this server refuses the certificate of ISDS account %1" => "",
+"The TLS library of this server refuses the certificate of ISDS account %1" => "Thư viện TLS của máy chủ này từ chối chứng chỉ của tài khoản ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 154
-"Reason of OpenSSL" => "",
+"Reason of OpenSSL" => "Lý do theo OpenSSL", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 155
-"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "",
+"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "OpenSSL trên máy chủ này không chấp nhận chứng chỉ hoặc khóa của nó – ví dụ khóa ngắn hơn mức chính sách yêu cầu, một chứng chỉ yếu trong chuỗi hoặc chữ ký cũ. Hãy lấy chứng chỉ đáp ứng chính sách (khóa RSA 3072 bit, chữ ký SHA-256), đăng ký nó với ISDS và khai báo nó trong misc/datovka/datovka_conf.php.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 188, 290
 "ISDS" => "",
 
 // src/Optimize/CheckIsds.php, row 195, 226
-"ISDS did not tell the rights of the user of account %1" => "",
+"ISDS did not tell the rights of the user of account %1" => "ISDS không cho biết quyền của người dùng tài khoản %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 202
-"The password of ISDS account %1 expires on %2" => "",
+"The password of ISDS account %1 expires on %2" => "Mật khẩu của tài khoản ISDS %1 hết hạn vào %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 203
-"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "",
+"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "Hãy đổi mật khẩu trên cổng ISDS và ghi mật khẩu mới vào %1 trong misc/datovka/datovka_conf.php.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"ISDS did not tell when the password of account %1 expires" => "",
+"ISDS did not tell when the password of account %1 expires" => "ISDS không cho biết khi nào mật khẩu của tài khoản %1 hết hạn", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"Check the password of the user in the ISDS portal." => "",
+"Check the password of the user in the ISDS portal." => "Hãy kiểm tra mật khẩu của người dùng trên cổng ISDS.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"Rights" => "",
+"Rights" => "Quyền", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"User type" => "",
+"User type" => "Loại người dùng", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 239
-"The user of ISDS account %1 lacks the rights %2" => "",
+"The user of ISDS account %1 lacks the rights %2" => "Người dùng của tài khoản ISDS %1 thiếu các quyền %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 241
-"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "",
+"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "Hãy cấp cho người dùng các quyền %1 trên cổng ISDS – thiếu chúng, ISDS sẽ từ chối %2.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 250
-"The user of ISDS account %1 has rights AA must not have: %2" => "",
+"The user of ISDS account %1 has rights AA must not have: %2" => "Người dùng của tài khoản ISDS %1 có những quyền mà AA không được có: %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 252
-"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "",
+"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "Trên cổng ISDS, hãy thu hồi các quyền này của người dùng, hoặc để AA đăng nhập bằng một người dùng riêng chỉ có các quyền %1.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 268
-"ISDS blocked logins from the address of this server" => "",
+"ISDS blocked logins from the address of this server" => "ISDS đã chặn đăng nhập từ địa chỉ của máy chủ này", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 269
-"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "",
+"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "ISDS tạm thời chặn địa chỉ của một máy chủ khi các lần đăng nhập từ đó trông giống một cuộc tấn công – áp dụng cho mọi tài khoản và mọi AA trên máy chủ này, bất kể cách đăng nhập. Hãy chờ: mỗi lần thử đều kéo dài thời gian bị chặn. AA sẽ tự thử thêm một lần sau %1 giờ, hoặc khi bạn kiểm tra lại tại đây. Nếu vẫn bị chặn, hãy gọi đường dây hỗ trợ ISDS 954 200 200.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 274
-"ISDS refused the login of account %1" => "",
+"ISDS refused the login of account %1" => "ISDS đã từ chối đăng nhập của tài khoản %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS asked account %1 to come back later" => "",
+"ISDS asked account %1 to come back later" => "ISDS yêu cầu tài khoản %1 thử lại sau", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS is in an outage or busy. Check again later." => "",
+"ISDS is in an outage or busy. Check again later." => "ISDS đang gián đoạn hoặc quá tải. Hãy kiểm tra lại sau.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 281
-"ISDS gave account %1 no answer" => "",
+"ISDS gave account %1 no answer" => "ISDS không phản hồi tài khoản %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 282
-"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "",
+"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "Hãy kiểm tra lại sau. Nếu lỗi lặp lại, hãy kiểm tra xem máy chủ có kết nối được tới %1 qua HTTPS hay không.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"ISDS gave account %1 an answer AA cannot read" => "",
+"ISDS gave account %1 an answer AA cannot read" => "ISDS trả về cho tài khoản %1 một phản hồi mà AA không đọc được", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"Check again later. If it repeats, the evidence gives the answer of ISDS." => "",
+"Check again later. If it repeats, the evidence gives the answer of ISDS." => "Hãy kiểm tra lại sau. Nếu lỗi lặp lại, phản hồi của ISDS có trong phần bằng chứng.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"ISDS refused account %1" => "",
+"ISDS refused account %1" => "ISDS đã từ chối tài khoản %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "",
+"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "Phản hồi của ISDS có trong phần bằng chứng. Hãy kiểm tra tài khoản và hộp dữ liệu của nó trên cổng ISDS.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 298
-"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "Hãy kiểm tra rằng chứng chỉ mà %1 chỉ định là chứng chỉ hệ thống ISDS đã đăng ký cho hộp dữ liệu, và chứng chỉ chưa hết hạn. AA tự thử một chứng chỉ mới, nhưng không bao giờ thử lại cùng một chứng chỉ. “Chạy kiểm tra mở rộng ngay” hoặc “Kiểm tra lại” tại đây sẽ thử thêm một lần.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 299
-"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "Hãy kiểm tra rằng hộp dữ liệu %1 cho phép dịch vụ lưu trữ có chứng chỉ mà %2 chỉ định (Settings, Access of external applications trên cổng ISDS), và chứng chỉ chưa hết hạn. AA tự thử một chứng chỉ mới, nhưng không bao giờ thử lại cùng một chứng chỉ. “Chạy kiểm tra mở rộng ngay” hoặc “Kiểm tra lại” tại đây sẽ thử thêm một lần.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 300
-"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "",
+"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "Hãy kiểm tra %1 và %2 trong misc/datovka/datovka_conf.php, và trên cổng ISDS xem mật khẩu đã hết hạn chưa. AA tự thử tên đăng nhập hoặc mật khẩu đã thay đổi, nhưng không bao giờ thử lại cùng một giá trị – mỗi lần bị từ chối đều kéo dài thời gian chặn đăng nhập. “Chạy kiểm tra mở rộng ngay” hoặc “Kiểm tra lại” tại đây sẽ thử thêm một lần.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 327
-"Check in the ISDS portal that the user has the rights %1 and none of %2." => "",
+"Check in the ISDS portal that the user has the rights %1 and none of %2." => "Trên cổng ISDS, hãy kiểm tra rằng người dùng có các quyền %1 và không có quyền nào trong số %2.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 356
-"read received messages" => "",
+"read received messages" => "đọc tin nhắn đã nhận", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 357
-"read received messages to own hands" => "",
+"read received messages to own hands" => "đọc tin nhắn đã nhận gửi tận tay", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 358
-"send messages" => "",
+"send messages" => "gửi tin nhắn", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 359
-"lists of messages and delivery info" => "",
+"lists of messages and delivery info" => "xem danh sách tin nhắn và thông tin giao nhận", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 360
-"search for data boxes" => "",
+"search for data boxes" => "tìm kiếm hộp dữ liệu", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 361
-"manage the data box" => "",
+"manage the data box" => "quản lý hộp dữ liệu", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 362
-"erase the vault" => "",
+"erase the vault" => "xóa kho lưu trữ tin nhắn", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 44
-"ISDS accounts" => "",
+"ISDS accounts" => "Tài khoản ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 49
-"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "",
+"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "Kiểm tra các tài khoản ISDS mà misc/datovka/datovka_conf.php thiết lập để gửi tới hộp dữ liệu từ các trang web của cơ sở dữ liệu này: thiết lập của chúng, các tệp chứng chỉ, trang web và các chuyên mục mà mỗi tài khoản gửi cho, cùng các trang gửi hàng loạt trong tuần qua có thiết lập chưa sẵn sàng, có chiến dịch không xác định được người nhận, hoặc có thao tác thất bại do lỗi nội bộ.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 80
-"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "",
+"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "Không có tài khoản ISDS nào trong misc/datovka/datovka_conf.php gửi cho một trang web của cơ sở dữ liệu này", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 100
-"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "misc/datovka/datovka_conf.php có thiết lập tài khoản ISDS mà AA không đọc: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 103
-"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "",
+"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "Tài khoản ISDS trong %1 được đặt tên bằng một từ gồm chữ in hoa và chữ số, ký tự đầu là chữ cái, và AA chỉ đọc các khóa %2, với tài khoản production thì thêm cả %3. Hãy sửa tên, hoặc xóa những gì AA không đọc.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 108
-"ISDS accounts ready to send: %1" => "",
+"ISDS accounts ready to send: %1" => "Tài khoản ISDS sẵn sàng gửi: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 127
-"A page of site %1 has a mass sending whose settings are not ready" => "",
+"A page of site %1 has a mass sending whose settings are not ready" => "Một trang của trang web %1 có đợt gửi hàng loạt với thiết lập chưa sẵn sàng", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 131, 167
-"Campaign slice" => "",
+"Campaign slice" => "Chuyên mục chiến dịch", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 137
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "Trang web “%1” chỉ cho phép người đọc từ các chuyên mục Quản lý người đọc của mình đăng nhập, nên không ai được gửi ở đó, cũng không thấy trên trang cần sửa gì – trong thiết lập của trang web, hãy đặt “Cơ sở dữ liệu đăng nhập người dùng” thành “%2”, sau đó mở lại trang.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 138
-"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "",
+"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "Hãy mở trang với tư cách người dùng được sửa mọi bài viết của chuyên mục chiến dịch hoặc mã của trang web: trang sẽ liệt kê mọi điều cần sửa trong thiết lập của {datovkabulk:page}, kèm các trang để sửa.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 163
-"A campaign of a mass sending on site %1 cannot tell its recipients" => "",
+"A campaign of a mass sending on site %1 cannot tell its recipients" => "Một chiến dịch gửi hàng loạt trên trang web %1 không xác định được người nhận", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 168, 204
-"Campaign" => "",
+"Campaign" => "Chiến dịch", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 173
-"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "",
+"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "Bộ lọc người nhận lưu trong chiến dịch không còn khớp với thiết lập của trang – một loại đã bị xóa khỏi types, hoặc member_field đã bị bỏ. Hãy mở chiến dịch trên trang và lưu lại người nhận của nó. Khi vấn đề nêu đến thiết lập hộp dữ liệu, hãy thiết lập chúng trên trang “Hộp dữ liệu từ sổ đăng ký” của chuyên mục nguồn.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 199
-"An action of a page of a mass sending failed on an internal error: %1" => "",
+"An action of a page of a mass sending failed on an internal error: %1" => "Một thao tác của trang gửi hàng loạt thất bại do lỗi nội bộ: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 209
-"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "",
+"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "Lỗi của AA – hãy báo cho nhà phát triển vị trí trong mã nêu ở phần bằng chứng. Thao tác có thể đã thực hiện một phần: trước khi người dùng thử lại, hãy xem đợt gửi trên trang của nó.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 225
-"ISDS account %1 cannot be used" => "",
+"ISDS account %1 cannot be used" => "Không thể dùng tài khoản ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 227
-"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "",
+"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "Hãy sửa trong misc/datovka/datovka_conf.php những gì phần bằng chứng nêu. Tài khoản là %1, với các khóa %2.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 261
-"PHP cannot read the certificate of ISDS account %1" => "",
+"PHP cannot read the certificate of ISDS account %1" => "PHP không đọc được chứng chỉ của tài khoản ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 263
-"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "",
+"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "Hãy kiểm tra rằng thiết lập chỉ định tệp bằng đường dẫn đầy đủ – đường dẫn tương đối bắt đầu từ %1 của AA –, rằng người dùng mà PHP chạy dưới quyền được phép đọc tệp, và open_basedir cho phép PHP truy cập vào đó.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "",
+"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "Không thể dùng chứng chỉ của tài khoản ISDS %1: PHP không có tiện ích mở rộng openssl", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"Install the openssl extension of PHP - a login with a certificate needs it." => "",
+"Install the openssl extension of PHP - a login with a certificate needs it." => "Hãy cài tiện ích mở rộng openssl của PHP – đăng nhập bằng chứng chỉ cần đến nó.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Serial number" => "",
+"Serial number" => "Số sê-ri", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Valid until" => "",
+"Valid until" => "Có hiệu lực đến", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 274
-"%1 names a file with no PEM certificate" => "",
+"%1 names a file with no PEM certificate" => "%1 chỉ định một tệp không chứa chứng chỉ PEM", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 275
-"The private key in %1 does not open: it is missing, or %2 does not fit" => "",
+"The private key in %1 does not open: it is missing, or %2 does not fit" => "Không mở được khóa riêng tư trong %1: khóa bị thiếu, hoặc %2 không khớp", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 276
-"The private key in %1 does not belong to the certificate in %2" => "",
+"The private key in %1 does not belong to the certificate in %2" => "Khóa riêng tư trong %1 không thuộc về chứng chỉ trong %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 277
-"The private key is shorter than %1 bits, which the secure connection refuses" => "",
+"The private key is shorter than %1 bits, which the secure connection refuses" => "Khóa riêng tư ngắn hơn %1 bit, điều mà kết nối bảo mật từ chối", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 278
-"The certificate is valid from %1 only" => "",
+"The certificate is valid from %1 only" => "Chứng chỉ chỉ có hiệu lực từ %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"The certificate of ISDS account %1 cannot be used" => "",
+"The certificate of ISDS account %1 cannot be used" => "Không thể dùng chứng chỉ của tài khoản ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "",
+"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "Hãy khai báo chứng chỉ và khóa của nó trong misc/datovka/datovka_conf.php, cùng cụm mật khẩu của khóa nếu khóa được mã hóa.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expired on %2" => "",
+"The certificate of ISDS account %1 expired on %2" => "Chứng chỉ của tài khoản ISDS %1 đã hết hạn vào %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expires on %2" => "",
+"The certificate of ISDS account %1 expires on %2" => "Chứng chỉ của tài khoản ISDS %1 sẽ hết hạn vào %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 290
-"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "",
+"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "Hãy lấy chứng chỉ mới, đăng ký nó với ISDS bên cạnh chứng chỉ cũ, và khai báo tệp của nó trong misc/datovka/datovka_conf.php – ISDS yêu cầu việc này %1 ngày trước khi chứng chỉ cũ hết hạn.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"The web server may serve the private key of ISDS account %1" => "",
+"The web server may serve the private key of ISDS account %1" => "Máy chủ web có thể trả ra khóa riêng tư của tài khoản ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"Other users of the server may read the private key of ISDS account %1" => "",
+"Other users of the server may read the private key of ISDS account %1" => "Những người dùng khác trên máy chủ có thể đọc khóa riêng tư của tài khoản ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 343
-"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "",
+"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "Ở đây PHP chạy bên trong máy chủ web, nên máy chủ web đọc được mọi thứ PHP được phép đọc – không quyền truy cập nào giúp được. Hãy chuyển tệp ra ngoài thư mục của AA và khai báo nó bằng đường dẫn đầy đủ.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 344
-"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "",
+"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "Tệp nằm trong thư mục của AA, nơi máy chủ web phục vụ ra ngoài. Hãy chuyển tệp ra ngoài và khai báo bằng đường dẫn đầy đủ, hoặc chỉ cho chủ sở hữu truy cập (chmod 600) và kiểm tra ACL của tệp (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 345
-"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "",
+"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "Hãy thu hồi mọi quyền của người dùng khác đối với tệp (chmod o-rwx) và kiểm tra ACL của tệp (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 403
-"The slices of ISDS account %1 are not ready for sending" => "",
+"The slices of ISDS account %1 are not ready for sending" => "Các chuyên mục của tài khoản ISDS %1 chưa sẵn sàng để gửi", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 406
-"Fix what the evidence names before sending from these slices." => "",
+"Fix what the evidence names before sending from these slices." => "Hãy sửa những gì phần bằng chứng nêu trước khi gửi từ các chuyên mục này.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 32
-"ISDS settings file" => "",
+"ISDS settings file" => "Tệp thiết lập ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 37
-"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "",
+"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "Kiểm tra misc/datovka/datovka_conf.php – thiết lập hộp dữ liệu của bản cài đặt này cho {datovka} và gửi hàng loạt: PHP có đọc được tệp và AA có dùng được toàn bộ hay không, các khóa bị ghi hai lần, quyền truy cập của tệp, các bản sao của tệp trong thư mục của AA, và trong tuần qua: các vấn đề mà những yêu cầu khác gặp khi đọc tệp cùng các phản hồi của ISDS bị từ chối vì thuộc bản cài đặt mà tệp không liệt kê.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"AA reads all of misc/datovka/datovka_conf.php" => "",
+"AA reads all of misc/datovka/datovka_conf.php" => "AA đọc được toàn bộ misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "",
+"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "Không có misc/datovka/datovka_conf.php – AA chạy mà không có thiết lập hộp dữ liệu của bản cài đặt này", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"ISDS accounts not checked: %1" => "",
+"ISDS accounts not checked: %1" => "Chưa kiểm tra các tài khoản ISDS: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"The check \"%1\" tells what to fix." => "",
+"The check \"%1\" tells what to fix." => "Kiểm tra “%1” cho biết cần sửa gì.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 100
-"PHP cannot read misc/datovka/datovka_conf.php" => "",
+"PHP cannot read misc/datovka/datovka_conf.php" => "PHP không đọc được misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"AA cannot use misc/datovka/datovka_conf.php" => "",
+"AA cannot use misc/datovka/datovka_conf.php" => "AA không thể dùng misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "",
+"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "Hãy sửa tệp theo datovka_conf.php.default – phần vấn đề cho biết điều gì sai. Cho đến khi đó, AA chạy như thể không có tệp.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 102
-"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "",
+"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "Hãy sửa %1 theo datovka_conf.php.default. Cho đến khi đó, AA không có tài khoản ISDS nào; phần còn lại của tệp AA vẫn đọc.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "",
+"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "AA bỏ qua các thiết lập của misc/datovka/datovka_conf.php: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"Correct each key as its problem says." => "",
+"Correct each key as its problem says." => "Hãy sửa từng khóa theo vấn đề được nêu.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 113
-"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "misc/datovka/datovka_conf.php có các khóa mà AA không đọc: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 116
-"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "",
+"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "Hãy chuyển tài khoản ISDS vào dưới %1, hoặc xóa những gì AA không đọc: ở cấp trên cùng AA đọc instances, test, standard và accounts; trong test và standard là cert và atsId; trong một bản cài đặt chỉ url.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "",
+"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "misc/datovka/datovka_conf.php vẫn còn địa chỉ của ISDS: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "",
+"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "AA không đọc url_* và wsdl_* từ tệp – các địa chỉ này là một phần của AA. Hãy xóa chúng.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 149
-"Other requests met a problem in misc/datovka/datovka_conf.php" => "",
+"Other requests met a problem in misc/datovka/datovka_conf.php" => "Những yêu cầu khác gặp vấn đề trong misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 150
-"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "",
+"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "Những yêu cầu khác không thể dùng các tài khoản của misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 151
-"Other requests could not use misc/datovka/datovka_conf.php" => "",
+"Other requests could not use misc/datovka/datovka_conf.php" => "Những yêu cầu khác không thể dùng misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 156
-"Site, one of them" => "",
+"Site, one of them" => "Trang web (một trong số đó)", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 158
-"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "",
+"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "%1 Nếu chỉ xuất hiện trong một ngày, thường là do hệ thống tệp mạng tạm thời từ chối PHP. Phát hiện này sẽ biến mất 7 ngày sau ngày “%2”.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 159
-"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "",
+"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "Tệp đã thay đổi từ đó, hoặc một cây AA khác trên cơ sở dữ liệu này đọc tệp riêng của nó. Hãy sửa những gì vấn đề nêu trong tệp mà từng cây đọc.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "",
+"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "Phản hồi của ISDS cho các tin nhắn của cơ sở dữ liệu này đã bị từ chối: %1 không liệt kê bản cài đặt %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS refused: the installation in their token is not in %1" => "",
+"Answers of ISDS refused: the installation in their token is not in %1" => "Phản hồi của ISDS bị từ chối: bản cài đặt trong token của chúng không có trong %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id" => "",
+"Installation id" => "ID bản cài đặt", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id, one of them" => "",
+"Installation id, one of them" => "ID bản cài đặt (một trong số đó)", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 191
-"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "",
+"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "Hãy thêm bản cài đặt có ID đó vào %1, kèm AA_INSTAL_URL của nó – mọi bản cài đặt dùng chung đăng ký dịch vụ xác thực đều liệt kê cùng các ID.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 192
-"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "",
+"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "Không có tin nhắn nào của cơ sở dữ liệu này mang token đó. Nếu một bản cài đặt dùng chung đăng ký dịch vụ xác thực có ID này, hãy thêm nó vào %1; nếu không, phản hồi không thuộc về bản cài đặt này và không cần thay đổi gì.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 215
-"Test boxes of ISDS accounts AA cannot read: %1" => "",
+"Test boxes of ISDS accounts AA cannot read: %1" => "Hộp thử nghiệm của tài khoản ISDS mà AA không đọc được: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 218
-"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "",
+"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "Hãy viết test_boxes dưới dạng danh sách ID hộp dữ liệu: ['<ID hộp dữ liệu>', ...], mỗi ID gồm 7 chữ cái hoặc chữ số. Cho đến khi đó, tài khoản vẫn gửi, nhưng không có tin nhắn thử nào của bản nháp được gửi từ tài khoản này.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 235
-"Paid tests of ISDS accounts AA cannot read: %1" => "",
+"Paid tests of ISDS accounts AA cannot read: %1" => "Kiểm thử trả phí của tài khoản ISDS mà AA không đọc được: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 238
-"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "",
+"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "Hãy viết paid_tests là true – không có dấu ngoặc kép – để cho phép tin nhắn thử của bản nháp tốn phí, hoặc xóa nó đi. Cho đến khi đó, tin nhắn thử chỉ được gửi miễn phí.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "",
+"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "misc/datovka/datovka_conf.php không được kiểm tra khóa bị ghi hai lần – tệp lớn hơn %1 KB", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"The settings of one installation take a few kilobytes - check what else the file holds." => "",
+"The settings of one installation take a few kilobytes - check what else the file holds." => "Thiết lập của một bản cài đặt chỉ chiếm vài kilobyte – hãy kiểm tra xem tệp còn chứa gì khác.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 303
-"misc/datovka/datovka_conf.php writes keys twice: %1" => "",
+"misc/datovka/datovka_conf.php writes keys twice: %1" => "misc/datovka/datovka_conf.php ghi khóa hai lần: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 307
-"ISDS accounts of the sites of other databases: %1" => "",
+"ISDS accounts of the sites of other databases: %1" => "Tài khoản ISDS của các trang web thuộc cơ sở dữ liệu khác: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 309
-"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "",
+"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "Với khóa bị ghi hai lần, PHP chỉ giữ lại khóa cuối và lặng lẽ bỏ qua khóa đầu. Hãy gộp hai khóa thành một, hoặc đổi tên một trong các tài khoản.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 310
-"An account of the sites of another database: the State Check of the database of its sites names it." => "",
+"An account of the sites of another database: the State Check of the database of its sites names it." => "Tài khoản của các trang web thuộc cơ sở dữ liệu khác: “Kiểm tra trạng thái” của cơ sở dữ liệu chứa các trang web đó sẽ nêu tài khoản này.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 341
-"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "",
+"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "Mọi người dùng trên máy chủ đều đọc được misc/datovka/datovka_conf.php, còn include/config.php thì không", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 343
-"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "",
+"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "Tệp chứa mật khẩu hoặc cụm mật khẩu. Hãy đặt cho tệp cùng chủ sở hữu, nhóm và chế độ như include/config.php (chown, chmod), và kiểm tra ACL của tệp (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 370
-"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "",
+"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "Bản sao của misc/datovka/datovka_conf.php trong thư mục của AA: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 373
-"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "",
+"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "Chỉ giữ các bản sao của tệp – bản sao lưu, phiên bản cũ, những gì trình soạn thảo hoặc svn để lại bên cạnh – bên ngoài cây thư mục web. Hãy chuyển đi hoặc xóa các bản sao này.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 393
-"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "",
+"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "AA không thể dùng các tài khoản của misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 398
-"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "",
+"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "Hãy đặt cho tệp cùng chủ sở hữu, nhóm và chế độ như include/config.php, vì mỗi trang web có thể chạy PHP dưới người dùng riêng, và kiểm tra rằng open_basedir của từng trang web cho phép PHP truy cập tệp (cả đích của liên kết). Cho đến khi đó, AA chạy như thể không có tệp.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 37
-"Letters to data boxes as a PDF" => "",
+"Letters to data boxes as a PDF" => "Thư gửi hộp dữ liệu dưới dạng PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 42
-"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "",
+"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "Chuyển một bức thư ngắn thành PDF, giống như việc gửi hàng loạt tới hộp dữ liệu làm với thư của mỗi chiến dịch – chỉ khi một tài khoản ISDS trong misc/datovka/datovka_conf.php gửi cho một trang web của cơ sở dữ liệu này.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 81
-"AA makes letters to data boxes into a PDF" => "",
+"AA makes letters to data boxes into a PDF" => "AA chuyển được thư gửi hộp dữ liệu thành PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 86
-"A letter to a data box cannot be made into a PDF" => "",
+"A letter to a data box cannot be made into a PDF" => "Không thể chuyển thư gửi hộp dữ liệu thành PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 87
-"Until then no campaign can be sent to data boxes." => "",
+"Until then no campaign can be sent to data boxes." => "Cho đến khi đó, không chiến dịch nào có thể được gửi tới hộp dữ liệu.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 88
-"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "",
+"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "Thiếu dompdf, thư viện tạo PDF: hãy chạy composer install trong thư mục của AA.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 89
-"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "",
+"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "PHP thiếu tiện ích mở rộng GD, dùng để vẽ hình ảnh trong thư: hãy cài đặt nó và khởi động lại PHP.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 90
-"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "",
+"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "Hãy chạy composer install trong thư mục của AA – lệnh này cài dompdf và các phông chữ của nó – và kiểm tra rằng PHP được phép ghi vào thư mục tạm của mình (sys_temp_dir).", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 30
-"Data boxes of the items" => "",
+"Data boxes of the items" => "Hộp dữ liệu của bài viết", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 35
-"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "",
+"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "So sánh hộp dữ liệu của các bài viết với sổ đăng ký hộp dữ liệu đã tải về, trong các chuyên mục ghép nối bài viết với sổ đăng ký đó, và nêu các tài khoản ISDS có trang web không dùng chuyên mục nào như vậy.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 60
-"No slice pairs its items with the register of data boxes" => "",
+"No slice pairs its items with the register of data boxes" => "Không có chuyên mục nào ghép nối bài viết với sổ đăng ký hộp dữ liệu", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 63
-"Paired slices whose items have the data boxes of the register: %1" => "",
+"Paired slices whose items have the data boxes of the register: %1" => "Các chuyên mục đã ghép nối có bài viết mang hộp dữ liệu theo sổ đăng ký: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 88
-"ISDS account" => "",
+"ISDS account" => "Tài khoản ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 94
-"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "",
+"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "Trang web của các tài khoản ISDS không dùng chuyên mục nào có thiết lập hộp dữ liệu, nên việc gửi hàng loạt không lấy được người nhận", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 97
-"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "",
+"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "Hãy mở trang “Hộp dữ liệu từ sổ đăng ký” trong thiết lập của chuyên mục mà các chiến dịch lấy người nhận – một chuyên mục công khai mà trang web sử dụng, xem “Mô-đun được sử dụng” trong thiết lập của trang web – và chọn tại đó các trường của bài viết: tên, loại và hộp dữ liệu mà việc gửi hàng loạt gửi tới.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 112
-"Data boxes of %1" => "",
+"Data boxes of %1" => "Hộp dữ liệu của %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 114
-"Download it on the page Data boxes from the register of a paired slice." => "",
+"Download it on the page Data boxes from the register of a paired slice." => "Hãy tải về trên trang “Hộp dữ liệu từ sổ đăng ký” của một chuyên mục đã ghép nối.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"The directory of the register of data boxes cannot be used" => "",
+"The directory of the register of data boxes cannot be used" => "Không thể dùng thư mục của sổ đăng ký hộp dữ liệu", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "",
+"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "Hãy cho phép PHP duyệt thư mục, hoặc đặt IMG_UPLOAD_PATH trong config.php. Sau đó tải sổ đăng ký về trên trang “Hộp dữ liệu từ sổ đăng ký” của một chuyên mục đã ghép nối.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The register of data boxes has not been downloaded" => "",
+"The register of data boxes has not been downloaded" => "Sổ đăng ký hộp dữ liệu chưa được tải về", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The items are compared with it." => "",
+"The items are compared with it." => "Các bài viết được so sánh với sổ đăng ký này.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 127
-"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "",
+"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "Hãy tải lại sổ đăng ký trên trang “Hộp dữ liệu từ sổ đăng ký” của một chuyên mục đã ghép nối. Cho đến khi đó, các bài viết không được so sánh với sổ đăng ký.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"The downloaded register of data boxes is older than %1 days" => "",
+"The downloaded register of data boxes is older than %1 days" => "Sổ đăng ký hộp dữ liệu đã tải về cũ hơn %1 ngày", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Downloaded" => "",
+"Downloaded" => "Đã tải về", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "",
+"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "Hãy tải lại trên trang “Hộp dữ liệu từ sổ đăng ký” của một chuyên mục đã ghép nối: các cơ quan có hộp dữ liệu mới và sáp nhập với nhau.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 140
-"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "",
+"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "Bản sao của sổ đăng ký bị hỏng: tải lại trên trang “Hộp dữ liệu từ sổ đăng ký” của một chuyên mục đã ghép nối sẽ thay thế bản sao này.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 141
-"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "",
+"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "Không đọc được bản sao của sổ đăng ký: hãy kiểm tra thư mục và quyền truy cập nêu trong phần bằng chứng; nếu chúng đúng, đĩa đã đọc lỗi – hãy thử lại sau.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 142
-"The downloaded register of data boxes cannot be read" => "",
+"The downloaded register of data boxes cannot be read" => "Không đọc được sổ đăng ký hộp dữ liệu đã tải về", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"The pairing of slice \"%1\" with the register no longer fits its fields" => "",
+"The pairing of slice \"%1\" with the register no longer fits its fields" => "Việc ghép nối chuyên mục “%1” với sổ đăng ký không còn khớp với các trường của nó", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"Choose the fields again in the settings on the page Data boxes from the register." => "",
+"Choose the fields again in the settings on the page Data boxes from the register." => "Hãy chọn lại các trường trong thiết lập trên trang “Hộp dữ liệu từ sổ đăng ký”.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 187
-"Slice \"%1\": items without a data box: %2, items with another box than the register by IČO: %3" => "",
+"Slice \"%1\": items without a data box: %2, items with another box than the register by IČO: %3" => "Chuyên mục “%1”: bài viết không có hộp dữ liệu: %2, bài viết có hộp khác với sổ đăng ký theo IČO: %3", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 190
-"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "",
+"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "Hãy mở trang “Hộp dữ liệu từ sổ đăng ký”, kiểm tra các hộp mà trang tìm thấy và ghi chúng lại. Với các bài viết mà sổ đăng ký không tìm thấy, cần điền hộp dữ liệu thủ công.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 21
-"Message items of mass sendings" => "",
+"Message items of mass sendings" => "Bài viết tin nhắn của các đợt gửi hàng loạt", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 26
-"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "",
+"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "So sánh các bài viết tin nhắn của những đợt gửi hàng loạt gần đây tới hộp dữ liệu với bản ghi các lần chạy của chúng, vốn là căn cứ để thực hiện việc gửi.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"Message items of a mass sending do not show what its record says: %1" => "",
+"Message items of a mass sending do not show what its record says: %1" => "Số bài viết tin nhắn của một đợt gửi hàng loạt không khớp với bản ghi của đợt gửi: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "",
+"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "Việc gửi được thực hiện theo bản ghi; các bài viết chỉ hiển thị nội dung đó cho người dùng, và một bài viết hiển thị tin nhắn là chưa gửi trong khi thực tế đã gửi sẽ khiến ai đó gửi lại thủ công. Mỗi ví dụ gồm số tham chiếu của người gửi, bài viết, nội dung bài viết hiển thị và nội dung bản ghi: hãy đặt trạng thái của bài viết theo bản ghi, hoặc xác minh tin nhắn trên cổng ISDS theo số tham chiếu của người gửi.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 96
 // src/Optimize/CheckIsdsRuns.php, row 90
@@ -12507,140 +12737,140 @@ return [
 "%1: nothing found" => "%1: không phát hiện gì", // ai 2026-10
 
 // src/Optimize/CheckIsdsRuns.php, row 51
-"Mass sendings to data boxes" => "",
+"Mass sendings to data boxes" => "Gửi hàng loạt tới hộp dữ liệu", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 56
-"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "",
+"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "Cảnh báo về các đợt gửi hàng loạt tới hộp dữ liệu bị treo hoặc dừng do lỗi, để lại tin nhắn chưa rõ kết quả hoặc có nhiều tin nhắn thất bại, có quá trình theo dõi chuyển phát bị đình trệ hoặc để lại tin nhắn không biết đã được chuyển phát hay chưa, và về các chiến dịch không cho thấy kết quả của việc gửi.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"The campaign of a finished mass sending does not show its end" => "",
+"The campaign of a finished mass sending does not show its end" => "Chiến dịch của một đợt gửi hàng loạt đã hoàn tất không cho thấy đợt gửi đã kết thúc", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "",
+"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "Bài viết chiến dịch sẽ không được ghi lại nữa. Hãy đặt trạng thái của nó thủ công: đã dừng nếu việc gửi bị dừng trước khi mọi tin nhắn được gửi đi, nếu không thì đã xong.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 121
-"Mass sendings to data boxes whose campaign item is gone: %1" => "",
+"Mass sendings to data boxes whose campaign item is gone: %1" => "Các đợt gửi hàng loạt tới hộp dữ liệu có bài viết chiến dịch đã bị xóa: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 125
-"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "",
+"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "Bản ghi và các thư đã cố định của chúng vẫn được giữ làm bằng chứng về những gì đã gửi - AA không xóa chúng cùng với chiến dịch. Một đợt gửi chưa hoàn tất vẫn tiếp tục đến hết: bản ghi của nó chứa thông tin gửi cho ai và gửi gì.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 160
-"Messages of unknown fate" => "",
+"Messages of unknown fate" => "Tin nhắn chưa rõ kết quả", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"Following the delivery of a mass sending to data boxes stopped by an error" => "",
+"Following the delivery of a mass sending to data boxes stopped by an error" => "Việc theo dõi chuyển phát của một đợt gửi hàng loạt tới hộp dữ liệu đã dừng do lỗi", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "",
+"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "Mọi tin nhắn đã được gửi đi, chỉ việc xác định chúng đã được chuyển phát hay chưa bị dừng. Hãy khắc phục vấn đề mà mã lỗi nêu, rồi chọn “Tiếp tục” trên trang của đợt gửi - thao tác này đọc cả các trạng thái đã bỏ lỡ - hoặc “Từ bỏ”, thao tác này kết thúc việc theo dõi vĩnh viễn.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 167
-"A mass sending to data boxes stopped by an error" => "",
+"A mass sending to data boxes stopped by an error" => "Một đợt gửi hàng loạt tới hộp dữ liệu đã dừng do lỗi", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 169
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "Sẽ không gửi thêm gì cho đến khi có người xử lý. Hãy khắc phục vấn đề mà mã lỗi nêu, rồi chọn “Tiếp tục” trên trang của đợt gửi - hoặc “Từ bỏ”, thao tác này kết thúc đợt gửi vĩnh viễn: khi đó, tin nhắn có thể đã được gửi đi sẽ cần một người xác minh. Bài viết chiến dịch có thể vẫn cho thấy đợt gửi đang diễn ra nếu lỗi xảy ra trước khi lần chạy kịp ghi lại.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 170
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "Sẽ không gửi thêm gì cho đến khi có người xử lý. Hãy khắc phục vấn đề mà mã lỗi nêu, rồi chọn “Tiếp tục” trên trang của đợt gửi - hoặc “Dừng”, sau đó sẽ không gửi thêm gì nữa. Tin nhắn có thể đã được gửi đi sẽ không bao giờ được gửi lại: đợt gửi sẽ tra cứu nó. Bài viết chiến dịch có thể vẫn cho thấy đợt gửi đang diễn ra nếu lỗi xảy ra trước khi lần chạy kịp ghi lại.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"A mass sending to data boxes has not moved on for %1 hours" => "",
+"A mass sending to data boxes has not moved on for %1 hours" => "Một đợt gửi hàng loạt tới hộp dữ liệu không tiến triển trong %1 giờ", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "",
+"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "Không có bước nào của hàng đợi xử lý đợt gửi này. Hãy kiểm tra rằng cron chạy hàng đợi tác vụ và mỗi vòng của hàng đợi đủ dài cho một bước (TOEXECUTE_ALLOWED_TIME trong config.php), rồi chọn “Tiếp tục” trên trang của đợt gửi.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A finished mass sending left messages of unknown fate: %1" => "",
+"A finished mass sending left messages of unknown fate: %1" => "Một đợt gửi hàng loạt đã hoàn tất để lại tin nhắn chưa rõ kết quả: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A mass sending being followed has messages of unknown fate: %1" => "",
+"A mass sending being followed has messages of unknown fate: %1" => "Một đợt gửi hàng loạt đang được theo dõi có tin nhắn chưa rõ kết quả: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 185
-"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "",
+"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "Các tin nhắn này có thể đã được chuyển phát, vì vậy AA không bao giờ gửi lại. Hãy tra cứu từng tin nhắn theo số tham chiếu của người gửi trong danh sách tin nhắn đã gửi của hộp dữ liệu trên cổng ISDS. Với tin nhắn không có ở đó, hãy chọn “Xác minh” trên trang của đợt gửi - khi đó tin nhắn được tính là chưa gửi - và gửi lại thư cho người nhận đó trong một chiến dịch mới.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 193
-"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "",
+"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "Những người nhận đó không nhận được thư. Các bài viết tin nhắn của họ cho biết ISDS đã phản hồi gì về từng người: hãy khắc phục nguyên nhân và gửi lại thư cho họ trong một chiến dịch mới.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 195
-"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "",
+"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "Mã 3: một tệp đính kèm không vượt qua kiểm tra virus của ISDS (tệp PDF không hợp lệ cũng không vượt qua). Hãy sửa các tệp đính kèm trước: cùng một tệp đính kèm sẽ lại thất bại.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 198
-"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "",
+"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "Mã 8: hộp dữ liệu của người nhận đã bị vô hiệu hóa. Tin nhắn không được chuyển phát, dù có thể hiển thị thời điểm coi như đã chuyển phát, và sẽ không có tin nhắn mới nào đến được hộp đó: hãy tìm hộp dữ liệu mới của người nhận.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 200
-"%1 of %2 messages of a mass sending to data boxes failed" => "",
+"%1 of %2 messages of a mass sending to data boxes failed" => "%1 trên %2 tin nhắn của một đợt gửi hàng loạt tới hộp dữ liệu đã thất bại", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"A mass sending to data boxes ended with messages not known to be delivered: %1" => "",
+"A mass sending to data boxes ended with messages not known to be delivered: %1" => "Một đợt gửi hàng loạt tới hộp dữ liệu đã kết thúc với các tin nhắn không biết đã được chuyển phát hay chưa: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "",
+"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "Trong thời gian AA theo dõi, ISDS không thông báo cho AA việc chuyển phát cũng như việc từ chối các tin nhắn này. Hãy xác minh từng tin nhắn trên cổng ISDS theo số tham chiếu của người gửi trong danh sách tin nhắn đã gửi của hộp dữ liệu.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 235
-"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "",
+"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "ISDS đã chặn địa chỉ của máy chủ này. AA sẽ thử lại sau 24 giờ. Xem mục kiểm tra “%1”.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 236
-"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "",
+"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "PHP không thể đọc misc/datovka/datovka_conf.php: hãy cấp lại quyền đọc tệp này cho PHP.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 237
-"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "",
+"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "Hộp dữ liệu có quá nhiều thay đổi trong một giờ nên AA không thể đọc được: hãy xác minh việc chuyển phát tin nhắn trên cổng ISDS theo số tham chiếu của người gửi.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 238
-"ISDS did not answer when AA read the delivery of the messages." => "",
+"ISDS did not answer when AA read the delivery of the messages." => "ISDS không phản hồi khi AA đọc trạng thái chuyển phát của tin nhắn.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 242
-"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "",
+"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "Bản ghi cho biết trạng thái chuyển phát đã được đọc đến một thời điểm trong tương lai. Vòng tiếp theo sẽ đọc lại từ đầu đợt gửi và không gửi lại tin nhắn nào; nếu phát hiện này vẫn còn, hãy kiểm tra đồng hồ của các máy chủ chạy hàng đợi tác vụ.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 243
-"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "",
+"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "AA tự động thử lại; khi đọc được, AA sẽ đọc cả các trạng thái đã bỏ lỡ và không gửi lại tin nhắn nào.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Read up to" => "",
+"Read up to" => "Đã đọc đến", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Last wait" => "",
+"Last wait" => "Lần chờ gần nhất", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 245
-"Following the delivery of a mass sending to data boxes has stalled" => "",
+"Following the delivery of a mass sending to data boxes has stalled" => "Việc theo dõi chuyển phát của một đợt gửi hàng loạt tới hộp dữ liệu bị đình trệ", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record of a mass sending to data boxes cannot be read" => "",
+"The record of a mass sending to data boxes cannot be read" => "Không thể đọc bản ghi của một đợt gửi hàng loạt tới hộp dữ liệu", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "",
+"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "Bản ghi hoặc danh sách người nhận đã cố định của đợt gửi đã bị thay đổi bên ngoài AA. Hãy khôi phục chúng từ bản sao lưu cơ sở dữ liệu trước khi có ai chọn “Tiếp tục”: chính bản ghi ngăn một tin nhắn bị gửi hai lần.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 264, 309
-"Campaign item" => "",
+"Campaign item" => "Bài viết chiến dịch", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 309
-"Campaign state" => "",
+"Campaign state" => "Trạng thái chiến dịch", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 35
-"Views of mass sendings" => "",
+"Views of mass sendings" => "Khung hiển thị của các đợt gửi hàng loạt", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 40
-"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "",
+"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "Kiểm tra tên các khung hiển thị của trang gửi hàng loạt tới hộp dữ liệu: mỗi khung hiển thị isds_... chỉ có một lần trong các chuyên mục chiến dịch và tin nhắn của một tài khoản ISDS - nếu có hai khung trùng tên, trang sẽ không hiển thị khung nào -, và khung hiển thị đầu vào isdscampainer chỉ có một lần trong các chuyên mục của trang web.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 79
-"Views of the slices of ISDS account %1 share the name %2" => "",
+"Views of the slices of ISDS account %1 share the name %2" => "Các khung hiển thị của chuyên mục thuộc tài khoản ISDS %1 có cùng tên %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 82
-"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "",
+"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "Trang gửi hàng loạt không hiển thị khung nào trong số đó. Hãy giữ tên này cho một khung hiển thị của chuyên mục chiến dịch hoặc chuyên mục tin nhắn, và đổi tên hoặc xóa các khung còn lại.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 95
-"Site %1 has the entry view isdscampainer more than once" => "",
+"Site %1 has the entry view isdscampainer more than once" => "Trang web %1 có khung hiển thị đầu vào isdscampainer nhiều hơn một lần", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 98
-"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "",
+"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "{view:isdscampainer} lấy khung hiển thị có số cao nhất, mà khung đó không nhất thiết là trang gửi hàng loạt. Hãy gọi khung hiển thị đầu vào bằng số của nó trong spot của trang, và đổi tên các khung hiển thị khác cùng tên.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 123
-"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "",
+"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "Một trang gửi hàng loạt trên trang web %1 hiển thị một khung hiển thị mà không khung nào trong các chuyên mục của nó mang tên này: %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 127, 163
 // src/Util/ChangesMonitor.php, row 444
 "View" => "Xem", // ai 2026-06
 
 // src/Optimize/CheckIsdsViews.php, row 131
-"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "",
+"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "Phần đó của trang sẽ để trống. Hãy trả lại tên cho khung hiển thị đã bị đổi tên của chuyên mục chiến dịch hoặc chuyên mục tin nhắn, hoặc sửa tên trong mẫu.", // ai 2026-11
 
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 28
 "Item edits without the edit permission" => "Sửa bài viết khi không có quyền sửa", // ai 2026-10
@@ -12924,23 +13154,92 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "Không có biểu mẫu đối tượng nào bị từ chối trong 30 ngày qua", // ai 2026-10
 
+// src/Optimize/CheckPasskeys.php, row 35
+"Passkey logins" => "Đăng nhập bằng khóa truy cập", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 40
+"Lists the passkey logins refused in the last 30 days and the right passwords of accounts that log in by a passkey." => "Liệt kê các lần đăng nhập bằng khóa truy cập bị từ chối trong 30 ngày qua và các mật khẩu đúng được nhập cho những tài khoản đăng nhập bằng khóa truy cập.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Passkeys cannot be used yet - the table authenticator is missing" => "Chưa thể dùng khóa truy cập - thiếu bảng authenticator", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Run service/sql_update.php - it creates the table." => "Hãy chạy service/sql_update.php - tập lệnh này sẽ tạo bảng.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 95
+"No passkey login was refused in the last 30 days" => "Không có lần đăng nhập bằng khóa truy cập nào bị từ chối trong 30 ngày qua", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"Right password of a passkey account" => "Mật khẩu đúng của tài khoản dùng khóa truy cập", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The right password of an account that logs in by a passkey (%1)" => "Mật khẩu đúng của một tài khoản đăng nhập bằng khóa truy cập (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The account logs in only by its passkey, so the password did not let anybody in - but someone knows it. If it was not the owner, the password should be changed; it is used again once the passkeys are deleted." => "Tài khoản chỉ đăng nhập bằng khóa truy cập, nên mật khẩu không cho ai vào được - nhưng có người biết mật khẩu này. Nếu đó không phải chủ tài khoản, nên đổi mật khẩu; mật khẩu sẽ được dùng lại khi các khóa truy cập bị xóa.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"Passkeys unknown - the directory did not answer" => "Không rõ khóa truy cập - thư mục không phản hồi", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The directory did not answer whether %1 has a passkey" => "Thư mục không trả lời liệu %1 có khóa truy cập hay không", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The password was refused, as the account may log in only by a passkey. Check the LDAP server and the bind account of AA." => "Mật khẩu đã bị từ chối vì tài khoản có thể chỉ được phép đăng nhập bằng khóa truy cập. Hãy kiểm tra máy chủ LDAP và tài khoản bind của AA.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"Passkey answer from another address" => "Phản hồi khóa truy cập từ địa chỉ khác", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"A passkey answer from another address than the page (%1)" => "Phản hồi khóa truy cập từ một địa chỉ khác với trang (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"AA sees the page under another host or scheme than the browser - usually a reverse proxy missing from AA_TRUSTED_PROXIES, or a site reached by http." => "AA thấy trang dưới một host hoặc scheme khác với trình duyệt - thường là do một proxy ngược chưa có trong AA_TRUSTED_PROXIES, hoặc trang web được truy cập qua http.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"Security key counter went back" => "Bộ đếm của khóa bảo mật bị lùi", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"A security key of %1 signed with a counter it had used before" => "Một khóa bảo mật của %1 đã ký với bộ đếm mà nó từng dùng trước đó", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"The key may have been copied. The login was let through, so its owner is not locked out; ask the owner and delete the passkey on the page of the account if in doubt." => "Khóa có thể đã bị sao chép. Lần đăng nhập vẫn được cho qua để chủ sở hữu không bị chặn; nếu có nghi ngờ, hãy hỏi chủ sở hữu và xóa khóa truy cập trên trang của tài khoản.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Unknown passkey" => "Khóa truy cập không xác định", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"A login by a passkey this AA does not keep" => "Đăng nhập bằng một khóa truy cập mà AA này không lưu", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Usually a passkey deleted in AA but still in the browser or phone of its owner, or one of another AA on the same host. The owner can delete it in the device." => "Thường là khóa truy cập đã bị xóa trong AA nhưng vẫn còn trong trình duyệt hoặc điện thoại của chủ sở hữu, hoặc khóa của một AA khác trên cùng host. Chủ sở hữu có thể xóa nó trong thiết bị.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"Passkey login refused" => "Đăng nhập bằng khóa truy cập bị từ chối", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"A passkey login refused: %1" => "Một lần đăng nhập bằng khóa truy cập bị từ chối: %1", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"An expired or repeated login, or an answer no browser sends. Nothing to do unless it repeats." => "Lần đăng nhập đã hết hạn hoặc bị lặp lại, hoặc một phản hồi mà không trình duyệt nào gửi. Không cần làm gì, trừ khi điều này lặp lại.", // ai 2026-11
+
 // src/Optimize/CheckPerVisitorReads.php, row 18
-"Pages left out of the page cache by {server:...}" => "",
+"Pages left out of the page cache by {server:...}" => "Các trang bị loại khỏi bộ nhớ đệm trang do {server:...}", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 23
-"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "",
+"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "Liệt kê các trang web và chuyên mục có mẫu đọc qua {server:...} một giá trị có thể thuộc về riêng người truy cập (địa chỉ, trình duyệt, referer) - bộ nhớ đệm trang không lưu những trang như vậy.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 72
-"Reads" => "",
+"Reads" => "Đọc", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 78
-"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "",
+"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "%1 có các trang mà bộ nhớ đệm trang không lưu - một mẫu đọc giá trị có thể thuộc về riêng người truy cập", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 81
-"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "",
+"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Mỗi lượt truy cập sẽ kết xuất lại trang như vậy. Chuyển hướng, bộ đếm lượt nhấp hoặc biểu mẫu có thể giữ nguyên. Ở những chỗ khác, nhất là trong mẫu dùng cho mọi trang (đầu trang, chân trang): hãy xóa giá trị chỉ được in ra để gỡ lỗi và kiểm tra chính tả của tên ({server:HTTP_REFERER}); để nhận biết người truy cập đến từ một chiến dịch, hãy dùng {qs:utm_source}, để nhận biết thiết bị, dùng {detect}. Host, scheme và URI ({server:HTTP_HOST}, {server:REQUEST_URI}) vẫn giữ trang trong bộ nhớ đệm.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 86
-"No template reads a value of the visitor's own by {server:...}" => "",
+"No template reads a value of the visitor's own by {server:...}" => "Không có mẫu nào đọc qua {server:...} giá trị thuộc về riêng người truy cập", // ai 2026-11
 
 // src/Optimize/CheckPhpFatals.php, row 24
 "PHP fatal errors" => "Lỗi PHP nghiêm trọng", // ai 2026-10
@@ -13054,28 +13353,28 @@ return [
 "No queued task with a missing class in the last 30 days" => "Không có tác vụ nào trong hàng đợi thiếu lớp trong 30 ngày qua", // ai 2026-10
 
 // src/Optimize/CheckRelatedSlices.php, row 20
-"Related slices of another website" => "",
+"Related slices of another website" => "Chuyên mục liên quan của trang web khác", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 25
-"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "",
+"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "Liệt kê các trường bài viết liên quan (rim có nút chỉnh sửa, mng) trỏ tới một chuyên mục mà không trang web nào của chính chuyên mục chứa trường đó sử dụng. Biên tập viên của chuyên mục có thể chỉnh sửa bài viết của chuyên mục kia.", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 78
-"Related slice" => "",
+"Related slice" => "Chuyên mục liên quan", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 79
-"Its websites" => "",
+"Its websites" => "Các trang web của nó", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 85
-"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "",
+"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "Không có trường bài viết liên quan nào trỏ tới chuyên mục của trang web khác; số trường thuộc các chuyên mục không trang web nào sử dụng chưa được so sánh: %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 86
-"Every related-item field points to a slice of its own website" => "",
+"Every related-item field points to a slice of its own website" => "Mọi trường bài viết liên quan đều trỏ tới chuyên mục của chính trang web của nó", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 90
-"%1 related-item fields point to a slice of another website" => "",
+"%1 related-item fields point to a slice of another website" => "Số trường bài viết liên quan trỏ tới chuyên mục của trang web khác: %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 92
-"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "",
+"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "Biên tập viên của chuyên mục có thể chỉnh sửa bài viết của chuyên mục liên quan. Nếu trường được sao chép cùng với một mẫu, hãy trỏ nó tới chuyên mục của chính trang web của nó.", // ai 2026-11
 
 // src/Optimize/CheckRequiredSettings.php, row 17
 "Required slice settings" => "Thiết lập bắt buộc của chuyên mục", // ai 2026-10
@@ -13376,77 +13675,77 @@ return [
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "Bí danh không hiển thị gì: f_u chỉ gọi các hàm của bản cài đặt (usr_* trong include/usr_aliasfnc.php), không bao giờ gọi hàm PHP hoặc AA. Hãy viết một hàm usr_* làm điều cần thiết, hoặc dùng biểu thức AA thay thế.", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 35
-"Slices left out of views, charsets ignored" => "",
+"Slices left out of views, charsets ignored" => "Chuyên mục bị loại khỏi khung hiển thị, bảng mã bị bỏ qua", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 40
-"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "",
+"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "Liệt kê các khung hiển thị đã bỏ qua một chuyên mục trong 30 ngày qua vì trang không biết mật khẩu đọc của chuyên mục đó: khung hiển thị được gọi từ URL trên chuyên mục đó, hoặc với các tham số nêu tên chuyên mục hay bài viết của nó.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 41
-"And the conditions on fields of related items in such a slice, which matched nothing." => "",
+"And the conditions on fields of related items in such a slice, which matched nothing." => "Và các điều kiện trên trường của bài viết liên quan trong chuyên mục như vậy, vốn không khớp với gì.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 42
-"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "",
+"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "Và các điều kiện và cách sắp xếp theo những trường mà AA không bao giờ hiển thị giá trị, chẳng hạn mật khẩu, đã bị bỏ qua.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 43
-"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "",
+"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "Đồng thời liệt kê các bảng mã mà liên kết và biểu mẫu nêu trong convertfrom hoặc convertto và đã bị bỏ qua.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 135
-"Slice settings (reading password)" => "",
+"Slice settings (reading password)" => "Thiết lập chuyên mục (mật khẩu đọc)", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 139
-"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "",
+"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "Một điều kiện, cách sắp xếp hoặc cách nhóm theo trường %1 của chuyên mục %2 đã bị bỏ qua: AA không bao giờ hiển thị giá trị của trường này", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 141
-"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Một khung hiển thị, {ids} hoặc một tìm kiếm trên trang có điều kiện, cách sắp xếp hoặc cách nhóm theo mật khẩu, bản sao của mật khẩu, khóa bí mật xác thực hai yếu tố hoặc một trường khác mà AA không bao giờ hiển thị giá trị (cũng như cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... hoặc group_by= trong URL). Điều kiện không khớp với gì, cách sắp xếp và cách nhóm đã bị loại bỏ. Vẫn có thể hỏi trường có được điền hay không (ISNULL, NOTNULL); nếu không, hãy xóa điều kiện hoặc cách sắp xếp khỏi khung hiển thị hoặc mẫu. Nếu Bạn không biết trang này, yêu cầu không đến từ các trang của Bạn và không cần thay đổi gì.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 142
-"Protected field refused" => "",
+"Protected field refused" => "Trường được bảo vệ bị từ chối", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 144
-"A condition on related items matched nothing in slice %1: its reading password was not known" => "",
+"A condition on related items matched nothing in slice %1: its reading password was not known" => "Một điều kiện trên bài viết liên quan không khớp với gì trong chuyên mục %1: không biết mật khẩu đọc của chuyên mục", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 146
-"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Một khung hiển thị, {ids} hoặc một tìm kiếm trên trang có điều kiện trên trường của bài viết liên quan trong chuyên mục đó (<field>@<relation> hoặc <field>@<slice>/<relation>, cũng như cmd[]=d-... trong URL), và trang không biết mật khẩu đọc của chuyên mục, nên điều kiện không khớp với gì. Nếu trang của Bạn cần điều kiện này, hãy cung cấp mật khẩu trong mẫu của trang ({credentials:...}) trước khung hiển thị, không bao giờ trong liên kết, AJAX hoặc jsview.php. Nếu Bạn không biết trang này, yêu cầu không đến từ các trang của Bạn và không cần thay đổi gì.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 147
-"Condition refused" => "",
+"Condition refused" => "Điều kiện bị từ chối", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 149
-"View %1" => "",
+"View %1" => "Khung hiển thị %1", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 150
-"%1 left out slice %2: its reading password was not known" => "",
+"%1 left out slice %2: its reading password was not known" => "%1 đã bỏ qua chuyên mục %2: không biết mật khẩu đọc của chuyên mục", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 151
-"Listed by" => "",
+"Listed by" => "Được liệt kê bởi", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 152
-"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Khung hiển thị được gọi từ URL (view.php, jsview.php, discussion.php), kể cả dưới dạng banner của khung hiển thị như vậy hoặc của slice.php (set[]=banner-..., slice.php?banner=...), trên chuyên mục đó, hoặc các tham số URL của nó (set[]=slice_id-.../slices-..., ID bài viết trong cmd[]=x-...) hay slices[] của slice.php nêu tên chuyên mục đó, và trang không biết mật khẩu đọc của chuyên mục. Nếu trang của Bạn cần chuyên mục ở đó, hãy gọi khung hiển thị từ mẫu của trang ({view...}), nơi các khung hiển thị được tin cậy; chỉ cung cấp mật khẩu trong URL (slice_pwd=...) trong một include phía máy chủ, không bao giờ trong liên kết, AJAX hoặc jsview.php, nơi mật khẩu sẽ xuất hiện trong mã nguồn trang và nhật ký. Nếu Bạn không biết trang này, yêu cầu không đến từ các trang của Bạn và không cần thay đổi gì.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 162, 193
-"Page asked for" => "",
+"Page asked for" => "Trang được yêu cầu", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 176
-"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "",
+"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "Trong 30 ngày qua, không có chuyên mục nào bị loại khỏi khung hiển thị hoặc điều kiện, không có trường được bảo vệ nào bị từ chối và không có bảng mã nào bị bỏ qua", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 187
-"%1 ignored a charset in %2" => "",
+"%1 ignored a charset in %2" => "%1 đã bỏ qua một bảng mã trong %2", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 191
 // src/Security/Protection.php, row 92
 "Parameter" => "Tham số", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 192
-"Latest charsets" => "",
+"Latest charsets" => "Các bảng mã gần nhất", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 194
-"Link on page" => "",
+"Link on page" => "Liên kết trên trang", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 198
-"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Một liên kết hoặc biểu mẫu đã nêu một bảng mã để chuyển đổi khung hiển thị, thảo luận, cuộc bình chọn hoặc biểu mẫu (convertfrom hoặc convertto của view.php, jsview.php, discussion.php, poll.php và filler.php, cũng như set[...]=convertfrom-... của khung hiển thị) mà AA không nhận từ URL; bảng mã này đã bị bỏ qua như thể không có. Các bảng mã được phép là %1, không phân biệt chữ hoa chữ thường. Hãy sửa bảng mã trong liên kết hoặc biểu mẫu trên trang của Bạn, hoặc bỏ convertfrom - khi đó khung hiển thị sẽ chuyển đổi từ bảng mã của chuyên mục của nó. Nếu Bạn không biết trang này, yêu cầu không đến từ các trang của Bạn và không cần thay đổi gì.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 202
-"Charset ignored" => "",
+"Charset ignored" => "Bảng mã bị bỏ qua", // ai 2026-11
 
 // src/Optimize/ClearPagecache.php, row 13
 "Clear Pagecache" => "Xóa pagecache", // ai 2026-06
@@ -13455,7 +13754,7 @@ return [
 "Whole pagecache will be invalidated and deleted" => "Toàn bộ pagecache sẽ bị vô hiệu hóa và xóa", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 35
-// src/Optimize/CopyContent.php, row 35
+// src/Optimize/CopyContent.php, row 37
 // src/Optimize/CreateUploadDir.php, row 38
 "There is nothing to test." => "Không có gì để kiểm thử.", // ai 2026-06
 
@@ -13553,13 +13852,13 @@ return [
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 43
 "DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "DB_CHARACTER_SET trong config.php là “%1”. Trước tiên hãy chuyển nó sang “utf8mb4” và kiểm tra văn bản trong AA hiển thị đúng - việc chuyển đổi giữ nguyên những gì AA hiển thị qua kết nối utf8mb4.", // ai 2026-10
 
-// src/Optimize/CopyContent.php, row 13
+// src/Optimize/CopyContent.php, row 15
 "Copy Content Table" => "Sao chép bảng content", // ai 2026-06
 
-// src/Optimize/CopyContent.php, row 21
+// src/Optimize/CopyContent.php, row 23
 "Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "Sao chép dữ liệu của tất cả các bài viết mới hơn short_id=1941629 từ bảng content sang bảng content2. Dùng để khôi phục bảng content trên máy chủ Ecn. Tôi nghĩ là không hữu ích cho bất kỳ người dùng nào khác.", // ai 2026-06
 
-// src/Optimize/CopyContent.php, row 67
+// src/Optimize/CopyContent.php, row 69
 "Copied" => "Đã sao chép", // ai 2026-06
 
 // src/Optimize/CopyItemsFromBackup.php, row 16
@@ -13574,34 +13873,34 @@ return [
 // src/Optimize/CopyItemsFromBackup.php, row 77
 "Deleted items to be recreated: %1." => "Bài viết đã xóa cần được tạo lại: %1.", // ai 2026-06
 
-// src/Optimize/CreateAppStoreAccount.php, row 14
+// src/Optimize/CreateAppStoreAccount.php, row 16
 "App store account" => "Tài khoản kho ứng dụng", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 19
+// src/Optimize/CreateAppStoreAccount.php, row 21
 "Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "Tạo tài khoản công khai mà các AA khác dùng để đọc các ứng dụng đã phát hành của AA này (người dùng %1, không có quyền). Mật khẩu của nó là công khai; tài khoản này không thể đăng nhập vào trang quản trị.", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 34
+// src/Optimize/CreateAppStoreAccount.php, row 36
 "No app store account - this AA publishes no apps" => "Không có tài khoản kho ứng dụng - AA này không phát hành ứng dụng nào", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 39
+// src/Optimize/CreateAppStoreAccount.php, row 41
 "The user %1 exists, but not with the public password of the app store - rename it, then repair" => "Người dùng %1 đã tồn tại nhưng không dùng mật khẩu công khai của kho ứng dụng - hãy đổi tên người dùng đó rồi sửa chữa", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 44
+// src/Optimize/CreateAppStoreAccount.php, row 46
 "The app store account %1 has rights or groups - remove them" => "Tài khoản kho ứng dụng %1 có quyền hoặc nhóm - hãy gỡ bỏ chúng", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 47
+// src/Optimize/CreateAppStoreAccount.php, row 49
 "The app store account is ready" => "Tài khoản kho ứng dụng đã sẵn sàng", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 55
+// src/Optimize/CreateAppStoreAccount.php, row 57
 "Only a superadmin may create the app store account" => "Chỉ quản trị viên cấp cao mới được tạo tài khoản kho ứng dụng", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 67
+// src/Optimize/CreateAppStoreAccount.php, row 69
 "The app store account could not be created" => "Không thể tạo tài khoản kho ứng dụng", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 70
+// src/Optimize/CreateAppStoreAccount.php, row 72
 "The app store account %1 is created" => "Đã tạo tài khoản kho ứng dụng %1", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 77
+// src/Optimize/CreateAppStoreAccount.php, row 79
 "The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "Tài khoản kho ứng dụng cần người dùng của chính AA (PERM_LIB sql); AA này dùng %1 - nó có thể cài đặt từ một kho, nhưng không thể làm kho", // ai 2026-10
 
 // src/Optimize/CreateUploadDir.php, row 16
@@ -13690,7 +13989,7 @@ return [
 "%1 duplicates found" => "Tìm thấy %1 bản trùng lặp", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 46
-// src/Optimize/FieldDuplicates.php, row 51, 65
+// src/Optimize/FieldDuplicates.php, row 53, 67
 "No duplicates found" => "Không tìm thấy bản trùng lặp nào", // ai 2026-06
 
 // src/Optimize/DbRelationStartsxy.php, row 22
@@ -13729,16 +14028,16 @@ return [
 // src/Optimize/DropBackupTables.php, row 28
 "Deletes all the current backup tables (bck_slice, bck_item, ...)." => "Xóa tất cả các bảng sao lưu hiện tại (bck_slice, bck_item, ...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 16
+// src/Optimize/FieldDuplicates.php, row 18
 "Fix field definitions duplicates" => "Sửa các định nghĩa trường trùng lặp", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 24
+// src/Optimize/FieldDuplicates.php, row 26
 "There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "Trong tất cả các chuyên mục chỉ nên có một cặp slice_id - field_id, nhưng đôi khi có nhiều hơn một (chủ yếu do lỗi trong script sql_update.php cũ, khi thêm nhiều trường display_count...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 55
+// src/Optimize/FieldDuplicates.php, row 57
 "Duplicate in slice - field: %1 - %2" => "Trùng lặp trong chuyên mục - trường: %1 - %2", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 83
+// src/Optimize/FieldDuplicates.php, row 85
 "Field %2 in slice %1 fixed" => "Đã sửa trường %2 trong chuyên mục %1", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 23
@@ -13796,16 +14095,16 @@ return [
 // src/Optimize/FixPagecache.php, row 86
 "%1 inconsistent rows in pagecache removed" => "Đã xóa %1 hàng không nhất quán trong pagecache", // ai 2026-06
 
-// src/Optimize/GenerateJslibsArray.php, row 17
+// src/Optimize/GenerateJslibsArray.php, row 19
 "Generate JS Library definition array" => "Tạo mảng định nghĩa thư viện JS", // ai 2026-06
 
-// src/Optimize/GenerateJslibsArray.php, row 25
+// src/Optimize/GenerateJslibsArray.php, row 27
 "Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)" => "In ra mảng định nghĩa thư viện JS dùng trong include/stringexpand.php để cập nhật lên phiên bản thư viện mới nhất trên CDN jsDeliver (nhà phát triển AA dùng để cập nhật thư viện js trong AA)", // ai 2026-06
 
-// src/Optimize/GenerateMetabase.php, row 42
+// src/Optimize/GenerateMetabase.php, row 44
 "Generate metabase definition row" => "Tạo hàng định nghĩa metabase", // ai 2026-06
 
-// src/Optimize/GenerateMetabase.php, row 50
+// src/Optimize/GenerateMetabase.php, row 52
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Chỉ dành cho lập trình viên - in ra nội dung include/metabase_schema.php (lược đồ DB mong đợi, dưới dạng mảng PHP dễ đọc) được tạo từ cơ sở dữ liệu hiện tại; sao chép nó vào tập tin và commit.", // ai 2026-06
 
 // src/Optimize/ImgCacheWritable.php, row 17
@@ -13868,92 +14167,98 @@ return [
 // src/Optimize/ItemDiscussion.php, row 65
 "%1 problems solved" => "Đã giải quyết %1 vấn đề", // ai 2026-06
 
+// src/Optimize/LdapPermsToSql.php, row 44
+"Convert LDAP permissions to SQL" => "Chuyển quyền LDAP sang SQL", // ai 2026-11
+
 // src/Optimize/LdapPermsToSql.php, row 49
-"Migrate LDAP perms to SQL perms" => "Chuyển quyền từ LDAP sang SQL", // ai 2026-06
+"Moves the users, groups and rights of this database from LDAP to the SQL tables under new numeric ids and rewrites the references to people in the data. Test only reads: its trial import is rolled back. Repair does everything in one transaction; then set PERM_LIB='sql' in every config of this database. Take a backup first - restoring it is the only way back." => "Chuyển người dùng, nhóm và quyền của cơ sở dữ liệu này từ LDAP sang các bảng SQL với ID số mới và ghi lại các tham chiếu đến người dùng trong dữ liệu. “Kiểm tra” chỉ đọc: lần nhập thử của nó được hoàn tác. “Sửa chữa” thực hiện mọi việc trong một giao dịch; sau đó hãy đặt PERM_LIB='sql' trong mọi tệp cấu hình của cơ sở dữ liệu này. Hãy sao lưu trước - khôi phục bản sao lưu là cách duy nhất để quay lại.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 55
-"Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Sao chép tất cả người dùng, nhóm, thành viên và quyền từ backend LDAP vào các bảng backend SQL (users, membership, perms), và viết lại item.posted_by / item.edited_by từ dạng LDAP DN (uid=...,ou=...) sang các id số SQL mới. Chạy một lần cho mỗi bản cài đặt, sau đó chuyển PERM_LIB sang 'sql' trong config. 'Test' là lần chạy thử chỉ đọc. 'Repair' thực hiện việc chuyển đổi và có thể chạy lại nhiều lần. 'Revert' dùng bảng đối chiếu để hoàn tác mọi thứ.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check passed: SQL answers as LDAP does." => "Kiểm tra tương đương đạt: SQL trả lời giống như LDAP.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 72
-"This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Trình tối ưu hóa này chỉ chạy khi PERM_LIB='ldap'. PERM_LIB hiện tại='%1'.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check failed - Repair would stop at it." => "Kiểm tra tương đương không đạt - “Sửa chữa” sẽ dừng tại đây.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 83
+"The trial import is skipped: it would stop at the first blocking finding above. Fix them and run Test again." => "Lần nhập thử bị bỏ qua: nó sẽ dừng ở phát hiện chặn đầu tiên ở trên. Hãy khắc phục các phát hiện đó và chạy lại “Kiểm tra”.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 87
-"Would create mapping table `%1`" => "Sẽ tạo bảng đối chiếu `%1`", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 116
 "Test failed: %1" => "Test thất bại: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 119
-"Test finished (dry run - no changes made)." => "Test hoàn tất (chạy thử - không có thay đổi nào).", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 108
+"Nothing was changed: the findings above block the conversion." => "Không có gì thay đổi: các phát hiện ở trên chặn việc chuyển đổi.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 135
-"Repair failed: %1" => "Sửa chữa thất bại: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 133
+"Repair failed, yet the database holds a finished conversion (its log row exists) - check it with Test: %1" => "“Sửa chữa” thất bại, nhưng cơ sở dữ liệu đã chứa một lần chuyển đổi hoàn tất (có dòng nhật ký của nó) - hãy kiểm tra bằng “Kiểm tra”: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 138
-"Repair finished." => "Hoàn tất sửa chữa.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 134
+"Repair failed, nothing was changed: %1" => "“Sửa chữa” thất bại, không có gì thay đổi: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 154
-"Revert failed: %1" => "Hoàn tác thất bại: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 144
+"The page cache was not cleared, clear it by hand: %1" => "Bộ nhớ đệm trang chưa được xóa, hãy xóa thủ công: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 157
-"Revert finished." => "Hoàn tất hoàn tác.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 148
+"Rewritten %1: %2 rows" => "Đã viết lại %1: %2 dòng", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 178
-"LDAP findUsernames failed or returned: %1" => "LDAP findUsernames thất bại hoặc trả về: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 150
+"New ids of the directory entries:" => "ID mới của các mục trong thư mục:", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 181
-"LDAP users found: %1" => "Số người dùng LDAP tìm thấy: %1", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 197
-"Skipping user %1 - cannot determine login" => "Bỏ qua người dùng %1 - không xác định được tên đăng nhập", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 206
-"User %1 already exists in SQL (id %2), reusing" => "Người dùng %1 đã tồn tại trong SQL (id %2), dùng lại", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 220
-"Would create SQL user: %1 (from %2)" => "Sẽ tạo người dùng SQL: %1 (từ %2)", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 228
-"Failed to create SQL user %1" => "Không tạo được người dùng SQL %1", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 235
-"Users: created=%1 reused=%2 failed=%3" => "Người dùng: đã tạo=%1 dùng lại=%2 thất bại=%3", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 243
-"LDAP groups found: %1" => "Số nhóm LDAP tìm thấy: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 151
+"Now set PERM_LIB='sql' in every config of this database - until then AA still asks LDAP." => "Bây giờ hãy đặt PERM_LIB='sql' trong mọi tệp cấu hình của cơ sở dữ liệu này - trước khi làm vậy, AA vẫn hỏi LDAP.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 264
-"Group %1 already exists in SQL (id %2), reusing" => "Nhóm %1 đã tồn tại trong SQL (id %2), dùng lại", // ai 2026-06
+"This database was already converted. A second run would give people other ids than the data now holds - restore the backup first if it really has to run again." => "Cơ sở dữ liệu này đã được chuyển đổi. Lần chạy thứ hai sẽ gán cho người dùng các ID khác với ID hiện có trong dữ liệu - nếu thực sự phải chạy lại, hãy khôi phục bản sao lưu trước.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 273
-"Would create SQL group: %1 (from %2)" => "Sẽ tạo nhóm SQL: %1 (từ %2)", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 274
+"This database was converted to SQL permissions on %1 (%2). Its parity check ran inside the committed transaction; Repair does not run twice." => "Cơ sở dữ liệu này đã được chuyển sang quyền SQL vào %1 (%2). Kiểm tra tương đương đã chạy bên trong giao dịch đã được xác nhận; “Sửa chữa” không chạy hai lần.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 280
-"Failed to create SQL group %1" => "Không tạo được nhóm SQL %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 279
+"DNs left in %1 (%2): %3" => "DN còn lại trong %1 (%2): %3", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 287
-"Groups: created=%1 reused=%2 failed=%3" => "Nhóm: đã tạo=%1 dùng lại=%2 thất bại=%3", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 282
+"These were written after the conversion or match no directory entry - fix them by hand if they matter." => "Các DN này được ghi sau khi chuyển đổi hoặc không khớp với mục nào trong thư mục - hãy sửa thủ công nếu chúng quan trọng.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 325
-"Memberships: added=%1 skipped_unmapped=%2" => "Thành viên: đã thêm=%1 bỏ qua_chưa đối chiếu=%2", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 283
+"No DN is left in the columns referring to people." => "Không còn DN nào trong các cột tham chiếu đến người dùng.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 367
-"Permission rows migrated: %1" => "Số dòng quyền đã chuyển: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 291
+"This conversion runs only while PERM_LIB is 'ldap'; here it is '%1'." => "Việc chuyển đổi này chỉ chạy khi PERM_LIB là 'ldap'; ở đây giá trị là '%1'.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 389
-"No mapping entries - nothing to rewrite." => "Không có mục đối chiếu - không có gì để ghi lại.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 296
+"The conversion has no dry run - switch it off. Test itself changes nothing." => "Việc chuyển đổi không có chế độ chạy thử - hãy tắt chế độ này. Bản thân “Kiểm tra” không thay đổi gì.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 408
-"Rewrite %1.%2: %3 rows" => "Ghi lại %1.%2: %3 dòng", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 310
+"Tables %1 must be InnoDB: on another engine a rollback restores nothing, so even the trial import of Test would delete the users for good. Convert them first - Optimize \"%2\"." => "Các bảng %1 phải là InnoDB: với engine khác, việc hoàn tác không khôi phục được gì, nên ngay cả lần nhập thử của “Kiểm tra” cũng sẽ xóa người dùng vĩnh viễn. Hãy chuyển đổi chúng trước - “Tối ưu hóa” “%2”.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 418
-"Mapping table is empty - nothing to revert." => "Bảng đối chiếu trống - không có gì để hoàn tác.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 316
+"The database connection uses \"%1\", not utf8mb4: a DN with a character outside it would silently not be found in the data. Set DB_CHARACTER_SET to \"utf8mb4\" in config.php first." => "Kết nối cơ sở dữ liệu dùng “%1”, không phải utf8mb4: một DN có ký tự nằm ngoài bảng mã này sẽ âm thầm không được tìm thấy trong dữ liệu. Hãy đặt DB_CHARACTER_SET thành “utf8mb4” trong config.php trước.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 434
-"Revert %1.%2: %3 rows" => "Hoàn tác %1.%2: %3 dòng", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 368
+"Imported %1 people, %2 groups, %3 memberships and %4 rights; %5 old rows removed." => "Đã nhập người dùng: %1, nhóm: %2, tư cách thành viên: %3, quyền: %4; đã xóa dòng cũ: %5.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 452
-"Deleted SQL users=%1 groups=%2" => "Đã xóa người dùng SQL=%1 nhóm=%2", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 369
+"(Trial run - rolled back.)" => "(Chạy thử - đã hoàn tác.)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 374
+"Plan: %1 people, %2 groups, %3 memberships, %4 rights; new ids from %5; %6 spellings of DNs in the data to rewrite." => "Kế hoạch: người dùng: %1, nhóm: %2, tư cách thành viên: %3, quyền: %4; ID mới bắt đầu từ %5; số cách viết DN trong dữ liệu cần ghi lại: %6.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Blocking" => "Gây chặn", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Info" => "Thông tin", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 394
+"References in %1: %2 rows (%3 s)" => "Tham chiếu trong %1: %2 dòng (%3 giây)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 396
+"Repair rewrites the references in about %1 s - each UPDATE scans its table as the count did." => "“Sửa chữa” ghi lại các tham chiếu trong khoảng %1 giây - mỗi lệnh UPDATE quét bảng của nó giống như khi đếm.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 397
+"A DN stored as cp1250 bytes with diacritics is not UTF-8, so it matches no directory entry and stays as it is." => "DN được lưu dưới dạng byte cp1250 có dấu không phải là UTF-8, nên nó không khớp với mục nào trong thư mục và được giữ nguyên.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 399
+"Mentions of ou=AA in %1: %2 rows - fix them by hand." => "Các lần nhắc đến ou=AA trong %1: %2 dòng - hãy sửa thủ công.", // ai 2026-11
 
 // src/Optimize/MissCacheRouting.php, row 37
 "Image cache routing" => "Định tuyến bộ nhớ đệm ảnh", // ai 2026-10
@@ -14046,89 +14351,89 @@ return [
 // src/Optimize/MultivalueDuplicates.php, row 139
 "The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "Bảng content không phải InnoDB, nên không thể sửa các bản trùng lặp tại đây. Trước tiên hãy chạy “%1”.", // ai 2026-10
 
-// src/Optimize/ReadersLogin2id.php, row 16
+// src/Optimize/ReadersLogin2id.php, row 18
 "Convert Readers login to reader id" => "Chuyển tên đăng nhập người đọc thành id người đọc", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 24
+// src/Optimize/ReadersLogin2id.php, row 26
 "There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "Trong AA v2.8.1 đã có thay đổi trong chức năng quản lý người đọc, nên người đọc không còn được nhận dạng nội bộ bằng tên đăng nhập mà bằng ID người đọc (ID bài viết của người đọc trong chuyên mục Người đọc). Điều này mạnh mẽ hơn nhiều - bạn có thể tạo quan hệ giống như trong chuyên mục thông thường. Nó hoạt động tốt mà không cần thay đổi gì. Vấn đề duy nhất là khi bạn đặt một chuyên mục cho phép người dùng từ chuyên mục Người đọc chỉnh sửa. Trong trường hợp đó các trường edited_by........ và posted_by........ được điền bằng tên đăng nhập của người đọc thay vì id người đọc. Bạn có thể khắc phục bằng \"Repair\".", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 38, 82
+// src/Optimize/ReadersLogin2id.php, row 40, 84
 "Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "Không thể kiểm tra - hệ thống phân quyền của bạn không cho phép lấy danh sách tất cả tên người dùng (LDAP?)", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 43
+// src/Optimize/ReadersLogin2id.php, row 45
 "%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "Tìm thấy %1 tên đăng nhập từ chuyên mục người đọc trong các bản ghi item.posted_by, điều này là sai (từ AA v2.8.1 ở đó phải là ID người đọc). \"Repair\" sẽ khắc phục.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 48
+// src/Optimize/ReadersLogin2id.php, row 50
 "%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "Tìm thấy %1 tên đăng nhập từ chuyên mục người đọc trong các bản ghi item.edited_by, điều này là sai (từ AA v2.8.1 ở đó phải là ID người đọc). \"Repair\" sẽ khắc phục.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 90
+// src/Optimize/ReadersLogin2id.php, row 92
 "Column item.posted_by updated for %1 (id: %2)." => "Đã cập nhật cột item.posted_by cho %1 (id: %2).", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 96
+// src/Optimize/ReadersLogin2id.php, row 98
 "Column item.edited_by updated for %1 (id: %2)." => "Đã cập nhật cột item.edited_by cho %1 (id: %2).", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 18
+// src/Optimize/RedefineCoreConstants.php, row 20
 "Redefine core constants" => "Định nghĩa lại các hằng số cốt lõi", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 26
+// src/Optimize/RedefineCoreConstants.php, row 28
 "Updates core constants - like Code-pages, Language Constants and AA Bins" => "Cập nhật các hằng số cốt lõi - như bảng mã (Code-pages), hằng số ngôn ngữ và schránka AA (AA Bins)", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 46
+// src/Optimize/RedefineCoreConstants.php, row 48
 "Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "Hằng số bảng mã (lt_codepages) chưa được cập nhật - tìm thấy: %1 trên 9", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 53
+// src/Optimize/RedefineCoreConstants.php, row 55
 "Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "Hằng số ngôn ngữ (lt_languages) chưa được cập nhật - tìm thấy: %1 trên 46", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 60
+// src/Optimize/RedefineCoreConstants.php, row 62
 "AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "Hằng số AA Bins (AA_Core_Bins....) chưa được cập nhật - tìm thấy: %1 trên 3", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 67
+// src/Optimize/RedefineCoreConstants.php, row 69
 "APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "Danh mục chung của APC (lt_apcCategories) chưa được cập nhật - tìm thấy: %1 trên 82", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 81
+// src/Optimize/RedefineCoreConstants.php, row 83
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "Đang xóa bảng mã, hằng số ngôn ngữ, hằng số AA Bins và danh mục chung của APC", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 85
+// src/Optimize/RedefineCoreConstants.php, row 87
 "Recreate Code-pages" => "Tạo lại bảng mã (Code-pages)", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 96
+// src/Optimize/RedefineCoreConstants.php, row 98
 "Recreate Languages" => "Tạo lại ngôn ngữ", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 144
+// src/Optimize/RedefineCoreConstants.php, row 146
 "Recreate AA Bins" => "Tạo lại AA Bins", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 149
+// src/Optimize/RedefineCoreConstants.php, row 151
 "APC wide categories" => "Danh mục chung của APC", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 233
+// src/Optimize/RedefineCoreConstants.php, row 235
 "Make sure, the constants are registered" => "Đảm bảo các hằng số đã được đăng ký", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 242
+// src/Optimize/RedefineCoreConstants.php, row 244
 "Redefine core constants - done." => "Định nghĩa lại các hằng số cốt lõi - hoàn tất.", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 43
+// src/Optimize/RedefineFieldTemplates.php, row 45
 "Redefine field templates" => "Định nghĩa lại mẫu trường", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 51
+// src/Optimize/RedefineFieldTemplates.php, row 53
 "Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice" => "Cập nhật mẫu trường (trong chuyên mục ActionApps Core), được dùng khi bạn thêm trường mới vào chuyên mục", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 77
+// src/Optimize/RedefineFieldTemplates.php, row 79
 "template fields are not present" => "thiếu các trường mẫu", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 95
-// src/Optimize/RedefineSliceNewsTemplates.php, row 57
+// src/Optimize/RedefineFieldTemplates.php, row 97
+// src/Optimize/RedefineSliceNewsTemplates.php, row 59
 "Deleting all fields from \"ActionApps Core\" slice" => "Đang xóa tất cả trường khỏi chuyên mục \"ActionApps Core\"", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 99
+// src/Optimize/RedefineFieldTemplates.php, row 101
 "Make sure slice owner Action Applications System exists and reset to defaults" => "Đảm bảo chủ sở hữu chuyên mục Action Applications System tồn tại và đặt lại về mặc định", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 102
+// src/Optimize/RedefineFieldTemplates.php, row 104
 "Make sure \"ActionApps Core\" slice exists and reset to defaults" => "Đảm bảo chuyên mục \"ActionApps Core\" tồn tại và đặt lại về mặc định", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 106
+// src/Optimize/RedefineFieldTemplates.php, row 108
 "Recreate field definitions" => "Tạo lại định nghĩa trường", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 197
+// src/Optimize/RedefineFieldTemplates.php, row 199
 "Redefine field defaults - done." => "Định nghĩa lại giá trị mặc định của trường - hoàn tất.", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
@@ -14141,127 +14446,127 @@ return [
 "There is no root Link Module category - Links module should be recreated" => "Không có danh mục gốc của mô-đun Links - nên tạo lại mô-đun Links", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
-// src/Optimize/RedefineSiteTemplates.php, row 47
+// src/Optimize/RedefineSiteTemplates.php, row 49
 "Replacing module definition" => "Đang thay thế định nghĩa mô-đun", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Tạo lại mẫu mô-đun Links - hoàn tất.", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 13
+// src/Optimize/RedefineSiteTemplates.php, row 15
 "Recreate Site module template" => "Tạo lại mẫu mô-đun Site", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 19
+// src/Optimize/RedefineSiteTemplates.php, row 21
 "Deletes and recreates the default template for Site module" => "Xóa và tạo lại mẫu mặc định cho mô-đun Site", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 36
+// src/Optimize/RedefineSiteTemplates.php, row 38
 "Site Module template should be recreated" => "Nên tạo lại mẫu mô-đun Site", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 53
+// src/Optimize/RedefineSiteTemplates.php, row 55
 "Site Module template recreation - done." => "Tạo lại mẫu mô-đun Site - hoàn tất.", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 15
+// src/Optimize/RedefineSlicReaderTemplates.php, row 17
 "Redefine Reader Management template slice" => "Định nghĩa lại chuyên mục mẫu Reader Management", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 23
+// src/Optimize/RedefineSlicReaderTemplates.php, row 25
 "Deletes and recreates the Reader Management slice, used as template or example slice" => "Xóa và tạo lại chuyên mục Reader Management, dùng làm chuyên mục mẫu hoặc ví dụ", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 42
+// src/Optimize/RedefineSlicReaderTemplates.php, row 44
 "\"Reader Management\" template slice is not defined" => "Chuyên mục mẫu \"Reader Management\" chưa được định nghĩa", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 58
+// src/Optimize/RedefineSlicReaderTemplates.php, row 60
 "Deleting all fields from \"Reader Management\" slice" => "Đang xóa tất cả trường khỏi chuyên mục \"Reader Management\"", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 62
+// src/Optimize/RedefineSlicReaderTemplates.php, row 64
 "Make sure \"Reader Management\" slice exists and reset to defaults" => "Đảm bảo chuyên mục \"Reader Management\" tồn tại và đặt lại về mặc định", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 66
+// src/Optimize/RedefineSlicReaderTemplates.php, row 68
 "Recreate field definitions for \"Reader Management\"" => "Tạo lại định nghĩa trường cho \"Reader Management\"", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 92
+// src/Optimize/RedefineSlicReaderTemplates.php, row 94
 "Reader Management template slice creation - done." => "Tạo chuyên mục mẫu Reader Management - hoàn tất.", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 15
+// src/Optimize/RedefineSliceNewsTemplates.php, row 17
 "Redefine News EN template slice" => "Định nghĩa lại chuyên mục mẫu News EN", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 23
+// src/Optimize/RedefineSliceNewsTemplates.php, row 25
 "Deletes and recreates the News EN slice, used as template or example slice" => "Xóa và tạo lại chuyên mục News EN, dùng làm chuyên mục mẫu hoặc ví dụ", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 41
+// src/Optimize/RedefineSliceNewsTemplates.php, row 43
 "News EN template slice is not defined" => "Chuyên mục mẫu News EN chưa được định nghĩa", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 61
+// src/Optimize/RedefineSliceNewsTemplates.php, row 63
 "Make sure \"News EN\" slice exists and reset to defaults" => "Đảm bảo chuyên mục \"News EN\" tồn tại và đặt lại về mặc định", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 65
+// src/Optimize/RedefineSliceNewsTemplates.php, row 67
 "Recreate field definitions for \"News EN\"" => "Tạo lại định nghĩa trường cho \"News EN\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 99
+// src/Optimize/RedefineSliceNewsTemplates.php, row 101
 "News EN template slice creation - done." => "Tạo chuyên mục mẫu News EN - hoàn tất.", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 15
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 17
 "Redefine Noticas - ES template slice" => "Định nghĩa lại chuyên mục mẫu Noticas - ES", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 23
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 25
 "Deletes and recreates the Noticas - ES slice, used as template or example slice" => "Xóa và tạo lại chuyên mục Noticas - ES, dùng làm chuyên mục mẫu hoặc ví dụ", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 42
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 44
 "\"Noticas - ES\" template slice is not defined" => "Chuyên mục mẫu \"Noticas - ES\" chưa được định nghĩa", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 58
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 60
 "Deleting all fields from \"Noticas - ES\" slice" => "Đang xóa tất cả các trường khỏi chuyên mục \"Noticas - ES\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 62
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 64
 "Make sure \"Noticas - ES\" slice exists and reset to defaults" => "Đảm bảo chuyên mục \"Noticas - ES\" tồn tại và đặt lại về mặc định", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 66
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 68
 "Recreate field definitions for \"Noticas - ES\"" => "Tạo lại định nghĩa trường cho \"Noticas - ES\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 100
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 102
 "Noticas - ES template slice creation - done." => "Tạo chuyên mục mẫu Noticas - ES - xong.", // ai 2026-06
 
-// src/Optimize/RedefineViewCalendarTemplates.php, row 10
+// src/Optimize/RedefineViewCalendarTemplates.php, row 12
 "Redefine calendar template view" => "Định nghĩa lại khung hiển thị mẫu calendar", // ai 2026-06
 
-// src/Optimize/RedefineViewCategoriesTemplates.php, row 10
+// src/Optimize/RedefineViewCategoriesTemplates.php, row 12
 "Redefine categories template view" => "Định nghĩa lại khung hiển thị mẫu categories", // ai 2026-06
 
-// src/Optimize/RedefineViewConstTemplates.php, row 10
+// src/Optimize/RedefineViewConstTemplates.php, row 12
 "Redefine const template view" => "Định nghĩa lại khung hiển thị mẫu const", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 13
+// src/Optimize/RedefineViewDiscusTemplates.php, row 15
 "Redefine discus template view" => "Định nghĩa lại khung hiển thị mẫu discus", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 19
+// src/Optimize/RedefineViewDiscusTemplates.php, row 21
 "Deletes and recreates that view, which is used as template view of that type" => "Xóa và tạo lại khung hiển thị đó, được dùng làm khung hiển thị mẫu của loại đó", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 47
+// src/Optimize/RedefineViewDiscusTemplates.php, row 49
 "\"%1\" template view is not defined" => "Khung hiển thị mẫu \"%1\" chưa được định nghĩa", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 58
+// src/Optimize/RedefineViewDiscusTemplates.php, row 60
 "Deleting the view template \"%1\"" => "Đang xóa mẫu khung hiển thị \"%1\"", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 62
+// src/Optimize/RedefineViewDiscusTemplates.php, row 64
 "Inserting the view \"discus\" template" => "Đang chèn mẫu khung hiển thị \"discus\"", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 66
+// src/Optimize/RedefineViewDiscusTemplates.php, row 68
 "view \"%1\" redefinition - done." => "định nghĩa lại khung hiển thị \"%1\" - xong.", // ai 2026-06
 
-// src/Optimize/RedefineViewFullTemplates.php, row 10
+// src/Optimize/RedefineViewFullTemplates.php, row 12
 "Redefine full template view" => "Định nghĩa lại khung hiển thị mẫu full", // ai 2026-06
 
-// src/Optimize/RedefineViewJavascriptTemplates.php, row 10
+// src/Optimize/RedefineViewJavascriptTemplates.php, row 12
 "Redefine javascript template view" => "Định nghĩa lại khung hiển thị mẫu javascript", // ai 2026-06
 
-// src/Optimize/RedefineViewLinksTemplates.php, row 10
+// src/Optimize/RedefineViewLinksTemplates.php, row 12
 "Redefine links template view" => "Định nghĩa lại khung hiển thị mẫu links", // ai 2026-06
 
-// src/Optimize/RedefineViewRssTemplates.php, row 10
+// src/Optimize/RedefineViewRssTemplates.php, row 12
 "Redefine rss template view" => "Định nghĩa lại khung hiển thị mẫu rss", // ai 2026-06
 
-// src/Optimize/RedefineViewStaticTemplates.php, row 10
+// src/Optimize/RedefineViewStaticTemplates.php, row 12
 "Redefine static template view" => "Định nghĩa lại khung hiển thị mẫu static", // ai 2026-06
 
-// src/Optimize/RedefineViewUrlsTemplates.php, row 10
+// src/Optimize/RedefineViewUrlsTemplates.php, row 12
 "Redefine urls template view" => "Định nghĩa lại khung hiển thị mẫu urls", // ai 2026-06
 
 // src/Optimize/RemoveAaCronEntries.php, row 22
@@ -14315,19 +14620,19 @@ return [
 // src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "OK - Không có trường hộp kiểm bắt buộc nào", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 20
+// src/Optimize/RestoreBckTables.php, row 22
 "Restore data from backup tables" => "Khôi phục dữ liệu từ các bảng sao lưu", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 "Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "Xóa tất cả các bảng hiện tại (slice, item, ...) có bảng bck_ tương ứng và đổi tên tất cả các bảng sao lưu (bck_slice, bck_item, ...) về đúng tên (slice, item, ...).", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 40
+// src/Optimize/RestoreBckTables.php, row 42
 "The bck_ tables do not exist (or at least bck_content table)" => "Các bảng bck_ không tồn tại (hoặc ít nhất là bảng bck_content)", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 59
+// src/Optimize/RestoreBckTables.php, row 61
 "There is no bck_%1 table - %1 not restored." => "Không có bảng bck_%1 - %1 không được khôi phục.", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 62
+// src/Optimize/RestoreBckTables.php, row 64
 "Replace table bck_%1 -> %1" => "Thay thế bảng bck_%1 -> %1", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 44
@@ -14579,6 +14884,30 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 141
 "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "sao lưu bảng cũ %1 -> bck_%1 và dùng các bảng mới thay thế tmp_%1 -> %1", // ai 2026-06
 
+// src/Passkey/Notice.php, row 23
+"A passkey was added to your account" => "Một khóa truy cập đã được thêm vào tài khoản của Bạn", // ai 2026-11
+
+// src/Passkey/Notice.php, row 23
+"The passkey \"%1\" was added to your account %2 on %3. It logs you in on %4." => "Khóa truy cập “%1” đã được thêm vào tài khoản %2 của Bạn vào %3. Khóa này giúp Bạn đăng nhập trên %4.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"A passkey was deleted from your account" => "Một khóa truy cập đã bị xóa khỏi tài khoản của Bạn", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"The passkey \"%1\" was deleted from your account %2 on %3." => "Khóa truy cập “%1” đã bị xóa khỏi tài khoản %2 của Bạn vào %3.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"The passkeys of your account were deleted" => "Các khóa truy cập của tài khoản của Bạn đã bị xóa", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"%1 deleted all passkeys of your account %2 on %3. You log in by your password again; you can add a new passkey after the login." => "%1 đã xóa mọi khóa truy cập của tài khoản %2 của Bạn vào %3. Bạn lại đăng nhập bằng mật khẩu; sau khi đăng nhập, Bạn có thể thêm khóa truy cập mới.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 60
+"If it was not you, tell the administrator of ActionApps at %1 at once." => "Nếu đó không phải là Bạn, hãy báo ngay cho quản trị viên ActionApps theo địa chỉ %1.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 61
+"Address: %1, browser: %2" => "Địa chỉ: %1, trình duyệt: %2", // ai 2026-11
+
 // src/Security/LoginThrottle.php, row 156
 "Too many failed login attempts. Try again in %1 min." => "Quá nhiều lần đăng nhập thất bại. Hãy thử lại sau %1 phút.", // ai 2026-10
 
@@ -14595,7 +14924,7 @@ return [
 "ret_code and ok_url sent to filler.php" => "ret_code và ok_url gửi tới filler.php", // ai 2026-10
 
 // src/Security/Protection.php, row 32
-"als[], noitem of views and the state of site pages, taken from the URL" => "",
+"als[], noitem of views and the state of site pages, taken from the URL" => "als[], noitem của khung hiển thị và trạng thái của các trang thuộc trang web, lấy từ URL", // ai 2026-11
 
 // src/Security/Protection.php, row 33
 "Logins to the administration and to reader accounts, counted per address of the visitor" => "Đăng nhập vào trang quản trị và vào tài khoản người đọc, được đếm theo địa chỉ của khách truy cập", // ai 2026-10
@@ -14616,7 +14945,7 @@ return [
 "Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it." => "Văn bản, số, ID và _#ALIASES trong als[] và trong trạng thái các trang của trang web vẫn hoạt động; một {expression} ở đó được hiển thị như văn bản. Hãy viết biểu thức trong mẫu tạo ra liên kết, để nó chạy ở đó trước khi liên kết được gửi, hoặc truyền một ID và tính phần còn lại trong trang nhận nó.", // ai 2026-10
 
 // src/Security/Protection.php, row 56
-"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "",
+"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "Văn bản noitem trong liên kết tới khung hiển thị (set[...]=noitem-...) được hiển thị dưới dạng văn bản, kể cả HTML và _#ALIASES. Hãy đưa văn bản vào thông báo “Không tìm thấy bài viết nào” của khung hiển thị, hoặc hiển thị khung hiển thị từ mẫu bằng {view.php?...}, nơi noitem hoạt động như trước. Tắt biện pháp bảo vệ này chỉ cho phép noitem có {expression} chạy như trước.", // ai 2026-11
 
 // src/Security/Protection.php, row 57
 "After 20 failed logins from one address in 12 hours, or 5 with one user name, the next login waits half a minute to a minute, twice as long after each further failure, at most an hour. A script that keeps logging in with an old password waits too: find its address in the Log (event LOGIN) and give it the current password. If every visitor seems to come from one address, AA runs behind a proxy missing in AA_TRUSTED_PROXIES - State Check names it; add it in config.php rather than switching this protection off." => "Sau 20 lần đăng nhập thất bại từ một địa chỉ trong 12 giờ, hoặc 5 lần với cùng một tên người dùng, lần đăng nhập tiếp theo phải chờ từ nửa phút đến một phút, gấp đôi sau mỗi lần thất bại tiếp theo, tối đa một giờ. Một tập lệnh liên tục đăng nhập bằng mật khẩu cũ cũng phải chờ: hãy tìm địa chỉ của nó trong “Nhật ký” (sự kiện LOGIN) và cập nhật mật khẩu hiện tại cho nó. Nếu mọi khách truy cập dường như đến từ một địa chỉ, AA đang chạy sau một proxy không có trong AA_TRUSTED_PROXIES - “Kiểm tra trạng thái” sẽ nêu tên proxy đó; hãy thêm nó vào config.php thay vì tắt biện pháp bảo vệ này.", // ai 2026-10
@@ -14811,17 +15140,17 @@ return [
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Hộp kiểm", // ai 2026-06
 
-// src/Widget/CodWidget.php, row 21
+// src/Widget/CodWidget.php, row 23
 "Code editor" => "Trình soạn thảo mã", // ai 2026-06
 
-// src/Widget/EdtWidget.php, row 21
+// src/Widget/EdtWidget.php, row 23
 "Rich Edit Text Area" => "Vùng văn bản định dạng (Rich Edit)", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 38
 "File Upload" => "Tải tập tin lên", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 206, 236
-// src/Widget/RichtextMarkup.php, row 73
+// src/Widget/RichtextMarkup.php, row 86
 "Upload" => "Tải lên", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 250
@@ -14844,13 +15173,13 @@ return [
 // src/Widget/GpsWidget.php, row 438
 "Use" => "Áp dụng", // ai 2026-06
 
-// src/Widget/HcoWidget.php, row 34
+// src/Widget/HcoWidget.php, row 36
 "hierarchical constants" => "hằng số phân cấp", // ai 2026-06
 
 // src/Widget/HidWidget.php, row 28
 "Hidden field" => "Trường ẩn", // ai 2026-06
 
-// src/Widget/InfWidget.php, row 31
+// src/Widget/InfWidget.php, row 33
 "Info text - output" => "Văn bản thông tin - đầu ra", // ai 2026-06
 
 // src/Widget/IsoWidget.php, row 35
@@ -14892,28 +15221,28 @@ return [
 // src/Widget/MngWidget.php, row 39
 "Best for galleries and other tabular data which is multivalue and different for each item" => "Phù hợp nhất cho thư viện ảnh và dữ liệu dạng bảng khác có nhiều giá trị và khác nhau cho mỗi bài viết", // ai 2026-06
 
-// src/Widget/MseWidget.php, row 25
+// src/Widget/MseWidget.php, row 27
 "Multiple Selectbox" => "Hộp chọn đa giá trị", // ai 2026-06
 
-// src/Widget/NulWidget.php, row 23
+// src/Widget/NulWidget.php, row 25
 "Do not show" => "Không hiển thị", // ai 2026-06
 
-// src/Widget/PreWidget.php, row 36
+// src/Widget/PreWidget.php, row 38
 "Text Field with Presets" => "Trường văn bản với giá trị định sẵn", // ai 2026-06
 
 // src/Widget/PwdWidget.php, row 37
 "Password and Change password" => "Mật khẩu và Đổi mật khẩu", // ai 2026-06
 
-// src/Widget/RichtextMarkup.php, row 75
+// src/Widget/RichtextMarkup.php, row 88
 "Loading..." => "Đang tải...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 76
+// src/Widget/RichtextMarkup.php, row 89
 "No files" => "Không có tệp", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 77
+// src/Widget/RichtextMarkup.php, row 90
 "Uploading..." => "Đang tải lên...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 78
+// src/Widget/RichtextMarkup.php, row 91
 "Upload failed" => "Tải lên thất bại", // ai 2026-10
 
 // src/Widget/RimWidget.php, row 43
@@ -14934,25 +15263,25 @@ return [
 // src/Widget/TagWidget.php, row 44
 "Tags" => "Thẻ", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 43
+// src/Widget/TfaWidget.php, row 45
 "2FA Secret generator" => "Trình tạo khóa bí mật 2FA", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 79
+// src/Widget/TfaWidget.php, row 81
 "One time Code" => "Mã dùng một lần", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 89
+// src/Widget/TfaWidget.php, row 91
 "Generate New Secret" => "Tạo khóa bí mật mới", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 90
+// src/Widget/TfaWidget.php, row 92
 "Get Secret" => "Lấy khóa bí mật", // ai 2026-06
 
-// src/Widget/TprWidget.php, row 27
+// src/Widget/TprWidget.php, row 29
 "Textarea with Presets" => "Vùng văn bản với giá trị định sẵn", // ai 2026-06
 
 // src/Widget/TxtWidget.php, row 40
 "Text Area" => "Vùng văn bản", // ai 2026-06
 
-// src/Widget/Wi2Widget.php, row 32
+// src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "Hai hộp", // ai 2026-06
 
 // src/Widget/Widget.php, row 603

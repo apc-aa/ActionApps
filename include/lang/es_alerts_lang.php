@@ -93,10 +93,10 @@ return [
 "remove" => "eliminar", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "La vista de esta selecci\xF3n fue eliminada; los suscriptores no reciben nada de ella. Qu\xEDtela y a\xF1ada una existente.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Esta selecci\xF3n fue eliminada; los suscriptores no reciben nada de ella. Qu\xEDtela y a\xF1ada una existente.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Todav\xEDa no se ha elegido ninguna selecci\xF3n.", // ai 2026-10

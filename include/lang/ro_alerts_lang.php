@@ -39,10 +39,10 @@ return [
 "remove" => "eliminare", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "Vederea sa a fost stears\xE3 - cititorii nu primesc nimic din aceast\xE3 selectie. Eliminati-o si ad\xE3ugati una existent\xE3.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Aceast\xE3 selectie a fost stears\xE3 - cititorii nu primesc nimic din ea. Eliminati-o si ad\xE3ugati una existent\xE3.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Nicio selectie aleas\xE3 \xEEnc\xE3.", // ai 2026-10

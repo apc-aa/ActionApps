@@ -15,6 +15,34 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Migrate LDAP perms to SQL perms" => "LDAP jogosults\xE1gok migr\xE1l\xE1sa SQL-be", // ai 2026-06
+// "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "\xC1tm\xE1solja az \xF6sszes felhaszn\xE1l\xF3t, csoportot, tags\xE1got \xE9s jogosults\xE1got az LDAP backendb\xF5l az SQL backend t\xE1bl\xE1iba (users, membership, perms), \xE9s \xE1t\xEDrja az item.posted_by / item.edited_by mez\xF5ket LDAP DN form\xE1b\xF3l (uid=...,ou=...) az \xFAj SQL numerikus azonos\xEDt\xF3kra. Telep\xEDt\xE9senk\xE9nt egyszer futtassa, majd \xE1ll\xEDtsa a PERM_LIB-et 'sql'-re a konfigur\xE1ci\xF3ban. A 'Test' csak olvas\xF3 pr\xF3bafuttat\xE1s. A 'Repair' elv\xE9gzi a migr\xE1ci\xF3t, \xE9s \xFAjrafuttathat\xF3. A 'Revert' a lek\xE9pez\xE9si t\xE1bla alapj\xE1n mindent visszavon.", // ai 2026-06
+// "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Ez az optimaliz\xE1l\xF3 csak PERM_LIB='ldap' eset\xE9n fut. Jelenlegi PERM_LIB='%1'.", // ai 2026-06
+// "Would create mapping table `%1`" => "L\xE9trehozn\xE1 a(z) `%1` lek\xE9pez\xE9si t\xE1bl\xE1t", // ai 2026-06
+// "Test finished (dry run - no changes made)." => "A teszt befejez\xF5d\xF6tt (pr\xF3bafuttat\xE1s - nem t\xF6rt\xE9nt v\xE1ltoztat\xE1s).", // ai 2026-06
+// "Repair failed: %1" => "A jav\xEDt\xE1s sikertelen: %1", // ai 2026-06
+// "Repair finished." => "A jav\xEDt\xE1s befejez\xF5d\xF6tt.", // ai 2026-06
+// "Revert failed: %1" => "A visszavon\xE1s sikertelen: %1", // ai 2026-06
+// "Revert finished." => "A visszavon\xE1s befejez\xF5d\xF6tt.", // ai 2026-06
+// "LDAP findUsernames failed or returned: %1" => "Az LDAP findUsernames meghi\xFAsult vagy ezt adta vissza: %1", // ai 2026-06
+// "LDAP users found: %1" => "Tal\xE1lt LDAP felhaszn\xE1l\xF3k: %1", // ai 2026-06
+// "Skipping user %1 - cannot determine login" => "%1 felhaszn\xE1l\xF3 kihagyva - a bejelentkez\xE9si n\xE9v nem \xE1llap\xEDthat\xF3 meg", // ai 2026-06
+// "User %1 already exists in SQL (id %2), reusing" => "A(z) %1 felhaszn\xE1l\xF3 m\xE1r l\xE9tezik az SQL-ben (id %2), a megl\xE9v\xF5t haszn\xE1ljuk", // ai 2026-06
+// "Would create SQL user: %1 (from %2)" => "SQL felhaszn\xE1l\xF3t hozna l\xE9tre: %1 (ebb\xF5l: %2)", // ai 2026-06
+// "Failed to create SQL user %1" => "Nem siker\xFClt l\xE9trehozni a(z) %1 SQL felhaszn\xE1l\xF3t", // ai 2026-06
+// "Users: created=%1 reused=%2 failed=%3" => "Felhaszn\xE1l\xF3k: l\xE9trehozva=%1 \xFAjrahasznos\xEDtva=%2 sikertelen=%3", // ai 2026-06
+// "LDAP groups found: %1" => "Tal\xE1lt LDAP csoportok: %1", // ai 2026-06
+// "Group %1 already exists in SQL (id %2), reusing" => "A(z) %1 csoport m\xE1r l\xE9tezik az SQL-ben (id %2), \xFAjrafelhaszn\xE1lva", // ai 2026-06
+// "Would create SQL group: %1 (from %2)" => "L\xE9trej\xF6nne az SQL-csoport: %1 (forr\xE1s: %2)", // ai 2026-06
+// "Failed to create SQL group %1" => "Nem siker\xFClt l\xE9trehozni a(z) %1 SQL-csoportot", // ai 2026-06
+// "Groups: created=%1 reused=%2 failed=%3" => "Csoportok: l\xE9trehozva=%1 \xFAjrafelhaszn\xE1lva=%2 sikertelen=%3", // ai 2026-06
+// "Memberships: added=%1 skipped_unmapped=%2" => "Tags\xE1gok: hozz\xE1adva=%1 kihagyva_lek\xE9pezetlen=%2", // ai 2026-06
+// "Permission rows migrated: %1" => "\xC1ttelep\xEDtett jogosults\xE1gsorok: %1", // ai 2026-06
+// "No mapping entries - nothing to rewrite." => "Nincsenek lek\xE9pez\xE9si bejegyz\xE9sek - nincs mit \xE1t\xEDrni.", // ai 2026-06
+// "Rewrite %1.%2: %3 rows" => "\xC1t\xEDr\xE1s %1.%2: %3 sor", // ai 2026-06
+// "Mapping table is empty - nothing to revert." => "A lek\xE9pez\xE9si t\xE1bla \xFCres - nincs mit vissza\xE1ll\xEDtani.", // ai 2026-06
+// "Revert %1.%2: %3 rows" => "Vissza\xE1ll\xEDt\xE1s %1.%2: %3 sor", // ai 2026-06
+// "Deleted SQL users=%1 groups=%2" => "T\xF6r\xF6lt SQL felhaszn\xE1l\xF3k=%1 csoportok=%2", // ai 2026-06
 // "als[] and the state of site pages, taken from the URL" => "Az URL-b\xF5l \xE1tvett als[] \xE9s a webhelyoldalak \xE1llapota", // ai 2026-10
 // "The index %1 of the content table does not contain the field" => "A content t\xE1bla %1 indexe nem tartalmazza a mez\xF5t", // ai 2026-10
 // "Adds the index (field_id, text) to the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes and about as much disk as the other indexes of the table - run it when the traffic is low." => "Hozz\xE1adja a (field_id, text) indexet a content t\xE1bl\xE1hoz, \xEDgy egy \xE9rt\xE9k egy mez\xF5ben an\xE9lk\xFCl is megtal\xE1lhat\xF3, hogy az \xF6sszes t\xF6bbi mez\xF5 azonos \xE9rt\xE9k\xE9t be kellene olvasni. Nagy adatb\xE1zison ez percekig tart, \xE9s nagyj\xE1b\xF3l annyi lemezter\xFCletet foglal, mint a t\xE1bla t\xF6bbi indexe - futtassa alacsony forgalom idej\xE9n.", // ai 2026-10
@@ -215,6 +243,8 @@ return [
 // admin/console.php, row 73
 // admin/fileman.php, row 110
 // admin/slicedel2.php, row 70
+// admin/um_passkeys.php, row 73
+// admin/um_passwd.php, row 80
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
@@ -266,8 +296,8 @@ return [
 // admin/aa_security.php, row 85
 // admin/setup.php, row 99, 240
 // admin/slicewiz.php, row 84
-// admin/um_passwd.php, row 111
-// admin/um_uedit.php, row 313, 317
+// admin/um_passwd.php, row 128
+// admin/um_uedit.php, row 314, 328
 // include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "Bejelentkez\xE9si n\xE9v", // ai 2026-06
@@ -338,12 +368,14 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 103
 // src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckFormRobotRefusals.php, row 80
 // src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
 // src/Optimize/CheckIsdsConf.php, row 160, 193
 // src/Optimize/CheckIsdsViews.php, row 132
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 97
 // src/Optimize/CheckLoginAddresses.php, row 90, 103
 // src/Optimize/CheckObjectFormRefusals.php, row 106
+// src/Optimize/CheckPasskeys.php, row 89
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
@@ -439,7 +471,7 @@ return [
 "Checked again at %1: the problem is gone." => "\xDAjraellen\xF5rizve %1-kor: a probl\xE9ma megsz\xFBnt.", // ai 2026-10
 
 // admin/aa_statecheck.php, row 255
-"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "",
+"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "\xDAjraellen\xF5rizve ekkor: %1: m\xE9g mindig a list\xE1n, utolj\xE1ra \xE9szlelve: %2. %3 Ez a meg\xE1llap\xEDt\xE1s a m\xE1r megt\xF6rt\xE9nt esem\xE9nyekb\xF5l sz\xE1mol\xF3dik (napl\xF3sorok, az utols\xF3 futtat\xE1s), ez\xE9rt a jav\xEDt\xE1s nem jelenik meg itt azonnal - akkor t\xFBnik el, amikor ezek a bejegyz\xE9sek elavulnak, vagy a k\xF6vetkez\xF5 futtat\xE1s sikeres. A jav\xEDt\xE1s ut\xE1n jel\xF6lje megoldottnak; ha \xFAjra el\xF5fordul, ism\xE9t megjelenik.", // ai 2026-11
 
 // admin/aa_statecheck.php, row 256
 "Checked again at %1: still there. %2" => "\xDAjraellen\xF5rizve %1-kor: tov\xE1bbra is fenn\xE1ll. %2", // ai 2026-10
@@ -713,7 +745,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1213
+// include/logs.php, row 1218
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -722,6 +754,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
+// src/Optimize/CheckFormRobotRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
@@ -748,7 +781,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 358
+// include/logs.php, row 363
 // src/AA_Plannedtask.php, row 204
 "Log" => "Napl\xF3", // ai 2026-06
 
@@ -780,13 +813,13 @@ return [
 
 // admin/aafinder.php, row 478, 508
 // admin/um_gedit.php, row 207, 324
-// admin/um_uedit.php, row 248
+// admin/um_uedit.php, row 249
 // include/se_users.php, row 138, 143
 // include/searchbar.class.php, row 566, 567, 607
 // include/transformation.class.php, row 829, 910
 // include/um_gsrch.php, row 47
 // src/Widget/GpsWidget.php, row 434
-// src/Widget/RichtextMarkup.php, row 72
+// src/Widget/RichtextMarkup.php, row 85
 "Search" => "Keres\xE9s", // ai 2026-06
 
 // admin/aafinder.php, row 481
@@ -887,7 +920,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 10284, 10363
+// include/stringexpand.php, row 10285, 10364
 "Send" => "K\xFCld\xE9s", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -1046,7 +1079,7 @@ return [
 "Author" => "Szerz\xF5", // ai 2026-06
 
 // admin/discedit.php, row 133
-// include/logs.php, row 898, 1309
+// include/logs.php, row 903, 1314
 "IP Address" => "IP-c\xEDm", // ai 2026-06
 
 // admin/discedit.php, row 134
@@ -1069,13 +1102,13 @@ return [
 // admin/prev_navigation.php, row 47
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
-// admin/um_uedit.php, row 265
+// admin/um_uedit.php, row 266
 // include/field.class.php, row 744
 // include/filedit.php, row 113
 // include/formutil.php, row 1777, 3394
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
-// include/statestore.php, row 1138
+// include/statestore.php, row 1143
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
 "Edit" => "Szerkeszt\xE9s", // ai 2026-06
@@ -1089,7 +1122,8 @@ return [
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
-// admin/um_uedit.php, row 267
+// admin/um_passkeys.php, row 158
+// admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
 // include/field.class.php, row 748
 // include/formutil.php, row 1788, 1925
@@ -1098,7 +1132,7 @@ return [
 // include/searchbar.class.php, row 1126
 // include/um_gsrch.php, row 53
 // src/Manageraction/Import_Delete.php, row 25
-// src/Manageraction/Object_Delete.php, row 24
+// src/Manageraction/Object_Delete.php, row 26
 // src/Manageraction/Table_Row_Delete.php, row 23
 // src/Widget/FilWidget.php, row 201
 "Delete" => "T\xF6rl\xE9s", // ai 2026-06
@@ -1120,7 +1154,7 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1060
+// include/logs.php, row 1065
 // include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "T\xE1rgy", // ai 2026-06
@@ -1128,8 +1162,8 @@ return [
 // admin/discedit2.php, row 94, 148
 // admin/setup.php, row 104, 247
 // admin/slicewiz.php, row 89
-// admin/um_passwd.php, row 118
-// admin/um_uedit.php, row 325
+// admin/um_passwd.php, row 140
+// admin/um_uedit.php, row 336
 // include/um_util.php, row 308, 309, 310
 // src/Central/FindingText.php, row 106
 "E-mail" => "E-mail", // ai 2026-10
@@ -1526,11 +1560,12 @@ return [
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
+// admin/um_passkeys.php, row 149, 153
 // central/installapp.php, row 831, 846
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1200
+// include/logs.php, row 1205
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1691,7 +1726,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1230
+// include/logs.php, row 1235
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
 // src/Optimize/CheckIsdsConf.php, row 342, 372
@@ -1715,7 +1750,7 @@ return [
 // admin/se_csv_import.php, row 277
 // admin/se_csv_import2.php, row 382
 // central/installapp.php, row 434, 558, 1368
-// src/Manageraction/Item_Preview.php, row 11
+// src/Manageraction/Item_Preview.php, row 13
 "Preview" => "El\xF5n\xE9zet", // ai 2026-06
 
 // admin/se_csv_import.php, row 278
@@ -1769,7 +1804,7 @@ return [
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
 // include/metabase.class.php, row 1667
-// include/statestore.php, row 1076, 1413
+// include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
@@ -1906,7 +1941,7 @@ return [
 // admin/se_export.php, row 124
 // include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
-// src/Manageraction/Central_MoveItem.php, row 43
+// src/Manageraction/Central_MoveItem.php, row 45
 "Trash" => "Lomt\xE1r", // ai 2026-06
 
 // admin/se_export.php, row 134
@@ -1932,7 +1967,7 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 553
+// include/logs.php, row 558
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
@@ -2075,7 +2110,7 @@ return [
 // admin/se_import.php, row 131
 // admin/se_mapping.php, row 158
 // admin/um_gedit.php, row 280
-// admin/um_uedit.php, row 388
+// admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 190, 2940
 // modules/jump/modedit.php, row 179
@@ -2158,9 +2193,9 @@ return [
 "Resource ID" => "Er\xF5forr\xE1s-azonos\xEDt\xF3", // ai 2026-06
 
 // admin/se_history.php, row 143, 165, 166
-// admin/um_uedit.php, row 262
+// admin/um_uedit.php, row 263
 // admin/usershow.php, row 89
-// include/perm_sql.php, row 384, 426
+// include/perm_sql.php, row 381, 440, 482
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
@@ -2245,7 +2280,7 @@ return [
 "Function" => "F\xFCggv\xE9ny", // ai 2026-06
 
 // admin/se_inputform.php, row 257
-"You can relate only to a slice where you may edit all items" => "",
+"You can relate only to a slice where you may edit all items" => "Kapcsolatot csak olyan rovattal hozhat l\xE9tre, amelyben minden cikket szerkeszthet", // ai 2026-11
 
 // admin/se_inputform.php, row 305
 "No field found" => "Nem tal\xE1lhat\xF3 mez\xF5", // ai 2026-06
@@ -2365,7 +2400,7 @@ return [
 "Reset" => "Vissza\xE1ll\xEDt\xE1s", // ai 2026-06
 
 // admin/se_inputform.php, row 514
-// include/logs.php, row 633
+// include/logs.php, row 638
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Param\xE9terek", // ai 2026-06
 
@@ -2472,13 +2507,13 @@ return [
 "The import was successfully created" => "Az import\xE1l\xE1s sikeresen l\xE9trej\xF6tt", // ai 2026-06
 
 // admin/se_isds_registry.php, row 54
-"You do not have permissions to pair the items of this slice with the register of data boxes" => "",
+"You do not have permissions to pair the items of this slice with the register of data boxes" => "Nincs jogosults\xE1ga e rovat cikkeit az adatdobozok nyilv\xE1ntart\xE1s\xE1val p\xE1ros\xEDtani", // ai 2026-11
 
 // admin/se_isds_registry.php, row 66
 // include/menu.php, row 167
 // src/Isds/SliceRules.php, row 180
 // src/Optimize/CheckIsdsRegistry.php, row 167
-"Data boxes from the register" => "",
+"Data boxes from the register" => "Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l", // ai 2026-11
 
 // admin/se_javascript.php, row 68
 // include/menu.php, row 169
@@ -2898,7 +2933,7 @@ return [
 // admin/se_sets.php, row 131
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 471, 528
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 172
 "ID" => "",
@@ -2992,7 +3027,7 @@ return [
 // admin/se_users.php, row 185
 // central/index.php, row 139
 // include/se_users.php, row 180
-// src/Widget/TfaWidget.php, row 71
+// src/Widget/TfaWidget.php, row 73
 "Username" => "Felhaszn\xE1l\xF3n\xE9v", // ai 2026-06
 
 // admin/se_users.php, row 185
@@ -3148,7 +3183,7 @@ return [
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
 // admin/write_mail.php, row 269
-// src/Widget/RichtextMarkup.php, row 74
+// src/Widget/RichtextMarkup.php, row 87
 "Close" => "Bez\xE1r\xE1s", // ai 2026-06
 
 // admin/setup.php, row 61, 64
@@ -3158,18 +3193,18 @@ return [
 "This script can't be used on a configured system." => "Ez a szkript nem haszn\xE1lhat\xF3 m\xE1r be\xE1ll\xEDtott rendszeren.", // ai 2026-06
 
 // admin/setup.php, row 95
-// admin/um_uedit.php, row 330
+// admin/um_uedit.php, row 341
 "Superadmin account" => "Szuperadmin fi\xF3k", // ai 2026-06
 
 // admin/setup.php, row 100, 241
 // admin/slicewiz.php, row 85
-// admin/um_passwd.php, row 114
-// admin/um_uedit.php, row 321
+// admin/um_passwd.php, row 136
+// admin/um_uedit.php, row 332
 // central/index.php, row 140
 // central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
-// src/Widget/TfaWidget.php, row 75
+// src/Widget/TfaWidget.php, row 77
 "Password" => "Jelsz\xF3", // ai 2026-06
 
 // admin/setup.php, row 101, 243
@@ -3178,8 +3213,8 @@ return [
 
 // admin/setup.php, row 102, 245
 // admin/slicewiz.php, row 87
-// admin/um_passwd.php, row 116
-// admin/um_uedit.php, row 323
+// admin/um_passwd.php, row 138
+// admin/um_uedit.php, row 334
 // include/um_util.php, row 298
 "First name" => "Keresztn\xE9v", // ai 2026-06
 
@@ -3246,7 +3281,7 @@ return [
 
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
-// admin/um_uedit.php, row 378
+// admin/um_uedit.php, row 389
 // include/formutil.php, row 1771
 // include/mlx.php, row 377
 // include/profile.php, row 170
@@ -3611,14 +3646,14 @@ return [
 "Slice Administrator" => "Rovatadminisztr\xE1tor", // ai 2026-06
 
 // admin/slicewiz.php, row 86
-// admin/um_passwd.php, row 115
-// admin/um_uedit.php, row 322
+// admin/um_passwd.php, row 137
+// admin/um_uedit.php, row 333
 // include/um_util.php, row 302
 "Retype password" => "Jelsz\xF3 m\xE9g egyszer", // ai 2026-06
 
 // admin/slicewiz.php, row 88
-// admin/um_passwd.php, row 117
-// admin/um_uedit.php, row 324
+// admin/um_passwd.php, row 139
+// admin/um_uedit.php, row 335
 // include/um_util.php, row 297
 "Surname" => "Vezet\xE9kn\xE9v", // ai 2026-06
 
@@ -3632,25 +3667,25 @@ return [
 "Go: Add Slice" => "Ind\xEDt\xE1s: rovat hozz\xE1ad\xE1sa", // ai 2026-06
 
 // admin/um_gedit.php, row 95
-// admin/um_uedit.php, row 110
+// admin/um_uedit.php, row 111
 "No permission to create new user" => "Nincs jogosults\xE1ga \xFAj felhaszn\xE1l\xF3 l\xE9trehoz\xE1s\xE1hoz", // ai 2026-06
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137, 154
+// admin/um_uedit.php, row 135, 138, 155
 "Too many groups found." => "T\xFAl sok csoport tal\xE1lhat\xF3.", // ai 2026-06
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137
+// admin/um_uedit.php, row 135, 138
 "No groups found" => "Nem tal\xE1lhat\xF3 csoport", // ai 2026-06
 
 // admin/um_gedit.php, row 120, 128
-// admin/um_uedit.php, row 128, 143, 167
+// admin/um_uedit.php, row 129, 144, 168
 // include/se_users.php, row 175
 // include/um_gsrch.php, row 31
 "Too many users or groups found." => "T\xFAl sok felhaszn\xE1l\xF3 vagy csoport tal\xE1lhat\xF3.", // ai 2026-06
 
 // admin/um_gedit.php, row 120
-// admin/um_uedit.php, row 128, 143
+// admin/um_uedit.php, row 129, 144
 // include/se_users.php, row 177
 // include/um_gsrch.php, row 34
 "No user (group) found" => "Nem tal\xE1lhat\xF3 felhaszn\xE1l\xF3 (csoport)", // ai 2026-06
@@ -3666,7 +3701,7 @@ return [
 "Are you sure you want to delete selected group from whole permission system?" => "Biztosan t\xF6rli a kijel\xF6lt csoportot a teljes jogosults\xE1gi rendszerb\xF5l?", // ai 2026-06
 
 // admin/um_gedit.php, row 189, 199
-// admin/um_uedit.php, row 336, 342
+// admin/um_uedit.php, row 347, 353
 // include/menu_util.php, row 71
 // include/se_users.php, row 141
 // include/um_gsrch.php, row 41
@@ -3683,7 +3718,7 @@ return [
 
 // admin/um_gedit.php, row 220
 // include/constants.php, row 455
-// include/perm_sql.php, row 403
+// include/perm_sql.php, row 459
 // include/um_gsrch.php, row 50
 "Group" => "Csoport", // ai 2026-06
 
@@ -3700,8 +3735,8 @@ return [
 "Superadmin group" => "Szuperadmin csoport", // ai 2026-06
 
 // admin/um_gedit.php, row 312
-// admin/um_uedit.php, row 230, 241
-// include/logs.php, row 911
+// admin/um_uedit.php, row 231, 242
+// include/logs.php, row 916
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -3713,57 +3748,216 @@ return [
 // admin/um_gedit.php, row 322
 "Group's Users" => "A csoport felhaszn\xE1l\xF3i", // ai 2026-06
 
-// admin/um_passwd.php, row 61
+// admin/um_passkeys.php, row 58
+"The directory of the accounts does not answer now - try it again later" => "A fi\xF3knyilv\xE1ntart\xE1s most nem v\xE1laszol - pr\xF3b\xE1lja \xFAjra k\xE9s\xF5bb", // ai 2026-11
+
+// admin/um_passkeys.php, row 62
+"You do not have permissions to manage the passkeys of this account" => "Nincs jogosults\xE1ga e fi\xF3k azonos\xEDt\xF3kulcsainak kezel\xE9s\xE9re", // ai 2026-11
+
+// admin/um_passkeys.php, row 105
+"The passkey is stored. From now on this account logs in only by a passkey." => "Az azonos\xEDt\xF3kulcs elmentve. Ez a fi\xF3k mostant\xF3l csak azonos\xEDt\xF3kulccsal jelentkezhet be.", // ai 2026-11
+
+// admin/um_passkeys.php, row 106
+"The passkey is renamed." => "Az azonos\xEDt\xF3kulcs \xE1tnevezve.", // ai 2026-11
+
+// admin/um_passkeys.php, row 107
+"The passkey is deleted." => "Az azonos\xEDt\xF3kulcs t\xF6r\xF6lve.", // ai 2026-11
+
+// admin/um_passkeys.php, row 108
+"All passkeys of the account are deleted - its password logs in again." => "A fi\xF3k \xF6sszes azonos\xEDt\xF3kulcsa t\xF6r\xF6lve - ism\xE9t a jelszav\xE1val lehet bejelentkezni.", // ai 2026-11
+
+// admin/um_passkeys.php, row 109
+"Log in again first - adding or deleting a passkey needs a login of the last %1 minutes." => "El\xF5bb jelentkezzen be \xFAjra - azonos\xEDt\xF3kulcs hozz\xE1ad\xE1s\xE1hoz vagy t\xF6rl\xE9s\xE9hez az elm\xFAlt %1 percen bel\xFCli bejelentkez\xE9s sz\xFCks\xE9ges.", // ai 2026-11
+
+// admin/um_passkeys.php, row 110
+"This passkey is stored already." => "Ez az azonos\xEDt\xF3kulcs m\xE1r el van mentve.", // ai 2026-11
+
+// admin/um_passkeys.php, row 111
+"The page waited too long. Try it again." => "Az oldal t\xFAl sok\xE1ig v\xE1rt. Pr\xF3b\xE1lja \xFAjra.", // ai 2026-11
+
+// admin/um_passkeys.php, row 112
+"The passkey could not be stored. Try it again, or another device." => "Az azonos\xEDt\xF3kulcsot nem siker\xFClt elmenteni. Pr\xF3b\xE1lja \xFAjra, vagy egy m\xE1sik eszk\xF6zzel.", // ai 2026-11
+
+// admin/um_passkeys.php, row 116
+// admin/um_passwd.php, row 130
+// admin/um_uedit.php, row 324
+"Passkeys" => "Azonos\xEDt\xF3kulcsok", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of your account %1" => "Az \xD6n %1 fi\xF3kj\xE1nak azonos\xEDt\xF3kulcsai", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of the account %1" => "A(z) %1 fi\xF3k azonos\xEDt\xF3kulcsai", // ai 2026-11
+
+// admin/um_passkeys.php, row 131
+"This account cannot have passkeys - only the users of the permission system of AA can." => "Ennek a fi\xF3knak nem lehetnek azonos\xEDt\xF3kulcsai - csak az AA jogosults\xE1gi rendszer\xE9nek felhaszn\xE1l\xF3i rendelkezhetnek vel\xFCk.", // ai 2026-11
+
+// admin/um_passkeys.php, row 137
+"A passkey logs you in without a password - by the fingerprint, face or PIN of your phone or computer. Nobody can steal it by a fake page or guess it." => "Az azonos\xEDt\xF3kulcs jelsz\xF3 n\xE9lk\xFCl jelentkezteti be - telefonja vagy sz\xE1m\xEDt\xF3g\xE9pe ujjlenyomat-olvas\xF3j\xE1val, arcfelismer\xE9s\xE9vel vagy PIN-k\xF3dj\xE1val. Hamis oldallal nem lehet ellopni, \xE9s kital\xE1lni sem lehet.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Once the account has a passkey, the password alone no longer logs it in" => "Ha a fi\xF3knak van azonos\xEDt\xF3kulcsa, a jelsz\xF3 \xF6nmag\xE1ban m\xE1r nem jelentkezteti be", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"neither here, nor for Central or scripts that log in by it." => "sem itt, sem a Central vagy az azzal bejelentkez\xF5 szkriptek sz\xE1m\xE1ra.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Add two passkeys - say in your phone and in your computer - so you keep the access when you lose one. If you lose all of them, a user manager of this AA deletes them and you log in by your password again." => "Adjon hozz\xE1 k\xE9t azonos\xEDt\xF3kulcsot - p\xE9ld\xE1ul a telefonj\xE1n \xE9s a sz\xE1m\xEDt\xF3g\xE9p\xE9n -, hogy az egyik elveszt\xE9sekor is megmaradjon a hozz\xE1f\xE9r\xE9se. Ha mindet elvesz\xEDti, ennek az AA-nak egy felhaszn\xE1l\xF3kezel\xF5je t\xF6rli \xF5ket, \xE9s ism\xE9t a jelszav\xE1val jelentkezhet be.", // ai 2026-11
+
+// admin/um_passkeys.php, row 140
+"Delete the passkeys only when their owner asks for it - lost or stolen device. The account then logs in by its password again, and its owner gets a mail about it." => "Az azonos\xEDt\xF3kulcsokat csak a tulajdonosuk k\xE9r\xE9s\xE9re t\xF6r\xF6lje - elveszett vagy ellopott eszk\xF6z eset\xE9n. A fi\xF3k ezut\xE1n ism\xE9t a jelszav\xE1val jelentkezik be, \xE9s a tulajdonosa e-mailt kap err\xF5l.", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Works on" => "Hol m\xFBk\xF6dik", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Added" => "Hozz\xE1adva", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+// include/formutil.php, row 3300
+"Last used" => "Utolj\xE1ra haszn\xE1lva", // ai 2026-06
+
+// admin/um_passkeys.php, row 149
+"Copies" => "M\xE1solatok", // ai 2026-11
+
+// admin/um_passkeys.php, row 153
+// include/searchbar.class.php, row 1124
+"Rename" => "\xC1tnevez\xE9s", // ai 2026-06
+
+// admin/um_passkeys.php, row 156
+"not yet" => "m\xE9g nem", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"in your other devices too" => "a t\xF6bbi eszk\xF6z\xE9n is", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"only in this device" => "csak ezen az eszk\xF6z\xF6n", // ai 2026-11
+
+// admin/um_passkeys.php, row 162
+"Delete all passkeys of the account" => "A fi\xF3k \xF6sszes azonos\xEDt\xF3kulcs\xE1nak t\xF6rl\xE9se", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"You have no passkey yet." => "M\xE9g nincs azonos\xEDt\xF3kulcsa.", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"The account has no passkey." => "A fi\xF3knak nincs azonos\xEDt\xF3kulcsa.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"To add or delete a passkey, log in again: it needs a login of the last %1 minutes." => "Azonos\xEDt\xF3kulcs hozz\xE1ad\xE1s\xE1hoz vagy t\xF6rl\xE9s\xE9hez jelentkezzen be \xFAjra: az elm\xFAlt %1 percen bel\xFCli bejelentkez\xE9s sz\xFCks\xE9ges.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"Log in again" => "\xDAjb\xF3li bejelentkez\xE9s", // ai 2026-11
+
+// admin/um_passkeys.php, row 171
+"A passkey cannot be added to this account: you may not change its data, or its password is public (the free links of a module log in by it)." => "Ehhez a fi\xF3khoz nem adhat\xF3 azonos\xEDt\xF3kulcs: nem m\xF3dos\xEDthatja az adatait, vagy a jelszava nyilv\xE1nos (egy modul szabad hivatkoz\xE1sai ezzel jelentkeznek be).", // ai 2026-11
+
+// admin/um_passkeys.php, row 173
+"A passkey can be added only on a page reached by https and by an address of this AA or of one of its sites, not an IP address." => "Azonos\xEDt\xF3kulcs csak olyan oldalon adhat\xF3 hozz\xE1, amely https-en kereszt\xFCl, ennek az AA-nak vagy valamelyik webhely\xE9nek c\xEDm\xE9n \xE9rhet\xF5 el, nem IP-c\xEDmen.", // ai 2026-11
+
+// admin/um_passkeys.php, row 180, 191
+"Add a passkey" => "Azonos\xEDt\xF3kulcs hozz\xE1ad\xE1sa", // ai 2026-11
+
+// admin/um_passkeys.php, row 182
+"This server cannot make passkeys." => "Ez a szerver nem tud azonos\xEDt\xF3kulcsot l\xE9trehozni.", // ai 2026-11
+
+// admin/um_passkeys.php, row 184
+"The passkey will work on %1. On the other addresses of this AA the login page sends you here." => "Az azonos\xEDt\xF3kulcs itt fog m\xFBk\xF6dni: %1. Az AA t\xF6bbi c\xEDm\xE9n a bejelentkez\xE9si oldal ide ir\xE1ny\xEDtja.", // ai 2026-11
+
+// admin/um_passkeys.php, row 185
+"Name of the passkey" => "Az azonos\xEDt\xF3kulcs neve", // ai 2026-11
+
+// admin/um_passkeys.php, row 186
+"e.g. My phone" => "pl. Saj\xE1t telefon", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"No passkey was made." => "Nem j\xF6tt l\xE9tre azonos\xEDt\xF3kulcs.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"This device keeps a passkey of the account already." => "Ezen az eszk\xF6z\xF6n m\xE1r van azonos\xEDt\xF3kulcsa a fi\xF3knak.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"The browser could not make a passkey." => "A b\xF6ng\xE9sz\xF5 nem tudott azonos\xEDt\xF3kulcsot l\xE9trehozni.", // ai 2026-11
+
+// admin/um_passkeys.php, row 190
+"This browser cannot make passkeys." => "Ez a b\xF6ng\xE9sz\xF5 nem tud azonos\xEDt\xF3kulcsot l\xE9trehozni.", // ai 2026-11
+
+// admin/um_passkeys.php, row 192
+"Adding a passkey needs JavaScript." => "Azonos\xEDt\xF3kulcs hozz\xE1ad\xE1s\xE1hoz JavaScript sz\xFCks\xE9ges.", // ai 2026-11
+
+// admin/um_passwd.php, row 64
 "You do not have permissions to change user data" => "Nincs jogosults\xE1ga a felhaszn\xE1l\xF3i adatok m\xF3dos\xEDt\xE1s\xE1hoz", // ai 2026-06
 
-// admin/um_passwd.php, row 71, 113
+// admin/um_passwd.php, row 83
+"Log in again first - a change of the account needs a login of the last %1 minutes" => "El\xF5bb jelentkezzen be \xFAjra - a fi\xF3k m\xF3dos\xEDt\xE1s\xE1hoz az elm\xFAlt %1 percen bel\xFCli bejelentkez\xE9s sz\xFCks\xE9ges", // ai 2026-11
+
+// admin/um_passwd.php, row 86, 132, 134
 // src/Widget/PwdWidget.php, row 66
 "Current password" => "Jelenlegi jelsz\xF3", // ai 2026-06
 
-// admin/um_passwd.php, row 73
+// admin/um_passwd.php, row 88
 "Error in current password - password is not changed" => "Hib\xE1s a jelenlegi jelsz\xF3 - a jelsz\xF3 nem v\xE1ltozott meg", // ai 2026-06
 
-// admin/um_passwd.php, row 82
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 98
+// admin/um_uedit.php, row 184
 "User data modified" => "Felhaszn\xE1l\xF3i adatok m\xF3dos\xEDtva", // ai 2026-06
 
-// admin/um_passwd.php, row 101
+// admin/um_passwd.php, row 117
 "Change user data" => "Felhaszn\xE1l\xF3i adatok m\xF3dos\xEDt\xE1sa", // ai 2026-06
 
-// admin/um_passwd.php, row 110
-// admin/um_uedit.php, row 312
+// admin/um_passwd.php, row 127
+// admin/um_uedit.php, row 313
 "Edit User" => "Felhaszn\xE1l\xF3 szerkeszt\xE9se", // ai 2026-06
 
-// admin/um_passwd.php, row 112
-// admin/um_uedit.php, row 314
+// admin/um_passwd.php, row 129
+// admin/um_uedit.php, row 315
 "User Id" => "Felhaszn\xE1l\xF3-azonos\xEDt\xF3", // ai 2026-06
 
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 130
+"The account logs in by a passkey" => "A fi\xF3k azonos\xEDt\xF3kulccsal jelentkezik be", // ai 2026-11
+
+// admin/um_passwd.php, row 130
+"Log in without a password" => "Bejelentkez\xE9s jelsz\xF3 n\xE9lk\xFCl", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed - you logged in a moment ago" => "Nem sz\xFCks\xE9ges - az im\xE9nt jelentkezett be", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed, but log in again first: a change needs a login of the last %1 minutes" => "Nem sz\xFCks\xE9ges, de el\xF5bb jelentkezzen be \xFAjra: a m\xF3dos\xEDt\xE1shoz az elm\xFAlt %1 percen bel\xFCli bejelentkez\xE9s sz\xFCks\xE9ges", // ai 2026-11
+
+// admin/um_uedit.php, row 184
 // include/um_util.php, row 344
 "User successfully added to permission system" => "A felhaszn\xE1l\xF3 sikeresen hozz\xE1adva a jogosults\xE1gi rendszerhez", // ai 2026-06
 
-// admin/um_uedit.php, row 198
+// admin/um_uedit.php, row 199
 "Are you sure you want to delete selected user from whole permission system?" => "Biztosan t\xF6rli a kiv\xE1lasztott felhaszn\xE1l\xF3t a teljes jogosults\xE1gi rendszerb\xF5l?", // ai 2026-06
 
-// admin/um_uedit.php, row 230
+// admin/um_uedit.php, row 231
 "Add new user" => "\xDAj felhaszn\xE1l\xF3 hozz\xE1ad\xE1sa", // ai 2026-06
 
-// admin/um_uedit.php, row 238
+// admin/um_uedit.php, row 239
 "Add user" => "Felhaszn\xE1l\xF3 hozz\xE1ad\xE1sa", // ai 2026-06
 
-// admin/um_uedit.php, row 247
+// admin/um_uedit.php, row 248
 "Find user" => "Felhaszn\xE1l\xF3 keres\xE9se", // ai 2026-06
 
-// admin/um_uedit.php, row 316
+// admin/um_uedit.php, row 324
+"%1 - the account logs in only by them" => "%1 - a fi\xF3k csak ezekkel jelentkezik be", // ai 2026-11
+
+// admin/um_uedit.php, row 324
+// src/Isds/Registry/Page.php, row 555, 653
+// src/Optimize/MissCacheRouting.php, row 98, 129
+"none" => "nincs", // ai 2026-10
+
+// admin/um_uedit.php, row 327
 "New user" => "\xDAj felhaszn\xE1l\xF3", // ai 2026-06
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "All Writable Groups" => "Minden \xEDrhat\xF3 csoport", // ai 2026-06
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "User's Groups" => "A felhaszn\xE1l\xF3 csoportjai", // ai 2026-06
 
-// admin/um_uedit.php, row 347
+// admin/um_uedit.php, row 358
 "Member of Unwritable Groups" => "Nem \xEDrhat\xF3 csoportok tagja", // ai 2026-06
 
 // admin/usershow.php, row 76
@@ -3826,7 +4020,7 @@ return [
 "Write email to users" => "E-mail \xEDr\xE1sa a felhaszn\xE1l\xF3knak", // ai 2026-06
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1059
+// include/logs.php, row 1064
 "Recipients" => "C\xEDmzettek", // ai 2026-06
 
 // admin/write_mail.php, row 238
@@ -3900,7 +4094,7 @@ return [
 "App" => "Alkalmaz\xE1s", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1201
+// include/logs.php, row 1206
 "Version" => "Verzi\xF3", // ai 2026-10
 
 // central/appstore.php, row 164
@@ -4043,11 +4237,11 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1202
+// include/logs.php, row 1207
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
-// src/Widget/RichtextMarkup.php, row 71
+// src/Widget/RichtextMarkup.php, row 84
 "Source" => "Forr\xE1s", // ai 2026-06
 
 // central/installapp.php, row 452
@@ -4088,7 +4282,7 @@ return [
 "Hold Ctrl to choose more of them." => "T\xF6bb elem kiv\xE1laszt\xE1s\xE1hoz tartsa lenyomva a Ctrl billenty\xFBt.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 790, 1244
+// include/logs.php, row 795, 1249
 "Mode" => "M\xF3d", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4478,7 +4672,7 @@ return [
 "Stopped by an error" => "Hiba miatt le\xE1llt", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 792
+// include/logs.php, row 797
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "Befejezve", // ai 2026-10
@@ -4681,7 +4875,7 @@ return [
 "Compared and Updated ActionApps" => "\xD6sszehasonl\xEDtott \xE9s friss\xEDtett ActionApps", // ai 2026-06
 
 // filldisc.php, row 106, 156
-// filler.php, row 423
+// filler.php, row 311, 427
 "Not accepted, sorry. Looks like spam." => "Sajn\xE1ljuk, nem fogadtuk el. Spamnek t\xFBnik.", // ai 2026-06
 
 // filldisc.php, row 113
@@ -4703,22 +4897,22 @@ return [
 // filler.php, row 295
 "Not allowed to post comments" => "Hozz\xE1sz\xF3l\xE1s bek\xFCld\xE9se nem enged\xE9lyezett", // ai 2026-06
 
-// filler.php, row 336, 382
+// filler.php, row 340, 386
 "Bad Token. Not allowed to post comments" => "Hib\xE1s token. Hozz\xE1sz\xF3l\xE1s bek\xFCld\xE9se nem enged\xE9lyezett", // ai 2026-06
 
-// filler.php, row 362
+// filler.php, row 366
 "Slice ID not defined" => "A rovat azonos\xEDt\xF3ja nincs megadva", // ai 2026-06
 
-// filler.php, row 368
+// filler.php, row 372
 "Bad slice ID" => "Hib\xE1s rovatazonos\xEDt\xF3", // ai 2026-06
 
-// filler.php, row 397, 486
+// filler.php, row 401, 490
 "You are not allowed to update this item." => "Nincs jogosults\xE1ga a cikk m\xF3dos\xEDt\xE1s\xE1hoz.", // ai 2026-06
 
-// filler.php, row 444
+// filler.php, row 448
 "Anonymous posting not admitted." => "N\xE9vtelen bek\xFCld\xE9s nem enged\xE9lyezett.", // ai 2026-06
 
-// filler.php, row 499
+// filler.php, row 503
 "Some error in store item." => "Hiba t\xF6rt\xE9nt a cikk ment\xE9sekor.", // ai 2026-06
 
 // include/adminpage.class.php, row 68
@@ -4728,7 +4922,7 @@ return [
 "Short Id" => "R\xF6vid ID", // ai 2026-06
 
 // include/constants.php, row 456
-// include/logs.php, row 950, 982
+// include/logs.php, row 955, 987
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Oszt\xE1ly", // ai 2026-06
 
@@ -4737,7 +4931,7 @@ return [
 "Level" => "Szint", // ai 2026-06
 
 // include/constants.php, row 509
-// include/logs.php, row 1161
+// include/logs.php, row 1166
 "Feed" => "Tartalom \xE1tad\xE1sa", // ai 2026-06
 
 // include/constants.php, row 510
@@ -5379,8 +5573,8 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1294
-// src/Manageraction/Item_Move2Slice.php, row 52
+// include/logs.php, row 1299
+// src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "Rovatazonos\xEDt\xF3", // ai 2026-06
 
 // include/form.class.php, row 232
@@ -5440,7 +5634,7 @@ return [
 "import" => "import\xE1l\xE1s", // ai 2026-06
 
 // include/formutil.php, row 1216
-// src/Widget/RichtextMarkup.php, row 70
+// src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Szerkeszt\xE9s a szerkeszt\xF5ben", // ai 2026-06
 
@@ -5471,7 +5665,7 @@ return [
 "Offer" => "K\xEDn\xE1lat", // ai 2026-06
 
 // include/formutil.php, row 2179
-// include/stringexpand.php, row 11505, 11528
+// include/stringexpand.php, row 11506, 11529
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 287
@@ -5496,7 +5690,7 @@ return [
 "Group Name" => "Csoport neve", // ai 2026-06
 
 // include/formutil.php, row 3295
-// include/logs.php, row 747, 847, 1111
+// include/logs.php, row 752, 852, 1116
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Darabsz\xE1m", // ai 2026-06
@@ -5512,9 +5706,6 @@ return [
 
 // include/formutil.php, row 3299
 "Updated by" => "Friss\xEDtette", // ai 2026-06
-
-// include/formutil.php, row 3300
-"Last used" => "Utolj\xE1ra haszn\xE1lva", // ai 2026-06
 
 // include/formutil.php, row 3307
 "All active items" => "Minden akt\xEDv cikk", // ai 2026-06
@@ -5532,7 +5723,7 @@ return [
 "All items in trash bin" => "Minden cikk a lomt\xE1rban", // ai 2026-06
 
 // include/init_page.php, row 84
-// include/locauth.php, row 100
+// include/locauth.php, row 137
 "Either your username or your password is not valid" => "\xC9rv\xE9nytelen felhaszn\xE1l\xF3n\xE9v vagy jelsz\xF3", // ai 2026-06
 
 // include/init_page.php, row 136
@@ -6033,252 +6224,258 @@ return [
 // include/itemview.php, row 723, 731
 "exact group name" => "pontos csoportn\xE9v", // ai 2026-06
 
-// include/locauth.php, row 102
+// include/locauth.php, row 134
+"The login by the passkey did not succeed. Try it again." => "Az azonos\xEDt\xF3kulccsal t\xF6rt\xE9n\xF5 bejelentkez\xE9s nem siker\xFClt. Pr\xF3b\xE1lja \xFAjra.", // ai 2026-11
+
+// include/locauth.php, row 139
 "Please try again!" => "K\xE9rj\xFCk, pr\xF3b\xE1lja \xFAjra!", // ai 2026-06
 
-// include/locauth.php, row 103
+// include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Ha biztos benne, hogy a helyes jelsz\xF3t \xEDrta be, k\xE9rj\xFCk, \xEDrjon e-mailt: <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 541
+// include/logs.php, row 546
 "Created time" => "L\xE9trehoz\xE1s ideje", // ai 2026-06
 
-// include/logs.php, row 542
+// include/logs.php, row 547
 "Readers to be emailed" => "E-mailben \xE9rtes\xEDtend\xF5 olvas\xF3k", // ai 2026-06
 
-// include/logs.php, row 554
+// include/logs.php, row 559
 // src/Optimize/CheckCkeditorUse.php, row 97
+// src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
 "Page" => "Oldal", // ai 2026-06
 
-// include/logs.php, row 629, 673, 688
+// include/logs.php, row 634, 678, 693
 "Time [s]" => "Id\xF5 [s]", // ai 2026-06
 
-// include/logs.php, row 630, 675
+// include/logs.php, row 635, 680
 "Memory usage [MB]" => "Mem\xF3riahaszn\xE1lat [MB]", // ai 2026-06
 
-// include/logs.php, row 631
+// include/logs.php, row 636
 "Memory peak [MB]" => "Mem\xF3riacs\xFAcs [MB]", // ai 2026-06
 
-// include/logs.php, row 632
+// include/logs.php, row 637
 "Return code" => "Visszat\xE9r\xE9si k\xF3d", // ai 2026-06
 
-// include/logs.php, row 648
+// include/logs.php, row 653
 "Tasks done" => "Elv\xE9gzett feladatok", // ai 2026-06
 
-// include/logs.php, row 649
+// include/logs.php, row 654
 "Tasks started" => "Elind\xEDtott feladatok", // ai 2026-06
 
-// include/logs.php, row 650
+// include/logs.php, row 655
 "Duration [s]" => "Id\xF5tartam [s]", // ai 2026-06
 
-// include/logs.php, row 651
+// include/logs.php, row 656
 "Allowed [s]" => "Enged\xE9lyezett [s]", // ai 2026-06
 
-// include/logs.php, row 671
+// include/logs.php, row 676
 "Cached" => "Gyors\xEDt\xF3t\xE1rb\xF3l", // ai 2026-06
 
-// include/logs.php, row 672
+// include/logs.php, row 677
 "Not Modified (304)" => "Nem m\xF3dosult (304)", // ai 2026-06
 
-// include/logs.php, row 674
+// include/logs.php, row 679
 "Time + Cached + 304" => "Id\xF5 + gyors\xEDt\xF3t\xE1r + 304", // ai 2026-06
 
-// include/logs.php, row 676, 689, 899, 1085
+// include/logs.php, row 681, 694, 904, 1090
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 716
+// include/logs.php, row 721
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 717
+// include/logs.php, row 722
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 718
+// include/logs.php, row 723
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 719
+// include/logs.php, row 724
 "DB" => "Adatb\xE1zis", // ai 2026-06
 
-// include/logs.php, row 720
+// include/logs.php, row 725
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Mem\xF3ria", // ai 2026-06
 
-// include/logs.php, row 721
+// include/logs.php, row 726
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 722
+// include/logs.php, row 727
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Szerverbe\xE1ll\xEDt\xE1sok", // ai 2026-10
 
-// include/logs.php, row 746, 845
+// include/logs.php, row 751, 850
 "Severity" => "S\xFAlyoss\xE1g", // ai 2026-10
 
-// include/logs.php, row 748, 843, 872
+// include/logs.php, row 753, 848, 877
 "Finding" => "Meg\xE1llap\xEDt\xE1s", // ai 2026-10
 
-// include/logs.php, row 766
+// include/logs.php, row 771
 "Problems" => "Probl\xE9m\xE1k", // ai 2026-10
 
-// include/logs.php, row 767
+// include/logs.php, row 772
 "Warnings" => "Figyelmeztet\xE9sek", // ai 2026-10
 
-// include/logs.php, row 768
+// include/logs.php, row 773
 "Recommendations" => "Javaslatok", // ai 2026-10
 
-// include/logs.php, row 769
+// include/logs.php, row 774
 "Checks" => "Ellen\xF5rz\xE9sek", // ai 2026-10
 
-// include/logs.php, row 789, 820
+// include/logs.php, row 794, 825
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Futtat\xE1s", // ai 2026-10
 
-// include/logs.php, row 791
+// include/logs.php, row 796
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "Kezd\xE9s", // ai 2026-10
 
-// include/logs.php, row 793
+// include/logs.php, row 798
 "Last full run" => "Utols\xF3 teljes futtat\xE1s", // ai 2026-10
 
-// include/logs.php, row 794
+// include/logs.php, row 799
 "Last full run started" => "Utols\xF3 teljes futtat\xE1s kezdete", // ai 2026-10
 
-// include/logs.php, row 819, 844
+// include/logs.php, row 824, 849
 "Pair" => "P\xE1r", // ai 2026-10
 
-// include/logs.php, row 821
+// include/logs.php, row 826
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Futtatva", // ai 2026-10
 
-// include/logs.php, row 822, 846
+// include/logs.php, row 827, 851
 "Known issue" => "Ismert probl\xE9ma", // ai 2026-10
 
-// include/logs.php, row 848
+// include/logs.php, row 853
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Els\xF5 \xE9szlel\xE9s", // ai 2026-10
 
-// include/logs.php, row 849
+// include/logs.php, row 854
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "Egym\xE1st k\xF6vet\xF5 futtat\xE1sok", // ai 2026-10
 
-// include/logs.php, row 873
+// include/logs.php, row 878
 "Evidence" => "Bizony\xEDt\xE9k", // ai 2026-10
 
-// include/logs.php, row 896
+// include/logs.php, row 901
 "Identifier" => "Azonos\xEDt\xF3", // ai 2026-06
 
-// include/logs.php, row 897, 1261, 1276
+// include/logs.php, row 902, 1266, 1281
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "Modul azonos\xEDt\xF3ja", // ai 2026-06
 
-// include/logs.php, row 910
+// include/logs.php, row 915
 "Template id" => "Sablon azonos\xEDt\xF3ja", // ai 2026-06
 
-// include/logs.php, row 912
+// include/logs.php, row 917
 "Emails sent" => "Elk\xFCld\xF6tt e-mailek", // ai 2026-06
 
-// include/logs.php, row 951
+// include/logs.php, row 956
 "Object id" => "Objektumazonos\xEDt\xF3", // ai 2026-10
 
-// include/logs.php, row 983
+// include/logs.php, row 988
 "Mail template" => "E-mail-sablon", // ai 2026-10
 
-// include/logs.php, row 984
+// include/logs.php, row 989
 "Reader item" => "Olvas\xF3 cikke", // ai 2026-10
 
-// include/logs.php, row 985
+// include/logs.php, row 990
 "Origin" => "Eredet", // ai 2026-10
 
-// include/logs.php, row 1056
+// include/logs.php, row 1061
 "Transport" => "K\xFCld\xE9si m\xF3d", // ai 2026-10
 
-// include/logs.php, row 1057
+// include/logs.php, row 1062
 "Recipients sent" => "Elk\xFCld\xF6tt c\xEDmzettek", // ai 2026-10
 
-// include/logs.php, row 1058
+// include/logs.php, row 1063
 "Server response" => "Szerver v\xE1lasza", // ai 2026-10
 
-// include/logs.php, row 1071
+// include/logs.php, row 1076
 "Items selected" => "Kijel\xF6lt t\xE9telek", // ai 2026-06
 
-// include/logs.php, row 1072
+// include/logs.php, row 1077
 "Items updated" => "Friss\xEDtett t\xE9telek", // ai 2026-06
 
-// include/logs.php, row 1073
+// include/logs.php, row 1078
 "Items planned" => "Tervezett t\xE9telek", // ai 2026-06
 
-// include/logs.php, row 1084
+// include/logs.php, row 1089
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "\xDCzenet", // ai 2026-06
 
-// include/logs.php, row 1086
+// include/logs.php, row 1091
 "Referer" => "Hivatkoz\xF3", // ai 2026-06
 
-// include/logs.php, row 1097
+// include/logs.php, row 1102
 "New name" => "\xDAj n\xE9v", // ai 2026-06
 
-// include/logs.php, row 1098
+// include/logs.php, row 1103
 "Old name" => "R\xE9gi n\xE9v", // ai 2026-06
 
-// include/logs.php, row 1109, 1174
+// include/logs.php, row 1114, 1179
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "F\xE1zis", // ai 2026-06
 
-// include/logs.php, row 1110
+// include/logs.php, row 1115
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Gy\xFBjtem\xE9ny", // ai 2026-06
 
-// include/logs.php, row 1112, 1163, 1175, 1310
+// include/logs.php, row 1117, 1168, 1180, 1315
 // src/Import/Definition.php, row 154
+// src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "R\xE9szletek", // ai 2026-06
 
-// include/logs.php, row 1162
+// include/logs.php, row 1167
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "\xC1llapot", // ai 2026-06
 
-// include/logs.php, row 1214
+// include/logs.php, row 1219
 "Processed" => "Feldolgozva", // ai 2026-06
 
-// include/logs.php, row 1215
+// include/logs.php, row 1220
 "Stored" => "T\xE1rolva", // ai 2026-06
 
-// include/logs.php, row 1216
+// include/logs.php, row 1221
 "Errors" => "Hib\xE1k", // ai 2026-06
 
-// include/logs.php, row 1229
+// include/logs.php, row 1234
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Eredm\xE9ny", // ai 2026-06
 
-// include/logs.php, row 1245
+// include/logs.php, row 1250
 "Flags" => "Jelz\xF5k", // ai 2026-06
 
-// include/logs.php, row 1246
+// include/logs.php, row 1251
 "Context" => "Kontextus", // ai 2026-06
 
-// include/logs.php, row 1262
+// include/logs.php, row 1267
 "Feed counterpart" => "Feed-megfelel\xF5", // ai 2026-06
 
-// include/logs.php, row 1277
+// include/logs.php, row 1282
 "Field ID" => "Mez\xF5azonos\xEDt\xF3", // ai 2026-06
 
-// include/logs.php, row 1295
+// include/logs.php, row 1300
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckHttp.php, row 62
+// src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 88
 "Reason" => "Indok", // ai 2026-10
 
@@ -6291,7 +6488,7 @@ return [
 // include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Tulajdonos", // ai 2026-06
 
@@ -6617,10 +6814,10 @@ return [
 // include/modutils.php, row 251
 "Select owner" => "Tulajdonos kiv\xE1laszt\xE1sa", // ai 2026-06
 
-// include/perm_core.php, row 1273, 1300
+// include/perm_core.php, row 1414, 1444
 "Reader Slice" => "Olvas\xF3i rovat", // ai 2026-06
 
-// include/perm_core.php, row 1285, 1302
+// include/perm_core.php, row 1429, 1446
 "Reader Set" => "Olvas\xF3-k\xE9szlet", // ai 2026-06
 
 // include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
@@ -6729,9 +6926,6 @@ return [
 // include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Szem\xE9lyes sz\xFBr\xF5 (kattintson az alkalmaz\xE1shoz)", // ai 2026-06
 
-// include/searchbar.class.php, row 1124
-"Rename" => "\xC1tnevez\xE9s", // ai 2026-06
-
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Sz\xFBr\xF5k kezel\xE9se", // ai 2026-06
 
@@ -6766,7 +6960,7 @@ return [
 "is not" => "nem egyenl\xF5", // ai 2026-06
 
 // include/searchlib.php, row 137, 140
-// include/statestore.php, row 1362
+// include/statestore.php, row 1367
 "select ..." => "v\xE1lasszon ...", // ai 2026-06
 
 // include/searchlib.php, row 370
@@ -6914,22 +7108,22 @@ return [
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Sorolja fel az \xF6sszes nyelvet, amelyhez a site modult haszn\xE1lni k\xEDv\xE1nja - en, es, cz, ..<br>K\xE9rj\xFCk, <b>tegye meg</b> akkor is, ha csak 1 nyelvet haszn\xE1l. <br>Erre sz\xFCks\xE9g van, ha a site modult az \xFAjabb m\xF3don k\xEDv\xE1nja megh\xEDvni az Apache-b\xF3l:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
 // include/slice.class.php, row 1645
-"Allowed {xflag} values" => "",
+"Allowed {xflag} values" => "A(z) {xflag} megengedett \xE9rt\xE9kei", // ai 2026-11
 
 // include/slice.class.php, row 1645
-"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "",
+"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "Regul\xE1ris kifejez\xE9s, amelyre az URL {xflag} r\xE9sz\xE9nek teljes eg\xE9sz\xE9ben illeszkednie kell (^ \xE9s \$ nem sz\xFCks\xE9ges), k\xFCl\xF6nben az oldal 404-es v\xE1laszt ad. A(z) {xflag} a nyelv \xE9s a nem k\xF6telez\xF5 {xpage} oldalsz\xE1m ut\xE1ni karakterek: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... Soha nem tartalmaz sz\xE1mjegyet vagy ,,-\" jelet - ezek lez\xE1rj\xE1k.<br>A(z) {xflag} n\xE9lk\xFCli oldalaknak is \xE1t kell menni\xFCk - z\xE1rja a mint\xE1t ? jellel, vagy adjon hozz\xE1 \xFCres alternat\xEDv\xE1t.<br><b>\xDCres</b> - b\xE1rmilyen \xE9rt\xE9k ,,=\" n\xE9lk\xFCl.<br><b>^\$</b> - a(z) {xflag} nincs haszn\xE1latban, csak az ennek h\xEDj\xE1n l\xE9v\xF5 oldalak.<br>P\xE9ld\xE1k:<br>[a-z]? - egy bet\xFB, vagy semmi<br>[tp]? - ,,t\" vagy ,,p\", vagy semmi<br>(print|pdf)? - a felsorolt szavak egyike, vagy semmi", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Allowed {xcat} values" => "",
+"Allowed {xcat} values" => "A(z) {xcat} megengedett \xE9rt\xE9kei", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "",
+"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "Regul\xE1ris kifejez\xE9s, amelyre az URL {xcat} r\xE9sz\xE9nek teljes eg\xE9sz\xE9ben illeszkednie kell (^ \xE9s \$ nem sz\xFCks\xE9ges), k\xFCl\xF6nben az oldal 404-es v\xE1laszt ad. A(z) {xcat} az els\xF5 k\xF6nyvt\xE1rban az els\xF5 ,,-\" ut\xE1ni teljes r\xE9sz: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... B\xE1rmit tartalmazhat, kiv\xE9ve ,,/\" jelet.<br>A(z) {xcat} n\xE9lk\xFCli oldalaknak is \xE1t kell menni\xFCk - z\xE1rja a mint\xE1t ? jellel, vagy adjon hozz\xE1 \xFCres alternat\xEDv\xE1t.<br><b>\xDCres</b> - b\xE1rmilyen \xE9rt\xE9k ,,=\" n\xE9lk\xFCl.<br><b>^\$</b> - a(z) {xcat} nincs haszn\xE1latban, csak az ennek h\xEDj\xE1n l\xE9v\xF5 oldalak.<br>P\xE9ld\xE1k:<br>[a-z0-9-]* - kisbet\xFBk, sz\xE1mjegyek \xE9s k\xF6t\xF5jelek, vagy semmi<br>([0-9]+)? - egy sz\xE1m, vagy semmi<br>(bioplyn|kompost)? - a felsorolt szavak egyike, vagy semmi", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Check the page path" => "",
+"Check the page path" => "Az oldal \xFAtvonal\xE1nak ellen\xF5rz\xE9se", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "",
+"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "404-es v\xE1lasz, ha az \xFAtvonal b\xE1rmely r\xE9sze ({xseo1}, {xseo2}, ...) nem k\xF6zz\xE9tett cikk, \xEDgy a /cz/nonsense/about-us nem jelen\xEDti meg az about-us oldalt. 404-es v\xE1laszt ad akkor is, ha az ,,Oldal nem tal\xE1lhat\xF3\" be\xE1ll\xEDt\xE1s \xE9rt\xE9ke ,,Figyelmen k\xEDv\xFCl hagy\xE1s\".", // ai 2026-11
 
 // include/slice.class.php, row 1648
 "Page not Found (404)" => "Az oldal nem tal\xE1lhat\xF3 (404)", // ai 2026-06
@@ -6971,10 +7165,10 @@ return [
 "Published modules" => "K\xF6zz\xE9tett modulok", // ai 2026-10
 
 // include/slice.class.php, row 1664
-"Page address (URL)" => "",
+"Page address (URL)" => "Oldal c\xEDme (URL)", // ai 2026-11
 
 // include/slice.class.php, row 1665
-"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "",
+"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>A(z) {xpage} egy sz\xE1m, a(z) {xflag} az ut\xE1na k\xF6vetkez\xF5 bet\xFBk, a(z) {xcat} az els\xF5 ,,-\" ut\xE1ni teljes r\xE9sz - mindh\xE1rom nem k\xF6telez\xF5. A(z) {xlang} elhagyhat\xF3, ha be van \xE1ll\xEDtva ,,A webhely nyelvei\".<br>P\xE9ld\xE1ul /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka", // ai 2026-11
 
 // include/slice.class.php, row 1707
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "Az alkalmaz\xE1s verzi\xF3ja legfeljebb 32 bet\xFB, sz\xE1mjegy \xE9s . + - jel (pl. 1.2.0), a le\xEDr\xE1s legfeljebb %1 karakter.", // ai 2026-10
@@ -7047,13 +7241,13 @@ return [
 // include/slicedit.php, row 372
 "Internal error when changing user role." => "Bels\xF5 hiba a felhaszn\xE1l\xF3i szerepk\xF6r m\xF3dos\xEDt\xE1sakor.", // ai 2026-06
 
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 "Owner ID" => "Tulajdonos-azonos\xEDt\xF3", // ai 2026-06
 
-// include/statestore.php, row 1170
+// include/statestore.php, row 1175
 "No object found" => "Nem tal\xE1lhat\xF3 objektum", // ai 2026-06
 
-// include/statestore.php, row 1444
+// include/statestore.php, row 1449
 "Manage components" => "Komponensek kezel\xE9se", // ai 2026-06
 
 // include/stringexpand.php, row 95
@@ -7095,84 +7289,84 @@ return [
 // include/stringexpand.php, row 6279
 "No module for dictionary slice" => "Nincs modul a sz\xF3t\xE1rrovathoz", // ai 2026-06
 
-// include/stringexpand.php, row 8195
+// include/stringexpand.php, row 8196
 "version" => "verzi\xF3", // ai 2026-06
 
-// include/stringexpand.php, row 8383
+// include/stringexpand.php, row 8384
 "show" => "megjelen\xEDt\xE9s", // ai 2026-06
 
-// include/stringexpand.php, row 8384
+// include/stringexpand.php, row 8385
 "hide" => "elrejt\xE9s", // ai 2026-06
 
-// include/stringexpand.php, row 8385
+// include/stringexpand.php, row 8386
 "loading" => "bet\xF6lt\xE9s", // ai 2026-06
 
-// include/stringexpand.php, row 9516
+// include/stringexpand.php, row 9517
 "E-mail confirmed." => "E-mail meger\xF5s\xEDtve.", // ai 2026-06
 
-// include/stringexpand.php, row 9520
+// include/stringexpand.php, row 9521
 "E-mail unsubscribed" => "E-mail leiratkoztatva", // ai 2026-06
 
-// include/stringexpand.php, row 10279
+// include/stringexpand.php, row 10280
 "Forgot your password? Fill in your email." => "Elfelejtette jelszav\xE1t? Adja meg e-mail-c\xEDm\xE9t.", // ai 2026-06
 
-// include/stringexpand.php, row 10281
+// include/stringexpand.php, row 10282
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-mail", // ai 2026-10
 
-// include/stringexpand.php, row 10299, 10303
+// include/stringexpand.php, row 10300, 10304
 "Unable to find user - please check if it has been misspelled." => "A felhaszn\xE1l\xF3 nem tal\xE1lhat\xF3 - ellen\xF5rizze, nem \xEDrta-e el.", // ai 2026-06
 
-// include/stringexpand.php, row 10317
+// include/stringexpand.php, row 10318
 "Password link" => "Jelsz\xF3-hivatkoz\xE1s", // ai 2026-06
 
-// include/stringexpand.php, row 10318
+// include/stringexpand.php, row 10319
 "Password change url parameter" => "Jelsz\xF3v\xE1ltoztat\xE1si URL-param\xE9ter", // ai 2026-06
 
-// include/stringexpand.php, row 10330
+// include/stringexpand.php, row 10331
 "Password change" => "Jelsz\xF3v\xE1ltoztat\xE1s", // ai 2026-06
 
-// include/stringexpand.php, row 10331
+// include/stringexpand.php, row 10332
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "A jelsz\xF3 megv\xE1ltoztat\xE1s\xE1hoz keresse fel a k\xF6vetkez\xF5 c\xEDmet:<br>%1<br>A v\xE1ltoztat\xE1s k\xE9t \xF3r\xE1n bel\xFCl lehets\xE9ges - ut\xE1na a kulcs lej\xE1r, \xE9s \xFAjat kell k\xE9rnie.", // ai 2026-06
 
-// include/stringexpand.php, row 10340
+// include/stringexpand.php, row 10341
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "A jelsz\xF3v\xE1ltoztat\xE1shoz sz\xFCks\xE9ges kulcsot tartalmaz\xF3 e-mailt elk\xFCldt\xFCk a k\xF6vetkez\xF5 c\xEDmre: %1", // ai 2026-06
 
-// include/stringexpand.php, row 10351, 10380
+// include/stringexpand.php, row 10352, 10381
 "Bad or expired key." => "Hib\xE1s vagy lej\xE1rt kulcs.", // ai 2026-06
 
-// include/stringexpand.php, row 10356
+// include/stringexpand.php, row 10357
 "Fill in the new password" => "Adja meg az \xFAj jelsz\xF3t", // ai 2026-06
 
-// include/stringexpand.php, row 10358
+// include/stringexpand.php, row 10359
 "New password" => "\xDAj jelsz\xF3", // ai 2026-06
 
-// include/stringexpand.php, row 10359
+// include/stringexpand.php, row 10360
 "Retype New Password" => "\xDAj jelsz\xF3 m\xE9g egyszer", // ai 2026-06
 
-// include/stringexpand.php, row 10383
+// include/stringexpand.php, row 10384
 "Passwords do not match - please try again." => "A jelszavak nem egyeznek - pr\xF3b\xE1lja \xFAjra.", // ai 2026-06
 
-// include/stringexpand.php, row 10386
+// include/stringexpand.php, row 10387
 "The password must be at least 6 characters long." => "A jelsz\xF3nak legal\xE1bb 6 karakter hossz\xFAnak kell lennie.", // ai 2026-06
 
-// include/stringexpand.php, row 10392
+// include/stringexpand.php, row 10393
 "Password changed." => "A jelsz\xF3 megv\xE1ltozott.", // ai 2026-06
 
-// include/stringexpand.php, row 10394
+// include/stringexpand.php, row 10395
 "An error occurred during password change - please contact: %1." => "Hiba t\xF6rt\xE9nt a jelsz\xF3v\xE1ltoztat\xE1s sor\xE1n - k\xE9rj\xFCk, forduljon a k\xF6vetkez\xF5h\xF6z: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 11502, 11525
+// include/stringexpand.php, row 11503, 11526
 "Are you sure you want to permanently DELETE this record?" => "Biztosan V\xC9GLEGESEN t\xF6rli ezt a rekordot?", // ai 2026-06
 
-// include/stringexpand.php, row 11508, 11511, 11531, 11534
+// include/stringexpand.php, row 11509, 11512, 11532, 11535
 // src/Widget/RimWidget.php, row 270
 "edit" => "szerkeszt\xE9s", // ai 2026-06
 
-// include/stringexpand.php, row 11514, 11537
+// include/stringexpand.php, row 11515, 11538
 "back" => "vissza", // ai 2026-06
 
-// include/stringexpand.php, row 11517, 11540
+// include/stringexpand.php, row 11518, 11541
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "h\xFAzza ide a f\xE1jlokat, vagy kattintson a felt\xF6lt\xE9shez", // ai 2026-06
 
@@ -7390,7 +7584,7 @@ return [
 "username | slice | <b>allslices</b>" => "",
 
 // include/validate.php, row 957
-"Not a valid regular expression" => "",
+"Not a valid regular expression" => "\xC9rv\xE9nytelen regul\xE1ris kifejez\xE9s", // ai 2026-11
 
 // include/validate.php, row 992
 "This field is required." => "Ez a mez\xF5 k\xF6telez\xF5.", // ai 2026-06
@@ -7675,37 +7869,37 @@ return [
 // src/AA_Plannedtask.php, row 457
 "next run" => "k\xF6vetkez\xF5 fut\xE1s", // ai 2026-06
 
-// src/Api/Controller/FilesController.php, row 54, 75
+// src/Api/Controller/FilesController.php, row 56, 77
 "The file is too big" => "A f\xE1jl t\xFAl nagy", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 67
+// src/Api/Controller/FilesController.php, row 69
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "Ide nem t\xF6lthet fel f\xE1jlokat. Ha \xE9ppen szerkesztett, a bejelentkez\xE9se lej\xE1rhatott - t\xF6ltse \xFAjra az oldalt.", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 70
+// src/Api/Controller/FilesController.php, row 72
 "Too many uploads - try again in an hour" => "T\xFAl sok felt\xF6lt\xE9s - pr\xF3b\xE1lja \xFAjra egy \xF3ra m\xFAlva", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 78, 243
+// src/Api/Controller/FilesController.php, row 80, 291
 "No file received" => "Nem \xE9rkezett f\xE1jl", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 86
+// src/Api/Controller/FilesController.php, row 88
 "Files of this type cannot be uploaded here: %1" => "Ilyen t\xEDpus\xFA f\xE1jlok ide nem t\xF6lthet\xF5k fel: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 89
+// src/Api/Controller/FilesController.php, row 91
 "The content of the file does not match its extension %1" => "A f\xE1jl tartalma nem felel meg a kiterjeszt\xE9s\xE9nek: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 92
+// src/Api/Controller/FilesController.php, row 94
 "The image is bigger than %1 MB" => "A k\xE9p nagyobb, mint %1 MB", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 95
+// src/Api/Controller/FilesController.php, row 97
 "The image has more than %1 megapixels" => "A k\xE9p t\xF6bb mint %1 megapixeles", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 100
+// src/Api/Controller/FilesController.php, row 102
 "The upload directory of the slice is not writable" => "A rovat felt\xF6lt\xE9si k\xF6nyvt\xE1ra nem \xEDrhat\xF3", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 110
+// src/Api/Controller/FilesController.php, row 112
 "The file could not be stored" => "A f\xE1jlt nem siker\xFClt t\xE1rolni", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 132
+// src/Api/Controller/FilesController.php, row 134
 "Only editors of the slice can browse its files" => "A rovat f\xE1jljait csak a rovat szerkeszt\xF5i b\xF6ng\xE9szhetik", // ai 2026-10
 
 // src/Central/Actionapps.php, row 178
@@ -7724,7 +7918,7 @@ return [
 "Expired - get a token" => "Lej\xE1rt - k\xE9rjen tokent", // ai 2026-10
 
 // src/Central/Actionapps.php, row 234
-"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "",
+"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "A t\xE1voli AA elutas\xEDtotta a bejelentkez\xE9st: hib\xE1s felhaszn\xE1l\xF3n\xE9v vagy jelsz\xF3, k\xE9tl\xE9pcs\xF5s bejelentkez\xE9s\xFB fi\xF3k (a Central m\xE9g nem tudja elk\xFCldeni a k\xF3dot), vagy a felhaszn\xE1l\xF3 ott nem szuperadminisztr\xE1tor", // ai 2026-11
 
 // src/Central/Actionapps.php, row 236
 "The remote AA gave no login token - update it" => "A t\xE1voli AA nem adott bejelentkez\xE9si tokent - friss\xEDtse azt", // ai 2026-10
@@ -8889,21 +9083,21 @@ return [
 // src/IO/Grabber/FilesFTP.php, row 106
 "Info to get" => "Lek\xE9rend\xF5 inform\xE1ci\xF3k", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 75
+// src/IO/Grabber/Form.php, row 76
 // src/IO/Grabber/ObjectForm.php, row 61
 "Form" => "\xDBrlap", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 83
+// src/IO/Grabber/Form.php, row 84
 // src/IO/Grabber/ObjectForm.php, row 69
 "Grabs data POSTed by AA form" => "Az AA \xFBrlap \xE1ltal POST-olt adatok beolvas\xE1sa", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 168
+// src/IO/Grabber/Form.php, row 193
 "No slice found: %1" => "Nem tal\xE1lhat\xF3 rovat: %1", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 171
+// src/IO/Grabber/Form.php, row 196
 "No file, img_upload, or img_src field type found in slice %1" => "Nem tal\xE1lhat\xF3 file, img_upload vagy img_src t\xEDpus\xFA mez\xF5 a(z) %1 rovatban", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 204
+// src/IO/Grabber/Form.php, row 229
 "no POST nor FILES sent" => "nem \xE9rkezett sem POST, sem FILES adat", // ai 2026-06
 
 // src/IO/Grabber/Ical.php, row 43
@@ -8930,13 +9124,13 @@ return [
 // src/IO/Grabber/PohodaStocks.php, row 42
 "Imports stock from POHODA accounting system" => "K\xE9szlet import\xE1l\xE1sa a POHODA k\xF6nyvel\xF5rendszerb\xF5l", // ai 2026-06
 
-// src/IO/Grabber/SOAP.php, row 60
+// src/IO/Grabber/SOAP.php, row 62
 "SOAP" => "",
 
-// src/IO/Grabber/SOAP.php, row 68
+// src/IO/Grabber/SOAP.php, row 70
 "General SOAP request" => "\xC1ltal\xE1nos SOAP k\xE9r\xE9s", // ai 2026-06
 
-// src/IO/Grabber/SOAP.php, row 78
+// src/IO/Grabber/SOAP.php, row 80
 "SOAP body request" => "SOAP k\xE9r\xE9s t\xF6rzse", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 82
@@ -10109,627 +10303,623 @@ return [
 "The column that identifies the item; it must be one of the columns" => "A cikket azonos\xEDt\xF3 oszlop; az oszlopok egyik\xE9nek kell lennie", // ai 2026-10
 
 // src/Isds/Advice.php, row 47
-"The form has expired, or it does not belong to this page. Load the page again." => "",
+"The form has expired, or it does not belong to this page. Load the page again." => "Az \xFBrlap lej\xE1rt, vagy nem ehhez az oldalhoz tartozik. T\xF6ltse be \xFAjra az oldalt.", // ai 2026-11
 
 // src/Isds/Advice.php, row 49
-"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "Az elk\xFCld\xF6tt \xFBrlap nagyobb, mint amennyit a szerver fogad (%1). Semmi sem lett mentve - cs\xF6kkentse a mell\xE9kletek m\xE9ret\xE9t.", // ai 2026-11
 
 // src/Isds/Advice.php, row 50
-"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "Az elk\xFCld\xF6tt \xFBrlap nagyobb, mint amennyit a szerver fogad. Semmi sem lett mentve - cs\xF6kkentse a mell\xE9kletek m\xE9ret\xE9t.", // ai 2026-11
 
 // src/Isds/Advice.php, row 51
-"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "",
+"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "A m\xFBvelet az AA bels\xF5 hib\xE1ja miatt meghi\xFAsult, \xE9s a munk\xE1ja egy r\xE9sz\xE9t m\xE1r elv\xE9gezhette. T\xF6ltse be \xFAjra az oldalt, \xE9s miel\xF5tt m\xE9g egyszer megpr\xF3b\xE1ln\xE1, ellen\xF5rizze az \xE1llapotot.", // ai 2026-11
 
 // src/Isds/Advice.php, row 52
-"Someone else, or another window, is working with this now. Try it again in a while." => "",
+"Someone else, or another window, is working with this now. Try it again in a while." => "Ezzel most valaki m\xE1s vagy egy m\xE1sik ablak dolgozik. Pr\xF3b\xE1lja \xFAjra egy kis id\xF5 m\xFAlva.", // ai 2026-11
 
 // src/Isds/Advice.php, row 53
-"You may not do this." => "",
+"You may not do this." => "Ezt nem teheti meg.", // ai 2026-11
 
 // src/Isds/Advice.php, row 54
-"This sending is not on this page." => "",
+"This sending is not on this page." => "Ez a k\xF6rk\xFCld\xE9s nincs ezen az oldalon.", // ai 2026-11
 
 // src/Isds/Advice.php, row 55
-"The sending does not wait for this now." => "",
+"The sending does not wait for this now." => "A k\xF6rk\xFCld\xE9s most nem erre v\xE1r.", // ai 2026-11
 
 // src/Isds/Advice.php, row 56
-"A step of the sending is still running. Try it again in a few minutes." => "",
+"A step of the sending is still running. Try it again in a few minutes." => "A k\xF6rk\xFCld\xE9s egyik l\xE9p\xE9se m\xE9g fut. Pr\xF3b\xE1lja \xFAjra n\xE9h\xE1ny perc m\xFAlva.", // ai 2026-11
 
 // src/Isds/Advice.php, row 57
-"The sending goes on." => "",
+"The sending goes on." => "A k\xF6rk\xFCld\xE9s folytat\xF3dik.", // ai 2026-11
 
 // src/Isds/Advice.php, row 58
-"The sending is stopping - no further message will go." => "",
+"The sending is stopping - no further message will go." => "A k\xF6rk\xFCld\xE9s le\xE1ll - tov\xE1bbi \xFCzenet m\xE1r nem megy ki.", // ai 2026-11
 
 // src/Isds/Advice.php, row 59
-"Every message has been sent or tried already - there is nothing left to stop." => "",
+"Every message has been sent or tried already - there is nothing left to stop." => "Minden \xFCzenetet m\xE1r elk\xFCldtek vagy megk\xEDs\xE9relt\xE9k elk\xFCldeni - nincs mit le\xE1ll\xEDtani.", // ai 2026-11
 
 // src/Isds/Advice.php, row 60
-"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "",
+"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "A k\xF6rk\xFCld\xE9s v\xE9glegesen befejez\xF5d\xF6tt. Az ismeretlen sors\xFA \xFCzenetek ellen\xF5rz\xE9se \xD6nre marad.", // ai 2026-11
 
 // src/Isds/Advice.php, row 61
-"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "",
+"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "A k\xF6rk\xFCld\xE9s m\xE1r le\xE1llt egy hiba miatt, \xEDgy a ,,Le\xE1ll\xEDt\xE1s\" itt semmit sem v\xE1ltoztat. V\xE1laszthatja a ,,Folytat\xE1s\" lehet\xF5s\xE9get, vagy v\xE9glegesen befejezheti a k\xF6rk\xFCld\xE9st - az ismeretlen sors\xFA \xFCzeneteket \xE9s a m\xE9g el nem olvasott k\xE9zbes\xEDt\xE9seket ezut\xE1n m\xE1r nem k\xF6vetj\xFCk nyomon.", // ai 2026-11
 
 // src/Isds/Advice.php, row 63
-"The draft is saved." => "",
+"The draft is saved." => "A piszkozat elmentve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 64
-"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "",
+"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "A lev\xE9l elmentve, de a c\xEDmzettek kiv\xE1laszt\xE1sa nem: id\xF5k\xF6zben megv\xE1ltozott - egy m\xE1sik ablakban, vagy egy kiv\xE1lasztott c\xEDmzett elt\xFBnt. Az oldal a most mentett c\xEDmzetteket mutatja; sz\xFCks\xE9g eset\xE9n v\xE1lassza ki \xF5ket \xFAjra.", // ai 2026-11
 
 // src/Isds/Advice.php, row 65
-"The copy is ready as a new draft." => "",
+"The copy is ready as a new draft." => "A m\xE1solat \xFAj piszkozatk\xE9nt elk\xE9sz\xFClt.", // ai 2026-11
 
 // src/Isds/Advice.php, row 66
-"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "",
+"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "A piszkozat a Lomt\xE1rba ker\xFClt. A rovat szerkeszt\xF5je vissza\xE1ll\xEDthatja a ,,Cikk-kezel\xF5\" oldalon.", // ai 2026-11
 
 // src/Isds/Advice.php, row 67
-"The sending of this campaign has started, so it stays - its messages must remain traceable." => "",
+"The sending of this campaign has started, so it stays - its messages must remain traceable." => "Ennek a kamp\xE1nynak a k\xFCld\xE9se m\xE1r elkezd\xF5d\xF6tt, ez\xE9rt megmarad - \xFCzeneteinek visszakereshet\xF5nek kell maradniuk.", // ai 2026-11
 
 // src/Isds/Advice.php, row 68
-"The sending left no recipient unsent - there is nothing to copy." => "",
+"The sending left no recipient unsent - there is nothing to copy." => "A k\xF6rk\xFCld\xE9s egyetlen c\xEDmzettet sem hagyott ki - nincs mit m\xE1solni.", // ai 2026-11
 
 // src/Isds/Advice.php, row 69
-"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "",
+"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "A lev\xE9l csak akkor k\xFCldhet\xF5 el \xFAjra ennek a c\xEDmzettnek, ha az \xFCzenete sikertelen volt, vagy a k\xF6rk\xFCld\xE9s el\xF5tte le\xE1llt. Ez az \xFCzenet elment, m\xE9g elmehet, vagy kimaradt - vagy nem tudni, hogy elment-e: ellen\xF5rizze, amint az oldal felk\xEDn\xE1lja (ne addig, am\xEDg az AA m\xE9g keresi), \xE9s ut\xE1na \xFAjra elk\xFCldhet\xF5.", // ai 2026-11
 
 // src/Isds/Advice.php, row 70
-"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "",
+"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "R\xF6gz\xEDtve: az \xFCzenet nem ment el. A lev\xE9l egy \xFAj kamp\xE1nyban \xFAjra elk\xFCldhet\xF5 ennek a c\xEDmzettnek.", // ai 2026-11
 
 // src/Isds/Advice.php, row 71
-"The fate of this message is known - there is nothing to verify." => "",
+"The fate of this message is known - there is nothing to verify." => "Ennek az \xFCzenetnek a sorsa ismert - nincs mit ellen\xF5rizni.", // ai 2026-11
 
 // src/Isds/Advice.php, row 72
-"This message does not belong to the sending." => "",
+"This message does not belong to the sending." => "Ez az \xFCzenet nem tartozik a k\xF6rk\xFCld\xE9shez.", // ai 2026-11
 
 // src/Isds/Advice.php, row 73
-"The data box of the recipient is taken from the register." => "",
+"The data box of the recipient is taken from the register." => "A c\xEDmzett adatdoboza \xE1tv\xE9ve a nyilv\xE1ntart\xE1sb\xF3l.", // ai 2026-11
 
 // src/Isds/Advice.php, row 74
-"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "",
+"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "A nyilv\xE1ntart\xE1s nem k\xEDn\xE1lja ezt az adatdobozt a c\xEDmzetthez el\xE9g biztosan ahhoz, hogy itt \xE1tvehet\xF5 legyen. A c\xEDmzettek rovat\xE1nak szerkeszt\xF5je \xF6sszeveti a rovat ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldal\xE1n, vagy jav\xEDtja a cikket.", // ai 2026-11
 
 // src/Isds/Advice.php, row 75
-"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "",
+"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "Az adatdobozok nyilv\xE1ntart\xE1sa nincs let\xF6ltve, vagy elavult. A c\xEDmzettek rovat\xE1nak szerkeszt\xF5je let\xF6lti a rovat ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldal\xE1n.", // ai 2026-11
 
 // src/Isds/Advice.php, row 76
-"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "",
+"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "Ez a c\xEDmzett nincs a nyilv\xE1ntart\xE1ssal p\xE1ros\xEDtottak k\xF6z\xF6tt: t\xF6r\xF6lt\xE9k, a Lomt\xE1rba ker\xFClt, vagy m\xE1s t\xEDpust kapott. T\xF6ltse be \xFAjra az oldalt.", // ai 2026-11
 
 // src/Isds/Advice.php, row 77
-"A page in the test environment changes no recipient." => "",
+"A page in the test environment changes no recipient." => "A tesztk\xF6rnyezetben l\xE9v\xF5 oldal egyetlen c\xEDmzettet sem m\xF3dos\xEDt.", // ai 2026-11
 
 // src/Isds/Advice.php, row 78
-"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "",
+"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "A k\xF6rk\xFCld\xE9s a feladatsorba ker\xFClt - c\xEDmzettek: %1. Mag\xE1t\xF3l folytat\xF3dik, az oldalt bez\xE1rhatja.", // ai 2026-11
 
 // src/Isds/Advice.php, row 79
-"The test message has gone (ID %1 in ISDS, reference number %2)." => "",
+"The test message has gone (ID %1 in ISDS, reference number %2)." => "A teszt\xFCzenet elment (azonos\xEDt\xF3 az ISDS-ben: %1, iktat\xF3sz\xE1m: %2).", // ai 2026-11
 
 // src/Isds/Advice.php, row 80
-"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "",
+"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "Nem tudni, hogy a teszt\xFCzenet elment-e. Keresse meg az adatdoboz elk\xFCld\xF6tt \xFCzenetei k\xF6z\xF6tt a(z) %1 iktat\xF3sz\xE1m alapj\xE1n.", // ai 2026-11
 
 // src/Isds/Advice.php, row 81
-"ISDS refused the test message." => "",
+"ISDS refused the test message." => "Az ISDS elutas\xEDtotta a teszt\xFCzenetet.", // ai 2026-11
 
 // src/Isds/Advice.php, row 82
-"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "",
+"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "Ennek az oldalnak egy m\xE1sik teszt\xFCzenete \xFAton van, vagy az im\xE9nt \xE1llt le. Pr\xF3b\xE1lja \xFAjra n\xE9h\xE1ny perc m\xFAlva.", // ai 2026-11
 
 // src/Isds/Advice.php, row 83
-"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "",
+"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "A k\xF6rk\xFCld\xE9s m\xE1r a feladatsorba ker\xFClt vagy el lett k\xFCldve, ez\xE9rt nem m\xF3dos\xEDthat\xF3 \xE9s nem k\xFCldhet\xF5 el \xFAjra. Ha m\xE9g egyszer el szeretn\xE9 k\xFCldeni a levelet, k\xE9sz\xEDtsen r\xF3la m\xE1solatot.", // ai 2026-11
 
 // src/Isds/Advice.php, row 84
-"Choose the recipients and save the draft." => "",
+"Choose the recipients and save the draft." => "V\xE1lassza ki a c\xEDmzetteket, \xE9s mentse a piszkozatot.", // ai 2026-11
 
 // src/Isds/Advice.php, row 85
-"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "",
+"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "Ez az oldal m\xE1r nem k\xEDn\xE1lja a piszkozattal mentett c\xEDmzetteket, ez\xE9rt nem mutat r\xF3luk kiv\xE1laszt\xE1st. V\xE1lassza ki \xFAjra a c\xEDmzetteket, \xE9s mentse a piszkozatot - az \xFAj kiv\xE1laszt\xE1s felv\xE1ltja a mentettet.", // ai 2026-11
 
 // src/Isds/Advice.php, row 86
-"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "",
+"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "A c\xEDmzettek sz\xE1ma megv\xE1ltozott az\xF3ta, hogy j\xF3v\xE1hagyta ezt: %1. Ellen\xF5rizze a kiv\xE1laszt\xE1st, \xE9s k\xFCldje el \xFAjra.", // ai 2026-11
 
 // src/Isds/Advice.php, row 87
-"There are more recipients than this page may send to (%1). Narrow the choice." => "",
+"There are more recipients than this page may send to (%1). Narrow the choice." => "T\xF6bb a c\xEDmzett, mint amennyinek ez az oldal k\xFCldhet (%1). Sz\xFBk\xEDtse a kiv\xE1laszt\xE1st.", // ai 2026-11
 
 // src/Isds/Advice.php, row 88
-"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "",
+"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "A lev\xE9l senkihez sem jutna el: a kiv\xE1lasztott c\xEDmzettek egyik\xE9nek sincs olyan adatdoboza, ahov\xE1 mehetne.", // ai 2026-11
 
 // src/Isds/Advice.php, row 89
-"No data box account is set up for this page. Ask the administrator." => "",
+"No data box account is set up for this page. Ask the administrator." => "Ehhez az oldalhoz nincs be\xE1ll\xEDtva adatdoboz-fi\xF3k. Forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 90
-"This page or its slices are not ready to send. Ask the administrator." => "",
+"This page or its slices are not ready to send. Ask the administrator." => "Ez az oldal vagy a rovatai nem \xE1llnak k\xE9szen a k\xFCld\xE9sre. Forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 91
-"The letter cannot go as a data message:" => "",
+"The letter cannot go as a data message:" => "A lev\xE9l nem mehet el adat\xFCzenetk\xE9nt:", // ai 2026-11
 
 // src/Isds/Advice.php, row 92
-"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "",
+"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "A szerver most nem tudta \xF6ssze\xE1ll\xEDtani a levelet - a piszkozatban nincs mit jav\xEDtani. Pr\xF3b\xE1lja \xFAjra k\xE9s\xF5bb, vagy forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "A szervernek t\xFAl kev\xE9s a mem\xF3ri\xE1ja a lev\xE9lhez \xE9s mell\xE9kleteihez (sz\xFCks\xE9ges: %1 MB). Forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments. Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments. Ask the administrator." => "A szervernek t\xFAl kev\xE9s a mem\xF3ri\xE1ja a lev\xE9lhez \xE9s mell\xE9kleteihez. Forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 94
-"The database cannot queue a sending safely. Ask the administrator." => "",
+"The database cannot queue a sending safely. Ask the administrator." => "Az adatb\xE1zis nem tudja biztons\xE1gosan a feladatsorba tenni a k\xF6rk\xFCld\xE9st. Forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 95
-"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "",
+"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "Az ISDS elutas\xEDtotta a fi\xF3k bejelentkez\xE9s\xE9t, semmi sem lett elk\xFCldve. K\xE9rje meg az adminisztr\xE1tort, hogy ellen\xF5rizze a bejelentkez\xE9si adatokat.", // ai 2026-11
 
 // src/Isds/Advice.php, row 96
-"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "Az ISDS letiltotta a bejelentkez\xE9st err\xF5l a szerverr\xF5l, semmi sem lett elk\xFCldve. \xDAj jelsz\xF3 nem seg\xEDt: az AA a letilt\xE1s ut\xE1n egy nappal pr\xF3b\xE1l \xFAjra bejelentkezni - pr\xF3b\xE1lja \xFAjra holnap, vagy forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 97
-"The settings of the account are not complete, nothing was sent. Ask the administrator." => "",
+"The settings of the account are not complete, nothing was sent. Ask the administrator." => "A fi\xF3k be\xE1ll\xEDt\xE1sai hi\xE1nyosak, semmi sem lett elk\xFCldve. Forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 98
-"ISDS does not answer, nothing was sent. Try it again in a while." => "",
+"ISDS does not answer, nothing was sent. Try it again in a while." => "Az ISDS nem v\xE1laszol, semmi sem lett elk\xFCldve. Pr\xF3b\xE1lja \xFAjra egy kis id\xF5 m\xFAlva.", // ai 2026-11
 
 // src/Isds/Advice.php, row 99
-"ISDS refused to tell whose the login of the account is, nothing was sent." => "",
+"ISDS refused to tell whose the login of the account is, nothing was sent." => "Az ISDS megtagadta annak k\xF6zl\xE9s\xE9t, hogy ki\xE9 a fi\xF3k bejelentkez\xE9se, semmi sem lett elk\xFCldve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 100
-"No test data box is set up for this page - in production the administrator of the server sets it." => "",
+"No test data box is set up for this page - in production the administrator of the server sets it." => "Ehhez az oldalhoz nincs be\xE1ll\xEDtva teszt-adatdoboz - \xE9les k\xF6rnyezetben a szerver adminisztr\xE1tora \xE1ll\xEDtja be.", // ai 2026-11
 
 // src/Isds/Advice.php, row 101
-"Choose one of the test data boxes of this page." => "",
+"Choose one of the test data boxes of this page." => "V\xE1lassza ki ennek az oldalnak az egyik teszt-adatdoboz\xE1t.", // ai 2026-11
 
 // src/Isds/Advice.php, row 102
-"A test message cannot go to the data box it is sent from. Choose another test box." => "",
+"A test message cannot go to the data box it is sent from. Choose another test box." => "Teszt\xFCzenet nem mehet abba az adatdobozba, amelyb\xF5l k\xFCldik. V\xE1lasszon m\xE1sik teszt-adatdobozt.", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained until %1. Try it again then." => "",
+"ISDS is being maintained until %1. Try it again then." => "Az ISDS karbantart\xE1s alatt \xE1ll eddig: %1. Akkor pr\xF3b\xE1lja \xFAjra.", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained. Try it again later." => "",
+"ISDS is being maintained. Try it again later." => "Az ISDS karbantart\xE1s alatt \xE1ll. Pr\xF3b\xE1lja \xFAjra k\xE9s\xF5bb.", // ai 2026-11
 
 // src/Isds/Advice.php, row 105
-"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "Ez a lev\xE9l m\xE1r elment, vagy elmehetett ebbe a teszt-adatdobozba ekkor: %2 (iktat\xF3sz\xE1m: %1). Az ism\xE9telt tesztel\xE9shez m\xF3dos\xEDtsa a piszkozatot.", // ai 2026-11
 
 // src/Isds/Advice.php, row 106
-"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "Ez a lev\xE9l m\xE1r elment, vagy elmehetett ebbe a teszt-adatdobozba (iktat\xF3sz\xE1m: %1). Az ism\xE9telt tesztel\xE9shez m\xF3dos\xEDtsa a piszkozatot.", // ai 2026-11
 
 // src/Isds/Advice.php, row 107
-"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "",
+"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "Az ebbe az adatdobozba k\xFCld\xF6tt \xFCzenet d\xEDjk\xF6teles lenne (postai adat\xFCzenet), \xE9les k\xF6rnyezetben pedig teszt\xFCzenet csak d\xEDjmentesen mehet. Teszteljen egy hivatal adatdoboz\xE1val.", // ai 2026-11
 
 // src/Isds/Advice.php, row 108
-"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "",
+"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "Nem siker\xFClt ellen\xF5rizni, hogy az \xFCzenet d\xEDjmentes lesz-e, semmi sem lett elk\xFCldve. Ellen\xF5rizze a teszt-adatdobozt, \xE9s pr\xF3b\xE1lja \xFAjra egy kis id\xF5 m\xFAlva.", // ai 2026-11
 
 // src/Isds/Advice.php, row 109
-"The test message went as a paid postal data message." => "",
+"The test message went as a paid postal data message." => "A teszt\xFCzenet d\xEDjk\xF6teles postai adat\xFCzenetk\xE9nt ment el.", // ai 2026-11
 
 // src/Isds/Advice.php, row 110
-"The test message may have cost money: it may have gone as a paid postal data message." => "",
+"The test message may have cost money: it may have gone as a paid postal data message." => "A teszt\xFCzenet p\xE9nzbe ker\xFClhetett: d\xEDjk\xF6teles postai adat\xFCzenetk\xE9nt mehetett el.", // ai 2026-11
 
 // src/Isds/Advice.php, row 141
-"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "",
+"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "Az ISDS egym\xE1s ut\xE1n t\xF6bb \xFCzenetet is ugyanazzal az \xE1llapottal utas\xEDtott el, vagy elutas\xEDtotta a k\xF6rk\xFCld\xE9s egy lek\xE9rdez\xE9s\xE9t - hogy ki\xE9 a fi\xF3k bejelentkez\xE9se, vagy mely \xFCzenetek lettek elk\xFCldve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 142
-"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "",
+"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "Elutas\xEDtott \xFCzenetek ut\xE1n a ,,Folytat\xE1s\" m\xE9g egyet elk\xFCld, \xE9s ha az ISDS azt is elutas\xEDtja, a k\xF6rk\xFCld\xE9s ism\xE9t le\xE1ll; elutas\xEDtott lek\xE9rdez\xE9s ut\xE1n a ,,Folytat\xE1s\" \xFAjra lek\xE9rdez.", // ai 2026-11
 
 // src/Isds/Advice.php, row 144
-"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "",
+"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "V\xE1rakoz\xE1s, am\xEDg az ISDS kilist\xE1zza azokat az \xFCzeneteket, amelyek sorsa m\xE9g nem ismert. A k\xF6rk\xFCld\xE9s mag\xE1t\xF3l megkeresi \xF5ket.", // ai 2026-11
 
 // src/Isds/Advice.php, row 145
-"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "",
+"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "A k\xF6rk\xFCld\xE9s v\xE9get \xE9rt - ez nem jelenti, hogy minden \xFCzenet elment, ezt a sz\xE1mok mutatj\xE1k. A k\xE9zbes\xEDt\xE9s k\xF6vet\xE9se k\xF6r\xF6kben t\xF6rt\xE9nik; a k\xF6vetkez\xF5 mag\xE1t\xF3l j\xF6n.", // ai 2026-11
 
 // src/Isds/Advice.php, row 146
-"ISDS is being maintained. The sending waits till the end and goes on by itself." => "",
+"ISDS is being maintained. The sending waits till the end and goes on by itself." => "Az ISDS karbantart\xE1s alatt \xE1ll. A k\xF6rk\xFCld\xE9s megv\xE1rja a v\xE9g\xE9t, \xE9s mag\xE1t\xF3l folytat\xF3dik.", // ai 2026-11
 
 // src/Isds/Advice.php, row 147
-"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "",
+"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "Ennek az oldalnak az adatdoboz-fi\xF3kja m\xE1r nem az, amellyel a k\xF6rk\xFCld\xE9s a feladatsorba ker\xFClt. Forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 148
-"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "",
+"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "Az ISDS nem v\xE1laszol. Az AA mag\xE1t\xF3l \xFAjrapr\xF3b\xE1lja; ha a k\xF6rk\xFCld\xE9s emiatt le\xE1llt, v\xE1lassza a ,,Folytat\xE1s\" lehet\xF5s\xE9get, amint az ISDS v\xE1laszol.", // ai 2026-11
 
 // src/Isds/Advice.php, row 149
-"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "",
+"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "Az ISDS elutas\xEDtja a fi\xF3k bejelentkez\xE9s\xE9t. K\xE9rje meg az adminisztr\xE1tort, hogy ellen\xF5rizze a bejelentkez\xE9si adatokat, majd v\xE1lassza a ,,Folytat\xE1s\" lehet\xF5s\xE9get.", // ai 2026-11
 
 // src/Isds/Advice.php, row 150
-"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "Az ISDS letiltotta a bejelentkez\xE9st err\xF5l a szerverr\xF5l. \xDAj jelsz\xF3 nem seg\xEDt: v\xE1lassza a ,,Folytat\xE1s\" lehet\xF5s\xE9get holnap, vagy forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 151
-"The settings of the account are not complete. Ask the administrator." => "",
+"The settings of the account are not complete. Ask the administrator." => "A fi\xF3k be\xE1ll\xEDt\xE1sai hi\xE1nyosak. Forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 152
-"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "",
+"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "Ami a k\xF6rk\xFCld\xE9shez r\xF6gz\xEDtve lett - a lev\xE9l, a mell\xE9kletei vagy a c\xEDmzettek -, hi\xE1nyzik vagy megv\xE1ltozott, ez\xE9rt a k\xF6rk\xFCld\xE9s nem folytat\xF3dhat. Forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 153
-"The database cannot record the sending safely. Ask the administrator." => "",
+"The database cannot record the sending safely. Ask the administrator." => "Az adatb\xE1zis nem tudja biztons\xE1gosan r\xF6gz\xEDteni a k\xF6rk\xFCld\xE9st. Forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 154
-"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "",
+"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "A k\xF6rk\xFCld\xE9s egyik l\xE9p\xE9se ism\xE9telten nem haladt el\xF5re. V\xE1lassza a ,,Folytat\xE1s\" lehet\xF5s\xE9get; ha ism\xE9t le\xE1ll, forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 155
-"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "A k\xF6rk\xFCld\xE9s egyik l\xE9p\xE9se a v\xE9ge el\xF5tt le\xE1llt. Az AA mag\xE1t\xF3l \xFAjrapr\xF3b\xE1lja; ha a k\xF6rk\xFCld\xE9s emiatt le\xE1llt, forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 156
-"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "A k\xF6rk\xFCld\xE9s v\xE9g\xE9t nem siker\xFClt r\xF6gz\xEDteni. Az AA mag\xE1t\xF3l \xFAjrapr\xF3b\xE1lja; ha a k\xF6rk\xFCld\xE9s emiatt le\xE1llt, forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 157
-"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "",
+"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "A k\xF6rk\xFCld\xE9s egyik l\xE9p\xE9se az AA bels\xF5 hib\xE1ja miatt meghi\xFAsult. V\xE1lassza a ,,Folytat\xE1s\" lehet\xF5s\xE9get; ha ism\xE9t meghi\xFAsul, forduljon az adminisztr\xE1torhoz.", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "",
+"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "A c\xEDmzett adatdoboza csak d\xEDjk\xF6teles postai adat\xFCzeneteket fogad, a k\xFCld\xF5 adatdoboz pedig nem k\xFCldhet ilyeneket.", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"Test with the data box of an authority." => "",
+"Test with the data box of an authority." => "Teszteljen egy hivatal adatdoboz\xE1val.", // ai 2026-11
 
 // src/Isds/Advice.php, row 174
-"The sending data box has been made inaccessible - no message can go from it now." => "",
+"The sending data box has been made inaccessible - no message can go from it now." => "A k\xFCld\xF5 adatdobozt el\xE9rhetetlenn\xE9 tett\xE9k - most egyetlen \xFCzenet sem mehet el bel\xF5le.", // ai 2026-11
 
 // src/Isds/Advice.php, row 175
-"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "",
+"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "A t\xE1rgy, a ,,Kezeihez\" mez\xF5 vagy egy mell\xE9klet neve olyan karaktert tartalmaz, amelyet az ISDS nem fogad el.", // ai 2026-11
 
 // src/Isds/Advice.php, row 183
-"ISDS answered with status %1." => "",
+"ISDS answered with status %1." => "Az ISDS a k\xF6vetkez\xF5 \xE1llapottal v\xE1laszolt: %1.", // ai 2026-11
 
 // src/Isds/Advice.php, row 193
-"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "A t\xE1rgy nem menthet\xF5: legfeljebb %1 karakter lehet, \xE9s nem tartalmazhat tabul\xE1tort vagy m\xE1s vez\xE9rl\xF5karaktert. A piszkozatb\xF3l semmi sem lett mentve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 194
-"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "A ,,Kezeihez\" mez\xF5 nem menthet\xF5: legfeljebb %1 karakter lehet, \xE9s nem tartalmazhat tabul\xE1tort vagy m\xE1s vez\xE9rl\xF5karaktert. A piszkozatb\xF3l semmi sem lett mentve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 195
-"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "",
+"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "A lev\xE9l sz\xF6vege nem menthet\xF5: nagyobb, mint %1, vagy nem \xE9rv\xE9nyes sz\xF6veg. A piszkozatb\xF3l semmi sem lett mentve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 196
-"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "",
+"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "A c\xEDmzettek kiv\xE1laszt\xE1sa nem menthet\xF5: ez az oldal nem k\xEDn\xE1lja fel. A piszkozatb\xF3l semmi sem lett mentve - v\xE1lassza ki \xF5ket m\xE9g egyszer, \xE9s mentse.", // ai 2026-11
 
 // src/Isds/Advice.php, row 197
-"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "",
+"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "A c\xEDmzettek kiv\xE1laszt\xE1sa nem menthet\xF5: legfeljebb %1 c\xEDmzett v\xE1laszthat\xF3 ki egyenk\xE9nt, \xE9s ugyanennyi hagyhat\xF3 ki egyenk\xE9nt. A piszkozatb\xF3l semmi sem lett mentve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 198
-"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "",
+"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Egy adat\xFCzenet a lev\xE9l mellett legfeljebb %1 mell\xE9kletet vihet. A piszkozatb\xF3l semmi sem lett mentve - el\xF5bb t\xE1vol\xEDtson el n\xE9h\xE1nyat.", // ai 2026-11
 
 // src/Isds/Advice.php, row 199
-"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "A(z) %1 f\xE1jl nem csatolhat\xF3: ez az oldal csak a k\xF6vetkez\xF5 t\xEDpus\xFA f\xE1jlokat fogadja: %2. Mentse PDF-k\xE9nt, vagy egy arch\xEDvum f\xE1jljait egyenk\xE9nt csatolja. A piszkozatb\xF3l semmi sem lett mentve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 200
-"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "A(z) %1 f\xE1jl nem csatolhat\xF3: a tartalma nem a kiterjeszt\xE9se szerinti t\xEDpus\xFA. A piszkozatb\xF3l semmi sem lett mentve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 201
-"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "",
+"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "A(z) %1 f\xE1jl nagyobb, mint amekkora itt egy f\xE1jl lehet (%2). A piszkozatb\xF3l semmi sem lett mentve. Az \xF6sszes mell\xE9klet \xE9s a lev\xE9l egy\xFCtt legfeljebb %3 lehet - ezt egy teszt\xFCzenet ellen\xF5rzi.", // ai 2026-11
 
 // src/Isds/Advice.php, row 202
-"The file %1 is empty. Nothing of the draft was saved." => "",
+"The file %1 is empty. Nothing of the draft was saved." => "A(z) %1 f\xE1jl \xFCres. A piszkozatb\xF3l semmi sem lett mentve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 203
-"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "",
+"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "A(z) %1 f\xE1jl nem \xE9rkezett meg teljesen. Pr\xF3b\xE1lja \xFAjra. A piszkozatb\xF3l semmi sem lett mentve.", // ai 2026-11
 
 // src/Isds/Advice.php, row 204
-"A value of the form cannot be taken. Load the page again and try it once more." => "",
+"A value of the form cannot be taken. Load the page again and try it once more." => "Az \xFBrlap egyik \xE9rt\xE9ke nem vehet\xF5 \xE1t. T\xF6ltse be \xFAjra az oldalt, \xE9s pr\xF3b\xE1lja meg m\xE9g egyszer.", // ai 2026-11
 
 // src/Isds/Gate.php, row 1139
-"The mass sending on this page is not ready - fix this first:" => "",
+"The mass sending on this page is not ready - fix this first:" => "A k\xF6rk\xFCld\xE9s ezen az oldalon nem \xE1ll k\xE9szen - el\xF5bb jav\xEDtsa ki a k\xF6vetkez\xF5ket:", // ai 2026-11
 
 // src/Isds/Gate.php, row 1140
-"Where to fix it:" => "",
+"Where to fix it:" => "Hol jav\xEDthat\xF3:", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"Name field" => "",
+"Name field" => "N\xE9vmez\xF5", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"The name the register is searched by when the I\xC4\x8CO finds no box" => "",
+"The name the register is searched by when the I\xC4\x8CO finds no box" => "A n\xE9v, amely alapj\xE1n a nyilv\xE1ntart\xE1sban keres\xFCnk, ha az I\xC8O alapj\xE1n nincs tal\xE1lat", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"I\xC4\x8CO field" => "",
+"I\xC4\x8CO field" => "I\xC8O-mez\xF5", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"The I\xC4\x8CO finds the box for sure; without it only names are matched, and a person checks those" => "",
+"The I\xC4\x8CO finds the box for sure; without it only names are matched, and a person checks those" => "Az I\xC8O biztosan megtal\xE1lja az adatdobozt; n\xE9lk\xFCle csak a nevek ker\xFClnek \xF6sszevet\xE9sre, \xE9s ezeket egy szem\xE9lynek kell ellen\xF5riznie", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"Data box field" => "",
+"Data box field" => "Adatdoboz-mez\xF5", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"The field the data box id is written to - the only field the pairing changes" => "",
+"The field the data box id is written to - the only field the pairing changes" => "A mez\xF5, amelybe az adatdoboz azonos\xEDt\xF3ja ker\xFCl - az egyetlen mez\xF5, amelyet a p\xE1ros\xEDt\xE1s m\xF3dos\xEDt", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"Type field" => "",
+"Type field" => "T\xEDpusmez\xF5", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"The type of the item, needed for the two lists below" => "",
+"The type of the item, needed for the two lists below" => "A cikk t\xEDpusa, amely az al\xE1bbi k\xE9t list\xE1hoz sz\xFCks\xE9ges", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Types to pair" => "",
+"Types to pair" => "P\xE1ros\xEDtand\xF3 t\xEDpusok", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Only items of these types are paired; none = all items" => "",
+"Only items of these types are paired; none = all items" => "Csak az ilyen t\xEDpus\xFA cikkek p\xE1rosulnak; ha nincs megadva, minden cikk", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Types of city districts" => "",
+"Types of city districts" => "V\xE1rosr\xE9szek t\xEDpusai", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "",
+"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "Az ilyen t\xEDpus\xFA cikkek a v\xE1rosr\xE9szek adatdobozaival p\xE1rosulnak, a t\xF6bbiek a telep\xFCl\xE9sek\xE9ivel", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field with the name" => "",
+"Choose the field with the name" => "V\xE1lassza ki a nevet tartalmaz\xF3 mez\xF5t", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field the data box is written to" => "",
+"Choose the field the data box is written to" => "V\xE1lassza ki a mez\xF5t, amelybe az adatdoboz ker\xFCl", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 132
-"The slice has no field %1" => "",
+"The slice has no field %1" => "A rovatnak nincs %1 mez\xF5je", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 139
-"The data box needs a field of its own - writing it would overwrite the name, I\xC4\x8CO or type" => "",
+"The data box needs a field of its own - writing it would overwrite the name, I\xC4\x8CO or type" => "Az adatdoboznak saj\xE1t mez\xF5 kell - a be\xEDr\xE1sa fel\xFCl\xEDrn\xE1 a nevet, az I\xC8O-t vagy a t\xEDpust", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 142
-"The lists of types need the type field" => "",
+"The lists of types need the type field" => "A t\xEDpuslist\xE1khoz t\xEDpus mez\xF5 sz\xFCks\xE9ges", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 147
-"The types of city districts must be among the types to pair too: %1" => "",
+"The types of city districts must be among the types to pair too: %1" => "A v\xE1rosr\xE9szek t\xEDpusainak a p\xE1ros\xEDtand\xF3 t\xEDpusok k\xF6z\xF6tt is szerepelni\xFCk kell: %1", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 160
-"The field %1 is protected - it is neither shown nor written here" => "",
+"The field %1 is protected - it is neither shown nor written here" => "A(z) %1 mez\xF5 v\xE9dett - itt sem nem jelenik meg, sem nem \xEDrhat\xF3", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 164
-"The data box cannot be written to %1, a column of the item table" => "",
+"The data box cannot be written to %1, a column of the item table" => "Az adatdoboz nem \xEDrhat\xF3 ide: %1, ez az item t\xE1bla egyik oszlopa", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 86
-"Changed" => "",
+"Changed" => "Megv\xE1ltozott", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 87
-"Same" => "",
+"Same" => "V\xE1ltozatlan", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 88
 // src/Isds/Registry/Page.php, row 567
-"Not found" => "",
+"Not found" => "Nincs tal\xE1lat", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 89
-"Several candidates" => "",
+"Several candidates" => "T\xF6bb jel\xF6lt", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 151
-"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by I\xC4\x8CO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "",
+"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by I\xC4\x8CO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "Ez az oldal megkeresi az adatdobozok nyilv\xE1nos nyilv\xE1ntart\xE1s\xE1ban minden cikk adatdoboz\xE1t, \xE9s be\xEDrja a cikkbe. Csak a bejel\xF6lt sorok ker\xFClnek be\xEDr\xE1sra, \xE9s csak az adatdoboz mez\xF5 v\xE1ltozik. Az I\xC8O alapj\xE1n tal\xE1lt adatdoboz el\xF5re be van jel\xF6lve; a n\xE9v alapj\xE1n tal\xE1lt csak javaslat, ez\xE9rt vesse \xF6ssze a neveket, \xE9s jel\xF6lje be saj\xE1t maga.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 169
-"The form sent values this page does not send. Reload the page and try again." => "",
+"The form sent values this page does not send. Reload the page and try again." => "Az \xFBrlap olyan \xE9rt\xE9keket k\xFCld\xF6tt, amelyeket ez az oldal nem k\xFCld. T\xF6ltse be \xFAjra az oldalt, \xE9s pr\xF3b\xE1lja \xFAjra.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 324
-"You do not have permissions to do this in this slice." => "",
+"You do not have permissions to do this in this slice." => "Nincs jogosults\xE1ga ehhez ebben a rovatban.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 325
-"The settings are saved." => "",
+"The settings are saved." => "A be\xE1ll\xEDt\xE1sok elmentve.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 327
-"The register is downloaded." => "",
+"The register is downloaded." => "A nyilv\xE1ntart\xE1s let\xF6ltve.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 329
-"The register is being downloaded right now. Reload the page in a minute." => "",
+"The register is being downloaded right now. Reload the page in a minute." => "A nyilv\xE1ntart\xE1s let\xF6lt\xE9se \xE9ppen folyamatban van. Egy perc m\xFAlva t\xF6ltse be \xFAjra az oldalt.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 330
-"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "A nyilv\xE1ntart\xE1s let\xF6lt\xE9se nem siker\xFClt; tov\xE1bbra is az el\xF5z\xF5 van haszn\xE1latban. Pr\xF3b\xE1lja \xFAjra k\xE9s\xF5bb. A r\xE9szleteket az adminisztr\xE1tor az AA napl\xF3j\xE1ban tal\xE1lja (t\xEDpus: %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 331
-"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "A nyilv\xE1ntart\xE1s let\xF6lt\xF5d\xF6tt, de az AA nem tudta r\xF6gz\xEDteni a let\xF6lt\xE9st, \xEDgy a nyilv\xE1ntart\xE1s nem haszn\xE1lhat\xF3, am\xEDg egy let\xF6lt\xE9s nem siker\xFCl. Pr\xF3b\xE1lja \xFAjra k\xE9s\xF5bb. A r\xE9szleteket az adminisztr\xE1tor az AA napl\xF3j\xE1ban tal\xE1lja (t\xEDpus: %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 332
-"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "",
+"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "A nyilv\xE1ntart\xE1s vagy a p\xE1ros\xEDt\xE1s be\xE1ll\xEDt\xE1sai megv\xE1ltoztak az\xF3ta, hogy megn\xE9zte a sorokat, ez\xE9rt semmi sem lett be\xEDrva. Ellen\xF5rizze \xFAjra az al\xE1bbi sorokat, \xE9s \xEDrja be \xF5ket.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 333
-"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "A nyilv\xE1ntart\xE1s m\xE1solata nem olvashat\xF3, ez\xE9rt semmi sem lett be\xEDrva. A r\xE9szleteket az adminisztr\xE1tor az AA napl\xF3j\xE1ban tal\xE1lja (t\xEDpus: %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 334
-"Nothing was written. Download the register again." => "",
+"Nothing was written. Download the register again." => "Semmi sem lett be\xEDrva. T\xF6ltse le \xFAjra a nyilv\xE1ntart\xE1st.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 335
-"Choose the fields of the pairing first." => "",
+"Choose the fields of the pairing first." => "El\xF5bb v\xE1lassza ki a p\xE1ros\xEDt\xE1s mez\xF5it.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 336
-"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "",
+"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "A p\xE1ros\xEDt\xE1s be\xE1ll\xEDt\xE1sai m\xE1r nem illenek a rovat mez\xF5ihez, ez\xE9rt semmi sem lett be\xEDrva: %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 337
-"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "",
+"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "A be\xEDr\xE1s hib\xE1val le\xE1llt. Az el\xF5tte be\xEDrt sorok be\xEDrva maradnak; az al\xE1bbi \xE1ttekint\xE9s a cikkek jelenlegi \xE1llapot\xE1t mutatja. A r\xE9szleteket az adminisztr\xE1tor az AA napl\xF3j\xE1ban tal\xE1lja (t\xEDpus: %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 347
-"The last download attempt was at %1. Another one is possible from %2." => "",
+"The last download attempt was at %1. Another one is possible from %2." => "Az utols\xF3 let\xF6lt\xE9si k\xEDs\xE9rlet ideje: %1. A k\xF6vetkez\xF5 ekkort\xF3l lehets\xE9ges: %2.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 355
-"Data boxes written: %1." => "",
+"Data boxes written: %1." => "Be\xEDrt adatdobozok: %1.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 356
-"Nothing was written: no row was ticked, or the ticked ones have their box already." => "",
+"Nothing was written: no row was ticked, or the ticked ones have their box already." => "Semmi sem lett be\xEDrva: egyetlen sor sem volt bejel\xF6lve, vagy a bejel\xF6lteknek m\xE1r megvan az adatdobozuk.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 358
-"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "",
+"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "Bejel\xF6lt sorok, amelyek id\xF5k\xF6zben megv\xE1ltoztak, \xE9s nem lettek be\xEDrva: %1. Ellen\xF5rizze \xF5ket \xFAjra al\xE1bb.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 361
-"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "",
+"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "A k\xF6vetkez\xF5 be\xEDr\xE1sra maradt bejel\xF6lt sorok: %1. Egy be\xEDr\xE1s legfeljebb %2 sort dolgoz fel.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 364
-"These items were not written:" => "",
+"These items were not written:" => "Ezek a cikkek nem lettek be\xEDrva:", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 386, 465
-"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "A nyilv\xE1ntart\xE1s m\xE1solata nem olvashat\xF3. A r\xE9szleteket az adminisztr\xE1tor az AA napl\xF3j\xE1ban tal\xE1lja (t\xEDpus: %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet. Download it to see the report." => "",
+"The register has not been downloaded yet. Download it to see the report." => "A nyilv\xE1ntart\xE1s m\xE9g nincs let\xF6ltve. T\xF6ltse le az \xE1ttekint\xE9s megtekint\xE9s\xE9hez.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet." => "",
+"The register has not been downloaded yet." => "A nyilv\xE1ntart\xE1s m\xE9g nincs let\xF6ltve.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Download the register again." => "",
+"Download the register again." => "T\xF6ltse le \xFAjra a nyilv\xE1ntart\xE1st.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Ask someone who manages the settings to download the register again." => "",
+"Ask someone who manages the settings to download the register again." => "K\xE9rje meg valakit, aki a be\xE1ll\xEDt\xE1sokat kezeli, hogy t\xF6ltse le \xFAjra a nyilv\xE1ntart\xE1st.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 392
-"Size: %1 MB." => "",
+"Size: %1 MB." => "M\xE9ret: %1 MB.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 394
-"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "",
+"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "A nyilv\xE1ntart\xE1s %1 napn\xE1l r\xE9gebbi. Be\xEDr\xE1s el\xF5tt t\xF6ltse le \xFAjra: a hivatalok \xFAj adatdobozokat kapnak, \xE9s \xF6sszevonj\xE1k \xF5ket.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 398
-"Download the register now" => "",
+"Download the register now" => "Nyilv\xE1ntart\xE1s let\xF6lt\xE9se most", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 399
-"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "",
+"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "A hivatalok adatdobozainak nyilv\xE1nos nyilv\xE1ntart\xE1sa, kb. 17 MB; a let\xF6lt\xE9s legfeljebb egy percig tart. Ennek az AA-nak minden rovata ugyanazt a m\xE1solatot haszn\xE1lja.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 401
-"Register of data boxes" => "",
+"Register of data boxes" => "Adatdobozok nyilv\xE1ntart\xE1sa", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"AA has no record of downloading this copy of the register" => "",
+"AA has no record of downloading this copy of the register" => "Az AA-nak nincs feljegyz\xE9se a nyilv\xE1ntart\xE1s e m\xE1solat\xE1nak let\xF6lt\xE9s\xE9r\xF5l", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"The register of data boxes is not the one AA downloaded" => "",
+"The register of data boxes is not the one AA downloaded" => "Az adatdobozok nyilv\xE1ntart\xE1sa nem az, amelyet az AA let\xF6lt\xF6tt", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 426
-"Downloaded: %1 (today)." => "",
+"Downloaded: %1 (today)." => "Let\xF6ltve: %1 (ma).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 427
-"Downloaded: %1 (yesterday)." => "",
+"Downloaded: %1 (yesterday)." => "Let\xF6ltve: %1 (tegnap).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 428
-"Downloaded: %1." => "",
+"Downloaded: %1." => "Let\xF6ltve: %1.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 469
-"Items and their data boxes" => "",
+"Items and their data boxes" => "Cikkek \xE9s adatdobozaik", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 482
-"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "",
+"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "A p\xE1ros\xEDt\xE1s be\xE1ll\xEDt\xE1sai m\xE1r nem illenek a rovat mez\xF5ihez: %1. V\xE1lassza ki \xFAjra a mez\xF5ket az al\xE1bbi be\xE1ll\xEDt\xE1sokban.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 485
-"The slice has no items to pair." => "",
+"The slice has no items to pair." => "A rovatban nincsenek p\xE1ros\xEDtand\xF3 cikkek.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 490
-"No row has this status." => "",
+"No row has this status." => "Egyetlen sor sem rendelkezik ezzel az \xE1llapottal.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 510
 "Write" => "\xCDr\xE1s", // ai 2026-06
 
 // src/Isds/Registry/Page.php, row 514
-"Stored data box" => "",
+"Stored data box" => "Mentett adatdoboz", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 514
-"Data box in the register" => "",
+"Data box in the register" => "Adatdoboz a nyilv\xE1ntart\xE1sban", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 520
-"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "",
+"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "Egy be\xEDr\xE1s legfeljebb %1 sort dolgoz fel, \xE9s legfeljebb ennyi van el\xF5re bejel\xF6lve. A t\xF6bbit ut\xE1na \xEDrja be.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 523
-"Write the ticked data boxes" => "",
+"Write the ticked data boxes" => "Bejel\xF6lt adatdobozok be\xEDr\xE1sa", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 524
-"Writes only the data box field of the ticked items. Their history records the change." => "",
+"Writes only the data box field of the ticked items. Their history records the change." => "Csak a bejel\xF6lt cikkek adatdoboz mez\xF5j\xE9t \xEDrja. A v\xE1ltoz\xE1st a cikkek el\xF5zm\xE9nyei r\xF6gz\xEDtik.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 536
-"Show the rows of" => "",
+"Show the rows of" => "Sorok megjelen\xEDt\xE9se ezzel az \xE1llapottal", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 542
-"(no name)" => "",
+"(no name)" => "(nincs n\xE9v)", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 546
-"Write the data box %1 into %2" => "",
-
-// src/Isds/Registry/Page.php, row 555, 653
-// src/Optimize/MissCacheRouting.php, row 98, 129
-"none" => "nincs", // ai 2026-10
+"Write the data box %1 into %2" => "A(z) %1 adatdoboz be\xEDr\xE1sa ide: %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 571
-"I\xC4\x8CO %1" => "",
+"I\xC4\x8CO %1" => "I\xC8O: %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 580
-"by I\xC4\x8CO" => "",
+"by I\xC4\x8CO" => "I\xC8O alapj\xE1n", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 581
-"by name, check it" => "",
+"by name, check it" => "n\xE9v alapj\xE1n, ellen\xF5rizze", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 585
-"I\xC4\x8CO of the item %1, of the box %2" => "",
+"I\xC4\x8CO of the item %1, of the box %2" => "A cikk I\xC8O-ja: %1, az adatdoboz\xE9: %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 588
-"Another item has or would get this data box too. Check that it is not one place twice." => "",
+"Another item has or would get this data box too. Check that it is not one place twice." => "Egy m\xE1sik cikknek is megvan vagy meglenne ez az adatdoboz. Ellen\xF5rizze, hogy nem ugyanaz a hely szerepel-e k\xE9tszer.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 599
-"Settings of the pairing" => "",
+"Settings of the pairing" => "A p\xE1ros\xEDt\xE1s be\xE1ll\xEDt\xE1sai", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 616
-"Saving changes only these settings, never the items." => "",
+"Saving changes only these settings, never the items." => "A ment\xE9s csak ezeket a be\xE1ll\xEDt\xE1sokat m\xF3dos\xEDtja, a cikkeket soha.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"Choose a field" => "",
+"Choose a field" => "V\xE1lasszon mez\xF5t", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"None" => "",
+"None" => "Nincs", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 639
-"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "",
+"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "Ehhez a rovathoz m\xE9g nincs be\xE1ll\xEDtva a p\xE1ros\xEDt\xE1s. Itt \xE1ll\xEDthatja be az, aki m\xF3dos\xEDthatja a rovat mez\xF5it.", // ai 2026-11
 
 // src/Isds/Registry/Sync.php, row 450
-"The item was not stored" => "",
+"The item was not stored" => "A cikk ment\xE9se nem siker\xFClt", // ai 2026-11
 
 // src/Isds/SendQueue.php, row 448
-"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "",
+"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "A kamp\xE1nyrovatnak nincs felt\xF6lt\xE9si k\xF6nyvt\xE1ra a lev\xE9l f\xE1jljai sz\xE1m\xE1ra - ezt a szerver rendszergazd\xE1ja \xE1ll\xEDtja be.", // ai 2026-11
 
 // src/Isds/Setup.php, row 107
-"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "",
+"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "A k\xF6rk\xFCld\xE9s be\xE1ll\xEDt\xE1sai nem JSON-objektum - adja meg \xF5ket a {jsonasoc:...} seg\xEDts\xE9g\xE9vel", // ai 2026-11
 
 // src/Isds/Setup.php, row 115
-"Unknown settings of the mass sending: %1 - the settings are %2" => "",
+"Unknown settings of the mass sending: %1 - the settings are %2" => "A k\xF6rk\xFCld\xE9s ismeretlen be\xE1ll\xEDt\xE1sai: %1 - a lehets\xE9ges be\xE1ll\xEDt\xE1sok: %2", // ai 2026-11
 
 // src/Isds/Setup.php, row 130
-"default_types names types that are not among types: %1" => "",
+"default_types names types that are not among types: %1" => "A default_types olyan t\xEDpusokat nevez meg, amelyek nincsenek a types k\xF6z\xF6tt: %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 133
-"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "",
+"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "Az environment \xE9rt\xE9ke csak ,,%1\" lehet - azt, hogy mikor haszn\xE1lja az \xE9les k\xF6rnyezetet, a misc/datovka/datovka_conf.php d\xF6nti el", // ai 2026-11
 
 // src/Isds/Setup.php, row 136
-"Set letterhead to a text" => "",
+"Set letterhead to a text" => "\xC1ll\xEDtsa a letterhead \xE9rt\xE9k\xE9t sz\xF6vegre", // ai 2026-11
 
 // src/Isds/Setup.php, row 146
-"The settings of data boxes cannot be read now - ask the administrator of the server" => "",
+"The settings of data boxes cannot be read now - ask the administrator of the server" => "Az adatdobozok be\xE1ll\xEDt\xE1sai most nem olvashat\xF3k - forduljon a szerver rendszergazd\xE1j\xE1hoz", // ai 2026-11
 
 // src/Isds/Setup.php, row 240
-"Set %1 to the id of a slice - 32 hexadecimal digits" => "",
+"Set %1 to the id of a slice - 32 hexadecimal digits" => "\xC1ll\xEDtsa a(z) %1 \xE9rt\xE9k\xE9t egy rovat azonos\xEDt\xF3j\xE1ra - 32 hexadecim\xE1lis sz\xE1mjegy", // ai 2026-11
 
 // src/Isds/Setup.php, row 258
-"Set %1 to the id of a field - 16 characters like text...........1" => "",
+"Set %1 to the id of a field - 16 characters like text...........1" => "\xC1ll\xEDtsa a(z) %1 \xE9rt\xE9k\xE9t egy mez\xF5 azonos\xEDt\xF3j\xE1ra - 16 karakter, p\xE9ld\xE1ul text...........1", // ai 2026-11
 
 // src/Isds/Setup.php, row 283
-"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "",
+"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "\xC1ll\xEDtsa a types \xE9rt\xE9k\xE9t a felk\xEDn\xE1land\xF3 cikkt\xEDpusok objektum\xE1ra, mindegyiket a c\xEDmk\xE9j\xE9vel: {jsonasoc:<type>:<label>:...}", // ai 2026-11
 
 // src/Isds/Setup.php, row 288
-"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "",
+"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "A types cikkt\xEDpusai csak bet\xFBket, sz\xE1mjegyeket, sz\xF3k\xF6z\xF6ket \xE9s a - _ . : karaktereket tartalmazhatj\xE1k: %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 303
-"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "",
+"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "\xC1ll\xEDtsa a(z) %1 \xE9rt\xE9k\xE9t sz\xF6vegre vagy sz\xF6vegek list\xE1j\xE1ra: [\"...\",\"...\"]", // ai 2026-11
 
 // src/Isds/Setup.php, row 321
-"test_box: %1 is not the id of a data box - 7 letters or digits" => "",
+"test_box: %1 is not the id of a data box - 7 letters or digits" => "test_box: a(z) %1 nem adatdoboz-azonos\xEDt\xF3 - 7 bet\xFB vagy sz\xE1mjegy", // ai 2026-11
 
 // src/Isds/Setup.php, row 351
-"Set max_recipients to a number from 1 to %1" => "",
+"Set max_recipients to a number from 1 to %1" => "\xC1ll\xEDtsa a max_recipients \xE9rt\xE9k\xE9t 1 \xE9s %1 k\xF6z\xF6tti sz\xE1mra", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 67
-"The campaign slice and the message slice must be two slices" => "",
+"The campaign slice and the message slice must be two slices" => "A kamp\xE1nyrovatnak \xE9s az \xFCzenetrovatnak k\xE9t k\xFCl\xF6nb\xF6z\xF5 rovatnak kell lennie", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 94
-"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "",
+"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "A(z) ,,%1\" webhely a lomt\xE1rban van - \xE1ll\xEDtsa vissza a lomt\xE1rb\xF3l, vagy adjon meg m\xE1sik webhelyet", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 95
-"There is no site %1" => "",
+"There is no site %1" => "A(z) %1 webhely nem l\xE9tezik", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 99
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "A(z) ,,%1\" webhely csak a saj\xE1t Olvas\xF3kezel\xE9s-rovatainak olvas\xF3it engedi bejelentkezni, \xEDgy senki sem kap k\xFCld\xE9si jogot - a webhely be\xE1ll\xEDt\xE1saiban \xE1ll\xEDtsa a ,,Felhaszn\xE1l\xF3i bejelentkez\xE9si adatb\xE1zisok\" \xE9rt\xE9k\xE9t erre: ,,%2\"", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 140
-"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "",
+"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "A(z) ,,%1\" rovatnak olvas\xE1si jelszava van, \xEDgy az oldal nem tudja beolvasni a c\xEDmzetteket - a rovat be\xE1ll\xEDt\xE1saiban t\xE1vol\xEDtsa el az ,,Olvas\xE1si jelsz\xF3\" \xE9rt\xE9k\xE9t, vagy adjon meg nyilv\xE1nos rovatot", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 144
-"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "",
+"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "A(z) ,,%1\" rovatnak nincsenek adatdoboz-be\xE1ll\xEDt\xE1sai - \xE1ll\xEDtsa be a mez\xF5it az ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldal\xE1n", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 151
-"Slice \"%1\", its settings of data boxes: %2" => "",
+"Slice \"%1\", its settings of data boxes: %2" => "A(z) ,,%1\" rovat adatdoboz-be\xE1ll\xEDt\xE1sai: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 154
-"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "",
+"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "A(z) ,,%1\" rovat: az adatdoboz-be\xE1ll\xEDt\xE1saiban v\xE1lassza ki a ,,T\xEDpusmez\xF5\" \xE9rt\xE9k\xE9t - a c\xEDmzettek kiv\xE1laszt\xE1sa t\xEDpus szerint t\xF6rt\xE9nik", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 156
-"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "",
+"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "A(z) ,,%1\" rovat a(z) %2 t\xEDpus\xFA cikkek k\xF6z\xFCl egyet sem p\xE1ros\xEDt adatdobozzal - csak a ,,P\xE1ros\xEDtand\xF3 t\xEDpusok\" k\xF6z\xFCl k\xEDn\xE1ljon: %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 162
-"Slice \"%1\" has no field %2 - name the field that tells a member" => "",
+"Slice \"%1\" has no field %2 - name the field that tells a member" => "A(z) ,,%1\" rovatnak nincs %2 mez\xF5je - adja meg azt a mez\xF5t, amely a tags\xE1got jelzi", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 164
-"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "",
+"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "A(z) ,,%2\" rovat %1 mez\xF5je v\xE9dett - adja meg azt a mez\xF5t, amely a tags\xE1got jelzi", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 179
 // src/Optimize/CheckSiteStateFiles.php, row 72
@@ -10737,58 +10927,58 @@ return [
 "Site settings" => "Webhely be\xE1ll\xEDt\xE1sai", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 225
-"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "",
+"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "A(z) ,,%1\" rovat a lomt\xE1rban van - \xE1ll\xEDtsa vissza a lomt\xE1rb\xF3l, vagy adjon meg m\xE1sik rovatot", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 226
-"There is no slice %1" => "",
+"There is no slice %1" => "A(z) %1 rovat nem l\xE9tezik", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 237
-"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "",
+"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "A(z) ,,%1\" webhely nem haszn\xE1lja a(z) %2 rovatot - a webhely be\xE1ll\xEDt\xE1saiban vegye fel a rovatot a ,,Haszn\xE1lt modulok\" k\xF6z\xE9", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 250
-"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "",
+"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "A(z) ,,%1\" rovatnak nincs olvas\xE1si jelszava - a rovat be\xE1ll\xEDt\xE1saiban t\xF6ltse ki az ,,Olvas\xE1si jelsz\xF3\" mez\xF5t", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 254
-"Close slice \"%1\" - set in its settings %2" => "",
+"Close slice \"%1\" - set in its settings %2" => "Z\xE1rja le a(z) ,,%1\" rovatot - a be\xE1ll\xEDt\xE1saiban \xE1ll\xEDtsa be: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 257
-"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "A(z) ,,%1\" rovat b\xE1rmely rovatnak engedi a cikkei import\xE1l\xE1s\xE1t - a ,,Helyi tartalomcsere\" oldal\xE1n kapcsolja ki az ,,Export\xE1l\xE1s enged\xE9lyez\xE9se b\xE1rmely rovatba\" be\xE1ll\xEDt\xE1st", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 274
-"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "A(z) ,,%1\" rovat m\xE1s rovatoknak engedi a cikkei import\xE1l\xE1s\xE1t - a ,,Helyi tartalomcsere\" oldal\xE1n helyezze \xE1t \xF5ket az ,,Export\xE1l\xE1s letiltva\" list\xE1ba", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 277
-"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "",
+"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "A(z) ,,%1\" rovat cikkei tartalomcser\xE9vel m\xE1s rovatokba ker\xFClnek - \xE1ll\xEDtsa le az import\xE1l\xE1st azokban a rovatokban, amelyeket a ,,Helyi tartalomcsere\" oldala a ,,Jelenleg export\xE1lva ide\" alatt sorol fel", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 281
-"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "",
+"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "A(z) ,,%1\" rovat m\xE1s rovatokb\xF3l import\xE1l cikkeket - a ,,Helyi tartalomcsere\" oldal\xE1n helyezze \xE1t \xF5ket a ,,Nincs import\xE1l\xE1s\" list\xE1ba", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 284
-"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "",
+"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "A(z) ,,%1\" rovat elk\xFCldi a cikkeit az ,,E-mail \xE9rtes\xEDt\xE9s\" c\xEDmeire - ott t\xE1vol\xEDtsa el a c\xEDmeket", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 303
-"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "A(z) ,,%1\" rovat minden cikkment\xE9skor sablonnal sz\xE1m\xEDtja ki a(z) %2 mez\xF5ket - az egyes mez\xF5k be\xE1ll\xEDt\xE1saiban \xE1ll\xEDtsa a ,,Besz\xFAr\xE1s\" \xE9rt\xE9k\xE9t erre: ,,%3\"", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 318
-"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "",
+"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "A(z) ,,%1\" \xE9s ,,%2\" rovat ford\xEDtott sorrendben van - els\xF5k\xE9nt a kamp\xE1nyrovatot adja meg", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 330
-"Slice \"%1\" lacks fields of a campaign slice: %2" => "",
+"Slice \"%1\" lacks fields of a campaign slice: %2" => "A(z) ,,%1\" rovatb\xF3l hi\xE1nyoznak a kamp\xE1nyrovat mez\xF5i: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 331
-"Slice \"%1\" lacks fields of a message slice: %2" => "",
+"Slice \"%1\" lacks fields of a message slice: %2" => "A(z) ,,%1\" rovatb\xF3l hi\xE1nyoznak az \xFCzenetrovat mez\xF5i: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 337
-"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "",
+"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "A(z) ,,%1\" rovat: a(z) %2 mez\xF5ket ,,Sz\xE1m\" form\xE1ban t\xE1rolja (az egyes mez\xF5k be\xE1ll\xEDt\xE1saiban a ,,T\xE1rol\xE1s m\xF3dja\" alatt)", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 343
-"Slice \"%1\": set the Default of the field %2 to %3" => "",
+"Slice \"%1\": set the Default of the field %2 to %3" => "A(z) ,,%1\" rovat: \xE1ll\xEDtsa a(z) %2 mez\xF5 ,,Alap\xE9rtelmezett\" \xE9rt\xE9k\xE9t erre: %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 382
-"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "A(z) ,,%1\" rovat m\xF3dos\xEDthatja, amit a k\xFCld\xE9s a(z) %2 mez\xF5kbe ment - az egyes mez\xF5k be\xE1ll\xEDt\xE1saiban \xE1ll\xEDtsa a ,,Besz\xFAr\xE1s\" \xE9rt\xE9k\xE9t erre: ,,%3\"", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
-"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "",
+"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "A(z) ,,%1\" rovat felveszi az \xE9rt\xE9kcsoportokba, amit a k\xFCld\xE9s a(z) %2 mez\xF5kbe ment - az egyes mez\xF5k be\xE1ll\xEDt\xE1saiban kapcsolja ki ezt: ,,%3\"", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
 // src/Widget/Widget.php, row 786
@@ -10874,12 +11064,12 @@ return [
 
 // src/Manageraction/Central_DeleteTrash.php, row 31
 // src/Manageraction/Item_DeleteTrash.php, row 34
-// src/Manageraction/Polls_DeleteTrash.php, row 71
+// src/Manageraction/Polls_DeleteTrash.php, row 73
 "Remove (delete from database)" => "Elt\xE1vol\xEDt\xE1s (t\xF6rl\xE9s az adatb\xE1zisb\xF3l)", // ai 2026-06
 
 // src/Manageraction/Central_DeleteTrash.php, row 38
 // src/Manageraction/Item_DeleteTrash.php, row 43
-// src/Manageraction/Taskmanager_Execute.php, row 24
+// src/Manageraction/Taskmanager_Execute.php, row 26
 "You do not have permissions to remove items" => "Nincs jogosults\xE1ga cikkek elt\xE1vol\xEDt\xE1s\xE1hoz", // ai 2026-06
 
 // src/Manageraction/Central_Linkcheck.php, row 17
@@ -10891,28 +11081,28 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 30
 "Status code" => "\xC1llapotk\xF3d", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 26
-// src/Manageraction/Item_MoveItem.php, row 29
-// src/Manageraction/Links_Move.php, row 26
-// src/Manageraction/Polls_MoveItem.php, row 29
-"Move to Active" => "\xC1thelyez\xE9s az Akt\xEDv t\xE1rol\xF3ba", // ai 2026-06
-
-// src/Manageraction/Central_MoveItem.php, row 27
-// src/Manageraction/Item_MoveItem.php, row 30
-// src/Manageraction/Links_Move.php, row 27
-// src/Manageraction/Polls_MoveItem.php, row 30
-"Move to Holding bin" => "\xC1thelyez\xE9s a V\xE1r\xF3list\xE1ra", // ai 2026-06
-
 // src/Manageraction/Central_MoveItem.php, row 28
 // src/Manageraction/Item_MoveItem.php, row 31
 // src/Manageraction/Links_Move.php, row 28
 // src/Manageraction/Polls_MoveItem.php, row 31
+"Move to Active" => "\xC1thelyez\xE9s az Akt\xEDv t\xE1rol\xF3ba", // ai 2026-06
+
+// src/Manageraction/Central_MoveItem.php, row 29
+// src/Manageraction/Item_MoveItem.php, row 32
+// src/Manageraction/Links_Move.php, row 29
+// src/Manageraction/Polls_MoveItem.php, row 32
+"Move to Holding bin" => "\xC1thelyez\xE9s a V\xE1r\xF3list\xE1ra", // ai 2026-06
+
+// src/Manageraction/Central_MoveItem.php, row 30
+// src/Manageraction/Item_MoveItem.php, row 33
+// src/Manageraction/Links_Move.php, row 30
+// src/Manageraction/Polls_MoveItem.php, row 33
 "Move to Trash" => "\xC1thelyez\xE9s a Lomt\xE1rba", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 41
+// src/Manageraction/Central_MoveItem.php, row 43
 "Activate" => "Aktiv\xE1l\xE1s", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 42
+// src/Manageraction/Central_MoveItem.php, row 44
 "Hold" => "V\xE1r\xF3list\xE1ra helyez\xE9s", // ai 2026-06
 
 // src/Manageraction/Central_OptimizeType.php, row 34
@@ -10922,7 +11112,7 @@ return [
 "Error: %1" => "Hiba: %1", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 19
-// src/Manageraction/Object_Delete.php, row 17
+// src/Manageraction/Object_Delete.php, row 19
 // src/Manageraction/Table_Row_Delete.php, row 16
 "Delete row" => "Sor t\xF6rl\xE9se", // ai 2026-06
 
@@ -10931,11 +11121,11 @@ return [
 
 // src/Manageraction/Import_Delete.php, row 38
 // src/Manageraction/Import_Run.php, row 42
-// src/Manageraction/Object_Delete.php, row 43
-// src/Manageraction/Object_Move2slice.php, row 50
+// src/Manageraction/Object_Delete.php, row 45
+// src/Manageraction/Object_Move2slice.php, row 52
 // src/Manageraction/Plannedtask_Runnow.php, row 41
-// src/Manageraction/Polls_DeleteTrash.php, row 83
-// src/Manageraction/Polls_MoveItem.php, row 41
+// src/Manageraction/Polls_DeleteTrash.php, row 85
+// src/Manageraction/Polls_MoveItem.php, row 43
 // src/Manageraction/Table_Row_Delete.php, row 40
 "This action does not work on this page." => "Ez a m\xFBvelet ezen az oldalon nem m\xFBk\xF6dik.", // ai 2026-10
 
@@ -10943,7 +11133,7 @@ return [
 "Some of the selected imports were not deleted." => "A kijel\xF6lt import\xE1l\xE1sok k\xF6z\xFCl n\xE9h\xE1ny nem lett t\xF6r\xF6lve.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 64
-// src/Manageraction/Object_Delete.php, row 51
+// src/Manageraction/Object_Delete.php, row 53
 "Some of the selected objects were not deleted - they belong to a module you can not change them in." => "A kijel\xF6lt objektumok k\xF6z\xFCl n\xE9h\xE1ny nem lett t\xF6r\xF6lve - olyan modulhoz tartoznak, amelyben nem m\xF3dos\xEDthatja \xF5ket.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 23
@@ -10970,19 +11160,19 @@ return [
 // src/Manageraction/Import_Run.php, row 101
 "Imports not started: %1 (%2). The import detail tells more." => "Nem indult import\xE1l\xE1sok: %1 (%2). Tov\xE1bbi inform\xE1ci\xF3 az import\xE1l\xE1s r\xE9szletein\xE9l.", // ai 2026-10
 
-// src/Manageraction/Item_Duplicate.php, row 23
+// src/Manageraction/Item_Duplicate.php, row 25
 "Duplicate Item" => "Cikk duplik\xE1l\xE1sa", // ai 2026-06
 
-// src/Manageraction/Item_Email.php, row 13
+// src/Manageraction/Item_Email.php, row 15
 "Send email" => "E-mail k\xFCld\xE9se", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 31
 "Export to slice" => "Export\xE1l\xE1s rovatba", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 38, 58
-// src/Manageraction/Item_Move2Slice.php, row 85
-// src/Manageraction/Object_Move2slice.php, row 33
-// src/Manageraction/View_Move2slice.php, row 31
+// src/Manageraction/Item_Move2Slice.php, row 87
+// src/Manageraction/Object_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 33
 "No slice selected" => "Nincs kijel\xF6lt rovat", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 50
@@ -10994,20 +11184,20 @@ return [
 // src/Manageraction/Item_Feed.php, row 68
 "Some of the selected items were not exported - they are not items of this slice." => "A kijel\xF6lt cikkek k\xF6z\xFCl n\xE9h\xE1ny nem lett export\xE1lva - nem ennek a rovatnak a cikkei.", // ai 2026-10
 
-// src/Manageraction/Item_Modifycontent.php, row 13
+// src/Manageraction/Item_Modifycontent.php, row 15
 "Modify content" => "Tartalom m\xF3dos\xEDt\xE1sa", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 37
-// src/Manageraction/Object_Move2slice.php, row 25
+// src/Manageraction/Item_Move2Slice.php, row 39
+// src/Manageraction/Object_Move2slice.php, row 27
 "Move to another slice" => "\xC1thelyez\xE9s m\xE1sik rovatba", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 75
+// src/Manageraction/Item_Move2Slice.php, row 77
 "Move to slice" => "\xC1thelyez\xE9s rovatba", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 89
+// src/Manageraction/Item_Move2Slice.php, row 91
 "Items can be moved only to a slice." => "Cikkeket csak rovatba lehet \xE1thelyezni.", // ai 2026-10
 
-// src/Manageraction/Item_Move2Slice.php, row 93
+// src/Manageraction/Item_Move2Slice.php, row 95
 "You do not have permissions to move items" => "Nincs jogosults\xE1ga cikkek \xE1thelyez\xE9s\xE9hez", // ai 2026-06
 
 // src/Manageraction/Links_Add2Cat.php, row 21
@@ -11016,32 +11206,32 @@ return [
 // src/Manageraction/Links_Check.php, row 25
 "Check Link" => "Link ellen\xF5rz\xE9se", // ai 2026-06
 
-// src/Manageraction/Links_Delete.php, row 20
+// src/Manageraction/Links_Delete.php, row 22
 "Remove from category" => "Elt\xE1vol\xEDt\xE1s kateg\xF3ri\xE1b\xF3l", // ai 2026-06
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Highlight Link" => "Link kiemel\xE9se", // ai 2026-06
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Dehighlight Link" => "Link kiemel\xE9s\xE9nek megsz\xFCntet\xE9se", // ai 2026-06
 
 // src/Manageraction/Links_Move2Cat.php, row 21
 "Move to category" => "\xC1thelyez\xE9s kateg\xF3ri\xE1ba", // ai 2026-06
 
-// src/Manageraction/Object_Delete.php, row 26
+// src/Manageraction/Object_Delete.php, row 28
 // src/Manageraction/Table_Row_Delete.php, row 25
 "Do you really want to delete this row?" => "Biztosan t\xF6rli ezt a sort?", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 37
+// src/Manageraction/Object_Move2slice.php, row 39
 "Tasks can be moved only to a slice." => "Feladatokat csak rovatba lehet \xE1thelyezni.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 41
+// src/Manageraction/Object_Move2slice.php, row 43
 "You do not have permissions to move it" => "Nincs jogosults\xE1ga az \xE1thelyez\xE9s\xE9hez", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 54
+// src/Manageraction/Object_Move2slice.php, row 56
 "Some of the selected objects were not moved - they belong to a module you can not change them in." => "A kijel\xF6lt objektumok k\xF6z\xFCl n\xE9h\xE1ny nem lett \xE1thelyezve - olyan modulhoz tartoznak, amelyben nem m\xF3dos\xEDthatja \xF5ket.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 60
+// src/Manageraction/Object_Move2slice.php, row 62
 "The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "A(z) %1 feladat nem lett \xE1thelyezve - {import} tartalm\xFA feladatot csak a rovat tartalomcser\xE9j\xE9t kezel\xF5 felhaszn\xE1l\xF3 helyezhet \xE1t oda.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 20, 27
@@ -11059,34 +11249,34 @@ return [
 // src/Manageraction/Plannedtask_Runnow.php, row 60
 "The task %1 is already waiting in the queue." => "A(z) %1 feladat m\xE1r v\xE1r a feladatsorban.", // ai 2026-10
 
-// src/Manageraction/Polls_DeleteTrash.php, row 78
+// src/Manageraction/Polls_DeleteTrash.php, row 80
 "You do not have permissions to remove polls" => "Nincs jogosults\xE1ga szavaz\xE1sok t\xF6rl\xE9s\xE9hez", // ai 2026-06
 
-// src/Manageraction/Polls_DeleteTrash.php, row 97
+// src/Manageraction/Polls_DeleteTrash.php, row 99
 "Some of the selected polls were not removed - they belong to another module." => "A kijel\xF6lt szavaz\xE1sok k\xF6z\xFCl n\xE9h\xE1ny nem lett elt\xE1vol\xEDtva - m\xE1sik modulhoz tartoznak.", // ai 2026-10
 
-// src/Manageraction/Polls_MoveItem.php, row 47
+// src/Manageraction/Polls_MoveItem.php, row 49
 "Some of the selected polls were not moved - they belong to another module." => "A kijel\xF6lt szavaz\xE1sok k\xF6z\xFCl n\xE9h\xE1ny nem lett \xE1thelyezve - m\xE1sik modulhoz tartoznak.", // ai 2026-10
 
 // src/Manageraction/Table_Row_Delete.php, row 54
 "Some of the selected rows were not deleted - they belong to another module." => "A kijel\xF6lt sorok k\xF6z\xFCl n\xE9h\xE1ny nem lett t\xF6r\xF6lve - m\xE1sik modulhoz tartoznak.", // ai 2026-10
 
-// src/Manageraction/Taskmanager_Delete.php, row 15
+// src/Manageraction/Taskmanager_Delete.php, row 17
 "Remove (cancel task)" => "Elt\xE1vol\xEDt\xE1s (feladat visszavon\xE1sa)", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Delete.php, row 24
+// src/Manageraction/Taskmanager_Delete.php, row 26
 "You do not have permissions to remove tasks" => "Nincs jogosults\xE1ga feladatok t\xF6rl\xE9s\xE9hez", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Execute.php, row 15
+// src/Manageraction/Taskmanager_Execute.php, row 17
 "Execute" => "V\xE9grehajt\xE1s", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 23
+// src/Manageraction/View_Move2slice.php, row 25
 "Move view to another slice" => "N\xE9zet \xE1thelyez\xE9se m\xE1sik rovatba", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 37
 "Views can be moved only to a slice." => "N\xE9zeteket csak rovatba lehet \xE1thelyezni.", // ai 2026-10
 
-// src/Manageraction/View_Move2slice.php, row 39
+// src/Manageraction/View_Move2slice.php, row 41
 "You do not have permissions to move views" => "Nincs jogosults\xE1ga n\xE9zetek \xE1thelyez\xE9s\xE9hez", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 25
@@ -11119,25 +11309,25 @@ return [
 // src/Optimize/AbstractOptimizeById.php, row 42
 "We found %1 problems" => "%1 probl\xE9m\xE1t tal\xE1ltunk", // ai 2026-06
 
-// src/Optimize/AddAddressFieldTemplate.php, row 10
+// src/Optimize/AddAddressFieldTemplate.php, row 12
 "Add address field template" => "address mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddAuthGroupFieldTemplate.php, row 10
+// src/Optimize/AddAuthGroupFieldTemplate.php, row 12
 "Add auth_group...... field template" => "auth_group...... mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddBitsetFieldTemplate.php, row 10
+// src/Optimize/AddBitsetFieldTemplate.php, row 12
 "Add bitset (flags, bitfield) field template" => "bitset (jelz\xF5k, bitmez\xF5) mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddCityFieldTemplate.php, row 10
+// src/Optimize/AddCityFieldTemplate.php, row 12
 "Add city field template" => "city mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddCodeFieldTemplate.php, row 10
+// src/Optimize/AddCodeFieldTemplate.php, row 12
 "Add code field template" => "code mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddComputedNumFieldTemplate.php, row 10
+// src/Optimize/AddComputedNumFieldTemplate.php, row 12
 "Add computed_num field template" => "computed_num mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddComputedTxtFieldTemplate.php, row 10
+// src/Optimize/AddComputedTxtFieldTemplate.php, row 12
 "Add computed_txt field template" => "computed_txt mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
 // src/Optimize/AddContentFieldIndex.php, row 25
@@ -11158,37 +11348,37 @@ return [
 // src/Optimize/AddContentFieldIndex.php, row 67
 "The index %1 of the content table changed" => "A content t\xE1bla %1 indexe m\xF3dosult", // ai 2026-10
 
-// src/Optimize/AddCountryFieldTemplate.php, row 10
+// src/Optimize/AddCountryFieldTemplate.php, row 12
 "Add country field template" => "country mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddDateFieldTemplate.php, row 10
+// src/Optimize/AddDateFieldTemplate.php, row 12
 "Add date field template" => "date mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 18
+// src/Optimize/AddDurationLog.php, row 20
 "Add hit duration log feature" => "Hit-id\xF5tartam napl\xF3z\xE1si funkci\xF3 hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 26
+// src/Optimize/AddDurationLog.php, row 28
 "Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit" => "A 'duration' oszlop hozz\xE1ad\xE1sa a hit_archive t\xE1bl\xE1hoz, amely a hit duration/cache/not_modified rekordjait t\xE1rolja", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 47
+// src/Optimize/AddDurationLog.php, row 49
 "The \"duration\" column missing in hit_archive table" => "A \"duration\" oszlop hi\xE1nyzik a hit_archive t\xE1bl\xE1b\xF3l", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 50
+// src/Optimize/AddDurationLog.php, row 52
 "OK - The \"duration\" column found in hit_archive table. Duration evaluated from %1" => "OK - A \"duration\" oszlop megtal\xE1lhat\xF3 a hit_archive t\xE1bl\xE1ban. Az id\xF5tartam ki\xE9rt\xE9kel\xE9se %1 \xF3ta t\xF6rt\xE9nik", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 60
+// src/Optimize/AddDurationLog.php, row 62
 "Table already has the column \"duration\"" => "A t\xE1bl\xE1ban m\xE1r l\xE9tezik a \"duration\" oszlop", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 63
+// src/Optimize/AddDurationLog.php, row 65
 "Do alter table hit_archive to add duration column" => "ALTER TABLE-t hajt v\xE9gre a hit_archive t\xE1bl\xE1n - hozz\xE1adja a duration oszlopot", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 65
+// src/Optimize/AddDurationLog.php, row 67
 "Column added" => "Oszlop hozz\xE1adva", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 72
+// src/Optimize/AddDurationLog.php, row 74
 "Do alter table hit_archive to remove duration column - it disables the feature" => "ALTER TABLE-t hajt v\xE9gre a hit_archive t\xE1bl\xE1n - elt\xE1vol\xEDtja a duration oszlopot, ezzel kikapcsolja a funkci\xF3t", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 74
+// src/Optimize/AddDurationLog.php, row 76
 "Column deleted" => "Oszlop t\xF6r\xF6lve", // ai 2026-06
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 14
@@ -11204,87 +11394,108 @@ return [
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 77
 "The e-mail templates updated" => "Az e-mail sablonok friss\xEDtve", // ai 2026-06
 
-// src/Optimize/AddFaxFieldTemplate.php, row 10
+// src/Optimize/AddFaxFieldTemplate.php, row 12
 "Add fax field template" => "A fax mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddHit1FieldTemplate.php, row 10
+// src/Optimize/AddHit1FieldTemplate.php, row 12
 "Add hit_1 field template" => "A hit_1 mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddHit30FieldTemplate.php, row 10
+// src/Optimize/AddHit30FieldTemplate.php, row 12
 "Add hit_30 field template" => "A hit_30 mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddHit7FieldTemplate.php, row 10
+// src/Optimize/AddHit7FieldTemplate.php, row 12
 "Add hit_7 field template" => "A hit_7 mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddIntegerFieldTemplate.php, row 10
+// src/Optimize/AddIntegerFieldTemplate.php, row 12
 "Add integer field template" => "Az integer mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddIpBannedFieldTemplate.php, row 10
+// src/Optimize/AddIpBannedFieldTemplate.php, row 12
 "Add _ip_banned field template" => "Az _ip_banned mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddIpFieldTemplate.php, row 10
+// src/Optimize/AddIpFieldTemplate.php, row 12
 "Add ip field template" => "Az ip mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddLocationFieldTemplate.php, row 10
+// src/Optimize/AddLocationFieldTemplate.php, row 12
 "Add location field template" => "A location mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddMailListsFieldTemplate.php, row 10
+// src/Optimize/AddMailListsFieldTemplate.php, row 12
 "Add mail_lists field template" => "A mail_lists mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddMandatoryDiscApp.php, row 10
-// src/Optimize/AddMandatoryDiscCount.php, row 10
-// src/Optimize/AddMandatoryDisplayCount.php, row 10
-// src/Optimize/AddMandatoryId.php, row 10
-// src/Optimize/AddMandatoryShortId.php, row 10
-// src/Optimize/AddMandatoryStatusCode.php, row 13
+// src/Optimize/AddMandatoryDiscApp.php, row 12
+// src/Optimize/AddMandatoryDiscCount.php, row 12
+// src/Optimize/AddMandatoryDisplayCount.php, row 12
+// src/Optimize/AddMandatoryId.php, row 12
+// src/Optimize/AddMandatoryShortId.php, row 12
+// src/Optimize/AddMandatoryStatusCode.php, row 15
 "Fixing missing %1 field definitions in slices" => "A hi\xE1nyz\xF3 %1 mez\xF5defin\xEDci\xF3k jav\xEDt\xE1sa a rovatokban", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 19
+// src/Optimize/AddMandatoryStatusCode.php, row 21
 "Adds field definitions for slices, where missing" => "Mez\xF5defin\xEDci\xF3kat ad hozz\xE1 azokhoz a rovatokhoz, ahol hi\xE1nyoznak", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 45
+// src/Optimize/AddMandatoryStatusCode.php, row 47
 "Missing %1 field definition in some slices - need to repair" => "Egyes rovatokban hi\xE1nyzik a(z) %1 mez\xF5 defin\xEDci\xF3ja - jav\xEDtani kell", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 54
+// src/Optimize/AddMandatoryStatusCode.php, row 56
 "Fixing missing %1 fields in slices" => "A hi\xE1nyz\xF3 %1 mez\xF5k jav\xEDt\xE1sa a rovatokban", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 69
+// src/Optimize/AddMandatoryStatusCode.php, row 71
 "Mandatory field %1 added to all slices" => "A k\xF6telez\xF5 %1 mez\xF5 hozz\xE1adva minden rovathoz", // ai 2026-06
 
-// src/Optimize/AddMlxctrlFieldTemplate.php, row 10
+// src/Optimize/AddMlxctrlFieldTemplate.php, row 12
 "Add mlxctrl field template" => "Az mlxctrl mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddMsgBannedFieldTemplate.php, row 10
+// src/Optimize/AddMsgBannedFieldTemplate.php, row 12
 "Add _msg_banned field template" => "Az _msg_banned mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddMsgSpamFieldTemplate.php, row 10
+// src/Optimize/AddMsgSpamFieldTemplate.php, row 12
 "Add _msg_spam field template" => "Az _msg_spam mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddNameFieldTemplate.php, row 10
+// src/Optimize/AddNameFieldTemplate.php, row 12
 "Add name field template" => "A name mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddPhoneFieldTemplate.php, row 10
+// src/Optimize/AddPasskeyTable.php, row 15
+"Table of passkeys" => "Azonos\xEDt\xF3kulcsok t\xE1bl\xE1ja", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 20
+"Creates the table authenticator, where the passkeys of the accounts are kept. Nothing else changes; without it, nobody can add a passkey." => "L\xE9trehozza az authenticator t\xE1bl\xE1t, amelyben a fi\xF3kok azonos\xEDt\xF3kulcsai t\xE1rol\xF3dnak. M\xE1s nem v\xE1ltozik; n\xE9lk\xFCle senki sem adhat hozz\xE1 azonos\xEDt\xF3kulcsot.", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 43
+"The table %1 is missing" => "Hi\xE1nyzik a(z) %1 t\xE1bla", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 46
+"OK - the table %1 exists" => "OK - a(z) %1 t\xE1bla l\xE9tezik", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 54
+"The table %1 exists already" => "A(z) %1 t\xE1bla m\xE1r l\xE9tezik", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 is created" => "A(z) %1 t\xE1bla l\xE9trej\xF6tt", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 could not be created" => "A(z) %1 t\xE1bl\xE1t nem siker\xFClt l\xE9trehozni", // ai 2026-11
+
+// src/Optimize/AddPhoneFieldTemplate.php, row 12
 "Add phone field template" => "A phone mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 29
+// src/Optimize/AddPolls.php, row 31
 "Add Polls tables" => "A Szavaz\xE1sok modul t\xE1bl\xE1inak hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 37
+// src/Optimize/AddPolls.php, row 39
 "Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "L\xE9trehozza az \xFAj Szavaz\xE1sok modul t\xE1bl\xE1it, \xE9s hozz\xE1adja az els\xF5, mintaszavaz\xE1sokat. Minden jelenlegi szavaz\xE1st t\xF6r\xF6l!", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 60
+// src/Optimize/AddPolls.php, row 62
 "Poll module is not installed" => "A Szavaz\xE1sok modul nincs telep\xEDtve", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 95
+// src/Optimize/AddPolls.php, row 97
 "Polls module created" => "A Szavaz\xE1sok modul l\xE9trehozva", // ai 2026-06
 
-// src/Optimize/AddRangeFieldTemplate.php, row 10
+// src/Optimize/AddRangeFieldTemplate.php, row 12
 "Add range field template" => "A range mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddRealFieldTemplate.php, row 10
+// src/Optimize/AddRealFieldTemplate.php, row 12
 "Add real field template" => "A real mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddSecretFieldTemplate.php, row 10
+// src/Optimize/AddSecretFieldTemplate.php, row 12
 "Add secret field template" => "Secret mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 16
@@ -11305,17 +11516,17 @@ return [
 // src/Optimize/AddSeoFieldTemplate.php, row 116
 "New \"%1\" field template added" => "\xDAj \"%1\" mez\xF5sablon hozz\xE1adva", // ai 2026-06
 
-// src/Optimize/AddUploadUrlFieldTemplate.php, row 10
+// src/Optimize/AddUploadUrlFieldTemplate.php, row 12
 "Add _upload_url field template" => "_upload_url mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
-// src/Optimize/AddUrlPreviewFieldTemplate.php, row 10
+// src/Optimize/AddUrlPreviewFieldTemplate.php, row 12
 "Add _url_preview field template" => "_url_preview mez\xF5sablon hozz\xE1ad\xE1sa", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 19
 "Backup tables" => "T\xE1bl\xE1k biztons\xE1gi ment\xE9se", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 // src/Optimize/UpdateDbStructure.php, row 31
 "[experimental] " => "[k\xEDs\xE9rleti]", // ai 2026-06
 
@@ -11355,10 +11566,10 @@ return [
 // src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "A nem t\xF6bb\xE9rt\xE9k\xFB \xE9s html-k\xE9nt megjel\xF6lt mez\xF5k f_h alias\xE1t a gyorsabb, k\xF6zvetlen tartalomki\xEDr\xE1st v\xE9gz\xF5 f_1 f\xFCggv\xE9nyre cser\xE9li", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 15
+// src/Optimize/ChangeF_t2F_1.php, row 17
 "Optimize f_t alias to f_1" => "Az f_t alias optimaliz\xE1l\xE1sa f_1-re", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 23
+// src/Optimize/ChangeF_t2F_1.php, row 25
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "A nem t\xF6bb\xE9rt\xE9k\xFB \xE9s html-k\xE9nt megjel\xF6lt mez\xF5k f_t alias\xE1t a gyorsabb, k\xF6zvetlen tartalomki\xEDr\xE1st v\xE9gz\xF5 f_1 f\xFCggv\xE9nyre cser\xE9li", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -11367,22 +11578,22 @@ return [
 // src/Optimize/ChangeF_t2F__.php, row 27
 "Replaces f_t alias used for code by quicker f__ function" => "A k\xF3dhoz haszn\xE1lt f_t aliast a gyorsabb f__ f\xFCggv\xE9nyre cser\xE9li", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 20
+// src/Optimize/ChangeModuleId.php, row 22
 "Change current module ID to new one" => "Az aktu\xE1lis modulazonos\xEDt\xF3 cser\xE9je \xFAjra", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 28
+// src/Optimize/ChangeModuleId.php, row 30
 "Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "N\xE9ha akkor haszn\xE1latos, ha kl\xF3nozza az adatb\xE1zist, vagy rovatokat m\xE1sol egy m\xE1sik adatb\xE1zisba egy m\xE1sik \xFCgyf\xE9l sz\xE1m\xE1ra, \xE9s nem szeretn\xE9 ugyanazokat a rovat-/site-azonos\xEDt\xF3kat haszn\xE1lni. Val\xF3sz\xEDn\xFBleg az \xF6sszes rovatra \xE9s a site modulra is el kell v\xE9geznie.<br>MEGV\xC1LTOZTATJA AZ AKTU\xC1LIS ROVAT AZONOS\xCDT\xD3J\xC1T!", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 42
+// src/Optimize/ChangeModuleId.php, row 44
 "Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "Itt nincs mit tesztelni. Csak legyen \xF3vatos - r\xE1k\xE9rdez\xE9s n\xE9lk\xFCl MEGV\xC1LTOZTATJA AZ AKTU\xC1LIS ROVAT AZONOS\xCDT\xD3J\xC1T!", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 63
+// src/Optimize/ChangeModuleId.php, row 65
 "Going to change module_id %1 -> %2 (%3 -> %4)" => "A module_id m\xF3dos\xEDt\xE1sa: %1 -> %2 (%3 -> %4)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 76
+// src/Optimize/ChangeModuleId.php, row 78
 "Changing ID for table %1 (%2)" => "Azonos\xEDt\xF3 m\xF3dos\xEDt\xE1sa a(z) %1 t\xE1bl\xE1ban (%2)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 85
+// src/Optimize/ChangeModuleId.php, row 87
 // src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "%1 t\xE1bla \xE1talak\xEDtva", // ai 2026-06
 
@@ -11425,11 +11636,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckFormRobotRefusals.php, row 76
 // src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
 // src/Optimize/CheckIsdsConf.php, row 156, 189
 // src/Optimize/CheckIsdsViews.php, row 128
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 93
 // src/Optimize/CheckObjectFormRefusals.php, row 102
+// src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
 // src/Optimize/CheckSessionidUse.php, row 101
@@ -11445,11 +11658,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 100
 // src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckFormRobotRefusals.php, row 77
 // src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
 // src/Optimize/CheckIsdsViews.php, row 129
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 94
 // src/Optimize/CheckObjectFormRefusals.php, row 103
+// src/Optimize/CheckPasskeys.php, row 86
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
@@ -11480,7 +11695,7 @@ return [
 "Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "Felsorolja a cikkek azon \xE9rtes\xEDt\xE9s-k\xFCld\xE9seit, amelyeket az elm\xFAlt 30 napban elutas\xEDtott a rendszer, mert a gy\xFBjtem\xE9ny nem kapcsol\xF3dik a cikk rovat\xE1hoz (nincs sz\xFBr\xF5je a rovatra, nem ez az olvas\xF3i rovata, nincs k\xF6z\xF6s webhely\xFCk).", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 86
-"Selections of the collection" => "",
+"Selections of the collection" => "A gy\xFBjtem\xE9ny v\xE1logat\xE1sai", // ai 2026-11
 
 // src/Optimize/CheckAlertitemRefusals.php, row 93
 "Alert send of an item of slice %1 through collection %2 was refused" => "A(z) %1 rovat egyik cikk\xE9nek \xE9rtes\xEDt\xE9s-k\xFCld\xE9se a(z) %2 gy\xFBjtem\xE9nyen kereszt\xFCl elutas\xEDtva", // ai 2026-10
@@ -11522,10 +11737,10 @@ return [
 "AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "Az AlertsSweep::SCHEDULE nem tartalmaz hozz\xE1 bejegyz\xE9st, \xEDgy soha nem \xFCtemez\xF5dik feladat, \xE9s ezek az olvas\xF3k semmit sem kapnak.", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 110
-"Every alert collection is swept on time and all its selections exist" => "",
+"Every alert collection is swept on time and all its selections exist" => "Minden \xE9rtes\xEDt\xE9si gy\xFBjtem\xE9ny kik\xFCld\xE9se id\xF5ben megt\xF6rt\xE9nik, \xE9s minden v\xE1logat\xE1sa l\xE9tezik", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 144
-"Selection" => "",
+"Selection" => "V\xE1logat\xE1s", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
@@ -11536,28 +11751,28 @@ return [
 "Problem" => "Probl\xE9ma", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 146
-"the selection was deleted" => "",
+"the selection was deleted" => "a v\xE1logat\xE1s t\xF6r\xF6lve lett", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 147
-"its view %1 was deleted" => "",
+"its view %1 was deleted" => "a(z) %1 azonos\xEDt\xF3j\xFA n\xE9zete t\xF6r\xF6lve lett", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 153
-"Alerts \"%1\" use a selection that no longer exists" => "",
+"Alerts \"%1\" use a selection that no longer exists" => "A(z) ,,%1\" \xE9rtes\xEDt\xE9s olyan v\xE1logat\xE1st haszn\xE1l, amely m\xE1r nem l\xE9tezik", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 154
-"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "",
+"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "A(z) ,,%1\" \xE9rtes\xEDt\xE9s semmit sem k\xFCld: a gy\xFBjtem\xE9ny egyik v\xE1logat\xE1sa sem l\xE9tezik m\xE1r", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 157
-"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "",
+"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "A v\xE1logat\xE1s annak a rovatnak egy n\xE9zet\xE9n alapul\xF3 sz\xFBr\xF5, amelyb\xF5l az \xE9rtes\xEDt\xE9s a cikkeit veszi. Ha a sz\xFBr\xF5t vagy a n\xE9zetet t\xF6rlik, a gy\xFBjtem\xE9ny tov\xE1bbra is r\xE1 mutat, \xE9s olvas\xF3i semmit sem kapnak bel\xF5le - a napl\xF3ban pedig nem jelenik meg hiba. A ,,V\xE1logat\xE1sok\" oldalon t\xE1vol\xEDtsa el a hi\xE1nyz\xF3k\xE9nt jel\xF6lt v\xE1logat\xE1st, \xE9s vegyen fel egy l\xE9tez\xF5t (a sz\xFBr\xF5ket az ,,\xC9rtes\xEDt\xE9sek - kiv\xE1laszt\xE1sok\" t\xEDpus\xFA n\xE9zetben lehet megadni). Az olyan \xC9rtes\xEDt\xE9sek modult, amelyet m\xE1r senki sem haszn\xE1l, ehelyett t\xF6r\xF6lheti is.", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 159
 "Selections" => "V\xE1logat\xE1sok", // ai 2026-06
 
 // src/Optimize/CheckAlerts.php, row 160
-"Alerts settings" => "",
+"Alerts settings" => "\xC9rtes\xEDt\xE9sek be\xE1ll\xEDt\xE1sai", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 163
-"Alert selection no longer exists" => "",
+"Alert selection no longer exists" => "Az \xE9rtes\xEDt\xE9si v\xE1logat\xE1s m\xE1r nem l\xE9tezik", // ai 2026-11
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 27
 "Forms without login changing accounts or authors" => "Bejelentkez\xE9s n\xE9lk\xFCli \xFBrlapok, amelyek fi\xF3kokat vagy szerz\xF5ket m\xF3dos\xEDtanak", // ai 2026-10
@@ -11647,7 +11862,7 @@ return [
 "A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "Az oldal egyik sablonja tartalmazza a {require:ckeditor} kifejez\xE9st (\xE9s a CKEDITOR.replace() h\xEDv\xE1st). Ehelyett csomagolja a textarea elemet <aa-richtext mode=\"rich\"> elembe a {require:aa-richtext@1} haszn\xE1lat\xE1val - a textarea megtartja nev\xE9t \xE9s \xE9rt\xE9k\xE9t, \xEDgy az \xFBrlap \xE9s a textarea.value \xE9rt\xE9ket olvas\xF3 szkriptek v\xE1ltozatlanul m\xFBk\xF6dnek; a CKEDITOR.instances[...].getData() hely\xE9be a textarea \xE9rt\xE9ke l\xE9p.", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 103
-"Templates with ckeditor" => "",
+"Templates with ckeditor" => "Sablonok CKEditorral", // ai 2026-11
 
 // src/Optimize/CheckCkeditorUse.php, row 109
 "No page loaded CKEditor 4 in the last 30 days" => "Az elm\xFAlt 30 napban egyetlen oldal sem t\xF6lt\xF6tte be a CKEditor 4-et", // ai 2026-10
@@ -11707,22 +11922,22 @@ return [
 "%1 cron rows, all readable and running on schedule" => "%1 cron-sor, mind olvashat\xF3 \xE9s \xFCtemez\xE9s szerint fut", // ai 2026-10
 
 // src/Optimize/CheckDiscussionRefusals.php, row 26
-"Refused comments" => "",
+"Refused comments" => "Elutas\xEDtott hozz\xE1sz\xF3l\xE1sok", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 31
-"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "",
+"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "Felsorolja azokat a rovatokat, amelyekben az elm\xFAlt 30 napban elutas\xEDtott\xE1k az \xFAj hozz\xE1sz\xF3l\xE1sokat, mert a rovat nem jelen\xEDt meg hozz\xE1sz\xF3l\xE1sokat.", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 70
-"New comments to items of slice %1 were refused" => "",
+"New comments to items of slice %1 were refused" => "A(z) %1 rovat cikkeihez \xEDrt \xFAj hozz\xE1sz\xF3l\xE1sokat elutas\xEDtott\xE1k", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 78
-"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "",
+"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "A rovatnak nincs hozz\xE1sz\xF3l\xE1s-n\xE9zete, \xE9s a teljes sz\xF6veg kin\xE9zet\xE9nek ,,Hozz\xE1sz\xF3l\xE1sok megjelen\xEDt\xE9se\" be\xE1ll\xEDt\xE1s\xE1ban sincs ilyen megadva, \xEDgy a hozz\xE1sz\xF3l\xE1s sehol sem jelenne meg. Ha a webhely egy m\xE1sik rovat hozz\xE1sz\xF3l\xE1s-n\xE9zet\xE9vel jelen\xEDti meg a hozz\xE1sz\xF3l\xE1sokat, v\xE1lassza ki azt a n\xE9zetet a ,,Hozz\xE1sz\xF3l\xE1sok megjelen\xEDt\xE9se\" be\xE1ll\xEDt\xE1sban; ellenkez\xF5 esetben t\xE1vol\xEDtsa el a hozz\xE1sz\xF3l\xE1si \xFBrlapot a rovat sablonjaib\xF3l.", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 80
-"Fulltext design" => "",
+"Fulltext design" => "Teljes sz\xF6veg kin\xE9zete", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 85
-"No comment was refused in the last 30 days" => "",
+"No comment was refused in the last 30 days" => "Az elm\xFAlt 30 napban egyetlen hozz\xE1sz\xF3l\xE1st sem utas\xEDtottak el", // ai 2026-11
 
 // src/Optimize/CheckEnvironment.php, row 18
 // src/Optimize/StateCheckModel.php, row 295
@@ -11748,6 +11963,21 @@ return [
 
 // src/Optimize/CheckEnvironment.php, row 66
 "AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4; %5 \xF3ta v\xE1ltozatlan", // ai 2026-10
+
+// src/Optimize/CheckFormRobotRefusals.php, row 26
+"Forms refused as robots" => "Robotk\xE9nt elutas\xEDtott \xFBrlapok", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 31
+"Lists the slices whose new items from a form were refused in the last 30 days because the form posted an empty slice_id, which its JS fills only for a visitor who moves the mouse or presses a key." => "Felsorolja azokat a rovatokat, amelyekbe az elm\xFAlt 30 napban \xFBrlapr\xF3l \xE9rkez\xF5 \xFAj cikkeket elutas\xEDtott\xE1k, mert az \xFBrlap \xFCres slice_id-t k\xFCld\xF6tt; ezt az \xFBrlap JS-e csak akkor t\xF6lti ki, ha a l\xE1togat\xF3 mozgatja az egeret vagy lenyom egy billenty\xFBt.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 70
+"A form adding items to slice %1 was refused as a robot" => "A(z) %1 rovatba cikket felvev\xF5 \xFBrlapot robotk\xE9nt elutas\xEDtott\xE1k", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 79
+"The form posted an empty slice_id. Forms with {formantispam:<slice_id>} or with their own anti-robot JS leave it empty and fill it when the visitor moves the mouse or presses a key, so this is mostly spam and needs no action. If real visitors complain that the form does not save, check that the JS of the form runs on the page (the browser console) and fills slice_id." => "Az \xFBrlap \xFCres slice_id-t k\xFCld\xF6tt. A {formantispam:<slice_id>} kifejez\xE9st vagy saj\xE1t robotellenes JS-t haszn\xE1l\xF3 \xFBrlapok ezt \xFCresen hagyj\xE1k, \xE9s csak akkor t\xF6ltik ki, ha a l\xE1togat\xF3 mozgatja az egeret vagy lenyom egy billenty\xFBt, \xEDgy ez t\xF6bbnyire spam, \xE9s nem ig\xE9nyel teend\xF5t. Ha val\xF3di l\xE1togat\xF3k panaszkodnak, hogy az \xFBrlap nem ment, ellen\xF5rizze (a b\xF6ng\xE9sz\xF5 konzolj\xE1ban), hogy az \xFBrlap JS-e lefut-e az oldalon, \xE9s kit\xF6lti-e a slice_id-t.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 85
+"No form was refused as a robot in the last 30 days" => "Az elm\xFAlt 30 napban egyetlen \xFBrlapot sem utas\xEDtottak el robotk\xE9nt", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 29
 "Outgoing HTTP" => "Kimen\xF5 HTTP", // ai 2026-10
@@ -11781,7 +12011,7 @@ return [
 "Note" => "Megjegyz\xE9s", // ai 2026-06
 
 // src/Optimize/CheckHttp.php, row 85
-"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "",
+"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "Maga a c\xEDm HTTP %1 v\xE1laszt ad, a(z) %2 pedig 200-at - ez szok\xE1sos, ha az AA k\xF6nyvt\xE1r\xE1nak nincs kezd\xF5lapja, \xE9s a szerver nem list\xE1zza a k\xF6nyvt\xE1rakat.", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 93
 "This installation's own address answers HTTP %1" => "A telep\xEDt\xE9s saj\xE1t c\xEDme HTTP %1 v\xE1laszt ad", // ai 2026-10
@@ -11947,7 +12177,7 @@ return [
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "A kulcs sort\xF6r\xE9st vagy NUL karaktert tartalmaz, ez\xE9rt egyetlen import\xE1l\xE1si forr\xE1s sem haszn\xE1lhatja. Jav\xEDtsa a konstanst a config.php f\xE1jlban.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 272
-"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "",
+"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "Egy JSON-kulcs (Google-szolg\xE1ltat\xE1sfi\xF3k) elf\xE9r egy sorban: illessze be azt a sort, amelyet a(z) %1 ki\xEDr.", // ai 2026-11
 
 // src/Optimize/CheckImports.php, row 291
 "Imports logged %1 failures in the last 7 days" => "Az import\xE1l\xE1sok hib\xE1i az elm\xFAlt 7 napban: %1", // ai 2026-10
@@ -11998,505 +12228,505 @@ return [
 "No app transfer is stuck" => "Egyetlen alkalmaz\xE1s\xE1tvitel sem akadt el", // ai 2026-10
 
 // src/Optimize/CheckIsds.php, row 49
-"ISDS login" => "",
+"ISDS login" => "ISDS-bejelentkez\xE9s", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 54
-"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "",
+"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "Bejelentkezik az ISDS-be a misc/datovka/datovka_conf.php minden olyan haszn\xE1lhat\xF3 fi\xF3kj\xE1val, amely ennek az adatb\xE1zisnak valamely webhelye sz\xE1m\xE1ra k\xFCld, \xE9s ellen\xF5rzi az adatdobozt, amelyb\xF5l k\xFCld; n\xE9vvel \xE9s jelsz\xF3val t\xF6rt\xE9n\xF5 bejelentkez\xE9sn\xE9l a felhaszn\xE1l\xF3 jogait \xE9s a jelsz\xF3 lej\xE1rat\xE1t is.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 79
-"No usable ISDS account to log in with" => "",
+"No usable ISDS account to log in with" => "Nincs haszn\xE1lhat\xF3 ISDS-fi\xF3k a bejelentkez\xE9shez", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 121
-"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "",
+"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "Az ISDS-fi\xF3kok kipr\xF3b\xE1l\xE1sa elmaradt, mert az ISDS letiltotta ennek a szervernek a c\xEDm\xE9t: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 122
-"ISDS accounts not tried, as ISDS did not answer: %1" => "",
+"ISDS accounts not tried, as ISDS did not answer: %1" => "Az ISDS-fi\xF3kok kipr\xF3b\xE1l\xE1sa elmaradt, mert az ISDS nem v\xE1laszolt: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Wait - each attempt from this server extends the block." => "",
+"Wait - each attempt from this server extends the block." => "V\xE1rjon - minden ebb\xF5l a szerverb\xF5l ind\xEDtott pr\xF3b\xE1lkoz\xE1s meghosszabb\xEDtja a tilt\xE1st.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Check again later." => "",
+"Check again later." => "K\xE9s\xF5bb ellen\xF5rizze \xFAjra.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 128
-"ISDS accounts log in to their data boxes: %1" => "",
+"ISDS accounts log in to their data boxes: %1" => "Az ISDS-fi\xF3kok bejelentkeznek az adatdobozaikba: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"ISDS account %1 not tried, as its certificate cannot be used" => "",
+"ISDS account %1 not tried, as its certificate cannot be used" => "A(z) %1 ISDS-fi\xF3k kipr\xF3b\xE1l\xE1sa elmaradt, mert a tan\xFAs\xEDtv\xE1nya nem haszn\xE1lhat\xF3", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"The check of ISDS accounts tells more." => "",
+"The check of ISDS accounts tells more." => "Az ISDS-fi\xF3kok ellen\xF5rz\xE9se t\xF6bbet el\xE1rul.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 153
-"The TLS library of this server refuses the certificate of ISDS account %1" => "",
+"The TLS library of this server refuses the certificate of ISDS account %1" => "Ennek a szervernek a TLS-k\xF6nyvt\xE1ra elutas\xEDtja a(z) %1 ISDS-fi\xF3k tan\xFAs\xEDtv\xE1ny\xE1t", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 154
-"Reason of OpenSSL" => "",
+"Reason of OpenSSL" => "OpenSSL-indok", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 155
-"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "",
+"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "A szerveren fut\xF3 OpenSSL nem fogadja el a tan\xFAs\xEDtv\xE1nyt vagy annak kulcs\xE1t - p\xE9ld\xE1ul a kulcs r\xF6videbb, mint amit a h\xE1zirendje megk\xF6vetel, a l\xE1ncban gyenge tan\xFAs\xEDtv\xE1ny van, vagy r\xE9gi az al\xE1\xEDr\xE1s. Szerezzen be a h\xE1zirendnek megfelel\xF5 tan\xFAs\xEDtv\xE1nyt (3072 bites RSA-kulcs, SHA-256 al\xE1\xEDr\xE1s), regisztr\xE1ltassa az ISDS-ben, \xE9s adja meg a misc/datovka/datovka_conf.php f\xE1jlban.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 188, 290
 "ISDS" => "",
 
 // src/Optimize/CheckIsds.php, row 195, 226
-"ISDS did not tell the rights of the user of account %1" => "",
+"ISDS did not tell the rights of the user of account %1" => "Az ISDS nem k\xF6z\xF6lte a(z) %1 fi\xF3k felhaszn\xE1l\xF3j\xE1nak jogait", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 202
-"The password of ISDS account %1 expires on %2" => "",
+"The password of ISDS account %1 expires on %2" => "A(z) %1 ISDS-fi\xF3k jelszava ekkor j\xE1r le: %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 203
-"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "",
+"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "V\xE1ltoztassa meg a jelsz\xF3t az ISDS-port\xE1lon, \xE9s \xEDrja be az \xFAjat a misc/datovka/datovka_conf.php f\xE1jlban ide: %1.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"ISDS did not tell when the password of account %1 expires" => "",
+"ISDS did not tell when the password of account %1 expires" => "Az ISDS nem k\xF6z\xF6lte, mikor j\xE1r le a(z) %1 fi\xF3k jelszava", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"Check the password of the user in the ISDS portal." => "",
+"Check the password of the user in the ISDS portal." => "Ellen\xF5rizze a felhaszn\xE1l\xF3 jelszav\xE1t az ISDS-port\xE1lon.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"Rights" => "",
+"Rights" => "Jogok", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"User type" => "",
+"User type" => "Felhaszn\xE1l\xF3t\xEDpus", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 239
-"The user of ISDS account %1 lacks the rights %2" => "",
+"The user of ISDS account %1 lacks the rights %2" => "A(z) %1 ISDS-fi\xF3k felhaszn\xE1l\xF3j\xE1t\xF3l hi\xE1nyoznak ezek a jogok: %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 241
-"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "",
+"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "Adja meg a felhaszn\xE1l\xF3nak az ISDS-port\xE1lon a k\xF6vetkez\xF5 jogokat: %1 - ezek n\xE9lk\xFCl az ISDS elutas\xEDtja: %2.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 250
-"The user of ISDS account %1 has rights AA must not have: %2" => "",
+"The user of ISDS account %1 has rights AA must not have: %2" => "A(z) %1 ISDS-fi\xF3k felhaszn\xE1l\xF3ja olyan jogokkal rendelkezik, amelyekkel az AA nem rendelkezhet: %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 252
-"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "",
+"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "Az ISDS-port\xE1lon vonja meg ezeket a jogokat a felhaszn\xE1l\xF3t\xF3l, vagy hagyja, hogy az AA saj\xE1t felhaszn\xE1l\xF3k\xE9nt jelentkezzen be, csak a k\xF6vetkez\xF5 jogokkal: %1.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 268
-"ISDS blocked logins from the address of this server" => "",
+"ISDS blocked logins from the address of this server" => "Az ISDS letiltotta a bejelentkez\xE9st ennek a szervernek a c\xEDm\xE9r\xF5l", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 269
-"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "",
+"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "Az ISDS egy id\xF5re letiltja a szerver c\xEDm\xE9t, ha az onnan \xE9rkez\xF5 bejelentkez\xE9sek t\xE1mad\xE1snak t\xFBnnek - a szerver minden fi\xF3kj\xE1ra \xE9s minden AA-j\xE1ra, b\xE1rmilyen m\xF3don jelentkeznek is be. V\xE1rjon: minden pr\xF3b\xE1lkoz\xE1s meghosszabb\xEDtja a tilt\xE1st. Az AA %1 \xF3ra m\xFAlva mag\xE1t\xF3l m\xE9g egyszer megpr\xF3b\xE1lja, vagy amikor itt \xFAjra ellen\xF5riz. Ha a tilt\xE1s tart\xF3s, h\xEDvja az ISDS \xFCgyf\xE9lvonal\xE1t: 954 200 200.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 274
-"ISDS refused the login of account %1" => "",
+"ISDS refused the login of account %1" => "Az ISDS elutas\xEDtotta a(z) %1 fi\xF3k bejelentkez\xE9s\xE9t", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS asked account %1 to come back later" => "",
+"ISDS asked account %1 to come back later" => "Az ISDS arra k\xE9rte a(z) %1 fi\xF3kot, hogy pr\xF3b\xE1lkozzon k\xE9s\xF5bb", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS is in an outage or busy. Check again later." => "",
+"ISDS is in an outage or busy. Check again later." => "Az ISDS-n\xE9l \xFCzemzavar van, vagy t\xFAlterhelt. K\xE9s\xF5bb ellen\xF5rizze \xFAjra.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 281
-"ISDS gave account %1 no answer" => "",
+"ISDS gave account %1 no answer" => "Az ISDS nem v\xE1laszolt a(z) %1 fi\xF3knak", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 282
-"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "",
+"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "K\xE9s\xF5bb ellen\xF5rizze \xFAjra. Ha ism\xE9tl\xF5dik, ellen\xF5rizze, hogy a szerver el\xE9ri-e a(z) %1 c\xEDmet HTTPS-en.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"ISDS gave account %1 an answer AA cannot read" => "",
+"ISDS gave account %1 an answer AA cannot read" => "Az ISDS olyan v\xE1laszt adott a(z) %1 fi\xF3knak, amelyet az AA nem tud \xE9rtelmezni", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"Check again later. If it repeats, the evidence gives the answer of ISDS." => "",
+"Check again later. If it repeats, the evidence gives the answer of ISDS." => "K\xE9s\xF5bb ellen\xF5rizze \xFAjra. Ha ism\xE9tl\xF5dik, az ISDS v\xE1lasza a bizony\xEDt\xE9kok k\xF6z\xF6tt tal\xE1lhat\xF3.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"ISDS refused account %1" => "",
+"ISDS refused account %1" => "Az ISDS elutas\xEDtotta a(z) %1 fi\xF3kot", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "",
+"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "Az ISDS v\xE1lasza a bizony\xEDt\xE9kok k\xF6z\xF6tt tal\xE1lhat\xF3. Ellen\xF5rizze a fi\xF3kot \xE9s annak adatdoboz\xE1t az ISDS-port\xE1lon.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 298
-"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "Ellen\xF5rizze, hogy a(z) %1 \xE1ltal megadott tan\xFAs\xEDtv\xE1ny az a rendszertan\xFAs\xEDtv\xE1ny, amelyet az ISDS az adatdobozhoz regisztr\xE1lt, \xE9s hogy nem j\xE1rt-e le. \xDAj tan\xFAs\xEDtv\xE1nyt az AA mag\xE1t\xF3l kipr\xF3b\xE1l, ugyanazt soha. A ,,B\xF5v\xEDtett ellen\xF5rz\xE9sek futtat\xE1sa\" vagy itt az ,,\xDAjraellen\xF5rz\xE9s\" m\xE9g egyszer megpr\xF3b\xE1lja.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 299
-"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "Ellen\xF5rizze, hogy a(z) %1 adatdoboz enged\xE9lyezi-e azt a t\xE1rhelyszolg\xE1ltat\xE1st, amelynek tan\xFAs\xEDtv\xE1ny\xE1t a(z) %2 megadja (az ISDS-port\xE1lon: Be\xE1ll\xEDt\xE1sok, K\xFCls\xF5 alkalmaz\xE1sok hozz\xE1f\xE9r\xE9se), \xE9s hogy a tan\xFAs\xEDtv\xE1ny nem j\xE1rt-e le. \xDAj tan\xFAs\xEDtv\xE1nyt az AA mag\xE1t\xF3l kipr\xF3b\xE1l, ugyanazt soha. A ,,B\xF5v\xEDtett ellen\xF5rz\xE9sek futtat\xE1sa\" vagy itt az ,,\xDAjraellen\xF5rz\xE9s\" m\xE9g egyszer megpr\xF3b\xE1lja.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 300
-"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "",
+"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "Ellen\xF5rizze a(z) %1 \xE9s %2 be\xE1ll\xEDt\xE1st a misc/datovka/datovka_conf.php f\xE1jlban, az ISDS-port\xE1lon pedig azt, hogy a jelsz\xF3 nem j\xE1rt-e le. A megv\xE1ltozott felhaszn\xE1l\xF3nevet vagy jelsz\xF3t az AA mag\xE1t\xF3l kipr\xF3b\xE1lja, ugyanazt soha - minden elutas\xEDtott pr\xF3b\xE1lkoz\xE1s meghosszabb\xEDtja a bejelentkez\xE9s tilt\xE1s\xE1t. A ,,B\xF5v\xEDtett ellen\xF5rz\xE9sek futtat\xE1sa\" vagy itt az ,,\xDAjraellen\xF5rz\xE9s\" m\xE9g egyszer megpr\xF3b\xE1lja.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 327
-"Check in the ISDS portal that the user has the rights %1 and none of %2." => "",
+"Check in the ISDS portal that the user has the rights %1 and none of %2." => "Ellen\xF5rizze az ISDS-port\xE1lon, hogy a felhaszn\xE1l\xF3nak megvannak-e a k\xF6vetkez\xF5 jogai: %1, \xE9s nincs-e egy sem a k\xF6vetkez\xF5k k\xF6z\xFCl: %2.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 356
-"read received messages" => "",
+"read received messages" => "be\xE9rkezett \xFCzenetek olvas\xE1sa", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 357
-"read received messages to own hands" => "",
+"read received messages to own hands" => "saj\xE1t k\xE9zbe k\xE9zbes\xEDtett \xFCzenetek olvas\xE1sa", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 358
-"send messages" => "",
+"send messages" => "\xFCzenetek k\xFCld\xE9se", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 359
-"lists of messages and delivery info" => "",
+"lists of messages and delivery info" => "\xFCzenetlist\xE1k \xE9s k\xE9zbes\xEDt\xE9si inform\xE1ci\xF3k megtekint\xE9se", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 360
-"search for data boxes" => "",
+"search for data boxes" => "adatdobozok keres\xE9se", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 361
-"manage the data box" => "",
+"manage the data box" => "az adatdoboz kezel\xE9se", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 362
-"erase the vault" => "",
+"erase the vault" => "az \xFCzenett\xE1r t\xF6rl\xE9se", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 44
-"ISDS accounts" => "",
+"ISDS accounts" => "ISDS-fi\xF3kok", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 49
-"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "",
+"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "Ellen\xF5rzi azokat az ISDS-fi\xF3kokat, amelyeket a misc/datovka/datovka_conf.php az ennek az adatb\xE1zisnak a webhelyeir\xF5l adatdobozokba t\xF6rt\xE9n\xF5 k\xFCld\xE9shez \xE1ll\xEDt be: a be\xE1ll\xEDt\xE1saikat, a tan\xFAs\xEDtv\xE1nyf\xE1jljaikat, azt a webhelyet \xE9s rovatokat, amelyek sz\xE1m\xE1ra az egyes fi\xF3kok k\xFCldenek, valamint azon k\xF6rk\xFCld\xE9sek oldalait, amelyeknek az elm\xFAlt h\xE9ten nem volt k\xE9sz a be\xE1ll\xEDt\xE1sa, amelyek kamp\xE1nyai nem tudt\xE1k meghat\xE1rozni a c\xEDmzettjeiket, vagy amelyek m\xFBveletei bels\xF5 hiba miatt meghi\xFAsultak.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 80
-"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "",
+"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "A misc/datovka/datovka_conf.php egyik ISDS-fi\xF3kja sem k\xFCld ennek az adatb\xE1zisnak egyetlen webhelye sz\xE1m\xE1ra sem", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 100
-"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "A misc/datovka/datovka_conf.php olyan ISDS-fi\xF3kbe\xE1ll\xEDt\xE1sokat tartalmaz, amelyeket az AA nem olvas be: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 103
-"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "",
+"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "A(z) %1 egy ISDS-fi\xF3kj\xE1nak neve egyetlen, nagybet\xFBkb\xF5l \xE9s sz\xE1mjegyekb\xF5l \xE1ll\xF3 sz\xF3, amely bet\xFBvel kezd\xF5dik, \xE9s az AA csak a(z) %2 kulcsokat olvassa be, \xE9les fi\xF3kn\xE1l a(z) %3 kulcsokat is. Jav\xEDtsa ki a neveket, vagy t\xE1vol\xEDtsa el azt, amit az AA nem olvas be.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 108
-"ISDS accounts ready to send: %1" => "",
+"ISDS accounts ready to send: %1" => "K\xFCld\xE9sre k\xE9sz ISDS-fi\xF3kok: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 127
-"A page of site %1 has a mass sending whose settings are not ready" => "",
+"A page of site %1 has a mass sending whose settings are not ready" => "A(z) %1 webhely egyik oldal\xE1n olyan k\xF6rk\xFCld\xE9s van, amelynek a be\xE1ll\xEDt\xE1sai nincsenek k\xE9szen", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 131, 167
-"Campaign slice" => "",
+"Campaign slice" => "Kamp\xE1nyrovat", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 137
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "A(z) ,,%1\" webhely csak a saj\xE1t Olvas\xF3kezel\xE9s-rovatainak olvas\xF3it engedi bejelentkezni, \xEDgy ott senki sem k\xFCldhet, \xE9s az oldalon azt sem l\xE1thatja, mit kell jav\xEDtani - a webhely be\xE1ll\xEDt\xE1saiban \xE1ll\xEDtsa a ,,Felhaszn\xE1l\xF3i bejelentkez\xE9si adatb\xE1zisok\" \xE9rt\xE9k\xE9t erre: ,,%2\", majd nyissa meg \xFAjra az oldalt.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 138
-"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "",
+"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "Nyissa meg az oldalt olyan felhaszn\xE1l\xF3k\xE9nt, aki szerkesztheti a kamp\xE1nyrovat \xF6sszes cikk\xE9t vagy a webhely k\xF3dj\xE1t: az oldal felsorolja mindazt, amit a {datovkabulk:page} be\xE1ll\xEDt\xE1saiban jav\xEDtani kell, azokkal az oldalakkal egy\xFCtt, ahol ez jav\xEDthat\xF3.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 163
-"A campaign of a mass sending on site %1 cannot tell its recipients" => "",
+"A campaign of a mass sending on site %1 cannot tell its recipients" => "A(z) %1 webhely egyik k\xF6rk\xFCld\xE9si kamp\xE1nya nem tudja meghat\xE1rozni a c\xEDmzettjeit", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 168, 204
-"Campaign" => "",
+"Campaign" => "Kamp\xE1ny", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 173
-"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "",
+"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "A kamp\xE1nyban t\xE1rolt c\xEDmzettsz\xFBr\xF5 m\xE1r nem felel meg az oldal be\xE1ll\xEDt\xE1sainak - egy t\xEDpust elt\xE1vol\xEDtottak a types k\xF6z\xFCl, vagy elhagyt\xE1k a member_field be\xE1ll\xEDt\xE1st. Nyissa meg a kamp\xE1nyt az oldalon, \xE9s mentse \xFAjra a c\xEDmzettjeit. Ha a probl\xE9ma az adatdoboz-be\xE1ll\xEDt\xE1sokat eml\xEDti, \xE1ll\xEDtsa be \xF5ket a forr\xE1srovat ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldal\xE1n.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 199
-"An action of a page of a mass sending failed on an internal error: %1" => "",
+"An action of a page of a mass sending failed on an internal error: %1" => "Egy k\xF6rk\xFCld\xE9si oldal m\xFBvelete bels\xF5 hiba miatt meghi\xFAsult: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 209
-"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "",
+"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "Az AA hib\xE1ja - jelentse a fejleszt\xF5inek a bizony\xEDt\xE9kokban szerepl\xF5 k\xF3dhelyet. Lehet, hogy a m\xFBvelet a munk\xE1ja egy r\xE9sz\xE9t m\xE1r elv\xE9gezte: miel\xF5tt a felhaszn\xE1l\xF3 \xFAjra megpr\xF3b\xE1ln\xE1, n\xE9zze meg a k\xFCld\xE9st annak oldal\xE1n.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 225
-"ISDS account %1 cannot be used" => "",
+"ISDS account %1 cannot be used" => "A(z) %1 ISDS-fi\xF3k nem haszn\xE1lhat\xF3", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 227
-"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "",
+"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "Jav\xEDtsa ki a misc/datovka/datovka_conf.php f\xE1jlban azt, amit a bizony\xEDt\xE9kok megneveznek. A fi\xF3k: %1, a kulcsai: %2.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 261
-"PHP cannot read the certificate of ISDS account %1" => "",
+"PHP cannot read the certificate of ISDS account %1" => "A PHP nem tudja beolvasni a(z) %1 ISDS-fi\xF3k tan\xFAs\xEDtv\xE1ny\xE1t", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 263
-"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "",
+"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "Ellen\xF5rizze, hogy a be\xE1ll\xEDt\xE1s teljes el\xE9r\xE9si \xFAttal adja-e meg a f\xE1jlt - a relat\xEDv \xFAt az AA %1 k\xF6nyvt\xE1r\xE1b\xF3l indul -, hogy az a felhaszn\xE1l\xF3, akinek nev\xE9ben a PHP fut, olvashatja-e, \xE9s hogy az open_basedir odaengedi-e a PHP-t.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "",
+"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "A(z) %1 ISDS-fi\xF3k tan\xFAs\xEDtv\xE1nya nem haszn\xE1lhat\xF3: a PHP-ben nincs openssl b\xF5v\xEDtm\xE9ny", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"Install the openssl extension of PHP - a login with a certificate needs it." => "",
+"Install the openssl extension of PHP - a login with a certificate needs it." => "Telep\xEDtse a PHP openssl b\xF5v\xEDtm\xE9ny\xE9t - a tan\xFAs\xEDtv\xE1nnyal t\xF6rt\xE9n\xF5 bejelentkez\xE9shez sz\xFCks\xE9g van r\xE1.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Serial number" => "",
+"Serial number" => "Sorozatsz\xE1m", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Valid until" => "",
+"Valid until" => "\xC9rv\xE9nyes eddig", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 274
-"%1 names a file with no PEM certificate" => "",
+"%1 names a file with no PEM certificate" => "A(z) %1 olyan f\xE1jlt ad meg, amelyben nincs PEM-tan\xFAs\xEDtv\xE1ny", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 275
-"The private key in %1 does not open: it is missing, or %2 does not fit" => "",
+"The private key in %1 does not open: it is missing, or %2 does not fit" => "A(z) %1 titkos kulcsa nem nyithat\xF3 meg: hi\xE1nyzik, vagy a(z) %2 nem megfelel\xF5", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 276
-"The private key in %1 does not belong to the certificate in %2" => "",
+"The private key in %1 does not belong to the certificate in %2" => "A(z) %1 titkos kulcsa nem tartozik a(z) %2 tan\xFAs\xEDtv\xE1ny\xE1hoz", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 277
-"The private key is shorter than %1 bits, which the secure connection refuses" => "",
+"The private key is shorter than %1 bits, which the secure connection refuses" => "A titkos kulcs r\xF6videbb %1 bitn\xE9l, ezt a biztons\xE1gos kapcsolat elutas\xEDtja", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 278
-"The certificate is valid from %1 only" => "",
+"The certificate is valid from %1 only" => "A tan\xFAs\xEDtv\xE1ny csak ekkort\xF3l \xE9rv\xE9nyes: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"The certificate of ISDS account %1 cannot be used" => "",
+"The certificate of ISDS account %1 cannot be used" => "A(z) %1 ISDS-fi\xF3k tan\xFAs\xEDtv\xE1nya nem haszn\xE1lhat\xF3", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "",
+"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "Adja meg a misc/datovka/datovka_conf.php f\xE1jlban a tan\xFAs\xEDtv\xE1nyt \xE9s a kulcs\xE1t, titkos\xEDtott kulcs eset\xE9n a jelmondat\xE1t is.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expired on %2" => "",
+"The certificate of ISDS account %1 expired on %2" => "A(z) %1 ISDS-fi\xF3k tan\xFAs\xEDtv\xE1nya ekkor lej\xE1rt: %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expires on %2" => "",
+"The certificate of ISDS account %1 expires on %2" => "A(z) %1 ISDS-fi\xF3k tan\xFAs\xEDtv\xE1nya ekkor j\xE1r le: %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 290
-"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "",
+"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "Szerezzen be \xFAj tan\xFAs\xEDtv\xE1nyt, regisztr\xE1ltassa az ISDS-ben a r\xE9gi mell\xE9, \xE9s adja meg a f\xE1jlj\xE1t a misc/datovka/datovka_conf.php f\xE1jlban - az ISDS ezt %1 nappal a r\xE9gi lej\xE1rta el\xF5tt k\xE9ri.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"The web server may serve the private key of ISDS account %1" => "",
+"The web server may serve the private key of ISDS account %1" => "A webszerver kiszolg\xE1lhatja a(z) %1 ISDS-fi\xF3k titkos kulcs\xE1t", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"Other users of the server may read the private key of ISDS account %1" => "",
+"Other users of the server may read the private key of ISDS account %1" => "A szerver m\xE1s felhaszn\xE1l\xF3i olvashatj\xE1k a(z) %1 ISDS-fi\xF3k titkos kulcs\xE1t", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 343
-"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "",
+"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "Itt a PHP a webszerveren bel\xFCl fut, \xEDgy a webszerver mindent olvas, amit a PHP olvashat - semmilyen jogosults\xE1g nem seg\xEDt. Helyezze \xE1t a f\xE1jlt az AA k\xF6nyvt\xE1r\xE1n k\xEDv\xFClre, \xE9s adja meg teljes el\xE9r\xE9si \xFAttal.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 344
-"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "",
+"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "A f\xE1jl az AA k\xF6nyvt\xE1r\xE1ban van, amelyet a webszerver kiszolg\xE1l. Helyezze \xE1t onnan, \xE9s adja meg teljes el\xE9r\xE9si \xFAttal, vagy hagyja csak a tulajdonosa sz\xE1m\xE1ra hozz\xE1f\xE9rhet\xF5v\xE9 (chmod 600), \xE9s ellen\xF5rizze az ACL-j\xE9t (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 345
-"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "",
+"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "Vonja meg a f\xE1jlra vonatkoz\xF3 \xF6sszes jogot a t\xF6bbi felhaszn\xE1l\xF3t\xF3l (chmod o-rwx), \xE9s ellen\xF5rizze az ACL-j\xE9t (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 403
-"The slices of ISDS account %1 are not ready for sending" => "",
+"The slices of ISDS account %1 are not ready for sending" => "A(z) %1 ISDS-fi\xF3k rovatai nem \xE1llnak k\xE9szen a k\xFCld\xE9sre", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 406
-"Fix what the evidence names before sending from these slices." => "",
+"Fix what the evidence names before sending from these slices." => "Miel\xF5tt ezekb\xF5l a rovatokb\xF3l k\xFCldene, jav\xEDtsa ki azt, amit a bizony\xEDt\xE9kok megneveznek.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 32
-"ISDS settings file" => "",
+"ISDS settings file" => "ISDS-be\xE1ll\xEDt\xE1si f\xE1jl", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 37
-"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "",
+"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "Ellen\xF5rzi a misc/datovka/datovka_conf.php f\xE1jlt, a telep\xEDt\xE9s adatdoboz-be\xE1ll\xEDt\xE1sait a {datovka} \xE9s a k\xF6rk\xFCld\xE9s sz\xE1m\xE1ra: hogy a PHP be tudja-e olvasni, \xE9s az AA teljes eg\xE9sz\xE9ben haszn\xE1lhatja-e, a k\xE9tszer megadott kulcsokat, a jogosults\xE1gait, a m\xE1solatait az AA k\xF6nyvt\xE1r\xE1ban, valamint az elm\xFAlt h\xE9ten azokat a probl\xE9m\xE1kat, amelyekbe m\xE1s k\xE9r\xE9sek a beolvas\xE1sakor \xFCtk\xF6ztek, \xE9s az ISDS azon elutas\xEDtott v\xE1laszait, amelyek olyan telep\xEDt\xE9snek sz\xF3ltak, amelyet a f\xE1jl nem sorol fel.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"AA reads all of misc/datovka/datovka_conf.php" => "",
+"AA reads all of misc/datovka/datovka_conf.php" => "Az AA a misc/datovka/datovka_conf.php teljes tartalm\xE1t beolvassa", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "",
+"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "Nincs misc/datovka/datovka_conf.php - az AA a telep\xEDt\xE9s adatdoboz-be\xE1ll\xEDt\xE1sai n\xE9lk\xFCl fut", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"ISDS accounts not checked: %1" => "",
+"ISDS accounts not checked: %1" => "Ellen\xF5rizetlen ISDS-fi\xF3kok: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"The check \"%1\" tells what to fix." => "",
+"The check \"%1\" tells what to fix." => "A(z) ,,%1\" ellen\xF5rz\xE9s megmondja, mit kell jav\xEDtani.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 100
-"PHP cannot read misc/datovka/datovka_conf.php" => "",
+"PHP cannot read misc/datovka/datovka_conf.php" => "A PHP nem tudja beolvasni a misc/datovka/datovka_conf.php f\xE1jlt", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"AA cannot use misc/datovka/datovka_conf.php" => "",
+"AA cannot use misc/datovka/datovka_conf.php" => "Az AA nem tudja haszn\xE1lni a misc/datovka/datovka_conf.php f\xE1jlt", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "",
+"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "Jav\xEDtsa ki a f\xE1jlt a datovka_conf.php.default alapj\xE1n - a probl\xE9ma megmondja, mi a hiba. Addig az AA \xFAgy fut, mintha a f\xE1jl nem l\xE9tezne.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 102
-"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "",
+"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "Jav\xEDtsa ki a(z) %1 r\xE9szt a datovka_conf.php.default alapj\xE1n. Addig az AA-nak nincs ISDS-fi\xF3kja; a f\xE1jl t\xF6bbi r\xE9sz\xE9t az AA beolvassa.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "",
+"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "Az AA kihagyja a misc/datovka/datovka_conf.php egyes be\xE1ll\xEDt\xE1sait: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"Correct each key as its problem says." => "",
+"Correct each key as its problem says." => "Jav\xEDtsa ki az egyes kulcsokat a hozz\xE1juk tartoz\xF3 probl\xE9ma szerint.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 113
-"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "A misc/datovka/datovka_conf.php olyan kulcsokat tartalmaz, amelyeket az AA nem olvas be: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 116
-"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "",
+"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "Helyezze \xE1t az ISDS-fi\xF3kot a(z) %1 al\xE1, vagy t\xF6r\xF6lje azt, amit az AA nem olvas be: a legfels\xF5 szinten az AA az instances, test, standard \xE9s accounts kulcsot olvassa, a test \xE9s standard alatt a cert \xE9s atsId kulcsot, egy telep\xEDt\xE9sen bel\xFCl csak az url kulcsot.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "",
+"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "A misc/datovka/datovka_conf.php m\xE9g tartalmaz ISDS-c\xEDmeket: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "",
+"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "Az AA nem olvassa be a f\xE1jlb\xF3l az url_* \xE9s wsdl_* kulcsokat - a c\xEDmek az AA r\xE9szei. T\xF6r\xF6lje \xF5ket.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 149
-"Other requests met a problem in misc/datovka/datovka_conf.php" => "",
+"Other requests met a problem in misc/datovka/datovka_conf.php" => "M\xE1s k\xE9r\xE9sek probl\xE9m\xE1ba \xFCtk\xF6ztek a misc/datovka/datovka_conf.php f\xE1jlban", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 150
-"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "",
+"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "M\xE1s k\xE9r\xE9sek nem tudt\xE1k haszn\xE1lni a misc/datovka/datovka_conf.php fi\xF3kjait", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 151
-"Other requests could not use misc/datovka/datovka_conf.php" => "",
+"Other requests could not use misc/datovka/datovka_conf.php" => "M\xE1s k\xE9r\xE9sek nem tudt\xE1k haszn\xE1lni a misc/datovka/datovka_conf.php f\xE1jlt", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 156
-"Site, one of them" => "",
+"Site, one of them" => "Webhely (az egyik)", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 158
-"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "",
+"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "%1 Ha csak egyetlen napon fordult el\xF5, \xE1ltal\xE1ban egy h\xE1l\xF3zati f\xE1jlrendszer utas\xEDtotta el egy id\xF5re a PHP-t. A meg\xE1llap\xEDt\xE1s 7 nappal a(z) ,,%2\" d\xE1tuma ut\xE1n elt\xFBnik.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 159
-"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "",
+"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "A f\xE1jl az\xF3ta megv\xE1ltozott, vagy az AA egy m\xE1sik, ugyanezen az adatb\xE1zison fut\xF3 f\xE1ja saj\xE1t f\xE1jlt olvas. Jav\xEDtsa ki azt, amit a probl\xE9ma megnevez, minden fa saj\xE1t f\xE1jlj\xE1ban.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "",
+"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "Az ISDS-nek az ebb\xF5l az adatb\xE1zisb\xF3l k\xFCld\xF6tt \xFCzenetekre adott v\xE1laszait elutas\xEDtott\xE1k: a(z) %1 nem sorolja fel a(z) %2 telep\xEDt\xE9st", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS refused: the installation in their token is not in %1" => "",
+"Answers of ISDS refused: the installation in their token is not in %1" => "Az ISDS v\xE1laszait elutas\xEDtott\xE1k: a tokenj\xFCkben szerepl\xF5 telep\xEDt\xE9s nincs benne ebben: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id" => "",
+"Installation id" => "Telep\xEDt\xE9sazonos\xEDt\xF3", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id, one of them" => "",
+"Installation id, one of them" => "Telep\xEDt\xE9sazonos\xEDt\xF3 (az egyik)", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 191
-"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "",
+"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "Vegye fel az ezzel az azonos\xEDt\xF3val rendelkez\xF5 telep\xEDt\xE9st a(z) %1 list\xE1ba az AA_INSTAL_URL \xE9rt\xE9k\xE9vel egy\xFCtt - a hiteles\xEDt\xE9si szolg\xE1ltat\xE1s regisztr\xE1ci\xF3j\xE1n osztoz\xF3 minden telep\xEDt\xE9s ugyanazokat az azonos\xEDt\xF3kat sorolja fel.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 192
-"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "",
+"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "Ennek az adatb\xE1zisnak egyetlen \xFCzenete sem rendelkezik ezzel a tokennel. Ha egy, a hiteles\xEDt\xE9si szolg\xE1ltat\xE1s regisztr\xE1ci\xF3j\xE1n osztoz\xF3 telep\xEDt\xE9snek ez az azonos\xEDt\xF3ja, vegye fel a(z) %1 list\xE1ba; ellenkez\xF5 esetben a v\xE1lasz nem ehhez a telep\xEDt\xE9shez tartozik, \xE9s semmit sem kell m\xF3dos\xEDtani.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 215
-"Test boxes of ISDS accounts AA cannot read: %1" => "",
+"Test boxes of ISDS accounts AA cannot read: %1" => "Az ISDS-fi\xF3kok azon tesztadatdobozai, amelyeket az AA nem tud beolvasni: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 218
-"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "",
+"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "A test_boxes \xE9rt\xE9k\xE9t adatdoboz-azonos\xEDt\xF3k list\xE1jak\xE9nt adja meg: ['<adatdoboz-azonos\xEDt\xF3>', ...], mindegyik 7 bet\xFB vagy sz\xE1mjegy. Addig a fi\xF3k k\xFCld, de piszkozatb\xF3l teszt\xFCzenet nem megy ki r\xF3la.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 235
-"Paid tests of ISDS accounts AA cannot read: %1" => "",
+"Paid tests of ISDS accounts AA cannot read: %1" => "Az ISDS-fi\xF3kok azon fizet\xF5s tesztjei, amelyeket az AA nem tud beolvasni: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 238
-"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "",
+"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "A paid_tests \xE9rt\xE9k\xE9t adja meg true form\xE1ban - id\xE9z\xF5jelek n\xE9lk\xFCl -, ha engedi, hogy egy piszkozat teszt\xFCzenete p\xE9nzbe ker\xFClj\xF6n, vagy t\xE1vol\xEDtsa el. Addig teszt\xFCzenet csak d\xEDjmentesen megy ki.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "",
+"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "A misc/datovka/datovka_conf.php nincs ellen\xF5rizve k\xE9tszer megadott kulcsokra - a f\xE1jl nagyobb %1 KB-n\xE1l", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"The settings of one installation take a few kilobytes - check what else the file holds." => "",
+"The settings of one installation take a few kilobytes - check what else the file holds." => "Egy telep\xEDt\xE9s be\xE1ll\xEDt\xE1sai n\xE9h\xE1ny kilob\xE1jtot foglalnak - ellen\xF5rizze, mi m\xE1st tartalmaz m\xE9g a f\xE1jl.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 303
-"misc/datovka/datovka_conf.php writes keys twice: %1" => "",
+"misc/datovka/datovka_conf.php writes keys twice: %1" => "A misc/datovka/datovka_conf.php k\xE9tszer megadott kulcsokat tartalmaz: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 307
-"ISDS accounts of the sites of other databases: %1" => "",
+"ISDS accounts of the sites of other databases: %1" => "M\xE1s adatb\xE1zisok webhelyeinek ISDS-fi\xF3kjai: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 309
-"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "",
+"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "A k\xE9tszer megadott kulcsb\xF3l a PHP csak az utols\xF3t tartja meg, az els\xF5t sz\xF3 n\xE9lk\xFCl kihagyja. Vonja \xF6ssze a kett\xF5t eggy\xE9, vagy nevezze \xE1t az egyik fi\xF3kot.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 310
-"An account of the sites of another database: the State Check of the database of its sites names it." => "",
+"An account of the sites of another database: the State Check of the database of its sites names it." => "Egy m\xE1sik adatb\xE1zis webhelyeinek fi\xF3kja: annak az adatb\xE1zisnak az ,,\xC1llapotellen\xF5rz\xE9s\" oldala nevezi meg, amelyhez a webhelyei tartoznak.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 341
-"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "",
+"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "A misc/datovka/datovka_conf.php a szerver minden felhaszn\xE1l\xF3ja sz\xE1m\xE1ra olvashat\xF3, az include/config.php nem", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 343
-"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "",
+"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "A f\xE1jl jelsz\xF3t vagy jelmondatot tartalmaz. Adja meg neki az include/config.php tulajdonos\xE1t, csoportj\xE1t \xE9s m\xF3dj\xE1t (chown, chmod), \xE9s ellen\xF5rizze az ACL-j\xE9t (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 370
-"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "",
+"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "A misc/datovka/datovka_conf.php m\xE1solatai az AA k\xF6nyvt\xE1r\xE1ban: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 373
-"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "",
+"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "A f\xE1jl m\xE1solatait - biztons\xE1gi ment\xE9seket, r\xE9gebbi v\xE1ltozatokat, amit egy szerkeszt\xF5 vagy az svn mellette hagy - csak a webes k\xF6nyvt\xE1rf\xE1n k\xEDv\xFCl tartsa. Ezeket helyezze \xE1t vagy t\xF6r\xF6lje.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 393
-"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "",
+"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "Az AA nem tudja haszn\xE1lni a misc/datovka/datovka_conf.php fi\xF3kjait", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 398
-"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "",
+"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "Adja meg a f\xE1jlnak az include/config.php tulajdonos\xE1t, csoportj\xE1t \xE9s m\xF3dj\xE1t, mivel minden webhely saj\xE1t felhaszn\xE1l\xF3k\xE9nt futtathatja a PHP-t, \xE9s ellen\xF5rizze, hogy minden webhely open_basedir be\xE1ll\xEDt\xE1sa engedi-e a PHP-nek el\xE9rni a f\xE1jlt (\xE9s egy hivatkoz\xE1s c\xE9lj\xE1t). Addig az AA \xFAgy fut, mintha a f\xE1jl nem l\xE9tezne.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 37
-"Letters to data boxes as a PDF" => "",
+"Letters to data boxes as a PDF" => "Levelek adatdobozokba PDF-k\xE9nt", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 42
-"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "",
+"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "Egy r\xF6vid levelet PDF-f\xE9 alak\xEDt, ahogy az adatdobozokba t\xF6rt\xE9n\xF5 k\xF6rk\xFCld\xE9s is teszi minden kamp\xE1ny level\xE9vel - csak akkor, ha a misc/datovka/datovka_conf.php valamely ISDS-fi\xF3kja ennek az adatb\xE1zisnak valamely webhelye sz\xE1m\xE1ra k\xFCld.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 81
-"AA makes letters to data boxes into a PDF" => "",
+"AA makes letters to data boxes into a PDF" => "Az AA PDF-f\xE9 alak\xEDtja az adatdobozokba k\xFCld\xF6tt leveleket", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 86
-"A letter to a data box cannot be made into a PDF" => "",
+"A letter to a data box cannot be made into a PDF" => "Az adatdobozba k\xFCld\xF6tt lev\xE9l nem alak\xEDthat\xF3 PDF-f\xE9", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 87
-"Until then no campaign can be sent to data boxes." => "",
+"Until then no campaign can be sent to data boxes." => "Addig egyetlen kamp\xE1ny sem k\xFCldhet\xF5 adatdobozokba.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 88
-"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "",
+"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "Hi\xE1nyzik a PDF-et el\xF5\xE1ll\xEDt\xF3 dompdf: futtassa a composer install parancsot az AA k\xF6nyvt\xE1r\xE1ban.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 89
-"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "",
+"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "A PHP-b\xF5l hi\xE1nyzik a GD b\xF5v\xEDtm\xE9ny, amely a lev\xE9l k\xE9peit rajzolja: telep\xEDtse, \xE9s ind\xEDtsa \xFAjra a PHP-t.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 90
-"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "",
+"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "Futtassa a composer install parancsot az AA k\xF6nyvt\xE1r\xE1ban - ez telep\xEDti a dompdf-et \xE9s a bet\xFBk\xE9szleteit -, \xE9s ellen\xF5rizze, hogy a PHP \xEDrhat-e az ideiglenes k\xF6nyvt\xE1r\xE1ba (sys_temp_dir).", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 30
-"Data boxes of the items" => "",
+"Data boxes of the items" => "A cikkek adatdobozai", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 35
-"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "",
+"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "Azokban a rovatokban, amelyek a cikkeiket p\xE1ros\xEDtj\xE1k az adatdobozok let\xF6lt\xF6tt nyilv\xE1ntart\xE1s\xE1val, \xF6sszeveti a cikkek adatdobozait a nyilv\xE1ntart\xE1ssal, \xE9s megnevezi azokat az ISDS-fi\xF3kokat, amelyek webhelyei egyetlen ilyen rovatot sem haszn\xE1lnak.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 60
-"No slice pairs its items with the register of data boxes" => "",
+"No slice pairs its items with the register of data boxes" => "Egyetlen rovat sem p\xE1ros\xEDtja a cikkeit az adatdobozok nyilv\xE1ntart\xE1s\xE1val", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 63
-"Paired slices whose items have the data boxes of the register: %1" => "",
+"Paired slices whose items have the data boxes of the register: %1" => "P\xE1ros\xEDtott rovatok, amelyek cikkein\xE9l a nyilv\xE1ntart\xE1s szerinti adatdobozok szerepelnek: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 88
-"ISDS account" => "",
+"ISDS account" => "ISDS-fi\xF3k", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 94
-"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "",
+"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "Az ISDS-fi\xF3kok webhelyei egyetlen adatdoboz-be\xE1ll\xEDt\xE1sokkal rendelkez\xF5 rovatot sem haszn\xE1lnak, \xEDgy a k\xF6rk\xFCld\xE9s nem tudja \xE1tvenni a c\xEDmzettjeit", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 97
-"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "",
+"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "Annak a rovatnak a be\xE1ll\xEDt\xE1saiban, amelyb\xF5l a kamp\xE1nyok a c\xEDmzettjeiket veszik - a webhely \xE1ltal haszn\xE1lt nyilv\xE1nos rovat, l\xE1sd a webhely be\xE1ll\xEDt\xE1saiban a ,,Haszn\xE1lt modulok\" r\xE9szt -, nyissa meg az ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldalt, \xE9s ott v\xE1lassza ki a cikkek mez\xF5it: a nevet, a t\xEDpust \xE9s azt az adatdobozt, amelybe a k\xF6rk\xFCld\xE9s k\xFCld.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 112
-"Data boxes of %1" => "",
+"Data boxes of %1" => "%1 adatdobozai", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 114
-"Download it on the page Data boxes from the register of a paired slice." => "",
+"Download it on the page Data boxes from the register of a paired slice." => "T\xF6ltse le egy p\xE1ros\xEDtott rovat ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldal\xE1n.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"The directory of the register of data boxes cannot be used" => "",
+"The directory of the register of data boxes cannot be used" => "Az adatdoboz-nyilv\xE1ntart\xE1s k\xF6nyvt\xE1ra nem haszn\xE1lhat\xF3", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "",
+"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "Enged\xE9lyezze a PHP-nek a k\xF6nyvt\xE1r bej\xE1r\xE1s\xE1t, vagy \xE1ll\xEDtsa be az IMG_UPLOAD_PATH \xE9rt\xE9k\xE9t a config.php f\xE1jlban. Ezut\xE1n t\xF6ltse le a nyilv\xE1ntart\xE1st egy p\xE1ros\xEDtott rovat ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldal\xE1n.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The register of data boxes has not been downloaded" => "",
+"The register of data boxes has not been downloaded" => "Az adatdobozok nyilv\xE1ntart\xE1sa nincs let\xF6ltve", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The items are compared with it." => "",
+"The items are compared with it." => "A cikkek \xF6sszevet\xE9se ezzel t\xF6rt\xE9nik.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 127
-"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "",
+"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "T\xF6ltse le \xFAjra a nyilv\xE1ntart\xE1st egy p\xE1ros\xEDtott rovat ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldal\xE1n. Addig a cikkek \xF6sszevet\xE9se a nyilv\xE1ntart\xE1ssal elmarad.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"The downloaded register of data boxes is older than %1 days" => "",
+"The downloaded register of data boxes is older than %1 days" => "Az adatdobozok let\xF6lt\xF6tt nyilv\xE1ntart\xE1sa %1 napn\xE1l r\xE9gebbi", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Downloaded" => "",
+"Downloaded" => "Let\xF6ltve", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "",
+"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "T\xF6ltse le \xFAjra egy p\xE1ros\xEDtott rovat ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldal\xE1n: a hivatalok \xFAj adatdobozokat kapnak, \xE9s \xF6sszeolvadnak.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 140
-"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "",
+"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "A nyilv\xE1ntart\xE1s m\xE1solata s\xE9r\xFClt: ha \xFAjra let\xF6lti egy p\xE1ros\xEDtott rovat ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldal\xE1n, az lecser\xE9li.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 141
-"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "",
+"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "A nyilv\xE1ntart\xE1s m\xE1solata nem olvashat\xF3: ellen\xF5rizze a bizony\xEDt\xE9kokban megnevezett k\xF6nyvt\xE1rat \xE9s jogosults\xE1gokat; ha ezek rendben vannak, a lemezr\xF5l t\xF6rt\xE9n\xF5 olvas\xE1s hi\xFAsult meg - pr\xF3b\xE1lja \xFAjra k\xE9s\xF5bb.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 142
-"The downloaded register of data boxes cannot be read" => "",
+"The downloaded register of data boxes cannot be read" => "Az adatdobozok let\xF6lt\xF6tt nyilv\xE1ntart\xE1sa nem olvashat\xF3", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"The pairing of slice \"%1\" with the register no longer fits its fields" => "",
+"The pairing of slice \"%1\" with the register no longer fits its fields" => "A(z) ,,%1\" rovat p\xE1ros\xEDt\xE1sa a nyilv\xE1ntart\xE1ssal m\xE1r nem felel meg a mez\xF5inek", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"Choose the fields again in the settings on the page Data boxes from the register." => "",
+"Choose the fields again in the settings on the page Data boxes from the register." => "V\xE1lassza ki \xFAjra a mez\xF5ket az ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldal be\xE1ll\xEDt\xE1saiban.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 187
-"Slice \"%1\": items without a data box: %2, items with another box than the register by I\xC4\x8CO: %3" => "",
+"Slice \"%1\": items without a data box: %2, items with another box than the register by I\xC4\x8CO: %3" => "A(z) ,,%1\" rovat: adatdoboz n\xE9lk\xFCli cikkek: %2, az I\xC8O alapj\xE1n a nyilv\xE1ntart\xE1sban szerepl\xF5t\xF5l elt\xE9r\xF5 adatdobozzal rendelkez\xF5 cikkek: %3", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 190
-"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "",
+"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "Nyissa meg az ,,Adatdobozok a nyilv\xE1ntart\xE1sb\xF3l\" oldalt, ellen\xF5rizze a tal\xE1lt adatdobozokat, \xE9s \xEDrja be \xF5ket. Azokn\xE1l a cikkekn\xE9l, amelyeket a nyilv\xE1ntart\xE1s nem tal\xE1l, az adatdobozt k\xE9zzel kell kit\xF6lteni.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 21
-"Message items of mass sendings" => "",
+"Message items of mass sendings" => "A k\xF6rk\xFCld\xE9sek \xFCzenetcikkei", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 26
-"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "",
+"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "\xD6sszeveti a nemr\xE9gi adatdoboz-k\xF6rk\xFCld\xE9sek \xFCzenetcikkeit a futtat\xE1saik rekordjaival, amelyek alapj\xE1n a k\xFCld\xE9s t\xF6rt\xE9nik.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"Message items of a mass sending do not show what its record says: %1" => "",
+"Message items of a mass sending do not show what its record says: %1" => "Egy k\xF6rk\xFCld\xE9s \xFCzenetcikkei nem azt mutatj\xE1k, amit a rekordja tartalmaz: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "",
+"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "A k\xFCld\xE9s a rekordja szerint halad; a cikkek csak megmutatj\xE1k az embereknek, \xE9s ha egy cikk el nem k\xFCld\xF6ttnek mutat egy val\xF3j\xE1ban elment \xFCzenetet, valaki k\xE9zzel \xFAjra elk\xFCldheti. Minden p\xE9lda megadja a felad\xF3 iktat\xF3sz\xE1m\xE1t, a cikket, azt, amit mutat, \xE9s azt, amit a rekord tartalmaz: \xE1ll\xEDtsa a cikk \xE1llapot\xE1t erre az \xE9rt\xE9kre, vagy ellen\xF5rizze az \xFCzenetet az ISDS-port\xE1lon a felad\xF3 iktat\xF3sz\xE1ma alapj\xE1n.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 96
 // src/Optimize/CheckIsdsRuns.php, row 90
@@ -12505,140 +12735,140 @@ return [
 "%1: nothing found" => "%1: nincs tal\xE1lat", // ai 2026-10
 
 // src/Optimize/CheckIsdsRuns.php, row 51
-"Mass sendings to data boxes" => "",
+"Mass sendings to data boxes" => "Adatdoboz-k\xF6rk\xFCld\xE9sek", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 56
-"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "",
+"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "Figyelmeztet azokra az adatdoboz-k\xF6rk\xFCld\xE9sekre, amelyek elakadtak vagy hib\xE1val le\xE1lltak, ismeretlen sors\xFA \xFCzeneteket hagytak h\xE1tra vagy sok \xFCzenet\xFCk meghi\xFAsult, amelyekn\xE9l a k\xE9zbes\xEDt\xE9s k\xF6vet\xE9se elakadt vagy k\xE9zbes\xEDtettk\xE9nt nem ismert \xFCzeneteket hagyott h\xE1tra, valamint azokra a kamp\xE1nyokra, amelyek nem mutatj\xE1k, hogyan zajlott a k\xFCld\xE9s\xFCk.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"The campaign of a finished mass sending does not show its end" => "",
+"The campaign of a finished mass sending does not show its end" => "Egy befejezett k\xF6rk\xFCld\xE9s kamp\xE1nya nem mutatja a k\xFCld\xE9s v\xE9g\xE9t", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "",
+"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "A kamp\xE1nycikket m\xE1r semmi sem \xEDrja \xFAjra. \xC1ll\xEDtsa be az \xE1llapot\xE1t k\xE9zzel: le\xE1ll\xEDtva, ha a k\xFCld\xE9st m\xE9g az \xF6sszes \xFCzenet elmen\xE9se el\xF5tt le\xE1ll\xEDtott\xE1k, egy\xE9bk\xE9nt k\xE9sz.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 121
-"Mass sendings to data boxes whose campaign item is gone: %1" => "",
+"Mass sendings to data boxes whose campaign item is gone: %1" => "Adatdoboz-k\xF6rk\xFCld\xE9sek, amelyeknek a kamp\xE1nycikke elt\xFBnt: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 125
-"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "",
+"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "Rekordjaik \xE9s r\xF6gz\xEDtett leveleik bizony\xEDt\xE9kk\xE9nt megmaradnak arr\xF3l, mit k\xFCldtek el - az AA nem t\xF6rli \xF5ket a kamp\xE1nnyal egy\xFCtt. A be nem fejezett k\xFCld\xE9s a v\xE9g\xE9ig folytat\xF3dik: a rekordja tartalmazza, kinek \xE9s mit k\xFCld.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 160
-"Messages of unknown fate" => "",
+"Messages of unknown fate" => "Ismeretlen sors\xFA \xFCzenetek", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"Following the delivery of a mass sending to data boxes stopped by an error" => "",
+"Following the delivery of a mass sending to data boxes stopped by an error" => "Egy adatdoboz-k\xF6rk\xFCld\xE9s k\xE9zbes\xEDt\xE9s\xE9nek k\xF6vet\xE9se hib\xE1val le\xE1llt", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "",
+"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "Minden \xFCzenet elment, csak annak meg\xE1llap\xEDt\xE1sa \xE1llt le, hogy k\xE9zbes\xEDtett\xE9k-e \xF5ket. H\xE1r\xEDtsa el a hibak\xF3d \xE1ltal megnevezett okot, majd a k\xFCld\xE9s oldal\xE1n v\xE1lassza a ,,Folytat\xE1s\" lehet\xF5s\xE9get - ez a kihagyott \xE1llapotokat is beolvassa -, vagy a ,,Megszak\xEDt\xE1s\" lehet\xF5s\xE9get, amely v\xE9gleg befejezi a k\xF6vet\xE9st.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 167
-"A mass sending to data boxes stopped by an error" => "",
+"A mass sending to data boxes stopped by an error" => "Egy adatdoboz-k\xF6rk\xFCld\xE9s hib\xE1val le\xE1llt", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 169
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "Am\xEDg valaki be nem avatkozik, semmi t\xF6bb nem megy el. H\xE1r\xEDtsa el a hibak\xF3d \xE1ltal megnevezett okot, majd a k\xFCld\xE9s oldal\xE1n v\xE1lassza a ,,Folytat\xE1s\" lehet\xF5s\xE9get - vagy a ,,Megszak\xEDt\xE1s\" lehet\xF5s\xE9get, amely v\xE9gleg befejezi: az esetleg m\xE1r elment \xFCzenetet ezut\xE1n egy embernek kell ellen\xF5riznie. A kamp\xE1nycikk m\xE9g mutathatja, hogy a k\xFCld\xE9s folyamatban van, ha a hiba azel\xF5tt j\xF6tt, hogy a futtat\xE1s be\xEDrhatta volna.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 170
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "Am\xEDg valaki be nem avatkozik, semmi t\xF6bb nem megy el. H\xE1r\xEDtsa el a hibak\xF3d \xE1ltal megnevezett okot, majd a k\xFCld\xE9s oldal\xE1n v\xE1lassza a ,,Folytat\xE1s\" lehet\xF5s\xE9get - vagy a ,,Le\xE1ll\xEDt\xE1s\" lehet\xF5s\xE9get, amely ut\xE1n semmi t\xF6bb nem megy el. Az esetleg m\xE1r elment \xFCzenetet a rendszer soha nem k\xFCldi el \xFAjra: a k\xFCld\xE9s megkeresi. A kamp\xE1nycikk m\xE9g mutathatja, hogy a k\xFCld\xE9s folyamatban van, ha a hiba azel\xF5tt j\xF6tt, hogy a futtat\xE1s be\xEDrhatta volna.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"A mass sending to data boxes has not moved on for %1 hours" => "",
+"A mass sending to data boxes has not moved on for %1 hours" => "Egy adatdoboz-k\xF6rk\xFCld\xE9s %1 \xF3r\xE1ja nem halad el\xF5re", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "",
+"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "Egyetlen feladatsor-l\xE9p\xE9s sem dolgozik rajta. Ellen\xF5rizze, hogy a cron futtatja-e a feladatsort, \xE9s hogy a k\xF6rei el\xE9g hossz\xFAak-e egy l\xE9p\xE9shez (TOEXECUTE_ALLOWED_TIME a config.php-ben), majd a k\xFCld\xE9s oldal\xE1n v\xE1lassza a ,,Folytat\xE1s\" lehet\xF5s\xE9get.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A finished mass sending left messages of unknown fate: %1" => "",
+"A finished mass sending left messages of unknown fate: %1" => "Egy befejezett k\xF6rk\xFCld\xE9s ismeretlen sors\xFA \xFCzeneteket hagyott h\xE1tra: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A mass sending being followed has messages of unknown fate: %1" => "",
+"A mass sending being followed has messages of unknown fate: %1" => "Egy k\xF6vetett k\xF6rk\xFCld\xE9snek ismeretlen sors\xFA \xFCzenetei vannak: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 185
-"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "",
+"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "Lehet, hogy k\xE9zbes\xEDtett\xE9k \xF5ket, ez\xE9rt az AA soha nem k\xFCldi el \xF5ket \xFAjra. Keresse meg mindegyiket a felad\xF3 iktat\xF3sz\xE1ma alapj\xE1n az adatdoboz elk\xFCld\xF6tt \xFCzenetei k\xF6z\xF6tt az ISDS-port\xE1lon. Ha valamelyik nincs ott, a k\xFCld\xE9s oldal\xE1n v\xE1lassza az ,,Ellen\xF5rz\xE9s\" lehet\xF5s\xE9get - ezut\xE1n el nem k\xFCld\xF6ttnek sz\xE1m\xEDt -, \xE9s k\xFCldje el \xFAjra a levelet ennek a c\xEDmzettnek egy \xFAj kamp\xE1nyban.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 193
-"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "",
+"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "Ezek a c\xEDmzettek nem kapt\xE1k meg a levelet. \xDCzenetcikkeik mutatj\xE1k, mit jelzett az ISDS mindegyikr\xF5l: h\xE1r\xEDtsa el az okot, \xE9s k\xFCldje el nekik \xFAjra a levelet egy \xFAj kamp\xE1nyban.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 195
-"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "",
+"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "3-as k\xF3d: egy mell\xE9klet nem ment \xE1t az ISDS v\xEDruskeres\xE9s\xE9n (az \xE9rv\xE9nytelen PDF sem megy \xE1t rajta). El\xF5bb jav\xEDtsa ki a mell\xE9kleteket: ugyanaz a mell\xE9klet ism\xE9t elbukik.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 198
-"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "",
+"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "8-as k\xF3d: a c\xEDmzett adatdoboz\xE1t el\xE9rhetetlenn\xE9 tett\xE9k. Az \xFCzenet nincs k\xE9zbes\xEDtve, b\xE1r mutathat v\xE9lelmezett k\xE9zbes\xEDt\xE9si id\xF5t, \xE9s ebbe a dobozba \xFAj \xFCzenet sem \xE9rkezik: der\xEDtse ki a c\xEDmzett \xFAj adatdoboz\xE1t.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 200
-"%1 of %2 messages of a mass sending to data boxes failed" => "",
+"%1 of %2 messages of a mass sending to data boxes failed" => "Egy adatdoboz-k\xF6rk\xFCld\xE9s \xFCzenetei k\xF6z\xFCl %1 / %2 meghi\xFAsult", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"A mass sending to data boxes ended with messages not known to be delivered: %1" => "",
+"A mass sending to data boxes ended with messages not known to be delivered: %1" => "Egy adatdoboz-k\xF6rk\xFCld\xE9s olyan \xFCzenetekkel \xE9rt v\xE9get, amelyek k\xE9zbes\xEDt\xE9se nem ismert: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "",
+"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "Az ISDS a k\xF6vet\xE9s alatt sem a k\xE9zbes\xEDt\xE9s\xFCket, sem az elutas\xEDt\xE1sukat nem jelezte az AA-nak. Ellen\xF5rizze mindegyiket az ISDS-port\xE1lon a felad\xF3 iktat\xF3sz\xE1ma alapj\xE1n az adatdoboz elk\xFCld\xF6tt \xFCzenetei k\xF6z\xF6tt.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 235
-"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "",
+"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "Az ISDS letiltotta ennek a szervernek a c\xEDm\xE9t. Az AA 24 \xF3ra m\xFAlva \xFAjra pr\xF3b\xE1lkozik. L\xE1sd a(z) ,,%1\" ellen\xF5rz\xE9st.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 236
-"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "",
+"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "A PHP nem tudja olvasni a misc/datovka/datovka_conf.php f\xE1jlt: adjon vissza neki olvas\xE1si jogot a f\xE1jlhoz.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 237
-"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "",
+"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "Az adatdobozban egy \xF3ra alatt annyi v\xE1ltoz\xE1s t\xF6rt\xE9nt, hogy az AA nem tudja beolvasni \xF5ket: ellen\xF5rizze az \xFCzenetek k\xE9zbes\xEDt\xE9s\xE9t az ISDS-port\xE1lon a felad\xF3 iktat\xF3sz\xE1mai alapj\xE1n.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 238
-"ISDS did not answer when AA read the delivery of the messages." => "",
+"ISDS did not answer when AA read the delivery of the messages." => "Az ISDS nem v\xE1laszolt, amikor az AA az \xFCzenetek k\xE9zbes\xEDt\xE9s\xE9t olvasta.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 242
-"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "",
+"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "A rekord szerint a k\xE9zbes\xEDt\xE9s egy j\xF6v\xF5beli id\xF5pontig be lett olvasva. A k\xF6vetkez\xF5 k\xF6r a k\xFCld\xE9s kezdet\xE9t\xF5l \xFAjra beolvassa, \xE9s egyetlen \xFCzenetet sem k\xFCld el \xFAjra; ha ez a meg\xE1llap\xEDt\xE1s megmarad, ellen\xF5rizze a feladatsort futtat\xF3 szerverek \xF3r\xE1it.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 243
-"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "",
+"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "Az AA mag\xE1t\xF3l \xFAjra pr\xF3b\xE1lkozik; amint olvasni tud, a kihagyott \xE1llapotokat is beolvassa, \xE9s egyetlen \xFCzenetet sem k\xFCld el \xFAjra.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Read up to" => "",
+"Read up to" => "Beolvasva eddig", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Last wait" => "",
+"Last wait" => "Utols\xF3 v\xE1rakoz\xE1s", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 245
-"Following the delivery of a mass sending to data boxes has stalled" => "",
+"Following the delivery of a mass sending to data boxes has stalled" => "Egy adatdoboz-k\xF6rk\xFCld\xE9s k\xE9zbes\xEDt\xE9s\xE9nek k\xF6vet\xE9se elakadt", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record of a mass sending to data boxes cannot be read" => "",
+"The record of a mass sending to data boxes cannot be read" => "Egy adatdoboz-k\xF6rk\xFCld\xE9s rekordja nem olvashat\xF3", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "",
+"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "A k\xFCld\xE9s rekordj\xE1t vagy r\xF6gz\xEDtett c\xEDmzettlist\xE1j\xE1t az AA-n k\xEDv\xFCl m\xF3dos\xEDtott\xE1k. \xC1ll\xEDtsa vissza \xF5ket az adatb\xE1zis biztons\xE1gi ment\xE9s\xE9b\xF5l, miel\xF5tt b\xE1rki a ,,Folytat\xE1s\" lehet\xF5s\xE9get v\xE1lasztan\xE1: a rekord akad\xE1lyozza meg, hogy egy \xFCzenet k\xE9tszer menjen el.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 264, 309
-"Campaign item" => "",
+"Campaign item" => "Kamp\xE1nycikk", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 309
-"Campaign state" => "",
+"Campaign state" => "Kamp\xE1ny \xE1llapota", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 35
-"Views of mass sendings" => "",
+"Views of mass sendings" => "K\xF6rk\xFCld\xE9sek n\xE9zetei", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 40
-"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "",
+"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "Ellen\xF5rzi az adatdoboz-k\xF6rk\xFCld\xE9s oldal\xE1nak n\xE9zetneveit: minden isds_... n\xE9zet egyszer szerepeljen egy ISDS-fi\xF3k kamp\xE1ny- \xE9s \xFCzenetrovataiban - k\xE9t azonos nev\xFB k\xF6z\xFCl az oldal egyiket sem mutatja -, az isdscampainer bel\xE9p\xF5 n\xE9zet pedig egyszer a webhely rovatai k\xF6z\xF6tt.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 79
-"Views of the slices of ISDS account %1 share the name %2" => "",
+"Views of the slices of ISDS account %1 share the name %2" => "A(z) %1 ISDS-fi\xF3k rovatainak n\xE9zetei ugyanazt a nevet viselik: %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 82
-"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "",
+"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "A k\xF6rk\xFCld\xE9s oldala egyiket sem mutatja. Hagyja meg a nevet a kamp\xE1ny- vagy az \xFCzenetrovat egyetlen n\xE9zet\xE9n\xE9l, a t\xF6bbit nevezze \xE1t vagy t\xF6r\xF6lje.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 95
-"Site %1 has the entry view isdscampainer more than once" => "",
+"Site %1 has the entry view isdscampainer more than once" => "A(z) %1 webhelyen az isdscampainer bel\xE9p\xF5 n\xE9zet t\xF6bbsz\xF6r szerepel", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 98
-"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "",
+"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "A {view:isdscampainer} a legmagasabb sz\xE1m\xFA n\xE9zetet veszi, ami nem felt\xE9tlen\xFCl a k\xF6rk\xFCld\xE9s oldala. Az oldal spotj\xE1ban h\xEDvja a bel\xE9p\xF5 n\xE9zetet a sz\xE1m\xE1val, \xE9s nevezze \xE1t az ilyen nev\xFB t\xF6bbi n\xE9zetet.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 123
-"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "",
+"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "A(z) %1 webhely egyik k\xF6rk\xFCld\xE9s-oldala olyan n\xE9zetet mutat, amilyen nev\xFB n\xE9zete egyik rovat\xE1nak sincs: %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 127, 163
 // src/Util/ChangesMonitor.php, row 444
 "View" => "Megtekint\xE9s", // ai 2026-06
 
 // src/Optimize/CheckIsdsViews.php, row 131
-"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "",
+"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "Az oldalnak ez a r\xE9sze \xFCres marad. Adja vissza a nevet a kamp\xE1ny- vagy \xFCzenetrovat \xE1tnevezett n\xE9zet\xE9nek, vagy jav\xEDtsa ki a nevet a sablonban.", // ai 2026-11
 
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 28
 "Item edits without the edit permission" => "Cikkszerkeszt\xE9sek szerkeszt\xE9si jogosults\xE1g n\xE9lk\xFCl", // ai 2026-10
@@ -12922,23 +13152,92 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "Az elm\xFAlt 30 napban egyetlen objektum\xFBrlapot sem utas\xEDtottak el", // ai 2026-10
 
+// src/Optimize/CheckPasskeys.php, row 35
+"Passkey logins" => "Azonos\xEDt\xF3kulcsos bejelentkez\xE9sek", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 40
+"Lists the passkey logins refused in the last 30 days and the right passwords of accounts that log in by a passkey." => "Felsorolja az elm\xFAlt 30 napban elutas\xEDtott azonos\xEDt\xF3kulcsos bejelentkez\xE9seket, valamint az azonos\xEDt\xF3kulccsal bejelentkez\xF5 fi\xF3kok helyesen megadott jelszavait.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Passkeys cannot be used yet - the table authenticator is missing" => "Az azonos\xEDt\xF3kulcsok m\xE9g nem haszn\xE1lhat\xF3k - hi\xE1nyzik az authenticator t\xE1bla", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Run service/sql_update.php - it creates the table." => "Futtassa a service/sql_update.php szkriptet - ez l\xE9trehozza a t\xE1bl\xE1t.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 95
+"No passkey login was refused in the last 30 days" => "Az elm\xFAlt 30 napban egyetlen azonos\xEDt\xF3kulcsos bejelentkez\xE9st sem utas\xEDtottak el", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"Right password of a passkey account" => "Azonos\xEDt\xF3kulcsos fi\xF3k helyes jelszava", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The right password of an account that logs in by a passkey (%1)" => "Egy jelkulccsal bejelentkez\xF5 fi\xF3k helyes jelszava (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The account logs in only by its passkey, so the password did not let anybody in - but someone knows it. If it was not the owner, the password should be changed; it is used again once the passkeys are deleted." => "A fi\xF3k csak az azonos\xEDt\xF3kulcs\xE1val jelentkezik be, \xEDgy a jelsz\xF3 senkit sem engedett be - de valaki ismeri. Ha nem a tulajdonos volt az, a jelsz\xF3t meg kell v\xE1ltoztatni; az azonos\xEDt\xF3kulcsok t\xF6rl\xE9se ut\xE1n ism\xE9t haszn\xE1latba ker\xFCl.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"Passkeys unknown - the directory did not answer" => "Az azonos\xEDt\xF3kulcsok ismeretlenek - a c\xEDmt\xE1r nem v\xE1laszolt", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The directory did not answer whether %1 has a passkey" => "A c\xEDmt\xE1r nem v\xE1laszolt arra, hogy %1 rendelkezik-e azonos\xEDt\xF3kulccsal", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The password was refused, as the account may log in only by a passkey. Check the LDAP server and the bind account of AA." => "A jelsz\xF3t elutas\xEDtotta a rendszer, mivel a fi\xF3k esetleg csak jelkulccsal jelentkezhet be. Ellen\xF5rizze az LDAP-kiszolg\xE1l\xF3t \xE9s az AA bind-fi\xF3kj\xE1t.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"Passkey answer from another address" => "Azonos\xEDt\xF3kulcs-v\xE1lasz m\xE1s c\xEDmr\xF5l", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"A passkey answer from another address than the page (%1)" => "Azonos\xEDt\xF3kulcs-v\xE1lasz az oldal\xE9t\xF3l elt\xE9r\xF5 c\xEDmr\xF5l (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"AA sees the page under another host or scheme than the browser - usually a reverse proxy missing from AA_TRUSTED_PROXIES, or a site reached by http." => "Az AA m\xE1s gazdag\xE9p vagy s\xE9ma alatt l\xE1tja az oldalt, mint a b\xF6ng\xE9sz\xF5 - \xE1ltal\xE1ban az AA_TRUSTED_PROXIES-b\xF5l hi\xE1nyz\xF3 ford\xEDtott proxy miatt, vagy mert a webhelyet http-n \xE9rt\xE9k el.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"Security key counter went back" => "A biztons\xE1gi kulcs sz\xE1ml\xE1l\xF3ja visszal\xE9pett", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"A security key of %1 signed with a counter it had used before" => "%1 biztons\xE1gi kulcsa egy kor\xE1bban m\xE1r haszn\xE1lt sz\xE1ml\xE1l\xF3\xE9rt\xE9kkel \xEDrt al\xE1", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"The key may have been copied. The login was let through, so its owner is not locked out; ask the owner and delete the passkey on the page of the account if in doubt." => "Lehet, hogy a kulcsot lem\xE1solt\xE1k. A bejelentkez\xE9st a rendszer \xE1tengedte, \xEDgy a tulajdonosa nincs kiz\xE1rva; k\xE9rdezze meg a tulajdonost, \xE9s k\xE9ts\xE9g eset\xE9n t\xF6r\xF6lje az azonos\xEDt\xF3kulcsot a fi\xF3k oldal\xE1n.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Unknown passkey" => "Ismeretlen azonos\xEDt\xF3kulcs", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"A login by a passkey this AA does not keep" => "Bejelentkez\xE9s olyan jelkulccsal, amelyet ez az AA nem t\xE1rol", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Usually a passkey deleted in AA but still in the browser or phone of its owner, or one of another AA on the same host. The owner can delete it in the device." => "\xC1ltal\xE1ban az AA-ban t\xF6r\xF6lt, de a tulajdonos b\xF6ng\xE9sz\xF5j\xE9ben vagy telefonj\xE1n m\xE9g megl\xE9v\xF5 azonos\xEDt\xF3kulcs, vagy egy ugyanazon a gazdag\xE9pen fut\xF3 m\xE1sik AA azonos\xEDt\xF3kulcsa. A tulajdonos t\xF6r\xF6lheti az eszk\xF6z\xE9n.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"Passkey login refused" => "Azonos\xEDt\xF3kulcsos bejelentkez\xE9s elutas\xEDtva", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"A passkey login refused: %1" => "Elutas\xEDtott azonos\xEDt\xF3kulcsos bejelentkez\xE9s: %1", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"An expired or repeated login, or an answer no browser sends. Nothing to do unless it repeats." => "Lej\xE1rt vagy ism\xE9telt bejelentkez\xE9s, vagy olyan v\xE1lasz, amelyet b\xF6ng\xE9sz\xF5 nem k\xFCld. Nincs teend\xF5, hacsak nem ism\xE9tl\xF5dik.", // ai 2026-11
+
 // src/Optimize/CheckPerVisitorReads.php, row 18
-"Pages left out of the page cache by {server:...}" => "",
+"Pages left out of the page cache by {server:...}" => "A {server:...} miatt az oldal-gyors\xEDt\xF3t\xE1rb\xF3l kihagyott oldalak", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 23
-"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "",
+"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "Felsorolja azokat a webhelyeket \xE9s rovatokat, amelyek sablonjai {server:...} seg\xEDts\xE9g\xE9vel olyan \xE9rt\xE9ket olvasnak, amely a l\xE1togat\xF3\xE9 lehet (c\xEDm, b\xF6ng\xE9sz\xF5, hivatkoz\xF3 oldal) - az oldal-gyors\xEDt\xF3t\xE1r az ilyen oldalakat nem t\xE1rolja.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 72
-"Reads" => "",
+"Reads" => "Olvassa", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 78
-"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "",
+"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "A(z) %1 oldalait az oldal-gyors\xEDt\xF3t\xE1r nem t\xE1rolja - egy sablon olyan \xE9rt\xE9ket olvas, amely a l\xE1togat\xF3\xE9 lehet", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 81
-"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "",
+"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Minden l\xE1togat\xE1s \xFAjra el\xF5\xE1ll\xEDtja az ilyen oldalt. \xC1tir\xE1ny\xEDt\xE1s, kattint\xE1ssz\xE1ml\xE1l\xF3 vagy \xFBrlap maradhat \xFAgy, ahogy van. M\xE1shol, f\xF5k\xE9nt a minden oldalon szerepl\xF5 sablonban (fejl\xE9c, l\xE1bl\xE9c): t\xF6r\xF6lje a csak hibakeres\xE9shez ki\xEDrt \xE9rt\xE9ket, \xE9s ellen\xF5rizze a n\xE9v helyes\xEDr\xE1s\xE1t ({server:HTTP_REFERER}); a kamp\xE1nyb\xF3l \xE9rkez\xF5 l\xE1togat\xF3k felismer\xE9s\xE9hez haszn\xE1lja a {qs:utm_source}, az eszk\xF6z\xE9hez a {detect} kifejez\xE9st. A gazdag\xE9p, a s\xE9ma \xE9s az URI ({server:HTTP_HOST}, {server:REQUEST_URI}) mellett az oldal a gyors\xEDt\xF3t\xE1rban marad.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 86
-"No template reads a value of the visitor's own by {server:...}" => "",
+"No template reads a value of the visitor's own by {server:...}" => "Egyetlen sablon sem olvas {server:...} seg\xEDts\xE9g\xE9vel a l\xE1togat\xF3hoz tartoz\xF3 \xE9rt\xE9ket", // ai 2026-11
 
 // src/Optimize/CheckPhpFatals.php, row 24
 "PHP fatal errors" => "V\xE9gzetes PHP-hib\xE1k", // ai 2026-10
@@ -13052,28 +13351,28 @@ return [
 "No queued task with a missing class in the last 30 days" => "Az elm\xFAlt 30 napban nem volt hi\xE1nyz\xF3 oszt\xE1ly\xFA sorban \xE1ll\xF3 feladat", // ai 2026-10
 
 // src/Optimize/CheckRelatedSlices.php, row 20
-"Related slices of another website" => "",
+"Related slices of another website" => "M\xE1s webhely kapcsol\xF3d\xF3 rovatai", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 25
-"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "",
+"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "Felsorolja azokat a kapcsol\xF3d\xF3cikk-mez\xF5ket (rim szerkeszt\xE9s gombbal, mng), amelyek olyan rovatra mutatnak, amelyet saj\xE1t rovatuk egyik webhelye sem haszn\xE1l. A rovat szerkeszt\xF5i \xEDgy szerkeszthetik annak a rovatnak a cikkeit.", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 78
-"Related slice" => "",
+"Related slice" => "Kapcsol\xF3d\xF3 rovat", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 79
-"Its websites" => "",
+"Its websites" => "Webhelyei", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 85
-"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "",
+"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "Egyetlen kapcsol\xF3d\xF3cikk-mez\xF5 sem mutat m\xE1s webhely rovat\xE1ra; a semelyik webhely \xE1ltal nem haszn\xE1lt rovatok mez\xF5it nem hasonl\xEDtotta \xF6ssze a rendszer: %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 86
-"Every related-item field points to a slice of its own website" => "",
+"Every related-item field points to a slice of its own website" => "Minden kapcsol\xF3d\xF3cikk-mez\xF5 a saj\xE1t webhelye egyik rovat\xE1ra mutat", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 90
-"%1 related-item fields point to a slice of another website" => "",
+"%1 related-item fields point to a slice of another website" => "M\xE1s webhely rovat\xE1ra mutat\xF3 kapcsol\xF3d\xF3cikk-mez\xF5k: %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 92
-"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "",
+"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "A rovat szerkeszt\xF5i szerkeszthetik a kapcsol\xF3d\xF3 rovat cikkeit. Ha a mez\xF5t sablonnal egy\xFCtt m\xE1solt\xE1k, ir\xE1ny\xEDtsa a saj\xE1t webhelye rovat\xE1ra.", // ai 2026-11
 
 // src/Optimize/CheckRequiredSettings.php, row 17
 "Required slice settings" => "K\xF6telez\xF5 rovatbe\xE1ll\xEDt\xE1sok", // ai 2026-10
@@ -13374,77 +13673,77 @@ return [
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "Az alias semmit sem jelen\xEDt meg: az f_u csak a telep\xEDt\xE9s f\xFCggv\xE9nyeit h\xEDvja (usr_* az include/usr_aliasfnc.php f\xE1jlban), PHP- vagy AA-f\xFCggv\xE9nyeket soha. \xCDrjon egy usr_* f\xFCggv\xE9nyt, amely elv\xE9gzi a sz\xFCks\xE9geset, vagy haszn\xE1ljon helyette AA-kifejez\xE9st.", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 35
-"Slices left out of views, charsets ignored" => "",
+"Slices left out of views, charsets ignored" => "N\xE9zetekb\xF5l kihagyott rovatok, figyelmen k\xEDv\xFCl hagyott karakterk\xE9szletek", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 40
-"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "",
+"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "Felsorolja azokat a n\xE9zeteket, amelyek az elm\xFAlt 30 napban kihagytak egy rovatot, mert az oldal nem ismerte a rovat olvas\xE1si jelszav\xE1t: az URL-b\xF5l az adott rovat f\xF6l\xF6tt h\xEDvott n\xE9zetet, vagy olyan param\xE9terekkel h\xEDvottat, amelyek a rovatot vagy annak cikkeit nevezik meg.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 41
-"And the conditions on fields of related items in such a slice, which matched nothing." => "",
+"And the conditions on fields of related items in such a slice, which matched nothing." => "Tov\xE1bb\xE1 az ilyen rovatban l\xE9v\xF5 kapcsol\xF3d\xF3 cikkek mez\xF5ire vonatkoz\xF3 felt\xE9teleket, amelyek semmit sem tal\xE1ltak.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 42
-"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "",
+"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "Tov\xE1bb\xE1 a kihagyott felt\xE9teleket \xE9s rendez\xE9seket olyan mez\xF5k szerint, amelyek \xE9rt\xE9keit az AA soha nem mutatja meg, p\xE9ld\xE1ul jelszavak.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 43
-"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "",
+"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "Felsorolja azokat a karakterk\xE9szleteket is, amelyeket hivatkoz\xE1sok \xE9s \xFBrlapok a convertfrom vagy convertto param\xE9terben megadtak, \xE9s amelyeket a rendszer figyelmen k\xEDv\xFCl hagyott.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 135
-"Slice settings (reading password)" => "",
+"Slice settings (reading password)" => "Rovat be\xE1ll\xEDt\xE1sai (olvas\xE1si jelsz\xF3)", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 139
-"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "",
+"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "A(z) %2 rovat %1 mez\xF5je szerinti felt\xE9tel, rendez\xE9s vagy csoportos\xEDt\xE1s kimaradt: az AA soha nem mutatja meg az \xE9rt\xE9keit", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 141
-"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Egy n\xE9zetben, {ids}-ben vagy keres\xE9sben az oldalon felt\xE9tel, rendez\xE9s vagy csoportos\xEDt\xE1s szerepelt egy jelsz\xF3, annak m\xE1solata, egy k\xE9tl\xE9pcs\xF5s azonos\xEDt\xE1si titok vagy m\xE1s olyan mez\xF5 szerint, amelynek \xE9rt\xE9keit az AA soha nem mutatja meg (az URL-ben cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... vagy group_by= is). A felt\xE9tel semmit sem tal\xE1lt, a rendez\xE9s \xE9s a csoportos\xEDt\xE1s elmaradt. Az tov\xE1bbra is lek\xE9rdezhet\xF5, hogy a mez\xF5 ki van-e t\xF6ltve (ISNULL, NOTNULL); egy\xE9bk\xE9nt t\xE1vol\xEDtsa el a felt\xE9telt vagy a rendez\xE9st a n\xE9zetb\xF5l vagy a sablonb\xF3l. Ha nem ismeri az oldalt, a k\xE9r\xE9s nem az \xD6n oldalair\xF3l j\xF6tt, \xE9s semmit sem kell m\xF3dos\xEDtani.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 142
-"Protected field refused" => "",
+"Protected field refused" => "V\xE9dett mez\xF5 elutas\xEDtva", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 144
-"A condition on related items matched nothing in slice %1: its reading password was not known" => "",
+"A condition on related items matched nothing in slice %1: its reading password was not known" => "Egy kapcsol\xF3d\xF3 cikkekre vonatkoz\xF3 felt\xE9tel semmit sem tal\xE1lt a(z) %1 rovatban: az olvas\xE1si jelszava nem volt ismert", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 146
-"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Egy n\xE9zetben, {ids}-ben vagy keres\xE9sben az oldalon felt\xE9tel szerepelt az adott rovat kapcsol\xF3d\xF3 cikkeinek egy mez\xF5j\xE9re (<field>@<relation> vagy <field>@<slice>/<relation>, az URL-ben cmd[]=d-... is), \xE9s az oldal nem ismerte a rovat olvas\xE1si jelszav\xE1t, \xEDgy a felt\xE9tel semmit sem tal\xE1lt. Ha oldal\xE1nak sz\xFCks\xE9ge van r\xE1, adja meg a jelsz\xF3t az oldal sablonj\xE1ban ({credentials:...}) a n\xE9zet el\xF5tt, soha ne hivatkoz\xE1sban, AJAX-ban vagy jsview.php-ben. Ha nem ismeri az oldalt, a k\xE9r\xE9s nem az \xD6n oldalair\xF3l j\xF6tt, \xE9s semmit sem kell m\xF3dos\xEDtani.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 147
-"Condition refused" => "",
+"Condition refused" => "Felt\xE9tel elutas\xEDtva", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 149
-"View %1" => "",
+"View %1" => "%1. n\xE9zet", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 150
-"%1 left out slice %2: its reading password was not known" => "",
+"%1 left out slice %2: its reading password was not known" => "%1 kihagyta a(z) %2 rovatot: az olvas\xE1si jelszava nem volt ismert", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 151
-"Listed by" => "",
+"Listed by" => "List\xE1zta", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 152
-"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "A n\xE9zetet az URL-b\xF5l h\xEDvt\xE1k (view.php, jsview.php, discussion.php) - ilyen n\xE9zet vagy a slice.php bannerek\xE9nt is (set[]=banner-..., slice.php?banner=...) - az adott rovat f\xF6l\xF6tt, vagy URL-param\xE9terei (set[]=slice_id-.../slices-..., a cmd[]=x-... cikkazonos\xEDt\xF3i) vagy a slice.php slices[] param\xE9tere nevezt\xE9k meg, \xE9s az oldal nem ismerte a rovat olvas\xE1si jelszav\xE1t. Ha oldal\xE1nak ott sz\xFCks\xE9ge van a rovatra, h\xEDvja a n\xE9zetet az oldal sablonj\xE1b\xF3l ({view...}), ahol a n\xE9zetek megb\xEDzhat\xF3k; a jelsz\xF3t az URL-ben (slice_pwd=...) csak szerveroldali beilleszt\xE9sben adja meg, soha ne hivatkoz\xE1sban, AJAX-ban vagy jsview.php-ben, ahol az oldal forr\xE1sk\xF3dj\xE1ba \xE9s a napl\xF3kba ker\xFClne. Ha nem ismeri az oldalt, a k\xE9r\xE9s nem az \xD6n oldalair\xF3l j\xF6tt, \xE9s semmit sem kell m\xF3dos\xEDtani.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 162, 193
-"Page asked for" => "",
+"Page asked for" => "K\xE9rt oldal", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 176
-"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "",
+"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "Az elm\xFAlt 30 napban egyetlen rovat sem maradt ki n\xE9zetb\xF5l vagy felt\xE9telb\xF5l, egyetlen v\xE9dett mez\xF5t sem utas\xEDtott el a rendszer, \xE9s egyetlen karakterk\xE9szletet sem hagyott figyelmen k\xEDv\xFCl", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 187
-"%1 ignored a charset in %2" => "",
+"%1 ignored a charset in %2" => "%1: figyelmen k\xEDv\xFCl hagyott karakterk\xE9szlet itt: %2", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 191
 // src/Security/Protection.php, row 92
 "Parameter" => "Param\xE9ter", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 192
-"Latest charsets" => "",
+"Latest charsets" => "Legut\xF3bbi karakterk\xE9szletek", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 194
-"Link on page" => "",
+"Link on page" => "Hivatkoz\xE1s az oldalon", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 198
-"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Egy hivatkoz\xE1s vagy \xFBrlap olyan karakterk\xE9szletet adott meg n\xE9zet, hozz\xE1sz\xF3l\xE1s, szavaz\xE1s vagy \xFBrlap \xE1talak\xEDt\xE1s\xE1hoz (a view.php, jsview.php, discussion.php, poll.php \xE9s filler.php convertfrom vagy convertto param\xE9tere, illetve egy n\xE9zet set[...]=convertfrom-... param\xE9tere), amelyet az AA nem vesz \xE1t az URL-b\xF5l; a rendszer figyelmen k\xEDv\xFCl hagyta, mintha ott sem lett volna. Enged\xE9lyezettek: %1, kis- \xE9s nagybet\xFBt\xF5l f\xFCggetlen\xFCl. Jav\xEDtsa ki a karakterk\xE9szletet az oldala hivatkoz\xE1s\xE1ban vagy \xFBrlapj\xE1ban, vagy hagyja el a convertfrom param\xE9tert - a n\xE9zet ekkor a rovata karakterk\xE9szlet\xE9b\xF5l alak\xEDt \xE1t. Ha nem ismeri az oldalt, a k\xE9r\xE9s nem az \xD6n oldalair\xF3l j\xF6tt, \xE9s semmit sem kell m\xF3dos\xEDtani.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 202
-"Charset ignored" => "",
+"Charset ignored" => "Karakterk\xE9szlet figyelmen k\xEDv\xFCl hagyva", // ai 2026-11
 
 // src/Optimize/ClearPagecache.php, row 13
 "Clear Pagecache" => "Oldalgyors\xEDt\xF3t\xE1r \xFCr\xEDt\xE9se", // ai 2026-06
@@ -13453,7 +13752,7 @@ return [
 "Whole pagecache will be invalidated and deleted" => "A teljes oldalgyors\xEDt\xF3t\xE1r \xE9rv\xE9nytelen\xEDtve \xE9s t\xF6r\xF6lve lesz", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 35
-// src/Optimize/CopyContent.php, row 35
+// src/Optimize/CopyContent.php, row 37
 // src/Optimize/CreateUploadDir.php, row 38
 "There is nothing to test." => "Nincs mit tesztelni.", // ai 2026-06
 
@@ -13551,13 +13850,13 @@ return [
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 43
 "DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "A config.php f\xE1jlban a DB_CHARACTER_SET \xE9rt\xE9ke ,,%1\". El\xF5bb \xE1ll\xEDtsa ,,utf8mb4\"-re, \xE9s ellen\xF5rizze, hogy a sz\xF6vegek helyesen jelennek-e meg az AA-ban - az \xE1talak\xEDt\xE1s azt \xF5rzi meg, amit az AA az utf8mb4 kapcsolaton kereszt\xFCl mutat.", // ai 2026-10
 
-// src/Optimize/CopyContent.php, row 13
+// src/Optimize/CopyContent.php, row 15
 "Copy Content Table" => "A content t\xE1bla m\xE1sol\xE1sa", // ai 2026-06
 
-// src/Optimize/CopyContent.php, row 21
+// src/Optimize/CopyContent.php, row 23
 "Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "A short_id=1941629-n\xE9l \xFAjabb \xF6sszes cikk adatainak m\xE1sol\xE1sa a content t\xE1bl\xE1b\xF3l a content2 t\xE1bl\xE1ba. A content t\xE1bla helyre\xE1ll\xEDt\xE1s\xE1ra szolg\xE1lt az Ecn szerveren. M\xE1s felhaszn\xE1l\xF3knak val\xF3sz\xEDn\xFBleg nem hasznos.", // ai 2026-06
 
-// src/Optimize/CopyContent.php, row 67
+// src/Optimize/CopyContent.php, row 69
 "Copied" => "\xC1tm\xE1solva", // ai 2026-06
 
 // src/Optimize/CopyItemsFromBackup.php, row 16
@@ -13572,34 +13871,34 @@ return [
 // src/Optimize/CopyItemsFromBackup.php, row 77
 "Deleted items to be recreated: %1." => "\xDAjra l\xE9trehozand\xF3 t\xF6r\xF6lt cikkek: %1.", // ai 2026-06
 
-// src/Optimize/CreateAppStoreAccount.php, row 14
+// src/Optimize/CreateAppStoreAccount.php, row 16
 "App store account" => "Alkalmaz\xE1st\xE1r-fi\xF3k", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 19
+// src/Optimize/CreateAppStoreAccount.php, row 21
 "Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "L\xE9trehozza azt a nyilv\xE1nos fi\xF3kot, amellyel m\xE1s AA-k olvass\xE1k ennek az AA-nak a k\xF6zz\xE9tett alkalmaz\xE1sait (%1 felhaszn\xE1l\xF3, jogosults\xE1gok n\xE9lk\xFCl). A jelszava nyilv\xE1nos; a fi\xF3k nem tud bejelentkezni az adminisztr\xE1ci\xF3ba.", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 34
+// src/Optimize/CreateAppStoreAccount.php, row 36
 "No app store account - this AA publishes no apps" => "Nincs alkalmaz\xE1st\xE1r-fi\xF3k - ez az AA nem tesz k\xF6zz\xE9 alkalmaz\xE1sokat", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 39
+// src/Optimize/CreateAppStoreAccount.php, row 41
 "The user %1 exists, but not with the public password of the app store - rename it, then repair" => "A(z) %1 felhaszn\xE1l\xF3 l\xE9tezik, de nem az alkalmaz\xE1st\xE1r nyilv\xE1nos jelszav\xE1val - nevezze \xE1t, majd jav\xEDtsa", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 44
+// src/Optimize/CreateAppStoreAccount.php, row 46
 "The app store account %1 has rights or groups - remove them" => "A(z) %1 alkalmaz\xE1st\xE1r-fi\xF3knak jogosults\xE1gai vagy csoportjai vannak - t\xE1vol\xEDtsa el \xF5ket", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 47
+// src/Optimize/CreateAppStoreAccount.php, row 49
 "The app store account is ready" => "Az alkalmaz\xE1st\xE1r-fi\xF3k k\xE9szen \xE1ll", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 55
+// src/Optimize/CreateAppStoreAccount.php, row 57
 "Only a superadmin may create the app store account" => "Az alkalmaz\xE1st\xE1r-fi\xF3kot csak szuperadmin hozhatja l\xE9tre", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 67
+// src/Optimize/CreateAppStoreAccount.php, row 69
 "The app store account could not be created" => "Az alkalmaz\xE1st\xE1r-fi\xF3kot nem siker\xFClt l\xE9trehozni", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 70
+// src/Optimize/CreateAppStoreAccount.php, row 72
 "The app store account %1 is created" => "A(z) %1 alkalmaz\xE1st\xE1r-fi\xF3k l\xE9trej\xF6tt", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 77
+// src/Optimize/CreateAppStoreAccount.php, row 79
 "The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "Az alkalmaz\xE1st\xE1r-fi\xF3khoz mag\xE1nak az AA-nak a felhaszn\xE1l\xF3i kellenek (PERM_LIB sql); ez az AA a(z) %1 rendszert haszn\xE1lja - telep\xEDthet alkalmaz\xE1st\xE1rb\xF3l, de maga nem lehet az", // ai 2026-10
 
 // src/Optimize/CreateUploadDir.php, row 16
@@ -13688,7 +13987,7 @@ return [
 "%1 duplicates found" => "%1 duplik\xE1tum tal\xE1lhat\xF3", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 46
-// src/Optimize/FieldDuplicates.php, row 51, 65
+// src/Optimize/FieldDuplicates.php, row 53, 67
 "No duplicates found" => "Nincs duplik\xE1tum", // ai 2026-06
 
 // src/Optimize/DbRelationStartsxy.php, row 22
@@ -13727,16 +14026,16 @@ return [
 // src/Optimize/DropBackupTables.php, row 28
 "Deletes all the current backup tables (bck_slice, bck_item, ...)." => "T\xF6rli az \xF6sszes jelenlegi ment\xE9si t\xE1bl\xE1t (bck_slice, bck_item, ...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 16
+// src/Optimize/FieldDuplicates.php, row 18
 "Fix field definitions duplicates" => "Duplik\xE1lt mez\xF5defin\xEDci\xF3k jav\xEDt\xE1sa", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 24
+// src/Optimize/FieldDuplicates.php, row 26
 "There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "Minden rovatban csak egy slice_id - field_id p\xE1rnak kellene lennie, de n\xE9ha t\xF6bb is van (f\xF5leg a kor\xE1bbi sql_update.php szkript hib\xE1ja miatt, amely t\xF6bb display_count... mez\xF5t is hozz\xE1adott).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 55
+// src/Optimize/FieldDuplicates.php, row 57
 "Duplicate in slice - field: %1 - %2" => "Duplik\xE1tum a rovat - mez\xF5 p\xE1rban: %1 - %2", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 83
+// src/Optimize/FieldDuplicates.php, row 85
 "Field %2 in slice %1 fixed" => "A(z) %2 mez\xF5 jav\xEDtva a(z) %1 rovatban", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 23
@@ -13794,16 +14093,16 @@ return [
 // src/Optimize/FixPagecache.php, row 86
 "%1 inconsistent rows in pagecache removed" => "%1 inkonzisztens sor elt\xE1vol\xEDtva a pagecache t\xE1bl\xE1b\xF3l", // ai 2026-06
 
-// src/Optimize/GenerateJslibsArray.php, row 17
+// src/Optimize/GenerateJslibsArray.php, row 19
 "Generate JS Library definition array" => "JS k\xF6nyvt\xE1rdefin\xEDci\xF3s t\xF6mb gener\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/GenerateJslibsArray.php, row 25
+// src/Optimize/GenerateJslibsArray.php, row 27
 "Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)" => "Ki\xEDrja az include/stringexpand.php-ban haszn\xE1lt JS k\xF6nyvt\xE1rdefin\xEDci\xF3s t\xF6mb\xF6t a jsDeliver CDN-en l\xE9v\xF5 k\xF6nyvt\xE1rak leg\xFAjabb verzi\xF3j\xE1ra friss\xEDt\xE9shez (az AA fejleszt\xF5i haszn\xE1lj\xE1k a JS k\xF6nyvt\xE1rak friss\xEDt\xE9s\xE9re az AA-ban)", // ai 2026-06
 
-// src/Optimize/GenerateMetabase.php, row 42
+// src/Optimize/GenerateMetabase.php, row 44
 "Generate metabase definition row" => "Metab\xE1zis-defin\xEDci\xF3s sor gener\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/GenerateMetabase.php, row 50
+// src/Optimize/GenerateMetabase.php, row 52
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Csak programoz\xF3knak - ki\xEDrja az include/metabase_schema.php tartalm\xE1t (a v\xE1rt adatb\xE1ziss\xE9m\xE1t olvashat\xF3 PHP t\xF6mbk\xE9nt) a jelenlegi adatb\xE1zis alapj\xE1n; m\xE1solja a f\xE1jlba \xE9s kommitolja.", // ai 2026-06
 
 // src/Optimize/ImgCacheWritable.php, row 17
@@ -13866,92 +14165,98 @@ return [
 // src/Optimize/ItemDiscussion.php, row 65
 "%1 problems solved" => "%1 probl\xE9ma megoldva", // ai 2026-06
 
+// src/Optimize/LdapPermsToSql.php, row 44
+"Convert LDAP permissions to SQL" => "LDAP-jogosults\xE1gok \xE1talak\xEDt\xE1sa SQL-re", // ai 2026-11
+
 // src/Optimize/LdapPermsToSql.php, row 49
-"Migrate LDAP perms to SQL perms" => "LDAP jogosults\xE1gok migr\xE1l\xE1sa SQL-be", // ai 2026-06
+"Moves the users, groups and rights of this database from LDAP to the SQL tables under new numeric ids and rewrites the references to people in the data. Test only reads: its trial import is rolled back. Repair does everything in one transaction; then set PERM_LIB='sql' in every config of this database. Take a backup first - restoring it is the only way back." => "\xC1thelyezi ennek az adatb\xE1zisnak a felhaszn\xE1l\xF3it, csoportjait \xE9s jogosults\xE1gait az LDAP-b\xF3l az SQL-t\xE1bl\xE1kba \xFAj numerikus azonos\xEDt\xF3kkal, \xE9s \xE1t\xEDrja az adatokban a szem\xE9lyekre mutat\xF3 hivatkoz\xE1sokat. A ,,Teszt\" csak olvas: a pr\xF3baimport\xE1l\xE1st visszag\xF6rgeti. A ,,Jav\xEDt\xE1s\" mindent egyetlen tranzakci\xF3ban v\xE9gez; ut\xE1na \xE1ll\xEDtsa be a PERM_LIB='sql' \xE9rt\xE9ket ennek az adatb\xE1zisnak minden konfigur\xE1ci\xF3j\xE1ban. El\xF5bb k\xE9sz\xEDtsen biztons\xE1gi ment\xE9st - annak vissza\xE1ll\xEDt\xE1sa az egyetlen \xFAt visszafel\xE9.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 55
-"Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "\xC1tm\xE1solja az \xF6sszes felhaszn\xE1l\xF3t, csoportot, tags\xE1got \xE9s jogosults\xE1got az LDAP backendb\xF5l az SQL backend t\xE1bl\xE1iba (users, membership, perms), \xE9s \xE1t\xEDrja az item.posted_by / item.edited_by mez\xF5ket LDAP DN form\xE1b\xF3l (uid=...,ou=...) az \xFAj SQL numerikus azonos\xEDt\xF3kra. Telep\xEDt\xE9senk\xE9nt egyszer futtassa, majd \xE1ll\xEDtsa a PERM_LIB-et 'sql'-re a konfigur\xE1ci\xF3ban. A 'Test' csak olvas\xF3 pr\xF3bafuttat\xE1s. A 'Repair' elv\xE9gzi a migr\xE1ci\xF3t, \xE9s \xFAjrafuttathat\xF3. A 'Revert' a lek\xE9pez\xE9si t\xE1bla alapj\xE1n mindent visszavon.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check passed: SQL answers as LDAP does." => "Az egyez\xE9sellen\xF5rz\xE9s sikeres: az SQL ugyan\xFAgy v\xE1laszol, mint az LDAP.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 72
-"This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Ez az optimaliz\xE1l\xF3 csak PERM_LIB='ldap' eset\xE9n fut. Jelenlegi PERM_LIB='%1'.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check failed - Repair would stop at it." => "Az egyez\xE9sellen\xF5rz\xE9s sikertelen - a ,,Jav\xEDt\xE1s\" enn\xE9l meg\xE1llna.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 83
+"The trial import is skipped: it would stop at the first blocking finding above. Fix them and run Test again." => "A pr\xF3baimport\xE1l\xE1s kimarad: a fenti els\xF5 blokkol\xF3 meg\xE1llap\xEDt\xE1sn\xE1l meg\xE1llna. Jav\xEDtsa ki \xF5ket, \xE9s futtassa \xFAjra a ,,Teszt\" m\xFBveletet.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 87
-"Would create mapping table `%1`" => "L\xE9trehozn\xE1 a(z) `%1` lek\xE9pez\xE9si t\xE1bl\xE1t", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 116
 "Test failed: %1" => "A teszt sikertelen: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 119
-"Test finished (dry run - no changes made)." => "A teszt befejez\xF5d\xF6tt (pr\xF3bafuttat\xE1s - nem t\xF6rt\xE9nt v\xE1ltoztat\xE1s).", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 108
+"Nothing was changed: the findings above block the conversion." => "Semmi sem v\xE1ltozott: a fenti meg\xE1llap\xEDt\xE1sok blokkolj\xE1k az \xE1talak\xEDt\xE1st.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 135
-"Repair failed: %1" => "A jav\xEDt\xE1s sikertelen: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 133
+"Repair failed, yet the database holds a finished conversion (its log row exists) - check it with Test: %1" => "A jav\xEDt\xE1s sikertelen, az adatb\xE1zis m\xE9gis befejezett \xE1talak\xEDt\xE1st tartalmaz (a napl\xF3sora l\xE9tezik) - ellen\xF5rizze a ,,Teszt\" seg\xEDts\xE9g\xE9vel: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 138
-"Repair finished." => "A jav\xEDt\xE1s befejez\xF5d\xF6tt.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 134
+"Repair failed, nothing was changed: %1" => "A jav\xEDt\xE1s sikertelen, semmi sem v\xE1ltozott: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 154
-"Revert failed: %1" => "A visszavon\xE1s sikertelen: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 144
+"The page cache was not cleared, clear it by hand: %1" => "Az oldal-gyors\xEDt\xF3t\xE1r nem lett ki\xFCr\xEDtve, \xFCr\xEDtse ki k\xE9zzel: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 157
-"Revert finished." => "A visszavon\xE1s befejez\xF5d\xF6tt.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 148
+"Rewritten %1: %2 rows" => "%1 \xE1t\xEDrva: %2 sor", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 178
-"LDAP findUsernames failed or returned: %1" => "Az LDAP findUsernames meghi\xFAsult vagy ezt adta vissza: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 150
+"New ids of the directory entries:" => "A c\xEDmt\xE1rbejegyz\xE9sek \xFAj azonos\xEDt\xF3i:", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 181
-"LDAP users found: %1" => "Tal\xE1lt LDAP felhaszn\xE1l\xF3k: %1", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 197
-"Skipping user %1 - cannot determine login" => "%1 felhaszn\xE1l\xF3 kihagyva - a bejelentkez\xE9si n\xE9v nem \xE1llap\xEDthat\xF3 meg", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 206
-"User %1 already exists in SQL (id %2), reusing" => "A(z) %1 felhaszn\xE1l\xF3 m\xE1r l\xE9tezik az SQL-ben (id %2), a megl\xE9v\xF5t haszn\xE1ljuk", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 220
-"Would create SQL user: %1 (from %2)" => "SQL felhaszn\xE1l\xF3t hozna l\xE9tre: %1 (ebb\xF5l: %2)", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 228
-"Failed to create SQL user %1" => "Nem siker\xFClt l\xE9trehozni a(z) %1 SQL felhaszn\xE1l\xF3t", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 235
-"Users: created=%1 reused=%2 failed=%3" => "Felhaszn\xE1l\xF3k: l\xE9trehozva=%1 \xFAjrahasznos\xEDtva=%2 sikertelen=%3", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 243
-"LDAP groups found: %1" => "Tal\xE1lt LDAP csoportok: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 151
+"Now set PERM_LIB='sql' in every config of this database - until then AA still asks LDAP." => "Most \xE1ll\xEDtsa be a PERM_LIB='sql' \xE9rt\xE9ket ennek az adatb\xE1zisnak minden konfigur\xE1ci\xF3j\xE1ban - addig az AA tov\xE1bbra is az LDAP-t\xF3l k\xE9rdez.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 264
-"Group %1 already exists in SQL (id %2), reusing" => "A(z) %1 csoport m\xE1r l\xE9tezik az SQL-ben (id %2), \xFAjrafelhaszn\xE1lva", // ai 2026-06
+"This database was already converted. A second run would give people other ids than the data now holds - restore the backup first if it really has to run again." => "Ez az adatb\xE1zis m\xE1r \xE1t lett alak\xEDtva. Egy m\xE1sodik futtat\xE1s m\xE1s azonos\xEDt\xF3kat adna a szem\xE9lyeknek, mint amilyeneket az adatok most tartalmaznak - ha val\xF3ban \xFAjra kell futtatni, el\xF5bb \xE1ll\xEDtsa vissza a biztons\xE1gi ment\xE9st.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 273
-"Would create SQL group: %1 (from %2)" => "L\xE9trej\xF6nne az SQL-csoport: %1 (forr\xE1s: %2)", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 274
+"This database was converted to SQL permissions on %1 (%2). Its parity check ran inside the committed transaction; Repair does not run twice." => "Ezt az adatb\xE1zist %1-kor (%2) alak\xEDtott\xE1k \xE1t SQL-jogosults\xE1gokra. Az egyez\xE9sellen\xF5rz\xE9s a v\xE9gleges\xEDtett tranzakci\xF3n bel\xFCl futott; a ,,Jav\xEDt\xE1s\" nem fut le k\xE9tszer.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 280
-"Failed to create SQL group %1" => "Nem siker\xFClt l\xE9trehozni a(z) %1 SQL-csoportot", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 279
+"DNs left in %1 (%2): %3" => "%1 (%2) helyen maradt DN-ek: %3", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 287
-"Groups: created=%1 reused=%2 failed=%3" => "Csoportok: l\xE9trehozva=%1 \xFAjrafelhaszn\xE1lva=%2 sikertelen=%3", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 282
+"These were written after the conversion or match no directory entry - fix them by hand if they matter." => "Ezek az \xE1talak\xEDt\xE1s ut\xE1n ker\xFCltek be\xEDr\xE1sra, vagy egyetlen c\xEDmt\xE1rbejegyz\xE9snek sem felelnek meg - ha sz\xE1m\xEDtanak, jav\xEDtsa ki \xF5ket k\xE9zzel.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 325
-"Memberships: added=%1 skipped_unmapped=%2" => "Tags\xE1gok: hozz\xE1adva=%1 kihagyva_lek\xE9pezetlen=%2", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 283
+"No DN is left in the columns referring to people." => "A szem\xE9lyekre hivatkoz\xF3 oszlopokban nem maradt DN.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 367
-"Permission rows migrated: %1" => "\xC1ttelep\xEDtett jogosults\xE1gsorok: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 291
+"This conversion runs only while PERM_LIB is 'ldap'; here it is '%1'." => "Ez az \xE1talak\xEDt\xE1s csak akkor fut, ha a PERM_LIB \xE9rt\xE9ke 'ldap'; itt '%1'.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 389
-"No mapping entries - nothing to rewrite." => "Nincsenek lek\xE9pez\xE9si bejegyz\xE9sek - nincs mit \xE1t\xEDrni.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 296
+"The conversion has no dry run - switch it off. Test itself changes nothing." => "Az \xE1talak\xEDt\xE1snak nincs pr\xF3bafuttat\xE1sa - kapcsolja ki. A ,,Teszt\" maga semmit sem m\xF3dos\xEDt.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 408
-"Rewrite %1.%2: %3 rows" => "\xC1t\xEDr\xE1s %1.%2: %3 sor", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 310
+"Tables %1 must be InnoDB: on another engine a rollback restores nothing, so even the trial import of Test would delete the users for good. Convert them first - Optimize \"%2\"." => "A(z) %1 t\xE1bl\xE1nak InnoDB-nek kell lennie: m\xE1s motoron a visszag\xF6rget\xE9s semmit sem \xE1ll\xEDt vissza, \xEDgy m\xE9g a ,,Teszt\" pr\xF3baimport\xE1l\xE1sa is v\xE9glegesen t\xF6r\xF6ln\xE9 a felhaszn\xE1l\xF3kat. El\xF5bb alak\xEDtsa \xE1t \xF5ket - ,,Optimaliz\xE1l\xE1s\" - ,,%2\".", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 418
-"Mapping table is empty - nothing to revert." => "A lek\xE9pez\xE9si t\xE1bla \xFCres - nincs mit vissza\xE1ll\xEDtani.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 316
+"The database connection uses \"%1\", not utf8mb4: a DN with a character outside it would silently not be found in the data. Set DB_CHARACTER_SET to \"utf8mb4\" in config.php first." => "Az adatb\xE1zis-kapcsolat ,,%1\" k\xF3dol\xE1st haszn\xE1l, nem utf8mb4-et: egy azon k\xEDv\xFCl es\xF5 karaktert tartalmaz\xF3 DN-t a rendszer csendben nem tal\xE1lna meg az adatokban. El\xF5bb \xE1ll\xEDtsa a DB_CHARACTER_SET \xE9rt\xE9k\xE9t ,,utf8mb4\"-re a config.php-ben.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 434
-"Revert %1.%2: %3 rows" => "Vissza\xE1ll\xEDt\xE1s %1.%2: %3 sor", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 368
+"Imported %1 people, %2 groups, %3 memberships and %4 rights; %5 old rows removed." => "Import\xE1lva: %1 szem\xE9ly, %2 csoport, %3 tags\xE1g \xE9s %4 jogosults\xE1g; %5 r\xE9gi sor elt\xE1vol\xEDtva.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 452
-"Deleted SQL users=%1 groups=%2" => "T\xF6r\xF6lt SQL felhaszn\xE1l\xF3k=%1 csoportok=%2", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 369
+"(Trial run - rolled back.)" => "(Pr\xF3bafuttat\xE1s - visszag\xF6rgetve.)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 374
+"Plan: %1 people, %2 groups, %3 memberships, %4 rights; new ids from %5; %6 spellings of DNs in the data to rewrite." => "Terv: %1 szem\xE9ly, %2 csoport, %3 tags\xE1g, %4 jogosults\xE1g; \xFAj azonos\xEDt\xF3k innen: %5; \xE1t\xEDrand\xF3 DN-\xEDr\xE1sm\xF3dok az adatokban: %6.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Blocking" => "Blokkol\xF3", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Info" => "Inform\xE1ci\xF3", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 394
+"References in %1: %2 rows (%3 s)" => "Hivatkoz\xE1sok itt: %1: %2 sor (%3 s)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 396
+"Repair rewrites the references in about %1 s - each UPDATE scans its table as the count did." => "A ,,Jav\xEDt\xE1s\" k\xF6r\xFClbel\xFCl %1 s alatt \xEDrja \xE1t a hivatkoz\xE1sokat - minden UPDATE ugyan\xFAgy v\xE9gigolvassa a t\xE1bl\xE1j\xE1t, mint a sz\xE1ml\xE1l\xE1s.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 397
+"A DN stored as cp1250 bytes with diacritics is not UTF-8, so it matches no directory entry and stays as it is." => "Az \xE9kezetes, cp1250 b\xE1jtokk\xE9nt t\xE1rolt DN nem UTF-8, \xEDgy egyetlen c\xEDmt\xE1rbejegyz\xE9snek sem felel meg, \xE9s v\xE1ltozatlan marad.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 399
+"Mentions of ou=AA in %1: %2 rows - fix them by hand." => "Az ou=AA el\xF5fordul\xE1sai itt: %1: %2 sor - jav\xEDtsa ki \xF5ket k\xE9zzel.", // ai 2026-11
 
 // src/Optimize/MissCacheRouting.php, row 37
 "Image cache routing" => "K\xE9pgyors\xEDt\xF3t\xE1r \xFAtv\xE1laszt\xE1sa", // ai 2026-10
@@ -14044,89 +14349,89 @@ return [
 // src/Optimize/MultivalueDuplicates.php, row 139
 "The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "A content t\xE1bla nem InnoDB, ez\xE9rt a duplik\xE1tumok itt nem jav\xEDthat\xF3k. El\xF5bb futtassa ezt: ,,%1\".", // ai 2026-10
 
-// src/Optimize/ReadersLogin2id.php, row 16
+// src/Optimize/ReadersLogin2id.php, row 18
 "Convert Readers login to reader id" => "Olvas\xF3i loginok \xE1talak\xEDt\xE1sa olvas\xF3 ID-v\xE1", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 24
+// src/Optimize/ReadersLogin2id.php, row 26
 "There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "Az AA v2.8.1-ben megv\xE1ltozott az Olvas\xF3-kezel\xE9s m\xFBk\xF6d\xE9se: az olvas\xF3kat bels\xF5leg m\xE1r nem a loginjuk, hanem az olvas\xF3 ID azonos\xEDtja (az olvas\xF3 cikk-azonos\xEDt\xF3ja az Olvas\xF3 rovatban). Ez sokkal hat\xE9konyabb - ugyan\xFAgy hozhat l\xE9tre kapcsolatokat, mint egy norm\xE1l rovatban. V\xE1ltoztat\xE1s n\xE9lk\xFCl is j\xF3l m\xFBk\xF6dik. Az egyetlen probl\xE9ma akkor jelentkezik, ha valamelyik rovatot \xFAgy \xE1ll\xEDtotta be, hogy az Olvas\xF3 rovat felhaszn\xE1l\xF3i szerkeszthess\xE9k. Ebben az esetben az edited_by........ \xE9s posted_by........ mez\xF5kbe az olvas\xF3 loginja ker\xFCl az olvas\xF3 ID helyett. A ,,Jav\xEDt\xE1s\" gombbal kijav\xEDthatja.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 38, 82
+// src/Optimize/ReadersLogin2id.php, row 40, 84
 "Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "Nem tesztelhet\xF5 - a jogosults\xE1gi rendszere nem engedi az \xF6sszes felhaszn\xE1l\xF3n\xE9v list\xE1z\xE1s\xE1t (LDAP?)", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 43
+// src/Optimize/ReadersLogin2id.php, row 45
 "%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "%1 login n\xE9v az olvas\xF3 rovatb\xF3l az item.posted_by mez\xF5ben szerepel, ami hib\xE1s (AA v2.8.1-t\xF5l olvas\xF3 ID-nak kellene lennie). A ,,Jav\xEDt\xE1s\" kijav\xEDtja.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 48
+// src/Optimize/ReadersLogin2id.php, row 50
 "%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "%1 login n\xE9v az olvas\xF3 rovatb\xF3l az item.edited_by mez\xF5ben szerepel, ami hib\xE1s (AA v2.8.1-t\xF5l olvas\xF3 ID-nak kellene lennie). A ,,Jav\xEDt\xE1s\" kijav\xEDtja.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 90
+// src/Optimize/ReadersLogin2id.php, row 92
 "Column item.posted_by updated for %1 (id: %2)." => "Az item.posted_by oszlop friss\xEDtve: %1 (id: %2).", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 96
+// src/Optimize/ReadersLogin2id.php, row 98
 "Column item.edited_by updated for %1 (id: %2)." => "Az item.edited_by oszlop friss\xEDtve: %1 (id: %2).", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 18
+// src/Optimize/RedefineCoreConstants.php, row 20
 "Redefine core constants" => "Alapkonstansok \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 26
+// src/Optimize/RedefineCoreConstants.php, row 28
 "Updates core constants - like Code-pages, Language Constants and AA Bins" => "Friss\xEDti az alapkonstansokat - pl. k\xF3dlapok, nyelvi konstansok \xE9s AA T\xE1rol\xF3k", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 46
+// src/Optimize/RedefineCoreConstants.php, row 48
 "Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "A k\xF3dlap-konstansok (lt_codepages) nem naprak\xE9szek - tal\xE1lva: %1 a 9-b\xF5l", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 53
+// src/Optimize/RedefineCoreConstants.php, row 55
 "Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "A nyelvi konstansok (lt_languages) nem naprak\xE9szek - tal\xE1lva: %1 a 46-b\xF3l", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 60
+// src/Optimize/RedefineCoreConstants.php, row 62
 "AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "Az AA T\xE1rol\xF3-konstansok (AA_Core_Bins....) nem naprak\xE9szek - tal\xE1lva: %1 a 3-b\xF3l", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 67
+// src/Optimize/RedefineCoreConstants.php, row 69
 "APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "Az APC-szint\xFB kateg\xF3ri\xE1k (lt_apcCategories) nem naprak\xE9szek - tal\xE1lva: %1 a 82-b\xF5l", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 81
+// src/Optimize/RedefineCoreConstants.php, row 83
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "K\xF3dlapok, nyelvi konstansok, AA T\xE1rol\xF3-konstansok \xE9s APC-szint\xFB kateg\xF3ri\xE1k t\xF6rl\xE9se", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 85
+// src/Optimize/RedefineCoreConstants.php, row 87
 "Recreate Code-pages" => "K\xF3dlapok \xFAjral\xE9trehoz\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 96
+// src/Optimize/RedefineCoreConstants.php, row 98
 "Recreate Languages" => "Nyelvek \xFAjral\xE9trehoz\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 144
+// src/Optimize/RedefineCoreConstants.php, row 146
 "Recreate AA Bins" => "AA T\xE1rol\xF3k \xFAjral\xE9trehoz\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 149
+// src/Optimize/RedefineCoreConstants.php, row 151
 "APC wide categories" => "APC-szint\xFB kateg\xF3ri\xE1k", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 233
+// src/Optimize/RedefineCoreConstants.php, row 235
 "Make sure, the constants are registered" => "A konstansok regisztr\xE1ci\xF3j\xE1nak ellen\xF5rz\xE9se", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 242
+// src/Optimize/RedefineCoreConstants.php, row 244
 "Redefine core constants - done." => "Alapkonstansok \xFAjradefini\xE1l\xE1sa - k\xE9sz.", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 43
+// src/Optimize/RedefineFieldTemplates.php, row 45
 "Redefine field templates" => "Mez\xF5sablonok \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 51
+// src/Optimize/RedefineFieldTemplates.php, row 53
 "Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice" => "Friss\xEDti a mez\xF5sablonokat (az ActionApps Core rovatban), amelyek \xFAj mez\xF5 rovathoz ad\xE1sakor haszn\xE1latosak", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 77
+// src/Optimize/RedefineFieldTemplates.php, row 79
 "template fields are not present" => "a sablonmez\xF5k hi\xE1nyoznak", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 95
-// src/Optimize/RedefineSliceNewsTemplates.php, row 57
+// src/Optimize/RedefineFieldTemplates.php, row 97
+// src/Optimize/RedefineSliceNewsTemplates.php, row 59
 "Deleting all fields from \"ActionApps Core\" slice" => "Az \xF6sszes mez\xF5 t\xF6rl\xE9se az \"ActionApps Core\" rovatb\xF3l", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 99
+// src/Optimize/RedefineFieldTemplates.php, row 101
 "Make sure slice owner Action Applications System exists and reset to defaults" => "Az Action Applications System rovattulajdonos l\xE9tez\xE9s\xE9nek biztos\xEDt\xE1sa \xE9s az alap\xE9rtelmez\xE9sek vissza\xE1ll\xEDt\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 102
+// src/Optimize/RedefineFieldTemplates.php, row 104
 "Make sure \"ActionApps Core\" slice exists and reset to defaults" => "Az \"ActionApps Core\" rovat l\xE9tez\xE9s\xE9nek biztos\xEDt\xE1sa \xE9s az alap\xE9rtelmez\xE9sek vissza\xE1ll\xEDt\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 106
+// src/Optimize/RedefineFieldTemplates.php, row 108
 "Recreate field definitions" => "Mez\xF5defin\xEDci\xF3k \xFAjb\xF3li l\xE9trehoz\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 197
+// src/Optimize/RedefineFieldTemplates.php, row 199
 "Redefine field defaults - done." => "A mez\xF5-alap\xE9rtelmez\xE9sek \xFAjradefini\xE1l\xE1sa - k\xE9sz.", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
@@ -14139,127 +14444,127 @@ return [
 "There is no root Link Module category - Links module should be recreated" => "Nem l\xE9tezik a Links modul gy\xF6k\xE9rkateg\xF3ri\xE1ja - a Links modult \xFAjra l\xE9tre kell hozni", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
-// src/Optimize/RedefineSiteTemplates.php, row 47
+// src/Optimize/RedefineSiteTemplates.php, row 49
 "Replacing module definition" => "A moduldefin\xEDci\xF3 cser\xE9je", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "A Links modul sablonj\xE1nak \xFAjb\xF3li l\xE9trehoz\xE1sa - k\xE9sz.", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 13
+// src/Optimize/RedefineSiteTemplates.php, row 15
 "Recreate Site module template" => "A Site modul sablonj\xE1nak \xFAjb\xF3li l\xE9trehoz\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 19
+// src/Optimize/RedefineSiteTemplates.php, row 21
 "Deletes and recreates the default template for Site module" => "T\xF6rli \xE9s \xFAjra l\xE9trehozza a Site modul alap\xE9rtelmezett sablonj\xE1t", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 36
+// src/Optimize/RedefineSiteTemplates.php, row 38
 "Site Module template should be recreated" => "A Site modul sablonj\xE1t \xFAjra l\xE9tre kell hozni", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 53
+// src/Optimize/RedefineSiteTemplates.php, row 55
 "Site Module template recreation - done." => "A Site modul sablonj\xE1nak \xFAjb\xF3li l\xE9trehoz\xE1sa - k\xE9sz.", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 15
+// src/Optimize/RedefineSlicReaderTemplates.php, row 17
 "Redefine Reader Management template slice" => "A Reader Management sablonrovat \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 23
+// src/Optimize/RedefineSlicReaderTemplates.php, row 25
 "Deletes and recreates the Reader Management slice, used as template or example slice" => "T\xF6rli \xE9s \xFAjra l\xE9trehozza a Reader Management rovatot, amely sablon- vagy mintarovatk\xE9nt szolg\xE1l", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 42
+// src/Optimize/RedefineSlicReaderTemplates.php, row 44
 "\"Reader Management\" template slice is not defined" => "A \"Reader Management\" sablonrovat nincs defini\xE1lva", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 58
+// src/Optimize/RedefineSlicReaderTemplates.php, row 60
 "Deleting all fields from \"Reader Management\" slice" => "Az \xF6sszes mez\xF5 t\xF6rl\xE9se a \"Reader Management\" rovatb\xF3l", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 62
+// src/Optimize/RedefineSlicReaderTemplates.php, row 64
 "Make sure \"Reader Management\" slice exists and reset to defaults" => "A \"Reader Management\" rovat l\xE9tez\xE9s\xE9nek biztos\xEDt\xE1sa \xE9s az alap\xE9rtelmez\xE9sek vissza\xE1ll\xEDt\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 66
+// src/Optimize/RedefineSlicReaderTemplates.php, row 68
 "Recreate field definitions for \"Reader Management\"" => "Mez\xF5defin\xEDci\xF3k \xFAjb\xF3li l\xE9trehoz\xE1sa a \"Reader Management\" rovathoz", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 92
+// src/Optimize/RedefineSlicReaderTemplates.php, row 94
 "Reader Management template slice creation - done." => "A Reader Management sablonrovat l\xE9trehoz\xE1sa - k\xE9sz.", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 15
+// src/Optimize/RedefineSliceNewsTemplates.php, row 17
 "Redefine News EN template slice" => "A News EN sablonrovat \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 23
+// src/Optimize/RedefineSliceNewsTemplates.php, row 25
 "Deletes and recreates the News EN slice, used as template or example slice" => "T\xF6rli \xE9s \xFAjra l\xE9trehozza a News EN rovatot, amely sablon- vagy mintarovatk\xE9nt szolg\xE1l", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 41
+// src/Optimize/RedefineSliceNewsTemplates.php, row 43
 "News EN template slice is not defined" => "A News EN sablonrovat nincs defini\xE1lva", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 61
+// src/Optimize/RedefineSliceNewsTemplates.php, row 63
 "Make sure \"News EN\" slice exists and reset to defaults" => "A \"News EN\" rovat l\xE9tez\xE9s\xE9nek biztos\xEDt\xE1sa \xE9s az alap\xE9rtelmez\xE9sek vissza\xE1ll\xEDt\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 65
+// src/Optimize/RedefineSliceNewsTemplates.php, row 67
 "Recreate field definitions for \"News EN\"" => "Mez\xF5defin\xEDci\xF3k \xFAjb\xF3li l\xE9trehoz\xE1sa a \"News EN\" rovathoz", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 99
+// src/Optimize/RedefineSliceNewsTemplates.php, row 101
 "News EN template slice creation - done." => "A News EN sablonrovat l\xE9trehoz\xE1sa - k\xE9sz.", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 15
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 17
 "Redefine Noticas - ES template slice" => "A Noticas - ES sablonrovat \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 23
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 25
 "Deletes and recreates the Noticas - ES slice, used as template or example slice" => "T\xF6rli \xE9s \xFAjra l\xE9trehozza a Noticas - ES rovatot, amely sablon- vagy mintarovatk\xE9nt szolg\xE1l", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 42
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 44
 "\"Noticas - ES\" template slice is not defined" => "A \"Noticas - ES\" sablonrovat nincs defini\xE1lva", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 58
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 60
 "Deleting all fields from \"Noticas - ES\" slice" => "Az \xF6sszes mez\xF5 t\xF6rl\xE9se a \"Noticas - ES\" rovatb\xF3l", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 62
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 64
 "Make sure \"Noticas - ES\" slice exists and reset to defaults" => "A \"Noticas - ES\" rovat l\xE9tez\xE9s\xE9nek biztos\xEDt\xE1sa \xE9s az alap\xE9rtelmez\xE9sek vissza\xE1ll\xEDt\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 66
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 68
 "Recreate field definitions for \"Noticas - ES\"" => "Mez\xF5defin\xEDci\xF3k \xFAjb\xF3li l\xE9trehoz\xE1sa a \"Noticas - ES\" rovathoz", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 100
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 102
 "Noticas - ES template slice creation - done." => "A Noticas - ES sablonrovat l\xE9trehoz\xE1sa - k\xE9sz.", // ai 2026-06
 
-// src/Optimize/RedefineViewCalendarTemplates.php, row 10
+// src/Optimize/RedefineViewCalendarTemplates.php, row 12
 "Redefine calendar template view" => "A calendar sablonn\xE9zet \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineViewCategoriesTemplates.php, row 10
+// src/Optimize/RedefineViewCategoriesTemplates.php, row 12
 "Redefine categories template view" => "A categories sablonn\xE9zet \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineViewConstTemplates.php, row 10
+// src/Optimize/RedefineViewConstTemplates.php, row 12
 "Redefine const template view" => "A const sablonn\xE9zet \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 13
+// src/Optimize/RedefineViewDiscusTemplates.php, row 15
 "Redefine discus template view" => "A discus sablonn\xE9zet \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 19
+// src/Optimize/RedefineViewDiscusTemplates.php, row 21
 "Deletes and recreates that view, which is used as template view of that type" => "T\xF6rli \xE9s \xFAjra l\xE9trehozza azt a n\xE9zetet, amely az adott t\xEDpus sablonn\xE9zetek\xE9nt szolg\xE1l", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 47
+// src/Optimize/RedefineViewDiscusTemplates.php, row 49
 "\"%1\" template view is not defined" => "A(z) \"%1\" sablonn\xE9zet nincs defini\xE1lva", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 58
+// src/Optimize/RedefineViewDiscusTemplates.php, row 60
 "Deleting the view template \"%1\"" => "A(z) \"%1\" n\xE9zetsablon t\xF6rl\xE9se", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 62
+// src/Optimize/RedefineViewDiscusTemplates.php, row 64
 "Inserting the view \"discus\" template" => "A \"discus\" n\xE9zetsablon besz\xFAr\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 66
+// src/Optimize/RedefineViewDiscusTemplates.php, row 68
 "view \"%1\" redefinition - done." => "a(z) \"%1\" n\xE9zet \xFAjradefini\xE1l\xE1sa - k\xE9sz.", // ai 2026-06
 
-// src/Optimize/RedefineViewFullTemplates.php, row 10
+// src/Optimize/RedefineViewFullTemplates.php, row 12
 "Redefine full template view" => "A full sablonn\xE9zet \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineViewJavascriptTemplates.php, row 10
+// src/Optimize/RedefineViewJavascriptTemplates.php, row 12
 "Redefine javascript template view" => "A javascript sablonn\xE9zet \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineViewLinksTemplates.php, row 10
+// src/Optimize/RedefineViewLinksTemplates.php, row 12
 "Redefine links template view" => "A links sablonn\xE9zet \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineViewRssTemplates.php, row 10
+// src/Optimize/RedefineViewRssTemplates.php, row 12
 "Redefine rss template view" => "Az rss sablonn\xE9zet \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineViewStaticTemplates.php, row 10
+// src/Optimize/RedefineViewStaticTemplates.php, row 12
 "Redefine static template view" => "A static sablonn\xE9zet \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
-// src/Optimize/RedefineViewUrlsTemplates.php, row 10
+// src/Optimize/RedefineViewUrlsTemplates.php, row 12
 "Redefine urls template view" => "Az urls sablonn\xE9zet \xFAjradefini\xE1l\xE1sa", // ai 2026-06
 
 // src/Optimize/RemoveAaCronEntries.php, row 22
@@ -14313,19 +14618,19 @@ return [
 // src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "OK - Nincs k\xF6telez\xF5 jel\xF6l\xF5n\xE9gyzet-mez\xF5", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 20
+// src/Optimize/RestoreBckTables.php, row 22
 "Restore data from backup tables" => "Adatok vissza\xE1ll\xEDt\xE1sa a biztons\xE1gi ment\xE9s t\xE1bl\xE1ib\xF3l", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 "Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "T\xF6rli az \xF6sszes jelenlegi t\xE1bl\xE1t (slice, item, ...), amelyhez l\xE9tezik bck_ t\xE1bla, \xE9s \xE1tnevezi az \xF6sszes biztons\xE1gi ment\xE9s t\xE1bl\xE1t (bck_slice, bck_item, ...) a megfelel\xF5 n\xE9vre (slice, item, ...).", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 40
+// src/Optimize/RestoreBckTables.php, row 42
 "The bck_ tables do not exist (or at least bck_content table)" => "A bck_ t\xE1bl\xE1k nem l\xE9teznek (vagy legal\xE1bbis a bck_content t\xE1bla nem)", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 59
+// src/Optimize/RestoreBckTables.php, row 61
 "There is no bck_%1 table - %1 not restored." => "Nincs bck_%1 t\xE1bla - %1 nem lett vissza\xE1ll\xEDtva.", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 62
+// src/Optimize/RestoreBckTables.php, row 64
 "Replace table bck_%1 -> %1" => "T\xE1bla cser\xE9je: bck_%1 -> %1", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 44
@@ -14577,6 +14882,30 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 141
 "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "r\xE9gi t\xE1bla ment\xE9se: %1 -> bck_%1, \xE9s az \xFAj t\xE1bl\xE1k haszn\xE1lata helyette: tmp_%1 -> %1", // ai 2026-06
 
+// src/Passkey/Notice.php, row 23
+"A passkey was added to your account" => "Azonos\xEDt\xF3kulcsot adtak hozz\xE1 a fi\xF3kj\xE1hoz", // ai 2026-11
+
+// src/Passkey/Notice.php, row 23
+"The passkey \"%1\" was added to your account %2 on %3. It logs you in on %4." => "A(z) ,,%1\" azonos\xEDt\xF3kulcsot hozz\xE1adt\xE1k a(z) %2 fi\xF3kj\xE1hoz ekkor: %3. Ezzel bejelentkezhet itt: %4.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"A passkey was deleted from your account" => "Azonos\xEDt\xF3kulcsot t\xF6r\xF6ltek a fi\xF3kj\xE1b\xF3l", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"The passkey \"%1\" was deleted from your account %2 on %3." => "A(z) ,,%1\" azonos\xEDt\xF3kulcsot t\xF6r\xF6lt\xE9k a(z) %2 fi\xF3kj\xE1b\xF3l ekkor: %3.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"The passkeys of your account were deleted" => "A fi\xF3kja azonos\xEDt\xF3kulcsait t\xF6r\xF6lt\xE9k", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"%1 deleted all passkeys of your account %2 on %3. You log in by your password again; you can add a new passkey after the login." => "%1 t\xF6r\xF6lte a(z) %2 fi\xF3kja \xF6sszes azonos\xEDt\xF3kulcs\xE1t ekkor: %3. Ism\xE9t a jelszav\xE1val jelentkezik be; bejelentkez\xE9s ut\xE1n \xFAj azonos\xEDt\xF3kulcsot adhat hozz\xE1.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 60
+"If it was not you, tell the administrator of ActionApps at %1 at once." => "Ha nem \xD6n volt, azonnal \xE9rtes\xEDtse az ActionApps adminisztr\xE1tor\xE1t: %1.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 61
+"Address: %1, browser: %2" => "C\xEDm: %1, b\xF6ng\xE9sz\xF5: %2", // ai 2026-11
+
 // src/Security/LoginThrottle.php, row 156
 "Too many failed login attempts. Try again in %1 min." => "T\xFAl sok sikertelen bejelentkez\xE9si k\xEDs\xE9rlet. Pr\xF3b\xE1lja \xFAjra %1 perc m\xFAlva.", // ai 2026-10
 
@@ -14593,7 +14922,7 @@ return [
 "ret_code and ok_url sent to filler.php" => "A filler.php-nak k\xFCld\xF6tt ret_code \xE9s ok_url", // ai 2026-10
 
 // src/Security/Protection.php, row 32
-"als[], noitem of views and the state of site pages, taken from the URL" => "",
+"als[], noitem of views and the state of site pages, taken from the URL" => "A n\xE9zetek als[] \xE9s noitem param\xE9tere, valamint a webhelyoldalak \xE1llapota az URL-b\xF5l \xE1tv\xE9ve", // ai 2026-11
 
 // src/Security/Protection.php, row 33
 "Logins to the administration and to reader accounts, counted per address of the visitor" => "Bejelentkez\xE9sek az adminisztr\xE1ci\xF3ba \xE9s az olvas\xF3i fi\xF3kokba, a l\xE1togat\xF3 c\xEDme szerint sz\xE1molva", // ai 2026-10
@@ -14614,7 +14943,7 @@ return [
 "Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it." => "Az als[]-ban \xE9s a webhelyoldalak \xE1llapot\xE1ban a sz\xF6veg, a sz\xE1mok, az azonos\xEDt\xF3k \xE9s a _#ALIASES form\xE1j\xFA aliasok tov\xE1bbra is m\xFBk\xF6dnek; az ott szerepl\xF5 {expression} sz\xF6vegk\xE9nt jelenik meg. \xCDrja a kifejez\xE9st abba a sablonba, amely a hivatkoz\xE1st fel\xE9p\xEDti, hogy ott fusson le a hivatkoz\xE1s elk\xFCld\xE9se el\xF5tt, vagy adjon \xE1t egy azonos\xEDt\xF3t, \xE9s a t\xF6bbit a fogad\xF3 oldalon sz\xE1m\xEDtsa ki.", // ai 2026-10
 
 // src/Security/Protection.php, row 56
-"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "",
+"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "A n\xE9zetre mutat\xF3 hivatkoz\xE1sban l\xE9v\xF5 noitem sz\xF6veg (set[...]=noitem-...) sz\xF6vegk\xE9nt jelenik meg, a HTML-t \xE9s a _#ALIASES-t is bele\xE9rtve. Tegye a sz\xF6veget a n\xE9zet ,,Nem tal\xE1lhat\xF3 cikk\" \xFCzenet\xE9be, vagy jelen\xEDtse meg a n\xE9zetet egy sablonb\xF3l a {view.php?...} seg\xEDts\xE9g\xE9vel, ahol a noitem \xFAgy m\xFBk\xF6dik, mint kor\xE1bban. Ha ezt a v\xE9delmet kikapcsolja, csak az {expression} kifejez\xE9st tartalmaz\xF3 noitem fut \xFAgy, mint kor\xE1bban.", // ai 2026-11
 
 // src/Security/Protection.php, row 57
 "After 20 failed logins from one address in 12 hours, or 5 with one user name, the next login waits half a minute to a minute, twice as long after each further failure, at most an hour. A script that keeps logging in with an old password waits too: find its address in the Log (event LOGIN) and give it the current password. If every visitor seems to come from one address, AA runs behind a proxy missing in AA_TRUSTED_PROXIES - State Check names it; add it in config.php rather than switching this protection off." => "Ha egy c\xEDmr\xF5l 12 \xF3r\xE1n bel\xFCl 20, vagy egy felhaszn\xE1l\xF3n\xE9vvel 5 sikertelen bejelentkez\xE9s t\xF6rt\xE9nik, a k\xF6vetkez\xF5 bejelentkez\xE9snek f\xE9l-egy percet kell v\xE1rnia, minden tov\xE1bbi sikertelen pr\xF3b\xE1lkoz\xE1s ut\xE1n k\xE9tszer annyit, legfeljebb egy \xF3r\xE1t. A r\xE9gi jelsz\xF3val \xFAjra \xE9s \xFAjra bejelentkez\xF5 szkriptnek is v\xE1rnia kell: keresse meg a c\xEDm\xE9t a Napl\xF3ban (LOGIN esem\xE9ny), \xE9s adja meg neki az aktu\xE1lis jelsz\xF3t. Ha \xFAgy t\xFBnik, hogy minden l\xE1togat\xF3 egyetlen c\xEDmr\xF5l \xE9rkezik, az AA egy olyan proxy m\xF6g\xF6tt fut, amely hi\xE1nyzik az AA_TRUSTED_PROXIES-b\xF3l - az ,,\xC1llapotellen\xF5rz\xE9s\" megnevezi; a v\xE9delem kikapcsol\xE1sa helyett vegye fel a config.php-ba.", // ai 2026-10
@@ -14809,17 +15138,17 @@ return [
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Jel\xF6l\xF5n\xE9gyzet", // ai 2026-06
 
-// src/Widget/CodWidget.php, row 21
+// src/Widget/CodWidget.php, row 23
 "Code editor" => "K\xF3dszerkeszt\xF5", // ai 2026-06
 
-// src/Widget/EdtWidget.php, row 21
+// src/Widget/EdtWidget.php, row 23
 "Rich Edit Text Area" => "Form\xE1zott sz\xF6vegter\xFClet", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 38
 "File Upload" => "F\xE1jlfelt\xF6lt\xE9s", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 206, 236
-// src/Widget/RichtextMarkup.php, row 73
+// src/Widget/RichtextMarkup.php, row 86
 "Upload" => "Felt\xF6lt\xE9s", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 250
@@ -14842,13 +15171,13 @@ return [
 // src/Widget/GpsWidget.php, row 438
 "Use" => "Haszn\xE1l", // ai 2026-06
 
-// src/Widget/HcoWidget.php, row 34
+// src/Widget/HcoWidget.php, row 36
 "hierarchical constants" => "hierarchikus konstansok", // ai 2026-06
 
 // src/Widget/HidWidget.php, row 28
 "Hidden field" => "Rejtett mez\xF5", // ai 2026-06
 
-// src/Widget/InfWidget.php, row 31
+// src/Widget/InfWidget.php, row 33
 "Info text - output" => "Inform\xE1ci\xF3s sz\xF6veg - kimenet", // ai 2026-06
 
 // src/Widget/IsoWidget.php, row 35
@@ -14890,28 +15219,28 @@ return [
 // src/Widget/MngWidget.php, row 39
 "Best for galleries and other tabular data which is multivalue and different for each item" => "Legink\xE1bb gal\xE9ri\xE1khoz \xE9s m\xE1s t\xE1bl\xE1zatos adatokhoz val\xF3, amelyek t\xF6bb\xE9rt\xE9k\xFBek \xE9s cikkenk\xE9nt elt\xE9r\xF5ek", // ai 2026-06
 
-// src/Widget/MseWidget.php, row 25
+// src/Widget/MseWidget.php, row 27
 "Multiple Selectbox" => "T\xF6bbes kijel\xF6l\xE9s\xFB lista", // ai 2026-06
 
-// src/Widget/NulWidget.php, row 23
+// src/Widget/NulWidget.php, row 25
 "Do not show" => "Nincs megjelen\xEDt\xE9s", // ai 2026-06
 
-// src/Widget/PreWidget.php, row 36
+// src/Widget/PreWidget.php, row 38
 "Text Field with Presets" => "Sz\xF6vegmez\xF5 el\xF5be\xE1ll\xEDt\xE1sokkal", // ai 2026-06
 
 // src/Widget/PwdWidget.php, row 37
 "Password and Change password" => "Jelsz\xF3 \xE9s jelsz\xF3m\xF3dos\xEDt\xE1s", // ai 2026-06
 
-// src/Widget/RichtextMarkup.php, row 75
+// src/Widget/RichtextMarkup.php, row 88
 "Loading..." => "Bet\xF6lt\xE9s...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 76
+// src/Widget/RichtextMarkup.php, row 89
 "No files" => "Nincsenek f\xE1jlok", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 77
+// src/Widget/RichtextMarkup.php, row 90
 "Uploading..." => "Felt\xF6lt\xE9s...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 78
+// src/Widget/RichtextMarkup.php, row 91
 "Upload failed" => "A felt\xF6lt\xE9s sikertelen", // ai 2026-10
 
 // src/Widget/RimWidget.php, row 43
@@ -14932,25 +15261,25 @@ return [
 // src/Widget/TagWidget.php, row 44
 "Tags" => "C\xEDmk\xE9k", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 43
+// src/Widget/TfaWidget.php, row 45
 "2FA Secret generator" => "2FA titkoskulcs-gener\xE1tor", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 79
+// src/Widget/TfaWidget.php, row 81
 "One time Code" => "Egyszeri k\xF3d", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 89
+// src/Widget/TfaWidget.php, row 91
 "Generate New Secret" => "\xDAj titkos kulcs gener\xE1l\xE1sa", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 90
+// src/Widget/TfaWidget.php, row 92
 "Get Secret" => "Titkos kulcs lek\xE9r\xE9se", // ai 2026-06
 
-// src/Widget/TprWidget.php, row 27
+// src/Widget/TprWidget.php, row 29
 "Textarea with Presets" => "Sz\xF6vegter\xFClet el\xF5be\xE1ll\xEDt\xE1sokkal", // ai 2026-06
 
 // src/Widget/TxtWidget.php, row 40
 "Text Area" => "Sz\xF6vegter\xFClet", // ai 2026-06
 
-// src/Widget/Wi2Widget.php, row 32
+// src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "K\xE9t lista", // ai 2026-06
 
 // src/Widget/Widget.php, row 603

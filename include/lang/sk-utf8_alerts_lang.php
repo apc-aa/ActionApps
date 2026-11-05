@@ -42,10 +42,10 @@ return [
 "remove" => "odstrániť", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "Jeho pohľad bol zmazaný - čitatelia z tohto výberu nedostanú nič. Odoberte ho a pridajte existujúci.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Tento výber bol zmazaný - čitatelia z neho nedostanú nič. Odoberte ho a pridajte existujúci.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Zatiaľ nie sú zvolené žiadne výbery.", // ai 2026-10

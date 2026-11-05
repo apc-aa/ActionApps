@@ -18,6 +18,34 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Migrate LDAP perms to SQL perms" => "LDAP許可をSQL許可に移行", // ai 2026-06
+// "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "LDAPバックエンドの全利用者、グループ、メンバーシップ、許可をSQLバックエンドのテーブル（users、membership、perms）にコピーし、item.posted_by / item.edited_by をLDAP DN形式（uid=...,ou=...）から新しいSQL数値IDに書き換えます。インストールごとに一度実行し、その後configでPERM_LIBを'sql'に切り替えてください。'Test'は読み取り専用の試験実行です。'Repair'は移行を実行し、繰り返し実行できます。'Revert'はマッピングテーブルを使ってすべてを元に戻します。", // ai 2026-06
+// "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "このオプティマイザはPERM_LIB='ldap'の場合のみ実行されます。現在のPERM_LIB='%1'。", // ai 2026-06
+// "Would create mapping table `%1`" => "マッピングテーブル `%1` が作成されます", // ai 2026-06
+// "Test finished (dry run - no changes made)." => "テスト完了（試験実行 - 変更なし）。", // ai 2026-06
+// "Repair failed: %1" => "修復失敗: %1", // ai 2026-06
+// "Repair finished." => "修復完了。", // ai 2026-06
+// "Revert failed: %1" => "復元失敗: %1", // ai 2026-06
+// "Revert finished." => "復元完了。", // ai 2026-06
+// "LDAP findUsernames failed or returned: %1" => "LDAP findUsernames が失敗したか、次の値を返しました: %1", // ai 2026-06
+// "LDAP users found: %1" => "見つかったLDAP利用者: %1", // ai 2026-06
+// "Skipping user %1 - cannot determine login" => "利用者 %1 をスキップ - ログインを特定できません", // ai 2026-06
+// "User %1 already exists in SQL (id %2), reusing" => "利用者 %1 は既にSQLに存在します（id %2）、再利用します", // ai 2026-06
+// "Would create SQL user: %1 (from %2)" => "SQL利用者が作成されます: %1（%2 から）", // ai 2026-06
+// "Failed to create SQL user %1" => "SQL利用者 %1 の作成に失敗しました", // ai 2026-06
+// "Users: created=%1 reused=%2 failed=%3" => "利用者: 作成=%1 再利用=%2 失敗=%3", // ai 2026-06
+// "LDAP groups found: %1" => "見つかったLDAPグループ: %1", // ai 2026-06
+// "Group %1 already exists in SQL (id %2), reusing" => "グループ %1 は既にSQLに存在します（id %2）、再利用します", // ai 2026-06
+// "Would create SQL group: %1 (from %2)" => "SQLグループが作成されます: %1（%2 から）", // ai 2026-06
+// "Failed to create SQL group %1" => "SQLグループ %1 の作成に失敗しました", // ai 2026-06
+// "Groups: created=%1 reused=%2 failed=%3" => "グループ: 作成=%1 再利用=%2 失敗=%3", // ai 2026-06
+// "Memberships: added=%1 skipped_unmapped=%2" => "メンバーシップ: 追加=%1 スキップ（未マッピング）=%2", // ai 2026-06
+// "Permission rows migrated: %1" => "移行された許可行数: %1", // ai 2026-06
+// "No mapping entries - nothing to rewrite." => "マッピングのエントリがありません - 書き換える対象はありません。", // ai 2026-06
+// "Rewrite %1.%2: %3 rows" => "%1.%2 の書き換え: %3 行", // ai 2026-06
+// "Mapping table is empty - nothing to revert." => "マッピングテーブルが空です - 元に戻すものはありません。", // ai 2026-06
+// "Revert %1.%2: %3 rows" => "%1.%2 の復元: %3 行", // ai 2026-06
+// "Deleted SQL users=%1 groups=%2" => "削除されたSQL利用者=%1 グループ=%2", // ai 2026-06
 // "als[] and the state of site pages, taken from the URL" => "URL から取得される als[] とサイトページの状態", // ai 2026-10
 // "The index %1 of the content table does not contain the field" => "content テーブルのインデックス %1 にフィールドが含まれていません", // ai 2026-10
 // "Adds the index (field_id, text) to the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes and about as much disk as the other indexes of the table - run it when the traffic is low." => "content テーブルにインデックス (field_id, text) を追加し、他のすべてのフィールドの同じ値を読まずに、1つのフィールド内で値を見つけられるようにします。大きなデータベースでは数分かかり、テーブルの他のインデックスと同程度のディスク容量を使います。アクセスの少ない時間に実行してください。", // ai 2026-10
@@ -231,6 +259,8 @@ return [
 // admin/console.php, row 73
 // admin/fileman.php, row 110
 // admin/slicedel2.php, row 70
+// admin/um_passkeys.php, row 73
+// admin/um_passwd.php, row 80
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
@@ -282,8 +312,8 @@ return [
 // admin/aa_security.php, row 85
 // admin/setup.php, row 99, 240
 // admin/slicewiz.php, row 84
-// admin/um_passwd.php, row 111
-// admin/um_uedit.php, row 313, 317
+// admin/um_passwd.php, row 128
+// admin/um_uedit.php, row 314, 328
 // include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "ログイン名",
@@ -354,12 +384,14 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 103
 // src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckFormRobotRefusals.php, row 80
 // src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
 // src/Optimize/CheckIsdsConf.php, row 160, 193
 // src/Optimize/CheckIsdsViews.php, row 132
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 97
 // src/Optimize/CheckLoginAddresses.php, row 90, 103
 // src/Optimize/CheckObjectFormRefusals.php, row 106
+// src/Optimize/CheckPasskeys.php, row 89
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
@@ -455,7 +487,7 @@ return [
 "Checked again at %1: the problem is gone." => "%1 に再チェックしました: 問題は解消しました。", // ai 2026-10
 
 // admin/aa_statecheck.php, row 255
-"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "",
+"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "%1に再チェックしました: まだ一覧にあり、最終検出は%2です。%3 この検出事項はすでに起きたこと（ログの行、前回の実行）から数えられるため、修正してもすぐにはここに反映されません。それらが古くなるか、次の実行が成功すると消えます。修正後は解決済みにしてください。再び起きた場合はまた表示されます。", // ai 2026-11
 
 // admin/aa_statecheck.php, row 256
 "Checked again at %1: still there. %2" => "%1 に再チェックしました: まだ残っています。%2", // ai 2026-10
@@ -729,7 +761,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1213
+// include/logs.php, row 1218
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -738,6 +770,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
+// src/Optimize/CheckFormRobotRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
@@ -764,7 +797,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 358
+// include/logs.php, row 363
 // src/AA_Plannedtask.php, row 204
 "Log" => "ログ", // ai 2026-06
 
@@ -796,13 +829,13 @@ return [
 
 // admin/aafinder.php, row 478, 508
 // admin/um_gedit.php, row 207, 324
-// admin/um_uedit.php, row 248
+// admin/um_uedit.php, row 249
 // include/se_users.php, row 138, 143
 // include/searchbar.class.php, row 566, 567, 607
 // include/transformation.class.php, row 829, 910
 // include/um_gsrch.php, row 47
 // src/Widget/GpsWidget.php, row 434
-// src/Widget/RichtextMarkup.php, row 72
+// src/Widget/RichtextMarkup.php, row 85
 "Search" => "検索",
 
 // admin/aafinder.php, row 481
@@ -903,7 +936,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 10284, 10363
+// include/stringexpand.php, row 10285, 10364
 "Send" => "送信", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -1062,7 +1095,7 @@ return [
 "Author" => "作者",
 
 // admin/discedit.php, row 133
-// include/logs.php, row 898, 1309
+// include/logs.php, row 903, 1314
 "IP Address" => "IPアドレス", // ai 2026-06
 
 // admin/discedit.php, row 134
@@ -1085,13 +1118,13 @@ return [
 // admin/prev_navigation.php, row 47
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
-// admin/um_uedit.php, row 265
+// admin/um_uedit.php, row 266
 // include/field.class.php, row 744
 // include/filedit.php, row 113
 // include/formutil.php, row 1777, 3394
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
-// include/statestore.php, row 1138
+// include/statestore.php, row 1143
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
 "Edit" => "編集", // ai 2026-06
@@ -1105,7 +1138,8 @@ return [
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
-// admin/um_uedit.php, row 267
+// admin/um_passkeys.php, row 158
+// admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
 // include/field.class.php, row 748
 // include/formutil.php, row 1788, 1925
@@ -1114,7 +1148,7 @@ return [
 // include/searchbar.class.php, row 1126
 // include/um_gsrch.php, row 53
 // src/Manageraction/Import_Delete.php, row 25
-// src/Manageraction/Object_Delete.php, row 24
+// src/Manageraction/Object_Delete.php, row 26
 // src/Manageraction/Table_Row_Delete.php, row 23
 // src/Widget/FilWidget.php, row 201
 "Delete" => "削除", // ai 2026-06
@@ -1136,7 +1170,7 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1060
+// include/logs.php, row 1065
 // include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "件名", // ai 2026-06
@@ -1144,8 +1178,8 @@ return [
 // admin/discedit2.php, row 94, 148
 // admin/setup.php, row 104, 247
 // admin/slicewiz.php, row 89
-// admin/um_passwd.php, row 118
-// admin/um_uedit.php, row 325
+// admin/um_passwd.php, row 140
+// admin/um_uedit.php, row 336
 // include/um_util.php, row 308, 309, 310
 // src/Central/FindingText.php, row 106
 "E-mail" => "E-メール",
@@ -1542,11 +1576,12 @@ return [
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
+// admin/um_passkeys.php, row 149, 153
 // central/installapp.php, row 831, 846
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1200
+// include/logs.php, row 1205
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1707,7 +1742,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1230
+// include/logs.php, row 1235
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
 // src/Optimize/CheckIsdsConf.php, row 342, 372
@@ -1731,7 +1766,7 @@ return [
 // admin/se_csv_import.php, row 277
 // admin/se_csv_import2.php, row 382
 // central/installapp.php, row 434, 558, 1368
-// src/Manageraction/Item_Preview.php, row 11
+// src/Manageraction/Item_Preview.php, row 13
 "Preview" => "プレビュー", // ai 2026-06
 
 // admin/se_csv_import.php, row 278
@@ -1785,7 +1820,7 @@ return [
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
 // include/metabase.class.php, row 1667
-// include/statestore.php, row 1076, 1413
+// include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
@@ -1922,7 +1957,7 @@ return [
 // admin/se_export.php, row 124
 // include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
-// src/Manageraction/Central_MoveItem.php, row 43
+// src/Manageraction/Central_MoveItem.php, row 45
 "Trash" => "ごみ箱", // ai 2026-06
 
 // admin/se_export.php, row 134
@@ -1948,7 +1983,7 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 553
+// include/logs.php, row 558
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
@@ -2091,7 +2126,7 @@ return [
 // admin/se_import.php, row 131
 // admin/se_mapping.php, row 158
 // admin/um_gedit.php, row 280
-// admin/um_uedit.php, row 388
+// admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 190, 2940
 // modules/jump/modedit.php, row 179
@@ -2174,9 +2209,9 @@ return [
 "Resource ID" => "リソースID", // ai 2026-06
 
 // admin/se_history.php, row 143, 165, 166
-// admin/um_uedit.php, row 262
+// admin/um_uedit.php, row 263
 // admin/usershow.php, row 89
-// include/perm_sql.php, row 384, 426
+// include/perm_sql.php, row 381, 440, 482
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
@@ -2261,7 +2296,7 @@ return [
 "Function" => "関数", // ai 2026-06
 
 // admin/se_inputform.php, row 257
-"You can relate only to a slice where you may edit all items" => "",
+"You can relate only to a slice where you may edit all items" => "関連付けできるのは、すべての項目を編集できるスライスだけです", // ai 2026-11
 
 // admin/se_inputform.php, row 305
 "No field found" => "フィールドが見付かりません", // ai 2026-06
@@ -2381,7 +2416,7 @@ return [
 "Reset" => "リセット", // ai 2026-06
 
 // admin/se_inputform.php, row 514
-// include/logs.php, row 633
+// include/logs.php, row 638
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "パラメータ", // ai 2026-06
 
@@ -2488,13 +2523,13 @@ return [
 "The import was successfully created" => "インポートは正常に作成されました", // ai 2026-06
 
 // admin/se_isds_registry.php, row 54
-"You do not have permissions to pair the items of this slice with the register of data boxes" => "",
+"You do not have permissions to pair the items of this slice with the register of data boxes" => "このスライスの項目をデータボックス登録簿と照合する許可がありません", // ai 2026-11
 
 // admin/se_isds_registry.php, row 66
 // include/menu.php, row 167
 // src/Isds/SliceRules.php, row 180
 // src/Optimize/CheckIsdsRegistry.php, row 167
-"Data boxes from the register" => "",
+"Data boxes from the register" => "登録簿のデータボックス", // ai 2026-11
 
 // admin/se_javascript.php, row 68
 // include/menu.php, row 169
@@ -2914,7 +2949,7 @@ return [
 // admin/se_sets.php, row 131
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 471, 528
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 172
 "ID" => "",
@@ -3008,7 +3043,7 @@ return [
 // admin/se_users.php, row 185
 // central/index.php, row 139
 // include/se_users.php, row 180
-// src/Widget/TfaWidget.php, row 71
+// src/Widget/TfaWidget.php, row 73
 "Username" => "利用者名", // ai 2026-06
 
 // admin/se_users.php, row 185
@@ -3164,7 +3199,7 @@ return [
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
 // admin/write_mail.php, row 269
-// src/Widget/RichtextMarkup.php, row 74
+// src/Widget/RichtextMarkup.php, row 87
 "Close" => "閉じる", // ai 2026-06
 
 // admin/setup.php, row 61, 64
@@ -3174,18 +3209,18 @@ return [
 "This script can't be used on a configured system." => "このスクリプトは設定済みのシステムでは使用できません。", // ai 2026-06
 
 // admin/setup.php, row 95
-// admin/um_uedit.php, row 330
+// admin/um_uedit.php, row 341
 "Superadmin account" => "超管理者 アカウント",
 
 // admin/setup.php, row 100, 241
 // admin/slicewiz.php, row 85
-// admin/um_passwd.php, row 114
-// admin/um_uedit.php, row 321
+// admin/um_passwd.php, row 136
+// admin/um_uedit.php, row 332
 // central/index.php, row 140
 // central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
-// src/Widget/TfaWidget.php, row 75
+// src/Widget/TfaWidget.php, row 77
 "Password" => "パスワード",
 
 // admin/setup.php, row 101, 243
@@ -3194,8 +3229,8 @@ return [
 
 // admin/setup.php, row 102, 245
 // admin/slicewiz.php, row 87
-// admin/um_passwd.php, row 116
-// admin/um_uedit.php, row 323
+// admin/um_passwd.php, row 138
+// admin/um_uedit.php, row 334
 // include/um_util.php, row 298
 "First name" => "名前",
 
@@ -3262,7 +3297,7 @@ return [
 
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
-// admin/um_uedit.php, row 378
+// admin/um_uedit.php, row 389
 // include/formutil.php, row 1771
 // include/mlx.php, row 377
 // include/profile.php, row 170
@@ -3627,14 +3662,14 @@ return [
 "Slice Administrator" => "スライス管理者", // ai 2026-06
 
 // admin/slicewiz.php, row 86
-// admin/um_passwd.php, row 115
-// admin/um_uedit.php, row 322
+// admin/um_passwd.php, row 137
+// admin/um_uedit.php, row 333
 // include/um_util.php, row 302
 "Retype password" => "パスワードを繰り返す",
 
 // admin/slicewiz.php, row 88
-// admin/um_passwd.php, row 117
-// admin/um_uedit.php, row 324
+// admin/um_passwd.php, row 139
+// admin/um_uedit.php, row 335
 // include/um_util.php, row 297
 "Surname" => "姓",
 
@@ -3648,25 +3683,25 @@ return [
 "Go: Add Slice" => "実行: スライスを追加", // ai 2026-06
 
 // admin/um_gedit.php, row 95
-// admin/um_uedit.php, row 110
+// admin/um_uedit.php, row 111
 "No permission to create new user" => "新しい利用者を作成する許可がありません",
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137, 154
+// admin/um_uedit.php, row 135, 138, 155
 "Too many groups found." => "見付かったグループが多すぎます。", // ai 2026-06
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137
+// admin/um_uedit.php, row 135, 138
 "No groups found" => "グループが見付かりません",
 
 // admin/um_gedit.php, row 120, 128
-// admin/um_uedit.php, row 128, 143, 167
+// admin/um_uedit.php, row 129, 144, 168
 // include/se_users.php, row 175
 // include/um_gsrch.php, row 31
 "Too many users or groups found." => "見付かった利用者またはグループが多すぎます。", // ai 2026-06
 
 // admin/um_gedit.php, row 120
-// admin/um_uedit.php, row 128, 143
+// admin/um_uedit.php, row 129, 144
 // include/se_users.php, row 177
 // include/um_gsrch.php, row 34
 "No user (group) found" => "利用者(グループ)が見付かりません",
@@ -3682,7 +3717,7 @@ return [
 "Are you sure you want to delete selected group from whole permission system?" => "選択したグループを許可システム全体から削除してもよろしいですか?", // ai 2026-06
 
 // admin/um_gedit.php, row 189, 199
-// admin/um_uedit.php, row 336, 342
+// admin/um_uedit.php, row 347, 353
 // include/menu_util.php, row 71
 // include/se_users.php, row 141
 // include/um_gsrch.php, row 41
@@ -3699,7 +3734,7 @@ return [
 
 // admin/um_gedit.php, row 220
 // include/constants.php, row 455
-// include/perm_sql.php, row 403
+// include/perm_sql.php, row 459
 // include/um_gsrch.php, row 50
 "Group" => "グループ", // ai 2026-06
 
@@ -3716,8 +3751,8 @@ return [
 "Superadmin group" => "超管理者グループ",
 
 // admin/um_gedit.php, row 312
-// admin/um_uedit.php, row 230, 241
-// include/logs.php, row 911
+// admin/um_uedit.php, row 231, 242
+// include/logs.php, row 916
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -3729,57 +3764,216 @@ return [
 // admin/um_gedit.php, row 322
 "Group's Users" => "グループの利用者",
 
-// admin/um_passwd.php, row 61
+// admin/um_passkeys.php, row 58
+"The directory of the accounts does not answer now - try it again later" => "アカウントのディレクトリが現在応答しません。後でもう一度お試しください", // ai 2026-11
+
+// admin/um_passkeys.php, row 62
+"You do not have permissions to manage the passkeys of this account" => "このアカウントのパスキーを管理する許可がありません", // ai 2026-11
+
+// admin/um_passkeys.php, row 105
+"The passkey is stored. From now on this account logs in only by a passkey." => "パスキーを保存しました。今後このアカウントはパスキーでのみログインします。", // ai 2026-11
+
+// admin/um_passkeys.php, row 106
+"The passkey is renamed." => "パスキーの名前を変更しました。", // ai 2026-11
+
+// admin/um_passkeys.php, row 107
+"The passkey is deleted." => "パスキーを削除しました。", // ai 2026-11
+
+// admin/um_passkeys.php, row 108
+"All passkeys of the account are deleted - its password logs in again." => "アカウントのパスキーをすべて削除しました。再びパスワードでログインできます。", // ai 2026-11
+
+// admin/um_passkeys.php, row 109
+"Log in again first - adding or deleting a passkey needs a login of the last %1 minutes." => "まず再ログインしてください。パスキーの追加や削除には、直近%1分以内のログインが必要です。", // ai 2026-11
+
+// admin/um_passkeys.php, row 110
+"This passkey is stored already." => "このパスキーはすでに保存されています。", // ai 2026-11
+
+// admin/um_passkeys.php, row 111
+"The page waited too long. Try it again." => "ページの待ち時間が長すぎました。もう一度お試しください。", // ai 2026-11
+
+// admin/um_passkeys.php, row 112
+"The passkey could not be stored. Try it again, or another device." => "パスキーを保存できませんでした。もう一度試すか、別のデバイスをお使いください。", // ai 2026-11
+
+// admin/um_passkeys.php, row 116
+// admin/um_passwd.php, row 130
+// admin/um_uedit.php, row 324
+"Passkeys" => "パスキー", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of your account %1" => "あなたのアカウント %1 のパスキー", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of the account %1" => "アカウント %1 のパスキー", // ai 2026-11
+
+// admin/um_passkeys.php, row 131
+"This account cannot have passkeys - only the users of the permission system of AA can." => "このアカウントはパスキーを持てません。持てるのは AA の許可システムの利用者だけです。", // ai 2026-11
+
+// admin/um_passkeys.php, row 137
+"A passkey logs you in without a password - by the fingerprint, face or PIN of your phone or computer. Nobody can steal it by a fake page or guess it." => "パスキーを使うと、パスワードなしでログインできます。スマートフォンやコンピューターの指紋、顔、PIN を使います。偽のページで盗まれることも、推測されることもありません。", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Once the account has a passkey, the password alone no longer logs it in" => "アカウントにパスキーを設定すると、パスワードだけではログインできなくなります", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"neither here, nor for Central or scripts that log in by it." => "ここでも、Central やパスワードでログインするスクリプトでも同様です。", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Add two passkeys - say in your phone and in your computer - so you keep the access when you lose one. If you lose all of them, a user manager of this AA deletes them and you log in by your password again." => "パスキーは2つ追加してください（例えばスマートフォンとコンピューターに）。1つを失くしてもアクセスを保てます。すべて失くした場合は、この AA の利用者管理者が削除し、再びパスワードでログインできるようになります。", // ai 2026-11
+
+// admin/um_passkeys.php, row 140
+"Delete the passkeys only when their owner asks for it - lost or stolen device. The account then logs in by its password again, and its owner gets a mail about it." => "パスキーの削除は、所有者から依頼があった場合（デバイスの紛失や盗難）に限ってください。削除後、アカウントは再びパスワードでログインし、所有者にはその旨のメールが届きます。", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Works on" => "使用先", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Added" => "追加日", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+// include/formutil.php, row 3300
+"Last used" => "最終使用", // ai 2026-06
+
+// admin/um_passkeys.php, row 149
+"Copies" => "コピー", // ai 2026-11
+
+// admin/um_passkeys.php, row 153
+// include/searchbar.class.php, row 1124
+"Rename" => "名前を変更", // ai 2026-06
+
+// admin/um_passkeys.php, row 156
+"not yet" => "未使用", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"in your other devices too" => "他のデバイスにも", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"only in this device" => "このデバイスのみ", // ai 2026-11
+
+// admin/um_passkeys.php, row 162
+"Delete all passkeys of the account" => "アカウントのパスキーをすべて削除", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"You have no passkey yet." => "まだパスキーがありません。", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"The account has no passkey." => "このアカウントにはパスキーがありません。", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"To add or delete a passkey, log in again: it needs a login of the last %1 minutes." => "パスキーを追加または削除するには、再ログインしてください。直近%1分以内のログインが必要です。", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"Log in again" => "再ログイン", // ai 2026-11
+
+// admin/um_passkeys.php, row 171
+"A passkey cannot be added to this account: you may not change its data, or its password is public (the free links of a module log in by it)." => "このアカウントにはパスキーを追加できません。アカウントのデータを変更する許可がないか、パスワードが公開されています（モジュールの公開リンクがそのパスワードでログインします）。", // ai 2026-11
+
+// admin/um_passkeys.php, row 173
+"A passkey can be added only on a page reached by https and by an address of this AA or of one of its sites, not an IP address." => "パスキーを追加できるのは、https でアクセスし、IP アドレスではなくこの AA またはそのサイトのアドレスで開いたページだけです。", // ai 2026-11
+
+// admin/um_passkeys.php, row 180, 191
+"Add a passkey" => "パスキーを追加", // ai 2026-11
+
+// admin/um_passkeys.php, row 182
+"This server cannot make passkeys." => "このサーバーではパスキーを作成できません。", // ai 2026-11
+
+// admin/um_passkeys.php, row 184
+"The passkey will work on %1. On the other addresses of this AA the login page sends you here." => "パスキーは %1 で使えます。この AA の他のアドレスでは、ログインページからここへ移動します。", // ai 2026-11
+
+// admin/um_passkeys.php, row 185
+"Name of the passkey" => "パスキーの名前", // ai 2026-11
+
+// admin/um_passkeys.php, row 186
+"e.g. My phone" => "例: 私のスマートフォン", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"No passkey was made." => "パスキーは作成されませんでした。", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"This device keeps a passkey of the account already." => "このデバイスにはすでにこのアカウントのパスキーがあります。", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"The browser could not make a passkey." => "ブラウザーがパスキーを作成できませんでした。", // ai 2026-11
+
+// admin/um_passkeys.php, row 190
+"This browser cannot make passkeys." => "このブラウザーはパスキーを作成できません。", // ai 2026-11
+
+// admin/um_passkeys.php, row 192
+"Adding a passkey needs JavaScript." => "パスキーの追加には JavaScript が必要です。", // ai 2026-11
+
+// admin/um_passwd.php, row 64
 "You do not have permissions to change user data" => "利用者のデータを変更する許可がありません", // ai 2026-06
 
-// admin/um_passwd.php, row 71, 113
+// admin/um_passwd.php, row 83
+"Log in again first - a change of the account needs a login of the last %1 minutes" => "まず再ログインしてください。アカウントの変更には直近%1分以内のログインが必要です", // ai 2026-11
+
+// admin/um_passwd.php, row 86, 132, 134
 // src/Widget/PwdWidget.php, row 66
 "Current password" => "現在のパスワード", // ai 2026-06
 
-// admin/um_passwd.php, row 73
+// admin/um_passwd.php, row 88
 "Error in current password - password is not changed" => "現在のパスワードが誤っています - パスワードは変更されませんでした", // ai 2026-06
 
-// admin/um_passwd.php, row 82
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 98
+// admin/um_uedit.php, row 184
 "User data modified" => "利用者データを変更しました", // ai 2026-06
 
-// admin/um_passwd.php, row 101
+// admin/um_passwd.php, row 117
 "Change user data" => "利用者データの変更", // ai 2026-06
 
-// admin/um_passwd.php, row 110
-// admin/um_uedit.php, row 312
+// admin/um_passwd.php, row 127
+// admin/um_uedit.php, row 313
 "Edit User" => "利用者の編集",
 
-// admin/um_passwd.php, row 112
-// admin/um_uedit.php, row 314
+// admin/um_passwd.php, row 129
+// admin/um_uedit.php, row 315
 "User Id" => "利用者 Id", // ai 2026-06
 
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 130
+"The account logs in by a passkey" => "パスキーでログイン", // ai 2026-11
+
+// admin/um_passwd.php, row 130
+"Log in without a password" => "パスワードなしでログイン", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed - you logged in a moment ago" => "不要です。先ほどログインしたばかりです", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed, but log in again first: a change needs a login of the last %1 minutes" => "不要ですが、まず再ログインしてください。変更には直近%1分以内のログインが必要です", // ai 2026-11
+
+// admin/um_uedit.php, row 184
 // include/um_util.php, row 344
 "User successfully added to permission system" => "利用者は許可システムに正常に追加されました", // ai 2026-06
 
-// admin/um_uedit.php, row 198
+// admin/um_uedit.php, row 199
 "Are you sure you want to delete selected user from whole permission system?" => "選択した利用者を許可システム全体から削除してもよろしいですか?", // ai 2026-06
 
-// admin/um_uedit.php, row 230
+// admin/um_uedit.php, row 231
 "Add new user" => "新規利用者を追加", // ai 2026-06
 
-// admin/um_uedit.php, row 238
+// admin/um_uedit.php, row 239
 "Add user" => "利用者を追加", // ai 2026-06
 
-// admin/um_uedit.php, row 247
+// admin/um_uedit.php, row 248
 "Find user" => "利用者を検索", // ai 2026-06
 
-// admin/um_uedit.php, row 316
+// admin/um_uedit.php, row 324
+"%1 - the account logs in only by them" => "%1 件 - このアカウントはこれらでのみログインします", // ai 2026-11
+
+// admin/um_uedit.php, row 324
+// src/Isds/Registry/Page.php, row 555, 653
+// src/Optimize/MissCacheRouting.php, row 98, 129
+"none" => "なし", // ai 2026-10
+
+// admin/um_uedit.php, row 327
 "New user" => "新規利用者",
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "All Writable Groups" => "書き込み可能な全グループ", // ai 2026-06
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "User's Groups" => "利用者のグループ",
 
-// admin/um_uedit.php, row 347
+// admin/um_uedit.php, row 358
 "Member of Unwritable Groups" => "書き込み不可のグループのメンバー", // ai 2026-06
 
 // admin/usershow.php, row 76
@@ -3842,7 +4036,7 @@ return [
 "Write email to users" => "利用者にE-メールを書く", // ai 2026-06
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1059
+// include/logs.php, row 1064
 "Recipients" => "受信者", // ai 2026-06
 
 // admin/write_mail.php, row 238
@@ -3916,7 +4110,7 @@ return [
 "App" => "アプリ", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1201
+// include/logs.php, row 1206
 "Version" => "バージョン", // ai 2026-10
 
 // central/appstore.php, row 164
@@ -4059,11 +4253,11 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1202
+// include/logs.php, row 1207
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
-// src/Widget/RichtextMarkup.php, row 71
+// src/Widget/RichtextMarkup.php, row 84
 "Source" => "ソース", // ai 2026-06
 
 // central/installapp.php, row 452
@@ -4104,7 +4298,7 @@ return [
 "Hold Ctrl to choose more of them." => "複数選択するには Ctrl キーを押したまま選択してください。", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 790, 1244
+// include/logs.php, row 795, 1249
 "Mode" => "モード", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4494,7 +4688,7 @@ return [
 "Stopped by an error" => "エラーで停止", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 792
+// include/logs.php, row 797
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "完了", // ai 2026-10
@@ -4697,7 +4891,7 @@ return [
 "Compared and Updated ActionApps" => "比較・更新された ActionApps", // ai 2026-06
 
 // filldisc.php, row 106, 156
-// filler.php, row 423
+// filler.php, row 311, 427
 "Not accepted, sorry. Looks like spam." => "受け付けられません。スパムのようです。", // ai 2026-06
 
 // filldisc.php, row 113
@@ -4719,22 +4913,22 @@ return [
 // filler.php, row 295
 "Not allowed to post comments" => "コメントの投稿は許可されていません", // ai 2026-06
 
-// filler.php, row 336, 382
+// filler.php, row 340, 386
 "Bad Token. Not allowed to post comments" => "不正なトークンです。コメントの投稿は許可されていません", // ai 2026-06
 
-// filler.php, row 362
+// filler.php, row 366
 "Slice ID not defined" => "スライス ID が定義されていません", // ai 2026-06
 
-// filler.php, row 368
+// filler.php, row 372
 "Bad slice ID" => "不正なスライス ID", // ai 2026-06
 
-// filler.php, row 397, 486
+// filler.php, row 401, 490
 "You are not allowed to update this item." => "この項目を更新する許可がありません。", // ai 2026-06
 
-// filler.php, row 444
+// filler.php, row 448
 "Anonymous posting not admitted." => "匿名投稿は許可されていません。", // ai 2026-06
 
-// filler.php, row 499
+// filler.php, row 503
 "Some error in store item." => "項目の保存中にエラーが発生しました。", // ai 2026-06
 
 // include/adminpage.class.php, row 68
@@ -4744,7 +4938,7 @@ return [
 "Short Id" => "短縮 ID", // ai 2026-06
 
 // include/constants.php, row 456
-// include/logs.php, row 950, 982
+// include/logs.php, row 955, 987
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "クラス", // ai 2026-06
 
@@ -4753,7 +4947,7 @@ return [
 "Level" => "レベル", // ai 2026-06
 
 // include/constants.php, row 509
-// include/logs.php, row 1161
+// include/logs.php, row 1166
 "Feed" => "フィードする", // ai 2026-06
 
 // include/constants.php, row 510
@@ -5395,8 +5589,8 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1294
-// src/Manageraction/Item_Move2Slice.php, row 52
+// include/logs.php, row 1299
+// src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "スライス ID", // ai 2026-06
 
 // include/form.class.php, row 232
@@ -5456,7 +5650,7 @@ return [
 "import" => "インポート", // ai 2026-06
 
 // include/formutil.php, row 1216
-// src/Widget/RichtextMarkup.php, row 70
+// src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "エディタで編集", // ai 2026-06
 
@@ -5487,7 +5681,7 @@ return [
 "Offer" => "候補", // ai 2026-06
 
 // include/formutil.php, row 2179
-// include/stringexpand.php, row 11505, 11528
+// include/stringexpand.php, row 11506, 11529
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 287
@@ -5512,7 +5706,7 @@ return [
 "Group Name" => "グループ名", // ai 2026-06
 
 // include/formutil.php, row 3295
-// include/logs.php, row 747, 847, 1111
+// include/logs.php, row 752, 852, 1116
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "件数", // ai 2026-06
@@ -5528,9 +5722,6 @@ return [
 
 // include/formutil.php, row 3299
 "Updated by" => "更新者", // ai 2026-06
-
-// include/formutil.php, row 3300
-"Last used" => "最終使用", // ai 2026-06
 
 // include/formutil.php, row 3307
 "All active items" => "全ての活動中の項目", // ai 2026-06
@@ -5548,7 +5739,7 @@ return [
 "All items in trash bin" => "ごみ箱の全項目", // ai 2026-06
 
 // include/init_page.php, row 84
-// include/locauth.php, row 100
+// include/locauth.php, row 137
 "Either your username or your password is not valid" => "利用者名またはパスワードが正しくありません", // ai 2026-06
 
 // include/init_page.php, row 136
@@ -6049,252 +6240,258 @@ return [
 // include/itemview.php, row 723, 731
 "exact group name" => "正確なグループ名", // ai 2026-06
 
-// include/locauth.php, row 102
+// include/locauth.php, row 134
+"The login by the passkey did not succeed. Try it again." => "パスキーによるログインに失敗しました。もう一度お試しください。", // ai 2026-11
+
+// include/locauth.php, row 139
 "Please try again!" => "もう一度お試しください！", // ai 2026-06
 
-// include/locauth.php, row 103
+// include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "パスワードを正しく入力したと確信される場合は、<a href=mailto:%1>%1</a> までメールでご連絡ください", // ai 2026-06
 
-// include/logs.php, row 541
+// include/logs.php, row 546
 "Created time" => "作成日時", // ai 2026-06
 
-// include/logs.php, row 542
+// include/logs.php, row 547
 "Readers to be emailed" => "メール送信対象の読者", // ai 2026-06
 
-// include/logs.php, row 554
+// include/logs.php, row 559
 // src/Optimize/CheckCkeditorUse.php, row 97
+// src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
 "Page" => "ページ", // ai 2026-06
 
-// include/logs.php, row 629, 673, 688
+// include/logs.php, row 634, 678, 693
 "Time [s]" => "時間 [s]", // ai 2026-06
 
-// include/logs.php, row 630, 675
+// include/logs.php, row 635, 680
 "Memory usage [MB]" => "メモリ使用量 [MB]", // ai 2026-06
 
-// include/logs.php, row 631
+// include/logs.php, row 636
 "Memory peak [MB]" => "最大メモリ [MB]", // ai 2026-06
 
-// include/logs.php, row 632
+// include/logs.php, row 637
 "Return code" => "戻りコード", // ai 2026-06
 
-// include/logs.php, row 648
+// include/logs.php, row 653
 "Tasks done" => "完了したタスク", // ai 2026-06
 
-// include/logs.php, row 649
+// include/logs.php, row 654
 "Tasks started" => "開始したタスク", // ai 2026-06
 
-// include/logs.php, row 650
+// include/logs.php, row 655
 "Duration [s]" => "所要時間 [秒]", // ai 2026-06
 
-// include/logs.php, row 651
+// include/logs.php, row 656
 "Allowed [s]" => "許容時間 [秒]", // ai 2026-06
 
-// include/logs.php, row 671
+// include/logs.php, row 676
 "Cached" => "キャッシュ済み", // ai 2026-06
 
-// include/logs.php, row 672
+// include/logs.php, row 677
 "Not Modified (304)" => "未変更 (304)", // ai 2026-06
 
-// include/logs.php, row 674
+// include/logs.php, row 679
 "Time + Cached + 304" => "時間 + キャッシュ + 304", // ai 2026-06
 
-// include/logs.php, row 676, 689, 899, 1085
+// include/logs.php, row 681, 694, 904, 1090
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 716
+// include/logs.php, row 721
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 717
+// include/logs.php, row 722
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 718
+// include/logs.php, row 723
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 719
+// include/logs.php, row 724
 "DB" => "",
 
-// include/logs.php, row 720
+// include/logs.php, row 725
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "メモリ", // ai 2026-06
 
-// include/logs.php, row 721
+// include/logs.php, row 726
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 722
+// include/logs.php, row 727
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "サーバー設定", // ai 2026-10
 
-// include/logs.php, row 746, 845
+// include/logs.php, row 751, 850
 "Severity" => "重大度", // ai 2026-10
 
-// include/logs.php, row 748, 843, 872
+// include/logs.php, row 753, 848, 877
 "Finding" => "検出事項", // ai 2026-10
 
-// include/logs.php, row 766
+// include/logs.php, row 771
 "Problems" => "問題", // ai 2026-10
 
-// include/logs.php, row 767
+// include/logs.php, row 772
 "Warnings" => "警告", // ai 2026-10
 
-// include/logs.php, row 768
+// include/logs.php, row 773
 "Recommendations" => "推奨", // ai 2026-10
 
-// include/logs.php, row 769
+// include/logs.php, row 774
 "Checks" => "チェック", // ai 2026-10
 
-// include/logs.php, row 789, 820
+// include/logs.php, row 794, 825
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "実行", // ai 2026-10
 
-// include/logs.php, row 791
+// include/logs.php, row 796
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "開始", // ai 2026-10
 
-// include/logs.php, row 793
+// include/logs.php, row 798
 "Last full run" => "最後の全体実行", // ai 2026-10
 
-// include/logs.php, row 794
+// include/logs.php, row 799
 "Last full run started" => "最後の全体実行の開始", // ai 2026-10
 
-// include/logs.php, row 819, 844
+// include/logs.php, row 824, 849
 "Pair" => "ペア", // ai 2026-10
 
-// include/logs.php, row 821
+// include/logs.php, row 826
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "実行日時", // ai 2026-10
 
-// include/logs.php, row 822, 846
+// include/logs.php, row 827, 851
 "Known issue" => "既知の問題", // ai 2026-10
 
-// include/logs.php, row 848
+// include/logs.php, row 853
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "初回検出", // ai 2026-10
 
-// include/logs.php, row 849
+// include/logs.php, row 854
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "連続回数", // ai 2026-10
 
-// include/logs.php, row 873
+// include/logs.php, row 878
 "Evidence" => "証拠", // ai 2026-10
 
-// include/logs.php, row 896
+// include/logs.php, row 901
 "Identifier" => "識別子", // ai 2026-06
 
-// include/logs.php, row 897, 1261, 1276
+// include/logs.php, row 902, 1266, 1281
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "モジュールID", // ai 2026-06
 
-// include/logs.php, row 910
+// include/logs.php, row 915
 "Template id" => "テンプレート Id", // ai 2026-06
 
-// include/logs.php, row 912
+// include/logs.php, row 917
 "Emails sent" => "送信したメール", // ai 2026-06
 
-// include/logs.php, row 951
+// include/logs.php, row 956
 "Object id" => "オブジェクト ID", // ai 2026-10
 
-// include/logs.php, row 983
+// include/logs.php, row 988
 "Mail template" => "メールテンプレート", // ai 2026-10
 
-// include/logs.php, row 984
+// include/logs.php, row 989
 "Reader item" => "読者の項目", // ai 2026-10
 
-// include/logs.php, row 985
+// include/logs.php, row 990
 "Origin" => "送信元", // ai 2026-10
 
-// include/logs.php, row 1056
+// include/logs.php, row 1061
 "Transport" => "送信方式", // ai 2026-10
 
-// include/logs.php, row 1057
+// include/logs.php, row 1062
 "Recipients sent" => "送信した受信者数", // ai 2026-10
 
-// include/logs.php, row 1058
+// include/logs.php, row 1063
 "Server response" => "サーバーの応答", // ai 2026-10
 
-// include/logs.php, row 1071
+// include/logs.php, row 1076
 "Items selected" => "選択された項目", // ai 2026-06
 
-// include/logs.php, row 1072
+// include/logs.php, row 1077
 "Items updated" => "更新された項目", // ai 2026-06
 
-// include/logs.php, row 1073
+// include/logs.php, row 1078
 "Items planned" => "予定された項目", // ai 2026-06
 
-// include/logs.php, row 1084
+// include/logs.php, row 1089
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "メッセージ", // ai 2026-06
 
-// include/logs.php, row 1086
+// include/logs.php, row 1091
 "Referer" => "参照元", // ai 2026-06
 
-// include/logs.php, row 1097
+// include/logs.php, row 1102
 "New name" => "新しい名前", // ai 2026-06
 
-// include/logs.php, row 1098
+// include/logs.php, row 1103
 "Old name" => "古い名前", // ai 2026-06
 
-// include/logs.php, row 1109, 1174
+// include/logs.php, row 1114, 1179
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "段階", // ai 2026-06
 
-// include/logs.php, row 1110
+// include/logs.php, row 1115
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "コレクション", // ai 2026-06
 
-// include/logs.php, row 1112, 1163, 1175, 1310
+// include/logs.php, row 1117, 1168, 1180, 1315
 // src/Import/Definition.php, row 154
+// src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "詳細", // ai 2026-06
 
-// include/logs.php, row 1162
+// include/logs.php, row 1167
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "状態", // ai 2026-06
 
-// include/logs.php, row 1214
+// include/logs.php, row 1219
 "Processed" => "処理済み", // ai 2026-06
 
-// include/logs.php, row 1215
+// include/logs.php, row 1220
 "Stored" => "保存済み", // ai 2026-06
 
-// include/logs.php, row 1216
+// include/logs.php, row 1221
 "Errors" => "エラー", // ai 2026-06
 
-// include/logs.php, row 1229
+// include/logs.php, row 1234
 // src/Import/DetailPage.php, row 329
 "Outcome" => "結果", // ai 2026-06
 
-// include/logs.php, row 1245
+// include/logs.php, row 1250
 "Flags" => "フラグ", // ai 2026-06
 
-// include/logs.php, row 1246
+// include/logs.php, row 1251
 "Context" => "コンテキスト", // ai 2026-06
 
-// include/logs.php, row 1262
+// include/logs.php, row 1267
 "Feed counterpart" => "フィードの対応先", // ai 2026-06
 
-// include/logs.php, row 1277
+// include/logs.php, row 1282
 "Field ID" => "フィールドID", // ai 2026-06
 
-// include/logs.php, row 1295
+// include/logs.php, row 1300
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckHttp.php, row 62
+// src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 88
 "Reason" => "理由", // ai 2026-10
 
@@ -6307,7 +6504,7 @@ return [
 // include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "所有者", // ai 2026-06
 
@@ -6633,10 +6830,10 @@ return [
 // include/modutils.php, row 251
 "Select owner" => "所有者を選択", // ai 2026-06
 
-// include/perm_core.php, row 1273, 1300
+// include/perm_core.php, row 1414, 1444
 "Reader Slice" => "読者スライス", // ai 2026-06
 
-// include/perm_core.php, row 1285, 1302
+// include/perm_core.php, row 1429, 1446
 "Reader Set" => "読者セット", // ai 2026-06
 
 // include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
@@ -6745,9 +6942,6 @@ return [
 // include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "個人フィルタ (クリックで適用)", // ai 2026-06
 
-// include/searchbar.class.php, row 1124
-"Rename" => "名前を変更", // ai 2026-06
-
 // include/searchbar.class.php, row 1135
 "Manage filters" => "フィルタの管理", // ai 2026-06
 
@@ -6782,7 +6976,7 @@ return [
 "is not" => "等しくない", // ai 2026-06
 
 // include/searchlib.php, row 137, 140
-// include/statestore.php, row 1362
+// include/statestore.php, row 1367
 "select ..." => "選択 ...", // ai 2026-06
 
 // include/searchlib.php, row 370
@@ -6930,22 +7124,22 @@ return [
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "サイトモジュールを使用する全ての言語を列挙してください - en, es, cz, ..<br>1 つの言語のみ使用する場合でも<b>必ず記入</b>してください。<br>Apache から新しい方法でサイトモジュールを呼び出す場合に必要です:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
 // include/slice.class.php, row 1645
-"Allowed {xflag} values" => "",
+"Allowed {xflag} values" => "許可される {xflag} の値", // ai 2026-11
 
 // include/slice.class.php, row 1645
-"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "",
+"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "URL の {xflag} の部分が全体として一致しなければならない正規表現です（^ や \$ は不要）。一致しない場合、ページは 404 を返します。{xflag} は言語と省略可能なページ番号 {xpage} の直後の文字です: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... 数字や「-」は含みません（そこで終わります）。<br>{xflag} のないページも通過する必要があります。パターンの末尾に ? を付けるか、空の選択肢を追加してください。<br><b>空</b> - 「=」を含まない任意の値。<br><b>^\$</b> - {xflag} を使わず、それのないページのみ。<br>例:<br>[a-z]? - 1文字、またはなし<br>[tp]? - 「t」か「p」、またはなし<br>(print|pdf)? - 列挙した単語のいずれか、またはなし", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Allowed {xcat} values" => "",
+"Allowed {xcat} values" => "許可される {xcat} の値", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "",
+"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "URL の {xcat} の部分が全体として一致しなければならない正規表現です（^ や \$ は不要）。一致しない場合、ページは 404 を返します。{xcat} は最初のディレクトリで最初の「-」より後ろのすべてです: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... 「/」以外は何でも含められます。<br>{xcat} のないページも通過する必要があります。パターンの末尾に ? を付けるか、空の選択肢を追加してください。<br><b>空</b> - 「=」を含まない任意の値。<br><b>^\$</b> - {xcat} を使わず、それのないページのみ。<br>例:<br>[a-z0-9-]* - 小文字、数字、ダッシュ、またはなし<br>([0-9]+)? - 数値、またはなし<br>(bioplyn|kompost)? - 列挙した単語のいずれか、またはなし", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Check the page path" => "",
+"Check the page path" => "ページのパスを確認", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "",
+"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "パスのいずれかの部分（{xseo1}, {xseo2}, ...）が公開済みの項目でない場合に 404 を返します。これにより /cz/nonsense/about-us で about-us ページが表示されることはありません。「ページが見つからない場合」が「何もしない」に設定されていても 404 を返します。", // ai 2026-11
 
 // include/slice.class.php, row 1648
 "Page not Found (404)" => "ページが見つかりません (404)", // ai 2026-06
@@ -6987,10 +7181,10 @@ return [
 "Published modules" => "公開モジュール", // ai 2026-10
 
 // include/slice.class.php, row 1664
-"Page address (URL)" => "",
+"Page address (URL)" => "ページのアドレス (URL)", // ai 2026-11
 
 // include/slice.class.php, row 1665
-"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "",
+"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} は数値、{xflag} はその後ろの文字、{xcat} は最初の「-」より後ろのすべてです。3つとも省略可能です。「ウェブサイトの言語」が設定されていれば {xlang} は省略できます。<br>例えば /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka", // ai 2026-11
 
 // include/slice.class.php, row 1707
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "アプリのバージョンは英字・数字と . + - で 32 文字以内（例: 1.2.0）、説明は %1 文字以内です。", // ai 2026-10
@@ -7063,13 +7257,13 @@ return [
 // include/slicedit.php, row 372
 "Internal error when changing user role." => "利用者の役割変更中に内部エラーが発生しました。", // ai 2026-06
 
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 "Owner ID" => "所有者ID", // ai 2026-06
 
-// include/statestore.php, row 1170
+// include/statestore.php, row 1175
 "No object found" => "オブジェクトが見付かりません", // ai 2026-06
 
-// include/statestore.php, row 1444
+// include/statestore.php, row 1449
 "Manage components" => "コンポーネントの管理", // ai 2026-06
 
 // include/stringexpand.php, row 95
@@ -7111,84 +7305,84 @@ return [
 // include/stringexpand.php, row 6279
 "No module for dictionary slice" => "辞書スライスのモジュールがありません", // ai 2026-06
 
-// include/stringexpand.php, row 8195
+// include/stringexpand.php, row 8196
 "version" => "バージョン", // ai 2026-06
 
-// include/stringexpand.php, row 8383
+// include/stringexpand.php, row 8384
 "show" => "表示", // ai 2026-06
 
-// include/stringexpand.php, row 8384
+// include/stringexpand.php, row 8385
 "hide" => "隠す", // ai 2026-06
 
-// include/stringexpand.php, row 8385
+// include/stringexpand.php, row 8386
 "loading" => "読み込み中", // ai 2026-06
 
-// include/stringexpand.php, row 9516
+// include/stringexpand.php, row 9517
 "E-mail confirmed." => "E-メールが確認されました。", // ai 2026-06
 
-// include/stringexpand.php, row 9520
+// include/stringexpand.php, row 9521
 "E-mail unsubscribed" => "E-メールの購読を解除しました", // ai 2026-06
 
-// include/stringexpand.php, row 10279
+// include/stringexpand.php, row 10280
 "Forgot your password? Fill in your email." => "パスワードをお忘れですか？E-メールを入力してください。", // ai 2026-06
 
-// include/stringexpand.php, row 10281
+// include/stringexpand.php, row 10282
 // src/Central/FindingText.php, row 457
 "e-mail" => "E-メール", // ai 2026-06
 
-// include/stringexpand.php, row 10299, 10303
+// include/stringexpand.php, row 10300, 10304
 "Unable to find user - please check if it has been misspelled." => "利用者が見付かりません。綴りに間違いがないか確認してください。", // ai 2026-06
 
-// include/stringexpand.php, row 10317
+// include/stringexpand.php, row 10318
 "Password link" => "パスワードリンク", // ai 2026-06
 
-// include/stringexpand.php, row 10318
+// include/stringexpand.php, row 10319
 "Password change url parameter" => "パスワード変更のURLパラメータ", // ai 2026-06
 
-// include/stringexpand.php, row 10330
+// include/stringexpand.php, row 10331
 "Password change" => "パスワード変更", // ai 2026-06
 
-// include/stringexpand.php, row 10331
+// include/stringexpand.php, row 10332
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "パスワードを変更するには、次のアドレスにアクセスしてください:<br>%1<br>変更は2時間のみ可能です。その後はキーの有効期限が切れるため、新しいキーを請求する必要があります。", // ai 2026-06
 
-// include/stringexpand.php, row 10340
+// include/stringexpand.php, row 10341
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "パスワード変更用のキーを記載したE-メールを次のアドレスに送信しました: %1", // ai 2026-06
 
-// include/stringexpand.php, row 10351, 10380
+// include/stringexpand.php, row 10352, 10381
 "Bad or expired key." => "キーが不正か期限切れです。", // ai 2026-06
 
-// include/stringexpand.php, row 10356
+// include/stringexpand.php, row 10357
 "Fill in the new password" => "新しいパスワードを入力してください", // ai 2026-06
 
-// include/stringexpand.php, row 10358
+// include/stringexpand.php, row 10359
 "New password" => "新しいパスワード", // ai 2026-06
 
-// include/stringexpand.php, row 10359
+// include/stringexpand.php, row 10360
 "Retype New Password" => "新しいパスワードを繰り返す", // ai 2026-06
 
-// include/stringexpand.php, row 10383
+// include/stringexpand.php, row 10384
 "Passwords do not match - please try again." => "パスワードが一致しません。もう一度お試しください。", // ai 2026-06
 
-// include/stringexpand.php, row 10386
+// include/stringexpand.php, row 10387
 "The password must be at least 6 characters long." => "パスワードは6文字以上にしてください。", // ai 2026-06
 
-// include/stringexpand.php, row 10392
+// include/stringexpand.php, row 10393
 "Password changed." => "パスワードを変更しました。", // ai 2026-06
 
-// include/stringexpand.php, row 10394
+// include/stringexpand.php, row 10395
 "An error occurred during password change - please contact: %1." => "パスワード変更中にエラーが発生しました。%1 までご連絡ください。", // ai 2026-06
 
-// include/stringexpand.php, row 11502, 11525
+// include/stringexpand.php, row 11503, 11526
 "Are you sure you want to permanently DELETE this record?" => "このレコードを完全に削除してもよろしいですか？", // ai 2026-06
 
-// include/stringexpand.php, row 11508, 11511, 11531, 11534
+// include/stringexpand.php, row 11509, 11512, 11532, 11535
 // src/Widget/RimWidget.php, row 270
 "edit" => "編集", // ai 2026-06
 
-// include/stringexpand.php, row 11514, 11537
+// include/stringexpand.php, row 11515, 11538
 "back" => "戻る", // ai 2026-06
 
-// include/stringexpand.php, row 11517, 11540
+// include/stringexpand.php, row 11518, 11541
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "ここにファイルをドロップするか、クリックしてアップロード", // ai 2026-06
 
@@ -7406,7 +7600,7 @@ return [
 "username | slice | <b>allslices</b>" => "",
 
 // include/validate.php, row 957
-"Not a valid regular expression" => "",
+"Not a valid regular expression" => "正しい正規表現ではありません", // ai 2026-11
 
 // include/validate.php, row 992
 "This field is required." => "このフィールドは必須です。", // ai 2026-06
@@ -7691,37 +7885,37 @@ return [
 // src/AA_Plannedtask.php, row 457
 "next run" => "次回実行", // ai 2026-06
 
-// src/Api/Controller/FilesController.php, row 54, 75
+// src/Api/Controller/FilesController.php, row 56, 77
 "The file is too big" => "ファイルが大きすぎます", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 67
+// src/Api/Controller/FilesController.php, row 69
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "ここにはファイルをアップロードできません。編集中だった場合は、ログインの有効期限が切れた可能性があります - ページを再読み込みしてください。", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 70
+// src/Api/Controller/FilesController.php, row 72
 "Too many uploads - try again in an hour" => "アップロードが多すぎます - 1 時間後にもう一度お試しください", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 78, 243
+// src/Api/Controller/FilesController.php, row 80, 291
 "No file received" => "ファイルを受信していません", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 86
+// src/Api/Controller/FilesController.php, row 88
 "Files of this type cannot be uploaded here: %1" => "この種類のファイルはここにアップロードできません: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 89
+// src/Api/Controller/FilesController.php, row 91
 "The content of the file does not match its extension %1" => "ファイルの内容が拡張子 %1 と一致しません", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 92
+// src/Api/Controller/FilesController.php, row 94
 "The image is bigger than %1 MB" => "画像が %1 MB を超えています", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 95
+// src/Api/Controller/FilesController.php, row 97
 "The image has more than %1 megapixels" => "画像が %1 メガピクセルを超えています", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 100
+// src/Api/Controller/FilesController.php, row 102
 "The upload directory of the slice is not writable" => "スライスのアップロード用ディレクトリに書き込めません", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 110
+// src/Api/Controller/FilesController.php, row 112
 "The file could not be stored" => "ファイルを保存できませんでした", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 132
+// src/Api/Controller/FilesController.php, row 134
 "Only editors of the slice can browse its files" => "スライスのファイルを閲覧できるのは、そのスライスの編集者だけです", // ai 2026-10
 
 // src/Central/Actionapps.php, row 178
@@ -7740,7 +7934,7 @@ return [
 "Expired - get a token" => "期限切れ - トークンを取得してください", // ai 2026-10
 
 // src/Central/Actionapps.php, row 234
-"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "",
+"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "リモートの AA がログインを拒否しました: ユーザー名かパスワードが違う、二段階ログインのアカウントである（Central はまだコードを送れません）、またはそのユーザーがそこでスーパー管理者ではありません", // ai 2026-11
 
 // src/Central/Actionapps.php, row 236
 "The remote AA gave no login token - update it" => "リモート AA がログイントークンを発行しませんでした - リモート AA を更新してください", // ai 2026-10
@@ -8905,21 +9099,21 @@ return [
 // src/IO/Grabber/FilesFTP.php, row 106
 "Info to get" => "取得する情報", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 75
+// src/IO/Grabber/Form.php, row 76
 // src/IO/Grabber/ObjectForm.php, row 61
 "Form" => "フォーム", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 83
+// src/IO/Grabber/Form.php, row 84
 // src/IO/Grabber/ObjectForm.php, row 69
 "Grabs data POSTed by AA form" => "AAフォームからPOSTされたデータを取得します", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 168
+// src/IO/Grabber/Form.php, row 193
 "No slice found: %1" => "スライスが見付かりません: %1", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 171
+// src/IO/Grabber/Form.php, row 196
 "No file, img_upload, or img_src field type found in slice %1" => "スライス %1 に file、img_upload、img_src のいずれのタイプのフィールドも見付かりません", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 204
+// src/IO/Grabber/Form.php, row 229
 "no POST nor FILES sent" => "POSTもFILESも送信されていません", // ai 2026-06
 
 // src/IO/Grabber/Ical.php, row 43
@@ -8946,13 +9140,13 @@ return [
 // src/IO/Grabber/PohodaStocks.php, row 42
 "Imports stock from POHODA accounting system" => "会計システムPOHODAから在庫をインポートします", // ai 2026-06
 
-// src/IO/Grabber/SOAP.php, row 60
+// src/IO/Grabber/SOAP.php, row 62
 "SOAP" => "",
 
-// src/IO/Grabber/SOAP.php, row 68
+// src/IO/Grabber/SOAP.php, row 70
 "General SOAP request" => "汎用SOAPリクエスト", // ai 2026-06
 
-// src/IO/Grabber/SOAP.php, row 78
+// src/IO/Grabber/SOAP.php, row 80
 "SOAP body request" => "SOAPリクエスト本文", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 82
@@ -10125,627 +10319,623 @@ return [
 "The column that identifies the item; it must be one of the columns" => "項目を識別する列。列のいずれかである必要があります", // ai 2026-10
 
 // src/Isds/Advice.php, row 47
-"The form has expired, or it does not belong to this page. Load the page again." => "",
+"The form has expired, or it does not belong to this page. Load the page again." => "フォームの有効期限が切れたか、このページのものではありません。ページを再読み込みしてください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 49
-"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "送信されたフォームがサーバーの受け付けるサイズ（%1）を超えています。何も保存されていません。添付ファイルを小さくしてください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 50
-"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "送信されたフォームがサーバーの受け付けるサイズを超えています。何も保存されていません。添付ファイルを小さくしてください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 51
-"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "",
+"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "AA の内部エラーにより操作が失敗しました。一部の処理がすでに行われた可能性があります。ページを再読み込みし、状態を確認してからもう一度お試しください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 52
-"Someone else, or another window, is working with this now. Try it again in a while." => "",
+"Someone else, or another window, is working with this now. Try it again in a while." => "他の人または別のウィンドウが現在この処理を行っています。しばらくしてからもう一度お試しください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 53
-"You may not do this." => "",
+"You may not do this." => "この操作は許可されていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 54
-"This sending is not on this page." => "",
+"This sending is not on this page." => "この一括送信はこのページにはありません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 55
-"The sending does not wait for this now." => "",
+"The sending does not wait for this now." => "一括送信は現在この操作を待っていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 56
-"A step of the sending is still running. Try it again in a few minutes." => "",
+"A step of the sending is still running. Try it again in a few minutes." => "一括送信のステップがまだ実行中です。数分後にもう一度お試しください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 57
-"The sending goes on." => "",
+"The sending goes on." => "一括送信を再開しました。", // ai 2026-11
 
 // src/Isds/Advice.php, row 58
-"The sending is stopping - no further message will go." => "",
+"The sending is stopping - no further message will go." => "一括送信を停止しています。これ以上メッセージは送信されません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 59
-"Every message has been sent or tried already - there is nothing left to stop." => "",
+"Every message has been sent or tried already - there is nothing left to stop." => "すべてのメッセージがすでに送信済みか送信を試みました。停止するものはありません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 60
-"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "",
+"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "一括送信を完全に終了しました。送信結果が不明なメッセージは、ご自身で確認してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 61
-"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "",
+"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "一括送信はすでにエラーで停止しているため、「停止」を押しても何も変わりません。「続行」を選ぶか、一括送信を完全に終了できます。終了すると、送信結果が不明なメッセージやまだ読まれていない配達は、以後確認されません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 63
-"The draft is saved." => "",
+"The draft is saved." => "下書きを保存しました。", // ai 2026-11
 
 // src/Isds/Advice.php, row 64
-"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "",
+"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "文書は保存しましたが、受信者の選択は保存されていません: その間に変更されました（別のウィンドウで、または選んだ受信者がなくなりました）。ページには現在保存されている受信者が表示されています。必要に応じて選び直してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 65
-"The copy is ready as a new draft." => "",
+"The copy is ready as a new draft." => "コピーを新しい下書きとして作成しました。", // ai 2026-11
 
 // src/Isds/Advice.php, row 66
-"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "",
+"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "下書きをごみ箱に移動しました。スライスの編集者は「項目管理」で元に戻せます。", // ai 2026-11
 
 // src/Isds/Advice.php, row 67
-"The sending of this campaign has started, so it stays - its messages must remain traceable." => "",
+"The sending of this campaign has started, so it stays - its messages must remain traceable." => "このキャンペーンの一括送信はすでに始まっているため、削除されません。メッセージを追跡できる状態に保つ必要があります。", // ai 2026-11
 
 // src/Isds/Advice.php, row 68
-"The sending left no recipient unsent - there is nothing to copy." => "",
+"The sending left no recipient unsent - there is nothing to copy." => "一括送信で未送信の受信者は残っていません。コピーするものはありません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 69
-"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "",
+"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "この受信者に文書を再送できるのは、メッセージが失敗した場合か、その受信者の前に一括送信が停止した場合だけです。このメッセージは送信済み、これから送信される可能性がある、省略された、または送信されたかどうか不明です。ページで確認できるようになったら（AA がまだ確認中のあいだではなく）確認してください。その後、再送できます。", // ai 2026-11
 
 // src/Isds/Advice.php, row 70
-"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "",
+"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "記録しました: メッセージは送信されていません。新しいキャンペーンでその受信者に文書を再送できます。", // ai 2026-11
 
 // src/Isds/Advice.php, row 71
-"The fate of this message is known - there is nothing to verify." => "",
+"The fate of this message is known - there is nothing to verify." => "このメッセージの送信結果は判明しています。確認するものはありません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 72
-"This message does not belong to the sending." => "",
+"This message does not belong to the sending." => "このメッセージはこの一括送信のものではありません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 73
-"The data box of the recipient is taken from the register." => "",
+"The data box of the recipient is taken from the register." => "受信者のデータボックスを登録簿から取り込みました。", // ai 2026-11
 
 // src/Isds/Advice.php, row 74
-"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "",
+"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "登録簿はこの受信者のデータボックスを、ここで取り込めるほど確実には示していません。受信者スライスの編集者がそのスライスの「登録簿のデータボックス」ページで照合するか、項目を修正してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 75
-"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "",
+"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "データボックス登録簿がダウンロードされていないか、古くなっています。受信者スライスの編集者がそのスライスの「登録簿のデータボックス」ページでダウンロードしてください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 76
-"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "",
+"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "この受信者は登録簿と照合された受信者に含まれていません: 削除された、ごみ箱に移動された、または別の種類に変更されました。ページを再読み込みしてください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 77
-"A page in the test environment changes no recipient." => "",
+"A page in the test environment changes no recipient." => "テスト環境のページでは受信者は変更されません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 78
-"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "",
+"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "一括送信をキューに入れました（受信者: %1）。自動で進むので、ページを閉じてもかまいません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 79
-"The test message has gone (ID %1 in ISDS, reference number %2)." => "",
+"The test message has gone (ID %1 in ISDS, reference number %2)." => "テストメッセージを送信しました（ISDS の ID %1、整理番号 %2）。", // ai 2026-11
 
 // src/Isds/Advice.php, row 80
-"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "",
+"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "テストメッセージが送信されたかどうか不明です。データボックスの送信済みメッセージの中から整理番号 %1 で探してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 81
-"ISDS refused the test message." => "",
+"ISDS refused the test message." => "ISDS がテストメッセージを拒否しました。", // ai 2026-11
 
 // src/Isds/Advice.php, row 82
-"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "",
+"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "このページの別のテストメッセージが送信中か、少し前に停止しました。数分後にもう一度お試しください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 83
-"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "",
+"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "一括送信はすでにキューに入っているか送信済みのため、変更も再送もできません。文書をもう一度送るには、コピーを作成してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 84
-"Choose the recipients and save the draft." => "",
+"Choose the recipients and save the draft." => "受信者を選んで下書きを保存してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 85
-"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "",
+"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "このページでは下書きと一緒に保存された受信者を選べなくなったため、選択は表示されていません。受信者を選び直して下書きを保存してください。新しい選択が保存済みの選択に置き換わります。", // ai 2026-11
 
 // src/Isds/Advice.php, row 86
-"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "",
+"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "%1 を確認した後で受信者数が変わりました。選択を確認して、もう一度送信してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 87
-"There are more recipients than this page may send to (%1). Narrow the choice." => "",
+"There are more recipients than this page may send to (%1). Narrow the choice." => "受信者がこのページで送信できる数（%1）を超えています。選択を絞り込んでください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 88
-"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "",
+"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "文書は誰にも届きません: 選んだ受信者のうち、送信できるデータボックスを持つ人がいません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 89
-"No data box account is set up for this page. Ask the administrator." => "",
+"No data box account is set up for this page. Ask the administrator." => "このページにはデータボックスのアカウントが設定されていません。管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 90
-"This page or its slices are not ready to send. Ask the administrator." => "",
+"This page or its slices are not ready to send. Ask the administrator." => "このページまたはそのスライスは送信の準備ができていません。管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 91
-"The letter cannot go as a data message:" => "",
+"The letter cannot go as a data message:" => "この文書はデータメッセージとして送信できません:", // ai 2026-11
 
 // src/Isds/Advice.php, row 92
-"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "",
+"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "サーバーが現在文書を作成できませんでした。下書きに修正すべき点はありません。後でもう一度試すか、管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "文書と添付ファイルに対してサーバーのメモリが足りません（%1 MB 必要）。管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments. Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments. Ask the administrator." => "文書と添付ファイルに対してサーバーのメモリが足りません。管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 94
-"The database cannot queue a sending safely. Ask the administrator." => "",
+"The database cannot queue a sending safely. Ask the administrator." => "データベースが一括送信を安全にキューに入れられません。管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 95
-"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "",
+"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "ISDS がアカウントのログインを拒否したため、何も送信されていません。ログインの確認を管理者に依頼してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 96
-"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "ISDS がこのサーバーからのログインをブロックしたため、何も送信されていません。新しいパスワードでは解決しません: AA はブロックの1日後に再ログインを試みます。明日もう一度試すか、管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 97
-"The settings of the account are not complete, nothing was sent. Ask the administrator." => "",
+"The settings of the account are not complete, nothing was sent. Ask the administrator." => "アカウントの設定が不完全なため、何も送信されていません。管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 98
-"ISDS does not answer, nothing was sent. Try it again in a while." => "",
+"ISDS does not answer, nothing was sent. Try it again in a while." => "ISDS が応答しないため、何も送信されていません。しばらくしてからもう一度お試しください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 99
-"ISDS refused to tell whose the login of the account is, nothing was sent." => "",
+"ISDS refused to tell whose the login of the account is, nothing was sent." => "ISDS がアカウントのログインの所有者を明かすことを拒否したため、何も送信されていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 100
-"No test data box is set up for this page - in production the administrator of the server sets it." => "",
+"No test data box is set up for this page - in production the administrator of the server sets it." => "このページにはテスト用データボックスが設定されていません。本番環境ではサーバー管理者が設定します。", // ai 2026-11
 
 // src/Isds/Advice.php, row 101
-"Choose one of the test data boxes of this page." => "",
+"Choose one of the test data boxes of this page." => "このページのテスト用データボックスのいずれかを選んでください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 102
-"A test message cannot go to the data box it is sent from. Choose another test box." => "",
+"A test message cannot go to the data box it is sent from. Choose another test box." => "テストメッセージは送信元のデータボックスには送れません。別のテスト用データボックスを選んでください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained until %1. Try it again then." => "",
+"ISDS is being maintained until %1. Try it again then." => "ISDS は %1 までメンテナンス中です。その後もう一度お試しください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained. Try it again later." => "",
+"ISDS is being maintained. Try it again later." => "ISDS はメンテナンス中です。後でもう一度お試しください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 105
-"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "この文書は %2 にこのテスト用データボックスへすでに送信されたか、送信された可能性があります（整理番号 %1）。もう一度テストするには下書きを変更してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 106
-"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "この文書はこのテスト用データボックスへすでに送信されたか、送信された可能性があります（整理番号 %1）。もう一度テストするには下書きを変更してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 107
-"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "",
+"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "このデータボックスへのメッセージは有料（郵便データメッセージ）になり、本番環境ではテストメッセージは無料でしか送れません。官公庁のデータボックスでテストしてください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 108
-"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "",
+"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "メッセージが無料になることを確認できなかったため、何も送信されていません。テスト用データボックスを確認し、しばらくしてからもう一度お試しください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 109
-"The test message went as a paid postal data message." => "",
+"The test message went as a paid postal data message." => "テストメッセージは有料の郵便データメッセージとして送信されました。", // ai 2026-11
 
 // src/Isds/Advice.php, row 110
-"The test message may have cost money: it may have gone as a paid postal data message." => "",
+"The test message may have cost money: it may have gone as a paid postal data message." => "テストメッセージに料金がかかった可能性があります: 有料の郵便データメッセージとして送信された可能性があります。", // ai 2026-11
 
 // src/Isds/Advice.php, row 141
-"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "",
+"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "ISDS が同じステータスで続けて複数のメッセージを拒否したか、一括送信の問い合わせ（アカウントのログインの所有者、または送信済みのメッセージ）を拒否しました。", // ai 2026-11
 
 // src/Isds/Advice.php, row 142
-"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "",
+"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "メッセージが拒否された後は、「続行」でもう1通送信し、ISDS がそれも拒否すると一括送信は再び停止します。問い合わせが拒否された後は、「続行」で再度問い合わせます。", // ai 2026-11
 
 // src/Isds/Advice.php, row 144
-"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "",
+"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "送信結果がまだ不明なメッセージを ISDS が一覧に出すのを待っています。一括送信が自動で確認します。", // ai 2026-11
 
 // src/Isds/Advice.php, row 145
-"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "",
+"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "一括送信は終了しました。ただし、すべてのメッセージが送信されたとは限りません。数値を確認してください。配達状況は定期的に追跡され、次の確認は自動で行われます。", // ai 2026-11
 
 // src/Isds/Advice.php, row 146
-"ISDS is being maintained. The sending waits till the end and goes on by itself." => "",
+"ISDS is being maintained. The sending waits till the end and goes on by itself." => "ISDS はメンテナンス中です。一括送信は終了まで待ち、自動で再開します。", // ai 2026-11
 
 // src/Isds/Advice.php, row 147
-"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "",
+"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "このページのデータボックスのアカウントが、一括送信をキューに入れたときのものと異なります。管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 148
-"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "",
+"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "ISDS が応答しません。AA が自動で再試行します。このために一括送信が停止した場合は、ISDS が応答するようになってから「続行」を選んでください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 149
-"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "",
+"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "ISDS がアカウントのログインを拒否しています。ログインの確認を管理者に依頼し、その後「続行」を選んでください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 150
-"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "ISDS がこのサーバーからのログインをブロックしました。新しいパスワードでは解決しません: 明日「続行」を選ぶか、管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 151
-"The settings of the account are not complete. Ask the administrator." => "",
+"The settings of the account are not complete. Ask the administrator." => "アカウントの設定が不完全です。管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 152
-"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "",
+"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "一括送信のために固定された内容（文書、添付ファイル、受信者）が欠けているか変更されたため、続行できません。管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 153
-"The database cannot record the sending safely. Ask the administrator." => "",
+"The database cannot record the sending safely. Ask the administrator." => "データベースが一括送信を安全に記録できません。管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 154
-"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "",
+"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "一括送信のステップが進まない状態が続きました。「続行」を選んでください。再び停止する場合は管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 155
-"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "一括送信のステップが途中で停止しました。AA が自動で再試行します。このために一括送信が停止した場合は、管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 156
-"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "一括送信の終了を記録できませんでした。AA が自動で再試行します。このために一括送信が停止した場合は、管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 157
-"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "",
+"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "一括送信のステップが AA の内部エラーで失敗しました。「続行」を選んでください。再び失敗する場合は管理者にお問い合わせください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "",
+"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "受信者のデータボックスは有料の郵便データメッセージしか受け付けず、送信元のデータボックスはそれを送信できません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"Test with the data box of an authority." => "",
+"Test with the data box of an authority." => "官公庁のデータボックスでテストしてください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 174
-"The sending data box has been made inaccessible - no message can go from it now." => "",
+"The sending data box has been made inaccessible - no message can go from it now." => "送信元のデータボックスが利用できなくなりました。現在そこからメッセージを送信できません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 175
-"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "",
+"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "件名、「担当者宛」、または添付ファイル名に ISDS が受け付けない文字が含まれています。", // ai 2026-11
 
 // src/Isds/Advice.php, row 183
-"ISDS answered with status %1." => "",
+"ISDS answered with status %1." => "ISDS がステータス %1 を返しました。", // ai 2026-11
 
 // src/Isds/Advice.php, row 193
-"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "件名を保存できません: 最大%1文字で、タブなどの制御文字は使えません。下書きは何も保存されていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 194
-"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "「担当者宛」を保存できません: 最大%1文字で、タブなどの制御文字は使えません。下書きは何も保存されていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 195
-"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "",
+"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "文書の本文を保存できません: %1 を超えているか、正しいテキストではありません。下書きは何も保存されていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 196
-"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "",
+"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "受信者の選択を保存できません: このページではその選択は使えません。下書きは何も保存されていません。もう一度選んで保存してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 197
-"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "",
+"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "受信者の選択を保存できません: 個別に選べるのは最大%1件、個別に除外できるのも同じ数までです。下書きは何も保存されていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 198
-"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "",
+"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "データメッセージには文書のほかに最大%1個の添付ファイルを付けられます。下書きは何も保存されていません。まず一部を削除してください。", // ai 2026-11
 
 // src/Isds/Advice.php, row 199
-"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "ファイル %1 は添付できません: このページで受け付けるファイルの種類は %2 だけです。PDF として保存するか、アーカイブ内のファイルを1つずつ添付してください。下書きは何も保存されていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 200
-"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "ファイル %1 は添付できません: 内容が拡張子の示す種類と一致しません。下書きは何も保存されていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 201
-"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "",
+"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "ファイル %1 は、ここで1ファイルに許される上限（%2）を超えています。下書きは何も保存されていません。添付ファイルと文書の合計は最大 %3 までです。これはテストメッセージで確認できます。", // ai 2026-11
 
 // src/Isds/Advice.php, row 202
-"The file %1 is empty. Nothing of the draft was saved." => "",
+"The file %1 is empty. Nothing of the draft was saved." => "ファイル %1 は空です。下書きは何も保存されていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 203
-"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "",
+"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "ファイル %1 が完全に届きませんでした。もう一度お試しください。下書きは何も保存されていません。", // ai 2026-11
 
 // src/Isds/Advice.php, row 204
-"A value of the form cannot be taken. Load the page again and try it once more." => "",
+"A value of the form cannot be taken. Load the page again and try it once more." => "フォームの値を取り込めません。ページを再読み込みして、もう一度お試しください。", // ai 2026-11
 
 // src/Isds/Gate.php, row 1139
-"The mass sending on this page is not ready - fix this first:" => "",
+"The mass sending on this page is not ready - fix this first:" => "このページの一括送信は準備ができていません。まず次の点を修正してください:", // ai 2026-11
 
 // src/Isds/Gate.php, row 1140
-"Where to fix it:" => "",
+"Where to fix it:" => "修正する場所:", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"Name field" => "",
+"Name field" => "名前フィールド", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"The name the register is searched by when the IČO finds no box" => "",
+"The name the register is searched by when the IČO finds no box" => "IČO でデータボックスが見つからないときに登録簿を検索する名前", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"IČO field" => "",
+"IČO field" => "IČO フィールド", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"The IČO finds the box for sure; without it only names are matched, and a person checks those" => "",
+"The IČO finds the box for sure; without it only names are matched, and a person checks those" => "IČO ならデータボックスを確実に見つけられます。IČO がない場合は名前だけで照合し、人が確認します", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"Data box field" => "",
+"Data box field" => "データボックスのフィールド", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"The field the data box id is written to - the only field the pairing changes" => "",
+"The field the data box id is written to - the only field the pairing changes" => "データボックス ID を書き込むフィールド。照合で変更されるのはこのフィールドだけです", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"Type field" => "",
+"Type field" => "種類フィールド", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"The type of the item, needed for the two lists below" => "",
+"The type of the item, needed for the two lists below" => "項目の種類。下の2つの一覧に必要です", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Types to pair" => "",
+"Types to pair" => "照合する種類", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Only items of these types are paired; none = all items" => "",
+"Only items of these types are paired; none = all items" => "これらの種類の項目だけを照合します。指定なし = すべての項目", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Types of city districts" => "",
+"Types of city districts" => "市の区の種類", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "",
+"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "これらの種類の項目は市の区のデータボックスと、それ以外は市町村のデータボックスと照合します", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field with the name" => "",
+"Choose the field with the name" => "名前のフィールドを選んでください", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field the data box is written to" => "",
+"Choose the field the data box is written to" => "データボックスを書き込むフィールドを選んでください", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 132
-"The slice has no field %1" => "",
+"The slice has no field %1" => "スライスにフィールド %1 がありません", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 139
-"The data box needs a field of its own - writing it would overwrite the name, IČO or type" => "",
+"The data box needs a field of its own - writing it would overwrite the name, IČO or type" => "データボックスには専用のフィールドが必要です。書き込むと名前、IČO、種類が上書きされてしまいます", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 142
-"The lists of types need the type field" => "",
+"The lists of types need the type field" => "種類の一覧には種類フィールドが必要です", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 147
-"The types of city districts must be among the types to pair too: %1" => "",
+"The types of city districts must be among the types to pair too: %1" => "市の区の種類は、照合する種類にも含める必要があります: %1", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 160
-"The field %1 is protected - it is neither shown nor written here" => "",
+"The field %1 is protected - it is neither shown nor written here" => "フィールド %1 は保護されています。ここでは表示も書き込みもしません", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 164
-"The data box cannot be written to %1, a column of the item table" => "",
+"The data box cannot be written to %1, a column of the item table" => "データボックスを item テーブルの列 %1 には書き込めません", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 86
-"Changed" => "",
+"Changed" => "変更あり", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 87
-"Same" => "",
+"Same" => "変更なし", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 88
 // src/Isds/Registry/Page.php, row 567
-"Not found" => "",
+"Not found" => "見つかりません", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 89
-"Several candidates" => "",
+"Several candidates" => "複数の候補", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 151
-"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by IČO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "",
+"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by IČO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "このページは、公開されているデータボックス登録簿から各項目のデータボックスを探し、項目に書き込みます。書き込まれるのはチェックした行だけで、変更されるのはデータボックスのフィールドだけです。IČO で見つかったデータボックスは最初からチェックされています。名前で見つかったデータボックスは候補にすぎないため、名前を比べてご自身でチェックしてください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 169
-"The form sent values this page does not send. Reload the page and try again." => "",
+"The form sent values this page does not send. Reload the page and try again." => "このページが送信しない値がフォームから送られました。ページを再読み込みして、もう一度お試しください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 324
-"You do not have permissions to do this in this slice." => "",
+"You do not have permissions to do this in this slice." => "このスライスでこの操作を行う許可がありません。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 325
-"The settings are saved." => "",
+"The settings are saved." => "設定を保存しました。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 327
-"The register is downloaded." => "",
+"The register is downloaded." => "登録簿をダウンロードしました。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 329
-"The register is being downloaded right now. Reload the page in a minute." => "",
+"The register is being downloaded right now. Reload the page in a minute." => "登録簿を現在ダウンロード中です。1分後にページを再読み込みしてください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 330
-"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "登録簿をダウンロードできませんでした。以前の登録簿を引き続き使用します。後でもう一度お試しください。詳細は管理者が AA のログ（種類 %1）で確認できます。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 331
-"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "登録簿はダウンロードされましたが、AA がダウンロードを記録できなかったため、ダウンロードが成功するまで登録簿は使用できません。後でもう一度お試しください。詳細は管理者が AA のログ（種類 %1）で確認できます。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 332
-"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "",
+"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "行を確認した後で登録簿または照合の設定が変わったため、何も書き込まれていません。下の行をもう一度確認してから書き込んでください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 333
-"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "登録簿のコピーを読み込めないため、何も書き込まれていません。詳細は管理者が AA のログ（種類 %1）で確認できます。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 334
-"Nothing was written. Download the register again." => "",
+"Nothing was written. Download the register again." => "何も書き込まれていません。登録簿をもう一度ダウンロードしてください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 335
-"Choose the fields of the pairing first." => "",
+"Choose the fields of the pairing first." => "まず照合のフィールドを選んでください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 336
-"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "",
+"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "照合の設定がスライスのフィールドと合わなくなったため、何も書き込まれていません: %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 337
-"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "",
+"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "エラーで書き込みが停止しました。それまでに書き込まれた行はそのままです。下の一覧は項目の現在の状態を示しています。詳細は管理者が AA のログ（種類 %1）で確認できます。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 347
-"The last download attempt was at %1. Another one is possible from %2." => "",
+"The last download attempt was at %1. Another one is possible from %2." => "前回のダウンロード試行は %1 でした。次は %2 から可能です。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 355
-"Data boxes written: %1." => "",
+"Data boxes written: %1." => "書き込んだデータボックス: %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 356
-"Nothing was written: no row was ticked, or the ticked ones have their box already." => "",
+"Nothing was written: no row was ticked, or the ticked ones have their box already." => "何も書き込まれていません: チェックされた行がないか、チェックした行にはすでにデータボックスがあります。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 358
-"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "",
+"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "チェックした行のうち、その間に変更されたため書き込まれなかった行: %1。下でもう一度確認してください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 361
-"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "",
+"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "次の書き込みに残ったチェック済みの行: %1。1回の書き込みは最大 %2 行です。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 364
-"These items were not written:" => "",
+"These items were not written:" => "次の項目は書き込まれませんでした:", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 386, 465
-"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "登録簿のコピーを読み込めません。詳細は管理者が AA のログ（種類 %1）で確認できます。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet. Download it to see the report." => "",
+"The register has not been downloaded yet. Download it to see the report." => "登録簿はまだダウンロードされていません。一覧を見るにはダウンロードしてください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet." => "",
+"The register has not been downloaded yet." => "登録簿はまだダウンロードされていません。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Download the register again." => "",
+"Download the register again." => "登録簿をもう一度ダウンロードしてください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Ask someone who manages the settings to download the register again." => "",
+"Ask someone who manages the settings to download the register again." => "設定を管理している人に、登録簿をもう一度ダウンロードするよう依頼してください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 392
-"Size: %1 MB." => "",
+"Size: %1 MB." => "サイズ: %1 MB", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 394
-"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "",
+"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "登録簿が %1 日より古くなっています。書き込む前にもう一度ダウンロードしてください。官公庁には新しいデータボックスが追加され、統合も行われます。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 398
-"Download the register now" => "",
+"Download the register now" => "今すぐ登録簿をダウンロード", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 399
-"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "",
+"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "官公庁のデータボックスの公開登録簿で、約 17 MB です。ダウンロードには最大1分かかります。この AA のすべてのスライスが同じコピーを使用します。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 401
-"Register of data boxes" => "",
+"Register of data boxes" => "データボックス登録簿", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"AA has no record of downloading this copy of the register" => "",
+"AA has no record of downloading this copy of the register" => "AA にはこの登録簿のコピーをダウンロードした記録がありません", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"The register of data boxes is not the one AA downloaded" => "",
+"The register of data boxes is not the one AA downloaded" => "このデータボックス登録簿は AA がダウンロードしたものではありません", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 426
-"Downloaded: %1 (today)." => "",
+"Downloaded: %1 (today)." => "ダウンロード日時: %1（今日）", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 427
-"Downloaded: %1 (yesterday)." => "",
+"Downloaded: %1 (yesterday)." => "ダウンロード日時: %1（昨日）", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 428
-"Downloaded: %1." => "",
+"Downloaded: %1." => "ダウンロード日時: %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 469
-"Items and their data boxes" => "",
+"Items and their data boxes" => "項目とそのデータボックス", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 482
-"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "",
+"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "照合の設定がスライスのフィールドと合わなくなりました: %1。下の設定でフィールドを選び直してください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 485
-"The slice has no items to pair." => "",
+"The slice has no items to pair." => "このスライスには照合する項目がありません。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 490
-"No row has this status." => "",
+"No row has this status." => "このステータスの行はありません。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 510
 "Write" => "書き込み", // ai 2026-06
 
 // src/Isds/Registry/Page.php, row 514
-"Stored data box" => "",
+"Stored data box" => "保存済みのデータボックス", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 514
-"Data box in the register" => "",
+"Data box in the register" => "登録簿のデータボックス", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 520
-"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "",
+"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "1回の書き込みは最大 %1 行で、最初からチェックされるのもその数までです。残りはその後で書き込んでください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 523
-"Write the ticked data boxes" => "",
+"Write the ticked data boxes" => "チェックしたデータボックスを書き込む", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 524
-"Writes only the data box field of the ticked items. Their history records the change." => "",
+"Writes only the data box field of the ticked items. Their history records the change." => "チェックした項目のデータボックスのフィールドだけを書き込みます。変更は項目の履歴に記録されます。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 536
-"Show the rows of" => "",
+"Show the rows of" => "表示する行のステータス", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 542
-"(no name)" => "",
+"(no name)" => "（名前なし）", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 546
-"Write the data box %1 into %2" => "",
-
-// src/Isds/Registry/Page.php, row 555, 653
-// src/Optimize/MissCacheRouting.php, row 98, 129
-"none" => "なし", // ai 2026-10
+"Write the data box %1 into %2" => "データボックス %1 を %2 に書き込む", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 571
-"IČO %1" => "",
+"IČO %1" => "IČO %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 580
-"by IČO" => "",
+"by IČO" => "IČO による", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 581
-"by name, check it" => "",
+"by name, check it" => "名前による（要確認）", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 585
-"IČO of the item %1, of the box %2" => "",
+"IČO of the item %1, of the box %2" => "項目の IČO %1、データボックスの IČO %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 588
-"Another item has or would get this data box too. Check that it is not one place twice." => "",
+"Another item has or would get this data box too. Check that it is not one place twice." => "別の項目にもこのデータボックスがある、または設定される予定です。同じ場所が二重になっていないか確認してください。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 599
-"Settings of the pairing" => "",
+"Settings of the pairing" => "照合の設定", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 616
-"Saving changes only these settings, never the items." => "",
+"Saving changes only these settings, never the items." => "保存で変更されるのはこの設定だけで、項目は変更されません。", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"Choose a field" => "",
+"Choose a field" => "フィールドを選択", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"None" => "",
+"None" => "なし", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 639
-"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "",
+"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "このスライスではまだ照合が設定されていません。スライスのフィールドを変更できる人がここで設定します。", // ai 2026-11
 
 // src/Isds/Registry/Sync.php, row 450
-"The item was not stored" => "",
+"The item was not stored" => "項目は保存されませんでした", // ai 2026-11
 
 // src/Isds/SendQueue.php, row 448
-"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "",
+"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "キャンペーンスライスに文書のファイル用のアップロードディレクトリがありません。サーバーの管理者が設定します。", // ai 2026-11
 
 // src/Isds/Setup.php, row 107
-"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "",
+"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "一括送信の設定が JSON オブジェクトではありません。{jsonasoc:...} で記述してください", // ai 2026-11
 
 // src/Isds/Setup.php, row 115
-"Unknown settings of the mass sending: %1 - the settings are %2" => "",
+"Unknown settings of the mass sending: %1 - the settings are %2" => "一括送信の不明な設定: %1 - 使用できる設定は %2 です", // ai 2026-11
 
 // src/Isds/Setup.php, row 130
-"default_types names types that are not among types: %1" => "",
+"default_types names types that are not among types: %1" => "default_types に types にない種類が指定されています: %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 133
-"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "",
+"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "environment に指定できるのは「%1」のみです。本番環境を使うかどうかは misc/datovka/datovka_conf.php が決めます", // ai 2026-11
 
 // src/Isds/Setup.php, row 136
-"Set letterhead to a text" => "",
+"Set letterhead to a text" => "letterhead にテキストを設定してください", // ai 2026-11
 
 // src/Isds/Setup.php, row 146
-"The settings of data boxes cannot be read now - ask the administrator of the server" => "",
+"The settings of data boxes cannot be read now - ask the administrator of the server" => "データボックスの設定を現在読み込めません。サーバーの管理者にお問い合わせください", // ai 2026-11
 
 // src/Isds/Setup.php, row 240
-"Set %1 to the id of a slice - 32 hexadecimal digits" => "",
+"Set %1 to the id of a slice - 32 hexadecimal digits" => "%1 にスライスの ID（16進数32桁）を設定してください", // ai 2026-11
 
 // src/Isds/Setup.php, row 258
-"Set %1 to the id of a field - 16 characters like text...........1" => "",
+"Set %1 to the id of a field - 16 characters like text...........1" => "%1 にフィールドの ID（text...........1 のような16文字）を設定してください", // ai 2026-11
 
 // src/Isds/Setup.php, row 283
-"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "",
+"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "types に、提供する項目の種類をそれぞれのラベル付きでオブジェクトとして設定してください: {jsonasoc:<type>:<label>:...}", // ai 2026-11
 
 // src/Isds/Setup.php, row 288
-"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "",
+"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "types の項目の種類に使えるのは、文字、数字、スペースと記号 - _ . : のみです: %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 303
-"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "",
+"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "%1 にテキスト、またはテキストのリストを設定してください: [\"...\",\"...\"]", // ai 2026-11
 
 // src/Isds/Setup.php, row 321
-"test_box: %1 is not the id of a data box - 7 letters or digits" => "",
+"test_box: %1 is not the id of a data box - 7 letters or digits" => "test_box: %1 はデータボックスの ID（英数字7文字）ではありません", // ai 2026-11
 
 // src/Isds/Setup.php, row 351
-"Set max_recipients to a number from 1 to %1" => "",
+"Set max_recipients to a number from 1 to %1" => "max_recipients に 1 から %1 までの数値を設定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 67
-"The campaign slice and the message slice must be two slices" => "",
+"The campaign slice and the message slice must be two slices" => "キャンペーンスライスとメッセージスライスは別々のスライスでなければなりません", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 94
-"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "",
+"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "サイト「%1」はごみ箱にあります。ごみ箱から復元するか、別のサイトを指定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 95
-"There is no site %1" => "",
+"There is no site %1" => "サイト %1 は存在しません", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 99
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "サイト「%1」は読者管理スライスの読者しかログインできないため、誰も送信権限を得られません。サイトの設定で「利用者ログイン用データベース」を「%2」に設定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 140
-"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "",
+"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "スライス「%1」には閲覧用パスワードがあるため、ページが受信者を読み込めません。スライスの設定で「閲覧用パスワード」を削除するか、公開スライスを指定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 144
-"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "",
+"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "スライス「%1」にデータボックスの設定がありません。そのスライスの「登録簿のデータボックス」ページでフィールドを設定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 151
-"Slice \"%1\", its settings of data boxes: %2" => "",
+"Slice \"%1\", its settings of data boxes: %2" => "スライス「%1」のデータボックス設定: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 154
-"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "",
+"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "スライス「%1」: データボックス設定で「種類」フィールドを選択してください。受信者は種類で選ばれます", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 156
-"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "",
+"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "スライス「%1」は種類 %2 の項目をデータボックスと照合していません。照合する「種類」だけを提供してください: %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 162
-"Slice \"%1\" has no field %2 - name the field that tells a member" => "",
+"Slice \"%1\" has no field %2 - name the field that tells a member" => "スライス「%1」にフィールド %2 がありません。会員を示すフィールドを指定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 164
-"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "",
+"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "スライス「%2」のフィールド %1 は保護されています。会員を示すフィールドを指定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 179
 // src/Optimize/CheckSiteStateFiles.php, row 72
@@ -10753,58 +10943,58 @@ return [
 "Site settings" => "サイトの設定", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 225
-"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "",
+"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "スライス「%1」はごみ箱にあります。ごみ箱から復元するか、別のスライスを指定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 226
-"There is no slice %1" => "",
+"There is no slice %1" => "スライス %1 は存在しません", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 237
-"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "",
+"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "サイト「%1」はスライス %2 を使用していません。サイトの設定で「使用モジュール」にスライスを追加してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 250
-"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "",
+"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "スライス「%1」に閲覧用パスワードがありません。スライスの設定で「閲覧用パスワード」を入力してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 254
-"Close slice \"%1\" - set in its settings %2" => "",
+"Close slice \"%1\" - set in its settings %2" => "スライス「%1」を非公開にしてください。設定で次のように設定します: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 257
-"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "スライス「%1」はどのスライスにも項目のインポートを許可しています。「ノード内フィード」ページで「すべてのスライスへのエクスポートを許可」をオフにしてください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 274
-"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "スライス「%1」は他のスライスに項目のインポートを許可しています。「ノード内フィード」ページでそれらを「エクスポート禁止」に移動してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 277
-"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "",
+"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "スライス「%1」の項目は他のスライスにフィードされています。「ノード内フィード」ページの「現在のエクスポート先」に表示されるスライスでインポートを停止してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 281
-"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "",
+"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "スライス「%1」は他のスライスから項目をインポートしています。「ノード内フィード」ページでそれらを「インポートしない」に移動してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 284
-"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "",
+"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "スライス「%1」は項目を「メール通知」のアドレスにメールで送信しています。そこでアドレスを削除してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 303
-"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "スライス「%1」は項目を保存するたびにフィールド %2 をテンプレートで計算します。各フィールドの設定で「挿入」を「%3」に設定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 318
-"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "",
+"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "スライス「%1」と「%2」の順序が逆です。キャンペーンスライスを先に指定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 330
-"Slice \"%1\" lacks fields of a campaign slice: %2" => "",
+"Slice \"%1\" lacks fields of a campaign slice: %2" => "スライス「%1」にキャンペーンスライスのフィールドがありません: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 331
-"Slice \"%1\" lacks fields of a message slice: %2" => "",
+"Slice \"%1\" lacks fields of a message slice: %2" => "スライス「%1」にメッセージスライスのフィールドがありません: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 337
-"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "",
+"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "スライス「%1」: フィールド %2 を「数値」として保存してください（各フィールドの設定の「保存形式」）", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 343
-"Slice \"%1\": set the Default of the field %2 to %3" => "",
+"Slice \"%1\": set the Default of the field %2 to %3" => "スライス「%1」: フィールド %2 の「省略値」を %3 に設定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 382
-"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "スライス「%1」では、送信処理がフィールド %2 に保存する内容が変更されるおそれがあります。各フィールドの設定で「挿入」を「%3」に設定してください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
-"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "",
+"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "スライス「%1」は、送信処理がフィールド %2 に保存する内容を定数に追加します。各フィールドの設定で「%3」をオフにしてください", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
 // src/Widget/Widget.php, row 786
@@ -10890,12 +11080,12 @@ return [
 
 // src/Manageraction/Central_DeleteTrash.php, row 31
 // src/Manageraction/Item_DeleteTrash.php, row 34
-// src/Manageraction/Polls_DeleteTrash.php, row 71
+// src/Manageraction/Polls_DeleteTrash.php, row 73
 "Remove (delete from database)" => "削除(データベースから削除)", // ai 2026-06
 
 // src/Manageraction/Central_DeleteTrash.php, row 38
 // src/Manageraction/Item_DeleteTrash.php, row 43
-// src/Manageraction/Taskmanager_Execute.php, row 24
+// src/Manageraction/Taskmanager_Execute.php, row 26
 "You do not have permissions to remove items" => "項目を削除する許可がありません", // ai 2026-06
 
 // src/Manageraction/Central_Linkcheck.php, row 17
@@ -10907,28 +11097,28 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 30
 "Status code" => "ステータスコード", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 26
-// src/Manageraction/Item_MoveItem.php, row 29
-// src/Manageraction/Links_Move.php, row 26
-// src/Manageraction/Polls_MoveItem.php, row 29
-"Move to Active" => "活動中へ移動",
-
-// src/Manageraction/Central_MoveItem.php, row 27
-// src/Manageraction/Item_MoveItem.php, row 30
-// src/Manageraction/Links_Move.php, row 27
-// src/Manageraction/Polls_MoveItem.php, row 30
-"Move to Holding bin" => "保留箱へ移動",
-
 // src/Manageraction/Central_MoveItem.php, row 28
 // src/Manageraction/Item_MoveItem.php, row 31
 // src/Manageraction/Links_Move.php, row 28
 // src/Manageraction/Polls_MoveItem.php, row 31
+"Move to Active" => "活動中へ移動",
+
+// src/Manageraction/Central_MoveItem.php, row 29
+// src/Manageraction/Item_MoveItem.php, row 32
+// src/Manageraction/Links_Move.php, row 29
+// src/Manageraction/Polls_MoveItem.php, row 32
+"Move to Holding bin" => "保留箱へ移動",
+
+// src/Manageraction/Central_MoveItem.php, row 30
+// src/Manageraction/Item_MoveItem.php, row 33
+// src/Manageraction/Links_Move.php, row 30
+// src/Manageraction/Polls_MoveItem.php, row 33
 "Move to Trash" => "ゴミ箱に移動",
 
-// src/Manageraction/Central_MoveItem.php, row 41
+// src/Manageraction/Central_MoveItem.php, row 43
 "Activate" => "有効化", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 42
+// src/Manageraction/Central_MoveItem.php, row 44
 "Hold" => "保留箱へ", // ai 2026-06
 
 // src/Manageraction/Central_OptimizeType.php, row 34
@@ -10938,7 +11128,7 @@ return [
 "Error: %1" => "エラー: %1", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 19
-// src/Manageraction/Object_Delete.php, row 17
+// src/Manageraction/Object_Delete.php, row 19
 // src/Manageraction/Table_Row_Delete.php, row 16
 "Delete row" => "行を削除", // ai 2026-06
 
@@ -10947,11 +11137,11 @@ return [
 
 // src/Manageraction/Import_Delete.php, row 38
 // src/Manageraction/Import_Run.php, row 42
-// src/Manageraction/Object_Delete.php, row 43
-// src/Manageraction/Object_Move2slice.php, row 50
+// src/Manageraction/Object_Delete.php, row 45
+// src/Manageraction/Object_Move2slice.php, row 52
 // src/Manageraction/Plannedtask_Runnow.php, row 41
-// src/Manageraction/Polls_DeleteTrash.php, row 83
-// src/Manageraction/Polls_MoveItem.php, row 41
+// src/Manageraction/Polls_DeleteTrash.php, row 85
+// src/Manageraction/Polls_MoveItem.php, row 43
 // src/Manageraction/Table_Row_Delete.php, row 40
 "This action does not work on this page." => "この操作はこのページでは使えません。", // ai 2026-10
 
@@ -10959,7 +11149,7 @@ return [
 "Some of the selected imports were not deleted." => "選択したインポートの一部は削除されませんでした。", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 64
-// src/Manageraction/Object_Delete.php, row 51
+// src/Manageraction/Object_Delete.php, row 53
 "Some of the selected objects were not deleted - they belong to a module you can not change them in." => "選択したオブジェクトの一部は削除されませんでした - 変更する許可のないモジュールに属しています。", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 23
@@ -10986,19 +11176,19 @@ return [
 // src/Manageraction/Import_Run.php, row 101
 "Imports not started: %1 (%2). The import detail tells more." => "開始しなかったインポート: %1 (%2)。詳しくはインポートの詳細を見てください。", // ai 2026-10
 
-// src/Manageraction/Item_Duplicate.php, row 23
+// src/Manageraction/Item_Duplicate.php, row 25
 "Duplicate Item" => "項目を複製", // ai 2026-06
 
-// src/Manageraction/Item_Email.php, row 13
+// src/Manageraction/Item_Email.php, row 15
 "Send email" => "E-メールを送信", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 31
 "Export to slice" => "スライスへエクスポート", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 38, 58
-// src/Manageraction/Item_Move2Slice.php, row 85
-// src/Manageraction/Object_Move2slice.php, row 33
-// src/Manageraction/View_Move2slice.php, row 31
+// src/Manageraction/Item_Move2Slice.php, row 87
+// src/Manageraction/Object_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 33
 "No slice selected" => "スライスが選択されていません", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 50
@@ -11010,20 +11200,20 @@ return [
 // src/Manageraction/Item_Feed.php, row 68
 "Some of the selected items were not exported - they are not items of this slice." => "選択した項目の一部はエクスポートされませんでした - このスライスの項目ではありません。", // ai 2026-10
 
-// src/Manageraction/Item_Modifycontent.php, row 13
+// src/Manageraction/Item_Modifycontent.php, row 15
 "Modify content" => "内容を変更", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 37
-// src/Manageraction/Object_Move2slice.php, row 25
+// src/Manageraction/Item_Move2Slice.php, row 39
+// src/Manageraction/Object_Move2slice.php, row 27
 "Move to another slice" => "別のスライスへ移動", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 75
+// src/Manageraction/Item_Move2Slice.php, row 77
 "Move to slice" => "スライスへ移動", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 89
+// src/Manageraction/Item_Move2Slice.php, row 91
 "Items can be moved only to a slice." => "項目はスライスにのみ移動できます。", // ai 2026-10
 
-// src/Manageraction/Item_Move2Slice.php, row 93
+// src/Manageraction/Item_Move2Slice.php, row 95
 "You do not have permissions to move items" => "項目を移動する許可がありません", // ai 2026-06
 
 // src/Manageraction/Links_Add2Cat.php, row 21
@@ -11032,32 +11222,32 @@ return [
 // src/Manageraction/Links_Check.php, row 25
 "Check Link" => "リンクをチェック", // ai 2026-06
 
-// src/Manageraction/Links_Delete.php, row 20
+// src/Manageraction/Links_Delete.php, row 22
 "Remove from category" => "分類から削除", // ai 2026-06
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Highlight Link" => "リンクを強調表示", // ai 2026-06
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Dehighlight Link" => "リンクの強調表示を解除", // ai 2026-06
 
 // src/Manageraction/Links_Move2Cat.php, row 21
 "Move to category" => "分類へ移動", // ai 2026-06
 
-// src/Manageraction/Object_Delete.php, row 26
+// src/Manageraction/Object_Delete.php, row 28
 // src/Manageraction/Table_Row_Delete.php, row 25
 "Do you really want to delete this row?" => "本当にこの行を削除しますか？", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 37
+// src/Manageraction/Object_Move2slice.php, row 39
 "Tasks can be moved only to a slice." => "タスクはスライスにのみ移動できます。", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 41
+// src/Manageraction/Object_Move2slice.php, row 43
 "You do not have permissions to move it" => "移動する許可がありません", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 54
+// src/Manageraction/Object_Move2slice.php, row 56
 "Some of the selected objects were not moved - they belong to a module you can not change them in." => "選択したオブジェクトの一部は移動されませんでした - 変更する許可のないモジュールに属しています。", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 60
+// src/Manageraction/Object_Move2slice.php, row 62
 "The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "タスク %1 は移動されませんでした - {import} を含むタスクをそこへ移動できるのは、スライスのフィードを管理する利用者だけです。", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 20, 27
@@ -11075,34 +11265,34 @@ return [
 // src/Manageraction/Plannedtask_Runnow.php, row 60
 "The task %1 is already waiting in the queue." => "タスク %1 はすでにキューで待機しています。", // ai 2026-10
 
-// src/Manageraction/Polls_DeleteTrash.php, row 78
+// src/Manageraction/Polls_DeleteTrash.php, row 80
 "You do not have permissions to remove polls" => "アンケートを削除する許可がありません", // ai 2026-06
 
-// src/Manageraction/Polls_DeleteTrash.php, row 97
+// src/Manageraction/Polls_DeleteTrash.php, row 99
 "Some of the selected polls were not removed - they belong to another module." => "選択したアンケートの一部は削除されませんでした - 別のモジュールに属しています。", // ai 2026-10
 
-// src/Manageraction/Polls_MoveItem.php, row 47
+// src/Manageraction/Polls_MoveItem.php, row 49
 "Some of the selected polls were not moved - they belong to another module." => "選択したアンケートの一部は移動されませんでした - 別のモジュールに属しています。", // ai 2026-10
 
 // src/Manageraction/Table_Row_Delete.php, row 54
 "Some of the selected rows were not deleted - they belong to another module." => "選択した行の一部は削除されませんでした - 別のモジュールに属しています。", // ai 2026-10
 
-// src/Manageraction/Taskmanager_Delete.php, row 15
+// src/Manageraction/Taskmanager_Delete.php, row 17
 "Remove (cancel task)" => "削除(タスクを中止)", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Delete.php, row 24
+// src/Manageraction/Taskmanager_Delete.php, row 26
 "You do not have permissions to remove tasks" => "タスクを削除する許可がありません", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Execute.php, row 15
+// src/Manageraction/Taskmanager_Execute.php, row 17
 "Execute" => "実行", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 23
+// src/Manageraction/View_Move2slice.php, row 25
 "Move view to another slice" => "ビューを別のスライスへ移動", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 37
 "Views can be moved only to a slice." => "ビューはスライスにのみ移動できます。", // ai 2026-10
 
-// src/Manageraction/View_Move2slice.php, row 39
+// src/Manageraction/View_Move2slice.php, row 41
 "You do not have permissions to move views" => "ビューを移動する許可がありません", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 25
@@ -11135,25 +11325,25 @@ return [
 // src/Optimize/AbstractOptimizeById.php, row 42
 "We found %1 problems" => "%1件の問題が見付かりました", // ai 2026-06
 
-// src/Optimize/AddAddressFieldTemplate.php, row 10
+// src/Optimize/AddAddressFieldTemplate.php, row 12
 "Add address field template" => "addressフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddAuthGroupFieldTemplate.php, row 10
+// src/Optimize/AddAuthGroupFieldTemplate.php, row 12
 "Add auth_group...... field template" => "auth_group......フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddBitsetFieldTemplate.php, row 10
+// src/Optimize/AddBitsetFieldTemplate.php, row 12
 "Add bitset (flags, bitfield) field template" => "bitset(フラグ、ビットフィールド)フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddCityFieldTemplate.php, row 10
+// src/Optimize/AddCityFieldTemplate.php, row 12
 "Add city field template" => "cityフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddCodeFieldTemplate.php, row 10
+// src/Optimize/AddCodeFieldTemplate.php, row 12
 "Add code field template" => "codeフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddComputedNumFieldTemplate.php, row 10
+// src/Optimize/AddComputedNumFieldTemplate.php, row 12
 "Add computed_num field template" => "computed_numフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddComputedTxtFieldTemplate.php, row 10
+// src/Optimize/AddComputedTxtFieldTemplate.php, row 12
 "Add computed_txt field template" => "computed_txtフィールドテンプレートを追加", // ai 2026-06
 
 // src/Optimize/AddContentFieldIndex.php, row 25
@@ -11174,37 +11364,37 @@ return [
 // src/Optimize/AddContentFieldIndex.php, row 67
 "The index %1 of the content table changed" => "content テーブルのインデックス %1 を変更しました", // ai 2026-10
 
-// src/Optimize/AddCountryFieldTemplate.php, row 10
+// src/Optimize/AddCountryFieldTemplate.php, row 12
 "Add country field template" => "countryフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddDateFieldTemplate.php, row 10
+// src/Optimize/AddDateFieldTemplate.php, row 12
 "Add date field template" => "dateフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 18
+// src/Optimize/AddDurationLog.php, row 20
 "Add hit duration log feature" => "ヒット処理時間ログ機能を追加", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 26
+// src/Optimize/AddDurationLog.php, row 28
 "Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit" => "hit_archiveテーブルに'duration'列を追加します。ヒットのduration/cache/not_modifiedレコードが保存されます", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 47
+// src/Optimize/AddDurationLog.php, row 49
 "The \"duration\" column missing in hit_archive table" => "hit_archiveテーブルに\"duration\"列がありません", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 50
+// src/Optimize/AddDurationLog.php, row 52
 "OK - The \"duration\" column found in hit_archive table. Duration evaluated from %1" => "OK - hit_archiveテーブルに\"duration\"列が見付かりました。処理時間は%1から評価されます", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 60
+// src/Optimize/AddDurationLog.php, row 62
 "Table already has the column \"duration\"" => "テーブルには既に\"duration\"列があります", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 63
+// src/Optimize/AddDurationLog.php, row 65
 "Do alter table hit_archive to add duration column" => "hit_archiveテーブルをalterしてduration列を追加します", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 65
+// src/Optimize/AddDurationLog.php, row 67
 "Column added" => "列を追加しました", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 72
+// src/Optimize/AddDurationLog.php, row 74
 "Do alter table hit_archive to remove duration column - it disables the feature" => "hit_archiveテーブルをalterしてduration列を削除します - この機能が無効になります", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 74
+// src/Optimize/AddDurationLog.php, row 76
 "Column deleted" => "列を削除しました", // ai 2026-06
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 14
@@ -11220,87 +11410,108 @@ return [
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 77
 "The e-mail templates updated" => "E-メールテンプレートを更新しました", // ai 2026-06
 
-// src/Optimize/AddFaxFieldTemplate.php, row 10
+// src/Optimize/AddFaxFieldTemplate.php, row 12
 "Add fax field template" => "faxフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddHit1FieldTemplate.php, row 10
+// src/Optimize/AddHit1FieldTemplate.php, row 12
 "Add hit_1 field template" => "hit_1フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddHit30FieldTemplate.php, row 10
+// src/Optimize/AddHit30FieldTemplate.php, row 12
 "Add hit_30 field template" => "hit_30フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddHit7FieldTemplate.php, row 10
+// src/Optimize/AddHit7FieldTemplate.php, row 12
 "Add hit_7 field template" => "hit_7フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddIntegerFieldTemplate.php, row 10
+// src/Optimize/AddIntegerFieldTemplate.php, row 12
 "Add integer field template" => "integerフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddIpBannedFieldTemplate.php, row 10
+// src/Optimize/AddIpBannedFieldTemplate.php, row 12
 "Add _ip_banned field template" => "_ip_bannedフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddIpFieldTemplate.php, row 10
+// src/Optimize/AddIpFieldTemplate.php, row 12
 "Add ip field template" => "ipフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddLocationFieldTemplate.php, row 10
+// src/Optimize/AddLocationFieldTemplate.php, row 12
 "Add location field template" => "locationフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddMailListsFieldTemplate.php, row 10
+// src/Optimize/AddMailListsFieldTemplate.php, row 12
 "Add mail_lists field template" => "mail_listsフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddMandatoryDiscApp.php, row 10
-// src/Optimize/AddMandatoryDiscCount.php, row 10
-// src/Optimize/AddMandatoryDisplayCount.php, row 10
-// src/Optimize/AddMandatoryId.php, row 10
-// src/Optimize/AddMandatoryShortId.php, row 10
-// src/Optimize/AddMandatoryStatusCode.php, row 13
+// src/Optimize/AddMandatoryDiscApp.php, row 12
+// src/Optimize/AddMandatoryDiscCount.php, row 12
+// src/Optimize/AddMandatoryDisplayCount.php, row 12
+// src/Optimize/AddMandatoryId.php, row 12
+// src/Optimize/AddMandatoryShortId.php, row 12
+// src/Optimize/AddMandatoryStatusCode.php, row 15
 "Fixing missing %1 field definitions in slices" => "スライスに欠けている%1フィールドの定義を修正しています", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 19
+// src/Optimize/AddMandatoryStatusCode.php, row 21
 "Adds field definitions for slices, where missing" => "スライスに欠けているフィールド定義を追加します", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 45
+// src/Optimize/AddMandatoryStatusCode.php, row 47
 "Missing %1 field definition in some slices - need to repair" => "一部のスライスに %1 フィールドの定義がありません - 修復が必要です", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 54
+// src/Optimize/AddMandatoryStatusCode.php, row 56
 "Fixing missing %1 fields in slices" => "スライスに欠けている %1 フィールドを修復しています", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 69
+// src/Optimize/AddMandatoryStatusCode.php, row 71
 "Mandatory field %1 added to all slices" => "必須フィールド %1 を全てのスライスに追加しました", // ai 2026-06
 
-// src/Optimize/AddMlxctrlFieldTemplate.php, row 10
+// src/Optimize/AddMlxctrlFieldTemplate.php, row 12
 "Add mlxctrl field template" => "mlxctrl フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddMsgBannedFieldTemplate.php, row 10
+// src/Optimize/AddMsgBannedFieldTemplate.php, row 12
 "Add _msg_banned field template" => "_msg_banned フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddMsgSpamFieldTemplate.php, row 10
+// src/Optimize/AddMsgSpamFieldTemplate.php, row 12
 "Add _msg_spam field template" => "_msg_spam フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddNameFieldTemplate.php, row 10
+// src/Optimize/AddNameFieldTemplate.php, row 12
 "Add name field template" => "name フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddPhoneFieldTemplate.php, row 10
+// src/Optimize/AddPasskeyTable.php, row 15
+"Table of passkeys" => "パスキーのテーブル", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 20
+"Creates the table authenticator, where the passkeys of the accounts are kept. Nothing else changes; without it, nobody can add a passkey." => "アカウントのパスキーを保存するテーブル authenticator を作成します。それ以外は何も変更しません。このテーブルがないと、誰もパスキーを追加できません。", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 43
+"The table %1 is missing" => "テーブル %1 がありません", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 46
+"OK - the table %1 exists" => "OK - テーブル %1 は存在します", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 54
+"The table %1 exists already" => "テーブル %1 は既に存在します", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 is created" => "テーブル %1 を作成しました", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 could not be created" => "テーブル %1 を作成できませんでした", // ai 2026-11
+
+// src/Optimize/AddPhoneFieldTemplate.php, row 12
 "Add phone field template" => "phone フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 29
+// src/Optimize/AddPolls.php, row 31
 "Add Polls tables" => "アンケートのテーブルを追加", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 37
+// src/Optimize/AddPolls.php, row 39
 "Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "新しいアンケートモジュール用のテーブルを作成し、最初のサンプルアンケートを追加します。現在のアンケートは全て削除されます！", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 60
+// src/Optimize/AddPolls.php, row 62
 "Poll module is not installed" => "アンケートモジュールはインストールされていません", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 95
+// src/Optimize/AddPolls.php, row 97
 "Polls module created" => "アンケートモジュールを作成しました", // ai 2026-06
 
-// src/Optimize/AddRangeFieldTemplate.php, row 10
+// src/Optimize/AddRangeFieldTemplate.php, row 12
 "Add range field template" => "range フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddRealFieldTemplate.php, row 10
+// src/Optimize/AddRealFieldTemplate.php, row 12
 "Add real field template" => "real フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddSecretFieldTemplate.php, row 10
+// src/Optimize/AddSecretFieldTemplate.php, row 12
 "Add secret field template" => "secret フィールドテンプレートを追加", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 16
@@ -11321,17 +11532,17 @@ return [
 // src/Optimize/AddSeoFieldTemplate.php, row 116
 "New \"%1\" field template added" => "新しい \"%1\" フィールドテンプレートを追加しました", // ai 2026-06
 
-// src/Optimize/AddUploadUrlFieldTemplate.php, row 10
+// src/Optimize/AddUploadUrlFieldTemplate.php, row 12
 "Add _upload_url field template" => "_upload_url フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddUrlPreviewFieldTemplate.php, row 10
+// src/Optimize/AddUrlPreviewFieldTemplate.php, row 12
 "Add _url_preview field template" => "_url_preview フィールドテンプレートを追加", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 19
 "Backup tables" => "テーブルのバックアップ", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 // src/Optimize/UpdateDbStructure.php, row 31
 "[experimental] " => "[実験的]", // ai 2026-06
 
@@ -11371,10 +11582,10 @@ return [
 // src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "複数値でなく html と指定されたフィールドの別名 f_h を、内容を直接出力するより高速な f_1 関数に置き換えます", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 15
+// src/Optimize/ChangeF_t2F_1.php, row 17
 "Optimize f_t alias to f_1" => "別名 f_t を f_1 に最適化", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 23
+// src/Optimize/ChangeF_t2F_1.php, row 25
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "複数値でなく html と指定されたフィールドの別名 f_t を、内容を直接出力するより高速な f_1 関数に置き換えます", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -11383,22 +11594,22 @@ return [
 // src/Optimize/ChangeF_t2F__.php, row 27
 "Replaces f_t alias used for code by quicker f__ function" => "コード用に使われている別名 f_t をより高速な f__ 関数に置き換えます", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 20
+// src/Optimize/ChangeModuleId.php, row 22
 "Change current module ID to new one" => "現在のモジュール ID を新しいものに変更", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 28
+// src/Optimize/ChangeModuleId.php, row 30
 "Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "データベースをクローンしたり、スライスを別のクライアント用の別のデータベースにコピーする際に、同じスライス/サイト ID を使いたくない場合に使うことがあります。おそらく全てのスライスと site モジュールに対して行う必要があります。<br>現在のスライス ID が変更されます！", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 42
+// src/Optimize/ChangeModuleId.php, row 44
 "Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "ここにテストするものはありません。ご注意ください - 確認なしに現在のスライス ID が変更されます！", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 63
+// src/Optimize/ChangeModuleId.php, row 65
 "Going to change module_id %1 -> %2 (%3 -> %4)" => "module_id を変更します %1 -> %2 (%3 -> %4)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 76
+// src/Optimize/ChangeModuleId.php, row 78
 "Changing ID for table %1 (%2)" => "テーブル %1 (%2) の ID を変更しています", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 85
+// src/Optimize/ChangeModuleId.php, row 87
 // src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "%1 個のテーブルを変換しました", // ai 2026-06
 
@@ -11441,11 +11652,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckFormRobotRefusals.php, row 76
 // src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
 // src/Optimize/CheckIsdsConf.php, row 156, 189
 // src/Optimize/CheckIsdsViews.php, row 128
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 93
 // src/Optimize/CheckObjectFormRefusals.php, row 102
+// src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
 // src/Optimize/CheckSessionidUse.php, row 101
@@ -11461,11 +11674,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 100
 // src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckFormRobotRefusals.php, row 77
 // src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
 // src/Optimize/CheckIsdsViews.php, row 129
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 94
 // src/Optimize/CheckObjectFormRefusals.php, row 103
+// src/Optimize/CheckPasskeys.php, row 86
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
@@ -11496,7 +11711,7 @@ return [
 "Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "過去30日間に拒否された項目のアラート送信を一覧表示します。拒否の理由は、コレクションが項目のスライスと関係ないことです（スライスへのフィルタがない、そのスライスが読者スライスでない、共通のサイトがない）。", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 86
-"Selections of the collection" => "",
+"Selections of the collection" => "コレクションの選択", // ai 2026-11
 
 // src/Optimize/CheckAlertitemRefusals.php, row 93
 "Alert send of an item of slice %1 through collection %2 was refused" => "コレクション %2 を通じたスライス %1 の項目のアラート送信が拒否されました", // ai 2026-10
@@ -11538,10 +11753,10 @@ return [
 "AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "AlertsSweep::SCHEDULE にこの頻度の登録がないため、タスクが予定されることはなく、これらの読者には何も届きません。", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 110
-"Every alert collection is swept on time and all its selections exist" => "",
+"Every alert collection is swept on time and all its selections exist" => "すべてのアラートコレクションが予定どおり送信され、その選択もすべて存在します", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 144
-"Selection" => "",
+"Selection" => "選択", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
@@ -11552,28 +11767,28 @@ return [
 "Problem" => "問題", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 146
-"the selection was deleted" => "",
+"the selection was deleted" => "選択は削除されました", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 147
-"its view %1 was deleted" => "",
+"its view %1 was deleted" => "そのビュー %1 は削除されました", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 153
-"Alerts \"%1\" use a selection that no longer exists" => "",
+"Alerts \"%1\" use a selection that no longer exists" => "アラート「%1」は存在しない選択を使用しています", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 154
-"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "",
+"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "アラート「%1」は何も送信しません: コレクションの選択がすべて存在しません", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 157
-"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "",
+"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "選択とは、アラートが項目を取得するスライスのビューのフィルターです。フィルターやビューが削除されても、コレクションはそれを参照し続け、読者には何も届きません。ログにエラーも記録されません。「選択」ページで、存在しないと表示された選択を削除し、既存の選択を追加してください（フィルターは「アラートの選択セット」タイプのビューで定義します）。もう誰も使っていないアラートモジュールであれば、代わりに削除してもかまいません。", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 159
 "Selections" => "選択", // ai 2026-06
 
 // src/Optimize/CheckAlerts.php, row 160
-"Alerts settings" => "",
+"Alerts settings" => "アラートの設定", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 163
-"Alert selection no longer exists" => "",
+"Alert selection no longer exists" => "アラートの選択が存在しません", // ai 2026-11
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 27
 "Forms without login changing accounts or authors" => "ログインなしでアカウントや作成者を変更するフォーム", // ai 2026-10
@@ -11663,7 +11878,7 @@ return [
 "A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "ページのテンプレートに {require:ckeditor}（と CKEDITOR.replace()）があります。代わりに textarea を {require:aa-richtext@1} 付きの <aa-richtext mode=\"rich\"> で囲んでください - textarea の名前と値は保たれるため、フォームや textarea.value を読むスクリプトはそのまま動きます。CKEDITOR.instances[...].getData() は textarea の値になります。", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 103
-"Templates with ckeditor" => "",
+"Templates with ckeditor" => "ckeditor を使用するテンプレート", // ai 2026-11
 
 // src/Optimize/CheckCkeditorUse.php, row 109
 "No page loaded CKEditor 4 in the last 30 days" => "過去30日間に CKEditor 4 を読み込んだページはありません", // ai 2026-10
@@ -11723,22 +11938,22 @@ return [
 "%1 cron rows, all readable and running on schedule" => "cron の行: %1。すべて読み取り可能で、予定どおり実行されています", // ai 2026-10
 
 // src/Optimize/CheckDiscussionRefusals.php, row 26
-"Refused comments" => "",
+"Refused comments" => "拒否されたコメント", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 31
-"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "",
+"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "スライスがディスカッションを表示しないため、過去30日間に新しいディスカッションのコメントが拒否されたスライスを一覧表示します。", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 70
-"New comments to items of slice %1 were refused" => "",
+"New comments to items of slice %1 were refused" => "スライス %1 の項目への新しいコメントが拒否されました", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 78
-"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "",
+"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "このスライスにはディスカッションのビューがなく、全文表示のデザインの「ディスカッションを表示」にも設定されていないため、コメントはどこにも表示されません。サイトが他のスライスのディスカッションビューでコメントを表示している場合は、そのビューを「ディスカッションを表示」で選択してください。そうでなければ、スライスのテンプレートからコメントフォームを削除してください。", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 80
-"Fulltext design" => "",
+"Fulltext design" => "全文表示のデザイン", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 85
-"No comment was refused in the last 30 days" => "",
+"No comment was refused in the last 30 days" => "過去30日間に拒否されたコメントはありません", // ai 2026-11
 
 // src/Optimize/CheckEnvironment.php, row 18
 // src/Optimize/StateCheckModel.php, row 295
@@ -11764,6 +11979,21 @@ return [
 
 // src/Optimize/CheckEnvironment.php, row 66
 "AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2)、PHP %3、%4。%5 から変更なし", // ai 2026-10
+
+// src/Optimize/CheckFormRobotRefusals.php, row 26
+"Forms refused as robots" => "ロボットとして拒否されたフォーム", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 31
+"Lists the slices whose new items from a form were refused in the last 30 days because the form posted an empty slice_id, which its JS fills only for a visitor who moves the mouse or presses a key." => "過去30日間に、フォームが空の slice_id を送信したため新しい項目が拒否されたスライスを一覧表示します。slice_id はフォームの JS が、マウスを動かすかキーを押した訪問者に対してのみ入力します。", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 70
+"A form adding items to slice %1 was refused as a robot" => "スライス %1 に項目を追加するフォームがロボットとして拒否されました", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 79
+"The form posted an empty slice_id. Forms with {formantispam:<slice_id>} or with their own anti-robot JS leave it empty and fill it when the visitor moves the mouse or presses a key, so this is mostly spam and needs no action. If real visitors complain that the form does not save, check that the JS of the form runs on the page (the browser console) and fills slice_id." => "フォームが空の slice_id を送信しました。{formantispam:<slice_id>} を含むフォームや独自のロボット対策 JS を持つフォームは、slice_id を空にしておき、訪問者がマウスを動かすかキーを押したときに入力します。そのため、ほとんどはスパムであり、対処は不要です。実際の訪問者からフォームが保存されないという苦情があれば、フォームの JS がページで動作し（ブラウザーのコンソール）、slice_id を入力しているか確認してください。", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 85
+"No form was refused as a robot in the last 30 days" => "過去30日間にロボットとして拒否されたフォームはありません", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 29
 "Outgoing HTTP" => "外向き HTTP", // ai 2026-10
@@ -11797,7 +12027,7 @@ return [
 "Note" => "メモ", // ai 2026-06
 
 // src/Optimize/CheckHttp.php, row 85
-"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "",
+"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "アドレス自体は HTTP %1 を返し、%2 は 200 を返します。AA のディレクトリにインデックスページがなく、サーバーがディレクトリ一覧を表示しない場合によくある状態です。", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 93
 "This installation's own address answers HTTP %1" => "このインストールの自身のアドレスが HTTP %1 を返します", // ai 2026-10
@@ -11963,7 +12193,7 @@ return [
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "キーに改行または NUL が含まれているため、どのインポートソースも使えません。config.php の定数を修正してください。", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 272
-"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "",
+"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "JSON キー（Google のサービスアカウント）は1行に収まります: %1 が出力する行を貼り付けてください。", // ai 2026-11
 
 // src/Optimize/CheckImports.php, row 291
 "Imports logged %1 failures in the last 7 days" => "過去7日間にインポートが記録した失敗: %1", // ai 2026-10
@@ -12014,505 +12244,505 @@ return [
 "No app transfer is stuck" => "止まっているアプリ転送はありません", // ai 2026-10
 
 // src/Optimize/CheckIsds.php, row 49
-"ISDS login" => "",
+"ISDS login" => "ISDS ログイン", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 54
-"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "",
+"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "misc/datovka/datovka_conf.php のうち、このデータベースのサイトのために送信する使用可能な各アカウントで ISDS にログインし、送信元のデータボックスを確認します。名前とパスワードによるログインでは、その利用者の権限とパスワードの有効期限も確認します。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 79
-"No usable ISDS account to log in with" => "",
+"No usable ISDS account to log in with" => "ログインに使用できる ISDS アカウントがありません", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 121
-"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "",
+"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "ISDS がこのサーバーのアドレスをブロックしたため、ISDS アカウントを試していません: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 122
-"ISDS accounts not tried, as ISDS did not answer: %1" => "",
+"ISDS accounts not tried, as ISDS did not answer: %1" => "ISDS が応答しなかったため、ISDS アカウントを試していません: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Wait - each attempt from this server extends the block." => "",
+"Wait - each attempt from this server extends the block." => "お待ちください。このサーバーから試行するたびにブロックが延長されます。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Check again later." => "",
+"Check again later." => "後でもう一度チェックしてください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 128
-"ISDS accounts log in to their data boxes: %1" => "",
+"ISDS accounts log in to their data boxes: %1" => "ISDS アカウントはそれぞれのデータボックスにログインできます: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"ISDS account %1 not tried, as its certificate cannot be used" => "",
+"ISDS account %1 not tried, as its certificate cannot be used" => "証明書を使用できないため、ISDS アカウント %1 を試していません", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"The check of ISDS accounts tells more." => "",
+"The check of ISDS accounts tells more." => "詳しくは「ISDS アカウント」のチェックをご覧ください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 153
-"The TLS library of this server refuses the certificate of ISDS account %1" => "",
+"The TLS library of this server refuses the certificate of ISDS account %1" => "このサーバーの TLS ライブラリが ISDS アカウント %1 の証明書を拒否しています", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 154
-"Reason of OpenSSL" => "",
+"Reason of OpenSSL" => "OpenSSL による理由", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 155
-"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "",
+"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "このサーバーの OpenSSL が証明書またはその鍵を受け付けません。たとえば、鍵がポリシーの要求より短い、チェーン内に弱い証明書がある、署名が古い、などです。ポリシーを満たす証明書（3072ビットの RSA 鍵、SHA-256 署名）を取得し、ISDS に登録してもらい、misc/datovka/datovka_conf.php に指定してください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 188, 290
 "ISDS" => "",
 
 // src/Optimize/CheckIsds.php, row 195, 226
-"ISDS did not tell the rights of the user of account %1" => "",
+"ISDS did not tell the rights of the user of account %1" => "ISDS がアカウント %1 の利用者の権限を返しませんでした", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 202
-"The password of ISDS account %1 expires on %2" => "",
+"The password of ISDS account %1 expires on %2" => "ISDS アカウント %1 のパスワードは %2 に期限切れになります", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 203
-"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "",
+"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "ISDS ポータルでパスワードを変更し、新しいパスワードを misc/datovka/datovka_conf.php の %1 に書き込んでください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"ISDS did not tell when the password of account %1 expires" => "",
+"ISDS did not tell when the password of account %1 expires" => "ISDS がアカウント %1 のパスワードの有効期限を返しませんでした", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"Check the password of the user in the ISDS portal." => "",
+"Check the password of the user in the ISDS portal." => "ISDS ポータルで利用者のパスワードを確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"Rights" => "",
+"Rights" => "権限", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"User type" => "",
+"User type" => "利用者の種類", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 239
-"The user of ISDS account %1 lacks the rights %2" => "",
+"The user of ISDS account %1 lacks the rights %2" => "ISDS アカウント %1 の利用者に権限 %2 がありません", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 241
-"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "",
+"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "ISDS ポータルで利用者に権限 %1 を付与してください。これがないと ISDS は %2 を拒否します。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 250
-"The user of ISDS account %1 has rights AA must not have: %2" => "",
+"The user of ISDS account %1 has rights AA must not have: %2" => "ISDS アカウント %1 の利用者は、AA が持ってはならない権限を持っています: %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 252
-"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "",
+"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "ISDS ポータルで利用者からこれらの権限を外すか、権限 %1 だけを持つ AA 専用の利用者として AA をログインさせてください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 268
-"ISDS blocked logins from the address of this server" => "",
+"ISDS blocked logins from the address of this server" => "ISDS がこのサーバーのアドレスからのログインをブロックしました", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 269
-"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "",
+"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "ISDS は、あるサーバーからのログインが攻撃のように見えると、そのサーバーのアドレスをしばらくブロックします。ログイン方法にかかわらず、このサーバー上のすべてのアカウントとすべての AA が対象です。お待ちください。試行するたびにブロックが延長されます。AA は %1 時間後、またはここでもう一度チェックしたときに、自動的にもう一度だけ試します。ブロックが続く場合は、ISDS のヘルプライン 954 200 200 に電話してください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 274
-"ISDS refused the login of account %1" => "",
+"ISDS refused the login of account %1" => "ISDS がアカウント %1 のログインを拒否しました", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS asked account %1 to come back later" => "",
+"ISDS asked account %1 to come back later" => "ISDS がアカウント %1 に後で再試行するよう求めました", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS is in an outage or busy. Check again later." => "",
+"ISDS is in an outage or busy. Check again later." => "ISDS が障害中か混雑しています。後でもう一度チェックしてください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 281
-"ISDS gave account %1 no answer" => "",
+"ISDS gave account %1 no answer" => "ISDS からアカウント %1 への応答がありませんでした", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 282
-"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "",
+"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "後でもう一度チェックしてください。繰り返し発生する場合は、サーバーが HTTPS で %1 に接続できるか確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"ISDS gave account %1 an answer AA cannot read" => "",
+"ISDS gave account %1 an answer AA cannot read" => "ISDS がアカウント %1 に、AA が読めない応答を返しました", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"Check again later. If it repeats, the evidence gives the answer of ISDS." => "",
+"Check again later. If it repeats, the evidence gives the answer of ISDS." => "後でもう一度チェックしてください。繰り返し発生する場合、ISDS の応答は証拠に記載されています。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"ISDS refused account %1" => "",
+"ISDS refused account %1" => "ISDS がアカウント %1 を拒否しました", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "",
+"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "ISDS の応答は証拠に記載されています。ISDS ポータルでアカウントとそのデータボックスを確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 298
-"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "%1 が指定する証明書が、ISDS がデータボックスに登録したシステム証明書であり、期限切れでないことを確認してください。AA は新しい証明書なら自動的に試しますが、同じ証明書は二度と試しません。「拡張チェックを実行」またはここでの「再チェック」で、もう一度試します。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 299
-"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "データボックス %1 が、%2 が指定する証明書のホスティングサービスを許可していること（ISDS ポータルの「設定」、「外部アプリケーションのアクセス」）と、証明書が期限切れでないことを確認してください。AA は新しい証明書なら自動的に試しますが、同じ証明書は二度と試しません。「拡張チェックを実行」またはここでの「再チェック」で、もう一度試します。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 300
-"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "",
+"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "misc/datovka/datovka_conf.php の %1 と %2 を確認し、ISDS ポータルでパスワードが期限切れでないことを確認してください。AA は変更されたログイン名やパスワードなら自動的に試しますが、同じものは二度と試しません。拒否された試行のたびにログインのブロックが延長されます。「拡張チェックを実行」またはここでの「再チェック」で、もう一度試します。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 327
-"Check in the ISDS portal that the user has the rights %1 and none of %2." => "",
+"Check in the ISDS portal that the user has the rights %1 and none of %2." => "ISDS ポータルで、利用者に権限 %1 があり、%2 のいずれもないことを確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 356
-"read received messages" => "",
+"read received messages" => "受信メッセージの閲覧", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 357
-"read received messages to own hands" => "",
+"read received messages to own hands" => "本人限定の受信メッセージの閲覧", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 358
-"send messages" => "",
+"send messages" => "メッセージの送信", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 359
-"lists of messages and delivery info" => "",
+"lists of messages and delivery info" => "メッセージ一覧と配達情報の表示", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 360
-"search for data boxes" => "",
+"search for data boxes" => "データボックスの検索", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 361
-"manage the data box" => "",
+"manage the data box" => "データボックスの管理", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 362
-"erase the vault" => "",
+"erase the vault" => "保管庫の消去", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 44
-"ISDS accounts" => "",
+"ISDS accounts" => "ISDS アカウント", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 49
-"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "",
+"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "このデータベースのサイトからデータボックスへ送信するために misc/datovka/datovka_conf.php が設定する ISDS アカウントをチェックします。対象は、その設定、証明書ファイル、各アカウントが送信するサイトとスライス、および過去1週間に設定が準備できていなかった一括送信ページ、キャンペーンが受信者を特定できなかったページ、内部エラーで操作が失敗したページです。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 80
-"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "",
+"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "misc/datovka/datovka_conf.php に、このデータベースのサイトのために送信する ISDS アカウントはありません", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 100
-"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "misc/datovka/datovka_conf.php に AA が読まない ISDS アカウントの設定があります: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 103
-"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "",
+"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "%1 の ISDS アカウント名は、英大文字と数字からなる1語で、先頭は英字です。AA が読むキーは %2 のみで、本番用アカウントでは %3 も読みます。名前を修正するか、AA が読まないものを削除してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 108
-"ISDS accounts ready to send: %1" => "",
+"ISDS accounts ready to send: %1" => "送信の準備ができた ISDS アカウント: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 127
-"A page of site %1 has a mass sending whose settings are not ready" => "",
+"A page of site %1 has a mass sending whose settings are not ready" => "サイト %1 のページに、設定が準備できていない一括送信があります", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 131, 167
-"Campaign slice" => "",
+"Campaign slice" => "キャンペーンスライス", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 137
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "サイト「%1」は読者管理スライスの読者しかログインできないため、そこでは誰も送信できず、何を修正すべきかもページで確認できません。サイトの設定で「利用者ログイン用データベース」を「%2」に設定し、ページをもう一度開いてください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 138
-"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "",
+"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "キャンペーンスライスのすべての項目を編集できる利用者、またはサイトのコードを編集できる利用者としてページを開いてください。{datovkabulk:page} の設定で修正が必要な点が、修正するためのページとともにすべて表示されます。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 163
-"A campaign of a mass sending on site %1 cannot tell its recipients" => "",
+"A campaign of a mass sending on site %1 cannot tell its recipients" => "サイト %1 の一括送信のキャンペーンが受信者を特定できません", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 168, 204
-"Campaign" => "",
+"Campaign" => "キャンペーン", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 173
-"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "",
+"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "キャンペーンに保存された受信者フィルターが、ページの設定に合わなくなっています。types から種類が削除されたか、member_field が削除されました。ページでキャンペーンを開き、受信者をもう一度保存してください。問題がデータボックスの設定を示している場合は、ソーススライスの「登録簿のデータボックス」ページで設定してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 199
-"An action of a page of a mass sending failed on an internal error: %1" => "",
+"An action of a page of a mass sending failed on an internal error: %1" => "一括送信ページの操作が内部エラーで失敗しました: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 209
-"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "",
+"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "AA の不具合です。証拠に記載されたコード上の位置を開発者に報告してください。操作は処理の一部を完了している可能性があります。利用者が再試行する前に、そのページで送信の状態を確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 225
-"ISDS account %1 cannot be used" => "",
+"ISDS account %1 cannot be used" => "ISDS アカウント %1 を使用できません", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 227
-"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "",
+"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "証拠に示された点を misc/datovka/datovka_conf.php で修正してください。アカウントは %1 で、キーは %2 です。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 261
-"PHP cannot read the certificate of ISDS account %1" => "",
+"PHP cannot read the certificate of ISDS account %1" => "PHP が ISDS アカウント %1 の証明書を読み込めません", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 263
-"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "",
+"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "設定がファイルをフルパスで指定していること（相対パスは AA の %1 から始まります）、PHP を実行する利用者がそのファイルを読めること、open_basedir がそこへのアクセスを許可していることを確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "",
+"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "ISDS アカウント %1 の証明書を使用できません: PHP に openssl 拡張がありません", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"Install the openssl extension of PHP - a login with a certificate needs it." => "",
+"Install the openssl extension of PHP - a login with a certificate needs it." => "PHP の openssl 拡張をインストールしてください。証明書によるログインに必要です。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Serial number" => "",
+"Serial number" => "シリアル番号", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Valid until" => "",
+"Valid until" => "有効期限", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 274
-"%1 names a file with no PEM certificate" => "",
+"%1 names a file with no PEM certificate" => "%1 が指定するファイルに PEM 証明書がありません", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 275
-"The private key in %1 does not open: it is missing, or %2 does not fit" => "",
+"The private key in %1 does not open: it is missing, or %2 does not fit" => "%1 の秘密鍵を開けません: 鍵がないか、%2 が一致しません", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 276
-"The private key in %1 does not belong to the certificate in %2" => "",
+"The private key in %1 does not belong to the certificate in %2" => "%1 の秘密鍵は %2 の証明書に対応していません", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 277
-"The private key is shorter than %1 bits, which the secure connection refuses" => "",
+"The private key is shorter than %1 bits, which the secure connection refuses" => "秘密鍵が %1 ビットより短いため、安全な接続で拒否されます", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 278
-"The certificate is valid from %1 only" => "",
+"The certificate is valid from %1 only" => "この証明書は %1 から有効になります", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"The certificate of ISDS account %1 cannot be used" => "",
+"The certificate of ISDS account %1 cannot be used" => "ISDS アカウント %1 の証明書を使用できません", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "",
+"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "misc/datovka/datovka_conf.php に証明書とその鍵を指定し、暗号化された鍵の場合はパスフレーズも指定してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expired on %2" => "",
+"The certificate of ISDS account %1 expired on %2" => "ISDS アカウント %1 の証明書は %2 に期限切れになりました", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expires on %2" => "",
+"The certificate of ISDS account %1 expires on %2" => "ISDS アカウント %1 の証明書は %2 に期限切れになります", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 290
-"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "",
+"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "新しい証明書を取得し、古い証明書と並べて ISDS に登録してもらい、そのファイルを misc/datovka/datovka_conf.php に指定してください。ISDS は古い証明書の期限切れの %1 日前までに求めています。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"The web server may serve the private key of ISDS account %1" => "",
+"The web server may serve the private key of ISDS account %1" => "Web サーバーが ISDS アカウント %1 の秘密鍵を公開してしまうおそれがあります", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"Other users of the server may read the private key of ISDS account %1" => "",
+"Other users of the server may read the private key of ISDS account %1" => "サーバーの他の利用者が ISDS アカウント %1 の秘密鍵を読めるおそれがあります", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 343
-"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "",
+"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "ここでは PHP が Web サーバー内で動作しているため、PHP が読めるものは Web サーバーも読めます。権限の設定では防げません。ファイルを AA のディレクトリの外に移動し、フルパスで指定してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 344
-"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "",
+"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "ファイルは Web サーバーが公開する AA のディレクトリ内にあります。外に移動してフルパスで指定するか、所有者だけが読めるようにし（chmod 600）、ACL を確認してください（getfacl）。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 345
-"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "",
+"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "ファイルから他の利用者の権限をすべて外し（chmod o-rwx）、ACL を確認してください（getfacl）。", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 403
-"The slices of ISDS account %1 are not ready for sending" => "",
+"The slices of ISDS account %1 are not ready for sending" => "ISDS アカウント %1 のスライスは送信の準備ができていません", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 406
-"Fix what the evidence names before sending from these slices." => "",
+"Fix what the evidence names before sending from these slices." => "これらのスライスから送信する前に、証拠に示された点を修正してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 32
-"ISDS settings file" => "",
+"ISDS settings file" => "ISDS 設定ファイル", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 37
-"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "",
+"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "このインストールの {datovka} と一括送信のためのデータボックス設定である misc/datovka/datovka_conf.php をチェックします。PHP が読み込めるか、AA がすべて使用できるか、二重に書かれたキー、ファイルの権限、AA のディレクトリ内のコピー、さらに過去1週間に他のリクエストが読み込み時に遭遇した問題と、ファイルに記載のないインストール宛てとして拒否された ISDS の応答を確認します。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"AA reads all of misc/datovka/datovka_conf.php" => "",
+"AA reads all of misc/datovka/datovka_conf.php" => "AA は misc/datovka/datovka_conf.php をすべて読み込みます", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "",
+"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "misc/datovka/datovka_conf.php がありません。AA はこのインストールのデータボックス設定なしで動作します", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"ISDS accounts not checked: %1" => "",
+"ISDS accounts not checked: %1" => "チェックされていない ISDS アカウント: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"The check \"%1\" tells what to fix." => "",
+"The check \"%1\" tells what to fix." => "修正すべき点は「%1」のチェックでわかります。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 100
-"PHP cannot read misc/datovka/datovka_conf.php" => "",
+"PHP cannot read misc/datovka/datovka_conf.php" => "PHP が misc/datovka/datovka_conf.php を読み込めません", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"AA cannot use misc/datovka/datovka_conf.php" => "",
+"AA cannot use misc/datovka/datovka_conf.php" => "AA は misc/datovka/datovka_conf.php を使用できません", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "",
+"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "datovka_conf.php.default に従ってファイルを修正してください。何が誤っているかは問題欄に示されています。修正するまで、AA はファイルがないものとして動作します。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 102
-"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "",
+"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "datovka_conf.php.default に従って %1 を修正してください。修正するまで AA には ISDS アカウントがありません。ファイルの残りの部分は読み込まれます。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "",
+"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "AA は misc/datovka/datovka_conf.php の設定を省略しています: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"Correct each key as its problem says." => "",
+"Correct each key as its problem says." => "各キーを、その問題の説明に従って修正してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 113
-"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "misc/datovka/datovka_conf.php に AA が読まないキーがあります: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 116
-"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "",
+"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "ISDS アカウントを %1 の下に移動するか、AA が読まないものを削除してください。AA が読むのは、最上位では instances、test、standard、accounts、test と standard の中では cert と atsId、インストールの中では url のみです。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "",
+"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "misc/datovka/datovka_conf.php に ISDS のアドレスがまだ残っています: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "",
+"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "AA はファイルから url_* と wsdl_* を読みません。アドレスは AA に含まれています。削除してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 149
-"Other requests met a problem in misc/datovka/datovka_conf.php" => "",
+"Other requests met a problem in misc/datovka/datovka_conf.php" => "他のリクエストが misc/datovka/datovka_conf.php で問題に遭遇しました", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 150
-"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "",
+"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "他のリクエストが misc/datovka/datovka_conf.php のアカウントを使用できませんでした", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 151
-"Other requests could not use misc/datovka/datovka_conf.php" => "",
+"Other requests could not use misc/datovka/datovka_conf.php" => "他のリクエストが misc/datovka/datovka_conf.php を使用できませんでした", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 156
-"Site, one of them" => "",
+"Site, one of them" => "サイト（そのうちの1つ）", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 158
-"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "",
+"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "%1 1日だけ発生した場合、通常はネットワークファイルシステムが一時的に PHP を拒否したものです。この検出事項は「%2」の7日後に消えます。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 159
-"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "",
+"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "その後ファイルが変更されたか、このデータベースを使う別の AA ツリーが独自のファイルを読み込んでいます。各ツリーが読み込むファイルで、問題に示された点を修正してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "",
+"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "このデータベースのメッセージに対する ISDS の応答が拒否されました: %1 にインストール %2 が記載されていません", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS refused: the installation in their token is not in %1" => "",
+"Answers of ISDS refused: the installation in their token is not in %1" => "ISDS の応答が拒否されました: トークン内のインストールが %1 にありません", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id" => "",
+"Installation id" => "インストール ID", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id, one of them" => "",
+"Installation id, one of them" => "インストール ID（そのうちの1つ）", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 191
-"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "",
+"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "その ID のインストールを AA_INSTAL_URL とともに %1 に追加してください。認証サービスの登録を共有するすべてのインストールには、同じ ID を記載します。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 192
-"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "",
+"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "このデータベースのメッセージにはこのトークンを持つものがありません。認証サービスの登録を共有するインストールがこの ID を持つ場合は、%1 に追加してください。そうでなければ、この応答はこのインストールのものではなく、変更は不要です。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 215
-"Test boxes of ISDS accounts AA cannot read: %1" => "",
+"Test boxes of ISDS accounts AA cannot read: %1" => "AA が読み込めない ISDS アカウントのテスト用データボックス: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 218
-"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "",
+"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "test_boxes をデータボックス ID のリストとして記述してください: ['<data box id>', ...]（それぞれ英数字7文字）。修正するまでアカウントは送信できますが、下書きのテストメッセージはそこから送信されません。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 235
-"Paid tests of ISDS accounts AA cannot read: %1" => "",
+"Paid tests of ISDS accounts AA cannot read: %1" => "AA が読み込めない ISDS アカウントの有料テスト: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 238
-"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "",
+"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "下書きのテストメッセージに料金がかかってもよい場合は paid_tests を true（引用符なし）と記述し、そうでなければ削除してください。修正するまで、テストメッセージは無料の場合のみ送信されます。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "",
+"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "misc/datovka/datovka_conf.php は二重に書かれたキーをチェックしていません。ファイルが %1 KB を超えています", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"The settings of one installation take a few kilobytes - check what else the file holds." => "",
+"The settings of one installation take a few kilobytes - check what else the file holds." => "1つのインストールの設定は数キロバイトです。ファイルに他に何が含まれているか確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 303
-"misc/datovka/datovka_conf.php writes keys twice: %1" => "",
+"misc/datovka/datovka_conf.php writes keys twice: %1" => "misc/datovka/datovka_conf.php にキーが二重に書かれています: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 307
-"ISDS accounts of the sites of other databases: %1" => "",
+"ISDS accounts of the sites of other databases: %1" => "他のデータベースのサイト用の ISDS アカウント: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 309
-"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "",
+"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "PHP は二重に書かれたキーのうち最後のものだけを残し、最初のものを警告なしに省略します。2つを1つにまとめるか、どちらかのアカウント名を変更してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 310
-"An account of the sites of another database: the State Check of the database of its sites names it." => "",
+"An account of the sites of another database: the State Check of the database of its sites names it." => "他のデータベースのサイト用のアカウントです。そのサイトのデータベースの「状態チェック」に表示されます。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 341
-"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "",
+"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "misc/datovka/datovka_conf.php はサーバーのすべての利用者が読めますが、include/config.php はそうではありません", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 343
-"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "",
+"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "このファイルにはパスワードまたはパスフレーズが含まれています。include/config.php と同じ所有者、グループ、モードを設定し（chown、chmod）、ACL を確認してください（getfacl）。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 370
-"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "",
+"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "AA のディレクトリ内にある misc/datovka/datovka_conf.php のコピー: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 373
-"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "",
+"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "ファイルのコピー（バックアップ、古いバージョン、エディターや svn が横に残したもの）は、Web ツリーの外にだけ置いてください。これらを移動するか削除してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 393
-"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "",
+"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "AA は misc/datovka/datovka_conf.php のアカウントを使用できません", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 398
-"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "",
+"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "サイトごとに別の利用者で PHP を実行している場合があるため、ファイルに include/config.php と同じ所有者、グループ、モードを設定し、各サイトの open_basedir で PHP がファイル（およびリンク先）にアクセスできることを確認してください。修正するまで、AA はファイルがないものとして動作します。", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 37
-"Letters to data boxes as a PDF" => "",
+"Letters to data boxes as a PDF" => "データボックス宛て文書の PDF 化", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 42
-"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "",
+"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "データボックスへの一括送信が各キャンペーンの文書を PDF にするのと同じように、短い文書を PDF にします。misc/datovka/datovka_conf.php の ISDS アカウントがこのデータベースのサイトのために送信する場合のみ実行します。", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 81
-"AA makes letters to data boxes into a PDF" => "",
+"AA makes letters to data boxes into a PDF" => "AA はデータボックス宛ての文書を PDF にできます", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 86
-"A letter to a data box cannot be made into a PDF" => "",
+"A letter to a data box cannot be made into a PDF" => "データボックス宛ての文書を PDF にできません", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 87
-"Until then no campaign can be sent to data boxes." => "",
+"Until then no campaign can be sent to data boxes." => "修正するまで、どのキャンペーンもデータボックスに送信できません。", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 88
-"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "",
+"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "PDF を作成する dompdf がありません: AA のディレクトリで composer install を実行してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 89
-"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "",
+"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "PHP に、文書の画像を描画する GD 拡張がありません: インストールして PHP を再起動してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 90
-"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "",
+"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "AA のディレクトリで composer install を実行し（dompdf とそのフォントが導入されます）、PHP が一時ディレクトリ（sys_temp_dir）に書き込めることを確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 30
-"Data boxes of the items" => "",
+"Data boxes of the items" => "項目のデータボックス", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 35
-"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "",
+"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "項目を登録簿と照合しているスライスで、項目のデータボックスをダウンロード済みのデータボックス登録簿と比較し、そのようなスライスを使うサイトがない ISDS アカウントを表示します。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 60
-"No slice pairs its items with the register of data boxes" => "",
+"No slice pairs its items with the register of data boxes" => "項目をデータボックス登録簿と照合しているスライスはありません", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 63
-"Paired slices whose items have the data boxes of the register: %1" => "",
+"Paired slices whose items have the data boxes of the register: %1" => "項目が登録簿のデータボックスを持つ照合済みスライス: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 88
-"ISDS account" => "",
+"ISDS account" => "ISDS アカウント", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 94
-"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "",
+"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "ISDS アカウントのサイトがデータボックス設定のあるスライスを使用していないため、一括送信で受信者を取得できません", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 97
-"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "",
+"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "キャンペーンが受信者を取得するスライス（サイトが使用する公開スライス。サイトの設定の「使用モジュール」を参照）の設定で「登録簿のデータボックス」ページを開き、項目のフィールドを選択してください: 名前、種類、一括送信の送信先となるデータボックスです。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 112
-"Data boxes of %1" => "",
+"Data boxes of %1" => "%1 のデータボックス", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 114
-"Download it on the page Data boxes from the register of a paired slice." => "",
+"Download it on the page Data boxes from the register of a paired slice." => "照合済みスライスの「登録簿のデータボックス」ページでダウンロードしてください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"The directory of the register of data boxes cannot be used" => "",
+"The directory of the register of data boxes cannot be used" => "データボックス登録簿のディレクトリを使用できません", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "",
+"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "PHP がディレクトリを検索できるようにするか、config.php で IMG_UPLOAD_PATH を設定してください。その後、照合済みスライスの「登録簿のデータボックス」ページで登録簿をダウンロードしてください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The register of data boxes has not been downloaded" => "",
+"The register of data boxes has not been downloaded" => "データボックス登録簿がダウンロードされていません", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The items are compared with it." => "",
+"The items are compared with it." => "項目は登録簿と比較されます。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 127
-"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "",
+"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "照合済みスライスの「登録簿のデータボックス」ページで登録簿をもう一度ダウンロードしてください。それまで項目は登録簿と比較されません。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"The downloaded register of data boxes is older than %1 days" => "",
+"The downloaded register of data boxes is older than %1 days" => "ダウンロード済みのデータボックス登録簿が %1 日より古くなっています", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Downloaded" => "",
+"Downloaded" => "ダウンロード日時", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "",
+"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "照合済みスライスの「登録簿のデータボックス」ページでもう一度ダウンロードしてください。官公庁には新しいボックスが追加され、統合も行われます。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 140
-"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "",
+"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "登録簿のコピーが破損しています: 照合済みスライスの「登録簿のデータボックス」ページで再ダウンロードすると置き換えられます。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 141
-"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "",
+"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "登録簿のコピーを読み込めません: 証拠に示されたディレクトリと権限を確認してください。問題がなければディスクの読み込みに失敗したため、後でもう一度お試しください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 142
-"The downloaded register of data boxes cannot be read" => "",
+"The downloaded register of data boxes cannot be read" => "ダウンロード済みのデータボックス登録簿を読み込めません", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"The pairing of slice \"%1\" with the register no longer fits its fields" => "",
+"The pairing of slice \"%1\" with the register no longer fits its fields" => "スライス「%1」と登録簿の照合が、そのフィールドに合わなくなっています", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"Choose the fields again in the settings on the page Data boxes from the register." => "",
+"Choose the fields again in the settings on the page Data boxes from the register." => "「登録簿のデータボックス」ページの設定でフィールドを選択し直してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 187
-"Slice \"%1\": items without a data box: %2, items with another box than the register by IČO: %3" => "",
+"Slice \"%1\": items without a data box: %2, items with another box than the register by IČO: %3" => "スライス「%1」: データボックスのない項目: %2、IČO による登録簿と異なるボックスを持つ項目: %3", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 190
-"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "",
+"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "「登録簿のデータボックス」ページを開き、見つかったボックスを確認して書き込んでください。登録簿で見つからない項目は、ボックスを手動で入力する必要があります。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 21
-"Message items of mass sendings" => "",
+"Message items of mass sendings" => "一括送信のメッセージ項目", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 26
-"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "",
+"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "最近のデータボックスへの一括送信について、メッセージ項目を、送信の基準となる実行記録と照らし合わせます。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"Message items of a mass sending do not show what its record says: %1" => "",
+"Message items of a mass sending do not show what its record says: %1" => "一括送信のメッセージ項目が記録の内容と一致しません: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "",
+"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "送信は記録に従って行われます。項目はそれを人に見せるだけですが、送信済みのメッセージを未送信と表示する項目があると、誰かが手作業で再送してしまいます。各例は送信者の参照番号、項目、その表示内容、記録の内容です。項目の状態を記録の内容に合わせるか、送信者の参照番号で ISDS ポータル上のメッセージを確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 96
 // src/Optimize/CheckIsdsRuns.php, row 90
@@ -12521,140 +12751,140 @@ return [
 "%1: nothing found" => "%1: 検出なし", // ai 2026-10
 
 // src/Optimize/CheckIsdsRuns.php, row 51
-"Mass sendings to data boxes" => "",
+"Mass sendings to data boxes" => "データボックスへの一括送信", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 56
-"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "",
+"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "停止したまま、またはエラーで止まった一括送信、結果不明のメッセージを残した、または多数が失敗した一括送信、配達の追跡が停滞した、または配達が確認できないメッセージを残した一括送信、および送信結果を表示していないキャンペーンについて警告します。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"The campaign of a finished mass sending does not show its end" => "",
+"The campaign of a finished mass sending does not show its end" => "完了した一括送信のキャンペーンに終了が表示されていません", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "",
+"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "キャンペーン項目はもう自動では書き換えられません。状態を手作業で設定してください。すべてのメッセージが送られる前に送信が停止された場合は「停止」、それ以外は「完了」です。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 121
-"Mass sendings to data boxes whose campaign item is gone: %1" => "",
+"Mass sendings to data boxes whose campaign item is gone: %1" => "キャンペーン項目が削除されたデータボックスへの一括送信: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 125
-"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "",
+"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "その記録と固定された文書は送信内容の証拠として残ります。AA はキャンペーンと一緒に削除しません。未完了の送信は最後まで続行されます。受信者と送信内容はその記録に保持されています。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 160
-"Messages of unknown fate" => "",
+"Messages of unknown fate" => "結果不明のメッセージ", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"Following the delivery of a mass sending to data boxes stopped by an error" => "",
+"Following the delivery of a mass sending to data boxes stopped by an error" => "データボックスへの一括送信の配達追跡がエラーで停止しました", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "",
+"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "メッセージはすべて送信済みで、配達されたかどうかの確認だけが止まっています。エラーコードが示す原因を解消してから、送信のページで「続行」を選んでください（見逃した状態も読み込みます）。または「放棄」を選ぶと追跡を完全に終了します。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 167
-"A mass sending to data boxes stopped by an error" => "",
+"A mass sending to data boxes stopped by an error" => "データボックスへの一括送信がエラーで停止しました", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 169
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "誰かが対処するまで、これ以上は送信されません。エラーコードが示す原因を解消してから、送信のページで「続行」を選んでください。または「放棄」を選ぶと送信を完全に終了します。その場合、送信された可能性のあるメッセージは人が確認する必要があります。実行が書き込む前にエラーが起きた場合、キャンペーン項目はまだ送信中と表示していることがあります。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 170
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "誰かが対処するまで、これ以上は送信されません。エラーコードが示す原因を解消してから、送信のページで「続行」を選んでください。または「停止」を選ぶと、以後は何も送信されません。送信された可能性のあるメッセージが再送されることはありません。送信処理がそれを照会します。実行が書き込む前にエラーが起きた場合、キャンペーン項目はまだ送信中と表示していることがあります。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"A mass sending to data boxes has not moved on for %1 hours" => "",
+"A mass sending to data boxes has not moved on for %1 hours" => "データボックスへの一括送信が %1 時間進んでいません", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "",
+"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "キューのどのステップも処理していません。cron がタスクキューを実行していること、その1回の実行時間がステップに十分な長さであること（config.php の TOEXECUTE_ALLOWED_TIME）を確認してから、送信のページで「続行」を選んでください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A finished mass sending left messages of unknown fate: %1" => "",
+"A finished mass sending left messages of unknown fate: %1" => "完了した一括送信に結果不明のメッセージが残っています: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A mass sending being followed has messages of unknown fate: %1" => "",
+"A mass sending being followed has messages of unknown fate: %1" => "追跡中の一括送信に結果不明のメッセージがあります: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 185
-"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "",
+"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "配達された可能性があるため、AA はこれらを再送しません。ISDS ポータルで、データボックスの送信済みメッセージから送信者の参照番号で各メッセージを探してください。見つからないものは、送信のページで「確認」を選ぶと未送信として扱われます。その受信者には新しいキャンペーンで文書を再送してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 193
-"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "",
+"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "これらの受信者には文書が届いていません。各メッセージ項目に ISDS の応答が表示されています。原因を解消し、新しいキャンペーンで文書を再送してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 195
-"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "",
+"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "コード 3: 添付ファイルが ISDS のウイルスチェックを通りませんでした（無効な PDF も通りません）。同じ添付ファイルは再び失敗するので、先に添付ファイルを修正してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 198
-"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "",
+"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "コード 8: 受信者のデータボックスが利用停止になりました。みなし配達の時刻が表示されることがありますが、メッセージは配達されておらず、そのボックスへの新しいメッセージも届きません。受信者の新しいデータボックスを調べてください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 200
-"%1 of %2 messages of a mass sending to data boxes failed" => "",
+"%1 of %2 messages of a mass sending to data boxes failed" => "データボックスへの一括送信のメッセージ %2 件中 %1 件が失敗しました", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"A mass sending to data boxes ended with messages not known to be delivered: %1" => "",
+"A mass sending to data boxes ended with messages not known to be delivered: %1" => "データボックスへの一括送信が、配達が確認できないメッセージを残して終了しました: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "",
+"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "追跡中、ISDS は AA に配達も拒否も通知しませんでした。ISDS ポータルで、データボックスの送信済みメッセージから送信者の参照番号で各メッセージを確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 235
-"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "",
+"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "ISDS がこのサーバーのアドレスをブロックしました。AA は 24 時間後に再試行します。チェック「%1」を参照してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 236
-"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "",
+"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "PHP が misc/datovka/datovka_conf.php を読めません。このファイルの読み取り権限を戻してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 237
-"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "",
+"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "データボックスの1時間あたりの変更が多すぎて、AA が読み込めません。送信者の参照番号で ISDS ポータル上のメッセージの配達を確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 238
-"ISDS did not answer when AA read the delivery of the messages." => "",
+"ISDS did not answer when AA read the delivery of the messages." => "AA がメッセージの配達状況を読み込もうとしたとき、ISDS が応答しませんでした。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 242
-"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "",
+"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "記録では、配達状況が未来の時刻まで読み込まれたことになっています。次回の実行で送信開始時点から読み込み直し、メッセージは再送しません。この検出事項が続く場合は、タスクキューを実行するサーバーの時計を確認してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 243
-"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "",
+"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "AA は自動で再試行します。読み込めるようになると、見逃した状態も読み込み、メッセージは再送しません。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Read up to" => "",
+"Read up to" => "読込済み時刻", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Last wait" => "",
+"Last wait" => "最後の待機", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 245
-"Following the delivery of a mass sending to data boxes has stalled" => "",
+"Following the delivery of a mass sending to data boxes has stalled" => "データボックスへの一括送信の配達追跡が停滞しています", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record of a mass sending to data boxes cannot be read" => "",
+"The record of a mass sending to data boxes cannot be read" => "データボックスへの一括送信の記録を読み込めません", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "",
+"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "送信の記録または固定された受信者が AA の外で変更されました。誰かが「続行」を選ぶ前に、データベースのバックアップから復元してください。メッセージの二重送信を防いでいるのはこの記録です。", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 264, 309
-"Campaign item" => "",
+"Campaign item" => "キャンペーン項目", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 309
-"Campaign state" => "",
+"Campaign state" => "キャンペーンの状態", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 35
-"Views of mass sendings" => "",
+"Views of mass sendings" => "一括送信のビュー", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 40
-"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "",
+"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "データボックスへの一括送信ページのビュー名を確認します。各 isds_... ビューは ISDS アカウントのキャンペーンとメッセージのスライス内で1つだけ（同名が2つあるとページはどちらも表示しません）、入口ビュー isdscampainer はサイトのスライス内で1つだけである必要があります。", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 79
-"Views of the slices of ISDS account %1 share the name %2" => "",
+"Views of the slices of ISDS account %1 share the name %2" => "ISDS アカウント %1 のスライスのビューが同じ名前 %2 を使っています", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 82
-"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "",
+"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "一括送信のページにはどれも表示されません。キャンペーンまたはメッセージのスライスのビュー1つだけにその名前を残し、他は名前を変更するか削除してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 95
-"Site %1 has the entry view isdscampainer more than once" => "",
+"Site %1 has the entry view isdscampainer more than once" => "サイト %1 に入口ビュー isdscampainer が複数あります", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 98
-"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "",
+"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "{view:isdscampainer} は番号が最大のビューを使いますが、それが一括送信のページとは限りません。ページのスポットでは入口ビューを番号で呼び出し、同名の他のビューは名前を変更してください。", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 123
-"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "",
+"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "サイト %1 の一括送信ページが、スライスのどのビューにもない名前のビューを表示しています: %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 127, 163
 // src/Util/ChangesMonitor.php, row 444
 "View" => "表示", // ai 2026-06
 
 // src/Optimize/CheckIsdsViews.php, row 131
-"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "",
+"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "ページのその部分は空のままになります。名前を変更されたキャンペーンまたはメッセージのスライスのビューに名前を戻すか、テンプレート内の名前を修正してください。", // ai 2026-11
 
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 28
 "Item edits without the edit permission" => "編集許可なしでの項目の編集", // ai 2026-10
@@ -12938,23 +13168,92 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "過去30日間に拒否されたオブジェクトのフォームはありません", // ai 2026-10
 
+// src/Optimize/CheckPasskeys.php, row 35
+"Passkey logins" => "パスキーによるログイン", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 40
+"Lists the passkey logins refused in the last 30 days and the right passwords of accounts that log in by a passkey." => "過去30日間に拒否されたパスキーによるログインと、パスキーでログインするアカウントへの正しいパスワード入力を一覧表示します。", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Passkeys cannot be used yet - the table authenticator is missing" => "パスキーはまだ使えません - authenticator テーブルがありません", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Run service/sql_update.php - it creates the table." => "service/sql_update.php を実行してください。テーブルが作成されます。", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 95
+"No passkey login was refused in the last 30 days" => "過去30日間に拒否されたパスキーによるログインはありません", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"Right password of a passkey account" => "パスキーアカウントの正しいパスワード", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The right password of an account that logs in by a passkey (%1)" => "パスキーでログインするアカウントの正しいパスワード（%1）", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The account logs in only by its passkey, so the password did not let anybody in - but someone knows it. If it was not the owner, the password should be changed; it is used again once the passkeys are deleted." => "このアカウントはパスキーでのみログインするため、パスワードでは誰もログインできませんでした。ただし、誰かがパスワードを知っています。本人でなければパスワードを変更してください。パスキーを削除すると、パスワードが再び使われます。", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"Passkeys unknown - the directory did not answer" => "パスキー不明 - ディレクトリが応答しません", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The directory did not answer whether %1 has a passkey" => "%1 がパスキーを持っているかどうか、ディレクトリが応答しませんでした", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The password was refused, as the account may log in only by a passkey. Check the LDAP server and the bind account of AA." => "アカウントがパスキーでのみログインできる可能性があるため、パスワードは拒否されました。LDAP サーバーと AA のバインドアカウントを確認してください。", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"Passkey answer from another address" => "別のアドレスからのパスキー応答", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"A passkey answer from another address than the page (%1)" => "ページとは別のアドレスからのパスキー応答（%1）", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"AA sees the page under another host or scheme than the browser - usually a reverse proxy missing from AA_TRUSTED_PROXIES, or a site reached by http." => "AA はページをブラウザとは別のホストまたはスキームで認識しています。通常は AA_TRUSTED_PROXIES に登録されていないリバースプロキシか、http でアクセスされたサイトが原因です。", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"Security key counter went back" => "セキュリティキーのカウンターが戻りました", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"A security key of %1 signed with a counter it had used before" => "%1 のセキュリティキーが、以前に使ったカウンター値で署名しました", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"The key may have been copied. The login was let through, so its owner is not locked out; ask the owner and delete the passkey on the page of the account if in doubt." => "キーが複製された可能性があります。所有者が締め出されないようログインは許可されました。所有者に確認し、疑わしい場合はアカウントのページでパスキーを削除してください。", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Unknown passkey" => "不明なパスキー", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"A login by a passkey this AA does not keep" => "この AA に登録されていないパスキーによるログイン", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Usually a passkey deleted in AA but still in the browser or phone of its owner, or one of another AA on the same host. The owner can delete it in the device." => "通常は、AA では削除されたが所有者のブラウザや電話に残っているパスキー、または同じホスト上の別の AA のパスキーです。所有者が端末から削除できます。", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"Passkey login refused" => "パスキーによるログインの拒否", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"A passkey login refused: %1" => "パスキーによるログインが拒否されました: %1", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"An expired or repeated login, or an answer no browser sends. Nothing to do unless it repeats." => "期限切れまたは重複したログイン、あるいはブラウザが送らないはずの応答です。繰り返されない限り対処は不要です。", // ai 2026-11
+
 // src/Optimize/CheckPerVisitorReads.php, row 18
-"Pages left out of the page cache by {server:...}" => "",
+"Pages left out of the page cache by {server:...}" => "{server:...} によりページキャッシュから除外されたページ", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 23
-"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "",
+"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "テンプレートが {server:...} で訪問者固有の可能性がある値（アドレス、ブラウザ、リファラー）を読み込んでいるサイトとスライスを一覧表示します。ページキャッシュはこのようなページを保存しません。", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 72
-"Reads" => "",
+"Reads" => "読み取る値", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 78
-"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "",
+"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "%1 にはページキャッシュが保存しないページがあります - テンプレートが訪問者固有の可能性がある値を読み込んでいます", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 81
-"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "",
+"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "このようなページは訪問のたびに再描画されます。リダイレクト、クリックカウンター、フォームはそのままで構いません。それ以外、特に全ページ共通のテンプレート（ヘッダー、フッター）では、デバッグ用にだけ出力している値を削除し、名前の綴りを確認してください（{server:HTTP_REFERER}）。キャンペーンから来た訪問者の判別には {qs:utm_source}、端末の判別には {detect} を使ってください。ホスト、スキーム、URI（{server:HTTP_HOST}、{server:REQUEST_URI}）ならページはキャッシュされたままです。", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 86
-"No template reads a value of the visitor's own by {server:...}" => "",
+"No template reads a value of the visitor's own by {server:...}" => "{server:...} で訪問者固有の値を読み込むテンプレートはありません", // ai 2026-11
 
 // src/Optimize/CheckPhpFatals.php, row 24
 "PHP fatal errors" => "PHP の致命的エラー", // ai 2026-10
@@ -13068,28 +13367,28 @@ return [
 "No queued task with a missing class in the last 30 days" => "過去30日間に、クラスが存在しないキュー内タスクはありません", // ai 2026-10
 
 // src/Optimize/CheckRelatedSlices.php, row 20
-"Related slices of another website" => "",
+"Related slices of another website" => "別のサイトの関連スライス", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 25
-"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "",
+"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "自身のスライスを使うどのサイトでも使われていないスライスを指す関連項目フィールド（編集ボタン付きの rim、mng）を一覧表示します。そのスライスの編集者は、指し先のスライスの項目を編集できます。", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 78
-"Related slice" => "",
+"Related slice" => "関連スライス", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 79
-"Its websites" => "",
+"Its websites" => "そのサイト", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 85
-"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "",
+"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "別のサイトのスライスを指す関連項目フィールドはありません。どのサイトでも使われていないスライスのフィールドは比較していません: %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 86
-"Every related-item field points to a slice of its own website" => "",
+"Every related-item field points to a slice of its own website" => "すべての関連項目フィールドが自身のサイトのスライスを指しています", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 90
-"%1 related-item fields point to a slice of another website" => "",
+"%1 related-item fields point to a slice of another website" => "別のサイトのスライスを指す関連項目フィールド: %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 92
-"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "",
+"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "このスライスの編集者は関連スライスの項目を編集できます。フィールドがテンプレートと一緒にコピーされたものなら、自身のサイトのスライスを指すように設定してください。", // ai 2026-11
 
 // src/Optimize/CheckRequiredSettings.php, row 17
 "Required slice settings" => "スライスの必須設定", // ai 2026-10
@@ -13390,77 +13689,77 @@ return [
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "この別名は何も表示しません: f_u はインストールの関数（include/usr_aliasfnc.php の usr_*）だけを呼び出し、PHP や AA の関数は呼び出しません。必要な処理を行う usr_* 関数を書くか、代わりに AA の式を使ってください。", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 35
-"Slices left out of views, charsets ignored" => "",
+"Slices left out of views, charsets ignored" => "ビューから除外されたスライス、無視された文字コード", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 40
-"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "",
+"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "過去30日間に、ページがスライスの閲覧パスワードを知らなかったためにそのスライスを除外したビューを一覧表示します。対象は、そのスライスに対して URL から呼び出されたビュー、またはそのスライスやその項目を指定するパラメーター付きのビューです。", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 41
-"And the conditions on fields of related items in such a slice, which matched nothing." => "",
+"And the conditions on fields of related items in such a slice, which matched nothing." => "また、そのようなスライス内の関連項目のフィールドに対する条件で、何も一致しなかったものも表示します。", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 42
-"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "",
+"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "また、パスワードなど AA が値を決して表示しないフィールドに対する条件と並べ替えで、除外されたものも表示します。", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 43
-"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "",
+"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "リンクやフォームが convertfrom または convertto で指定し、無視された文字コードも一覧表示します。", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 135
-"Slice settings (reading password)" => "",
+"Slice settings (reading password)" => "スライス設定（閲覧パスワード）", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 139
-"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "",
+"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "スライス %2 のフィールド %1 に対する条件、並べ替え、またはグループ化が除外されました: AA はその値を決して表示しません", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 141
-"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "ページ上のビュー、{ids} または検索に、パスワード、そのコピー、2要素認証の秘密鍵など、AA が値を決して表示しないフィールドに対する条件、並べ替え、またはグループ化がありました（URL 内の cmd[]=d-...、sort[]、set[]=sort-...、set[]=group_by-...、group_by= も含みます）。条件は何にも一致せず、並べ替えとグループ化は破棄されました。フィールドが入力済みかどうかは引き続き問い合わせできます（ISNULL、NOTNULL）。それ以外の場合は、ビューまたはテンプレートから条件や並べ替えを削除してください。ページに心当たりがない場合、リクエストはあなたのページから来たものではなく、変更は不要です。", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 142
-"Protected field refused" => "",
+"Protected field refused" => "保護されたフィールドの拒否", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 144
-"A condition on related items matched nothing in slice %1: its reading password was not known" => "",
+"A condition on related items matched nothing in slice %1: its reading password was not known" => "関連項目に対する条件がスライス %1 で何にも一致しませんでした: 閲覧パスワードが不明でした", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 146
-"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "ページ上のビュー、{ids} または検索に、そのスライス内の関連項目のフィールドに対する条件（<field>@<relation> または <field>@<slice>/<relation>、URL 内の cmd[]=d-... も含みます）がありましたが、ページがスライスの閲覧パスワードを知らなかったため、条件は何にも一致しませんでした。ページで必要な場合は、ビューより前にページのテンプレートでパスワードを指定してください（{credentials:...}）。リンク、AJAX、jsview.php では決して指定しないでください。ページに心当たりがない場合、リクエストはあなたのページから来たものではなく、変更は不要です。", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 147
-"Condition refused" => "",
+"Condition refused" => "条件の拒否", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 149
-"View %1" => "",
+"View %1" => "ビュー %1", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 150
-"%1 left out slice %2: its reading password was not known" => "",
+"%1 left out slice %2: its reading password was not known" => "%1 がスライス %2 を除外しました: 閲覧パスワードが不明でした", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 151
-"Listed by" => "",
+"Listed by" => "表示元", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 152
-"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "ビューが URL から（view.php、jsview.php、discussion.php）、またはそのようなビューや slice.php のバナーとして（set[]=banner-...、slice.php?banner=...）そのスライスに対して呼び出されたか、その URL パラメーター（set[]=slice_id-.../slices-...、cmd[]=x-... の項目 ID）や slice.php の slices[] がそのスライスを指定していましたが、ページがスライスの閲覧パスワードを知りませんでした。ページでそのスライスが必要な場合は、ビューが信頼されるページのテンプレートからビューを呼び出してください（{view...}）。URL でのパスワード指定（slice_pwd=...）はサーバー側インクルードの場合に限り、リンク、AJAX、jsview.php では決して行わないでください。ページのソースやログに残ってしまいます。ページに心当たりがない場合、リクエストはあなたのページから来たものではなく、変更は不要です。", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 162, 193
-"Page asked for" => "",
+"Page asked for" => "要求されたページ", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 176
-"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "",
+"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "過去30日間に、ビューや条件から除外されたスライス、拒否された保護フィールド、無視された文字コードはありません", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 187
-"%1 ignored a charset in %2" => "",
+"%1 ignored a charset in %2" => "%1 が %2 の文字コードを無視しました", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 191
 // src/Security/Protection.php, row 92
 "Parameter" => "パラメーター", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 192
-"Latest charsets" => "",
+"Latest charsets" => "最近の文字コード", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 194
-"Link on page" => "",
+"Link on page" => "リンク元ページ", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 198
-"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "リンクまたはフォームが、ビュー、ディスカッション、アンケート、フォームの変換用に、AA が URL から受け付けない文字コードを指定しました（view.php、jsview.php、discussion.php、poll.php、filler.php の convertfrom または convertto、ビューの set[...]=convertfrom-... も含みます）。この指定はなかったものとして無視されました。使用できるのは %1 です（大文字小文字は区別しません）。ページのリンクまたはフォームの文字コードを修正するか、convertfrom を省略してください。省略するとビューはスライスの文字コードから変換します。ページに心当たりがない場合、リクエストはあなたのページから来たものではなく、変更は不要です。", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 202
-"Charset ignored" => "",
+"Charset ignored" => "文字コードの無視", // ai 2026-11
 
 // src/Optimize/ClearPagecache.php, row 13
 "Clear Pagecache" => "pagecache をクリア", // ai 2026-06
@@ -13469,7 +13768,7 @@ return [
 "Whole pagecache will be invalidated and deleted" => "pagecache 全体が無効化され削除されます", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 35
-// src/Optimize/CopyContent.php, row 35
+// src/Optimize/CopyContent.php, row 37
 // src/Optimize/CreateUploadDir.php, row 38
 "There is nothing to test." => "テストするものはありません。", // ai 2026-06
 
@@ -13567,13 +13866,13 @@ return [
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 43
 "DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "config.php の DB_CHARACTER_SET は「%1」です。先に「utf8mb4」に切り替え、AA のテキストが正しく表示されることを確認してください。変換では、utf8mb4 接続で AA が表示している内容が保たれます。", // ai 2026-10
 
-// src/Optimize/CopyContent.php, row 13
+// src/Optimize/CopyContent.php, row 15
 "Copy Content Table" => "contentテーブルのコピー", // ai 2026-06
 
-// src/Optimize/CopyContent.php, row 21
+// src/Optimize/CopyContent.php, row 23
 "Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "short_id=1941629より新しい全項目のデータをcontentテーブルからcontent2テーブルへコピーします。Ecnサーバーのcontentテーブル復旧に使用。他の利用者には恐らく不要です。", // ai 2026-06
 
-// src/Optimize/CopyContent.php, row 67
+// src/Optimize/CopyContent.php, row 69
 "Copied" => "コピー完了", // ai 2026-06
 
 // src/Optimize/CopyItemsFromBackup.php, row 16
@@ -13588,34 +13887,34 @@ return [
 // src/Optimize/CopyItemsFromBackup.php, row 77
 "Deleted items to be recreated: %1." => "再作成される削除済み項目: %1.", // ai 2026-06
 
-// src/Optimize/CreateAppStoreAccount.php, row 14
+// src/Optimize/CreateAppStoreAccount.php, row 16
 "App store account" => "アプリストアのアカウント", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 19
+// src/Optimize/CreateAppStoreAccount.php, row 21
 "Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "他の AA がこの AA の公開アプリを読み取るための公開アカウントを作成します（利用者 %1、権限なし）。パスワードは公開されており、このアカウントでは管理画面にログインできません。", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 34
+// src/Optimize/CreateAppStoreAccount.php, row 36
 "No app store account - this AA publishes no apps" => "アプリストアのアカウントはありません。この AA はアプリを公開していません", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 39
+// src/Optimize/CreateAppStoreAccount.php, row 41
 "The user %1 exists, but not with the public password of the app store - rename it, then repair" => "利用者 %1 は存在しますが、アプリストアの公開パスワードではありません。名前を変更してから修復してください", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 44
+// src/Optimize/CreateAppStoreAccount.php, row 46
 "The app store account %1 has rights or groups - remove them" => "アプリストアのアカウント %1 に権限またはグループがあります。削除してください", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 47
+// src/Optimize/CreateAppStoreAccount.php, row 49
 "The app store account is ready" => "アプリストアのアカウントは準備できています", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 55
+// src/Optimize/CreateAppStoreAccount.php, row 57
 "Only a superadmin may create the app store account" => "アプリストアのアカウントを作成できるのはスーパー管理者だけです", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 67
+// src/Optimize/CreateAppStoreAccount.php, row 69
 "The app store account could not be created" => "アプリストアのアカウントを作成できませんでした", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 70
+// src/Optimize/CreateAppStoreAccount.php, row 72
 "The app store account %1 is created" => "アプリストアのアカウント %1 を作成しました", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 77
+// src/Optimize/CreateAppStoreAccount.php, row 79
 "The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "アプリストアのアカウントには AA 自身の利用者 (PERM_LIB sql) が必要です。この AA は %1 を使っているため、ストアからインストールはできますが、ストアにはなれません", // ai 2026-10
 
 // src/Optimize/CreateUploadDir.php, row 16
@@ -13704,7 +14003,7 @@ return [
 "%1 duplicates found" => "重複が %1 件見付かりました", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 46
-// src/Optimize/FieldDuplicates.php, row 51, 65
+// src/Optimize/FieldDuplicates.php, row 53, 67
 "No duplicates found" => "重複は見付かりませんでした", // ai 2026-06
 
 // src/Optimize/DbRelationStartsxy.php, row 22
@@ -13743,16 +14042,16 @@ return [
 // src/Optimize/DropBackupTables.php, row 28
 "Deletes all the current backup tables (bck_slice, bck_item, ...)." => "現在の全バックアップテーブル (bck_slice, bck_item, ...) を削除します。", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 16
+// src/Optimize/FieldDuplicates.php, row 18
 "Fix field definitions duplicates" => "フィールド定義の重複を修正", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 24
+// src/Optimize/FieldDuplicates.php, row 26
 "There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "すべてのスライスで slice_id - field_id の組は1つだけのはずですが、複数存在する場合があります (主に旧sql_update.phpスクリプトのバグで、display_count...フィールドが複数追加されたため)。", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 55
+// src/Optimize/FieldDuplicates.php, row 57
 "Duplicate in slice - field: %1 - %2" => "スライス - フィールドの重複: %1 - %2", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 83
+// src/Optimize/FieldDuplicates.php, row 85
 "Field %2 in slice %1 fixed" => "スライス %1 のフィールド %2 を修正しました", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 23
@@ -13810,16 +14109,16 @@ return [
 // src/Optimize/FixPagecache.php, row 86
 "%1 inconsistent rows in pagecache removed" => "pagecache内の不整合な行 %1 件を削除しました", // ai 2026-06
 
-// src/Optimize/GenerateJslibsArray.php, row 17
+// src/Optimize/GenerateJslibsArray.php, row 19
 "Generate JS Library definition array" => "JSライブラリ定義配列を生成", // ai 2026-06
 
-// src/Optimize/GenerateJslibsArray.php, row 25
+// src/Optimize/GenerateJslibsArray.php, row 27
 "Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)" => "include/stringexpand.php で使われるJSライブラリ定義配列を出力します。jsDeliver CDN上のライブラリを最新版に更新するためのものです (AA開発者がAAのjsライブラリの更新に使用)", // ai 2026-06
 
-// src/Optimize/GenerateMetabase.php, row 42
+// src/Optimize/GenerateMetabase.php, row 44
 "Generate metabase definition row" => "メタベース定義行を生成", // ai 2026-06
 
-// src/Optimize/GenerateMetabase.php, row 50
+// src/Optimize/GenerateMetabase.php, row 52
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "プログラマ専用 - 現在のデータベースから生成した include/metabase_schema.php の内容 (期待されるDBスキーマ、読みやすいPHP配列) を出力します。ファイルにコピーしてコミットしてください。", // ai 2026-06
 
 // src/Optimize/ImgCacheWritable.php, row 17
@@ -13882,92 +14181,98 @@ return [
 // src/Optimize/ItemDiscussion.php, row 65
 "%1 problems solved" => "%1件の問題を解決しました", // ai 2026-06
 
+// src/Optimize/LdapPermsToSql.php, row 44
+"Convert LDAP permissions to SQL" => "LDAP の許可を SQL に変換", // ai 2026-11
+
 // src/Optimize/LdapPermsToSql.php, row 49
-"Migrate LDAP perms to SQL perms" => "LDAP許可をSQL許可に移行", // ai 2026-06
+"Moves the users, groups and rights of this database from LDAP to the SQL tables under new numeric ids and rewrites the references to people in the data. Test only reads: its trial import is rolled back. Repair does everything in one transaction; then set PERM_LIB='sql' in every config of this database. Take a backup first - restoring it is the only way back." => "このデータベースの利用者、グループ、権限を LDAP から SQL テーブルへ新しい数値 ID で移し、データ内の人への参照を書き換えます。「テスト」は読み取りのみで、試験インポートはロールバックされます。「修復」はすべてを1つのトランザクションで行います。その後、このデータベースのすべての設定ファイルで PERM_LIB='sql' を設定してください。事前にバックアップを取ってください。元に戻す方法はその復元だけです。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 55
-"Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "LDAPバックエンドの全利用者、グループ、メンバーシップ、許可をSQLバックエンドのテーブル（users、membership、perms）にコピーし、item.posted_by / item.edited_by をLDAP DN形式（uid=...,ou=...）から新しいSQL数値IDに書き換えます。インストールごとに一度実行し、その後configでPERM_LIBを'sql'に切り替えてください。'Test'は読み取り専用の試験実行です。'Repair'は移行を実行し、繰り返し実行できます。'Revert'はマッピングテーブルを使ってすべてを元に戻します。", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check passed: SQL answers as LDAP does." => "整合性チェック成功: SQL は LDAP と同じ結果を返します。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 72
-"This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "このオプティマイザはPERM_LIB='ldap'の場合のみ実行されます。現在のPERM_LIB='%1'。", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check failed - Repair would stop at it." => "整合性チェック失敗 - 「修復」はここで停止します。", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 83
+"The trial import is skipped: it would stop at the first blocking finding above. Fix them and run Test again." => "試験インポートは省略されました。上記の最初のブロッキング検出事項で停止するためです。それらを修正して、もう一度「テスト」を実行してください。", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 87
-"Would create mapping table `%1`" => "マッピングテーブル `%1` が作成されます", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 116
 "Test failed: %1" => "テスト失敗: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 119
-"Test finished (dry run - no changes made)." => "テスト完了（試験実行 - 変更なし）。", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 108
+"Nothing was changed: the findings above block the conversion." => "何も変更されていません: 上記の検出事項が変換を妨げています。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 135
-"Repair failed: %1" => "修復失敗: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 133
+"Repair failed, yet the database holds a finished conversion (its log row exists) - check it with Test: %1" => "修復は失敗しましたが、データベースには完了した変換があります（そのログ行が存在します）。「テスト」で確認してください: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 138
-"Repair finished." => "修復完了。", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 134
+"Repair failed, nothing was changed: %1" => "修復は失敗しました。何も変更されていません: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 154
-"Revert failed: %1" => "復元失敗: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 144
+"The page cache was not cleared, clear it by hand: %1" => "ページキャッシュはクリアされませんでした。手動でクリアしてください: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 157
-"Revert finished." => "復元完了。", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 148
+"Rewritten %1: %2 rows" => "%1 を書き換えました: %2 行", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 178
-"LDAP findUsernames failed or returned: %1" => "LDAP findUsernames が失敗したか、次の値を返しました: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 150
+"New ids of the directory entries:" => "ディレクトリ項目の新しい ID:", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 181
-"LDAP users found: %1" => "見つかったLDAP利用者: %1", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 197
-"Skipping user %1 - cannot determine login" => "利用者 %1 をスキップ - ログインを特定できません", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 206
-"User %1 already exists in SQL (id %2), reusing" => "利用者 %1 は既にSQLに存在します（id %2）、再利用します", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 220
-"Would create SQL user: %1 (from %2)" => "SQL利用者が作成されます: %1（%2 から）", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 228
-"Failed to create SQL user %1" => "SQL利用者 %1 の作成に失敗しました", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 235
-"Users: created=%1 reused=%2 failed=%3" => "利用者: 作成=%1 再利用=%2 失敗=%3", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 243
-"LDAP groups found: %1" => "見つかったLDAPグループ: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 151
+"Now set PERM_LIB='sql' in every config of this database - until then AA still asks LDAP." => "このデータベースのすべての設定ファイルで PERM_LIB='sql' を設定してください。それまで AA は引き続き LDAP に問い合わせます。", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 264
-"Group %1 already exists in SQL (id %2), reusing" => "グループ %1 は既にSQLに存在します（id %2）、再利用します", // ai 2026-06
+"This database was already converted. A second run would give people other ids than the data now holds - restore the backup first if it really has to run again." => "このデータベースはすでに変換済みです。もう一度実行すると、現在のデータとは異なる ID が人に割り当てられます。どうしても再実行が必要な場合は、先にバックアップを復元してください。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 273
-"Would create SQL group: %1 (from %2)" => "SQLグループが作成されます: %1（%2 から）", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 274
+"This database was converted to SQL permissions on %1 (%2). Its parity check ran inside the committed transaction; Repair does not run twice." => "このデータベースは %1（%2）に SQL の許可へ変換されました。整合性チェックはコミットされたトランザクション内で実行済みです。「修復」は2回実行されません。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 280
-"Failed to create SQL group %1" => "SQLグループ %1 の作成に失敗しました", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 279
+"DNs left in %1 (%2): %3" => "%1（%2）に残っている DN: %3", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 287
-"Groups: created=%1 reused=%2 failed=%3" => "グループ: 作成=%1 再利用=%2 失敗=%3", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 282
+"These were written after the conversion or match no directory entry - fix them by hand if they matter." => "これらは変換後に書き込まれたか、どのディレクトリ項目とも一致しません。必要なら手動で修正してください。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 325
-"Memberships: added=%1 skipped_unmapped=%2" => "メンバーシップ: 追加=%1 スキップ（未マッピング）=%2", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 283
+"No DN is left in the columns referring to people." => "人を参照する列に DN は残っていません。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 367
-"Permission rows migrated: %1" => "移行された許可行数: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 291
+"This conversion runs only while PERM_LIB is 'ldap'; here it is '%1'." => "この変換は PERM_LIB が 'ldap' のときだけ実行されます。ここでは '%1' です。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 389
-"No mapping entries - nothing to rewrite." => "マッピングのエントリがありません - 書き換える対象はありません。", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 296
+"The conversion has no dry run - switch it off. Test itself changes nothing." => "この変換には試験実行がありません。オフにしてください。「テスト」自体は何も変更しません。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 408
-"Rewrite %1.%2: %3 rows" => "%1.%2 の書き換え: %3 行", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 310
+"Tables %1 must be InnoDB: on another engine a rollback restores nothing, so even the trial import of Test would delete the users for good. Convert them first - Optimize \"%2\"." => "テーブル %1 は InnoDB である必要があります。他のエンジンではロールバックで何も復元されないため、「テスト」の試験インポートでも利用者が完全に削除されてしまいます。先に変換してください - 「最適化」の「%2」。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 418
-"Mapping table is empty - nothing to revert." => "マッピングテーブルが空です - 元に戻すものはありません。", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 316
+"The database connection uses \"%1\", not utf8mb4: a DN with a character outside it would silently not be found in the data. Set DB_CHARACTER_SET to \"utf8mb4\" in config.php first." => "データベース接続が utf8mb4 ではなく「%1」を使っています。その範囲外の文字を含む DN はデータ内で見つからず、警告も出ません。先に config.php で DB_CHARACTER_SET を「utf8mb4」に設定してください。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 434
-"Revert %1.%2: %3 rows" => "%1.%2 の復元: %3 行", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 368
+"Imported %1 people, %2 groups, %3 memberships and %4 rights; %5 old rows removed." => "インポート: 人 %1、グループ %2、メンバーシップ %3、権限 %4。古い行 %5 件を削除しました。", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 452
-"Deleted SQL users=%1 groups=%2" => "削除されたSQL利用者=%1 グループ=%2", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 369
+"(Trial run - rolled back.)" => "（試験実行 - ロールバックしました。）", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 374
+"Plan: %1 people, %2 groups, %3 memberships, %4 rights; new ids from %5; %6 spellings of DNs in the data to rewrite." => "計画: 人 %1、グループ %2、メンバーシップ %3、権限 %4。新しい ID は %5 から。書き換えるデータ内の DN の表記: %6 種類。", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Blocking" => "ブロッキング", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Info" => "情報", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 394
+"References in %1: %2 rows (%3 s)" => "%1 内の参照: %2 行（%3 秒）", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 396
+"Repair rewrites the references in about %1 s - each UPDATE scans its table as the count did." => "「修復」による参照の書き換えには約 %1 秒かかります。各 UPDATE は件数集計と同様にテーブル全体を走査します。", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 397
+"A DN stored as cp1250 bytes with diacritics is not UTF-8, so it matches no directory entry and stays as it is." => "発音区別符号付きの cp1250 バイトで保存された DN は UTF-8 ではないため、どのディレクトリ項目とも一致せず、そのまま残ります。", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 399
+"Mentions of ou=AA in %1: %2 rows - fix them by hand." => "%1 内の ou=AA への言及: %2 行 - 手動で修正してください。", // ai 2026-11
 
 // src/Optimize/MissCacheRouting.php, row 37
 "Image cache routing" => "画像キャッシュのルーティング", // ai 2026-10
@@ -14060,89 +14365,89 @@ return [
 // src/Optimize/MultivalueDuplicates.php, row 139
 "The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "content テーブルが InnoDB ではないため、ここでは重複を修復できません。先に「%1」を実行してください。", // ai 2026-10
 
-// src/Optimize/ReadersLogin2id.php, row 16
+// src/Optimize/ReadersLogin2id.php, row 18
 "Convert Readers login to reader id" => "読者のログインを読者IDに変換", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 24
+// src/Optimize/ReadersLogin2id.php, row 26
 "There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "AA v2.8.1で読者管理機能に変更があり、読者は内部的にログインではなく読者ID（読者スライス内の読者の項目ID）で識別されるようになりました。これははるかに強力で、通常のスライスと同様に関係を作成できます。変更なしで問題なく動作します。唯一の問題は、読者スライスの利用者が編集できるようにスライスを設定している場合です。その場合、edited_by........ と posted_by........ のフィールドに読者IDではなく読者のログインが入ります。\"Repair\" で修正できます。", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 38, 82
+// src/Optimize/ReadersLogin2id.php, row 40, 84
 "Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "テストできません - お使いの許可システムでは全利用者名の一覧が許可されていません（LDAP?）", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 43
+// src/Optimize/ReadersLogin2id.php, row 45
 "%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "item.posted_by のレコードに読者スライスのログイン名が%1件見つかりましたが、これは誤りです（AA v2.8.1以降は読者IDであるべきです）。\"Repair\" で修正されます。", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 48
+// src/Optimize/ReadersLogin2id.php, row 50
 "%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "item.edited_by のレコードに読者スライスのログイン名が%1件見つかりましたが、これは誤りです（AA v2.8.1以降は読者IDであるべきです）。\"Repair\" で修正されます。", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 90
+// src/Optimize/ReadersLogin2id.php, row 92
 "Column item.posted_by updated for %1 (id: %2)." => "%1（id: %2）の item.posted_by 列を更新しました。", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 96
+// src/Optimize/ReadersLogin2id.php, row 98
 "Column item.edited_by updated for %1 (id: %2)." => "%1（id: %2）の item.edited_by 列を更新しました。", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 18
+// src/Optimize/RedefineCoreConstants.php, row 20
 "Redefine core constants" => "コア定数の再定義", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 26
+// src/Optimize/RedefineCoreConstants.php, row 28
 "Updates core constants - like Code-pages, Language Constants and AA Bins" => "コア定数を更新します - コードページ、言語定数、AA Bins など", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 46
+// src/Optimize/RedefineCoreConstants.php, row 48
 "Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "コードページ定数（lt_codepages）が最新ではありません - 見つかった数: 9 中 %1", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 53
+// src/Optimize/RedefineCoreConstants.php, row 55
 "Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "言語定数（lt_languages）が最新ではありません - 見つかった数: 46 中 %1", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 60
+// src/Optimize/RedefineCoreConstants.php, row 62
 "AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "AA Bins定数（AA_Core_Bins....）が最新ではありません - 見つかった数: 3 中 %1", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 67
+// src/Optimize/RedefineCoreConstants.php, row 69
 "APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "APC共通分類（lt_apcCategories）が最新ではありません - 見つかった数: 82 中 %1", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 81
+// src/Optimize/RedefineCoreConstants.php, row 83
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "コードページ、言語定数、AA Bins定数、APC共通分類を削除しています", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 85
+// src/Optimize/RedefineCoreConstants.php, row 87
 "Recreate Code-pages" => "コードページの再作成", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 96
+// src/Optimize/RedefineCoreConstants.php, row 98
 "Recreate Languages" => "言語の再作成", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 144
+// src/Optimize/RedefineCoreConstants.php, row 146
 "Recreate AA Bins" => "AA Binsの再作成", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 149
+// src/Optimize/RedefineCoreConstants.php, row 151
 "APC wide categories" => "APC共通分類", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 233
+// src/Optimize/RedefineCoreConstants.php, row 235
 "Make sure, the constants are registered" => "定数が登録されていることを確認", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 242
+// src/Optimize/RedefineCoreConstants.php, row 244
 "Redefine core constants - done." => "コア定数の再定義 - 完了。", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 43
+// src/Optimize/RedefineFieldTemplates.php, row 45
 "Redefine field templates" => "フィールドテンプレートの再定義", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 51
+// src/Optimize/RedefineFieldTemplates.php, row 53
 "Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice" => "スライスに新しいフィールドを追加する際に使われるフィールドテンプレート（ActionApps Coreスライス内）を更新します", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 77
+// src/Optimize/RedefineFieldTemplates.php, row 79
 "template fields are not present" => "テンプレートフィールドが存在しません", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 95
-// src/Optimize/RedefineSliceNewsTemplates.php, row 57
+// src/Optimize/RedefineFieldTemplates.php, row 97
+// src/Optimize/RedefineSliceNewsTemplates.php, row 59
 "Deleting all fields from \"ActionApps Core\" slice" => "\"ActionApps Core\"スライスから全フィールドを削除しています", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 99
+// src/Optimize/RedefineFieldTemplates.php, row 101
 "Make sure slice owner Action Applications System exists and reset to defaults" => "スライス所有者 Action Applications System が存在することを確認し、既定の設定に戻す", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 102
+// src/Optimize/RedefineFieldTemplates.php, row 104
 "Make sure \"ActionApps Core\" slice exists and reset to defaults" => "\"ActionApps Core\"スライスが存在することを確認し、既定の設定に戻す", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 106
+// src/Optimize/RedefineFieldTemplates.php, row 108
 "Recreate field definitions" => "フィールド定義の再作成", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 197
+// src/Optimize/RedefineFieldTemplates.php, row 199
 "Redefine field defaults - done." => "フィールド省略値の再定義 - 完了。", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
@@ -14155,127 +14460,127 @@ return [
 "There is no root Link Module category - Links module should be recreated" => "Linksモジュールのルート分類がありません - Linksモジュールの再作成が必要です", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
-// src/Optimize/RedefineSiteTemplates.php, row 47
+// src/Optimize/RedefineSiteTemplates.php, row 49
 "Replacing module definition" => "モジュール定義を置き換えています", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Linksモジュールテンプレートの再作成 - 完了。", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 13
+// src/Optimize/RedefineSiteTemplates.php, row 15
 "Recreate Site module template" => "Siteモジュールテンプレートの再作成", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 19
+// src/Optimize/RedefineSiteTemplates.php, row 21
 "Deletes and recreates the default template for Site module" => "Siteモジュールの既定のテンプレートを削除して再作成します", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 36
+// src/Optimize/RedefineSiteTemplates.php, row 38
 "Site Module template should be recreated" => "Siteモジュールテンプレートは再作成が必要です", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 53
+// src/Optimize/RedefineSiteTemplates.php, row 55
 "Site Module template recreation - done." => "Siteモジュールテンプレートの再作成 - 完了。", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 15
+// src/Optimize/RedefineSlicReaderTemplates.php, row 17
 "Redefine Reader Management template slice" => "Reader Managementテンプレートスライスの再定義", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 23
+// src/Optimize/RedefineSlicReaderTemplates.php, row 25
 "Deletes and recreates the Reader Management slice, used as template or example slice" => "テンプレートまたはサンプルスライスとして使われる Reader Management スライスを削除して再作成します", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 42
+// src/Optimize/RedefineSlicReaderTemplates.php, row 44
 "\"Reader Management\" template slice is not defined" => "\"Reader Management\"テンプレートスライスが定義されていません", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 58
+// src/Optimize/RedefineSlicReaderTemplates.php, row 60
 "Deleting all fields from \"Reader Management\" slice" => "\"Reader Management\"スライスから全フィールドを削除しています", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 62
+// src/Optimize/RedefineSlicReaderTemplates.php, row 64
 "Make sure \"Reader Management\" slice exists and reset to defaults" => "\"Reader Management\"スライスが存在することを確認し、既定の設定に戻す", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 66
+// src/Optimize/RedefineSlicReaderTemplates.php, row 68
 "Recreate field definitions for \"Reader Management\"" => "\"Reader Management\"のフィールド定義の再作成", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 92
+// src/Optimize/RedefineSlicReaderTemplates.php, row 94
 "Reader Management template slice creation - done." => "Reader Management テンプレートスライスの作成 - 完了。", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 15
+// src/Optimize/RedefineSliceNewsTemplates.php, row 17
 "Redefine News EN template slice" => "News EN テンプレートスライスの再定義", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 23
+// src/Optimize/RedefineSliceNewsTemplates.php, row 25
 "Deletes and recreates the News EN slice, used as template or example slice" => "テンプレートまたは例示用スライスとして使われる News EN スライスを削除して再作成します", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 41
+// src/Optimize/RedefineSliceNewsTemplates.php, row 43
 "News EN template slice is not defined" => "News EN テンプレートスライスが定義されていません", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 61
+// src/Optimize/RedefineSliceNewsTemplates.php, row 63
 "Make sure \"News EN\" slice exists and reset to defaults" => "「News EN」スライスの存在を確認し、初期設定に戻す", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 65
+// src/Optimize/RedefineSliceNewsTemplates.php, row 67
 "Recreate field definitions for \"News EN\"" => "「News EN」のフィールド定義を再作成", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 99
+// src/Optimize/RedefineSliceNewsTemplates.php, row 101
 "News EN template slice creation - done." => "News EN テンプレートスライスの作成 - 完了。", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 15
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 17
 "Redefine Noticas - ES template slice" => "Noticas - ES テンプレートスライスの再定義", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 23
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 25
 "Deletes and recreates the Noticas - ES slice, used as template or example slice" => "テンプレートまたは例示用スライスとして使われる Noticas - ES スライスを削除して再作成します", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 42
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 44
 "\"Noticas - ES\" template slice is not defined" => "「Noticas - ES」テンプレートスライスが定義されていません", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 58
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 60
 "Deleting all fields from \"Noticas - ES\" slice" => "「Noticas - ES」スライスから全フィールドを削除しています", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 62
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 64
 "Make sure \"Noticas - ES\" slice exists and reset to defaults" => "「Noticas - ES」スライスの存在を確認し、初期設定に戻す", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 66
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 68
 "Recreate field definitions for \"Noticas - ES\"" => "「Noticas - ES」のフィールド定義を再作成", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 100
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 102
 "Noticas - ES template slice creation - done." => "Noticas - ES テンプレートスライスの作成 - 完了。", // ai 2026-06
 
-// src/Optimize/RedefineViewCalendarTemplates.php, row 10
+// src/Optimize/RedefineViewCalendarTemplates.php, row 12
 "Redefine calendar template view" => "calendar テンプレートビューの再定義", // ai 2026-06
 
-// src/Optimize/RedefineViewCategoriesTemplates.php, row 10
+// src/Optimize/RedefineViewCategoriesTemplates.php, row 12
 "Redefine categories template view" => "categories テンプレートビューの再定義", // ai 2026-06
 
-// src/Optimize/RedefineViewConstTemplates.php, row 10
+// src/Optimize/RedefineViewConstTemplates.php, row 12
 "Redefine const template view" => "const テンプレートビューの再定義", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 13
+// src/Optimize/RedefineViewDiscusTemplates.php, row 15
 "Redefine discus template view" => "discus テンプレートビューの再定義", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 19
+// src/Optimize/RedefineViewDiscusTemplates.php, row 21
 "Deletes and recreates that view, which is used as template view of that type" => "その種類のテンプレートビューとして使われるビューを削除して再作成します", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 47
+// src/Optimize/RedefineViewDiscusTemplates.php, row 49
 "\"%1\" template view is not defined" => "「%1」テンプレートビューが定義されていません", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 58
+// src/Optimize/RedefineViewDiscusTemplates.php, row 60
 "Deleting the view template \"%1\"" => "ビューテンプレート「%1」を削除しています", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 62
+// src/Optimize/RedefineViewDiscusTemplates.php, row 64
 "Inserting the view \"discus\" template" => "ビュー「discus」のテンプレートを挿入しています", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 66
+// src/Optimize/RedefineViewDiscusTemplates.php, row 68
 "view \"%1\" redefinition - done." => "ビュー「%1」の再定義 - 完了。", // ai 2026-06
 
-// src/Optimize/RedefineViewFullTemplates.php, row 10
+// src/Optimize/RedefineViewFullTemplates.php, row 12
 "Redefine full template view" => "full テンプレートビューの再定義", // ai 2026-06
 
-// src/Optimize/RedefineViewJavascriptTemplates.php, row 10
+// src/Optimize/RedefineViewJavascriptTemplates.php, row 12
 "Redefine javascript template view" => "javascript テンプレートビューの再定義", // ai 2026-06
 
-// src/Optimize/RedefineViewLinksTemplates.php, row 10
+// src/Optimize/RedefineViewLinksTemplates.php, row 12
 "Redefine links template view" => "links テンプレートビューの再定義", // ai 2026-06
 
-// src/Optimize/RedefineViewRssTemplates.php, row 10
+// src/Optimize/RedefineViewRssTemplates.php, row 12
 "Redefine rss template view" => "rss テンプレートビューの再定義", // ai 2026-06
 
-// src/Optimize/RedefineViewStaticTemplates.php, row 10
+// src/Optimize/RedefineViewStaticTemplates.php, row 12
 "Redefine static template view" => "static テンプレートビューの再定義", // ai 2026-06
 
-// src/Optimize/RedefineViewUrlsTemplates.php, row 10
+// src/Optimize/RedefineViewUrlsTemplates.php, row 12
 "Redefine urls template view" => "urls テンプレートビューの再定義", // ai 2026-06
 
 // src/Optimize/RemoveAaCronEntries.php, row 22
@@ -14329,19 +14634,19 @@ return [
 // src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "OK - 「必要」指定のチェックボックスフィールドはありません", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 20
+// src/Optimize/RestoreBckTables.php, row 22
 "Restore data from backup tables" => "バックアップテーブルからデータを復元", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 "Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "bck_ テーブルが存在する現在のテーブル (slice, item, ...) をすべて削除し、すべてのバックアップテーブル (bck_slice, bck_item, ...) を正しい名前 (slice, item, ...) に変更します。", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 40
+// src/Optimize/RestoreBckTables.php, row 42
 "The bck_ tables do not exist (or at least bck_content table)" => "bck_ テーブルが存在しません (少なくとも bck_content テーブル)", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 59
+// src/Optimize/RestoreBckTables.php, row 61
 "There is no bck_%1 table - %1 not restored." => "bck_%1 テーブルが存在しません - %1 は復元されませんでした。", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 62
+// src/Optimize/RestoreBckTables.php, row 64
 "Replace table bck_%1 -> %1" => "テーブルの置き換え bck_%1 -> %1", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 44
@@ -14593,6 +14898,30 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 141
 "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "旧テーブルをバックアップ %1 -> bck_%1 し、代わりに新テーブルを使用 tmp_%1 -> %1", // ai 2026-06
 
+// src/Passkey/Notice.php, row 23
+"A passkey was added to your account" => "アカウントにパスキーが追加されました", // ai 2026-11
+
+// src/Passkey/Notice.php, row 23
+"The passkey \"%1\" was added to your account %2 on %3. It logs you in on %4." => "パスキー「%1」が %3 にアカウント %2 に追加されました。このパスキーで %4 にログインできます。", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"A passkey was deleted from your account" => "アカウントからパスキーが削除されました", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"The passkey \"%1\" was deleted from your account %2 on %3." => "パスキー「%1」が %3 にアカウント %2 から削除されました。", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"The passkeys of your account were deleted" => "アカウントのパスキーが削除されました", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"%1 deleted all passkeys of your account %2 on %3. You log in by your password again; you can add a new passkey after the login." => "%1 が %3 にアカウント %2 のパスキーをすべて削除しました。再びパスワードでログインします。ログイン後に新しいパスキーを追加できます。", // ai 2026-11
+
+// src/Passkey/Notice.php, row 60
+"If it was not you, tell the administrator of ActionApps at %1 at once." => "心当たりがない場合は、すぐに ActionApps の管理者（%1）に連絡してください。", // ai 2026-11
+
+// src/Passkey/Notice.php, row 61
+"Address: %1, browser: %2" => "アドレス: %1、ブラウザ: %2", // ai 2026-11
+
 // src/Security/LoginThrottle.php, row 156
 "Too many failed login attempts. Try again in %1 min." => "ログインの失敗が多すぎます。%1 分後にもう一度お試しください。", // ai 2026-10
 
@@ -14609,7 +14938,7 @@ return [
 "ret_code and ok_url sent to filler.php" => "filler.php に送られる ret_code と ok_url", // ai 2026-10
 
 // src/Security/Protection.php, row 32
-"als[], noitem of views and the state of site pages, taken from the URL" => "",
+"als[], noitem of views and the state of site pages, taken from the URL" => "URL から取得したビューの als[]、noitem とサイトページの状態", // ai 2026-11
 
 // src/Security/Protection.php, row 33
 "Logins to the administration and to reader accounts, counted per address of the visitor" => "管理画面と読者アカウントへのログイン（訪問者のアドレスごとに集計）", // ai 2026-10
@@ -14630,7 +14959,7 @@ return [
 "Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it." => "als[] やサイトページの状態に含まれるテキスト、数値、ID、_#ALIASES は引き続き機能しますが、そこにある {expression} はテキストとして表示されます。式はリンクを作成するテンプレート側に書いて、リンクが送られる前にそこで実行されるようにするか、ID を渡して残りを受け取る側のページで計算してください。", // ai 2026-10
 
 // src/Security/Protection.php, row 56
-"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "",
+"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "ビューへのリンク内の noitem テキスト（set[...]=noitem-...）は、HTML や _#ALIASES も含めてテキストとして表示されます。そのテキストはビューの「項目が見付かりません」メッセージに入れるか、テンプレートから {view.php?...} でビューを表示してください。そこでは noitem は従来どおり動作します。この保護をオフにすると、{expression} を含む noitem だけが従来どおり実行されます。", // ai 2026-11
 
 // src/Security/Protection.php, row 57
 "After 20 failed logins from one address in 12 hours, or 5 with one user name, the next login waits half a minute to a minute, twice as long after each further failure, at most an hour. A script that keeps logging in with an old password waits too: find its address in the Log (event LOGIN) and give it the current password. If every visitor seems to come from one address, AA runs behind a proxy missing in AA_TRUSTED_PROXIES - State Check names it; add it in config.php rather than switching this protection off." => "12時間以内に1つのアドレスから20回、または1つの利用者名で5回ログインに失敗すると、次のログインは30秒から1分待たされ、その後失敗するたびに待ち時間が2倍になります（最長1時間）。古いパスワードでログインし続けるスクリプトも待たされます。「ログ」（イベント LOGIN）でそのアドレスを探し、現在のパスワードを設定してください。すべての訪問者が1つのアドレスから来ているように見える場合、AA は AA_TRUSTED_PROXIES にないプロキシの背後で動作しています。「状態チェック」がそのプロキシを示します。この保護を無効にするのではなく、config.php に追加してください。", // ai 2026-10
@@ -14825,17 +15154,17 @@ return [
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "チェックボックス", // ai 2026-06
 
-// src/Widget/CodWidget.php, row 21
+// src/Widget/CodWidget.php, row 23
 "Code editor" => "コードエディタ", // ai 2026-06
 
-// src/Widget/EdtWidget.php, row 21
+// src/Widget/EdtWidget.php, row 23
 "Rich Edit Text Area" => "リッチエディットテキストエリア", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 38
 "File Upload" => "ファイルアップロード", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 206, 236
-// src/Widget/RichtextMarkup.php, row 73
+// src/Widget/RichtextMarkup.php, row 86
 "Upload" => "アップロード", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 250
@@ -14858,13 +15187,13 @@ return [
 // src/Widget/GpsWidget.php, row 438
 "Use" => "使用", // ai 2026-06
 
-// src/Widget/HcoWidget.php, row 34
+// src/Widget/HcoWidget.php, row 36
 "hierarchical constants" => "階層定数", // ai 2026-06
 
 // src/Widget/HidWidget.php, row 28
 "Hidden field" => "隠しフィールド", // ai 2026-06
 
-// src/Widget/InfWidget.php, row 31
+// src/Widget/InfWidget.php, row 33
 "Info text - output" => "情報テキスト - 出力", // ai 2026-06
 
 // src/Widget/IsoWidget.php, row 35
@@ -14906,28 +15235,28 @@ return [
 // src/Widget/MngWidget.php, row 39
 "Best for galleries and other tabular data which is multivalue and different for each item" => "ギャラリーなど、項目ごとに異なる複数値の表形式データに最適です", // ai 2026-06
 
-// src/Widget/MseWidget.php, row 25
+// src/Widget/MseWidget.php, row 27
 "Multiple Selectbox" => "複数セレクトボックス", // ai 2026-06
 
-// src/Widget/NulWidget.php, row 23
+// src/Widget/NulWidget.php, row 25
 "Do not show" => "表示しない", // ai 2026-06
 
-// src/Widget/PreWidget.php, row 36
+// src/Widget/PreWidget.php, row 38
 "Text Field with Presets" => "プリセット付きテキストフィールド", // ai 2026-06
 
 // src/Widget/PwdWidget.php, row 37
 "Password and Change password" => "パスワードとパスワード変更", // ai 2026-06
 
-// src/Widget/RichtextMarkup.php, row 75
+// src/Widget/RichtextMarkup.php, row 88
 "Loading..." => "読み込み中...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 76
+// src/Widget/RichtextMarkup.php, row 89
 "No files" => "ファイルがありません", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 77
+// src/Widget/RichtextMarkup.php, row 90
 "Uploading..." => "アップロード中...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 78
+// src/Widget/RichtextMarkup.php, row 91
 "Upload failed" => "アップロードに失敗しました", // ai 2026-10
 
 // src/Widget/RimWidget.php, row 43
@@ -14948,25 +15277,25 @@ return [
 // src/Widget/TagWidget.php, row 44
 "Tags" => "タグ", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 43
+// src/Widget/TfaWidget.php, row 45
 "2FA Secret generator" => "2FAシークレットジェネレータ", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 79
+// src/Widget/TfaWidget.php, row 81
 "One time Code" => "ワンタイムコード", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 89
+// src/Widget/TfaWidget.php, row 91
 "Generate New Secret" => "新しいシークレットを生成", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 90
+// src/Widget/TfaWidget.php, row 92
 "Get Secret" => "シークレットを取得", // ai 2026-06
 
-// src/Widget/TprWidget.php, row 27
+// src/Widget/TprWidget.php, row 29
 "Textarea with Presets" => "プリセット付きテキストエリア", // ai 2026-06
 
 // src/Widget/TxtWidget.php, row 40
 "Text Area" => "テキストエリア", // ai 2026-06
 
-// src/Widget/Wi2Widget.php, row 32
+// src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "2つのボックス", // ai 2026-06
 
 // src/Widget/Widget.php, row 603

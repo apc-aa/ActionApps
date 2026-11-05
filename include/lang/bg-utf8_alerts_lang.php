@@ -42,10 +42,10 @@ return [
 "remove" => "премахни", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "Изгледът ѝ е изтрит - читателите не получават нищо от тази подборка. Премахнете я и добавете съществуваща.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Тази подборка е изтрита - читателите не получават нищо от нея. Премахнете я и добавете съществуваща.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Все още не са избрани селекции.", // ai 2026-10

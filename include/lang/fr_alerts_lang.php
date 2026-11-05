@@ -39,10 +39,10 @@ return [
 "remove" => "supprimer", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "Sa vue a \xE9t\xE9 supprim\xE9e - les lecteurs ne re\xE7oivent rien de cette s\xE9lection. Retirez-la et ajoutez-en une existante.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Cette s\xE9lection a \xE9t\xE9 supprim\xE9e - les lecteurs n'en re\xE7oivent rien. Retirez-la et ajoutez-en une existante.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Aucune s\xE9lection pour l'instant.", // ai 2026-10
