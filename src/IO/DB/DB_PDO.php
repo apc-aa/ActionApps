@@ -216,7 +216,7 @@ class DB_PDO
                 $this->halt("connect($Host$Port, $User, \$Password) failed.");
 
 
-                return 0;
+                return false;
             }
 
             switch ($this->Server) {
