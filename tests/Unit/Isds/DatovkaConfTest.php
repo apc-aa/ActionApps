@@ -682,6 +682,9 @@ final class DatovkaConfTest extends TestCase
     #[PreserveGlobalState(false)]
     public function test_load_readsOnce(): void
     {
+        if (file_exists(DatovkaConf::base() . DatovkaConf::FILE)) {
+            $this->markTestSkipped('this checkout has a settings file of its own: load() would read it and log its problems');
+        }
         $this->assertSame(DatovkaConf::load(), DatovkaConf::load());
     }
 
