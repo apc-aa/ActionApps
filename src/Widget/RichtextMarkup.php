@@ -25,19 +25,20 @@ final class RichtextMarkup
     }
 
     /**
-     * The upload-* attributes for a viewer who may upload in $mode; none for UploadPolicy::NONE.
+     * The upload-* attributes for a viewer who may upload in $mode; just upload="none" for
+     * UploadPolicy::NONE - it tells the editor AA decided, so it does not ask api/files.php.
      * @return array<string, string>
      */
     public static function uploadAttrs(string $slice_id, string $mode, string $uid, int $now, string $api_url): array
     {
         if (($mode !== UploadPolicy::USER) && ($mode !== UploadPolicy::ANON)) {
-            return [];
+            return ['upload' => UploadPolicy::NONE];
         }
         $attrs = [
             'upload'       => $mode,
             'upload-url'   => $api_url,
             'upload-token' => UploadToken::issue($slice_id, $mode, $uid, $now),
-            'slice'        => $slice_id,
+            'upload-slice' => $slice_id,
         ];
         $attrs['upload-images'] = implode(',', UploadPolicy::imageTypes($mode));
         if ($mode === UploadPolicy::USER) {
@@ -56,11 +57,23 @@ final class RichtextMarkup
     {
         $viewer = ($upload && is_long_id($slice_id)) ? UploadPolicy::viewer($slice_id) : null;
         $mode   = $viewer ? UploadPolicy::mode($viewer['editor'], $viewer['anonymous']) : UploadPolicy::NONE;
-        $api    = (defined('AA_INSTAL_PATH') ? AA_INSTAL_PATH : '/') . 'api/files.php';
-        return self::uploadAttrs($slice_id, $mode, AuthGetUid(), time(), $api) + [
-            'ui-lang' => Langs::getLangName2Code(Langs::currentLang()),
-            'l10n'    => (string) json_encode(self::labels(), JSON_UNESCAPED_UNICODE),
-        ];
+        return self::viewerAttrs($slice_id, $mode, AuthGetUid(), time()) + ['ui-lang' => Langs::getLangName2Code(Langs::currentLang())];
+    }
+
+    /**
+     * The upload-* attributes and the texts of an editor of $slice_id - for the editors AA renders
+     * and for those of a template, which ask api/files.php.
+     * @return array<string, string>
+     */
+    public static function viewerAttrs(string $slice_id, string $mode, string $uid, int $now): array
+    {
+        return self::uploadAttrs($slice_id, $mode, $uid, $now, self::apiUrl()) + ['l10n' => (string) json_encode(self::labels(), JSON_UNESCAPED_UNICODE)];
+    }
+
+    /** where the editor uploads and lists files - AA often lives under a path (/aaa/) */
+    public static function apiUrl(): string
+    {
+        return (defined('AA_INSTAL_PATH') ? AA_INSTAL_PATH : '/') . 'api/files.php';
     }
 
     /** @return array<string, string> */

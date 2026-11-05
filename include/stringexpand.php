@@ -8156,6 +8156,7 @@ class AA_Requires {
             'aa-code@1'                   => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-code.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
             'aa-isds@1'                   => new AA_Req_Lib(get_aa_url('javascript/aa-isds.js', ['v'=>AA_JS_VERSION],false).' module', '', ['_css-aa-isds@1', 'aa-richtext@1']),
             '_css-aa-isds@1'              => new AA_Req_Css(get_aa_url('css/aa-isds.css', ['v'=>AA_JS_VERSION],false)),
+            'aa-passkey@1'                => new AA_Req_Lib(get_aa_url('javascript/aa-passkey.js', ['v'=>AA_JS_VERSION],false).' module'),
             'aa-richtext@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-richtext.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
             'aa-editable@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-editable.js', ['v'=>AA_JS_VERSION],false).' module'),
             'aa-speech@1'                 => new AA_Req_Lib(get_aa_url('javascript/aa-speech/aa-speech.js', ['v'=>AA_JS_VERSION],false), '', ['_css-aa-speech@1']),

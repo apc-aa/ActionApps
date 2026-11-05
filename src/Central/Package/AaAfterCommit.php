@@ -14,11 +14,12 @@ use RuntimeException;
 
 /** AfterCommit on this AA.
  *
- *  Rights: as AA does for a module it creates (modutils.php, slicedit.php), AddPermObject($id, 'slice') -
- *  a superadmin reaches every module. An importer below SUPER (PS_INSTALL_APP granted directly) also gets
- *  the ADMINISTRATOR role on each new module, or could not open what (s)he installed; IsSuperadmin() knows
- *  the logged-in user only, so another user (CLI) gets the role. Never undone: it runs after the commit.
- *  AddPerm() writes without nohalt - a DB error there ends the request (the import stays).
+ *  Rights: as AA does for a module it creates (modutils.php, slicedit.php), AA::$perm->addPermObject($id,
+ *  'slice') - a superadmin reaches every module; with no backend storing permissions it throws LogicException.
+ *  An importer below SUPER (PS_INSTALL_APP granted directly) also gets the ADMINISTRATOR role on each new
+ *  module, or could not open what (s)he installed; IsSuperadmin() knows the logged-in user only, so another
+ *  user (CLI) gets the role. Never undone: it runs after the commit.
+ *  addPerm() writes without nohalt - a DB error there ends the request (the import stays).
  *
  *  The log entry: the rows AA_Log::write() makes, inserted with nohalt - AA_Log::write() die()s on a DB
  *  error, here a failed insert is an exception (a row of the report). */
@@ -29,17 +30,14 @@ final class AaAfterCommit implements AfterCommit
 
     public function permissions(string $module, string $user): void
     {
-        if (!function_exists('AddPermObject') || !function_exists('AddPerm')) {
-            throw new LogicException('No permission library loaded - AddPermObject() did not run');
-        }
-        if (!\AddPermObject($module, 'slice')) {
-            throw new RuntimeException("AddPermObject($module) failed");
+        if (!AA::$perm->addPermObject($module, 'slice')) {
+            throw new RuntimeException("addPermObject($module) failed");
         }
         if (($user === '') || (($user === \AuthGetUid()) && \IsSuperadmin())) {
             return;
         }
-        if (!\AddPerm($user, $module, 'slice', AA_Perm::ROLES['ADMINISTRATOR']['id'])) {
-            throw new RuntimeException("AddPerm($user, $module, ADMINISTRATOR) failed");
+        if (!AA::$perm->addPerm($user, $module, 'slice', AA_Perm::ROLES['ADMINISTRATOR']['id'])) {
+            throw new RuntimeException("addPerm($user, $module, ADMINISTRATOR) failed");
         }
         AA::$perm->invalidateCache();           // the new role in the session's cached perms, as se_users.php
     }

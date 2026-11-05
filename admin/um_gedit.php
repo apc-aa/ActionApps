@@ -97,7 +97,7 @@ if (!IfSlPerm(PS_NEW_USER)) {
 }
 
 if ( $submit_action === "grp_del" && $selected_group ) {
-    DelGroup( $selected_group );     // default is to delete any references as well
+    AA::$perm->delGroup( $selected_group );     // default is to delete any references as well
     go_url( StateUrl($_SERVER['PHP_SELF']) );
 }
 

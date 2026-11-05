@@ -52,13 +52,13 @@ function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role): void
 {
     if ($UsrAdd) {
         if (CanChangeRole(AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, AA_Perm::ROLES[$role]['perm'])) {
-            AddPerm($UsrAdd, $slice_id, "slice", AA_Perm::ROLES[$role]['id']);
+            AA::$perm->addPerm($UsrAdd, $slice_id, "slice", AA_Perm::ROLES[$role]['id']);
             AA::$perm->invalidateCache();
             AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
         }
     } elseif ($UsrDel) {
         if (CanChangeRole(AA::$perm->getModulePerms($UsrDel, $slice_id, false), $editor_perms, AA_Perm::ROLES["AUTHOR"]['perm'])) { // smallest permission
-            DelPerm($UsrDel, $slice_id, "slice");
+            AA::$perm->delPerm($UsrDel, $slice_id, "slice");
             AA::$perm->invalidateCache();
         }
 
@@ -100,9 +100,9 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr = true): void
     $username = perm_username($usr_id);
     $usrinfo  = AA::$perm->getIDsInfo($usr_id);
 
-    echo "<tr><td>" . $usr['name'] . "</td>\n";
-    echo "<td>$username</td>\n";
-    echo "<td>" . (($usr['mail']) ?: "&nbsp;") . "</td>\n";
+    echo "<tr><td>" . safe($usr['name']) . "</td>\n";
+    echo "<td>" . safe($username) . "</td>\n";
+    echo "<td>" . (safe($usr['mail'] ?? '') ?: "&nbsp;") . "</td>\n";
     echo "<td>" . UserTypeLabel($usrinfo, $usr_id) . "</td>\n";
 
     echo IfLink(($editor_role > AA_Perm::ROLES["AUTHOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'AUTHOR'], true), _m("Author"));

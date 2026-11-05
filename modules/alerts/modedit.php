@@ -108,7 +108,7 @@ if ($is_add ? $insert : $update) {
             break;
         }
 
-        // module table (also runs AddPermObject() on insert)
+        // module table (also runs AA::$perm->addPermObject() on insert)
         $module_id = WriteModuleFields($is_add ? null : ($module_id ?: null), $superadmin, 'Alerts', $name, $slice_url, $priority, $lang_file, $owner, $deleted);
         if (!$module_id) {
             break;

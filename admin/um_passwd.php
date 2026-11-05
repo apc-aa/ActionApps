@@ -29,6 +29,8 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -46,6 +48,7 @@ try {
     $user_surname = InputVars::stringSlashedPOST('user_surname'); // alpha
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
+    $token = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -65,12 +68,25 @@ if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) || !AA::$perm->isUserEditable(AuthGetUid()
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
+const PASSWD_TOKEN = 'aa-passwd';
 $user_data = AA::$perm->getIDsInfo(AuthGetUid());
+// an account with a passkey logs in only by it - its password is no proof here, a login of a moment ago is
+$by_passkey = AA::$perm->hasPasskey(AuthGetUid());
+$minutes    = intdiv(AA_Auth::FRESH_SECONDS, 60);
 if ($update) {
     // Procces user data -------------------------------------------------------
-    ValidateInput("user_password_old", _m("Current password"), $user_password_old, $err, true, "password");
-    if (!AA::$perm->authenticateUsername(AuthGetUname(), $user_password_old, '')) {
-        $err['Password'] = MsgErr(_m("Error in current password - password is not changed"));
+    // without the current password nothing else proves the change was sent from this form
+    if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(PASSWD_TOKEN, $token, $_SERVER)) {
+        $err['Token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+    } elseif ($by_passkey) {
+        if (!AuthIsFresh()) {
+            $err['Password'] = MsgErr(_m("Log in again first - a change of the account needs a login of the last %1 minutes", [$minutes]));
+        }
+    } else {
+        ValidateInput("user_password_old", _m("Current password"), $user_password_old, $err, true, "password");
+        if (!AA::$perm->authenticateUsername(AuthGetUname(), $user_password_old, '')) {
+            $err['Password'] = MsgErr(_m("Error in current password - password is not changed"));
+        }
     }
     $userrecord = FillUserRecord($err, 'nOnEwlOgiN', $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1);
 
@@ -100,6 +116,7 @@ if ($update) {
 $apage = new AA_Adminpageutil('userinfo');
 $apage->setTitle(_m("Change user data"));
 $apage->printHead($err, $Msg);
+echo FormToken::field(PASSWD_TOKEN);
 
 
 $form_buttons = [
@@ -110,7 +127,12 @@ $form_buttons = [
 FrmTabCaption(_m("Edit User"));
 FrmStaticText(_m("Login name"), $user_data['login']);
 FrmStaticText(_m("User Id"), $user_data['id']);
-FrmInputPwd("user_password_old", _m("Current password"), $user_password_old);
+FrmStaticText(_m("Passkeys"), a_href(get_admin_url('um_passkeys.php'), $by_passkey ? _m("The account logs in by a passkey") : _m("Log in without a password")), '', '', false);
+if ($by_passkey) {
+    FrmStaticText(_m("Current password"), AuthIsFresh() ? _m("Not needed - you logged in a moment ago") : _m("Not needed, but log in again first: a change needs a login of the last %1 minutes", [$minutes]));
+} else {
+    FrmInputPwd("user_password_old", _m("Current password"), $user_password_old);
+}
 FrmInputPwd("user_password1", _m("Password"), $user_password1);
 FrmInputPwd("user_password2", _m("Retype password"), $user_password2);
 FrmInputText("user_firstname", _m("First name"), $user_firstname, 50, 50, true);

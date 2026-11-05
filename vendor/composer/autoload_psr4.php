@@ -14,6 +14,7 @@ return array(
     'Symfony\\Component\\HttpClient\\' => array($vendorDir . '/symfony/http-client'),
     'Svg\\' => array($vendorDir . '/dompdf/php-svg-lib/src/Svg'),
     'Sabberworm\\CSS\\' => array($vendorDir . '/sabberworm/php-css-parser/src'),
+    'ReportUri\\Passkeys\\' => array($vendorDir . '/report-uri/passkeys-php/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'MissCache\\' => array($vendorDir . '/honzito/misscache/src'),

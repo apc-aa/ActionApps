@@ -54,30 +54,25 @@ class Cacheentry
         }
         $this->i = $item_id;
         $this->p = $cacheability;
-        $this->t = time();
+        // the request start: Apache dates the response by it and Last-Modified must not be later
+        $this->t = (int) ($_SERVER['REQUEST_TIME'] ?? time());
     }
 
     /** send headers, print output and count hit of the page item and of $hits */
     public function processPage(bool $cached = false, zids ...$hits): void
     {
-        $lastModified = $this->t;     // get the last-modified-date of this very file
-        $etag = hash('md5', 'x' . $this->c . 'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)
-        $ifModifiedMatch = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $lastModified) : false;
-        $etagMatch = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? (trim($_SERVER['HTTP_IF_NONE_MATCH']) === $etag) : false;   //(etag: unique file hash)
+        $hash = hash('md5', 'x' . $this->c . 'q'); // salted, so it differs from the cache key in the db
         $cacheability = in_array($this->p, ['public', 'private', 'no-cache']) ? $this->p : 'public';
-        $not_modified = false;
 
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s", $lastModified) . " GMT");   // set last-modified header
-        header("Etag: $etag");                                                      // set etag-header
-        // maybe we do not have to cache all pages
-        header("Cache-Control: $cacheability");                                     // make sure caching is turned on
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s", $this->t) . " GMT");
+        // weak: Apache compresses the body and keeps the ETag
+        header("ETag: W/\"$hash\"");
+        header("Cache-Control: $cacheability");
         // maybe we can add max-age=60   (minute helps a lot on big loads (catches 99%), but is nothing for reader)
 
-        // check if page has changed. If not, send 304 and exit
-        // Maybe we should check also $this->h, if they do not contain 404, 302 or other status code already
-        if ($ifModifiedMatch || $etagMatch) {
-            header("HTTP/1.1 304 Not Modified");
-            $not_modified = true;
+        $not_modified = self::notModified($this->h, $_SERVER, $hash, $this->t);
+        if ($not_modified) {
+            http_response_code(304);
         } else {
             AA::sendHeaders($this->h);
             echo $this->c;
@@ -88,5 +83,33 @@ class Cacheentry
         foreach ($hits as $zids) {
             Hitcounter::hit($zids, $cached, $not_modified);
         }
+    }
+
+    /** Is the client's copy current (RFC 9110 §13)? $hash is the opaque part of our ETag, $headers the page's own.
+     *  Only GET and HEAD: any other method has run already, before its preconditions could be checked
+     *  (a 304 set by the template answers to any method) */
+    public static function notModified(array $headers, array $server, string $hash, int $last_modified): bool
+    {
+        $status = preg_match('~^HTTP/\S+\s+(\d{3})~', $headers['status'] ?? '', $m) ? (int) $m[1] : 200;
+        if ($status === 304) {   // {header:304}: a 304 must not carry the body
+            return true;
+        }
+        // preconditions hold only for a page that would answer 2xx (§13.2.1)
+        if (($status < 200) || ($status >= 300) || !in_array($server['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
+            return false;
+        }
+        $if_none_match = $server['HTTP_IF_NONE_MATCH'] ?? null;
+        $if_modified_since = $server['HTTP_IF_MODIFIED_SINCE'] ?? null;
+        if ($if_none_match !== null) {   // If-Modified-Since is ignored then
+            if (trim($if_none_match) === '*') {
+                return true;
+            }
+            // weak comparison, so a W/ prefix does not matter
+            preg_match_all('~"([^"]*)"~', $if_none_match, $m);
+            return in_array($hash, $m[1], true);
+        }
+        // only the exact date we sent: the URL has variants (cookies, login) rendered at other times,
+        // so an older entry is not "unmodified" for a client holding a newer variant
+        return ($if_modified_since !== null) && (strtotime($if_modified_since) === $last_modified);
     }
 }

@@ -698,6 +698,12 @@ function AuthGetUname(): string {
     return is_object($auth) ? $auth->getUname() : '';
 }
 
+/** the user logged in a moment ago - AA_Auth::isFresh() */
+function AuthIsFresh(): bool {
+    global $auth;
+    return ($auth instanceof AA_Auth) && $auth->isFresh();
+}
+
 class AA_Session extends Session
 {
     private const AA_FORM_TOKEN_LIFETIME = 172800; // 2 days = 2*24*60*60 seconds =  172800 seconds
@@ -720,13 +726,23 @@ class AA_Session extends Session
         if (!is_array($_SESSION ?? null) || (($_SESSION['perm_cache_v'] ?? 0) === 2)) {
             return;
         }
+        self::dropPermissionCache();
+        $_SESSION['perm_cache_v'] = 2;
+    }
+
+    /** the next permission check rebuilds the cache from the database (AA_Perm::cache(), which keeps it in
+     *  the session) */
+    public static function dropPermissionCache(): void
+    {
+        if (!is_array($_SESSION ?? null)) {
+            return;
+        }
         foreach (['permission_uid', 'permission_to', 'r_superuser'] as $key) {
             if (array_key_exists($key, $_SESSION)) {   // start() copied it into the global
                 unset($_SESSION[$key]);
                 $GLOBALS[$key] = null;
             }
         }
-        $_SESSION['perm_cache_v'] = 2;
     }
 
     /** Token store for AA forms - to avoid CSRF attacks

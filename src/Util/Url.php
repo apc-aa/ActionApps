@@ -70,12 +70,14 @@ final class Url
     /**
      * Behind a proxy TrustedProxy::apply() has already set HTTPS from the proxy's X-Forwarded-Proto;
      * the header itself is not read here - from anyone but a trusted proxy it means nothing.
+     * @param ?array<string, mixed> $server $_SERVER when null
      */
-    public static function isHttps(): bool
+    public static function isHttps(?array $server = null): bool
     {
+        $server ??= $_SERVER;
         return match (true) {
-            !empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' => true,
-            ($_SERVER['SERVER_PORT'] ?? null) == 443 => true,
+            !empty($server['HTTPS']) && strtolower((string) $server['HTTPS']) !== 'off' => true,
+            ($server['SERVER_PORT'] ?? null) == 443 => true,
             default => false,
         };
     }

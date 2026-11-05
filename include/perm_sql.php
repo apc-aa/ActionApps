@@ -27,6 +27,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Passkey\Store;
 
 require_once __DIR__ . "/perm_core.php";
 
@@ -46,251 +47,22 @@ users        membership     perms
 
 */
 
-// ----------------------------- USERS --------------------------------------
-
-// users and groups are really the same thing, except
-//   groups have null for the attributes  password & mail
-//   (also marked by  'type'
-
-/** AddUser function
- * @param $user
- * @param $flags
- * creates new person in permission system
- * @return false|string  id of the new user (last_insert_id), false when the login is taken
- */
-function AddUser($user, $flags = 0): false|string
-{
-    if (! AA::$perm->isUsernameFree($user["uid"])) {
-        return false;
-    }
-    // (string): a missing value is stored as '' - Metabase would leave a null column out
-    return AA::Metabase()->doInsert('users', [
-        'type'        => "User",
-        'uid'         => (string) $user["uid"],
-        'mail'        => (string) (is_array($user['mail']) ? $user['mail'][0] : $user['mail']),
-        'name'        => $user["givenname"]." ".$user["sn"],
-        'sn'          => (string) $user["sn"],
-        'givenname'   => (string) $user["givenname"],
-        'description' => '',
-        'password'    => AA_Permsystem_Sql::generatePasswordHash($user["userpassword"]),
-    ]);  // last_insert_id
-}
-
-/** DelUser function
- * @param $user_id
- * @param $flags
- *  deletes an user in permission system
- *  $user_id is DN
- * @return bool
- */
-function DelUser($user_id, $flags = 3): bool {
-     // To keep integrity of AA we should also delete all references
-     // to this group
-     if ($flags & 1) {
-         // cancel this group's membership in other groups
-         DB_AA::delete('membership', [['memberid', $user_id]]);
-         AA_Permsystem_Sql::forgetMembership();
-     }
-     if ($flags & 2) {
-         // cancel direct permissions
-         DB_AA::delete('perms', [['userid', $user_id]]);
-     }
-     // cancel the user
-     DB_AA::delete('users', [['id', $user_id]]);
-     return true;
-}
-
-/** ChangeUser function
- * @param $user
- * @param $flags
- *  changes user entry in permission system
- * @return bool
- */
-function ChangeUser($user, $flags = 0): bool {
-    // (string): a missing value is stored as '' - Metabase would leave a null column out
-    $data = [
-        'id'        => $user["uid"],   // an SQL user id is digits (userIdFormatMatches()), so the int key finds the same row
-        'mail'      => (string) (is_array($user['mail']) ? $user['mail'][0] : $user['mail']),
-        'name'      => $user["givenname"]." ".$user["sn"],
-        'sn'        => (string) $user["sn"],
-        'givenname' => (string) $user["givenname"],
-    ];
-    if ($user["userpassword"]) {
-        $data['password'] = AA_Permsystem_Sql::generatePasswordHash($user["userpassword"]);
-    }
-    AA::Metabase()->doUpdate('users', $data, null, $user["uid"]);
-    return true;
-}
-
-// ----------------------------- GROUPS -----------------------------------
-
-/** AddGroup function
- * creates new group in permission system
- *
- * @param  array  $group  is an array ("name", "description", ...)
- * @param  int    $flags
- *
- * @return false|string
- */
-function AddGroup($group, $flags = 0): false|string
-{
-    // creates new person in permission system
-    return AA::Metabase()->doInsert('users', [
-        'type'        => 'Group',
-        'uid'         => '',
-        'mail'        => '',
-        'name'        => (string) $group['name'],
-        'sn'          => '',
-        'givenname'   => '',
-        'description' => (string) $group['description'],
-        'password'    => 'crypt will never return this',
-    ]); // last_insert_id
-}
-
-/** DelGroup function
- *  deletes an group in permission system
- * @param string $group_id is DN
- * @param int $flags
- * @return bool
- */
-function DelGroup($group_id, $flags = 3): bool {
-     // cancel other people's membership in this group
-     DB_AA::delete('membership', [['groupid', $group_id]]);
-
-     // To keep integrity of AA we should also delete all references
-     // to this group
-     if ($flags & 1) {
-         // cancel this group's membership in other groups
-         DB_AA::delete('membership', [['memberid', $group_id]]);
-     }
-     AA_Permsystem_Sql::forgetMembership();   // after both writes to the membership table
-     if ($flags & 2) {
-         // cancel direct permissions
-         DB_AA::delete('perms', [['userid', $group_id]]);
-     }
-     // cancel the group
-     DB_AA::delete('users', [['id', $group_id]]);
-     return true;
-}
-
-/** ChangeGroup function
- *  changes fields about group
- * @param array $group is an array ("name", "description", ...)
- * @param int   $flags
- * @return bool
- */
-function ChangeGroup($group, $flags = 0): bool {
-    $varset = new CVarset([
-                                ['name'       , $group["name"]],
-                                ['description', $group["description"]]
-        ]
-                          );
-    $varset->addkey("id", "text", $group["uid"]);
-    $varset->doUpdate('users', null, $group["uid"]);
-    return true;
-}
-
-// ----------------------------- MEMBERSHIP ---------------------------------
-/** AddGroupMember function
- * @param $group_id
- * @param $id
- * @param $flags
- */
-function AddGroupMember($group_id, $id, $flags = 0): void
-{
-    if ($group_id && $id) {
-        DelGroupMember($group_id, $id);
-        AA::Metabase()->doInsert('membership', ['groupid' => $group_id, 'memberid' => $id]);
-        AA_Permsystem_Sql::forgetMembership();
-    }
-}
-
-/** DelGroupMember function
- * @param $group_id
- * @param $id
- * @param $flags
- */
-function DelGroupMember($group_id, $id, $flags = 0): void
-{
-    DB_AA::delete('membership', [['groupid', $group_id], ['memberid', $id]]);
-    AA_Permsystem_Sql::forgetMembership();
-}
-
-// ----------------------------- PERMS -----------------------------------
-
-/** AddPermObject function
- *  creates a new object
- * @param $objectID
- * @param $objectType
- * @param $flags
- * @return bool
- */
-function AddPermObject($objectID, $objectType, $flags = 0): bool {
-    // we don't need to do that in mysql
-    return true;
-}
-
-/** DelPermObject function
- *  deletes an ACL object in permission system
- * @param $objectID
- * @param $objectType
- * @param $flags
- * @return bool
- */
-function DelPermObject($objectID, $objectType, $flags = 0): bool {
-    // we don't need to do that in mysql
-    return true;
-}
-
-/** AddPerm function
- * append permission to existing object
- *
- * @param       $id
- * @param       $objectID
- * @param       $object_type
- * @param       $perm
- * @param  int  $flags
- *
- * @return bool
- */
-function AddPerm($id, $objectID, $object_type, $perm, $flags = 0): bool
-{
-    DelPerm($id, $objectID, $object_type);
-    // (string): a null is stored as '' - Metabase would leave the column out (userid defaults to '0')
-    return AA::Metabase()->doInsert('perms', ['object_type' => (string) $object_type, 'objectid' => (string) $objectID, 'userid' => (string) $id, 'perm' => (string) $perm]);
-}
-
-/** DelPerm function
- *
- * @param       $id
- * @param       $objectID
- * @param       $object_type
- * @param  int  $flags
- */
-function DelPerm($id, $objectID, $object_type, $flags = 0): void
-{
-    DB_AA::delete('perms', [['object_type', $object_type], ['objectid', $objectID], ['userid', $id]]);
-}
-
-/** ChangePerm function
- * @param $id
- * @param $objectID
- * @param $objectType
- * @param $perm
- * @param $flags
- */
-function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0): bool
-{
-    return AddPerm($id, $objectID, $objectType, $perm);
-}
-
-
 //#############################################################################
 
 class AA_Permsystem_Sql extends AA_Permsystem {
 
     /** @var array<string, string[]> groups (all levels) of the ids resolved in this request - see getMembership() */
     private static array $membership = [];
+
+    /** A login compared with loginKey(): case and edge spaces do not count, as in the LDAP login people are
+     *  used to, accents do - utf8mb4_bin, because uid is binary and a *_ci mail would also ignore accents */
+    private const LOGIN_UID  = 'LOWER(TRIM(CONVERT(uid USING utf8mb4))) COLLATE utf8mb4_bin';
+    private const LOGIN_MAIL = 'LOWER(TRIM(CONVERT(mail USING utf8mb4))) COLLATE utf8mb4_bin';
+
+    private static function loginKey(string $login): string
+    {
+        return mb_strtolower(trim($login), 'UTF-8');
+    }
 
     /** Drops the per-request membership memo - called by every function that writes the membership table */
     public static function forgetMembership(): void
@@ -304,6 +76,284 @@ class AA_Permsystem_Sql extends AA_Permsystem {
 
     /** true, if the User data (name, mail, ..) could be edited on AA Permission page */
     function isUserEditable(): bool { return true; }
+
+    // ----------------------------- USERS --------------------------------------
+
+    // users and groups are really the same thing, except
+    //   groups have null for the attributes  password & mail
+    //   (also marked by  'type'
+
+    /** addUser function
+     * creates new person in permission system. Call it through AA::$perm - AA_Perm::addUser() checks
+     * the login is free in every backend, this one does not.
+     * @param array $user
+     * @return false|string  id of the new user (last_insert_id)
+     */
+    public function addUser(array $user): false|string
+    {
+        // (string): a missing value is stored as '' - Metabase would leave a null column out
+        return AA::Metabase()->doInsert('users', [
+            'type'        => "User",
+            'uid'         => (string) $user["uid"],
+            'mail'        => (string) (is_array($user['mail']) ? $user['mail'][0] : $user['mail']),
+            'name'        => $user["givenname"]." ".$user["sn"],
+            'sn'          => (string) $user["sn"],
+            'givenname'   => (string) $user["givenname"],
+            'description' => '',
+            'password'    => self::generatePasswordHash($user["userpassword"]),
+        ]);  // last_insert_id
+    }
+
+    /** Stores a person taken over from another permission system under the id it was given there.
+     *  The password is already a hash comparePwds() verifies, so it is stored as it is.
+     *  'nohalt': a failed insert returns false, so the caller can roll its transaction back.
+     * @param array{id: int, uid: string, mail: string, name: string, givenname: string, sn: string, password: string} $row
+     * @return bool  false also for an empty password - such an account would never log in
+     */
+    public function importUser(array $row): bool
+    {
+        if ($row['password'] === '') {
+            return false;
+        }
+        return (bool) AA::Metabase()->doInsert('users', [
+            'id'          => $row['id'],
+            'type'        => 'User',
+            'uid'         => $row['uid'],
+            'mail'        => $row['mail'],
+            'name'        => $row['name'],
+            'sn'          => $row['sn'],
+            'givenname'   => $row['givenname'],
+            'description' => '',
+            'password'    => $row['password'],
+        ], 'nohalt');
+    }
+
+    /** delUser function
+     * @param $user_id
+     * @param int $flags
+     *  deletes an user in permission system
+     * @return bool  false at the first statement the database refused - the rest is not sent,
+     *               so a caller inside a transaction can roll it back
+     */
+    public function delUser($user_id, int $flags = 3): bool {
+         // To keep integrity of AA we should also delete all references
+         // to this group
+         if ($flags & 1) {
+             // cancel this group's membership in other groups
+             $done = (false !== DB_AA::delete('membership', [['memberid', $user_id]]));
+             self::forgetMembership();
+             if (!$done) {
+                 return false;
+             }
+         }
+         if ($flags & 2) {
+             // cancel direct permissions
+             if (false === DB_AA::delete('perms', [['userid', $user_id]])) {
+                 return false;
+             }
+         }
+         // a later account of the same id would log in by them
+         (new Store())->deleteAll((string) $this->passkeyId((string) $user_id));
+         // cancel the user
+         return false !== DB_AA::delete('users', [['id', $user_id]]);
+    }
+
+    /** changeUser function
+     * @param array $user
+     *  changes user entry in permission system
+     * @return bool
+     */
+    public function changeUser(array $user): bool {
+        // (string): a missing value is stored as '' - Metabase would leave a null column out
+        $data = [
+            'id'        => $user["uid"],   // an SQL user id is digits (userIdFormatMatches()), so the int key finds the same row
+            'mail'      => (string) (is_array($user['mail']) ? $user['mail'][0] : $user['mail']),
+            'name'      => $user["givenname"]." ".$user["sn"],
+            'sn'        => (string) $user["sn"],
+            'givenname' => (string) $user["givenname"],
+        ];
+        if ($user["userpassword"]) {
+            $data['password'] = self::generatePasswordHash($user["userpassword"]);
+        }
+        AA::Metabase()->doUpdate('users', $data, null, $user["uid"]);
+        return true;
+    }
+
+    // ----------------------------- GROUPS -----------------------------------
+
+    /** addGroup function
+     * creates new group in permission system
+     *
+     * @param  array  $group  is an array ("name", "description", ...)
+     *
+     * @return false|string
+     */
+    public function addGroup(array $group): false|string
+    {
+        // creates new person in permission system
+        return AA::Metabase()->doInsert('users', [
+            'type'        => 'Group',
+            'uid'         => '',
+            'mail'        => '',
+            'name'        => (string) $group['name'],
+            'sn'          => '',
+            'givenname'   => '',
+            'description' => (string) $group['description'],
+            'password'    => 'crypt will never return this',
+        ]); // last_insert_id
+    }
+
+    /** Stores a group taken over from another permission system under the id it was given there
+     *  (same columns as addGroup()). 'nohalt': a failed insert returns false.
+     * @param array{id: int, name: string, description: string} $row
+     */
+    public function importGroup(array $row): bool
+    {
+        return (bool) AA::Metabase()->doInsert('users', [
+            'id'          => $row['id'],
+            'type'        => 'Group',
+            'uid'         => '',
+            'mail'        => '',
+            'name'        => $row['name'],
+            'sn'          => '',
+            'givenname'   => '',
+            'description' => $row['description'],
+            'password'    => 'crypt will never return this',
+        ], 'nohalt');
+    }
+
+    /** delGroup function
+     *  deletes an group in permission system
+     * @param string $group_id
+     * @param int $flags
+     * @return bool  false at the first statement the database refused (as delUser())
+     */
+    public function delGroup($group_id, int $flags = 3): bool {
+         // cancel other people's membership in this group
+         $done = (false !== DB_AA::delete('membership', [['groupid', $group_id]]));
+
+         // To keep integrity of AA we should also delete all references
+         // to this group
+         if ($done && ($flags & 1)) {
+             // cancel this group's membership in other groups
+             $done = (false !== DB_AA::delete('membership', [['memberid', $group_id]]));
+         }
+         self::forgetMembership();   // after both writes to the membership table
+         if ($done && ($flags & 2)) {
+             // cancel direct permissions
+             $done = (false !== DB_AA::delete('perms', [['userid', $group_id]]));
+         }
+         // cancel the group
+         return $done && (false !== DB_AA::delete('users', [['id', $group_id]]));
+    }
+
+    /** changeGroup function
+     *  changes fields about group
+     * @param array $group is an array ("name", "description", ...)
+     * @return bool
+     */
+    public function changeGroup(array $group): bool {
+        $varset = new CVarset([
+                                    ['name'       , $group["name"]],
+                                    ['description', $group["description"]]
+            ]
+                              );
+        $varset->addkey("id", "text", $group["uid"]);
+        $varset->doUpdate('users', null, $group["uid"]);
+        return true;
+    }
+
+    // ----------------------------- MEMBERSHIP ---------------------------------
+    /** addGroupMember function
+     * @param $group_id
+     * @param $id
+     * @return bool  false also for an empty id - nothing was stored
+     */
+    public function addGroupMember($group_id, $id): bool
+    {
+        if (!$group_id || !$id || !$this->delGroupMember($group_id, $id)) {
+            return false;
+        }
+        $done = (bool) AA::Metabase()->doInsert('membership', ['groupid' => $group_id, 'memberid' => $id]);
+        self::forgetMembership();
+        return $done;
+    }
+
+    /** delGroupMember function
+     * @param $group_id
+     * @param $id
+     */
+    public function delGroupMember($group_id, $id): bool
+    {
+        $done = (false !== DB_AA::delete('membership', [['groupid', $group_id], ['memberid', $id]]));
+        self::forgetMembership();
+        return $done;
+    }
+
+    // ----------------------------- PERMS -----------------------------------
+
+    /** addPermObject function
+     *  creates a new object
+     * @param $objectID
+     * @param string $objectType
+     * @return bool
+     */
+    public function addPermObject($objectID, string $objectType): bool {
+        // we don't need to do that in mysql
+        return true;
+    }
+
+    /** delPermObject function
+     *  deletes an ACL object in permission system
+     * @param $objectID
+     * @param string $objectType
+     * @return bool
+     */
+    public function delPermObject($objectID, string $objectType): bool {
+        // we don't need to do that in mysql
+        return true;
+    }
+
+    /** addPerm function
+     * append permission to existing object
+     *
+     * @param         $id
+     * @param         $objectID
+     * @param  string $objectType
+     * @param         $perm
+     *
+     * @return bool
+     */
+    public function addPerm($id, $objectID, string $objectType, $perm): bool
+    {
+        if (!$this->delPerm($id, $objectID, $objectType)) {
+            return false;
+        }
+        // (string): a null is stored as '' - Metabase would leave the column out (userid defaults to '0')
+        return AA::Metabase()->doInsert('perms', ['object_type' => (string) $objectType, 'objectid' => (string) $objectID, 'userid' => (string) $id, 'perm' => (string) $perm]);
+    }
+
+    /** delPerm function
+     *
+     * @param         $id
+     * @param         $objectID
+     * @param  string $objectType
+     */
+    public function delPerm($id, $objectID, string $objectType): bool
+    {
+        return false !== DB_AA::delete('perms', [['object_type', $objectType], ['objectid', $objectID], ['userid', $id]]);
+    }
+
+    /** changePerm function
+     * @param $id
+     * @param $objectID
+     * @param string $objectType
+     * @param $perm
+     */
+    public function changePerm($id, $objectID, string $objectType, $perm): bool
+    {
+        return $this->addPerm($id, $objectID, $objectType, $perm);
+    }
 
 
     /** userIdFormatMatches - is user id in correct format?
@@ -323,20 +373,26 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      */
     public function authenticateUsername($username, $password, $code2fa = ''): false|string
     {
-        if ($user = DB_AA::select1('', 'SELECT id, password FROM `users`', [[strpos($username, "@") ? 'mail' : 'uid', $username]])) {
-            if (!AA_Perm::comparePwds($password, $user['password'])) {
-                return false;
-            }
-            // Opportunistic rehash: if the stored hash is a legacy LDAP
-            // hash ({SSHA}/{SHA}/{SMD5}/{MD5}/{CRYPT}) carried over by
-            // AA\Optimize\LdapPermsToSql, upgrade it to bcrypt now that
-            // we have the plaintext in hand. Silent and transparent.
-            if (str_starts_with((string) $user['password'], '{')) {
-                AA::Metabase()->doUpdate('users', ['id' => $user['id'], 'password' => self::generatePasswordHash($password)]);
-            }
-            return $user['id'];
+        $key = self::loginKey((string) $username);
+        if (($key === '') || ((string) $password === '')) {
+            return false;
         }
-        return false;
+        $column = strpos($key, '@') ? self::LOGIN_MAIL : self::LOGIN_UID;
+        $users  = DB_AA::select([], 'SELECT id, password FROM `users`', [[$column, $key], ['type', [_m("User"), 'User']]], null, null, 10);
+        // several accounts may share one e-mail - the password picks one; when it fits two, it belongs to neither
+        $matches = array_values(array_filter($users, static fn($row) => AA_Perm::comparePwds($password, $row['password'])));
+        if (count($matches) !== 1) {
+            return false;
+        }
+        $user = $matches[0];
+        // Opportunistic rehash: if the stored hash is a legacy LDAP
+        // hash ({SSHA}/{SHA}/{SMD5}/{MD5}/{CRYPT}) carried over by
+        // AA\Optimize\LdapPermsToSql, upgrade it to bcrypt now that
+        // we have the plaintext in hand. Silent and transparent.
+        if (str_starts_with((string) $user['password'], '{')) {
+            AA::Metabase()->doUpdate('users', ['id' => $user['id'], 'password' => self::generatePasswordHash($password)]);
+        }
+        return (string) $user['id'];
     }
 
     /** The stored password hash - exactly users.password, so tokens tagged with it stay valid */
@@ -359,10 +415,10 @@ class AA_Permsystem_Sql extends AA_Permsystem {
         return !(DB_AA::select1('', 'SELECT uid FROM `users`', [['uid', $username]]));
     }
 
-    /** uid is binary (case counts), mail a *_ci char - both folded here, $login in UTF-8 */
+    /** $login in UTF-8, folded as authenticateUsername() folds it */
     public function isLoginFree(string $login): bool {
-        $key = mb_strtolower(rtrim($login, ' '), 'UTF-8');
-        foreach (["LOWER(TRIM(TRAILING ' ' FROM CONVERT(uid USING utf8mb4)))", "LOWER(TRIM(TRAILING ' ' FROM mail))"] as $column) {
+        $key = self::loginKey($login);
+        foreach ([self::LOGIN_UID, self::LOGIN_MAIL] as $column) {
             if (DB_AA::select1('id', 'SELECT id FROM `users`', [[$column, $key]])) {
                 return false;
             }
@@ -435,6 +491,13 @@ class AA_Permsystem_Sql extends AA_Permsystem {
         return false;
     }
 
+    /** users.id of a user - one id whatever login (name or e-mail) was typed */
+    public function passkeyId(string $uid): ?string
+    {
+        $info = $this->getIDsInfo($uid);
+        return (is_array($info) && ($info['type'] === 'User')) ? (string) $info['id'] : null;
+    }
+
     /** getGroupMembers function
      * @param $group_id
      * @return array
@@ -451,13 +514,13 @@ class AA_Permsystem_Sql extends AA_Permsystem {
 
     /** getMembership function
      * @param $id
-     * @param $flags - use to obey group in groups?
+     * @param $flags - 0: groups of all levels, else only the groups $id is directly in (as LDAP)
      * @return array of group_ids, where id (group or user) is a member
      */
     function getMembership($id, $flags = 0): array {
-        // per-request memo (T6) - CheckPerms() asks for the same id over and over; only a scalar id
+        // per-request memo - CheckPerms() asks for the same id over and over; only a scalar id
         // can be a key (an array id never worked, but it must not turn into a TypeError here)
-        $memo_key = is_scalar($id) ? (string) $id : null;
+        $memo_key = is_scalar($id) ? "$id|$flags" : null;
         if ($memo_key !== null && isset(self::$membership[$memo_key])) {
             return self::$membership[$memo_key];
         }
@@ -485,7 +548,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
                     $all_groups[]  = $gid;
                 }
             }
-        } while (count($last_groups));
+        } while (count($last_groups) && ($flags == 0));
 
         // I _think_ this is a list of groupids.
         if ($memo_key !== null) {

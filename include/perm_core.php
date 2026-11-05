@@ -32,6 +32,8 @@
 //
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\CheckPasskeys;
+use AA\Passkey\Store;
 use AA\Security\LoginThrottle;
 
 const MAX_GROUPS_DEEP   = 16;   // Maximum number of nested groups (user belongs to group1, group1 to group2 ...)
@@ -362,14 +364,14 @@ function ChangeCatPermAsIn($category, $template): void
     // Delete all old perms
     if ( $oldPerms ) {
         foreach (array_keys($oldPerms) as $uid ) {
-            DelPerm($uid, $category_perm_id, 'slice');
+            AA::$perm->delPerm($uid, $category_perm_id, 'slice');
         }
     }
 
     // Copy template's permissions
     if ( $newPerms ) {
         foreach ($newPerms as  $uid => $perm) {
-            AddPerm($uid, $category_perm_id, 'slice', $perm);
+            AA::$perm->addPerm($uid, $category_perm_id, 'slice', $perm);
         }
     }
 }
@@ -463,6 +465,9 @@ class AA_Perm {
     /** @var AA_Permsystem[] */
     private array $perm_systems = [];
 
+    /** @var AA_Permsystem[] all the configured systems - restrictPermsTo() does not narrow them */
+    private array $configured_systems = [];
+
     /** @var $perm_mode - '' | 'cron' - currently used only for toexecute task for ANONYMOUS_EDIT_CRON permission  */
     private string $perm_mode = '';
 
@@ -525,6 +530,7 @@ class AA_Perm {
             $system_name = 'AA_Permsystem_' . ucfirst($system_name);
             $this->perm_systems[$system_name] = new $system_name;
         }
+        $this->configured_systems = $this->perm_systems;
     }
 
     /**
@@ -559,6 +565,12 @@ class AA_Perm {
         $started = hrtime(true);
         foreach ($this->perm_systems as $perm_sys) {
             if ($user_id = $perm_sys->authenticateUsername($username, $password, $code2fa)) {
+                // an account with a passkey logs in only by it - the free login (?free=) takes any account, too.
+                // The right password must look like a wrong one, or the guesser would learn it is right
+                if ($refusal = $this->passkeyOnly((string) $user_id)) {
+                    CheckPasskeys::record($refusal, $username);
+                    break;
+                }
                 return $user_id;
             }
         }
@@ -581,7 +593,7 @@ class AA_Perm {
         return true;
     }
 
-    /** No user of AA logs in with $login - as the login name or the e-mail, in any case, with trailing
+    /** No user of AA logs in with $login - as the login name or the e-mail, in any case, with edge
      *  spaces or not. The readers of Reader Management slices are left out. Without a user system
      *  (restrictPermsTo()) it throws: "free" would be a guess.
      *  @throws LogicException */
@@ -667,12 +679,47 @@ class AA_Perm {
         return false;
     }
 
+    /** The id the account's passkeys are kept under - the same however the person logs in (an LDAP login gives
+     *  the DN as the name was typed). null for an account without passkeys: a group, an unknown id, a reader
+     *  (no passkey login on the sites)
+     *  @throws RuntimeException the backend cannot tell now - the directory did not answer */
+    public function passkeyId($uid): ?string
+    {
+        if ($uid && ($ps = $this->_whichUsersystem($uid))) {
+            return $ps->passkeyId((string) $uid);
+        }
+        return null;
+    }
+
+    /** the account logs in only by its passkey */
+    public function hasPasskey(string $uid): bool
+    {
+        return $this->passkeyOnly($uid) !== null;
+    }
+
+    /** why the password does not log this account in (CheckPasskeys::PASSWORD|DIRECTORY), null: it does */
+    private function passkeyOnly(string $uid): ?string
+    {
+        $store = new Store();
+        if (!$store->available()) {
+            return null;
+        }
+        try {
+            $key = $this->passkeyId($uid);
+        } catch (RuntimeException) {
+            // its passkey may be kept under the DN the directory would give - refusing beats letting the password in
+            return $store->hosts() ? CheckPasskeys::DIRECTORY : null;
+        }
+        return (($key !== null) && $store->has($key)) ? CheckPasskeys::PASSWORD : null;
+    }
+
     /** What changes when the user's password changes, from the backend the id belongs to
-     *  @return ?string null for an id no backend knows as a user, or whose backend cannot tell */
+     *  @return ?string null for an id no backend knows as a user, or whose backend cannot tell - and for an
+     *  account with a passkey: a token was issued for the password, which no longer logs it in */
     public function credentialStamp($uid): ?string
     {
         if ($uid && ($ps = $this->_whichUsersystem($uid))) {
-            return $ps->credentialStamp((string) $uid);
+            return $this->hasPasskey((string) $uid) ? null : $ps->credentialStamp((string) $uid);
         }
         return null;
     }
@@ -739,7 +786,7 @@ class AA_Perm {
 
     /** getMembership function
      * @param string $uid
-     * @param $flags - use to obey group in groups?
+     * @param $flags - 0: groups of all levels, else only the groups $uid is directly in
      * @return array of group_ids, where id (group or user) is a member
      */
     function getMembership($uid, $flags = 0): array
@@ -783,8 +830,8 @@ class AA_Perm {
         if ($uid === '') {
             return false;
         }
-        $slice_perm = self::_resolve((string) ($this->getUserPerms($uid, 'slice')[$slice_id] ?? ''));
-        $aa_perm    = self::_resolve((string) ($this->getUserPerms($uid, 'aa')[AA_ID] ?? ''));
+        $slice_perm = self::resolveRoles((string) ($this->getUserPerms($uid, 'slice')[$slice_id] ?? ''));
+        $aa_perm    = self::resolveRoles((string) ($this->getUserPerms($uid, 'aa')[AA_ID] ?? ''));
         return IsPerm(self::joinSliceAndAAPerm($slice_perm, $aa_perm), $perm);
     }
 
@@ -801,13 +848,58 @@ class AA_Perm {
         return [];
     }
 
+    /** Every write of users, groups, memberships and permissions goes to the one backend which stores the
+     *  general perms (PERM_LIB) - the other backends only read.
+     *  @throws LogicException none stores them (restrictPermsTo() leaves the readers only) */
+    private function storage(): AA_Permsystem
+    {
+        return $this->_whichPermstorage() ?? throw new LogicException('No permission system stores users, groups and permissions');
+    }
+
+    /** The login must be free also in another case or with edge spaces - the folded login would fit both
+     *  accounts and log in neither.
+     *  @return false|string id of the new user; false when the login is taken (in any backend) or the write failed
+     *  @throws LogicException no backend of users (restrictPermsTo() leaves the readers only) - storage() would throw too */
+    public function addUser(array $user): false|string
+    {
+        if (!$this->isUsernameFree($user['uid']) || !$this->isAdminUsernameFree((string) $user['uid'])) {
+            return false;
+        }
+        return $this->storage()->addUser($user);
+    }
+
+    /** @param int $flags 1 - drop the memberships too, 2 - drop the user's permissions too */
+    public function delUser($user_id, int $flags = 3): bool                   { return $this->storage()->delUser($user_id, $flags); }
+    public function changeUser(array $user): bool                             { return $this->storage()->changeUser($user); }
+    /** @return false|string id of the new group */
+    public function addGroup(array $group): false|string                      { return $this->storage()->addGroup($group); }
+    /** @param int $flags 1 - drop its membership in other groups too, 2 - drop its permissions too */
+    public function delGroup($group_id, int $flags = 3): bool                 { return $this->storage()->delGroup($group_id, $flags); }
+    public function changeGroup(array $group): bool                           { return $this->storage()->changeGroup($group); }
+    public function addGroupMember($group_id, $id): bool                      { return $this->storage()->addGroupMember($group_id, $id); }
+    public function delGroupMember($group_id, $id): bool                      { return $this->storage()->delGroupMember($group_id, $id); }
+    public function addPermObject($objectID, string $objectType): bool        { return $this->storage()->addPermObject($objectID, $objectType); }
+    public function delPermObject($objectID, string $objectType): bool        { return $this->storage()->delPermObject($objectID, $objectType); }
+    public function addPerm($id, $objectID, string $objectType, $perm): bool  { return $this->storage()->addPerm($id, $objectID, $objectType, $perm); }
+    public function delPerm($id, $objectID, string $objectType): bool         { return $this->storage()->delPerm($id, $objectID, $objectType); }
+    public function changePerm($id, $objectID, string $objectType, $perm): bool { return $this->storage()->changePerm($id, $objectID, $objectType, $perm); }
+
+    /** Some configured permission system issues ids of this form. Checked against all of them, not only
+     *  those restrictPermsTo() leaves: a readers-only site opens the session of an admin, too, and must
+     *  not log them out. */
+    public function recognizesId(string $uid): bool
+    {
+        return $this->_whichUsersystem($uid, $this->configured_systems) !== null;
+    }
+
     /** $this->_whichUsersystem($uid) function
      *  returns the permission system for the user id
      * @param $uid
+     * @param AA_Permsystem[]|null $systems where to look; the systems in use when null
      */
-    private function _whichUsersystem($uid): ?AA_Permsystem
+    private function _whichUsersystem($uid, ?array $systems = null): ?AA_Permsystem
     {
-        foreach ($this->perm_systems as $perm_sys) {
+        foreach ($systems ?? $this->perm_systems as $perm_sys) {
             if ($perm_sys->userIdFormatMatches($uid)) {
                 return $perm_sys;
             }
@@ -827,6 +919,41 @@ class AA_Perm {
         return null;
     }
 
+    /** LDAP hash schemes AA verifies => [digest algorithm, salted]; CRYPT is a crypt(3) string */
+    public const LDAP_HASH_SCHEMES = [
+        'SSHA'  => ['sha1', true],
+        'SHA'   => ['sha1', false],
+        'SMD5'  => ['md5', true],
+        'MD5'   => ['md5', false],
+        'CRYPT' => null,
+    ];
+
+    /** @return array{0: string, 1: string}|null [upper-case scheme, value] of a {SCHEME}value hash */
+    private static function splitLdapHash(string $hash): ?array
+    {
+        return preg_match('/^\{([A-Za-z0-9]+)\}(.*)$/s', $hash, $m) ? [strtoupper($m[1]), $m[2]] : null;
+    }
+
+    /** true if some password can match the LDAP-style hash - a known scheme with a well-formed value */
+    public static function isVerifiableLdapHash(string $hash): bool
+    {
+        [$scheme, $value] = self::splitLdapHash($hash) ?? ['', ''];
+        if (!array_key_exists($scheme, self::LDAP_HASH_SCHEMES)) {
+            return false;
+        }
+        $digest = self::LDAP_HASH_SCHEMES[$scheme];
+        if ($digest === null) {
+            // crypt() answers '*0'/'*1' for a salt this PHP cannot use (locked '!', unsupported scheme)
+            return !str_starts_with((string) crypt('probe', $value), '*');
+        }
+        $raw = base64_decode($value, true);
+        if ($raw === false) {
+            return false;
+        }
+        $length = strlen(hash($digest[0], '', true));
+        return $digest[1] ? strlen($raw) >= $length : strlen($raw) === $length;
+    }
+
     /** Verify a password against a LDAP-style hash ({SSHA}, {SHA},
      *  {SMD5}, {MD5}, {CRYPT}). Used by comparePwds() to accept hashes
      *  migrated from the LDAP perm backend. Returns true iff the
@@ -834,28 +961,23 @@ class AA_Perm {
      */
     private static function verifyLdapHash(string $password, string $hash): bool
     {
-        if (!preg_match('/^\{([A-Za-z0-9]+)\}(.*)$/s', $hash, $m)) {
+        [$scheme, $value] = self::splitLdapHash($hash) ?? ['', ''];
+        // a crypt() failure ('*0'/'*1') never equals the stored value, so CRYPT needs no probe here
+        if ($scheme !== 'CRYPT' && !self::isVerifiableLdapHash($hash)) {
             return false;
         }
-        $value = $m[2];
-        switch (strtoupper($m[1])) {
+        switch ($scheme) {
             case 'SSHA':    // base64( sha1(password . salt) . salt )
                 $raw = base64_decode($value, true);
-                if ($raw === false || strlen($raw) < 20) {
-                    return false;
-                }
                 return hash_equals(substr($raw, 0, 20), sha1($password . substr($raw, 20), true));
             case 'SHA':
                 return hash_equals($value, base64_encode(sha1($password, true)));
             case 'SMD5':    // base64( md5(password . salt) . salt )
                 $raw = base64_decode($value, true);
-                if ($raw === false || strlen($raw) < 16) {
-                    return false;
-                }
                 return hash_equals(substr($raw, 0, 16), md5($password . substr($raw, 16), true));
             case 'MD5':
                 return hash_equals($value, base64_encode(md5($password, true)));
-            case 'CRYPT':   // the value is a crypt(3) string incl. its salt; an invalid salt makes crypt() return '*0'
+            case 'CRYPT':   // the value is a crypt(3) string incl. its salt
                 return hash_equals($value, (string) crypt($password, $value));
         }
         return false;
@@ -942,14 +1064,14 @@ class AA_Perm {
 
         // Resolve all permission (convert roles into perms)
         foreach ($permission_to["slice"] as $key => $val) {
-            $permission_to["slice"][$key] = self::_resolve($val);
+            $permission_to["slice"][$key] = self::resolveRoles((string) $val);
         }
 
         foreach ($permission_to["aa"] as $key => $val) {
             if ( IsPerm($val, self::ROLES['SUPER']['id']) ) {
                 $r_superuser[$key] = true;
             }
-            $permission_to["aa"][$key] = self::_resolve($val);
+            $permission_to["aa"][$key] = self::resolveRoles((string) $val);
         }
 
         // after the values are set - register() copies the global into a session which does not have it yet
@@ -976,8 +1098,8 @@ class AA_Perm {
      */
     public static function compare($perms1, $perms2): string
     {
-        $perms1 = self::_resolve($perms1);
-        $perms2 = self::_resolve($perms2);
+        $perms1 = self::resolveRoles((string) $perms1);
+        $perms2 = self::resolveRoles((string) $perms2);
 
         if (strlen($perms1) == strspn($perms1, $perms2)) {
             // perms are equal ?
@@ -1020,13 +1142,9 @@ class AA_Perm {
         return ($slice_perm ?: $aa_perm);
     }
 
-    /** AA_Perm::_resolve($perms) function
-     *  Replaces roles with apropriate perms
-     *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
-     * @param $perms
-     * @return string
+    /** Replaces the role digits (1-4) by the letters of the role (ROLES), so rights compare letter by letter
      */
-    private static function _resolve($perms): string
+    public static function resolveRoles(string $perms): string
     {
         foreach (self::ROLES as $arr) {
             $perms = str_replace($arr['id'], $arr['perm'], $perms);
@@ -1064,7 +1182,7 @@ abstract class AA_Permsystem {
 
     function isUsernameFree($username): bool                                  { return false; }
 
-    /** no user has $login as the login name or the e-mail - case and trailing spaces ignored */
+    /** no user has $login as the login name or the e-mail - case and edge spaces ignored */
     public function isLoginFree(string $login): bool                        { return false; }
 
     /** @return string|array - string "too much" if too many users should be listed (LDAP returns it sometimes) */
@@ -1078,6 +1196,10 @@ abstract class AA_Permsystem {
      *  @return ?string null: not a user of this backend, or the backend cannot tell */
     public function credentialStamp(string $uid): ?string { return null; }
 
+    /** see AA_Perm::passkeyId() - null: this backend's accounts have no passkeys
+     *  @throws RuntimeException */
+    public function passkeyId(string $uid): ?string { return null; }
+
     /** getGroup function
      * @param $group_id
      * @return false|array [uid, name, description] or false if not found
@@ -1089,6 +1211,25 @@ abstract class AA_Permsystem {
 
     function getObjectsPerms($objectID, $objectType): array { return []; }
     function getJoinedPerms($uid, $objectType, $groups= []): array { return []; }
+
+    // Writes - called through AA_Perm, which picks the backend that stores the general perms (storesGeneralPerms());
+    // a backend which cannot write refuses. Ids are the backend's own (a number in SQL, a DN in LDAP).
+
+    /** Callers go through AA::$perm: AA_Perm::addUser() checks the login is free in every backend, the backend
+     *  itself does not (it cannot see the others). */
+    public function addUser(array $user): false|string                          { return false; }
+    public function delUser($user_id, int $flags = 3): bool                    { return false; }
+    public function changeUser(array $user): bool                              { return false; }
+    public function addGroup(array $group): false|string                       { return false; }
+    public function delGroup($group_id, int $flags = 3): bool                  { return false; }
+    public function changeGroup(array $group): bool                            { return false; }
+    public function addGroupMember($group_id, $id): bool                       { return false; }
+    public function delGroupMember($group_id, $id): bool                       { return false; }
+    public function addPermObject($objectID, string $objectType): bool         { return false; }
+    public function delPermObject($objectID, string $objectType): bool         { return false; }
+    public function addPerm($id, $objectID, string $objectType, $perm): bool   { return false; }
+    public function delPerm($id, $objectID, string $objectType): bool          { return false; }
+    public function changePerm($id, $objectID, string $objectType, $perm): bool { return false; }
 
     /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
      *  SQL and LDAP is able to store it, Reader not. */
@@ -1281,9 +1422,12 @@ class AA_Permsystem_Reader extends AA_Permsystem {
             $groups[unpack_id($row['id'])] = ['name' => "$prefix: ". $row['name']];
         }
 
-        // get all ReaderSets
+        // the sets whose own name matches go first - the listing is cut after MAX_ENTRIES_SHOWN;
+        // an empty pattern found every slice, so the sets of the found slices are all of them
+        $sets = (((string) $pattern === '') ? [] : AA_Object::getNameArray('AA_Set', AA_Reader::getReaderSlices(), (string) $pattern))
+            + AA_Object::getNameArray('AA_Set', array_keys($groups));
         $prefix = _m('Reader Set');
-        foreach ( AA_Object::getNameArray('AA_Set', array_keys($groups)) as $set_id => $name ) {
+        foreach ($sets as $set_id => $name) {
             $groups[$set_id] = ['name' => "$prefix: $name"];
         }
         return $groups;

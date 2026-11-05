@@ -2,7 +2,8 @@
 
 /**
  * Files of a slice for the rich-text editor: POST uploads one (multipart `file`, `slice`,
- * header X-AA-Upload-Token), GET lists them (`slice`, `kind`, `q`).
+ * header X-AA-Upload-Token), GET lists them (`slice`, `kind`, `q`), GET `ask` gives an editor
+ * written in a template its upload-* attributes (`slice` or `item`, header X-AA-Upload-Ask).
  *
  * A real file, like translate.php: it works where the api/.htaccess rewrite does not
  * (the ECN servers ignore .htaccess). Rules: AA\Api\Controller\FilesController.
@@ -19,10 +20,26 @@ require_once __DIR__ . '/../include/config.php';
 require_once __DIR__ . '/../include/locsess.php';
 require_once __DIR__ . '/../include/util.php';
 
-// 'nobody': no HTML login form; the controller decides what an anonymous visitor may do.
-pageOpen('nobody');
+$ask = (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') && isset($_GET['ask']);
+if ($ask && empty($_COOKIE['AA_Session'])) {
+    // an editor asks as its page loads: no session file and cookie for every anonymous visitor (as modules/site/site.php)
+    $auth = new AA_Auth();
+    $auth->unauth(true);
+} else {
+    // 'nobody': no HTML login form; the controller decides what an anonymous visitor may do.
+    pageOpen('nobody');
+}
 
 ob_end_clean();
 
 $controller = new FilesController();
-((($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') ? $controller->upload() : $controller->list())->emit();
+$response   = match (true) {
+    $ask                                             => $controller->ask(),
+    ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' => $controller->upload(),
+    default                                          => $controller->list(),
+};
+// the answers name the viewer's token and files - no proxy may keep them for the next visitor
+if (!headers_sent()) {
+    header('Cache-Control: private, no-store');
+}
+$response->emit();

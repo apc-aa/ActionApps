@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Files of a slice for the rich-text editor: upload one, list them for the picker.
+ * Files of a slice for the rich-text editor: upload one, list them for the picker, and hand
+ * an editor written in a template the token AA would have rendered with it.
  * Who may do what decides AA\Upload\UploadPolicy; the X-AA-Upload-Token header (AA\Upload\UploadToken)
- * proves AA rendered the editor.
+ * proves the request comes from a page of this AA.
  *
  * @package Api
  */
@@ -18,6 +19,7 @@ use AA\IO\DB\DB_AA;
 use AA\Upload\UploadPolicy;
 use AA\Upload\UploadToken;
 use AA\Util\Imgfunc;
+use AA\Widget\RichtextMarkup;
 use AA\Util\LogOnce;
 use AA_Log;
 use AA_Logentry;
@@ -143,6 +145,34 @@ class FilesController
     }
 
     /**
+     * The upload-* attributes for an <aa-richtext> AA did not render (a form in a template):
+     * upload="none" when this viewer may not upload, and for a slice or item that does not exist -
+     * no 404 to probe ids with. GET ask, slice - or item, for its slice.
+     * Only a script of a page of this AA gets them: it sends X-AA-Upload-Ask, a foreign page cannot
+     * without the browser asking first (CORS), and could not read the answer. No Origin or Referer
+     * check: a same-origin GET carries no Origin, and a page may send no Referer.
+     */
+    public function ask(): JsonResponse
+    {
+        $fetch_site = (string) ($_SERVER['HTTP_SEC_FETCH_SITE'] ?? 'same-origin');    // older browsers do not send it
+        if ((($_SERVER['HTTP_X_AA_UPLOAD_ASK'] ?? '') !== '1') || ($fetch_site !== 'same-origin')) {
+            return JsonResponse::error(401, 'Unauthorized');
+        }
+        $slice = is_string($_GET['slice'] ?? null) ? $_GET['slice'] : '';
+        $item  = is_string($_GET['item'] ?? null) ? $_GET['item'] : '';
+        if (!is_long_id($slice) && !is_long_id($item)) {
+            return JsonResponse::error(400, 'Bad request');
+        }
+        $slice_id = is_long_id($slice) ? $slice : $this->sliceOfItem($item);
+        $viewer   = ($slice_id === null) ? null : $this->viewer($slice_id);
+        if ($viewer === null) {
+            return JsonResponse::ok(['attrs' => RichtextMarkup::viewerAttrs('', UploadPolicy::NONE, '', time())]);
+        }
+        $this->bindLanguage((string) $slice_id);
+        return JsonResponse::ok(['attrs' => RichtextMarkup::viewerAttrs((string) $slice_id, UploadPolicy::mode($viewer['editor'], $viewer['anonymous']), $this->uid(), time())]);
+    }
+
+    /**
      * Files in $dir, newest first - no dot files, no directories.
      * @return list<array{name: string, size: int, mtime: int, type: string}>
      */
@@ -198,6 +228,24 @@ class FilesController
     protected function viewer(string $slice_id): ?array
     {
         return UploadPolicy::viewer($slice_id);
+    }
+
+    /** the slice of an item, null for none - no read check: GetItemContent() keeps the slice of every item */
+    protected function sliceOfItem(string $item_id): ?string
+    {
+        $content = GetItemContent(new \zids($item_id, 'l'), false, false, ['slice_id........']);
+        $slice   = $content ? (reset($content)['u_slice_id......'][0]['value'] ?? null) : null;
+        return is_string($slice) ? $slice : null;
+    }
+
+    /** the texts of the editor in the language of the slice's pages, not of the AA install - only a UTF-8
+     *  one: the texts of an old windows-1250 language would not go into the JSON */
+    protected function bindLanguage(string $slice_id): void
+    {
+        $slice = AA_Slice::getModule($slice_id);
+        if (($slice instanceof AA_Slice) && (strtolower($slice->getCharset()) === 'utf-8')) {
+            mgettext_bind($slice->getLang(), 'news');
+        }
     }
 
     protected function uid(): string

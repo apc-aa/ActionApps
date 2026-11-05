@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018
+class ComposerStaticInit1ba294ada09b3ce260f871e643990d2b
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -27,6 +27,10 @@ class ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018
             'Symfony\\Component\\HttpClient\\' => 29,
             'Svg\\' => 4,
             'Sabberworm\\CSS\\' => 15,
+        ),
+        'R' =>
+        array (
+            'ReportUri\\Passkeys\\' => 19,
         ),
         'P' =>
         array (
@@ -93,6 +97,10 @@ class ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018
         'Sabberworm\\CSS\\' =>
         array (
             0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
+        ),
+        'ReportUri\\Passkeys\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/report-uri/passkeys-php/src',
         ),
         'Psr\\Log\\' =>
         array (
@@ -534,6 +542,7 @@ class ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018
         'AA\\Optimize\\AddMsgBannedFieldTemplate' => __DIR__ . '/../..' . '/src/Optimize/AddMsgBannedFieldTemplate.php',
         'AA\\Optimize\\AddMsgSpamFieldTemplate' => __DIR__ . '/../..' . '/src/Optimize/AddMsgSpamFieldTemplate.php',
         'AA\\Optimize\\AddNameFieldTemplate' => __DIR__ . '/../..' . '/src/Optimize/AddNameFieldTemplate.php',
+        'AA\\Optimize\\AddPasskeyTable' => __DIR__ . '/../..' . '/src/Optimize/AddPasskeyTable.php',
         'AA\\Optimize\\AddPhoneFieldTemplate' => __DIR__ . '/../..' . '/src/Optimize/AddPhoneFieldTemplate.php',
         'AA\\Optimize\\AddPolls' => __DIR__ . '/../..' . '/src/Optimize/AddPolls.php',
         'AA\\Optimize\\AddRangeFieldTemplate' => __DIR__ . '/../..' . '/src/Optimize/AddRangeFieldTemplate.php',
@@ -578,6 +587,7 @@ class ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018
         'AA\\Optimize\\CheckLoginAddresses' => __DIR__ . '/../..' . '/src/Optimize/CheckLoginAddresses.php',
         'AA\\Optimize\\CheckNightly' => __DIR__ . '/../..' . '/src/Optimize/CheckNightly.php',
         'AA\\Optimize\\CheckObjectFormRefusals' => __DIR__ . '/../..' . '/src/Optimize/CheckObjectFormRefusals.php',
+        'AA\\Optimize\\CheckPasskeys' => __DIR__ . '/../..' . '/src/Optimize/CheckPasskeys.php',
         'AA\\Optimize\\CheckPerVisitorReads' => __DIR__ . '/../..' . '/src/Optimize/CheckPerVisitorReads.php',
         'AA\\Optimize\\CheckPhpFatals' => __DIR__ . '/../..' . '/src/Optimize/CheckPhpFatals.php',
         'AA\\Optimize\\CheckQueue' => __DIR__ . '/../..' . '/src/Optimize/CheckQueue.php',
@@ -656,6 +666,19 @@ class ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018
         'AA\\Optimize\\StateCheckModel' => __DIR__ . '/../..' . '/src/Optimize/StateCheckModel.php',
         'AA\\Optimize\\TrimFieldValues' => __DIR__ . '/../..' . '/src/Optimize/TrimFieldValues.php',
         'AA\\Optimize\\UpdateDbStructure' => __DIR__ . '/../..' . '/src/Optimize/UpdateDbStructure.php',
+        'AA\\Passkey\\Ceremony' => __DIR__ . '/../..' . '/src/Passkey/Ceremony.php',
+        'AA\\Passkey\\Challenges' => __DIR__ . '/../..' . '/src/Passkey/Challenges.php',
+        'AA\\Passkey\\Credential' => __DIR__ . '/../..' . '/src/Passkey/Credential.php',
+        'AA\\Passkey\\Credentials' => __DIR__ . '/../..' . '/src/Passkey/Credentials.php',
+        'AA\\Passkey\\Notice' => __DIR__ . '/../..' . '/src/Passkey/Notice.php',
+        'AA\\Passkey\\Refused' => __DIR__ . '/../..' . '/src/Passkey/Refused.php',
+        'AA\\Passkey\\Store' => __DIR__ . '/../..' . '/src/Passkey/Store.php',
+        'AA\\Perm\\LdapToSql\\Directory' => __DIR__ . '/../..' . '/src/Perm/LdapToSql/Directory.php',
+        'AA\\Perm\\LdapToSql\\Dn' => __DIR__ . '/../..' . '/src/Perm/LdapToSql/Dn.php',
+        'AA\\Perm\\LdapToSql\\Importer' => __DIR__ . '/../..' . '/src/Perm/LdapToSql/Importer.php',
+        'AA\\Perm\\LdapToSql\\Parity' => __DIR__ . '/../..' . '/src/Perm/LdapToSql/Parity.php',
+        'AA\\Perm\\LdapToSql\\Plan' => __DIR__ . '/../..' . '/src/Perm/LdapToSql/Plan.php',
+        'AA\\Perm\\LdapToSql\\References' => __DIR__ . '/../..' . '/src/Perm/LdapToSql/References.php',
         'AA\\Security\\LoginThrottle' => __DIR__ . '/../..' . '/src/Security/LoginThrottle.php',
         'AA\\Security\\Protection' => __DIR__ . '/../..' . '/src/Security/Protection.php',
         'AA\\Security\\ProtectionLog' => __DIR__ . '/../..' . '/src/Security/ProtectionLog.php',
@@ -1553,6 +1576,12 @@ class ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018
         'Psr\\Log\\LoggerTrait' => __DIR__ . '/..' . '/psr/log/src/LoggerTrait.php',
         'Psr\\Log\\NullLogger' => __DIR__ . '/..' . '/psr/log/src/NullLogger.php',
         'QueryZidsHelper' => __DIR__ . '/../..' . '/include/searchlib.php',
+        'ReportUri\\Passkeys\\Attestation\\AttestationObject' => __DIR__ . '/..' . '/report-uri/passkeys-php/src/Attestation/AttestationObject.php',
+        'ReportUri\\Passkeys\\Attestation\\AuthenticatorData' => __DIR__ . '/..' . '/report-uri/passkeys-php/src/Attestation/AuthenticatorData.php',
+        'ReportUri\\Passkeys\\Binary\\ByteBuffer' => __DIR__ . '/..' . '/report-uri/passkeys-php/src/Binary/ByteBuffer.php',
+        'ReportUri\\Passkeys\\CBOR\\CborDecoder' => __DIR__ . '/..' . '/report-uri/passkeys-php/src/CBOR/CborDecoder.php',
+        'ReportUri\\Passkeys\\WebAuthn' => __DIR__ . '/..' . '/report-uri/passkeys-php/src/WebAuthn.php',
+        'ReportUri\\Passkeys\\WebAuthnException' => __DIR__ . '/..' . '/report-uri/passkeys-php/src/WebAuthnException.php',
         'SQL_Lex' => __DIR__ . '/../..' . '/include/sql_parser.php',
         'SQL_Parser_Constants' => __DIR__ . '/../..' . '/include/sql_parser.php',
         'SQLite3Exception' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/SQLite3Exception.php',
@@ -1873,10 +1902,10 @@ class ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitb40e7f33e255eb8f6387bd4dd1257018::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit1ba294ada09b3ce260f871e643990d2b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit1ba294ada09b3ce260f871e643990d2b::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit1ba294ada09b3ce260f871e643990d2b::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit1ba294ada09b3ce260f871e643990d2b::$classMap;
 
         }, null, ClassLoader::class);
     }

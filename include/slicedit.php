@@ -344,7 +344,7 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
                     $err["DB"] .= MsgErr("Can't copy fields");
                 }
 
-                AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
+                AA::$perm->addPermObject($slice_id, "slice");    // no special permission added - only superuser can access
 
                 /* Added by Jakub on June 2002 to support Add slice Wizard */
                 // Copy constants

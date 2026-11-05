@@ -191,10 +191,10 @@ function ChangeUserModulePerms($perm_mod, $selected_user): void
         foreach ($perm_mod as $xmid => $role) {
             $mid = substr($xmid,1);   // removes first 'x' character (makes index string)
             if ( $role === 'REVOKE' ) {
-                DelPerm($selected_user, $mid, 'slice');
+                AA::$perm->delPerm($selected_user, $mid, 'slice');
             }
             elseif ( AA_Perm::compare($perm_slices[$mid], AA_Perm::ROLES[$role]['id']) !== 'E' ) {
-                ChangePerm($selected_user, $mid, 'slice', AA_Perm::ROLES[$role]['id']);
+                AA::$perm->changePerm($selected_user, $mid, 'slice', AA_Perm::ROLES[$role]['id']);
             }
         }
     }
@@ -212,7 +212,7 @@ function AddUserModulePerms($new_module, $new_module_role, $selected_user): void
     if ( isset($new_module) && is_array($new_module) ) {
         foreach ($new_module as $no => $mid) {
             if ( trim($mid) != "" && isset(AA_Perm::ROLES[$new_module_role[$no]]) ) {
-                AddPerm($selected_user, $mid, 'slice', AA_Perm::ROLES[$new_module_role[$no]]['id']);
+                AA::$perm->addPerm($selected_user, $mid, 'slice', AA_Perm::ROLES[$new_module_role[$no]]['id']);
             }
         }
     }
@@ -263,7 +263,7 @@ function ChangeUserGroups(?string $posted_groups, $sel_groups, $selected_user): 
     if ( isset($sel_groups) && is_array($sel_groups) && $sel_groups["n"]=="") {
         // first we remove user from all groups
         foreach (array_keys($sel_groups) as $foo_gid) {
-            DelGroupMember($foo_gid, $selected_user);
+            AA::$perm->delGroupMember($foo_gid, $selected_user);
         }
     }
     // now we add user to specified groups
@@ -272,7 +272,7 @@ function ChangeUserGroups(?string $posted_groups, $sel_groups, $selected_user): 
     $assigned_groups = explode(",",$posted_groups);
     foreach ($assigned_groups as $foo_gid) {
         if ($foo_gid) {
-            AddGroupMember(rawurldecode($foo_gid), $selected_user);
+            AA::$perm->addGroupMember(rawurldecode($foo_gid), $selected_user);
         }
     }
 }
@@ -333,12 +333,12 @@ function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $use
 function NewUserData(&$err, $uid, &$userrecord, $user_super, $um_uedit_no_go_url): void
 {
     $userrecord["uid"] = $uid;
-    if (!($newuserid = AddUser($userrecord))) {
+    if (!($newuserid = AA::$perm->addUser($userrecord))) {
         $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
     }
     if ( !count($err) ) {
         if ($user_super) {	// set super admin privilege
-            AddPerm($newuserid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
+            AA::$perm->addPerm($newuserid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
         }
         if (!$um_uedit_no_go_url) {
             go_url( get_url('', ['UsrSrch'=>1, 'usr'=>$uid, 'Msg'=>_m("User successfully added to permission system")], true));
@@ -354,15 +354,15 @@ function NewUserData(&$err, $uid, &$userrecord, $user_super, $um_uedit_no_go_url
 function ChangeUserData(&$err, $uid, &$userrecord, $user_super): void
 {
     $userrecord["uid"] = $uid;
-    if (AA::$perm->isUserEditable($uid) && !ChangeUser($userrecord)) {
+    if (AA::$perm->isUserEditable($uid) && !AA::$perm->changeUser($userrecord)) {
         $err["LDAP"] = MsgErr(_m("Can't change user"));
         return;
     }
     if ($user_super !== 'AA_NO_CHANGE') {
         if ($user_super) {		// set or revoke super admin privilege
-            AddPerm($userrecord["uid"], AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
+            AA::$perm->addPerm($userrecord["uid"], AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
         } else {
-            DelPerm($userrecord["uid"], AA_ID, "aa");
+            AA::$perm->delPerm($userrecord["uid"], AA_ID, "aa");
         }
     }
 }

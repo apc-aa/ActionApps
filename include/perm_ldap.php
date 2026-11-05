@@ -27,426 +27,7 @@
  *
 */
 
-
-//#############################################################################
-// API functions
-//#############################################################################
-
-
-//############### User functions //#############################################
-
-/** AddUser function
- *  Creates new person in LDAP permission system
- *
- * @param $user
- * @param $flags
- *
- * @return false|string
- */
-function AddUser($user, $flags = 0): false|string
-{
-    if (! AA::$perm->isUsernameFree($user["uid"])) {
-        return false;
-    }
-
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    $record = [];
-    $record["objectclass"][0]   = "top";
-    $record["objectclass"][1]   = "person";
-    $record["objectclass"][2]   = "organizationalperson";
-    $record["objectclass"][3]   = "inetorgperson";
-    $record["cn"]               = $user["givenname"] . "  " . $user["sn"];
-    $record["sn"]               = $user["sn"];
-    $record["givenname"]        = $user["givenname"];
-    if ($user["mail"]) {
-        $record["mail"]         = $user["mail"];   // can be an array
-    }
-    $record["uid"]              = $user["uid"];
-    $record["userPassword"]     = AA_Permsystem_Ldap::generatePasswordHash($user["userpassword"]);
-
-    if ($user["phone"]) {
-        $record["telephoneNumber"] = $user["phone"];
-    }
-
-    // add data to directory
-    $user_dn = "uid=" . $user['uid'] . "," . $aa_default_ldap['people'];
-    $r       = @ldap_add($ds, $user_dn, $record);
-    ldap_unbind($ds);
-    return ($r ? $user_dn : false);
-}
-
-/** DelUser function
- *  Deletes an user in LDAP permission system
- * @param string $user_id is DN
- * @param int $flags
- * @return bool
- */
-function DelUser($user_id, $flags = 3): bool
-{
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    // To keep integrity of LDAP DB, we should also delete all references
-    // to this user in other LDAP entries (e.g. member=.., apcaci=..).
-    // But this requires explicit knowledge of the schema!
-    if ($flags & 1) {            // cancel membership in groups
-        $filter = "(&(objectclass=groupOfNames)(member=$user_id))";
-        $r      = ldap_search($ds, $aa_default_ldap['groups'], $filter, [""]);
-        $arr    = ldap_get_entries($ds, $r);
-        for ($i = 0; $i < $arr["count"]; ++$i) {
-            DelGroupMember($arr[$i]["dn"], $user_id);
-        }
-        ldap_free_result($r);
-    }
-
-    if ($flags & 2) {            // cancel assigned permissions
-        $filter = "(&(objectclass=apcacl)(apcaci=$user_id:*))";
-        $r      = ldap_search($ds, $aa_default_ldap['acls'], $filter, ["apcObjectType","apcaci","apcObjectID"]);
-        $arr    = ldap_get_entries($ds, $r);
-        for ($i = 0; $i < $arr["count"]; ++$i) {
-            // indexes in lowercase !!!
-            DelPerm($user_id, $arr[$i]["apcobjectid"][0], $arr[$i]["apcobjecttype"][0]);
-        }
-        ldap_free_result($r);
-    }
-
-    $r = @ldap_delete($ds, $user_id);
-
-    ldap_unbind($ds);
-    return $r;
-}
-
-/** ChangeUser function
- *  Changes user entry in LDAP permission system
- * @param $user
- * @param $flags
- * @return bool
- */
-function ChangeUser($user, $flags = 0): bool
-{
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    $record = [];
-    $record["cn"]        = $user["givenname"] . " " . $user["sn"];
-    $record["sn"]        = $user["sn"];
-    $record["givenname"] = $user["givenname"];
-    $record["mail"]      = $user["mail"];                // can be an array
-    if ($user["userpassword"]) {
-        $record["userPassword"]    = AA_Permsystem_Ldap::generatePasswordHash($user["userpassword"]);
-    }
-    if ($user["phone"]) {
-        $record["telephoneNumber"] = $user["phone"];
-    }
-
-    // add data to directory
-    $r = @ldap_mod_replace($ds, $user['uid'], $record);
-    ldap_unbind($ds);
-    return $r;
-}
-
-//############### Group functions //############################################
-
-/** AddGroup function
- *  Creates new group in LDAP permission system
- *
- * @param $group array ("name", "description", ...)
- * @param $flags
- *
- * @return false|string
- */
-function AddGroup($group, $flags = 0): false|string
-{
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    $record = [];
-    $record["objectclass"][0] = "top";
-    $record["objectclass"][1] = "groupOfNames";
-    $record["cn"]             = $group["name"];
-    $record["member"]         = LDAP_BINDDN;  // in order to be compatible with LDAP
-    // schema where member is required
-
-    if ($group["description"]) {
-        $record["description"] = $group["description"];
-    }
-
-    // add data to directory
-    $group_dn = "cn=" . $group['name'] . "," . $aa_default_ldap['groups'];
-    $r = @ldap_add($ds, $group_dn, $record);
-    ldap_unbind($ds);
-
-    return ($r ? $group_dn : false);
-}
-
-/** DelGroup function
- *  Deletes a group in LDAP permission system
- * @param string $group_id is DN
- * @param int $flags
- * @return bool
- */
-function DelGroup($group_id, $flags = 3): bool
-{
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    // To keep integrity of LDAP DB, we should also delete all references
-    // to this group in other LDAP entries (e.g. member=.., apcaci=..).
-    // But this requires explicit knowledge of the schema.
-
-    if ($flags & 1) {            // cancel membership in other groups
-        $filter = "(&(objectclass=groupOfNames)(member=$group_id))";
-        $r      = ldap_search($ds, $aa_default_ldap['groups'], $filter, [""]);
-        $arr    = ldap_get_entries($ds, $r);
-        for ($i = 0; $i < $arr["count"]; ++$i) {
-            DelGroupMember($arr[$i]["dn"], $group_id);
-        }
-        ldap_free_result($r);
-    }
-
-    if ($flags & 2) {            // cancel assigned permissions
-        $filter = "(&(objectclass=apcacl)(apcaci=$group_id:*))";
-        $r      = ldap_search($ds, $aa_default_ldap['acls'], $filter, ["apcObjectType","apcaci","apcObjectID"]);
-        $arr    = ldap_get_entries($ds, $r);
-        for ($i = 0; $i < $arr["count"]; ++$i) {
-            // indexes in lowercase !!!
-            DelPerm($group_id, $arr[$i]["apcobjectid"][0], $arr[$i]["apcobjecttype"][0]);
-        }
-        ldap_free_result($r);
-    }
-
-    $r = @ldap_delete($ds, $group_id);
-
-    ldap_unbind($ds);
-    return $r;
-}
-
-/** ChangeGroup function
- *  changes group entry in LDAP permission system
- * @param $group
- * @param $flags
- * @return bool
- */
-function ChangeGroup($group, $flags = 0): bool
-{
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    $record = [];
-    $record["description"] = $group["description"];
-    if ($group["name"]) {
-        $record["cn"] = $group["name"];
-    }
-
-    // add data to directory
-    $r = @ldap_mod_replace($ds, $group['uid'], $record);
-    ldap_unbind($ds);
-    return $r;
-}
-
-/** AddGroupMember function
- * @param $group_id
- * @param $id
- * @param $flags
- * @return bool
- */
-function AddGroupMember($group_id, $id, $flags = 0): bool
-{
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    $r = @ldap_mod_add($ds, $group_id, ["member" => (string) $id]);
-    ldap_unbind($ds);
-    return $r;
-}
-
-/** DelGroupMember function
- * @param $group_id
- * @param $id
- * @param $flags
- * @return bool
- */
-function DelGroupMember($group_id, $id, $flags = 0): bool
-{
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    // immediate ldap_mod_del fails, if there is only one member attribute (=$id)
-    $filter = "objectclass=groupOfNames";
-    $result = @ldap_read($ds, $group_id, $filter, ["member"]);
-    if (!$result) {
-        return false;
-    }
-    $entry  = ldap_first_entry($ds, $result);
-    $arr    = ldap_get_attributes($ds, $entry);
-
-    $new    = [];
-    for ($i = 0; $i < $arr["member"]["count"]; ++$i) {
-        if (stripos($arr["member"][$i], $id) === false) {
-            $new["member"][] = $arr["member"][$i];
-        }
-    }
-
-    if (empty($new["member"])) {
-        $new["member"][] = LDAP_BINDDN;   // in order to be compatible with LDAP
-    }                                     // schema where member is required
-
-    $r = ldap_mod_replace($ds, $group_id, $new);
-    ldap_unbind($ds);
-    return $r;
-}
-
-
-//############### Permission functions //#######################################
-
-/** AddPermObject function
- *  Creates a new object in LDAP
- * @param $objectID
- * @param $objectType
- * @param $flags
- * @return bool
- */
-function AddPermObject($objectID, $objectType, $flags = 0): bool
-{
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    $record = [];
-    $record["objectclass"][0] = "top";
-    $record["objectclass"][1] = "apcacl";
-    $record["apcobjectid"]    = $objectID;
-    $record["apcobjecttype"]  = $objectType;
-
-    // add data to directory
-    $r = ldap_add($ds, "apcobjectid=$objectID," . $aa_default_ldap['acls'], $record);
-    ldap_unbind($ds);
-    return $r;
-}
-
-/** DelPermObject function
- *  Deletes an ACL object in LDAP permission system
- * @param $objectID
- * @param $objectType
- * @param $flags
- * @return bool
- */
-function DelPermObject($objectID, $objectType, $flags = 0): bool
-{
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    $r = @ldap_delete($ds, "apcobjectid=$objectID," . $aa_default_ldap['acls']);
-
-    ldap_unbind($ds);
-    return $r;
-}
-
-/** AddPerm function
- * Append permission to existing object
- * @param $id
- * @param $objectID
- * @param $objectType
- * @param $perm
- * @param $flags
- * @return bool
- */
-function AddPerm($id, $objectID, $objectType, $perm, $flags = 0): bool
-{
-    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
-    if (!($ds = InitLDAP())) {
-        return false;
-    }
-
-    $filter = "objectclass=apcacl";
-    $basedn = "apcobjectid=" . $objectID . "," . $aa_default_ldap['acls'];
-    $result = @ldap_read($ds, $basedn, $filter, ["apcaci"]);
-    if (!$result) {
-        // we have to add the permission object
-        AddPermObject($objectID, $objectType);
-        $result = @ldap_read($ds, $basedn, $filter, ["apcaci"]);
-
-        // does not help - return false
-        if (!$result) {
-            return false;
-        }
-    }
-    $entry = ldap_first_entry($ds, $result);
-    $arr   = ldap_get_attributes($ds, $entry);
-
-    // some older AAs could have mixed case attributes :-( (apcAci)
-    $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
-    $new = [];
-    $old = [];
-
-    for ($i = 0; $i < $aci['count']; ++$i) { // copy old apcAci values
-        if (stripos($aci[$i], $id) === false) {   // except the modified/deleted one
-            $new["apcaci"][] = $aci[$i];
-        } else {
-            $old["apcaci"][] = $aci[$i];
-        }
-    }
-
-    if ($perm) {
-        $new["apcaci"][] = "$id:$perm";
-    }
-
-    if (count($new)) {
-        $r = ldap_mod_replace($ds, $basedn, $new);
-    } else {
-        $r = ldap_mod_del($ds, $basedn, $old);
-    }
-
-    ldap_unbind($ds);
-    return $r;          // true or false
-}
-
-/** DelPerm function
- *
- * @param       $id
- * @param       $objectID
- * @param       $objectType
- * @param  int  $flags
- *
- * @return bool
- */
-function DelPerm($id, $objectID, $objectType, $flags = 0): bool
-{
-    return AddPerm($id, $objectID, $objectType, false);
-}
-
-/** ChangePerm function
- *
- * @param       $id
- * @param       $objectID
- * @param       $objectType
- * @param       $perm
- * @param  int  $flags
- *
- * @return bool
- */
-function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0): bool
-{
-    return AddPerm($id, $objectID, $objectType, $perm);
-}
+use AA\Passkey\Store;
 
 //#############################################################################
 // Internal functions
@@ -539,6 +120,409 @@ class AA_Permsystem_Ldap extends AA_Permsystem
     public function isUserEditable(): bool
     {
         return true;
+    }
+
+    //############### User functions //#############################################
+
+    /** addUser function
+     *  Creates new person in LDAP permission system. Call it through AA::$perm - AA_Perm::addUser() checks
+     *  the login is free in every backend, this one does not.
+     *
+     * @param $user
+     *
+     * @return false|string
+     */
+    public function addUser(array $user): false|string
+    {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+
+        $record = [];
+        $record["objectclass"][0]   = "top";
+        $record["objectclass"][1]   = "person";
+        $record["objectclass"][2]   = "organizationalperson";
+        $record["objectclass"][3]   = "inetorgperson";
+        $record["cn"]               = $user["givenname"] . "  " . $user["sn"];
+        $record["sn"]               = $user["sn"];
+        $record["givenname"]        = $user["givenname"];
+        if ($user["mail"]) {
+            $record["mail"]         = $user["mail"];   // can be an array
+        }
+        $record["uid"]              = $user["uid"];
+        $record["userPassword"]     = AA_Permsystem_Ldap::generatePasswordHash($user["userpassword"]);
+
+        if ($user["phone"]) {
+            $record["telephoneNumber"] = $user["phone"];
+        }
+
+        // add data to directory
+        $user_dn = "uid=" . $user['uid'] . "," . $aa_default_ldap['people'];
+        $r       = @ldap_add($ds, $user_dn, $record);
+        ldap_unbind($ds);
+        return ($r ? $user_dn : false);
+    }
+
+    /** delUser function
+     *  Deletes an user in LDAP permission system
+     * @param string $user_id is DN
+     * @param int $flags
+     * @return bool
+     */
+    public function delUser($user_id, int $flags = 3): bool
+    {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+        // a new account of the same login gets the same DN - and would log in by them
+        (new Store())->deleteAll((string) $this->passkeyId((string) $user_id));
+
+        // To keep integrity of LDAP DB, we should also delete all references
+        // to this user in other LDAP entries (e.g. member=.., apcaci=..).
+        // But this requires explicit knowledge of the schema!
+        if ($flags & 1) {            // cancel membership in groups
+            $filter = "(&(objectclass=groupOfNames)(member=$user_id))";
+            $r      = ldap_search($ds, $aa_default_ldap['groups'], $filter, [""]);
+            $arr    = ldap_get_entries($ds, $r);
+            for ($i = 0; $i < $arr["count"]; ++$i) {
+                $this->delGroupMember($arr[$i]["dn"], $user_id);
+            }
+            ldap_free_result($r);
+        }
+
+        if ($flags & 2) {            // cancel assigned permissions
+            $filter = "(&(objectclass=apcacl)(apcaci=$user_id:*))";
+            $r      = ldap_search($ds, $aa_default_ldap['acls'], $filter, ["apcObjectType","apcaci","apcObjectID"]);
+            $arr    = ldap_get_entries($ds, $r);
+            for ($i = 0; $i < $arr["count"]; ++$i) {
+                // indexes in lowercase !!!
+                $this->delPerm($user_id, $arr[$i]["apcobjectid"][0], (string) ($arr[$i]["apcobjecttype"][0] ?? ''));
+            }
+            ldap_free_result($r);
+        }
+
+        $r = @ldap_delete($ds, $user_id);
+
+        ldap_unbind($ds);
+        return $r;
+    }
+
+    /** changeUser function
+     *  Changes user entry in LDAP permission system
+     * @param $user
+     * @return bool
+     */
+    public function changeUser(array $user): bool
+    {
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+
+        $record = [];
+        $record["cn"]        = $user["givenname"] . " " . $user["sn"];
+        $record["sn"]        = $user["sn"];
+        $record["givenname"] = $user["givenname"];
+        $record["mail"]      = $user["mail"];                // can be an array
+        if ($user["userpassword"]) {
+            $record["userPassword"]    = AA_Permsystem_Ldap::generatePasswordHash($user["userpassword"]);
+        }
+        if ($user["phone"]) {
+            $record["telephoneNumber"] = $user["phone"];
+        }
+
+        // add data to directory
+        $r = @ldap_mod_replace($ds, $user['uid'], $record);
+        ldap_unbind($ds);
+        return $r;
+    }
+
+    //############### Group functions //############################################
+
+    /** addGroup function
+     *  Creates new group in LDAP permission system
+     *
+     * @param $group array ("name", "description", ...)
+     *
+     * @return false|string
+     */
+    public function addGroup(array $group): false|string
+    {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+
+        $record = [];
+        $record["objectclass"][0] = "top";
+        $record["objectclass"][1] = "groupOfNames";
+        $record["cn"]             = $group["name"];
+        $record["member"]         = LDAP_BINDDN;  // in order to be compatible with LDAP
+        // schema where member is required
+
+        if ($group["description"]) {
+            $record["description"] = $group["description"];
+        }
+
+        // add data to directory
+        $group_dn = "cn=" . $group['name'] . "," . $aa_default_ldap['groups'];
+        $r = @ldap_add($ds, $group_dn, $record);
+        ldap_unbind($ds);
+
+        return ($r ? $group_dn : false);
+    }
+
+    /** delGroup function
+     *  Deletes a group in LDAP permission system
+     * @param string $group_id is DN
+     * @param int $flags
+     * @return bool
+     */
+    public function delGroup($group_id, int $flags = 3): bool
+    {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+
+        // To keep integrity of LDAP DB, we should also delete all references
+        // to this group in other LDAP entries (e.g. member=.., apcaci=..).
+        // But this requires explicit knowledge of the schema.
+
+        if ($flags & 1) {            // cancel membership in other groups
+            $filter = "(&(objectclass=groupOfNames)(member=$group_id))";
+            $r      = ldap_search($ds, $aa_default_ldap['groups'], $filter, [""]);
+            $arr    = ldap_get_entries($ds, $r);
+            for ($i = 0; $i < $arr["count"]; ++$i) {
+                $this->delGroupMember($arr[$i]["dn"], $group_id);
+            }
+            ldap_free_result($r);
+        }
+
+        if ($flags & 2) {            // cancel assigned permissions
+            $filter = "(&(objectclass=apcacl)(apcaci=$group_id:*))";
+            $r      = ldap_search($ds, $aa_default_ldap['acls'], $filter, ["apcObjectType","apcaci","apcObjectID"]);
+            $arr    = ldap_get_entries($ds, $r);
+            for ($i = 0; $i < $arr["count"]; ++$i) {
+                // indexes in lowercase !!!
+                $this->delPerm($group_id, $arr[$i]["apcobjectid"][0], (string) ($arr[$i]["apcobjecttype"][0] ?? ''));
+            }
+            ldap_free_result($r);
+        }
+
+        $r = @ldap_delete($ds, $group_id);
+
+        ldap_unbind($ds);
+        return $r;
+    }
+
+    /** changeGroup function
+     *  changes group entry in LDAP permission system
+     * @param $group
+     * @return bool
+     */
+    public function changeGroup(array $group): bool
+    {
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+
+        $record = [];
+        $record["description"] = $group["description"];
+        if ($group["name"]) {
+            $record["cn"] = $group["name"];
+        }
+
+        // add data to directory
+        $r = @ldap_mod_replace($ds, $group['uid'], $record);
+        ldap_unbind($ds);
+        return $r;
+    }
+
+    /** addGroupMember function
+     * @param $group_id
+     * @param $id
+     * @return bool
+     */
+    public function addGroupMember($group_id, $id): bool
+    {
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+
+        $r = @ldap_mod_add($ds, $group_id, ["member" => (string) $id]);
+        ldap_unbind($ds);
+        return $r;
+    }
+
+    /** delGroupMember function
+     * @param $group_id
+     * @param $id
+     * @return bool
+     */
+    public function delGroupMember($group_id, $id): bool
+    {
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+
+        // immediate ldap_mod_del fails, if there is only one member attribute (=$id)
+        $filter = "objectclass=groupOfNames";
+        $result = @ldap_read($ds, $group_id, $filter, ["member"]);
+        if (!$result) {
+            return false;
+        }
+        $entry  = ldap_first_entry($ds, $result);
+        $arr    = ldap_get_attributes($ds, $entry);
+
+        $new    = [];
+        for ($i = 0; $i < $arr["member"]["count"]; ++$i) {
+            if (stripos($arr["member"][$i], $id) === false) {
+                $new["member"][] = $arr["member"][$i];
+            }
+        }
+
+        if (empty($new["member"])) {
+            $new["member"][] = LDAP_BINDDN;   // in order to be compatible with LDAP
+        }                                     // schema where member is required
+
+        $r = ldap_mod_replace($ds, $group_id, $new);
+        ldap_unbind($ds);
+        return $r;
+    }
+
+
+    //############### Permission functions //#######################################
+
+    /** addPermObject function
+     *  Creates a new object in LDAP
+     * @param $objectID
+     * @param $objectType
+     * @return bool
+     */
+    public function addPermObject($objectID, string $objectType): bool
+    {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+
+        $record = [];
+        $record["objectclass"][0] = "top";
+        $record["objectclass"][1] = "apcacl";
+        $record["apcobjectid"]    = $objectID;
+        $record["apcobjecttype"]  = $objectType;
+
+        // add data to directory
+        $r = ldap_add($ds, "apcobjectid=$objectID," . $aa_default_ldap['acls'], $record);
+        ldap_unbind($ds);
+        return $r;
+    }
+
+    /** delPermObject function
+     *  Deletes an ACL object in LDAP permission system
+     * @param $objectID
+     * @param $objectType
+     * @return bool
+     */
+    public function delPermObject($objectID, string $objectType): bool
+    {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+
+        $r = @ldap_delete($ds, "apcobjectid=$objectID," . $aa_default_ldap['acls']);
+
+        ldap_unbind($ds);
+        return $r;
+    }
+
+    /** addPerm function
+     * Append permission to existing object
+     * @param $id
+     * @param $objectID
+     * @param $objectType
+     * @param $perm
+     * @return bool
+     */
+    public function addPerm($id, $objectID, string $objectType, $perm): bool
+    {
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
+        if (!($ds = InitLDAP())) {
+            return false;
+        }
+
+        $filter = "objectclass=apcacl";
+        $basedn = "apcobjectid=" . $objectID . "," . $aa_default_ldap['acls'];
+        $result = @ldap_read($ds, $basedn, $filter, ["apcaci"]);
+        if (!$result) {
+            // we have to add the permission object
+            $this->addPermObject($objectID, $objectType);
+            $result = @ldap_read($ds, $basedn, $filter, ["apcaci"]);
+
+            // does not help - return false
+            if (!$result) {
+                return false;
+            }
+        }
+        $entry = ldap_first_entry($ds, $result);
+        $arr   = ldap_get_attributes($ds, $entry);
+
+        // some older AAs could have mixed case attributes :-( (apcAci)
+        $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
+        $new = [];
+        $old = [];
+
+        for ($i = 0; $i < $aci['count']; ++$i) { // copy old apcAci values
+            if (stripos($aci[$i], $id) === false) {   // except the modified/deleted one
+                $new["apcaci"][] = $aci[$i];
+            } else {
+                $old["apcaci"][] = $aci[$i];
+            }
+        }
+
+        if ($perm) {
+            $new["apcaci"][] = "$id:$perm";
+        }
+
+        if (count($new)) {
+            $r = ldap_mod_replace($ds, $basedn, $new);
+        } else {
+            $r = ldap_mod_del($ds, $basedn, $old);
+        }
+
+        ldap_unbind($ds);
+        return $r;          // true or false
+    }
+
+    /** delPerm function
+     *
+     * @param       $id
+     * @param       $objectID
+     * @param       $objectType
+     *
+     * @return bool
+     */
+    public function delPerm($id, $objectID, string $objectType): bool
+    {
+        return $this->addPerm($id, $objectID, $objectType, false);
+    }
+
+    /** changePerm function
+     *
+     * @param       $id
+     * @param       $objectID
+     * @param       $objectType
+     * @param       $perm
+     *
+     * @return bool
+     */
+    public function changePerm($id, $objectID, string $objectType, $perm): bool
+    {
+        return $this->addPerm($id, $objectID, $objectType, $perm);
     }
 
     /** Creates a password hash for given Permsystem */
@@ -792,6 +776,29 @@ class AA_Permsystem_Ldap extends AA_Permsystem
         return $res;
     }
 
+
+    /** The DN of a user as the directory keeps it. The DN of a login is built from the name as typed, so one
+     *  person comes as uid=Kalen01 and uid=kalen01 - a passkey kept under one would not hold back the other.
+     *  null for a group or an unknown DN
+     *  @throws RuntimeException the server did not answer - "no passkey" would let a password in */
+    public function passkeyId(string $uid): ?string
+    {
+        if (!$this->userIdFormatMatches($uid)) {
+            return null;
+        }
+        if (!($ds = InitLDAP())) {
+            throw new RuntimeException('LDAP server unreachable');
+        }
+        $result = @ldap_read($ds, $uid, '(objectclass=inetOrgPerson)', ['1.1']);   // 1.1: no attributes, the DN only
+        $error  = $result ? 0 : ldap_errno($ds);
+        $entry  = $result ? ldap_first_entry($ds, $result) : false;
+        $dn     = $entry ? ldap_get_dn($ds, $entry) : false;
+        ldap_unbind($ds);
+        if ($error && ($error !== 32)) {   // 32: no such object - not an account
+            throw new RuntimeException("LDAP read failed ($error)");
+        }
+        return (is_string($dn) && ($dn !== '')) ? $dn : null;
+    }
 
     /** @return ?string null for a group, an unknown DN or an unreachable server - see AA\Util\LdapStamp */
     public function credentialStamp(string $uid): ?string
