@@ -146,8 +146,8 @@ class FilesController
 
     /**
      * The upload-* attributes for an <aa-richtext> AA did not render (a form in a template):
-     * upload="none" when this viewer may not upload, or for a slice or item that does not exist -
-     * the answer tells no one which ids exist. GET ask, slice - or item, for its slice.
+     * upload="none" when this viewer may not upload, and for a slice or item that does not exist -
+     * no 404 to probe ids with. GET ask, slice - or item, for its slice.
      * Only a script of a page of this AA gets them: it sends X-AA-Upload-Ask, a foreign page cannot
      * without the browser asking first (CORS), and could not read the answer. No Origin or Referer
      * check: a same-origin GET carries no Origin, and a page may send no Referer.
@@ -238,11 +238,12 @@ class FilesController
         return is_string($slice) ? $slice : null;
     }
 
-    /** the texts of the editor in the language of the slice's pages, not of the AA install */
+    /** the texts of the editor in the language of the slice's pages, not of the AA install - only a UTF-8
+     *  one: the texts of an old windows-1250 language would not go into the JSON */
     protected function bindLanguage(string $slice_id): void
     {
         $slice = AA_Slice::getModule($slice_id);
-        if ($slice instanceof AA_Slice) {
+        if (($slice instanceof AA_Slice) && (strtolower($slice->getCharset()) === 'utf-8')) {
             mgettext_bind($slice->getLang(), 'news');
         }
     }
