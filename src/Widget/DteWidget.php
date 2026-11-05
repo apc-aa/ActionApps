@@ -214,9 +214,11 @@ class DteWidget extends Widget
                 $year = $years[$i] ?: date('Y'); // specified year or current
                 $month = $months[$i] ?: 1;         // specified month or January
                 $day = $days[$i] ?: 1;         // specified day or 1st
-                $time = explode(':', $times[$i] ?: "0:0:0");         // specified time or midnight
+                // specified time or midnight; "10:30" (the field shows no seconds) or "14" lacks a part - it is 0,
+                // as in datectrl::get_date() - mktime() would take the current one for a missing part
+                $time = explode(':', $times[$i] ?: "0:0:0") + [0, 0, 0];
 
-                $values[] = mktime($time[0], $time[1], $time[2], (int) $month, (int) $day, (int) $year);
+                $values[] = mktime((int) $time[0], (int) $time[1], (int) $time[2], (int) $month, (int) $day, (int) $year);
             }
         }
 
