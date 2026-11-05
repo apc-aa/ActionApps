@@ -22,7 +22,7 @@ class Manageractions implements \IteratorAggregate, ArrayAccess, Countable
      */
     public function getAction($id): ?AbstractManageraction
     {
-        return $this->arr[$id] ?: null;
+        return $this->arr[$id] ?? null;
     }
 
     public function getManagerButtons(string $manager_url, string $id_alias, string $module_alias): array
