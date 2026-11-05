@@ -437,6 +437,19 @@ namespace Tests\Unit\Legacy {
             $this->assertSame(LoginToken::SCOPE_ADMIN, AA_Auth::scope());
         }
 
+        /** a cookie session sent along may hold the rights cached for another user or database */
+        #[RunInSeparateProcess]
+        #[PreserveGlobalState(false)]
+        public function test_bearer_drops_the_rights_the_session_cached(): void
+        {
+            define('AA_TOKEN_ENTRY', true);
+            $_SESSION = ['permission_uid' => '7', 'r_superuser' => ['x' => true]];
+            $GLOBALS['r_superuser'] = ['x' => true];
+            $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . LoginToken::issue('7');
+            $this->assertSame('7', (new AA_Auth())->auth_preauth());
+            $this->assertSame([[], null], [$_SESSION, $GLOBALS['r_superuser']]);
+        }
+
         #[RunInSeparateProcess]
         #[PreserveGlobalState(false)]
         public function test_bearer_of_an_apps_token_logs_in_with_its_scope(): void

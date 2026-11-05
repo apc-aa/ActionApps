@@ -61,14 +61,23 @@ class AA_Auth extends Auth
     /** Is some user logged in? The is_authenticated() works differently, so we added this one  */
     public function is_user(): bool
     {
-        return strlen($this->auth["uid"]) && $this->auth["uid"] !== 'nobody';
+        $uid = $this->getUid();
+        return ($uid !== '') && ($uid !== 'nobody');
     }
 
     /** A session keeps the id it logged in with - after a change of PERM_LIB (ldap -> sql) no system may
-     *  know it, and the user would stay logged in without any right. Such a session logs in again. */
+     *  know it, and the user would stay logged in without any right. Such a session logs in again, as does
+     *  a session of another database (ofOtherDatabase()). */
     public function is_authenticated()
     {
         $uid = parent::is_authenticated();
+        if ($uid && $this->ofOtherDatabase()) {
+            if (isset($this->auth['db'])) {   // a session from before AA marked the database just logs in again
+                AA_Log::write('OTHER_DB', AA_Log::context((string) $uid, false), (string) $this->auth['db']);
+            }
+            $this->unauth();
+            return false;
+        }
         if ($uid && !in_array($uid, ['nobody', 'form'], true) && !AA::$perm->recognizesId((string) $uid)) {
             // tells such a logout from a lost session; once, as unauth() clears the uid (type: 10 bytes at most)
             AA_Log::write('UNKNOWN_ID', AA_Log::context((string) $uid, false), (string) ($this->auth['uname'] ?? ''));
@@ -78,14 +87,21 @@ class AA_Auth extends Auth
         return $uid;
     }
 
+    /** AAs on other databases may share the session files, and there the same id is another user - a session
+     *  counts only in the database it logged in to. Also pages that do not check the login (pageOpen('noauth')). */
+    private function ofOtherDatabase(): bool
+    {
+        return !in_array((string) ($this->auth['uid'] ?? ''), ['', 'nobody', 'form'], true) && (($this->auth['db'] ?? null) !== DB_NAME);
+    }
+
     public function getUid(): string
     {
-        return (string) $this->auth["uid"];
+        return $this->ofOtherDatabase() ? '' : (string) $this->auth["uid"];
     }
 
     public function getUname(): string
     {
-        return (string) $this->auth["uname"];
+        return $this->ofOtherDatabase() ? '' : (string) $this->auth["uname"];
     }
 
     public function set_nobody($state = true): void
@@ -198,13 +214,14 @@ class AA_Auth extends Auth
         return $uid;
     }
 
-    /** The one way a checked login becomes the session's: the LOGIN row, a new session id, when and how it happened
+    /** The one way a checked login becomes the session's: the LOGIN row, a new session id, the database, when and how it happened
      *  @param string $method password|passkey|free */
     private function loginUid(string $uid, string $uname, string $method): void
     {
-        $before = $this->auth['uid'] ?? '';
+        $before = [$this->auth['uid'] ?? '', $this->auth['db'] ?? ''];
         $this->auth['uname'] = $uname;
         $this->auth['uid']   = $uid;
+        $this->auth['db']    = DB_NAME;
         $this->auth['at']    = time();
         $this->auth['via']   = $method;
         if ($method === 'free') {
@@ -213,10 +230,14 @@ class AA_Auth extends Auth
         } else {
             AA_Log::write('LOGIN', AA_Log::context($uid, false), LoginThrottle::stored($uname));
         }
-        // a session id known before the login (planted cookie, a shared device) must not become the logged-in one;
+        // a session id known before the login (planted cookie, a shared device) must not become the logged-in one,
+        // nor the rights cached before - of another user, or of the same id in another database;
         // the free login of init_page.php repeats on every request - a new id each time would break parallel requests
-        if (($uid !== $before) && (session_status() === PHP_SESSION_ACTIVE) && !headers_sent()) {
-            session_regenerate_id(true);
+        if ($before !== [$uid, DB_NAME]) {
+            AA_Session::dropPermissionCache();
+            if ((session_status() === PHP_SESSION_ACTIVE) && !headers_sent()) {
+                session_regenerate_id(true);
+            }
         }
     }
 
@@ -234,11 +255,11 @@ class AA_Auth extends Auth
         return AppStore::isPublic($uid) || DB_AA::test('log', [['type', 'FREE_LOGIN'], ['selector', AA::$perm->getUserLoginName($uid)]]);
     }
 
-    /** the time and way of the login go with it - a later login form must not inherit them */
+    /** the database, time and way of the login go with it - a later login form must not inherit them */
     public function unauth($nobody = false): void
     {
         parent::unauth($nobody);
-        unset($this->auth['at'], $this->auth['via']);
+        unset($this->auth['db'], $this->auth['at'], $this->auth['via']);
     }
 
     public static function use2FA(): bool
@@ -297,6 +318,8 @@ class AA_Auth extends Auth
         unset($this->auth['at'], $this->auth['via']);
         try {
             [$this->auth['uid'], $this->auth['uname'], self::$scope] = LoginToken::verify($jwt);
+            $this->auth['db'] = DB_NAME;   // the token checks the password of the user in this database
+            AA_Session::dropPermissionCache();   // a session sent along may cache another user's or database's rights
             return $this->auth['uid'];
         } catch (\Throwable $e) {   // a malformed token throws TypeError, too
             LogOnce::daily('JWT_DENY', (string) ($_SERVER['REMOTE_ADDR'] ?? ''), $e->getMessage());

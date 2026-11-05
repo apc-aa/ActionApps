@@ -500,8 +500,8 @@ final class ProgressEndpointTest extends TestCase
         session_id(self::SID);
         session_start();
         $auth = new \AA_Auth();
-        // an id of a user system - a session with an id no system knows is logged out
-        (new \ReflectionProperty(\Auth::class, 'auth'))->setValue($auth, ['uid' => '1', 'uname' => 'tester', 'perm' => '', 'exp' => $exp, 'refresh' => 0]);
+        // an id of a user system logged in to this database - other sessions are logged out
+        (new \ReflectionProperty(\Auth::class, 'auth'))->setValue($auth, ['uid' => '1', 'uname' => 'tester', 'perm' => '', 'exp' => $exp, 'refresh' => 0, 'db' => DB_NAME]);
         $_SESSION = ['auth' => $auth];
         session_write_close();
         unset($GLOBALS['auth'], $GLOBALS['sess']);

@@ -151,7 +151,7 @@ namespace Tests\Unit\Legacy {
             AA::$perm = $this->perm;
             $_POST    = [];
             $_SESSION = [];
-            unset($_SERVER['HTTPS']);
+            unset($_SERVER['HTTPS'], $GLOBALS['permission_uid'], $GLOBALS['permission_to'], $GLOBALS['r_superuser']);
         }
 
         private function answer(string $sql): array
@@ -215,6 +215,35 @@ namespace Tests\Unit\Legacy {
             $this->assertSame('7', $auth->auth_preauth());
             $this->assertSame('password', AA_Auth::login());
             $this->assertTrue($auth->isFresh());
+            // AA_Auth::is_authenticated() takes the session only in this database
+            $this->assertSame(DB_NAME, (new \ReflectionProperty($auth, 'auth'))->getValue($auth)['db']);
+        }
+
+        /** the same id logged in to another database before - the rights cached for it there must go, for this
+         *  request (globals) and the next ones (session) */
+        public function test_password_afterSessionOfOtherDatabase_dropsCachedRights(): void
+        {
+            $this->assertSame([[], null, null], $this->loginOver(['uid' => '7', 'uname' => 'honza', 'db' => 'other_db']));
+        }
+
+        /** a login of the same user in the same database again (the free login repeats on every request) - the cache stays */
+        public function test_password_sameUserAgain_keepsCachedRights(): void
+        {
+            $cached = ['permission_uid' => '7', 'r_superuser' => ['x' => true]];
+            $this->assertSame([$cached, '7', ['x' => true]], $this->loginOver(['uid' => '7', 'uname' => 'honza', 'db' => DB_NAME]));
+        }
+
+        /** [session, global permission_uid, global r_superuser] after a login by password over the session data $before */
+        private function loginOver(array $before): array
+        {
+            $_SESSION = ['permission_uid' => '7', 'r_superuser' => ['x' => true]];
+            $GLOBALS['permission_uid'] = '7';
+            $GLOBALS['r_superuser']    = ['x' => true];
+            $_POST    = ['username' => 'honza', 'password' => 'pw'];
+            $auth     = new AA_Auth();
+            (new \ReflectionProperty($auth, 'auth'))->setValue($auth, $before);
+            $this->assertSame('7', $auth->auth_preauth());
+            return [$_SESSION, $GLOBALS['permission_uid'], $GLOBALS['r_superuser']];
         }
 
         public function test_password_accountWithPasskey_refusedLikeAWrongOne(): void

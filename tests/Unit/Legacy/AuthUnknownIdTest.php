@@ -33,6 +33,7 @@ namespace Tests\Unit\Legacy {
     /**
      * A session keeps the user id it logged in with. After PERM_LIB changes (ldap -> sql) a session holding
      * an id no permission system knows must ask to log in again - not stay logged in without any right.
+     * The same holds for a session of another database: there the same id is another user.
      */
     final class AuthUnknownIdTest extends TestCase
     {
@@ -68,12 +69,13 @@ namespace Tests\Unit\Legacy {
             AA::$perm = $this->perm;
         }
 
-        /** AA_Auth with the session data of a user logged in as $uid, not expired */
-        private static function sessionOf(string $uid, bool $nobody = false): AA_Auth
+        /** AA_Auth with the session data of a user logged in as $uid to the database $db (null: no mark), not expired */
+        private static function sessionOf(string $uid, bool $nobody = false, ?string $db = DB_NAME): AA_Auth
         {
             $auth = new AA_Auth();
             $auth->set_nobody($nobody);
-            (fn() => $this->auth = ['uid' => $uid, 'uname' => 'jan', 'perm' => '', 'exp' => time() + 600, 'refresh' => 0])->call($auth);
+            $data = ['uid' => $uid, 'uname' => 'jan', 'perm' => '', 'exp' => time() + 600, 'refresh' => 0] + (is_null($db) ? [] : ['db' => $db]);
+            (fn() => $this->auth = $data)->call($auth);
             return $auth;
         }
 
@@ -129,6 +131,44 @@ namespace Tests\Unit\Legacy {
         {
             AA::$perm->restrictPermsTo([]);
             $this->assertSame('12', self::sessionOf('12')->is_authenticated());
+        }
+
+        public function test_isAuthenticated_sessionOfOtherDatabaseLogsOut(): void
+        {
+            $auth = self::sessionOf('12', false, 'other_db');
+            $this->assertFalse($auth->is_authenticated());
+            $data = (new \ReflectionProperty($auth, 'auth'))->getValue($auth);
+            $this->assertSame('', $data['uid']);
+            $this->assertArrayNotHasKey('db', $data, 'a later login compares with no database');
+            [$row] = RecordingDb::inserts('log');
+            $this->assertSame(['OTHER_DB', 'other_db'], [$row['type'], $row['params']]);
+            $this->assertStringStartsWith('12:', $row['selector']);
+            $this->assertFalse($auth->is_authenticated());
+            $this->assertCount(1, RecordingDb::inserts('log'));
+        }
+
+        /** pages that do not check the login (pageOpen('noauth')) read the user straight from the session */
+        public function test_getUid_sessionOfOtherDatabaseHasNoUser(): void
+        {
+            $auth = self::sessionOf('12', false, 'other_db');
+            $this->assertSame(['', '', false], [$auth->getUid(), $auth->getUname(), $auth->is_user()]);
+            $this->assertSame('12', self::sessionOf('12')->getUid());
+            $this->assertSame('nobody', self::sessionOf('nobody', true, null)->getUid());
+        }
+
+        /** a session from before the mark logs in again, and that is no event worth a log row */
+        public function test_isAuthenticated_sessionWithoutDatabaseLogsInAgain(): void
+        {
+            $auth = self::sessionOf('12', false, null);
+            $this->assertFalse($auth->is_authenticated());
+            $this->assertSame('', $auth->getUid());
+            $this->assertSame([], RecordingDb::inserts('log'));
+        }
+
+        public function test_isAuthenticated_nobodyAndLoginFormNeedNoDatabase(): void
+        {
+            $this->assertSame('nobody', self::sessionOf('nobody', true, null)->is_authenticated());
+            $this->assertSame('form', self::sessionOf('form', false, null)->is_authenticated());
         }
 
         public function test_recognizesId(): void

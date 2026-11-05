@@ -37,7 +37,8 @@ https://www.apc.org/
  * Auth state is stored in the session as the serialized AA_Auth object
  * ($_SESSION['auth']), so we load AA's classes to read it via getUid() —
  * authenticated = uid set and not a sentinel ('form' = login in progress,
- * 'nobody' = anonymous). This path touches no DB (AA_Auth::$refresh = 0).
+ * 'nobody' = anonymous); getUid() is empty for a session of another database.
+ * This path touches no DB (AA_Auth::$refresh = 0).
  * See SECURITY-AUDIT-FINDINGS.md B2.
  */
 require_once __DIR__ . "/../vendor/autoload.php";   // classmap: AA_Auth, AA\* for unserialize
