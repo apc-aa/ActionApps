@@ -16,8 +16,7 @@ use ReflectionProperty;
  *
  * DB_PDO::quote() just lazy-connects then delegates to the driver's PDO::quote().
  * We exercise its contract with a reflection-injected in-memory SQLite PDO, so
- * connect() short-circuits before its sqlite-function registration (which needs
- * legacy globals like _sql_rand). The exact escaping is the driver's — SQLite
+ * connect() short-circuits before its sqlite-function registration. The exact escaping is the driver's — SQLite
  * doubles the quote, production MySQL backslash-escapes — so we assert only the
  * driver-agnostic safety contract (value is wrapped and the inner quote escaped).
  *
@@ -124,6 +123,21 @@ final class DbPdoTest extends TestCase
     }
 
     /** Inject a ready PDO into the protected $dbh so connect() short-circuits. */
+    // --- connect(): SQLite gets the MySQL functions AA's SQL uses ---
+
+    public function test_connect_sqlite_registers_rand_greatest_least(): void
+    {
+        $db  = $this->dbPdo('db_pdo:sqlite', ':memory:');
+        $pdo = $db->connect();
+        $this->assertInstanceOf(PDO::class, $pdo);
+
+        $row = $pdo->query('SELECT rand() AS r, greatest(1, 3, 2) AS g, least(4, 2, 5) AS l')->fetch(PDO::FETCH_ASSOC);
+        $this->assertGreaterThanOrEqual(0, $row['r']);
+        $this->assertLessThanOrEqual(1, $row['r']);
+        $this->assertEquals(3, $row['g']);
+        $this->assertEquals(2, $row['l']);
+    }
+
     private function injectPdo(DB_PDO $db, PDO $pdo): void
     {
         (new ReflectionProperty(DB_PDO::class, 'dbh'))->setValue($db, $pdo);

@@ -259,7 +259,7 @@ class DB_PDO
                     }, 3);
                     $this->dbh->sqliteCreateFunction('md5', 'md5', 1);
                     $this->dbh->sqliteCreateFunction('pow', 'pow', 2);
-                    $this->dbh->sqliteCreateFunction('rand', '_sql_rand');
+                    $this->dbh->sqliteCreateFunction('rand', fn(): float => mt_rand() / mt_getrandmax());
                     $this->dbh->sqliteCreateFunction('if', function ($condition, $expr1, $expr2 = null) {
                         return $condition ? $expr1 : $expr2;
                     });
@@ -270,8 +270,8 @@ class DB_PDO
                         $sep = array_shift($args);
                         return implode($sep, $args);
                     });
-                    $this->dbh->sqliteCreateFunction('greatest', '_sql_greatest');
-                    $this->dbh->sqliteCreateFunction('least', '_sql_least');
+                    $this->dbh->sqliteCreateFunction('greatest', fn(...$args) => max($args));
+                    $this->dbh->sqliteCreateFunction('least', fn(...$args) => min($args));
                     $this->dbh->sqliteCreateFunction('regexp', function ($pattern, $value) {
                         #mb_internal_encoding('UTF-8'); // multibyte character encoding
                         #mb_regex_encoding('UTF-8');    // should be set at the application level
