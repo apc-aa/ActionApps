@@ -25,7 +25,6 @@ use AA_Log;
 use AA_Logentry;
 use AA_Logentry_Un;
 use AA_Logentry_Unv;
-use AA_Items;
 use AA_Slice;
 use AA_Stringexpand_Img;
 use Files;
@@ -146,32 +145,31 @@ class FilesController
     }
 
     /**
-     * The upload-* attributes for an <aa-richtext> AA did not render (a form in a template); none
-     * when this viewer may not upload. GET ask, slice - or item, for its slice. Only a script of a
-     * page of this AA gets them: it sends X-AA-Upload-Ask, a foreign page cannot without the
-     * browser asking first (CORS), and could not read the answer.
+     * The upload-* attributes for an <aa-richtext> AA did not render (a form in a template):
+     * upload="none" when this viewer may not upload, or for a slice or item that does not exist -
+     * the answer tells no one which ids exist. GET ask, slice - or item, for its slice.
+     * Only a script of a page of this AA gets them: it sends X-AA-Upload-Ask, a foreign page cannot
+     * without the browser asking first (CORS), and could not read the answer. No Origin or Referer
+     * check: a same-origin GET carries no Origin, and a page may send no Referer.
      */
     public function ask(): JsonResponse
     {
         $fetch_site = (string) ($_SERVER['HTTP_SEC_FETCH_SITE'] ?? 'same-origin');    // older browsers do not send it
-        if (!$this->sameHostRequest() || (($_SERVER['HTTP_X_AA_UPLOAD_ASK'] ?? '') !== '1') || ($fetch_site !== 'same-origin')) {
+        if ((($_SERVER['HTTP_X_AA_UPLOAD_ASK'] ?? '') !== '1') || ($fetch_site !== 'same-origin')) {
             return JsonResponse::error(401, 'Unauthorized');
         }
-        $slice = (string) ($_GET['slice'] ?? '');
-        $item  = (string) ($_GET['item'] ?? '');
+        $slice = is_string($_GET['slice'] ?? null) ? $_GET['slice'] : '';
+        $item  = is_string($_GET['item'] ?? null) ? $_GET['item'] : '';
         if (!is_long_id($slice) && !is_long_id($item)) {
             return JsonResponse::error(400, 'Bad request');
         }
         $slice_id = is_long_id($slice) ? $slice : $this->sliceOfItem($item);
         $viewer   = ($slice_id === null) ? null : $this->viewer($slice_id);
-        if (($slice_id === null) || ($viewer === null)) {
-            return JsonResponse::error(404, 'Unknown slice');
+        if ($viewer === null) {
+            return JsonResponse::ok(['attrs' => RichtextMarkup::viewerAttrs('', UploadPolicy::NONE, '', time())]);
         }
-        $attrs = RichtextMarkup::uploadAttrs($slice_id, UploadPolicy::mode($viewer['editor'], $viewer['anonymous']), $this->uid(), time(), RichtextMarkup::apiUrl());
-        if ($attrs) {
-            $attrs['l10n'] = (string) json_encode(RichtextMarkup::labels(), JSON_UNESCAPED_UNICODE);
-        }
-        return JsonResponse::ok(['attrs' => $attrs]);
+        $this->bindLanguage((string) $slice_id);
+        return JsonResponse::ok(['attrs' => RichtextMarkup::viewerAttrs((string) $slice_id, UploadPolicy::mode($viewer['editor'], $viewer['anonymous']), $this->uid(), time())]);
     }
 
     /**
@@ -232,10 +230,21 @@ class FilesController
         return UploadPolicy::viewer($slice_id);
     }
 
-    /** null for an item that does not exist or the visitor may not read */
+    /** the slice of an item, null for none - no read check: GetItemContent() keeps the slice of every item */
     protected function sliceOfItem(string $item_id): ?string
     {
-        return AA_Items::getItem(new \zids($item_id, 'l'))?->getSliceID();
+        $content = GetItemContent(new \zids($item_id, 'l'), false, false, ['slice_id........']);
+        $slice   = $content ? (reset($content)['u_slice_id......'][0]['value'] ?? null) : null;
+        return is_string($slice) ? $slice : null;
+    }
+
+    /** the texts of the editor in the language of the slice's pages, not of the AA install */
+    protected function bindLanguage(string $slice_id): void
+    {
+        $slice = AA_Slice::getModule($slice_id);
+        if ($slice instanceof AA_Slice) {
+            mgettext_bind($slice->getLang(), 'news');
+        }
     }
 
     protected function uid(): string

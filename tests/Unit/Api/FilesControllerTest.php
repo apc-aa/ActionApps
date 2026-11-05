@@ -38,6 +38,7 @@ final class FakeFilesController extends FilesController
     {
         return $this->itemSlice;
     }
+    protected function bindLanguage(string $slice_id): void {}
     protected function uid(): string
     {
         return 'u1';
@@ -378,23 +379,36 @@ final class FilesControllerTest extends TestCase
         $this->assertArrayNotHasKey('upload-types', $attrs);
 
         $this->c->viewer = ['editor' => false, 'anonymous' => false];
-        $this->assertSame(['attrs' => []], $this->ask(['slice' => self::SLICE])['body']);
+        $this->assertNone($this->ask(['slice' => self::SLICE]));
+    }
+
+    /** upload="none" - the editor does not ask again - and the texts of the editor */
+    private function assertNone(array $r): void
+    {
+        $this->assertSame(200, $r['status']);
+        $this->assertSame(['upload', 'l10n'], array_keys($r['body']['attrs']));
+        $this->assertSame('none', $r['body']['attrs']['upload']);
     }
 
     public function test_ask_finds_the_slice_of_an_item(): void
     {
         $this->c->itemSlice = self::SLICE;
         $this->assertSame(self::SLICE, $this->ask(['item' => str_repeat('a', 32)])['body']['attrs']['upload-slice']);
-
-        $this->c->itemSlice = null;
-        $this->assertSame(404, $this->ask(['item' => str_repeat('a', 32)])['status']);
+        $this->assertSame(self::SLICE, $this->ask(['slice' => 'x', 'item' => str_repeat('a', 32)])['body']['attrs']['upload-slice']);
     }
 
-    public function test_ask_refuses_an_unknown_slice_and_bad_ids(): void
+    public function test_ask_tells_nothing_of_ids_that_do_not_exist(): void
     {
+        $this->c->itemSlice = null;
+        $this->assertNone($this->ask(['item' => str_repeat('a', 32)]));
         $this->c->viewer = null;
-        $this->assertSame(404, $this->ask(['slice' => self::SLICE])['status']);
+        $this->assertNone($this->ask(['slice' => self::SLICE]));
+    }
+
+    public function test_ask_refuses_bad_ids(): void
+    {
         $this->assertSame(400, $this->ask(['slice' => 'x'])['status']);
+        $this->assertSame(400, $this->ask(['slice' => [self::SLICE]])['status']);
         $this->assertSame(400, $this->ask([])['status']);
     }
 
@@ -403,13 +417,12 @@ final class FilesControllerTest extends TestCase
         $this->assertSame(401, $this->ask(['slice' => self::SLICE], 'cross-site')['status']);
         $this->assertSame(401, $this->ask(['slice' => self::SLICE], 'same-site')['status']);
 
-        unset($_SERVER['HTTP_SEC_FETCH_SITE'], $_SERVER['HTTP_X_AA_UPLOAD_ASK']);
+        unset($_SERVER['HTTP_SEC_FETCH_SITE'], $_SERVER['HTTP_X_AA_UPLOAD_ASK'], $_SERVER['HTTP_ORIGIN']);
         $_GET = ['ask' => '1', 'slice' => self::SLICE];
         $this->assertSame(401, $this->read($this->c->ask())['status']);     // no X-AA-Upload-Ask: a link or <script src>
-        $_SERVER['HTTP_X_AA_UPLOAD_ASK'] = '1';
-        $this->assertSame(200, $this->read($this->c->ask())['status']);     // a browser without Sec-Fetch-Site
-
-        $_SERVER['HTTP_ORIGIN'] = 'https://evil.example';
+        $_SERVER['HTTP_X_AA_UPLOAD_ASK'] = 'yes';
         $this->assertSame(401, $this->read($this->c->ask())['status']);
+        $_SERVER['HTTP_X_AA_UPLOAD_ASK'] = '1';
+        $this->assertSame(200, $this->read($this->c->ask())['status']);     // no Sec-Fetch-Site, no Origin, no Referer
     }
 }

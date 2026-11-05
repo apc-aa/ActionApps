@@ -37,7 +37,7 @@ final class RichtextMarkupTest extends TestCase
 
     public function test_nobody_gets_no_upload(): void
     {
-        $this->assertSame([], RichtextMarkup::uploadAttrs(self::SLICE, UploadPolicy::NONE, 'u1', self::NOW, '/aa/api/files.php'));
+        $this->assertSame(['upload' => 'none'], RichtextMarkup::uploadAttrs(self::SLICE, UploadPolicy::NONE, 'u1', self::NOW, '/aa/api/files.php'));
     }
 
     public function test_an_editor_gets_a_token_the_api_accepts_and_the_document_types(): void

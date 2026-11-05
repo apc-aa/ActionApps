@@ -18,8 +18,9 @@
  * HTML) pick code or plain; the "Edit in Editor" link ([data-aa-editor-for=<textarea id>])
  * and the Editor button of the source view pick rich; TinyMCE's Source button picks code.
  * toolbar="letter" = a short toolbar for a data-message letter; missing or any other value = the full one.
- * Without upload-token (a form written in a template) the editor asks AA for the upload-* attributes
- * of upload-slice, or of the slice in the AA name of the textarea (aa-richtext-upload.js).
+ * Without upload (a form written in a template; AA writes upload="none" itself when there is nothing to
+ * upload) the editor asks AA for the upload-* attributes of upload-slice, or of the slice in the AA name
+ * of the textarea (aa-richtext-upload.js).
  */
 
 // Carry our own ?v= over, so one AA_JS_VERSION bump busts every module loaded from here.
@@ -143,9 +144,10 @@ class AaRichtextElement extends HTMLElement {
         }
     }
 
-    /** the upload-* attributes AA did not write: asked for before TinyMCE starts, the page's own ones stay */
+    /** the upload-* attributes AA did not write (it always writes upload): asked for before TinyMCE
+     *  starts. The answer's replace what the page wrote - a token goes with its slice -, all but its l10n. */
     async #askUpload() {
-        if (this.hasAttribute('upload-token')) {
+        if (this.hasAttribute('upload')) {
             return;
         }
         try {
@@ -155,15 +157,12 @@ class AaRichtextElement extends HTMLElement {
                 return;
             }
             const attrs = await askUpload(new URL('../../api/files.php', import.meta.url), target);
-            const l10n  = !this.hasAttribute('l10n');
             for (const [name, value] of Object.entries(attrs)) {
-                if (!this.hasAttribute(name)) {
+                if ((name !== 'l10n') || !this.hasAttribute('l10n')) {
                     this.setAttribute(name, value);
                 }
             }
-            if (l10n) {
-                this.#readL10n();
-            }
+            this.#readL10n();
         } catch (e) {
             console.error('aa-richtext: could not ask for uploads', e);   // the editor works, without uploads
         }
@@ -448,7 +447,8 @@ class AaRichtextElement extends HTMLElement {
             return null;
         }
         const token = this.getAttribute('upload-token') ?? '';
-        const slice = this.getAttribute('upload-slice') ?? '';
+        // slice: the name of the attribute before upload-slice - pages in the page cache still carry it
+        const slice = this.getAttribute('upload-slice') ?? this.getAttribute('slice') ?? '';
         const send  = async (blob, name) => {
             const body = new FormData();
             body.append('file', blob, name);

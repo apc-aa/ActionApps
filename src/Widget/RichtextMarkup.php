@@ -25,13 +25,14 @@ final class RichtextMarkup
     }
 
     /**
-     * The upload-* attributes for a viewer who may upload in $mode; none for UploadPolicy::NONE.
+     * The upload-* attributes for a viewer who may upload in $mode; just upload="none" for
+     * UploadPolicy::NONE - it tells the editor AA decided, so it does not ask api/files.php.
      * @return array<string, string>
      */
     public static function uploadAttrs(string $slice_id, string $mode, string $uid, int $now, string $api_url): array
     {
         if (($mode !== UploadPolicy::USER) && ($mode !== UploadPolicy::ANON)) {
-            return [];
+            return ['upload' => UploadPolicy::NONE];
         }
         $attrs = [
             'upload'       => $mode,
@@ -56,10 +57,17 @@ final class RichtextMarkup
     {
         $viewer = ($upload && is_long_id($slice_id)) ? UploadPolicy::viewer($slice_id) : null;
         $mode   = $viewer ? UploadPolicy::mode($viewer['editor'], $viewer['anonymous']) : UploadPolicy::NONE;
-        return self::uploadAttrs($slice_id, $mode, AuthGetUid(), time(), self::apiUrl()) + [
-            'ui-lang' => Langs::getLangName2Code(Langs::currentLang()),
-            'l10n'    => (string) json_encode(self::labels(), JSON_UNESCAPED_UNICODE),
-        ];
+        return self::viewerAttrs($slice_id, $mode, AuthGetUid(), time()) + ['ui-lang' => Langs::getLangName2Code(Langs::currentLang())];
+    }
+
+    /**
+     * The upload-* attributes and the texts of an editor of $slice_id - for the editors AA renders
+     * and for those of a template, which ask api/files.php.
+     * @return array<string, string>
+     */
+    public static function viewerAttrs(string $slice_id, string $mode, string $uid, int $now): array
+    {
+        return self::uploadAttrs($slice_id, $mode, $uid, $now, self::apiUrl()) + ['l10n' => (string) json_encode(self::labels(), JSON_UNESCAPED_UNICODE)];
     }
 
     /** where the editor uploads and lists files - AA often lives under a path (/aaa/) */

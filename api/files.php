@@ -20,15 +20,22 @@ require_once __DIR__ . '/../include/config.php';
 require_once __DIR__ . '/../include/locsess.php';
 require_once __DIR__ . '/../include/util.php';
 
-// 'nobody': no HTML login form; the controller decides what an anonymous visitor may do.
-pageOpen('nobody');
+$ask = (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') && isset($_GET['ask']);
+if ($ask && empty($_COOKIE['AA_Session'])) {
+    // an editor asks as its page loads: no session file and cookie for every anonymous visitor (as modules/site/site.php)
+    $auth = new AA_Auth();
+    $auth->unauth(true);
+} else {
+    // 'nobody': no HTML login form; the controller decides what an anonymous visitor may do.
+    pageOpen('nobody');
+}
 
 ob_end_clean();
 
 $controller = new FilesController();
 $response   = match (true) {
+    $ask                                             => $controller->ask(),
     ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' => $controller->upload(),
-    isset($_GET['ask'])                              => $controller->ask(),
     default                                          => $controller->list(),
 };
 // the answers name the viewer's token and files - no proxy may keep them for the next visitor

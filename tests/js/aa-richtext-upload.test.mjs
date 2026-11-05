@@ -44,12 +44,23 @@ test('the attributes come back, asked once per slice for every editor of the pag
     assert.deepEqual(calls[0][1], { headers: { 'X-AA-Upload-Ask': '1' }, credentials: 'same-origin' });
 });
 
-test('no rights, a refusal or a broken answer leave the editor without uploads', async () => {
+test('a refusal or a broken answer leave the editor without uploads', async (t) => {
+    t.mock.method(console, 'warn', () => {});
     const cases = [[200, { attrs: [] }], [401, { error: 'Unauthorized' }], [200, { attrs: 'x' }], [200, null]];
     for (const [i, [status, body]] of cases.entries()) {
         const { get } = fakeFetch(status, body);
         assert.deepEqual(await askUpload(API, uploadTarget(null, `aa[u${ITEM.slice(0, 31)}${i}][a]`), get), {});
     }
+});
+
+test('a failed question is asked again, an answered one is not', async (t) => {
+    const warn = t.mock.method(console, 'warn', () => {});
+    const target  = uploadTarget(null, `aa[n1_${ITEM}][a]`);
     const failing = async () => { throw new TypeError('offline'); };
-    assert.deepEqual(await askUpload(API, uploadTarget(null, `aa[n1_${ITEM}][a]`), failing), {});
+    assert.deepEqual(await askUpload(API, target, failing), {});
+    assert.equal(warn.mock.callCount(), 1);
+    const { get, calls } = fakeFetch(200, { attrs: { upload: 'none' } });
+    assert.deepEqual(await askUpload(API, target, get), { upload: 'none' });
+    assert.deepEqual(await askUpload(API, target, get), { upload: 'none' });
+    assert.equal(calls.length, 1);
 });

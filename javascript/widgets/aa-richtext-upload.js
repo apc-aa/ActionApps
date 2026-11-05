@@ -25,7 +25,7 @@ export function uploadTarget(slice, name) {
     return new URLSearchParams(m[1] ? { ask: '1', slice: m[1] } : { ask: '1', item: m[2] });
 }
 
-// all editors of a page asking about one slice share one request
+// editors of a page asking about one slice (or one item) share one request; a failed one is asked again
 const asked = new Map();
 
 /**
@@ -39,10 +39,19 @@ export function askUpload(api, target, get = fetch) {
     url.search = target.toString();
     if (!asked.has(url.href)) {
         asked.set(url.href, get(url, { headers: { 'X-AA-Upload-Ask': '1' }, credentials: 'same-origin' })
-            .then(response => (response.ok ? response.json() : {}))
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(json => (((typeof json?.attrs === 'object') && json.attrs) || {}))
             .then(attrs => Object.fromEntries(Object.entries(attrs).filter(([, value]) => typeof value === 'string')))
-            .catch(() => ({})));
+            .catch((e) => {
+                asked.delete(url.href);
+                console.warn('aa-richtext: no uploads -', url.href, e.message);   // for the author of the template
+                return {};
+            }));
     }
     return asked.get(url.href);
 }
