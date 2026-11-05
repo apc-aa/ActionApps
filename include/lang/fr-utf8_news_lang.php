@@ -26,6 +26,34 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Migrate LDAP perms to SQL perms" => "Migrer les permissions LDAP vers les permissions SQL", // ai 2026-06
+// "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Copie tous les utilisateurs, groupes, appartenances et permissions du backend LDAP vers les tables du backend SQL (users, membership, perms), et réécrit item.posted_by / item.edited_by du format DN LDAP (uid=...,ou=...) vers les nouveaux identifiants numériques SQL. À exécuter une seule fois par installation, puis passez PERM_LIB à 'sql' dans la configuration. 'Test' est une simulation en lecture seule. 'Repair' effectue la migration et peut être relancé. 'Revert' utilise la table de correspondance pour tout annuler.", // ai 2026-06
+// "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Cet optimiseur ne s'exécute que lorsque PERM_LIB='ldap'. PERM_LIB actuel='%1'.", // ai 2026-06
+// "Would create mapping table `%1`" => "Créerait la table de correspondance `%1`", // ai 2026-06
+// "Test finished (dry run - no changes made)." => "Test terminé (simulation - aucune modification effectuée).", // ai 2026-06
+// "Repair failed: %1" => "Échec de la réparation : %1", // ai 2026-06
+// "Repair finished." => "Réparation terminée.", // ai 2026-06
+// "Revert failed: %1" => "Échec de l'annulation : %1", // ai 2026-06
+// "Revert finished." => "Annulation terminée.", // ai 2026-06
+// "LDAP findUsernames failed or returned: %1" => "LDAP findUsernames a échoué ou a retourné : %1", // ai 2026-06
+// "LDAP users found: %1" => "Utilisateurs LDAP trouvés : %1", // ai 2026-06
+// "Skipping user %1 - cannot determine login" => "Utilisateur %1 ignoré - impossible de déterminer le login", // ai 2026-06
+// "User %1 already exists in SQL (id %2), reusing" => "L'utilisateur %1 existe déjà dans SQL (id %2), réutilisation", // ai 2026-06
+// "Would create SQL user: %1 (from %2)" => "Créerait l'utilisateur SQL : %1 (depuis %2)", // ai 2026-06
+// "Failed to create SQL user %1" => "Échec de la création de l'utilisateur SQL %1", // ai 2026-06
+// "Users: created=%1 reused=%2 failed=%3" => "Utilisateurs : créés=%1 réutilisés=%2 échecs=%3", // ai 2026-06
+// "LDAP groups found: %1" => "Groupes LDAP trouvés : %1", // ai 2026-06
+// "Group %1 already exists in SQL (id %2), reusing" => "Le groupe %1 existe déjà dans SQL (id %2), réutilisation", // ai 2026-06
+// "Would create SQL group: %1 (from %2)" => "Créerait le groupe SQL : %1 (depuis %2)", // ai 2026-06
+// "Failed to create SQL group %1" => "Échec de la création du groupe SQL %1", // ai 2026-06
+// "Groups: created=%1 reused=%2 failed=%3" => "Groupes : créés=%1 réutilisés=%2 échecs=%3", // ai 2026-06
+// "Memberships: added=%1 skipped_unmapped=%2" => "Appartenances : ajoutées=%1 ignorées_sans_correspondance=%2", // ai 2026-06
+// "Permission rows migrated: %1" => "Lignes de permissions migrées : %1", // ai 2026-06
+// "No mapping entries - nothing to rewrite." => "Aucune entrée de correspondance - rien à réécrire.", // ai 2026-06
+// "Rewrite %1.%2: %3 rows" => "Réécriture de %1.%2 : %3 lignes", // ai 2026-06
+// "Mapping table is empty - nothing to revert." => "La table de correspondance est vide - rien à annuler.", // ai 2026-06
+// "Revert %1.%2: %3 rows" => "Annulation de %1.%2 : %3 lignes", // ai 2026-06
+// "Deleted SQL users=%1 groups=%2" => "Utilisateurs SQL supprimés=%1 groupes=%2", // ai 2026-06
 // "als[] and the state of site pages, taken from the URL" => "als[] et l'état des pages de site, pris dans l'URL", // ai 2026-10
 // "The index %1 of the content table does not contain the field" => "L'index %1 de la table content ne contient pas le champ", // ai 2026-10
 // "Adds the index (field_id, text) to the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes and about as much disk as the other indexes of the table - run it when the traffic is low." => "Ajoute l'index (field_id, text) à la table content, afin qu'une valeur soit trouvée dans un champ sans lire la même valeur de tous les autres champs. Sur une grosse base de données, cela prend plusieurs minutes et à peu près autant d'espace disque que les autres index de la table - lancez-le quand le trafic est faible.", // ai 2026-10
@@ -415,6 +443,8 @@ return [
 // admin/console.php, row 73
 // admin/fileman.php, row 110
 // admin/slicedel2.php, row 70
+// admin/um_passkeys.php, row 73
+// admin/um_passwd.php, row 80
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
@@ -466,8 +496,8 @@ return [
 // admin/aa_security.php, row 85
 // admin/setup.php, row 99, 240
 // admin/slicewiz.php, row 84
-// admin/um_passwd.php, row 111
-// admin/um_uedit.php, row 313, 317
+// admin/um_passwd.php, row 128
+// admin/um_uedit.php, row 314, 328
 // include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "nom d'utilisateur",
@@ -538,12 +568,14 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 103
 // src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckFormRobotRefusals.php, row 80
 // src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
 // src/Optimize/CheckIsdsConf.php, row 160, 193
 // src/Optimize/CheckIsdsViews.php, row 132
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 97
 // src/Optimize/CheckLoginAddresses.php, row 90, 103
 // src/Optimize/CheckObjectFormRefusals.php, row 106
+// src/Optimize/CheckPasskeys.php, row 89
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
@@ -639,7 +671,7 @@ return [
 "Checked again at %1: the problem is gone." => "Revérifié à %1 : le problème a disparu.", // ai 2026-10
 
 // admin/aa_statecheck.php, row 255
-"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "",
+"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "Revérifié à %1 : toujours dans la liste, vu pour la dernière fois %2. %3 Ce constat est calculé à partir de ce qui s'est déjà produit (lignes du journal, dernière exécution) ; une correction n'apparaît donc pas ici tout de suite - il disparaît quand ces entrées vieillissent ou quand la prochaine exécution réussit. Après la correction, marquez-le comme résolu ; il reviendra si le problème se reproduit.", // ai 2026-11
 
 // admin/aa_statecheck.php, row 256
 "Checked again at %1: still there. %2" => "Revérifié à %1 : toujours présent. %2", // ai 2026-10
@@ -913,7 +945,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1213
+// include/logs.php, row 1218
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -922,6 +954,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
+// src/Optimize/CheckFormRobotRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
@@ -948,7 +981,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 358
+// include/logs.php, row 363
 // src/AA_Plannedtask.php, row 204
 "Log" => "Journal", // ai 2026-06
 
@@ -980,13 +1013,13 @@ return [
 
 // admin/aafinder.php, row 478, 508
 // admin/um_gedit.php, row 207, 324
-// admin/um_uedit.php, row 248
+// admin/um_uedit.php, row 249
 // include/se_users.php, row 138, 143
 // include/searchbar.class.php, row 566, 567, 607
 // include/transformation.class.php, row 829, 910
 // include/um_gsrch.php, row 47
 // src/Widget/GpsWidget.php, row 434
-// src/Widget/RichtextMarkup.php, row 72
+// src/Widget/RichtextMarkup.php, row 85
 "Search" => "Rechercher",
 
 // admin/aafinder.php, row 481
@@ -1087,7 +1120,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 10284, 10363
+// include/stringexpand.php, row 10285, 10364
 "Send" => "Envoyer",
 
 // admin/anonym_wizard.php, row 151
@@ -1246,7 +1279,7 @@ return [
 "Author" => "Auteur",
 
 // admin/discedit.php, row 133
-// include/logs.php, row 898, 1309
+// include/logs.php, row 903, 1314
 "IP Address" => "Adresse IP", // ai 2026-06
 
 // admin/discedit.php, row 134
@@ -1269,13 +1302,13 @@ return [
 // admin/prev_navigation.php, row 47
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
-// admin/um_uedit.php, row 265
+// admin/um_uedit.php, row 266
 // include/field.class.php, row 744
 // include/filedit.php, row 113
 // include/formutil.php, row 1777, 3394
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
-// include/statestore.php, row 1138
+// include/statestore.php, row 1143
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
 "Edit" => "Modifier",
@@ -1289,7 +1322,8 @@ return [
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
-// admin/um_uedit.php, row 267
+// admin/um_passkeys.php, row 158
+// admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
 // include/field.class.php, row 748
 // include/formutil.php, row 1788, 1925
@@ -1298,7 +1332,7 @@ return [
 // include/searchbar.class.php, row 1126
 // include/um_gsrch.php, row 53
 // src/Manageraction/Import_Delete.php, row 25
-// src/Manageraction/Object_Delete.php, row 24
+// src/Manageraction/Object_Delete.php, row 26
 // src/Manageraction/Table_Row_Delete.php, row 23
 // src/Widget/FilWidget.php, row 201
 "Delete" => "Supprimer",
@@ -1320,7 +1354,7 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1060
+// include/logs.php, row 1065
 // include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Sujet",
@@ -1328,8 +1362,8 @@ return [
 // admin/discedit2.php, row 94, 148
 // admin/setup.php, row 104, 247
 // admin/slicewiz.php, row 89
-// admin/um_passwd.php, row 118
-// admin/um_uedit.php, row 325
+// admin/um_passwd.php, row 140
+// admin/um_uedit.php, row 336
 // include/um_util.php, row 308, 309, 310
 // src/Central/FindingText.php, row 106
 "E-mail" => "Courriel",
@@ -1727,11 +1761,12 @@ return [
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
+// admin/um_passkeys.php, row 149, 153
 // central/installapp.php, row 831, 846
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1200
+// include/logs.php, row 1205
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1892,7 +1927,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1230
+// include/logs.php, row 1235
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
 // src/Optimize/CheckIsdsConf.php, row 342, 372
@@ -1916,7 +1951,7 @@ return [
 // admin/se_csv_import.php, row 277
 // admin/se_csv_import2.php, row 382
 // central/installapp.php, row 434, 558, 1368
-// src/Manageraction/Item_Preview.php, row 11
+// src/Manageraction/Item_Preview.php, row 13
 "Preview" => "Aperçu", // ai 2026-10
 
 // admin/se_csv_import.php, row 278
@@ -1970,7 +2005,7 @@ return [
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
 // include/metabase.class.php, row 1667
-// include/statestore.php, row 1076, 1413
+// include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
@@ -2107,7 +2142,7 @@ return [
 // admin/se_export.php, row 124
 // include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
-// src/Manageraction/Central_MoveItem.php, row 43
+// src/Manageraction/Central_MoveItem.php, row 45
 "Trash" => "Corbeille", // ai 2026-06
 
 // admin/se_export.php, row 134
@@ -2133,7 +2168,7 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 553
+// include/logs.php, row 558
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
@@ -2276,7 +2311,7 @@ return [
 // admin/se_import.php, row 131
 // admin/se_mapping.php, row 158
 // admin/um_gedit.php, row 280
-// admin/um_uedit.php, row 388
+// admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 190, 2940
 // modules/jump/modedit.php, row 179
@@ -2359,9 +2394,9 @@ return [
 "Resource ID" => "ID de la ressource", // ai 2026-06
 
 // admin/se_history.php, row 143, 165, 166
-// admin/um_uedit.php, row 262
+// admin/um_uedit.php, row 263
 // admin/usershow.php, row 89
-// include/perm_sql.php, row 384, 426
+// include/perm_sql.php, row 381, 440, 482
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
@@ -2446,7 +2481,7 @@ return [
 "Function" => "Founction",
 
 // admin/se_inputform.php, row 257
-"You can relate only to a slice where you may edit all items" => "",
+"You can relate only to a slice where you may edit all items" => "Vous ne pouvez créer une relation qu'avec une section dans laquelle vous pouvez modifier tous les items", // ai 2026-11
 
 // admin/se_inputform.php, row 305
 "No field found" => "Aucun champ trouvé", // ai 2026-06
@@ -2566,7 +2601,7 @@ return [
 "Reset" => "Réinitialiser", // ai 2026-06
 
 // admin/se_inputform.php, row 514
-// include/logs.php, row 633
+// include/logs.php, row 638
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Paramètres", // ai 2026-10
 
@@ -2673,13 +2708,13 @@ return [
 "The import was successfully created" => "L'importation fut créée avec succès", // ai 2026-10
 
 // admin/se_isds_registry.php, row 54
-"You do not have permissions to pair the items of this slice with the register of data boxes" => "",
+"You do not have permissions to pair the items of this slice with the register of data boxes" => "Vous n'avez pas la permission d'apparier les items de cette section avec le registre des boîtes de données", // ai 2026-11
 
 // admin/se_isds_registry.php, row 66
 // include/menu.php, row 167
 // src/Isds/SliceRules.php, row 180
 // src/Optimize/CheckIsdsRegistry.php, row 167
-"Data boxes from the register" => "",
+"Data boxes from the register" => "Boîtes de données du registre", // ai 2026-11
 
 // admin/se_javascript.php, row 68
 // include/menu.php, row 169
@@ -3099,7 +3134,7 @@ return [
 // admin/se_sets.php, row 131
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 471, 528
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 172
 "ID" => "",
@@ -3193,7 +3228,7 @@ return [
 // admin/se_users.php, row 185
 // central/index.php, row 139
 // include/se_users.php, row 180
-// src/Widget/TfaWidget.php, row 71
+// src/Widget/TfaWidget.php, row 73
 "Username" => "nom d'usager", // ai 2026-06
 
 // admin/se_users.php, row 185
@@ -3349,7 +3384,7 @@ return [
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
 // admin/write_mail.php, row 269
-// src/Widget/RichtextMarkup.php, row 74
+// src/Widget/RichtextMarkup.php, row 87
 "Close" => "Fermer",
 
 // admin/setup.php, row 61, 64
@@ -3359,18 +3394,18 @@ return [
 "This script can't be used on a configured system." => "Ce script ne peut pas être utilisé sur un système configuré.", // ai 2026-10
 
 // admin/setup.php, row 95
-// admin/um_uedit.php, row 330
+// admin/um_uedit.php, row 341
 "Superadmin account" => "compte super-administrateur",
 
 // admin/setup.php, row 100, 241
 // admin/slicewiz.php, row 85
-// admin/um_passwd.php, row 114
-// admin/um_uedit.php, row 321
+// admin/um_passwd.php, row 136
+// admin/um_uedit.php, row 332
 // central/index.php, row 140
 // central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
-// src/Widget/TfaWidget.php, row 75
+// src/Widget/TfaWidget.php, row 77
 "Password" => "Mot de passe",
 
 // admin/setup.php, row 101, 243
@@ -3379,8 +3414,8 @@ return [
 
 // admin/setup.php, row 102, 245
 // admin/slicewiz.php, row 87
-// admin/um_passwd.php, row 116
-// admin/um_uedit.php, row 323
+// admin/um_passwd.php, row 138
+// admin/um_uedit.php, row 334
 // include/um_util.php, row 298
 "First name" => "Prénom", // ai 2026-10
 
@@ -3447,7 +3482,7 @@ return [
 
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
-// admin/um_uedit.php, row 378
+// admin/um_uedit.php, row 389
 // include/formutil.php, row 1771
 // include/mlx.php, row 377
 // include/profile.php, row 170
@@ -3811,14 +3846,14 @@ return [
 "Slice Administrator" => "Administrateur de section",
 
 // admin/slicewiz.php, row 86
-// admin/um_passwd.php, row 115
-// admin/um_uedit.php, row 322
+// admin/um_passwd.php, row 137
+// admin/um_uedit.php, row 333
 // include/um_util.php, row 302
 "Retype password" => "Retapez le mot de passe",
 
 // admin/slicewiz.php, row 88
-// admin/um_passwd.php, row 117
-// admin/um_uedit.php, row 324
+// admin/um_passwd.php, row 139
+// admin/um_uedit.php, row 335
 // include/um_util.php, row 297
 "Surname" => "Nom de famille",
 
@@ -3832,25 +3867,25 @@ return [
 "Go: Add Slice" => "Allez: Ajouter section",
 
 // admin/um_gedit.php, row 95
-// admin/um_uedit.php, row 110
+// admin/um_uedit.php, row 111
 "No permission to create new user" => "Pas de permission pour créer un nouvel usager", // ai 2026-10
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137, 154
+// admin/um_uedit.php, row 135, 138, 155
 "Too many groups found." => "Trop de groupes trouvés", // ai 2026-10
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137
+// admin/um_uedit.php, row 135, 138
 "No groups found" => "Aucun groupe trouvé", // ai 2026-10
 
 // admin/um_gedit.php, row 120, 128
-// admin/um_uedit.php, row 128, 143, 167
+// admin/um_uedit.php, row 129, 144, 168
 // include/se_users.php, row 175
 // include/um_gsrch.php, row 31
 "Too many users or groups found." => "Trop d'usagers ou de groupes trouvés", // ai 2026-10
 
 // admin/um_gedit.php, row 120
-// admin/um_uedit.php, row 128, 143
+// admin/um_uedit.php, row 129, 144
 // include/se_users.php, row 177
 // include/um_gsrch.php, row 34
 "No user (group) found" => "Pas d'usager (groupe) trouvé", // ai 2026-10
@@ -3866,7 +3901,7 @@ return [
 "Are you sure you want to delete selected group from whole permission system?" => "Êtes-vous sûr de vouloir supprimer le groupe sélectionné de tout le système de permissions ?", // ai 2026-06
 
 // admin/um_gedit.php, row 189, 199
-// admin/um_uedit.php, row 336, 342
+// admin/um_uedit.php, row 347, 353
 // include/menu_util.php, row 71
 // include/se_users.php, row 141
 // include/um_gsrch.php, row 41
@@ -3883,7 +3918,7 @@ return [
 
 // admin/um_gedit.php, row 220
 // include/constants.php, row 455
-// include/perm_sql.php, row 403
+// include/perm_sql.php, row 459
 // include/um_gsrch.php, row 50
 "Group" => "groupe",
 
@@ -3900,8 +3935,8 @@ return [
 "Superadmin group" => "Groupe super-administrateur",
 
 // admin/um_gedit.php, row 312
-// admin/um_uedit.php, row 230, 241
-// include/logs.php, row 911
+// admin/um_uedit.php, row 231, 242
+// include/logs.php, row 916
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -3913,57 +3948,216 @@ return [
 // admin/um_gedit.php, row 322
 "Group's Users" => "usagers groupe",
 
-// admin/um_passwd.php, row 61
+// admin/um_passkeys.php, row 58
+"The directory of the accounts does not answer now - try it again later" => "L'annuaire des comptes ne répond pas pour le moment - réessayez plus tard", // ai 2026-11
+
+// admin/um_passkeys.php, row 62
+"You do not have permissions to manage the passkeys of this account" => "Vous n'avez pas la permission de gérer les clés d'accès de ce compte", // ai 2026-11
+
+// admin/um_passkeys.php, row 105
+"The passkey is stored. From now on this account logs in only by a passkey." => "La clé d'accès est enregistrée. Désormais, ce compte se connecte uniquement avec une clé d'accès.", // ai 2026-11
+
+// admin/um_passkeys.php, row 106
+"The passkey is renamed." => "La clé d'accès a été renommée.", // ai 2026-11
+
+// admin/um_passkeys.php, row 107
+"The passkey is deleted." => "La clé d'accès a été supprimée.", // ai 2026-11
+
+// admin/um_passkeys.php, row 108
+"All passkeys of the account are deleted - its password logs in again." => "Toutes les clés d'accès du compte ont été supprimées - son mot de passe permet de nouveau de se connecter.", // ai 2026-11
+
+// admin/um_passkeys.php, row 109
+"Log in again first - adding or deleting a passkey needs a login of the last %1 minutes." => "Reconnectez-vous d'abord - l'ajout ou la suppression d'une clé d'accès exige une connexion datant de moins de %1 minutes.", // ai 2026-11
+
+// admin/um_passkeys.php, row 110
+"This passkey is stored already." => "Cette clé d'accès est déjà enregistrée.", // ai 2026-11
+
+// admin/um_passkeys.php, row 111
+"The page waited too long. Try it again." => "La page a attendu trop longtemps. Réessayez.", // ai 2026-11
+
+// admin/um_passkeys.php, row 112
+"The passkey could not be stored. Try it again, or another device." => "La clé d'accès n'a pas pu être enregistrée. Réessayez, ou essayez un autre appareil.", // ai 2026-11
+
+// admin/um_passkeys.php, row 116
+// admin/um_passwd.php, row 130
+// admin/um_uedit.php, row 324
+"Passkeys" => "Clés d'accès", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of your account %1" => "Clés d'accès de votre compte %1", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of the account %1" => "Clés d'accès du compte %1", // ai 2026-11
+
+// admin/um_passkeys.php, row 131
+"This account cannot have passkeys - only the users of the permission system of AA can." => "Ce compte ne peut pas avoir de clés d'accès - seuls les utilisateurs du système de permissions d'AA le peuvent.", // ai 2026-11
+
+// admin/um_passkeys.php, row 137
+"A passkey logs you in without a password - by the fingerprint, face or PIN of your phone or computer. Nobody can steal it by a fake page or guess it." => "Une clé d'accès vous connecte sans mot de passe - par l'empreinte digitale, le visage ou le code PIN de votre téléphone ou ordinateur. Personne ne peut la voler au moyen d'une fausse page ni la deviner.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Once the account has a passkey, the password alone no longer logs it in" => "Dès que le compte a une clé d'accès, le mot de passe seul ne permet plus de se connecter", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"neither here, nor for Central or scripts that log in by it." => "ni ici, ni pour Central ou les scripts qui se connectent avec lui.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Add two passkeys - say in your phone and in your computer - so you keep the access when you lose one. If you lose all of them, a user manager of this AA deletes them and you log in by your password again." => "Ajoutez deux clés d'accès - par exemple dans votre téléphone et dans votre ordinateur - afin de garder l'accès si vous en perdez une. Si vous les perdez toutes, un gestionnaire des utilisateurs de cet AA les supprime et vous vous connectez de nouveau avec votre mot de passe.", // ai 2026-11
+
+// admin/um_passkeys.php, row 140
+"Delete the passkeys only when their owner asks for it - lost or stolen device. The account then logs in by its password again, and its owner gets a mail about it." => "Ne supprimez les clés d'accès que si leur propriétaire le demande - appareil perdu ou volé. Le compte se connecte alors de nouveau avec son mot de passe, et son propriétaire en est averti par courriel.", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Works on" => "Fonctionne sur", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Added" => "Ajoutée", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+// include/formutil.php, row 3300
+"Last used" => "Dernière utilisation le", // ai 2026-10
+
+// admin/um_passkeys.php, row 149
+"Copies" => "Copies", // ai 2026-11
+
+// admin/um_passkeys.php, row 153
+// include/searchbar.class.php, row 1124
+"Rename" => "Renommer",
+
+// admin/um_passkeys.php, row 156
+"not yet" => "pas encore", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"in your other devices too" => "aussi sur vos autres appareils", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"only in this device" => "uniquement sur cet appareil", // ai 2026-11
+
+// admin/um_passkeys.php, row 162
+"Delete all passkeys of the account" => "Supprimer toutes les clés d'accès du compte", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"You have no passkey yet." => "Vous n'avez pas encore de clé d'accès.", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"The account has no passkey." => "Le compte n'a aucune clé d'accès.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"To add or delete a passkey, log in again: it needs a login of the last %1 minutes." => "Pour ajouter ou supprimer une clé d'accès, reconnectez-vous : cela exige une connexion datant de moins de %1 minutes.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"Log in again" => "Se reconnecter", // ai 2026-11
+
+// admin/um_passkeys.php, row 171
+"A passkey cannot be added to this account: you may not change its data, or its password is public (the free links of a module log in by it)." => "Impossible d'ajouter une clé d'accès à ce compte : vous ne pouvez pas modifier ses données, ou son mot de passe est public (les liens libres d'un module se connectent avec lui).", // ai 2026-11
+
+// admin/um_passkeys.php, row 173
+"A passkey can be added only on a page reached by https and by an address of this AA or of one of its sites, not an IP address." => "Une clé d'accès ne peut être ajoutée que sur une page ouverte en https et par une adresse de cet AA ou de l'un de ses sites, pas par une adresse IP.", // ai 2026-11
+
+// admin/um_passkeys.php, row 180, 191
+"Add a passkey" => "Ajouter une clé d'accès", // ai 2026-11
+
+// admin/um_passkeys.php, row 182
+"This server cannot make passkeys." => "Ce serveur ne peut pas créer de clés d'accès.", // ai 2026-11
+
+// admin/um_passkeys.php, row 184
+"The passkey will work on %1. On the other addresses of this AA the login page sends you here." => "La clé d'accès fonctionnera sur %1. Sur les autres adresses de cet AA, la page de connexion vous renvoie ici.", // ai 2026-11
+
+// admin/um_passkeys.php, row 185
+"Name of the passkey" => "Nom de la clé d'accès", // ai 2026-11
+
+// admin/um_passkeys.php, row 186
+"e.g. My phone" => "p. ex. Mon téléphone", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"No passkey was made." => "Aucune clé d'accès n'a été créée.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"This device keeps a passkey of the account already." => "Cet appareil contient déjà une clé d'accès de ce compte.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"The browser could not make a passkey." => "Le navigateur n'a pas pu créer de clé d'accès.", // ai 2026-11
+
+// admin/um_passkeys.php, row 190
+"This browser cannot make passkeys." => "Ce navigateur ne peut pas créer de clés d'accès.", // ai 2026-11
+
+// admin/um_passkeys.php, row 192
+"Adding a passkey needs JavaScript." => "L'ajout d'une clé d'accès nécessite JavaScript.", // ai 2026-11
+
+// admin/um_passwd.php, row 64
 "You do not have permissions to change user data" => "Vous n'avez pas la permission de modifier les données utilisateur", // ai 2026-06
 
-// admin/um_passwd.php, row 71, 113
+// admin/um_passwd.php, row 83
+"Log in again first - a change of the account needs a login of the last %1 minutes" => "Reconnectez-vous d'abord - une modification du compte exige une connexion datant de moins de %1 minutes", // ai 2026-11
+
+// admin/um_passwd.php, row 86, 132, 134
 // src/Widget/PwdWidget.php, row 66
 "Current password" => "Mot de passe actuel", // ai 2026-06
 
-// admin/um_passwd.php, row 73
+// admin/um_passwd.php, row 88
 "Error in current password - password is not changed" => "Erreur dans le mot de passe actuel - le mot de passe n'a pas été changé", // ai 2026-06
 
-// admin/um_passwd.php, row 82
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 98
+// admin/um_uedit.php, row 184
 "User data modified" => "Données utilisateur modifiées", // ai 2026-06
 
-// admin/um_passwd.php, row 101
+// admin/um_passwd.php, row 117
 "Change user data" => "Modifier les données de l'utilisateur", // ai 2026-06
 
-// admin/um_passwd.php, row 110
-// admin/um_uedit.php, row 312
+// admin/um_passwd.php, row 127
+// admin/um_uedit.php, row 313
 "Edit User" => "Modifier usager",
 
-// admin/um_passwd.php, row 112
-// admin/um_uedit.php, row 314
+// admin/um_passwd.php, row 129
+// admin/um_uedit.php, row 315
 "User Id" => "Identité de l'usager ", // ai 2026-10
 
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 130
+"The account logs in by a passkey" => "Le compte se connecte avec une clé d'accès", // ai 2026-11
+
+// admin/um_passwd.php, row 130
+"Log in without a password" => "Connexion sans mot de passe", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed - you logged in a moment ago" => "Inutile - vous venez de vous connecter", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed, but log in again first: a change needs a login of the last %1 minutes" => "Inutile, mais reconnectez-vous d'abord : une modification exige une connexion datant de moins de %1 minutes", // ai 2026-11
+
+// admin/um_uedit.php, row 184
 // include/um_util.php, row 344
 "User successfully added to permission system" => "Utilisateur ajouté avec succès aux permissions du système", // ai 2026-10
 
-// admin/um_uedit.php, row 198
+// admin/um_uedit.php, row 199
 "Are you sure you want to delete selected user from whole permission system?" => "Voulez-vous vraiment supprimer l'utilisateur sélectionné de tout le système de permissions ?", // ai 2026-06
 
-// admin/um_uedit.php, row 230
+// admin/um_uedit.php, row 231
 "Add new user" => "Ajouter un nouvel utilisateur", // ai 2026-06
 
-// admin/um_uedit.php, row 238
+// admin/um_uedit.php, row 239
 "Add user" => "Ajouter l'utilisateur", // ai 2026-06
 
-// admin/um_uedit.php, row 247
+// admin/um_uedit.php, row 248
 "Find user" => "Rechercher un utilisateur", // ai 2026-06
 
-// admin/um_uedit.php, row 316
+// admin/um_uedit.php, row 324
+"%1 - the account logs in only by them" => "%1 - le compte se connecte uniquement avec elles", // ai 2026-11
+
+// admin/um_uedit.php, row 324
+// src/Isds/Registry/Page.php, row 555, 653
+// src/Optimize/MissCacheRouting.php, row 98, 129
+"none" => "aucune", // ai 2026-10
+
+// admin/um_uedit.php, row 327
 "New user" => "Nouvel utilisateur",
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "All Writable Groups" => "Tous les groupes modifiables", // ai 2026-06
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "User's Groups" => "Groupes d'usagers",
 
-// admin/um_uedit.php, row 347
+// admin/um_uedit.php, row 358
 "Member of Unwritable Groups" => "Membre de groupes non modifiables", // ai 2026-06
 
 // admin/usershow.php, row 76
@@ -4026,7 +4220,7 @@ return [
 "Write email to users" => "Ecrire un courriel aux usagers",
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1059
+// include/logs.php, row 1064
 "Recipients" => "Destinataires",
 
 // admin/write_mail.php, row 238
@@ -4100,7 +4294,7 @@ return [
 "App" => "Application", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1201
+// include/logs.php, row 1206
 "Version" => "Version", // ai 2026-10
 
 // central/appstore.php, row 164
@@ -4243,11 +4437,11 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1202
+// include/logs.php, row 1207
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
-// src/Widget/RichtextMarkup.php, row 71
+// src/Widget/RichtextMarkup.php, row 84
 "Source" => "Source", // ai 2026-10
 
 // central/installapp.php, row 452
@@ -4288,7 +4482,7 @@ return [
 "Hold Ctrl to choose more of them." => "Maintenez Ctrl pour en choisir plusieurs.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 790, 1244
+// include/logs.php, row 795, 1249
 "Mode" => "Mode", // ai 2026-10
 
 // central/installapp.php, row 506
@@ -4678,7 +4872,7 @@ return [
 "Stopped by an error" => "Arrêté par une erreur", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 792
+// include/logs.php, row 797
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "Terminé", // ai 2026-10
@@ -4881,7 +5075,7 @@ return [
 "Compared and Updated ActionApps" => "ActionApps comparées et mises à jour", // ai 2026-06
 
 // filldisc.php, row 106, 156
-// filler.php, row 423
+// filler.php, row 311, 427
 "Not accepted, sorry. Looks like spam." => "Refusé, désolé. Cela ressemble à du spam.", // ai 2026-06
 
 // filldisc.php, row 113
@@ -4903,22 +5097,22 @@ return [
 // filler.php, row 295
 "Not allowed to post comments" => "Non autorisé à publier des commentaires", // ai 2026-06
 
-// filler.php, row 336, 382
+// filler.php, row 340, 386
 "Bad Token. Not allowed to post comments" => "Jeton invalide. Non autorisé à publier des commentaires", // ai 2026-06
 
-// filler.php, row 362
+// filler.php, row 366
 "Slice ID not defined" => "L'identité  de la section n'est pas définie", // ai 2026-10
 
-// filler.php, row 368
+// filler.php, row 372
 "Bad slice ID" => "Mauvaise identité sur cette section", // ai 2026-10
 
-// filler.php, row 397, 486
+// filler.php, row 401, 490
 "You are not allowed to update this item." => "Vous n'avez pas les permissions pour mettre à  jour cet item", // ai 2026-10
 
-// filler.php, row 444
+// filler.php, row 448
 "Anonymous posting not admitted." => "Les soumissions anonymes ne sont pas permises",
 
-// filler.php, row 499
+// filler.php, row 503
 "Some error in store item." => "Erreur lors de l'enregistrement de l'item", // ai 2026-10
 
 // include/adminpage.class.php, row 68
@@ -4928,7 +5122,7 @@ return [
 "Short Id" => "Courte Identité", // ai 2026-10
 
 // include/constants.php, row 456
-// include/logs.php, row 950, 982
+// include/logs.php, row 955, 987
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Classe",
 
@@ -4937,7 +5131,7 @@ return [
 "Level" => "Niveau",
 
 // include/constants.php, row 509
-// include/logs.php, row 1161
+// include/logs.php, row 1166
 "Feed" => "Alimentation",
 
 // include/constants.php, row 510
@@ -5579,8 +5773,8 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1294
-// src/Manageraction/Item_Move2Slice.php, row 52
+// include/logs.php, row 1299
+// src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID de la section", // ai 2026-06
 
 // include/form.class.php, row 232
@@ -5640,7 +5834,7 @@ return [
 "import" => "importer",
 
 // include/formutil.php, row 1216
-// src/Widget/RichtextMarkup.php, row 70
+// src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Modifier dans la zone HTML",
 
@@ -5671,7 +5865,7 @@ return [
 "Offer" => "Offrir",
 
 // include/formutil.php, row 2179
-// include/stringexpand.php, row 11505, 11528
+// include/stringexpand.php, row 11506, 11529
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 287
@@ -5696,7 +5890,7 @@ return [
 "Group Name" => "Nom du groupe",
 
 // include/formutil.php, row 3295
-// include/logs.php, row 747, 847, 1111
+// include/logs.php, row 752, 852, 1116
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Nombre", // ai 2026-06
@@ -5712,9 +5906,6 @@ return [
 
 // include/formutil.php, row 3299
 "Updated by" => "Mis à jour par", // ai 2026-06
-
-// include/formutil.php, row 3300
-"Last used" => "Dernière utilisation le", // ai 2026-10
 
 // include/formutil.php, row 3307
 "All active items" => "Tous les items actifs", // ai 2026-06
@@ -5732,7 +5923,7 @@ return [
 "All items in trash bin" => "Tous les items de la corbeille", // ai 2026-06
 
 // include/init_page.php, row 84
-// include/locauth.php, row 100
+// include/locauth.php, row 137
 "Either your username or your password is not valid" => "Votre nom d'usager ou votre mot de passe ne sont pas valides",
 
 // include/init_page.php, row 136
@@ -6233,252 +6424,258 @@ return [
 // include/itemview.php, row 723, 731
 "exact group name" => "nom exact du groupe", // ai 2026-06
 
-// include/locauth.php, row 102
+// include/locauth.php, row 134
+"The login by the passkey did not succeed. Try it again." => "La connexion avec la clé d'accès a échoué. Réessayez.", // ai 2026-11
+
+// include/locauth.php, row 139
 "Please try again!" => "Essayez encore",
 
-// include/locauth.php, row 103
+// include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Si vous êtes certain d'avoir tapé le bon mot de passe, envoyez un courriel à <a href=mailto:%1>%1</a>", // ai 2026-10
 
-// include/logs.php, row 541
+// include/logs.php, row 546
 "Created time" => "Date de création", // ai 2026-06
 
-// include/logs.php, row 542
+// include/logs.php, row 547
 "Readers to be emailed" => "Lecteurs à qui envoyer le courriel", // ai 2026-06
 
-// include/logs.php, row 554
+// include/logs.php, row 559
 // src/Optimize/CheckCkeditorUse.php, row 97
+// src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
 "Page" => "Page", // ai 2026-10
 
-// include/logs.php, row 629, 673, 688
+// include/logs.php, row 634, 678, 693
 "Time [s]" => "Temps [s]", // ai 2026-06
 
-// include/logs.php, row 630, 675
+// include/logs.php, row 635, 680
 "Memory usage [MB]" => "Mémoire utilisée [Mo]", // ai 2026-06
 
-// include/logs.php, row 631
+// include/logs.php, row 636
 "Memory peak [MB]" => "Pic mémoire [Mo]", // ai 2026-06
 
-// include/logs.php, row 632
+// include/logs.php, row 637
 "Return code" => "Code de retour", // ai 2026-06
 
-// include/logs.php, row 648
+// include/logs.php, row 653
 "Tasks done" => "Tâches terminées", // ai 2026-06
 
-// include/logs.php, row 649
+// include/logs.php, row 654
 "Tasks started" => "Tâches lancées", // ai 2026-06
 
-// include/logs.php, row 650
+// include/logs.php, row 655
 "Duration [s]" => "Durée [s]", // ai 2026-06
 
-// include/logs.php, row 651
+// include/logs.php, row 656
 "Allowed [s]" => "Autorisé [s]", // ai 2026-06
 
-// include/logs.php, row 671
+// include/logs.php, row 676
 "Cached" => "En cache", // ai 2026-06
 
-// include/logs.php, row 672
+// include/logs.php, row 677
 "Not Modified (304)" => "Non modifié (304)", // ai 2026-06
 
-// include/logs.php, row 674
+// include/logs.php, row 679
 "Time + Cached + 304" => "Temps + cache + 304", // ai 2026-06
 
-// include/logs.php, row 676, 689, 899, 1085
+// include/logs.php, row 681, 694, 904, 1090
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 716
+// include/logs.php, row 721
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 717
+// include/logs.php, row 722
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 718
+// include/logs.php, row 723
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 719
+// include/logs.php, row 724
 "DB" => "BD", // ai 2026-06
 
-// include/logs.php, row 720
+// include/logs.php, row 725
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Mémoire", // ai 2026-06
 
-// include/logs.php, row 721
+// include/logs.php, row 726
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 722
+// include/logs.php, row 727
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Paramètres du serveur", // ai 2026-10
 
-// include/logs.php, row 746, 845
+// include/logs.php, row 751, 850
 "Severity" => "Gravité", // ai 2026-10
 
-// include/logs.php, row 748, 843, 872
+// include/logs.php, row 753, 848, 877
 "Finding" => "Constat", // ai 2026-10
 
-// include/logs.php, row 766
+// include/logs.php, row 771
 "Problems" => "Problèmes", // ai 2026-10
 
-// include/logs.php, row 767
+// include/logs.php, row 772
 "Warnings" => "Avertissements", // ai 2026-10
 
-// include/logs.php, row 768
+// include/logs.php, row 773
 "Recommendations" => "Recommandations", // ai 2026-10
 
-// include/logs.php, row 769
+// include/logs.php, row 774
 "Checks" => "Vérifications", // ai 2026-10
 
-// include/logs.php, row 789, 820
+// include/logs.php, row 794, 825
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Lancer", // ai 2026-10
 
-// include/logs.php, row 791
+// include/logs.php, row 796
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "Début", // ai 2026-10
 
-// include/logs.php, row 793
+// include/logs.php, row 798
 "Last full run" => "Dernière exécution complète", // ai 2026-10
 
-// include/logs.php, row 794
+// include/logs.php, row 799
 "Last full run started" => "Début de la dernière exécution complète", // ai 2026-10
 
-// include/logs.php, row 819, 844
+// include/logs.php, row 824, 849
 "Pair" => "Paire", // ai 2026-10
 
-// include/logs.php, row 821
+// include/logs.php, row 826
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Exécuté", // ai 2026-10
 
-// include/logs.php, row 822, 846
+// include/logs.php, row 827, 851
 "Known issue" => "Problème connu", // ai 2026-10
 
-// include/logs.php, row 848
+// include/logs.php, row 853
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Première détection", // ai 2026-10
 
-// include/logs.php, row 849
+// include/logs.php, row 854
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "Exécutions consécutives", // ai 2026-10
 
-// include/logs.php, row 873
+// include/logs.php, row 878
 "Evidence" => "Preuves", // ai 2026-10
 
-// include/logs.php, row 896
+// include/logs.php, row 901
 "Identifier" => "Identifiant", // ai 2026-06
 
-// include/logs.php, row 897, 1261, 1276
+// include/logs.php, row 902, 1266, 1281
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "ID du module", // ai 2026-06
 
-// include/logs.php, row 910
+// include/logs.php, row 915
 "Template id" => "Id du modèle", // ai 2026-06
 
-// include/logs.php, row 912
+// include/logs.php, row 917
 "Emails sent" => "Courriels envoyés", // ai 2026-06
 
-// include/logs.php, row 951
+// include/logs.php, row 956
 "Object id" => "Id de l'objet", // ai 2026-10
 
-// include/logs.php, row 983
+// include/logs.php, row 988
 "Mail template" => "Modèle de courriel", // ai 2026-10
 
-// include/logs.php, row 984
+// include/logs.php, row 989
 "Reader item" => "Item du lecteur", // ai 2026-10
 
-// include/logs.php, row 985
+// include/logs.php, row 990
 "Origin" => "Origine", // ai 2026-10
 
-// include/logs.php, row 1056
+// include/logs.php, row 1061
 "Transport" => "Transport", // ai 2026-10
 
-// include/logs.php, row 1057
+// include/logs.php, row 1062
 "Recipients sent" => "Destinataires atteints", // ai 2026-10
 
-// include/logs.php, row 1058
+// include/logs.php, row 1063
 "Server response" => "Réponse du serveur", // ai 2026-10
 
-// include/logs.php, row 1071
+// include/logs.php, row 1076
 "Items selected" => "Items sélectionnés", // ai 2026-06
 
-// include/logs.php, row 1072
+// include/logs.php, row 1077
 "Items updated" => "Items mis à jour", // ai 2026-06
 
-// include/logs.php, row 1073
+// include/logs.php, row 1078
 "Items planned" => "Items planifiés", // ai 2026-06
 
-// include/logs.php, row 1084
+// include/logs.php, row 1089
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Message", // ai 2026-10
 
-// include/logs.php, row 1086
+// include/logs.php, row 1091
 "Referer" => "Référent", // ai 2026-06
 
-// include/logs.php, row 1097
+// include/logs.php, row 1102
 "New name" => "Nouveau nom", // ai 2026-06
 
-// include/logs.php, row 1098
+// include/logs.php, row 1103
 "Old name" => "Ancien nom", // ai 2026-06
 
-// include/logs.php, row 1109, 1174
+// include/logs.php, row 1114, 1179
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Phase", // ai 2026-10
 
-// include/logs.php, row 1110
+// include/logs.php, row 1115
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Collection", // ai 2026-10
 
-// include/logs.php, row 1112, 1163, 1175, 1310
+// include/logs.php, row 1117, 1168, 1180, 1315
 // src/Import/Definition.php, row 154
+// src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "Détail", // ai 2026-06
 
-// include/logs.php, row 1162
+// include/logs.php, row 1167
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "État", // ai 2026-06
 
-// include/logs.php, row 1214
+// include/logs.php, row 1219
 "Processed" => "Traités", // ai 2026-06
 
-// include/logs.php, row 1215
+// include/logs.php, row 1220
 "Stored" => "Stockés", // ai 2026-06
 
-// include/logs.php, row 1216
+// include/logs.php, row 1221
 "Errors" => "Erreurs", // ai 2026-06
 
-// include/logs.php, row 1229
+// include/logs.php, row 1234
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Résultat", // ai 2026-06
 
-// include/logs.php, row 1245
+// include/logs.php, row 1250
 "Flags" => "Indicateurs", // ai 2026-06
 
-// include/logs.php, row 1246
+// include/logs.php, row 1251
 "Context" => "Contexte", // ai 2026-06
 
-// include/logs.php, row 1262
+// include/logs.php, row 1267
 "Feed counterpart" => "Contrepartie d'alimentation", // ai 2026-06
 
-// include/logs.php, row 1277
+// include/logs.php, row 1282
 "Field ID" => "ID du champ", // ai 2026-06
 
-// include/logs.php, row 1295
+// include/logs.php, row 1300
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckHttp.php, row 62
+// src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 88
 "Reason" => "Raison", // ai 2026-10
 
@@ -6491,7 +6688,7 @@ return [
 // include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Propriétaire", // ai 2026-10
 
@@ -6817,10 +7014,10 @@ return [
 // include/modutils.php, row 251
 "Select owner" => "Sélectionner Maître", // ai 2026-10
 
-// include/perm_core.php, row 1273, 1300
+// include/perm_core.php, row 1414, 1444
 "Reader Slice" => "Section de lecteurs", // ai 2026-06
 
-// include/perm_core.php, row 1285, 1302
+// include/perm_core.php, row 1429, 1446
 "Reader Set" => "Ensemble de lecteurs", // ai 2026-06
 
 // include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
@@ -6929,9 +7126,6 @@ return [
 // include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Filtre personnel (cliquez pour appliquer)", // ai 2026-06
 
-// include/searchbar.class.php, row 1124
-"Rename" => "Renommer",
-
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Gérer les filtres", // ai 2026-06
 
@@ -6966,7 +7160,7 @@ return [
 "is not" => "n'est pas", // ai 2026-06
 
 // include/searchlib.php, row 137, 140
-// include/statestore.php, row 1362
+// include/statestore.php, row 1367
 "select ..." => "Sélectionner ...", // ai 2026-10
 
 // include/searchlib.php, row 370
@@ -7114,22 +7308,22 @@ return [
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Listez toutes les langues pour lesquelles vous voulez utiliser le module site - en, es, cz, ..<br>Veuillez <b>le faire</b>, même si vous n'utilisez qu'une seule langue. <br>C'est indispensable si vous voulez appeler le module site de la manière la plus récente depuis Apache :<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
 // include/slice.class.php, row 1645
-"Allowed {xflag} values" => "",
+"Allowed {xflag} values" => "Valeurs {xflag} autorisées", // ai 2026-11
 
 // include/slice.class.php, row 1645
-"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "",
+"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "Expression régulière à laquelle la partie {xflag} de l'URL doit correspondre entièrement (^ et \$ inutiles), sinon la page répond 404. {xflag} désigne les caractères situés juste après la langue et le numéro de page facultatif {xpage} : /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... Elle ne contient jamais de chiffre ni de « - » - ceux-ci la terminent.<br>Les pages sans {xflag} doivent aussi passer - terminez le motif par ? ou ajoutez une alternative vide.<br><b>Vide</b> - toute valeur sans « = ».<br><b>^\$</b> - {xflag} n'est pas utilisé, uniquement les pages sans lui.<br>Exemples :<br>[a-z]? - une lettre, ou rien<br>[tp]? - « t » ou « p », ou rien<br>(print|pdf)? - l'un des mots indiqués, ou rien", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Allowed {xcat} values" => "",
+"Allowed {xcat} values" => "Valeurs {xcat} autorisées", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "",
+"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "Expression régulière à laquelle la partie {xcat} de l'URL doit correspondre entièrement (^ et \$ inutiles), sinon la page répond 404. {xcat} désigne tout ce qui suit le premier « - » dans le premier répertoire : /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... Elle peut contenir n'importe quoi sauf « / ».<br>Les pages sans {xcat} doivent aussi passer - terminez le motif par ? ou ajoutez une alternative vide.<br><b>Vide</b> - toute valeur sans « = ».<br><b>^\$</b> - {xcat} n'est pas utilisé, uniquement les pages sans lui.<br>Exemples :<br>[a-z0-9-]* - lettres minuscules, chiffres et tirets, ou rien<br>([0-9]+)? - un nombre, ou rien<br>(bioplyn|kompost)? - l'un des mots indiqués, ou rien", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Check the page path" => "",
+"Check the page path" => "Vérifier le chemin de la page", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "",
+"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "Répondre 404 lorsqu'une partie du chemin ({xseo1}, {xseo2}, ...) n'est pas un item publié ; ainsi /cz/nonsense/about-us n'affiche pas la page about-us. La réponse est 404 même si « Page non trouvée » est réglé sur « Sans importance ».", // ai 2026-11
 
 // include/slice.class.php, row 1648
 "Page not Found (404)" => "Page non trouvée (404)", // ai 2026-06
@@ -7171,10 +7365,10 @@ return [
 "Published modules" => "Modules publiés", // ai 2026-10
 
 // include/slice.class.php, row 1664
-"Page address (URL)" => "",
+"Page address (URL)" => "Adresse de la page (URL)", // ai 2026-11
 
 // include/slice.class.php, row 1665
-"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "",
+"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} est un nombre, {xflag} les lettres qui le suivent, {xcat} tout ce qui suit le premier « - » - tous trois sont facultatifs. {xlang} peut être omis si « Langues du site web » est réglé.<br>Par exemple /cz2t-bioplyn/zpravy/bioplynka : {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka", // ai 2026-11
 
 // include/slice.class.php, row 1707
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "La version de l'application compte au plus 32 lettres, chiffres et . + - (par ex. 1.2.0), la description au plus %1 caractères.", // ai 2026-10
@@ -7247,13 +7441,13 @@ return [
 // include/slicedit.php, row 372
 "Internal error when changing user role." => "Erreur interne en changeant les rôles des usagers", // ai 2026-10
 
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 "Owner ID" => "ID du propriétaire", // ai 2026-06
 
-// include/statestore.php, row 1170
+// include/statestore.php, row 1175
 "No object found" => "Aucun objet trouvé", // ai 2026-06
 
-// include/statestore.php, row 1444
+// include/statestore.php, row 1449
 "Manage components" => "Gérer les composants", // ai 2026-06
 
 // include/stringexpand.php, row 95
@@ -7295,84 +7489,84 @@ return [
 // include/stringexpand.php, row 6279
 "No module for dictionary slice" => "Aucun module pour la section de dictionnaire", // ai 2026-06
 
-// include/stringexpand.php, row 8195
+// include/stringexpand.php, row 8196
 "version" => "version", // ai 2026-10
 
-// include/stringexpand.php, row 8383
+// include/stringexpand.php, row 8384
 "show" => "montrer", // ai 2026-06
 
-// include/stringexpand.php, row 8384
+// include/stringexpand.php, row 8385
 "hide" => "masquer", // ai 2026-06
 
-// include/stringexpand.php, row 8385
+// include/stringexpand.php, row 8386
 "loading" => "chargement", // ai 2026-06
 
-// include/stringexpand.php, row 9516
+// include/stringexpand.php, row 9517
 "E-mail confirmed." => "Courriel confirmé.", // ai 2026-06
 
-// include/stringexpand.php, row 9520
+// include/stringexpand.php, row 9521
 "E-mail unsubscribed" => "Courriel désabonné", // ai 2026-06
 
-// include/stringexpand.php, row 10279
+// include/stringexpand.php, row 10280
 "Forgot your password? Fill in your email." => "Mot de passe oublié ? Saisissez votre courriel.", // ai 2026-06
 
-// include/stringexpand.php, row 10281
+// include/stringexpand.php, row 10282
 // src/Central/FindingText.php, row 457
 "e-mail" => "courriel", // ai 2026-06
 
-// include/stringexpand.php, row 10299, 10303
+// include/stringexpand.php, row 10300, 10304
 "Unable to find user - please check if it has been misspelled." => "Utilisateur introuvable - veuillez vérifier l'orthographe.", // ai 2026-06
 
-// include/stringexpand.php, row 10317
+// include/stringexpand.php, row 10318
 "Password link" => "Lien de mot de passe", // ai 2026-06
 
-// include/stringexpand.php, row 10318
+// include/stringexpand.php, row 10319
 "Password change url parameter" => "Paramètre d'URL de changement de mot de passe", // ai 2026-06
 
-// include/stringexpand.php, row 10330
+// include/stringexpand.php, row 10331
 "Password change" => "Changement de mot de passe", // ai 2026-06
 
-// include/stringexpand.php, row 10331
+// include/stringexpand.php, row 10332
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Pour changer le mot de passe, veuillez visiter l'adresse suivante :<br>%1<br>Le changement sera possible pendant deux heures - ensuite la clé expirera et vous devrez en demander une nouvelle.", // ai 2026-06
 
-// include/stringexpand.php, row 10340
+// include/stringexpand.php, row 10341
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "Un courriel avec une clé pour changer le mot de passe vient d'être envoyé à l'adresse : %1", // ai 2026-06
 
-// include/stringexpand.php, row 10351, 10380
+// include/stringexpand.php, row 10352, 10381
 "Bad or expired key." => "Clé invalide ou expirée.", // ai 2026-06
 
-// include/stringexpand.php, row 10356
+// include/stringexpand.php, row 10357
 "Fill in the new password" => "Saisissez le nouveau mot de passe", // ai 2026-06
 
-// include/stringexpand.php, row 10358
+// include/stringexpand.php, row 10359
 "New password" => "Nouveau mot de passe", // ai 2026-06
 
-// include/stringexpand.php, row 10359
+// include/stringexpand.php, row 10360
 "Retype New Password" => "Ré-écrivez le nouveau mot de passe", // ai 2026-10
 
-// include/stringexpand.php, row 10383
+// include/stringexpand.php, row 10384
 "Passwords do not match - please try again." => "Les mots de passe ne correspondent pas - veuillez réessayer.", // ai 2026-06
 
-// include/stringexpand.php, row 10386
+// include/stringexpand.php, row 10387
 "The password must be at least 6 characters long." => "Le mot de passe doit comporter au moins 6 caractères.", // ai 2026-06
 
-// include/stringexpand.php, row 10392
+// include/stringexpand.php, row 10393
 "Password changed." => "Mot de passe changé.", // ai 2026-06
 
-// include/stringexpand.php, row 10394
+// include/stringexpand.php, row 10395
 "An error occurred during password change - please contact: %1." => "Une erreur s'est produite lors du changement de mot de passe - veuillez contacter : %1.", // ai 2026-06
 
-// include/stringexpand.php, row 11502, 11525
+// include/stringexpand.php, row 11503, 11526
 "Are you sure you want to permanently DELETE this record?" => "Souhaitez-vous vraiment supprimer de façon permanente cet enregistrement", // ai 2026-10
 
-// include/stringexpand.php, row 11508, 11511, 11531, 11534
+// include/stringexpand.php, row 11509, 11512, 11532, 11535
 // src/Widget/RimWidget.php, row 270
 "edit" => "Modifier",
 
-// include/stringexpand.php, row 11514, 11537
+// include/stringexpand.php, row 11515, 11538
 "back" => "retour", // ai 2026-06
 
-// include/stringexpand.php, row 11517, 11540
+// include/stringexpand.php, row 11518, 11541
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "déposez les fichiers ici ou cliquez pour téléverser", // ai 2026-06
 
@@ -7590,7 +7784,7 @@ return [
 "username | slice | <b>allslices</b>" => "",
 
 // include/validate.php, row 957
-"Not a valid regular expression" => "",
+"Not a valid regular expression" => "Expression régulière non valide", // ai 2026-11
 
 // include/validate.php, row 992
 "This field is required." => "Ce champ est requis",
@@ -7875,37 +8069,37 @@ return [
 // src/AA_Plannedtask.php, row 457
 "next run" => "prochaine exécution", // ai 2026-06
 
-// src/Api/Controller/FilesController.php, row 54, 75
+// src/Api/Controller/FilesController.php, row 56, 77
 "The file is too big" => "Le fichier est trop volumineux", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 67
+// src/Api/Controller/FilesController.php, row 69
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "Vous ne pouvez pas téléverser de fichiers ici. Si vous étiez en train de modifier, votre session a peut-être expiré – rechargez la page.", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 70
+// src/Api/Controller/FilesController.php, row 72
 "Too many uploads - try again in an hour" => "Trop de téléversements – réessayez dans une heure", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 78, 243
+// src/Api/Controller/FilesController.php, row 80, 291
 "No file received" => "Aucun fichier reçu", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 86
+// src/Api/Controller/FilesController.php, row 88
 "Files of this type cannot be uploaded here: %1" => "Les fichiers de ce type ne peuvent pas être téléversés ici : %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 89
+// src/Api/Controller/FilesController.php, row 91
 "The content of the file does not match its extension %1" => "Le contenu du fichier ne correspond pas à son extension %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 92
+// src/Api/Controller/FilesController.php, row 94
 "The image is bigger than %1 MB" => "L'image dépasse %1 Mo", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 95
+// src/Api/Controller/FilesController.php, row 97
 "The image has more than %1 megapixels" => "L'image dépasse %1 mégapixels", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 100
+// src/Api/Controller/FilesController.php, row 102
 "The upload directory of the slice is not writable" => "Le répertoire de téléversement de la section n'est pas accessible en écriture", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 110
+// src/Api/Controller/FilesController.php, row 112
 "The file could not be stored" => "Le fichier n'a pas pu être enregistré", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 132
+// src/Api/Controller/FilesController.php, row 134
 "Only editors of the slice can browse its files" => "Seuls les éditeurs de la section peuvent parcourir ses fichiers", // ai 2026-10
 
 // src/Central/Actionapps.php, row 178
@@ -7924,7 +8118,7 @@ return [
 "Expired - get a token" => "Expiré – obtenez un jeton", // ai 2026-10
 
 // src/Central/Actionapps.php, row 234
-"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "",
+"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "L'AA distant a refusé la connexion : identifiant ou mot de passe incorrect, compte avec connexion à deux facteurs (Central ne sait pas encore envoyer le code), ou l'utilisateur n'y est pas superadmin", // ai 2026-11
 
 // src/Central/Actionapps.php, row 236
 "The remote AA gave no login token - update it" => "L'AA distant n'a fourni aucun jeton de connexion – mettez-le à jour", // ai 2026-10
@@ -9089,21 +9283,21 @@ return [
 // src/IO/Grabber/FilesFTP.php, row 106
 "Info to get" => "Informations à récupérer", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 75
+// src/IO/Grabber/Form.php, row 76
 // src/IO/Grabber/ObjectForm.php, row 61
 "Form" => "Formulaire", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 83
+// src/IO/Grabber/Form.php, row 84
 // src/IO/Grabber/ObjectForm.php, row 69
 "Grabs data POSTed by AA form" => "Récupère les données envoyées (POST) par un formulaire AA", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 168
+// src/IO/Grabber/Form.php, row 193
 "No slice found: %1" => "Aucune section trouvée : %1", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 171
+// src/IO/Grabber/Form.php, row 196
 "No file, img_upload, or img_src field type found in slice %1" => "Aucun champ de type file, img_upload ou img_src trouvé dans la section %1", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 204
+// src/IO/Grabber/Form.php, row 229
 "no POST nor FILES sent" => "aucune donnée POST ni FILES envoyée", // ai 2026-06
 
 // src/IO/Grabber/Ical.php, row 43
@@ -9130,13 +9324,13 @@ return [
 // src/IO/Grabber/PohodaStocks.php, row 42
 "Imports stock from POHODA accounting system" => "Importe les stocks du système comptable POHODA", // ai 2026-06
 
-// src/IO/Grabber/SOAP.php, row 60
+// src/IO/Grabber/SOAP.php, row 62
 "SOAP" => "",
 
-// src/IO/Grabber/SOAP.php, row 68
+// src/IO/Grabber/SOAP.php, row 70
 "General SOAP request" => "Requête SOAP générique", // ai 2026-06
 
-// src/IO/Grabber/SOAP.php, row 78
+// src/IO/Grabber/SOAP.php, row 80
 "SOAP body request" => "Corps de la requête SOAP", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 82
@@ -10309,627 +10503,623 @@ return [
 "The column that identifies the item; it must be one of the columns" => "La colonne qui identifie l'item ; elle doit faire partie des colonnes", // ai 2026-10
 
 // src/Isds/Advice.php, row 47
-"The form has expired, or it does not belong to this page. Load the page again." => "",
+"The form has expired, or it does not belong to this page. Load the page again." => "Le formulaire a expiré ou n'appartient pas à cette page. Rechargez la page.", // ai 2026-11
 
 // src/Isds/Advice.php, row 49
-"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "Le formulaire envoyé dépasse la taille acceptée par le serveur (%1). Rien n'a été enregistré - réduisez la taille des pièces jointes.", // ai 2026-11
 
 // src/Isds/Advice.php, row 50
-"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "Le formulaire envoyé dépasse la taille acceptée par le serveur. Rien n'a été enregistré - réduisez la taille des pièces jointes.", // ai 2026-11
 
 // src/Isds/Advice.php, row 51
-"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "",
+"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "L'action a échoué sur une erreur interne d'AA et a peut-être effectué une partie de son travail. Rechargez la page et vérifiez l'état avant de réessayer.", // ai 2026-11
 
 // src/Isds/Advice.php, row 52
-"Someone else, or another window, is working with this now. Try it again in a while." => "",
+"Someone else, or another window, is working with this now. Try it again in a while." => "Quelqu'un d'autre, ou une autre fenêtre, travaille actuellement sur ceci. Réessayez dans un moment.", // ai 2026-11
 
 // src/Isds/Advice.php, row 53
-"You may not do this." => "",
+"You may not do this." => "Vous n'avez pas le droit de faire ceci.", // ai 2026-11
 
 // src/Isds/Advice.php, row 54
-"This sending is not on this page." => "",
+"This sending is not on this page." => "Cet envoi ne figure pas sur cette page.", // ai 2026-11
 
 // src/Isds/Advice.php, row 55
-"The sending does not wait for this now." => "",
+"The sending does not wait for this now." => "L'envoi n'attend pas cette action pour le moment.", // ai 2026-11
 
 // src/Isds/Advice.php, row 56
-"A step of the sending is still running. Try it again in a few minutes." => "",
+"A step of the sending is still running. Try it again in a few minutes." => "Une étape de l'envoi est encore en cours. Réessayez dans quelques minutes.", // ai 2026-11
 
 // src/Isds/Advice.php, row 57
-"The sending goes on." => "",
+"The sending goes on." => "L'envoi continue.", // ai 2026-11
 
 // src/Isds/Advice.php, row 58
-"The sending is stopping - no further message will go." => "",
+"The sending is stopping - no further message will go." => "L'envoi s'arrête - aucun autre message ne partira.", // ai 2026-11
 
 // src/Isds/Advice.php, row 59
-"Every message has been sent or tried already - there is nothing left to stop." => "",
+"Every message has been sent or tried already - there is nothing left to stop." => "Chaque message a déjà été envoyé ou tenté - il n'y a plus rien à arrêter.", // ai 2026-11
 
 // src/Isds/Advice.php, row 60
-"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "",
+"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "L'envoi a été définitivement terminé. Les messages au sort inconnu restent à vérifier par vous.", // ai 2026-11
 
 // src/Isds/Advice.php, row 61
-"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "",
+"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "L'envoi s'est déjà arrêté sur une erreur ; « Arrêter » ne change donc rien ici. Vous pouvez choisir « Continuer », ou terminer définitivement l'envoi - les messages au sort inconnu et les remises pas encore lues ne seront alors plus recherchés.", // ai 2026-11
 
 // src/Isds/Advice.php, row 63
-"The draft is saved." => "",
+"The draft is saved." => "Le brouillon est enregistré.", // ai 2026-11
 
 // src/Isds/Advice.php, row 64
-"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "",
+"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "La lettre est enregistrée, mais pas le choix des destinataires : il a changé entre-temps - dans une autre fenêtre, ou un destinataire choisi a disparu. La page affiche les destinataires enregistrés actuellement ; choisissez-les de nouveau si nécessaire.", // ai 2026-11
 
 // src/Isds/Advice.php, row 65
-"The copy is ready as a new draft." => "",
+"The copy is ready as a new draft." => "La copie est prête sous forme de nouveau brouillon.", // ai 2026-11
 
 // src/Isds/Advice.php, row 66
-"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "",
+"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "Le brouillon a été placé dans la Corbeille. Un éditeur de la section peut le restaurer dans le « Gestionnaire d'Item ».", // ai 2026-11
 
 // src/Isds/Advice.php, row 67
-"The sending of this campaign has started, so it stays - its messages must remain traceable." => "",
+"The sending of this campaign has started, so it stays - its messages must remain traceable." => "L'envoi de cette campagne a déjà commencé, elle est donc conservée - ses messages doivent rester traçables.", // ai 2026-11
 
 // src/Isds/Advice.php, row 68
-"The sending left no recipient unsent - there is nothing to copy." => "",
+"The sending left no recipient unsent - there is nothing to copy." => "L'envoi n'a laissé aucun destinataire sans message - il n'y a rien à copier.", // ai 2026-11
 
 // src/Isds/Advice.php, row 69
-"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "",
+"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "La lettre ne peut être renvoyée à ce destinataire que si son message a échoué ou si l'envoi s'est arrêté avant lui. Ce message est parti, peut encore partir ou a été omis - ou bien on ne sait pas s'il est parti : vérifiez-le dès que la page le propose (pas tant qu'AA le recherche encore), il pourra alors être renvoyé.", // ai 2026-11
 
 // src/Isds/Advice.php, row 70
-"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "",
+"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "Enregistré : le message n'est pas parti. La lettre peut être renvoyée à ce destinataire dans une nouvelle campagne.", // ai 2026-11
 
 // src/Isds/Advice.php, row 71
-"The fate of this message is known - there is nothing to verify." => "",
+"The fate of this message is known - there is nothing to verify." => "Le sort de ce message est connu - il n'y a rien à vérifier.", // ai 2026-11
 
 // src/Isds/Advice.php, row 72
-"This message does not belong to the sending." => "",
+"This message does not belong to the sending." => "Ce message n'appartient pas à cet envoi.", // ai 2026-11
 
 // src/Isds/Advice.php, row 73
-"The data box of the recipient is taken from the register." => "",
+"The data box of the recipient is taken from the register." => "La boîte de données du destinataire a été reprise du registre.", // ai 2026-11
 
 // src/Isds/Advice.php, row 74
-"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "",
+"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "Le registre ne propose pas cette boîte de données pour le destinataire avec une certitude suffisante pour la reprendre ici. Un éditeur de la section des destinataires la compare sur sa page « Boîtes de données du registre », ou corrige l'item.", // ai 2026-11
 
 // src/Isds/Advice.php, row 75
-"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "",
+"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "Le registre des boîtes de données n'a pas été téléchargé, ou il est ancien. Un éditeur de la section des destinataires le télécharge sur sa page « Boîtes de données du registre ».", // ai 2026-11
 
 // src/Isds/Advice.php, row 76
-"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "",
+"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "Ce destinataire ne fait pas partie de ceux appariés avec le registre : il a été supprimé, placé dans la Corbeille ou a reçu un autre type. Rechargez la page.", // ai 2026-11
 
 // src/Isds/Advice.php, row 77
-"A page in the test environment changes no recipient." => "",
+"A page in the test environment changes no recipient." => "Une page de l'environnement de test ne modifie aucun destinataire.", // ai 2026-11
 
 // src/Isds/Advice.php, row 78
-"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "",
+"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "L'envoi est en file d'attente - destinataires : %1. Il se poursuit tout seul, vous pouvez fermer la page.", // ai 2026-11
 
 // src/Isds/Advice.php, row 79
-"The test message has gone (ID %1 in ISDS, reference number %2)." => "",
+"The test message has gone (ID %1 in ISDS, reference number %2)." => "Le message de test est parti (ID %1 dans ISDS, numéro de référence %2).", // ai 2026-11
 
 // src/Isds/Advice.php, row 80
-"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "",
+"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "On ne sait pas si le message de test est parti. Cherchez-le parmi les messages envoyés de la boîte de données d'après son numéro de référence %1.", // ai 2026-11
 
 // src/Isds/Advice.php, row 81
-"ISDS refused the test message." => "",
+"ISDS refused the test message." => "ISDS a refusé le message de test.", // ai 2026-11
 
 // src/Isds/Advice.php, row 82
-"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "",
+"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "Un autre message de test de cette page est en cours d'envoi, ou l'un d'eux vient de s'arrêter. Réessayez dans quelques minutes.", // ai 2026-11
 
 // src/Isds/Advice.php, row 83
-"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "",
+"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "L'envoi a déjà été mis en file d'attente ou envoyé ; il ne peut donc être ni modifié ni renvoyé. Pour envoyer la lettre une nouvelle fois, faites-en une copie.", // ai 2026-11
 
 // src/Isds/Advice.php, row 84
-"Choose the recipients and save the draft." => "",
+"Choose the recipients and save the draft." => "Choisissez les destinataires et enregistrez le brouillon.", // ai 2026-11
 
 // src/Isds/Advice.php, row 85
-"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "",
+"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "Cette page ne propose plus les destinataires enregistrés avec le brouillon ; elle n'affiche donc aucun choix de destinataires. Choisissez de nouveau les destinataires et enregistrez le brouillon - le nouveau choix remplace celui enregistré.", // ai 2026-11
 
 // src/Isds/Advice.php, row 86
-"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "",
+"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "Le nombre de destinataires a changé depuis que vous avez confirmé %1. Vérifiez le choix et envoyez de nouveau.", // ai 2026-11
 
 // src/Isds/Advice.php, row 87
-"There are more recipients than this page may send to (%1). Narrow the choice." => "",
+"There are more recipients than this page may send to (%1). Narrow the choice." => "Il y a plus de destinataires que cette page n'est autorisée à en servir (%1). Restreignez le choix.", // ai 2026-11
 
 // src/Isds/Advice.php, row 88
-"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "",
+"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "La lettre n'atteindrait personne : aucun des destinataires choisis n'a de boîte de données où elle puisse arriver.", // ai 2026-11
 
 // src/Isds/Advice.php, row 89
-"No data box account is set up for this page. Ask the administrator." => "",
+"No data box account is set up for this page. Ask the administrator." => "Aucun compte de boîte de données n'est configuré pour cette page. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 90
-"This page or its slices are not ready to send. Ask the administrator." => "",
+"This page or its slices are not ready to send. Ask the administrator." => "Cette page ou ses sections ne sont pas prêtes pour l'envoi. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 91
-"The letter cannot go as a data message:" => "",
+"The letter cannot go as a data message:" => "La lettre ne peut pas partir comme message de données :", // ai 2026-11
 
 // src/Isds/Advice.php, row 92
-"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "",
+"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "Le serveur n'a pas pu générer la lettre pour le moment - il n'y a rien à corriger dans le brouillon. Réessayez plus tard, ou adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "Le serveur manque de mémoire pour la lettre et ses pièces jointes (%1 Mo nécessaires). Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments. Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments. Ask the administrator." => "Le serveur manque de mémoire pour la lettre et ses pièces jointes. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 94
-"The database cannot queue a sending safely. Ask the administrator." => "",
+"The database cannot queue a sending safely. Ask the administrator." => "La base de données ne peut pas mettre un envoi en file d'attente de manière sûre. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 95
-"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "",
+"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "ISDS a refusé la connexion du compte, rien n'a été envoyé. Demandez à l'administrateur de vérifier la connexion.", // ai 2026-11
 
 // src/Isds/Advice.php, row 96
-"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "ISDS a bloqué les connexions depuis ce serveur, rien n'a été envoyé. Un nouveau mot de passe n'y change rien : AA essaie de se reconnecter un jour après le blocage - réessayez demain, ou adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 97
-"The settings of the account are not complete, nothing was sent. Ask the administrator." => "",
+"The settings of the account are not complete, nothing was sent. Ask the administrator." => "La configuration du compte est incomplète, rien n'a été envoyé. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 98
-"ISDS does not answer, nothing was sent. Try it again in a while." => "",
+"ISDS does not answer, nothing was sent. Try it again in a while." => "ISDS ne répond pas, rien n'a été envoyé. Réessayez dans un moment.", // ai 2026-11
 
 // src/Isds/Advice.php, row 99
-"ISDS refused to tell whose the login of the account is, nothing was sent." => "",
+"ISDS refused to tell whose the login of the account is, nothing was sent." => "ISDS a refusé d'indiquer à qui appartient la connexion du compte, rien n'a été envoyé.", // ai 2026-11
 
 // src/Isds/Advice.php, row 100
-"No test data box is set up for this page - in production the administrator of the server sets it." => "",
+"No test data box is set up for this page - in production the administrator of the server sets it." => "Aucune boîte de données de test n'est configurée pour cette page - en production, c'est l'administrateur du serveur qui la configure.", // ai 2026-11
 
 // src/Isds/Advice.php, row 101
-"Choose one of the test data boxes of this page." => "",
+"Choose one of the test data boxes of this page." => "Choisissez l'une des boîtes de données de test de cette page.", // ai 2026-11
 
 // src/Isds/Advice.php, row 102
-"A test message cannot go to the data box it is sent from. Choose another test box." => "",
+"A test message cannot go to the data box it is sent from. Choose another test box." => "Un message de test ne peut pas être envoyé à la boîte de données d'où il part. Choisissez une autre boîte de test.", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained until %1. Try it again then." => "",
+"ISDS is being maintained until %1. Try it again then." => "ISDS est en maintenance jusqu'à %1. Réessayez ensuite.", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained. Try it again later." => "",
+"ISDS is being maintained. Try it again later." => "ISDS est en maintenance. Réessayez plus tard.", // ai 2026-11
 
 // src/Isds/Advice.php, row 105
-"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "Cette lettre est déjà partie, ou a pu partir, vers cette boîte de test le %2 (numéro de référence %1). Modifiez le brouillon pour la tester de nouveau.", // ai 2026-11
 
 // src/Isds/Advice.php, row 106
-"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "Cette lettre est déjà partie, ou a pu partir, vers cette boîte de test (numéro de référence %1). Modifiez le brouillon pour la tester de nouveau.", // ai 2026-11
 
 // src/Isds/Advice.php, row 107
-"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "",
+"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "Un message vers cette boîte de données serait payant (message de données postal) et, en production, un message de test ne part que gratuitement. Testez avec la boîte de données d'une autorité.", // ai 2026-11
 
 // src/Isds/Advice.php, row 108
-"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "",
+"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "Impossible de vérifier que le message serait gratuit, rien n'a été envoyé. Vérifiez la boîte de test et réessayez dans un moment.", // ai 2026-11
 
 // src/Isds/Advice.php, row 109
-"The test message went as a paid postal data message." => "",
+"The test message went as a paid postal data message." => "Le message de test est parti comme message de données postal payant.", // ai 2026-11
 
 // src/Isds/Advice.php, row 110
-"The test message may have cost money: it may have gone as a paid postal data message." => "",
+"The test message may have cost money: it may have gone as a paid postal data message." => "Le message de test a peut-être été payant : il a pu partir comme message de données postal payant.", // ai 2026-11
 
 // src/Isds/Advice.php, row 141
-"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "",
+"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "ISDS a refusé plusieurs messages consécutifs avec le même statut, ou a refusé une requête de l'envoi - à qui appartient la connexion du compte, ou quels messages ont été envoyés.", // ai 2026-11
 
 // src/Isds/Advice.php, row 142
-"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "",
+"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "Après des messages refusés, « Continuer » en envoie un de plus, et l'envoi s'arrête de nouveau si ISDS refuse aussi celui-là ; après une requête refusée, « Continuer » la renouvelle.", // ai 2026-11
 
 // src/Isds/Advice.php, row 144
-"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "",
+"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "En attente qu'ISDS liste les messages dont le sort n'est pas encore connu. L'envoi les recherche tout seul.", // ai 2026-11
 
 // src/Isds/Advice.php, row 145
-"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "",
+"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "L'envoi est terminé - ce qui ne signifie pas que tous les messages sont partis, les chiffres le montrent. La remise est suivie par tours ; le suivant vient tout seul.", // ai 2026-11
 
 // src/Isds/Advice.php, row 146
-"ISDS is being maintained. The sending waits till the end and goes on by itself." => "",
+"ISDS is being maintained. The sending waits till the end and goes on by itself." => "ISDS est en maintenance. L'envoi attend la fin et se poursuit tout seul.", // ai 2026-11
 
 // src/Isds/Advice.php, row 147
-"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "",
+"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "Le compte de boîte de données de cette page n'est plus celui avec lequel l'envoi a été mis en file d'attente. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 148
-"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "",
+"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "ISDS ne répond pas. AA réessaie tout seul ; si l'envoi s'est arrêté pour cette raison, choisissez « Continuer » dès qu'ISDS répond.", // ai 2026-11
 
 // src/Isds/Advice.php, row 149
-"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "",
+"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "ISDS refuse la connexion du compte. Demandez à l'administrateur de vérifier la connexion, puis choisissez « Continuer ».", // ai 2026-11
 
 // src/Isds/Advice.php, row 150
-"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "ISDS a bloqué les connexions depuis ce serveur. Un nouveau mot de passe n'y change rien : choisissez « Continuer » demain, ou adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 151
-"The settings of the account are not complete. Ask the administrator." => "",
+"The settings of the account are not complete. Ask the administrator." => "La configuration du compte est incomplète. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 152
-"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "",
+"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "Ce qui a été figé pour l'envoi - la lettre, ses pièces jointes ou les destinataires - manque ou a changé ; l'envoi ne peut donc pas continuer. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 153
-"The database cannot record the sending safely. Ask the administrator." => "",
+"The database cannot record the sending safely. Ask the administrator." => "La base de données ne peut pas enregistrer l'envoi de manière sûre. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 154
-"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "",
+"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "Une étape de l'envoi n'a pas progressé à plusieurs reprises. Choisissez « Continuer » ; si l'envoi s'arrête de nouveau, adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 155
-"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Une étape de l'envoi s'est arrêtée avant sa fin. AA réessaie tout seul ; si l'envoi s'est arrêté pour cette raison, adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 156
-"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "La fin de l'envoi n'a pas pu être enregistrée. AA réessaie tout seul ; si l'envoi s'est arrêté pour cette raison, adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 157
-"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "",
+"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "Une étape de l'envoi a échoué sur une erreur interne d'AA. Choisissez « Continuer » ; si elle échoue de nouveau, adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "",
+"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "La boîte de données du destinataire n'accepte que des messages de données postaux payants, et la boîte de données expéditrice n'a pas le droit d'en envoyer.", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"Test with the data box of an authority." => "",
+"Test with the data box of an authority." => "Testez avec la boîte de données d'une autorité.", // ai 2026-11
 
 // src/Isds/Advice.php, row 174
-"The sending data box has been made inaccessible - no message can go from it now." => "",
+"The sending data box has been made inaccessible - no message can go from it now." => "La boîte de données expéditrice a été rendue inaccessible - aucun message ne peut en partir pour le moment.", // ai 2026-11
 
 // src/Isds/Advice.php, row 175
-"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "",
+"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "L'objet, « À l'attention de » ou le nom d'une pièce jointe contient un caractère qu'ISDS n'accepte pas.", // ai 2026-11
 
 // src/Isds/Advice.php, row 183
-"ISDS answered with status %1." => "",
+"ISDS answered with status %1." => "ISDS a répondu avec le statut %1.", // ai 2026-11
 
 // src/Isds/Advice.php, row 193
-"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "L'objet ne peut pas être enregistré : il peut comporter au plus %1 caractères, sans tabulation ni autre caractère de contrôle. Rien du brouillon n'a été enregistré.", // ai 2026-11
 
 // src/Isds/Advice.php, row 194
-"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "« À l'attention de » ne peut pas être enregistré : il peut comporter au plus %1 caractères, sans tabulation ni autre caractère de contrôle. Rien du brouillon n'a été enregistré.", // ai 2026-11
 
 // src/Isds/Advice.php, row 195
-"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "",
+"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "Le texte de la lettre ne peut pas être enregistré : il dépasse %1, ou ce n'est pas un texte valide. Rien du brouillon n'a été enregistré.", // ai 2026-11
 
 // src/Isds/Advice.php, row 196
-"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "",
+"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "Le choix des destinataires ne peut pas être enregistré : cette page ne le propose pas. Rien du brouillon n'a été enregistré - choisissez-les encore une fois et enregistrez-le.", // ai 2026-11
 
 // src/Isds/Advice.php, row 197
-"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "",
+"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "Le choix des destinataires ne peut pas être enregistré : on peut en choisir au plus %1 individuellement, et en exclure autant un par un. Rien du brouillon n'a été enregistré.", // ai 2026-11
 
 // src/Isds/Advice.php, row 198
-"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "",
+"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Un message de données transporte au plus %1 pièces jointes en plus de la lettre. Rien du brouillon n'a été enregistré - retirez-en d'abord quelques-unes.", // ai 2026-11
 
 // src/Isds/Advice.php, row 199
-"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "Le fichier %1 ne peut pas être joint : cette page n'accepte que les fichiers des types %2. Enregistrez-le en PDF, ou joignez un par un les fichiers d'une archive. Rien du brouillon n'a été enregistré.", // ai 2026-11
 
 // src/Isds/Advice.php, row 200
-"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "Le fichier %1 ne peut pas être joint : son contenu ne correspond pas au type indiqué par son extension. Rien du brouillon n'a été enregistré.", // ai 2026-11
 
 // src/Isds/Advice.php, row 201
-"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "",
+"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "Le fichier %1 dépasse la taille autorisée ici pour un fichier (%2). Rien du brouillon n'a été enregistré. L'ensemble des pièces jointes et la lettre peuvent faire au plus %3 - un message de test le vérifie.", // ai 2026-11
 
 // src/Isds/Advice.php, row 202
-"The file %1 is empty. Nothing of the draft was saved." => "",
+"The file %1 is empty. Nothing of the draft was saved." => "Le fichier %1 est vide. Rien du brouillon n'a été enregistré.", // ai 2026-11
 
 // src/Isds/Advice.php, row 203
-"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "",
+"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "Le fichier %1 n'est pas arrivé en entier. Réessayez. Rien du brouillon n'a été enregistré.", // ai 2026-11
 
 // src/Isds/Advice.php, row 204
-"A value of the form cannot be taken. Load the page again and try it once more." => "",
+"A value of the form cannot be taken. Load the page again and try it once more." => "Une valeur du formulaire ne peut pas être reprise. Rechargez la page et réessayez.", // ai 2026-11
 
 // src/Isds/Gate.php, row 1139
-"The mass sending on this page is not ready - fix this first:" => "",
+"The mass sending on this page is not ready - fix this first:" => "L'envoi groupé sur cette page n'est pas prêt - corrigez d'abord ceci :", // ai 2026-11
 
 // src/Isds/Gate.php, row 1140
-"Where to fix it:" => "",
+"Where to fix it:" => "Où le corriger :", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"Name field" => "",
+"Name field" => "Champ du nom", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"The name the register is searched by when the IČO finds no box" => "",
+"The name the register is searched by when the IČO finds no box" => "Nom recherché dans le registre lorsque l'IČO ne trouve aucune boîte", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"IČO field" => "",
+"IČO field" => "Champ IČO", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"The IČO finds the box for sure; without it only names are matched, and a person checks those" => "",
+"The IČO finds the box for sure; without it only names are matched, and a person checks those" => "L'IČO trouve la boîte à coup sûr ; sans lui, seuls les noms sont comparés, et une personne les vérifie", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"Data box field" => "",
+"Data box field" => "Champ de la boîte de données", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"The field the data box id is written to - the only field the pairing changes" => "",
+"The field the data box id is written to - the only field the pairing changes" => "Champ dans lequel l'identifiant de la boîte de données est écrit - le seul champ que l'appariement modifie", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"Type field" => "",
+"Type field" => "Champ du type", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"The type of the item, needed for the two lists below" => "",
+"The type of the item, needed for the two lists below" => "Type de l'item, nécessaire pour les deux listes ci-dessous", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Types to pair" => "",
+"Types to pair" => "Types à apparier", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Only items of these types are paired; none = all items" => "",
+"Only items of these types are paired; none = all items" => "Seuls les items de ces types sont appariés ; aucun = tous les items", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Types of city districts" => "",
+"Types of city districts" => "Types d'arrondissements", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "",
+"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "Les items de ces types sont appariés avec les boîtes des arrondissements, les autres avec celles des communes", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field with the name" => "",
+"Choose the field with the name" => "Choisissez le champ du nom", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field the data box is written to" => "",
+"Choose the field the data box is written to" => "Choisissez le champ dans lequel la boîte de données est écrite", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 132
-"The slice has no field %1" => "",
+"The slice has no field %1" => "La section n'a pas de champ %1", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 139
-"The data box needs a field of its own - writing it would overwrite the name, IČO or type" => "",
+"The data box needs a field of its own - writing it would overwrite the name, IČO or type" => "La boîte de données a besoin de son propre champ - l'écrire écraserait le nom, l'IČO ou le type", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 142
-"The lists of types need the type field" => "",
+"The lists of types need the type field" => "Les listes de types nécessitent le champ du type", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 147
-"The types of city districts must be among the types to pair too: %1" => "",
+"The types of city districts must be among the types to pair too: %1" => "Les types d'arrondissements doivent aussi figurer parmi les types à apparier : %1", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 160
-"The field %1 is protected - it is neither shown nor written here" => "",
+"The field %1 is protected - it is neither shown nor written here" => "Le champ %1 est protégé - il n'est ni affiché ni écrit ici", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 164
-"The data box cannot be written to %1, a column of the item table" => "",
+"The data box cannot be written to %1, a column of the item table" => "La boîte de données ne peut pas être écrite dans %1, une colonne de la table item", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 86
-"Changed" => "",
+"Changed" => "Modifiée", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 87
-"Same" => "",
+"Same" => "Identique", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 88
 // src/Isds/Registry/Page.php, row 567
-"Not found" => "",
+"Not found" => "Non trouvée", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 89
-"Several candidates" => "",
+"Several candidates" => "Plusieurs candidats", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 151
-"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by IČO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "",
+"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by IČO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "Cette page trouve la boîte de données de chaque item dans le registre public des boîtes de données et l'écrit dans l'item. Seules les lignes que vous cochez sont écrites, et seul le champ de la boîte de données change. Une boîte trouvée par l'IČO est cochée d'avance ; une boîte trouvée par le nom n'est qu'une suggestion : comparez donc les noms et cochez-la vous-même.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 169
-"The form sent values this page does not send. Reload the page and try again." => "",
+"The form sent values this page does not send. Reload the page and try again." => "Le formulaire a envoyé des valeurs que cette page n'envoie pas. Rechargez la page et réessayez.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 324
-"You do not have permissions to do this in this slice." => "",
+"You do not have permissions to do this in this slice." => "Vous n'avez pas la permission de faire ceci dans cette section.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 325
-"The settings are saved." => "",
+"The settings are saved." => "La configuration a été enregistrée.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 327
-"The register is downloaded." => "",
+"The register is downloaded." => "Le registre a été téléchargé.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 329
-"The register is being downloaded right now. Reload the page in a minute." => "",
+"The register is being downloaded right now. Reload the page in a minute." => "Le registre est en cours de téléchargement. Rechargez la page dans une minute.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 330
-"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "Le registre n'a pas été téléchargé ; le précédent reste utilisé. Réessayez plus tard. Un administrateur trouvera les détails dans le Journal d'AA (type %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 331
-"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "Le registre a été téléchargé, mais AA n'a pas pu enregistrer le téléchargement ; le registre ne peut donc pas être utilisé tant qu'un téléchargement n'a pas réussi. Réessayez plus tard. Un administrateur trouvera les détails dans le Journal d'AA (type %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 332
-"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "",
+"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "Le registre ou la configuration de l'appariement ont changé depuis que vous avez consulté les lignes ; rien n'a donc été écrit. Vérifiez de nouveau les lignes ci-dessous et écrivez-les.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 333
-"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "La copie du registre ne peut pas être lue ; rien n'a donc été écrit. Un administrateur trouvera les détails dans le Journal d'AA (type %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 334
-"Nothing was written. Download the register again." => "",
+"Nothing was written. Download the register again." => "Rien n'a été écrit. Téléchargez de nouveau le registre.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 335
-"Choose the fields of the pairing first." => "",
+"Choose the fields of the pairing first." => "Choisissez d'abord les champs de l'appariement.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 336
-"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "",
+"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "La configuration de l'appariement ne correspond plus aux champs de la section ; rien n'a donc été écrit : %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 337
-"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "",
+"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "L'écriture s'est arrêtée sur une erreur. Les lignes écrites auparavant le restent ; le rapport ci-dessous montre les items dans leur état actuel. Un administrateur trouvera les détails dans le Journal d'AA (type %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 347
-"The last download attempt was at %1. Another one is possible from %2." => "",
+"The last download attempt was at %1. Another one is possible from %2." => "La dernière tentative de téléchargement a eu lieu le %1. Une nouvelle est possible à partir de %2.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 355
-"Data boxes written: %1." => "",
+"Data boxes written: %1." => "Boîtes de données enregistrées : %1.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 356
-"Nothing was written: no row was ticked, or the ticked ones have their box already." => "",
+"Nothing was written: no row was ticked, or the ticked ones have their box already." => "Rien n'a été écrit : aucune ligne n'était cochée, ou les lignes cochées ont déjà leur boîte.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 358
-"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "",
+"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "Lignes cochées modifiées entre-temps et non écrites : %1. Vérifiez-les de nouveau ci-dessous.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 361
-"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "",
+"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "Lignes cochées laissées pour la prochaine écriture : %1. Une écriture traite au plus %2 lignes.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 364
-"These items were not written:" => "",
+"These items were not written:" => "Ces items n'ont pas été écrits :", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 386, 465
-"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "La copie du registre ne peut pas être lue. Un administrateur trouvera les détails dans le Journal d'AA (type %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet. Download it to see the report." => "",
+"The register has not been downloaded yet. Download it to see the report." => "Le registre n'a pas encore été téléchargé. Téléchargez-le pour voir le rapport.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet." => "",
+"The register has not been downloaded yet." => "Le registre n'a pas encore été téléchargé.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Download the register again." => "",
+"Download the register again." => "Téléchargez de nouveau le registre.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Ask someone who manages the settings to download the register again." => "",
+"Ask someone who manages the settings to download the register again." => "Demandez à une personne qui gère la configuration de télécharger de nouveau le registre.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 392
-"Size: %1 MB." => "",
+"Size: %1 MB." => "Taille : %1 Mo.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 394
-"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "",
+"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "Le registre date de plus de %1 jours. Téléchargez-le de nouveau avant d'écrire : les autorités reçoivent de nouvelles boîtes et fusionnent.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 398
-"Download the register now" => "",
+"Download the register now" => "Télécharger le registre maintenant", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 399
-"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "",
+"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "Le registre public des boîtes de données des autorités, environ 17 Mo ; le téléchargement prend jusqu'à une minute. Toutes les sections de cet AA utilisent la même copie.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 401
-"Register of data boxes" => "",
+"Register of data boxes" => "Registre des boîtes de données", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"AA has no record of downloading this copy of the register" => "",
+"AA has no record of downloading this copy of the register" => "AA n'a aucune trace du téléchargement de cette copie du registre", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"The register of data boxes is not the one AA downloaded" => "",
+"The register of data boxes is not the one AA downloaded" => "Le registre des boîtes de données n'est pas celui qu'AA a téléchargé", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 426
-"Downloaded: %1 (today)." => "",
+"Downloaded: %1 (today)." => "Téléchargé : %1 (aujourd'hui).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 427
-"Downloaded: %1 (yesterday)." => "",
+"Downloaded: %1 (yesterday)." => "Téléchargé : %1 (hier).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 428
-"Downloaded: %1." => "",
+"Downloaded: %1." => "Téléchargé : %1.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 469
-"Items and their data boxes" => "",
+"Items and their data boxes" => "Items et leurs boîtes de données", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 482
-"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "",
+"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "La configuration de l'appariement ne correspond plus aux champs de la section : %1. Choisissez de nouveau les champs dans la configuration ci-dessous.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 485
-"The slice has no items to pair." => "",
+"The slice has no items to pair." => "La section n'a aucun item à apparier.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 490
-"No row has this status." => "",
+"No row has this status." => "Aucune ligne n'a ce statut.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 510
 "Write" => "Écrire", // ai 2026-06
 
 // src/Isds/Registry/Page.php, row 514
-"Stored data box" => "",
+"Stored data box" => "Boîte enregistrée", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 514
-"Data box in the register" => "",
+"Data box in the register" => "Boîte dans le registre", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 520
-"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "",
+"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "Une écriture traite au plus %1 lignes, et au plus autant sont cochées d'avance. Écrivez le reste ensuite.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 523
-"Write the ticked data boxes" => "",
+"Write the ticked data boxes" => "Enregistrer les boîtes cochées", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 524
-"Writes only the data box field of the ticked items. Their history records the change." => "",
+"Writes only the data box field of the ticked items. Their history records the change." => "N'écrit que le champ de la boîte de données des items cochés. Leur historique enregistre la modification.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 536
-"Show the rows of" => "",
+"Show the rows of" => "Afficher les lignes au statut", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 542
-"(no name)" => "",
+"(no name)" => "(sans nom)", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 546
-"Write the data box %1 into %2" => "",
-
-// src/Isds/Registry/Page.php, row 555, 653
-// src/Optimize/MissCacheRouting.php, row 98, 129
-"none" => "aucune", // ai 2026-10
+"Write the data box %1 into %2" => "Écrire la boîte de données %1 dans %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 571
-"IČO %1" => "",
+"IČO %1" => "IČO %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 580
-"by IČO" => "",
+"by IČO" => "par IČO", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 581
-"by name, check it" => "",
+"by name, check it" => "par nom, à vérifier", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 585
-"IČO of the item %1, of the box %2" => "",
+"IČO of the item %1, of the box %2" => "IČO de l'item %1, de la boîte %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 588
-"Another item has or would get this data box too. Check that it is not one place twice." => "",
+"Another item has or would get this data box too. Check that it is not one place twice." => "Un autre item a ou recevrait aussi cette boîte de données. Vérifiez qu'il ne s'agit pas deux fois du même lieu.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 599
-"Settings of the pairing" => "",
+"Settings of the pairing" => "Configuration de l'appariement", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 616
-"Saving changes only these settings, never the items." => "",
+"Saving changes only these settings, never the items." => "L'enregistrement ne modifie que cette configuration, jamais les items.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"Choose a field" => "",
+"Choose a field" => "Choisissez un champ", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"None" => "",
+"None" => "Aucun", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 639
-"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "",
+"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "L'appariement n'est pas encore configuré pour cette section. Une personne autorisée à modifier les champs de la section le configure ici.", // ai 2026-11
 
 // src/Isds/Registry/Sync.php, row 450
-"The item was not stored" => "",
+"The item was not stored" => "L'item n'a pas été enregistré", // ai 2026-11
 
 // src/Isds/SendQueue.php, row 448
-"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "",
+"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "La section des campagnes n'a pas de répertoire de téléversement pour les fichiers de la lettre - l'administrateur du serveur le configure.", // ai 2026-11
 
 // src/Isds/Setup.php, row 107
-"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "",
+"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "La configuration de l'envoi groupé n'est pas un objet JSON - écrivez-la avec {jsonasoc:...}", // ai 2026-11
 
 // src/Isds/Setup.php, row 115
-"Unknown settings of the mass sending: %1 - the settings are %2" => "",
+"Unknown settings of the mass sending: %1 - the settings are %2" => "Configuration inconnue de l'envoi groupé : %1 - les paramètres possibles sont %2", // ai 2026-11
 
 // src/Isds/Setup.php, row 130
-"default_types names types that are not among types: %1" => "",
+"default_types names types that are not among types: %1" => "default_types cite des types qui ne figurent pas dans types : %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 133
-"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "",
+"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "environment ne peut valoir que « %1 » - c'est misc/datovka/datovka_conf.php qui décide quand la production est utilisée", // ai 2026-11
 
 // src/Isds/Setup.php, row 136
-"Set letterhead to a text" => "",
+"Set letterhead to a text" => "Donnez un texte à letterhead", // ai 2026-11
 
 // src/Isds/Setup.php, row 146
-"The settings of data boxes cannot be read now - ask the administrator of the server" => "",
+"The settings of data boxes cannot be read now - ask the administrator of the server" => "La configuration des boîtes de données ne peut pas être lue pour le moment - adressez-vous à l'administrateur du serveur", // ai 2026-11
 
 // src/Isds/Setup.php, row 240
-"Set %1 to the id of a slice - 32 hexadecimal digits" => "",
+"Set %1 to the id of a slice - 32 hexadecimal digits" => "Donnez à %1 l'identifiant d'une section - 32 chiffres hexadécimaux", // ai 2026-11
 
 // src/Isds/Setup.php, row 258
-"Set %1 to the id of a field - 16 characters like text...........1" => "",
+"Set %1 to the id of a field - 16 characters like text...........1" => "Donnez à %1 l'identifiant d'un champ - 16 caractères comme text...........1", // ai 2026-11
 
 // src/Isds/Setup.php, row 283
-"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "",
+"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "Donnez à types un objet des types d'items proposés, chacun avec son libellé : {jsonasoc:<type>:<label>:...}", // ai 2026-11
 
 // src/Isds/Setup.php, row 288
-"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "",
+"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "Un type d'item dans types ne peut contenir que des lettres, des chiffres, des espaces et les caractères - _ . : %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 303
-"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "",
+"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "Donnez à %1 un texte, ou une liste de textes : [\"...\",\"...\"]", // ai 2026-11
 
 // src/Isds/Setup.php, row 321
-"test_box: %1 is not the id of a data box - 7 letters or digits" => "",
+"test_box: %1 is not the id of a data box - 7 letters or digits" => "test_box : %1 n'est pas l'identifiant d'une boîte de données - 7 lettres ou chiffres", // ai 2026-11
 
 // src/Isds/Setup.php, row 351
-"Set max_recipients to a number from 1 to %1" => "",
+"Set max_recipients to a number from 1 to %1" => "Donnez à max_recipients un nombre de 1 à %1", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 67
-"The campaign slice and the message slice must be two slices" => "",
+"The campaign slice and the message slice must be two slices" => "La section des campagnes et la section des messages doivent être deux sections différentes", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 94
-"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "",
+"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "Le site « %1 » est dans la Corbeille - restaurez-le depuis la Corbeille, ou indiquez un autre site", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 95
-"There is no site %1" => "",
+"There is no site %1" => "Le site %1 n'existe pas", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 99
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "Le site « %1 » ne connecte que les lecteurs de ses sections de gestion des lecteurs, si bien que personne n'obtient le droit d'envoyer - dans la configuration du site, réglez « Bases de données de connexion des utilisateurs » sur « %2 »", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 140
-"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "",
+"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "La section « %1 » a un mot de passe de lecture, la page ne peut donc pas lire les destinataires - supprimez « Mot de passe pour lecture » dans la configuration de la section, ou indiquez une section publique", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 144
-"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "",
+"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "La section « %1 » n'a pas de configuration des boîtes de données - configurez ses champs sur sa page « Boîtes de données du registre »", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 151
-"Slice \"%1\", its settings of data boxes: %2" => "",
+"Slice \"%1\", its settings of data boxes: %2" => "Section « %1 », sa configuration des boîtes de données : %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 154
-"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "",
+"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "Section « %1 » : choisissez le champ du type dans sa configuration des boîtes de données - les destinataires sont choisis par type", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 156
-"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "",
+"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "La section « %1 » n'apparie aucun item des types %2 avec des boîtes de données - ne proposez que ses types à apparier : %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 162
-"Slice \"%1\" has no field %2 - name the field that tells a member" => "",
+"Slice \"%1\" has no field %2 - name the field that tells a member" => "La section « %1 » n'a pas de champ %2 - indiquez le champ qui désigne un membre", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 164
-"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "",
+"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "Le champ %1 de la section « %2 » est protégé - indiquez le champ qui désigne un membre", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 179
 // src/Optimize/CheckSiteStateFiles.php, row 72
@@ -10937,58 +11127,58 @@ return [
 "Site settings" => "Paramètres du site", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 225
-"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "",
+"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "La section « %1 » est dans la Corbeille - restaurez-la depuis la Corbeille, ou indiquez une autre section", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 226
-"There is no slice %1" => "",
+"There is no slice %1" => "La section %1 n'existe pas", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 237
-"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "",
+"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "Le site « %1 » n'utilise pas la section %2 - ajoutez la section à « Modules utilisés » dans la configuration du site", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 250
-"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "",
+"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "La section « %1 » n'a pas de mot de passe de lecture - remplissez « Mot de passe pour lecture » dans la configuration de la section", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 254
-"Close slice \"%1\" - set in its settings %2" => "",
+"Close slice \"%1\" - set in its settings %2" => "Fermez la section « %1 » - dans sa configuration, réglez %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 257
-"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "La section « %1 » permet à n'importe quelle section d'importer ses items - sur sa page « Alimentation inter-noeud », désactivez l'export vers toutes les sections", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 274
-"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "La section « %1 » permet à d'autres sections d'importer ses items - sur sa page « Alimentation inter-noeud », déplacez-les vers « Exportation interdite »", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 277
-"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "",
+"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "Les items de la section « %1 » alimentent d'autres sections - arrêtez l'import dans les sections que sa page « Alimentation inter-noeud » liste sous « Actuellement exporté vers »", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 281
-"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "",
+"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "La section « %1 » importe des items d'autres sections - sur sa page « Alimentation inter-noeud », déplacez-les vers « Ne pas importer »", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 284
-"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "",
+"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "La section « %1 » envoie ses items par courriel aux adresses de sa « Notification par courriel » - supprimez-y les adresses", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 303
-"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "La section « %1 » calcule les champs %2 par un modèle à chaque enregistrement d'un item - dans la configuration de chacun de ces champs, réglez « Insérer » sur « %3 »", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 318
-"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "",
+"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "Les sections « %1 » et « %2 » sont dans l'ordre inverse - indiquez d'abord la section des campagnes", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 330
-"Slice \"%1\" lacks fields of a campaign slice: %2" => "",
+"Slice \"%1\" lacks fields of a campaign slice: %2" => "Il manque à la section « %1 » des champs d'une section des campagnes : %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 331
-"Slice \"%1\" lacks fields of a message slice: %2" => "",
+"Slice \"%1\" lacks fields of a message slice: %2" => "Il manque à la section « %1 » des champs d'une section des messages : %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 337
-"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "",
+"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "Section « %1 » : stockez les champs %2 comme « Nombre » (« Stocké comme » dans la configuration de chaque champ)", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 343
-"Slice \"%1\": set the Default of the field %2 to %3" => "",
+"Slice \"%1\": set the Default of the field %2 to %3" => "Section « %1 » : réglez « Par défaut » du champ %2 sur %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 382
-"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "La section « %1 » peut modifier ce que l'envoi enregistre dans les champs %2 - dans la configuration de chacun de ces champs, réglez « Insérer » sur « %3 »", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
-"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "",
+"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "La section « %1 » ajoute aux constantes ce que l'envoi enregistre dans les champs %2 - dans la configuration de chacun de ces champs, désactivez « %3 »", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
 // src/Widget/Widget.php, row 786
@@ -11074,12 +11264,12 @@ return [
 
 // src/Manageraction/Central_DeleteTrash.php, row 31
 // src/Manageraction/Item_DeleteTrash.php, row 34
-// src/Manageraction/Polls_DeleteTrash.php, row 71
+// src/Manageraction/Polls_DeleteTrash.php, row 73
 "Remove (delete from database)" => "Supprimer (effacer de la base de données)", // ai 2026-06
 
 // src/Manageraction/Central_DeleteTrash.php, row 38
 // src/Manageraction/Item_DeleteTrash.php, row 43
-// src/Manageraction/Taskmanager_Execute.php, row 24
+// src/Manageraction/Taskmanager_Execute.php, row 26
 "You do not have permissions to remove items" => "Vous n,avez pas les permission pour retirer des items",
 
 // src/Manageraction/Central_Linkcheck.php, row 17
@@ -11091,28 +11281,28 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 30
 "Status code" => "Code d'état", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 26
-// src/Manageraction/Item_MoveItem.php, row 29
-// src/Manageraction/Links_Move.php, row 26
-// src/Manageraction/Polls_MoveItem.php, row 29
-"Move to Active" => "Avancer en mode Active",
-
-// src/Manageraction/Central_MoveItem.php, row 27
-// src/Manageraction/Item_MoveItem.php, row 30
-// src/Manageraction/Links_Move.php, row 27
-// src/Manageraction/Polls_MoveItem.php, row 30
-"Move to Holding bin" => "Déplacer vers le casier de stockage", // ai 2026-10
-
 // src/Manageraction/Central_MoveItem.php, row 28
 // src/Manageraction/Item_MoveItem.php, row 31
 // src/Manageraction/Links_Move.php, row 28
 // src/Manageraction/Polls_MoveItem.php, row 31
+"Move to Active" => "Avancer en mode Active",
+
+// src/Manageraction/Central_MoveItem.php, row 29
+// src/Manageraction/Item_MoveItem.php, row 32
+// src/Manageraction/Links_Move.php, row 29
+// src/Manageraction/Polls_MoveItem.php, row 32
+"Move to Holding bin" => "Déplacer vers le casier de stockage", // ai 2026-10
+
+// src/Manageraction/Central_MoveItem.php, row 30
+// src/Manageraction/Item_MoveItem.php, row 33
+// src/Manageraction/Links_Move.php, row 30
+// src/Manageraction/Polls_MoveItem.php, row 33
 "Move to Trash" => "Supprimer",
 
-// src/Manageraction/Central_MoveItem.php, row 41
+// src/Manageraction/Central_MoveItem.php, row 43
 "Activate" => "Activer", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 42
+// src/Manageraction/Central_MoveItem.php, row 44
 "Hold" => "À approuver", // ai 2026-06
 
 // src/Manageraction/Central_OptimizeType.php, row 34
@@ -11122,7 +11312,7 @@ return [
 "Error: %1" => "Erreur : %1", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 19
-// src/Manageraction/Object_Delete.php, row 17
+// src/Manageraction/Object_Delete.php, row 19
 // src/Manageraction/Table_Row_Delete.php, row 16
 "Delete row" => "Supprimer la ligne", // ai 2026-06
 
@@ -11131,11 +11321,11 @@ return [
 
 // src/Manageraction/Import_Delete.php, row 38
 // src/Manageraction/Import_Run.php, row 42
-// src/Manageraction/Object_Delete.php, row 43
-// src/Manageraction/Object_Move2slice.php, row 50
+// src/Manageraction/Object_Delete.php, row 45
+// src/Manageraction/Object_Move2slice.php, row 52
 // src/Manageraction/Plannedtask_Runnow.php, row 41
-// src/Manageraction/Polls_DeleteTrash.php, row 83
-// src/Manageraction/Polls_MoveItem.php, row 41
+// src/Manageraction/Polls_DeleteTrash.php, row 85
+// src/Manageraction/Polls_MoveItem.php, row 43
 // src/Manageraction/Table_Row_Delete.php, row 40
 "This action does not work on this page." => "Cette action ne fonctionne pas sur cette page.", // ai 2026-10
 
@@ -11143,7 +11333,7 @@ return [
 "Some of the selected imports were not deleted." => "Certains des imports sélectionnés n'ont pas été supprimés.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 64
-// src/Manageraction/Object_Delete.php, row 51
+// src/Manageraction/Object_Delete.php, row 53
 "Some of the selected objects were not deleted - they belong to a module you can not change them in." => "Certains des objets sélectionnés n'ont pas été supprimés - ils appartiennent à un module dans lequel vous ne pouvez pas les modifier.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 23
@@ -11170,19 +11360,19 @@ return [
 // src/Manageraction/Import_Run.php, row 101
 "Imports not started: %1 (%2). The import detail tells more." => "Imports non lancés : %1 (%2). Le détail de l'import en dit plus.", // ai 2026-10
 
-// src/Manageraction/Item_Duplicate.php, row 23
+// src/Manageraction/Item_Duplicate.php, row 25
 "Duplicate Item" => "Dupliquer l'item", // ai 2026-06
 
-// src/Manageraction/Item_Email.php, row 13
+// src/Manageraction/Item_Email.php, row 15
 "Send email" => "Envoyer un courriel",
 
 // src/Manageraction/Item_Feed.php, row 31
 "Export to slice" => "Exporter vers la section", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 38, 58
-// src/Manageraction/Item_Move2Slice.php, row 85
-// src/Manageraction/Object_Move2slice.php, row 33
-// src/Manageraction/View_Move2slice.php, row 31
+// src/Manageraction/Item_Move2Slice.php, row 87
+// src/Manageraction/Object_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 33
 "No slice selected" => "Aucune section choisie",
 
 // src/Manageraction/Item_Feed.php, row 50
@@ -11194,20 +11384,20 @@ return [
 // src/Manageraction/Item_Feed.php, row 68
 "Some of the selected items were not exported - they are not items of this slice." => "Certains des items sélectionnés n'ont pas été exportés - ce ne sont pas des items de cette section.", // ai 2026-10
 
-// src/Manageraction/Item_Modifycontent.php, row 13
+// src/Manageraction/Item_Modifycontent.php, row 15
 "Modify content" => "Modifier le contenu", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 37
-// src/Manageraction/Object_Move2slice.php, row 25
+// src/Manageraction/Item_Move2Slice.php, row 39
+// src/Manageraction/Object_Move2slice.php, row 27
 "Move to another slice" => "Déplacer vers une autre section", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 75
+// src/Manageraction/Item_Move2Slice.php, row 77
 "Move to slice" => "Déplacer vers la section", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 89
+// src/Manageraction/Item_Move2Slice.php, row 91
 "Items can be moved only to a slice." => "Les items ne peuvent être déplacés que vers une section.", // ai 2026-10
 
-// src/Manageraction/Item_Move2Slice.php, row 93
+// src/Manageraction/Item_Move2Slice.php, row 95
 "You do not have permissions to move items" => "Vous n'avez pas la permission de déplacer des items", // ai 2026-06
 
 // src/Manageraction/Links_Add2Cat.php, row 21
@@ -11216,32 +11406,32 @@ return [
 // src/Manageraction/Links_Check.php, row 25
 "Check Link" => "Vérifier le lien", // ai 2026-06
 
-// src/Manageraction/Links_Delete.php, row 20
+// src/Manageraction/Links_Delete.php, row 22
 "Remove from category" => "Retirer de la catégorie", // ai 2026-06
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Highlight Link" => "Mettre en évidence le lien", // ai 2026-06
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Dehighlight Link" => "Annuler la mise en évidence du lien", // ai 2026-06
 
 // src/Manageraction/Links_Move2Cat.php, row 21
 "Move to category" => "Déplacer vers la catégorie", // ai 2026-06
 
-// src/Manageraction/Object_Delete.php, row 26
+// src/Manageraction/Object_Delete.php, row 28
 // src/Manageraction/Table_Row_Delete.php, row 25
 "Do you really want to delete this row?" => "Voulez-vous vraiment supprimer cette ligne ?", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 37
+// src/Manageraction/Object_Move2slice.php, row 39
 "Tasks can be moved only to a slice." => "Les tâches ne peuvent être déplacées que vers une section.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 41
+// src/Manageraction/Object_Move2slice.php, row 43
 "You do not have permissions to move it" => "Vous n'avez pas la permission de le déplacer", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 54
+// src/Manageraction/Object_Move2slice.php, row 56
 "Some of the selected objects were not moved - they belong to a module you can not change them in." => "Certains des objets sélectionnés n'ont pas été déplacés - ils appartiennent à un module dans lequel vous ne pouvez pas les modifier.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 60
+// src/Manageraction/Object_Move2slice.php, row 62
 "The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "La tâche %1 n'a pas été déplacée - seul un utilisateur qui gère l'alimentation de la section peut y déplacer une tâche contenant {import}.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 20, 27
@@ -11259,34 +11449,34 @@ return [
 // src/Manageraction/Plannedtask_Runnow.php, row 60
 "The task %1 is already waiting in the queue." => "La tâche %1 attend déjà dans la file.", // ai 2026-10
 
-// src/Manageraction/Polls_DeleteTrash.php, row 78
+// src/Manageraction/Polls_DeleteTrash.php, row 80
 "You do not have permissions to remove polls" => "Vous n'avez pas la permission de supprimer des sondages", // ai 2026-06
 
-// src/Manageraction/Polls_DeleteTrash.php, row 97
+// src/Manageraction/Polls_DeleteTrash.php, row 99
 "Some of the selected polls were not removed - they belong to another module." => "Certains des sondages sélectionnés n'ont pas été retirés - ils appartiennent à un autre module.", // ai 2026-10
 
-// src/Manageraction/Polls_MoveItem.php, row 47
+// src/Manageraction/Polls_MoveItem.php, row 49
 "Some of the selected polls were not moved - they belong to another module." => "Certains des sondages sélectionnés n'ont pas été déplacés - ils appartiennent à un autre module.", // ai 2026-10
 
 // src/Manageraction/Table_Row_Delete.php, row 54
 "Some of the selected rows were not deleted - they belong to another module." => "Certaines des lignes sélectionnées n'ont pas été supprimées - elles appartiennent à un autre module.", // ai 2026-10
 
-// src/Manageraction/Taskmanager_Delete.php, row 15
+// src/Manageraction/Taskmanager_Delete.php, row 17
 "Remove (cancel task)" => "Supprimer (annuler la tâche)", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Delete.php, row 24
+// src/Manageraction/Taskmanager_Delete.php, row 26
 "You do not have permissions to remove tasks" => "Vous n'avez pas la permission de supprimer des tâches", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Execute.php, row 15
+// src/Manageraction/Taskmanager_Execute.php, row 17
 "Execute" => "Exécuter", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 23
+// src/Manageraction/View_Move2slice.php, row 25
 "Move view to another slice" => "Déplacer la vue vers une autre section", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 37
 "Views can be moved only to a slice." => "Les vues ne peuvent être déplacées que vers une section.", // ai 2026-10
 
-// src/Manageraction/View_Move2slice.php, row 39
+// src/Manageraction/View_Move2slice.php, row 41
 "You do not have permissions to move views" => "Vous n'avez pas la permission de déplacer des vues", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 25
@@ -11319,25 +11509,25 @@ return [
 // src/Optimize/AbstractOptimizeById.php, row 42
 "We found %1 problems" => "Nous avons trouvé %1 problèmes", // ai 2026-06
 
-// src/Optimize/AddAddressFieldTemplate.php, row 10
+// src/Optimize/AddAddressFieldTemplate.php, row 12
 "Add address field template" => "Ajouter le modèle du champ address", // ai 2026-06
 
-// src/Optimize/AddAuthGroupFieldTemplate.php, row 10
+// src/Optimize/AddAuthGroupFieldTemplate.php, row 12
 "Add auth_group...... field template" => "Ajouter le modèle de champ auth_group......", // ai 2026-06
 
-// src/Optimize/AddBitsetFieldTemplate.php, row 10
+// src/Optimize/AddBitsetFieldTemplate.php, row 12
 "Add bitset (flags, bitfield) field template" => "Ajouter le modèle de champ bitset (drapeaux, champ de bits)", // ai 2026-06
 
-// src/Optimize/AddCityFieldTemplate.php, row 10
+// src/Optimize/AddCityFieldTemplate.php, row 12
 "Add city field template" => "Ajouter le modèle de champ city", // ai 2026-06
 
-// src/Optimize/AddCodeFieldTemplate.php, row 10
+// src/Optimize/AddCodeFieldTemplate.php, row 12
 "Add code field template" => "Ajouter le modèle de champ code", // ai 2026-06
 
-// src/Optimize/AddComputedNumFieldTemplate.php, row 10
+// src/Optimize/AddComputedNumFieldTemplate.php, row 12
 "Add computed_num field template" => "Ajouter le modèle de champ computed_num", // ai 2026-06
 
-// src/Optimize/AddComputedTxtFieldTemplate.php, row 10
+// src/Optimize/AddComputedTxtFieldTemplate.php, row 12
 "Add computed_txt field template" => "Ajouter le modèle de champ computed_txt", // ai 2026-06
 
 // src/Optimize/AddContentFieldIndex.php, row 25
@@ -11358,37 +11548,37 @@ return [
 // src/Optimize/AddContentFieldIndex.php, row 67
 "The index %1 of the content table changed" => "L'index %1 de la table content a été modifié", // ai 2026-10
 
-// src/Optimize/AddCountryFieldTemplate.php, row 10
+// src/Optimize/AddCountryFieldTemplate.php, row 12
 "Add country field template" => "Ajouter le modèle de champ country", // ai 2026-06
 
-// src/Optimize/AddDateFieldTemplate.php, row 10
+// src/Optimize/AddDateFieldTemplate.php, row 12
 "Add date field template" => "Ajouter le modèle de champ date", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 18
+// src/Optimize/AddDurationLog.php, row 20
 "Add hit duration log feature" => "Ajouter la journalisation de la durée des hits", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 26
+// src/Optimize/AddDurationLog.php, row 28
 "Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit" => "Ajoute la colonne « duration » à la table hit_archive, qui stockera les enregistrements duration/cache/not_modified du hit", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 47
+// src/Optimize/AddDurationLog.php, row 49
 "The \"duration\" column missing in hit_archive table" => "La colonne « duration » manque dans la table hit_archive", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 50
+// src/Optimize/AddDurationLog.php, row 52
 "OK - The \"duration\" column found in hit_archive table. Duration evaluated from %1" => "OK - La colonne « duration » est présente dans la table hit_archive. Durée évaluée à partir de %1", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 60
+// src/Optimize/AddDurationLog.php, row 62
 "Table already has the column \"duration\"" => "La table possède déjà la colonne « duration »", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 63
+// src/Optimize/AddDurationLog.php, row 65
 "Do alter table hit_archive to add duration column" => "Modifier la table hit_archive pour ajouter la colonne duration", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 65
+// src/Optimize/AddDurationLog.php, row 67
 "Column added" => "Colonne ajoutée", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 72
+// src/Optimize/AddDurationLog.php, row 74
 "Do alter table hit_archive to remove duration column - it disables the feature" => "Modifier la table hit_archive pour supprimer la colonne duration - cela désactive la fonction", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 74
+// src/Optimize/AddDurationLog.php, row 76
 "Column deleted" => "Colonne supprimée", // ai 2026-06
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 14
@@ -11404,87 +11594,108 @@ return [
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 77
 "The e-mail templates updated" => "Modèles de courriel mis à jour", // ai 2026-06
 
-// src/Optimize/AddFaxFieldTemplate.php, row 10
+// src/Optimize/AddFaxFieldTemplate.php, row 12
 "Add fax field template" => "Ajouter le modèle de champ fax", // ai 2026-06
 
-// src/Optimize/AddHit1FieldTemplate.php, row 10
+// src/Optimize/AddHit1FieldTemplate.php, row 12
 "Add hit_1 field template" => "Ajouter le modèle de champ hit_1", // ai 2026-06
 
-// src/Optimize/AddHit30FieldTemplate.php, row 10
+// src/Optimize/AddHit30FieldTemplate.php, row 12
 "Add hit_30 field template" => "Ajouter le modèle de champ hit_30", // ai 2026-06
 
-// src/Optimize/AddHit7FieldTemplate.php, row 10
+// src/Optimize/AddHit7FieldTemplate.php, row 12
 "Add hit_7 field template" => "Ajouter le modèle de champ hit_7", // ai 2026-06
 
-// src/Optimize/AddIntegerFieldTemplate.php, row 10
+// src/Optimize/AddIntegerFieldTemplate.php, row 12
 "Add integer field template" => "Ajouter le modèle de champ integer", // ai 2026-06
 
-// src/Optimize/AddIpBannedFieldTemplate.php, row 10
+// src/Optimize/AddIpBannedFieldTemplate.php, row 12
 "Add _ip_banned field template" => "Ajouter le modèle de champ _ip_banned", // ai 2026-06
 
-// src/Optimize/AddIpFieldTemplate.php, row 10
+// src/Optimize/AddIpFieldTemplate.php, row 12
 "Add ip field template" => "Ajouter le modèle de champ ip", // ai 2026-06
 
-// src/Optimize/AddLocationFieldTemplate.php, row 10
+// src/Optimize/AddLocationFieldTemplate.php, row 12
 "Add location field template" => "Ajouter le modèle de champ location", // ai 2026-06
 
-// src/Optimize/AddMailListsFieldTemplate.php, row 10
+// src/Optimize/AddMailListsFieldTemplate.php, row 12
 "Add mail_lists field template" => "Ajouter le modèle de champ mail_lists", // ai 2026-06
 
-// src/Optimize/AddMandatoryDiscApp.php, row 10
-// src/Optimize/AddMandatoryDiscCount.php, row 10
-// src/Optimize/AddMandatoryDisplayCount.php, row 10
-// src/Optimize/AddMandatoryId.php, row 10
-// src/Optimize/AddMandatoryShortId.php, row 10
-// src/Optimize/AddMandatoryStatusCode.php, row 13
+// src/Optimize/AddMandatoryDiscApp.php, row 12
+// src/Optimize/AddMandatoryDiscCount.php, row 12
+// src/Optimize/AddMandatoryDisplayCount.php, row 12
+// src/Optimize/AddMandatoryId.php, row 12
+// src/Optimize/AddMandatoryShortId.php, row 12
+// src/Optimize/AddMandatoryStatusCode.php, row 15
 "Fixing missing %1 field definitions in slices" => "Correction des définitions de champ %1 manquantes dans les sections", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 19
+// src/Optimize/AddMandatoryStatusCode.php, row 21
 "Adds field definitions for slices, where missing" => "Ajoute les définitions de champ manquantes aux sections", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 45
+// src/Optimize/AddMandatoryStatusCode.php, row 47
 "Missing %1 field definition in some slices - need to repair" => "Définition du champ %1 manquante dans certaines sections — réparation nécessaire", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 54
+// src/Optimize/AddMandatoryStatusCode.php, row 56
 "Fixing missing %1 fields in slices" => "Correction des champs %1 manquants dans les sections", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 69
+// src/Optimize/AddMandatoryStatusCode.php, row 71
 "Mandatory field %1 added to all slices" => "Champ obligatoire %1 ajouté à toutes les sections", // ai 2026-06
 
-// src/Optimize/AddMlxctrlFieldTemplate.php, row 10
+// src/Optimize/AddMlxctrlFieldTemplate.php, row 12
 "Add mlxctrl field template" => "Ajouter le modèle de champ mlxctrl", // ai 2026-06
 
-// src/Optimize/AddMsgBannedFieldTemplate.php, row 10
+// src/Optimize/AddMsgBannedFieldTemplate.php, row 12
 "Add _msg_banned field template" => "Ajouter le modèle de champ _msg_banned", // ai 2026-06
 
-// src/Optimize/AddMsgSpamFieldTemplate.php, row 10
+// src/Optimize/AddMsgSpamFieldTemplate.php, row 12
 "Add _msg_spam field template" => "Ajouter le modèle de champ _msg_spam", // ai 2026-06
 
-// src/Optimize/AddNameFieldTemplate.php, row 10
+// src/Optimize/AddNameFieldTemplate.php, row 12
 "Add name field template" => "Ajouter le modèle de champ name", // ai 2026-06
 
-// src/Optimize/AddPhoneFieldTemplate.php, row 10
+// src/Optimize/AddPasskeyTable.php, row 15
+"Table of passkeys" => "Table des clés d'accès", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 20
+"Creates the table authenticator, where the passkeys of the accounts are kept. Nothing else changes; without it, nobody can add a passkey." => "Crée la table authenticator, où sont conservées les clés d'accès (passkeys) des comptes. Rien d'autre ne change ; sans elle, personne ne peut ajouter de clé d'accès.", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 43
+"The table %1 is missing" => "La table %1 manque", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 46
+"OK - the table %1 exists" => "OK - la table %1 existe", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 54
+"The table %1 exists already" => "La table %1 existe déjà", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 is created" => "La table %1 a été créée", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 could not be created" => "La table %1 n'a pas pu être créée", // ai 2026-11
+
+// src/Optimize/AddPhoneFieldTemplate.php, row 12
 "Add phone field template" => "Ajouter le modèle de champ phone", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 29
+// src/Optimize/AddPolls.php, row 31
 "Add Polls tables" => "Ajouter les tables des sondages", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 37
+// src/Optimize/AddPolls.php, row 39
 "Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "Crée les tables du nouveau module Sondages et ajoute les premiers sondages modèles. Supprime tous les sondages existants !", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 60
+// src/Optimize/AddPolls.php, row 62
 "Poll module is not installed" => "Le module Sondages n'est pas installé", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 95
+// src/Optimize/AddPolls.php, row 97
 "Polls module created" => "Module Sondages créé", // ai 2026-06
 
-// src/Optimize/AddRangeFieldTemplate.php, row 10
+// src/Optimize/AddRangeFieldTemplate.php, row 12
 "Add range field template" => "Ajouter le modèle de champ range", // ai 2026-06
 
-// src/Optimize/AddRealFieldTemplate.php, row 10
+// src/Optimize/AddRealFieldTemplate.php, row 12
 "Add real field template" => "Ajouter le modèle de champ real", // ai 2026-06
 
-// src/Optimize/AddSecretFieldTemplate.php, row 10
+// src/Optimize/AddSecretFieldTemplate.php, row 12
 "Add secret field template" => "Ajouter le modèle de champ secret", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 16
@@ -11505,17 +11716,17 @@ return [
 // src/Optimize/AddSeoFieldTemplate.php, row 116
 "New \"%1\" field template added" => "Nouveau modèle de champ « %1 » ajouté", // ai 2026-06
 
-// src/Optimize/AddUploadUrlFieldTemplate.php, row 10
+// src/Optimize/AddUploadUrlFieldTemplate.php, row 12
 "Add _upload_url field template" => "Ajouter le modèle de champ _upload_url", // ai 2026-06
 
-// src/Optimize/AddUrlPreviewFieldTemplate.php, row 10
+// src/Optimize/AddUrlPreviewFieldTemplate.php, row 12
 "Add _url_preview field template" => "Ajouter le modèle de champ _url_preview", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 19
 "Backup tables" => "Sauvegarder les tables", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 // src/Optimize/UpdateDbStructure.php, row 31
 "[experimental] " => "[expérimental] ", // ai 2026-06
 
@@ -11555,10 +11766,10 @@ return [
 // src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Remplace l'alias f_h des champs marqués non multiples et HTML par la fonction f_1, plus rapide, pour l'affichage direct du contenu", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 15
+// src/Optimize/ChangeF_t2F_1.php, row 17
 "Optimize f_t alias to f_1" => "Optimiser l'alias f_t en f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 23
+// src/Optimize/ChangeF_t2F_1.php, row 25
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Remplace l'alias f_t des champs marqués non multiples et HTML par la fonction f_1, plus rapide, pour l'affichage direct du contenu", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -11567,22 +11778,22 @@ return [
 // src/Optimize/ChangeF_t2F__.php, row 27
 "Replaces f_t alias used for code by quicker f__ function" => "Remplace l'alias f_t utilisé pour le code par la fonction f__, plus rapide", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 20
+// src/Optimize/ChangeModuleId.php, row 22
 "Change current module ID to new one" => "Remplacer l'ID du module actuel par un nouveau", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 28
+// src/Optimize/ChangeModuleId.php, row 30
 "Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "Utilisé parfois lorsque vous clonez la base de données ou copiez des sections vers une autre base pour un autre client et ne voulez pas réutiliser les mêmes ID de section/site. Vous devrez probablement le faire pour toutes les sections et le module site.<br>CELA CHANGE L'ID DE LA SECTION ACTUELLE !", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 42
+// src/Optimize/ChangeModuleId.php, row 44
 "Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "Rien à tester ici. Soyez simplement prudent — CELA CHANGE L'ID DE LA SECTION ACTUELLE sans confirmation !", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 63
+// src/Optimize/ChangeModuleId.php, row 65
 "Going to change module_id %1 -> %2 (%3 -> %4)" => "Changement du module_id %1 -> %2 (%3 -> %4)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 76
+// src/Optimize/ChangeModuleId.php, row 78
 "Changing ID for table %1 (%2)" => "Changement de l'ID pour la table %1 (%2)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 85
+// src/Optimize/ChangeModuleId.php, row 87
 // src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "%1 tables converties", // ai 2026-06
 
@@ -11625,11 +11836,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckFormRobotRefusals.php, row 76
 // src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
 // src/Optimize/CheckIsdsConf.php, row 156, 189
 // src/Optimize/CheckIsdsViews.php, row 128
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 93
 // src/Optimize/CheckObjectFormRefusals.php, row 102
+// src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
 // src/Optimize/CheckSessionidUse.php, row 101
@@ -11645,11 +11858,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 100
 // src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckFormRobotRefusals.php, row 77
 // src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
 // src/Optimize/CheckIsdsViews.php, row 129
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 94
 // src/Optimize/CheckObjectFormRefusals.php, row 103
+// src/Optimize/CheckPasskeys.php, row 86
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
@@ -11680,7 +11895,7 @@ return [
 "Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "Liste les envois d'un item par Alertes refusés ces 30 derniers jours, car la collection n'est pas liée à la section de l'item (pas de filtre sur la section, ce n'est pas sa section de lecteurs, aucun site commun).", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 86
-"Selections of the collection" => "",
+"Selections of the collection" => "Sélections de la collection", // ai 2026-11
 
 // src/Optimize/CheckAlertitemRefusals.php, row 93
 "Alert send of an item of slice %1 through collection %2 was refused" => "L'envoi d'un item de la section %1 par la collection %2 a été refusé", // ai 2026-10
@@ -11722,10 +11937,10 @@ return [
 "AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "AlertsSweep::SCHEDULE n'a pas d'entrée pour elle, donc aucune tâche n'est jamais planifiée et ces lecteurs ne reçoivent rien.", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 110
-"Every alert collection is swept on time and all its selections exist" => "",
+"Every alert collection is swept on time and all its selections exist" => "Chaque collection d'alertes est envoyée à temps et toutes ses sélections existent", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 144
-"Selection" => "",
+"Selection" => "Sélection", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
@@ -11736,28 +11951,28 @@ return [
 "Problem" => "Problème", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 146
-"the selection was deleted" => "",
+"the selection was deleted" => "la sélection a été supprimée", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 147
-"its view %1 was deleted" => "",
+"its view %1 was deleted" => "sa vue %1 a été supprimée", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 153
-"Alerts \"%1\" use a selection that no longer exists" => "",
+"Alerts \"%1\" use a selection that no longer exists" => "Les alertes « %1 » utilisent une sélection qui n'existe plus", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 154
-"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "",
+"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "Les alertes « %1 » n'envoient rien : aucune sélection de la collection n'existe plus", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 157
-"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "",
+"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "Une sélection est un filtre d'une vue de la section dont l'alerte tire ses items. Lorsque le filtre ou la vue est supprimé, la collection continue d'y renvoyer et ses lecteurs n'en reçoivent rien - sans aucune erreur dans le Journal. Sur la page « Sélections », supprimez la sélection marquée comme manquante et ajoutez-en une existante (les filtres sont définis dans la vue de type « Alerte à l'ensemble de sélection »). Un module « Alerte » que plus personne n'utilise peut aussi être supprimé.", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 159
 "Selections" => "Sélections", // ai 2026-06
 
 // src/Optimize/CheckAlerts.php, row 160
-"Alerts settings" => "",
+"Alerts settings" => "Configuration des alertes", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 163
-"Alert selection no longer exists" => "",
+"Alert selection no longer exists" => "La sélection d'alertes n'existe plus", // ai 2026-11
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 27
 "Forms without login changing accounts or authors" => "Formulaires sans connexion modifiant des comptes ou des auteurs", // ai 2026-10
@@ -11847,7 +12062,7 @@ return [
 "A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "Un modèle de la page contient {require:ckeditor} (et CKEDITOR.replace()). Enveloppez plutôt le textarea dans <aa-richtext mode=\"rich\"> avec {require:aa-richtext@1} - le textarea garde son nom et sa valeur, donc le formulaire et les scripts lisant textarea.value fonctionnent tels quels ; CKEDITOR.instances[...].getData() devient la valeur du textarea.", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 103
-"Templates with ckeditor" => "",
+"Templates with ckeditor" => "Modèles avec CKEditor", // ai 2026-11
 
 // src/Optimize/CheckCkeditorUse.php, row 109
 "No page loaded CKEditor 4 in the last 30 days" => "Aucune page n'a chargé CKEditor 4 ces 30 derniers jours", // ai 2026-10
@@ -11907,22 +12122,22 @@ return [
 "%1 cron rows, all readable and running on schedule" => "Lignes cron : %1, toutes lisibles et exécutées selon le planning", // ai 2026-10
 
 // src/Optimize/CheckDiscussionRefusals.php, row 26
-"Refused comments" => "",
+"Refused comments" => "Commentaires refusés", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 31
-"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "",
+"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "Liste les sections dont les nouveaux commentaires de discussion ont été refusés au cours des 30 derniers jours, parce que la section n'affiche aucune discussion.", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 70
-"New comments to items of slice %1 were refused" => "",
+"New comments to items of slice %1 were refused" => "Les nouveaux commentaires sur les items de la section %1 ont été refusés", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 78
-"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "",
+"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "La section n'a pas de vue de discussion et aucune n'est réglée dans « Montrer la discussion » de son modèle de texte intégral ; un commentaire ne serait donc affiché nulle part. Si le site affiche les commentaires via la vue de discussion d'une autre section, choisissez cette vue dans « Montrer la discussion » ; sinon, retirez le formulaire de commentaire des modèles de la section.", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 80
-"Fulltext design" => "",
+"Fulltext design" => "Modèle du texte intégral", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 85
-"No comment was refused in the last 30 days" => "",
+"No comment was refused in the last 30 days" => "Aucun commentaire n'a été refusé au cours des 30 derniers jours", // ai 2026-11
 
 // src/Optimize/CheckEnvironment.php, row 18
 // src/Optimize/StateCheckModel.php, row 295
@@ -11948,6 +12163,21 @@ return [
 
 // src/Optimize/CheckEnvironment.php, row 66
 "AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4 ; inchangé depuis %5", // ai 2026-10
+
+// src/Optimize/CheckFormRobotRefusals.php, row 26
+"Forms refused as robots" => "Formulaires refusés comme robots", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 31
+"Lists the slices whose new items from a form were refused in the last 30 days because the form posted an empty slice_id, which its JS fills only for a visitor who moves the mouse or presses a key." => "Liste les sections dont les nouveaux items envoyés par un formulaire ont été refusés au cours des 30 derniers jours, parce que le formulaire a envoyé un slice_id vide, que son JS ne remplit que pour un visiteur qui bouge la souris ou appuie sur une touche.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 70
+"A form adding items to slice %1 was refused as a robot" => "Un formulaire ajoutant des items à la section %1 a été refusé comme robot", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 79
+"The form posted an empty slice_id. Forms with {formantispam:<slice_id>} or with their own anti-robot JS leave it empty and fill it when the visitor moves the mouse or presses a key, so this is mostly spam and needs no action. If real visitors complain that the form does not save, check that the JS of the form runs on the page (the browser console) and fills slice_id." => "Le formulaire a envoyé un slice_id vide. Les formulaires avec {formantispam:<slice_id>} ou avec leur propre JS anti-robot le laissent vide et le remplissent lorsque le visiteur bouge la souris ou appuie sur une touche ; il s'agit donc surtout de spam et aucune action n'est nécessaire. Si de vrais visiteurs se plaignent que le formulaire n'enregistre rien, vérifiez que le JS du formulaire s'exécute sur la page (console du navigateur) et remplit slice_id.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 85
+"No form was refused as a robot in the last 30 days" => "Aucun formulaire n'a été refusé comme robot au cours des 30 derniers jours", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 29
 "Outgoing HTTP" => "HTTP sortant", // ai 2026-10
@@ -11981,7 +12211,7 @@ return [
 "Note" => "Note", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 85
-"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "",
+"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "L'adresse elle-même répond HTTP %1, %2 répond 200 - c'est habituel quand le répertoire d'AA n'a pas de page d'accueil et que le serveur ne liste pas les répertoires.", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 93
 "This installation's own address answers HTTP %1" => "L'adresse propre de cette installation répond HTTP %1", // ai 2026-10
@@ -12147,7 +12377,7 @@ return [
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "La clé contient un saut de ligne ou un NUL : aucune source d'import ne peut donc l'utiliser. Corrigez la constante dans config.php.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 272
-"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "",
+"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "Une clé JSON (compte de service Google) tient sur une ligne : collez la ligne qu'affiche %1.", // ai 2026-11
 
 // src/Optimize/CheckImports.php, row 291
 "Imports logged %1 failures in the last 7 days" => "Échecs journalisés par les imports ces 7 derniers jours : %1", // ai 2026-10
@@ -12198,505 +12428,505 @@ return [
 "No app transfer is stuck" => "Aucun transfert d'application n'est bloqué", // ai 2026-10
 
 // src/Optimize/CheckIsds.php, row 49
-"ISDS login" => "",
+"ISDS login" => "Connexion à ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 54
-"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "",
+"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "Se connecte à ISDS avec chaque compte utilisable de misc/datovka/datovka_conf.php qui envoie pour un site de cette base de données, et vérifie la boîte de données depuis laquelle il envoie ; pour une connexion par identifiant et mot de passe, aussi les droits de son utilisateur et la date d'expiration de son mot de passe.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 79
-"No usable ISDS account to log in with" => "",
+"No usable ISDS account to log in with" => "Aucun compte ISDS utilisable pour se connecter", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 121
-"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "",
+"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "Comptes ISDS non essayés, car ISDS a bloqué l'adresse de ce serveur : %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 122
-"ISDS accounts not tried, as ISDS did not answer: %1" => "",
+"ISDS accounts not tried, as ISDS did not answer: %1" => "Comptes ISDS non essayés, car ISDS n'a pas répondu : %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Wait - each attempt from this server extends the block." => "",
+"Wait - each attempt from this server extends the block." => "Patientez - chaque tentative depuis ce serveur prolonge le blocage.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Check again later." => "",
+"Check again later." => "Vérifiez de nouveau plus tard.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 128
-"ISDS accounts log in to their data boxes: %1" => "",
+"ISDS accounts log in to their data boxes: %1" => "Les comptes ISDS se connectent à leurs boîtes de données : %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"ISDS account %1 not tried, as its certificate cannot be used" => "",
+"ISDS account %1 not tried, as its certificate cannot be used" => "Compte ISDS %1 non essayé, car son certificat est inutilisable", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"The check of ISDS accounts tells more." => "",
+"The check of ISDS accounts tells more." => "La vérification « Comptes ISDS » en dit plus.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 153
-"The TLS library of this server refuses the certificate of ISDS account %1" => "",
+"The TLS library of this server refuses the certificate of ISDS account %1" => "La bibliothèque TLS de ce serveur refuse le certificat du compte ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 154
-"Reason of OpenSSL" => "",
+"Reason of OpenSSL" => "Raison selon OpenSSL", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 155
-"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "",
+"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "OpenSSL sur ce serveur n'accepte pas le certificat ou sa clé - p. ex. une clé plus courte que ne l'exige sa politique, un certificat faible dans la chaîne ou une ancienne signature. Procurez-vous un certificat conforme à la politique (clé RSA de 3072 bits, signature SHA-256), faites-le enregistrer par ISDS et indiquez-le dans misc/datovka/datovka_conf.php.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 188, 290
 "ISDS" => "",
 
 // src/Optimize/CheckIsds.php, row 195, 226
-"ISDS did not tell the rights of the user of account %1" => "",
+"ISDS did not tell the rights of the user of account %1" => "ISDS n'a pas communiqué les droits de l'utilisateur du compte %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 202
-"The password of ISDS account %1 expires on %2" => "",
+"The password of ISDS account %1 expires on %2" => "Le mot de passe du compte ISDS %1 expire le %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 203
-"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "",
+"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "Changez le mot de passe sur le portail ISDS et écrivez le nouveau dans %1 de misc/datovka/datovka_conf.php.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"ISDS did not tell when the password of account %1 expires" => "",
+"ISDS did not tell when the password of account %1 expires" => "ISDS n'a pas communiqué la date d'expiration du mot de passe du compte %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"Check the password of the user in the ISDS portal." => "",
+"Check the password of the user in the ISDS portal." => "Vérifiez le mot de passe de l'utilisateur sur le portail ISDS.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"Rights" => "",
+"Rights" => "Droits", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"User type" => "",
+"User type" => "Type d'utilisateur", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 239
-"The user of ISDS account %1 lacks the rights %2" => "",
+"The user of ISDS account %1 lacks the rights %2" => "Il manque à l'utilisateur du compte ISDS %1 les droits %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 241
-"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "",
+"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "Accordez à l'utilisateur les droits %1 sur le portail ISDS - sans eux, ISDS refuse %2.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 250
-"The user of ISDS account %1 has rights AA must not have: %2" => "",
+"The user of ISDS account %1 has rights AA must not have: %2" => "L'utilisateur du compte ISDS %1 a des droits qu'AA ne doit pas avoir : %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 252
-"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "",
+"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "Sur le portail ISDS, retirez ces droits à l'utilisateur, ou faites connecter AA comme utilisateur distinct n'ayant que les droits %1.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 268
-"ISDS blocked logins from the address of this server" => "",
+"ISDS blocked logins from the address of this server" => "ISDS a bloqué les connexions depuis l'adresse de ce serveur", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 269
-"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "",
+"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "ISDS bloque pour un temps l'adresse d'un serveur lorsque les connexions qui en proviennent ressemblent à une attaque - pour tous les comptes et tous les AA de ce serveur, quelle que soit leur connexion. Patientez : chaque tentative prolonge le blocage. AA réessaie tout seul une fois %1 heures plus tard, ou quand vous vérifiez de nouveau ici. Si le blocage persiste, appelez l'assistance ISDS au 954 200 200.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 274
-"ISDS refused the login of account %1" => "",
+"ISDS refused the login of account %1" => "ISDS a refusé la connexion du compte %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS asked account %1 to come back later" => "",
+"ISDS asked account %1 to come back later" => "ISDS a demandé au compte %1 de réessayer plus tard", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS is in an outage or busy. Check again later." => "",
+"ISDS is in an outage or busy. Check again later." => "ISDS est en panne ou surchargé. Vérifiez de nouveau plus tard.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 281
-"ISDS gave account %1 no answer" => "",
+"ISDS gave account %1 no answer" => "ISDS n'a pas répondu au compte %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 282
-"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "",
+"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "Vérifiez de nouveau plus tard. Si cela se répète, vérifiez que le serveur atteint %1 en HTTPS.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"ISDS gave account %1 an answer AA cannot read" => "",
+"ISDS gave account %1 an answer AA cannot read" => "ISDS a renvoyé au compte %1 une réponse qu'AA ne sait pas lire", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"Check again later. If it repeats, the evidence gives the answer of ISDS." => "",
+"Check again later. If it repeats, the evidence gives the answer of ISDS." => "Vérifiez de nouveau plus tard. Si cela se répète, la réponse d'ISDS figure dans les preuves.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"ISDS refused account %1" => "",
+"ISDS refused account %1" => "ISDS a refusé le compte %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "",
+"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "La réponse d'ISDS figure dans les preuves. Vérifiez le compte et sa boîte de données sur le portail ISDS.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 298
-"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "Vérifiez que le certificat qu'indique %1 est bien le certificat système qu'ISDS a enregistré pour la boîte de données, et qu'il n'a pas expiré. AA essaie tout seul un nouveau certificat, jamais le même. « Lancer les vérifications étendues » ou « Revérifier » ici l'essaie une fois de plus.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 299
-"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "Vérifiez que la boîte de données %1 autorise le service d'hébergement dont le certificat est indiqué par %2 (Paramètres, Accès des applications externes sur le portail ISDS), et que le certificat n'a pas expiré. AA essaie tout seul un nouveau certificat, jamais le même. « Lancer les vérifications étendues » ou « Revérifier » ici l'essaie une fois de plus.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 300
-"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "",
+"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "Vérifiez %1 et %2 dans misc/datovka/datovka_conf.php, et sur le portail ISDS que le mot de passe n'a pas expiré. AA essaie tout seul un identifiant ou un mot de passe modifié, jamais le même - chaque tentative refusée prolonge le blocage de la connexion. « Lancer les vérifications étendues » ou « Revérifier » ici l'essaie une fois de plus.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 327
-"Check in the ISDS portal that the user has the rights %1 and none of %2." => "",
+"Check in the ISDS portal that the user has the rights %1 and none of %2." => "Sur le portail ISDS, vérifiez que l'utilisateur a les droits %1 et aucun de %2.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 356
-"read received messages" => "",
+"read received messages" => "lire les messages reçus", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 357
-"read received messages to own hands" => "",
+"read received messages to own hands" => "lire les messages reçus en mains propres", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 358
-"send messages" => "",
+"send messages" => "envoyer des messages", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 359
-"lists of messages and delivery info" => "",
+"lists of messages and delivery info" => "listes des messages et accusés de remise", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 360
-"search for data boxes" => "",
+"search for data boxes" => "rechercher des boîtes de données", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 361
-"manage the data box" => "",
+"manage the data box" => "gérer la boîte de données", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 362
-"erase the vault" => "",
+"erase the vault" => "effacer le coffre-fort de messages", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 44
-"ISDS accounts" => "",
+"ISDS accounts" => "Comptes ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 49
-"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "",
+"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "Vérifie les comptes ISDS que misc/datovka/datovka_conf.php configure pour l'envoi vers des boîtes de données depuis les sites de cette base de données : leur configuration, les fichiers de leurs certificats, le site et les sections pour lesquels chaque compte envoie, ainsi que les pages d'envoi groupé dont la configuration n'était pas prête, dont les campagnes n'ont pas pu déterminer leurs destinataires ou dont les actions ont échoué sur une erreur interne, au cours de la dernière semaine.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 80
-"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "",
+"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "Aucun compte ISDS de misc/datovka/datovka_conf.php n'envoie pour un site de cette base de données", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 100
-"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "misc/datovka/datovka_conf.php contient des paramètres de comptes ISDS qu'AA ne lit pas : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 103
-"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "",
+"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "Un compte ISDS dans %1 est nommé par un seul mot de majuscules et de chiffres, commençant par une lettre, et AA ne lit que les clés %2, et pour un compte de production aussi %3. Corrigez les noms, ou supprimez ce qu'AA ne lit pas.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 108
-"ISDS accounts ready to send: %1" => "",
+"ISDS accounts ready to send: %1" => "Comptes ISDS prêts à envoyer : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 127
-"A page of site %1 has a mass sending whose settings are not ready" => "",
+"A page of site %1 has a mass sending whose settings are not ready" => "Une page du site %1 a un envoi groupé dont la configuration n'est pas prête", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 131, 167
-"Campaign slice" => "",
+"Campaign slice" => "Section des campagnes", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 137
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "Le site « %1 » ne connecte que les lecteurs de ses sections de gestion des lecteurs, si bien que personne ne peut y envoyer, ni voir sur la page ce qu'il faut corriger - dans la configuration du site, réglez « Bases de données de connexion des utilisateurs » sur « %2 », puis rouvrez la page.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 138
-"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "",
+"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "Ouvrez la page en tant qu'utilisateur autorisé à modifier tous les items de la section des campagnes, ou le code du site : elle liste tout ce qu'il faut corriger dans la configuration de {datovkabulk:page}, avec les pages où le corriger.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 163
-"A campaign of a mass sending on site %1 cannot tell its recipients" => "",
+"A campaign of a mass sending on site %1 cannot tell its recipients" => "Une campagne d'envoi groupé sur le site %1 ne peut pas déterminer ses destinataires", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 168, 204
-"Campaign" => "",
+"Campaign" => "Campagne", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 173
-"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "",
+"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "Le filtre des destinataires enregistré dans la campagne ne correspond plus à la configuration de la page - un type a été retiré de types, ou member_field a été supprimé. Ouvrez la campagne sur la page et enregistrez de nouveau ses destinataires. Si le problème mentionne la configuration des boîtes de données, réglez-la sur la page « Boîtes de données du registre » de la section source.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 199
-"An action of a page of a mass sending failed on an internal error: %1" => "",
+"An action of a page of a mass sending failed on an internal error: %1" => "Une action d'une page d'envoi groupé a échoué sur une erreur interne : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 209
-"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "",
+"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "Défaut d'AA - signalez à ses développeurs l'emplacement dans le code indiqué dans les preuves. L'action a pu faire une partie de son travail : avant que l'utilisateur ne la réessaie, consultez l'envoi sur sa page.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 225
-"ISDS account %1 cannot be used" => "",
+"ISDS account %1 cannot be used" => "Le compte ISDS %1 est inutilisable", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 227
-"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "",
+"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "Corrigez dans misc/datovka/datovka_conf.php ce qu'indiquent les preuves. Le compte est %1, avec les clés %2.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 261
-"PHP cannot read the certificate of ISDS account %1" => "",
+"PHP cannot read the certificate of ISDS account %1" => "PHP ne peut pas lire le certificat du compte ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 263
-"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "",
+"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "Vérifiez que le paramètre indique le fichier par un chemin complet - un chemin relatif part de %1 d'AA -, que l'utilisateur sous lequel PHP s'exécute peut le lire, et qu'open_basedir y laisse accéder PHP.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "",
+"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "Le certificat du compte ISDS %1 est inutilisable : PHP n'a pas l'extension openssl", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"Install the openssl extension of PHP - a login with a certificate needs it." => "",
+"Install the openssl extension of PHP - a login with a certificate needs it." => "Installez l'extension openssl de PHP - la connexion par certificat en a besoin.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Serial number" => "",
+"Serial number" => "Numéro de série", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Valid until" => "",
+"Valid until" => "Valide jusqu'au", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 274
-"%1 names a file with no PEM certificate" => "",
+"%1 names a file with no PEM certificate" => "%1 indique un fichier sans certificat PEM", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 275
-"The private key in %1 does not open: it is missing, or %2 does not fit" => "",
+"The private key in %1 does not open: it is missing, or %2 does not fit" => "La clé privée dans %1 ne s'ouvre pas : elle manque, ou %2 ne convient pas", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 276
-"The private key in %1 does not belong to the certificate in %2" => "",
+"The private key in %1 does not belong to the certificate in %2" => "La clé privée dans %1 n'appartient pas au certificat dans %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 277
-"The private key is shorter than %1 bits, which the secure connection refuses" => "",
+"The private key is shorter than %1 bits, which the secure connection refuses" => "La clé privée fait moins de %1 bits, ce que la connexion sécurisée refuse", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 278
-"The certificate is valid from %1 only" => "",
+"The certificate is valid from %1 only" => "Le certificat n'est valide qu'à partir du %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"The certificate of ISDS account %1 cannot be used" => "",
+"The certificate of ISDS account %1 cannot be used" => "Le certificat du compte ISDS %1 est inutilisable", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "",
+"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "Indiquez dans misc/datovka/datovka_conf.php le certificat et sa clé, et pour une clé chiffrée aussi sa phrase secrète.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expired on %2" => "",
+"The certificate of ISDS account %1 expired on %2" => "Le certificat du compte ISDS %1 a expiré le %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expires on %2" => "",
+"The certificate of ISDS account %1 expires on %2" => "Le certificat du compte ISDS %1 expire le %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 290
-"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "",
+"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "Procurez-vous un nouveau certificat, faites-le enregistrer par ISDS à côté de l'ancien, et indiquez son fichier dans misc/datovka/datovka_conf.php - ISDS le demande %1 jours avant l'expiration de l'ancien.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"The web server may serve the private key of ISDS account %1" => "",
+"The web server may serve the private key of ISDS account %1" => "Le serveur web peut servir la clé privée du compte ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"Other users of the server may read the private key of ISDS account %1" => "",
+"Other users of the server may read the private key of ISDS account %1" => "D'autres utilisateurs du serveur peuvent lire la clé privée du compte ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 343
-"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "",
+"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "Ici, PHP s'exécute à l'intérieur du serveur web, donc le serveur web lit tout ce que PHP peut lire - aucune permission n'y change rien. Déplacez le fichier hors du répertoire d'AA et indiquez-le par un chemin complet.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 344
-"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "",
+"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "Le fichier se trouve dans le répertoire d'AA, que le serveur web sert. Déplacez-le à l'extérieur et indiquez-le par un chemin complet, ou laissez-le à son seul propriétaire (chmod 600) et vérifiez son ACL (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 345
-"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "",
+"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "Retirez au fichier tous les droits des autres utilisateurs (chmod o-rwx) et vérifiez son ACL (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 403
-"The slices of ISDS account %1 are not ready for sending" => "",
+"The slices of ISDS account %1 are not ready for sending" => "Les sections du compte ISDS %1 ne sont pas prêtes pour l'envoi", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 406
-"Fix what the evidence names before sending from these slices." => "",
+"Fix what the evidence names before sending from these slices." => "Avant d'envoyer depuis ces sections, corrigez ce qu'indiquent les preuves.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 32
-"ISDS settings file" => "",
+"ISDS settings file" => "Fichier de configuration ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 37
-"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "",
+"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "Vérifie misc/datovka/datovka_conf.php, la configuration des boîtes de données de cette installation pour {datovka} et l'envoi groupé : si PHP le lit et si AA peut l'utiliser en entier, les clés écrites deux fois, ses permissions, ses copies dans le répertoire d'AA, et pour la dernière semaine les problèmes rencontrés par d'autres requêtes en le lisant ainsi que les réponses d'ISDS refusées pour une installation qu'il ne liste pas.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"AA reads all of misc/datovka/datovka_conf.php" => "",
+"AA reads all of misc/datovka/datovka_conf.php" => "AA lit l'intégralité de misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "",
+"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "misc/datovka/datovka_conf.php n'existe pas - AA fonctionne sans la configuration des boîtes de données de cette installation", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"ISDS accounts not checked: %1" => "",
+"ISDS accounts not checked: %1" => "Comptes ISDS non vérifiés : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"The check \"%1\" tells what to fix." => "",
+"The check \"%1\" tells what to fix." => "La vérification « %1 » indique ce qu'il faut corriger.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 100
-"PHP cannot read misc/datovka/datovka_conf.php" => "",
+"PHP cannot read misc/datovka/datovka_conf.php" => "PHP ne peut pas lire misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"AA cannot use misc/datovka/datovka_conf.php" => "",
+"AA cannot use misc/datovka/datovka_conf.php" => "AA ne peut pas utiliser misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "",
+"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "Corrigez le fichier d'après datovka_conf.php.default - le problème indique ce qui ne va pas. D'ici là, AA fonctionne comme si le fichier n'existait pas.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 102
-"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "",
+"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "Corrigez %1 d'après datovka_conf.php.default. D'ici là, AA n'a aucun compte ISDS ; AA lit le reste du fichier.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "",
+"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "AA ignore des paramètres de misc/datovka/datovka_conf.php : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"Correct each key as its problem says." => "",
+"Correct each key as its problem says." => "Corrigez chaque clé comme l'indique son problème.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 113
-"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "misc/datovka/datovka_conf.php contient des clés qu'AA ne lit pas : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 116
-"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "",
+"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "Déplacez un compte ISDS sous %1, ou supprimez ce qu'AA ne lit pas : au premier niveau, AA lit instances, test, standard et accounts ; dans test et standard, cert et atsId ; dans une installation, seulement url.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "",
+"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "misc/datovka/datovka_conf.php contient encore des adresses d'ISDS : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "",
+"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "AA ne lit pas url_* et wsdl_* dans le fichier - les adresses font partie d'AA. Supprimez-les.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 149
-"Other requests met a problem in misc/datovka/datovka_conf.php" => "",
+"Other requests met a problem in misc/datovka/datovka_conf.php" => "D'autres requêtes ont rencontré un problème dans misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 150
-"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "",
+"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "D'autres requêtes n'ont pas pu utiliser les comptes de misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 151
-"Other requests could not use misc/datovka/datovka_conf.php" => "",
+"Other requests could not use misc/datovka/datovka_conf.php" => "D'autres requêtes n'ont pas pu utiliser misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 156
-"Site, one of them" => "",
+"Site, one of them" => "Site, l'un d'eux", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 158
-"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "",
+"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "%1 Observé un seul jour, il s'agit généralement d'un système de fichiers réseau qui refuse PHP pendant un moment. Le constat disparaît 7 jours après « %2 ».", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 159
-"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "",
+"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "Le fichier a changé depuis, ou une autre arborescence d'AA sur cette base de données lit son propre fichier. Corrigez ce qu'indique le problème dans le fichier que lit chaque arborescence.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "",
+"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "Des réponses d'ISDS aux messages de cette base de données ont été refusées : %1 ne liste pas l'installation %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS refused: the installation in their token is not in %1" => "",
+"Answers of ISDS refused: the installation in their token is not in %1" => "Réponses d'ISDS refusées : l'installation de leur jeton ne figure pas dans %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id" => "",
+"Installation id" => "Identifiant de l'installation", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id, one of them" => "",
+"Installation id, one of them" => "Identifiant de l'installation, l'un d'eux", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 191
-"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "",
+"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "Ajoutez l'installation de cet identifiant à %1, avec son AA_INSTAL_URL - chaque installation qui partage l'enregistrement du service d'authentification liste les mêmes identifiants.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 192
-"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "",
+"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "Aucun message de cette base de données n'a ce jeton. Si une installation qui partage l'enregistrement du service d'authentification a cet identifiant, ajoutez-le à %1 ; sinon, la réponse n'appartient pas à cette installation et rien ne doit changer.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 215
-"Test boxes of ISDS accounts AA cannot read: %1" => "",
+"Test boxes of ISDS accounts AA cannot read: %1" => "Boîtes de test des comptes ISDS qu'AA ne peut pas lire : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 218
-"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "",
+"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "Écrivez test_boxes comme une liste d'identifiants de boîtes de données : ['<identifiant de la boîte>', ...], 7 lettres ou chiffres chacun. D'ici là, le compte envoie, mais aucun message de test d'un brouillon n'en part.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 235
-"Paid tests of ISDS accounts AA cannot read: %1" => "",
+"Paid tests of ISDS accounts AA cannot read: %1" => "Tests payants des comptes ISDS qu'AA ne peut pas lire : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 238
-"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "",
+"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "Écrivez paid_tests à true - sans guillemets - pour qu'un message de test d'un brouillon puisse coûter de l'argent, ou supprimez-le. D'ici là, un message de test ne part que gratuitement.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "",
+"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "misc/datovka/datovka_conf.php n'est pas vérifié pour les clés écrites deux fois - le fichier dépasse %1 Ko", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"The settings of one installation take a few kilobytes - check what else the file holds." => "",
+"The settings of one installation take a few kilobytes - check what else the file holds." => "La configuration d'une installation tient en quelques kilo-octets - vérifiez ce que le fichier contient d'autre.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 303
-"misc/datovka/datovka_conf.php writes keys twice: %1" => "",
+"misc/datovka/datovka_conf.php writes keys twice: %1" => "misc/datovka/datovka_conf.php écrit des clés deux fois : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 307
-"ISDS accounts of the sites of other databases: %1" => "",
+"ISDS accounts of the sites of other databases: %1" => "Comptes ISDS des sites d'autres bases de données : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 309
-"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "",
+"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "PHP ne garde que la dernière occurrence d'une clé écrite deux fois et ignore la première sans avertissement. Fusionnez les deux en une, ou renommez l'un des comptes.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 310
-"An account of the sites of another database: the State Check of the database of its sites names it." => "",
+"An account of the sites of another database: the State Check of the database of its sites names it." => "Un compte des sites d'une autre base de données : la « Vérification de l'état » de la base de données de ses sites le mentionne.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 341
-"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "",
+"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "misc/datovka/datovka_conf.php est lisible par tous les utilisateurs du serveur, include/config.php ne l'est pas", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 343
-"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "",
+"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "Le fichier contient un mot de passe ou une phrase secrète. Donnez-lui le propriétaire, le groupe et le mode d'include/config.php (chown, chmod), et vérifiez son ACL (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 370
-"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "",
+"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "Copies de misc/datovka/datovka_conf.php dans le répertoire d'AA : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 373
-"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "",
+"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "Ne gardez des copies du fichier - sauvegardes, anciennes versions, ce qu'un éditeur ou svn laisse à côté - qu'en dehors de l'arborescence web. Déplacez ou supprimez celles-ci.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 393
-"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "",
+"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "AA ne peut pas utiliser les comptes de misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 398
-"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "",
+"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "Donnez au fichier le propriétaire, le groupe et le mode d'include/config.php, car chaque site peut exécuter PHP sous son propre utilisateur, et vérifiez que l'open_basedir de chaque site laisse PHP accéder au fichier (et à la cible d'un lien). D'ici là, AA fonctionne comme si le fichier n'existait pas.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 37
-"Letters to data boxes as a PDF" => "",
+"Letters to data boxes as a PDF" => "Lettres aux boîtes de données en PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 42
-"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "",
+"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "Convertit une courte lettre en PDF, comme le fait l'envoi groupé vers des boîtes de données avec la lettre de chaque campagne - seulement lorsqu'un compte ISDS de misc/datovka/datovka_conf.php envoie pour un site de cette base de données.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 81
-"AA makes letters to data boxes into a PDF" => "",
+"AA makes letters to data boxes into a PDF" => "AA convertit les lettres aux boîtes de données en PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 86
-"A letter to a data box cannot be made into a PDF" => "",
+"A letter to a data box cannot be made into a PDF" => "Une lettre à une boîte de données ne peut pas être convertie en PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 87
-"Until then no campaign can be sent to data boxes." => "",
+"Until then no campaign can be sent to data boxes." => "D'ici là, aucune campagne ne peut être envoyée vers des boîtes de données.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 88
-"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "",
+"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "dompdf, qui génère le PDF, manque : lancez composer install dans le répertoire d'AA.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 89
-"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "",
+"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "Il manque à PHP l'extension GD, qui dessine les images d'une lettre : installez-la et redémarrez PHP.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 90
-"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "",
+"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "Lancez composer install dans le répertoire d'AA - il apporte dompdf et ses polices - et vérifiez que PHP peut écrire dans son répertoire temporaire (sys_temp_dir).", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 30
-"Data boxes of the items" => "",
+"Data boxes of the items" => "Boîtes de données des items", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 35
-"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "",
+"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "Compare les boîtes de données des items avec le registre des boîtes de données téléchargé, dans les sections qui y apparient leurs items, et indique les comptes ISDS dont les sites n'utilisent aucune section de ce genre.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 60
-"No slice pairs its items with the register of data boxes" => "",
+"No slice pairs its items with the register of data boxes" => "Aucune section n'apparie ses items avec le registre des boîtes de données", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 63
-"Paired slices whose items have the data boxes of the register: %1" => "",
+"Paired slices whose items have the data boxes of the register: %1" => "Sections appariées dont les items ont les boîtes de données du registre : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 88
-"ISDS account" => "",
+"ISDS account" => "Compte ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 94
-"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "",
+"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "Les sites des comptes ISDS n'utilisent aucune section configurée pour les boîtes de données ; un envoi groupé ne peut donc pas obtenir ses destinataires", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 97
-"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "",
+"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "Dans la configuration de la section dont les campagnes tirent leurs destinataires - une section publique utilisée par le site, voir « Modules utilisés » dans la configuration du site -, ouvrez la page « Boîtes de données du registre » et choisissez-y les champs de ses items : le nom, le type et la boîte de données vers laquelle l'envoi groupé envoie.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 112
-"Data boxes of %1" => "",
+"Data boxes of %1" => "Boîtes de données de %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 114
-"Download it on the page Data boxes from the register of a paired slice." => "",
+"Download it on the page Data boxes from the register of a paired slice." => "Téléchargez-le sur la page « Boîtes de données du registre » d'une section appariée.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"The directory of the register of data boxes cannot be used" => "",
+"The directory of the register of data boxes cannot be used" => "Le répertoire du registre des boîtes de données est inutilisable", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "",
+"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "Autorisez PHP à parcourir le répertoire, ou réglez IMG_UPLOAD_PATH dans config.php. Téléchargez ensuite le registre sur la page « Boîtes de données du registre » d'une section appariée.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The register of data boxes has not been downloaded" => "",
+"The register of data boxes has not been downloaded" => "Le registre des boîtes de données n'a pas été téléchargé", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The items are compared with it." => "",
+"The items are compared with it." => "Les items sont comparés avec lui.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 127
-"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "",
+"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "Téléchargez de nouveau le registre sur la page « Boîtes de données du registre » d'une section appariée. D'ici là, les items ne sont pas comparés avec le registre.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"The downloaded register of data boxes is older than %1 days" => "",
+"The downloaded register of data boxes is older than %1 days" => "Le registre des boîtes de données téléchargé date de plus de %1 jours", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Downloaded" => "",
+"Downloaded" => "Téléchargé", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "",
+"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "Téléchargez-le de nouveau sur la page « Boîtes de données du registre » d'une section appariée : les autorités reçoivent de nouvelles boîtes et fusionnent.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 140
-"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "",
+"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "La copie du registre est endommagée : un nouveau téléchargement sur la page « Boîtes de données du registre » d'une section appariée la remplace.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 141
-"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "",
+"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "La copie du registre ne peut pas être lue : vérifiez le répertoire et les permissions indiqués dans les preuves ; s'ils sont corrects, la lecture du disque a échoué - réessayez plus tard.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 142
-"The downloaded register of data boxes cannot be read" => "",
+"The downloaded register of data boxes cannot be read" => "Le registre des boîtes de données téléchargé ne peut pas être lu", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"The pairing of slice \"%1\" with the register no longer fits its fields" => "",
+"The pairing of slice \"%1\" with the register no longer fits its fields" => "L'appariement de la section « %1 » avec le registre ne correspond plus à ses champs", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"Choose the fields again in the settings on the page Data boxes from the register." => "",
+"Choose the fields again in the settings on the page Data boxes from the register." => "Choisissez de nouveau les champs dans la configuration sur la page « Boîtes de données du registre ».", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 187
-"Slice \"%1\": items without a data box: %2, items with another box than the register by IČO: %3" => "",
+"Slice \"%1\": items without a data box: %2, items with another box than the register by IČO: %3" => "Section « %1 » : items sans boîte de données : %2, items avec une autre boîte que celle du registre selon l'IČO : %3", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 190
-"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "",
+"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "Ouvrez la page « Boîtes de données du registre », vérifiez les boîtes trouvées et écrivez-les. Pour les items que le registre ne trouve pas, la boîte doit être remplie à la main.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 21
-"Message items of mass sendings" => "",
+"Message items of mass sendings" => "Items de messages des envois groupés", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 26
-"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "",
+"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "Compare les items de message des envois groupés récents vers les boîtes de données avec les enregistrements de leurs exécutions, sur lesquels l'envoi se fonde.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"Message items of a mass sending do not show what its record says: %1" => "",
+"Message items of a mass sending do not show what its record says: %1" => "Les items de message d'un envoi groupé ne reflètent pas ce qu'indique son enregistrement : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "",
+"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "L'envoi se fonde sur son enregistrement ; les items ne font que l'afficher aux personnes, et un item qui présente un message comme non envoyé alors qu'il est parti pousse quelqu'un à le renvoyer à la main. Chaque exemple indique le numéro de référence de l'expéditeur, l'item, ce qu'il affiche et ce qu'indique l'enregistrement : donnez cet état à l'item, ou vérifiez le message sur le portail ISDS d'après son numéro de référence de l'expéditeur.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 96
 // src/Optimize/CheckIsdsRuns.php, row 90
@@ -12705,140 +12935,140 @@ return [
 "%1: nothing found" => "%1 : rien trouvé", // ai 2026-10
 
 // src/Optimize/CheckIsdsRuns.php, row 51
-"Mass sendings to data boxes" => "",
+"Mass sendings to data boxes" => "Envois groupés vers les boîtes de données", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 56
-"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "",
+"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "Signale les envois groupés vers les boîtes de données bloqués ou arrêtés sur une erreur, ceux qui ont laissé des messages au sort inconnu ou dont beaucoup ont échoué, ceux dont le suivi de la remise est bloqué ou a laissé des messages dont la remise n'est pas connue, ainsi que les campagnes qui n'indiquent pas comment leur envoi s'est déroulé.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"The campaign of a finished mass sending does not show its end" => "",
+"The campaign of a finished mass sending does not show its end" => "La campagne d'un envoi groupé terminé n'en indique pas la fin", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "",
+"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "Plus rien ne réécrira l'item de la campagne. Définissez son état à la main : arrêté si l'envoi a été arrêté avant que tous les messages soient partis, sinon terminé.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 121
-"Mass sendings to data boxes whose campaign item is gone: %1" => "",
+"Mass sendings to data boxes whose campaign item is gone: %1" => "Envois groupés vers les boîtes de données dont l'item de la campagne a disparu : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 125
-"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "",
+"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "Leurs enregistrements et leurs lettres figées restent comme preuve de ce qui a été envoyé - AA ne les supprime pas avec la campagne. Un envoi non terminé se poursuit jusqu'à sa fin : son enregistrement contient à qui il envoie et quoi.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 160
-"Messages of unknown fate" => "",
+"Messages of unknown fate" => "Messages au sort inconnu", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"Following the delivery of a mass sending to data boxes stopped by an error" => "",
+"Following the delivery of a mass sending to data boxes stopped by an error" => "Le suivi de la remise d'un envoi groupé vers les boîtes de données s'est arrêté sur une erreur", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "",
+"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "Tous les messages sont partis ; seule la vérification de leur remise s'est arrêtée. Corrigez ce que désigne le code d'erreur, puis choisissez sur la page de l'envoi « Continuer » - il lit aussi les états manqués - ou « Abandonner », qui met fin au suivi définitivement.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 167
-"A mass sending to data boxes stopped by an error" => "",
+"A mass sending to data boxes stopped by an error" => "Un envoi groupé vers les boîtes de données s'est arrêté sur une erreur", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 169
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "Rien d'autre n'est envoyé tant que personne n'intervient. Corrigez ce que désigne le code d'erreur, puis choisissez sur la page de l'envoi « Continuer » - ou « Abandonner », qui y met fin définitivement : un message qui est peut-être parti reste alors à vérifier par une personne. L'item de la campagne peut encore indiquer que l'envoi est en cours si l'erreur est survenue avant que l'exécution ait pu l'écrire.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 170
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "Rien d'autre n'est envoyé tant que personne n'intervient. Corrigez ce que désigne le code d'erreur, puis choisissez sur la page de l'envoi « Continuer » - ou « Arrêter », après quoi plus rien n'est envoyé. Un message qui est peut-être parti n'est jamais renvoyé : l'envoi le recherche. L'item de la campagne peut encore indiquer que l'envoi est en cours si l'erreur est survenue avant que l'exécution ait pu l'écrire.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"A mass sending to data boxes has not moved on for %1 hours" => "",
+"A mass sending to data boxes has not moved on for %1 hours" => "Un envoi groupé vers les boîtes de données est immobile depuis %1 h", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "",
+"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "Aucune étape de la file des tâches ne le traite. Vérifiez que cron lance la file des tâches et que ses tours sont assez longs pour une étape (TOEXECUTE_ALLOWED_TIME dans config.php), puis choisissez « Continuer » sur la page de l'envoi.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A finished mass sending left messages of unknown fate: %1" => "",
+"A finished mass sending left messages of unknown fate: %1" => "Un envoi groupé terminé a laissé des messages au sort inconnu : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A mass sending being followed has messages of unknown fate: %1" => "",
+"A mass sending being followed has messages of unknown fate: %1" => "Un envoi groupé en cours de suivi a des messages au sort inconnu : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 185
-"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "",
+"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "Ils ont pu être remis, AA ne les renvoie donc jamais. Recherchez chacun d'après son numéro de référence de l'expéditeur parmi les messages envoyés de la boîte de données sur le portail ISDS. Pour celui qui n'y figure pas, choisissez « Vérifier » sur la page de l'envoi - il compte alors comme non envoyé - et renvoyez la lettre à ce destinataire dans une nouvelle campagne.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 193
-"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "",
+"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "Ces destinataires n'ont pas reçu la lettre. Leurs items de message indiquent ce qu'ISDS a répondu pour chacun : corrigez la cause et renvoyez-leur la lettre dans une nouvelle campagne.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 195
-"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "",
+"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "Code 3 : une pièce jointe n'a pas passé le contrôle antivirus d'ISDS (un PDF invalide y échoue aussi). Corrigez d'abord les pièces jointes : la même pièce jointe échouera de nouveau.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 198
-"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "",
+"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "Code 8 : la boîte de données du destinataire a été rendue inaccessible. Le message n'est pas remis, même s'il peut afficher une heure de remise par fiction, et aucun nouveau message n'arrive dans cette boîte : trouvez la nouvelle boîte de données du destinataire.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 200
-"%1 of %2 messages of a mass sending to data boxes failed" => "",
+"%1 of %2 messages of a mass sending to data boxes failed" => "Messages échoués d'un envoi groupé vers les boîtes de données : %1 sur %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"A mass sending to data boxes ended with messages not known to be delivered: %1" => "",
+"A mass sending to data boxes ended with messages not known to be delivered: %1" => "Un envoi groupé vers les boîtes de données s'est terminé avec des messages dont la remise n'est pas connue : %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "",
+"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "ISDS n'a indiqué à AA ni leur remise ni un refus pendant le suivi. Vérifiez chacun sur le portail ISDS d'après son numéro de référence de l'expéditeur parmi les messages envoyés de la boîte de données.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 235
-"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "",
+"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "ISDS a bloqué l'adresse de ce serveur. AA réessaie après 24 heures. Voir la vérification « %1 ».", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 236
-"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "",
+"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "PHP ne peut pas lire misc/datovka/datovka_conf.php : rendez-lui l'accès en lecture au fichier.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 237
-"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "",
+"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "La boîte de données a tant de changements en une heure qu'AA ne peut pas les lire : vérifiez la remise des messages sur le portail ISDS d'après leurs numéros de référence de l'expéditeur.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 238
-"ISDS did not answer when AA read the delivery of the messages." => "",
+"ISDS did not answer when AA read the delivery of the messages." => "ISDS n'a pas répondu quand AA lisait la remise des messages.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 242
-"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "",
+"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "L'enregistrement indique que la remise a été lue jusqu'à un moment futur. Le prochain tour la relit depuis le début de l'envoi et ne renvoie aucun message ; si ce constat persiste, vérifiez les horloges des serveurs qui exécutent la file des tâches.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 243
-"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "",
+"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "AA réessaie tout seul ; dès qu'il peut lire, il lit aussi les états manqués et ne renvoie aucun message.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Read up to" => "",
+"Read up to" => "Lu jusqu'au", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Last wait" => "",
+"Last wait" => "Dernière attente", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 245
-"Following the delivery of a mass sending to data boxes has stalled" => "",
+"Following the delivery of a mass sending to data boxes has stalled" => "Le suivi de la remise d'un envoi groupé vers les boîtes de données est bloqué", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record of a mass sending to data boxes cannot be read" => "",
+"The record of a mass sending to data boxes cannot be read" => "L'enregistrement d'un envoi groupé vers les boîtes de données est illisible", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "",
+"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "L'enregistrement ou les destinataires figés de l'envoi ont été modifiés en dehors d'AA. Restaurez-les depuis une sauvegarde de la base de données avant que quiconque choisisse « Continuer » : c'est l'enregistrement qui empêche un message de partir deux fois.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 264, 309
-"Campaign item" => "",
+"Campaign item" => "Item de la campagne", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 309
-"Campaign state" => "",
+"Campaign state" => "État de la campagne", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 35
-"Views of mass sendings" => "",
+"Views of mass sendings" => "Vues des envois groupés", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 40
-"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "",
+"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "Vérifie les noms des vues de la page d'un envoi groupé vers les boîtes de données : chaque vue isds_... une seule fois dans les sections des campagnes et des messages d'un compte ISDS - s'il y en a deux, la page n'en affiche aucune -, et la vue d'entrée isdscampainer une seule fois parmi les sections du site.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 79
-"Views of the slices of ISDS account %1 share the name %2" => "",
+"Views of the slices of ISDS account %1 share the name %2" => "Des vues des sections du compte ISDS %1 portent le même nom %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 82
-"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "",
+"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "La page de l'envoi groupé n'en affiche aucune. Gardez le nom sur une seule vue de la section des campagnes ou des messages, et renommez ou supprimez les autres.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 95
-"Site %1 has the entry view isdscampainer more than once" => "",
+"Site %1 has the entry view isdscampainer more than once" => "Le site %1 a plusieurs fois la vue d'entrée isdscampainer", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 98
-"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "",
+"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "{view:isdscampainer} prend la vue au numéro le plus élevé, qui n'est pas forcément celle de la page de l'envoi groupé. Dans le spot de la page, appelez la vue d'entrée par son numéro, et renommez les autres vues de ce nom.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 123
-"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "",
+"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "Une page d'envoi groupé sur le site %1 affiche une vue dont aucune vue de ses sections ne porte le nom : %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 127, 163
 // src/Util/ChangesMonitor.php, row 444
 "View" => "Vues",
 
 // src/Optimize/CheckIsdsViews.php, row 131
-"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "",
+"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "Cette partie de la page reste vide. Rendez son nom à la vue renommée de la section des campagnes ou des messages, ou corrigez le nom dans le modèle.", // ai 2026-11
 
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 28
 "Item edits without the edit permission" => "Modifications d'items sans permission de modification", // ai 2026-10
@@ -13122,23 +13352,92 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "Aucun formulaire d'objet refusé ces 30 derniers jours", // ai 2026-10
 
+// src/Optimize/CheckPasskeys.php, row 35
+"Passkey logins" => "Connexions par clé d'accès", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 40
+"Lists the passkey logins refused in the last 30 days and the right passwords of accounts that log in by a passkey." => "Liste les connexions par clé d'accès refusées au cours des 30 derniers jours et les mots de passe corrects des comptes qui se connectent par clé d'accès.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Passkeys cannot be used yet - the table authenticator is missing" => "Les clés d'accès ne sont pas encore utilisables - la table authenticator manque", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Run service/sql_update.php - it creates the table." => "Lancez service/sql_update.php - il crée la table.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 95
+"No passkey login was refused in the last 30 days" => "Aucune connexion par clé d'accès refusée au cours des 30 derniers jours", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"Right password of a passkey account" => "Mot de passe correct d'un compte à clé d'accès", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The right password of an account that logs in by a passkey (%1)" => "Le mot de passe correct d'un compte qui se connecte par clé d'accès (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The account logs in only by its passkey, so the password did not let anybody in - but someone knows it. If it was not the owner, the password should be changed; it is used again once the passkeys are deleted." => "Le compte se connecte uniquement par sa clé d'accès, le mot de passe n'a donc laissé entrer personne - mais quelqu'un le connaît. Si ce n'était pas le propriétaire, il faut changer le mot de passe ; il resservira une fois les clés d'accès supprimées.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"Passkeys unknown - the directory did not answer" => "Clés d'accès inconnues - l'annuaire n'a pas répondu", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The directory did not answer whether %1 has a passkey" => "L'annuaire n'a pas indiqué si %1 a une clé d'accès", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The password was refused, as the account may log in only by a passkey. Check the LDAP server and the bind account of AA." => "Le mot de passe a été refusé, car le compte ne peut peut-être se connecter que par clé d'accès. Vérifiez le serveur LDAP et le compte de liaison (bind) d'AA.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"Passkey answer from another address" => "Réponse de clé d'accès depuis une autre adresse", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"A passkey answer from another address than the page (%1)" => "Une réponse de clé d'accès depuis une autre adresse que celle de la page (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"AA sees the page under another host or scheme than the browser - usually a reverse proxy missing from AA_TRUSTED_PROXIES, or a site reached by http." => "AA voit la page sous un autre hôte ou schéma que le navigateur - en général un proxy inverse absent de AA_TRUSTED_PROXIES, ou un site ouvert en http.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"Security key counter went back" => "Le compteur de la clé de sécurité a reculé", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"A security key of %1 signed with a counter it had used before" => "Une clé de sécurité de %1 a signé avec un compteur déjà utilisé", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"The key may have been copied. The login was let through, so its owner is not locked out; ask the owner and delete the passkey on the page of the account if in doubt." => "La clé a peut-être été copiée. La connexion a été acceptée, son propriétaire n'est donc pas bloqué ; interrogez le propriétaire et, en cas de doute, supprimez la clé d'accès sur la page du compte.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Unknown passkey" => "Clé d'accès inconnue", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"A login by a passkey this AA does not keep" => "Une connexion par une clé d'accès que cet AA ne conserve pas", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Usually a passkey deleted in AA but still in the browser or phone of its owner, or one of another AA on the same host. The owner can delete it in the device." => "En général une clé d'accès supprimée dans AA mais encore présente dans le navigateur ou le téléphone de son propriétaire, ou celle d'un autre AA sur le même hôte. Le propriétaire peut la supprimer dans l'appareil.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"Passkey login refused" => "Connexion par clé d'accès refusée", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"A passkey login refused: %1" => "Une connexion par clé d'accès refusée : %1", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"An expired or repeated login, or an answer no browser sends. Nothing to do unless it repeats." => "Une connexion expirée ou répétée, ou une réponse qu'aucun navigateur n'envoie. Rien à faire, sauf si cela se répète.", // ai 2026-11
+
 // src/Optimize/CheckPerVisitorReads.php, row 18
-"Pages left out of the page cache by {server:...}" => "",
+"Pages left out of the page cache by {server:...}" => "Pages exclues du cache de pages à cause de {server:...}", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 23
-"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "",
+"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "Liste les sites et les sections dont les modèles lisent par {server:...} une valeur qui peut être propre au visiteur (adresse, navigateur, referer) - le cache de pages n'enregistre pas de telles pages.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 72
-"Reads" => "",
+"Reads" => "Lit", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 78
-"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "",
+"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "%1 a des pages que le cache de pages n'enregistre pas - un modèle lit une valeur qui peut être propre au visiteur", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 81
-"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "",
+"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Chaque visite génère à nouveau une telle page. Une redirection, un compteur de clics ou un formulaire peuvent rester tels quels. Ailleurs, surtout dans un modèle de chaque page (en-tête, pied de page) : supprimez une valeur affichée uniquement pour le débogage et vérifiez l'orthographe du nom ({server:HTTP_REFERER}) ; pour reconnaître les visiteurs venant d'une campagne, utilisez {qs:utm_source}, pour l'appareil {detect}. L'hôte, le schéma et l'URI ({server:HTTP_HOST}, {server:REQUEST_URI}) laissent la page dans le cache.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 86
-"No template reads a value of the visitor's own by {server:...}" => "",
+"No template reads a value of the visitor's own by {server:...}" => "Aucun modèle ne lit par {server:...} une valeur propre au visiteur", // ai 2026-11
 
 // src/Optimize/CheckPhpFatals.php, row 24
 "PHP fatal errors" => "Erreurs fatales PHP", // ai 2026-10
@@ -13252,28 +13551,28 @@ return [
 "No queued task with a missing class in the last 30 days" => "Aucune tâche en file d'une classe manquante ces 30 derniers jours", // ai 2026-10
 
 // src/Optimize/CheckRelatedSlices.php, row 20
-"Related slices of another website" => "",
+"Related slices of another website" => "Sections liées d'un autre site web", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 25
-"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "",
+"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "Liste les champs d'items liés (rim avec le bouton de modification, mng) qui pointent vers une section qu'aucun site web de leur propre section n'utilise. Les éditeurs de la section peuvent modifier les items de cette section-là.", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 78
-"Related slice" => "",
+"Related slice" => "Section liée", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 79
-"Its websites" => "",
+"Its websites" => "Ses sites web", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 85
-"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "",
+"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "Aucun champ d'items liés ne pointe vers une section d'un autre site web ; champs de sections qu'aucun site web n'utilise, non comparés : %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 86
-"Every related-item field points to a slice of its own website" => "",
+"Every related-item field points to a slice of its own website" => "Chaque champ d'items liés pointe vers une section de son propre site web", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 90
-"%1 related-item fields point to a slice of another website" => "",
+"%1 related-item fields point to a slice of another website" => "Champs d'items liés pointant vers une section d'un autre site web : %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 92
-"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "",
+"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "Les éditeurs de la section peuvent modifier les items de la section liée. Si le champ a été copié avec un modèle, faites-le pointer vers la section de son propre site web.", // ai 2026-11
 
 // src/Optimize/CheckRequiredSettings.php, row 17
 "Required slice settings" => "Paramètres obligatoires des sections", // ai 2026-10
@@ -13574,77 +13873,77 @@ return [
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "L'alias n'affiche rien : f_u n'appelle que des fonctions de l'installation (usr_* dans include/usr_aliasfnc.php), jamais des fonctions PHP ou AA. Écrivez une fonction usr_* qui fait ce qu'il faut, ou utilisez plutôt une expression AA.", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 35
-"Slices left out of views, charsets ignored" => "",
+"Slices left out of views, charsets ignored" => "Sections exclues des vues, jeux de caractères ignorés", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 40
-"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "",
+"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "Liste les vues qui ont exclu une section au cours des 30 derniers jours parce que la page ne connaissait pas le mot de passe de lecture de la section : une vue appelée depuis l'URL sur cette section, ou avec des paramètres désignant la section ou ses items.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 41
-"And the conditions on fields of related items in such a slice, which matched nothing." => "",
+"And the conditions on fields of related items in such a slice, which matched nothing." => "Ainsi que les conditions sur des champs d'items liés dans une telle section, qui n'ont rien trouvé.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 42
-"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "",
+"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "Ainsi que les conditions et tris exclus sur des champs dont AA n'affiche jamais les valeurs, comme les mots de passe.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 43
-"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "",
+"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "Liste aussi les jeux de caractères que des liens et formulaires ont indiqués dans convertfrom ou convertto et qui ont été ignorés.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 135
-"Slice settings (reading password)" => "",
+"Slice settings (reading password)" => "Configuration de la section (mot de passe de lecture)", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 139
-"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "",
+"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "Une condition, un tri ou un regroupement sur le champ %1 de la section %2 a été exclu : AA n'en affiche jamais les valeurs", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 141
-"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Une vue, {ids} ou une recherche sur la page comportait une condition, un tri ou un regroupement sur un mot de passe, sa copie, un secret à deux facteurs ou un autre champ dont AA n'affiche jamais les valeurs (aussi cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... ou group_by= dans l'URL). La condition n'a rien trouvé, le tri et le regroupement ont été abandonnés. On peut toujours demander si le champ est rempli (ISNULL, NOTNULL) ; sinon, retirez la condition ou le tri de la vue ou du modèle. Si vous ne connaissez pas la page, la requête ne venait pas de vos pages et rien ne doit changer.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 142
-"Protected field refused" => "",
+"Protected field refused" => "Champ protégé refusé", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 144
-"A condition on related items matched nothing in slice %1: its reading password was not known" => "",
+"A condition on related items matched nothing in slice %1: its reading password was not known" => "Une condition sur des items liés n'a rien trouvé dans la section %1 : son mot de passe de lecture n'était pas connu", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 146
-"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Une vue, {ids} ou une recherche sur la page comportait une condition sur un champ d'items liés dans cette section (<field>@<relation> ou <field>@<slice>/<relation>, aussi cmd[]=d-... dans l'URL), et la page ne connaissait pas le mot de passe de lecture de la section ; la condition n'a donc rien trouvé. Si votre page en a besoin, indiquez le mot de passe dans le modèle de la page ({credentials:...}) avant la vue, jamais dans un lien, en AJAX ou dans jsview.php. Si vous ne connaissez pas la page, la requête ne venait pas de vos pages et rien ne doit changer.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 147
-"Condition refused" => "",
+"Condition refused" => "Condition refusée", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 149
-"View %1" => "",
+"View %1" => "Vue %1", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 150
-"%1 left out slice %2: its reading password was not known" => "",
+"%1 left out slice %2: its reading password was not known" => "%1 : section %2 exclue, son mot de passe de lecture n'était pas connu", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 151
-"Listed by" => "",
+"Listed by" => "Listé par", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 152
-"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "La vue a été appelée depuis l'URL (view.php, jsview.php, discussion.php), y compris comme bannière d'une telle vue ou de slice.php (set[]=banner-..., slice.php?banner=...), sur cette section, ou ses paramètres d'URL (set[]=slice_id-.../slices-..., les identifiants d'items de cmd[]=x-...) ou les slices[] de slice.php la désignaient, et la page ne connaissait pas le mot de passe de lecture de la section. Si votre page a besoin de la section à cet endroit, appelez la vue depuis le modèle de la page ({view...}), où les vues sont considérées comme fiables ; n'indiquez son mot de passe dans l'URL (slice_pwd=...) que dans une inclusion côté serveur, jamais dans un lien, en AJAX ou dans jsview.php, où il finirait dans le code source de la page et dans les journaux. Si vous ne connaissez pas la page, la requête ne venait pas de vos pages et rien ne doit changer.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 162, 193
-"Page asked for" => "",
+"Page asked for" => "Page demandée", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 176
-"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "",
+"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "Au cours des 30 derniers jours, aucune section n'a été exclue d'une vue ou d'une condition, aucun champ protégé n'a été refusé et aucun jeu de caractères n'a été ignoré", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 187
-"%1 ignored a charset in %2" => "",
+"%1 ignored a charset in %2" => "%1 : jeu de caractères ignoré dans %2", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 191
 // src/Security/Protection.php, row 92
 "Parameter" => "Paramètre", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 192
-"Latest charsets" => "",
+"Latest charsets" => "Derniers jeux de caractères", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 194
-"Link on page" => "",
+"Link on page" => "Lien sur la page", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 198
-"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Un lien ou un formulaire a indiqué, pour convertir une vue, une discussion, un sondage ou un formulaire, un jeu de caractères (convertfrom ou convertto de view.php, jsview.php, discussion.php, poll.php et filler.php, ainsi que set[...]=convertfrom-... d'une vue) qu'AA ne reprend pas de l'URL ; il a été ignoré comme s'il n'y était pas. Sont autorisés : %1, sans distinction de casse. Corrigez le jeu de caractères dans le lien ou le formulaire de votre page, ou omettez convertfrom - une vue convertit alors depuis le jeu de caractères de sa section. Si vous ne connaissez pas la page, la requête ne venait pas de vos pages et rien ne doit changer.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 202
-"Charset ignored" => "",
+"Charset ignored" => "Jeu de caractères ignoré", // ai 2026-11
 
 // src/Optimize/ClearPagecache.php, row 13
 "Clear Pagecache" => "Vider le cache de pages", // ai 2026-06
@@ -13653,7 +13952,7 @@ return [
 "Whole pagecache will be invalidated and deleted" => "L'ensemble du cache de pages sera invalidé et supprimé", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 35
-// src/Optimize/CopyContent.php, row 35
+// src/Optimize/CopyContent.php, row 37
 // src/Optimize/CreateUploadDir.php, row 38
 "There is nothing to test." => "Il n'y a rien à tester.", // ai 2026-06
 
@@ -13751,13 +14050,13 @@ return [
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 43
 "DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "DB_CHARACTER_SET dans config.php vaut « %1 ». Passez-le d'abord à « utf8mb4 » et vérifiez que les textes dans AA s'affichent correctement – la conversion conserve ce qu'AA affiche via la connexion utf8mb4.", // ai 2026-10
 
-// src/Optimize/CopyContent.php, row 13
+// src/Optimize/CopyContent.php, row 15
 "Copy Content Table" => "Copier la table content", // ai 2026-06
 
-// src/Optimize/CopyContent.php, row 21
+// src/Optimize/CopyContent.php, row 23
 "Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "Copie les données de tous les items plus récents que short_id=1941629 de la table content vers la table content2. Utilisé pour la récupération de la table content sur le serveur Ecn. Sans doute inutile pour tout autre utilisateur.", // ai 2026-06
 
-// src/Optimize/CopyContent.php, row 67
+// src/Optimize/CopyContent.php, row 69
 "Copied" => "Copié", // ai 2026-06
 
 // src/Optimize/CopyItemsFromBackup.php, row 16
@@ -13772,34 +14071,34 @@ return [
 // src/Optimize/CopyItemsFromBackup.php, row 77
 "Deleted items to be recreated: %1." => "Items supprimés à recréer : %1.", // ai 2026-06
 
-// src/Optimize/CreateAppStoreAccount.php, row 14
+// src/Optimize/CreateAppStoreAccount.php, row 16
 "App store account" => "Compte du catalogue d'applications", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 19
+// src/Optimize/CreateAppStoreAccount.php, row 21
 "Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "Crée le compte public avec lequel les autres AA lisent les applications publiées de cet AA (utilisateur %1, sans droits). Son mot de passe est public ; le compte ne peut pas se connecter à l'administration.", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 34
+// src/Optimize/CreateAppStoreAccount.php, row 36
 "No app store account - this AA publishes no apps" => "Pas de compte du catalogue d'applications – cet AA ne publie aucune application", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 39
+// src/Optimize/CreateAppStoreAccount.php, row 41
 "The user %1 exists, but not with the public password of the app store - rename it, then repair" => "L'utilisateur %1 existe, mais sans le mot de passe public du catalogue d'applications – renommez-le, puis réparez", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 44
+// src/Optimize/CreateAppStoreAccount.php, row 46
 "The app store account %1 has rights or groups - remove them" => "Le compte du catalogue d'applications %1 a des droits ou des groupes – retirez-les", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 47
+// src/Optimize/CreateAppStoreAccount.php, row 49
 "The app store account is ready" => "Le compte du catalogue d'applications est prêt", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 55
+// src/Optimize/CreateAppStoreAccount.php, row 57
 "Only a superadmin may create the app store account" => "Seul un superadmin peut créer le compte du catalogue d'applications", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 67
+// src/Optimize/CreateAppStoreAccount.php, row 69
 "The app store account could not be created" => "Le compte du catalogue d'applications n'a pas pu être créé", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 70
+// src/Optimize/CreateAppStoreAccount.php, row 72
 "The app store account %1 is created" => "Le compte du catalogue d'applications %1 a été créé", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 77
+// src/Optimize/CreateAppStoreAccount.php, row 79
 "The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "Le compte du catalogue d'applications nécessite les utilisateurs propres à AA (PERM_LIB sql) ; cet AA utilise %1 – il peut installer depuis un catalogue, mais pas en être un", // ai 2026-10
 
 // src/Optimize/CreateUploadDir.php, row 16
@@ -13888,7 +14187,7 @@ return [
 "%1 duplicates found" => "%1 doublons trouvés", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 46
-// src/Optimize/FieldDuplicates.php, row 51, 65
+// src/Optimize/FieldDuplicates.php, row 53, 67
 "No duplicates found" => "Aucun doublon trouvé", // ai 2026-06
 
 // src/Optimize/DbRelationStartsxy.php, row 22
@@ -13927,16 +14226,16 @@ return [
 // src/Optimize/DropBackupTables.php, row 28
 "Deletes all the current backup tables (bck_slice, bck_item, ...)." => "Supprime toutes les tables de sauvegarde actuelles (bck_slice, bck_item, ...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 16
+// src/Optimize/FieldDuplicates.php, row 18
 "Fix field definitions duplicates" => "Corriger les doublons de définitions de champs", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 24
+// src/Optimize/FieldDuplicates.php, row 26
 "There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "Il ne devrait y avoir qu'une seule paire slice_id - field_id dans toutes les sections, mais il y en a parfois plusieurs (principalement à cause d'une erreur dans l'ancien script sql_update.php, qui ajoutait plusieurs champs display_count...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 55
+// src/Optimize/FieldDuplicates.php, row 57
 "Duplicate in slice - field: %1 - %2" => "Doublon dans section - champ : %1 - %2", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 83
+// src/Optimize/FieldDuplicates.php, row 85
 "Field %2 in slice %1 fixed" => "Champ %2 de la section %1 corrigé", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 23
@@ -13994,16 +14293,16 @@ return [
 // src/Optimize/FixPagecache.php, row 86
 "%1 inconsistent rows in pagecache removed" => "%1 lignes incohérentes supprimées du pagecache", // ai 2026-06
 
-// src/Optimize/GenerateJslibsArray.php, row 17
+// src/Optimize/GenerateJslibsArray.php, row 19
 "Generate JS Library definition array" => "Générer le tableau de définition des bibliothèques JS", // ai 2026-06
 
-// src/Optimize/GenerateJslibsArray.php, row 25
+// src/Optimize/GenerateJslibsArray.php, row 27
 "Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)" => "Affiche le tableau de définition des bibliothèques JS utilisé dans include/stringexpand.php pour la mise à jour vers la dernière version des bibliothèques sur le CDN jsDelivr (utilisé par les développeurs AA pour mettre à jour les bibliothèques JS dans AA)", // ai 2026-06
 
-// src/Optimize/GenerateMetabase.php, row 42
+// src/Optimize/GenerateMetabase.php, row 44
 "Generate metabase definition row" => "Générer la ligne de définition de la métabase", // ai 2026-06
 
-// src/Optimize/GenerateMetabase.php, row 50
+// src/Optimize/GenerateMetabase.php, row 52
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Réservé aux programmeurs - affiche le contenu de include/metabase_schema.php (le schéma DB attendu, sous forme de tableau PHP lisible) généré à partir de la base de données actuelle ; copiez-le dans le fichier et faites un commit.", // ai 2026-06
 
 // src/Optimize/ImgCacheWritable.php, row 17
@@ -14066,92 +14365,98 @@ return [
 // src/Optimize/ItemDiscussion.php, row 65
 "%1 problems solved" => "%1 problèmes résolus", // ai 2026-06
 
+// src/Optimize/LdapPermsToSql.php, row 44
+"Convert LDAP permissions to SQL" => "Convertir les permissions LDAP en SQL", // ai 2026-11
+
 // src/Optimize/LdapPermsToSql.php, row 49
-"Migrate LDAP perms to SQL perms" => "Migrer les permissions LDAP vers les permissions SQL", // ai 2026-06
+"Moves the users, groups and rights of this database from LDAP to the SQL tables under new numeric ids and rewrites the references to people in the data. Test only reads: its trial import is rolled back. Repair does everything in one transaction; then set PERM_LIB='sql' in every config of this database. Take a backup first - restoring it is the only way back." => "Déplace les utilisateurs, groupes et droits de cette base de données de LDAP vers les tables SQL sous de nouveaux identifiants numériques et réécrit les références aux personnes dans les données. « Tester » ne fait que lire : son import d'essai est annulé. « Réparer » fait tout en une seule transaction ; définissez ensuite PERM_LIB='sql' dans chaque config de cette base de données. Faites d'abord une sauvegarde - la restaurer est le seul moyen de revenir en arrière.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 55
-"Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Copie tous les utilisateurs, groupes, appartenances et permissions du backend LDAP vers les tables du backend SQL (users, membership, perms), et réécrit item.posted_by / item.edited_by du format DN LDAP (uid=...,ou=...) vers les nouveaux identifiants numériques SQL. À exécuter une seule fois par installation, puis passez PERM_LIB à 'sql' dans la configuration. 'Test' est une simulation en lecture seule. 'Repair' effectue la migration et peut être relancé. 'Revert' utilise la table de correspondance pour tout annuler.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check passed: SQL answers as LDAP does." => "Contrôle de parité réussi : SQL répond comme LDAP.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 72
-"This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Cet optimiseur ne s'exécute que lorsque PERM_LIB='ldap'. PERM_LIB actuel='%1'.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check failed - Repair would stop at it." => "Contrôle de parité échoué - « Réparer » s'y arrêterait.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 83
+"The trial import is skipped: it would stop at the first blocking finding above. Fix them and run Test again." => "L'import d'essai est sauté : il s'arrêterait au premier constat bloquant ci-dessus. Corrigez-les et relancez « Tester ».", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 87
-"Would create mapping table `%1`" => "Créerait la table de correspondance `%1`", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 116
 "Test failed: %1" => "Échec du test : %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 119
-"Test finished (dry run - no changes made)." => "Test terminé (simulation - aucune modification effectuée).", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 108
+"Nothing was changed: the findings above block the conversion." => "Rien n'a été modifié : les constats ci-dessus bloquent la conversion.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 135
-"Repair failed: %1" => "Échec de la réparation : %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 133
+"Repair failed, yet the database holds a finished conversion (its log row exists) - check it with Test: %1" => "La réparation a échoué, mais la base de données contient une conversion terminée (sa ligne de journal existe) - vérifiez-la avec « Tester » : %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 138
-"Repair finished." => "Réparation terminée.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 134
+"Repair failed, nothing was changed: %1" => "La réparation a échoué, rien n'a été modifié : %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 154
-"Revert failed: %1" => "Échec de l'annulation : %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 144
+"The page cache was not cleared, clear it by hand: %1" => "Le cache de pages n'a pas été vidé, videz-le à la main : %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 157
-"Revert finished." => "Annulation terminée.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 148
+"Rewritten %1: %2 rows" => "%1 réécrit : %2 ligne(s)", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 178
-"LDAP findUsernames failed or returned: %1" => "LDAP findUsernames a échoué ou a retourné : %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 150
+"New ids of the directory entries:" => "Nouveaux identifiants des entrées de l'annuaire :", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 181
-"LDAP users found: %1" => "Utilisateurs LDAP trouvés : %1", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 197
-"Skipping user %1 - cannot determine login" => "Utilisateur %1 ignoré - impossible de déterminer le login", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 206
-"User %1 already exists in SQL (id %2), reusing" => "L'utilisateur %1 existe déjà dans SQL (id %2), réutilisation", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 220
-"Would create SQL user: %1 (from %2)" => "Créerait l'utilisateur SQL : %1 (depuis %2)", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 228
-"Failed to create SQL user %1" => "Échec de la création de l'utilisateur SQL %1", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 235
-"Users: created=%1 reused=%2 failed=%3" => "Utilisateurs : créés=%1 réutilisés=%2 échecs=%3", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 243
-"LDAP groups found: %1" => "Groupes LDAP trouvés : %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 151
+"Now set PERM_LIB='sql' in every config of this database - until then AA still asks LDAP." => "Définissez maintenant PERM_LIB='sql' dans chaque config de cette base de données - d'ici là, AA interroge toujours LDAP.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 264
-"Group %1 already exists in SQL (id %2), reusing" => "Le groupe %1 existe déjà dans SQL (id %2), réutilisation", // ai 2026-06
+"This database was already converted. A second run would give people other ids than the data now holds - restore the backup first if it really has to run again." => "Cette base de données a déjà été convertie. Une seconde exécution donnerait aux personnes d'autres identifiants que ceux que contiennent désormais les données - restaurez d'abord la sauvegarde s'il faut vraiment la relancer.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 273
-"Would create SQL group: %1 (from %2)" => "Créerait le groupe SQL : %1 (depuis %2)", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 274
+"This database was converted to SQL permissions on %1 (%2). Its parity check ran inside the committed transaction; Repair does not run twice." => "Cette base de données a été convertie aux permissions SQL le %1 (%2). Son contrôle de parité s'est exécuté dans la transaction validée ; « Réparer » ne s'exécute pas deux fois.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 280
-"Failed to create SQL group %1" => "Échec de la création du groupe SQL %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 279
+"DNs left in %1 (%2): %3" => "DN restants dans %1 (%2) : %3", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 287
-"Groups: created=%1 reused=%2 failed=%3" => "Groupes : créés=%1 réutilisés=%2 échecs=%3", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 282
+"These were written after the conversion or match no directory entry - fix them by hand if they matter." => "Ils ont été écrits après la conversion ou ne correspondent à aucune entrée de l'annuaire - corrigez-les à la main s'ils sont importants.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 325
-"Memberships: added=%1 skipped_unmapped=%2" => "Appartenances : ajoutées=%1 ignorées_sans_correspondance=%2", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 283
+"No DN is left in the columns referring to people." => "Aucun DN ne reste dans les colonnes qui font référence à des personnes.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 367
-"Permission rows migrated: %1" => "Lignes de permissions migrées : %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 291
+"This conversion runs only while PERM_LIB is 'ldap'; here it is '%1'." => "Cette conversion ne s'exécute que si PERM_LIB vaut 'ldap' ; ici, il vaut '%1'.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 389
-"No mapping entries - nothing to rewrite." => "Aucune entrée de correspondance - rien à réécrire.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 296
+"The conversion has no dry run - switch it off. Test itself changes nothing." => "La conversion n'a pas de simulation - désactivez-la. « Tester » lui-même ne modifie rien.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 408
-"Rewrite %1.%2: %3 rows" => "Réécriture de %1.%2 : %3 lignes", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 310
+"Tables %1 must be InnoDB: on another engine a rollback restores nothing, so even the trial import of Test would delete the users for good. Convert them first - Optimize \"%2\"." => "Les tables %1 doivent être en InnoDB : avec un autre moteur, une annulation ne restaure rien, si bien que même l'import d'essai de « Tester » supprimerait définitivement les utilisateurs. Convertissez-les d'abord - Optimiser « %2 ».", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 418
-"Mapping table is empty - nothing to revert." => "La table de correspondance est vide - rien à annuler.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 316
+"The database connection uses \"%1\", not utf8mb4: a DN with a character outside it would silently not be found in the data. Set DB_CHARACTER_SET to \"utf8mb4\" in config.php first." => "La connexion à la base de données utilise « %1 », pas utf8mb4 : un DN contenant un caractère hors de ce jeu ne serait pas trouvé dans les données, sans aucun avertissement. Définissez d'abord DB_CHARACTER_SET à « utf8mb4 » dans config.php.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 434
-"Revert %1.%2: %3 rows" => "Annulation de %1.%2 : %3 lignes", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 368
+"Imported %1 people, %2 groups, %3 memberships and %4 rights; %5 old rows removed." => "Importés : %1 personnes, %2 groupes, %3 appartenances et %4 droits ; anciennes lignes supprimées : %5.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 452
-"Deleted SQL users=%1 groups=%2" => "Utilisateurs SQL supprimés=%1 groupes=%2", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 369
+"(Trial run - rolled back.)" => "(Essai - annulé.)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 374
+"Plan: %1 people, %2 groups, %3 memberships, %4 rights; new ids from %5; %6 spellings of DNs in the data to rewrite." => "Plan : %1 personnes, %2 groupes, %3 appartenances, %4 droits ; nouveaux identifiants à partir de %5 ; graphies de DN à réécrire dans les données : %6.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Blocking" => "Bloquant", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Info" => "Info", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 394
+"References in %1: %2 rows (%3 s)" => "Références dans %1 : %2 ligne(s) (%3 s)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 396
+"Repair rewrites the references in about %1 s - each UPDATE scans its table as the count did." => "« Réparer » réécrit les références en environ %1 s - chaque UPDATE parcourt sa table comme l'a fait le comptage.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 397
+"A DN stored as cp1250 bytes with diacritics is not UTF-8, so it matches no directory entry and stays as it is." => "Un DN stocké en octets cp1250 avec des diacritiques n'est pas en UTF-8 ; il ne correspond donc à aucune entrée de l'annuaire et reste tel quel.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 399
+"Mentions of ou=AA in %1: %2 rows - fix them by hand." => "Mentions de ou=AA dans %1 : %2 ligne(s) - corrigez-les à la main.", // ai 2026-11
 
 // src/Optimize/MissCacheRouting.php, row 37
 "Image cache routing" => "Routage du cache d'images", // ai 2026-10
@@ -14244,89 +14549,89 @@ return [
 // src/Optimize/MultivalueDuplicates.php, row 139
 "The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "La table content n'est pas en InnoDB, les doublons ne peuvent donc pas être réparés ici. Lancez d'abord « %1 ».", // ai 2026-10
 
-// src/Optimize/ReadersLogin2id.php, row 16
+// src/Optimize/ReadersLogin2id.php, row 18
 "Convert Readers login to reader id" => "Convertir les logins des lecteurs en ID de lecteur", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 24
+// src/Optimize/ReadersLogin2id.php, row 26
 "There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "La gestion des lecteurs a changé dans AA v2.8.1 : les lecteurs ne sont plus identifiés en interne par leur login, mais par l'ID de lecteur (ID de l'item du lecteur dans la section des lecteurs). C'est beaucoup plus puissant - vous pouvez créer des relations comme dans une section normale. Tout fonctionne sans aucun changement. Le seul problème survient si vous avez configuré une section pour être modifiable par les utilisateurs de la section des lecteurs. Dans ce cas, les champs edited_by........ et posted_by........ sont remplis avec le login du lecteur au lieu de l'ID de lecteur. Vous pouvez corriger cela avec « Repair ».", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 38, 82
+// src/Optimize/ReadersLogin2id.php, row 40, 84
 "Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "Test impossible - la liste de tous les noms d'utilisateur n'est pas autorisée par votre système de permissions (LDAP ?)", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 43
+// src/Optimize/ReadersLogin2id.php, row 45
 "%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "%1 logins de la section des lecteurs trouvés comme enregistrements dans item.posted_by, ce qui est incorrect (depuis AA v2.8.1 il devrait s'agir de l'ID de lecteur). « Repair » corrigera cela.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 48
+// src/Optimize/ReadersLogin2id.php, row 50
 "%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "%1 logins de la section des lecteurs trouvés comme enregistrements dans item.edited_by, ce qui est incorrect (depuis AA v2.8.1 il devrait s'agir de l'ID de lecteur). « Repair » corrigera cela.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 90
+// src/Optimize/ReadersLogin2id.php, row 92
 "Column item.posted_by updated for %1 (id: %2)." => "Colonne item.posted_by mise à jour pour %1 (id : %2).", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 96
+// src/Optimize/ReadersLogin2id.php, row 98
 "Column item.edited_by updated for %1 (id: %2)." => "Colonne item.edited_by mise à jour pour %1 (id : %2).", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 18
+// src/Optimize/RedefineCoreConstants.php, row 20
 "Redefine core constants" => "Redéfinir les constantes de base", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 26
+// src/Optimize/RedefineCoreConstants.php, row 28
 "Updates core constants - like Code-pages, Language Constants and AA Bins" => "Met à jour les constantes de base - comme les pages de code, les constantes de langues et les Bins AA", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 46
+// src/Optimize/RedefineCoreConstants.php, row 48
 "Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "Les constantes des pages de code (lt_codepages) ne sont pas à jour - trouvées : %1 sur 9", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 53
+// src/Optimize/RedefineCoreConstants.php, row 55
 "Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "Les constantes de langues (lt_languages) ne sont pas à jour - trouvées : %1 sur 46", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 60
+// src/Optimize/RedefineCoreConstants.php, row 62
 "AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "Les constantes des Bins AA (AA_Core_Bins....) ne sont pas à jour - trouvées : %1 sur 3", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 67
+// src/Optimize/RedefineCoreConstants.php, row 69
 "APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "Les catégories communes à APC (lt_apcCategories) ne sont pas à jour - trouvées : %1 sur 82", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 81
+// src/Optimize/RedefineCoreConstants.php, row 83
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "Suppression des pages de code, des constantes de langues, des constantes des Bins AA et des catégories communes à APC", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 85
+// src/Optimize/RedefineCoreConstants.php, row 87
 "Recreate Code-pages" => "Recréer les pages de code", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 96
+// src/Optimize/RedefineCoreConstants.php, row 98
 "Recreate Languages" => "Recréer les langues", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 144
+// src/Optimize/RedefineCoreConstants.php, row 146
 "Recreate AA Bins" => "Recréer les Bins AA", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 149
+// src/Optimize/RedefineCoreConstants.php, row 151
 "APC wide categories" => "Catégories communes à APC", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 233
+// src/Optimize/RedefineCoreConstants.php, row 235
 "Make sure, the constants are registered" => "Vérifier que les constantes sont enregistrées", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 242
+// src/Optimize/RedefineCoreConstants.php, row 244
 "Redefine core constants - done." => "Redéfinition des constantes de base - terminé.", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 43
+// src/Optimize/RedefineFieldTemplates.php, row 45
 "Redefine field templates" => "Redéfinir les modèles de champ", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 51
+// src/Optimize/RedefineFieldTemplates.php, row 53
 "Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice" => "Met à jour les modèles de champ (dans la section ActionApps Core), utilisés lors de l'ajout d'un nouveau champ à une section", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 77
+// src/Optimize/RedefineFieldTemplates.php, row 79
 "template fields are not present" => "les champs de modèle ne sont pas présents", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 95
-// src/Optimize/RedefineSliceNewsTemplates.php, row 57
+// src/Optimize/RedefineFieldTemplates.php, row 97
+// src/Optimize/RedefineSliceNewsTemplates.php, row 59
 "Deleting all fields from \"ActionApps Core\" slice" => "Suppression de tous les champs de la section « ActionApps Core »", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 99
+// src/Optimize/RedefineFieldTemplates.php, row 101
 "Make sure slice owner Action Applications System exists and reset to defaults" => "Vérifier que le propriétaire de section Action Applications System existe et le réinitialiser aux valeurs par défaut", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 102
+// src/Optimize/RedefineFieldTemplates.php, row 104
 "Make sure \"ActionApps Core\" slice exists and reset to defaults" => "Vérifier que la section « ActionApps Core » existe et la réinitialiser aux valeurs par défaut", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 106
+// src/Optimize/RedefineFieldTemplates.php, row 108
 "Recreate field definitions" => "Recréer les définitions de champs", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 197
+// src/Optimize/RedefineFieldTemplates.php, row 199
 "Redefine field defaults - done." => "Redéfinition des valeurs par défaut des champs - terminé.", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
@@ -14339,127 +14644,127 @@ return [
 "There is no root Link Module category - Links module should be recreated" => "Il n'y a pas de catégorie racine du module Links - le module Links devrait être recréé", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
-// src/Optimize/RedefineSiteTemplates.php, row 47
+// src/Optimize/RedefineSiteTemplates.php, row 49
 "Replacing module definition" => "Remplacement de la définition du module", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Recréation du modèle du module Links - terminé.", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 13
+// src/Optimize/RedefineSiteTemplates.php, row 15
 "Recreate Site module template" => "Recréer le modèle du module Site", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 19
+// src/Optimize/RedefineSiteTemplates.php, row 21
 "Deletes and recreates the default template for Site module" => "Supprime et recrée le modèle par défaut du module Site", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 36
+// src/Optimize/RedefineSiteTemplates.php, row 38
 "Site Module template should be recreated" => "Le modèle du module Site devrait être recréé", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 53
+// src/Optimize/RedefineSiteTemplates.php, row 55
 "Site Module template recreation - done." => "Recréation du modèle du module Site - terminée.", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 15
+// src/Optimize/RedefineSlicReaderTemplates.php, row 17
 "Redefine Reader Management template slice" => "Redéfinir la section modèle Reader Management", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 23
+// src/Optimize/RedefineSlicReaderTemplates.php, row 25
 "Deletes and recreates the Reader Management slice, used as template or example slice" => "Supprime et recrée la section Reader Management, utilisée comme section modèle ou d'exemple", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 42
+// src/Optimize/RedefineSlicReaderTemplates.php, row 44
 "\"Reader Management\" template slice is not defined" => "La section modèle \"Reader Management\" n'est pas définie", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 58
+// src/Optimize/RedefineSlicReaderTemplates.php, row 60
 "Deleting all fields from \"Reader Management\" slice" => "Suppression de tous les champs de la section \"Reader Management\"", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 62
+// src/Optimize/RedefineSlicReaderTemplates.php, row 64
 "Make sure \"Reader Management\" slice exists and reset to defaults" => "Vérifier que la section \"Reader Management\" existe et la réinitialiser aux valeurs par défaut", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 66
+// src/Optimize/RedefineSlicReaderTemplates.php, row 68
 "Recreate field definitions for \"Reader Management\"" => "Recréer les définitions de champs pour \"Reader Management\"", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 92
+// src/Optimize/RedefineSlicReaderTemplates.php, row 94
 "Reader Management template slice creation - done." => "Création de la section modèle Reader Management - terminée.", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 15
+// src/Optimize/RedefineSliceNewsTemplates.php, row 17
 "Redefine News EN template slice" => "Redéfinir la section modèle News EN", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 23
+// src/Optimize/RedefineSliceNewsTemplates.php, row 25
 "Deletes and recreates the News EN slice, used as template or example slice" => "Supprime et recrée la section News EN, utilisée comme section modèle ou d'exemple", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 41
+// src/Optimize/RedefineSliceNewsTemplates.php, row 43
 "News EN template slice is not defined" => "La section modèle News EN n'est pas définie", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 61
+// src/Optimize/RedefineSliceNewsTemplates.php, row 63
 "Make sure \"News EN\" slice exists and reset to defaults" => "Vérifier que la section \"News EN\" existe et la réinitialiser aux valeurs par défaut", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 65
+// src/Optimize/RedefineSliceNewsTemplates.php, row 67
 "Recreate field definitions for \"News EN\"" => "Recréer les définitions de champs pour \"News EN\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 99
+// src/Optimize/RedefineSliceNewsTemplates.php, row 101
 "News EN template slice creation - done." => "Création de la section modèle News EN - terminée.", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 15
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 17
 "Redefine Noticas - ES template slice" => "Redéfinir la section modèle Noticas - ES", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 23
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 25
 "Deletes and recreates the Noticas - ES slice, used as template or example slice" => "Supprime et recrée la section Noticas - ES, utilisée comme section modèle ou d'exemple", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 42
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 44
 "\"Noticas - ES\" template slice is not defined" => "La section modèle \"Noticas - ES\" n'est pas définie", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 58
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 60
 "Deleting all fields from \"Noticas - ES\" slice" => "Suppression de tous les champs de la section \"Noticas - ES\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 62
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 64
 "Make sure \"Noticas - ES\" slice exists and reset to defaults" => "Vérifier que la section \"Noticas - ES\" existe et la réinitialiser aux valeurs par défaut", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 66
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 68
 "Recreate field definitions for \"Noticas - ES\"" => "Recréer les définitions de champs pour \"Noticas - ES\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 100
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 102
 "Noticas - ES template slice creation - done." => "Création de la section modèle Noticas - ES - terminée.", // ai 2026-06
 
-// src/Optimize/RedefineViewCalendarTemplates.php, row 10
+// src/Optimize/RedefineViewCalendarTemplates.php, row 12
 "Redefine calendar template view" => "Redéfinir la vue modèle calendar", // ai 2026-06
 
-// src/Optimize/RedefineViewCategoriesTemplates.php, row 10
+// src/Optimize/RedefineViewCategoriesTemplates.php, row 12
 "Redefine categories template view" => "Redéfinir la vue modèle categories", // ai 2026-06
 
-// src/Optimize/RedefineViewConstTemplates.php, row 10
+// src/Optimize/RedefineViewConstTemplates.php, row 12
 "Redefine const template view" => "Redéfinir la vue modèle const", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 13
+// src/Optimize/RedefineViewDiscusTemplates.php, row 15
 "Redefine discus template view" => "Redéfinir la vue modèle discus", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 19
+// src/Optimize/RedefineViewDiscusTemplates.php, row 21
 "Deletes and recreates that view, which is used as template view of that type" => "Supprime et recrée cette vue, utilisée comme vue modèle de ce type", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 47
+// src/Optimize/RedefineViewDiscusTemplates.php, row 49
 "\"%1\" template view is not defined" => "La vue modèle \"%1\" n'est pas définie", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 58
+// src/Optimize/RedefineViewDiscusTemplates.php, row 60
 "Deleting the view template \"%1\"" => "Suppression de la vue modèle \"%1\"", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 62
+// src/Optimize/RedefineViewDiscusTemplates.php, row 64
 "Inserting the view \"discus\" template" => "Insertion du modèle de la vue \"discus\"", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 66
+// src/Optimize/RedefineViewDiscusTemplates.php, row 68
 "view \"%1\" redefinition - done." => "redéfinition de la vue \"%1\" - terminée.", // ai 2026-06
 
-// src/Optimize/RedefineViewFullTemplates.php, row 10
+// src/Optimize/RedefineViewFullTemplates.php, row 12
 "Redefine full template view" => "Redéfinir la vue modèle full", // ai 2026-06
 
-// src/Optimize/RedefineViewJavascriptTemplates.php, row 10
+// src/Optimize/RedefineViewJavascriptTemplates.php, row 12
 "Redefine javascript template view" => "Redéfinir la vue modèle javascript", // ai 2026-06
 
-// src/Optimize/RedefineViewLinksTemplates.php, row 10
+// src/Optimize/RedefineViewLinksTemplates.php, row 12
 "Redefine links template view" => "Redéfinir la vue modèle links", // ai 2026-06
 
-// src/Optimize/RedefineViewRssTemplates.php, row 10
+// src/Optimize/RedefineViewRssTemplates.php, row 12
 "Redefine rss template view" => "Redéfinir la vue modèle rss", // ai 2026-06
 
-// src/Optimize/RedefineViewStaticTemplates.php, row 10
+// src/Optimize/RedefineViewStaticTemplates.php, row 12
 "Redefine static template view" => "Redéfinir la vue modèle static", // ai 2026-06
 
-// src/Optimize/RedefineViewUrlsTemplates.php, row 10
+// src/Optimize/RedefineViewUrlsTemplates.php, row 12
 "Redefine urls template view" => "Redéfinir la vue modèle urls", // ai 2026-06
 
 // src/Optimize/RemoveAaCronEntries.php, row 22
@@ -14513,19 +14818,19 @@ return [
 // src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "OK - Aucun champ case à cocher obligatoire", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 20
+// src/Optimize/RestoreBckTables.php, row 22
 "Restore data from backup tables" => "Restaurer les données depuis les tables de sauvegarde", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 "Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "Supprime toutes les tables actuelles (slice, item, ...) pour lesquelles une table bck_ existe et renomme toutes les tables de sauvegarde (bck_slice, bck_item, ...) avec leurs noms corrects (slice, item, ...).", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 40
+// src/Optimize/RestoreBckTables.php, row 42
 "The bck_ tables do not exist (or at least bck_content table)" => "Les tables bck_ n'existent pas (ou au moins la table bck_content)", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 59
+// src/Optimize/RestoreBckTables.php, row 61
 "There is no bck_%1 table - %1 not restored." => "La table bck_%1 n'existe pas - %1 non restaurée.", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 62
+// src/Optimize/RestoreBckTables.php, row 64
 "Replace table bck_%1 -> %1" => "Remplacement de la table bck_%1 -> %1", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 44
@@ -14777,6 +15082,30 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 141
 "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "sauvegarde de l'ancienne table %1 -> bck_%1 et utilisation des nouvelles tables à la place tmp_%1 -> %1", // ai 2026-06
 
+// src/Passkey/Notice.php, row 23
+"A passkey was added to your account" => "Une clé d'accès a été ajoutée à votre compte", // ai 2026-11
+
+// src/Passkey/Notice.php, row 23
+"The passkey \"%1\" was added to your account %2 on %3. It logs you in on %4." => "La clé d'accès « %1 » a été ajoutée à votre compte %2 le %3. Elle vous connecte sur %4.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"A passkey was deleted from your account" => "Une clé d'accès a été supprimée de votre compte", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"The passkey \"%1\" was deleted from your account %2 on %3." => "La clé d'accès « %1 » a été supprimée de votre compte %2 le %3.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"The passkeys of your account were deleted" => "Les clés d'accès de votre compte ont été supprimées", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"%1 deleted all passkeys of your account %2 on %3. You log in by your password again; you can add a new passkey after the login." => "%1 a supprimé toutes les clés d'accès de votre compte %2 le %3. Vous vous connectez de nouveau avec votre mot de passe ; vous pouvez ajouter une nouvelle clé d'accès après la connexion.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 60
+"If it was not you, tell the administrator of ActionApps at %1 at once." => "Si ce n'était pas vous, prévenez immédiatement l'administrateur d'ActionApps à l'adresse %1.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 61
+"Address: %1, browser: %2" => "Adresse : %1, navigateur : %2", // ai 2026-11
+
 // src/Security/LoginThrottle.php, row 156
 "Too many failed login attempts. Try again in %1 min." => "Trop de tentatives de connexion échouées. Réessayez dans %1 min.", // ai 2026-10
 
@@ -14793,7 +15122,7 @@ return [
 "ret_code and ok_url sent to filler.php" => "ret_code et ok_url envoyés à filler.php", // ai 2026-10
 
 // src/Security/Protection.php, row 32
-"als[], noitem of views and the state of site pages, taken from the URL" => "",
+"als[], noitem of views and the state of site pages, taken from the URL" => "als[], noitem des vues et état des pages du site, repris de l'URL", // ai 2026-11
 
 // src/Security/Protection.php, row 33
 "Logins to the administration and to reader accounts, counted per address of the visitor" => "Connexions à l'administration et aux comptes de lecteurs, comptées par adresse du visiteur", // ai 2026-10
@@ -14814,7 +15143,7 @@ return [
 "Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it." => "Le texte, les nombres, les id et les _#ALIASES dans als[] et dans l'état des pages de site continuent de fonctionner ; une {expression} y est affichée comme texte. Écrivez l'expression dans le modèle qui construit le lien, pour qu'elle s'y exécute avant l'envoi du lien, ou transmettez un id et calculez le reste dans la page qui le reçoit.", // ai 2026-10
 
 // src/Security/Protection.php, row 56
-"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "",
+"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "Un texte noitem dans un lien vers une vue (set[...]=noitem-...) s'affiche comme texte, HTML et _#ALIASES compris. Placez le texte dans le message « Pas d'item trouvé » de la vue, ou affichez la vue depuis un modèle avec {view.php?...}, où noitem fonctionne comme avant. Désactiver cette protection permet uniquement à un noitem contenant une {expression} de s'exécuter comme avant.", // ai 2026-11
 
 // src/Security/Protection.php, row 57
 "After 20 failed logins from one address in 12 hours, or 5 with one user name, the next login waits half a minute to a minute, twice as long after each further failure, at most an hour. A script that keeps logging in with an old password waits too: find its address in the Log (event LOGIN) and give it the current password. If every visitor seems to come from one address, AA runs behind a proxy missing in AA_TRUSTED_PROXIES - State Check names it; add it in config.php rather than switching this protection off." => "Après 20 connexions échouées depuis une même adresse en 12 heures, ou 5 avec un même identifiant, la connexion suivante attend d'une demi-minute à une minute, deux fois plus après chaque nouvel échec, au plus une heure. Un script qui continue de se connecter avec un ancien mot de passe attend aussi : trouvez son adresse dans le « Journal » (événement LOGIN) et donnez-lui le mot de passe actuel. Si tous les visiteurs semblent venir d'une seule adresse, AA fonctionne derrière un proxy absent de AA_TRUSTED_PROXIES - la « Vérification de l'état » l'indique ; ajoutez-le dans config.php plutôt que de désactiver cette protection.", // ai 2026-10
@@ -15009,17 +15338,17 @@ return [
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Boîte De Contrôle", // ai 2026-10
 
-// src/Widget/CodWidget.php, row 21
+// src/Widget/CodWidget.php, row 23
 "Code editor" => "Éditeur de code", // ai 2026-06
 
-// src/Widget/EdtWidget.php, row 21
+// src/Widget/EdtWidget.php, row 23
 "Rich Edit Text Area" => "Zone de modification de texte",
 
 // src/Widget/FilWidget.php, row 38
 "File Upload" => "Téléchargement de fichier", // ai 2026-10
 
 // src/Widget/FilWidget.php, row 206, 236
-// src/Widget/RichtextMarkup.php, row 73
+// src/Widget/RichtextMarkup.php, row 86
 "Upload" => "Téléverser", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 250
@@ -15042,13 +15371,13 @@ return [
 // src/Widget/GpsWidget.php, row 438
 "Use" => "Utiliser", // ai 2026-06
 
-// src/Widget/HcoWidget.php, row 34
+// src/Widget/HcoWidget.php, row 36
 "hierarchical constants" => "Constantes hiérarchiques", // ai 2026-10
 
 // src/Widget/HidWidget.php, row 28
 "Hidden field" => "Champ caché", // ai 2026-10
 
-// src/Widget/InfWidget.php, row 31
+// src/Widget/InfWidget.php, row 33
 "Info text - output" => "Texte d'information - sortie", // ai 2026-06
 
 // src/Widget/IsoWidget.php, row 35
@@ -15090,28 +15419,28 @@ return [
 // src/Widget/MngWidget.php, row 39
 "Best for galleries and other tabular data which is multivalue and different for each item" => "Idéal pour les galeries et autres données tabulaires multivaleurs et différentes pour chaque item", // ai 2026-06
 
-// src/Widget/MseWidget.php, row 25
+// src/Widget/MseWidget.php, row 27
 "Multiple Selectbox" => "Boîte de sélection multiples", // ai 2026-10
 
-// src/Widget/NulWidget.php, row 23
+// src/Widget/NulWidget.php, row 25
 "Do not show" => "Ne pas montrer",
 
-// src/Widget/PreWidget.php, row 36
+// src/Widget/PreWidget.php, row 38
 "Text Field with Presets" => "Champ texte avec pré-configuration", // ai 2026-10
 
 // src/Widget/PwdWidget.php, row 37
 "Password and Change password" => "Mot de passe et changement de mot de passe",
 
-// src/Widget/RichtextMarkup.php, row 75
+// src/Widget/RichtextMarkup.php, row 88
 "Loading..." => "Chargement...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 76
+// src/Widget/RichtextMarkup.php, row 89
 "No files" => "Aucun fichier", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 77
+// src/Widget/RichtextMarkup.php, row 90
 "Uploading..." => "Téléversement...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 78
+// src/Widget/RichtextMarkup.php, row 91
 "Upload failed" => "Échec du téléversement", // ai 2026-10
 
 // src/Widget/RimWidget.php, row 43
@@ -15132,25 +15461,25 @@ return [
 // src/Widget/TagWidget.php, row 44
 "Tags" => "Étiquettes", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 43
+// src/Widget/TfaWidget.php, row 45
 "2FA Secret generator" => "Générateur de secret 2FA", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 79
+// src/Widget/TfaWidget.php, row 81
 "One time Code" => "Code à usage unique", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 89
+// src/Widget/TfaWidget.php, row 91
 "Generate New Secret" => "Générer un nouveau secret", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 90
+// src/Widget/TfaWidget.php, row 92
 "Get Secret" => "Obtenir le secret", // ai 2026-06
 
-// src/Widget/TprWidget.php, row 27
+// src/Widget/TprWidget.php, row 29
 "Textarea with Presets" => "Zone de texte avec pré-configuration", // ai 2026-10
 
 // src/Widget/TxtWidget.php, row 40
 "Text Area" => "Zone de texte",
 
-// src/Widget/Wi2Widget.php, row 32
+// src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "Deux boîtes", // ai 2026-10
 
 // src/Widget/Widget.php, row 603

@@ -31,6 +31,34 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Migrate LDAP perms to SQL perms" => "Migracija LDAP dozvola u SQL dozvole", // ai 2026-06
+// "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Kopira sve korisnike, grupe, \xE8lanstva i dozvole iz LDAP backenda u tablice SQL backenda (users, membership, perms) te prepisuje item.posted_by / item.edited_by iz LDAP DN oblika (uid=...,ou=...) u nove SQL numeri\xE8ke id-ove. Pokrenite jednom po instalaciji, zatim u configu prebacite PERM_LIB na 'sql'. 'Test' je probno izvo\xF0enje koje samo \xE8ita. 'Repair' izvodi migraciju i mo\x9Ee se pokretati opetovano. 'Revert' pomo\xE6u tablice mapiranja poni\x9Atava sve izmjene.", // ai 2026-06
+// "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Ovaj optimizator radi samo kada je PERM_LIB='ldap'. Trenutno PERM_LIB='%1'.", // ai 2026-06
+// "Would create mapping table `%1`" => "Stvorila bi se tablica mapiranja `%1`", // ai 2026-06
+// "Test finished (dry run - no changes made)." => "Test zavr\x9Aen (probno izvo\xF0enje - bez izmjena).", // ai 2026-06
+// "Repair failed: %1" => "Popravak nije uspio: %1", // ai 2026-06
+// "Repair finished." => "Popravak zavr\x9Aen.", // ai 2026-06
+// "Revert failed: %1" => "Vra\xE6anje nije uspjelo: %1", // ai 2026-06
+// "Revert finished." => "Vra\xE6anje zavr\x9Aeno.", // ai 2026-06
+// "LDAP findUsernames failed or returned: %1" => "LDAP findUsernames nije uspio ili je vratio: %1", // ai 2026-06
+// "LDAP users found: %1" => "Prona\xF0eno LDAP korisnika: %1", // ai 2026-06
+// "Skipping user %1 - cannot determine login" => "Preska\xE8em korisnika %1 - nije mogu\xE6e odrediti korisni\xE8ko ime", // ai 2026-06
+// "User %1 already exists in SQL (id %2), reusing" => "Korisnik %1 ve\xE6 postoji u SQL-u (id %2), koristi se postoje\xE6i", // ai 2026-06
+// "Would create SQL user: %1 (from %2)" => "Stvorio bi se SQL korisnik: %1 (iz %2)", // ai 2026-06
+// "Failed to create SQL user %1" => "Stvaranje SQL korisnika %1 nije uspjelo", // ai 2026-06
+// "Users: created=%1 reused=%2 failed=%3" => "Korisnici: stvoreno=%1 ponovno_iskori\x9Ateno=%2 neuspjelo=%3", // ai 2026-06
+// "LDAP groups found: %1" => "Prona\xF0eno LDAP grupa: %1", // ai 2026-06
+// "Group %1 already exists in SQL (id %2), reusing" => "Grupa %1 ve\xE6 postoji u SQL-u (id %2), koristi se postoje\xE6a", // ai 2026-06
+// "Would create SQL group: %1 (from %2)" => "Stvorila bi se SQL grupa: %1 (iz %2)", // ai 2026-06
+// "Failed to create SQL group %1" => "Stvaranje SQL grupe %1 nije uspjelo", // ai 2026-06
+// "Groups: created=%1 reused=%2 failed=%3" => "Grupe: stvoreno=%1 ponovno_iskori\x9Ateno=%2 neuspjelo=%3", // ai 2026-06
+// "Memberships: added=%1 skipped_unmapped=%2" => "\xC8lanstva: dodano=%1 presko\xE8eno_nemapirano=%2", // ai 2026-06
+// "Permission rows migrated: %1" => "Migrirano redaka dozvola: %1", // ai 2026-06
+// "No mapping entries - nothing to rewrite." => "Nema zapisa mapiranja - nema se \x9Ato prepisati.", // ai 2026-06
+// "Rewrite %1.%2: %3 rows" => "Prepisivanje %1.%2: %3 redaka", // ai 2026-06
+// "Mapping table is empty - nothing to revert." => "Tablica mapiranja je prazna - nema se \x9Ato vratiti.", // ai 2026-06
+// "Revert %1.%2: %3 rows" => "Vra\xE6anje %1.%2: %3 redaka", // ai 2026-06
+// "Deleted SQL users=%1 groups=%2" => "Izbrisano SQL korisnika=%1 grupa=%2", // ai 2026-06
 // "als[] and the state of site pages, taken from the URL" => "als[] i stanje web-stranica, preuzeti iz web-adrese", // ai 2026-10
 // "The index %1 of the content table does not contain the field" => "Indeks %1 u tablici content ne sadr\x9Ei polje", // ai 2026-10
 // "Adds the index (field_id, text) to the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes and about as much disk as the other indexes of the table - run it when the traffic is low." => "Dodaje indeks (field_id, text) u tablicu content, tako da se vrijednost u jednom polju pronalazi bez \xE8itanja iste vrijednosti u svim ostalim poljima. Na velikoj bazi podataka traje nekoliko minuta i zauzima otprilike onoliko prostora na disku koliko i ostali indeksi tablice - pokrenite ga kad je promet slab.", // ai 2026-10
@@ -512,6 +540,8 @@ return [
 // admin/console.php, row 73
 // admin/fileman.php, row 110
 // admin/slicedel2.php, row 70
+// admin/um_passkeys.php, row 73
+// admin/um_passwd.php, row 80
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
@@ -563,8 +593,8 @@ return [
 // admin/aa_security.php, row 85
 // admin/setup.php, row 99, 240
 // admin/slicewiz.php, row 84
-// admin/um_passwd.php, row 111
-// admin/um_uedit.php, row 313, 317
+// admin/um_passwd.php, row 128
+// admin/um_uedit.php, row 314, 328
 // include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "Korisni\xE8ko ime",
@@ -635,12 +665,14 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 103
 // src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckFormRobotRefusals.php, row 80
 // src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
 // src/Optimize/CheckIsdsConf.php, row 160, 193
 // src/Optimize/CheckIsdsViews.php, row 132
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 97
 // src/Optimize/CheckLoginAddresses.php, row 90, 103
 // src/Optimize/CheckObjectFormRefusals.php, row 106
+// src/Optimize/CheckPasskeys.php, row 89
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
@@ -736,7 +768,7 @@ return [
 "Checked again at %1: the problem is gone." => "Ponovno provjereno u %1: problem je nestao.", // ai 2026-10
 
 // admin/aa_statecheck.php, row 255
-"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "",
+"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "Ponovno provjereno u %1: jo\x9A je na popisu, posljednji put uo\xE8eno %2. %3 Ovaj se nalaz ra\xE8una iz onoga \x9Ato se ve\xE6 dogodilo (retci zapisnika, posljednje izvo\xF0enje), pa se popravak ovdje ne vidi odmah \x96 nestat \xE6e kad ti zapisi zastare ili kad pro\xF0e sljede\xE6e izvo\xF0enje. Nakon popravka ozna\xE8ite ga kao rije\x9Aen; vratit \xE6e se ako se ponovno dogodi.", // ai 2026-11
 
 // admin/aa_statecheck.php, row 256
 "Checked again at %1: still there. %2" => "Ponovno provjereno u %1: jo\x9A postoji. %2", // ai 2026-10
@@ -1010,7 +1042,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1213
+// include/logs.php, row 1218
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -1019,6 +1051,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
+// src/Optimize/CheckFormRobotRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
@@ -1045,7 +1078,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 358
+// include/logs.php, row 363
 // src/AA_Plannedtask.php, row 204
 "Log" => "Zapisnik", // ai 2026-06
 
@@ -1077,13 +1110,13 @@ return [
 
 // admin/aafinder.php, row 478, 508
 // admin/um_gedit.php, row 207, 324
-// admin/um_uedit.php, row 248
+// admin/um_uedit.php, row 249
 // include/se_users.php, row 138, 143
 // include/searchbar.class.php, row 566, 567, 607
 // include/transformation.class.php, row 829, 910
 // include/um_gsrch.php, row 47
 // src/Widget/GpsWidget.php, row 434
-// src/Widget/RichtextMarkup.php, row 72
+// src/Widget/RichtextMarkup.php, row 85
 "Search" => "Tra\x9Ei",
 
 // admin/aafinder.php, row 481
@@ -1184,7 +1217,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 10284, 10363
+// include/stringexpand.php, row 10285, 10364
 "Send" => "Po\x9Aaljite",
 
 // admin/anonym_wizard.php, row 151
@@ -1342,7 +1375,7 @@ return [
 "Author" => "Autor - autorica",
 
 // admin/discedit.php, row 133
-// include/logs.php, row 898, 1309
+// include/logs.php, row 903, 1314
 "IP Address" => "IP adresa", // ai 2026-06
 
 // admin/discedit.php, row 134
@@ -1365,13 +1398,13 @@ return [
 // admin/prev_navigation.php, row 47
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
-// admin/um_uedit.php, row 265
+// admin/um_uedit.php, row 266
 // include/field.class.php, row 744
 // include/filedit.php, row 113
 // include/formutil.php, row 1777, 3394
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
-// include/statestore.php, row 1138
+// include/statestore.php, row 1143
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
 "Edit" => "Uredite",
@@ -1385,7 +1418,8 @@ return [
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
-// admin/um_uedit.php, row 267
+// admin/um_passkeys.php, row 158
+// admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
 // include/field.class.php, row 748
 // include/formutil.php, row 1788, 1925
@@ -1394,7 +1428,7 @@ return [
 // include/searchbar.class.php, row 1126
 // include/um_gsrch.php, row 53
 // src/Manageraction/Import_Delete.php, row 25
-// src/Manageraction/Object_Delete.php, row 24
+// src/Manageraction/Object_Delete.php, row 26
 // src/Manageraction/Table_Row_Delete.php, row 23
 // src/Widget/FilWidget.php, row 201
 "Delete" => "Obri\x9Aite",
@@ -1416,7 +1450,7 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1060
+// include/logs.php, row 1065
 // include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Subjekt",
@@ -1424,8 +1458,8 @@ return [
 // admin/discedit2.php, row 94, 148
 // admin/setup.php, row 104, 247
 // admin/slicewiz.php, row 89
-// admin/um_passwd.php, row 118
-// admin/um_uedit.php, row 325
+// admin/um_passwd.php, row 140
+// admin/um_uedit.php, row 336
 // include/um_util.php, row 308, 309, 310
 // src/Central/FindingText.php, row 106
 "E-mail" => "e-mail",
@@ -1819,11 +1853,12 @@ return [
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
+// admin/um_passkeys.php, row 149, 153
 // central/installapp.php, row 831, 846
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1200
+// include/logs.php, row 1205
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1984,7 +2019,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1230
+// include/logs.php, row 1235
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
 // src/Optimize/CheckIsdsConf.php, row 342, 372
@@ -2008,7 +2043,7 @@ return [
 // admin/se_csv_import.php, row 277
 // admin/se_csv_import2.php, row 382
 // central/installapp.php, row 434, 558, 1368
-// src/Manageraction/Item_Preview.php, row 11
+// src/Manageraction/Item_Preview.php, row 13
 "Preview" => "Pregled",
 
 // admin/se_csv_import.php, row 278
@@ -2062,7 +2097,7 @@ return [
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
 // include/metabase.class.php, row 1667
-// include/statestore.php, row 1076, 1413
+// include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
@@ -2199,7 +2234,7 @@ return [
 // admin/se_export.php, row 124
 // include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
-// src/Manageraction/Central_MoveItem.php, row 43
+// src/Manageraction/Central_MoveItem.php, row 45
 "Trash" => "Sme\xE6e",
 
 // admin/se_export.php, row 134
@@ -2225,7 +2260,7 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 553
+// include/logs.php, row 558
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
@@ -2365,7 +2400,7 @@ return [
 // admin/se_import.php, row 131
 // admin/se_mapping.php, row 158
 // admin/um_gedit.php, row 280
-// admin/um_uedit.php, row 388
+// admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 190, 2940
 // modules/jump/modedit.php, row 179
@@ -2448,9 +2483,9 @@ return [
 "Resource ID" => "ID resursa", // ai 2026-06
 
 // admin/se_history.php, row 143, 165, 166
-// admin/um_uedit.php, row 262
+// admin/um_uedit.php, row 263
 // admin/usershow.php, row 89
-// include/perm_sql.php, row 384, 426
+// include/perm_sql.php, row 381, 440, 482
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
@@ -2535,7 +2570,7 @@ return [
 "Function" => "Funkcija",
 
 // admin/se_inputform.php, row 257
-"You can relate only to a slice where you may edit all items" => "",
+"You can relate only to a slice where you may edit all items" => "Vezu mo\x9Eete postaviti samo na stranicu na kojoj smijete ure\xF0ivati sve stavke", // ai 2026-11
 
 // admin/se_inputform.php, row 305
 "No field found" => "Nije prona\xF0eno nijedno polje", // ai 2026-06
@@ -2655,7 +2690,7 @@ return [
 "Reset" => "Poni\x9Ati", // ai 2026-06
 
 // admin/se_inputform.php, row 514
-// include/logs.php, row 633
+// include/logs.php, row 638
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Postavke",
 
@@ -2762,13 +2797,13 @@ return [
 "The import was successfully created" => "Uvoz je uspje\x9Ano kreiran",
 
 // admin/se_isds_registry.php, row 54
-"You do not have permissions to pair the items of this slice with the register of data boxes" => "",
+"You do not have permissions to pair the items of this slice with the register of data boxes" => "Nemate dozvolu za uparivanje stavki ove stranice s registrom podatkovnih pretinaca", // ai 2026-11
 
 // admin/se_isds_registry.php, row 66
 // include/menu.php, row 167
 // src/Isds/SliceRules.php, row 180
 // src/Optimize/CheckIsdsRegistry.php, row 167
-"Data boxes from the register" => "",
+"Data boxes from the register" => "Podatkovni pretinci iz registra", // ai 2026-11
 
 // admin/se_javascript.php, row 68
 // include/menu.php, row 169
@@ -3188,7 +3223,7 @@ return [
 // admin/se_sets.php, row 131
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 471, 528
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 172
 "ID" => "Oznaka",
@@ -3282,7 +3317,7 @@ return [
 // admin/se_users.php, row 185
 // central/index.php, row 139
 // include/se_users.php, row 180
-// src/Widget/TfaWidget.php, row 71
+// src/Widget/TfaWidget.php, row 73
 "Username" => "Korisni\xE8ko ime", // ai 2026-06
 
 // admin/se_users.php, row 185
@@ -3438,7 +3473,7 @@ return [
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
 // admin/write_mail.php, row 269
-// src/Widget/RichtextMarkup.php, row 74
+// src/Widget/RichtextMarkup.php, row 87
 "Close" => "Zatvorite", // ai 2026-06
 
 // admin/setup.php, row 61, 64
@@ -3448,18 +3483,18 @@ return [
 "This script can't be used on a configured system." => "Ova skripta ne mo\x9Ee biti kori\x9Atena u ve\xE6 konfiguriranom sistemu",
 
 // admin/setup.php, row 95
-// admin/um_uedit.php, row 330
+// admin/um_uedit.php, row 341
 "Superadmin account" => "Ra\xE8un superadmina",
 
 // admin/setup.php, row 100, 241
 // admin/slicewiz.php, row 85
-// admin/um_passwd.php, row 114
-// admin/um_uedit.php, row 321
+// admin/um_passwd.php, row 136
+// admin/um_uedit.php, row 332
 // central/index.php, row 140
 // central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
-// src/Widget/TfaWidget.php, row 75
+// src/Widget/TfaWidget.php, row 77
 "Password" => "Lozinka",
 
 // admin/setup.php, row 101, 243
@@ -3468,8 +3503,8 @@ return [
 
 // admin/setup.php, row 102, 245
 // admin/slicewiz.php, row 87
-// admin/um_passwd.php, row 116
-// admin/um_uedit.php, row 323
+// admin/um_passwd.php, row 138
+// admin/um_uedit.php, row 334
 // include/um_util.php, row 298
 "First name" => "Ime",
 
@@ -3536,7 +3571,7 @@ return [
 
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
-// admin/um_uedit.php, row 378
+// admin/um_uedit.php, row 389
 // include/formutil.php, row 1771
 // include/mlx.php, row 377
 // include/profile.php, row 170
@@ -3900,14 +3935,14 @@ return [
 "Slice Administrator" => "Administrator stranica",
 
 // admin/slicewiz.php, row 86
-// admin/um_passwd.php, row 115
-// admin/um_uedit.php, row 322
+// admin/um_passwd.php, row 137
+// admin/um_uedit.php, row 333
 // include/um_util.php, row 302
 "Retype password" => "Ponovo upi\x9Aite lozinku",
 
 // admin/slicewiz.php, row 88
-// admin/um_passwd.php, row 117
-// admin/um_uedit.php, row 324
+// admin/um_passwd.php, row 139
+// admin/um_uedit.php, row 335
 // include/um_util.php, row 297
 "Surname" => "Prezime",
 
@@ -3921,25 +3956,25 @@ return [
 "Go: Add Slice" => "Krenite: Dodaj stranicu",
 
 // admin/um_gedit.php, row 95
-// admin/um_uedit.php, row 110
+// admin/um_uedit.php, row 111
 "No permission to create new user" => "Nemate dozvolu za stvaranje novog korisnika/ice",
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137, 154
+// admin/um_uedit.php, row 135, 138, 155
 "Too many groups found." => "Prona\xF0eno je previ\x9Ae grupa.", // ai 2026-06
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137
+// admin/um_uedit.php, row 135, 138
 "No groups found" => "Nema prona\xF0enih grupa",
 
 // admin/um_gedit.php, row 120, 128
-// admin/um_uedit.php, row 128, 143, 167
+// admin/um_uedit.php, row 129, 144, 168
 // include/se_users.php, row 175
 // include/um_gsrch.php, row 31
 "Too many users or groups found." => "Prona\xF0eno prtevi\x9Ae korisnika ili grupa",
 
 // admin/um_gedit.php, row 120
-// admin/um_uedit.php, row 128, 143
+// admin/um_uedit.php, row 129, 144
 // include/se_users.php, row 177
 // include/um_gsrch.php, row 34
 "No user (group) found" => "Nije prona\xF0en korisnik ili grupa",
@@ -3955,7 +3990,7 @@ return [
 "Are you sure you want to delete selected group from whole permission system?" => "Jeste li sigurni da \x9Eelite izbrisati odabranu grupu iz cijelog sustava dozvola?", // ai 2026-06
 
 // admin/um_gedit.php, row 189, 199
-// admin/um_uedit.php, row 336, 342
+// admin/um_uedit.php, row 347, 353
 // include/menu_util.php, row 71
 // include/se_users.php, row 141
 // include/um_gsrch.php, row 41
@@ -3972,7 +4007,7 @@ return [
 
 // admin/um_gedit.php, row 220
 // include/constants.php, row 455
-// include/perm_sql.php, row 403
+// include/perm_sql.php, row 459
 // include/um_gsrch.php, row 50
 "Group" => "Grupa",
 
@@ -3989,8 +4024,8 @@ return [
 "Superadmin group" => "Superadamin grupe",
 
 // admin/um_gedit.php, row 312
-// admin/um_uedit.php, row 230, 241
-// include/logs.php, row 911
+// admin/um_uedit.php, row 231, 242
+// include/logs.php, row 916
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -4002,57 +4037,216 @@ return [
 // admin/um_gedit.php, row 322
 "Group's Users" => "Korisnici / ice grupe",
 
-// admin/um_passwd.php, row 61
+// admin/um_passkeys.php, row 58
+"The directory of the accounts does not answer now - try it again later" => "Imenik ra\xE8una trenuta\xE8no ne odgovara \x96 poku\x9Aajte ponovno kasnije", // ai 2026-11
+
+// admin/um_passkeys.php, row 62
+"You do not have permissions to manage the passkeys of this account" => "Nemate dozvolu za upravljanje pristupnim klju\xE8evima ovog ra\xE8una", // ai 2026-11
+
+// admin/um_passkeys.php, row 105
+"The passkey is stored. From now on this account logs in only by a passkey." => "Pristupni klju\xE8 je spremljen. Od sada se ovaj ra\xE8un prijavljuje samo pristupnim klju\xE8em.", // ai 2026-11
+
+// admin/um_passkeys.php, row 106
+"The passkey is renamed." => "Pristupni klju\xE8 je preimenovan.", // ai 2026-11
+
+// admin/um_passkeys.php, row 107
+"The passkey is deleted." => "Pristupni klju\xE8 je izbrisan.", // ai 2026-11
+
+// admin/um_passkeys.php, row 108
+"All passkeys of the account are deleted - its password logs in again." => "Svi pristupni klju\xE8evi ra\xE8una su izbrisani \x96 prijava ponovno radi lozinkom.", // ai 2026-11
+
+// admin/um_passkeys.php, row 109
+"Log in again first - adding or deleting a passkey needs a login of the last %1 minutes." => "Najprije se ponovno prijavite \x96 dodavanje ili brisanje pristupnog klju\xE8a zahtijeva prijavu u posljednjih %1 min.", // ai 2026-11
+
+// admin/um_passkeys.php, row 110
+"This passkey is stored already." => "Ovaj je pristupni klju\xE8 ve\xE6 spremljen.", // ai 2026-11
+
+// admin/um_passkeys.php, row 111
+"The page waited too long. Try it again." => "Stranica je predugo \xE8ekala. Poku\x9Aajte ponovno.", // ai 2026-11
+
+// admin/um_passkeys.php, row 112
+"The passkey could not be stored. Try it again, or another device." => "Pristupni klju\xE8 nije bilo mogu\xE6e spremiti. Poku\x9Aajte ponovno ili s drugim ure\xF0ajem.", // ai 2026-11
+
+// admin/um_passkeys.php, row 116
+// admin/um_passwd.php, row 130
+// admin/um_uedit.php, row 324
+"Passkeys" => "Pristupni klju\xE8evi", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of your account %1" => "Pristupni klju\xE8evi va\x9Aeg ra\xE8una %1", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of the account %1" => "Pristupni klju\xE8evi ra\xE8una %1", // ai 2026-11
+
+// admin/um_passkeys.php, row 131
+"This account cannot have passkeys - only the users of the permission system of AA can." => "Ovaj ra\xE8un ne mo\x9Ee imati pristupne klju\xE8eve \x96 mogu ih imati samo korisnici sustava dozvola AA.", // ai 2026-11
+
+// admin/um_passkeys.php, row 137
+"A passkey logs you in without a password - by the fingerprint, face or PIN of your phone or computer. Nobody can steal it by a fake page or guess it." => "Pristupni klju\xE8 vas prijavljuje bez lozinke \x96 otiskom prsta, licem ili PIN-om va\x9Aeg telefona ili ra\xE8unala. Nitko ga ne mo\x9Ee ukrasti la\x9Enom web-stranicom niti pogoditi.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Once the account has a passkey, the password alone no longer logs it in" => "Kad ra\xE8un ima pristupni klju\xE8, sama ga lozinka vi\x9Ae ne prijavljuje", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"neither here, nor for Central or scripts that log in by it." => "ni ovdje, ni za Central ili skripte koje se njome prijavljuju.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Add two passkeys - say in your phone and in your computer - so you keep the access when you lose one. If you lose all of them, a user manager of this AA deletes them and you log in by your password again." => "Dodajte dva pristupna klju\xE8a \x96 npr. u telefonu i u ra\xE8unalu \x96 kako biste zadr\x9Eali pristup ako jedan izgubite. Ako ih izgubite sve, upravitelj korisnika ovog AA ih izbri\x9Ae i ponovno se prijavljujete lozinkom.", // ai 2026-11
+
+// admin/um_passkeys.php, row 140
+"Delete the passkeys only when their owner asks for it - lost or stolen device. The account then logs in by its password again, and its owner gets a mail about it." => "Pristupne klju\xE8eve bri\x9Aite samo kad to zatra\x9Ei njihov vlasnik \x96 izgubljen ili ukraden ure\xF0aj. Ra\xE8un se zatim ponovno prijavljuje lozinkom, a vlasnik o tome dobiva e-poruku.", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Works on" => "Radi na", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Added" => "Dodano", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+// include/formutil.php, row 3300
+"Last used" => "Zadnje kori\x9Ateno", // ai 2026-06
+
+// admin/um_passkeys.php, row 149
+"Copies" => "Kopije", // ai 2026-11
+
+// admin/um_passkeys.php, row 153
+// include/searchbar.class.php, row 1124
+"Rename" => "Preimenujte", // ai 2026-06
+
+// admin/um_passkeys.php, row 156
+"not yet" => "jo\x9A ne", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"in your other devices too" => "i na va\x9Aim drugim ure\xF0ajima", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"only in this device" => "samo na ovom ure\xF0aju", // ai 2026-11
+
+// admin/um_passkeys.php, row 162
+"Delete all passkeys of the account" => "Izbri\x9Aite sve pristupne klju\xE8eve ra\xE8una", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"You have no passkey yet." => "Jo\x9A nemate pristupni klju\xE8.", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"The account has no passkey." => "Ra\xE8un nema pristupni klju\xE8.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"To add or delete a passkey, log in again: it needs a login of the last %1 minutes." => "Za dodavanje ili brisanje pristupnog klju\xE8a ponovno se prijavite: potrebna je prijava u posljednjih %1 min.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"Log in again" => "Ponovno se prijavite", // ai 2026-11
+
+// admin/um_passkeys.php, row 171
+"A passkey cannot be added to this account: you may not change its data, or its password is public (the free links of a module log in by it)." => "Ovom ra\xE8unu nije mogu\xE6e dodati pristupni klju\xE8: ne smijete mijenjati njegove podatke ili je njegova lozinka javna (njome se prijavljuju slobodne poveznice modula).", // ai 2026-11
+
+// admin/um_passkeys.php, row 173
+"A passkey can be added only on a page reached by https and by an address of this AA or of one of its sites, not an IP address." => "Pristupni klju\xE8 mo\x9Ee se dodati samo na web-stranici otvorenoj preko https i adrese ovog AA ili nekog od njegovih webova, a ne IP adrese.", // ai 2026-11
+
+// admin/um_passkeys.php, row 180, 191
+"Add a passkey" => "Dodajte pristupni klju\xE8", // ai 2026-11
+
+// admin/um_passkeys.php, row 182
+"This server cannot make passkeys." => "Ovaj poslu\x9Eitelj ne mo\x9Ee izra\xF0ivati pristupne klju\xE8eve.", // ai 2026-11
+
+// admin/um_passkeys.php, row 184
+"The passkey will work on %1. On the other addresses of this AA the login page sends you here." => "Pristupni klju\xE8 radit \xE6e na %1. Na ostalim adresama ovog AA stranica za prijavu preusmjerit \xE6e vas ovamo.", // ai 2026-11
+
+// admin/um_passkeys.php, row 185
+"Name of the passkey" => "Naziv pristupnog klju\xE8a", // ai 2026-11
+
+// admin/um_passkeys.php, row 186
+"e.g. My phone" => "npr. Moj telefon", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"No passkey was made." => "Pristupni klju\xE8 nije izra\xF0en.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"This device keeps a passkey of the account already." => "Ovaj ure\xF0aj ve\xE6 ima pristupni klju\xE8 ovog ra\xE8una.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"The browser could not make a passkey." => "Preglednik nije mogao izraditi pristupni klju\xE8.", // ai 2026-11
+
+// admin/um_passkeys.php, row 190
+"This browser cannot make passkeys." => "Ovaj preglednik ne mo\x9Ee izra\xF0ivati pristupne klju\xE8eve.", // ai 2026-11
+
+// admin/um_passkeys.php, row 192
+"Adding a passkey needs JavaScript." => "Za dodavanje pristupnog klju\xE8a potreban je JavaScript.", // ai 2026-11
+
+// admin/um_passwd.php, row 64
 "You do not have permissions to change user data" => "Nemate dozvolu za promjenu korisni\xE8kih podataka", // ai 2026-06
 
-// admin/um_passwd.php, row 71, 113
+// admin/um_passwd.php, row 83
+"Log in again first - a change of the account needs a login of the last %1 minutes" => "Najprije se ponovno prijavite \x96 promjena ra\xE8una zahtijeva prijavu u posljednjih %1 min", // ai 2026-11
+
+// admin/um_passwd.php, row 86, 132, 134
 // src/Widget/PwdWidget.php, row 66
 "Current password" => "Trenutna lozinka", // ai 2026-06
 
-// admin/um_passwd.php, row 73
+// admin/um_passwd.php, row 88
 "Error in current password - password is not changed" => "Pogre\x9Ana trenutna lozinka - lozinka nije promijenjena", // ai 2026-06
 
-// admin/um_passwd.php, row 82
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 98
+// admin/um_uedit.php, row 184
 "User data modified" => "Korisni\xE8ki podaci su izmijenjeni", // ai 2026-06
 
-// admin/um_passwd.php, row 101
+// admin/um_passwd.php, row 117
 "Change user data" => "Promijenite korisni\xE8ke podatke", // ai 2026-06
 
-// admin/um_passwd.php, row 110
-// admin/um_uedit.php, row 312
+// admin/um_passwd.php, row 127
+// admin/um_uedit.php, row 313
 "Edit User" => "Promjena podataka o korisniku / ici",
 
-// admin/um_passwd.php, row 112
-// admin/um_uedit.php, row 314
+// admin/um_passwd.php, row 129
+// admin/um_uedit.php, row 315
 "User Id" => "ID korsisnika / ice",
 
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 130
+"The account logs in by a passkey" => "Ra\xE8un se prijavljuje pristupnim klju\xE8em", // ai 2026-11
+
+// admin/um_passwd.php, row 130
+"Log in without a password" => "Prijava bez lozinke", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed - you logged in a moment ago" => "Nije potrebno \x96 upravo ste se prijavili", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed, but log in again first: a change needs a login of the last %1 minutes" => "Nije potrebno, ali se najprije ponovno prijavite: promjena zahtijeva prijavu u posljednjih %1 min", // ai 2026-11
+
+// admin/um_uedit.php, row 184
 // include/um_util.php, row 344
 "User successfully added to permission system" => "Korisnik-ica je uspje\x9Ano dodan-  u sistem dozvola",
 
-// admin/um_uedit.php, row 198
+// admin/um_uedit.php, row 199
 "Are you sure you want to delete selected user from whole permission system?" => "Jeste li sigurni da \x9Eelite izbrisati odabranog korisnika iz cijelog sustava dozvola?", // ai 2026-06
 
-// admin/um_uedit.php, row 230
+// admin/um_uedit.php, row 231
 "Add new user" => "Dodajte novog korisnika", // ai 2026-06
 
-// admin/um_uedit.php, row 238
+// admin/um_uedit.php, row 239
 "Add user" => "Dodajte korisnika", // ai 2026-06
 
-// admin/um_uedit.php, row 247
+// admin/um_uedit.php, row 248
 "Find user" => "Prona\xF0ite korisnika", // ai 2026-06
 
-// admin/um_uedit.php, row 316
+// admin/um_uedit.php, row 324
+"%1 - the account logs in only by them" => "%1 \x96 ra\xE8un se prijavljuje samo njima", // ai 2026-11
+
+// admin/um_uedit.php, row 324
+// src/Isds/Registry/Page.php, row 555, 653
+// src/Optimize/MissCacheRouting.php, row 98, 129
+"none" => "nema", // ai 2026-10
+
+// admin/um_uedit.php, row 327
 "New user" => "Novi korisnik - ica",
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "All Writable Groups" => "Sve grupe s pravom pisanja", // ai 2026-06
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "User's Groups" => "Korisni\xE8ke grupe",
 
-// admin/um_uedit.php, row 347
+// admin/um_uedit.php, row 358
 "Member of Unwritable Groups" => "\xC8lan grupa bez prava pisanja", // ai 2026-06
 
 // admin/usershow.php, row 76
@@ -4115,7 +4309,7 @@ return [
 "Write email to users" => "Napi\x9Aite e-mail korisnicima", // ai 2026-06
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1059
+// include/logs.php, row 1064
 "Recipients" => "Primatelji", // ai 2026-06
 
 // admin/write_mail.php, row 238
@@ -4189,7 +4383,7 @@ return [
 "App" => "Aplikacija", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1201
+// include/logs.php, row 1206
 "Version" => "Verzija", // ai 2026-10
 
 // central/appstore.php, row 164
@@ -4332,11 +4526,11 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1202
+// include/logs.php, row 1207
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
-// src/Widget/RichtextMarkup.php, row 71
+// src/Widget/RichtextMarkup.php, row 84
 "Source" => "Izvor", // ai 2026-06
 
 // central/installapp.php, row 452
@@ -4377,7 +4571,7 @@ return [
 "Hold Ctrl to choose more of them." => "Za odabir vi\x9Ae njih dr\x9Eite Ctrl.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 790, 1244
+// include/logs.php, row 795, 1249
 "Mode" => "Na\xE8in", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4767,7 +4961,7 @@ return [
 "Stopped by an error" => "Zaustavljeno gre\x9Akom", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 792
+// include/logs.php, row 797
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "Zavr\x9Aeno", // ai 2026-10
@@ -4970,7 +5164,7 @@ return [
 "Compared and Updated ActionApps" => "Uspore\xF0ene i a\x9Eurirane ActionApps", // ai 2026-06
 
 // filldisc.php, row 106, 156
-// filler.php, row 423
+// filler.php, row 311, 427
 "Not accepted, sorry. Looks like spam." => "Nije prihva\xE6eno, \x9Eao nam je. Izgleda kao spam.", // ai 2026-06
 
 // filldisc.php, row 113
@@ -4992,22 +5186,22 @@ return [
 // filler.php, row 295
 "Not allowed to post comments" => "Nije dozvoljeno slanje komentara", // ai 2026-06
 
-// filler.php, row 336, 382
+// filler.php, row 340, 386
 "Bad Token. Not allowed to post comments" => "Neispravan token. Nije dozvoljeno slanje komentara", // ai 2026-06
 
-// filler.php, row 362
+// filler.php, row 366
 "Slice ID not defined" => "Nije definiran ID stranice",
 
-// filler.php, row 368
+// filler.php, row 372
 "Bad slice ID" => "Neispravan ID stranice",
 
-// filler.php, row 397, 486
+// filler.php, row 401, 490
 "You are not allowed to update this item." => "Nemate dozvolu za update",
 
-// filler.php, row 444
+// filler.php, row 448
 "Anonymous posting not admitted." => "Nisu dozvoljene anonimne poruke.",
 
-// filler.php, row 499
+// filler.php, row 503
 "Some error in store item." => "Gre\x9Aka.",
 
 // include/adminpage.class.php, row 68
@@ -5017,7 +5211,7 @@ return [
 "Short Id" => "Kratki ID",
 
 // include/constants.php, row 456
-// include/logs.php, row 950, 982
+// include/logs.php, row 955, 987
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "klasa",
 
@@ -5026,7 +5220,7 @@ return [
 "Level" => "Nivo",
 
 // include/constants.php, row 509
-// include/logs.php, row 1161
+// include/logs.php, row 1166
 "Feed" => "Kopirati sadr\x9Eaj", // ai 2026-06
 
 // include/constants.php, row 510
@@ -5667,8 +5861,8 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1294
-// src/Manageraction/Item_Move2Slice.php, row 52
+// include/logs.php, row 1299
+// src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID stranice", // ai 2026-06
 
 // include/form.class.php, row 232
@@ -5728,7 +5922,7 @@ return [
 "import" => "Uvezi",
 
 // include/formutil.php, row 1216
-// src/Widget/RichtextMarkup.php, row 70
+// src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Uredite u ure\xF0iva\xE8u", // ai 2026-06
 
@@ -5759,7 +5953,7 @@ return [
 "Offer" => "Ponu\xF0eno",
 
 // include/formutil.php, row 2179
-// include/stringexpand.php, row 11505, 11528
+// include/stringexpand.php, row 11506, 11529
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 287
@@ -5784,7 +5978,7 @@ return [
 "Group Name" => "Naziv grupe", // ai 2026-06
 
 // include/formutil.php, row 3295
-// include/logs.php, row 747, 847, 1111
+// include/logs.php, row 752, 852, 1116
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Broj", // ai 2026-06
@@ -5800,9 +5994,6 @@ return [
 
 // include/formutil.php, row 3299
 "Updated by" => "Izmijenio/la", // ai 2026-06
-
-// include/formutil.php, row 3300
-"Last used" => "Zadnje kori\x9Ateno", // ai 2026-06
 
 // include/formutil.php, row 3307
 "All active items" => "Sve aktivne stavke", // ai 2026-06
@@ -5820,7 +6011,7 @@ return [
 "All items in trash bin" => "Sve stavke u sme\xE6u", // ai 2026-06
 
 // include/init_page.php, row 84
-// include/locauth.php, row 100
+// include/locauth.php, row 137
 "Either your username or your password is not valid" => "Korisni\xE8ko ime ili lozinka nisu ispravni", // ai 2026-06
 
 // include/init_page.php, row 136
@@ -6312,252 +6503,258 @@ return [
 // include/itemview.php, row 723, 731
 "exact group name" => "to\xE8an naziv grupe", // ai 2026-06
 
-// include/locauth.php, row 102
+// include/locauth.php, row 134
+"The login by the passkey did not succeed. Try it again." => "Prijava pristupnim klju\xE8em nije uspjela. Poku\x9Aajte ponovno.", // ai 2026-11
+
+// include/locauth.php, row 139
 "Please try again!" => "Molimo Vsa, poku\x9Aajte ponovo!",
 
-// include/locauth.php, row 103
+// include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Ako ste sigurni da ste upisali ispravnu lozinku, molimo po\x9Aaljite e-mail na <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 541
+// include/logs.php, row 546
 "Created time" => "Vrijeme stvaranja", // ai 2026-06
 
-// include/logs.php, row 542
+// include/logs.php, row 547
 "Readers to be emailed" => "\xC8itatelji kojima se \x9Aalje e-mail", // ai 2026-06
 
-// include/logs.php, row 554
+// include/logs.php, row 559
 // src/Optimize/CheckCkeditorUse.php, row 97
+// src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
 "Page" => "Stranica", // ai 2026-06
 
-// include/logs.php, row 629, 673, 688
+// include/logs.php, row 634, 678, 693
 "Time [s]" => "Vrijeme [s]", // ai 2026-06
 
-// include/logs.php, row 630, 675
+// include/logs.php, row 635, 680
 "Memory usage [MB]" => "Kori\x9Atena memorija [MB]", // ai 2026-06
 
-// include/logs.php, row 631
+// include/logs.php, row 636
 "Memory peak [MB]" => "Vr\x9Ana memorija [MB]", // ai 2026-06
 
-// include/logs.php, row 632
+// include/logs.php, row 637
 "Return code" => "Povratni kod", // ai 2026-06
 
-// include/logs.php, row 648
+// include/logs.php, row 653
 "Tasks done" => "Zavr\x9Aeni zadaci", // ai 2026-06
 
-// include/logs.php, row 649
+// include/logs.php, row 654
 "Tasks started" => "Pokrenuti zadaci", // ai 2026-06
 
-// include/logs.php, row 650
+// include/logs.php, row 655
 "Duration [s]" => "Trajanje [s]", // ai 2026-06
 
-// include/logs.php, row 651
+// include/logs.php, row 656
 "Allowed [s]" => "Dopu\x9Ateno [s]", // ai 2026-06
 
-// include/logs.php, row 671
+// include/logs.php, row 676
 "Cached" => "Iz predmemorije", // ai 2026-06
 
-// include/logs.php, row 672
+// include/logs.php, row 677
 "Not Modified (304)" => "Nepromijenjeno (304)", // ai 2026-06
 
-// include/logs.php, row 674
+// include/logs.php, row 679
 "Time + Cached + 304" => "Vrijeme + predmemorija + 304", // ai 2026-06
 
-// include/logs.php, row 676, 689, 899, 1085
+// include/logs.php, row 681, 694, 904, 1090
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "Web adresa",
 
-// include/logs.php, row 716
+// include/logs.php, row 721
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 717
+// include/logs.php, row 722
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 718
+// include/logs.php, row 723
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 719
+// include/logs.php, row 724
 "DB" => "",
 
-// include/logs.php, row 720
+// include/logs.php, row 725
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Memorija", // ai 2026-06
 
-// include/logs.php, row 721
+// include/logs.php, row 726
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 722
+// include/logs.php, row 727
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Postavke poslu\x9Eitelja", // ai 2026-10
 
-// include/logs.php, row 746, 845
+// include/logs.php, row 751, 850
 "Severity" => "Ozbiljnost", // ai 2026-10
 
-// include/logs.php, row 748, 843, 872
+// include/logs.php, row 753, 848, 877
 "Finding" => "Nalaz", // ai 2026-10
 
-// include/logs.php, row 766
+// include/logs.php, row 771
 "Problems" => "Problemi", // ai 2026-10
 
-// include/logs.php, row 767
+// include/logs.php, row 772
 "Warnings" => "Upozorenja", // ai 2026-10
 
-// include/logs.php, row 768
+// include/logs.php, row 773
 "Recommendations" => "Preporuke", // ai 2026-10
 
-// include/logs.php, row 769
+// include/logs.php, row 774
 "Checks" => "Provjere", // ai 2026-10
 
-// include/logs.php, row 789, 820
+// include/logs.php, row 794, 825
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Pokrenite", // ai 2026-10
 
-// include/logs.php, row 791
+// include/logs.php, row 796
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "Po\xE8etak", // ai 2026-10
 
-// include/logs.php, row 793
+// include/logs.php, row 798
 "Last full run" => "Posljednje potpuno izvo\xF0enje", // ai 2026-10
 
-// include/logs.php, row 794
+// include/logs.php, row 799
 "Last full run started" => "Po\xE8etak posljednjeg potpunog izvo\xF0enja", // ai 2026-10
 
-// include/logs.php, row 819, 844
+// include/logs.php, row 824, 849
 "Pair" => "Par", // ai 2026-10
 
-// include/logs.php, row 821
+// include/logs.php, row 826
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Izvedeno", // ai 2026-10
 
-// include/logs.php, row 822, 846
+// include/logs.php, row 827, 851
 "Known issue" => "Poznati problem", // ai 2026-10
 
-// include/logs.php, row 848
+// include/logs.php, row 853
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Prvi put uo\xE8eno", // ai 2026-10
 
-// include/logs.php, row 849
+// include/logs.php, row 854
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "Izvo\xF0enja zaredom", // ai 2026-10
 
-// include/logs.php, row 873
+// include/logs.php, row 878
 "Evidence" => "Dokaz", // ai 2026-10
 
-// include/logs.php, row 896
+// include/logs.php, row 901
 "Identifier" => "Identifikator", // ai 2026-06
 
-// include/logs.php, row 897, 1261, 1276
+// include/logs.php, row 902, 1266, 1281
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "ID modula", // ai 2026-06
 
-// include/logs.php, row 910
+// include/logs.php, row 915
 "Template id" => "ID predlo\x9Aka", // ai 2026-06
 
-// include/logs.php, row 912
+// include/logs.php, row 917
 "Emails sent" => "Poslane e-poruke", // ai 2026-06
 
-// include/logs.php, row 951
+// include/logs.php, row 956
 "Object id" => "ID objekta", // ai 2026-10
 
-// include/logs.php, row 983
+// include/logs.php, row 988
 "Mail template" => "Predlo\x9Eak e-po\x9Ate", // ai 2026-10
 
-// include/logs.php, row 984
+// include/logs.php, row 989
 "Reader item" => "Stavka \xE8itatelja", // ai 2026-10
 
-// include/logs.php, row 985
+// include/logs.php, row 990
 "Origin" => "Podrijetlo", // ai 2026-10
 
-// include/logs.php, row 1056
+// include/logs.php, row 1061
 "Transport" => "Na\xE8in slanja", // ai 2026-10
 
-// include/logs.php, row 1057
+// include/logs.php, row 1062
 "Recipients sent" => "Poslano primateljima", // ai 2026-10
 
-// include/logs.php, row 1058
+// include/logs.php, row 1063
 "Server response" => "Odgovor poslu\x9Eitelja", // ai 2026-10
 
-// include/logs.php, row 1071
+// include/logs.php, row 1076
 "Items selected" => "Odabrane stavke", // ai 2026-06
 
-// include/logs.php, row 1072
+// include/logs.php, row 1077
 "Items updated" => "A\x9Eurirane stavke", // ai 2026-06
 
-// include/logs.php, row 1073
+// include/logs.php, row 1078
 "Items planned" => "Planirane stavke", // ai 2026-06
 
-// include/logs.php, row 1084
+// include/logs.php, row 1089
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Poruka", // ai 2026-06
 
-// include/logs.php, row 1086
+// include/logs.php, row 1091
 "Referer" => "Referer", // ai 2026-10
 
-// include/logs.php, row 1097
+// include/logs.php, row 1102
 "New name" => "Novi naziv", // ai 2026-06
 
-// include/logs.php, row 1098
+// include/logs.php, row 1103
 "Old name" => "Stari naziv", // ai 2026-06
 
-// include/logs.php, row 1109, 1174
+// include/logs.php, row 1114, 1179
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Faza", // ai 2026-06
 
-// include/logs.php, row 1110
+// include/logs.php, row 1115
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Zbirka", // ai 2026-06
 
-// include/logs.php, row 1112, 1163, 1175, 1310
+// include/logs.php, row 1117, 1168, 1180, 1315
 // src/Import/Definition.php, row 154
+// src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "Detalj", // ai 2026-06
 
-// include/logs.php, row 1162
+// include/logs.php, row 1167
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Status", // ai 2026-10
 
-// include/logs.php, row 1214
+// include/logs.php, row 1219
 "Processed" => "Obra\xF0eno", // ai 2026-06
 
-// include/logs.php, row 1215
+// include/logs.php, row 1220
 "Stored" => "Pohranjeno", // ai 2026-06
 
-// include/logs.php, row 1216
+// include/logs.php, row 1221
 "Errors" => "Gre\x9Ake", // ai 2026-06
 
-// include/logs.php, row 1229
+// include/logs.php, row 1234
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Ishod", // ai 2026-06
 
-// include/logs.php, row 1245
+// include/logs.php, row 1250
 "Flags" => "Zastavice", // ai 2026-06
 
-// include/logs.php, row 1246
+// include/logs.php, row 1251
 "Context" => "Kontekst", // ai 2026-06
 
-// include/logs.php, row 1262
+// include/logs.php, row 1267
 "Feed counterpart" => "Parnjak izvora", // ai 2026-06
 
-// include/logs.php, row 1277
+// include/logs.php, row 1282
 "Field ID" => "ID polja",
 
-// include/logs.php, row 1295
+// include/logs.php, row 1300
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckHttp.php, row 62
+// src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 88
 "Reason" => "Razlog", // ai 2026-10
 
@@ -6570,7 +6767,7 @@ return [
 // include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Vlasnik - ica",
 
@@ -6896,10 +7093,10 @@ return [
 // include/modutils.php, row 251
 "Select owner" => "Izaberite vlasnika",
 
-// include/perm_core.php, row 1273, 1300
+// include/perm_core.php, row 1414, 1444
 "Reader Slice" => "Stranica \xE8itatelja", // ai 2026-06
 
-// include/perm_core.php, row 1285, 1302
+// include/perm_core.php, row 1429, 1446
 "Reader Set" => "Skup \xE8itatelja", // ai 2026-06
 
 // include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
@@ -7008,9 +7205,6 @@ return [
 // include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Osobni filtar (kliknite za primjenu)", // ai 2026-06
 
-// include/searchbar.class.php, row 1124
-"Rename" => "Preimenujte", // ai 2026-06
-
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Upravljanje filtrima", // ai 2026-06
 
@@ -7045,7 +7239,7 @@ return [
 "is not" => "nije", // ai 2026-06
 
 // include/searchlib.php, row 137, 140
-// include/statestore.php, row 1362
+// include/statestore.php, row 1367
 "select ..." => "odaberite ...", // ai 2026-06
 
 // include/searchlib.php, row 370
@@ -7193,22 +7387,22 @@ return [
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Navedite sve jezike za koje \x9Eelite koristiti site modul - en, es, cz, ..<br>Molimo <b>u\xE8inite to</b>, \xE8ak i ako koristite samo 1 jezik. <br>To je nu\x9Eno ako \x9Eelite pozivati site modul na noviji na\xE8in iz Apachea:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
 // include/slice.class.php, row 1645
-"Allowed {xflag} values" => "",
+"Allowed {xflag} values" => "Dopu\x9Atene vrijednosti {xflag}", // ai 2026-11
 
 // include/slice.class.php, row 1645
-"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "",
+"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "Regularni izraz kojem dio web adrese {xflag} mora u cijelosti odgovarati (^ ni \$ nisu potrebni), ina\xE8e web-stranica odgovara 404. {xflag} su znakovi odmah iza jezika i neobaveznog broja stranice {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... Nikad ne sadr\x9Ei znamenku ni \x84-\x93 \x96 oni ga zavr\x9Aavaju.<br>Moraju pro\xE6i i web-stranice bez {xflag} \x96 zavr\x9Aite uzorak znakom ? ili dodajte praznu alternativu.<br><b>Prazno</b> \x96 bilo koja vrijednost bez \x84=\x93.<br><b>^\$</b> \x96 {xflag} se ne koristi, samo web-stranice bez njega.<br>Primjeri:<br>[a-z]? \x96 jedno slovo ili ni\x9Ata<br>[tp]? \x96 \x84t\x93 ili \x84p\x93 ili ni\x9Ata<br>(print|pdf)? \x96 jedna od navedenih rije\xE8i ili ni\x9Ata", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Allowed {xcat} values" => "",
+"Allowed {xcat} values" => "Dopu\x9Atene vrijednosti {xcat}", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "",
+"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "Regularni izraz kojem dio web adrese {xcat} mora u cijelosti odgovarati (^ ni \$ nisu potrebni), ina\xE8e web-stranica odgovara 404. {xcat} je sve iza prvog \x84-\x93 u prvom direktoriju: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... Mo\x9Ee sadr\x9Eavati sve osim \x84/\x93.<br>Moraju pro\xE6i i web-stranice bez {xcat} \x96 zavr\x9Aite uzorak znakom ? ili dodajte praznu alternativu.<br><b>Prazno</b> \x96 bilo koja vrijednost bez \x84=\x93.<br><b>^\$</b> \x96 {xcat} se ne koristi, samo web-stranice bez njega.<br>Primjeri:<br>[a-z0-9-]* \x96 mala slova, znamenke i crtice ili ni\x9Ata<br>([0-9]+)? \x96 broj ili ni\x9Ata<br>(bioplyn|kompost)? \x96 jedna od navedenih rije\xE8i ili ni\x9Ata", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Check the page path" => "",
+"Check the page path" => "Provjerite putanju web-stranice", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "",
+"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "Odgovara 404 kad bilo koji dio putanje ({xseo1}, {xseo2}, ...) nije objavljena stavka, pa /cz/besmislica/o-nama ne prika\x9Ee web-stranicu o-nama. Odgovara 404 i kad je \x84Page not Found\x93 postavljeno na \x84Zanemari\x93.", // ai 2026-11
 
 // include/slice.class.php, row 1648
 "Page not Found (404)" => "Stranica nije prona\xF0ena (404)", // ai 2026-06
@@ -7250,10 +7444,10 @@ return [
 "Published modules" => "Objavljeni moduli", // ai 2026-10
 
 // include/slice.class.php, row 1664
-"Page address (URL)" => "",
+"Page address (URL)" => "Adresa web-stranice (URL)", // ai 2026-11
 
 // include/slice.class.php, row 1665
-"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "",
+"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} je broj, {xflag} slova iza njega, {xcat} sve iza prvog \x84-\x93 \x96 sva su tri neobavezna. {xlang} se mo\x9Ee izostaviti kad su postavljeni \x84Jezici na webu\x93.<br>Primjerice /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka", // ai 2026-11
 
 // include/slice.class.php, row 1707
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "Verzija aplikacije ima najvi\x9Ae 32 slova, znamenke i znakove . + - (npr. 1.2.0), opis najvi\x9Ae %1 znakova.", // ai 2026-10
@@ -7323,13 +7517,13 @@ return [
 // include/slicedit.php, row 372
 "Internal error when changing user role." => "Interna gre\x9Aka u promjeni uloge korisnika/ice",
 
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 "Owner ID" => "ID vlasnika", // ai 2026-06
 
-// include/statestore.php, row 1170
+// include/statestore.php, row 1175
 "No object found" => "Nijedan objekt nije prona\xF0en", // ai 2026-06
 
-// include/statestore.php, row 1444
+// include/statestore.php, row 1449
 "Manage components" => "Upravljanje komponentama", // ai 2026-06
 
 // include/stringexpand.php, row 95
@@ -7371,84 +7565,84 @@ return [
 // include/stringexpand.php, row 6279
 "No module for dictionary slice" => "Nema modula za stranicu rje\xE8nika", // ai 2026-06
 
-// include/stringexpand.php, row 8195
+// include/stringexpand.php, row 8196
 "version" => "verzija", // ai 2026-06
 
-// include/stringexpand.php, row 8383
+// include/stringexpand.php, row 8384
 "show" => "prika\x9Ei", // ai 2026-06
 
-// include/stringexpand.php, row 8384
+// include/stringexpand.php, row 8385
 "hide" => "sakrij", // ai 2026-06
 
-// include/stringexpand.php, row 8385
+// include/stringexpand.php, row 8386
 "loading" => "u\xE8itavanje", // ai 2026-06
 
-// include/stringexpand.php, row 9516
+// include/stringexpand.php, row 9517
 "E-mail confirmed." => "E-mail potvr\xF0en.", // ai 2026-06
 
-// include/stringexpand.php, row 9520
+// include/stringexpand.php, row 9521
 "E-mail unsubscribed" => "E-mail odjavljen", // ai 2026-06
 
-// include/stringexpand.php, row 10279
+// include/stringexpand.php, row 10280
 "Forgot your password? Fill in your email." => "Zaboravili ste lozinku? Upi\x9Aite svoju e-mail adresu.", // ai 2026-06
 
-// include/stringexpand.php, row 10281
+// include/stringexpand.php, row 10282
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-po\x9Ata", // ai 2026-06
 
-// include/stringexpand.php, row 10299, 10303
+// include/stringexpand.php, row 10300, 10304
 "Unable to find user - please check if it has been misspelled." => "Korisnik nije prona\xF0en - provjerite je li ispravno napisan.", // ai 2026-06
 
-// include/stringexpand.php, row 10317
+// include/stringexpand.php, row 10318
 "Password link" => "Poveznica za lozinku", // ai 2026-06
 
-// include/stringexpand.php, row 10318
+// include/stringexpand.php, row 10319
 "Password change url parameter" => "URL parametar za promjenu lozinke", // ai 2026-06
 
-// include/stringexpand.php, row 10330
+// include/stringexpand.php, row 10331
 "Password change" => "Promjena lozinke", // ai 2026-06
 
-// include/stringexpand.php, row 10331
+// include/stringexpand.php, row 10332
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Za promjenu lozinke posjetite sljede\xE6u adresu:<br>%1<br>Promjena \xE6e biti mogu\xE6a dva sata - nakon toga klju\xE8 istje\xE8e i morat \xE6ete zatra\x9Eiti novi.", // ai 2026-06
 
-// include/stringexpand.php, row 10340
+// include/stringexpand.php, row 10341
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail s klju\xE8em za promjenu lozinke upravo je poslan na adresu: %1", // ai 2026-06
 
-// include/stringexpand.php, row 10351, 10380
+// include/stringexpand.php, row 10352, 10381
 "Bad or expired key." => "Neispravan ili istekao klju\xE8.", // ai 2026-06
 
-// include/stringexpand.php, row 10356
+// include/stringexpand.php, row 10357
 "Fill in the new password" => "Upi\x9Aite novu lozinku", // ai 2026-06
 
-// include/stringexpand.php, row 10358
+// include/stringexpand.php, row 10359
 "New password" => "Nova lozinka", // ai 2026-06
 
-// include/stringexpand.php, row 10359
+// include/stringexpand.php, row 10360
 "Retype New Password" => "Utipkajte ponovo novu lozinku",
 
-// include/stringexpand.php, row 10383
+// include/stringexpand.php, row 10384
 "Passwords do not match - please try again." => "Lozinke se ne podudaraju - poku\x9Aajte ponovno.", // ai 2026-06
 
-// include/stringexpand.php, row 10386
+// include/stringexpand.php, row 10387
 "The password must be at least 6 characters long." => "Lozinka mora imati najmanje 6 znakova.", // ai 2026-06
 
-// include/stringexpand.php, row 10392
+// include/stringexpand.php, row 10393
 "Password changed." => "Lozinka promijenjena.", // ai 2026-06
 
-// include/stringexpand.php, row 10394
+// include/stringexpand.php, row 10395
 "An error occurred during password change - please contact: %1." => "Do\x9Alo je do gre\x9Ake pri promjeni lozinke - kontaktirajte: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 11502, 11525
+// include/stringexpand.php, row 11503, 11526
 "Are you sure you want to permanently DELETE this record?" => "Jeste li sigurni da \x9Eelite ZAUVIJEK obrisati ozna\xE8ene zapis",
 
-// include/stringexpand.php, row 11508, 11511, 11531, 11534
+// include/stringexpand.php, row 11509, 11512, 11532, 11535
 // src/Widget/RimWidget.php, row 270
 "edit" => "Uredite",
 
-// include/stringexpand.php, row 11514, 11537
+// include/stringexpand.php, row 11515, 11538
 "back" => "natrag", // ai 2026-06
 
-// include/stringexpand.php, row 11517, 11540
+// include/stringexpand.php, row 11518, 11541
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "povucite datoteke ovdje ili kliknite za prijenos", // ai 2026-06
 
@@ -7666,7 +7860,7 @@ return [
 "username | slice | <b>allslices</b>" => "",
 
 // include/validate.php, row 957
-"Not a valid regular expression" => "",
+"Not a valid regular expression" => "Neispravan regularni izraz", // ai 2026-11
 
 // include/validate.php, row 992
 "This field is required." => "Obavezno polje",
@@ -7951,37 +8145,37 @@ return [
 // src/AA_Plannedtask.php, row 457
 "next run" => "sljede\xE6e pokretanje", // ai 2026-06
 
-// src/Api/Controller/FilesController.php, row 54, 75
+// src/Api/Controller/FilesController.php, row 56, 77
 "The file is too big" => "Datoteka je prevelika", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 67
+// src/Api/Controller/FilesController.php, row 69
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "Ovdje ne smijete u\xE8itavati datoteke. Ako ste ure\xF0ivali, prijava vam je mo\x9Eda istekla \x96 ponovno u\xE8itajte stranicu.", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 70
+// src/Api/Controller/FilesController.php, row 72
 "Too many uploads - try again in an hour" => "Previ\x9Ae u\xE8itavanja \x96 poku\x9Aajte ponovno za sat vremena", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 78, 243
+// src/Api/Controller/FilesController.php, row 80, 291
 "No file received" => "Nije primljena nijedna datoteka", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 86
+// src/Api/Controller/FilesController.php, row 88
 "Files of this type cannot be uploaded here: %1" => "Datoteke ove vrste ne mogu se ovdje u\xE8itati: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 89
+// src/Api/Controller/FilesController.php, row 91
 "The content of the file does not match its extension %1" => "Sadr\x9Eaj datoteke ne odgovara njezinu nastavku %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 92
+// src/Api/Controller/FilesController.php, row 94
 "The image is bigger than %1 MB" => "Slika je ve\xE6a od %1 MB", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 95
+// src/Api/Controller/FilesController.php, row 97
 "The image has more than %1 megapixels" => "Slika ima vi\x9Ae od %1 megapiksela", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 100
+// src/Api/Controller/FilesController.php, row 102
 "The upload directory of the slice is not writable" => "U mapu za u\xE8itane datoteke stranice nije mogu\xE6e pisati", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 110
+// src/Api/Controller/FilesController.php, row 112
 "The file could not be stored" => "Datoteku nije mogu\xE6e spremiti", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 132
+// src/Api/Controller/FilesController.php, row 134
 "Only editors of the slice can browse its files" => "Datoteke stranice mogu pregledavati samo njezini urednici", // ai 2026-10
 
 // src/Central/Actionapps.php, row 178
@@ -8000,7 +8194,7 @@ return [
 "Expired - get a token" => "Isteklo \x96 nabavite token", // ai 2026-10
 
 // src/Central/Actionapps.php, row 234
-"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "",
+"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "Udaljeni AA odbio je prijavu: pogre\x9Ano korisni\xE8ko ime ili lozinka, ra\xE8un s dvofaktorskom prijavom (Central jo\x9A ne zna poslati kod) ili korisnik ondje nije superadmin", // ai 2026-11
 
 // src/Central/Actionapps.php, row 236
 "The remote AA gave no login token - update it" => "Udaljeni AA nije dao token za prijavu \x96 a\x9Eurirajte ga", // ai 2026-10
@@ -9165,21 +9359,21 @@ return [
 // src/IO/Grabber/FilesFTP.php, row 106
 "Info to get" => "Koje informacije dohvatiti", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 75
+// src/IO/Grabber/Form.php, row 76
 // src/IO/Grabber/ObjectForm.php, row 61
 "Form" => "Forma", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 83
+// src/IO/Grabber/Form.php, row 84
 // src/IO/Grabber/ObjectForm.php, row 69
 "Grabs data POSTed by AA form" => "Dohva\xE6a podatke poslane (POST) putem AA forme", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 168
+// src/IO/Grabber/Form.php, row 193
 "No slice found: %1" => "Stranica nije prona\xF0ena: %1", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 171
+// src/IO/Grabber/Form.php, row 196
 "No file, img_upload, or img_src field type found in slice %1" => "U stranici %1 nije prona\xF0eno polje tipa file, img_upload ili img_src", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 204
+// src/IO/Grabber/Form.php, row 229
 "no POST nor FILES sent" => "nije poslan ni POST ni FILES", // ai 2026-06
 
 // src/IO/Grabber/Ical.php, row 43
@@ -9206,13 +9400,13 @@ return [
 // src/IO/Grabber/PohodaStocks.php, row 42
 "Imports stock from POHODA accounting system" => "Uvozi zalihe iz ra\xE8unovodstvenog sustava POHODA", // ai 2026-06
 
-// src/IO/Grabber/SOAP.php, row 60
+// src/IO/Grabber/SOAP.php, row 62
 "SOAP" => "",
 
-// src/IO/Grabber/SOAP.php, row 68
+// src/IO/Grabber/SOAP.php, row 70
 "General SOAP request" => "Op\xE6i SOAP zahtjev", // ai 2026-06
 
-// src/IO/Grabber/SOAP.php, row 78
+// src/IO/Grabber/SOAP.php, row 80
 "SOAP body request" => "Tijelo SOAP zahtjeva", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 82
@@ -10385,627 +10579,623 @@ return [
 "The column that identifies the item; it must be one of the columns" => "Stupac koji identificira stavku; mora biti jedan od stupaca", // ai 2026-10
 
 // src/Isds/Advice.php, row 47
-"The form has expired, or it does not belong to this page. Load the page again." => "",
+"The form has expired, or it does not belong to this page. Load the page again." => "Obrazac je istekao ili ne pripada ovoj web-stranici. Ponovno u\xE8itajte web-stranicu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 49
-"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "Poslani obrazac ve\xE6i je nego \x9Ato poslu\x9Eitelj prima (%1). Ni\x9Ata nije spremljeno \x96 smanjite privitke.", // ai 2026-11
 
 // src/Isds/Advice.php, row 50
-"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "Poslani obrazac ve\xE6i je nego \x9Ato poslu\x9Eitelj prima. Ni\x9Ata nije spremljeno \x96 smanjite privitke.", // ai 2026-11
 
 // src/Isds/Advice.php, row 51
-"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "",
+"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "Radnja nije uspjela zbog interne pogre\x9Ake AA i mo\x9Eda je dio posla ve\xE6 obavila. Ponovno u\xE8itajte web-stranicu i provjerite stanje prije nego \x9Ato poku\x9Aate jo\x9A jednom.", // ai 2026-11
 
 // src/Isds/Advice.php, row 52
-"Someone else, or another window, is working with this now. Try it again in a while." => "",
+"Someone else, or another window, is working with this now. Try it again in a while." => "S ovim upravo radi netko drugi ili drugi prozor. Poku\x9Aajte ponovno malo kasnije.", // ai 2026-11
 
 // src/Isds/Advice.php, row 53
-"You may not do this." => "",
+"You may not do this." => "Ovo ne smijete.", // ai 2026-11
 
 // src/Isds/Advice.php, row 54
-"This sending is not on this page." => "",
+"This sending is not on this page." => "Ovo slanje nije na ovoj web-stranici.", // ai 2026-11
 
 // src/Isds/Advice.php, row 55
-"The sending does not wait for this now." => "",
+"The sending does not wait for this now." => "Slanje sada ne \xE8eka na ovu radnju.", // ai 2026-11
 
 // src/Isds/Advice.php, row 56
-"A step of the sending is still running. Try it again in a few minutes." => "",
+"A step of the sending is still running. Try it again in a few minutes." => "Korak slanja jo\x9A traje. Poku\x9Aajte ponovno za nekoliko minuta.", // ai 2026-11
 
 // src/Isds/Advice.php, row 57
-"The sending goes on." => "",
+"The sending goes on." => "Slanje se nastavlja.", // ai 2026-11
 
 // src/Isds/Advice.php, row 58
-"The sending is stopping - no further message will go." => "",
+"The sending is stopping - no further message will go." => "Slanje se zaustavlja \x96 vi\x9Ae nijedna poruka ne\xE6e oti\xE6i.", // ai 2026-11
 
 // src/Isds/Advice.php, row 59
-"Every message has been sent or tried already - there is nothing left to stop." => "",
+"Every message has been sent or tried already - there is nothing left to stop." => "Sve su poruke ve\xE6 poslane ili se poku\x9Aalo poslati ih \x96 nema se \x9Ato zaustaviti.", // ai 2026-11
 
 // src/Isds/Advice.php, row 60
-"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "",
+"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "Slanje je trajno zavr\x9Aeno. Poruke nepoznate sudbine ostaju vama na provjeru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 61
-"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "",
+"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "Slanje se ve\xE6 zaustavilo zbog pogre\x9Ake, pa \x84Zaustavite\x93 ovdje ni\x9Ata ne mijenja. Mo\x9Eete odabrati \x84Nastavite\x93 ili trajno zavr\x9Aiti slanje \x96 poruke nepoznate sudbine i jo\x9A nepro\xE8itane dostave tada se vi\x9Ae ne\xE6e provjeravati.", // ai 2026-11
 
 // src/Isds/Advice.php, row 63
-"The draft is saved." => "",
+"The draft is saved." => "Nacrt je spremljen.", // ai 2026-11
 
 // src/Isds/Advice.php, row 64
-"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "",
+"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "Pismo je spremljeno, ali ne i odabir primatelja: u me\xF0uvremenu se promijenio \x96 u drugom prozoru ili je odabrani primatelj nestao. Web-stranica prikazuje sada spremljene primatelje; po potrebi ih ponovno odaberite.", // ai 2026-11
 
 // src/Isds/Advice.php, row 65
-"The copy is ready as a new draft." => "",
+"The copy is ready as a new draft." => "Kopija je spremna kao novi nacrt.", // ai 2026-11
 
 // src/Isds/Advice.php, row 66
-"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "",
+"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "Nacrt je premje\x9Aten u ko\x9A. Urednik stranice mo\x9Ee ga vratiti u \x84Ure\xF0ivanje stavki\x93.", // ai 2026-11
 
 // src/Isds/Advice.php, row 67
-"The sending of this campaign has started, so it stays - its messages must remain traceable." => "",
+"The sending of this campaign has started, so it stays - its messages must remain traceable." => "Slanje ove kampanje ve\xE6 je po\xE8elo, pa ona ostaje \x96 njezine poruke moraju ostati sljedive.", // ai 2026-11
 
 // src/Isds/Advice.php, row 68
-"The sending left no recipient unsent - there is nothing to copy." => "",
+"The sending left no recipient unsent - there is nothing to copy." => "Slanje nije ostavilo nijednog primatelja bez poruke \x96 nema se \x9Ato kopirati.", // ai 2026-11
 
 // src/Isds/Advice.php, row 69
-"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "",
+"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "Pismo se ovom primatelju mo\x9Ee ponovno poslati samo ako je njegova poruka bila neuspje\x9Ana ili se slanje zaustavilo prije nje. Ova je poruka oti\x9Ala, jo\x9A mo\x9Ee oti\xE6i ili je izostavljena \x96 ili se ne zna je li oti\x9Ala: provjerite je \xE8im web-stranica to ponudi (ne dok je AA jo\x9A tra\x9Ei), a zatim se mo\x9Ee ponovno poslati.", // ai 2026-11
 
 // src/Isds/Advice.php, row 70
-"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "",
+"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "Zabilje\x9Eeno: poruka nije oti\x9Ala. Pismo se tom primatelju mo\x9Ee ponovno poslati u novoj kampanji.", // ai 2026-11
 
 // src/Isds/Advice.php, row 71
-"The fate of this message is known - there is nothing to verify." => "",
+"The fate of this message is known - there is nothing to verify." => "Sudbina ove poruke je poznata \x96 nema se \x9Ato provjeravati.", // ai 2026-11
 
 // src/Isds/Advice.php, row 72
-"This message does not belong to the sending." => "",
+"This message does not belong to the sending." => "Ova poruka ne pripada slanju.", // ai 2026-11
 
 // src/Isds/Advice.php, row 73
-"The data box of the recipient is taken from the register." => "",
+"The data box of the recipient is taken from the register." => "Podatkovni pretinac primatelja preuzet je iz registra.", // ai 2026-11
 
 // src/Isds/Advice.php, row 74
-"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "",
+"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "Registar ne nudi ovaj podatkovni pretinac primatelja dovoljno pouzdano da bi se ovdje preuzeo. Urednik stranice primatelja usporedit \xE6e ga na njezinu zaslonu \x84Podatkovni pretinci iz registra\x93 ili ispraviti stavku.", // ai 2026-11
 
 // src/Isds/Advice.php, row 75
-"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "",
+"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "Registar podatkovnih pretinaca nije preuzet ili je zastario. Urednik stranice primatelja preuzet \xE6e ga na njezinu zaslonu \x84Podatkovni pretinci iz registra\x93.", // ai 2026-11
 
 // src/Isds/Advice.php, row 76
-"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "",
+"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "Ovaj primatelj nije me\xF0u onima uparenima s registrom: izbrisan je, premje\x9Aten u ko\x9A ili je dobio drugu vrstu. Ponovno u\xE8itajte web-stranicu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 77
-"A page in the test environment changes no recipient." => "",
+"A page in the test environment changes no recipient." => "Web-stranica u testnom okru\x9Eenju ne mijenja nijednog primatelja.", // ai 2026-11
 
 // src/Isds/Advice.php, row 78
-"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "",
+"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "Slanje je u redu \xE8ekanja \x96 primatelja: %1. Nastavlja se samo, web-stranicu mo\x9Eete zatvoriti.", // ai 2026-11
 
 // src/Isds/Advice.php, row 79
-"The test message has gone (ID %1 in ISDS, reference number %2)." => "",
+"The test message has gone (ID %1 in ISDS, reference number %2)." => "Testna poruka je oti\x9Ala (ID %1 u ISDS-u, urud\x9Ebeni broj %2).", // ai 2026-11
 
 // src/Isds/Advice.php, row 80
-"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "",
+"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "Ne zna se je li testna poruka oti\x9Ala. Potra\x9Eite je me\xF0u poslanim porukama podatkovnog pretinca prema urud\x9Ebenom broju %1.", // ai 2026-11
 
 // src/Isds/Advice.php, row 81
-"ISDS refused the test message." => "",
+"ISDS refused the test message." => "ISDS je odbio testnu poruku.", // ai 2026-11
 
 // src/Isds/Advice.php, row 82
-"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "",
+"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "Druga testna poruka ove web-stranice je na putu ili se maloprije zaustavila. Poku\x9Aajte ponovno za nekoliko minuta.", // ai 2026-11
 
 // src/Isds/Advice.php, row 83
-"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "",
+"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "Slanje je ve\xE6 u redu \xE8ekanja ili poslano, pa se ne mo\x9Ee mijenjati ni ponovno poslati. \x8Eelite li pismo poslati jo\x9A jednom, napravite njegovu kopiju.", // ai 2026-11
 
 // src/Isds/Advice.php, row 84
-"Choose the recipients and save the draft." => "",
+"Choose the recipients and save the draft." => "Odaberite primatelje i spremite nacrt.", // ai 2026-11
 
 // src/Isds/Advice.php, row 85
-"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "",
+"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "Ova web-stranica vi\x9Ae ne nudi primatelje spremljene s nacrtom, pa ne prikazuje nikakav njihov odabir. Ponovno odaberite primatelje i spremite nacrt \x96 novi odabir zamjenjuje spremljeni.", // ai 2026-11
 
 // src/Isds/Advice.php, row 86
-"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "",
+"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "Broj primatelja promijenio se otkad ste potvrdili %1. Provjerite odabir i po\x9Aaljite ponovno.", // ai 2026-11
 
 // src/Isds/Advice.php, row 87
-"There are more recipients than this page may send to (%1). Narrow the choice." => "",
+"There are more recipients than this page may send to (%1). Narrow the choice." => "Primatelja je vi\x9Ae nego \x9Ato ova web-stranica smije obuhvatiti (%1). Suzite odabir.", // ai 2026-11
 
 // src/Isds/Advice.php, row 88
-"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "",
+"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "Pismo ne bi stiglo nikome: nijedan od odabranih primatelja nema podatkovni pretinac u koji bi moglo oti\xE6i.", // ai 2026-11
 
 // src/Isds/Advice.php, row 89
-"No data box account is set up for this page. Ask the administrator." => "",
+"No data box account is set up for this page. Ask the administrator." => "Za ovu web-stranicu nije postavljen nijedan ra\xE8un podatkovnog pretinca. Obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 90
-"This page or its slices are not ready to send. Ask the administrator." => "",
+"This page or its slices are not ready to send. Ask the administrator." => "Ova web-stranica ili njezine stranice nisu spremne za slanje. Obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 91
-"The letter cannot go as a data message:" => "",
+"The letter cannot go as a data message:" => "Pismo ne mo\x9Ee oti\xE6i kao podatkovna poruka:", // ai 2026-11
 
 // src/Isds/Advice.php, row 92
-"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "",
+"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "Poslu\x9Eitelj sada nije mogao sastaviti pismo \x96 u nacrtu nema \x9Ato ispravljati. Poku\x9Aajte ponovno kasnije ili se obratite administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "Poslu\x9Eitelj ima premalo memorije za pismo i njegove privitke (potrebno %1 MB). Obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments. Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments. Ask the administrator." => "Poslu\x9Eitelj ima premalo memorije za pismo i njegove privitke. Obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 94
-"The database cannot queue a sending safely. Ask the administrator." => "",
+"The database cannot queue a sending safely. Ask the administrator." => "Baza podataka ne mo\x9Ee sigurno staviti slanje u red \xE8ekanja. Obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 95
-"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "",
+"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "ISDS je odbio prijavu ra\xE8una, ni\x9Ata nije poslano. Zamolite administratora da provjeri prijavu.", // ai 2026-11
 
 // src/Isds/Advice.php, row 96
-"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "ISDS je blokirao prijave s ovog poslu\x9Eitelja, ni\x9Ata nije poslano. Nova lozinka ne poma\x9Ee: AA se ponovno poku\x9Aava prijaviti dan nakon blokade \x96 poku\x9Aajte ponovno sutra ili se obratite administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 97
-"The settings of the account are not complete, nothing was sent. Ask the administrator." => "",
+"The settings of the account are not complete, nothing was sent. Ask the administrator." => "Postavke ra\xE8una nisu potpune, ni\x9Ata nije poslano. Obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 98
-"ISDS does not answer, nothing was sent. Try it again in a while." => "",
+"ISDS does not answer, nothing was sent. Try it again in a while." => "ISDS ne odgovara, ni\x9Ata nije poslano. Poku\x9Aajte ponovno malo kasnije.", // ai 2026-11
 
 // src/Isds/Advice.php, row 99
-"ISDS refused to tell whose the login of the account is, nothing was sent." => "",
+"ISDS refused to tell whose the login of the account is, nothing was sent." => "ISDS je odbio re\xE6i \xE8ija je prijava ra\xE8una, ni\x9Ata nije poslano.", // ai 2026-11
 
 // src/Isds/Advice.php, row 100
-"No test data box is set up for this page - in production the administrator of the server sets it." => "",
+"No test data box is set up for this page - in production the administrator of the server sets it." => "Za ovu web-stranicu nije postavljen nijedan testni podatkovni pretinac \x96 u produkciji ga postavlja administrator poslu\x9Eitelja.", // ai 2026-11
 
 // src/Isds/Advice.php, row 101
-"Choose one of the test data boxes of this page." => "",
+"Choose one of the test data boxes of this page." => "Odaberite jedan od testnih podatkovnih pretinaca ove web-stranice.", // ai 2026-11
 
 // src/Isds/Advice.php, row 102
-"A test message cannot go to the data box it is sent from. Choose another test box." => "",
+"A test message cannot go to the data box it is sent from. Choose another test box." => "Testna poruka ne mo\x9Ee i\xE6i u podatkovni pretinac iz kojeg se \x9Aalje. Odaberite drugi testni pretinac.", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained until %1. Try it again then." => "",
+"ISDS is being maintained until %1. Try it again then." => "ISDS je u odr\x9Eavanju do %1. Tada poku\x9Aajte ponovno.", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained. Try it again later." => "",
+"ISDS is being maintained. Try it again later." => "ISDS je u odr\x9Eavanju. Poku\x9Aajte ponovno kasnije.", // ai 2026-11
 
 // src/Isds/Advice.php, row 105
-"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "Ovo je pismo ve\xE6 oti\x9Alo ili je mo\x9Eda oti\x9Alo u ovaj testni pretinac %2 (urud\x9Ebeni broj %1). Za ponovno testiranje promijenite nacrt.", // ai 2026-11
 
 // src/Isds/Advice.php, row 106
-"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "Ovo je pismo ve\xE6 oti\x9Alo ili je mo\x9Eda oti\x9Alo u ovaj testni pretinac (urud\x9Ebeni broj %1). Za ponovno testiranje promijenite nacrt.", // ai 2026-11
 
 // src/Isds/Advice.php, row 107
-"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "",
+"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "Poruka u ovaj podatkovni pretinac bila bi pla\xE6ena (po\x9Atanska podatkovna poruka), a u produkciji testna poruka ide samo besplatno. Testirajte s podatkovnim pretincem nekog tijela.", // ai 2026-11
 
 // src/Isds/Advice.php, row 108
-"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "",
+"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "Nije bilo mogu\xE6e provjeriti ho\xE6e li poruka biti besplatna, ni\x9Ata nije poslano. Provjerite testni pretinac i poku\x9Aajte ponovno malo kasnije.", // ai 2026-11
 
 // src/Isds/Advice.php, row 109
-"The test message went as a paid postal data message." => "",
+"The test message went as a paid postal data message." => "Testna poruka oti\x9Ala je kao pla\xE6ena po\x9Atanska podatkovna poruka.", // ai 2026-11
 
 // src/Isds/Advice.php, row 110
-"The test message may have cost money: it may have gone as a paid postal data message." => "",
+"The test message may have cost money: it may have gone as a paid postal data message." => "Testna poruka mo\x9Eda je ne\x9Ato stajala: mo\x9Eda je oti\x9Ala kao pla\xE6ena po\x9Atanska podatkovna poruka.", // ai 2026-11
 
 // src/Isds/Advice.php, row 141
-"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "",
+"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "ISDS je odbio nekoliko poruka zaredom s istim statusom ili je odbio upit slanja \x96 \xE8ija je prijava ra\xE8una ili koje su poruke poslane.", // ai 2026-11
 
 // src/Isds/Advice.php, row 142
-"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "",
+"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "Nakon odbijenih poruka \x84Nastavite\x93 \x9Aalje jo\x9A jednu, a slanje se ponovno zaustavlja ako ISDS odbije i nju; nakon odbijenog upita \x84Nastavite\x93 ponovno postavlja upit.", // ai 2026-11
 
 // src/Isds/Advice.php, row 144
-"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "",
+"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "\xC8eka se da ISDS navede poruke \xE8ija sudbina jo\x9A nije poznata. Slanje ih samo pronalazi.", // ai 2026-11
 
 // src/Isds/Advice.php, row 145
-"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "",
+"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "Slanje je zavr\x9Aeno \x96 \x9Ato ne zna\xE8i da su oti\x9Ale sve poruke, to pokazuju brojke. Dostava se prati u krugovima; sljede\xE6i dolazi sam.", // ai 2026-11
 
 // src/Isds/Advice.php, row 146
-"ISDS is being maintained. The sending waits till the end and goes on by itself." => "",
+"ISDS is being maintained. The sending waits till the end and goes on by itself." => "ISDS je u odr\x9Eavanju. Slanje \xE8eka do kraja i nastavlja se samo.", // ai 2026-11
 
 // src/Isds/Advice.php, row 147
-"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "",
+"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "Ra\xE8un podatkovnog pretinca ove web-stranice vi\x9Ae nije onaj s kojim je slanje stavljeno u red \xE8ekanja. Obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 148
-"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "",
+"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "ISDS ne odgovara. AA poku\x9Aava ponovno sam; ako se slanje zbog toga zaustavilo, odaberite \x84Nastavite\x93 \xE8im ISDS odgovori.", // ai 2026-11
 
 // src/Isds/Advice.php, row 149
-"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "",
+"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "ISDS odbija prijavu ra\xE8una. Zamolite administratora da provjeri prijavu, a zatim odaberite \x84Nastavite\x93.", // ai 2026-11
 
 // src/Isds/Advice.php, row 150
-"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "ISDS je blokirao prijave s ovog poslu\x9Eitelja. Nova lozinka ne poma\x9Ee: odaberite \x84Nastavite\x93 sutra ili se obratite administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 151
-"The settings of the account are not complete. Ask the administrator." => "",
+"The settings of the account are not complete. Ask the administrator." => "Postavke ra\xE8una nisu potpune. Obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 152
-"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "",
+"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "Ono \x9Ato je za slanje zamrznuto \x96 pismo, njegovi privitci ili primatelji \x96 nedostaje ili se promijenilo, pa se ne mo\x9Ee nastaviti. Obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 153
-"The database cannot record the sending safely. Ask the administrator." => "",
+"The database cannot record the sending safely. Ask the administrator." => "Baza podataka ne mo\x9Ee sigurno zabilje\x9Eiti slanje. Obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 154
-"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "",
+"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "Korak slanja opetovano ne napreduje. Odaberite \x84Nastavite\x93; ako se ponovno zaustavi, obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 155
-"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Korak slanja zaustavio se prije kraja. AA poku\x9Aava ponovno sam; ako se slanje zbog toga zaustavilo, obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 156
-"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Kraj slanja nije bilo mogu\xE6e zabilje\x9Eiti. AA poku\x9Aava ponovno sam; ako se slanje zbog toga zaustavilo, obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 157
-"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "",
+"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "Korak slanja nije uspio zbog interne pogre\x9Ake AA. Odaberite \x84Nastavite\x93; ako ponovno ne uspije, obratite se administratoru.", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "",
+"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "Podatkovni pretinac primatelja prima samo pla\xE6ene po\x9Atanske podatkovne poruke, a pretinac po\x9Ailjatelja ih ne smije slati.", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"Test with the data box of an authority." => "",
+"Test with the data box of an authority." => "Testirajte s podatkovnim pretincem nekog tijela.", // ai 2026-11
 
 // src/Isds/Advice.php, row 174
-"The sending data box has been made inaccessible - no message can go from it now." => "",
+"The sending data box has been made inaccessible - no message can go from it now." => "Podatkovni pretinac po\x9Ailjatelja onemogu\xE6en je \x96 iz njega sada ne mo\x9Ee oti\xE6i nijedna poruka.", // ai 2026-11
 
 // src/Isds/Advice.php, row 175
-"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "",
+"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "Predmet, \x84Na ruke\x93 ili naziv privitka sadr\x9Ei znak koji ISDS ne prihva\xE6a.", // ai 2026-11
 
 // src/Isds/Advice.php, row 183
-"ISDS answered with status %1." => "",
+"ISDS answered with status %1." => "ISDS je odgovorio statusom %1.", // ai 2026-11
 
 // src/Isds/Advice.php, row 193
-"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "Predmet nije mogu\xE6e spremiti: smije imati najvi\x9Ae %1 znakova i nijedan tabulator ni drugi kontrolni znak. Ni\x9Ata iz nacrta nije spremljeno.", // ai 2026-11
 
 // src/Isds/Advice.php, row 194
-"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "\x84Na ruke\x93 nije mogu\xE6e spremiti: smije imati najvi\x9Ae %1 znakova i nijedan tabulator ni drugi kontrolni znak. Ni\x9Ata iz nacrta nije spremljeno.", // ai 2026-11
 
 // src/Isds/Advice.php, row 195
-"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "",
+"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "Tekst pisma nije mogu\xE6e spremiti: ve\xE6i je od %1 ili nije ispravan tekst. Ni\x9Ata iz nacrta nije spremljeno.", // ai 2026-11
 
 // src/Isds/Advice.php, row 196
-"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "",
+"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "Odabir primatelja nije mogu\xE6e spremiti: ova ga web-stranica ne nudi. Ni\x9Ata iz nacrta nije spremljeno \x96 odaberite ih jo\x9A jednom i spremite ga.", // ai 2026-11
 
 // src/Isds/Advice.php, row 197
-"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "",
+"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "Odabir primatelja nije mogu\xE6e spremiti: mo\x9Ee se pojedina\xE8no odabrati najvi\x9Ae %1 primatelja i isto toliko pojedina\xE8no izostaviti. Ni\x9Ata iz nacrta nije spremljeno.", // ai 2026-11
 
 // src/Isds/Advice.php, row 198
-"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "",
+"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Podatkovna poruka nosi uz pismo najvi\x9Ae %1 privitaka. Ni\x9Ata iz nacrta nije spremljeno \x96 najprije uklonite neke od njih.", // ai 2026-11
 
 // src/Isds/Advice.php, row 199
-"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "Datoteku %1 nije mogu\xE6e prilo\x9Eiti: ova web-stranica prima samo datoteke vrsta %2. Spremite je kao PDF ili prilo\x9Eite datoteke iz arhive pojedina\xE8no. Ni\x9Ata iz nacrta nije spremljeno.", // ai 2026-11
 
 // src/Isds/Advice.php, row 200
-"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "Datoteku %1 nije mogu\xE6e prilo\x9Eiti: njezin sadr\x9Eaj ne odgovara vrsti koju navodi nastavak. Ni\x9Ata iz nacrta nije spremljeno.", // ai 2026-11
 
 // src/Isds/Advice.php, row 201
-"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "",
+"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "Datoteka %1 ve\xE6a je nego \x9Ato ovdje smije biti jedna datoteka (%2). Ni\x9Ata iz nacrta nije spremljeno. Svi privitci i pismo zajedno smiju imati najvi\x9Ae %3 \x96 to provjerava testna poruka.", // ai 2026-11
 
 // src/Isds/Advice.php, row 202
-"The file %1 is empty. Nothing of the draft was saved." => "",
+"The file %1 is empty. Nothing of the draft was saved." => "Datoteka %1 je prazna. Ni\x9Ata iz nacrta nije spremljeno.", // ai 2026-11
 
 // src/Isds/Advice.php, row 203
-"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "",
+"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "Datoteka %1 nije stigla cijela. Poku\x9Aajte ponovno. Ni\x9Ata iz nacrta nije spremljeno.", // ai 2026-11
 
 // src/Isds/Advice.php, row 204
-"A value of the form cannot be taken. Load the page again and try it once more." => "",
+"A value of the form cannot be taken. Load the page again and try it once more." => "Vrijednost iz obrasca nije mogu\xE6e preuzeti. Ponovno u\xE8itajte web-stranicu i poku\x9Aajte jo\x9A jednom.", // ai 2026-11
 
 // src/Isds/Gate.php, row 1139
-"The mass sending on this page is not ready - fix this first:" => "",
+"The mass sending on this page is not ready - fix this first:" => "Masovno slanje na ovoj web-stranici nije spremno \x96 najprije ispravite ovo:", // ai 2026-11
 
 // src/Isds/Gate.php, row 1140
-"Where to fix it:" => "",
+"Where to fix it:" => "Gdje to ispraviti:", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"Name field" => "",
+"Name field" => "Polje s nazivom", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"The name the register is searched by when the I\xC4\x8CO finds no box" => "",
+"The name the register is searched by when the I\xC4\x8CO finds no box" => "Naziv prema kojem se pretra\x9Euje registar kad I\xC8O ne prona\xF0e nijedan pretinac", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"I\xC4\x8CO field" => "",
+"I\xC4\x8CO field" => "Polje s I\xC8O", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"The I\xC4\x8CO finds the box for sure; without it only names are matched, and a person checks those" => "",
+"The I\xC4\x8CO finds the box for sure; without it only names are matched, and a person checks those" => "I\xC8O pouzdano pronalazi pretinac; bez njega se uspore\xF0uju samo nazivi, a njih provjerava \xE8ovjek", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"Data box field" => "",
+"Data box field" => "Polje s podatkovnim pretincem", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"The field the data box id is written to - the only field the pairing changes" => "",
+"The field the data box id is written to - the only field the pairing changes" => "Polje u koje se upisuje ID podatkovnog pretinca \x96 jedino polje koje uparivanje mijenja", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"Type field" => "",
+"Type field" => "Polje s vrstom", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"The type of the item, needed for the two lists below" => "",
+"The type of the item, needed for the two lists below" => "Vrsta stavke, potrebna za dva popisa u nastavku", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Types to pair" => "",
+"Types to pair" => "Vrste za uparivanje", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Only items of these types are paired; none = all items" => "",
+"Only items of these types are paired; none = all items" => "Uparuju se samo stavke ovih vrsta; nijedna = sve stavke", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Types of city districts" => "",
+"Types of city districts" => "Vrste gradskih \xE8etvrti", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "",
+"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "Stavke ovih vrsta uparuju se s pretincima gradskih \xE8etvrti, ostale s pretincima op\xE6ina", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field with the name" => "",
+"Choose the field with the name" => "Odaberite polje s nazivom", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field the data box is written to" => "",
+"Choose the field the data box is written to" => "Odaberite polje u koje se upisuje podatkovni pretinac", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 132
-"The slice has no field %1" => "",
+"The slice has no field %1" => "Stranica nema polje %1", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 139
-"The data box needs a field of its own - writing it would overwrite the name, I\xC4\x8CO or type" => "",
+"The data box needs a field of its own - writing it would overwrite the name, I\xC4\x8CO or type" => "Podatkovni pretinac treba vlastito polje \x96 njegovim upisom prepisao bi se naziv, I\xC8O ili vrsta", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 142
-"The lists of types need the type field" => "",
+"The lists of types need the type field" => "Popisi vrsta zahtijevaju polje s vrstom", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 147
-"The types of city districts must be among the types to pair too: %1" => "",
+"The types of city districts must be among the types to pair too: %1" => "Vrste gradskih \xE8etvrti moraju biti i me\xF0u vrstama za uparivanje: %1", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 160
-"The field %1 is protected - it is neither shown nor written here" => "",
+"The field %1 is protected - it is neither shown nor written here" => "Polje %1 je za\x9Ati\xE6eno \x96 ovdje se ne prikazuje niti upisuje", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 164
-"The data box cannot be written to %1, a column of the item table" => "",
+"The data box cannot be written to %1, a column of the item table" => "Podatkovni pretinac ne mo\x9Ee se upisati u %1, stupac tablice item", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 86
-"Changed" => "",
+"Changed" => "Promijenjeno", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 87
-"Same" => "",
+"Same" => "Bez promjene", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 88
 // src/Isds/Registry/Page.php, row 567
-"Not found" => "",
+"Not found" => "Nije prona\xF0eno", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 89
-"Several candidates" => "",
+"Several candidates" => "Vi\x9Ae kandidata", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 151
-"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by I\xC4\x8CO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "",
+"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by I\xC4\x8CO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "Ovaj zaslon pronalazi podatkovni pretinac svake stavke u javnom registru podatkovnih pretinaca i upisuje ga u stavku. Upisuju se samo retci koje ozna\xE8ite i mijenja se samo polje s podatkovnim pretincem. Pretinac prona\xF0en prema I\xC8O unaprijed je ozna\xE8en; pretinac prona\xF0en prema nazivu samo je prijedlog, pa usporedite nazive i ozna\xE8ite ga sami.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 169
-"The form sent values this page does not send. Reload the page and try again." => "",
+"The form sent values this page does not send. Reload the page and try again." => "Obrazac je poslao vrijednosti koje ovaj zaslon ne \x9Aalje. Ponovno u\xE8itajte zaslon i poku\x9Aajte ponovno.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 324
-"You do not have permissions to do this in this slice." => "",
+"You do not have permissions to do this in this slice." => "Nemate dozvolu za to na ovoj stranici.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 325
-"The settings are saved." => "",
+"The settings are saved." => "Postavke su spremljene.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 327
-"The register is downloaded." => "",
+"The register is downloaded." => "Registar je preuzet.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 329
-"The register is being downloaded right now. Reload the page in a minute." => "",
+"The register is being downloaded right now. Reload the page in a minute." => "Registar se upravo preuzima. Ponovno u\xE8itajte zaslon za minutu.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 330
-"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "Registar se nije preuzeo; i dalje se koristi prethodni. Poku\x9Aajte ponovno kasnije. Administrator \xE6e pojedinosti prona\xE6i u zapisniku AA (vrsta %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 331
-"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "Registar je preuzet, ali AA nije uspio zabilje\x9Eiti preuzimanje, pa se registar ne mo\x9Ee koristiti dok preuzimanje ne uspije. Poku\x9Aajte ponovno kasnije. Administrator \xE6e pojedinosti prona\xE6i u zapisniku AA (vrsta %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 332
-"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "",
+"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "Registar ili postavke uparivanja promijenili su se otkad ste pregledali retke, pa ni\x9Ata nije upisano. Ponovno provjerite retke u nastavku i upi\x9Aite ih.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 333
-"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "Kopiju registra nije mogu\xE6e pro\xE8itati, pa ni\x9Ata nije upisano. Administrator \xE6e pojedinosti prona\xE6i u zapisniku AA (vrsta %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 334
-"Nothing was written. Download the register again." => "",
+"Nothing was written. Download the register again." => "Ni\x9Ata nije upisano. Ponovno preuzmite registar.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 335
-"Choose the fields of the pairing first." => "",
+"Choose the fields of the pairing first." => "Najprije odaberite polja za uparivanje.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 336
-"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "",
+"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "Postavke uparivanja vi\x9Ae ne odgovaraju poljima stranice, pa ni\x9Ata nije upisano: %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 337
-"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "",
+"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "Upisivanje se zaustavilo zbog pogre\x9Ake. Retci upisani prije toga ostaju upisani; pregled u nastavku prikazuje stavke u trenuta\xE8nom stanju. Administrator \xE6e pojedinosti prona\xE6i u zapisniku AA (vrsta %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 347
-"The last download attempt was at %1. Another one is possible from %2." => "",
+"The last download attempt was at %1. Another one is possible from %2." => "Posljednji poku\x9Aaj preuzimanja bio je %1. Sljede\xE6i je mogu\xE6 od %2.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 355
-"Data boxes written: %1." => "",
+"Data boxes written: %1." => "Upisano podatkovnih pretinaca: %1.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 356
-"Nothing was written: no row was ticked, or the ticked ones have their box already." => "",
+"Nothing was written: no row was ticked, or the ticked ones have their box already." => "Ni\x9Ata nije upisano: nijedan redak nije ozna\xE8en ili ozna\xE8eni ve\xE6 imaju svoj pretinac.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 358
-"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "",
+"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "Ozna\xE8eni retci koji su se u me\xF0uvremenu promijenili i nisu upisani: %1. Ponovno ih provjerite u nastavku.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 361
-"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "",
+"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "Ozna\xE8eni retci ostavljeni za sljede\xE6e upisivanje: %1. Jedno upisivanje obuhva\xE6a najvi\x9Ae %2 redaka.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 364
-"These items were not written:" => "",
+"These items were not written:" => "Ove stavke nisu upisane:", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 386, 465
-"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "Kopiju registra nije mogu\xE6e pro\xE8itati. Administrator \xE6e pojedinosti prona\xE6i u zapisniku AA (vrsta %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet. Download it to see the report." => "",
+"The register has not been downloaded yet. Download it to see the report." => "Registar jo\x9A nije preuzet. Preuzmite ga kako biste vidjeli pregled.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet." => "",
+"The register has not been downloaded yet." => "Registar jo\x9A nije preuzet.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Download the register again." => "",
+"Download the register again." => "Ponovno preuzmite registar.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Ask someone who manages the settings to download the register again." => "",
+"Ask someone who manages the settings to download the register again." => "Zamolite nekoga tko upravlja postavkama da ponovno preuzme registar.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 392
-"Size: %1 MB." => "",
+"Size: %1 MB." => "Veli\xE8ina: %1 MB.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 394
-"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "",
+"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "Registar je stariji od %1 dana. Ponovno ga preuzmite prije upisivanja: tijela dobivaju nove pretince i spajaju se.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 398
-"Download the register now" => "",
+"Download the register now" => "Preuzmite registar odmah", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 399
-"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "",
+"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "Javni registar podatkovnih pretinaca tijela, oko 17 MB; preuzimanje traje do minute. Sve stranice ovog AA koriste istu kopiju.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 401
-"Register of data boxes" => "",
+"Register of data boxes" => "Registar podatkovnih pretinaca", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"AA has no record of downloading this copy of the register" => "",
+"AA has no record of downloading this copy of the register" => "AA nema zapis o preuzimanju ove kopije registra", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"The register of data boxes is not the one AA downloaded" => "",
+"The register of data boxes is not the one AA downloaded" => "Registar podatkovnih pretinaca nije onaj koji je AA preuzeo", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 426
-"Downloaded: %1 (today)." => "",
+"Downloaded: %1 (today)." => "Preuzeto: %1 (danas).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 427
-"Downloaded: %1 (yesterday)." => "",
+"Downloaded: %1 (yesterday)." => "Preuzeto: %1 (ju\xE8er).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 428
-"Downloaded: %1." => "",
+"Downloaded: %1." => "Preuzeto: %1.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 469
-"Items and their data boxes" => "",
+"Items and their data boxes" => "Stavke i njihovi podatkovni pretinci", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 482
-"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "",
+"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "Postavke uparivanja vi\x9Ae ne odgovaraju poljima stranice: %1. Ponovno odaberite polja u postavkama u nastavku.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 485
-"The slice has no items to pair." => "",
+"The slice has no items to pair." => "Stranica nema stavki za uparivanje.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 490
-"No row has this status." => "",
+"No row has this status." => "Nijedan redak nema ovaj status.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 510
 "Write" => "Zapi\x9Ai", // ai 2026-06
 
 // src/Isds/Registry/Page.php, row 514
-"Stored data box" => "",
+"Stored data box" => "Spremljeni pretinac", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 514
-"Data box in the register" => "",
+"Data box in the register" => "Pretinac u registru", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 520
-"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "",
+"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "Jedno upisivanje obuhva\xE6a najvi\x9Ae %1 redaka i najvi\x9Ae toliko ih je unaprijed ozna\xE8eno. Ostatak upi\x9Aite poslije.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 523
-"Write the ticked data boxes" => "",
+"Write the ticked data boxes" => "Upi\x9Aite ozna\xE8ene pretince", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 524
-"Writes only the data box field of the ticked items. Their history records the change." => "",
+"Writes only the data box field of the ticked items. Their history records the change." => "Upisuje samo polje s podatkovnim pretincem ozna\xE8enih stavki. Promjenu bilje\x9Ei njihova povijest.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 536
-"Show the rows of" => "",
+"Show the rows of" => "Prika\x9Eite retke sa statusom", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 542
-"(no name)" => "",
+"(no name)" => "(bez naziva)", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 546
-"Write the data box %1 into %2" => "",
-
-// src/Isds/Registry/Page.php, row 555, 653
-// src/Optimize/MissCacheRouting.php, row 98, 129
-"none" => "nema", // ai 2026-10
+"Write the data box %1 into %2" => "Upi\x9Aite podatkovni pretinac %1 u %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 571
-"I\xC4\x8CO %1" => "",
+"I\xC4\x8CO %1" => "I\xC8O %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 580
-"by I\xC4\x8CO" => "",
+"by I\xC4\x8CO" => "prema I\xC8O", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 581
-"by name, check it" => "",
+"by name, check it" => "prema nazivu, provjerite", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 585
-"I\xC4\x8CO of the item %1, of the box %2" => "",
+"I\xC4\x8CO of the item %1, of the box %2" => "I\xC8O stavke %1, pretinca %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 588
-"Another item has or would get this data box too. Check that it is not one place twice." => "",
+"Another item has or would get this data box too. Check that it is not one place twice." => "Ovaj podatkovni pretinac ima ili bi dobila i druga stavka. Provjerite nije li rije\xE8 dvaput o istom mjestu.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 599
-"Settings of the pairing" => "",
+"Settings of the pairing" => "Postavke uparivanja", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 616
-"Saving changes only these settings, never the items." => "",
+"Saving changes only these settings, never the items." => "Spremanje mijenja samo ove postavke, nikada stavke.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"Choose a field" => "",
+"Choose a field" => "Odaberite polje", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"None" => "",
+"None" => "Nijedno", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 639
-"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "",
+"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "Uparivanje za ovu stranicu jo\x9A nije postavljeno. Postavlja ga ovdje onaj tko smije mijenjati polja stranice.", // ai 2026-11
 
 // src/Isds/Registry/Sync.php, row 450
-"The item was not stored" => "",
+"The item was not stored" => "Stavka nije spremljena", // ai 2026-11
 
 // src/Isds/SendQueue.php, row 448
-"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "",
+"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "Stranica kampanje nema direktorij za u\xE8itavanje datoteka pisma \x96 postavlja ga administrator poslu\x9Eitelja.", // ai 2026-11
 
 // src/Isds/Setup.php, row 107
-"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "",
+"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "Postavke masovnog slanja nisu JSON objekt \x96 zapi\x9Aite ih pomo\xE6u {jsonasoc:...}", // ai 2026-11
 
 // src/Isds/Setup.php, row 115
-"Unknown settings of the mass sending: %1 - the settings are %2" => "",
+"Unknown settings of the mass sending: %1 - the settings are %2" => "Nepoznate postavke masovnog slanja: %1 \x96 mogu\xE6e postavke su %2", // ai 2026-11
 
 // src/Isds/Setup.php, row 130
-"default_types names types that are not among types: %1" => "",
+"default_types names types that are not among types: %1" => "default_types navodi tipove koji nisu me\xF0u types: %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 133
-"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "",
+"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "environment smije biti samo \x84%1\x93 \x96 kada se koristi produkcija, odre\xF0uje misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Isds/Setup.php, row 136
-"Set letterhead to a text" => "",
+"Set letterhead to a text" => "Postavite letterhead na tekst", // ai 2026-11
 
 // src/Isds/Setup.php, row 146
-"The settings of data boxes cannot be read now - ask the administrator of the server" => "",
+"The settings of data boxes cannot be read now - ask the administrator of the server" => "Postavke podatkovnih pretinaca trenutno se ne mogu pro\xE8itati \x96 obratite se administratoru poslu\x9Eitelja", // ai 2026-11
 
 // src/Isds/Setup.php, row 240
-"Set %1 to the id of a slice - 32 hexadecimal digits" => "",
+"Set %1 to the id of a slice - 32 hexadecimal digits" => "Postavite %1 na ID stranice \x96 32 heksadecimalne znamenke", // ai 2026-11
 
 // src/Isds/Setup.php, row 258
-"Set %1 to the id of a field - 16 characters like text...........1" => "",
+"Set %1 to the id of a field - 16 characters like text...........1" => "Postavite %1 na ID polja \x96 16 znakova, npr. text...........1", // ai 2026-11
 
 // src/Isds/Setup.php, row 283
-"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "",
+"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "Postavite types na objekt tipova stavki koje se nude, svaki s oznakom: {jsonasoc:<type>:<label>:...}", // ai 2026-11
 
 // src/Isds/Setup.php, row 288
-"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "",
+"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "Tip stavke u types smije sadr\x9Eavati samo slova, znamenke, razmake i znakove - _ . : %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 303
-"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "",
+"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "Postavite %1 na tekst ili na popis tekstova: [\"...\",\"...\"]", // ai 2026-11
 
 // src/Isds/Setup.php, row 321
-"test_box: %1 is not the id of a data box - 7 letters or digits" => "",
+"test_box: %1 is not the id of a data box - 7 letters or digits" => "test_box: %1 nije ID podatkovnog pretinca \x96 7 slova ili znamenki", // ai 2026-11
 
 // src/Isds/Setup.php, row 351
-"Set max_recipients to a number from 1 to %1" => "",
+"Set max_recipients to a number from 1 to %1" => "Postavite max_recipients na broj od 1 do %1", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 67
-"The campaign slice and the message slice must be two slices" => "",
+"The campaign slice and the message slice must be two slices" => "Stranica kampanje i stranica poruka moraju biti dvije razli\xE8ite stranice", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 94
-"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "",
+"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "Web \x84%1\x93 je u sme\xE6u \x96 vratite ga iz sme\xE6a ili navedite drugi web", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 95
-"There is no site %1" => "",
+"There is no site %1" => "Web %1 ne postoji", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 99
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "Web \x84%1\x93 prijavljuje samo \xE8itatelje sa svojih stranica za upravljanje \xE8itateljima, pa nitko ne dobiva pravo slanja \x96 u postavkama weba postavite \x84Baze podataka za prijavu korisnika\x93 na \x84%2\x93", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 140
-"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "",
+"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "Stranica \x84%1\x93 ima lozinku za \xE8itanje, pa web-stranica ne mo\x9Ee u\xE8itati primatelje \x96 u postavkama stranice uklonite \x84Lozinka za \xE8itanje\x93 ili navedite javnu stranicu", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 144
-"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "",
+"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "Stranica \x84%1\x93 nema postavke podatkovnih pretinaca \x96 postavite njezina polja na njezinom zaslonu \x84Podatkovni pretinci iz registra\x93", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 151
-"Slice \"%1\", its settings of data boxes: %2" => "",
+"Slice \"%1\", its settings of data boxes: %2" => "Stranica \x84%1\x93, njezine postavke podatkovnih pretinaca: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 154
-"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "",
+"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "Stranica \x84%1\x93: u njezinim postavkama podatkovnih pretinaca odaberite polje \x84Tip\x93 \x96 primatelji se biraju prema tipu", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 156
-"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "",
+"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "Stranica \x84%1\x93 ne uparuje s podatkovnim pretincima nijednu stavku tipova %2 \x96 nudite samo njezine \x84Tipovi\x93 za uparivanje: %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 162
-"Slice \"%1\" has no field %2 - name the field that tells a member" => "",
+"Slice \"%1\" has no field %2 - name the field that tells a member" => "Stranica \x84%1\x93 nema polje %2 \x96 navedite polje koje ozna\xE8ava \xE8lana", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 164
-"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "",
+"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "Polje %1 stranice \x84%2\x93 je za\x9Ati\xE6eno \x96 navedite polje koje ozna\xE8ava \xE8lana", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 179
 // src/Optimize/CheckSiteStateFiles.php, row 72
@@ -11013,58 +11203,58 @@ return [
 "Site settings" => "Postavke weba", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 225
-"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "",
+"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "Stranica \x84%1\x93 je u sme\xE6u \x96 vratite je iz sme\xE6a ili navedite drugu stranicu", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 226
-"There is no slice %1" => "",
+"There is no slice %1" => "Stranica %1 ne postoji", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 237
-"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "",
+"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "Web \x84%1\x93 ne koristi stranicu %2 \x96 dodajte stranicu u \x84Koristi module\x93 u postavkama weba", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 250
-"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "",
+"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "Stranica \x84%1\x93 nema lozinku za \xE8itanje \x96 ispunite \x84Lozinka za \xE8itanje\x93 u postavkama stranice", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 254
-"Close slice \"%1\" - set in its settings %2" => "",
+"Close slice \"%1\" - set in its settings %2" => "Zatvorite stranicu \x84%1\x93 \x96 u njezinim postavkama postavite %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 257
-"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "Stranica \x84%1\x93 dopu\x9Ata bilo kojoj stranici uvoz svojih stavki \x96 na njezinom zaslonu \x84Punjenje sadr\x9Eaja\x93 isklju\xE8ite \x84Omogu\xE6i izvoz u bilo koju stranicu\x93", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 274
-"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "Stranica \x84%1\x93 dopu\x9Ata drugim stranicama uvoz svojih stavki \x96 na njezinom zaslonu \x84Punjenje sadr\x9Eaja\x93 premjestite ih u \x84Izvoz onemogu\xE6en\x93", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 277
-"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "",
+"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "Stavke stranice \x84%1\x93 \x9Aalju se u druge stranice \x96 zaustavite uvoz u stranicama koje njezin zaslon \x84Punjenje sadr\x9Eaja\x93 navodi pod \x84Trenutno se izvozi u\x93", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 281
-"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "",
+"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "Stranica \x84%1\x93 uvozi stavke iz drugih stranica \x96 na njezinom zaslonu \x84Punjenje sadr\x9Eaja\x93 premjestite ih u \x84Nemojte uvesti\x93", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 284
-"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "",
+"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "Stranica \x84%1\x93 \x9Aalje svoje stavke na adrese iz \x84e-mail obavijest\x93 \x96 tamo uklonite adrese", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 303
-"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "Stranica \x84%1\x93 pri svakom spremanju stavke ra\xE8una polja %2 predlo\x9Akom \x96 u postavkama svakog od njih postavite \x84Umetnite\x93 na \x84%3\x93", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 318
-"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "",
+"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "Stranice \x84%1\x93 i \x84%2\x93 su obrnutim redoslijedom \x96 prvo navedite stranicu kampanje", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 330
-"Slice \"%1\" lacks fields of a campaign slice: %2" => "",
+"Slice \"%1\" lacks fields of a campaign slice: %2" => "Stranici \x84%1\x93 nedostaju polja stranice kampanje: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 331
-"Slice \"%1\" lacks fields of a message slice: %2" => "",
+"Slice \"%1\" lacks fields of a message slice: %2" => "Stranici \x84%1\x93 nedostaju polja stranice poruka: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 337
-"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "",
+"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "Stranica \x84%1\x93: spremite polja %2 kao \x84Broj\x93 (\x84Pohranjeno kao\x93 u postavkama svakog polja)", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 343
-"Slice \"%1\": set the Default of the field %2 to %3" => "",
+"Slice \"%1\": set the Default of the field %2 to %3" => "Stranica \x84%1\x93: postavite \x84Zadano\x93 polja %2 na %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 382
-"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "Stranica \x84%1\x93 mo\x9Ee mijenjati ono \x9Ato slanje sprema u polja %2 \x96 u postavkama svakog od njih postavite \x84Umetnite\x93 na \x84%3\x93", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
-"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "",
+"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "Stranica \x84%1\x93 dodaje ono \x9Ato slanje sprema u polja %2 u konstante \x96 u postavkama svakog od njih isklju\xE8ite \x84%3\x93", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
 // src/Widget/Widget.php, row 786
@@ -11150,12 +11340,12 @@ return [
 
 // src/Manageraction/Central_DeleteTrash.php, row 31
 // src/Manageraction/Item_DeleteTrash.php, row 34
-// src/Manageraction/Polls_DeleteTrash.php, row 71
+// src/Manageraction/Polls_DeleteTrash.php, row 73
 "Remove (delete from database)" => "Uklonite (izbri\x9Aite iz baze podataka)", // ai 2026-06
 
 // src/Manageraction/Central_DeleteTrash.php, row 38
 // src/Manageraction/Item_DeleteTrash.php, row 43
-// src/Manageraction/Taskmanager_Execute.php, row 24
+// src/Manageraction/Taskmanager_Execute.php, row 26
 "You do not have permissions to remove items" => "Nemate dozvolu za brisanje stavki",
 
 // src/Manageraction/Central_Linkcheck.php, row 17
@@ -11167,28 +11357,28 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 30
 "Status code" => "Statusni kod", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 26
-// src/Manageraction/Item_MoveItem.php, row 29
-// src/Manageraction/Links_Move.php, row 26
-// src/Manageraction/Polls_MoveItem.php, row 29
-"Move to Active" => "Preselite u aktivno",
-
-// src/Manageraction/Central_MoveItem.php, row 27
-// src/Manageraction/Item_MoveItem.php, row 30
-// src/Manageraction/Links_Move.php, row 27
-// src/Manageraction/Polls_MoveItem.php, row 30
-"Move to Holding bin" => "Preselite na \xE8ekanje",
-
 // src/Manageraction/Central_MoveItem.php, row 28
 // src/Manageraction/Item_MoveItem.php, row 31
 // src/Manageraction/Links_Move.php, row 28
 // src/Manageraction/Polls_MoveItem.php, row 31
+"Move to Active" => "Preselite u aktivno",
+
+// src/Manageraction/Central_MoveItem.php, row 29
+// src/Manageraction/Item_MoveItem.php, row 32
+// src/Manageraction/Links_Move.php, row 29
+// src/Manageraction/Polls_MoveItem.php, row 32
+"Move to Holding bin" => "Preselite na \xE8ekanje",
+
+// src/Manageraction/Central_MoveItem.php, row 30
+// src/Manageraction/Item_MoveItem.php, row 33
+// src/Manageraction/Links_Move.php, row 30
+// src/Manageraction/Polls_MoveItem.php, row 33
 "Move to Trash" => "Preselite u sme\xE6e",
 
-// src/Manageraction/Central_MoveItem.php, row 41
+// src/Manageraction/Central_MoveItem.php, row 43
 "Activate" => "Aktivirajte", // ai 2026-06
 
-// src/Manageraction/Central_MoveItem.php, row 42
+// src/Manageraction/Central_MoveItem.php, row 44
 "Hold" => "Na \xE8ekanje", // ai 2026-06
 
 // src/Manageraction/Central_OptimizeType.php, row 34
@@ -11198,7 +11388,7 @@ return [
 "Error: %1" => "Pogre\x9Aka: %1", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 19
-// src/Manageraction/Object_Delete.php, row 17
+// src/Manageraction/Object_Delete.php, row 19
 // src/Manageraction/Table_Row_Delete.php, row 16
 "Delete row" => "Izbri\x9Aite redak", // ai 2026-06
 
@@ -11207,11 +11397,11 @@ return [
 
 // src/Manageraction/Import_Delete.php, row 38
 // src/Manageraction/Import_Run.php, row 42
-// src/Manageraction/Object_Delete.php, row 43
-// src/Manageraction/Object_Move2slice.php, row 50
+// src/Manageraction/Object_Delete.php, row 45
+// src/Manageraction/Object_Move2slice.php, row 52
 // src/Manageraction/Plannedtask_Runnow.php, row 41
-// src/Manageraction/Polls_DeleteTrash.php, row 83
-// src/Manageraction/Polls_MoveItem.php, row 41
+// src/Manageraction/Polls_DeleteTrash.php, row 85
+// src/Manageraction/Polls_MoveItem.php, row 43
 // src/Manageraction/Table_Row_Delete.php, row 40
 "This action does not work on this page." => "Ova radnja ne radi na ovom zaslonu.", // ai 2026-10
 
@@ -11219,7 +11409,7 @@ return [
 "Some of the selected imports were not deleted." => "Neki od odabranih uvoza nisu izbrisani.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 64
-// src/Manageraction/Object_Delete.php, row 51
+// src/Manageraction/Object_Delete.php, row 53
 "Some of the selected objects were not deleted - they belong to a module you can not change them in." => "Neki od odabranih objekata nisu izbrisani - pripadaju modulu u kojem ih ne smijete mijenjati.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 23
@@ -11246,19 +11436,19 @@ return [
 // src/Manageraction/Import_Run.php, row 101
 "Imports not started: %1 (%2). The import detail tells more." => "Uvozi nisu pokrenuti: %1 (%2). Vi\x9Ae pokazuje detalj uvoza.", // ai 2026-10
 
-// src/Manageraction/Item_Duplicate.php, row 23
+// src/Manageraction/Item_Duplicate.php, row 25
 "Duplicate Item" => "Duplicirajte stavku", // ai 2026-06
 
-// src/Manageraction/Item_Email.php, row 13
+// src/Manageraction/Item_Email.php, row 15
 "Send email" => "Po\x9Aaljite e-mail", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 31
 "Export to slice" => "Izvezite u stranicu", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 38, 58
-// src/Manageraction/Item_Move2Slice.php, row 85
-// src/Manageraction/Object_Move2slice.php, row 33
-// src/Manageraction/View_Move2slice.php, row 31
+// src/Manageraction/Item_Move2Slice.php, row 87
+// src/Manageraction/Object_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 33
 "No slice selected" => "Nije odabrana nijedna stranica", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 50
@@ -11270,20 +11460,20 @@ return [
 // src/Manageraction/Item_Feed.php, row 68
 "Some of the selected items were not exported - they are not items of this slice." => "Neke od odabranih stavki nisu izvezene - nisu stavke ove stranice.", // ai 2026-10
 
-// src/Manageraction/Item_Modifycontent.php, row 13
+// src/Manageraction/Item_Modifycontent.php, row 15
 "Modify content" => "Izmijenite sadr\x9Eaj", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 37
-// src/Manageraction/Object_Move2slice.php, row 25
+// src/Manageraction/Item_Move2Slice.php, row 39
+// src/Manageraction/Object_Move2slice.php, row 27
 "Move to another slice" => "Preselite na drugu stranicu", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 75
+// src/Manageraction/Item_Move2Slice.php, row 77
 "Move to slice" => "Preselite na stranicu", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 89
+// src/Manageraction/Item_Move2Slice.php, row 91
 "Items can be moved only to a slice." => "Stavke se mogu premjestiti samo na stranicu.", // ai 2026-10
 
-// src/Manageraction/Item_Move2Slice.php, row 93
+// src/Manageraction/Item_Move2Slice.php, row 95
 "You do not have permissions to move items" => "Nemate dozvolu seljenja stavki",
 
 // src/Manageraction/Links_Add2Cat.php, row 21
@@ -11292,32 +11482,32 @@ return [
 // src/Manageraction/Links_Check.php, row 25
 "Check Link" => "Provjerite vezu",
 
-// src/Manageraction/Links_Delete.php, row 20
+// src/Manageraction/Links_Delete.php, row 22
 "Remove from category" => "Uklonite iz kategorije",
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Highlight Link" => "Ozna\xE8ite vezu",
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Dehighlight Link" => "Odzna\xE8ite vezu",
 
 // src/Manageraction/Links_Move2Cat.php, row 21
 "Move to category" => "Preselite u kategoriju",
 
-// src/Manageraction/Object_Delete.php, row 26
+// src/Manageraction/Object_Delete.php, row 28
 // src/Manageraction/Table_Row_Delete.php, row 25
 "Do you really want to delete this row?" => "\x8Eelite li doista izbrisati ovaj redak?", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 37
+// src/Manageraction/Object_Move2slice.php, row 39
 "Tasks can be moved only to a slice." => "Zadaci se mogu premjestiti samo na stranicu.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 41
+// src/Manageraction/Object_Move2slice.php, row 43
 "You do not have permissions to move it" => "Nemate dozvolu za premje\x9Atanje", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 54
+// src/Manageraction/Object_Move2slice.php, row 56
 "Some of the selected objects were not moved - they belong to a module you can not change them in." => "Neki od odabranih objekata nisu premje\x9Ateni - pripadaju modulu u kojem ih ne smijete mijenjati.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 60
+// src/Manageraction/Object_Move2slice.php, row 62
 "The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "Zadatak %1 nije premje\x9Aten - zadatak s {import} onamo smije premjestiti samo korisnik koji upravlja razmjenom stavki stranice.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 20, 27
@@ -11335,34 +11525,34 @@ return [
 // src/Manageraction/Plannedtask_Runnow.php, row 60
 "The task %1 is already waiting in the queue." => "Zadatak %1 ve\xE6 \xE8eka u redu \xE8ekanja.", // ai 2026-10
 
-// src/Manageraction/Polls_DeleteTrash.php, row 78
+// src/Manageraction/Polls_DeleteTrash.php, row 80
 "You do not have permissions to remove polls" => "Nemate dozvolu za uklanjanje anketa", // ai 2026-06
 
-// src/Manageraction/Polls_DeleteTrash.php, row 97
+// src/Manageraction/Polls_DeleteTrash.php, row 99
 "Some of the selected polls were not removed - they belong to another module." => "Neke od odabranih anketa nisu uklonjene - pripadaju drugom modulu.", // ai 2026-10
 
-// src/Manageraction/Polls_MoveItem.php, row 47
+// src/Manageraction/Polls_MoveItem.php, row 49
 "Some of the selected polls were not moved - they belong to another module." => "Neke od odabranih anketa nisu premje\x9Atene - pripadaju drugom modulu.", // ai 2026-10
 
 // src/Manageraction/Table_Row_Delete.php, row 54
 "Some of the selected rows were not deleted - they belong to another module." => "Neki od odabranih redaka nisu izbrisani - pripadaju drugom modulu.", // ai 2026-10
 
-// src/Manageraction/Taskmanager_Delete.php, row 15
+// src/Manageraction/Taskmanager_Delete.php, row 17
 "Remove (cancel task)" => "Uklonite (otka\x9Eite zadatak)", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Delete.php, row 24
+// src/Manageraction/Taskmanager_Delete.php, row 26
 "You do not have permissions to remove tasks" => "Nemate dozvolu za uklanjanje zadataka", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Execute.php, row 15
+// src/Manageraction/Taskmanager_Execute.php, row 17
 "Execute" => "Izvr\x9Aite", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 23
+// src/Manageraction/View_Move2slice.php, row 25
 "Move view to another slice" => "Preselite pogled na drugu stranicu", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 37
 "Views can be moved only to a slice." => "Pogledi se mogu premjestiti samo na stranicu.", // ai 2026-10
 
-// src/Manageraction/View_Move2slice.php, row 39
+// src/Manageraction/View_Move2slice.php, row 41
 "You do not have permissions to move views" => "Nemate dozvolu za premje\x9Atanje pogleda", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 25
@@ -11395,25 +11585,25 @@ return [
 // src/Optimize/AbstractOptimizeById.php, row 42
 "We found %1 problems" => "Prona\x9Ali smo %1 problema", // ai 2026-06
 
-// src/Optimize/AddAddressFieldTemplate.php, row 10
+// src/Optimize/AddAddressFieldTemplate.php, row 12
 "Add address field template" => "Dodajte predlo\x9Eak polja adrese", // ai 2026-06
 
-// src/Optimize/AddAuthGroupFieldTemplate.php, row 10
+// src/Optimize/AddAuthGroupFieldTemplate.php, row 12
 "Add auth_group...... field template" => "Dodaj predlo\x9Eak polja auth_group......", // ai 2026-06
 
-// src/Optimize/AddBitsetFieldTemplate.php, row 10
+// src/Optimize/AddBitsetFieldTemplate.php, row 12
 "Add bitset (flags, bitfield) field template" => "Dodaj predlo\x9Eak polja bitset (zastavice, bitno polje)", // ai 2026-06
 
-// src/Optimize/AddCityFieldTemplate.php, row 10
+// src/Optimize/AddCityFieldTemplate.php, row 12
 "Add city field template" => "Dodaj predlo\x9Eak polja city", // ai 2026-06
 
-// src/Optimize/AddCodeFieldTemplate.php, row 10
+// src/Optimize/AddCodeFieldTemplate.php, row 12
 "Add code field template" => "Dodaj predlo\x9Eak polja code", // ai 2026-06
 
-// src/Optimize/AddComputedNumFieldTemplate.php, row 10
+// src/Optimize/AddComputedNumFieldTemplate.php, row 12
 "Add computed_num field template" => "Dodaj predlo\x9Eak polja computed_num", // ai 2026-06
 
-// src/Optimize/AddComputedTxtFieldTemplate.php, row 10
+// src/Optimize/AddComputedTxtFieldTemplate.php, row 12
 "Add computed_txt field template" => "Dodaj predlo\x9Eak polja computed_txt", // ai 2026-06
 
 // src/Optimize/AddContentFieldIndex.php, row 25
@@ -11434,37 +11624,37 @@ return [
 // src/Optimize/AddContentFieldIndex.php, row 67
 "The index %1 of the content table changed" => "Indeks %1 u tablici content je promijenjen", // ai 2026-10
 
-// src/Optimize/AddCountryFieldTemplate.php, row 10
+// src/Optimize/AddCountryFieldTemplate.php, row 12
 "Add country field template" => "Dodaj predlo\x9Eak polja country", // ai 2026-06
 
-// src/Optimize/AddDateFieldTemplate.php, row 10
+// src/Optimize/AddDateFieldTemplate.php, row 12
 "Add date field template" => "Dodaj predlo\x9Eak polja date", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 18
+// src/Optimize/AddDurationLog.php, row 20
 "Add hit duration log feature" => "Dodaj bilje\x9Eenje trajanja obrade hita", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 26
+// src/Optimize/AddDurationLog.php, row 28
 "Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit" => "Dodaje u tablicu hit_archive stupac 'duration', u koji \xE6e se spremati zapisi duration/cache/not_modified za hit", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 47
+// src/Optimize/AddDurationLog.php, row 49
 "The \"duration\" column missing in hit_archive table" => "U tablici hit_archive nedostaje stupac \"duration\"", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 50
+// src/Optimize/AddDurationLog.php, row 52
 "OK - The \"duration\" column found in hit_archive table. Duration evaluated from %1" => "OK - stupac \"duration\" prona\xF0en u tablici hit_archive. Trajanje se vrednuje od %1", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 60
+// src/Optimize/AddDurationLog.php, row 62
 "Table already has the column \"duration\"" => "Tablica ve\xE6 ima stupac \"duration\"", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 63
+// src/Optimize/AddDurationLog.php, row 65
 "Do alter table hit_archive to add duration column" => "Izvr\x9Ai alter tablice hit_archive - dodaje stupac duration", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 65
+// src/Optimize/AddDurationLog.php, row 67
 "Column added" => "Stupac dodan", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 72
+// src/Optimize/AddDurationLog.php, row 74
 "Do alter table hit_archive to remove duration column - it disables the feature" => "Izvr\x9Ai alter tablice hit_archive - uklanja stupac duration, \xE8ime se funkcija isklju\xE8uje", // ai 2026-06
 
-// src/Optimize/AddDurationLog.php, row 74
+// src/Optimize/AddDurationLog.php, row 76
 "Column deleted" => "Stupac obrisan", // ai 2026-06
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 14
@@ -11480,87 +11670,108 @@ return [
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 77
 "The e-mail templates updated" => "E-mail predlo\x9Aci a\x9Eurirani", // ai 2026-06
 
-// src/Optimize/AddFaxFieldTemplate.php, row 10
+// src/Optimize/AddFaxFieldTemplate.php, row 12
 "Add fax field template" => "Dodaj predlo\x9Eak polja fax", // ai 2026-06
 
-// src/Optimize/AddHit1FieldTemplate.php, row 10
+// src/Optimize/AddHit1FieldTemplate.php, row 12
 "Add hit_1 field template" => "Dodaj predlo\x9Eak polja hit_1", // ai 2026-06
 
-// src/Optimize/AddHit30FieldTemplate.php, row 10
+// src/Optimize/AddHit30FieldTemplate.php, row 12
 "Add hit_30 field template" => "Dodaj predlo\x9Eak polja hit_30", // ai 2026-06
 
-// src/Optimize/AddHit7FieldTemplate.php, row 10
+// src/Optimize/AddHit7FieldTemplate.php, row 12
 "Add hit_7 field template" => "Dodaj predlo\x9Eak polja hit_7", // ai 2026-06
 
-// src/Optimize/AddIntegerFieldTemplate.php, row 10
+// src/Optimize/AddIntegerFieldTemplate.php, row 12
 "Add integer field template" => "Dodaj predlo\x9Eak polja integer", // ai 2026-06
 
-// src/Optimize/AddIpBannedFieldTemplate.php, row 10
+// src/Optimize/AddIpBannedFieldTemplate.php, row 12
 "Add _ip_banned field template" => "Dodaj predlo\x9Eak polja _ip_banned", // ai 2026-06
 
-// src/Optimize/AddIpFieldTemplate.php, row 10
+// src/Optimize/AddIpFieldTemplate.php, row 12
 "Add ip field template" => "Dodaj predlo\x9Eak polja ip", // ai 2026-06
 
-// src/Optimize/AddLocationFieldTemplate.php, row 10
+// src/Optimize/AddLocationFieldTemplate.php, row 12
 "Add location field template" => "Dodajte predlo\x9Eak polja location", // ai 2026-06
 
-// src/Optimize/AddMailListsFieldTemplate.php, row 10
+// src/Optimize/AddMailListsFieldTemplate.php, row 12
 "Add mail_lists field template" => "Dodajte predlo\x9Eak polja mail_lists", // ai 2026-06
 
-// src/Optimize/AddMandatoryDiscApp.php, row 10
-// src/Optimize/AddMandatoryDiscCount.php, row 10
-// src/Optimize/AddMandatoryDisplayCount.php, row 10
-// src/Optimize/AddMandatoryId.php, row 10
-// src/Optimize/AddMandatoryShortId.php, row 10
-// src/Optimize/AddMandatoryStatusCode.php, row 13
+// src/Optimize/AddMandatoryDiscApp.php, row 12
+// src/Optimize/AddMandatoryDiscCount.php, row 12
+// src/Optimize/AddMandatoryDisplayCount.php, row 12
+// src/Optimize/AddMandatoryId.php, row 12
+// src/Optimize/AddMandatoryShortId.php, row 12
+// src/Optimize/AddMandatoryStatusCode.php, row 15
 "Fixing missing %1 field definitions in slices" => "Ispravljanje nedostaju\xE6ih definicija polja %1 u stranicama", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 19
+// src/Optimize/AddMandatoryStatusCode.php, row 21
 "Adds field definitions for slices, where missing" => "Dodaje definicije polja u stranice gdje nedostaju", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 45
+// src/Optimize/AddMandatoryStatusCode.php, row 47
 "Missing %1 field definition in some slices - need to repair" => "U nekim stranicama nedostaje definicija polja %1 - potreban popravak", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 54
+// src/Optimize/AddMandatoryStatusCode.php, row 56
 "Fixing missing %1 fields in slices" => "Ispravljanje nedostaju\xE6ih polja %1 u stranicama", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 69
+// src/Optimize/AddMandatoryStatusCode.php, row 71
 "Mandatory field %1 added to all slices" => "Obavezno polje %1 dodano u sve stranice", // ai 2026-06
 
-// src/Optimize/AddMlxctrlFieldTemplate.php, row 10
+// src/Optimize/AddMlxctrlFieldTemplate.php, row 12
 "Add mlxctrl field template" => "Dodajte predlo\x9Eak polja mlxctrl", // ai 2026-06
 
-// src/Optimize/AddMsgBannedFieldTemplate.php, row 10
+// src/Optimize/AddMsgBannedFieldTemplate.php, row 12
 "Add _msg_banned field template" => "Dodajte predlo\x9Eak polja _msg_banned", // ai 2026-06
 
-// src/Optimize/AddMsgSpamFieldTemplate.php, row 10
+// src/Optimize/AddMsgSpamFieldTemplate.php, row 12
 "Add _msg_spam field template" => "Dodajte predlo\x9Eak polja _msg_spam", // ai 2026-06
 
-// src/Optimize/AddNameFieldTemplate.php, row 10
+// src/Optimize/AddNameFieldTemplate.php, row 12
 "Add name field template" => "Dodajte predlo\x9Eak polja name", // ai 2026-06
 
-// src/Optimize/AddPhoneFieldTemplate.php, row 10
+// src/Optimize/AddPasskeyTable.php, row 15
+"Table of passkeys" => "Tablica pristupnih klju\xE8eva", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 20
+"Creates the table authenticator, where the passkeys of the accounts are kept. Nothing else changes; without it, nobody can add a passkey." => "Stvara tablicu authenticator, u kojoj se \xE8uvaju pristupni klju\xE8evi ra\xE8una. Ni\x9Ata drugo se ne mijenja; bez nje nitko ne mo\x9Ee dodati pristupni klju\xE8.", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 43
+"The table %1 is missing" => "Nedostaje tablica %1", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 46
+"OK - the table %1 exists" => "OK \x96 tablica %1 postoji", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 54
+"The table %1 exists already" => "Tablica %1 ve\xE6 postoji", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 is created" => "Tablica %1 je stvorena", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 could not be created" => "Tablicu %1 nije bilo mogu\xE6e stvoriti", // ai 2026-11
+
+// src/Optimize/AddPhoneFieldTemplate.php, row 12
 "Add phone field template" => "Dodajte predlo\x9Eak polja phone", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 29
+// src/Optimize/AddPolls.php, row 31
 "Add Polls tables" => "Dodajte tablice anketa", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 37
+// src/Optimize/AddPolls.php, row 39
 "Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "Stvara tablice za novi modul Ankete i dodaje prve - ogledne ankete. Uklanja sve postoje\xE6e ankete!", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 60
+// src/Optimize/AddPolls.php, row 62
 "Poll module is not installed" => "Modul Ankete nije instaliran", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 95
+// src/Optimize/AddPolls.php, row 97
 "Polls module created" => "Modul Ankete je stvoren", // ai 2026-06
 
-// src/Optimize/AddRangeFieldTemplate.php, row 10
+// src/Optimize/AddRangeFieldTemplate.php, row 12
 "Add range field template" => "Dodajte predlo\x9Eak polja range", // ai 2026-06
 
-// src/Optimize/AddRealFieldTemplate.php, row 10
+// src/Optimize/AddRealFieldTemplate.php, row 12
 "Add real field template" => "Dodajte predlo\x9Eak polja real", // ai 2026-06
 
-// src/Optimize/AddSecretFieldTemplate.php, row 10
+// src/Optimize/AddSecretFieldTemplate.php, row 12
 "Add secret field template" => "Dodajte predlo\x9Eak polja secret", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 16
@@ -11581,17 +11792,17 @@ return [
 // src/Optimize/AddSeoFieldTemplate.php, row 116
 "New \"%1\" field template added" => "Dodan novi predlo\x9Eak polja \"%1\"", // ai 2026-06
 
-// src/Optimize/AddUploadUrlFieldTemplate.php, row 10
+// src/Optimize/AddUploadUrlFieldTemplate.php, row 12
 "Add _upload_url field template" => "Dodajte predlo\x9Eak polja _upload_url", // ai 2026-06
 
-// src/Optimize/AddUrlPreviewFieldTemplate.php, row 10
+// src/Optimize/AddUrlPreviewFieldTemplate.php, row 12
 "Add _url_preview field template" => "Dodajte predlo\x9Eak polja _url_preview", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 19
 "Backup tables" => "Sigurnosna kopija tablica", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 // src/Optimize/UpdateDbStructure.php, row 31
 "[experimental] " => "[eksperimentalno]", // ai 2026-06
 
@@ -11631,10 +11842,10 @@ return [
 // src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Zamjenjuje alias f_h za polje ozna\xE8eno kao ne-vi\x9Aestruko i html br\x9Eom funkcijom f_1 za izravan ispis sadr\x9Eaja", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 15
+// src/Optimize/ChangeF_t2F_1.php, row 17
 "Optimize f_t alias to f_1" => "Optimiziraj alias f_t u f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 23
+// src/Optimize/ChangeF_t2F_1.php, row 25
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Zamjenjuje alias f_t za polje ozna\xE8eno kao ne-vi\x9Aestruko i html br\x9Eom funkcijom f_1 za izravan ispis sadr\x9Eaja", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -11643,22 +11854,22 @@ return [
 // src/Optimize/ChangeF_t2F__.php, row 27
 "Replaces f_t alias used for code by quicker f__ function" => "Zamjenjuje alias f_t kori\x9Aten za kod br\x9Eom funkcijom f__", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 20
+// src/Optimize/ChangeModuleId.php, row 22
 "Change current module ID to new one" => "Promijeni trenutni ID modula u novi", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 28
+// src/Optimize/ChangeModuleId.php, row 30
 "Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "Koristi se ponekad kada klonirate bazu podataka ili kopirate stranice u drugu bazu za drugog klijenta i ne \x9Eelite koristiti iste ID-ove stranica/site modula. Vjerojatno to trebate u\xE8initi za sve stranice i site modul.<br>MIJENJA TRENUTNI ID STRANICE!", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 42
+// src/Optimize/ChangeModuleId.php, row 44
 "Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "Ovdje se nema \x9Ato testirati. Samo budite oprezni - MIJENJA TRENUTNI ID STRANICE bez pitanja!", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 63
+// src/Optimize/ChangeModuleId.php, row 65
 "Going to change module_id %1 -> %2 (%3 -> %4)" => "Bit \xE6e promijenjen module_id %1 -> %2 (%3 -> %4)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 76
+// src/Optimize/ChangeModuleId.php, row 78
 "Changing ID for table %1 (%2)" => "Promjena ID-a za tablicu %1 (%2)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 85
+// src/Optimize/ChangeModuleId.php, row 87
 // src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "Pretvoreno %1 tablica", // ai 2026-06
 
@@ -11701,11 +11912,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckFormRobotRefusals.php, row 76
 // src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
 // src/Optimize/CheckIsdsConf.php, row 156, 189
 // src/Optimize/CheckIsdsViews.php, row 128
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 93
 // src/Optimize/CheckObjectFormRefusals.php, row 102
+// src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
 // src/Optimize/CheckSessionidUse.php, row 101
@@ -11721,11 +11934,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 100
 // src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckFormRobotRefusals.php, row 77
 // src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
 // src/Optimize/CheckIsdsViews.php, row 129
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 94
 // src/Optimize/CheckObjectFormRefusals.php, row 103
+// src/Optimize/CheckPasskeys.php, row 86
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
@@ -11756,7 +11971,7 @@ return [
 "Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "Navodi slanja stavki putem upozorenja odbijena u posljednjih 30 dana jer kolekcija nije povezana sa stranicom stavke (nema filtar na stranicu, nije njezina stranica \xE8itatelja, nemaju zajedni\xE8ki web).", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 86
-"Selections of the collection" => "",
+"Selections of the collection" => "Odabiri kolekcije", // ai 2026-11
 
 // src/Optimize/CheckAlertitemRefusals.php, row 93
 "Alert send of an item of slice %1 through collection %2 was refused" => "Slanje stavke sa stranice %1 putem kolekcije %2 je odbijeno", // ai 2026-10
@@ -11798,10 +12013,10 @@ return [
 "AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "AlertsSweep::SCHEDULE za nju nema unos, pa se nikad ne planira nijedan zadatak i ti \xE8itatelji ne dobivaju ni\x9Ata.", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 110
-"Every alert collection is swept on time and all its selections exist" => "",
+"Every alert collection is swept on time and all its selections exist" => "Svaka kolekcija upozorenja \x9Aalje se na vrijeme i svi njezini odabiri postoje", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 144
-"Selection" => "",
+"Selection" => "Odabir", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
@@ -11812,28 +12027,28 @@ return [
 "Problem" => "Problem", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 146
-"the selection was deleted" => "",
+"the selection was deleted" => "odabir je izbrisan", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 147
-"its view %1 was deleted" => "",
+"its view %1 was deleted" => "njegov pogled %1 je izbrisan", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 153
-"Alerts \"%1\" use a selection that no longer exists" => "",
+"Alerts \"%1\" use a selection that no longer exists" => "Upozorenja \x84%1\x93 koriste odabir koji vi\x9Ae ne postoji", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 154
-"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "",
+"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "Upozorenja \x84%1\x93 ne \x9Aalju ni\x9Ata: nijedan odabir kolekcije vi\x9Ae ne postoji", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 157
-"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "",
+"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "Odabir je filtar pogleda stranice iz koje upozorenje uzima stavke. Kada se filtar ili pogled izbri\x9Ae, kolekcija i dalje upu\xE6uje na njega, a njezini \xE8itatelji iz njega ne dobivaju ni\x9Ata \x96 bez pogre\x9Ake u zapisniku. Na zaslonu \x84Odabiri\x93 uklonite odabir ozna\xE8en kao nedostaju\xE6i i dodajte postoje\xE6i (filtri se definiraju u pogledu tipa \x84POstavke sekcije upozorenja\x93). Modul Upozorenja koji vi\x9Ae nitko ne koristi mo\x9Eete umjesto toga izbrisati.", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 159
 "Selections" => "Odabiri",
 
 // src/Optimize/CheckAlerts.php, row 160
-"Alerts settings" => "",
+"Alerts settings" => "Postavke upozorenja", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 163
-"Alert selection no longer exists" => "",
+"Alert selection no longer exists" => "Odabir upozorenja vi\x9Ae ne postoji", // ai 2026-11
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 27
 "Forms without login changing accounts or authors" => "Obrasci bez prijave koji mijenjaju ra\xE8une ili autore", // ai 2026-10
@@ -11923,7 +12138,7 @@ return [
 "A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "Predlo\x9Eak web-stranice sadr\x9Ei {require:ckeditor} (i CKEDITOR.replace()). Umjesto toga omotajte textarea u <aa-richtext mode=\"rich\"> s {require:aa-richtext@1} - textarea zadr\x9Eava ime i vrijednost, pa obrazac i skripte koje \xE8itaju textarea.value rade bez izmjena; CKEDITOR.instances[...].getData() postaje vrijednost textarea.", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 103
-"Templates with ckeditor" => "",
+"Templates with ckeditor" => "Predlo\x9Aci s CKEditorom", // ai 2026-11
 
 // src/Optimize/CheckCkeditorUse.php, row 109
 "No page loaded CKEditor 4 in the last 30 days" => "U posljednjih 30 dana nijedna web-stranica nije u\xE8itala CKEditor 4", // ai 2026-10
@@ -11983,22 +12198,22 @@ return [
 "%1 cron rows, all readable and running on schedule" => "Redaka crona: %1, svi su \xE8itljivi i izvr\x9Aavaju se prema rasporedu", // ai 2026-10
 
 // src/Optimize/CheckDiscussionRefusals.php, row 26
-"Refused comments" => "",
+"Refused comments" => "Odbijeni komentari", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 31
-"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "",
+"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "Navodi stranice \xE8iji su novi komentari u raspravi u posljednjih 30 dana odbijeni jer stranica ne prikazuje nikakvu raspravu.", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 70
-"New comments to items of slice %1 were refused" => "",
+"New comments to items of slice %1 were refused" => "Novi komentari na stavke stranice %1 su odbijeni", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 78
-"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "",
+"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "Stranica nema pogled rasprave, a nijedan nije postavljen ni u \x84Poka\x9Eite raspravu\x93 njezina izgleda cijelog teksta, pa se komentar ne bi nigdje prikazao. Ako web prikazuje komentare kroz pogled rasprave druge stranice, odaberite taj pogled u \x84Poka\x9Eite raspravu\x93; ina\xE8e uklonite obrazac za komentare iz predlo\x9Eaka stranice.", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 80
-"Fulltext design" => "",
+"Fulltext design" => "Izgled cijelog teksta", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 85
-"No comment was refused in the last 30 days" => "",
+"No comment was refused in the last 30 days" => "U posljednjih 30 dana nije odbijen nijedan komentar", // ai 2026-11
 
 // src/Optimize/CheckEnvironment.php, row 18
 // src/Optimize/StateCheckModel.php, row 295
@@ -12024,6 +12239,21 @@ return [
 
 // src/Optimize/CheckEnvironment.php, row 66
 "AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4; bez promjene od %5", // ai 2026-10
+
+// src/Optimize/CheckFormRobotRefusals.php, row 26
+"Forms refused as robots" => "Obrasci odbijeni kao robotski", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 31
+"Lists the slices whose new items from a form were refused in the last 30 days because the form posted an empty slice_id, which its JS fills only for a visitor who moves the mouse or presses a key." => "Navodi stranice \xE8ije su nove stavke iz obrasca u posljednjih 30 dana odbijene jer je obrazac poslao prazan slice_id, koji njegov JS popunjava samo posjetitelju koji pomakne mi\x9A ili pritisne tipku.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 70
+"A form adding items to slice %1 was refused as a robot" => "Obrazac za dodavanje stavki u stranicu %1 odbijen je kao robot", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 79
+"The form posted an empty slice_id. Forms with {formantispam:<slice_id>} or with their own anti-robot JS leave it empty and fill it when the visitor moves the mouse or presses a key, so this is mostly spam and needs no action. If real visitors complain that the form does not save, check that the JS of the form runs on the page (the browser console) and fills slice_id." => "Obrazac je poslao prazan slice_id. Obrasci s {formantispam:<slice_id>} ili s vlastitim JS-om protiv robota ostavljaju ga prazan i popunjavaju ga kada posjetitelj pomakne mi\x9A ili pritisne tipku, pa je to uglavnom spam i nije potrebna nikakva radnja. Ako se stvarni posjetitelji \x9Eale da obrazac ne sprema, provjerite izvodi li se JS obrasca na web-stranici (konzola preglednika) i popunjava li slice_id.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 85
+"No form was refused as a robot in the last 30 days" => "U posljednjih 30 dana nijedan obrazac nije odbijen kao robot", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 29
 "Outgoing HTTP" => "Odlazni HTTP", // ai 2026-10
@@ -12057,7 +12287,7 @@ return [
 "Note" => "Bilje\x9Aka", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 85
-"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "",
+"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "Sama adresa odgovara HTTP %1, %2 odgovara 200 \x96 uobi\xE8ajeno kada direktorij AA nema po\xE8etnu stranicu, a poslu\x9Eitelj ne ispisuje direktorije.", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 93
 "This installation's own address answers HTTP %1" => "Vlastita adresa ove instalacije odgovara s HTTP %1", // ai 2026-10
@@ -12223,7 +12453,7 @@ return [
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "Klju\xE8 sadr\x9Ei prijelom retka ili NUL, pa ga nijedan izvor uvoza ne smije koristiti. Ispravite konstantu u config.php.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 272
-"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "",
+"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "JSON klju\xE8 (Google servisni ra\xE8un) stane u jedan redak: zalijepite redak koji ispi\x9Ae %1.", // ai 2026-11
 
 // src/Optimize/CheckImports.php, row 291
 "Imports logged %1 failures in the last 7 days" => "Gre\x9Ake uvoza zabilje\x9Eene u posljednjih 7 dana: %1", // ai 2026-10
@@ -12274,505 +12504,505 @@ return [
 "No app transfer is stuck" => "Nijedan prijenos aplikacije nije zapeo", // ai 2026-10
 
 // src/Optimize/CheckIsds.php, row 49
-"ISDS login" => "",
+"ISDS login" => "Prijava u ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 54
-"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "",
+"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "Prijavljuje se u ISDS svakim upotrebljivim ra\xE8unom iz misc/datovka/datovka_conf.php koji \x9Aalje za web ove baze podataka i provjerava podatkovni pretinac iz kojeg \x9Aalje; kod prijave imenom i lozinkom tako\xF0er prava njegova korisnika i kada mu istje\xE8e lozinka.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 79
-"No usable ISDS account to log in with" => "",
+"No usable ISDS account to log in with" => "Nema upotrebljivog ISDS ra\xE8una za prijavu", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 121
-"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "",
+"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "ISDS ra\xE8uni nisu isprobani jer je ISDS blokirao adresu ovog poslu\x9Eitelja: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 122
-"ISDS accounts not tried, as ISDS did not answer: %1" => "",
+"ISDS accounts not tried, as ISDS did not answer: %1" => "ISDS ra\xE8uni nisu isprobani jer ISDS nije odgovorio: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Wait - each attempt from this server extends the block." => "",
+"Wait - each attempt from this server extends the block." => "Pri\xE8ekajte \x96 svaki poku\x9Aaj s ovog poslu\x9Eitelja produljuje blokadu.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Check again later." => "",
+"Check again later." => "Provjerite ponovno kasnije.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 128
-"ISDS accounts log in to their data boxes: %1" => "",
+"ISDS accounts log in to their data boxes: %1" => "ISDS ra\xE8uni prijavljuju se u svoje podatkovne pretince: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"ISDS account %1 not tried, as its certificate cannot be used" => "",
+"ISDS account %1 not tried, as its certificate cannot be used" => "ISDS ra\xE8un %1 nije isproban jer se njegov certifikat ne mo\x9Ee koristiti", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"The check of ISDS accounts tells more." => "",
+"The check of ISDS accounts tells more." => "Vi\x9Ae ka\x9Ee provjera \x84ISDS ra\xE8uni\x93.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 153
-"The TLS library of this server refuses the certificate of ISDS account %1" => "",
+"The TLS library of this server refuses the certificate of ISDS account %1" => "TLS biblioteka ovog poslu\x9Eitelja odbija certifikat ISDS ra\xE8una %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 154
-"Reason of OpenSSL" => "",
+"Reason of OpenSSL" => "Razlog prema OpenSSL-u", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 155
-"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "",
+"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "OpenSSL na ovom poslu\x9Eitelju ne prihva\xE6a certifikat ili njegov klju\xE8 \x96 npr. klju\xE8 kra\xE6i nego \x9Ato zahtijeva njegova politika, slab certifikat u lancu ili star potpis. Nabavite certifikat koji zadovoljava politiku (RSA klju\xE8 od 3072 bita, potpis SHA-256), dajte ga registrirati u ISDS-u i navedite ga u misc/datovka/datovka_conf.php.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 188, 290
 "ISDS" => "",
 
 // src/Optimize/CheckIsds.php, row 195, 226
-"ISDS did not tell the rights of the user of account %1" => "",
+"ISDS did not tell the rights of the user of account %1" => "ISDS nije javio prava korisnika ra\xE8una %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 202
-"The password of ISDS account %1 expires on %2" => "",
+"The password of ISDS account %1 expires on %2" => "Lozinka ISDS ra\xE8una %1 istje\xE8e %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 203
-"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "",
+"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "Promijenite lozinku na portalu ISDS i novu upi\x9Aite u %1 u misc/datovka/datovka_conf.php.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"ISDS did not tell when the password of account %1 expires" => "",
+"ISDS did not tell when the password of account %1 expires" => "ISDS nije javio kada istje\xE8e lozinka ra\xE8una %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"Check the password of the user in the ISDS portal." => "",
+"Check the password of the user in the ISDS portal." => "Provjerite lozinku korisnika na portalu ISDS.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"Rights" => "",
+"Rights" => "Prava", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"User type" => "",
+"User type" => "Tip korisnika", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 239
-"The user of ISDS account %1 lacks the rights %2" => "",
+"The user of ISDS account %1 lacks the rights %2" => "Korisniku ISDS ra\xE8una %1 nedostaju prava %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 241
-"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "",
+"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "Dodijelite korisniku na portalu ISDS prava %1 \x96 bez njih ISDS odbija %2.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 250
-"The user of ISDS account %1 has rights AA must not have: %2" => "",
+"The user of ISDS account %1 has rights AA must not have: %2" => "Korisnik ISDS ra\xE8una %1 ima prava koja AA ne smije imati: %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 252
-"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "",
+"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "Na portalu ISDS oduzmite korisniku ta prava ili neka se AA prijavljuje kao zaseban korisnik samo s pravima %1.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 268
-"ISDS blocked logins from the address of this server" => "",
+"ISDS blocked logins from the address of this server" => "ISDS je blokirao prijave s adrese ovog poslu\x9Eitelja", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 269
-"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "",
+"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "ISDS na neko vrijeme blokira adresu poslu\x9Eitelja kada prijave s nje izgledaju kao napad \x96 za sve ra\xE8une i sve AA na ovom poslu\x9Eitelju, bez obzira na na\xE8in prijave. Pri\xE8ekajte: svaki poku\x9Aaj produljuje blokadu. AA sam poku\x9Aava jo\x9A jednom nakon %1 h ili kada ovdje ponovno pokrenete provjeru. Ako blokada potraje, nazovite korisni\xE8ku podr\x9Aku ISDS-a 954 200 200.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 274
-"ISDS refused the login of account %1" => "",
+"ISDS refused the login of account %1" => "ISDS je odbio prijavu ra\xE8una %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS asked account %1 to come back later" => "",
+"ISDS asked account %1 to come back later" => "ISDS je zatra\x9Eio od ra\xE8una %1 da poku\x9Aa kasnije", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS is in an outage or busy. Check again later." => "",
+"ISDS is in an outage or busy. Check again later." => "ISDS ima prekid rada ili je preoptere\xE6en. Provjerite ponovno kasnije.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 281
-"ISDS gave account %1 no answer" => "",
+"ISDS gave account %1 no answer" => "ISDS nije odgovorio ra\xE8unu %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 282
-"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "",
+"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "Provjerite ponovno kasnije. Ako se ponavlja, provjerite dolazi li poslu\x9Eitelj do %1 preko HTTPS-a.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"ISDS gave account %1 an answer AA cannot read" => "",
+"ISDS gave account %1 an answer AA cannot read" => "ISDS je ra\xE8unu %1 vratio odgovor koji AA ne mo\x9Ee pro\xE8itati", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"Check again later. If it repeats, the evidence gives the answer of ISDS." => "",
+"Check again later. If it repeats, the evidence gives the answer of ISDS." => "Provjerite ponovno kasnije. Ako se ponavlja, odgovor ISDS-a nalazi se u dokazima.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"ISDS refused account %1" => "",
+"ISDS refused account %1" => "ISDS je odbio ra\xE8un %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "",
+"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "Odgovor ISDS-a nalazi se u dokazima. Provjerite ra\xE8un i njegov podatkovni pretinac na portalu ISDS.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 298
-"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "Provjerite je li certifikat koji navodi %1 sistemski certifikat koji je ISDS registrirao za podatkovni pretinac i da nije istekao. Novi certifikat AA isproba sam, isti nikada. \x84Pokrenite pro\x9Airene provjere\x93 ili ovdje \x84Provjerite ponovno\x93 isprobat \xE6e ga jo\x9A jednom.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 299
-"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "Provjerite dopu\x9Ata li podatkovni pretinac %1 uslugu hostinga \xE8iji certifikat navodi %2 (Postavke, Pristup vanjskih aplikacija na portalu ISDS) i da certifikat nije istekao. Novi certifikat AA isproba sam, isti nikada. \x84Pokrenite pro\x9Airene provjere\x93 ili ovdje \x84Provjerite ponovno\x93 isprobat \xE6e ga jo\x9A jednom.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 300
-"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "",
+"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "Provjerite %1 i %2 u misc/datovka/datovka_conf.php te na portalu ISDS da lozinka nije istekla. Promijenjeno korisni\xE8ko ime ili lozinku AA isproba sam, iste nikada \x96 svaki odbijeni poku\x9Aaj produljuje blokadu prijave. \x84Pokrenite pro\x9Airene provjere\x93 ili ovdje \x84Provjerite ponovno\x93 isprobat \xE6e to jo\x9A jednom.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 327
-"Check in the ISDS portal that the user has the rights %1 and none of %2." => "",
+"Check in the ISDS portal that the user has the rights %1 and none of %2." => "Na portalu ISDS provjerite ima li korisnik prava %1 i nijedno od %2.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 356
-"read received messages" => "",
+"read received messages" => "\xE8itanje primljenih poruka", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 357
-"read received messages to own hands" => "",
+"read received messages to own hands" => "\xE8itanje primljenih poruka u vlastite ruke", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 358
-"send messages" => "",
+"send messages" => "slanje poruka", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 359
-"lists of messages and delivery info" => "",
+"lists of messages and delivery info" => "popisi poruka i podaci o dostavi", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 360
-"search for data boxes" => "",
+"search for data boxes" => "tra\x9Eenje podatkovnih pretinaca", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 361
-"manage the data box" => "",
+"manage the data box" => "upravljanje podatkovnim pretincem", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 362
-"erase the vault" => "",
+"erase the vault" => "brisanje trezora", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 44
-"ISDS accounts" => "",
+"ISDS accounts" => "ISDS ra\xE8uni", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 49
-"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "",
+"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "Provjerava ISDS ra\xE8une koje misc/datovka/datovka_conf.php postavlja za slanje u podatkovne pretince s webova ove baze podataka: njihove postavke, datoteke njihovih certifikata, web i stranice za koje svaki ra\xE8un \x9Aalje te web-stranice masovnog slanja \xE8ije postavke nisu bile spremne, \xE8ije kampanje nisu mogle odrediti primatelje ili \xE8ije su radnje pale na internoj pogre\x9Aci, sve u posljednjih tjedan dana.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 80
-"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "",
+"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "Nijedan ISDS ra\xE8un u misc/datovka/datovka_conf.php ne \x9Aalje za web ove baze podataka", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 100
-"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "misc/datovka/datovka_conf.php sadr\x9Ei postavke ISDS ra\xE8una koje AA ne \xE8ita: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 103
-"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "",
+"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "ISDS ra\xE8un u %1 imenuje se jednom rije\xE8ju od velikih slova i znamenki, prvi znak je slovo, a AA \xE8ita samo klju\xE8eve %2, kod produkcijskog ra\xE8una i %3. Ispravite nazive ili uklonite ono \x9Ato AA ne \xE8ita.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 108
-"ISDS accounts ready to send: %1" => "",
+"ISDS accounts ready to send: %1" => "ISDS ra\xE8uni spremni za slanje: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 127
-"A page of site %1 has a mass sending whose settings are not ready" => "",
+"A page of site %1 has a mass sending whose settings are not ready" => "Web-stranica weba %1 ima masovno slanje \xE8ije postavke nisu spremne", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 131, 167
-"Campaign slice" => "",
+"Campaign slice" => "Stranica kampanje", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 137
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "Web \x84%1\x93 prijavljuje samo \xE8itatelje sa svojih stranica za upravljanje \xE8itateljima, pa ondje nitko ne smije slati niti na web-stranici vidjeti \x9Ato treba ispraviti \x96 u postavkama weba postavite \x84Baze podataka za prijavu korisnika\x93 na \x84%2\x93 pa ponovno otvorite web-stranicu.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 138
-"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "",
+"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "Otvorite web-stranicu kao korisnik koji smije ure\xF0ivati sve stavke stranice kampanje ili kod weba: ona navodi sve \x9Ato treba ispraviti u postavkama {datovkabulk:page}, sa zaslonima na kojima se to ispravlja.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 163
-"A campaign of a mass sending on site %1 cannot tell its recipients" => "",
+"A campaign of a mass sending on site %1 cannot tell its recipients" => "Kampanja masovnog slanja na webu %1 ne mo\x9Ee odrediti svoje primatelje", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 168, 204
-"Campaign" => "",
+"Campaign" => "Kampanja", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 173
-"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "",
+"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "Filtar primatelja spremljen u kampanji vi\x9Ae ne odgovara postavkama web-stranice \x96 iz types je uklonjen tip ili je izba\xE8en member_field. Otvorite kampanju na web-stranici i ponovno spremite njezine primatelje. Kada problem spominje postavke podatkovnih pretinaca, postavite ih na zaslonu \x84Podatkovni pretinci iz registra\x93 izvorne stranice.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 199
-"An action of a page of a mass sending failed on an internal error: %1" => "",
+"An action of a page of a mass sending failed on an internal error: %1" => "Radnja web-stranice masovnog slanja pala je na internoj pogre\x9Aci: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 209
-"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "",
+"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "Pogre\x9Aka u AA \x96 prijavite njegovim razvijateljima mjesto u kodu navedeno u dokazima. Radnja je mo\x9Eda obavila dio posla: prije nego \x9Ato je korisnik ponovno poku\x9Aa, pogledajte slanje na njegovoj web-stranici.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 225
-"ISDS account %1 cannot be used" => "",
+"ISDS account %1 cannot be used" => "ISDS ra\xE8un %1 ne mo\x9Ee se koristiti", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 227
-"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "",
+"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "U misc/datovka/datovka_conf.php ispravite ono \x9Ato navode dokazi. Ra\xE8un je %1, s klju\xE8evima %2.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 261
-"PHP cannot read the certificate of ISDS account %1" => "",
+"PHP cannot read the certificate of ISDS account %1" => "PHP ne mo\x9Ee pro\xE8itati certifikat ISDS ra\xE8una %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 263
-"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "",
+"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "Provjerite navodi li postavka datoteku punom putanjom \x96 relativna po\xE8inje u %1 AA-a \x96, smije li je \xE8itati korisnik pod kojim PHP radi i pu\x9Ata li PHP onamo open_basedir.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "",
+"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "Certifikat ISDS ra\xE8una %1 ne mo\x9Ee se koristiti: PHP nema pro\x9Airenje openssl", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"Install the openssl extension of PHP - a login with a certificate needs it." => "",
+"Install the openssl extension of PHP - a login with a certificate needs it." => "Instalirajte PHP pro\x9Airenje openssl \x96 potrebno je za prijavu certifikatom.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Serial number" => "",
+"Serial number" => "Serijski broj", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Valid until" => "",
+"Valid until" => "Vrijedi do", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 274
-"%1 names a file with no PEM certificate" => "",
+"%1 names a file with no PEM certificate" => "%1 navodi datoteku bez PEM certifikata", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 275
-"The private key in %1 does not open: it is missing, or %2 does not fit" => "",
+"The private key in %1 does not open: it is missing, or %2 does not fit" => "Privatni klju\xE8 u %1 ne mo\x9Ee se otvoriti: nedostaje ili %2 ne odgovara", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 276
-"The private key in %1 does not belong to the certificate in %2" => "",
+"The private key in %1 does not belong to the certificate in %2" => "Privatni klju\xE8 u %1 ne pripada certifikatu u %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 277
-"The private key is shorter than %1 bits, which the secure connection refuses" => "",
+"The private key is shorter than %1 bits, which the secure connection refuses" => "Privatni klju\xE8 kra\xE6i je od %1 bita, \x9Ato sigurna veza odbija", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 278
-"The certificate is valid from %1 only" => "",
+"The certificate is valid from %1 only" => "Certifikat vrijedi tek od %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"The certificate of ISDS account %1 cannot be used" => "",
+"The certificate of ISDS account %1 cannot be used" => "Certifikat ISDS ra\xE8una %1 ne mo\x9Ee se koristiti", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "",
+"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "U misc/datovka/datovka_conf.php navedite certifikat i njegov klju\xE8, a kod \x9Aifriranog klju\xE8a i njegovu lozinku.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expired on %2" => "",
+"The certificate of ISDS account %1 expired on %2" => "Certifikat ISDS ra\xE8una %1 istekao je %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expires on %2" => "",
+"The certificate of ISDS account %1 expires on %2" => "Certifikat ISDS ra\xE8una %1 istje\xE8e %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 290
-"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "",
+"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "Nabavite novi certifikat, dajte ga u ISDS-u registrirati uz stari i navedite njegovu datoteku u misc/datovka/datovka_conf.php \x96 ISDS ga \x9Eeli %1 dana prije isteka staroga.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"The web server may serve the private key of ISDS account %1" => "",
+"The web server may serve the private key of ISDS account %1" => "Web-poslu\x9Eitelj mo\x9Ee isporu\xE8iti privatni klju\xE8 ISDS ra\xE8una %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"Other users of the server may read the private key of ISDS account %1" => "",
+"Other users of the server may read the private key of ISDS account %1" => "Ostali korisnici poslu\x9Eitelja mogu \xE8itati privatni klju\xE8 ISDS ra\xE8una %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 343
-"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "",
+"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "PHP ovdje radi unutar web-poslu\x9Eitelja, pa web-poslu\x9Eitelj pro\xE8ita sve \x9Ato smije \xE8itati PHP \x96 nikakva dopu\x9Atenja ne poma\x9Eu. Premjestite datoteku izvan direktorija AA-a i navedite je punom putanjom.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 344
-"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "",
+"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "Datoteka se nalazi u direktoriju AA-a, koji web-poslu\x9Eitelj isporu\xE8uje. Premjestite je van i navedite je punom putanjom ili je ostavite samo vlasniku (chmod 600) i provjerite njezin ACL (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 345
-"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "",
+"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "Uklonite iz datoteke sva prava ostalih korisnika (chmod o-rwx) i provjerite njezin ACL (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 403
-"The slices of ISDS account %1 are not ready for sending" => "",
+"The slices of ISDS account %1 are not ready for sending" => "Stranice ISDS ra\xE8una %1 nisu spremne za slanje", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 406
-"Fix what the evidence names before sending from these slices." => "",
+"Fix what the evidence names before sending from these slices." => "Prije slanja s ovih stranica ispravite ono \x9Ato navode dokazi.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 32
-"ISDS settings file" => "",
+"ISDS settings file" => "Datoteka postavki ISDS-a", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 37
-"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "",
+"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "Provjerava misc/datovka/datovka_conf.php, postavke podatkovnih pretinaca ove instalacije za {datovka} i masovno slanje: \xE8ita li ga PHP i mo\x9Ee li ga AA koristiti cijelog, dvaput zapisane klju\xE8eve, njegova dopu\x9Atenja, njegove kopije u direktoriju AA-a te u posljednjih tjedan dana probleme na koje su drugi zahtjevi nai\x9Ali pri njegovu \xE8itanju i odbijene odgovore ISDS-a za instalaciju koju ne navodi.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"AA reads all of misc/datovka/datovka_conf.php" => "",
+"AA reads all of misc/datovka/datovka_conf.php" => "AA \xE8ita cijeli misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "",
+"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "misc/datovka/datovka_conf.php ne postoji \x96 AA radi bez postavki podatkovnih pretinaca ove instalacije", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"ISDS accounts not checked: %1" => "",
+"ISDS accounts not checked: %1" => "ISDS ra\xE8uni nisu provjereni: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"The check \"%1\" tells what to fix." => "",
+"The check \"%1\" tells what to fix." => "\x8Ato treba ispraviti, ka\x9Ee provjera \x84%1\x93.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 100
-"PHP cannot read misc/datovka/datovka_conf.php" => "",
+"PHP cannot read misc/datovka/datovka_conf.php" => "PHP ne mo\x9Ee pro\xE8itati misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"AA cannot use misc/datovka/datovka_conf.php" => "",
+"AA cannot use misc/datovka/datovka_conf.php" => "AA ne mo\x9Ee koristiti misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "",
+"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "Ispravite datoteku prema datovka_conf.php.default \x96 \x9Ato nije u redu, ka\x9Ee problem. Do tada AA radi kao da datoteka ne postoji.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 102
-"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "",
+"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "Ispravite %1 prema datovka_conf.php.default. Do tada AA nema nijedan ISDS ra\xE8un; ostatak datoteke AA \xE8ita.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "",
+"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "AA izostavlja postavke iz misc/datovka/datovka_conf.php: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"Correct each key as its problem says." => "",
+"Correct each key as its problem says." => "Ispravite svaki klju\xE8 kako ka\x9Ee njegov problem.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 113
-"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "misc/datovka/datovka_conf.php sadr\x9Ei klju\xE8eve koje AA ne \xE8ita: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 116
-"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "",
+"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "Premjestite ISDS ra\xE8un pod %1 ili izbri\x9Aite ono \x9Ato AA ne \xE8ita: na najvi\x9Aoj razini AA \xE8ita instances, test, standard i accounts, u test i standard cert i atsId, u instalaciji samo url.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "",
+"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "misc/datovka/datovka_conf.php jo\x9A sadr\x9Ei adrese ISDS-a: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "",
+"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "AA ne \xE8ita url_* i wsdl_* iz datoteke \x96 adrese su dio AA-a. Izbri\x9Aite ih.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 149
-"Other requests met a problem in misc/datovka/datovka_conf.php" => "",
+"Other requests met a problem in misc/datovka/datovka_conf.php" => "Drugi zahtjevi nai\x9Ali su na problem u misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 150
-"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "",
+"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "Drugi zahtjevi nisu mogli koristiti ra\xE8une iz misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 151
-"Other requests could not use misc/datovka/datovka_conf.php" => "",
+"Other requests could not use misc/datovka/datovka_conf.php" => "Drugi zahtjevi nisu mogli koristiti misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 156
-"Site, one of them" => "",
+"Site, one of them" => "Web, jedan od njih", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 158
-"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "",
+"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "%1 Ako se pojavilo samo jedan dan, obi\xE8no je rije\xE8 o mre\x9Enom datote\xE8nom sustavu koji je na neko vrijeme odbio PHP. Nalaz nestaje 7 dana nakon datuma \x84%2\x93.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 159
-"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "",
+"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "Datoteka se u me\xF0uvremenu promijenila ili drugo stablo AA-a nad ovom bazom podataka \xE8ita vlastitu datoteku. Ispravite ono \x9Ato navodi problem u datoteci koju \xE8ita svako stablo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "",
+"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "Odgovori ISDS-a na poruke ove baze podataka odbijeni su: %1 ne navodi instalaciju %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS refused: the installation in their token is not in %1" => "",
+"Answers of ISDS refused: the installation in their token is not in %1" => "Odgovori ISDS-a odbijeni: instalacija u njihovom tokenu nije u %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id" => "",
+"Installation id" => "ID instalacije", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id, one of them" => "",
+"Installation id, one of them" => "ID instalacije, jedan od njih", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 191
-"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "",
+"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "Dodajte instalaciju s tim ID-om u %1, zajedno s njezinim AA_INSTAL_URL \x96 svaka instalacija koja dijeli registraciju usluge autentifikacije navodi iste ID-ove.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 192
-"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "",
+"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "Nijedna poruka ove baze podataka nema taj token. Ako taj ID ima instalacija koja dijeli registraciju usluge autentifikacije, dodajte ga u %1; ina\xE8e odgovor ne pripada ovoj instalaciji i ni\x9Ata ne treba mijenjati.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 215
-"Test boxes of ISDS accounts AA cannot read: %1" => "",
+"Test boxes of ISDS accounts AA cannot read: %1" => "Testni pretinci ISDS ra\xE8una koje AA ne mo\x9Ee pro\xE8itati: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 218
-"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "",
+"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "Zapi\x9Aite test_boxes kao popis ID-ova podatkovnih pretinaca: ['<ID pretinca>', ...], svaki od 7 slova ili znamenki. Do tada ra\xE8un \x9Aalje, ali s njega ne odlazi nijedna testna poruka nacrta.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 235
-"Paid tests of ISDS accounts AA cannot read: %1" => "",
+"Paid tests of ISDS accounts AA cannot read: %1" => "Pla\xE6eni testovi ISDS ra\xE8una koje AA ne mo\x9Ee pro\xE8itati: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 238
-"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "",
+"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "Zapi\x9Aite paid_tests kao true \x96 bez navodnika \x96 kako bi testna poruka nacrta smjela stajati novca, ili ga uklonite. Do tada testna poruka odlazi samo besplatno.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "",
+"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "misc/datovka/datovka_conf.php ne provjerava se na dvaput zapisane klju\xE8eve \x96 datoteka ima vi\x9Ae od %1 KB", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"The settings of one installation take a few kilobytes - check what else the file holds." => "",
+"The settings of one installation take a few kilobytes - check what else the file holds." => "Postavke jedne instalacije zauzimaju nekoliko kilobajta \x96 provjerite \x9Ato jo\x9A datoteka sadr\x9Ei.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 303
-"misc/datovka/datovka_conf.php writes keys twice: %1" => "",
+"misc/datovka/datovka_conf.php writes keys twice: %1" => "misc/datovka/datovka_conf.php sadr\x9Ei dvaput zapisane klju\xE8eve: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 307
-"ISDS accounts of the sites of other databases: %1" => "",
+"ISDS accounts of the sites of other databases: %1" => "ISDS ra\xE8uni webova drugih baza podataka: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 309
-"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "",
+"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "PHP od dvaput zapisanog klju\xE8a zadr\x9Eava samo posljednji, a prvi bez upozorenja izostavlja. Spojite ih u jedan ili preimenujte jedan od ra\xE8una.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 310
-"An account of the sites of another database: the State Check of the database of its sites names it." => "",
+"An account of the sites of another database: the State Check of the database of its sites names it." => "Ra\xE8un webova druge baze podataka: navodi ga Provjera stanja baze podataka njegovih webova.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 341
-"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "",
+"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "misc/datovka/datovka_conf.php mogu \xE8itati svi korisnici poslu\x9Eitelja, include/config.php ne", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 343
-"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "",
+"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "Datoteka sadr\x9Ei lozinku ili zaporku klju\xE8a. Dajte joj vlasnika, grupu i na\xE8in pristupa kao include/config.php (chown, chmod) i provjerite njezin ACL (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 370
-"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "",
+"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "Kopije misc/datovka/datovka_conf.php u direktoriju AA-a: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 373
-"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "",
+"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "Kopije datoteke \x96 sigurnosne kopije, starije verzije, ono \x9Ato uz nju ostavi ure\xF0iva\xE8 ili svn \x96 dr\x9Eite samo izvan web-stabla. Ove premjestite ili izbri\x9Aite.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 393
-"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "",
+"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "AA ne mo\x9Ee koristiti ra\xE8une iz misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 398
-"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "",
+"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "Dajte datoteci vlasnika, grupu i na\xE8in pristupa kao include/config.php, jer svaki web mo\x9Ee pokretati PHP pod vlastitim korisnikom, i provjerite pu\x9Ata li open_basedir svakog weba PHP do datoteke (i do cilja poveznice). Do tada AA radi kao da datoteka ne postoji.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 37
-"Letters to data boxes as a PDF" => "",
+"Letters to data boxes as a PDF" => "Pisma u podatkovne pretince kao PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 42
-"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "",
+"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "Pretvara kratko pismo u PDF, kao \x9Ato masovno slanje u podatkovne pretince \xE8ini s pismom svake kampanje \x96 samo kada ISDS ra\xE8un iz misc/datovka/datovka_conf.php \x9Aalje za web ove baze podataka.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 81
-"AA makes letters to data boxes into a PDF" => "",
+"AA makes letters to data boxes into a PDF" => "AA pretvara pisma u podatkovne pretince u PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 86
-"A letter to a data box cannot be made into a PDF" => "",
+"A letter to a data box cannot be made into a PDF" => "Pismo u podatkovni pretinac ne mo\x9Ee se pretvoriti u PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 87
-"Until then no campaign can be sent to data boxes." => "",
+"Until then no campaign can be sent to data boxes." => "Do tada se nijedna kampanja ne mo\x9Ee poslati u podatkovne pretince.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 88
-"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "",
+"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "Nedostaje dompdf, koji izra\xF0uje PDF: pokrenite composer install u direktoriju AA-a.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 89
-"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "",
+"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "PHP-u nedostaje pro\x9Airenje GD, koje crta slike pisma: instalirajte ga i ponovno pokrenite PHP.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 90
-"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "",
+"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "Pokrenite composer install u direktoriju AA-a \x96 donosi dompdf i njegove fontove \x96 i provjerite smije li PHP pisati u svoj privremeni direktorij (sys_temp_dir).", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 30
-"Data boxes of the items" => "",
+"Data boxes of the items" => "Podatkovni pretinci stavki", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 35
-"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "",
+"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "Uspore\xF0uje podatkovne pretince stavki s preuzetim registrom podatkovnih pretinaca u stranicama koje s njim uparuju svoje stavke i navodi ISDS ra\xE8une \xE8iji webovi ne koriste nijednu takvu stranicu.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 60
-"No slice pairs its items with the register of data boxes" => "",
+"No slice pairs its items with the register of data boxes" => "Nijedna stranica ne uparuje svoje stavke s registrom podatkovnih pretinaca", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 63
-"Paired slices whose items have the data boxes of the register: %1" => "",
+"Paired slices whose items have the data boxes of the register: %1" => "Uparene stranice \xE8ije stavke imaju podatkovne pretince iz registra: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 88
-"ISDS account" => "",
+"ISDS account" => "ISDS ra\xE8un", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 94
-"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "",
+"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "Webovi ISDS ra\xE8una ne koriste nijednu stranicu s postavkama podatkovnih pretinaca, pa masovno slanje ne mo\x9Ee preuzeti primatelje", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 97
-"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "",
+"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "U postavkama stranice iz koje kampanje uzimaju primatelje \x96 javne stranice koju web koristi, vidi \x84Koristi module\x93 u postavkama weba \x96 otvorite zaslon \x84Podatkovni pretinci iz registra\x93 i ondje odaberite polja njezinih stavki: naziv, tip i podatkovni pretinac u koji masovno slanje \x9Aalje.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 112
-"Data boxes of %1" => "",
+"Data boxes of %1" => "Podatkovni pretinci stranice %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 114
-"Download it on the page Data boxes from the register of a paired slice." => "",
+"Download it on the page Data boxes from the register of a paired slice." => "Preuzmite ga na zaslonu \x84Podatkovni pretinci iz registra\x93 neke uparene stranice.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"The directory of the register of data boxes cannot be used" => "",
+"The directory of the register of data boxes cannot be used" => "Direktorij registra podatkovnih pretinaca ne mo\x9Ee se koristiti", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "",
+"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "Dopustite PHP-u pretra\x9Eivanje direktorija ili postavite IMG_UPLOAD_PATH u config.php. Zatim preuzmite registar na zaslonu \x84Podatkovni pretinci iz registra\x93 neke uparene stranice.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The register of data boxes has not been downloaded" => "",
+"The register of data boxes has not been downloaded" => "Registar podatkovnih pretinaca nije preuzet", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The items are compared with it." => "",
+"The items are compared with it." => "Stavke se uspore\xF0uju s njim.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 127
-"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "",
+"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "Ponovno preuzmite registar na zaslonu \x84Podatkovni pretinci iz registra\x93 neke uparene stranice. Do tada se stavke ne uspore\xF0uju s registrom.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"The downloaded register of data boxes is older than %1 days" => "",
+"The downloaded register of data boxes is older than %1 days" => "Preuzeti registar podatkovnih pretinaca stariji je od %1 dana", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Downloaded" => "",
+"Downloaded" => "Preuzeto", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "",
+"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "Ponovno ga preuzmite na zaslonu \x84Podatkovni pretinci iz registra\x93 neke uparene stranice: tijela dobivaju nove pretince i spajaju se.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 140
-"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "",
+"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "Kopija registra je o\x9Ate\xE6ena: zamijenit \xE6e je ponovno preuzimanje na zaslonu \x84Podatkovni pretinci iz registra\x93 neke uparene stranice.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 141
-"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "",
+"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "Kopija registra ne mo\x9Ee se pro\xE8itati: provjerite direktorij i dopu\x9Atenja navedena u dokazima; ako su u redu, \xE8itanje s diska nije uspjelo \x96 poku\x9Aajte ponovno kasnije.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 142
-"The downloaded register of data boxes cannot be read" => "",
+"The downloaded register of data boxes cannot be read" => "Preuzeti registar podatkovnih pretinaca ne mo\x9Ee se pro\xE8itati", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"The pairing of slice \"%1\" with the register no longer fits its fields" => "",
+"The pairing of slice \"%1\" with the register no longer fits its fields" => "Uparivanje stranice \x84%1\x93 s registrom vi\x9Ae ne odgovara njezinim poljima", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"Choose the fields again in the settings on the page Data boxes from the register." => "",
+"Choose the fields again in the settings on the page Data boxes from the register." => "Ponovno odaberite polja u postavkama na zaslonu \x84Podatkovni pretinci iz registra\x93.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 187
-"Slice \"%1\": items without a data box: %2, items with another box than the register by I\xC4\x8CO: %3" => "",
+"Slice \"%1\": items without a data box: %2, items with another box than the register by I\xC4\x8CO: %3" => "Stranica \x84%1\x93: stavke bez podatkovnog pretinca: %2, stavke s drugim pretincem od onoga u registru prema I\xC8O: %3", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 190
-"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "",
+"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "Otvorite zaslon \x84Podatkovni pretinci iz registra\x93, provjerite prona\xF0ene pretince i upi\x9Aite ih. Stavkama koje registar ne prona\xF0e pretinac treba upisati ru\xE8no.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 21
-"Message items of mass sendings" => "",
+"Message items of mass sendings" => "Stavke poruka masovnih slanja", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 26
-"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "",
+"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "Uspore\xF0uje stavke poruka nedavnih masovnih slanja u podatkovne pretince sa zapisima njihovih izvo\xF0enja, prema kojima se \x9Aalje.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"Message items of a mass sending do not show what its record says: %1" => "",
+"Message items of a mass sending do not show what its record says: %1" => "Stavke poruka masovnog slanja ne prikazuju ono \x9Ato navodi njegov zapis: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "",
+"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "Slanje se ravna prema svom zapisu; stavke ga samo prikazuju ljudima, a stavka koja poruku prikazuje kao neposlanu iako je oti\x9Ala navest \xE6e nekoga da je ru\xE8no po\x9Aalje ponovno. Svaki primjer navodi referentnu oznaku po\x9Ailjatelja, stavku, \x9Ato ona prikazuje i \x9Ato navodi zapis: postavite stanje stavke na tu vrijednost ili provjerite poruku na portalu ISDS prema referentnoj oznaci po\x9Ailjatelja.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 96
 // src/Optimize/CheckIsdsRuns.php, row 90
@@ -12781,140 +13011,140 @@ return [
 "%1: nothing found" => "%1: ni\x9Ata nije prona\xF0eno", // ai 2026-10
 
 // src/Optimize/CheckIsdsRuns.php, row 51
-"Mass sendings to data boxes" => "",
+"Mass sendings to data boxes" => "Masovna slanja u podatkovne pretince", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 56
-"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "",
+"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "Upozorava na masovna slanja u podatkovne pretince koja su zapela ili se zaustavila zbog pogre\x9Ake, koja su ostavila poruke nepoznate sudbine ili kod kojih mnoge poruke nisu uspjele, \xE8ije je pra\xE6enje dostave zastalo ili ostavilo poruke za koje se ne zna jesu li dostavljene, te na kampanje koje ne prikazuju kako je slanje pro\x9Alo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"The campaign of a finished mass sending does not show its end" => "",
+"The campaign of a finished mass sending does not show its end" => "Kampanja zavr\x9Aenog masovnog slanja ne prikazuje njegov kraj", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "",
+"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "Stavku kampanje vi\x9Ae ni\x9Ata ne\xE6e ponovno zapisati. Postavite njezino stanje ru\xE8no: zaustavljeno ako je slanje zaustavljeno prije nego \x9Ato su oti\x9Ale sve poruke, ina\xE8e gotovo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 121
-"Mass sendings to data boxes whose campaign item is gone: %1" => "",
+"Mass sendings to data boxes whose campaign item is gone: %1" => "Masovna slanja u podatkovne pretince \xE8ija je stavka kampanje nestala: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 125
-"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "",
+"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "Njihovi zapisi i zamrznuta pisma ostaju kao dokaz onoga \x9Ato je poslano - AA ih ne bri\x9Ae zajedno s kampanjom. Nedovr\x9Aeno slanje nastavlja se do kraja: njegov zapis sadr\x9Ei kome i \x9Ato \x9Aalje.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 160
-"Messages of unknown fate" => "",
+"Messages of unknown fate" => "Poruke nepoznate sudbine", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"Following the delivery of a mass sending to data boxes stopped by an error" => "",
+"Following the delivery of a mass sending to data boxes stopped by an error" => "Pra\xE6enje dostave masovnog slanja u podatkovne pretince zaustavljeno je zbog pogre\x9Ake", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "",
+"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "Sve su poruke oti\x9Ale, zaustavilo se samo utvr\xF0ivanje jesu li dostavljene. Otklonite uzrok koji navodi k\xF4d pogre\x9Ake, a zatim na web-stranici slanja odaberite \x84Nastavite\x93 - u\xE8itat \xE6e i propu\x9Atena stanja - ili \x84Odustanite\x93, \xE8ime se pra\xE6enje trajno zavr\x9Aava.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 167
-"A mass sending to data boxes stopped by an error" => "",
+"A mass sending to data boxes stopped by an error" => "Masovno slanje u podatkovne pretince zaustavljeno je zbog pogre\x9Ake", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 169
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "Ni\x9Ata se vi\x9Ae ne \x9Aalje dok netko ne intervenira. Otklonite uzrok koji navodi k\xF4d pogre\x9Ake, a zatim na web-stranici slanja odaberite \x84Nastavite\x93 - ili \x84Odustanite\x93, \xE8ime se slanje trajno zavr\x9Aava: poruku koja je mo\x9Eda oti\x9Ala tada mora provjeriti osoba. Stavka kampanje mo\x9Ee i dalje prikazivati da slanje traje ako je pogre\x9Aka nastala prije nego \x9Ato ju je izvo\xF0enje stiglo zapisati.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 170
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "Ni\x9Ata se vi\x9Ae ne \x9Aalje dok netko ne intervenira. Otklonite uzrok koji navodi k\xF4d pogre\x9Ake, a zatim na web-stranici slanja odaberite \x84Nastavite\x93 - ili \x84Zaustavite\x93, nakon \xE8ega se vi\x9Ae ni\x9Ata ne \x9Aalje. Poruka koja je mo\x9Eda oti\x9Ala nikad se ne \x9Aalje ponovno: slanje je pronalazi. Stavka kampanje mo\x9Ee i dalje prikazivati da slanje traje ako je pogre\x9Aka nastala prije nego \x9Ato ju je izvo\xF0enje stiglo zapisati.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"A mass sending to data boxes has not moved on for %1 hours" => "",
+"A mass sending to data boxes has not moved on for %1 hours" => "Masovno slanje u podatkovne pretince stoji ve\xE6 %1 h", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "",
+"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "Na njemu ne radi nijedan korak reda zadataka. Provjerite pokre\xE6e li cron red zadataka i jesu li njegovi krugovi dovoljno dugi za jedan korak (TOEXECUTE_ALLOWED_TIME u config.php), a zatim na web-stranici slanja odaberite \x84Nastavite\x93.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A finished mass sending left messages of unknown fate: %1" => "",
+"A finished mass sending left messages of unknown fate: %1" => "Zavr\x9Aeno masovno slanje ostavilo je poruke nepoznate sudbine: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A mass sending being followed has messages of unknown fate: %1" => "",
+"A mass sending being followed has messages of unknown fate: %1" => "Pra\xE6eno masovno slanje ima poruke nepoznate sudbine: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 185
-"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "",
+"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "Mo\x9Eda su dostavljene, pa ih AA nikad ne \x9Aalje ponovno. Prona\xF0ite svaku prema referentnoj oznaci po\x9Ailjatelja me\xF0u poslanim porukama podatkovnog pretinca na portalu ISDS. Za onu koje ondje nema odaberite \x84Provjerite\x93 na web-stranici slanja - tada se smatra neposlanom - i po\x9Aaljite pismo tom primatelju ponovno u novoj kampanji.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 193
-"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "",
+"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "Ti primatelji nisu dobili pismo. Njihove stavke poruka prikazuju \x9Ato je ISDS javio za svakoga: otklonite uzrok i po\x9Aaljite im pismo ponovno u novoj kampanji.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 195
-"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "",
+"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "K\xF4d 3: privitak nije pro\x9Aao antivirusnu provjeru ISDS-a (ne prolazi je ni neva\x9Ee\xE6i PDF). Najprije popravite privitke: isti privitak ponovno ne\xE6e pro\xE6i.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 198
-"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "",
+"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "K\xF4d 8: podatkovni pretinac primatelja u\xE8injen je nedostupnim. Poruka nije dostavljena, iako mo\x9Ee prikazivati vrijeme fiktivne dostave, a nijedna nova poruka u taj pretinac ne sti\x9Ee: prona\xF0ite novi podatkovni pretinac primatelja.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 200
-"%1 of %2 messages of a mass sending to data boxes failed" => "",
+"%1 of %2 messages of a mass sending to data boxes failed" => "Poruke masovnog slanja u podatkovne pretince: neuspjelo %1 od %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"A mass sending to data boxes ended with messages not known to be delivered: %1" => "",
+"A mass sending to data boxes ended with messages not known to be delivered: %1" => "Masovno slanje u podatkovne pretince zavr\x9Ailo je s porukama za koje se ne zna jesu li dostavljene: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "",
+"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "ISDS tijekom pra\xE6enja nije javio AA-u ni njihovu dostavu ni odbijanje. Provjerite svaku na portalu ISDS prema referentnoj oznaci po\x9Ailjatelja me\xF0u poslanim porukama podatkovnog pretinca.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 235
-"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "",
+"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "ISDS je blokirao adresu ovog poslu\x9Eitelja. AA poku\x9Aava ponovno nakon 24 sata. Pogledajte provjeru \x84%1\x93.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 236
-"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "",
+"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "PHP ne mo\x9Ee \xE8itati misc/datovka/datovka_conf.php: ponovno mu omogu\xE6ite \xE8itanje datoteke.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 237
-"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "",
+"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "Podatkovni pretinac ima u sat vremena toliko promjena da ih AA ne mo\x9Ee u\xE8itati: provjerite dostavu poruka na portalu ISDS prema njihovim referentnim oznakama po\x9Ailjatelja.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 238
-"ISDS did not answer when AA read the delivery of the messages." => "",
+"ISDS did not answer when AA read the delivery of the messages." => "ISDS nije odgovorio dok je AA u\xE8itavao dostavu poruka.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 242
-"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "",
+"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "Zapis navodi da je dostava u\xE8itana do trenutka u budu\xE6nosti. Sljede\xE6i krug u\xE8itat \xE6e je ponovno od po\xE8etka slanja i nijednu poruku ne\xE6e ponovno poslati; ako ovaj nalaz potraje, provjerite satove poslu\x9Eitelja koji pokre\xE6u red zadataka.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 243
-"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "",
+"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "AA sam poku\x9Aava ponovno; \xE8im uspije u\xE8itati, u\xE8itat \xE6e i propu\x9Atena stanja i nijednu poruku ne\xE6e ponovno poslati.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Read up to" => "",
+"Read up to" => "U\xE8itano do", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Last wait" => "",
+"Last wait" => "Posljednje \xE8ekanje", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 245
-"Following the delivery of a mass sending to data boxes has stalled" => "",
+"Following the delivery of a mass sending to data boxes has stalled" => "Pra\xE6enje dostave masovnog slanja u podatkovne pretince je zastalo", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record of a mass sending to data boxes cannot be read" => "",
+"The record of a mass sending to data boxes cannot be read" => "Zapis masovnog slanja u podatkovne pretince ne mo\x9Ee se pro\xE8itati", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "",
+"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "Zapis ili zamrznuti primatelji slanja promijenjeni su izvan AA. Vratite ih iz sigurnosne kopije baze podataka prije nego \x9Ato itko odabere \x84Nastavite\x93: upravo zapis sprje\xE8ava da poruka ode dvaput.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 264, 309
-"Campaign item" => "",
+"Campaign item" => "Stavka kampanje", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 309
-"Campaign state" => "",
+"Campaign state" => "Stanje kampanje", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 35
-"Views of mass sendings" => "",
+"Views of mass sendings" => "Pogledi masovnih slanja", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 40
-"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "",
+"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "Provjerava nazive pogleda web-stranice masovnog slanja u podatkovne pretince: svaki pogled isds_... smije biti jednom u stranicama kampanja i poruka jednog ISDS ra\xE8una - od dvaju istoimenih web-stranica ne prikazuje nijedan -, a ulazni pogled isdscampainer jednom me\xF0u stranicama weba.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 79
-"Views of the slices of ISDS account %1 share the name %2" => "",
+"Views of the slices of ISDS account %1 share the name %2" => "Pogledi stranica ISDS ra\xE8una %1 dijele naziv %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 82
-"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "",
+"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "Web-stranica masovnog slanja ne prikazuje nijedan od njih. Zadr\x9Eite naziv na jednom pogledu stranice kampanja ili poruka, a ostale preimenujte ili izbri\x9Aite.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 95
-"Site %1 has the entry view isdscampainer more than once" => "",
+"Site %1 has the entry view isdscampainer more than once" => "Web %1 ima ulazni pogled isdscampainer vi\x9Ae puta", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 98
-"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "",
+"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "{view:isdscampainer} uzima pogled s najve\xE6im brojem, koji ne mora biti web-stranica masovnog slanja. U spotu web-stranice pozovite ulazni pogled njegovim brojem, a ostale poglede tog naziva preimenujte.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 123
-"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "",
+"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "Web-stranica masovnog slanja na webu %1 prikazuje pogled s nazivom koji nema nijedan pogled njezinih stranica: %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 127, 163
 // src/Util/ChangesMonitor.php, row 444
 "View" => "Pogled",
 
 // src/Optimize/CheckIsdsViews.php, row 131
-"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "",
+"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "Taj dio web-stranice ostaje prazan. Vratite naziv preimenovanom pogledu stranice kampanja ili poruka ili ispravite naziv u predlo\x9Aku.", // ai 2026-11
 
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 28
 "Item edits without the edit permission" => "Izmjene stavki bez dozvole za ure\xF0ivanje", // ai 2026-10
@@ -13198,23 +13428,92 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "U posljednjih 30 dana nije odbijen nijedan obrazac objekta", // ai 2026-10
 
+// src/Optimize/CheckPasskeys.php, row 35
+"Passkey logins" => "Prijave pristupnim klju\xE8em", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 40
+"Lists the passkey logins refused in the last 30 days and the right passwords of accounts that log in by a passkey." => "Navodi prijave pristupnim klju\xE8em odbijene u posljednjih 30 dana i ispravne lozinke ra\xE8una koji se prijavljuju pristupnim klju\xE8em.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Passkeys cannot be used yet - the table authenticator is missing" => "Pristupni klju\xE8evi jo\x9A se ne mogu koristiti - nedostaje tablica authenticator", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Run service/sql_update.php - it creates the table." => "Pokrenite service/sql_update.php - stvorit \xE6e tablicu.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 95
+"No passkey login was refused in the last 30 days" => "U posljednjih 30 dana nije odbijena nijedna prijava pristupnim klju\xE8em", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"Right password of a passkey account" => "Ispravna lozinka ra\xE8una s pristupnim klju\xE8em", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The right password of an account that logs in by a passkey (%1)" => "Ispravna lozinka ra\xE8una koji se prijavljuje pristupnim klju\xE8em (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The account logs in only by its passkey, so the password did not let anybody in - but someone knows it. If it was not the owner, the password should be changed; it is used again once the passkeys are deleted." => "Ra\xE8un se prijavljuje samo pristupnim klju\xE8em, pa lozinka nikoga nije pustila unutra - ali netko je zna. Ako to nije bio vlasnik, lozinku treba promijeniti; ponovno se koristi nakon brisanja pristupnih klju\xE8eva.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"Passkeys unknown - the directory did not answer" => "Pristupni klju\xE8evi nepoznati - imenik nije odgovorio", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The directory did not answer whether %1 has a passkey" => "Imenik nije odgovorio ima li %1 pristupni klju\xE8", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The password was refused, as the account may log in only by a passkey. Check the LDAP server and the bind account of AA." => "Lozinka je odbijena jer se ra\xE8un mo\x9Eda smije prijavljivati samo pristupnim klju\xE8em. Provjerite LDAP poslu\x9Eitelj i ra\xE8un za povezivanje (bind) AA-a.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"Passkey answer from another address" => "Odgovor pristupnog klju\xE8a s druge adrese", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"A passkey answer from another address than the page (%1)" => "Odgovor pristupnog klju\xE8a s druge adrese od one web-stranice (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"AA sees the page under another host or scheme than the browser - usually a reverse proxy missing from AA_TRUSTED_PROXIES, or a site reached by http." => "AA vidi web-stranicu pod drugim hostom ili shemom nego preglednik - obi\xE8no zbog reverznog proxyja koji nedostaje u AA_TRUSTED_PROXIES ili weba otvorenog preko http.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"Security key counter went back" => "Broja\xE8 sigurnosnog klju\xE8a vratio se unatrag", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"A security key of %1 signed with a counter it had used before" => "Sigurnosni klju\xE8 korisnika %1 potpisao je broja\xE8em koji je ve\xE6 prije upotrijebio", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"The key may have been copied. The login was let through, so its owner is not locked out; ask the owner and delete the passkey on the page of the account if in doubt." => "Klju\xE8 je mo\x9Eda kopiran. Prijava je propu\x9Atena, pa vlasnik nije zaklju\xE8an; ako ste u nedoumici, pitajte vlasnika i izbri\x9Aite pristupni klju\xE8 na zaslonu ra\xE8una.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Unknown passkey" => "Nepoznat pristupni klju\xE8", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"A login by a passkey this AA does not keep" => "Prijava pristupnim klju\xE8em koji ovaj AA ne \xE8uva", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Usually a passkey deleted in AA but still in the browser or phone of its owner, or one of another AA on the same host. The owner can delete it in the device." => "Obi\xE8no pristupni klju\xE8 izbrisan u AA, ali jo\x9A prisutan u pregledniku ili telefonu vlasnika, ili klju\xE8 drugog AA na istom hostu. Vlasnik ga mo\x9Ee izbrisati na ure\xF0aju.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"Passkey login refused" => "Prijava pristupnim klju\xE8em odbijena", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"A passkey login refused: %1" => "Odbijena prijava pristupnim klju\xE8em: %1", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"An expired or repeated login, or an answer no browser sends. Nothing to do unless it repeats." => "Istekla ili ponovljena prijava, ili odgovor koji nijedan preglednik ne \x9Aalje. Ni\x9Ata ne treba poduzimati, osim ako se ponavlja.", // ai 2026-11
+
 // src/Optimize/CheckPerVisitorReads.php, row 18
-"Pages left out of the page cache by {server:...}" => "",
+"Pages left out of the page cache by {server:...}" => "Web-stranice izostavljene iz predmemorije web-stranica zbog {server:...}", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 23
-"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "",
+"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "Navodi webove i stranice \xE8iji predlo\x9Aci preko {server:...} \xE8itaju vrijednost koja mo\x9Ee pripadati posjetitelju (adresa, preglednik, referer) - predmemorija web-stranica takve web-stranice ne sprema.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 72
-"Reads" => "",
+"Reads" => "\xC8ita", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 78
-"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "",
+"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "%1 ima web-stranice koje predmemorija web-stranica ne sprema - predlo\x9Eak \xE8ita vrijednost koja mo\x9Ee pripadati posjetitelju", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 81
-"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "",
+"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Svaki posjet takvu web-stranicu ponovno iscrtava. Preusmjeravanje, broja\xE8 klikova ili obrazac mogu ostati kakvi jesu. Drugdje, prije svega u predlo\x9Aku svake web-stranice (zaglavlje, podno\x9Eje): izbri\x9Aite vrijednost ispisanu samo za otklanjanje pogre\x9Aaka i provjerite pravopis naziva ({server:HTTP_REFERER}); za prepoznavanje posjetitelja koji dolaze iz kampanje upotrijebite {qs:utm_source}, za ure\xF0aj {detect}. Host, shema i URI ({server:HTTP_HOST}, {server:REQUEST_URI}) web-stranicu ostavljaju u predmemoriji.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 86
-"No template reads a value of the visitor's own by {server:...}" => "",
+"No template reads a value of the visitor's own by {server:...}" => "Nijedan predlo\x9Eak ne \xE8ita preko {server:...} vrijednost koja pripada posjetitelju", // ai 2026-11
 
 // src/Optimize/CheckPhpFatals.php, row 24
 "PHP fatal errors" => "Fatalne gre\x9Ake PHP-a", // ai 2026-10
@@ -13328,28 +13627,28 @@ return [
 "No queued task with a missing class in the last 30 days" => "U posljednjih 30 dana nema zadataka u redu s nepostoje\xE6om klasom", // ai 2026-10
 
 // src/Optimize/CheckRelatedSlices.php, row 20
-"Related slices of another website" => "",
+"Related slices of another website" => "Povezane stranice drugog weba", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 25
-"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "",
+"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "Navodi polja povezanih stavki (rim s gumbom za ure\xF0ivanje, mng) koja upu\xE6uju na stranicu koju ne koristi nijedan web njihove vlastite stranice. Urednici stranice tako mogu ure\xF0ivati stavke te stranice.", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 78
-"Related slice" => "",
+"Related slice" => "Povezana stranica", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 79
-"Its websites" => "",
+"Its websites" => "Njezini webovi", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 85
-"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "",
+"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "Nijedno polje povezanih stavki ne upu\xE6uje na stranicu drugog weba; polja stranica koje ne koristi nijedan web nisu uspore\xF0ena: %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 86
-"Every related-item field points to a slice of its own website" => "",
+"Every related-item field points to a slice of its own website" => "Svako polje povezanih stavki upu\xE6uje na stranicu svojeg weba", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 90
-"%1 related-item fields point to a slice of another website" => "",
+"%1 related-item fields point to a slice of another website" => "Polja povezanih stavki koja upu\xE6uju na stranicu drugog weba: %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 92
-"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "",
+"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "Urednici stranice mogu ure\xF0ivati stavke povezane stranice. Ako je polje kopirano s predlo\x9Akom, usmjerite ga na stranicu njegova vlastitog weba.", // ai 2026-11
 
 // src/Optimize/CheckRequiredSettings.php, row 17
 "Required slice settings" => "Obavezne postavke stranice", // ai 2026-10
@@ -13650,77 +13949,77 @@ return [
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "Sinonim ni\x9Ata ne prikazuje: f_u poziva samo funkcije instalacije (usr_* u include/usr_aliasfnc.php), nikada funkcije PHP-a ili AA. Napi\x9Aite funkciju usr_* koja radi \x9Ato je potrebno ili umjesto toga upotrijebite AA izraz.", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 35
-"Slices left out of views, charsets ignored" => "",
+"Slices left out of views, charsets ignored" => "Stranice izostavljene iz pogleda, zanemareni skupovi znakova", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 40
-"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "",
+"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "Navodi poglede koji su u posljednjih 30 dana izostavili stranicu jer web-stranica nije znala lozinku za \xE8itanje te stranice: pogled pozvan iz URL-a nad tom stranicom ili s parametrima koji navode tu stranicu ili njezine stavke.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 41
-"And the conditions on fields of related items in such a slice, which matched nothing." => "",
+"And the conditions on fields of related items in such a slice, which matched nothing." => "Te uvjete na poljima povezanih stavki u takvoj stranici koji nisu ni\x9Ata prona\x9Ali.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 42
-"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "",
+"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "Te izostavljene uvjete i razvrstavanja po poljima \xE8ije vrijednosti AA nikad ne prikazuje, poput lozinki.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 43
-"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "",
+"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "Navodi i skupove znakova koje su poveznice i obrasci naveli u convertfrom ili convertto i koji su zanemareni.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 135
-"Slice settings (reading password)" => "",
+"Slice settings (reading password)" => "Postavke stranice (lozinka za \xE8itanje)", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 139
-"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "",
+"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "Uvjet, razvrstavanje ili grupiranje po polju %1 stranice %2 izostavljeno je: AA nikad ne prikazuje njegove vrijednosti", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 141
-"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Pogled, {ids} ili pretra\x9Eivanje na web-stranici imalo je uvjet, razvrstavanje ili grupiranje po lozinki, njezinoj kopiji, tajnom klju\xE8u dvofaktorske autentifikacije ili drugom polju \xE8ije vrijednosti AA nikad ne prikazuje (tako\xF0er cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... ili group_by= u URL-u). Uvjet nije ni\x9Ata prona\x9Aao, a razvrstavanje i grupiranje su izostavljeni. Je li polje popunjeno, i dalje se mo\x9Ee pitati (ISNULL, NOTNULL); ina\xE8e uklonite uvjet ili razvrstavanje iz pogleda ili predlo\x9Aka. Ako ne poznajete tu web-stranicu, zahtjev nije do\x9Aao s va\x9Aih web-stranica i ni\x9Ata ne treba mijenjati.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 142
-"Protected field refused" => "",
+"Protected field refused" => "Za\x9Ati\xE6eno polje odbijeno", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 144
-"A condition on related items matched nothing in slice %1: its reading password was not known" => "",
+"A condition on related items matched nothing in slice %1: its reading password was not known" => "Uvjet na povezane stavke nije ni\x9Ata prona\x9Aao u stranici %1: njezina lozinka za \xE8itanje nije bila poznata", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 146
-"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Pogled, {ids} ili pretra\x9Eivanje na web-stranici imalo je uvjet na polje povezanih stavki u toj stranici (<field>@<relation> ili <field>@<slice>/<relation>, tako\xF0er cmd[]=d-... u URL-u), a web-stranica nije znala lozinku za \xE8itanje te stranice, pa uvjet nije ni\x9Ata prona\x9Aao. Ako ga va\x9Aa web-stranica treba, navedite lozinku u predlo\x9Aku web-stranice ({credentials:...}) prije pogleda, nikad u poveznici, AJAX-u ili jsview.php. Ako ne poznajete tu web-stranicu, zahtjev nije do\x9Aao s va\x9Aih web-stranica i ni\x9Ata ne treba mijenjati.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 147
-"Condition refused" => "",
+"Condition refused" => "Uvjet odbijen", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 149
-"View %1" => "",
+"View %1" => "Pogled %1", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 150
-"%1 left out slice %2: its reading password was not known" => "",
+"%1 left out slice %2: its reading password was not known" => "%1: izostavljena stranica %2, njezina lozinka za \xE8itanje nije bila poznata", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 151
-"Listed by" => "",
+"Listed by" => "Ispisano u", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 152
-"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Pogled je pozvan iz URL-a (view.php, jsview.php, discussion.php), tako\xF0er kao banner takvog pogleda ili slice.php (set[]=banner-..., slice.php?banner=...), nad tom stranicom, ili su je navodili njegovi parametri u URL-u (set[]=slice_id-.../slices-..., ID-jevi stavki u cmd[]=x-...) ili slices[] u slice.php, a web-stranica nije znala lozinku za \xE8itanje te stranice. Ako va\x9Aa web-stranica ondje treba tu stranicu, pozovite pogled iz predlo\x9Aka web-stranice ({view...}), gdje se pogledima vjeruje; lozinku u URL-u (slice_pwd=...) navedite samo u uklju\xE8ivanju na strani poslu\x9Eitelja, nikad u poveznici, AJAX-u ili jsview.php, gdje bi zavr\x9Aila u izvornom kodu web-stranice i u zapisnicima. Ako ne poznajete tu web-stranicu, zahtjev nije do\x9Aao s va\x9Aih web-stranica i ni\x9Ata ne treba mijenjati.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 162, 193
-"Page asked for" => "",
+"Page asked for" => "Tra\x9Eena web-stranica", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 176
-"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "",
+"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "U posljednjih 30 dana nijedna stranica nije izostavljena iz pogleda ni iz uvjeta, nijedno za\x9Ati\xE6eno polje nije odbijeno i nijedan skup znakova nije zanemaren", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 187
-"%1 ignored a charset in %2" => "",
+"%1 ignored a charset in %2" => "%1: zanemaren skup znakova u %2", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 191
 // src/Security/Protection.php, row 92
 "Parameter" => "Parametar", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 192
-"Latest charsets" => "",
+"Latest charsets" => "Posljednji skupovi znakova", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 194
-"Link on page" => "",
+"Link on page" => "Poveznica na web-stranici", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 198
-"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Poveznica ili obrazac naveli su skup znakova za pretvorbu pogleda, rasprave, ankete ili obrasca (convertfrom ili convertto u view.php, jsview.php, discussion.php, poll.php i filler.php, tako\xF0er set[...]=convertfrom-... pogleda) koji AA ne preuzima iz URL-a; zanemaren je kao da ga nema. Dopu\x9Ateni su %1, bez obzira na velika i mala slova. Ispravite skup znakova u poveznici ili obrascu svoje web-stranice ili izostavite convertfrom - pogled tada pretvara iz skupa znakova svoje stranice. Ako ne poznajete tu web-stranicu, zahtjev nije do\x9Aao s va\x9Aih web-stranica i ni\x9Ata ne treba mijenjati.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 202
-"Charset ignored" => "",
+"Charset ignored" => "Skup znakova zanemaren", // ai 2026-11
 
 // src/Optimize/ClearPagecache.php, row 13
 "Clear Pagecache" => "O\xE8isti pagecache", // ai 2026-06
@@ -13729,7 +14028,7 @@ return [
 "Whole pagecache will be invalidated and deleted" => "Cijeli pagecache bit \xE6e poni\x9Aten i obrisan", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 35
-// src/Optimize/CopyContent.php, row 35
+// src/Optimize/CopyContent.php, row 37
 // src/Optimize/CreateUploadDir.php, row 38
 "There is nothing to test." => "Nema se \x9Ato testirati.", // ai 2026-06
 
@@ -13827,13 +14126,13 @@ return [
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 43
 "DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "DB_CHARACTER_SET u config.php je \x84%1\x93. Najprije ga prebacite na \x84utf8mb4\x93 i provjerite izgledaju li tekstovi u AA ispravno - pretvorba zadr\x9Eava ono \x9Ato AA prikazuje preko utf8mb4 veze.", // ai 2026-10
 
-// src/Optimize/CopyContent.php, row 13
+// src/Optimize/CopyContent.php, row 15
 "Copy Content Table" => "Kopiraj tablicu content", // ai 2026-06
 
-// src/Optimize/CopyContent.php, row 21
+// src/Optimize/CopyContent.php, row 23
 "Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "Kopira podatke svih stavki novijih od short_id=1941629 iz tablice content u tablicu content2. Koristi se za oporavak tablice content na Ecn poslu\x9Eitelju. Mislim da nije korisno ni za koga drugog.", // ai 2026-06
 
-// src/Optimize/CopyContent.php, row 67
+// src/Optimize/CopyContent.php, row 69
 "Copied" => "Kopirano", // ai 2026-06
 
 // src/Optimize/CopyItemsFromBackup.php, row 16
@@ -13848,34 +14147,34 @@ return [
 // src/Optimize/CopyItemsFromBackup.php, row 77
 "Deleted items to be recreated: %1." => "Izbrisane stavke koje \xE6e se ponovno stvoriti: %1.", // ai 2026-06
 
-// src/Optimize/CreateAppStoreAccount.php, row 14
+// src/Optimize/CreateAppStoreAccount.php, row 16
 "App store account" => "Ra\xE8un kataloga aplikacija", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 19
+// src/Optimize/CreateAppStoreAccount.php, row 21
 "Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "Stvara javni ra\xE8un kojim drugi AA \xE8itaju objavljene aplikacije ovog AA (korisnik %1, bez prava). Njegova lozinka je javna; ra\xE8un se ne mo\x9Ee prijaviti u administraciju.", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 34
+// src/Optimize/CreateAppStoreAccount.php, row 36
 "No app store account - this AA publishes no apps" => "Nema ra\xE8una kataloga aplikacija - ovaj AA ne objavljuje aplikacije", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 39
+// src/Optimize/CreateAppStoreAccount.php, row 41
 "The user %1 exists, but not with the public password of the app store - rename it, then repair" => "Korisnik %1 postoji, ali nema javnu lozinku kataloga aplikacija - preimenujte ga, a zatim popravite", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 44
+// src/Optimize/CreateAppStoreAccount.php, row 46
 "The app store account %1 has rights or groups - remove them" => "Ra\xE8un kataloga aplikacija %1 ima prava ili grupe - uklonite ih", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 47
+// src/Optimize/CreateAppStoreAccount.php, row 49
 "The app store account is ready" => "Ra\xE8un kataloga aplikacija je spreman", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 55
+// src/Optimize/CreateAppStoreAccount.php, row 57
 "Only a superadmin may create the app store account" => "Ra\xE8un kataloga aplikacija smije stvoriti samo superadmin", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 67
+// src/Optimize/CreateAppStoreAccount.php, row 69
 "The app store account could not be created" => "Ra\xE8un kataloga aplikacija nije mogu\xE6e stvoriti", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 70
+// src/Optimize/CreateAppStoreAccount.php, row 72
 "The app store account %1 is created" => "Ra\xE8un kataloga aplikacija %1 je stvoren", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 77
+// src/Optimize/CreateAppStoreAccount.php, row 79
 "The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "Ra\xE8un kataloga aplikacija treba korisnike samog AA (PERM_LIB sql); ovaj AA koristi %1 - mo\x9Ee instalirati iz kataloga, ali ne mo\x9Ee biti katalog", // ai 2026-10
 
 // src/Optimize/CreateUploadDir.php, row 16
@@ -13964,7 +14263,7 @@ return [
 "%1 duplicates found" => "Prona\xF0eno %1 duplikata", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 46
-// src/Optimize/FieldDuplicates.php, row 51, 65
+// src/Optimize/FieldDuplicates.php, row 53, 67
 "No duplicates found" => "Nema duplikata", // ai 2026-06
 
 // src/Optimize/DbRelationStartsxy.php, row 22
@@ -14003,16 +14302,16 @@ return [
 // src/Optimize/DropBackupTables.php, row 28
 "Deletes all the current backup tables (bck_slice, bck_item, ...)." => "Bri\x9Ae sve trenuta\xE8ne sigurnosne kopije tablica (bck_slice, bck_item, ...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 16
+// src/Optimize/FieldDuplicates.php, row 18
 "Fix field definitions duplicates" => "Popravite duplikate definicija polja", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 24
+// src/Optimize/FieldDuplicates.php, row 26
 "There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "U svim stranicama trebao bi postojati samo jedan par slice_id - field_id, ali ponekad ih je vi\x9Ae (uglavnom zbog gre\x9Ake u nekada\x9Anjoj skripti sql_update.php, koja je dodala vi\x9Ae polja display_count...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 55
+// src/Optimize/FieldDuplicates.php, row 57
 "Duplicate in slice - field: %1 - %2" => "Duplikat u stranici - polje: %1 - %2", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 83
+// src/Optimize/FieldDuplicates.php, row 85
 "Field %2 in slice %1 fixed" => "Polje %2 u stranici %1 popravljeno", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 23
@@ -14070,16 +14369,16 @@ return [
 // src/Optimize/FixPagecache.php, row 86
 "%1 inconsistent rows in pagecache removed" => "Uklonjeno %1 nekonzistentnih redaka u tablici pagecache", // ai 2026-06
 
-// src/Optimize/GenerateJslibsArray.php, row 17
+// src/Optimize/GenerateJslibsArray.php, row 19
 "Generate JS Library definition array" => "Generirajte definicijsko polje JS biblioteka", // ai 2026-06
 
-// src/Optimize/GenerateJslibsArray.php, row 25
+// src/Optimize/GenerateJslibsArray.php, row 27
 "Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)" => "Ispisuje definicijsko polje JS biblioteka kori\x9Ateno u include/stringexpand.php za a\x9Euriranje na zadnju verziju biblioteka na jsDeliver CDN-u (koriste AA developeri za a\x9Euriranje JS biblioteka u AA)", // ai 2026-06
 
-// src/Optimize/GenerateMetabase.php, row 42
+// src/Optimize/GenerateMetabase.php, row 44
 "Generate metabase definition row" => "Generirajte definicijski redak metabaze", // ai 2026-06
 
-// src/Optimize/GenerateMetabase.php, row 50
+// src/Optimize/GenerateMetabase.php, row 52
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Samo za programere - ispisuje sadr\x9Eaj include/metabase_schema.php (o\xE8ekivanu shemu baze podataka kao \xE8itljiv PHP array) generiran iz trenutne baze podataka; kopirajte ga u datoteku i commitajte.", // ai 2026-06
 
 // src/Optimize/ImgCacheWritable.php, row 17
@@ -14142,92 +14441,98 @@ return [
 // src/Optimize/ItemDiscussion.php, row 65
 "%1 problems solved" => "Rije\x9Aeno problema: %1", // ai 2026-06
 
+// src/Optimize/LdapPermsToSql.php, row 44
+"Convert LDAP permissions to SQL" => "Pretvorite LDAP dozvole u SQL", // ai 2026-11
+
 // src/Optimize/LdapPermsToSql.php, row 49
-"Migrate LDAP perms to SQL perms" => "Migracija LDAP dozvola u SQL dozvole", // ai 2026-06
+"Moves the users, groups and rights of this database from LDAP to the SQL tables under new numeric ids and rewrites the references to people in the data. Test only reads: its trial import is rolled back. Repair does everything in one transaction; then set PERM_LIB='sql' in every config of this database. Take a backup first - restoring it is the only way back." => "Premje\x9Ata korisnike, grupe i prava ove baze podataka iz LDAP-a u SQL tablice pod novim broj\xE8anim ID-jevima i prepisuje reference na osobe u podacima. \x84Testirajte\x93 samo \xE8ita: njegov probni uvoz se poni\x9Atava. \x84Popravite\x93 sve obavlja u jednoj transakciji; zatim postavite PERM_LIB='sql' u svakoj konfiguraciji ove baze podataka. Najprije napravite sigurnosnu kopiju - njezino vra\xE6anje jedini je put natrag.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 55
-"Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Kopira sve korisnike, grupe, \xE8lanstva i dozvole iz LDAP backenda u tablice SQL backenda (users, membership, perms) te prepisuje item.posted_by / item.edited_by iz LDAP DN oblika (uid=...,ou=...) u nove SQL numeri\xE8ke id-ove. Pokrenite jednom po instalaciji, zatim u configu prebacite PERM_LIB na 'sql'. 'Test' je probno izvo\xF0enje koje samo \xE8ita. 'Repair' izvodi migraciju i mo\x9Ee se pokretati opetovano. 'Revert' pomo\xE6u tablice mapiranja poni\x9Atava sve izmjene.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check passed: SQL answers as LDAP does." => "Provjera podudarnosti uspjela: SQL odgovara jednako kao LDAP.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 72
-"This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Ovaj optimizator radi samo kada je PERM_LIB='ldap'. Trenutno PERM_LIB='%1'.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check failed - Repair would stop at it." => "Provjera podudarnosti nije uspjela - \x84Popravite\x93 bi se na njoj zaustavio.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 83
+"The trial import is skipped: it would stop at the first blocking finding above. Fix them and run Test again." => "Probni uvoz je presko\xE8en: zaustavio bi se na prvom blokiraju\xE6em nalazu iznad. Otklonite ih i ponovno pokrenite \x84Testirajte\x93.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 87
-"Would create mapping table `%1`" => "Stvorila bi se tablica mapiranja `%1`", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 116
 "Test failed: %1" => "Test nije uspio: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 119
-"Test finished (dry run - no changes made)." => "Test zavr\x9Aen (probno izvo\xF0enje - bez izmjena).", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 108
+"Nothing was changed: the findings above block the conversion." => "Ni\x9Ata nije promijenjeno: nalazi iznad blokiraju pretvorbu.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 135
-"Repair failed: %1" => "Popravak nije uspio: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 133
+"Repair failed, yet the database holds a finished conversion (its log row exists) - check it with Test: %1" => "Popravak nije uspio, a baza podataka ipak sadr\x9Ei dovr\x9Aenu pretvorbu (postoji njezin redak u zapisniku) \x96 provjerite je pomo\xE6u \x84Testirajte\x93: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 138
-"Repair finished." => "Popravak zavr\x9Aen.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 134
+"Repair failed, nothing was changed: %1" => "\x84Popravite\x93 nije uspio, ni\x9Ata nije promijenjeno: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 154
-"Revert failed: %1" => "Vra\xE6anje nije uspjelo: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 144
+"The page cache was not cleared, clear it by hand: %1" => "Predmemorija web-stranica nije o\xE8i\x9A\xE6ena, o\xE8istite je ru\xE8no: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 157
-"Revert finished." => "Vra\xE6anje zavr\x9Aeno.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 148
+"Rewritten %1: %2 rows" => "%1 \x96 prepisano redaka: %2", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 178
-"LDAP findUsernames failed or returned: %1" => "LDAP findUsernames nije uspio ili je vratio: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 150
+"New ids of the directory entries:" => "Novi ID-jevi unosa imenika:", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 181
-"LDAP users found: %1" => "Prona\xF0eno LDAP korisnika: %1", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 197
-"Skipping user %1 - cannot determine login" => "Preska\xE8em korisnika %1 - nije mogu\xE6e odrediti korisni\xE8ko ime", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 206
-"User %1 already exists in SQL (id %2), reusing" => "Korisnik %1 ve\xE6 postoji u SQL-u (id %2), koristi se postoje\xE6i", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 220
-"Would create SQL user: %1 (from %2)" => "Stvorio bi se SQL korisnik: %1 (iz %2)", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 228
-"Failed to create SQL user %1" => "Stvaranje SQL korisnika %1 nije uspjelo", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 235
-"Users: created=%1 reused=%2 failed=%3" => "Korisnici: stvoreno=%1 ponovno_iskori\x9Ateno=%2 neuspjelo=%3", // ai 2026-06
-
-// src/Optimize/LdapPermsToSql.php, row 243
-"LDAP groups found: %1" => "Prona\xF0eno LDAP grupa: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 151
+"Now set PERM_LIB='sql' in every config of this database - until then AA still asks LDAP." => "Sada postavite PERM_LIB='sql' u svakoj konfiguraciji ove baze podataka - dotad AA i dalje pita LDAP.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 264
-"Group %1 already exists in SQL (id %2), reusing" => "Grupa %1 ve\xE6 postoji u SQL-u (id %2), koristi se postoje\xE6a", // ai 2026-06
+"This database was already converted. A second run would give people other ids than the data now holds - restore the backup first if it really has to run again." => "Ova baza podataka ve\xE6 je pretvorena. Drugo izvo\xF0enje dalo bi osobama druge ID-jeve od onih koje podaci sada sadr\x9Ee - ako zaista mora ponovno raditi, najprije vratite sigurnosnu kopiju.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 273
-"Would create SQL group: %1 (from %2)" => "Stvorila bi se SQL grupa: %1 (iz %2)", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 274
+"This database was converted to SQL permissions on %1 (%2). Its parity check ran inside the committed transaction; Repair does not run twice." => "Ova baza podataka pretvorena je na SQL dozvole %1 (%2). Njezina provjera podudarnosti izvedena je unutar potvr\xF0ene transakcije; \x84Popravite\x93 se ne izvodi dvaput.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 280
-"Failed to create SQL group %1" => "Stvaranje SQL grupe %1 nije uspjelo", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 279
+"DNs left in %1 (%2): %3" => "DN-ovi preostali u %1 (%2): %3", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 287
-"Groups: created=%1 reused=%2 failed=%3" => "Grupe: stvoreno=%1 ponovno_iskori\x9Ateno=%2 neuspjelo=%3", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 282
+"These were written after the conversion or match no directory entry - fix them by hand if they matter." => "Ti su DN-ovi zapisani nakon pretvorbe ili ne odgovaraju nijednom unosu imenika \x96 ako su va\x9Eni, ispravite ih ru\xE8no.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 325
-"Memberships: added=%1 skipped_unmapped=%2" => "\xC8lanstva: dodano=%1 presko\xE8eno_nemapirano=%2", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 283
+"No DN is left in the columns referring to people." => "U stupcima koji upu\xE6uju na osobe nije preostao nijedan DN.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 367
-"Permission rows migrated: %1" => "Migrirano redaka dozvola: %1", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 291
+"This conversion runs only while PERM_LIB is 'ldap'; here it is '%1'." => "Ova se pretvorba izvodi samo dok je PERM_LIB 'ldap'; ovdje je '%1'.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 389
-"No mapping entries - nothing to rewrite." => "Nema zapisa mapiranja - nema se \x9Ato prepisati.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 296
+"The conversion has no dry run - switch it off. Test itself changes nothing." => "Pretvorba nema probno pokretanje - isklju\xE8ite ga. Sam \x84Testirajte\x93 ni\x9Ata ne mijenja.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 408
-"Rewrite %1.%2: %3 rows" => "Prepisivanje %1.%2: %3 redaka", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 310
+"Tables %1 must be InnoDB: on another engine a rollback restores nothing, so even the trial import of Test would delete the users for good. Convert them first - Optimize \"%2\"." => "Tablice %1 moraju biti InnoDB: na drugom pogonu poni\x9Atavanje ni\x9Ata ne vra\xE6a, pa bi i probni uvoz pod \x84Testirajte\x93 trajno izbrisao korisnike. Najprije ih pretvorite - \x84Optimizirajte\x93 \x84%2\x93.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 418
-"Mapping table is empty - nothing to revert." => "Tablica mapiranja je prazna - nema se \x9Ato vratiti.", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 316
+"The database connection uses \"%1\", not utf8mb4: a DN with a character outside it would silently not be found in the data. Set DB_CHARACTER_SET to \"utf8mb4\" in config.php first." => "Veza s bazom podataka koristi \x84%1\x93, a ne utf8mb4: DN sa znakom izvan tog skupa ne bi se u podacima prona\x9Aao, bez upozorenja. Najprije postavite DB_CHARACTER_SET na \x84utf8mb4\x93 u config.php.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 434
-"Revert %1.%2: %3 rows" => "Vra\xE6anje %1.%2: %3 redaka", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 368
+"Imported %1 people, %2 groups, %3 memberships and %4 rights; %5 old rows removed." => "Uvezeno osoba: %1, grupa: %2, \xE8lanstava: %3 i prava: %4; uklonjeno starih redaka: %5.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 452
-"Deleted SQL users=%1 groups=%2" => "Izbrisano SQL korisnika=%1 grupa=%2", // ai 2026-06
+// src/Optimize/LdapPermsToSql.php, row 369
+"(Trial run - rolled back.)" => "(Probno izvo\xF0enje - poni\x9Ateno.)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 374
+"Plan: %1 people, %2 groups, %3 memberships, %4 rights; new ids from %5; %6 spellings of DNs in the data to rewrite." => "Plan: osoba %1, grupa %2, \xE8lanstava %3, prava %4; novi ID-jevi od %5; zapisa DN-ova u podacima za prepisivanje: %6.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Blocking" => "Blokiraju\xE6e", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Info" => "Informacija", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 394
+"References in %1: %2 rows (%3 s)" => "Reference u %1: redaka %2 (%3 s)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 396
+"Repair rewrites the references in about %1 s - each UPDATE scans its table as the count did." => "\x84Popravite\x93 prepisuje reference za otprilike %1 s - svaki UPDATE pregledava svoju tablicu kao i brojanje.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 397
+"A DN stored as cp1250 bytes with diacritics is not UTF-8, so it matches no directory entry and stays as it is." => "DN spremljen kao cp1250 bajtovi s dijakriti\xE8kim znakovima nije UTF-8, pa ne odgovara nijednom unosu imenika i ostaje kakav jest.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 399
+"Mentions of ou=AA in %1: %2 rows - fix them by hand." => "Spominjanja ou=AA u %1: redaka %2 - ispravite ih ru\xE8no.", // ai 2026-11
 
 // src/Optimize/MissCacheRouting.php, row 37
 "Image cache routing" => "Usmjeravanje predmemorije slika", // ai 2026-10
@@ -14320,89 +14625,89 @@ return [
 // src/Optimize/MultivalueDuplicates.php, row 139
 "The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "Tablica content nije InnoDB, pa se duplikati ovdje ne mogu popraviti. Najprije pokrenite \x84%1\x93.", // ai 2026-10
 
-// src/Optimize/ReadersLogin2id.php, row 16
+// src/Optimize/ReadersLogin2id.php, row 18
 "Convert Readers login to reader id" => "Pretvori login \xE8itatelja u ID \xE8itatelja", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 24
+// src/Optimize/ReadersLogin2id.php, row 26
 "There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "U AA v2.8.1 promijenjena je funkcionalnost upravljanja \xE8itateljima, pa se \xE8itatelji interno vi\x9Ae ne identificiraju svojim loginom, nego ID-om \xE8itatelja (ID stavke \xE8itatelja u stranici \xE8itatelja). To je mnogo mo\xE6nije - relacije mo\x9Eete stvarati jednako kao u obi\xE8noj stranici. Sve radi bez ikakvih izmjena. Jedini problem nastaje ako ste neku stranicu postavili tako da je mogu ure\xF0ivati korisnici iz stranice \xE8itatelja. U tom se slu\xE8aju polja edited_by........ i posted_by........ popunjavaju loginom \xE8itatelja umjesto ID-om \xE8itatelja. To mo\x9Eete popraviti opcijom \"Repair\".", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 38, 82
+// src/Optimize/ReadersLogin2id.php, row 40, 84
 "Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "Nije mogu\xE6e testirati - va\x9A sustav dozvola ne dopu\x9Ata popis svih korisni\xE8kih imena (LDAP?)", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 43
+// src/Optimize/ReadersLogin2id.php, row 45
 "%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "Prona\xF0eno %1 logina iz stranice \xE8itatelja u zapisima item.posted_by, \x9Ato je pogre\x9Ano (od AA v2.8.1 tamo treba biti ID \xE8itatelja). \"Repair\" \xE6e to ispraviti.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 48
+// src/Optimize/ReadersLogin2id.php, row 50
 "%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "Prona\xF0eno %1 logina iz stranice \xE8itatelja u zapisima item.edited_by, \x9Ato je pogre\x9Ano (od AA v2.8.1 tamo treba biti ID \xE8itatelja). \"Repair\" \xE6e to ispraviti.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 90
+// src/Optimize/ReadersLogin2id.php, row 92
 "Column item.posted_by updated for %1 (id: %2)." => "Stupac item.posted_by a\x9Euriran za %1 (id: %2).", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 96
+// src/Optimize/ReadersLogin2id.php, row 98
 "Column item.edited_by updated for %1 (id: %2)." => "Stupac item.edited_by a\x9Euriran za %1 (id: %2).", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 18
+// src/Optimize/RedefineCoreConstants.php, row 20
 "Redefine core constants" => "Ponovno definiraj osnovne konstante", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 26
+// src/Optimize/RedefineCoreConstants.php, row 28
 "Updates core constants - like Code-pages, Language Constants and AA Bins" => "A\x9Eurira osnovne konstante - poput kodnih stranica, jezi\xE8nih konstanti i AA spremnika", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 46
+// src/Optimize/RedefineCoreConstants.php, row 48
 "Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "Konstante kodnih stranica (lt_codepages) nisu a\x9Eurne - prona\xF0eno: %1 od 9", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 53
+// src/Optimize/RedefineCoreConstants.php, row 55
 "Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "Jezi\xE8ne konstante (lt_languages) nisu a\x9Eurne - prona\xF0eno: %1 od 46", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 60
+// src/Optimize/RedefineCoreConstants.php, row 62
 "AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "Konstante AA spremnika (AA_Core_Bins....) nisu a\x9Eurne - prona\xF0eno: %1 od 3", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 67
+// src/Optimize/RedefineCoreConstants.php, row 69
 "APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "Zajedni\xE8ke APC kategorije (lt_apcCategories) nisu a\x9Eurne - prona\xF0eno: %1 od 82", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 81
+// src/Optimize/RedefineCoreConstants.php, row 83
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "Brisanje kodnih stranica, jezi\xE8nih konstanti, konstanti AA spremnika i zajedni\xE8kih APC kategorija", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 85
+// src/Optimize/RedefineCoreConstants.php, row 87
 "Recreate Code-pages" => "Ponovno stvori kodne stranice", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 96
+// src/Optimize/RedefineCoreConstants.php, row 98
 "Recreate Languages" => "Ponovno stvori jezike", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 144
+// src/Optimize/RedefineCoreConstants.php, row 146
 "Recreate AA Bins" => "Ponovno stvori AA spremnike", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 149
+// src/Optimize/RedefineCoreConstants.php, row 151
 "APC wide categories" => "Zajedni\xE8ke APC kategorije", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 233
+// src/Optimize/RedefineCoreConstants.php, row 235
 "Make sure, the constants are registered" => "Provjeri jesu li konstante registrirane", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 242
+// src/Optimize/RedefineCoreConstants.php, row 244
 "Redefine core constants - done." => "Ponovno definiranje osnovnih konstanti - gotovo.", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 43
+// src/Optimize/RedefineFieldTemplates.php, row 45
 "Redefine field templates" => "Ponovno definiraj predlo\x9Ake polja", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 51
+// src/Optimize/RedefineFieldTemplates.php, row 53
 "Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice" => "A\x9Eurira predlo\x9Ake polja (u stranici ActionApps Core) koji se koriste pri dodavanju novog polja u stranicu", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 77
+// src/Optimize/RedefineFieldTemplates.php, row 79
 "template fields are not present" => "polja predlo\x9Aka nisu prisutna", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 95
-// src/Optimize/RedefineSliceNewsTemplates.php, row 57
+// src/Optimize/RedefineFieldTemplates.php, row 97
+// src/Optimize/RedefineSliceNewsTemplates.php, row 59
 "Deleting all fields from \"ActionApps Core\" slice" => "Brisanje svih polja iz stranice \"ActionApps Core\"", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 99
+// src/Optimize/RedefineFieldTemplates.php, row 101
 "Make sure slice owner Action Applications System exists and reset to defaults" => "Provjeri postoji li vlasnik stranice Action Applications System i vrati na zadane vrijednosti", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 102
+// src/Optimize/RedefineFieldTemplates.php, row 104
 "Make sure \"ActionApps Core\" slice exists and reset to defaults" => "Provjeri postoji li stranica \"ActionApps Core\" i vrati na zadane vrijednosti", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 106
+// src/Optimize/RedefineFieldTemplates.php, row 108
 "Recreate field definitions" => "Ponovno stvori definicije polja", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 197
+// src/Optimize/RedefineFieldTemplates.php, row 199
 "Redefine field defaults - done." => "Ponovno definiranje zadanih vrijednosti polja - gotovo.", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
@@ -14415,127 +14720,127 @@ return [
 "There is no root Link Module category - Links module should be recreated" => "Ne postoji korijenska kategorija modula Links - modul Links treba ponovno stvoriti", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
-// src/Optimize/RedefineSiteTemplates.php, row 47
+// src/Optimize/RedefineSiteTemplates.php, row 49
 "Replacing module definition" => "Zamjena definicije modula", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Ponovno stvaranje predlo\x9Aka modula Links - gotovo.", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 13
+// src/Optimize/RedefineSiteTemplates.php, row 15
 "Recreate Site module template" => "Ponovno stvori predlo\x9Eak modula Site", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 19
+// src/Optimize/RedefineSiteTemplates.php, row 21
 "Deletes and recreates the default template for Site module" => "Bri\x9Ae i ponovno stvara zadani predlo\x9Eak modula Site", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 36
+// src/Optimize/RedefineSiteTemplates.php, row 38
 "Site Module template should be recreated" => "Predlo\x9Eak modula Site treba ponovno stvoriti", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 53
+// src/Optimize/RedefineSiteTemplates.php, row 55
 "Site Module template recreation - done." => "Ponovno stvaranje predlo\x9Aka modula Site - gotovo.", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 15
+// src/Optimize/RedefineSlicReaderTemplates.php, row 17
 "Redefine Reader Management template slice" => "Ponovno definiraj predlo\x9Enu stranicu Reader Management", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 23
+// src/Optimize/RedefineSlicReaderTemplates.php, row 25
 "Deletes and recreates the Reader Management slice, used as template or example slice" => "Bri\x9Ae i ponovno stvara stranicu Reader Management, koja se koristi kao predlo\x9Eak ili ogledna stranica", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 42
+// src/Optimize/RedefineSlicReaderTemplates.php, row 44
 "\"Reader Management\" template slice is not defined" => "Predlo\x9Eak stranice \"Reader Management\" nije definiran", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 58
+// src/Optimize/RedefineSlicReaderTemplates.php, row 60
 "Deleting all fields from \"Reader Management\" slice" => "Brisanje svih polja iz stranice \"Reader Management\"", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 62
+// src/Optimize/RedefineSlicReaderTemplates.php, row 64
 "Make sure \"Reader Management\" slice exists and reset to defaults" => "Provjerite da stranica \"Reader Management\" postoji i obnovite zadane postavke", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 66
+// src/Optimize/RedefineSlicReaderTemplates.php, row 68
 "Recreate field definitions for \"Reader Management\"" => "Ponovno stvorite definicije polja za \"Reader Management\"", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 92
+// src/Optimize/RedefineSlicReaderTemplates.php, row 94
 "Reader Management template slice creation - done." => "Stvaranje predlo\x9Aka stranice Reader Management - gotovo.", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 15
+// src/Optimize/RedefineSliceNewsTemplates.php, row 17
 "Redefine News EN template slice" => "Redefinirajte predlo\x9Eak stranice News EN", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 23
+// src/Optimize/RedefineSliceNewsTemplates.php, row 25
 "Deletes and recreates the News EN slice, used as template or example slice" => "Bri\x9Ae i ponovno stvara stranicu News EN, koja se koristi kao predlo\x9Eak ili ogledna stranica", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 41
+// src/Optimize/RedefineSliceNewsTemplates.php, row 43
 "News EN template slice is not defined" => "Predlo\x9Eak stranice News EN nije definiran", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 61
+// src/Optimize/RedefineSliceNewsTemplates.php, row 63
 "Make sure \"News EN\" slice exists and reset to defaults" => "Provjerite da stranica \"News EN\" postoji i obnovite zadane postavke", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 65
+// src/Optimize/RedefineSliceNewsTemplates.php, row 67
 "Recreate field definitions for \"News EN\"" => "Ponovno stvorite definicije polja za \"News EN\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 99
+// src/Optimize/RedefineSliceNewsTemplates.php, row 101
 "News EN template slice creation - done." => "Stvaranje predlo\x9Aka stranice News EN - gotovo.", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 15
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 17
 "Redefine Noticas - ES template slice" => "Redefinirajte predlo\x9Eak stranice Noticas - ES", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 23
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 25
 "Deletes and recreates the Noticas - ES slice, used as template or example slice" => "Bri\x9Ae i ponovno stvara stranicu Noticas - ES, koja se koristi kao predlo\x9Eak ili ogledna stranica", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 42
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 44
 "\"Noticas - ES\" template slice is not defined" => "Predlo\x9Eak stranice \"Noticas - ES\" nije definiran", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 58
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 60
 "Deleting all fields from \"Noticas - ES\" slice" => "Brisanje svih polja iz stranice \"Noticas - ES\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 62
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 64
 "Make sure \"Noticas - ES\" slice exists and reset to defaults" => "Provjerite da stranica \"Noticas - ES\" postoji i obnovite zadane postavke", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 66
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 68
 "Recreate field definitions for \"Noticas - ES\"" => "Ponovno stvorite definicije polja za \"Noticas - ES\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 100
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 102
 "Noticas - ES template slice creation - done." => "Stvaranje predlo\x9Aka stranice Noticas - ES - gotovo.", // ai 2026-06
 
-// src/Optimize/RedefineViewCalendarTemplates.php, row 10
+// src/Optimize/RedefineViewCalendarTemplates.php, row 12
 "Redefine calendar template view" => "Redefinirajte predlo\x9Eak pogleda calendar", // ai 2026-06
 
-// src/Optimize/RedefineViewCategoriesTemplates.php, row 10
+// src/Optimize/RedefineViewCategoriesTemplates.php, row 12
 "Redefine categories template view" => "Redefinirajte predlo\x9Eak pogleda categories", // ai 2026-06
 
-// src/Optimize/RedefineViewConstTemplates.php, row 10
+// src/Optimize/RedefineViewConstTemplates.php, row 12
 "Redefine const template view" => "Redefinirajte predlo\x9Eak pogleda const", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 13
+// src/Optimize/RedefineViewDiscusTemplates.php, row 15
 "Redefine discus template view" => "Redefinirajte predlo\x9Eak pogleda discus", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 19
+// src/Optimize/RedefineViewDiscusTemplates.php, row 21
 "Deletes and recreates that view, which is used as template view of that type" => "Bri\x9Ae i ponovno stvara taj pogled, koji se koristi kao predlo\x9Eak pogleda te vrste", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 47
+// src/Optimize/RedefineViewDiscusTemplates.php, row 49
 "\"%1\" template view is not defined" => "Predlo\x9Eak pogleda \"%1\" nije definiran", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 58
+// src/Optimize/RedefineViewDiscusTemplates.php, row 60
 "Deleting the view template \"%1\"" => "Brisanje predlo\x9Aka pogleda \"%1\"", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 62
+// src/Optimize/RedefineViewDiscusTemplates.php, row 64
 "Inserting the view \"discus\" template" => "Umetanje predlo\x9Aka pogleda \"discus\"", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 66
+// src/Optimize/RedefineViewDiscusTemplates.php, row 68
 "view \"%1\" redefinition - done." => "redefinicija pogleda \"%1\" - gotovo.", // ai 2026-06
 
-// src/Optimize/RedefineViewFullTemplates.php, row 10
+// src/Optimize/RedefineViewFullTemplates.php, row 12
 "Redefine full template view" => "Redefinirajte predlo\x9Eak pogleda full", // ai 2026-06
 
-// src/Optimize/RedefineViewJavascriptTemplates.php, row 10
+// src/Optimize/RedefineViewJavascriptTemplates.php, row 12
 "Redefine javascript template view" => "Redefinirajte predlo\x9Eak pogleda javascript", // ai 2026-06
 
-// src/Optimize/RedefineViewLinksTemplates.php, row 10
+// src/Optimize/RedefineViewLinksTemplates.php, row 12
 "Redefine links template view" => "Redefinirajte predlo\x9Eak pogleda links", // ai 2026-06
 
-// src/Optimize/RedefineViewRssTemplates.php, row 10
+// src/Optimize/RedefineViewRssTemplates.php, row 12
 "Redefine rss template view" => "Redefinirajte predlo\x9Eak pogleda rss", // ai 2026-06
 
-// src/Optimize/RedefineViewStaticTemplates.php, row 10
+// src/Optimize/RedefineViewStaticTemplates.php, row 12
 "Redefine static template view" => "Redefinirajte predlo\x9Eak pogleda static", // ai 2026-06
 
-// src/Optimize/RedefineViewUrlsTemplates.php, row 10
+// src/Optimize/RedefineViewUrlsTemplates.php, row 12
 "Redefine urls template view" => "Redefinirajte predlo\x9Eak pogleda urls", // ai 2026-06
 
 // src/Optimize/RemoveAaCronEntries.php, row 22
@@ -14589,19 +14894,19 @@ return [
 // src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "U redu - nema obaveznih checkbox polja", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 20
+// src/Optimize/RestoreBckTables.php, row 22
 "Restore data from backup tables" => "Vrati podatke iz backup tablica", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 "Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "Bri\x9Ae sve trenutne tablice (slice, item, ...) za koje postoji bck_ tablica i preimenuje sve backup tablice (bck_slice, bck_item, ...) u prave nazive (slice, item, ...).", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 40
+// src/Optimize/RestoreBckTables.php, row 42
 "The bck_ tables do not exist (or at least bck_content table)" => "Tablice bck_ ne postoje (ili barem tablica bck_content)", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 59
+// src/Optimize/RestoreBckTables.php, row 61
 "There is no bck_%1 table - %1 not restored." => "Tablica bck_%1 ne postoji - %1 nije vra\xE6ena.", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 62
+// src/Optimize/RestoreBckTables.php, row 64
 "Replace table bck_%1 -> %1" => "Zamijeni tablicu bck_%1 -> %1", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 44
@@ -14853,6 +15158,30 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 141
 "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "backup stare tablice %1 -> bck_%1 i kori\x9Atenje novih tablica umjesto njih tmp_%1 -> %1", // ai 2026-06
 
+// src/Passkey/Notice.php, row 23
+"A passkey was added to your account" => "Va\x9Aem je ra\xE8unu dodan pristupni klju\xE8", // ai 2026-11
+
+// src/Passkey/Notice.php, row 23
+"The passkey \"%1\" was added to your account %2 on %3. It logs you in on %4." => "Pristupni klju\xE8 \x84%1\x93 dodan je va\x9Aem ra\xE8unu %2 dana %3. Prijavljuje vas na %4.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"A passkey was deleted from your account" => "Iz va\x9Aeg je ra\xE8una izbrisan pristupni klju\xE8", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"The passkey \"%1\" was deleted from your account %2 on %3." => "Pristupni klju\xE8 \x84%1\x93 izbrisan je iz va\x9Aeg ra\xE8una %2 dana %3.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"The passkeys of your account were deleted" => "Pristupni klju\xE8evi va\x9Aeg ra\xE8una su izbrisani", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"%1 deleted all passkeys of your account %2 on %3. You log in by your password again; you can add a new passkey after the login." => "%1 je izbrisao sve pristupne klju\xE8eve va\x9Aeg ra\xE8una %2 dana %3. Ponovno se prijavljujete lozinkom; nakon prijave mo\x9Eete dodati novi pristupni klju\xE8.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 60
+"If it was not you, tell the administrator of ActionApps at %1 at once." => "Ako to niste bili vi, odmah obavijestite administratora ActionAppsa na %1.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 61
+"Address: %1, browser: %2" => "Adresa: %1, preglednik: %2", // ai 2026-11
+
 // src/Security/LoginThrottle.php, row 156
 "Too many failed login attempts. Try again in %1 min." => "Previ\x9Ae neuspjelih poku\x9Aaja prijave. Poku\x9Aajte ponovno za %1 min.", // ai 2026-10
 
@@ -14869,7 +15198,7 @@ return [
 "ret_code and ok_url sent to filler.php" => "ret_code i ok_url poslani u filler.php", // ai 2026-10
 
 // src/Security/Protection.php, row 32
-"als[], noitem of views and the state of site pages, taken from the URL" => "",
+"als[], noitem of views and the state of site pages, taken from the URL" => "als[], noitem pogleda i stanje web-stranica weba, preuzeti iz URL-a", // ai 2026-11
 
 // src/Security/Protection.php, row 33
 "Logins to the administration and to reader accounts, counted per address of the visitor" => "Prijave u administraciju i u \xE8itateljske ra\xE8une, brojene po adresi posjetitelja", // ai 2026-10
@@ -14890,7 +15219,7 @@ return [
 "Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it." => "Tekst, brojevi, ID-ovi i _#ALIASES u als[] i u stanju web-stranica i dalje rade; {expression} se ondje prikazuje kao tekst. Izraz napi\x9Aite u predlo\x9Eak koji gradi poveznicu, kako bi se ondje izvr\x9Aio prije slanja poveznice, ili proslijedite ID, a ostalo izra\xE8unajte na web-stranici koja ga prima.", // ai 2026-10
 
 // src/Security/Protection.php, row 56
-"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "",
+"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "Tekst noitem u poveznici na pogled (set[...]=noitem-...) prikazuje se kao tekst, uklju\xE8uju\xE6i HTML i _#ALIASES. Stavite tekst u poruku \x84Nije prona\xF0eno\x93 pogleda ili prika\x9Eite pogled iz predlo\x9Aka pomo\xE6u {view.php?...}, gdje noitem radi kao i prije. Isklju\xE8ivanje ove za\x9Atite omogu\xE6uje da kao i prije radi samo noitem s {expression}.", // ai 2026-11
 
 // src/Security/Protection.php, row 57
 "After 20 failed logins from one address in 12 hours, or 5 with one user name, the next login waits half a minute to a minute, twice as long after each further failure, at most an hour. A script that keeps logging in with an old password waits too: find its address in the Log (event LOGIN) and give it the current password. If every visitor seems to come from one address, AA runs behind a proxy missing in AA_TRUSTED_PROXIES - State Check names it; add it in config.php rather than switching this protection off." => "Nakon 20 neuspjelih prijava s jedne adrese u 12 sati ili 5 s jednim korisni\xE8kim imenom sljede\xE6a prijava \xE8eka od pola minute do minute, nakon svakog daljnjeg neuspjeha dvostruko dulje, najvi\x9Ae sat vremena. \xC8eka i skripta koja se neprestano prijavljuje starom lozinkom: prona\xF0ite njezinu adresu u Zapisniku (doga\xF0aj LOGIN) i dajte joj aktualnu lozinku. Ako se \xE8ini da svi posjetitelji dolaze s jedne adrese, AA radi iza proxyja koji nedostaje u AA_TRUSTED_PROXIES - \x84Provjera stanja\x93 ga navodi; dodajte ga u config.php umjesto da isklju\xE8ite ovu za\x9Atitu.", // ai 2026-10
@@ -15085,17 +15414,17 @@ return [
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Ku\xE6ica za izbor",
 
-// src/Widget/CodWidget.php, row 21
+// src/Widget/CodWidget.php, row 23
 "Code editor" => "Ure\xF0iva\xE8 k\xF4da", // ai 2026-06
 
-// src/Widget/EdtWidget.php, row 21
+// src/Widget/EdtWidget.php, row 23
 "Rich Edit Text Area" => "RTF ure\xF0ivanje teksta",
 
 // src/Widget/FilWidget.php, row 38
 "File Upload" => "Datoteka je poslana",
 
 // src/Widget/FilWidget.php, row 206, 236
-// src/Widget/RichtextMarkup.php, row 73
+// src/Widget/RichtextMarkup.php, row 86
 "Upload" => "Prenesite", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 250
@@ -15118,13 +15447,13 @@ return [
 // src/Widget/GpsWidget.php, row 438
 "Use" => "Upotrijebite", // ai 2026-06
 
-// src/Widget/HcoWidget.php, row 34
+// src/Widget/HcoWidget.php, row 36
 "hierarchical constants" => "hijerarhijske konstante", // ai 2026-06
 
 // src/Widget/HidWidget.php, row 28
 "Hidden field" => "Sakriveno polje",
 
-// src/Widget/InfWidget.php, row 31
+// src/Widget/InfWidget.php, row 33
 "Info text - output" => "Informativni tekst - izlaz", // ai 2026-06
 
 // src/Widget/IsoWidget.php, row 35
@@ -15166,28 +15495,28 @@ return [
 // src/Widget/MngWidget.php, row 39
 "Best for galleries and other tabular data which is multivalue and different for each item" => "Najbolje za galerije i druge tabli\xE8ne podatke koji imaju vi\x9Ae vrijednosti i razlikuju se za svaku stavku", // ai 2026-06
 
-// src/Widget/MseWidget.php, row 25
+// src/Widget/MseWidget.php, row 27
 "Multiple Selectbox" => "Vi\x9Aestruke ku\xE6ice izbora",
 
-// src/Widget/NulWidget.php, row 23
+// src/Widget/NulWidget.php, row 25
 "Do not show" => "Nemojte pokazati",
 
-// src/Widget/PreWidget.php, row 36
+// src/Widget/PreWidget.php, row 38
 "Text Field with Presets" => "Tekstualano polje sa predpostavkama",
 
 // src/Widget/PwdWidget.php, row 37
 "Password and Change password" => "Lozinka i promjena lozinke",
 
-// src/Widget/RichtextMarkup.php, row 75
+// src/Widget/RichtextMarkup.php, row 88
 "Loading..." => "U\xE8itavanje...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 76
+// src/Widget/RichtextMarkup.php, row 89
 "No files" => "Nema datoteka", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 77
+// src/Widget/RichtextMarkup.php, row 90
 "Uploading..." => "Preno\x9Aenje...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 78
+// src/Widget/RichtextMarkup.php, row 91
 "Upload failed" => "Prijenos nije uspio", // ai 2026-10
 
 // src/Widget/RimWidget.php, row 43
@@ -15208,25 +15537,25 @@ return [
 // src/Widget/TagWidget.php, row 44
 "Tags" => "Oznake", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 43
+// src/Widget/TfaWidget.php, row 45
 "2FA Secret generator" => "Generator tajnog klju\xE8a za 2FA", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 79
+// src/Widget/TfaWidget.php, row 81
 "One time Code" => "Jednokratni k\xF4d", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 89
+// src/Widget/TfaWidget.php, row 91
 "Generate New Secret" => "Generirajte novi tajni klju\xE8", // ai 2026-06
 
-// src/Widget/TfaWidget.php, row 90
+// src/Widget/TfaWidget.php, row 92
 "Get Secret" => "Dohvatite tajni klju\xE8", // ai 2026-06
 
-// src/Widget/TprWidget.php, row 27
+// src/Widget/TprWidget.php, row 29
 "Textarea with Presets" => "Podru\xE8je za tekst sa predefiniranim stilovima",
 
 // src/Widget/TxtWidget.php, row 40
 "Text Area" => "Podru\xE8je za tekst",
 
-// src/Widget/Wi2Widget.php, row 32
+// src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "Dvije ku\xE6ice",
 
 // src/Widget/Widget.php, row 603

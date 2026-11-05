@@ -42,10 +42,10 @@ return [
 "remove" => "supprimer", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "Sa vue a été supprimée - les lecteurs ne reçoivent rien de cette sélection. Retirez-la et ajoutez-en une existante.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Cette sélection a été supprimée - les lecteurs n'en reçoivent rien. Retirez-la et ajoutez-en une existante.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Aucune sélection pour l'instant.", // ai 2026-10

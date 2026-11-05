@@ -87,10 +87,10 @@ return [
 "remove" => "ukloni", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "Njegov je pogled izbrisan - čitatelji iz ovog odabira ne dobivaju ništa. Uklonite ga i dodajte postojeći.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Ovaj je odabir izbrisan - čitatelji iz njega ne dobivaju ništa. Uklonite ga i dodajte postojeći.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Još nije odabran nijedan izbor.", // ai 2026-10

@@ -42,10 +42,10 @@ return [
 "remove" => "eliminare", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "Vederea sa a fost ștearsă - cititorii nu primesc nimic din această selecție. Eliminați-o și adăugați una existentă.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Această selecție a fost ștearsă - cititorii nu primesc nimic din ea. Eliminați-o și adăugați una existentă.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Nicio selecție aleasă încă.", // ai 2026-10

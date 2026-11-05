@@ -42,10 +42,10 @@ return [
 "remove" => "eltávolítás", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "A nézete törölve lett – az olvasók semmit sem kapnak ebből a válogatásból. Távolítsa el, és adjon hozzá egy létezőt.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Ez a válogatás törölve lett – az olvasók semmit sem kapnak belőle. Távolítsa el, és adjon hozzá egy létezőt.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Még nincs kiválasztott szűrés.", // ai 2026-10

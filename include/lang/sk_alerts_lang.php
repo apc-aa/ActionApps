@@ -39,10 +39,10 @@ return [
 "remove" => "odstr\xE1ni\x9D", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "Jeho poh\xBEad bol zmazan\xFD - \xE8itatelia z tohto v\xFDberu nedostan\xFA ni\xE8. Odoberte ho a pridajte existuj\xFAci.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Tento v\xFDber bol zmazan\xFD - \xE8itatelia z neho nedostan\xFA ni\xE8. Odoberte ho a pridajte existuj\xFAci.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "Zatia\xBE nie s\xFA zvolen\xE9 \x9Eiadne v\xFDbery.", // ai 2026-10

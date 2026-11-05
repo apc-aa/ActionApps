@@ -25,6 +25,34 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Migrate LDAP perms to SQL perms" => "Migrar permisos LDAP a permisos SQL",
+// "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Copia todos los usuarios, grupos, membres\xEDas y permisos del backend LDAP a las tablas del backend SQL (users, membership, perms), y reescribe item.posted_by / item.edited_by del formato DN de LDAP (uid=...,ou=...) a los nuevos ids num\xE9ricos SQL. Ejec\xFAtelo una vez por instalaci\xF3n y luego cambie PERM_LIB a 'sql' en config. 'Test' es una prueba de solo lectura. 'Repair' realiza la migraci\xF3n y puede ejecutarse varias veces. 'Revert' usa la tabla de mapeo para deshacerlo todo.",
+// "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Este optimizador solo se ejecuta cuando PERM_LIB='ldap'. PERM_LIB actual='%1'.",
+// "Would create mapping table `%1`" => "Crear\xEDa la tabla de mapeo `%1`",
+// "Test finished (dry run - no changes made)." => "Prueba finalizada (simulaci\xF3n - sin cambios).",
+// "Repair failed: %1" => "Reparaci\xF3n fallida: %1",
+// "Repair finished." => "Reparaci\xF3n finalizada.",
+// "Revert failed: %1" => "Reversi\xF3n fallida: %1",
+// "Revert finished." => "Reversi\xF3n finalizada.",
+// "LDAP findUsernames failed or returned: %1" => "LDAP findUsernames fall\xF3 o devolvi\xF3: %1",
+// "LDAP users found: %1" => "Usuarios LDAP encontrados: %1",
+// "Skipping user %1 - cannot determine login" => "Omitiendo usuario %1 - no se puede determinar el login",
+// "User %1 already exists in SQL (id %2), reusing" => "El usuario %1 ya existe en SQL (id %2), se reutiliza",
+// "Would create SQL user: %1 (from %2)" => "Crear\xEDa el usuario SQL: %1 (desde %2)",
+// "Failed to create SQL user %1" => "No se pudo crear el usuario SQL %1",
+// "Users: created=%1 reused=%2 failed=%3" => "Usuarios: creados=%1 reutilizados=%2 fallidos=%3",
+// "LDAP groups found: %1" => "Grupos LDAP encontrados: %1",
+// "Group %1 already exists in SQL (id %2), reusing" => "El grupo %1 ya existe en SQL (id %2), se reutiliza",
+// "Would create SQL group: %1 (from %2)" => "Crear\xEDa el grupo SQL: %1 (desde %2)",
+// "Failed to create SQL group %1" => "No se pudo crear el grupo SQL %1",
+// "Groups: created=%1 reused=%2 failed=%3" => "Grupos: creados=%1 reutilizados=%2 fallidos=%3",
+// "Memberships: added=%1 skipped_unmapped=%2" => "Membres\xEDas: a\xF1adidas=%1 omitidas_sin_mapear=%2",
+// "Permission rows migrated: %1" => "Filas de permisos migradas: %1",
+// "No mapping entries - nothing to rewrite." => "No hay entradas de mapeo - nada que reescribir.",
+// "Rewrite %1.%2: %3 rows" => "Reescribir %1.%2: %3 filas",
+// "Mapping table is empty - nothing to revert." => "La tabla de mapeo est\xE1 vac\xEDa - nada que revertir.",
+// "Revert %1.%2: %3 rows" => "Revertir %1.%2: %3 filas",
+// "Deleted SQL users=%1 groups=%2" => "Eliminados usuarios SQL=%1 grupos=%2",
 // "als[] and the state of site pages, taken from the URL" => "als[] y el estado de las p\xE1ginas del sitio, tomados de la URL", // ai 2026-10
 // "The index %1 of the content table does not contain the field" => "El \xEDndice %1 de la tabla content no contiene el campo", // ai 2026-10
 // "Adds the index (field_id, text) to the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes and about as much disk as the other indexes of the table - run it when the traffic is low." => "A\xF1ade el \xEDndice (field_id, text) a la tabla content, de modo que un valor se encuentra en un campo sin leer el mismo valor de todos los dem\xE1s campos. En una base de datos grande tarda minutos y ocupa en disco aproximadamente lo mismo que los dem\xE1s \xEDndices de la tabla - ejec\xFAtelo cuando haya poco tr\xE1fico.", // ai 2026-10
@@ -545,6 +573,8 @@ return [
 // admin/console.php, row 73
 // admin/fileman.php, row 110
 // admin/slicedel2.php, row 70
+// admin/um_passkeys.php, row 73
+// admin/um_passwd.php, row 80
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
@@ -596,8 +626,8 @@ return [
 // admin/aa_security.php, row 85
 // admin/setup.php, row 99, 240
 // admin/slicewiz.php, row 84
-// admin/um_passwd.php, row 111
-// admin/um_uedit.php, row 313, 317
+// admin/um_passwd.php, row 128
+// admin/um_uedit.php, row 314, 328
 // include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "Nombre de usuario (login)",
@@ -668,12 +698,14 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 103
 // src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckFormRobotRefusals.php, row 80
 // src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
 // src/Optimize/CheckIsdsConf.php, row 160, 193
 // src/Optimize/CheckIsdsViews.php, row 132
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 97
 // src/Optimize/CheckLoginAddresses.php, row 90, 103
 // src/Optimize/CheckObjectFormRefusals.php, row 106
+// src/Optimize/CheckPasskeys.php, row 89
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
@@ -769,7 +801,7 @@ return [
 "Checked again at %1: the problem is gone." => "Comprobado de nuevo a las %1: el problema ha desaparecido.", // ai 2026-10
 
 // admin/aa_statecheck.php, row 255
-"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "",
+"Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again." => "Comprobado de nuevo a las %1: sigue en la lista, visto por \xFAltima vez %2. %3 Este hallazgo se calcula a partir de lo que ya ocurri\xF3 (filas del registro, la \xFAltima ejecuci\xF3n), por lo que una correcci\xF3n no se refleja aqu\xED de inmediato: desaparece cuando esos datos caducan o pasa la siguiente ejecuci\xF3n. Tras la correcci\xF3n, m\xE1rquelo como resuelto; volver\xE1 si vuelve a ocurrir.", // ai 2026-11
 
 // admin/aa_statecheck.php, row 256
 "Checked again at %1: still there. %2" => "Comprobado de nuevo a las %1: sigue presente. %2", // ai 2026-10
@@ -1043,7 +1075,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1213
+// include/logs.php, row 1218
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -1052,6 +1084,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
+// src/Optimize/CheckFormRobotRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
@@ -1078,7 +1111,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 358
+// include/logs.php, row 363
 // src/AA_Plannedtask.php, row 204
 "Log" => "Registro",
 
@@ -1110,13 +1143,13 @@ return [
 
 // admin/aafinder.php, row 478, 508
 // admin/um_gedit.php, row 207, 324
-// admin/um_uedit.php, row 248
+// admin/um_uedit.php, row 249
 // include/se_users.php, row 138, 143
 // include/searchbar.class.php, row 566, 567, 607
 // include/transformation.class.php, row 829, 910
 // include/um_gsrch.php, row 47
 // src/Widget/GpsWidget.php, row 434
-// src/Widget/RichtextMarkup.php, row 72
+// src/Widget/RichtextMarkup.php, row 85
 "Search" => "Buscar",
 
 // admin/aafinder.php, row 481
@@ -1217,7 +1250,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 10284, 10363
+// include/stringexpand.php, row 10285, 10364
 "Send" => "Enviar",
 
 // admin/anonym_wizard.php, row 151
@@ -1375,7 +1408,7 @@ return [
 "Author" => "Autor",
 
 // admin/discedit.php, row 133
-// include/logs.php, row 898, 1309
+// include/logs.php, row 903, 1314
 "IP Address" => "Direcci\xF3n IP",
 
 // admin/discedit.php, row 134
@@ -1398,13 +1431,13 @@ return [
 // admin/prev_navigation.php, row 47
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
-// admin/um_uedit.php, row 265
+// admin/um_uedit.php, row 266
 // include/field.class.php, row 744
 // include/filedit.php, row 113
 // include/formutil.php, row 1777, 3394
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
-// include/statestore.php, row 1138
+// include/statestore.php, row 1143
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
 "Edit" => "Editar",
@@ -1418,7 +1451,8 @@ return [
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
-// admin/um_uedit.php, row 267
+// admin/um_passkeys.php, row 158
+// admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
 // include/field.class.php, row 748
 // include/formutil.php, row 1788, 1925
@@ -1427,7 +1461,7 @@ return [
 // include/searchbar.class.php, row 1126
 // include/um_gsrch.php, row 53
 // src/Manageraction/Import_Delete.php, row 25
-// src/Manageraction/Object_Delete.php, row 24
+// src/Manageraction/Object_Delete.php, row 26
 // src/Manageraction/Table_Row_Delete.php, row 23
 // src/Widget/FilWidget.php, row 201
 "Delete" => "Borrar",
@@ -1449,7 +1483,7 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1060
+// include/logs.php, row 1065
 // include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Asunto",
@@ -1457,8 +1491,8 @@ return [
 // admin/discedit2.php, row 94, 148
 // admin/setup.php, row 104, 247
 // admin/slicewiz.php, row 89
-// admin/um_passwd.php, row 118
-// admin/um_uedit.php, row 325
+// admin/um_passwd.php, row 140
+// admin/um_uedit.php, row 336
 // include/um_util.php, row 308, 309, 310
 // src/Central/FindingText.php, row 106
 "E-mail" => "Correo electr\xF3nico",
@@ -1854,11 +1888,12 @@ return [
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
+// admin/um_passkeys.php, row 149, 153
 // central/installapp.php, row 831, 846
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1200
+// include/logs.php, row 1205
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -2019,7 +2054,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1230
+// include/logs.php, row 1235
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
 // src/Optimize/CheckIsdsConf.php, row 342, 372
@@ -2043,7 +2078,7 @@ return [
 // admin/se_csv_import.php, row 277
 // admin/se_csv_import2.php, row 382
 // central/installapp.php, row 434, 558, 1368
-// src/Manageraction/Item_Preview.php, row 11
+// src/Manageraction/Item_Preview.php, row 13
 "Preview" => "Vista preliminar",
 
 // admin/se_csv_import.php, row 278
@@ -2097,7 +2132,7 @@ return [
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
 // include/metabase.class.php, row 1667
-// include/statestore.php, row 1076, 1413
+// include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
@@ -2234,7 +2269,7 @@ return [
 // admin/se_export.php, row 124
 // include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
-// src/Manageraction/Central_MoveItem.php, row 43
+// src/Manageraction/Central_MoveItem.php, row 45
 "Trash" => "Papelera",
 
 // admin/se_export.php, row 134
@@ -2260,7 +2295,7 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 553
+// include/logs.php, row 558
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
@@ -2400,7 +2435,7 @@ return [
 // admin/se_import.php, row 131
 // admin/se_mapping.php, row 158
 // admin/um_gedit.php, row 280
-// admin/um_uedit.php, row 388
+// admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 190, 2940
 // modules/jump/modedit.php, row 179
@@ -2483,9 +2518,9 @@ return [
 "Resource ID" => "ID del recurso",
 
 // admin/se_history.php, row 143, 165, 166
-// admin/um_uedit.php, row 262
+// admin/um_uedit.php, row 263
 // admin/usershow.php, row 89
-// include/perm_sql.php, row 384, 426
+// include/perm_sql.php, row 381, 440, 482
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
@@ -2570,7 +2605,7 @@ return [
 "Function" => "Funci\xF3n",
 
 // admin/se_inputform.php, row 257
-"You can relate only to a slice where you may edit all items" => "",
+"You can relate only to a slice where you may edit all items" => "Solo puede relacionar con un canal en el que pueda editar todos los \xEDtems", // ai 2026-11
 
 // admin/se_inputform.php, row 305
 "No field found" => "No se encontr\xF3 ning\xFAn campo",
@@ -2690,7 +2725,7 @@ return [
 "Reset" => "Restablecer",
 
 // admin/se_inputform.php, row 514
-// include/logs.php, row 633
+// include/logs.php, row 638
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Par\xE1metros",
 
@@ -2797,13 +2832,13 @@ return [
 "The import was successfully created" => "La importaci\xF3n se cre\xF3 con \xE9xito",
 
 // admin/se_isds_registry.php, row 54
-"You do not have permissions to pair the items of this slice with the register of data boxes" => "",
+"You do not have permissions to pair the items of this slice with the register of data boxes" => "No tiene permisos para emparejar los \xEDtems de este canal con el registro de buzones de datos", // ai 2026-11
 
 // admin/se_isds_registry.php, row 66
 // include/menu.php, row 167
 // src/Isds/SliceRules.php, row 180
 // src/Optimize/CheckIsdsRegistry.php, row 167
-"Data boxes from the register" => "",
+"Data boxes from the register" => "Buzones de datos del registro", // ai 2026-11
 
 // admin/se_javascript.php, row 68
 // include/menu.php, row 169
@@ -3223,7 +3258,7 @@ return [
 // admin/se_sets.php, row 131
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 471, 528
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 172
 "ID" => "",
@@ -3317,7 +3352,7 @@ return [
 // admin/se_users.php, row 185
 // central/index.php, row 139
 // include/se_users.php, row 180
-// src/Widget/TfaWidget.php, row 71
+// src/Widget/TfaWidget.php, row 73
 "Username" => "Nombre de usuario",
 
 // admin/se_users.php, row 185
@@ -3473,7 +3508,7 @@ return [
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
 // admin/write_mail.php, row 269
-// src/Widget/RichtextMarkup.php, row 74
+// src/Widget/RichtextMarkup.php, row 87
 "Close" => "Cerrar",
 
 // admin/setup.php, row 61, 64
@@ -3483,18 +3518,18 @@ return [
 "This script can't be used on a configured system." => "Este script no se puede usar en un sistema ya configurado.",
 
 // admin/setup.php, row 95
-// admin/um_uedit.php, row 330
+// admin/um_uedit.php, row 341
 "Superadmin account" => "Cuenta de superadministrador",
 
 // admin/setup.php, row 100, 241
 // admin/slicewiz.php, row 85
-// admin/um_passwd.php, row 114
-// admin/um_uedit.php, row 321
+// admin/um_passwd.php, row 136
+// admin/um_uedit.php, row 332
 // central/index.php, row 140
 // central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
-// src/Widget/TfaWidget.php, row 75
+// src/Widget/TfaWidget.php, row 77
 "Password" => "Clave",
 
 // admin/setup.php, row 101, 243
@@ -3503,8 +3538,8 @@ return [
 
 // admin/setup.php, row 102, 245
 // admin/slicewiz.php, row 87
-// admin/um_passwd.php, row 116
-// admin/um_uedit.php, row 323
+// admin/um_passwd.php, row 138
+// admin/um_uedit.php, row 334
 // include/um_util.php, row 298
 "First name" => "Nombre",
 
@@ -3571,7 +3606,7 @@ return [
 
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
-// admin/um_uedit.php, row 378
+// admin/um_uedit.php, row 389
 // include/formutil.php, row 1771
 // include/mlx.php, row 377
 // include/profile.php, row 170
@@ -3936,14 +3971,14 @@ return [
 "Slice Administrator" => "Administrador",
 
 // admin/slicewiz.php, row 86
-// admin/um_passwd.php, row 115
-// admin/um_uedit.php, row 322
+// admin/um_passwd.php, row 137
+// admin/um_uedit.php, row 333
 // include/um_util.php, row 302
 "Retype password" => "Teclee la clave nuevamente",
 
 // admin/slicewiz.php, row 88
-// admin/um_passwd.php, row 117
-// admin/um_uedit.php, row 324
+// admin/um_passwd.php, row 139
+// admin/um_uedit.php, row 335
 // include/um_util.php, row 297
 "Surname" => "Apellido",
 
@@ -3957,25 +3992,25 @@ return [
 "Go: Add Slice" => "Crear canal",
 
 // admin/um_gedit.php, row 95
-// admin/um_uedit.php, row 110
+// admin/um_uedit.php, row 111
 "No permission to create new user" => "No tiene permisos para crear un nuevo usuario",
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137, 154
+// admin/um_uedit.php, row 135, 138, 155
 "Too many groups found." => "Demasiados grupos encontrados",
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137
+// admin/um_uedit.php, row 135, 138
 "No groups found" => "No se encontraron grupos",
 
 // admin/um_gedit.php, row 120, 128
-// admin/um_uedit.php, row 128, 143, 167
+// admin/um_uedit.php, row 129, 144, 168
 // include/se_users.php, row 175
 // include/um_gsrch.php, row 31
 "Too many users or groups found." => "Demasiados grupos de usuarios encontrados",
 
 // admin/um_gedit.php, row 120
-// admin/um_uedit.php, row 128, 143
+// admin/um_uedit.php, row 129, 144
 // include/se_users.php, row 177
 // include/um_gsrch.php, row 34
 "No user (group) found" => "No se encuentra grupo de usuarios",
@@ -3991,7 +4026,7 @@ return [
 "Are you sure you want to delete selected group from whole permission system?" => "Est\xE1 seguro que desea borrar el grupo seleccionado de todo el sistema de permisos?",
 
 // admin/um_gedit.php, row 189, 199
-// admin/um_uedit.php, row 336, 342
+// admin/um_uedit.php, row 347, 353
 // include/menu_util.php, row 71
 // include/se_users.php, row 141
 // include/um_gsrch.php, row 41
@@ -4008,7 +4043,7 @@ return [
 
 // admin/um_gedit.php, row 220
 // include/constants.php, row 455
-// include/perm_sql.php, row 403
+// include/perm_sql.php, row 459
 // include/um_gsrch.php, row 50
 "Group" => "Grupo",
 
@@ -4025,8 +4060,8 @@ return [
 "Superadmin group" => "Grupo super-administraci\xF3n",
 
 // admin/um_gedit.php, row 312
-// admin/um_uedit.php, row 230, 241
-// include/logs.php, row 911
+// admin/um_uedit.php, row 231, 242
+// include/logs.php, row 916
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -4038,57 +4073,216 @@ return [
 // admin/um_gedit.php, row 322
 "Group's Users" => "Usuarios del grupo",
 
-// admin/um_passwd.php, row 61
+// admin/um_passkeys.php, row 58
+"The directory of the accounts does not answer now - try it again later" => "El directorio de cuentas no responde en este momento. Int\xE9ntelo de nuevo m\xE1s tarde", // ai 2026-11
+
+// admin/um_passkeys.php, row 62
+"You do not have permissions to manage the passkeys of this account" => "No tiene permisos para administrar las llaves de acceso de esta cuenta", // ai 2026-11
+
+// admin/um_passkeys.php, row 105
+"The passkey is stored. From now on this account logs in only by a passkey." => "La llave de acceso se ha guardado. A partir de ahora esta cuenta solo inicia sesi\xF3n con una llave de acceso.", // ai 2026-11
+
+// admin/um_passkeys.php, row 106
+"The passkey is renamed." => "La llave de acceso se ha renombrado.", // ai 2026-11
+
+// admin/um_passkeys.php, row 107
+"The passkey is deleted." => "La llave de acceso se ha eliminado.", // ai 2026-11
+
+// admin/um_passkeys.php, row 108
+"All passkeys of the account are deleted - its password logs in again." => "Se han eliminado todas las llaves de acceso de la cuenta: la cuenta vuelve a iniciar sesi\xF3n con su contrase\xF1a.", // ai 2026-11
+
+// admin/um_passkeys.php, row 109
+"Log in again first - adding or deleting a passkey needs a login of the last %1 minutes." => "Primero inicie sesi\xF3n de nuevo: a\xF1adir o eliminar una llave de acceso requiere un inicio de sesi\xF3n de los \xFAltimos %1 minutos.", // ai 2026-11
+
+// admin/um_passkeys.php, row 110
+"This passkey is stored already." => "Esta llave de acceso ya est\xE1 guardada.", // ai 2026-11
+
+// admin/um_passkeys.php, row 111
+"The page waited too long. Try it again." => "La p\xE1gina esper\xF3 demasiado tiempo. Int\xE9ntelo de nuevo.", // ai 2026-11
+
+// admin/um_passkeys.php, row 112
+"The passkey could not be stored. Try it again, or another device." => "No se pudo guardar la llave de acceso. Int\xE9ntelo de nuevo o con otro dispositivo.", // ai 2026-11
+
+// admin/um_passkeys.php, row 116
+// admin/um_passwd.php, row 130
+// admin/um_uedit.php, row 324
+"Passkeys" => "Llaves de acceso", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of your account %1" => "Llaves de acceso de su cuenta %1", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of the account %1" => "Llaves de acceso de la cuenta %1", // ai 2026-11
+
+// admin/um_passkeys.php, row 131
+"This account cannot have passkeys - only the users of the permission system of AA can." => "Esta cuenta no puede tener llaves de acceso: solo pueden tenerlas los usuarios del sistema de permisos de AA.", // ai 2026-11
+
+// admin/um_passkeys.php, row 137
+"A passkey logs you in without a password - by the fingerprint, face or PIN of your phone or computer. Nobody can steal it by a fake page or guess it." => "Una llave de acceso le permite iniciar sesi\xF3n sin contrase\xF1a, con la huella, el rostro o el PIN de su tel\xE9fono u ordenador. Nadie puede robarla mediante una p\xE1gina falsa ni adivinarla.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Once the account has a passkey, the password alone no longer logs it in" => "Cuando la cuenta tiene una llave de acceso, la contrase\xF1a sola ya no permite iniciar sesi\xF3n", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"neither here, nor for Central or scripts that log in by it." => "ni aqu\xED, ni en Central ni en los scripts que inician sesi\xF3n con ella.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Add two passkeys - say in your phone and in your computer - so you keep the access when you lose one. If you lose all of them, a user manager of this AA deletes them and you log in by your password again." => "A\xF1ada dos llaves de acceso, por ejemplo en su tel\xE9fono y en su ordenador, para no perder el acceso si pierde una. Si las pierde todas, un administrador de usuarios de este AA las elimina y usted vuelve a iniciar sesi\xF3n con su contrase\xF1a.", // ai 2026-11
+
+// admin/um_passkeys.php, row 140
+"Delete the passkeys only when their owner asks for it - lost or stolen device. The account then logs in by its password again, and its owner gets a mail about it." => "Elimine las llaves de acceso solo cuando su propietario lo solicite (dispositivo perdido o robado). La cuenta volver\xE1 a iniciar sesi\xF3n con su contrase\xF1a y su propietario recibir\xE1 un correo al respecto.", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Works on" => "Funciona en", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Added" => "A\xF1adida", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+// include/formutil.php, row 3300
+"Last used" => "Usado por \xFAltima vez",
+
+// admin/um_passkeys.php, row 149
+"Copies" => "Copias", // ai 2026-11
+
+// admin/um_passkeys.php, row 153
+// include/searchbar.class.php, row 1124
+"Rename" => "Renombrar",
+
+// admin/um_passkeys.php, row 156
+"not yet" => "todav\xEDa no", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"in your other devices too" => "tambi\xE9n en sus otros dispositivos", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"only in this device" => "solo en este dispositivo", // ai 2026-11
+
+// admin/um_passkeys.php, row 162
+"Delete all passkeys of the account" => "Eliminar todas las llaves de acceso de la cuenta", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"You have no passkey yet." => "Todav\xEDa no tiene ninguna llave de acceso.", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"The account has no passkey." => "La cuenta no tiene ninguna llave de acceso.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"To add or delete a passkey, log in again: it needs a login of the last %1 minutes." => "Para a\xF1adir o eliminar una llave de acceso, inicie sesi\xF3n de nuevo: se requiere un inicio de sesi\xF3n de los \xFAltimos %1 minutos.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"Log in again" => "Iniciar sesi\xF3n de nuevo", // ai 2026-11
+
+// admin/um_passkeys.php, row 171
+"A passkey cannot be added to this account: you may not change its data, or its password is public (the free links of a module log in by it)." => "No se puede a\xF1adir una llave de acceso a esta cuenta: no puede modificar sus datos, o su contrase\xF1a es p\xFAblica (los enlaces libres de un m\xF3dulo inician sesi\xF3n con ella).", // ai 2026-11
+
+// admin/um_passkeys.php, row 173
+"A passkey can be added only on a page reached by https and by an address of this AA or of one of its sites, not an IP address." => "Solo se puede a\xF1adir una llave de acceso en una p\xE1gina abierta por https y con una direcci\xF3n de este AA o de uno de sus sitios, no con una direcci\xF3n IP.", // ai 2026-11
+
+// admin/um_passkeys.php, row 180, 191
+"Add a passkey" => "A\xF1adir una llave de acceso", // ai 2026-11
+
+// admin/um_passkeys.php, row 182
+"This server cannot make passkeys." => "Este servidor no puede crear llaves de acceso.", // ai 2026-11
+
+// admin/um_passkeys.php, row 184
+"The passkey will work on %1. On the other addresses of this AA the login page sends you here." => "La llave de acceso funcionar\xE1 en %1. En las dem\xE1s direcciones de este AA, la p\xE1gina de inicio de sesi\xF3n le enviar\xE1 aqu\xED.", // ai 2026-11
+
+// admin/um_passkeys.php, row 185
+"Name of the passkey" => "Nombre de la llave de acceso", // ai 2026-11
+
+// admin/um_passkeys.php, row 186
+"e.g. My phone" => "p. ej. Mi tel\xE9fono", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"No passkey was made." => "No se cre\xF3 ninguna llave de acceso.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"This device keeps a passkey of the account already." => "Este dispositivo ya guarda una llave de acceso de la cuenta.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"The browser could not make a passkey." => "El navegador no pudo crear una llave de acceso.", // ai 2026-11
+
+// admin/um_passkeys.php, row 190
+"This browser cannot make passkeys." => "Este navegador no puede crear llaves de acceso.", // ai 2026-11
+
+// admin/um_passkeys.php, row 192
+"Adding a passkey needs JavaScript." => "Para a\xF1adir una llave de acceso se necesita JavaScript.", // ai 2026-11
+
+// admin/um_passwd.php, row 64
 "You do not have permissions to change user data" => "No tiene permisos para cambiar los datos del usuario",
 
-// admin/um_passwd.php, row 71, 113
+// admin/um_passwd.php, row 83
+"Log in again first - a change of the account needs a login of the last %1 minutes" => "Primero inicie sesi\xF3n de nuevo: un cambio de la cuenta requiere un inicio de sesi\xF3n de los \xFAltimos %1 minutos", // ai 2026-11
+
+// admin/um_passwd.php, row 86, 132, 134
 // src/Widget/PwdWidget.php, row 66
 "Current password" => "Clave actual",
 
-// admin/um_passwd.php, row 73
+// admin/um_passwd.php, row 88
 "Error in current password - password is not changed" => "Error en la contrase\xF1a actual - la contrase\xF1a no se cambi\xF3",
 
-// admin/um_passwd.php, row 82
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 98
+// admin/um_uedit.php, row 184
 "User data modified" => "Datos del usuario modificados",
 
-// admin/um_passwd.php, row 101
+// admin/um_passwd.php, row 117
 "Change user data" => "Cambio de datos de usuario",
 
-// admin/um_passwd.php, row 110
-// admin/um_uedit.php, row 312
+// admin/um_passwd.php, row 127
+// admin/um_uedit.php, row 313
 "Edit User" => "Editar Usuario",
 
-// admin/um_passwd.php, row 112
-// admin/um_uedit.php, row 314
+// admin/um_passwd.php, row 129
+// admin/um_uedit.php, row 315
 "User Id" => "Id Usuario",
 
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 130
+"The account logs in by a passkey" => "La cuenta inicia sesi\xF3n con una llave de acceso", // ai 2026-11
+
+// admin/um_passwd.php, row 130
+"Log in without a password" => "Iniciar sesi\xF3n sin contrase\xF1a", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed - you logged in a moment ago" => "No es necesaria: acaba de iniciar sesi\xF3n", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed, but log in again first: a change needs a login of the last %1 minutes" => "No es necesaria, pero primero inicie sesi\xF3n de nuevo: un cambio requiere un inicio de sesi\xF3n de los \xFAltimos %1 minutos", // ai 2026-11
+
+// admin/um_uedit.php, row 184
 // include/um_util.php, row 344
 "User successfully added to permission system" => "Usuario a\xF1adido al sistema de permisos con \xE9xito",
 
-// admin/um_uedit.php, row 198
+// admin/um_uedit.php, row 199
 "Are you sure you want to delete selected user from whole permission system?" => "Est\xE1 seguro de borrar el usuario seleccionado de todo el sistema de permisos?",
 
-// admin/um_uedit.php, row 230
+// admin/um_uedit.php, row 231
 "Add new user" => "Agregar nuevo usuario",
 
-// admin/um_uedit.php, row 238
+// admin/um_uedit.php, row 239
 "Add user" => "Agregar usuario",
 
-// admin/um_uedit.php, row 247
+// admin/um_uedit.php, row 248
 "Find user" => "Buscar usuario",
 
-// admin/um_uedit.php, row 316
+// admin/um_uedit.php, row 324
+"%1 - the account logs in only by them" => "%1: la cuenta solo inicia sesi\xF3n con ellas", // ai 2026-11
+
+// admin/um_uedit.php, row 324
+// src/Isds/Registry/Page.php, row 555, 653
+// src/Optimize/MissCacheRouting.php, row 98, 129
+"none" => "ninguna", // ai 2026-10
+
+// admin/um_uedit.php, row 327
 "New user" => "Nuevo usuario",
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "All Writable Groups" => "Todos los grupos con permiso de escritura",
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "User's Groups" => "Grupos de usuarios",
 
-// admin/um_uedit.php, row 347
+// admin/um_uedit.php, row 358
 "Member of Unwritable Groups" => "Miembro de grupos sin permiso de escritura",
 
 // admin/usershow.php, row 76
@@ -4151,7 +4345,7 @@ return [
 "Write email to users" => "Escribir correo a usuarios",
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1059
+// include/logs.php, row 1064
 "Recipients" => "Destinatarios",
 
 // admin/write_mail.php, row 238
@@ -4225,7 +4419,7 @@ return [
 "App" => "Aplicaci\xF3n", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1201
+// include/logs.php, row 1206
 "Version" => "Versi\xF3n", // ai 2026-10
 
 // central/appstore.php, row 164
@@ -4368,11 +4562,11 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1202
+// include/logs.php, row 1207
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
-// src/Widget/RichtextMarkup.php, row 71
+// src/Widget/RichtextMarkup.php, row 84
 "Source" => "Fuente",
 
 // central/installapp.php, row 452
@@ -4413,7 +4607,7 @@ return [
 "Hold Ctrl to choose more of them." => "Mantenga pulsado Ctrl para elegir varios.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 790, 1244
+// include/logs.php, row 795, 1249
 "Mode" => "Modo", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4803,7 +4997,7 @@ return [
 "Stopped by an error" => "Detenido por un error", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 792
+// include/logs.php, row 797
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "Terminado", // ai 2026-10
@@ -5006,7 +5200,7 @@ return [
 "Compared and Updated ActionApps" => "ActionApps comparadas y actualizadas",
 
 // filldisc.php, row 106, 156
-// filler.php, row 423
+// filler.php, row 311, 427
 "Not accepted, sorry. Looks like spam." => "No aceptado, lo sentimos. Parece spam.",
 
 // filldisc.php, row 113
@@ -5028,22 +5222,22 @@ return [
 // filler.php, row 295
 "Not allowed to post comments" => "No tiene permiso para publicar comentarios",
 
-// filler.php, row 336, 382
+// filler.php, row 340, 386
 "Bad Token. Not allowed to post comments" => "Token incorrecto. No tiene permiso para publicar comentarios",
 
-// filler.php, row 362
+// filler.php, row 366
 "Slice ID not defined" => "ID del Canal no definido",
 
-// filler.php, row 368
+// filler.php, row 372
 "Bad slice ID" => "ID del Canal inv\xE1lido",
 
-// filler.php, row 397, 486
+// filler.php, row 401, 490
 "You are not allowed to update this item." => "Usted no tiene permiso para modificar este \xEDtem.",
 
-// filler.php, row 444
+// filler.php, row 448
 "Anonymous posting not admitted." => "No est\xE1 permitida la publiaci\xF3n an\xF3nima",
 
-// filler.php, row 499
+// filler.php, row 503
 "Some error in store item." => "Ocurri\xF3 un error al guardar el item.",
 
 // include/adminpage.class.php, row 68
@@ -5053,7 +5247,7 @@ return [
 "Short Id" => "Id corto",
 
 // include/constants.php, row 456
-// include/logs.php, row 950, 982
+// include/logs.php, row 955, 987
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Clase",
 
@@ -5062,7 +5256,7 @@ return [
 "Level" => "Nivel",
 
 // include/constants.php, row 509
-// include/logs.php, row 1161
+// include/logs.php, row 1166
 "Feed" => "Alimentar",
 
 // include/constants.php, row 510
@@ -5703,8 +5897,8 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1294
-// src/Manageraction/Item_Move2Slice.php, row 52
+// include/logs.php, row 1299
+// src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID del canal",
 
 // include/form.class.php, row 232
@@ -5764,7 +5958,7 @@ return [
 "import" => "importar",
 
 // include/formutil.php, row 1216
-// src/Widget/RichtextMarkup.php, row 70
+// src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Editar en \xE1rea HTML",
 
@@ -5795,7 +5989,7 @@ return [
 "Offer" => "Ofrecer",
 
 // include/formutil.php, row 2179
-// include/stringexpand.php, row 11505, 11528
+// include/stringexpand.php, row 11506, 11529
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 287
@@ -5820,7 +6014,7 @@ return [
 "Group Name" => "Nombre de grupo",
 
 // include/formutil.php, row 3295
-// include/logs.php, row 747, 847, 1111
+// include/logs.php, row 752, 852, 1116
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Cantidad",
@@ -5836,9 +6030,6 @@ return [
 
 // include/formutil.php, row 3299
 "Updated by" => "Actualizado por",
-
-// include/formutil.php, row 3300
-"Last used" => "Usado por \xFAltima vez",
 
 // include/formutil.php, row 3307
 "All active items" => "Todos los \xEDtems activos",
@@ -5856,7 +6047,7 @@ return [
 "All items in trash bin" => "Todos los \xEDtems en la papelera",
 
 // include/init_page.php, row 84
-// include/locauth.php, row 100
+// include/locauth.php, row 137
 "Either your username or your password is not valid" => "La combinaci\xF3n de usuario y clave no es v\xE1lida.",
 
 // include/init_page.php, row 136
@@ -6356,252 +6547,258 @@ return [
 // include/itemview.php, row 723, 731
 "exact group name" => "nombre exacto del grupo",
 
-// include/locauth.php, row 102
+// include/locauth.php, row 134
+"The login by the passkey did not succeed. Try it again." => "El inicio de sesi\xF3n con la llave de acceso no tuvo \xE9xito. Int\xE9ntelo de nuevo.", // ai 2026-11
+
+// include/locauth.php, row 139
 "Please try again!" => "\xA1Intente otra vez!",
 
-// include/locauth.php, row 103
+// include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Si Usted est\xE1 seguro que tecle\xF3 bien su clave de acceso, por favor contacte a <a href=mailto:%1>%1</a>.",
 
-// include/logs.php, row 541
+// include/logs.php, row 546
 "Created time" => "Fecha de creaci\xF3n",
 
-// include/logs.php, row 542
+// include/logs.php, row 547
 "Readers to be emailed" => "Lectores a los que enviar correo",
 
-// include/logs.php, row 554
+// include/logs.php, row 559
 // src/Optimize/CheckCkeditorUse.php, row 97
+// src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
 "Page" => "P\xE1gina",
 
-// include/logs.php, row 629, 673, 688
+// include/logs.php, row 634, 678, 693
 "Time [s]" => "Tiempo [s]",
 
-// include/logs.php, row 630, 675
+// include/logs.php, row 635, 680
 "Memory usage [MB]" => "Uso de memoria [MB]",
 
-// include/logs.php, row 631
+// include/logs.php, row 636
 "Memory peak [MB]" => "Pico de memoria [MB]",
 
-// include/logs.php, row 632
+// include/logs.php, row 637
 "Return code" => "C\xF3digo de retorno",
 
-// include/logs.php, row 648
+// include/logs.php, row 653
 "Tasks done" => "Tareas completadas", // ai 2026-06
 
-// include/logs.php, row 649
+// include/logs.php, row 654
 "Tasks started" => "Tareas iniciadas", // ai 2026-06
 
-// include/logs.php, row 650
+// include/logs.php, row 655
 "Duration [s]" => "Duraci\xF3n [s]", // ai 2026-06
 
-// include/logs.php, row 651
+// include/logs.php, row 656
 "Allowed [s]" => "Permitido [s]", // ai 2026-06
 
-// include/logs.php, row 671
+// include/logs.php, row 676
 "Cached" => "En cach\xE9",
 
-// include/logs.php, row 672
+// include/logs.php, row 677
 "Not Modified (304)" => "No modificado (304)",
 
-// include/logs.php, row 674
+// include/logs.php, row 679
 "Time + Cached + 304" => "Tiempo + En cach\xE9 + 304",
 
-// include/logs.php, row 676, 689, 899, 1085
+// include/logs.php, row 681, 694, 904, 1090
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 716
+// include/logs.php, row 721
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 717
+// include/logs.php, row 722
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 718
+// include/logs.php, row 723
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 719
+// include/logs.php, row 724
 "DB" => "",
 
-// include/logs.php, row 720
+// include/logs.php, row 725
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Memoria",
 
-// include/logs.php, row 721
+// include/logs.php, row 726
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 722
+// include/logs.php, row 727
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Configuraci\xF3n del servidor", // ai 2026-10
 
-// include/logs.php, row 746, 845
+// include/logs.php, row 751, 850
 "Severity" => "Gravedad", // ai 2026-10
 
-// include/logs.php, row 748, 843, 872
+// include/logs.php, row 753, 848, 877
 "Finding" => "Hallazgo", // ai 2026-10
 
-// include/logs.php, row 766
+// include/logs.php, row 771
 "Problems" => "Problemas", // ai 2026-10
 
-// include/logs.php, row 767
+// include/logs.php, row 772
 "Warnings" => "Advertencias", // ai 2026-10
 
-// include/logs.php, row 768
+// include/logs.php, row 773
 "Recommendations" => "Recomendaciones", // ai 2026-10
 
-// include/logs.php, row 769
+// include/logs.php, row 774
 "Checks" => "Comprobaciones", // ai 2026-10
 
-// include/logs.php, row 789, 820
+// include/logs.php, row 794, 825
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Ejecutar", // ai 2026-10
 
-// include/logs.php, row 791
+// include/logs.php, row 796
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "Inicio", // ai 2026-10
 
-// include/logs.php, row 793
+// include/logs.php, row 798
 "Last full run" => "\xDAltima ejecuci\xF3n completa", // ai 2026-10
 
-// include/logs.php, row 794
+// include/logs.php, row 799
 "Last full run started" => "Inicio de la \xFAltima ejecuci\xF3n completa", // ai 2026-10
 
-// include/logs.php, row 819, 844
+// include/logs.php, row 824, 849
 "Pair" => "Par", // ai 2026-10
 
-// include/logs.php, row 821
+// include/logs.php, row 826
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Ejecutada", // ai 2026-10
 
-// include/logs.php, row 822, 846
+// include/logs.php, row 827, 851
 "Known issue" => "Problema conocido", // ai 2026-10
 
-// include/logs.php, row 848
+// include/logs.php, row 853
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Primera aparici\xF3n", // ai 2026-10
 
-// include/logs.php, row 849
+// include/logs.php, row 854
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "Ejecuciones seguidas", // ai 2026-10
 
-// include/logs.php, row 873
+// include/logs.php, row 878
 "Evidence" => "Evidencia", // ai 2026-10
 
-// include/logs.php, row 896
+// include/logs.php, row 901
 "Identifier" => "Identificador",
 
-// include/logs.php, row 897, 1261, 1276
+// include/logs.php, row 902, 1266, 1281
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "ID del m\xF3dulo",
 
-// include/logs.php, row 910
+// include/logs.php, row 915
 "Template id" => "Id de plantilla", // ai 2026-06
 
-// include/logs.php, row 912
+// include/logs.php, row 917
 "Emails sent" => "Emails enviados", // ai 2026-06
 
-// include/logs.php, row 951
+// include/logs.php, row 956
 "Object id" => "Id del objeto", // ai 2026-10
 
-// include/logs.php, row 983
+// include/logs.php, row 988
 "Mail template" => "Plantilla de correo", // ai 2026-10
 
-// include/logs.php, row 984
+// include/logs.php, row 989
 "Reader item" => "\xCDtem del lector", // ai 2026-10
 
-// include/logs.php, row 985
+// include/logs.php, row 990
 "Origin" => "Origen", // ai 2026-10
 
-// include/logs.php, row 1056
+// include/logs.php, row 1061
 "Transport" => "Transporte", // ai 2026-10
 
-// include/logs.php, row 1057
+// include/logs.php, row 1062
 "Recipients sent" => "Destinatarios enviados", // ai 2026-10
 
-// include/logs.php, row 1058
+// include/logs.php, row 1063
 "Server response" => "Respuesta del servidor", // ai 2026-10
 
-// include/logs.php, row 1071
+// include/logs.php, row 1076
 "Items selected" => "\xCDtems seleccionados", // ai 2026-06
 
-// include/logs.php, row 1072
+// include/logs.php, row 1077
 "Items updated" => "\xCDtems actualizados", // ai 2026-06
 
-// include/logs.php, row 1073
+// include/logs.php, row 1078
 "Items planned" => "\xCDtems planificados", // ai 2026-06
 
-// include/logs.php, row 1084
+// include/logs.php, row 1089
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Mensaje", // ai 2026-06
 
-// include/logs.php, row 1086
+// include/logs.php, row 1091
 "Referer" => "Referente", // ai 2026-10
 
-// include/logs.php, row 1097
+// include/logs.php, row 1102
 "New name" => "Nombre nuevo", // ai 2026-06
 
-// include/logs.php, row 1098
+// include/logs.php, row 1103
 "Old name" => "Nombre antiguo", // ai 2026-06
 
-// include/logs.php, row 1109, 1174
+// include/logs.php, row 1114, 1179
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Fase", // ai 2026-06
 
-// include/logs.php, row 1110
+// include/logs.php, row 1115
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Colecci\xF3n", // ai 2026-06
 
-// include/logs.php, row 1112, 1163, 1175, 1310
+// include/logs.php, row 1117, 1168, 1180, 1315
 // src/Import/Definition.php, row 154
+// src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "Detalle", // ai 2026-06
 
-// include/logs.php, row 1162
+// include/logs.php, row 1167
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Estado", // ai 2026-06
 
-// include/logs.php, row 1214
+// include/logs.php, row 1219
 "Processed" => "Procesados", // ai 2026-06
 
-// include/logs.php, row 1215
+// include/logs.php, row 1220
 "Stored" => "Almacenados", // ai 2026-06
 
-// include/logs.php, row 1216
+// include/logs.php, row 1221
 "Errors" => "Errores", // ai 2026-06
 
-// include/logs.php, row 1229
+// include/logs.php, row 1234
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Resultado", // ai 2026-06
 
-// include/logs.php, row 1245
+// include/logs.php, row 1250
 "Flags" => "Banderas", // ai 2026-06
 
-// include/logs.php, row 1246
+// include/logs.php, row 1251
 "Context" => "Contexto", // ai 2026-06
 
-// include/logs.php, row 1262
+// include/logs.php, row 1267
 "Feed counterpart" => "Contraparte de alimentaci\xF3n", // ai 2026-06
 
-// include/logs.php, row 1277
+// include/logs.php, row 1282
 "Field ID" => "ID Campo",
 
-// include/logs.php, row 1295
+// include/logs.php, row 1300
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckHttp.php, row 62
+// src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 88
 "Reason" => "Motivo", // ai 2026-10
 
@@ -6614,7 +6811,7 @@ return [
 // include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Due\xF1o",
 
@@ -6940,10 +7137,10 @@ return [
 // include/modutils.php, row 251
 "Select owner" => "Seleccione propietario",
 
-// include/perm_core.php, row 1273, 1300
+// include/perm_core.php, row 1414, 1444
 "Reader Slice" => "Canal de lectores",
 
-// include/perm_core.php, row 1285, 1302
+// include/perm_core.php, row 1429, 1446
 "Reader Set" => "Conjunto de lectores",
 
 // include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
@@ -7052,9 +7249,6 @@ return [
 // include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Filtro personal (clic para aplicar)",
 
-// include/searchbar.class.php, row 1124
-"Rename" => "Renombrar",
-
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Gestionar filtros",
 
@@ -7089,7 +7283,7 @@ return [
 "is not" => "no es",
 
 // include/searchlib.php, row 137, 140
-// include/statestore.php, row 1362
+// include/statestore.php, row 1367
 "select ..." => "seleccionar ...",
 
 // include/searchlib.php, row 370
@@ -7237,22 +7431,22 @@ return [
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Liste todos los idiomas para los que desea usar el m\xF3dulo de sitio - en, es, cz, ..<br>Por favor <b>h\xE1galo</b>, incluso si usa 1 solo idioma. <br>Es muy necesario si desea llamar al m\xF3dulo de sitio de la forma m\xE1s nueva desde Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>",
 
 // include/slice.class.php, row 1645
-"Allowed {xflag} values" => "",
+"Allowed {xflag} values" => "Valores permitidos de {xflag}", // ai 2026-11
 
 // include/slice.class.php, row 1645
-"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "",
+"Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "Expresi\xF3n regular a la que debe ajustarse por completo la parte {xflag} de la URL (no hacen falta ^ ni \$); de lo contrario, la p\xE1gina responde 404. {xflag} son los caracteres justo despu\xE9s del idioma y del n\xFAmero de p\xE1gina opcional {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... Nunca contiene una cifra ni \xAB-\xBB, que lo terminan.<br>Las p\xE1ginas sin {xflag} tambi\xE9n deben pasar: termine el patr\xF3n con ? o a\xF1ada una alternativa vac\xEDa.<br><b>Vac\xEDo</b> - cualquier valor sin \xAB=\xBB.<br><b>^\$</b> - {xflag} no se usa, solo p\xE1ginas sin \xE9l.<br>Ejemplos:<br>[a-z]? - una letra, o nada<br>[tp]? - \xABt\xBB o \xABp\xBB, o nada<br>(print|pdf)? - una de las palabras indicadas, o nada", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Allowed {xcat} values" => "",
+"Allowed {xcat} values" => "Valores permitidos de {xcat}", // ai 2026-11
 
 // include/slice.class.php, row 1646
-"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "",
+"Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "Expresi\xF3n regular a la que debe ajustarse por completo la parte {xcat} de la URL (no hacen falta ^ ni \$); de lo contrario, la p\xE1gina responde 404. {xcat} es todo lo que sigue al primer \xAB-\xBB del primer directorio: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... Puede contener cualquier cosa excepto \xAB/\xBB.<br>Las p\xE1ginas sin {xcat} tambi\xE9n deben pasar: termine el patr\xF3n con ? o a\xF1ada una alternativa vac\xEDa.<br><b>Vac\xEDo</b> - cualquier valor sin \xAB=\xBB.<br><b>^\$</b> - {xcat} no se usa, solo p\xE1ginas sin \xE9l.<br>Ejemplos:<br>[a-z0-9-]* - min\xFAsculas, cifras y guiones, o nada<br>([0-9]+)? - un n\xFAmero, o nada<br>(bioplyn|kompost)? - una de las palabras indicadas, o nada", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Check the page path" => "",
+"Check the page path" => "Comprobar la ruta de la p\xE1gina", // ai 2026-11
 
 // include/slice.class.php, row 1647
-"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "",
+"Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "Responder 404 cuando alguna parte de la ruta ({xseo1}, {xseo2}, ...) no sea un \xEDtem publicado, de modo que /cz/nonsense/about-us no muestre la p\xE1gina about-us. Responde 404 tambi\xE9n cuando \xABP\xE1gina no encontrada\xBB est\xE1 configurado como \xABNo importa\xBB.", // ai 2026-11
 
 // include/slice.class.php, row 1648
 "Page not Found (404)" => "P\xE1gina no encontrada (404)",
@@ -7294,10 +7488,10 @@ return [
 "Published modules" => "M\xF3dulos publicados", // ai 2026-10
 
 // include/slice.class.php, row 1664
-"Page address (URL)" => "",
+"Page address (URL)" => "Direcci\xF3n de la p\xE1gina (URL)", // ai 2026-11
 
 // include/slice.class.php, row 1665
-"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "",
+"<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} es un n\xFAmero, {xflag} las letras que lo siguen, {xcat} todo lo que sigue al primer \xAB-\xBB; los tres son opcionales. {xlang} puede omitirse cuando est\xE1n configurados los \xABIdiomas del sitio web\xBB.<br>Por ejemplo, /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka", // ai 2026-11
 
 // include/slice.class.php, row 1707
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "La versi\xF3n de la aplicaci\xF3n tiene como m\xE1ximo 32 letras, d\xEDgitos y . + - (por ejemplo 1.2.0); la descripci\xF3n, como m\xE1ximo %1 caracteres.", // ai 2026-10
@@ -7369,13 +7563,13 @@ return [
 // include/slicedit.php, row 372
 "Internal error when changing user role." => "Error interno al cambiar el rol del usuario.",
 
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 "Owner ID" => "ID del propietario",
 
-// include/statestore.php, row 1170
+// include/statestore.php, row 1175
 "No object found" => "No se encontr\xF3 ning\xFAn objeto",
 
-// include/statestore.php, row 1444
+// include/statestore.php, row 1449
 "Manage components" => "Gestionar componentes",
 
 // include/stringexpand.php, row 95
@@ -7417,84 +7611,84 @@ return [
 // include/stringexpand.php, row 6279
 "No module for dictionary slice" => "No hay m\xF3dulo para el canal de diccionario",
 
-// include/stringexpand.php, row 8195
+// include/stringexpand.php, row 8196
 "version" => "versi\xF3n",
 
-// include/stringexpand.php, row 8383
+// include/stringexpand.php, row 8384
 "show" => "mostrar",
 
-// include/stringexpand.php, row 8384
+// include/stringexpand.php, row 8385
 "hide" => "ocultar",
 
-// include/stringexpand.php, row 8385
+// include/stringexpand.php, row 8386
 "loading" => "cargando",
 
-// include/stringexpand.php, row 9516
+// include/stringexpand.php, row 9517
 "E-mail confirmed." => "E-mail confirmado.",
 
-// include/stringexpand.php, row 9520
+// include/stringexpand.php, row 9521
 "E-mail unsubscribed" => "E-mail dado de baja",
 
-// include/stringexpand.php, row 10279
+// include/stringexpand.php, row 10280
 "Forgot your password? Fill in your email." => "\xBFOlvid\xF3 su contrase\xF1a? Escriba su email.",
 
-// include/stringexpand.php, row 10281
+// include/stringexpand.php, row 10282
 // src/Central/FindingText.php, row 457
 "e-mail" => "Correo-e:",
 
-// include/stringexpand.php, row 10299, 10303
+// include/stringexpand.php, row 10300, 10304
 "Unable to find user - please check if it has been misspelled." => "No se pudo encontrar al usuario - compruebe si est\xE1 mal escrito.",
 
-// include/stringexpand.php, row 10317
+// include/stringexpand.php, row 10318
 "Password link" => "Enlace de contrase\xF1a",
 
-// include/stringexpand.php, row 10318
+// include/stringexpand.php, row 10319
 "Password change url parameter" => "Par\xE1metro url de cambio de contrase\xF1a",
 
-// include/stringexpand.php, row 10330
+// include/stringexpand.php, row 10331
 "Password change" => "Cambio de contrase\xF1a",
 
-// include/stringexpand.php, row 10331
+// include/stringexpand.php, row 10332
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Para cambiar la contrase\xF1a, visite la siguiente direcci\xF3n:<br>%1<br>El cambio ser\xE1 posible durante dos horas - despu\xE9s la clave expirar\xE1 y deber\xE1 solicitar una nueva.",
 
-// include/stringexpand.php, row 10340
+// include/stringexpand.php, row 10341
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "Se acaba de enviar un correo electr\xF3nico con una clave para cambiar la contrase\xF1a a la direcci\xF3n: %1",
 
-// include/stringexpand.php, row 10351, 10380
+// include/stringexpand.php, row 10352, 10381
 "Bad or expired key." => "Clave incorrecta o caducada.",
 
-// include/stringexpand.php, row 10356
+// include/stringexpand.php, row 10357
 "Fill in the new password" => "Introduzca la nueva contrase\xF1a",
 
-// include/stringexpand.php, row 10358
+// include/stringexpand.php, row 10359
 "New password" => "Nueva contrase\xF1a",
 
-// include/stringexpand.php, row 10359
+// include/stringexpand.php, row 10360
 "Retype New Password" => "Reescriba nueva clave",
 
-// include/stringexpand.php, row 10383
+// include/stringexpand.php, row 10384
 "Passwords do not match - please try again." => "Las contrase\xF1as no coinciden - int\xE9ntelo de nuevo.",
 
-// include/stringexpand.php, row 10386
+// include/stringexpand.php, row 10387
 "The password must be at least 6 characters long." => "La contrase\xF1a debe tener al menos 6 caracteres.",
 
-// include/stringexpand.php, row 10392
+// include/stringexpand.php, row 10393
 "Password changed." => "Contrase\xF1a cambiada.",
 
-// include/stringexpand.php, row 10394
+// include/stringexpand.php, row 10395
 "An error occurred during password change - please contact: %1." => "Se produjo un error al cambiar la contrase\xF1a - por favor contacte con: %1.",
 
-// include/stringexpand.php, row 11502, 11525
+// include/stringexpand.php, row 11503, 11526
 "Are you sure you want to permanently DELETE this record?" => "\xBFEst\xE1 seguro/a que quiere borrar PERMANENTEMENTE este registro?",
 
-// include/stringexpand.php, row 11508, 11511, 11531, 11534
+// include/stringexpand.php, row 11509, 11512, 11532, 11535
 // src/Widget/RimWidget.php, row 270
 "edit" => "editar",
 
-// include/stringexpand.php, row 11514, 11537
+// include/stringexpand.php, row 11515, 11538
 "back" => "volver",
 
-// include/stringexpand.php, row 11517, 11540
+// include/stringexpand.php, row 11518, 11541
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "suelte los archivos aqu\xED o haga clic para subirlos",
 
@@ -7712,7 +7906,7 @@ return [
 "username | slice | <b>allslices</b>" => "",
 
 // include/validate.php, row 957
-"Not a valid regular expression" => "",
+"Not a valid regular expression" => "No es una expresi\xF3n regular v\xE1lida", // ai 2026-11
 
 // include/validate.php, row 992
 "This field is required." => "Este campo es obligatorio.",
@@ -7997,37 +8191,37 @@ return [
 // src/AA_Plannedtask.php, row 457
 "next run" => "pr\xF3xima ejecuci\xF3n",
 
-// src/Api/Controller/FilesController.php, row 54, 75
+// src/Api/Controller/FilesController.php, row 56, 77
 "The file is too big" => "El archivo es demasiado grande", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 67
+// src/Api/Controller/FilesController.php, row 69
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "No puede subir archivos aqu\xED. Si estaba editando, puede que su sesi\xF3n haya caducado - recargue la p\xE1gina.", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 70
+// src/Api/Controller/FilesController.php, row 72
 "Too many uploads - try again in an hour" => "Demasiadas subidas - int\xE9ntelo de nuevo dentro de una hora", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 78, 243
+// src/Api/Controller/FilesController.php, row 80, 291
 "No file received" => "No se recibi\xF3 ning\xFAn archivo", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 86
+// src/Api/Controller/FilesController.php, row 88
 "Files of this type cannot be uploaded here: %1" => "Aqu\xED no se pueden subir archivos de este tipo: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 89
+// src/Api/Controller/FilesController.php, row 91
 "The content of the file does not match its extension %1" => "El contenido del archivo no corresponde a su extensi\xF3n %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 92
+// src/Api/Controller/FilesController.php, row 94
 "The image is bigger than %1 MB" => "La imagen ocupa m\xE1s de %1 MB", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 95
+// src/Api/Controller/FilesController.php, row 97
 "The image has more than %1 megapixels" => "La imagen tiene m\xE1s de %1 megap\xEDxeles", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 100
+// src/Api/Controller/FilesController.php, row 102
 "The upload directory of the slice is not writable" => "No se puede escribir en el directorio de subidas del canal", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 110
+// src/Api/Controller/FilesController.php, row 112
 "The file could not be stored" => "No se pudo guardar el archivo", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 132
+// src/Api/Controller/FilesController.php, row 134
 "Only editors of the slice can browse its files" => "Solo los editores del canal pueden explorar sus archivos", // ai 2026-10
 
 // src/Central/Actionapps.php, row 178
@@ -8046,7 +8240,7 @@ return [
 "Expired - get a token" => "Caducado - obtenga un token", // ai 2026-10
 
 // src/Central/Actionapps.php, row 234
-"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "",
+"The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "El AA remoto rechaz\xF3 el inicio de sesi\xF3n: nombre de usuario o contrase\xF1a incorrectos, una cuenta con inicio de sesi\xF3n en dos pasos (Central a\xFAn no puede enviar el c\xF3digo), o el usuario no es superadministrador all\xED", // ai 2026-11
 
 // src/Central/Actionapps.php, row 236
 "The remote AA gave no login token - update it" => "El AA remoto no entreg\xF3 ning\xFAn token de inicio de sesi\xF3n - actual\xEDcelo", // ai 2026-10
@@ -9211,21 +9405,21 @@ return [
 // src/IO/Grabber/FilesFTP.php, row 106
 "Info to get" => "Informaci\xF3n a obtener",
 
-// src/IO/Grabber/Form.php, row 75
+// src/IO/Grabber/Form.php, row 76
 // src/IO/Grabber/ObjectForm.php, row 61
 "Form" => "Formulario",
 
-// src/IO/Grabber/Form.php, row 83
+// src/IO/Grabber/Form.php, row 84
 // src/IO/Grabber/ObjectForm.php, row 69
 "Grabs data POSTed by AA form" => "Obtiene datos enviados por POST desde un formulario AA",
 
-// src/IO/Grabber/Form.php, row 168
+// src/IO/Grabber/Form.php, row 193
 "No slice found: %1" => "No se encontr\xF3 el canal: %1",
 
-// src/IO/Grabber/Form.php, row 171
+// src/IO/Grabber/Form.php, row 196
 "No file, img_upload, or img_src field type found in slice %1" => "No se encontr\xF3 ning\xFAn campo de tipo file, img_upload o img_src en el canal %1",
 
-// src/IO/Grabber/Form.php, row 204
+// src/IO/Grabber/Form.php, row 229
 "no POST nor FILES sent" => "no se envi\xF3 POST ni FILES",
 
 // src/IO/Grabber/Ical.php, row 43
@@ -9252,13 +9446,13 @@ return [
 // src/IO/Grabber/PohodaStocks.php, row 42
 "Imports stock from POHODA accounting system" => "Importa existencias del sistema contable POHODA",
 
-// src/IO/Grabber/SOAP.php, row 60
+// src/IO/Grabber/SOAP.php, row 62
 "SOAP" => "",
 
-// src/IO/Grabber/SOAP.php, row 68
+// src/IO/Grabber/SOAP.php, row 70
 "General SOAP request" => "Petici\xF3n SOAP gen\xE9rica",
 
-// src/IO/Grabber/SOAP.php, row 78
+// src/IO/Grabber/SOAP.php, row 80
 "SOAP body request" => "Cuerpo de la petici\xF3n SOAP",
 
 // src/IO/Grabber/SQL.php, row 82
@@ -10431,627 +10625,623 @@ return [
 "The column that identifies the item; it must be one of the columns" => "La columna que identifica el \xEDtem; debe ser una de las columnas", // ai 2026-10
 
 // src/Isds/Advice.php, row 47
-"The form has expired, or it does not belong to this page. Load the page again." => "",
+"The form has expired, or it does not belong to this page. Load the page again." => "El formulario ha caducado o no pertenece a esta p\xE1gina. Vuelva a cargar la p\xE1gina.", // ai 2026-11
 
 // src/Isds/Advice.php, row 49
-"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "El formulario enviado es mayor de lo que admite el servidor (%1). No se guard\xF3 nada: reduzca el tama\xF1o de los adjuntos.", // ai 2026-11
 
 // src/Isds/Advice.php, row 50
-"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "",
+"The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "El formulario enviado es mayor de lo que admite el servidor. No se guard\xF3 nada: reduzca el tama\xF1o de los adjuntos.", // ai 2026-11
 
 // src/Isds/Advice.php, row 51
-"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "",
+"The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "La acci\xF3n fall\xF3 por un error interno de AA y puede haber realizado parte de su trabajo. Vuelva a cargar la p\xE1gina y revise el estado antes de intentarlo otra vez.", // ai 2026-11
 
 // src/Isds/Advice.php, row 52
-"Someone else, or another window, is working with this now. Try it again in a while." => "",
+"Someone else, or another window, is working with this now. Try it again in a while." => "Otra persona, u otra ventana, est\xE1 trabajando con esto ahora. Int\xE9ntelo de nuevo dentro de un rato.", // ai 2026-11
 
 // src/Isds/Advice.php, row 53
-"You may not do this." => "",
+"You may not do this." => "No tiene permiso para hacer esto.", // ai 2026-11
 
 // src/Isds/Advice.php, row 54
-"This sending is not on this page." => "",
+"This sending is not on this page." => "Este env\xEDo no est\xE1 en esta p\xE1gina.", // ai 2026-11
 
 // src/Isds/Advice.php, row 55
-"The sending does not wait for this now." => "",
+"The sending does not wait for this now." => "El env\xEDo no est\xE1 esperando esta acci\xF3n ahora.", // ai 2026-11
 
 // src/Isds/Advice.php, row 56
-"A step of the sending is still running. Try it again in a few minutes." => "",
+"A step of the sending is still running. Try it again in a few minutes." => "Todav\xEDa se est\xE1 ejecutando un paso del env\xEDo. Int\xE9ntelo de nuevo dentro de unos minutos.", // ai 2026-11
 
 // src/Isds/Advice.php, row 57
-"The sending goes on." => "",
+"The sending goes on." => "El env\xEDo contin\xFAa.", // ai 2026-11
 
 // src/Isds/Advice.php, row 58
-"The sending is stopping - no further message will go." => "",
+"The sending is stopping - no further message will go." => "El env\xEDo se est\xE1 deteniendo: no saldr\xE1 ning\xFAn mensaje m\xE1s.", // ai 2026-11
 
 // src/Isds/Advice.php, row 59
-"Every message has been sent or tried already - there is nothing left to stop." => "",
+"Every message has been sent or tried already - there is nothing left to stop." => "Todos los mensajes ya se han enviado o se ha intentado enviarlos: no queda nada que detener.", // ai 2026-11
 
 // src/Isds/Advice.php, row 60
-"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "",
+"The sending has been ended for good. Any message of unknown fate stays for you to verify." => "El env\xEDo se ha terminado definitivamente. Los mensajes de destino incierto quedan pendientes de que usted los verifique.", // ai 2026-11
 
 // src/Isds/Advice.php, row 61
-"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "",
+"The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "El env\xEDo ya se detuvo por un error, as\xED que \xABDetener\xBB no cambia nada aqu\xED. Puede elegir \xABContinuar\xBB o terminar el env\xEDo definitivamente; en ese caso ya no se buscar\xE1n los mensajes de destino incierto ni las entregas a\xFAn no le\xEDdas.", // ai 2026-11
 
 // src/Isds/Advice.php, row 63
-"The draft is saved." => "",
+"The draft is saved." => "El borrador se ha guardado.", // ai 2026-11
 
 // src/Isds/Advice.php, row 64
-"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "",
+"The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "La carta se ha guardado, pero no la selecci\xF3n de destinatarios: cambi\xF3 entretanto, en otra ventana, o ya no existe un destinatario que eligi\xF3. La p\xE1gina muestra los destinatarios guardados ahora; vuelva a elegirlos si es necesario.", // ai 2026-11
 
 // src/Isds/Advice.php, row 65
-"The copy is ready as a new draft." => "",
+"The copy is ready as a new draft." => "La copia est\xE1 lista como nuevo borrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 66
-"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "",
+"The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "El borrador se ha movido a la papelera. Un editor del canal puede restaurarlo en el \xABAdministrador de \xEDtems\xBB.", // ai 2026-11
 
 // src/Isds/Advice.php, row 67
-"The sending of this campaign has started, so it stays - its messages must remain traceable." => "",
+"The sending of this campaign has started, so it stays - its messages must remain traceable." => "El env\xEDo de esta campa\xF1a ya ha comenzado, por lo que se conserva: sus mensajes deben poder rastrearse.", // ai 2026-11
 
 // src/Isds/Advice.php, row 68
-"The sending left no recipient unsent - there is nothing to copy." => "",
+"The sending left no recipient unsent - there is nothing to copy." => "El env\xEDo no dej\xF3 ning\xFAn destinatario sin enviar: no hay nada que copiar.", // ai 2026-11
 
 // src/Isds/Advice.php, row 69
-"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "",
+"The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "La carta solo puede volver a enviarse a este destinatario si su mensaje fall\xF3 o si el env\xEDo se detuvo antes de llegar a \xE9l. Este mensaje ya sali\xF3, todav\xEDa puede salir o se omiti\xF3, o bien no se sabe si sali\xF3: verif\xEDquelo cuando la p\xE1gina lo ofrezca (no mientras AA a\xFAn lo est\xE9 buscando) y despu\xE9s podr\xE1 volver a enviarse.", // ai 2026-11
 
 // src/Isds/Advice.php, row 70
-"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "",
+"Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "Registrado: el mensaje no sali\xF3. La carta puede volver a enviarse a ese destinatario en una nueva campa\xF1a.", // ai 2026-11
 
 // src/Isds/Advice.php, row 71
-"The fate of this message is known - there is nothing to verify." => "",
+"The fate of this message is known - there is nothing to verify." => "El destino de este mensaje es conocido: no hay nada que verificar.", // ai 2026-11
 
 // src/Isds/Advice.php, row 72
-"This message does not belong to the sending." => "",
+"This message does not belong to the sending." => "Este mensaje no pertenece al env\xEDo.", // ai 2026-11
 
 // src/Isds/Advice.php, row 73
-"The data box of the recipient is taken from the register." => "",
+"The data box of the recipient is taken from the register." => "El buz\xF3n de datos del destinatario se ha tomado del registro.", // ai 2026-11
 
 // src/Isds/Advice.php, row 74
-"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "",
+"The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "El registro no ofrece este buz\xF3n de datos para el destinatario con la seguridad suficiente para tomarlo aqu\xED. Un editor del canal de destinatarios lo compara en su p\xE1gina \xABBuzones de datos del registro\xBB o corrige el \xEDtem.", // ai 2026-11
 
 // src/Isds/Advice.php, row 75
-"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "",
+"The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "El registro de buzones de datos no se ha descargado o es antiguo. Un editor del canal de destinatarios lo descarga en su p\xE1gina \xABBuzones de datos del registro\xBB.", // ai 2026-11
 
 // src/Isds/Advice.php, row 76
-"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "",
+"This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "Este destinatario no est\xE1 entre los emparejados con el registro: se elimin\xF3, se movi\xF3 a la papelera o se le asign\xF3 otro tipo. Vuelva a cargar la p\xE1gina.", // ai 2026-11
 
 // src/Isds/Advice.php, row 77
-"A page in the test environment changes no recipient." => "",
+"A page in the test environment changes no recipient." => "Una p\xE1gina en el entorno de pruebas no modifica ning\xFAn destinatario.", // ai 2026-11
 
 // src/Isds/Advice.php, row 78
-"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "",
+"The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "El env\xEDo est\xE1 en cola; destinatarios: %1. Contin\xFAa por s\xED solo, puede cerrar la p\xE1gina.", // ai 2026-11
 
 // src/Isds/Advice.php, row 79
-"The test message has gone (ID %1 in ISDS, reference number %2)." => "",
+"The test message has gone (ID %1 in ISDS, reference number %2)." => "El mensaje de prueba ha salido (ID %1 en ISDS, n\xFAmero de referencia %2).", // ai 2026-11
 
 // src/Isds/Advice.php, row 80
-"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "",
+"It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "No se sabe si el mensaje de prueba sali\xF3. B\xFAsquelo entre los mensajes enviados del buz\xF3n de datos por su n\xFAmero de referencia %1.", // ai 2026-11
 
 // src/Isds/Advice.php, row 81
-"ISDS refused the test message." => "",
+"ISDS refused the test message." => "ISDS rechaz\xF3 el mensaje de prueba.", // ai 2026-11
 
 // src/Isds/Advice.php, row 82
-"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "",
+"Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "Otro mensaje de prueba de esta p\xE1gina est\xE1 en camino, o uno se detuvo hace un momento. Int\xE9ntelo de nuevo dentro de unos minutos.", // ai 2026-11
 
 // src/Isds/Advice.php, row 83
-"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "",
+"The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "El env\xEDo ya se ha puesto en cola o se ha enviado, por lo que no puede modificarse ni volver a enviarse. Para enviar la carta una vez m\xE1s, haga una copia de ella.", // ai 2026-11
 
 // src/Isds/Advice.php, row 84
-"Choose the recipients and save the draft." => "",
+"Choose the recipients and save the draft." => "Elija los destinatarios y guarde el borrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 85
-"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "",
+"This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "Esta p\xE1gina ya no ofrece los destinatarios guardados con el borrador, por lo que no muestra ninguna selecci\xF3n de ellos. Elija de nuevo los destinatarios y guarde el borrador: la nueva selecci\xF3n sustituye a la guardada.", // ai 2026-11
 
 // src/Isds/Advice.php, row 86
-"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "",
+"The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "El n\xFAmero de destinatarios ha cambiado desde que confirm\xF3 %1. Revise la selecci\xF3n y env\xEDela de nuevo.", // ai 2026-11
 
 // src/Isds/Advice.php, row 87
-"There are more recipients than this page may send to (%1). Narrow the choice." => "",
+"There are more recipients than this page may send to (%1). Narrow the choice." => "Hay m\xE1s destinatarios de los que admite esta p\xE1gina (%1). Reduzca la selecci\xF3n.", // ai 2026-11
 
 // src/Isds/Advice.php, row 88
-"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "",
+"The letter would reach no one: none of the recipients chosen has a data box it can go to." => "La carta no llegar\xEDa a nadie: ninguno de los destinatarios elegidos tiene un buz\xF3n de datos al que pueda enviarse.", // ai 2026-11
 
 // src/Isds/Advice.php, row 89
-"No data box account is set up for this page. Ask the administrator." => "",
+"No data box account is set up for this page. Ask the administrator." => "No hay ninguna cuenta de buz\xF3n de datos configurada para esta p\xE1gina. Consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 90
-"This page or its slices are not ready to send. Ask the administrator." => "",
+"This page or its slices are not ready to send. Ask the administrator." => "Esta p\xE1gina o sus canales no est\xE1n preparados para enviar. Consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 91
-"The letter cannot go as a data message:" => "",
+"The letter cannot go as a data message:" => "La carta no puede enviarse como mensaje de datos:", // ai 2026-11
 
 // src/Isds/Advice.php, row 92
-"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "",
+"The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "El servidor no pudo generar la carta en este momento; no hay nada que corregir en el borrador. Int\xE9ntelo de nuevo m\xE1s tarde o consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "El servidor tiene muy poca memoria para la carta y sus adjuntos (se necesitan %1 MB). Consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 93
-"The server has too little memory for the letter and its attachments. Ask the administrator." => "",
+"The server has too little memory for the letter and its attachments. Ask the administrator." => "El servidor tiene muy poca memoria para la carta y sus adjuntos. Consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 94
-"The database cannot queue a sending safely. Ask the administrator." => "",
+"The database cannot queue a sending safely. Ask the administrator." => "La base de datos no puede poner un env\xEDo en cola de forma segura. Consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 95
-"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "",
+"ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "ISDS rechaz\xF3 el inicio de sesi\xF3n de la cuenta; no se envi\xF3 nada. Pida al administrador que compruebe el inicio de sesi\xF3n.", // ai 2026-11
 
 // src/Isds/Advice.php, row 96
-"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "ISDS ha bloqueado los inicios de sesi\xF3n desde este servidor; no se envi\xF3 nada. Una contrase\xF1a nueva no sirve: AA vuelve a intentar iniciar sesi\xF3n un d\xEDa despu\xE9s del bloqueo. Int\xE9ntelo de nuevo ma\xF1ana o consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 97
-"The settings of the account are not complete, nothing was sent. Ask the administrator." => "",
+"The settings of the account are not complete, nothing was sent. Ask the administrator." => "La configuraci\xF3n de la cuenta no est\xE1 completa; no se envi\xF3 nada. Consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 98
-"ISDS does not answer, nothing was sent. Try it again in a while." => "",
+"ISDS does not answer, nothing was sent. Try it again in a while." => "ISDS no responde; no se envi\xF3 nada. Int\xE9ntelo de nuevo dentro de un rato.", // ai 2026-11
 
 // src/Isds/Advice.php, row 99
-"ISDS refused to tell whose the login of the account is, nothing was sent." => "",
+"ISDS refused to tell whose the login of the account is, nothing was sent." => "ISDS se neg\xF3 a indicar a qui\xE9n pertenece el inicio de sesi\xF3n de la cuenta; no se envi\xF3 nada.", // ai 2026-11
 
 // src/Isds/Advice.php, row 100
-"No test data box is set up for this page - in production the administrator of the server sets it." => "",
+"No test data box is set up for this page - in production the administrator of the server sets it." => "No hay ning\xFAn buz\xF3n de datos de prueba configurado para esta p\xE1gina; en producci\xF3n lo configura el administrador del servidor.", // ai 2026-11
 
 // src/Isds/Advice.php, row 101
-"Choose one of the test data boxes of this page." => "",
+"Choose one of the test data boxes of this page." => "Elija uno de los buzones de datos de prueba de esta p\xE1gina.", // ai 2026-11
 
 // src/Isds/Advice.php, row 102
-"A test message cannot go to the data box it is sent from. Choose another test box." => "",
+"A test message cannot go to the data box it is sent from. Choose another test box." => "Un mensaje de prueba no puede ir al buz\xF3n de datos desde el que se env\xEDa. Elija otro buz\xF3n de prueba.", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained until %1. Try it again then." => "",
+"ISDS is being maintained until %1. Try it again then." => "ISDS est\xE1 en mantenimiento hasta %1. Int\xE9ntelo de nuevo entonces.", // ai 2026-11
 
 // src/Isds/Advice.php, row 103
-"ISDS is being maintained. Try it again later." => "",
+"ISDS is being maintained. Try it again later." => "ISDS est\xE1 en mantenimiento. Int\xE9ntelo de nuevo m\xE1s tarde.", // ai 2026-11
 
 // src/Isds/Advice.php, row 105
-"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "Esta carta ya sali\xF3, o pudo salir, hacia este buz\xF3n de prueba el %2 (n\xFAmero de referencia %1). Modifique el borrador para volver a probarla.", // ai 2026-11
 
 // src/Isds/Advice.php, row 106
-"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "",
+"This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "Esta carta ya sali\xF3, o pudo salir, hacia este buz\xF3n de prueba (n\xFAmero de referencia %1). Modifique el borrador para volver a probarla.", // ai 2026-11
 
 // src/Isds/Advice.php, row 107
-"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "",
+"A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "Un mensaje a este buz\xF3n de datos ser\xEDa de pago (mensaje de datos postal), y en producci\xF3n un mensaje de prueba solo sale si es gratuito. Pruebe con el buz\xF3n de datos de un organismo p\xFAblico.", // ai 2026-11
 
 // src/Isds/Advice.php, row 108
-"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "",
+"It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "No se pudo comprobar que el mensaje fuera gratuito; no se envi\xF3 nada. Revise el buz\xF3n de prueba e int\xE9ntelo de nuevo dentro de un rato.", // ai 2026-11
 
 // src/Isds/Advice.php, row 109
-"The test message went as a paid postal data message." => "",
+"The test message went as a paid postal data message." => "El mensaje de prueba sali\xF3 como mensaje de datos postal de pago.", // ai 2026-11
 
 // src/Isds/Advice.php, row 110
-"The test message may have cost money: it may have gone as a paid postal data message." => "",
+"The test message may have cost money: it may have gone as a paid postal data message." => "El mensaje de prueba puede haber tenido coste: puede haber salido como mensaje de datos postal de pago.", // ai 2026-11
 
 // src/Isds/Advice.php, row 141
-"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "",
+"ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "ISDS rechaz\xF3 varios mensajes seguidos con el mismo estado, o rechaz\xF3 una consulta del env\xEDo: a qui\xE9n pertenece el inicio de sesi\xF3n de la cuenta o qu\xE9 mensajes se enviaron.", // ai 2026-11
 
 // src/Isds/Advice.php, row 142
-"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "",
+"After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "Tras mensajes rechazados, \xABContinuar\xBB env\xEDa uno m\xE1s, y el env\xEDo se detiene de nuevo si ISDS tambi\xE9n lo rechaza; tras una consulta rechazada, \xABContinuar\xBB vuelve a preguntar.", // ai 2026-11
 
 // src/Isds/Advice.php, row 144
-"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "",
+"Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "Esperando a que ISDS liste los mensajes cuyo destino a\xFAn no se conoce. El env\xEDo los busca por s\xED solo.", // ai 2026-11
 
 // src/Isds/Advice.php, row 145
-"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "",
+"The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "El env\xEDo ha terminado, lo que no significa que hayan salido todos los mensajes; eso lo indican las cifras. La entrega se sigue por rondas; la siguiente llega por s\xED sola.", // ai 2026-11
 
 // src/Isds/Advice.php, row 146
-"ISDS is being maintained. The sending waits till the end and goes on by itself." => "",
+"ISDS is being maintained. The sending waits till the end and goes on by itself." => "ISDS est\xE1 en mantenimiento. El env\xEDo espera hasta que termine y contin\xFAa por s\xED solo.", // ai 2026-11
 
 // src/Isds/Advice.php, row 147
-"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "",
+"The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "La cuenta de buz\xF3n de datos de esta p\xE1gina ya no es la misma con la que se puso en cola el env\xEDo. Consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 148
-"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "",
+"ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "ISDS no responde. AA lo vuelve a intentar por s\xED solo; si el env\xEDo se detuvo por ello, elija \xABContinuar\xBB cuando ISDS responda.", // ai 2026-11
 
 // src/Isds/Advice.php, row 149
-"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "",
+"ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "ISDS rechaza el inicio de sesi\xF3n de la cuenta. Pida al administrador que compruebe el inicio de sesi\xF3n y despu\xE9s elija \xABContinuar\xBB.", // ai 2026-11
 
 // src/Isds/Advice.php, row 150
-"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "",
+"ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "ISDS ha bloqueado los inicios de sesi\xF3n desde este servidor. Una contrase\xF1a nueva no sirve: elija \xABContinuar\xBB ma\xF1ana o consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 151
-"The settings of the account are not complete. Ask the administrator." => "",
+"The settings of the account are not complete. Ask the administrator." => "La configuraci\xF3n de la cuenta no est\xE1 completa. Consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 152
-"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "",
+"What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "Lo que se congel\xF3 para el env\xEDo (la carta, sus adjuntos o los destinatarios) falta o ha cambiado, por lo que no puede continuar. Consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 153
-"The database cannot record the sending safely. Ask the administrator." => "",
+"The database cannot record the sending safely. Ask the administrator." => "La base de datos no puede registrar el env\xEDo de forma segura. Consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 154
-"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "",
+"A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "Un paso del env\xEDo no logr\xF3 avanzar en varios intentos. Elija \xABContinuar\xBB; si se detiene de nuevo, consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 155
-"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Un paso del env\xEDo se detuvo antes de terminar. AA lo vuelve a intentar por s\xED solo; si el env\xEDo se detuvo por ello, consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 156
-"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "",
+"The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "No se pudo registrar el final del env\xEDo. AA lo vuelve a intentar por s\xED solo; si el env\xEDo se detuvo por ello, consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 157
-"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "",
+"A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "Un paso del env\xEDo fall\xF3 por un error interno de AA. Elija \xABContinuar\xBB; si vuelve a fallar, consulte al administrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "",
+"The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "El buz\xF3n de datos del destinatario solo acepta mensajes de datos postales de pago, y el buz\xF3n de datos remitente no puede enviarlos.", // ai 2026-11
 
 // src/Isds/Advice.php, row 173
-"Test with the data box of an authority." => "",
+"Test with the data box of an authority." => "Pruebe con el buz\xF3n de datos de un organismo p\xFAblico.", // ai 2026-11
 
 // src/Isds/Advice.php, row 174
-"The sending data box has been made inaccessible - no message can go from it now." => "",
+"The sending data box has been made inaccessible - no message can go from it now." => "El buz\xF3n de datos remitente se ha hecho inaccesible: ahora no puede salir ning\xFAn mensaje desde \xE9l.", // ai 2026-11
 
 // src/Isds/Advice.php, row 175
-"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "",
+"The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "El asunto, \xABA la atenci\xF3n de\xBB o el nombre de un adjunto contiene un car\xE1cter que ISDS no admite.", // ai 2026-11
 
 // src/Isds/Advice.php, row 183
-"ISDS answered with status %1." => "",
+"ISDS answered with status %1." => "ISDS respondi\xF3 con el estado %1.", // ai 2026-11
 
 // src/Isds/Advice.php, row 193
-"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "No se puede guardar el asunto: puede tener como m\xE1ximo %1 caracteres y ning\xFAn tabulador ni otro car\xE1cter de control. No se guard\xF3 nada del borrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 194
-"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "",
+"\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "No se puede guardar \xABA la atenci\xF3n de\xBB: puede tener como m\xE1ximo %1 caracteres y ning\xFAn tabulador ni otro car\xE1cter de control. No se guard\xF3 nada del borrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 195
-"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "",
+"The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "No se puede guardar el texto de la carta: supera %1 o no es un texto v\xE1lido. No se guard\xF3 nada del borrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 196
-"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "",
+"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "No se puede guardar la selecci\xF3n de destinatarios: esta p\xE1gina no la ofrece. No se guard\xF3 nada del borrador; el\xEDjalos una vez m\xE1s y gu\xE1rdelo.", // ai 2026-11
 
 // src/Isds/Advice.php, row 197
-"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "",
+"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "No se puede guardar la selecci\xF3n de destinatarios: se pueden elegir como m\xE1ximo %1 uno a uno, y excluir otros tantos uno a uno. No se guard\xF3 nada del borrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 198
-"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "",
+"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Un mensaje de datos lleva como m\xE1ximo %1 adjuntos adem\xE1s de la carta. No se guard\xF3 nada del borrador: primero quite algunos.", // ai 2026-11
 
 // src/Isds/Advice.php, row 199
-"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "No se puede adjuntar el archivo %1: esta p\xE1gina solo acepta archivos de los tipos %2. Gu\xE1rdelo como PDF o adjunte uno a uno los archivos de un archivo comprimido. No se guard\xF3 nada del borrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 200
-"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "",
+"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "No se puede adjuntar el archivo %1: su contenido no es del tipo que indica su extensi\xF3n. No se guard\xF3 nada del borrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 201
-"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "",
+"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "El archivo %1 es mayor de lo que puede ser aqu\xED un archivo (%2). No se guard\xF3 nada del borrador. Todos los adjuntos y la carta juntos pueden ocupar como m\xE1ximo %3; un mensaje de prueba lo comprueba.", // ai 2026-11
 
 // src/Isds/Advice.php, row 202
-"The file %1 is empty. Nothing of the draft was saved." => "",
+"The file %1 is empty. Nothing of the draft was saved." => "El archivo %1 est\xE1 vac\xEDo. No se guard\xF3 nada del borrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 203
-"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "",
+"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "El archivo %1 no lleg\xF3 completo. Int\xE9ntelo de nuevo. No se guard\xF3 nada del borrador.", // ai 2026-11
 
 // src/Isds/Advice.php, row 204
-"A value of the form cannot be taken. Load the page again and try it once more." => "",
+"A value of the form cannot be taken. Load the page again and try it once more." => "No se puede tomar un valor del formulario. Vuelva a cargar la p\xE1gina e int\xE9ntelo una vez m\xE1s.", // ai 2026-11
 
 // src/Isds/Gate.php, row 1139
-"The mass sending on this page is not ready - fix this first:" => "",
+"The mass sending on this page is not ready - fix this first:" => "El env\xEDo masivo de esta p\xE1gina no est\xE1 preparado; corrija primero esto:", // ai 2026-11
 
 // src/Isds/Gate.php, row 1140
-"Where to fix it:" => "",
+"Where to fix it:" => "D\xF3nde corregirlo:", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"Name field" => "",
+"Name field" => "Campo del nombre", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
-"The name the register is searched by when the I\xC4\x8CO finds no box" => "",
+"The name the register is searched by when the I\xC4\x8CO finds no box" => "El nombre por el que se busca en el registro cuando el ICO no encuentra ning\xFAn buz\xF3n", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"I\xC4\x8CO field" => "",
+"I\xC4\x8CO field" => "Campo del ICO", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 54
-"The I\xC4\x8CO finds the box for sure; without it only names are matched, and a person checks those" => "",
+"The I\xC4\x8CO finds the box for sure; without it only names are matched, and a person checks those" => "El ICO encuentra el buz\xF3n con seguridad; sin \xE9l solo se comparan los nombres, y esos los revisa una persona", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"Data box field" => "",
+"Data box field" => "Campo del buz\xF3n de datos", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 55
-"The field the data box id is written to - the only field the pairing changes" => "",
+"The field the data box id is written to - the only field the pairing changes" => "El campo en el que se escribe el ID del buz\xF3n de datos; es el \xFAnico campo que modifica el emparejamiento", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"Type field" => "",
+"Type field" => "Campo del tipo", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 56
-"The type of the item, needed for the two lists below" => "",
+"The type of the item, needed for the two lists below" => "El tipo del \xEDtem, necesario para las dos listas siguientes", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Types to pair" => "",
+"Types to pair" => "Tipos a emparejar", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 57
-"Only items of these types are paired; none = all items" => "",
+"Only items of these types are paired; none = all items" => "Solo se emparejan los \xEDtems de estos tipos; ninguno = todos los \xEDtems", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Types of city districts" => "",
+"Types of city districts" => "Tipos de distritos municipales", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 58
-"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "",
+"Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "Los \xEDtems de estos tipos se emparejan con los buzones de los distritos municipales; los dem\xE1s, con los de los municipios", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field with the name" => "",
+"Choose the field with the name" => "Elija el campo con el nombre", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 123
-"Choose the field the data box is written to" => "",
+"Choose the field the data box is written to" => "Elija el campo en el que se escribe el buz\xF3n de datos", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 132
-"The slice has no field %1" => "",
+"The slice has no field %1" => "El canal no tiene el campo %1", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 139
-"The data box needs a field of its own - writing it would overwrite the name, I\xC4\x8CO or type" => "",
+"The data box needs a field of its own - writing it would overwrite the name, I\xC4\x8CO or type" => "El buz\xF3n de datos necesita un campo propio: escribirlo sobrescribir\xEDa el nombre, el ICO o el tipo", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 142
-"The lists of types need the type field" => "",
+"The lists of types need the type field" => "Las listas de tipos necesitan el campo del tipo", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 147
-"The types of city districts must be among the types to pair too: %1" => "",
+"The types of city districts must be among the types to pair too: %1" => "Los tipos de distritos municipales tambi\xE9n deben estar entre los tipos a emparejar: %1", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 160
-"The field %1 is protected - it is neither shown nor written here" => "",
+"The field %1 is protected - it is neither shown nor written here" => "El campo %1 est\xE1 protegido: aqu\xED no se muestra ni se escribe", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 164
-"The data box cannot be written to %1, a column of the item table" => "",
+"The data box cannot be written to %1, a column of the item table" => "El buz\xF3n de datos no puede escribirse en %1, una columna de la tabla item", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 86
-"Changed" => "",
+"Changed" => "Cambiado", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 87
-"Same" => "",
+"Same" => "Sin cambios", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 88
 // src/Isds/Registry/Page.php, row 567
-"Not found" => "",
+"Not found" => "No encontrado", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 89
-"Several candidates" => "",
+"Several candidates" => "Varios candidatos", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 151
-"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by I\xC4\x8CO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "",
+"This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by I\xC4\x8CO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself." => "Esta p\xE1gina busca el buz\xF3n de datos de cada \xEDtem en el registro p\xFAblico de buzones de datos y lo escribe en el \xEDtem. Solo se escriben las filas que marque, y solo cambia el campo del buz\xF3n de datos. Un buz\xF3n encontrado por ICO aparece marcado de antemano; un buz\xF3n encontrado por nombre es solo una sugerencia, as\xED que compare los nombres y m\xE1rquelo usted mismo.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 169
-"The form sent values this page does not send. Reload the page and try again." => "",
+"The form sent values this page does not send. Reload the page and try again." => "El formulario envi\xF3 valores que esta p\xE1gina no env\xEDa. Vuelva a cargar la p\xE1gina e int\xE9ntelo de nuevo.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 324
-"You do not have permissions to do this in this slice." => "",
+"You do not have permissions to do this in this slice." => "No tiene permisos para hacer esto en este canal.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 325
-"The settings are saved." => "",
+"The settings are saved." => "La configuraci\xF3n se ha guardado.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 327
-"The register is downloaded." => "",
+"The register is downloaded." => "El registro se ha descargado.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 329
-"The register is being downloaded right now. Reload the page in a minute." => "",
+"The register is being downloaded right now. Reload the page in a minute." => "El registro se est\xE1 descargando en este momento. Vuelva a cargar la p\xE1gina dentro de un minuto.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 330
-"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1)." => "El registro no se descarg\xF3; se sigue usando el anterior. Int\xE9ntelo de nuevo m\xE1s tarde. Un administrador encontrar\xE1 los detalles en el registro (log) de AA (tipo %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 331
-"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "",
+"The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1)." => "El registro se descarg\xF3, pero AA no pudo registrar la descarga, por lo que el registro no puede usarse hasta que una descarga tenga \xE9xito. Int\xE9ntelo de nuevo m\xE1s tarde. Un administrador encontrar\xE1 los detalles en el registro (log) de AA (tipo %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 332
-"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "",
+"The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them." => "El registro o la configuraci\xF3n del emparejamiento han cambiado desde que revis\xF3 las filas, por lo que no se escribi\xF3 nada. Revise de nuevo las filas siguientes y escr\xEDbalas.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 333
-"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1)." => "No se puede leer la copia del registro, por lo que no se escribi\xF3 nada. Un administrador encontrar\xE1 los detalles en el registro (log) de AA (tipo %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 334
-"Nothing was written. Download the register again." => "",
+"Nothing was written. Download the register again." => "No se escribi\xF3 nada. Descargue de nuevo el registro.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 335
-"Choose the fields of the pairing first." => "",
+"Choose the fields of the pairing first." => "Elija primero los campos del emparejamiento.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 336
-"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "",
+"The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1" => "La configuraci\xF3n del emparejamiento ya no se ajusta a los campos del canal, por lo que no se escribi\xF3 nada: %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 337
-"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "",
+"Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1)." => "La escritura se detuvo por un error. Las filas escritas antes siguen escritas; el informe siguiente muestra los \xEDtems tal como est\xE1n ahora. Un administrador encontrar\xE1 los detalles en el registro (log) de AA (tipo %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 347
-"The last download attempt was at %1. Another one is possible from %2." => "",
+"The last download attempt was at %1. Another one is possible from %2." => "El \xFAltimo intento de descarga fue el %1. Se puede volver a intentar a partir de %2.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 355
-"Data boxes written: %1." => "",
+"Data boxes written: %1." => "Buzones de datos escritos: %1.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 356
-"Nothing was written: no row was ticked, or the ticked ones have their box already." => "",
+"Nothing was written: no row was ticked, or the ticked ones have their box already." => "No se escribi\xF3 nada: no se marc\xF3 ninguna fila, o las marcadas ya tienen su buz\xF3n.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 358
-"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "",
+"Ticked rows that changed meanwhile and were not written: %1. Check them again below." => "Filas marcadas que cambiaron entretanto y no se escribieron: %1. Rev\xEDselas de nuevo abajo.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 361
-"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "",
+"Ticked rows left for the next write: %1. One write takes at most %2 rows." => "Filas marcadas pendientes para la siguiente escritura: %1. Una escritura procesa como m\xE1ximo %2 filas.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 364
-"These items were not written:" => "",
+"These items were not written:" => "Estos \xEDtems no se escribieron:", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 386, 465
-"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "",
+"The copy of the register cannot be read. An administrator finds the details in the AA log (type %1)." => "No se puede leer la copia del registro. Un administrador encontrar\xE1 los detalles en el registro (log) de AA (tipo %1).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet. Download it to see the report." => "",
+"The register has not been downloaded yet. Download it to see the report." => "El registro a\xFAn no se ha descargado. Desc\xE1rguelo para ver el informe.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 388
-"The register has not been downloaded yet." => "",
+"The register has not been downloaded yet." => "El registro a\xFAn no se ha descargado.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Download the register again." => "",
+"Download the register again." => "Descargue de nuevo el registro.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 390
-"Ask someone who manages the settings to download the register again." => "",
+"Ask someone who manages the settings to download the register again." => "Pida a alguien que administre la configuraci\xF3n que vuelva a descargar el registro.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 392
-"Size: %1 MB." => "",
+"Size: %1 MB." => "Tama\xF1o: %1 MB.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 394
-"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "",
+"The register is older than %1 days. Download it again before writing: authorities get new boxes and merge." => "El registro tiene m\xE1s de %1 d\xEDas. Desc\xE1rguelo de nuevo antes de escribir: los organismos p\xFAblicos obtienen buzones nuevos y se fusionan.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 398
-"Download the register now" => "",
+"Download the register now" => "Descargar el registro ahora", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 399
-"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "",
+"The public register of the authorities' data boxes, about 17 MB; the download takes up to a minute. All slices of this AA use the same copy." => "El registro p\xFAblico de buzones de datos de los organismos p\xFAblicos, unos 17 MB; la descarga tarda hasta un minuto. Todos los canales de este AA usan la misma copia.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 401
-"Register of data boxes" => "",
+"Register of data boxes" => "Registro de buzones de datos", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"AA has no record of downloading this copy of the register" => "",
+"AA has no record of downloading this copy of the register" => "AA no tiene constancia de haber descargado esta copia del registro", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 411
-"The register of data boxes is not the one AA downloaded" => "",
+"The register of data boxes is not the one AA downloaded" => "El registro de buzones de datos no es el que descarg\xF3 AA", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 426
-"Downloaded: %1 (today)." => "",
+"Downloaded: %1 (today)." => "Descargado: %1 (hoy).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 427
-"Downloaded: %1 (yesterday)." => "",
+"Downloaded: %1 (yesterday)." => "Descargado: %1 (ayer).", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 428
-"Downloaded: %1." => "",
+"Downloaded: %1." => "Descargado: %1.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 469
-"Items and their data boxes" => "",
+"Items and their data boxes" => "\xCDtems y sus buzones de datos", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 482
-"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "",
+"The settings of the pairing no longer fit the fields of the slice: %1. Choose the fields again in the settings below." => "La configuraci\xF3n del emparejamiento ya no se ajusta a los campos del canal: %1. Elija de nuevo los campos en la configuraci\xF3n de abajo.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 485
-"The slice has no items to pair." => "",
+"The slice has no items to pair." => "El canal no tiene \xEDtems para emparejar.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 490
-"No row has this status." => "",
+"No row has this status." => "Ninguna fila tiene este estado.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 510
 "Write" => "Escribir",
 
 // src/Isds/Registry/Page.php, row 514
-"Stored data box" => "",
+"Stored data box" => "Buz\xF3n guardado", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 514
-"Data box in the register" => "",
+"Data box in the register" => "Buz\xF3n en el registro", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 520
-"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "",
+"One write takes at most %1 rows, and at most as many are ticked in advance. Write the rest afterwards." => "Una escritura procesa como m\xE1ximo %1 filas, y como m\xE1ximo ese mismo n\xFAmero se marca de antemano. Escriba el resto despu\xE9s.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 523
-"Write the ticked data boxes" => "",
+"Write the ticked data boxes" => "Escribir los buzones marcados", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 524
-"Writes only the data box field of the ticked items. Their history records the change." => "",
+"Writes only the data box field of the ticked items. Their history records the change." => "Escribe solo el campo del buz\xF3n de datos de los \xEDtems marcados. Su historial registra el cambio.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 536
-"Show the rows of" => "",
+"Show the rows of" => "Mostrar las filas con estado", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 542
-"(no name)" => "",
+"(no name)" => "(sin nombre)", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 546
-"Write the data box %1 into %2" => "",
-
-// src/Isds/Registry/Page.php, row 555, 653
-// src/Optimize/MissCacheRouting.php, row 98, 129
-"none" => "ninguna", // ai 2026-10
+"Write the data box %1 into %2" => "Escribir el buz\xF3n de datos %1 en %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 571
-"I\xC4\x8CO %1" => "",
+"I\xC4\x8CO %1" => "ICO %1", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 580
-"by I\xC4\x8CO" => "",
+"by I\xC4\x8CO" => "por ICO", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 581
-"by name, check it" => "",
+"by name, check it" => "por nombre, rev\xEDselo", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 585
-"I\xC4\x8CO of the item %1, of the box %2" => "",
+"I\xC4\x8CO of the item %1, of the box %2" => "ICO del \xEDtem %1, del buz\xF3n %2", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 588
-"Another item has or would get this data box too. Check that it is not one place twice." => "",
+"Another item has or would get this data box too. Check that it is not one place twice." => "Otro \xEDtem tambi\xE9n tiene o tendr\xEDa este buz\xF3n de datos. Compruebe que no sea el mismo lugar dos veces.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 599
-"Settings of the pairing" => "",
+"Settings of the pairing" => "Configuraci\xF3n del emparejamiento", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 616
-"Saving changes only these settings, never the items." => "",
+"Saving changes only these settings, never the items." => "Al guardar solo cambia esta configuraci\xF3n, nunca los \xEDtems.", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"Choose a field" => "",
+"Choose a field" => "Elija un campo", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 626
-"None" => "",
+"None" => "Ninguno", // ai 2026-11
 
 // src/Isds/Registry/Page.php, row 639
-"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "",
+"The pairing is not set up for this slice yet. Someone who may change the fields of the slice sets it up here." => "El emparejamiento a\xFAn no est\xE1 configurado para este canal. Lo configura aqu\xED quien puede modificar los campos del canal.", // ai 2026-11
 
 // src/Isds/Registry/Sync.php, row 450
-"The item was not stored" => "",
+"The item was not stored" => "El \xEDtem no se guard\xF3", // ai 2026-11
 
 // src/Isds/SendQueue.php, row 448
-"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "",
+"The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it." => "El canal de campa\xF1as no tiene directorio de carga para los archivos de la carta; lo configura el administrador del servidor.", // ai 2026-11
 
 // src/Isds/Setup.php, row 107
-"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "",
+"The settings of the mass sending are not a JSON object - write them with {jsonasoc:...}" => "La configuraci\xF3n del env\xEDo masivo no es un objeto JSON; escr\xEDbala con {jsonasoc:...}", // ai 2026-11
 
 // src/Isds/Setup.php, row 115
-"Unknown settings of the mass sending: %1 - the settings are %2" => "",
+"Unknown settings of the mass sending: %1 - the settings are %2" => "Configuraci\xF3n desconocida del env\xEDo masivo: %1; las opciones posibles son %2", // ai 2026-11
 
 // src/Isds/Setup.php, row 130
-"default_types names types that are not among types: %1" => "",
+"default_types names types that are not among types: %1" => "default_types menciona tipos que no est\xE1n en types: %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 133
-"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "",
+"environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "environment solo puede ser \xAB%1\xBB; cu\xE1ndo se usa producci\xF3n lo decide misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Isds/Setup.php, row 136
-"Set letterhead to a text" => "",
+"Set letterhead to a text" => "Asigne un texto a letterhead", // ai 2026-11
 
 // src/Isds/Setup.php, row 146
-"The settings of data boxes cannot be read now - ask the administrator of the server" => "",
+"The settings of data boxes cannot be read now - ask the administrator of the server" => "Ahora no se puede leer la configuraci\xF3n de los buzones de datos; consulte al administrador del servidor", // ai 2026-11
 
 // src/Isds/Setup.php, row 240
-"Set %1 to the id of a slice - 32 hexadecimal digits" => "",
+"Set %1 to the id of a slice - 32 hexadecimal digits" => "Asigne a %1 el ID de un canal: 32 d\xEDgitos hexadecimales", // ai 2026-11
 
 // src/Isds/Setup.php, row 258
-"Set %1 to the id of a field - 16 characters like text...........1" => "",
+"Set %1 to the id of a field - 16 characters like text...........1" => "Asigne a %1 el ID de un campo: 16 caracteres, como text...........1", // ai 2026-11
 
 // src/Isds/Setup.php, row 283
-"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "",
+"Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "Asigne a types un objeto con los tipos de \xEDtem ofrecidos, cada uno con su etiqueta: {jsonasoc:<type>:<label>:...}", // ai 2026-11
 
 // src/Isds/Setup.php, row 288
-"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "",
+"An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "Un tipo de \xEDtem en types solo puede contener letras, d\xEDgitos, espacios y los caracteres - _ . : %1", // ai 2026-11
 
 // src/Isds/Setup.php, row 303
-"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "",
+"Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "Asigne a %1 un texto o una lista de textos: [\"...\",\"...\"]", // ai 2026-11
 
 // src/Isds/Setup.php, row 321
-"test_box: %1 is not the id of a data box - 7 letters or digits" => "",
+"test_box: %1 is not the id of a data box - 7 letters or digits" => "test_box: %1 no es el ID de un buz\xF3n de datos (7 letras o d\xEDgitos)", // ai 2026-11
 
 // src/Isds/Setup.php, row 351
-"Set max_recipients to a number from 1 to %1" => "",
+"Set max_recipients to a number from 1 to %1" => "Asigne a max_recipients un n\xFAmero de 1 a %1", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 67
-"The campaign slice and the message slice must be two slices" => "",
+"The campaign slice and the message slice must be two slices" => "El canal de campa\xF1as y el canal de mensajes deben ser dos canales distintos", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 94
-"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "",
+"Site \"%1\" is in the trash - restore it from the trash, or name another site" => "El sitio \xAB%1\xBB est\xE1 en la papelera; rest\xE1urelo desde la papelera o indique otro sitio", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 95
-"There is no site %1" => "",
+"There is no site %1" => "No existe el sitio %1", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 99
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to \"%2\" in the settings of the site" => "El sitio \xAB%1\xBB solo permite iniciar sesi\xF3n a los lectores de sus canales de Gesti\xF3n de lectores, as\xED que nadie obtiene el derecho de enviar; en la configuraci\xF3n del sitio ajuste \xABBases de datos de inicio de sesi\xF3n de usuarios\xBB a \xAB%2\xBB", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 140
-"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "",
+"Slice \"%1\" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice" => "El canal \xAB%1\xBB tiene contrase\xF1a de lectura, por lo que la p\xE1gina no puede leer los destinatarios; quite \xABClave (password) para lectura\xBB en la configuraci\xF3n del canal o indique un canal p\xFAblico", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 144
-"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "",
+"Slice \"%1\" has no settings of data boxes - set its fields on its page Data boxes from the register" => "El canal \xAB%1\xBB no tiene configuraci\xF3n de buzones de datos; configure sus campos en su p\xE1gina \xABBuzones de datos del registro\xBB", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 151
-"Slice \"%1\", its settings of data boxes: %2" => "",
+"Slice \"%1\", its settings of data boxes: %2" => "Canal \xAB%1\xBB, su configuraci\xF3n de buzones de datos: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 154
-"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "",
+"Slice \"%1\": choose the Type field in its settings of data boxes - recipients are chosen by type" => "Canal \xAB%1\xBB: elija el \xABCampo del tipo\xBB en su configuraci\xF3n de buzones de datos; los destinatarios se eligen por tipo", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 156
-"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "",
+"Slice \"%1\" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3" => "El canal \xAB%1\xBB no empareja con buzones de datos ning\xFAn \xEDtem de los tipos %2; ofrezca solo sus \xABTipos a emparejar\xBB: %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 162
-"Slice \"%1\" has no field %2 - name the field that tells a member" => "",
+"Slice \"%1\" has no field %2 - name the field that tells a member" => "El canal \xAB%1\xBB no tiene el campo %2; indique el campo que identifica a un miembro", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 164
-"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "",
+"The field %1 of slice \"%2\" is protected - name the field that tells a member" => "El campo %1 del canal \xAB%2\xBB est\xE1 protegido; indique el campo que identifica a un miembro", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 179
 // src/Optimize/CheckSiteStateFiles.php, row 72
@@ -11059,58 +11249,58 @@ return [
 "Site settings" => "Configuraci\xF3n del sitio", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 225
-"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "",
+"Slice \"%1\" is in the trash - restore it from the trash, or name another slice" => "El canal \xAB%1\xBB est\xE1 en la papelera; rest\xE1urelo desde la papelera o indique otro canal", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 226
-"There is no slice %1" => "",
+"There is no slice %1" => "No existe el canal %1", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 237
-"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "",
+"Site \"%1\" does not use slice %2 - add the slice to Uses modules in the settings of the site" => "El sitio \xAB%1\xBB no usa el canal %2; a\xF1ada el canal a \xABUsa m\xF3dulos\xBB en la configuraci\xF3n del sitio", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 250
-"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "",
+"Slice \"%1\" has no reading password - fill in Password for Reading in the settings of the slice" => "El canal \xAB%1\xBB no tiene contrase\xF1a de lectura; rellene \xABClave (password) para lectura\xBB en la configuraci\xF3n del canal", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 254
-"Close slice \"%1\" - set in its settings %2" => "",
+"Close slice \"%1\" - set in its settings %2" => "Cierre el canal \xAB%1\xBB: en su configuraci\xF3n ajuste %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 257
-"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets any slice import its items - turn off Enable export to any slice on its Inner Node Feeding page" => "El canal \xAB%1\xBB permite a cualquier canal importar sus \xEDtems; desactive \xABPermitir exportar a cualquier canal\xBB en su p\xE1gina \xABAlimentaci\xF3n Canales Internos\xBB", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 274
-"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "",
+"Slice \"%1\" lets other slices import its items - move them to Export disable on its Inner Node Feeding page" => "El canal \xAB%1\xBB permite a otros canales importar sus \xEDtems; mu\xE9valos a \xABDeshabilitar exportaci\xF3n\xBB en su p\xE1gina \xABAlimentaci\xF3n Canales Internos\xBB", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 277
-"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "",
+"Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "Los \xEDtems del canal \xAB%1\xBB se env\xEDan a otros canales; detenga la importaci\xF3n en los canales que su p\xE1gina \xABAlimentaci\xF3n Canales Internos\xBB lista en \xABActualmente exportando a\xBB", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 281
-"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "",
+"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "El canal \xAB%1\xBB importa \xEDtems de otros canales; mu\xE9valos a \xABNo importar\xBB en su p\xE1gina \xABAlimentaci\xF3n Canales Internos\xBB", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 284
-"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "",
+"Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "El canal \xAB%1\xBB env\xEDa sus \xEDtems por correo a las direcciones de su \xABNotificaci\xF3n por correo electr\xF3nico\xBB; quite all\xED las direcciones", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 303
-"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" computes the fields %2 by a template whenever an item is stored - set their Insert to \"%3\" in the settings of each field" => "El canal \xAB%1\xBB calcula los campos %2 con una plantilla cada vez que se guarda un \xEDtem; en la configuraci\xF3n de cada campo ajuste su \xABPublicar\xBB a \xAB%3\xBB", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 318
-"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "",
+"Slices \"%1\" and \"%2\" are in reverse order - name the campaign slice first" => "Los canales \xAB%1\xBB y \xAB%2\xBB est\xE1n en orden inverso; indique primero el canal de campa\xF1as", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 330
-"Slice \"%1\" lacks fields of a campaign slice: %2" => "",
+"Slice \"%1\" lacks fields of a campaign slice: %2" => "Al canal \xAB%1\xBB le faltan campos de un canal de campa\xF1as: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 331
-"Slice \"%1\" lacks fields of a message slice: %2" => "",
+"Slice \"%1\" lacks fields of a message slice: %2" => "Al canal \xAB%1\xBB le faltan campos de un canal de mensajes: %2", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 337
-"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "",
+"Slice \"%1\": store the fields %2 as Number (Stored as, in the settings of each field)" => "Canal \xAB%1\xBB: guarde los campos %2 como \xABN\xFAmero\xBB (\xABAlmacenado como\xBB en la configuraci\xF3n de cada campo)", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 343
-"Slice \"%1\": set the Default of the field %2 to %3" => "",
+"Slice \"%1\": set the Default of the field %2 to %3" => "Canal \xAB%1\xBB: ajuste el \xABPredeterminado\xBB del campo %2 a %3", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 382
-"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "",
+"Slice \"%1\" may change what the sending stores in the fields %2 - set their Insert to \"%3\" in the settings of each field" => "El canal \xAB%1\xBB puede modificar lo que el env\xEDo guarda en los campos %2; en la configuraci\xF3n de cada campo ajuste su \xABPublicar\xBB a \xAB%3\xBB", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
-"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "",
+"Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "El canal \xAB%1\xBB a\xF1ade a las constantes lo que el env\xEDo guarda en los campos %2; desactive \xAB%3\xBB en la configuraci\xF3n de cada campo", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
 // src/Widget/Widget.php, row 786
@@ -11196,12 +11386,12 @@ return [
 
 // src/Manageraction/Central_DeleteTrash.php, row 31
 // src/Manageraction/Item_DeleteTrash.php, row 34
-// src/Manageraction/Polls_DeleteTrash.php, row 71
+// src/Manageraction/Polls_DeleteTrash.php, row 73
 "Remove (delete from database)" => "Borrar (borrar de la base de datos)",
 
 // src/Manageraction/Central_DeleteTrash.php, row 38
 // src/Manageraction/Item_DeleteTrash.php, row 43
-// src/Manageraction/Taskmanager_Execute.php, row 24
+// src/Manageraction/Taskmanager_Execute.php, row 26
 "You do not have permissions to remove items" => "Usted no tiene permisos para borrar \xEDtems",
 
 // src/Manageraction/Central_Linkcheck.php, row 17
@@ -11213,28 +11403,28 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 30
 "Status code" => "C\xF3digo de estado",
 
-// src/Manageraction/Central_MoveItem.php, row 26
-// src/Manageraction/Item_MoveItem.php, row 29
-// src/Manageraction/Links_Move.php, row 26
-// src/Manageraction/Polls_MoveItem.php, row 29
-"Move to Active" => "Aprobar",
-
-// src/Manageraction/Central_MoveItem.php, row 27
-// src/Manageraction/Item_MoveItem.php, row 30
-// src/Manageraction/Links_Move.php, row 27
-// src/Manageraction/Polls_MoveItem.php, row 30
-"Move to Holding bin" => "Mover a Por Aprobar",
-
 // src/Manageraction/Central_MoveItem.php, row 28
 // src/Manageraction/Item_MoveItem.php, row 31
 // src/Manageraction/Links_Move.php, row 28
 // src/Manageraction/Polls_MoveItem.php, row 31
+"Move to Active" => "Aprobar",
+
+// src/Manageraction/Central_MoveItem.php, row 29
+// src/Manageraction/Item_MoveItem.php, row 32
+// src/Manageraction/Links_Move.php, row 29
+// src/Manageraction/Polls_MoveItem.php, row 32
+"Move to Holding bin" => "Mover a Por Aprobar",
+
+// src/Manageraction/Central_MoveItem.php, row 30
+// src/Manageraction/Item_MoveItem.php, row 33
+// src/Manageraction/Links_Move.php, row 30
+// src/Manageraction/Polls_MoveItem.php, row 33
 "Move to Trash" => "Mover a Papelera",
 
-// src/Manageraction/Central_MoveItem.php, row 41
+// src/Manageraction/Central_MoveItem.php, row 43
 "Activate" => "Activar",
 
-// src/Manageraction/Central_MoveItem.php, row 42
+// src/Manageraction/Central_MoveItem.php, row 44
 "Hold" => "Por aprobar",
 
 // src/Manageraction/Central_OptimizeType.php, row 34
@@ -11244,7 +11434,7 @@ return [
 "Error: %1" => "Error: %1", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 19
-// src/Manageraction/Object_Delete.php, row 17
+// src/Manageraction/Object_Delete.php, row 19
 // src/Manageraction/Table_Row_Delete.php, row 16
 "Delete row" => "Eliminar fila",
 
@@ -11253,11 +11443,11 @@ return [
 
 // src/Manageraction/Import_Delete.php, row 38
 // src/Manageraction/Import_Run.php, row 42
-// src/Manageraction/Object_Delete.php, row 43
-// src/Manageraction/Object_Move2slice.php, row 50
+// src/Manageraction/Object_Delete.php, row 45
+// src/Manageraction/Object_Move2slice.php, row 52
 // src/Manageraction/Plannedtask_Runnow.php, row 41
-// src/Manageraction/Polls_DeleteTrash.php, row 83
-// src/Manageraction/Polls_MoveItem.php, row 41
+// src/Manageraction/Polls_DeleteTrash.php, row 85
+// src/Manageraction/Polls_MoveItem.php, row 43
 // src/Manageraction/Table_Row_Delete.php, row 40
 "This action does not work on this page." => "Esta acci\xF3n no funciona en esta p\xE1gina.", // ai 2026-10
 
@@ -11265,7 +11455,7 @@ return [
 "Some of the selected imports were not deleted." => "Algunas de las importaciones seleccionadas no se eliminaron.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 64
-// src/Manageraction/Object_Delete.php, row 51
+// src/Manageraction/Object_Delete.php, row 53
 "Some of the selected objects were not deleted - they belong to a module you can not change them in." => "Algunos de los objetos seleccionados no se eliminaron - pertenecen a un m\xF3dulo en el que no puede modificarlos.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 23
@@ -11292,19 +11482,19 @@ return [
 // src/Manageraction/Import_Run.php, row 101
 "Imports not started: %1 (%2). The import detail tells more." => "Importaciones no iniciadas: %1 (%2). El detalle de la importaci\xF3n da m\xE1s informaci\xF3n.", // ai 2026-10
 
-// src/Manageraction/Item_Duplicate.php, row 23
+// src/Manageraction/Item_Duplicate.php, row 25
 "Duplicate Item" => "Duplicar \xEDtem",
 
-// src/Manageraction/Item_Email.php, row 13
+// src/Manageraction/Item_Email.php, row 15
 "Send email" => "Enviar correo electr\xF3nico",
 
 // src/Manageraction/Item_Feed.php, row 31
 "Export to slice" => "Exportar a canal",
 
 // src/Manageraction/Item_Feed.php, row 38, 58
-// src/Manageraction/Item_Move2Slice.php, row 85
-// src/Manageraction/Object_Move2slice.php, row 33
-// src/Manageraction/View_Move2slice.php, row 31
+// src/Manageraction/Item_Move2Slice.php, row 87
+// src/Manageraction/Object_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 33
 "No slice selected" => "Canal no seleccionado",
 
 // src/Manageraction/Item_Feed.php, row 50
@@ -11316,20 +11506,20 @@ return [
 // src/Manageraction/Item_Feed.php, row 68
 "Some of the selected items were not exported - they are not items of this slice." => "Algunos de los \xEDtems seleccionados no se exportaron - no son \xEDtems de este canal.", // ai 2026-10
 
-// src/Manageraction/Item_Modifycontent.php, row 13
+// src/Manageraction/Item_Modifycontent.php, row 15
 "Modify content" => "Modificar contenido",
 
-// src/Manageraction/Item_Move2Slice.php, row 37
-// src/Manageraction/Object_Move2slice.php, row 25
+// src/Manageraction/Item_Move2Slice.php, row 39
+// src/Manageraction/Object_Move2slice.php, row 27
 "Move to another slice" => "Mover a otro canal",
 
-// src/Manageraction/Item_Move2Slice.php, row 75
+// src/Manageraction/Item_Move2Slice.php, row 77
 "Move to slice" => "Mover a canal",
 
-// src/Manageraction/Item_Move2Slice.php, row 89
+// src/Manageraction/Item_Move2Slice.php, row 91
 "Items can be moved only to a slice." => "Los \xEDtems solo se pueden mover a un canal.", // ai 2026-10
 
-// src/Manageraction/Item_Move2Slice.php, row 93
+// src/Manageraction/Item_Move2Slice.php, row 95
 "You do not have permissions to move items" => "Usted no tiene permisos para mover \xEDtems",
 
 // src/Manageraction/Links_Add2Cat.php, row 21
@@ -11338,32 +11528,32 @@ return [
 // src/Manageraction/Links_Check.php, row 25
 "Check Link" => "Comprobar enlace",
 
-// src/Manageraction/Links_Delete.php, row 20
+// src/Manageraction/Links_Delete.php, row 22
 "Remove from category" => "Quitar de categor\xEDa",
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Highlight Link" => "Destacar enlace",
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Dehighlight Link" => "Dejar de destacar enlace",
 
 // src/Manageraction/Links_Move2Cat.php, row 21
 "Move to category" => "Mover a categor\xEDa",
 
-// src/Manageraction/Object_Delete.php, row 26
+// src/Manageraction/Object_Delete.php, row 28
 // src/Manageraction/Table_Row_Delete.php, row 25
 "Do you really want to delete this row?" => "\xBFRealmente desea eliminar esta fila?",
 
-// src/Manageraction/Object_Move2slice.php, row 37
+// src/Manageraction/Object_Move2slice.php, row 39
 "Tasks can be moved only to a slice." => "Las tareas solo se pueden mover a un canal.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 41
+// src/Manageraction/Object_Move2slice.php, row 43
 "You do not have permissions to move it" => "No tiene permisos para moverlo",
 
-// src/Manageraction/Object_Move2slice.php, row 54
+// src/Manageraction/Object_Move2slice.php, row 56
 "Some of the selected objects were not moved - they belong to a module you can not change them in." => "Algunos de los objetos seleccionados no se movieron - pertenecen a un m\xF3dulo en el que no puede modificarlos.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 60
+// src/Manageraction/Object_Move2slice.php, row 62
 "The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "La tarea %1 no se movi\xF3 - solo un usuario que administre la funci\xF3n Compartir contenido del canal puede mover all\xED una tarea con {import}.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 20, 27
@@ -11381,34 +11571,34 @@ return [
 // src/Manageraction/Plannedtask_Runnow.php, row 60
 "The task %1 is already waiting in the queue." => "La tarea %1 ya est\xE1 esperando en la cola.", // ai 2026-10
 
-// src/Manageraction/Polls_DeleteTrash.php, row 78
+// src/Manageraction/Polls_DeleteTrash.php, row 80
 "You do not have permissions to remove polls" => "No tiene permisos para eliminar encuestas",
 
-// src/Manageraction/Polls_DeleteTrash.php, row 97
+// src/Manageraction/Polls_DeleteTrash.php, row 99
 "Some of the selected polls were not removed - they belong to another module." => "Algunas de las encuestas seleccionadas no se quitaron - pertenecen a otro m\xF3dulo.", // ai 2026-10
 
-// src/Manageraction/Polls_MoveItem.php, row 47
+// src/Manageraction/Polls_MoveItem.php, row 49
 "Some of the selected polls were not moved - they belong to another module." => "Algunas de las encuestas seleccionadas no se movieron - pertenecen a otro m\xF3dulo.", // ai 2026-10
 
 // src/Manageraction/Table_Row_Delete.php, row 54
 "Some of the selected rows were not deleted - they belong to another module." => "Algunas de las filas seleccionadas no se eliminaron - pertenecen a otro m\xF3dulo.", // ai 2026-10
 
-// src/Manageraction/Taskmanager_Delete.php, row 15
+// src/Manageraction/Taskmanager_Delete.php, row 17
 "Remove (cancel task)" => "Eliminar (cancelar tarea)",
 
-// src/Manageraction/Taskmanager_Delete.php, row 24
+// src/Manageraction/Taskmanager_Delete.php, row 26
 "You do not have permissions to remove tasks" => "No tiene permisos para eliminar tareas",
 
-// src/Manageraction/Taskmanager_Execute.php, row 15
+// src/Manageraction/Taskmanager_Execute.php, row 17
 "Execute" => "Ejecutar",
 
-// src/Manageraction/View_Move2slice.php, row 23
+// src/Manageraction/View_Move2slice.php, row 25
 "Move view to another slice" => "Mover vista a otro canal",
 
-// src/Manageraction/View_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 37
 "Views can be moved only to a slice." => "Las vistas solo se pueden mover a un canal.", // ai 2026-10
 
-// src/Manageraction/View_Move2slice.php, row 39
+// src/Manageraction/View_Move2slice.php, row 41
 "You do not have permissions to move views" => "No tiene permisos para mover vistas",
 
 // src/Module/Poll/Menu.php, row 25
@@ -11441,25 +11631,25 @@ return [
 // src/Optimize/AbstractOptimizeById.php, row 42
 "We found %1 problems" => "Se encontraron %1 problemas",
 
-// src/Optimize/AddAddressFieldTemplate.php, row 10
+// src/Optimize/AddAddressFieldTemplate.php, row 12
 "Add address field template" => "A\xF1adir plantilla de campo address",
 
-// src/Optimize/AddAuthGroupFieldTemplate.php, row 10
+// src/Optimize/AddAuthGroupFieldTemplate.php, row 12
 "Add auth_group...... field template" => "A\xF1adir plantilla de campo auth_group......",
 
-// src/Optimize/AddBitsetFieldTemplate.php, row 10
+// src/Optimize/AddBitsetFieldTemplate.php, row 12
 "Add bitset (flags, bitfield) field template" => "A\xF1adir plantilla de campo bitset (flags, campo de bits)",
 
-// src/Optimize/AddCityFieldTemplate.php, row 10
+// src/Optimize/AddCityFieldTemplate.php, row 12
 "Add city field template" => "A\xF1adir plantilla de campo city",
 
-// src/Optimize/AddCodeFieldTemplate.php, row 10
+// src/Optimize/AddCodeFieldTemplate.php, row 12
 "Add code field template" => "A\xF1adir plantilla de campo code",
 
-// src/Optimize/AddComputedNumFieldTemplate.php, row 10
+// src/Optimize/AddComputedNumFieldTemplate.php, row 12
 "Add computed_num field template" => "A\xF1adir plantilla de campo computed_num",
 
-// src/Optimize/AddComputedTxtFieldTemplate.php, row 10
+// src/Optimize/AddComputedTxtFieldTemplate.php, row 12
 "Add computed_txt field template" => "A\xF1adir plantilla de campo computed_txt",
 
 // src/Optimize/AddContentFieldIndex.php, row 25
@@ -11480,37 +11670,37 @@ return [
 // src/Optimize/AddContentFieldIndex.php, row 67
 "The index %1 of the content table changed" => "El \xEDndice %1 de la tabla content se ha modificado", // ai 2026-10
 
-// src/Optimize/AddCountryFieldTemplate.php, row 10
+// src/Optimize/AddCountryFieldTemplate.php, row 12
 "Add country field template" => "A\xF1adir plantilla de campo country",
 
-// src/Optimize/AddDateFieldTemplate.php, row 10
+// src/Optimize/AddDateFieldTemplate.php, row 12
 "Add date field template" => "A\xF1adir plantilla de campo date",
 
-// src/Optimize/AddDurationLog.php, row 18
+// src/Optimize/AddDurationLog.php, row 20
 "Add hit duration log feature" => "A\xF1adir funci\xF3n de registro de duraci\xF3n de hits",
 
-// src/Optimize/AddDurationLog.php, row 26
+// src/Optimize/AddDurationLog.php, row 28
 "Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit" => "A\xF1ade la columna 'duration' a la tabla hit_archive, que almacenar\xE1 los registros duration/cache/not_modified del hit",
 
-// src/Optimize/AddDurationLog.php, row 47
+// src/Optimize/AddDurationLog.php, row 49
 "The \"duration\" column missing in hit_archive table" => "Falta la columna \"duration\" en la tabla hit_archive",
 
-// src/Optimize/AddDurationLog.php, row 50
+// src/Optimize/AddDurationLog.php, row 52
 "OK - The \"duration\" column found in hit_archive table. Duration evaluated from %1" => "OK - Columna \"duration\" encontrada en la tabla hit_archive. Duraci\xF3n evaluada desde %1",
 
-// src/Optimize/AddDurationLog.php, row 60
+// src/Optimize/AddDurationLog.php, row 62
 "Table already has the column \"duration\"" => "La tabla ya tiene la columna \"duration\"",
 
-// src/Optimize/AddDurationLog.php, row 63
+// src/Optimize/AddDurationLog.php, row 65
 "Do alter table hit_archive to add duration column" => "Ejecuta alter table en hit_archive para a\xF1adir la columna duration",
 
-// src/Optimize/AddDurationLog.php, row 65
+// src/Optimize/AddDurationLog.php, row 67
 "Column added" => "Columna a\xF1adida",
 
-// src/Optimize/AddDurationLog.php, row 72
+// src/Optimize/AddDurationLog.php, row 74
 "Do alter table hit_archive to remove duration column - it disables the feature" => "Ejecuta alter table en hit_archive para eliminar la columna duration - desactiva la funci\xF3n",
 
-// src/Optimize/AddDurationLog.php, row 74
+// src/Optimize/AddDurationLog.php, row 76
 "Column deleted" => "Columna eliminada",
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 14
@@ -11526,87 +11716,108 @@ return [
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 77
 "The e-mail templates updated" => "Plantillas de correo electr\xF3nico actualizadas",
 
-// src/Optimize/AddFaxFieldTemplate.php, row 10
+// src/Optimize/AddFaxFieldTemplate.php, row 12
 "Add fax field template" => "A\xF1adir plantilla de campo fax",
 
-// src/Optimize/AddHit1FieldTemplate.php, row 10
+// src/Optimize/AddHit1FieldTemplate.php, row 12
 "Add hit_1 field template" => "A\xF1adir plantilla de campo hit_1",
 
-// src/Optimize/AddHit30FieldTemplate.php, row 10
+// src/Optimize/AddHit30FieldTemplate.php, row 12
 "Add hit_30 field template" => "A\xF1adir plantilla de campo hit_30",
 
-// src/Optimize/AddHit7FieldTemplate.php, row 10
+// src/Optimize/AddHit7FieldTemplate.php, row 12
 "Add hit_7 field template" => "A\xF1adir plantilla de campo hit_7",
 
-// src/Optimize/AddIntegerFieldTemplate.php, row 10
+// src/Optimize/AddIntegerFieldTemplate.php, row 12
 "Add integer field template" => "A\xF1adir plantilla de campo integer",
 
-// src/Optimize/AddIpBannedFieldTemplate.php, row 10
+// src/Optimize/AddIpBannedFieldTemplate.php, row 12
 "Add _ip_banned field template" => "A\xF1adir plantilla de campo _ip_banned",
 
-// src/Optimize/AddIpFieldTemplate.php, row 10
+// src/Optimize/AddIpFieldTemplate.php, row 12
 "Add ip field template" => "A\xF1adir plantilla de campo ip",
 
-// src/Optimize/AddLocationFieldTemplate.php, row 10
+// src/Optimize/AddLocationFieldTemplate.php, row 12
 "Add location field template" => "A\xF1adir plantilla de campo location",
 
-// src/Optimize/AddMailListsFieldTemplate.php, row 10
+// src/Optimize/AddMailListsFieldTemplate.php, row 12
 "Add mail_lists field template" => "A\xF1adir plantilla de campo mail_lists",
 
-// src/Optimize/AddMandatoryDiscApp.php, row 10
-// src/Optimize/AddMandatoryDiscCount.php, row 10
-// src/Optimize/AddMandatoryDisplayCount.php, row 10
-// src/Optimize/AddMandatoryId.php, row 10
-// src/Optimize/AddMandatoryShortId.php, row 10
-// src/Optimize/AddMandatoryStatusCode.php, row 13
+// src/Optimize/AddMandatoryDiscApp.php, row 12
+// src/Optimize/AddMandatoryDiscCount.php, row 12
+// src/Optimize/AddMandatoryDisplayCount.php, row 12
+// src/Optimize/AddMandatoryId.php, row 12
+// src/Optimize/AddMandatoryShortId.php, row 12
+// src/Optimize/AddMandatoryStatusCode.php, row 15
 "Fixing missing %1 field definitions in slices" => "Corrigiendo definiciones del campo %1 faltantes en los canales",
 
-// src/Optimize/AddMandatoryStatusCode.php, row 19
+// src/Optimize/AddMandatoryStatusCode.php, row 21
 "Adds field definitions for slices, where missing" => "A\xF1ade definiciones de campo a los canales donde faltan",
 
-// src/Optimize/AddMandatoryStatusCode.php, row 45
+// src/Optimize/AddMandatoryStatusCode.php, row 47
 "Missing %1 field definition in some slices - need to repair" => "Falta la definici\xF3n del campo %1 en algunos canales - es necesario reparar",
 
-// src/Optimize/AddMandatoryStatusCode.php, row 54
+// src/Optimize/AddMandatoryStatusCode.php, row 56
 "Fixing missing %1 fields in slices" => "Corrigiendo campos %1 faltantes en los canales",
 
-// src/Optimize/AddMandatoryStatusCode.php, row 69
+// src/Optimize/AddMandatoryStatusCode.php, row 71
 "Mandatory field %1 added to all slices" => "Campo obligatorio %1 a\xF1adido a todos los canales",
 
-// src/Optimize/AddMlxctrlFieldTemplate.php, row 10
+// src/Optimize/AddMlxctrlFieldTemplate.php, row 12
 "Add mlxctrl field template" => "A\xF1adir plantilla de campo mlxctrl",
 
-// src/Optimize/AddMsgBannedFieldTemplate.php, row 10
+// src/Optimize/AddMsgBannedFieldTemplate.php, row 12
 "Add _msg_banned field template" => "A\xF1adir plantilla de campo _msg_banned",
 
-// src/Optimize/AddMsgSpamFieldTemplate.php, row 10
+// src/Optimize/AddMsgSpamFieldTemplate.php, row 12
 "Add _msg_spam field template" => "A\xF1adir plantilla de campo _msg_spam",
 
-// src/Optimize/AddNameFieldTemplate.php, row 10
+// src/Optimize/AddNameFieldTemplate.php, row 12
 "Add name field template" => "A\xF1adir plantilla de campo name",
 
-// src/Optimize/AddPhoneFieldTemplate.php, row 10
+// src/Optimize/AddPasskeyTable.php, row 15
+"Table of passkeys" => "Tabla de llaves de acceso", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 20
+"Creates the table authenticator, where the passkeys of the accounts are kept. Nothing else changes; without it, nobody can add a passkey." => "Crea la tabla authenticator, donde se guardan las llaves de acceso (passkeys) de las cuentas. No cambia nada m\xE1s; sin ella nadie puede a\xF1adir una llave de acceso.", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 43
+"The table %1 is missing" => "Falta la tabla %1", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 46
+"OK - the table %1 exists" => "OK: la tabla %1 existe", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 54
+"The table %1 exists already" => "La tabla %1 ya existe", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 is created" => "La tabla %1 se ha creado", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 could not be created" => "No se pudo crear la tabla %1", // ai 2026-11
+
+// src/Optimize/AddPhoneFieldTemplate.php, row 12
 "Add phone field template" => "A\xF1adir plantilla de campo phone",
 
-// src/Optimize/AddPolls.php, row 29
+// src/Optimize/AddPolls.php, row 31
 "Add Polls tables" => "A\xF1adir tablas de encuestas",
 
-// src/Optimize/AddPolls.php, row 37
+// src/Optimize/AddPolls.php, row 39
 "Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "Crea las tablas para el nuevo m\xF3dulo de encuestas y a\xF1ade las primeras encuestas de plantilla. \xA1Elimina todas las encuestas actuales!",
 
-// src/Optimize/AddPolls.php, row 60
+// src/Optimize/AddPolls.php, row 62
 "Poll module is not installed" => "El m\xF3dulo de encuestas no est\xE1 instalado",
 
-// src/Optimize/AddPolls.php, row 95
+// src/Optimize/AddPolls.php, row 97
 "Polls module created" => "M\xF3dulo de encuestas creado",
 
-// src/Optimize/AddRangeFieldTemplate.php, row 10
+// src/Optimize/AddRangeFieldTemplate.php, row 12
 "Add range field template" => "A\xF1adir plantilla de campo range",
 
-// src/Optimize/AddRealFieldTemplate.php, row 10
+// src/Optimize/AddRealFieldTemplate.php, row 12
 "Add real field template" => "A\xF1adir plantilla de campo real",
 
-// src/Optimize/AddSecretFieldTemplate.php, row 10
+// src/Optimize/AddSecretFieldTemplate.php, row 12
 "Add secret field template" => "A\xF1adir plantilla de campo secret",
 
 // src/Optimize/AddSeoFieldTemplate.php, row 16
@@ -11627,17 +11838,17 @@ return [
 // src/Optimize/AddSeoFieldTemplate.php, row 116
 "New \"%1\" field template added" => "Nueva plantilla de campo \"%1\" a\xF1adida",
 
-// src/Optimize/AddUploadUrlFieldTemplate.php, row 10
+// src/Optimize/AddUploadUrlFieldTemplate.php, row 12
 "Add _upload_url field template" => "A\xF1adir plantilla de campo _upload_url",
 
-// src/Optimize/AddUrlPreviewFieldTemplate.php, row 10
+// src/Optimize/AddUrlPreviewFieldTemplate.php, row 12
 "Add _url_preview field template" => "A\xF1adir plantilla de campo _url_preview",
 
 // src/Optimize/BackupTables.php, row 19
 "Backup tables" => "Tablas de copia de seguridad",
 
 // src/Optimize/BackupTables.php, row 27
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 // src/Optimize/UpdateDbStructure.php, row 31
 "[experimental] " => "[experimental]", // ai 2026-06
 
@@ -11677,10 +11888,10 @@ return [
 // src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Reemplaza el alias f_h de los campos marcados como no m\xFAltiples y html por la funci\xF3n m\xE1s r\xE1pida f_1 para impresi\xF3n directa del contenido",
 
-// src/Optimize/ChangeF_t2F_1.php, row 15
+// src/Optimize/ChangeF_t2F_1.php, row 17
 "Optimize f_t alias to f_1" => "Optimizar el alias f_t a f_1",
 
-// src/Optimize/ChangeF_t2F_1.php, row 23
+// src/Optimize/ChangeF_t2F_1.php, row 25
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Reemplaza el alias f_t de los campos marcados como no m\xFAltiples y html por la funci\xF3n m\xE1s r\xE1pida f_1 para impresi\xF3n directa del contenido",
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -11689,22 +11900,22 @@ return [
 // src/Optimize/ChangeF_t2F__.php, row 27
 "Replaces f_t alias used for code by quicker f__ function" => "Reemplaza el alias f_t usado para code por la funci\xF3n m\xE1s r\xE1pida f__",
 
-// src/Optimize/ChangeModuleId.php, row 20
+// src/Optimize/ChangeModuleId.php, row 22
 "Change current module ID to new one" => "Cambiar el ID del m\xF3dulo actual por uno nuevo",
 
-// src/Optimize/ChangeModuleId.php, row 28
+// src/Optimize/ChangeModuleId.php, row 30
 "Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "Se usa a veces si clona la base de datos o copia canales a otra base de datos para otro cliente y no quiere usar los mismos ids de canal/sitio. Probablemente deba hacerlo para todos los canales y el m\xF3dulo site.<br>\xA1CAMBIA EL ID DEL CANAL ACTUAL!",
 
-// src/Optimize/ChangeModuleId.php, row 42
+// src/Optimize/ChangeModuleId.php, row 44
 "Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "Nada que probar aqu\xED. Tenga cuidado: \xA1CAMBIA EL ID DEL CANAL ACTUAL sin preguntar!",
 
-// src/Optimize/ChangeModuleId.php, row 63
+// src/Optimize/ChangeModuleId.php, row 65
 "Going to change module_id %1 -> %2 (%3 -> %4)" => "Se va a cambiar module_id %1 -> %2 (%3 -> %4)",
 
-// src/Optimize/ChangeModuleId.php, row 76
+// src/Optimize/ChangeModuleId.php, row 78
 "Changing ID for table %1 (%2)" => "Cambiando el ID de la tabla %1 (%2)",
 
-// src/Optimize/ChangeModuleId.php, row 85
+// src/Optimize/ChangeModuleId.php, row 87
 // src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "Convertidas %1 tablas",
 
@@ -11747,11 +11958,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckFormRobotRefusals.php, row 76
 // src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
 // src/Optimize/CheckIsdsConf.php, row 156, 189
 // src/Optimize/CheckIsdsViews.php, row 128
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 93
 // src/Optimize/CheckObjectFormRefusals.php, row 102
+// src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
 // src/Optimize/CheckSessionidUse.php, row 101
@@ -11767,11 +11980,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 100
 // src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckFormRobotRefusals.php, row 77
 // src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
 // src/Optimize/CheckIsdsViews.php, row 129
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 94
 // src/Optimize/CheckObjectFormRefusals.php, row 103
+// src/Optimize/CheckPasskeys.php, row 86
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
@@ -11802,7 +12017,7 @@ return [
 "Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "Lista los env\xEDos de alertas de un \xEDtem rechazados en los \xFAltimos 30 d\xEDas porque la colecci\xF3n no est\xE1 relacionada con el canal del \xEDtem (sin filtro sobre el canal, no es su canal de lectores, sin sitio com\xFAn).", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 86
-"Selections of the collection" => "",
+"Selections of the collection" => "Selecciones de la colecci\xF3n", // ai 2026-11
 
 // src/Optimize/CheckAlertitemRefusals.php, row 93
 "Alert send of an item of slice %1 through collection %2 was refused" => "Se rechaz\xF3 el env\xEDo de alerta de un \xEDtem del canal %1 mediante la colecci\xF3n %2", // ai 2026-10
@@ -11844,10 +12059,10 @@ return [
 "AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "AlertsSweep::SCHEDULE no tiene ninguna entrada para ella, por lo que nunca se planifica ninguna tarea y esos lectores no reciben nada.", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 110
-"Every alert collection is swept on time and all its selections exist" => "",
+"Every alert collection is swept on time and all its selections exist" => "Cada colecci\xF3n de Alertas se env\xEDa a tiempo y todas sus selecciones existen", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 144
-"Selection" => "",
+"Selection" => "Selecci\xF3n", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
@@ -11858,28 +12073,28 @@ return [
 "Problem" => "Problema", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 146
-"the selection was deleted" => "",
+"the selection was deleted" => "la selecci\xF3n fue eliminada", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 147
-"its view %1 was deleted" => "",
+"its view %1 was deleted" => "su vista %1 fue eliminada", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 153
-"Alerts \"%1\" use a selection that no longer exists" => "",
+"Alerts \"%1\" use a selection that no longer exists" => "Las Alertas \xAB%1\xBB usan una selecci\xF3n que ya no existe", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 154
-"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "",
+"Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "Las Alertas \xAB%1\xBB no env\xEDan nada: ya no existe ninguna selecci\xF3n de la colecci\xF3n", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 157
-"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "",
+"A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "Una selecci\xF3n es un filtro de una vista del canal del que la alerta toma sus \xEDtems. Cuando se elimina el filtro o la vista, la colecci\xF3n sigue apuntando a \xE9l y sus lectores no reciben nada de \xE9l, sin ning\xFAn error en el registro. En la p\xE1gina \xABSelecciones\xBB quite la selecci\xF3n marcada como inexistente y a\xF1ada una existente (los filtros se definen en la vista de tipo \xABConjunto de Selecci\xF3n de Alertas\xBB). En su lugar, puede eliminar un m\xF3dulo de Alertas que ya nadie usa.", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 159
 "Selections" => "Selecciones",
 
 // src/Optimize/CheckAlerts.php, row 160
-"Alerts settings" => "",
+"Alerts settings" => "Configuraci\xF3n de Alertas", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 163
-"Alert selection no longer exists" => "",
+"Alert selection no longer exists" => "La selecci\xF3n de Alertas ya no existe", // ai 2026-11
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 27
 "Forms without login changing accounts or authors" => "Formularios sin inicio de sesi\xF3n que modifican cuentas o autores", // ai 2026-10
@@ -11969,7 +12184,7 @@ return [
 "A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "Una plantilla de la p\xE1gina contiene {require:ckeditor} (y CKEDITOR.replace()). En su lugar, envuelva el textarea en <aa-richtext mode=\"rich\"> con {require:aa-richtext@1} - el textarea conserva su nombre y su valor, por lo que el formulario y los scripts que leen textarea.value funcionan sin cambios; CKEDITOR.instances[...].getData() pasa a ser el valor del textarea.", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 103
-"Templates with ckeditor" => "",
+"Templates with ckeditor" => "Plantillas con CKEditor", // ai 2026-11
 
 // src/Optimize/CheckCkeditorUse.php, row 109
 "No page loaded CKEditor 4 in the last 30 days" => "Ninguna p\xE1gina carg\xF3 CKEditor 4 en los \xFAltimos 30 d\xEDas", // ai 2026-10
@@ -12029,22 +12244,22 @@ return [
 "%1 cron rows, all readable and running on schedule" => "Filas de cron: %1, todas legibles y ejecut\xE1ndose seg\xFAn lo programado", // ai 2026-10
 
 // src/Optimize/CheckDiscussionRefusals.php, row 26
-"Refused comments" => "",
+"Refused comments" => "Comentarios rechazados", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 31
-"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "",
+"Lists the slices whose new discussion comments were refused in the last 30 days because the slice shows no discussion." => "Lista los canales cuyos nuevos comentarios de discusi\xF3n se rechazaron en los \xFAltimos 30 d\xEDas porque el canal no muestra ninguna discusi\xF3n.", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 70
-"New comments to items of slice %1 were refused" => "",
+"New comments to items of slice %1 were refused" => "Se rechazaron nuevos comentarios a \xEDtems del canal %1", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 78
-"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "",
+"The slice has no discussion view and none is set in \"Show discussion\" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in \"Show discussion\"; otherwise remove the comment form from the slice templates." => "El canal no tiene vista de discusi\xF3n y tampoco hay ninguna en \xABMostrar comentarios\xBB de su dise\xF1o de texto completo, as\xED que el comentario no se mostrar\xEDa en ning\xFAn sitio. Si el sitio muestra los comentarios mediante una vista de discusi\xF3n de otro canal, elija esa vista en \xABMostrar comentarios\xBB; si no, quite el formulario de comentarios de las plantillas del canal.", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 80
-"Fulltext design" => "",
+"Fulltext design" => "Dise\xF1o de texto completo", // ai 2026-11
 
 // src/Optimize/CheckDiscussionRefusals.php, row 85
-"No comment was refused in the last 30 days" => "",
+"No comment was refused in the last 30 days" => "No se rechaz\xF3 ning\xFAn comentario en los \xFAltimos 30 d\xEDas", // ai 2026-11
 
 // src/Optimize/CheckEnvironment.php, row 18
 // src/Optimize/StateCheckModel.php, row 295
@@ -12070,6 +12285,21 @@ return [
 
 // src/Optimize/CheckEnvironment.php, row 66
 "AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4; sin cambios desde %5", // ai 2026-10
+
+// src/Optimize/CheckFormRobotRefusals.php, row 26
+"Forms refused as robots" => "Formularios rechazados como robots", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 31
+"Lists the slices whose new items from a form were refused in the last 30 days because the form posted an empty slice_id, which its JS fills only for a visitor who moves the mouse or presses a key." => "Lista los canales cuyos nuevos \xEDtems desde un formulario se rechazaron en los \xFAltimos 30 d\xEDas porque el formulario envi\xF3 un slice_id vac\xEDo, que su JS rellena solo para un visitante que mueve el rat\xF3n o pulsa una tecla.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 70
+"A form adding items to slice %1 was refused as a robot" => "Un formulario que a\xF1ade \xEDtems al canal %1 fue rechazado como robot", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 79
+"The form posted an empty slice_id. Forms with {formantispam:<slice_id>} or with their own anti-robot JS leave it empty and fill it when the visitor moves the mouse or presses a key, so this is mostly spam and needs no action. If real visitors complain that the form does not save, check that the JS of the form runs on the page (the browser console) and fills slice_id." => "El formulario envi\xF3 un slice_id vac\xEDo. Los formularios con {formantispam:<slice_id>} o con su propio JS antirrobots lo dejan vac\xEDo y lo rellenan cuando el visitante mueve el rat\xF3n o pulsa una tecla, as\xED que casi siempre es spam y no requiere ninguna acci\xF3n. Si visitantes reales se quejan de que el formulario no guarda, compruebe que el JS del formulario se ejecuta en la p\xE1gina (consola del navegador) y rellena slice_id.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 85
+"No form was refused as a robot in the last 30 days" => "No se rechaz\xF3 ning\xFAn formulario como robot en los \xFAltimos 30 d\xEDas", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 29
 "Outgoing HTTP" => "HTTP saliente", // ai 2026-10
@@ -12103,7 +12333,7 @@ return [
 "Note" => "Nota",
 
 // src/Optimize/CheckHttp.php, row 85
-"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "",
+"The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories." => "La propia direcci\xF3n responde HTTP %1 y %2 responde 200; es habitual cuando el directorio de AA no tiene p\xE1gina de inicio y el servidor no lista directorios.", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 93
 "This installation's own address answers HTTP %1" => "La propia direcci\xF3n de esta instalaci\xF3n responde HTTP %1", // ai 2026-10
@@ -12269,7 +12499,7 @@ return [
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "La clave contiene un salto de l\xEDnea o NUL, as\xED que ning\xFAn origen de importaci\xF3n puede usarla. Corrija la constante en config.php.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 272
-"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "",
+"A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "Una clave JSON (una cuenta de servicio de Google) cabe en una l\xEDnea: pegue la l\xEDnea que imprime %1.", // ai 2026-11
 
 // src/Optimize/CheckImports.php, row 291
 "Imports logged %1 failures in the last 7 days" => "Fallos registrados por importaciones en los \xFAltimos 7 d\xEDas: %1", // ai 2026-10
@@ -12320,505 +12550,505 @@ return [
 "No app transfer is stuck" => "Ninguna transferencia de aplicaci\xF3n est\xE1 atascada", // ai 2026-10
 
 // src/Optimize/CheckIsds.php, row 49
-"ISDS login" => "",
+"ISDS login" => "Inicio de sesi\xF3n en ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 54
-"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "",
+"Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires." => "Inicia sesi\xF3n en ISDS con cada cuenta utilizable de misc/datovka/datovka_conf.php que env\xEDa para un sitio de esta base de datos y comprueba el buz\xF3n de datos desde el que env\xEDa; en un inicio de sesi\xF3n con nombre y contrase\xF1a, tambi\xE9n los derechos de su usuario y cu\xE1ndo caduca su contrase\xF1a.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 79
-"No usable ISDS account to log in with" => "",
+"No usable ISDS account to log in with" => "No hay ninguna cuenta de ISDS utilizable para iniciar sesi\xF3n", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 121
-"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "",
+"ISDS accounts not tried, as ISDS blocked the address of this server: %1" => "Cuentas de ISDS no probadas porque ISDS bloque\xF3 la direcci\xF3n de este servidor: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 122
-"ISDS accounts not tried, as ISDS did not answer: %1" => "",
+"ISDS accounts not tried, as ISDS did not answer: %1" => "Cuentas de ISDS no probadas porque ISDS no respondi\xF3: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Wait - each attempt from this server extends the block." => "",
+"Wait - each attempt from this server extends the block." => "Espere: cada intento desde este servidor prolonga el bloqueo.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 123
-"Check again later." => "",
+"Check again later." => "Compru\xE9belo de nuevo m\xE1s tarde.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 128
-"ISDS accounts log in to their data boxes: %1" => "",
+"ISDS accounts log in to their data boxes: %1" => "Las cuentas de ISDS inician sesi\xF3n en sus buzones de datos: %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"ISDS account %1 not tried, as its certificate cannot be used" => "",
+"ISDS account %1 not tried, as its certificate cannot be used" => "Cuenta de ISDS %1 no probada porque su certificado no se puede usar", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 142
-"The check of ISDS accounts tells more." => "",
+"The check of ISDS accounts tells more." => "La comprobaci\xF3n \xABCuentas de ISDS\xBB da m\xE1s detalles.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 153
-"The TLS library of this server refuses the certificate of ISDS account %1" => "",
+"The TLS library of this server refuses the certificate of ISDS account %1" => "La biblioteca TLS de este servidor rechaza el certificado de la cuenta de ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 154
-"Reason of OpenSSL" => "",
+"Reason of OpenSSL" => "Motivo seg\xFAn OpenSSL", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 155
-"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "",
+"OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php." => "OpenSSL en este servidor no acepta el certificado o su clave; p. ej., una clave m\xE1s corta de lo que exige su pol\xEDtica, un certificado d\xE9bil en la cadena o una firma antigua. Obtenga un certificado que cumpla la pol\xEDtica (clave RSA de 3072 bits, firma SHA-256), haga que ISDS lo registre e ind\xEDquelo en misc/datovka/datovka_conf.php.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 188, 290
 "ISDS" => "",
 
 // src/Optimize/CheckIsds.php, row 195, 226
-"ISDS did not tell the rights of the user of account %1" => "",
+"ISDS did not tell the rights of the user of account %1" => "ISDS no inform\xF3 de los derechos del usuario de la cuenta %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 202
-"The password of ISDS account %1 expires on %2" => "",
+"The password of ISDS account %1 expires on %2" => "La contrase\xF1a de la cuenta de ISDS %1 caduca el %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 203
-"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "",
+"Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php." => "Cambie la contrase\xF1a en el portal de ISDS y escriba la nueva en %1 en misc/datovka/datovka_conf.php.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"ISDS did not tell when the password of account %1 expires" => "",
+"ISDS did not tell when the password of account %1 expires" => "ISDS no inform\xF3 de cu\xE1ndo caduca la contrase\xF1a de la cuenta %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 211
-"Check the password of the user in the ISDS portal." => "",
+"Check the password of the user in the ISDS portal." => "Compruebe la contrase\xF1a del usuario en el portal de ISDS.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"Rights" => "",
+"Rights" => "Derechos", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 224
-"User type" => "",
+"User type" => "Tipo de usuario", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 239
-"The user of ISDS account %1 lacks the rights %2" => "",
+"The user of ISDS account %1 lacks the rights %2" => "Al usuario de la cuenta de ISDS %1 le faltan los derechos %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 241
-"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "",
+"Give the user the rights %1 in the ISDS portal - without them ISDS refuses %2." => "Otorgue al usuario los derechos %1 en el portal de ISDS; sin ellos, ISDS rechaza %2.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 250
-"The user of ISDS account %1 has rights AA must not have: %2" => "",
+"The user of ISDS account %1 has rights AA must not have: %2" => "El usuario de la cuenta de ISDS %1 tiene derechos que AA no debe tener: %2", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 252
-"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "",
+"In the ISDS portal take these rights from the user, or let AA log in as a user of its own with only the rights %1." => "En el portal de ISDS retire estos derechos al usuario, o haga que AA inicie sesi\xF3n como un usuario propio solo con los derechos %1.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 268
-"ISDS blocked logins from the address of this server" => "",
+"ISDS blocked logins from the address of this server" => "ISDS bloque\xF3 los inicios de sesi\xF3n desde la direcci\xF3n de este servidor", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 269
-"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "",
+"ISDS blocks the address of a server for a while when logins from it look like an attack - every account and every AA on this server, whatever their login. Wait: each attempt extends the block. AA tries once more by itself %1 hours later, or when you check again here. If the block lasts, call the ISDS helpline 954 200 200." => "ISDS bloquea durante un tiempo la direcci\xF3n de un servidor cuando los inicios de sesi\xF3n desde ella parecen un ataque: para todas las cuentas y todas las instalaciones de AA en este servidor, sea cual sea su forma de iniciar sesi\xF3n. Espere: cada intento prolonga el bloqueo. AA lo intentar\xE1 una vez m\xE1s por s\xED mismo al cabo de %1 horas, o cuando lo compruebe de nuevo aqu\xED. Si el bloqueo persiste, llame a la l\xEDnea de asistencia de ISDS 954 200 200.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 274
-"ISDS refused the login of account %1" => "",
+"ISDS refused the login of account %1" => "ISDS rechaz\xF3 el inicio de sesi\xF3n de la cuenta %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS asked account %1 to come back later" => "",
+"ISDS asked account %1 to come back later" => "ISDS pidi\xF3 a la cuenta %1 que volviera a intentarlo m\xE1s tarde", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 277
-"ISDS is in an outage or busy. Check again later." => "",
+"ISDS is in an outage or busy. Check again later." => "ISDS sufre una interrupci\xF3n o est\xE1 sobrecargado. Compru\xE9belo de nuevo m\xE1s tarde.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 281
-"ISDS gave account %1 no answer" => "",
+"ISDS gave account %1 no answer" => "ISDS no dio respuesta a la cuenta %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 282
-"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "",
+"Check again later. If it repeats, check that the server reaches %1 over HTTPS." => "Compru\xE9belo de nuevo m\xE1s tarde. Si se repite, compruebe que el servidor puede conectarse a %1 por HTTPS.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"ISDS gave account %1 an answer AA cannot read" => "",
+"ISDS gave account %1 an answer AA cannot read" => "ISDS dio a la cuenta %1 una respuesta que AA no puede leer", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 284
-"Check again later. If it repeats, the evidence gives the answer of ISDS." => "",
+"Check again later. If it repeats, the evidence gives the answer of ISDS." => "Compru\xE9belo de nuevo m\xE1s tarde. Si se repite, la respuesta de ISDS figura en la evidencia.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"ISDS refused account %1" => "",
+"ISDS refused account %1" => "ISDS rechaz\xF3 la cuenta %1", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 285
-"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "",
+"The evidence gives the answer of ISDS. Check the account and its data box in the ISDS portal." => "La respuesta de ISDS figura en la evidencia. Compruebe la cuenta y su buz\xF3n de datos en el portal de ISDS.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 298
-"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "Compruebe que el certificado que indica %1 es el certificado de sistema que ISDS registr\xF3 para el buz\xF3n de datos y que no ha caducado. AA prueba por s\xED mismo un certificado nuevo, nunca el mismo. \xABEjecutar comprobaciones ampliadas\xBB o aqu\xED \xABComprobar de nuevo\xBB lo prueban una vez m\xE1s.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 299
-"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "",
+"Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more." => "Compruebe que el buz\xF3n de datos %1 permite el servicio de alojamiento cuyo certificado indica %2 (Configuraci\xF3n, Acceso de aplicaciones externas en el portal de ISDS) y que el certificado no ha caducado. AA prueba por s\xED mismo un certificado nuevo, nunca el mismo. \xABEjecutar comprobaciones ampliadas\xBB o aqu\xED \xABComprobar de nuevo\xBB lo prueban una vez m\xE1s.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 300
-"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "",
+"Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more." => "Compruebe %1 y %2 en misc/datovka/datovka_conf.php, y en el portal de ISDS que la contrase\xF1a no ha caducado. AA prueba por s\xED mismo un nombre o una contrase\xF1a modificados, nunca los mismos: cada intento rechazado prolonga el bloqueo del inicio de sesi\xF3n. \xABEjecutar comprobaciones ampliadas\xBB o aqu\xED \xABComprobar de nuevo\xBB lo prueban una vez m\xE1s.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 327
-"Check in the ISDS portal that the user has the rights %1 and none of %2." => "",
+"Check in the ISDS portal that the user has the rights %1 and none of %2." => "Compruebe en el portal de ISDS que el usuario tiene los derechos %1 y ninguno de %2.", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 356
-"read received messages" => "",
+"read received messages" => "leer mensajes recibidos", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 357
-"read received messages to own hands" => "",
+"read received messages to own hands" => "leer mensajes recibidos en mano propia", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 358
-"send messages" => "",
+"send messages" => "enviar mensajes", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 359
-"lists of messages and delivery info" => "",
+"lists of messages and delivery info" => "listas de mensajes e informaci\xF3n de entrega", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 360
-"search for data boxes" => "",
+"search for data boxes" => "buscar buzones de datos", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 361
-"manage the data box" => "",
+"manage the data box" => "administrar el buz\xF3n de datos", // ai 2026-11
 
 // src/Optimize/CheckIsds.php, row 362
-"erase the vault" => "",
+"erase the vault" => "borrar la b\xF3veda de datos", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 44
-"ISDS accounts" => "",
+"ISDS accounts" => "Cuentas de ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 49
-"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "",
+"Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, whose campaigns could not tell their recipients, or whose actions failed on an internal error, in the last week." => "Comprueba las cuentas de ISDS que misc/datovka/datovka_conf.php configura para enviar a buzones de datos desde los sitios de esta base de datos: su configuraci\xF3n, los archivos de sus certificados, el sitio y los canales para los que env\xEDa cada cuenta, y las p\xE1ginas de env\xEDo masivo cuya configuraci\xF3n no estaba lista, cuyas campa\xF1as no pudieron determinar sus destinatarios o cuyas acciones fallaron por un error interno, en la \xFAltima semana.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 80
-"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "",
+"No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database" => "Ninguna cuenta de ISDS en misc/datovka/datovka_conf.php env\xEDa para un sitio de esta base de datos", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 100
-"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1" => "misc/datovka/datovka_conf.php contiene configuraci\xF3n de cuentas de ISDS que AA no lee: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 103
-"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "",
+"An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2, and of a production account %3 too. Correct the names, or remove what AA does not read." => "Una cuenta de ISDS en %1 se nombra con una sola palabra de letras may\xFAsculas y d\xEDgitos, la primera una letra, y AA lee solo las claves %2, y en una cuenta de producci\xF3n tambi\xE9n %3. Corrija los nombres o quite lo que AA no lee.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 108
-"ISDS accounts ready to send: %1" => "",
+"ISDS accounts ready to send: %1" => "Cuentas de ISDS listas para enviar: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 127
-"A page of site %1 has a mass sending whose settings are not ready" => "",
+"A page of site %1 has a mass sending whose settings are not ready" => "Una p\xE1gina del sitio %1 tiene un env\xEDo masivo cuya configuraci\xF3n no est\xE1 lista", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 131, 167
-"Campaign slice" => "",
+"Campaign slice" => "Canal de campa\xF1as", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 137
-"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "",
+"Site \"%1\" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to \"%2\" in the settings of the site, then open the page again." => "El sitio \xAB%1\xBB solo permite iniciar sesi\xF3n a los lectores de sus canales de Gesti\xF3n de lectores, as\xED que nadie puede enviar all\xED ni ver en la p\xE1gina qu\xE9 corregir; en la configuraci\xF3n del sitio ajuste \xABBases de datos de inicio de sesi\xF3n de usuarios\xBB a \xAB%2\xBB y vuelva a abrir la p\xE1gina.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 138
-"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "",
+"Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it." => "Abra la p\xE1gina como un usuario que puede editar todos los \xEDtems del canal de campa\xF1as o el c\xF3digo del sitio: lista todo lo que hay que corregir en la configuraci\xF3n de {datovkabulk:page}, con las p\xE1ginas donde se corrige.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 163
-"A campaign of a mass sending on site %1 cannot tell its recipients" => "",
+"A campaign of a mass sending on site %1 cannot tell its recipients" => "Una campa\xF1a de env\xEDo masivo en el sitio %1 no puede determinar sus destinatarios", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 168, 204
-"Campaign" => "",
+"Campaign" => "Campa\xF1a", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 173
-"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "",
+"The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice." => "El filtro de destinatarios guardado en la campa\xF1a ya no corresponde a la configuraci\xF3n de la p\xE1gina: se quit\xF3 un tipo de types o se elimin\xF3 member_field. Abra la campa\xF1a en la p\xE1gina y guarde de nuevo sus destinatarios. Cuando el problema menciona la configuraci\xF3n de buzones de datos, aj\xFAstela en la p\xE1gina \xABBuzones de datos del registro\xBB del canal de origen.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 199
-"An action of a page of a mass sending failed on an internal error: %1" => "",
+"An action of a page of a mass sending failed on an internal error: %1" => "Una acci\xF3n de una p\xE1gina de env\xEDo masivo fall\xF3 por un error interno: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 209
-"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "",
+"A fault of AA - report the place in the code from the evidence to its developers. The action may have done part of its work: before the user tries it again, look at the sending on its page." => "Un fallo de AA: comunique a sus desarrolladores el lugar del c\xF3digo que figura en la evidencia. Puede que la acci\xF3n haya hecho parte de su trabajo: antes de que el usuario la intente de nuevo, revise el env\xEDo en su p\xE1gina.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 225
-"ISDS account %1 cannot be used" => "",
+"ISDS account %1 cannot be used" => "La cuenta de ISDS %1 no se puede usar", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 227
-"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "",
+"Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2." => "Corrija en misc/datovka/datovka_conf.php lo que indica la evidencia. La cuenta es %1, con las claves %2.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 261
-"PHP cannot read the certificate of ISDS account %1" => "",
+"PHP cannot read the certificate of ISDS account %1" => "PHP no puede leer el certificado de la cuenta de ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 263
-"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "",
+"Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there." => "Compruebe que la configuraci\xF3n indica el archivo con una ruta completa (una relativa empieza en %1 de AA), que el usuario con el que se ejecuta PHP puede leerlo y que open_basedir permite a PHP acceder all\xED.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "",
+"The certificate of ISDS account %1 cannot be used: PHP has no openssl extension" => "El certificado de la cuenta de ISDS %1 no se puede usar: PHP no tiene la extensi\xF3n openssl", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 268
-"Install the openssl extension of PHP - a login with a certificate needs it." => "",
+"Install the openssl extension of PHP - a login with a certificate needs it." => "Instale la extensi\xF3n openssl de PHP; el inicio de sesi\xF3n con certificado la necesita.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Serial number" => "",
+"Serial number" => "N\xFAmero de serie", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 272
-"Valid until" => "",
+"Valid until" => "V\xE1lido hasta", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 274
-"%1 names a file with no PEM certificate" => "",
+"%1 names a file with no PEM certificate" => "%1 indica un archivo sin certificado PEM", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 275
-"The private key in %1 does not open: it is missing, or %2 does not fit" => "",
+"The private key in %1 does not open: it is missing, or %2 does not fit" => "La clave privada en %1 no se abre: falta, o %2 no corresponde", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 276
-"The private key in %1 does not belong to the certificate in %2" => "",
+"The private key in %1 does not belong to the certificate in %2" => "La clave privada en %1 no pertenece al certificado en %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 277
-"The private key is shorter than %1 bits, which the secure connection refuses" => "",
+"The private key is shorter than %1 bits, which the secure connection refuses" => "La clave privada es m\xE1s corta de %1 bits, lo que la conexi\xF3n segura rechaza", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 278
-"The certificate is valid from %1 only" => "",
+"The certificate is valid from %1 only" => "El certificado solo es v\xE1lido a partir del %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"The certificate of ISDS account %1 cannot be used" => "",
+"The certificate of ISDS account %1 cannot be used" => "El certificado de la cuenta de ISDS %1 no se puede usar", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 282
-"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "",
+"Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key." => "Indique en misc/datovka/datovka_conf.php el certificado y su clave y, si la clave est\xE1 cifrada, su frase de contrase\xF1a.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expired on %2" => "",
+"The certificate of ISDS account %1 expired on %2" => "El certificado de la cuenta de ISDS %1 caduc\xF3 el %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 288
-"The certificate of ISDS account %1 expires on %2" => "",
+"The certificate of ISDS account %1 expires on %2" => "El certificado de la cuenta de ISDS %1 caduca el %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 290
-"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "",
+"Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires." => "Obtenga un nuevo certificado, haga que ISDS lo registre junto al anterior e indique su archivo en misc/datovka/datovka_conf.php; ISDS lo requiere %1 d\xEDas antes de que caduque el anterior.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"The web server may serve the private key of ISDS account %1" => "",
+"The web server may serve the private key of ISDS account %1" => "El servidor web puede servir la clave privada de la cuenta de ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 340
-"Other users of the server may read the private key of ISDS account %1" => "",
+"Other users of the server may read the private key of ISDS account %1" => "Otros usuarios del servidor pueden leer la clave privada de la cuenta de ISDS %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 343
-"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "",
+"PHP runs inside the web server here, so the web server reads whatever PHP may read - no permissions help. Move the file outside the directory of AA and name it by a full path." => "Aqu\xED PHP se ejecuta dentro del servidor web, as\xED que el servidor web lee todo lo que PHP puede leer; ning\xFAn permiso ayuda. Mueva el archivo fuera del directorio de AA e ind\xEDquelo con una ruta completa.", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 344
-"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "",
+"The file lies in the directory of AA, which the web server serves. Move it outside and name it by a full path, or leave it only to its owner (chmod 600) and check its ACL (getfacl)." => "El archivo est\xE1 en el directorio de AA, que el servidor web sirve. Mu\xE9valo fuera e ind\xEDquelo con una ruta completa, o d\xE9jelo solo a su propietario (chmod 600) y compruebe su ACL (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 345
-"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "",
+"Take every right of other users from the file (chmod o-rwx) and check its ACL (getfacl)." => "Quite al archivo todos los derechos de otros usuarios (chmod o-rwx) y compruebe su ACL (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 403
-"The slices of ISDS account %1 are not ready for sending" => "",
+"The slices of ISDS account %1 are not ready for sending" => "Los canales de la cuenta de ISDS %1 no est\xE1n listos para enviar", // ai 2026-11
 
 // src/Optimize/CheckIsdsAccounts.php, row 406
-"Fix what the evidence names before sending from these slices." => "",
+"Fix what the evidence names before sending from these slices." => "Antes de enviar desde estos canales, corrija lo que indica la evidencia.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 32
-"ISDS settings file" => "",
+"ISDS settings file" => "Archivo de configuraci\xF3n de ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 37
-"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "",
+"Checks misc/datovka/datovka_conf.php, the data-box settings of this installation for {datovka} and mass sending: whether PHP reads it and AA can use all of it, keys written twice, its permissions, copies of it in the directory of AA, and in the last week the problems other requests met reading it and the answers of ISDS refused for an installation it does not list." => "Comprueba misc/datovka/datovka_conf.php, la configuraci\xF3n de buzones de datos de esta instalaci\xF3n para {datovka} y el env\xEDo masivo: si PHP lo lee y AA puede usarlo entero, claves escritas dos veces, sus permisos, copias suyas en el directorio de AA y, en la \xFAltima semana, los problemas que encontraron otras peticiones al leerlo y las respuestas de ISDS rechazadas para una instalaci\xF3n que no figura en \xE9l.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"AA reads all of misc/datovka/datovka_conf.php" => "",
+"AA reads all of misc/datovka/datovka_conf.php" => "AA lee todo misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 70
-"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "",
+"There is no misc/datovka/datovka_conf.php - AA runs without the data-box settings of this installation" => "No existe misc/datovka/datovka_conf.php; AA funciona sin la configuraci\xF3n de buzones de datos de esta instalaci\xF3n", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"ISDS accounts not checked: %1" => "",
+"ISDS accounts not checked: %1" => "Cuentas de ISDS no comprobadas: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 84
-"The check \"%1\" tells what to fix." => "",
+"The check \"%1\" tells what to fix." => "La comprobaci\xF3n \xAB%1\xBB indica qu\xE9 corregir.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 100
-"PHP cannot read misc/datovka/datovka_conf.php" => "",
+"PHP cannot read misc/datovka/datovka_conf.php" => "PHP no puede leer misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"AA cannot use misc/datovka/datovka_conf.php" => "",
+"AA cannot use misc/datovka/datovka_conf.php" => "AA no puede usar misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 101
-"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "",
+"Correct the file following datovka_conf.php.default - the problem tells what is wrong. Until then AA runs as if there were no file." => "Corrija el archivo seg\xFAn datovka_conf.php.default; el problema indica qu\xE9 est\xE1 mal. Hasta entonces AA funciona como si no existiera el archivo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 102
-"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "",
+"Correct %1 following datovka_conf.php.default. Until then AA has no ISDS account; AA reads the rest of the file." => "Corrija %1 seg\xFAn datovka_conf.php.default. Hasta entonces AA no tiene ninguna cuenta de ISDS; el resto del archivo AA s\xED lo lee.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "",
+"AA leaves out settings of misc/datovka/datovka_conf.php: %1" => "AA omite configuraci\xF3n de misc/datovka/datovka_conf.php: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 107
-"Correct each key as its problem says." => "",
+"Correct each key as its problem says." => "Corrija cada clave seg\xFAn indica su problema.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 113
-"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "",
+"misc/datovka/datovka_conf.php has keys AA does not read: %1" => "misc/datovka/datovka_conf.php contiene claves que AA no lee: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 116
-"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "",
+"Move an ISDS account under %1, or delete what AA does not read: at the top AA reads instances, test, standard and accounts, in test and standard cert and atsId, in an installation only url." => "Mueva una cuenta de ISDS bajo %1, o elimine lo que AA no lee: en el nivel superior AA lee instances, test, standard y accounts; en test y standard, cert y atsId; en una instalaci\xF3n, solo url.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "",
+"misc/datovka/datovka_conf.php still has addresses of ISDS: %1" => "misc/datovka/datovka_conf.php a\xFAn contiene direcciones de ISDS: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 122
-"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "",
+"AA does not read url_* and wsdl_* from the file - the addresses are part of AA. Delete them." => "AA no lee url_* ni wsdl_* del archivo: las direcciones forman parte de AA. Elim\xEDnelas.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 149
-"Other requests met a problem in misc/datovka/datovka_conf.php" => "",
+"Other requests met a problem in misc/datovka/datovka_conf.php" => "Otras peticiones encontraron un problema en misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 150
-"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "",
+"Other requests could not use the accounts of misc/datovka/datovka_conf.php" => "Otras peticiones no pudieron usar las cuentas de misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 151
-"Other requests could not use misc/datovka/datovka_conf.php" => "",
+"Other requests could not use misc/datovka/datovka_conf.php" => "Otras peticiones no pudieron usar misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 156
-"Site, one of them" => "",
+"Site, one of them" => "Sitio (uno de ellos)", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 158
-"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "",
+"%1 Seen on one day only, it is usually a network file system refusing PHP for a while. The finding disappears 7 days after %2." => "%1 Si solo apareci\xF3 un d\xEDa, suele ser un sistema de archivos en red que rechaz\xF3 a PHP durante un rato. El hallazgo desaparece 7 d\xEDas despu\xE9s de la fecha \xAB%2\xBB.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 159
-"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "",
+"The file has changed since, or another tree of AA over this database reads a file of its own. Correct what the problem names in the file each tree reads." => "El archivo ha cambiado desde entonces, u otro \xE1rbol de AA sobre esta base de datos lee un archivo propio. Corrija lo que indica el problema en el archivo que lee cada \xE1rbol.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "",
+"Answers of ISDS to messages of this database were refused: %1 does not list installation %2" => "Se rechazaron respuestas de ISDS a mensajes de esta base de datos: %1 no incluye la instalaci\xF3n %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 186
-"Answers of ISDS refused: the installation in their token is not in %1" => "",
+"Answers of ISDS refused: the installation in their token is not in %1" => "Respuestas de ISDS rechazadas: la instalaci\xF3n de su token no est\xE1 en %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id" => "",
+"Installation id" => "ID de la instalaci\xF3n", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 189
-"Installation id, one of them" => "",
+"Installation id, one of them" => "ID de la instalaci\xF3n (uno de ellos)", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 191
-"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "",
+"Add the installation of that id to %1, with its AA_INSTAL_URL - every installation that shares the registration of the authentication service lists the same ids." => "A\xF1ada a %1 la instalaci\xF3n con ese ID, junto con su AA_INSTAL_URL; todas las instalaciones que comparten el registro del servicio de autenticaci\xF3n incluyen los mismos ID.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 192
-"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "",
+"No message of this database has the token. If an installation that shares the registration of the authentication service has the id, add it to %1; otherwise the answer does not belong to this installation and nothing needs to change." => "Ning\xFAn mensaje de esta base de datos tiene ese token. Si una instalaci\xF3n que comparte el registro del servicio de autenticaci\xF3n tiene ese ID, a\xF1\xE1dalo a %1; si no, la respuesta no pertenece a esta instalaci\xF3n y no hay que cambiar nada.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 215
-"Test boxes of ISDS accounts AA cannot read: %1" => "",
+"Test boxes of ISDS accounts AA cannot read: %1" => "Buzones de prueba de cuentas de ISDS que AA no puede leer: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 218
-"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "",
+"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "Escriba test_boxes como una lista de ID de buzones de datos: ['<ID del buz\xF3n>', ...], cada uno de 7 letras o d\xEDgitos. Hasta entonces la cuenta env\xEDa, pero desde ella no sale ning\xFAn mensaje de prueba de un borrador.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 235
-"Paid tests of ISDS accounts AA cannot read: %1" => "",
+"Paid tests of ISDS accounts AA cannot read: %1" => "Pruebas de pago de cuentas de ISDS que AA no puede leer: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 238
-"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "",
+"Write paid_tests as true - without quotes - to let a test message of a draft cost money, or remove it. Until then a test message goes only free of charge." => "Escriba paid_tests como true (sin comillas) para permitir que un mensaje de prueba de un borrador cueste dinero, o qu\xEDtelo. Hasta entonces los mensajes de prueba solo se env\xEDan si son gratuitos.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "",
+"misc/datovka/datovka_conf.php is not checked for keys written twice - the file is over %1 KB" => "No se comprueba si misc/datovka/datovka_conf.php tiene claves escritas dos veces: el archivo supera los %1 KB", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 274
-"The settings of one installation take a few kilobytes - check what else the file holds." => "",
+"The settings of one installation take a few kilobytes - check what else the file holds." => "La configuraci\xF3n de una instalaci\xF3n ocupa unos pocos kilobytes; compruebe qu\xE9 m\xE1s contiene el archivo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 303
-"misc/datovka/datovka_conf.php writes keys twice: %1" => "",
+"misc/datovka/datovka_conf.php writes keys twice: %1" => "misc/datovka/datovka_conf.php contiene claves escritas dos veces: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 307
-"ISDS accounts of the sites of other databases: %1" => "",
+"ISDS accounts of the sites of other databases: %1" => "Cuentas de ISDS de los sitios de otras bases de datos: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 309
-"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "",
+"PHP keeps only the last of a key written twice and leaves out the first without a word. Join the two into one, or rename one of the accounts." => "De una clave escrita dos veces, PHP conserva solo la \xFAltima y omite la primera sin avisar. Una las dos en una sola o cambie el nombre de una de las cuentas.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 310
-"An account of the sites of another database: the State Check of the database of its sites names it." => "",
+"An account of the sites of another database: the State Check of the database of its sites names it." => "Una cuenta de los sitios de otra base de datos: la menciona la Comprobaci\xF3n de estado de la base de datos de sus sitios.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 341
-"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "",
+"misc/datovka/datovka_conf.php is readable to all users of the server, include/config.php is not" => "Todos los usuarios del servidor pueden leer misc/datovka/datovka_conf.php, pero no include/config.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 343
-"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "",
+"The file holds a password or a passphrase. Give it the owner, group and mode of include/config.php (chown, chmod), and check its ACL (getfacl)." => "El archivo contiene una contrase\xF1a o una frase de contrase\xF1a. As\xEDgnele el propietario, el grupo y el modo de include/config.php (chown, chmod) y compruebe su ACL (getfacl).", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 370
-"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "",
+"Copies of misc/datovka/datovka_conf.php in the directory of AA: %1" => "Copias de misc/datovka/datovka_conf.php en el directorio de AA: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 373
-"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "",
+"Keep copies of the file - backups, older versions, what an editor or svn leaves next to it - only outside the web tree. Move or delete these." => "Guarde las copias del archivo (copias de seguridad, versiones anteriores, lo que un editor o svn deja a su lado) solo fuera del \xE1rbol web. Mueva o elimine estas.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 393
-"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "",
+"AA cannot use the accounts of misc/datovka/datovka_conf.php" => "AA no puede usar las cuentas de misc/datovka/datovka_conf.php", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 398
-"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "",
+"Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "Asigne al archivo el propietario, el grupo y el modo de include/config.php, ya que cada sitio puede ejecutar PHP con su propio usuario, y compruebe que el open_basedir de cada sitio permite a PHP llegar al archivo (y al destino de un enlace). Hasta entonces AA funciona como si no existiera el archivo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 37
-"Letters to data boxes as a PDF" => "",
+"Letters to data boxes as a PDF" => "Cartas a buzones de datos en PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 42
-"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "",
+"Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "Convierte una carta breve en PDF, como lo hace el env\xEDo masivo a buzones de datos con la carta de cada campa\xF1a; solo cuando una cuenta de ISDS de misc/datovka/datovka_conf.php env\xEDa para un sitio de esta base de datos.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 81
-"AA makes letters to data boxes into a PDF" => "",
+"AA makes letters to data boxes into a PDF" => "AA convierte las cartas a buzones de datos en PDF", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 86
-"A letter to a data box cannot be made into a PDF" => "",
+"A letter to a data box cannot be made into a PDF" => "No se puede convertir en PDF una carta a un buz\xF3n de datos", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 87
-"Until then no campaign can be sent to data boxes." => "",
+"Until then no campaign can be sent to data boxes." => "Hasta entonces no se puede enviar ninguna campa\xF1a a buzones de datos.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 88
-"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "",
+"dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "Falta dompdf, que genera el PDF: ejecute composer install en el directorio de AA.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 89
-"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "",
+"PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "A PHP le falta la extensi\xF3n GD, que dibuja las im\xE1genes de la carta: inst\xE1lela y reinicie PHP.", // ai 2026-11
 
 // src/Optimize/CheckIsdsPdf.php, row 90
-"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "",
+"Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "Ejecute composer install en el directorio de AA (instala dompdf y sus fuentes) y compruebe que PHP puede escribir en su directorio temporal (sys_temp_dir).", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 30
-"Data boxes of the items" => "",
+"Data boxes of the items" => "Buzones de datos de los \xEDtems", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 35
-"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "",
+"Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice." => "Compara los buzones de datos de los \xEDtems con el registro de buzones de datos descargado, en los canales que emparejan sus \xEDtems con \xE9l, e indica las cuentas de ISDS cuyos sitios no usan ning\xFAn canal as\xED.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 60
-"No slice pairs its items with the register of data boxes" => "",
+"No slice pairs its items with the register of data boxes" => "Ning\xFAn canal empareja sus \xEDtems con el registro de buzones de datos", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 63
-"Paired slices whose items have the data boxes of the register: %1" => "",
+"Paired slices whose items have the data boxes of the register: %1" => "Canales emparejados cuyos \xEDtems tienen los buzones de datos del registro: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 88
-"ISDS account" => "",
+"ISDS account" => "Cuenta de ISDS", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 94
-"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "",
+"Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients" => "Los sitios de las cuentas de ISDS no usan ning\xFAn canal con configuraci\xF3n de buzones de datos, as\xED que el env\xEDo masivo no puede tomar sus destinatarios", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 97
-"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "",
+"Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to." => "En la configuraci\xF3n del canal del que las campa\xF1as toman sus destinatarios (un canal p\xFAblico que usa el sitio; vea \xABUsa m\xF3dulos\xBB en la configuraci\xF3n del sitio), abra la p\xE1gina \xABBuzones de datos del registro\xBB y elija all\xED los campos de sus \xEDtems: el nombre, el tipo y el buz\xF3n de datos al que env\xEDa el env\xEDo masivo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 112
-"Data boxes of %1" => "",
+"Data boxes of %1" => "Buzones de datos de %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 114
-"Download it on the page Data boxes from the register of a paired slice." => "",
+"Download it on the page Data boxes from the register of a paired slice." => "Desc\xE1rguelo en la p\xE1gina \xABBuzones de datos del registro\xBB de un canal emparejado.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"The directory of the register of data boxes cannot be used" => "",
+"The directory of the register of data boxes cannot be used" => "No se puede usar el directorio del registro de buzones de datos", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 119
-"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "",
+"Let PHP search the directory, or set IMG_UPLOAD_PATH in config.php. Then download the register on the page Data boxes from the register of a paired slice." => "Permita a PHP recorrer el directorio, o ajuste IMG_UPLOAD_PATH en config.php. Despu\xE9s descargue el registro en la p\xE1gina \xABBuzones de datos del registro\xBB de un canal emparejado.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The register of data boxes has not been downloaded" => "",
+"The register of data boxes has not been downloaded" => "El registro de buzones de datos no se ha descargado", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 122
-"The items are compared with it." => "",
+"The items are compared with it." => "Los \xEDtems se comparan con \xE9l.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 127
-"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "",
+"Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register." => "Descargue de nuevo el registro en la p\xE1gina \xABBuzones de datos del registro\xBB de un canal emparejado. Hasta entonces los \xEDtems no se comparan con el registro.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"The downloaded register of data boxes is older than %1 days" => "",
+"The downloaded register of data boxes is older than %1 days" => "El registro de buzones de datos descargado tiene m\xE1s de %1 d\xEDas", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Downloaded" => "",
+"Downloaded" => "Descargado", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 134
-"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "",
+"Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge." => "Desc\xE1rguelo de nuevo en la p\xE1gina \xABBuzones de datos del registro\xBB de un canal emparejado: las autoridades obtienen buzones nuevos y se fusionan.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 140
-"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "",
+"The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it." => "La copia del registro est\xE1 da\xF1ada: una nueva descarga en la p\xE1gina \xABBuzones de datos del registro\xBB de un canal emparejado la reemplaza.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 141
-"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "",
+"The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later." => "No se puede leer la copia del registro: compruebe el directorio y los permisos indicados en la evidencia; si son correctos, fall\xF3 una lectura del disco; int\xE9ntelo m\xE1s tarde.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 142
-"The downloaded register of data boxes cannot be read" => "",
+"The downloaded register of data boxes cannot be read" => "No se puede leer el registro de buzones de datos descargado", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"The pairing of slice \"%1\" with the register no longer fits its fields" => "",
+"The pairing of slice \"%1\" with the register no longer fits its fields" => "El emparejamiento del canal \xAB%1\xBB con el registro ya no corresponde a sus campos", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 172
-"Choose the fields again in the settings on the page Data boxes from the register." => "",
+"Choose the fields again in the settings on the page Data boxes from the register." => "Elija de nuevo los campos en la configuraci\xF3n de la p\xE1gina \xABBuzones de datos del registro\xBB.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 187
-"Slice \"%1\": items without a data box: %2, items with another box than the register by I\xC4\x8CO: %3" => "",
+"Slice \"%1\": items without a data box: %2, items with another box than the register by I\xC4\x8CO: %3" => "Canal \xAB%1\xBB: \xEDtems sin buz\xF3n de datos: %2; \xEDtems con un buz\xF3n distinto del que indica el registro seg\xFAn el ICO: %3", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 190
-"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "",
+"Open the page Data boxes from the register, check the boxes it found and write them. Items the register does not find need their box filled in by hand." => "Abra la p\xE1gina \xABBuzones de datos del registro\xBB, compruebe los buzones encontrados y gu\xE1rdelos. A los \xEDtems que el registro no encuentra hay que rellenarles el buz\xF3n a mano.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 21
-"Message items of mass sendings" => "",
+"Message items of mass sendings" => "\xCDtems de mensajes de los env\xEDos masivos", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 26
-"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "",
+"Compares the message items of recent mass sendings to data boxes with the records of their runs, which the sending goes by." => "Compara los \xEDtems de mensajes de los env\xEDos masivos recientes a buzones de datos con los registros de sus ejecuciones, por los que se rige el env\xEDo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"Message items of a mass sending do not show what its record says: %1" => "",
+"Message items of a mass sending do not show what its record says: %1" => "Los \xEDtems de mensajes de un env\xEDo masivo no muestran lo que indica su registro: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 93
-"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "",
+"The sending goes by its record; the items only show it to people, and an item that shows a message as not sent though it went makes someone send it again by hand. Each example is the sender reference, the item, what it shows and what the record says: set the state of the item to that, or verify the message in the ISDS portal by its sender reference." => "El env\xEDo se rige por su registro; los \xEDtems solo lo muestran a las personas, y un \xEDtem que muestra un mensaje como no enviado aunque s\xED sali\xF3 hace que alguien lo vuelva a enviar a mano. Cada ejemplo indica la referencia del remitente, el \xEDtem, lo que muestra y lo que indica el registro: ajuste el estado del \xEDtem a ese valor o verifique el mensaje en el portal de ISDS por su referencia del remitente.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRunItems.php, row 96
 // src/Optimize/CheckIsdsRuns.php, row 90
@@ -12827,140 +13057,140 @@ return [
 "%1: nothing found" => "%1: no se encontr\xF3 nada", // ai 2026-10
 
 // src/Optimize/CheckIsdsRuns.php, row 51
-"Mass sendings to data boxes" => "",
+"Mass sendings to data boxes" => "Env\xEDos masivos a buzones de datos", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 56
-"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "",
+"Warns about mass sendings to data boxes that hang or stopped by an error, that left messages of unknown fate or had many fail, whose following of the delivery has stalled or left messages not known to be delivered, and about campaigns that do not show how their sending went." => "Advierte de los env\xEDos masivos a buzones de datos que se atascaron o se detuvieron por un error, que dejaron mensajes de destino desconocido o en los que fallaron muchos, cuyo seguimiento de la entrega se estanc\xF3 o dej\xF3 mensajes sin entrega confirmada, y de las campa\xF1as que no muestran c\xF3mo termin\xF3 su env\xEDo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"The campaign of a finished mass sending does not show its end" => "",
+"The campaign of a finished mass sending does not show its end" => "La campa\xF1a de un env\xEDo masivo terminado no muestra su fin", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 112
-"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "",
+"Nothing writes the campaign item again. Set its state by hand: stopped when the sending was stopped before every message went, otherwise done." => "Nada volver\xE1 a escribir el \xEDtem de la campa\xF1a. Ajuste su estado a mano: detenido si el env\xEDo se detuvo antes de que salieran todos los mensajes; si no, terminado.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 121
-"Mass sendings to data boxes whose campaign item is gone: %1" => "",
+"Mass sendings to data boxes whose campaign item is gone: %1" => "Env\xEDos masivos a buzones de datos cuyo \xEDtem de campa\xF1a ya no existe: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 125
-"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "",
+"Their records and frozen letters stay as the evidence of what was sent - AA does not delete them with the campaign. A sending not finished goes on to its end: its record holds whom and what it sends." => "Sus registros y cartas congeladas quedan como evidencia de lo enviado: AA no los elimina con la campa\xF1a. Un env\xEDo no terminado contin\xFAa hasta el final: su registro contiene a qui\xE9n y qu\xE9 env\xEDa.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 160
-"Messages of unknown fate" => "",
+"Messages of unknown fate" => "Mensajes de destino desconocido", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"Following the delivery of a mass sending to data boxes stopped by an error" => "",
+"Following the delivery of a mass sending to data boxes stopped by an error" => "El seguimiento de la entrega de un env\xEDo masivo a buzones de datos se detuvo por un error", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 166
-"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "",
+"All messages went, only finding out whether they were delivered has stopped. Fix what the error code names, then choose Continue on the page of the sending - it reads the states it missed - or Abandon, which ends the following for good." => "Todos los mensajes salieron; solo se detuvo la comprobaci\xF3n de si fueron entregados. Corrija lo que indica el c\xF3digo de error y luego elija \xABContinuar\xBB en la p\xE1gina del env\xEDo (lee tambi\xE9n los estados que no lleg\xF3 a leer) o \xABAbandonar\xBB, que termina el seguimiento definitivamente.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 167
-"A mass sending to data boxes stopped by an error" => "",
+"A mass sending to data boxes stopped by an error" => "Un env\xEDo masivo a buzones de datos se detuvo por un error", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 169
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Abandon, which ends it for good: a message that may have left then stays for a person to verify. The campaign item may still show the sending going on when the error came before the run could write it." => "No se enviar\xE1 nada m\xE1s hasta que alguien intervenga. Corrija lo que indica el c\xF3digo de error y luego elija \xABContinuar\xBB en la p\xE1gina del env\xEDo, o \xABAbandonar\xBB, que lo termina definitivamente: un mensaje que quiz\xE1 sali\xF3 queda entonces para que lo verifique una persona. El \xEDtem de la campa\xF1a puede seguir mostrando el env\xEDo en curso si el error lleg\xF3 antes de que la ejecuci\xF3n pudiera escribirlo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 170
-"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "",
+"Nothing more is sent until someone acts. Fix what the error code names, then choose Continue on the page of the sending - or Stop, after which nothing more is sent. A message that may have left is never sent again: the sending looks it up. The campaign item may still show the sending going on when the error came before the run could write it." => "No se enviar\xE1 nada m\xE1s hasta que alguien intervenga. Corrija lo que indica el c\xF3digo de error y luego elija \xABContinuar\xBB en la p\xE1gina del env\xEDo, o \xABDetener\xBB, tras lo cual no se env\xEDa nada m\xE1s. Un mensaje que quiz\xE1 sali\xF3 nunca se vuelve a enviar: el env\xEDo lo localiza. El \xEDtem de la campa\xF1a puede seguir mostrando el env\xEDo en curso si el error lleg\xF3 antes de que la ejecuci\xF3n pudiera escribirlo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"A mass sending to data boxes has not moved on for %1 hours" => "",
+"A mass sending to data boxes has not moved on for %1 hours" => "Un env\xEDo masivo a buzones de datos lleva %1 horas sin avanzar", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 175
-"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "",
+"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the page of the sending." => "Ning\xFAn paso de la cola trabaja en \xE9l. Compruebe que cron ejecuta la cola de tareas y que sus rondas son lo bastante largas para un paso (TOEXECUTE_ALLOWED_TIME en config.php); luego elija \xABContinuar\xBB en la p\xE1gina del env\xEDo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A finished mass sending left messages of unknown fate: %1" => "",
+"A finished mass sending left messages of unknown fate: %1" => "Un env\xEDo masivo terminado dej\xF3 mensajes de destino desconocido: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 184
-"A mass sending being followed has messages of unknown fate: %1" => "",
+"A mass sending being followed has messages of unknown fate: %1" => "Un env\xEDo masivo en seguimiento tiene mensajes de destino desconocido: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 185
-"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "",
+"They may have been delivered, so AA never sends them again. Look each up by its sender reference among the sent messages of the data box in the ISDS portal. For one that is not there, choose Verify on the page of the sending - it then counts as not sent - and send the letter again to that recipient in a new campaign." => "Pueden haber sido entregados, por eso AA nunca los vuelve a enviar. Busque cada uno por su referencia del remitente entre los mensajes enviados del buz\xF3n de datos en el portal de ISDS. Para uno que no est\xE9 all\xED, elija \xABVerificar\xBB en la p\xE1gina del env\xEDo (entonces cuenta como no enviado) y env\xEDe la carta de nuevo a ese destinatario en una nueva campa\xF1a.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 193
-"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "",
+"Those recipients did not get the letter. Their message items show what ISDS said of each: fix the cause and send them the letter again in a new campaign." => "Esos destinatarios no recibieron la carta. Sus \xEDtems de mensajes muestran lo que ISDS indic\xF3 de cada uno: corrija la causa y env\xEDeles la carta de nuevo en una nueva campa\xF1a.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 195
-"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "",
+"Code 3: an attachment did not pass the antivirus check of ISDS (an invalid PDF fails it too). Fix the attachments first: the same attachment fails again." => "C\xF3digo 3: un adjunto no super\xF3 el control antivirus de ISDS (un PDF no v\xE1lido tampoco lo supera). Corrija primero los adjuntos: el mismo adjunto volver\xE1 a fallar.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 198
-"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "",
+"Code 8: the data box of the recipient was made inaccessible. The message is not delivered, though it may show a time of fiction, and no new one to that box arrives: find the new data box of the recipient." => "C\xF3digo 8: el buz\xF3n de datos del destinatario se ha hecho inaccesible. El mensaje no est\xE1 entregado, aunque puede mostrar una hora de entrega ficticia, y a ese buz\xF3n no llega ning\xFAn mensaje nuevo: averig\xFCe el nuevo buz\xF3n de datos del destinatario.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 200
-"%1 of %2 messages of a mass sending to data boxes failed" => "",
+"%1 of %2 messages of a mass sending to data boxes failed" => "Fallaron %1 de %2 mensajes de un env\xEDo masivo a buzones de datos", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"A mass sending to data boxes ended with messages not known to be delivered: %1" => "",
+"A mass sending to data boxes ended with messages not known to be delivered: %1" => "Un env\xEDo masivo a buzones de datos termin\xF3 con mensajes sin entrega confirmada: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 206
-"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "",
+"ISDS told AA neither their delivery nor a refusal while it followed them. Verify each in the ISDS portal by its sender reference among the sent messages of the data box." => "Durante el seguimiento, ISDS no comunic\xF3 a AA ni su entrega ni un rechazo. Verifique cada uno en el portal de ISDS por su referencia del remitente entre los mensajes enviados del buz\xF3n de datos.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 235
-"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "",
+"ISDS blocked the address of this server. AA tries again after 24 hours. See the check \"%1\"." => "ISDS bloque\xF3 la direcci\xF3n de este servidor. AA lo intentar\xE1 de nuevo pasadas 24 horas. Vea la comprobaci\xF3n \xAB%1\xBB.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 236
-"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "",
+"PHP cannot read misc/datovka/datovka_conf.php: give it read access to the file again." => "PHP no puede leer misc/datovka/datovka_conf.php: vuelva a darle permiso de lectura del archivo.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 237
-"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "",
+"The data box has so many changes in an hour that AA cannot read them: verify the delivery of the messages in the ISDS portal by their sender references." => "El buz\xF3n de datos tiene tantos cambios en una hora que AA no puede leerlos: verifique la entrega de los mensajes en el portal de ISDS por sus referencias del remitente.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 238
-"ISDS did not answer when AA read the delivery of the messages." => "",
+"ISDS did not answer when AA read the delivery of the messages." => "ISDS no respondi\xF3 cuando AA le\xEDa la entrega de los mensajes.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 242
-"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "",
+"The record says the delivery was read up to a time in the future. The next round reads it again from the start of the sending and sends no message again; if this finding persists, check the clocks of the servers that run the task queue." => "El registro indica que la entrega se ley\xF3 hasta una hora futura. La pr\xF3xima ronda la leer\xE1 de nuevo desde el inicio del env\xEDo y no reenviar\xE1 ning\xFAn mensaje; si este hallazgo persiste, compruebe los relojes de los servidores que ejecutan la cola de tareas.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 243
-"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "",
+"AA tries again by itself; once it can read, it reads the states it missed too and sends no message again." => "AA lo intenta de nuevo por s\xED mismo; en cuanto pueda leer, leer\xE1 tambi\xE9n los estados que no lleg\xF3 a leer y no reenviar\xE1 ning\xFAn mensaje.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Read up to" => "",
+"Read up to" => "Le\xEDdo hasta", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 244
-"Last wait" => "",
+"Last wait" => "\xDAltima espera", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 245
-"Following the delivery of a mass sending to data boxes has stalled" => "",
+"Following the delivery of a mass sending to data boxes has stalled" => "El seguimiento de la entrega de un env\xEDo masivo a buzones de datos se ha estancado", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record of a mass sending to data boxes cannot be read" => "",
+"The record of a mass sending to data boxes cannot be read" => "No se puede leer el registro de un env\xEDo masivo a buzones de datos", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 251
-"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "",
+"The record or the frozen recipients of the sending were changed outside AA. Restore them from a backup of the database before anyone chooses Continue: the record is what keeps a message from going twice." => "El registro o los destinatarios congelados del env\xEDo se modificaron fuera de AA. Rest\xE1urelos desde una copia de seguridad de la base de datos antes de que alguien elija \xABContinuar\xBB: el registro es lo que impide que un mensaje salga dos veces.", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 264, 309
-"Campaign item" => "",
+"Campaign item" => "\xCDtem de la campa\xF1a", // ai 2026-11
 
 // src/Optimize/CheckIsdsRuns.php, row 309
-"Campaign state" => "",
+"Campaign state" => "Estado de la campa\xF1a", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 35
-"Views of mass sendings" => "",
+"Views of mass sendings" => "Vistas de env\xEDos masivos", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 40
-"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "",
+"Checks the names of the views of a page of a mass sending to data boxes: each view isds_... once in the slices of campaigns and messages of an ISDS account - of two the page shows none -, and the entry view isdscampainer once among the slices of the site." => "Comprueba los nombres de las vistas de la p\xE1gina de un env\xEDo masivo a buzones de datos: cada vista isds_... una sola vez en los canales de campa\xF1as y de mensajes de una cuenta de ISDS (de dos hom\xF3nimas la p\xE1gina no muestra ninguna) y la vista de entrada isdscampainer una sola vez entre los canales del sitio.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 79
-"Views of the slices of ISDS account %1 share the name %2" => "",
+"Views of the slices of ISDS account %1 share the name %2" => "Las vistas de los canales de la cuenta de ISDS %1 comparten el nombre %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 82
-"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "",
+"The page of the mass sending shows none of them. Keep the name on one view of the slice of campaigns or of messages, and rename or delete the others." => "La p\xE1gina del env\xEDo masivo no muestra ninguna de ellas. Deje el nombre en una sola vista del canal de campa\xF1as o de mensajes, y renombre o elimine las dem\xE1s.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 95
-"Site %1 has the entry view isdscampainer more than once" => "",
+"Site %1 has the entry view isdscampainer more than once" => "El sitio %1 tiene la vista de entrada isdscampainer m\xE1s de una vez", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 98
-"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "",
+"{view:isdscampainer} takes the view of the highest number, which need not be the page of the mass sending. Call the entry view by its number in the spot of the page, and rename the views of that name that are not it." => "{view:isdscampainer} toma la vista de n\xFAmero m\xE1s alto, que no tiene por qu\xE9 ser la de la p\xE1gina del env\xEDo masivo. Llame a la vista de entrada por su n\xFAmero en el spot de la p\xE1gina y renombre las dem\xE1s vistas con ese nombre.", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 123
-"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "",
+"A page of a mass sending on site %1 shows a view no view of its slices is named: %2" => "Una p\xE1gina de env\xEDo masivo del sitio %1 muestra una vista cuyo nombre no lleva ninguna vista de sus canales: %2", // ai 2026-11
 
 // src/Optimize/CheckIsdsViews.php, row 127, 163
 // src/Util/ChangesMonitor.php, row 444
 "View" => "Ver",
 
 // src/Optimize/CheckIsdsViews.php, row 131
-"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "",
+"That part of the page stays empty. Give the name back to the view of the slice of campaigns or of messages that was renamed, or correct the name in the template." => "Esa parte de la p\xE1gina queda vac\xEDa. Devuelva el nombre a la vista renombrada del canal de campa\xF1as o de mensajes, o corrija el nombre en la plantilla.", // ai 2026-11
 
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 28
 "Item edits without the edit permission" => "Ediciones de \xEDtems sin permiso de edici\xF3n", // ai 2026-10
@@ -13244,23 +13474,92 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "No se rechaz\xF3 ning\xFAn formulario de objeto en los \xFAltimos 30 d\xEDas", // ai 2026-10
 
+// src/Optimize/CheckPasskeys.php, row 35
+"Passkey logins" => "Inicios de sesi\xF3n con llave de acceso", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 40
+"Lists the passkey logins refused in the last 30 days and the right passwords of accounts that log in by a passkey." => "Lista los inicios de sesi\xF3n con llave de acceso rechazados en los \xFAltimos 30 d\xEDas y las contrase\xF1as correctas de cuentas que inician sesi\xF3n con llave de acceso.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Passkeys cannot be used yet - the table authenticator is missing" => "Las llaves de acceso a\xFAn no se pueden usar: falta la tabla authenticator", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Run service/sql_update.php - it creates the table." => "Ejecute service/sql_update.php: crea la tabla.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 95
+"No passkey login was refused in the last 30 days" => "No se rechaz\xF3 ning\xFAn inicio de sesi\xF3n con llave de acceso en los \xFAltimos 30 d\xEDas", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"Right password of a passkey account" => "Contrase\xF1a correcta de una cuenta con llave de acceso", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The right password of an account that logs in by a passkey (%1)" => "La contrase\xF1a correcta de una cuenta que inicia sesi\xF3n con llave de acceso (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The account logs in only by its passkey, so the password did not let anybody in - but someone knows it. If it was not the owner, the password should be changed; it is used again once the passkeys are deleted." => "La cuenta inicia sesi\xF3n solo con su llave de acceso, as\xED que la contrase\xF1a no dej\xF3 entrar a nadie, pero alguien la conoce. Si no fue el propietario, conviene cambiar la contrase\xF1a; vuelve a usarse en cuanto se eliminan las llaves de acceso.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"Passkeys unknown - the directory did not answer" => "Llaves de acceso desconocidas: el directorio no respondi\xF3", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The directory did not answer whether %1 has a passkey" => "El directorio no respondi\xF3 si %1 tiene llave de acceso", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The password was refused, as the account may log in only by a passkey. Check the LDAP server and the bind account of AA." => "Se rechaz\xF3 la contrase\xF1a, ya que la cuenta puede iniciar sesi\xF3n solo con llave de acceso. Compruebe el servidor LDAP y la cuenta de enlace (bind) de AA.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"Passkey answer from another address" => "Respuesta de llave de acceso desde otra direcci\xF3n", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"A passkey answer from another address than the page (%1)" => "Una respuesta de llave de acceso desde una direcci\xF3n distinta de la de la p\xE1gina (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"AA sees the page under another host or scheme than the browser - usually a reverse proxy missing from AA_TRUSTED_PROXIES, or a site reached by http." => "AA ve la p\xE1gina con otro host o esquema que el navegador; normalmente, un proxy inverso que falta en AA_TRUSTED_PROXIES o un sitio al que se accede por http.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"Security key counter went back" => "El contador de la llave de seguridad retrocedi\xF3", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"A security key of %1 signed with a counter it had used before" => "Una llave de seguridad de %1 firm\xF3 con un contador que ya hab\xEDa usado", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"The key may have been copied. The login was let through, so its owner is not locked out; ask the owner and delete the passkey on the page of the account if in doubt." => "La llave puede haber sido copiada. Se permiti\xF3 el inicio de sesi\xF3n para no bloquear a su propietario; pregunte al propietario y, en caso de duda, elimine la llave de acceso en la p\xE1gina de la cuenta.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Unknown passkey" => "Llave de acceso desconocida", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"A login by a passkey this AA does not keep" => "Un inicio de sesi\xF3n con una llave de acceso que este AA no guarda", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Usually a passkey deleted in AA but still in the browser or phone of its owner, or one of another AA on the same host. The owner can delete it in the device." => "Normalmente, una llave de acceso eliminada en AA pero que sigue en el navegador o el tel\xE9fono de su propietario, o una de otro AA en el mismo host. El propietario puede eliminarla en el dispositivo.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"Passkey login refused" => "Inicio de sesi\xF3n con llave de acceso rechazado", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"A passkey login refused: %1" => "Inicio de sesi\xF3n con llave de acceso rechazado: %1", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"An expired or repeated login, or an answer no browser sends. Nothing to do unless it repeats." => "Un inicio de sesi\xF3n caducado o repetido, o una respuesta que ning\xFAn navegador env\xEDa. No hace falta hacer nada, salvo que se repita.", // ai 2026-11
+
 // src/Optimize/CheckPerVisitorReads.php, row 18
-"Pages left out of the page cache by {server:...}" => "",
+"Pages left out of the page cache by {server:...}" => "P\xE1ginas excluidas de la cach\xE9 de p\xE1ginas por {server:...}", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 23
-"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "",
+"Lists the sites and slices whose templates read by {server:...} a value which may be the visitor's own (address, browser, referer) - the page cache does not store such pages." => "Lista los sitios y canales cuyas plantillas leen mediante {server:...} un valor que puede ser propio del visitante (direcci\xF3n, navegador, referer); la cach\xE9 de p\xE1ginas no guarda esas p\xE1ginas.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 72
-"Reads" => "",
+"Reads" => "Lee", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 78
-"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "",
+"%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "%1 tiene p\xE1ginas que la cach\xE9 de p\xE1ginas no guarda: una plantilla lee un valor que puede ser propio del visitante", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 81
-"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "",
+"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Cada visita vuelve a generar esa p\xE1gina. Una redirecci\xF3n, un contador de clics o un formulario pueden quedarse como est\xE1n. En otros casos, sobre todo en una plantilla de todas las p\xE1ginas (cabecera, pie): elimine un valor impreso solo para depuraci\xF3n y compruebe la ortograf\xEDa del nombre ({server:HTTP_REFERER}); para distinguir a los visitantes que llegan de una campa\xF1a use {qs:utm_source}, para el dispositivo {detect}. El host, el esquema y la URI ({server:HTTP_HOST}, {server:REQUEST_URI}) mantienen la p\xE1gina en la cach\xE9.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 86
-"No template reads a value of the visitor's own by {server:...}" => "",
+"No template reads a value of the visitor's own by {server:...}" => "Ninguna plantilla lee mediante {server:...} un valor propio del visitante", // ai 2026-11
 
 // src/Optimize/CheckPhpFatals.php, row 24
 "PHP fatal errors" => "Errores fatales de PHP", // ai 2026-10
@@ -13374,28 +13673,28 @@ return [
 "No queued task with a missing class in the last 30 days" => "Ninguna tarea en cola con una clase inexistente en los \xFAltimos 30 d\xEDas", // ai 2026-10
 
 // src/Optimize/CheckRelatedSlices.php, row 20
-"Related slices of another website" => "",
+"Related slices of another website" => "Canales relacionados de otro sitio web", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 25
-"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "",
+"Lists related-item fields (rim with the edit button, mng) pointing to a slice that no website of their own slice uses. The editors of the slice can edit the items of that slice." => "Lista los campos de \xEDtems relacionados (rim con el bot\xF3n de edici\xF3n, mng) que apuntan a un canal que no usa ning\xFAn sitio web de su propio canal. Los editores del canal pueden editar los \xEDtems de ese canal.", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 78
-"Related slice" => "",
+"Related slice" => "Canal relacionado", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 79
-"Its websites" => "",
+"Its websites" => "Sus sitios web", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 85
-"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "",
+"No related-item field points to a slice of another website; %1 fields of slices no website uses were not compared" => "Ning\xFAn campo de \xEDtems relacionados apunta a un canal de otro sitio web; campos de canales que no usa ning\xFAn sitio web, no comparados: %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 86
-"Every related-item field points to a slice of its own website" => "",
+"Every related-item field points to a slice of its own website" => "Todos los campos de \xEDtems relacionados apuntan a un canal de su propio sitio web", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 90
-"%1 related-item fields point to a slice of another website" => "",
+"%1 related-item fields point to a slice of another website" => "Campos de \xEDtems relacionados que apuntan a un canal de otro sitio web: %1", // ai 2026-11
 
 // src/Optimize/CheckRelatedSlices.php, row 92
-"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "",
+"The editors of the slice can edit the items of the related slice. If the field was copied with a template, point it to the slice of its own website." => "Los editores del canal pueden editar los \xEDtems del canal relacionado. Si el campo se copi\xF3 con una plantilla, ap\xFAntelo al canal de su propio sitio web.", // ai 2026-11
 
 // src/Optimize/CheckRequiredSettings.php, row 17
 "Required slice settings" => "Configuraci\xF3n obligatoria de canales", // ai 2026-10
@@ -13696,77 +13995,77 @@ return [
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "El alias no muestra nada: f_u solo llama a funciones de la instalaci\xF3n (usr_* en include/usr_aliasfnc.php), nunca a funciones de PHP o de AA. Escriba una funci\xF3n usr_* que haga lo necesario o use en su lugar una expresi\xF3n de AA.", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 35
-"Slices left out of views, charsets ignored" => "",
+"Slices left out of views, charsets ignored" => "Canales excluidos de vistas, juegos de caracteres ignorados", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 40
-"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "",
+"Lists the views that left out a slice in the last 30 days because the page did not know the slice's reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it." => "Lista las vistas que excluyeron un canal en los \xFAltimos 30 d\xEDas porque la p\xE1gina no conoc\xEDa la contrase\xF1a de lectura del canal: una vista llamada desde la URL sobre ese canal, o con par\xE1metros que nombran el canal o \xEDtems suyos.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 41
-"And the conditions on fields of related items in such a slice, which matched nothing." => "",
+"And the conditions on fields of related items in such a slice, which matched nothing." => "Y las condiciones sobre campos de \xEDtems relacionados en ese canal, que no encontraron nada.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 42
-"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "",
+"And the conditions and sorts on fields whose values AA never shows, such as passwords, which were left out." => "Y las condiciones y ordenaciones excluidas sobre campos cuyos valores AA nunca muestra, como las contrase\xF1as.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 43
-"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "",
+"Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored." => "Tambi\xE9n lista los juegos de caracteres que enlaces y formularios indicaron en convertfrom o convertto y que se ignoraron.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 135
-"Slice settings (reading password)" => "",
+"Slice settings (reading password)" => "Configuraci\xF3n del canal (contrase\xF1a de lectura)", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 139
-"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "",
+"A condition, sort or grouping on field %1 of slice %2 was left out: AA never shows its values" => "Se excluy\xF3 una condici\xF3n, ordenaci\xF3n o agrupaci\xF3n por el campo %1 del canal %2: AA nunca muestra sus valores", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 141
-"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition, sort or grouping on a password, its copy, a two-factor secret or another field whose values AA never shows (also cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... or group_by= in the URL). The condition matched nothing, the sort and the grouping were dropped. Whether the field is filled can still be asked (ISNULL, NOTNULL); remove the condition or sort from the view or template otherwise. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Una vista, {ids} o una b\xFAsqueda en la p\xE1gina ten\xEDa una condici\xF3n, ordenaci\xF3n o agrupaci\xF3n por una contrase\xF1a, su copia, un secreto de doble factor u otro campo cuyos valores AA nunca muestra (tambi\xE9n cmd[]=d-..., sort[], set[]=sort-..., set[]=group_by-... o group_by= en la URL). La condici\xF3n no encontr\xF3 nada; la ordenaci\xF3n y la agrupaci\xF3n se descartaron. S\xED se puede consultar si el campo est\xE1 relleno (ISNULL, NOTNULL); en otro caso, quite la condici\xF3n u ordenaci\xF3n de la vista o la plantilla. Si no conoce la p\xE1gina, la solicitud no vino de sus p\xE1ginas y no hace falta cambiar nada.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 142
-"Protected field refused" => "",
+"Protected field refused" => "Campo protegido rechazado", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 144
-"A condition on related items matched nothing in slice %1: its reading password was not known" => "",
+"A condition on related items matched nothing in slice %1: its reading password was not known" => "Una condici\xF3n sobre \xEDtems relacionados no encontr\xF3 nada en el canal %1: no se conoc\xEDa su contrase\xF1a de lectura", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 146
-"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A view, {ids} or a search on the page had a condition on a field of related items in that slice (<field>@<relation> or <field>@<slice>/<relation>, also cmd[]=d-... in the URL), and the page did not know the slice's reading password, so the condition matched nothing. If your page needs it, give the password in the template of the page ({credentials:...}) before the view, never in a link, AJAX or jsview.php. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Una vista, {ids} o una b\xFAsqueda en la p\xE1gina ten\xEDa una condici\xF3n sobre un campo de \xEDtems relacionados en ese canal (<field>@<relation> o <field>@<slice>/<relation>, tambi\xE9n cmd[]=d-... en la URL), y la p\xE1gina no conoc\xEDa la contrase\xF1a de lectura del canal, as\xED que la condici\xF3n no encontr\xF3 nada. Si su p\xE1gina la necesita, indique la contrase\xF1a en la plantilla de la p\xE1gina ({credentials:...}) antes de la vista, nunca en un enlace, AJAX o jsview.php. Si no conoce la p\xE1gina, la solicitud no vino de sus p\xE1ginas y no hace falta cambiar nada.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 147
-"Condition refused" => "",
+"Condition refused" => "Condici\xF3n rechazada", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 149
-"View %1" => "",
+"View %1" => "Vista %1", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 150
-"%1 left out slice %2: its reading password was not known" => "",
+"%1 left out slice %2: its reading password was not known" => "%1 excluy\xF3 el canal %2: no se conoc\xEDa su contrase\xF1a de lectura", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 151
-"Listed by" => "",
+"Listed by" => "Listado por", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 152
-"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice's reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change." => "La vista se llam\xF3 desde la URL (view.php, jsview.php, discussion.php), tambi\xE9n como banner de esa vista o de slice.php (set[]=banner-..., slice.php?banner=...), sobre ese canal, o lo nombraban sus par\xE1metros de URL (set[]=slice_id-.../slices-..., los ids de \xEDtems de cmd[]=x-...) o slices[] de slice.php, y la p\xE1gina no conoc\xEDa la contrase\xF1a de lectura del canal. Si su p\xE1gina necesita ah\xED el canal, llame a la vista desde la plantilla de la p\xE1gina ({view...}), donde las vistas son de confianza; indique su contrase\xF1a en la URL (slice_pwd=...) solo en un include del lado del servidor, nunca en un enlace, AJAX o jsview.php, donde acabar\xEDa en el c\xF3digo fuente de la p\xE1gina y en los registros. Si no conoce la p\xE1gina, la solicitud no vino de sus p\xE1ginas y no hace falta cambiar nada.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 162, 193
-"Page asked for" => "",
+"Page asked for" => "P\xE1gina solicitada", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 176
-"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "",
+"No slice was left out of a view or a condition, no protected field was refused and no charset was ignored in the last 30 days" => "En los \xFAltimos 30 d\xEDas no se excluy\xF3 ning\xFAn canal de una vista ni de una condici\xF3n, no se rechaz\xF3 ning\xFAn campo protegido y no se ignor\xF3 ning\xFAn juego de caracteres", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 187
-"%1 ignored a charset in %2" => "",
+"%1 ignored a charset in %2" => "%1 ignor\xF3 un juego de caracteres en %2", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 191
 // src/Security/Protection.php, row 92
 "Parameter" => "Par\xE1metro", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 192
-"Latest charsets" => "",
+"Latest charsets" => "\xDAltimos juegos de caracteres", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 194
-"Link on page" => "",
+"Link on page" => "Enlace en la p\xE1gina", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 198
-"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "",
+"A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Un enlace o formulario indic\xF3 un juego de caracteres para convertir una vista, discusi\xF3n, encuesta o formulario (convertfrom o convertto de view.php, jsview.php, discussion.php, poll.php y filler.php, tambi\xE9n set[...]=convertfrom-... de una vista) que AA no toma de la URL; se ignor\xF3 como si no estuviera. Se permiten %1, sin distinguir may\xFAsculas y min\xFAsculas. Corrija el juego de caracteres en el enlace o formulario de su p\xE1gina, o quite convertfrom: la vista convierte entonces desde el juego de caracteres de su canal. Si no conoce la p\xE1gina, la solicitud no vino de sus p\xE1ginas y no hace falta cambiar nada.", // ai 2026-11
 
 // src/Optimize/CheckViewSliceRefusals.php, row 202
-"Charset ignored" => "",
+"Charset ignored" => "Juego de caracteres ignorado", // ai 2026-11
 
 // src/Optimize/ClearPagecache.php, row 13
 "Clear Pagecache" => "Limpiar la cach\xE9 de p\xE1ginas",
@@ -13775,7 +14074,7 @@ return [
 "Whole pagecache will be invalidated and deleted" => "Se invalidar\xE1 y eliminar\xE1 toda la cach\xE9 de p\xE1ginas",
 
 // src/Optimize/ClearPagecache.php, row 35
-// src/Optimize/CopyContent.php, row 35
+// src/Optimize/CopyContent.php, row 37
 // src/Optimize/CreateUploadDir.php, row 38
 "There is nothing to test." => "No hay nada que probar.",
 
@@ -13873,13 +14172,13 @@ return [
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 43
 "DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "DB_CHARACTER_SET en config.php es \xAB%1\xBB. C\xE1mbielo primero a \xAButf8mb4\xBB y compruebe que los textos en AA se ven bien: la conversi\xF3n conserva lo que AA muestra por la conexi\xF3n utf8mb4.", // ai 2026-10
 
-// src/Optimize/CopyContent.php, row 13
+// src/Optimize/CopyContent.php, row 15
 "Copy Content Table" => "Copiar la tabla content",
 
-// src/Optimize/CopyContent.php, row 21
+// src/Optimize/CopyContent.php, row 23
 "Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "Copia los datos de todos los \xEDtems m\xE1s nuevos que short_id=1941629 de la tabla content a la tabla content2. Usado para la recuperaci\xF3n de la tabla content en el servidor de Ecn. Creo que no es \xFAtil para ning\xFAn otro usuario.",
 
-// src/Optimize/CopyContent.php, row 67
+// src/Optimize/CopyContent.php, row 69
 "Copied" => "Copiado",
 
 // src/Optimize/CopyItemsFromBackup.php, row 16
@@ -13894,34 +14193,34 @@ return [
 // src/Optimize/CopyItemsFromBackup.php, row 77
 "Deleted items to be recreated: %1." => "\xCDtems eliminados que se recrear\xE1n: %1.",
 
-// src/Optimize/CreateAppStoreAccount.php, row 14
+// src/Optimize/CreateAppStoreAccount.php, row 16
 "App store account" => "Cuenta del cat\xE1logo de aplicaciones", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 19
+// src/Optimize/CreateAppStoreAccount.php, row 21
 "Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "Crea la cuenta p\xFAblica con la que otros AA leen las aplicaciones publicadas de este AA (usuario %1, sin permisos). Su contrase\xF1a es p\xFAblica; la cuenta no puede iniciar sesi\xF3n en la administraci\xF3n.", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 34
+// src/Optimize/CreateAppStoreAccount.php, row 36
 "No app store account - this AA publishes no apps" => "No hay cuenta del cat\xE1logo de aplicaciones: este AA no publica aplicaciones", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 39
+// src/Optimize/CreateAppStoreAccount.php, row 41
 "The user %1 exists, but not with the public password of the app store - rename it, then repair" => "El usuario %1 existe, pero no con la contrase\xF1a p\xFAblica del cat\xE1logo de aplicaciones: c\xE1mbiele el nombre y luego repare", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 44
+// src/Optimize/CreateAppStoreAccount.php, row 46
 "The app store account %1 has rights or groups - remove them" => "La cuenta del cat\xE1logo de aplicaciones %1 tiene permisos o grupos: elim\xEDnelos", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 47
+// src/Optimize/CreateAppStoreAccount.php, row 49
 "The app store account is ready" => "La cuenta del cat\xE1logo de aplicaciones est\xE1 lista", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 55
+// src/Optimize/CreateAppStoreAccount.php, row 57
 "Only a superadmin may create the app store account" => "Solo un superadministrador puede crear la cuenta del cat\xE1logo de aplicaciones", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 67
+// src/Optimize/CreateAppStoreAccount.php, row 69
 "The app store account could not be created" => "No se pudo crear la cuenta del cat\xE1logo de aplicaciones", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 70
+// src/Optimize/CreateAppStoreAccount.php, row 72
 "The app store account %1 is created" => "Se ha creado la cuenta del cat\xE1logo de aplicaciones %1", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 77
+// src/Optimize/CreateAppStoreAccount.php, row 79
 "The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "La cuenta del cat\xE1logo de aplicaciones requiere los usuarios del propio AA (PERM_LIB sql); este AA usa %1: puede instalar desde un cat\xE1logo, pero no ser uno", // ai 2026-10
 
 // src/Optimize/CreateUploadDir.php, row 16
@@ -14010,7 +14309,7 @@ return [
 "%1 duplicates found" => "%1 duplicados encontrados",
 
 // src/Optimize/DbRelationDups.php, row 46
-// src/Optimize/FieldDuplicates.php, row 51, 65
+// src/Optimize/FieldDuplicates.php, row 53, 67
 "No duplicates found" => "No se encontraron duplicados",
 
 // src/Optimize/DbRelationStartsxy.php, row 22
@@ -14049,16 +14348,16 @@ return [
 // src/Optimize/DropBackupTables.php, row 28
 "Deletes all the current backup tables (bck_slice, bck_item, ...)." => "Elimina todas las tablas de copia de seguridad actuales (bck_slice, bck_item, ...).",
 
-// src/Optimize/FieldDuplicates.php, row 16
+// src/Optimize/FieldDuplicates.php, row 18
 "Fix field definitions duplicates" => "Corregir definiciones de campo duplicadas",
 
-// src/Optimize/FieldDuplicates.php, row 24
+// src/Optimize/FieldDuplicates.php, row 26
 "There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "Deber\xEDa haber un solo par slice_id - field_id en todos los canales, pero a veces hay m\xE1s de uno (principalmente por un error en el antiguo script sql_update.php, que a\xF1ad\xEDa m\xE1s de un campo display_count...).",
 
-// src/Optimize/FieldDuplicates.php, row 55
+// src/Optimize/FieldDuplicates.php, row 57
 "Duplicate in slice - field: %1 - %2" => "Duplicado en canal - campo: %1 - %2",
 
-// src/Optimize/FieldDuplicates.php, row 83
+// src/Optimize/FieldDuplicates.php, row 85
 "Field %2 in slice %1 fixed" => "Campo %2 en el canal %1 corregido",
 
 // src/Optimize/FixContentColumn.php, row 23
@@ -14116,16 +14415,16 @@ return [
 // src/Optimize/FixPagecache.php, row 86
 "%1 inconsistent rows in pagecache removed" => "%1 filas inconsistentes eliminadas de pagecache",
 
-// src/Optimize/GenerateJslibsArray.php, row 17
+// src/Optimize/GenerateJslibsArray.php, row 19
 "Generate JS Library definition array" => "Generar el array de definici\xF3n de librer\xEDas JS",
 
-// src/Optimize/GenerateJslibsArray.php, row 25
+// src/Optimize/GenerateJslibsArray.php, row 27
 "Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)" => "Imprime el array de definici\xF3n de librer\xEDas JS usado en include/stringexpand.php para actualizar a la \xFAltima versi\xF3n de las librer\xEDas en el CDN jsDeliver (usado por los desarrolladores de AA para actualizar las librer\xEDas js de AA)",
 
-// src/Optimize/GenerateMetabase.php, row 42
+// src/Optimize/GenerateMetabase.php, row 44
 "Generate metabase definition row" => "Generar fila de definici\xF3n de metabase",
 
-// src/Optimize/GenerateMetabase.php, row 50
+// src/Optimize/GenerateMetabase.php, row 52
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Solo para programadores - imprime el contenido de include/metabase_schema.php (el esquema de BD esperado, como un array PHP legible) generado a partir de la base de datos actual; c\xF3pielo en el archivo y haga commit.",
 
 // src/Optimize/ImgCacheWritable.php, row 17
@@ -14188,92 +14487,98 @@ return [
 // src/Optimize/ItemDiscussion.php, row 65
 "%1 problems solved" => "%1 problemas resueltos",
 
+// src/Optimize/LdapPermsToSql.php, row 44
+"Convert LDAP permissions to SQL" => "Convertir permisos de LDAP a SQL", // ai 2026-11
+
 // src/Optimize/LdapPermsToSql.php, row 49
-"Migrate LDAP perms to SQL perms" => "Migrar permisos LDAP a permisos SQL",
+"Moves the users, groups and rights of this database from LDAP to the SQL tables under new numeric ids and rewrites the references to people in the data. Test only reads: its trial import is rolled back. Repair does everything in one transaction; then set PERM_LIB='sql' in every config of this database. Take a backup first - restoring it is the only way back." => "Traslada los usuarios, grupos y permisos de esta base de datos de LDAP a las tablas SQL con nuevos ids num\xE9ricos y reescribe las referencias a personas en los datos. \xABPrueba\xBB solo lee: su importaci\xF3n de prueba se revierte. \xABReparar\xBB lo hace todo en una transacci\xF3n; despu\xE9s establezca PERM_LIB='sql' en cada config de esta base de datos. Haga antes una copia de seguridad: restaurarla es la \xFAnica vuelta atr\xE1s.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 55
-"Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Copia todos los usuarios, grupos, membres\xEDas y permisos del backend LDAP a las tablas del backend SQL (users, membership, perms), y reescribe item.posted_by / item.edited_by del formato DN de LDAP (uid=...,ou=...) a los nuevos ids num\xE9ricos SQL. Ejec\xFAtelo una vez por instalaci\xF3n y luego cambie PERM_LIB a 'sql' en config. 'Test' es una prueba de solo lectura. 'Repair' realiza la migraci\xF3n y puede ejecutarse varias veces. 'Revert' usa la tabla de mapeo para deshacerlo todo.",
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check passed: SQL answers as LDAP does." => "Comprobaci\xF3n de paridad superada: SQL responde igual que LDAP.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 72
-"This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Este optimizador solo se ejecuta cuando PERM_LIB='ldap'. PERM_LIB actual='%1'.",
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check failed - Repair would stop at it." => "La comprobaci\xF3n de paridad fall\xF3: \xABReparar\xBB se detendr\xEDa en ella.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 83
+"The trial import is skipped: it would stop at the first blocking finding above. Fix them and run Test again." => "Se omite la importaci\xF3n de prueba: se detendr\xEDa en el primer hallazgo bloqueante de arriba. Corr\xEDjalos y ejecute \xABPrueba\xBB de nuevo.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 87
-"Would create mapping table `%1`" => "Crear\xEDa la tabla de mapeo `%1`",
-
-// src/Optimize/LdapPermsToSql.php, row 116
 "Test failed: %1" => "Prueba fallida: %1",
 
-// src/Optimize/LdapPermsToSql.php, row 119
-"Test finished (dry run - no changes made)." => "Prueba finalizada (simulaci\xF3n - sin cambios).",
+// src/Optimize/LdapPermsToSql.php, row 108
+"Nothing was changed: the findings above block the conversion." => "No se cambi\xF3 nada: los hallazgos de arriba bloquean la conversi\xF3n.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 135
-"Repair failed: %1" => "Reparaci\xF3n fallida: %1",
+// src/Optimize/LdapPermsToSql.php, row 133
+"Repair failed, yet the database holds a finished conversion (its log row exists) - check it with Test: %1" => "\xABReparar\xBB fall\xF3, pero la base de datos contiene una conversi\xF3n terminada (existe su fila de registro); compru\xE9bela con \xABPrueba\xBB: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 138
-"Repair finished." => "Reparaci\xF3n finalizada.",
+// src/Optimize/LdapPermsToSql.php, row 134
+"Repair failed, nothing was changed: %1" => "\xABReparar\xBB fall\xF3, no se cambi\xF3 nada: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 154
-"Revert failed: %1" => "Reversi\xF3n fallida: %1",
+// src/Optimize/LdapPermsToSql.php, row 144
+"The page cache was not cleared, clear it by hand: %1" => "No se vaci\xF3 la cach\xE9 de p\xE1ginas; vac\xEDela a mano: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 157
-"Revert finished." => "Reversi\xF3n finalizada.",
+// src/Optimize/LdapPermsToSql.php, row 148
+"Rewritten %1: %2 rows" => "Reescrito %1: %2 filas", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 178
-"LDAP findUsernames failed or returned: %1" => "LDAP findUsernames fall\xF3 o devolvi\xF3: %1",
+// src/Optimize/LdapPermsToSql.php, row 150
+"New ids of the directory entries:" => "Nuevos ids de las entradas del directorio:", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 181
-"LDAP users found: %1" => "Usuarios LDAP encontrados: %1",
-
-// src/Optimize/LdapPermsToSql.php, row 197
-"Skipping user %1 - cannot determine login" => "Omitiendo usuario %1 - no se puede determinar el login",
-
-// src/Optimize/LdapPermsToSql.php, row 206
-"User %1 already exists in SQL (id %2), reusing" => "El usuario %1 ya existe en SQL (id %2), se reutiliza",
-
-// src/Optimize/LdapPermsToSql.php, row 220
-"Would create SQL user: %1 (from %2)" => "Crear\xEDa el usuario SQL: %1 (desde %2)",
-
-// src/Optimize/LdapPermsToSql.php, row 228
-"Failed to create SQL user %1" => "No se pudo crear el usuario SQL %1",
-
-// src/Optimize/LdapPermsToSql.php, row 235
-"Users: created=%1 reused=%2 failed=%3" => "Usuarios: creados=%1 reutilizados=%2 fallidos=%3",
-
-// src/Optimize/LdapPermsToSql.php, row 243
-"LDAP groups found: %1" => "Grupos LDAP encontrados: %1",
+// src/Optimize/LdapPermsToSql.php, row 151
+"Now set PERM_LIB='sql' in every config of this database - until then AA still asks LDAP." => "Ahora establezca PERM_LIB='sql' en cada config de esta base de datos; hasta entonces AA sigue consultando LDAP.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 264
-"Group %1 already exists in SQL (id %2), reusing" => "El grupo %1 ya existe en SQL (id %2), se reutiliza",
+"This database was already converted. A second run would give people other ids than the data now holds - restore the backup first if it really has to run again." => "Esta base de datos ya se convirti\xF3. Una segunda ejecuci\xF3n dar\xEDa a las personas ids distintos de los que contienen ahora los datos; restaure antes la copia de seguridad si de verdad debe ejecutarse de nuevo.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 273
-"Would create SQL group: %1 (from %2)" => "Crear\xEDa el grupo SQL: %1 (desde %2)",
+// src/Optimize/LdapPermsToSql.php, row 274
+"This database was converted to SQL permissions on %1 (%2). Its parity check ran inside the committed transaction; Repair does not run twice." => "Esta base de datos se convirti\xF3 a permisos SQL el %1 (%2). Su comprobaci\xF3n de paridad se ejecut\xF3 dentro de la transacci\xF3n confirmada; \xABReparar\xBB no se ejecuta dos veces.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 280
-"Failed to create SQL group %1" => "No se pudo crear el grupo SQL %1",
+// src/Optimize/LdapPermsToSql.php, row 279
+"DNs left in %1 (%2): %3" => "DN restantes en %1 (%2): %3", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 287
-"Groups: created=%1 reused=%2 failed=%3" => "Grupos: creados=%1 reutilizados=%2 fallidos=%3",
+// src/Optimize/LdapPermsToSql.php, row 282
+"These were written after the conversion or match no directory entry - fix them by hand if they matter." => "Estos se escribieron despu\xE9s de la conversi\xF3n o no coinciden con ninguna entrada del directorio; corr\xEDjalos a mano si importan.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 325
-"Memberships: added=%1 skipped_unmapped=%2" => "Membres\xEDas: a\xF1adidas=%1 omitidas_sin_mapear=%2",
+// src/Optimize/LdapPermsToSql.php, row 283
+"No DN is left in the columns referring to people." => "No queda ning\xFAn DN en las columnas que hacen referencia a personas.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 367
-"Permission rows migrated: %1" => "Filas de permisos migradas: %1",
+// src/Optimize/LdapPermsToSql.php, row 291
+"This conversion runs only while PERM_LIB is 'ldap'; here it is '%1'." => "Esta conversi\xF3n solo se ejecuta mientras PERM_LIB sea 'ldap'; aqu\xED es '%1'.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 389
-"No mapping entries - nothing to rewrite." => "No hay entradas de mapeo - nada que reescribir.",
+// src/Optimize/LdapPermsToSql.php, row 296
+"The conversion has no dry run - switch it off. Test itself changes nothing." => "La conversi\xF3n no admite ejecuci\xF3n de prueba; desactive esa opci\xF3n. \xABPrueba\xBB por s\xED sola no cambia nada.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 408
-"Rewrite %1.%2: %3 rows" => "Reescribir %1.%2: %3 filas",
+// src/Optimize/LdapPermsToSql.php, row 310
+"Tables %1 must be InnoDB: on another engine a rollback restores nothing, so even the trial import of Test would delete the users for good. Convert them first - Optimize \"%2\"." => "Las tablas %1 deben ser InnoDB: con otro motor un rollback no restaura nada, as\xED que incluso la importaci\xF3n de prueba de \xABPrueba\xBB eliminar\xEDa los usuarios definitivamente. Convi\xE9rtalas primero con \xAB%2\xBB en \xABOptimizar\xBB.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 418
-"Mapping table is empty - nothing to revert." => "La tabla de mapeo est\xE1 vac\xEDa - nada que revertir.",
+// src/Optimize/LdapPermsToSql.php, row 316
+"The database connection uses \"%1\", not utf8mb4: a DN with a character outside it would silently not be found in the data. Set DB_CHARACTER_SET to \"utf8mb4\" in config.php first." => "La conexi\xF3n a la base de datos usa \xAB%1\xBB, no utf8mb4: un DN con un car\xE1cter fuera de ese juego no se encontrar\xEDa en los datos, sin ning\xFAn aviso. Establezca primero DB_CHARACTER_SET en \xAButf8mb4\xBB en config.php.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 434
-"Revert %1.%2: %3 rows" => "Revertir %1.%2: %3 filas",
+// src/Optimize/LdapPermsToSql.php, row 368
+"Imported %1 people, %2 groups, %3 memberships and %4 rights; %5 old rows removed." => "Se importaron %1 personas, %2 grupos, %3 pertenencias a grupos y %4 permisos; se eliminaron %5 filas antiguas.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 452
-"Deleted SQL users=%1 groups=%2" => "Eliminados usuarios SQL=%1 grupos=%2",
+// src/Optimize/LdapPermsToSql.php, row 369
+"(Trial run - rolled back.)" => "(Ejecuci\xF3n de prueba: se ha revertido.)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 374
+"Plan: %1 people, %2 groups, %3 memberships, %4 rights; new ids from %5; %6 spellings of DNs in the data to rewrite." => "Plan: %1 personas, %2 grupos, %3 pertenencias a grupos, %4 permisos; nuevos ids desde %5; %6 graf\xEDas de DN en los datos por reescribir.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Blocking" => "Bloqueante", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Info" => "Info", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 394
+"References in %1: %2 rows (%3 s)" => "Referencias en %1: %2 filas (%3 s)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 396
+"Repair rewrites the references in about %1 s - each UPDATE scans its table as the count did." => "\xABReparar\xBB reescribe las referencias en unos %1 s; cada UPDATE recorre su tabla igual que el recuento.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 397
+"A DN stored as cp1250 bytes with diacritics is not UTF-8, so it matches no directory entry and stays as it is." => "Un DN guardado como bytes cp1250 con diacr\xEDticos no es UTF-8, as\xED que no coincide con ninguna entrada del directorio y se queda como est\xE1.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 399
+"Mentions of ou=AA in %1: %2 rows - fix them by hand." => "Menciones de ou=AA en %1: %2 filas; corr\xEDjalas a mano.", // ai 2026-11
 
 // src/Optimize/MissCacheRouting.php, row 37
 "Image cache routing" => "Enrutamiento de la cach\xE9 de im\xE1genes", // ai 2026-10
@@ -14366,89 +14671,89 @@ return [
 // src/Optimize/MultivalueDuplicates.php, row 139
 "The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "La tabla content no es InnoDB, as\xED que los duplicados no se pueden reparar aqu\xED. Ejecute primero \xAB%1\xBB.", // ai 2026-10
 
-// src/Optimize/ReadersLogin2id.php, row 16
+// src/Optimize/ReadersLogin2id.php, row 18
 "Convert Readers login to reader id" => "Convertir el login de lectores a id de lector",
 
-// src/Optimize/ReadersLogin2id.php, row 24
+// src/Optimize/ReadersLogin2id.php, row 26
 "There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "En AA v2.8.1 cambi\xF3 la gesti\xF3n de lectores: los lectores ya no se identifican internamente por su login, sino por el ID de lector (ID del \xEDtem del lector en el canal de lectores). Esto es mucho m\xE1s potente - puede crear relaciones igual que en un canal normal. Funciona bien sin ning\xFAn cambio. El \xFAnico problema surge si configura alg\xFAn canal para que lo editen usuarios del canal de lectores. En ese caso los campos edited_by........ y posted_by........ se rellenan con el login del lector en lugar del id de lector. Puede corregirlo con \"Repair\".",
 
-// src/Optimize/ReadersLogin2id.php, row 38, 82
+// src/Optimize/ReadersLogin2id.php, row 40, 84
 "Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "No se puede comprobar - su sistema de permisos no permite listar todos los nombres de usuario (\xBFLDAP?)",
 
-// src/Optimize/ReadersLogin2id.php, row 43
+// src/Optimize/ReadersLogin2id.php, row 45
 "%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "%1 logins del canal de lectores encontrados como registros en item.posted_by, lo cual es err\xF3neo (desde AA v2.8.1 deber\xEDa ser el ID de lector). \"Repair\" lo corregir\xE1.",
 
-// src/Optimize/ReadersLogin2id.php, row 48
+// src/Optimize/ReadersLogin2id.php, row 50
 "%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "%1 logins del canal de lectores encontrados como registros en item.edited_by, lo cual es err\xF3neo (desde AA v2.8.1 deber\xEDa ser el ID de lector). \"Repair\" lo corregir\xE1.",
 
-// src/Optimize/ReadersLogin2id.php, row 90
+// src/Optimize/ReadersLogin2id.php, row 92
 "Column item.posted_by updated for %1 (id: %2)." => "Columna item.posted_by actualizada para %1 (id: %2).",
 
-// src/Optimize/ReadersLogin2id.php, row 96
+// src/Optimize/ReadersLogin2id.php, row 98
 "Column item.edited_by updated for %1 (id: %2)." => "Columna item.edited_by actualizada para %1 (id: %2).",
 
-// src/Optimize/RedefineCoreConstants.php, row 18
+// src/Optimize/RedefineCoreConstants.php, row 20
 "Redefine core constants" => "Redefinir constantes del n\xFAcleo",
 
-// src/Optimize/RedefineCoreConstants.php, row 26
+// src/Optimize/RedefineCoreConstants.php, row 28
 "Updates core constants - like Code-pages, Language Constants and AA Bins" => "Actualiza las constantes del n\xFAcleo - como p\xE1ginas de c\xF3digos, constantes de idioma y Bins de AA",
 
-// src/Optimize/RedefineCoreConstants.php, row 46
+// src/Optimize/RedefineCoreConstants.php, row 48
 "Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "Las constantes de p\xE1ginas de c\xF3digos (lt_codepages) no est\xE1n actualizadas - encontradas: %1 de 9",
 
-// src/Optimize/RedefineCoreConstants.php, row 53
+// src/Optimize/RedefineCoreConstants.php, row 55
 "Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "Las constantes de idioma (lt_languages) no est\xE1n actualizadas - encontradas: %1 de 46",
 
-// src/Optimize/RedefineCoreConstants.php, row 60
+// src/Optimize/RedefineCoreConstants.php, row 62
 "AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "Las constantes de Bins de AA (AA_Core_Bins....) no est\xE1n actualizadas - encontradas: %1 de 3",
 
-// src/Optimize/RedefineCoreConstants.php, row 67
+// src/Optimize/RedefineCoreConstants.php, row 69
 "APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "Las categor\xEDas APC (lt_apcCategories) no est\xE1n actualizadas - encontradas: %1 de 82",
 
-// src/Optimize/RedefineCoreConstants.php, row 81
+// src/Optimize/RedefineCoreConstants.php, row 83
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "Eliminando p\xE1ginas de c\xF3digos, constantes de idioma, constantes de Bins de AA y categor\xEDas APC",
 
-// src/Optimize/RedefineCoreConstants.php, row 85
+// src/Optimize/RedefineCoreConstants.php, row 87
 "Recreate Code-pages" => "Recrear p\xE1ginas de c\xF3digos",
 
-// src/Optimize/RedefineCoreConstants.php, row 96
+// src/Optimize/RedefineCoreConstants.php, row 98
 "Recreate Languages" => "Recrear idiomas",
 
-// src/Optimize/RedefineCoreConstants.php, row 144
+// src/Optimize/RedefineCoreConstants.php, row 146
 "Recreate AA Bins" => "Recrear Bins de AA",
 
-// src/Optimize/RedefineCoreConstants.php, row 149
+// src/Optimize/RedefineCoreConstants.php, row 151
 "APC wide categories" => "Categor\xEDas APC",
 
-// src/Optimize/RedefineCoreConstants.php, row 233
+// src/Optimize/RedefineCoreConstants.php, row 235
 "Make sure, the constants are registered" => "Asegurarse de que las constantes est\xE1n registradas",
 
-// src/Optimize/RedefineCoreConstants.php, row 242
+// src/Optimize/RedefineCoreConstants.php, row 244
 "Redefine core constants - done." => "Redefinir constantes del n\xFAcleo - hecho.",
 
-// src/Optimize/RedefineFieldTemplates.php, row 43
+// src/Optimize/RedefineFieldTemplates.php, row 45
 "Redefine field templates" => "Redefinir plantillas de campo",
 
-// src/Optimize/RedefineFieldTemplates.php, row 51
+// src/Optimize/RedefineFieldTemplates.php, row 53
 "Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice" => "Actualiza las plantillas de campo (en el canal ActionApps Core), que se usan al a\xF1adir un nuevo campo a un canal",
 
-// src/Optimize/RedefineFieldTemplates.php, row 77
+// src/Optimize/RedefineFieldTemplates.php, row 79
 "template fields are not present" => "los campos de plantilla no est\xE1n presentes",
 
-// src/Optimize/RedefineFieldTemplates.php, row 95
-// src/Optimize/RedefineSliceNewsTemplates.php, row 57
+// src/Optimize/RedefineFieldTemplates.php, row 97
+// src/Optimize/RedefineSliceNewsTemplates.php, row 59
 "Deleting all fields from \"ActionApps Core\" slice" => "Eliminando todos los campos del canal \"ActionApps Core\"",
 
-// src/Optimize/RedefineFieldTemplates.php, row 99
+// src/Optimize/RedefineFieldTemplates.php, row 101
 "Make sure slice owner Action Applications System exists and reset to defaults" => "Asegurarse de que el propietario de canal Action Applications System existe y restablecerlo a los valores predeterminados",
 
-// src/Optimize/RedefineFieldTemplates.php, row 102
+// src/Optimize/RedefineFieldTemplates.php, row 104
 "Make sure \"ActionApps Core\" slice exists and reset to defaults" => "Asegurarse de que el canal \"ActionApps Core\" existe y restablecerlo a los valores predeterminados",
 
-// src/Optimize/RedefineFieldTemplates.php, row 106
+// src/Optimize/RedefineFieldTemplates.php, row 108
 "Recreate field definitions" => "Recrear definiciones de campos",
 
-// src/Optimize/RedefineFieldTemplates.php, row 197
+// src/Optimize/RedefineFieldTemplates.php, row 199
 "Redefine field defaults - done." => "Redefinir valores predeterminados de campos - hecho.",
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
@@ -14461,127 +14766,127 @@ return [
 "There is no root Link Module category - Links module should be recreated" => "No existe la categor\xEDa ra\xEDz del m\xF3dulo Links - el m\xF3dulo Links deber\xEDa recrearse",
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
-// src/Optimize/RedefineSiteTemplates.php, row 47
+// src/Optimize/RedefineSiteTemplates.php, row 49
 "Replacing module definition" => "Reemplazando la definici\xF3n del m\xF3dulo",
 
 // src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Recreaci\xF3n de la plantilla del m\xF3dulo Links - hecho.",
 
-// src/Optimize/RedefineSiteTemplates.php, row 13
+// src/Optimize/RedefineSiteTemplates.php, row 15
 "Recreate Site module template" => "Recrear plantilla del m\xF3dulo Site",
 
-// src/Optimize/RedefineSiteTemplates.php, row 19
+// src/Optimize/RedefineSiteTemplates.php, row 21
 "Deletes and recreates the default template for Site module" => "Elimina y recrea la plantilla predeterminada del m\xF3dulo Site",
 
-// src/Optimize/RedefineSiteTemplates.php, row 36
+// src/Optimize/RedefineSiteTemplates.php, row 38
 "Site Module template should be recreated" => "La plantilla del m\xF3dulo Site deber\xEDa recrearse",
 
-// src/Optimize/RedefineSiteTemplates.php, row 53
+// src/Optimize/RedefineSiteTemplates.php, row 55
 "Site Module template recreation - done." => "Recreaci\xF3n de la plantilla del m\xF3dulo Site - hecho.",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 15
+// src/Optimize/RedefineSlicReaderTemplates.php, row 17
 "Redefine Reader Management template slice" => "Redefinir el canal plantilla Reader Management",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 23
+// src/Optimize/RedefineSlicReaderTemplates.php, row 25
 "Deletes and recreates the Reader Management slice, used as template or example slice" => "Elimina y recrea el canal Reader Management, usado como canal plantilla o de ejemplo",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 42
+// src/Optimize/RedefineSlicReaderTemplates.php, row 44
 "\"Reader Management\" template slice is not defined" => "El canal plantilla \"Reader Management\" no est\xE1 definido",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 58
+// src/Optimize/RedefineSlicReaderTemplates.php, row 60
 "Deleting all fields from \"Reader Management\" slice" => "Eliminando todos los campos del canal \"Reader Management\"",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 62
+// src/Optimize/RedefineSlicReaderTemplates.php, row 64
 "Make sure \"Reader Management\" slice exists and reset to defaults" => "Asegurarse de que el canal \"Reader Management\" existe y restablecerlo a los valores predeterminados",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 66
+// src/Optimize/RedefineSlicReaderTemplates.php, row 68
 "Recreate field definitions for \"Reader Management\"" => "Recrear definiciones de campos para \"Reader Management\"",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 92
+// src/Optimize/RedefineSlicReaderTemplates.php, row 94
 "Reader Management template slice creation - done." => "Creaci\xF3n del canal plantilla Reader Management - hecho.",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 15
+// src/Optimize/RedefineSliceNewsTemplates.php, row 17
 "Redefine News EN template slice" => "Redefinir el canal plantilla News EN",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 23
+// src/Optimize/RedefineSliceNewsTemplates.php, row 25
 "Deletes and recreates the News EN slice, used as template or example slice" => "Elimina y recrea el canal News EN, usado como canal plantilla o de ejemplo",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 41
+// src/Optimize/RedefineSliceNewsTemplates.php, row 43
 "News EN template slice is not defined" => "El canal plantilla News EN no est\xE1 definido",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 61
+// src/Optimize/RedefineSliceNewsTemplates.php, row 63
 "Make sure \"News EN\" slice exists and reset to defaults" => "Asegurarse de que el canal \"News EN\" existe y restablecerlo a los valores predeterminados",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 65
+// src/Optimize/RedefineSliceNewsTemplates.php, row 67
 "Recreate field definitions for \"News EN\"" => "Recrear definiciones de campos para \"News EN\"",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 99
+// src/Optimize/RedefineSliceNewsTemplates.php, row 101
 "News EN template slice creation - done." => "Creaci\xF3n del canal plantilla News EN - hecho.",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 15
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 17
 "Redefine Noticas - ES template slice" => "Redefinir el canal plantilla Noticas - ES",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 23
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 25
 "Deletes and recreates the Noticas - ES slice, used as template or example slice" => "Elimina y recrea el canal Noticas - ES, usado como canal plantilla o de ejemplo",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 42
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 44
 "\"Noticas - ES\" template slice is not defined" => "El canal plantilla \"Noticas - ES\" no est\xE1 definido",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 58
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 60
 "Deleting all fields from \"Noticas - ES\" slice" => "Eliminando todos los campos del canal \"Noticas - ES\"",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 62
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 64
 "Make sure \"Noticas - ES\" slice exists and reset to defaults" => "Asegurarse de que el canal \"Noticas - ES\" existe y restablecerlo a los valores predeterminados",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 66
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 68
 "Recreate field definitions for \"Noticas - ES\"" => "Recrear definiciones de campos para \"Noticas - ES\"",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 100
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 102
 "Noticas - ES template slice creation - done." => "Creaci\xF3n del canal plantilla Noticas - ES - hecho.",
 
-// src/Optimize/RedefineViewCalendarTemplates.php, row 10
+// src/Optimize/RedefineViewCalendarTemplates.php, row 12
 "Redefine calendar template view" => "Redefinir la vista plantilla calendar",
 
-// src/Optimize/RedefineViewCategoriesTemplates.php, row 10
+// src/Optimize/RedefineViewCategoriesTemplates.php, row 12
 "Redefine categories template view" => "Redefinir la vista plantilla categories",
 
-// src/Optimize/RedefineViewConstTemplates.php, row 10
+// src/Optimize/RedefineViewConstTemplates.php, row 12
 "Redefine const template view" => "Redefinir la vista plantilla const",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 13
+// src/Optimize/RedefineViewDiscusTemplates.php, row 15
 "Redefine discus template view" => "Redefinir la vista plantilla discus",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 19
+// src/Optimize/RedefineViewDiscusTemplates.php, row 21
 "Deletes and recreates that view, which is used as template view of that type" => "Elimina y recrea esa vista, que se usa como vista plantilla de ese tipo",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 47
+// src/Optimize/RedefineViewDiscusTemplates.php, row 49
 "\"%1\" template view is not defined" => "La vista plantilla \"%1\" no est\xE1 definida",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 58
+// src/Optimize/RedefineViewDiscusTemplates.php, row 60
 "Deleting the view template \"%1\"" => "Eliminando la plantilla de vista \"%1\"",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 62
+// src/Optimize/RedefineViewDiscusTemplates.php, row 64
 "Inserting the view \"discus\" template" => "Insertando la plantilla de la vista \"discus\"",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 66
+// src/Optimize/RedefineViewDiscusTemplates.php, row 68
 "view \"%1\" redefinition - done." => "redefinici\xF3n de la vista \"%1\" - hecho.",
 
-// src/Optimize/RedefineViewFullTemplates.php, row 10
+// src/Optimize/RedefineViewFullTemplates.php, row 12
 "Redefine full template view" => "Redefinir la vista plantilla full",
 
-// src/Optimize/RedefineViewJavascriptTemplates.php, row 10
+// src/Optimize/RedefineViewJavascriptTemplates.php, row 12
 "Redefine javascript template view" => "Redefinir la vista plantilla javascript",
 
-// src/Optimize/RedefineViewLinksTemplates.php, row 10
+// src/Optimize/RedefineViewLinksTemplates.php, row 12
 "Redefine links template view" => "Redefinir la vista plantilla links",
 
-// src/Optimize/RedefineViewRssTemplates.php, row 10
+// src/Optimize/RedefineViewRssTemplates.php, row 12
 "Redefine rss template view" => "Redefinir la vista plantilla rss",
 
-// src/Optimize/RedefineViewStaticTemplates.php, row 10
+// src/Optimize/RedefineViewStaticTemplates.php, row 12
 "Redefine static template view" => "Redefinir la vista plantilla static",
 
-// src/Optimize/RedefineViewUrlsTemplates.php, row 10
+// src/Optimize/RedefineViewUrlsTemplates.php, row 12
 "Redefine urls template view" => "Redefinir la vista plantilla urls",
 
 // src/Optimize/RemoveAaCronEntries.php, row 22
@@ -14635,19 +14940,19 @@ return [
 // src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "OK - No hay ning\xFAn campo de casilla obligatorio",
 
-// src/Optimize/RestoreBckTables.php, row 20
+// src/Optimize/RestoreBckTables.php, row 22
 "Restore data from backup tables" => "Restaurar datos desde las tablas de copia de seguridad",
 
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 "Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "Elimina todas las tablas actuales (slice, item, ...) para las que existe una tabla bck_ y renombra todas las tablas de copia de seguridad (bck_slice, bck_item, ...) a sus nombres correctos (slice, item, ...).",
 
-// src/Optimize/RestoreBckTables.php, row 40
+// src/Optimize/RestoreBckTables.php, row 42
 "The bck_ tables do not exist (or at least bck_content table)" => "Las tablas bck_ no existen (o al menos la tabla bck_content)",
 
-// src/Optimize/RestoreBckTables.php, row 59
+// src/Optimize/RestoreBckTables.php, row 61
 "There is no bck_%1 table - %1 not restored." => "No existe la tabla bck_%1 - %1 no restaurada.",
 
-// src/Optimize/RestoreBckTables.php, row 62
+// src/Optimize/RestoreBckTables.php, row 64
 "Replace table bck_%1 -> %1" => "Reemplazar tabla bck_%1 -> %1",
 
 // src/Optimize/SeoDuplicates.php, row 44
@@ -14899,6 +15204,30 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 141
 "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "copia de seguridad de la tabla antigua %1 -> bck_%1 y uso de las tablas nuevas en su lugar tmp_%1 -> %1",
 
+// src/Passkey/Notice.php, row 23
+"A passkey was added to your account" => "Se a\xF1adi\xF3 una llave de acceso a su cuenta", // ai 2026-11
+
+// src/Passkey/Notice.php, row 23
+"The passkey \"%1\" was added to your account %2 on %3. It logs you in on %4." => "La llave de acceso \xAB%1\xBB se a\xF1adi\xF3 a su cuenta %2 el %3. Le permite iniciar sesi\xF3n en %4.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"A passkey was deleted from your account" => "Se elimin\xF3 una llave de acceso de su cuenta", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"The passkey \"%1\" was deleted from your account %2 on %3." => "La llave de acceso \xAB%1\xBB se elimin\xF3 de su cuenta %2 el %3.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"The passkeys of your account were deleted" => "Se eliminaron las llaves de acceso de su cuenta", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"%1 deleted all passkeys of your account %2 on %3. You log in by your password again; you can add a new passkey after the login." => "%1 elimin\xF3 todas las llaves de acceso de su cuenta %2 el %3. Vuelve a iniciar sesi\xF3n con su contrase\xF1a; puede a\xF1adir una nueva llave de acceso despu\xE9s de iniciar sesi\xF3n.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 60
+"If it was not you, tell the administrator of ActionApps at %1 at once." => "Si no fue usted, avise de inmediato al administrador de ActionApps en %1.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 61
+"Address: %1, browser: %2" => "Direcci\xF3n: %1, navegador: %2", // ai 2026-11
+
 // src/Security/LoginThrottle.php, row 156
 "Too many failed login attempts. Try again in %1 min." => "Demasiados intentos de inicio de sesi\xF3n fallidos. Int\xE9ntelo de nuevo en %1 min.", // ai 2026-10
 
@@ -14915,7 +15244,7 @@ return [
 "ret_code and ok_url sent to filler.php" => "ret_code y ok_url enviados a filler.php", // ai 2026-10
 
 // src/Security/Protection.php, row 32
-"als[], noitem of views and the state of site pages, taken from the URL" => "",
+"als[], noitem of views and the state of site pages, taken from the URL" => "als[], noitem de las vistas y el estado de las p\xE1ginas del sitio, tomados de la URL", // ai 2026-11
 
 // src/Security/Protection.php, row 33
 "Logins to the administration and to reader accounts, counted per address of the visitor" => "Inicios de sesi\xF3n en la administraci\xF3n y en cuentas de lectores, contados por direcci\xF3n del visitante", // ai 2026-10
@@ -14936,7 +15265,7 @@ return [
 "Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it." => "El texto, los n\xFAmeros, los ids y los _#ALIASES en als[] y en el estado de las p\xE1ginas del sitio siguen funcionando; una {expression} all\xED se muestra como texto. Escriba la expresi\xF3n en la plantilla que construye el enlace, para que se ejecute all\xED antes de enviar el enlace, o pase un id y calcule el resto en la p\xE1gina que lo recibe.", // ai 2026-10
 
 // src/Security/Protection.php, row 56
-"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "",
+"A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the \"No item found\" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before." => "Un texto noitem en un enlace a una vista (set[...]=noitem-...) se muestra como texto, incluidos el HTML y los _#ALIASES. Ponga el texto en el mensaje \xABNo se encontr\xF3 ning\xFAn \xEDtem\xBB de la vista, o muestre la vista desde una plantilla con {view.php?...}, donde noitem funciona como antes. Desactivar esta protecci\xF3n solo permite que un noitem con una {expression} funcione como antes.", // ai 2026-11
 
 // src/Security/Protection.php, row 57
 "After 20 failed logins from one address in 12 hours, or 5 with one user name, the next login waits half a minute to a minute, twice as long after each further failure, at most an hour. A script that keeps logging in with an old password waits too: find its address in the Log (event LOGIN) and give it the current password. If every visitor seems to come from one address, AA runs behind a proxy missing in AA_TRUSTED_PROXIES - State Check names it; add it in config.php rather than switching this protection off." => "Tras 20 inicios de sesi\xF3n fallidos desde una direcci\xF3n en 12 horas, o 5 con un mismo nombre de usuario, el siguiente inicio de sesi\xF3n espera de medio minuto a un minuto, el doble tras cada fallo adicional, como m\xE1ximo una hora. Un script que sigue iniciando sesi\xF3n con una contrase\xF1a antigua tambi\xE9n espera: busque su direcci\xF3n en el Registro (evento LOGIN) y dele la contrase\xF1a actual. Si todos los visitantes parecen venir de una sola direcci\xF3n, AA funciona detr\xE1s de un proxy que falta en AA_TRUSTED_PROXIES - la \xABComprobaci\xF3n de estado\xBB lo indica; a\xF1\xE1dalo en config.php en lugar de desactivar esta protecci\xF3n.", // ai 2026-10
@@ -15131,17 +15460,17 @@ return [
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Selecci\xF3n",
 
-// src/Widget/CodWidget.php, row 21
+// src/Widget/CodWidget.php, row 23
 "Code editor" => "Editor de c\xF3digo",
 
-// src/Widget/EdtWidget.php, row 21
+// src/Widget/EdtWidget.php, row 23
 "Rich Edit Text Area" => "Area de texto enriquecida",
 
 // src/Widget/FilWidget.php, row 38
 "File Upload" => "Archivo para subir",
 
 // src/Widget/FilWidget.php, row 206, 236
-// src/Widget/RichtextMarkup.php, row 73
+// src/Widget/RichtextMarkup.php, row 86
 "Upload" => "Subir",
 
 // src/Widget/FilWidget.php, row 250
@@ -15164,13 +15493,13 @@ return [
 // src/Widget/GpsWidget.php, row 438
 "Use" => "Usar",
 
-// src/Widget/HcoWidget.php, row 34
+// src/Widget/HcoWidget.php, row 36
 "hierarchical constants" => "Constantes Jer\xE1rquicas",
 
 // src/Widget/HidWidget.php, row 28
 "Hidden field" => "Campo Oculto",
 
-// src/Widget/InfWidget.php, row 31
+// src/Widget/InfWidget.php, row 33
 "Info text - output" => "Texto informativo - salida",
 
 // src/Widget/IsoWidget.php, row 35
@@ -15212,28 +15541,28 @@ return [
 // src/Widget/MngWidget.php, row 39
 "Best for galleries and other tabular data which is multivalue and different for each item" => "Ideal para galer\xEDas y otros datos tabulares multivalor distintos para cada \xEDtem",
 
-// src/Widget/MseWidget.php, row 25
+// src/Widget/MseWidget.php, row 27
 "Multiple Selectbox" => "Caja selecci\xF3n m\xFAltiple",
 
-// src/Widget/NulWidget.php, row 23
+// src/Widget/NulWidget.php, row 25
 "Do not show" => "No muestre",
 
-// src/Widget/PreWidget.php, row 36
+// src/Widget/PreWidget.php, row 38
 "Text Field with Presets" => "Campo de Texto con Preselecci\xF3n",
 
 // src/Widget/PwdWidget.php, row 37
 "Password and Change password" => "Clave y Cambiar Clave",
 
-// src/Widget/RichtextMarkup.php, row 75
+// src/Widget/RichtextMarkup.php, row 88
 "Loading..." => "Cargando...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 76
+// src/Widget/RichtextMarkup.php, row 89
 "No files" => "No hay archivos", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 77
+// src/Widget/RichtextMarkup.php, row 90
 "Uploading..." => "Subiendo...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 78
+// src/Widget/RichtextMarkup.php, row 91
 "Upload failed" => "Error al subir", // ai 2026-10
 
 // src/Widget/RimWidget.php, row 43
@@ -15254,25 +15583,25 @@ return [
 // src/Widget/TagWidget.php, row 44
 "Tags" => "Etiquetas",
 
-// src/Widget/TfaWidget.php, row 43
+// src/Widget/TfaWidget.php, row 45
 "2FA Secret generator" => "Generador de secreto 2FA",
 
-// src/Widget/TfaWidget.php, row 79
+// src/Widget/TfaWidget.php, row 81
 "One time Code" => "C\xF3digo de un solo uso",
 
-// src/Widget/TfaWidget.php, row 89
+// src/Widget/TfaWidget.php, row 91
 "Generate New Secret" => "Generar nuevo secreto",
 
-// src/Widget/TfaWidget.php, row 90
+// src/Widget/TfaWidget.php, row 92
 "Get Secret" => "Obtener secreto",
 
-// src/Widget/TprWidget.php, row 27
+// src/Widget/TprWidget.php, row 29
 "Textarea with Presets" => "Area de texto con Preselecci\xF3n",
 
 // src/Widget/TxtWidget.php, row 40
 "Text Area" => "Area texto",
 
-// src/Widget/Wi2Widget.php, row 32
+// src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "Dos Cajas",
 
 // src/Widget/Widget.php, row 603

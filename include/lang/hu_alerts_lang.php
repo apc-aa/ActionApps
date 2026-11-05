@@ -39,10 +39,10 @@ return [
 "remove" => "elt\xE1vol\xEDt\xE1s", // ai 2026-10
 
 // modules/alerts/acf.php, row 123
-"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "",
+"Its view was deleted - readers get nothing from this selection. Remove it and add an existing one." => "A n\xE9zete t\xF6r\xF6lve lett - az olvas\xF3k semmit sem kapnak ebb\xF5l a v\xE1logat\xE1sb\xF3l. T\xE1vol\xEDtsa el, \xE9s adjon hozz\xE1 egy l\xE9tez\xF5t.", // ai 2026-11
 
 // modules/alerts/acf.php, row 124
-"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "",
+"This selection was deleted - readers get nothing from it. Remove it and add an existing one." => "Ez a v\xE1logat\xE1s t\xF6r\xF6lve lett - az olvas\xF3k semmit sem kapnak bel\xF5le. T\xE1vol\xEDtsa el, \xE9s adjon hozz\xE1 egy l\xE9tez\xF5t.", // ai 2026-11
 
 // modules/alerts/acf.php, row 131
 "No selections chosen yet." => "M\xE9g nincs kiv\xE1lasztott sz\xFBr\xE9s.", // ai 2026-10

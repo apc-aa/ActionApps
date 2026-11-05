@@ -25,6 +25,34 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Migrate LDAP perms to SQL perms" => "P\xF8evod pr\xE1v z LDAP do SQL",
+// "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Zkop\xEDruje v\x9Aechny u\x9Eivatele, skupiny, \xE8lenstv\xED a pr\xE1va z LDAP backendu do tabulek SQL backendu (users, membership, perms) a p\xF8ep\xED\x9Ae item.posted_by / item.edited_by z LDAP DN podoby (uid=...,ou=...) na nov\xE1 SQL \xE8\xEDseln\xE1 id. Spus\x9Dte jednou pro ka\x9Edou instalaci, pot\xE9 v configu p\xF8epn\xECte PERM_LIB na 'sql'. 'Test' je zku\x9Aebn\xED b\xECh pouze pro \xE8ten\xED. 'Repair' provede migraci a lze jej spou\x9At\xECt opakovan\xEC. 'Revert' pomoc\xED mapovac\xED tabulky v\x9Ae vr\xE1t\xED zp\xECt.",
+// "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Tato optimalizace b\xEC\x9E\xED jen p\xF8i PERM_LIB='ldap'. Aktu\xE1ln\xED PERM_LIB='%1'.",
+// "Would create mapping table `%1`" => "Vytvo\xF8ila by se mapovac\xED tabulka `%1`",
+// "Test finished (dry run - no changes made)." => "Test dokon\xE8en (zku\x9Aebn\xED b\xECh - nebyly provedeny \x9E\xE1dn\xE9 zm\xECny).",
+// "Repair failed: %1" => "Oprava selhala: %1",
+// "Repair finished." => "Oprava dokon\xE8ena.",
+// "Revert failed: %1" => "Vr\xE1cen\xED zp\xECt selhalo: %1",
+// "Revert finished." => "Vr\xE1cen\xED zp\xECt dokon\xE8eno.",
+// "LDAP findUsernames failed or returned: %1" => "LDAP findUsernames selhalo nebo vr\xE1tilo: %1",
+// "LDAP users found: %1" => "Nalezeno LDAP u\x9Eivatel\xF9: %1",
+// "Skipping user %1 - cannot determine login" => "P\xF8eskakuji u\x9Eivatele %1 - nelze ur\xE8it login",
+// "User %1 already exists in SQL (id %2), reusing" => "U\x9Eivatel %1 u\x9E v SQL existuje (id %2), pou\x9Eije se st\xE1vaj\xEDc\xED",
+// "Would create SQL user: %1 (from %2)" => "Vytvo\xF8il by se SQL u\x9Eivatel: %1 (z %2)",
+// "Failed to create SQL user %1" => "Nepoda\xF8ilo se vytvo\xF8it SQL u\x9Eivatele %1",
+// "Users: created=%1 reused=%2 failed=%3" => "U\x9Eivatel\xE9: vytvo\xF8eno=%1 pou\x9Eito st\xE1vaj\xEDc\xEDch=%2 selhalo=%3",
+// "LDAP groups found: %1" => "Nalezeno LDAP skupin: %1",
+// "Group %1 already exists in SQL (id %2), reusing" => "Skupina %1 u\x9E v SQL existuje (id %2), pou\x9Eije se st\xE1vaj\xEDc\xED",
+// "Would create SQL group: %1 (from %2)" => "Vytvo\xF8ila by se SQL skupina: %1 (z %2)",
+// "Failed to create SQL group %1" => "Nepoda\xF8ilo se vytvo\xF8it SQL skupinu %1",
+// "Groups: created=%1 reused=%2 failed=%3" => "Skupiny: vytvo\xF8eno=%1 pou\x9Eito st\xE1vaj\xEDc\xEDch=%2 selhalo=%3",
+// "Memberships: added=%1 skipped_unmapped=%2" => "\xC8lenstv\xED: p\xF8id\xE1no=%1 p\xF8esko\xE8eno_nenamapov\xE1no=%2",
+// "Permission rows migrated: %1" => "P\xF8evedeno \xF8\xE1dk\xF9 pr\xE1v: %1",
+// "No mapping entries - nothing to rewrite." => "\x8E\xE1dn\xE9 z\xE1znamy v mapov\xE1n\xED - nen\xED co p\xF8epsat.",
+// "Rewrite %1.%2: %3 rows" => "P\xF8epis %1.%2: %3 \xF8\xE1dk\xF9",
+// "Mapping table is empty - nothing to revert." => "Mapovac\xED tabulka je pr\xE1zdn\xE1 - nen\xED co vracet.",
+// "Revert %1.%2: %3 rows" => "Vr\xE1cen\xED %1.%2: %3 \xF8\xE1dk\xF9",
+// "Deleted SQL users=%1 groups=%2" => "Smaz\xE1no SQL u\x9Eivatel\xF9=%1 skupin=%2",
 // "als[] and the state of site pages, taken from the URL" => "als[] a stav str\xE1nek webu, p\xF8evzat\xE9 z URL", // ai 2026-10
 // "The index %1 of the content table does not contain the field" => "Index %1 tabulky content neobsahuje pol\xED\xE8ko", // ai 2026-10
 // "Adds the index (field_id, text) to the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes and about as much disk as the other indexes of the table - run it when the traffic is low." => "P\xF8id\xE1 do tabulky content index (field_id, text), aby se hodnota v jednom pol\xED\xE8ku na\x9Ala bez \xE8ten\xED stejn\xE9 hodnoty v\x9Aech ostatn\xEDch pol\xED\xE8ek. Na velk\xE9 datab\xE1zi to trv\xE1 minuty a zabere zhruba tolik m\xEDsta na disku jako ostatn\xED indexy tabulky \x96 spus\x9Dte to v dob\xEC n\xEDzk\xE9ho provozu.", // ai 2026-10
@@ -467,6 +495,8 @@ return [
 // admin/console.php, row 73
 // admin/fileman.php, row 110
 // admin/slicedel2.php, row 70
+// admin/um_passkeys.php, row 73
+// admin/um_passwd.php, row 80
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
@@ -518,8 +548,8 @@ return [
 // admin/aa_security.php, row 85
 // admin/setup.php, row 99, 240
 // admin/slicewiz.php, row 84
-// admin/um_passwd.php, row 111
-// admin/um_uedit.php, row 313, 317
+// admin/um_passwd.php, row 128
+// admin/um_uedit.php, row 314, 328
 // include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "U\x9Eivatelsk\xE9 jm\xE9no",
@@ -590,12 +620,14 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 103
 // src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckFormRobotRefusals.php, row 80
 // src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
 // src/Optimize/CheckIsdsConf.php, row 160, 193
 // src/Optimize/CheckIsdsViews.php, row 132
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 97
 // src/Optimize/CheckLoginAddresses.php, row 90, 103
 // src/Optimize/CheckObjectFormRefusals.php, row 106
+// src/Optimize/CheckPasskeys.php, row 89
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
@@ -965,7 +997,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1213
+// include/logs.php, row 1218
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -974,6 +1006,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
+// src/Optimize/CheckFormRobotRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
@@ -1000,7 +1033,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 358
+// include/logs.php, row 363
 // src/AA_Plannedtask.php, row 204
 "Log" => "Log", // ai 2026-10
 
@@ -1032,13 +1065,13 @@ return [
 
 // admin/aafinder.php, row 478, 508
 // admin/um_gedit.php, row 207, 324
-// admin/um_uedit.php, row 248
+// admin/um_uedit.php, row 249
 // include/se_users.php, row 138, 143
 // include/searchbar.class.php, row 566, 567, 607
 // include/transformation.class.php, row 829, 910
 // include/um_gsrch.php, row 47
 // src/Widget/GpsWidget.php, row 434
-// src/Widget/RichtextMarkup.php, row 72
+// src/Widget/RichtextMarkup.php, row 85
 "Search" => "Vyhledat",
 
 // admin/aafinder.php, row 481
@@ -1139,7 +1172,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 10284, 10363
+// include/stringexpand.php, row 10285, 10364
 "Send" => "Po\x9Ali",
 
 // admin/anonym_wizard.php, row 151
@@ -1299,7 +1332,7 @@ return [
 "Author" => "Autor",
 
 // admin/discedit.php, row 133
-// include/logs.php, row 898, 1309
+// include/logs.php, row 903, 1314
 "IP Address" => "IP adresa",
 
 // admin/discedit.php, row 134
@@ -1322,13 +1355,13 @@ return [
 // admin/prev_navigation.php, row 47
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
-// admin/um_uedit.php, row 265
+// admin/um_uedit.php, row 266
 // include/field.class.php, row 744
 // include/filedit.php, row 113
 // include/formutil.php, row 1777, 3394
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
-// include/statestore.php, row 1138
+// include/statestore.php, row 1143
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
 "Edit" => "Editace",
@@ -1342,7 +1375,8 @@ return [
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
-// admin/um_uedit.php, row 267
+// admin/um_passkeys.php, row 158
+// admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
 // include/field.class.php, row 748
 // include/formutil.php, row 1788, 1925
@@ -1351,7 +1385,7 @@ return [
 // include/searchbar.class.php, row 1126
 // include/um_gsrch.php, row 53
 // src/Manageraction/Import_Delete.php, row 25
-// src/Manageraction/Object_Delete.php, row 24
+// src/Manageraction/Object_Delete.php, row 26
 // src/Manageraction/Table_Row_Delete.php, row 23
 // src/Widget/FilWidget.php, row 201
 "Delete" => "Smazat",
@@ -1373,7 +1407,7 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1060
+// include/logs.php, row 1065
 // include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "P\xF8edm\xECt",
@@ -1381,8 +1415,8 @@ return [
 // admin/discedit2.php, row 94, 148
 // admin/setup.php, row 104, 247
 // admin/slicewiz.php, row 89
-// admin/um_passwd.php, row 118
-// admin/um_uedit.php, row 325
+// admin/um_passwd.php, row 140
+// admin/um_uedit.php, row 336
 // include/um_util.php, row 308, 309, 310
 // src/Central/FindingText.php, row 106
 "E-mail" => "E-mail", // ai 2026-10
@@ -1779,11 +1813,12 @@ return [
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
+// admin/um_passkeys.php, row 149, 153
 // central/installapp.php, row 831, 846
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1200
+// include/logs.php, row 1205
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1944,7 +1979,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1230
+// include/logs.php, row 1235
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
 // src/Optimize/CheckIsdsConf.php, row 342, 372
@@ -1968,7 +2003,7 @@ return [
 // admin/se_csv_import.php, row 277
 // admin/se_csv_import2.php, row 382
 // central/installapp.php, row 434, 558, 1368
-// src/Manageraction/Item_Preview.php, row 11
+// src/Manageraction/Item_Preview.php, row 13
 "Preview" => "N\xE1hled",
 
 // admin/se_csv_import.php, row 278
@@ -2022,7 +2057,7 @@ return [
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
 // include/metabase.class.php, row 1667
-// include/statestore.php, row 1076, 1413
+// include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
@@ -2159,7 +2194,7 @@ return [
 // admin/se_export.php, row 124
 // include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
-// src/Manageraction/Central_MoveItem.php, row 43
+// src/Manageraction/Central_MoveItem.php, row 45
 "Trash" => "Ko\x9A",
 
 // admin/se_export.php, row 134
@@ -2185,7 +2220,7 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 553
+// include/logs.php, row 558
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
@@ -2331,7 +2366,7 @@ return [
 // admin/se_import.php, row 131
 // admin/se_mapping.php, row 158
 // admin/um_gedit.php, row 280
-// admin/um_uedit.php, row 388
+// admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 190, 2940
 // modules/jump/modedit.php, row 179
@@ -2414,9 +2449,9 @@ return [
 "Resource ID" => "ID zdroje",
 
 // admin/se_history.php, row 143, 165, 166
-// admin/um_uedit.php, row 262
+// admin/um_uedit.php, row 263
 // admin/usershow.php, row 89
-// include/perm_sql.php, row 384, 426
+// include/perm_sql.php, row 381, 440, 482
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
@@ -2621,7 +2656,7 @@ return [
 "Reset" => "Resetovat", // ai 2026-06
 
 // admin/se_inputform.php, row 514
-// include/logs.php, row 633
+// include/logs.php, row 638
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Parametry",
 
@@ -3154,7 +3189,7 @@ return [
 // admin/se_sets.php, row 131
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 471, 528
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 172
 "ID" => "",
@@ -3248,7 +3283,7 @@ return [
 // admin/se_users.php, row 185
 // central/index.php, row 139
 // include/se_users.php, row 180
-// src/Widget/TfaWidget.php, row 71
+// src/Widget/TfaWidget.php, row 73
 "Username" => "U\x9Eivatelsk\xE9 jm\xE9no",
 
 // admin/se_users.php, row 185
@@ -3404,7 +3439,7 @@ return [
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
 // admin/write_mail.php, row 269
-// src/Widget/RichtextMarkup.php, row 74
+// src/Widget/RichtextMarkup.php, row 87
 "Close" => "Zav\xF8\xEDt",
 
 // admin/setup.php, row 61, 64
@@ -3414,18 +3449,18 @@ return [
 "This script can't be used on a configured system." => "Skript nelze pou\x9E\xEDt na nakonfigurovan\xE9m syst\xE9mu.",
 
 // admin/setup.php, row 95
-// admin/um_uedit.php, row 330
+// admin/um_uedit.php, row 341
 "Superadmin account" => "Superadmin",
 
 // admin/setup.php, row 100, 241
 // admin/slicewiz.php, row 85
-// admin/um_passwd.php, row 114
-// admin/um_uedit.php, row 321
+// admin/um_passwd.php, row 136
+// admin/um_uedit.php, row 332
 // central/index.php, row 140
 // central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
-// src/Widget/TfaWidget.php, row 75
+// src/Widget/TfaWidget.php, row 77
 "Password" => "Heslo",
 
 // admin/setup.php, row 101, 243
@@ -3434,8 +3469,8 @@ return [
 
 // admin/setup.php, row 102, 245
 // admin/slicewiz.php, row 87
-// admin/um_passwd.php, row 116
-// admin/um_uedit.php, row 323
+// admin/um_passwd.php, row 138
+// admin/um_uedit.php, row 334
 // include/um_util.php, row 298
 "First name" => "Jm\xE9no",
 
@@ -3502,7 +3537,7 @@ return [
 
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
-// admin/um_uedit.php, row 378
+// admin/um_uedit.php, row 389
 // include/formutil.php, row 1771
 // include/mlx.php, row 377
 // include/profile.php, row 170
@@ -3867,14 +3902,14 @@ return [
 "Slice Administrator" => "Administr\xE1tor Web\xEDku.",
 
 // admin/slicewiz.php, row 86
-// admin/um_passwd.php, row 115
-// admin/um_uedit.php, row 322
+// admin/um_passwd.php, row 137
+// admin/um_uedit.php, row 333
 // include/um_util.php, row 302
 "Retype password" => "Potvrdit heslo",
 
 // admin/slicewiz.php, row 88
-// admin/um_passwd.php, row 117
-// admin/um_uedit.php, row 324
+// admin/um_passwd.php, row 139
+// admin/um_uedit.php, row 335
 // include/um_util.php, row 297
 "Surname" => "P\xF8\xEDjmen\xED",
 
@@ -3888,25 +3923,25 @@ return [
 "Go: Add Slice" => "Je\xEF: P\xF8idej Web\xEDk",
 
 // admin/um_gedit.php, row 95
-// admin/um_uedit.php, row 110
+// admin/um_uedit.php, row 111
 "No permission to create new user" => "Nem\xE1te pr\xE1vo vytvo\xF8it u\x9Eivatele",
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137, 154
+// admin/um_uedit.php, row 135, 138, 155
 "Too many groups found." => "Nalezeno p\xF8\xEDli\x9A moc skupin.",
 
 // admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 134, 137
+// admin/um_uedit.php, row 135, 138
 "No groups found" => "Skupina nenalezena",
 
 // admin/um_gedit.php, row 120, 128
-// admin/um_uedit.php, row 128, 143, 167
+// admin/um_uedit.php, row 129, 144, 168
 // include/se_users.php, row 175
 // include/um_gsrch.php, row 31
 "Too many users or groups found." => "Nalezeno p\xF8\xEDli\x9A mnoho u\x9Eivatel\xF9 \xE8i skupin.",
 
 // admin/um_gedit.php, row 120
-// admin/um_uedit.php, row 128, 143
+// admin/um_uedit.php, row 129, 144
 // include/se_users.php, row 177
 // include/um_gsrch.php, row 34
 "No user (group) found" => "U\x9Eivatel (skupina) nenalezena",
@@ -3922,7 +3957,7 @@ return [
 "Are you sure you want to delete selected group from whole permission system?" => "Opravdu chcete vymazat celou skupinu ze syst\xE9mu?",
 
 // admin/um_gedit.php, row 189, 199
-// admin/um_uedit.php, row 336, 342
+// admin/um_uedit.php, row 347, 353
 // include/menu_util.php, row 71
 // include/se_users.php, row 141
 // include/um_gsrch.php, row 41
@@ -3939,7 +3974,7 @@ return [
 
 // admin/um_gedit.php, row 220
 // include/constants.php, row 455
-// include/perm_sql.php, row 403
+// include/perm_sql.php, row 459
 // include/um_gsrch.php, row 50
 "Group" => "Skupina",
 
@@ -3956,8 +3991,8 @@ return [
 "Superadmin group" => "Administrativn\xED skupina",
 
 // admin/um_gedit.php, row 312
-// admin/um_uedit.php, row 230, 241
-// include/logs.php, row 911
+// admin/um_uedit.php, row 231, 242
+// include/logs.php, row 916
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -3969,57 +4004,216 @@ return [
 // admin/um_gedit.php, row 322
 "Group's Users" => "U\x9Eivatel\xE9 ve skupin\xEC",
 
-// admin/um_passwd.php, row 61
+// admin/um_passkeys.php, row 58
+"The directory of the accounts does not answer now - try it again later" => "Adres\xE1\xF8 \xFA\xE8t\xF9 te\xEF neodpov\xEDd\xE1 - zkuste to znovu pozd\xECji", // ai 2026-11
+
+// admin/um_passkeys.php, row 62
+"You do not have permissions to manage the passkeys of this account" => "Nem\xE1te opr\xE1vn\xECn\xED spravovat p\xF8\xEDstupov\xE9 kl\xED\xE8e tohoto \xFA\xE8tu", // ai 2026-11
+
+// admin/um_passkeys.php, row 105
+"The passkey is stored. From now on this account logs in only by a passkey." => "P\xF8\xEDstupov\xFD kl\xED\xE8 je ulo\x9Een. Tento \xFA\xE8et se od te\xEF p\xF8ihla\x9Auje jen p\xF8\xEDstupov\xFDm kl\xED\xE8em.", // ai 2026-11
+
+// admin/um_passkeys.php, row 106
+"The passkey is renamed." => "P\xF8\xEDstupov\xFD kl\xED\xE8 byl p\xF8ejmenov\xE1n.", // ai 2026-11
+
+// admin/um_passkeys.php, row 107
+"The passkey is deleted." => "P\xF8\xEDstupov\xFD kl\xED\xE8 byl smaz\xE1n.", // ai 2026-11
+
+// admin/um_passkeys.php, row 108
+"All passkeys of the account are deleted - its password logs in again." => "V\x9Aechny p\xF8\xEDstupov\xE9 kl\xED\xE8e \xFA\xE8tu byly smaz\xE1ny - \xFA\xE8et se op\xECt p\xF8ihla\x9Auje heslem.", // ai 2026-11
+
+// admin/um_passkeys.php, row 109
+"Log in again first - adding or deleting a passkey needs a login of the last %1 minutes." => "Nejprve se znovu p\xF8ihlaste - p\xF8id\xE1n\xED nebo smaz\xE1n\xED p\xF8\xEDstupov\xE9ho kl\xED\xE8e vy\x9Eaduje p\xF8ihl\xE1\x9Aen\xED ne star\x9A\xED ne\x9E %1 min.", // ai 2026-11
+
+// admin/um_passkeys.php, row 110
+"This passkey is stored already." => "Tento p\xF8\xEDstupov\xFD kl\xED\xE8 u\x9E je ulo\x9Een.", // ai 2026-11
+
+// admin/um_passkeys.php, row 111
+"The page waited too long. Try it again." => "Str\xE1nka \xE8ekala p\xF8\xEDli\x9A dlouho. Zkuste to znovu.", // ai 2026-11
+
+// admin/um_passkeys.php, row 112
+"The passkey could not be stored. Try it again, or another device." => "P\xF8\xEDstupov\xFD kl\xED\xE8 se nepoda\xF8ilo ulo\x9Eit. Zkuste to znovu nebo na jin\xE9m za\xF8\xEDzen\xED.", // ai 2026-11
+
+// admin/um_passkeys.php, row 116
+// admin/um_passwd.php, row 130
+// admin/um_uedit.php, row 324
+"Passkeys" => "P\xF8\xEDstupov\xE9 kl\xED\xE8e", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of your account %1" => "P\xF8\xEDstupov\xE9 kl\xED\xE8e va\x9Aeho \xFA\xE8tu %1", // ai 2026-11
+
+// admin/um_passkeys.php, row 128
+"Passkeys of the account %1" => "P\xF8\xEDstupov\xE9 kl\xED\xE8e \xFA\xE8tu %1", // ai 2026-11
+
+// admin/um_passkeys.php, row 131
+"This account cannot have passkeys - only the users of the permission system of AA can." => "Tento \xFA\xE8et nem\xF9\x9Ee m\xEDt p\xF8\xEDstupov\xE9 kl\xED\xE8e - mohou je m\xEDt jen u\x9Eivatel\xE9 syst\xE9mu opr\xE1vn\xECn\xED AA.", // ai 2026-11
+
+// admin/um_passkeys.php, row 137
+"A passkey logs you in without a password - by the fingerprint, face or PIN of your phone or computer. Nobody can steal it by a fake page or guess it." => "P\xF8\xEDstupov\xFD kl\xED\xE8 v\xE1s p\xF8ihl\xE1s\xED bez hesla - otiskem prstu, obli\xE8ejem nebo PINem va\x9Aeho telefonu \xE8i po\xE8\xEDta\xE8e. Nikdo ho nem\xF9\x9Ee ukr\xE1st p\xF8es podvodnou str\xE1nku ani uhodnout.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Once the account has a passkey, the password alone no longer logs it in" => "Jakmile m\xE1 \xFA\xE8et p\xF8\xEDstupov\xFD kl\xED\xE8, samotn\xE9 heslo ho u\x9E nep\xF8ihl\xE1s\xED", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"neither here, nor for Central or scripts that log in by it." => "ani tady, ani v Centralu nebo ve skriptech, kter\xE9 se j\xEDm p\xF8ihla\x9Auj\xED.", // ai 2026-11
+
+// admin/um_passkeys.php, row 138
+"Add two passkeys - say in your phone and in your computer - so you keep the access when you lose one. If you lose all of them, a user manager of this AA deletes them and you log in by your password again." => "P\xF8idejte si dva p\xF8\xEDstupov\xE9 kl\xED\xE8e - t\xF8eba v telefonu a v po\xE8\xEDta\xE8i -, abyste p\xF8i ztr\xE1t\xEC jednoho nep\xF8i\x9Ali o p\xF8\xEDstup. Kdy\x9E ztrat\xEDte v\x9Aechny, spr\xE1vce u\x9Eivatel\xF9 tohoto AA je sma\x9Ee a vy se znovu p\xF8ihl\xE1s\xEDte heslem.", // ai 2026-11
+
+// admin/um_passkeys.php, row 140
+"Delete the passkeys only when their owner asks for it - lost or stolen device. The account then logs in by its password again, and its owner gets a mail about it." => "P\xF8\xEDstupov\xE9 kl\xED\xE8e ma\x9Ete jen na \x9E\xE1dost jejich vlastn\xEDka - p\xF8i ztr\xE1t\xEC nebo kr\xE1de\x9Ei za\xF8\xEDzen\xED. \xDA\xE8et se pak znovu p\xF8ihla\x9Auje heslem a jeho vlastn\xEDk o tom dostane e-mail.", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Works on" => "Funguje na", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+"Added" => "P\xF8id\xE1no", // ai 2026-11
+
+// admin/um_passkeys.php, row 149
+// include/formutil.php, row 3300
+"Last used" => "Naposledy pou\x9Eito",
+
+// admin/um_passkeys.php, row 149
+"Copies" => "Kopie", // ai 2026-11
+
+// admin/um_passkeys.php, row 153
+// include/searchbar.class.php, row 1124
+"Rename" => "P\xF8ejmenovat",
+
+// admin/um_passkeys.php, row 156
+"not yet" => "zat\xEDm ne", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"in your other devices too" => "i ve va\x9Aich dal\x9A\xEDch za\xF8\xEDzen\xEDch", // ai 2026-11
+
+// admin/um_passkeys.php, row 157
+"only in this device" => "jen v tomto za\xF8\xEDzen\xED", // ai 2026-11
+
+// admin/um_passkeys.php, row 162
+"Delete all passkeys of the account" => "Smazat v\x9Aechny p\xF8\xEDstupov\xE9 kl\xED\xE8e \xFA\xE8tu", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"You have no passkey yet." => "Zat\xEDm nem\xE1te \x9E\xE1dn\xFD p\xF8\xEDstupov\xFD kl\xED\xE8.", // ai 2026-11
+
+// admin/um_passkeys.php, row 165
+"The account has no passkey." => "\xDA\xE8et nem\xE1 \x9E\xE1dn\xFD p\xF8\xEDstupov\xFD kl\xED\xE8.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"To add or delete a passkey, log in again: it needs a login of the last %1 minutes." => "Chcete-li p\xF8idat nebo smazat p\xF8\xEDstupov\xFD kl\xED\xE8, p\xF8ihlaste se znovu: vy\x9Eaduje to p\xF8ihl\xE1\x9Aen\xED ne star\x9A\xED ne\x9E %1 min.", // ai 2026-11
+
+// admin/um_passkeys.php, row 169
+"Log in again" => "P\xF8ihl\xE1sit se znovu", // ai 2026-11
+
+// admin/um_passkeys.php, row 171
+"A passkey cannot be added to this account: you may not change its data, or its password is public (the free links of a module log in by it)." => "K tomuto \xFA\xE8tu nelze p\xF8idat p\xF8\xEDstupov\xFD kl\xED\xE8: nesm\xEDte m\xECnit jeho \xFAdaje, nebo je jeho heslo ve\xF8ejn\xE9 (p\xF8ihla\x9Auj\xED se j\xEDm voln\xE9 odkazy modulu).", // ai 2026-11
+
+// admin/um_passkeys.php, row 173
+"A passkey can be added only on a page reached by https and by an address of this AA or of one of its sites, not an IP address." => "P\xF8\xEDstupov\xFD kl\xED\xE8 lze p\xF8idat jen na str\xE1nce otev\xF8en\xE9 p\xF8es https a na adrese tohoto AA nebo n\xECkter\xE9ho z jeho web\xF9, ne na IP adrese.", // ai 2026-11
+
+// admin/um_passkeys.php, row 180, 191
+"Add a passkey" => "P\xF8idat p\xF8\xEDstupov\xFD kl\xED\xE8", // ai 2026-11
+
+// admin/um_passkeys.php, row 182
+"This server cannot make passkeys." => "Tento server neum\xED vytv\xE1\xF8et p\xF8\xEDstupov\xE9 kl\xED\xE8e.", // ai 2026-11
+
+// admin/um_passkeys.php, row 184
+"The passkey will work on %1. On the other addresses of this AA the login page sends you here." => "P\xF8\xEDstupov\xFD kl\xED\xE8 bude fungovat na %1. Na ostatn\xEDch adres\xE1ch tohoto AA v\xE1s sem p\xF8esm\xECruje p\xF8ihla\x9Aovac\xED str\xE1nka.", // ai 2026-11
+
+// admin/um_passkeys.php, row 185
+"Name of the passkey" => "N\xE1zev p\xF8\xEDstupov\xE9ho kl\xED\xE8e", // ai 2026-11
+
+// admin/um_passkeys.php, row 186
+"e.g. My phone" => "nap\xF8. M\xF9j telefon", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"No passkey was made." => "\x8E\xE1dn\xFD p\xF8\xEDstupov\xFD kl\xED\xE8 nebyl vytvo\xF8en.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"This device keeps a passkey of the account already." => "Toto za\xF8\xEDzen\xED u\x9E p\xF8\xEDstupov\xFD kl\xED\xE8 tohoto \xFA\xE8tu m\xE1.", // ai 2026-11
+
+// admin/um_passkeys.php, row 189
+"The browser could not make a passkey." => "Prohl\xED\x9Ee\xE8i se nepoda\xF8ilo vytvo\xF8it p\xF8\xEDstupov\xFD kl\xED\xE8.", // ai 2026-11
+
+// admin/um_passkeys.php, row 190
+"This browser cannot make passkeys." => "Tento prohl\xED\x9Ee\xE8 neum\xED vytv\xE1\xF8et p\xF8\xEDstupov\xE9 kl\xED\xE8e.", // ai 2026-11
+
+// admin/um_passkeys.php, row 192
+"Adding a passkey needs JavaScript." => "P\xF8id\xE1n\xED p\xF8\xEDstupov\xE9ho kl\xED\xE8e vy\x9Eaduje JavaScript.", // ai 2026-11
+
+// admin/um_passwd.php, row 64
 "You do not have permissions to change user data" => "Nem\xE1te pr\xE1vo m\xECnit \xFAdaje o u\x9Eivateli",
 
-// admin/um_passwd.php, row 71, 113
+// admin/um_passwd.php, row 83
+"Log in again first - a change of the account needs a login of the last %1 minutes" => "Nejprve se znovu p\xF8ihlaste - zm\xECna \xFA\xE8tu vy\x9Eaduje p\xF8ihl\xE1\x9Aen\xED ne star\x9A\xED ne\x9E %1 min.", // ai 2026-11
+
+// admin/um_passwd.php, row 86, 132, 134
 // src/Widget/PwdWidget.php, row 66
 "Current password" => "Sou\xE8asn\xE9 heslo",
 
-// admin/um_passwd.php, row 73
+// admin/um_passwd.php, row 88
 "Error in current password - password is not changed" => "\x8Apatn\xE9 heslo - heslo nebylo zm\xECn\xECnp",
 
-// admin/um_passwd.php, row 82
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 98
+// admin/um_uedit.php, row 184
 "User data modified" => "\xDAdaje o u\x9Eivateli byly zm\xECn\xECny",
 
-// admin/um_passwd.php, row 101
+// admin/um_passwd.php, row 117
 "Change user data" => "Zm\xECnit \xFAdaje o u\x9Eivateli",
 
-// admin/um_passwd.php, row 110
-// admin/um_uedit.php, row 312
+// admin/um_passwd.php, row 127
+// admin/um_uedit.php, row 313
 "Edit User" => "Editace u\x9Eivatele",
 
-// admin/um_passwd.php, row 112
-// admin/um_uedit.php, row 314
+// admin/um_passwd.php, row 129
+// admin/um_uedit.php, row 315
 "User Id" => "Id u\x9Eivatele",
 
-// admin/um_uedit.php, row 183
+// admin/um_passwd.php, row 130
+"The account logs in by a passkey" => "\xDA\xE8et se p\xF8ihla\x9Auje p\xF8\xEDstupov\xFDm kl\xED\xE8em", // ai 2026-11
+
+// admin/um_passwd.php, row 130
+"Log in without a password" => "P\xF8ihl\xE1\x9Aen\xED bez hesla", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed - you logged in a moment ago" => "Nen\xED t\xF8eba - p\xF8ed chv\xEDl\xED jste se p\xF8ihl\xE1sili", // ai 2026-11
+
+// admin/um_passwd.php, row 132
+"Not needed, but log in again first: a change needs a login of the last %1 minutes" => "Nen\xED t\xF8eba, ale nejprve se znovu p\xF8ihlaste: zm\xECna vy\x9Eaduje p\xF8ihl\xE1\x9Aen\xED ne star\x9A\xED ne\x9E %1 min.", // ai 2026-11
+
+// admin/um_uedit.php, row 184
 // include/um_util.php, row 344
 "User successfully added to permission system" => "U\x9Eivatel byl \xFAsp\xEC\x9An\xEC p\xF8id\xE1n do syst\xE9mu",
 
-// admin/um_uedit.php, row 198
+// admin/um_uedit.php, row 199
 "Are you sure you want to delete selected user from whole permission system?" => "Opravdu chcete vymazat u\x9Eivatele ze syst\xE9mu?",
 
-// admin/um_uedit.php, row 230
+// admin/um_uedit.php, row 231
 "Add new user" => "P\xF8idat nov\xE9ho u\x9Eivatele",
 
-// admin/um_uedit.php, row 238
+// admin/um_uedit.php, row 239
 "Add user" => "P\xF8idat u\x9Eivatele",
 
-// admin/um_uedit.php, row 247
+// admin/um_uedit.php, row 248
 "Find user" => "Naj\xEDt u\x9Eivatele",
 
-// admin/um_uedit.php, row 316
+// admin/um_uedit.php, row 324
+"%1 - the account logs in only by them" => "%1 - \xFA\xE8et se p\xF8ihla\x9Auje jen jimi", // ai 2026-11
+
+// admin/um_uedit.php, row 324
+// src/Isds/Registry/Page.php, row 555, 653
+// src/Optimize/MissCacheRouting.php, row 98, 129
+"none" => "\x9E\xE1dn\xE1", // ai 2026-10
+
+// admin/um_uedit.php, row 327
 "New user" => "Nov\xFD u\x9Eivatel",
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "All Writable Groups" => "V\x9Aechny zapisovateln\xE9 skupiny",
 
-// admin/um_uedit.php, row 342
+// admin/um_uedit.php, row 353
 "User's Groups" => "U\x9Eivatelovy skupiny",
 
-// admin/um_uedit.php, row 347
+// admin/um_uedit.php, row 358
 "Member of Unwritable Groups" => "\xC8len nezapisovateln\xFDch skupin",
 
 // admin/usershow.php, row 76
@@ -4082,7 +4276,7 @@ return [
 "Write email to users" => "Hromadn\xFD e-mail u\x9Eivatel\xF9m",
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1059
+// include/logs.php, row 1064
 "Recipients" => "P\xF8\xEDjemci",
 
 // admin/write_mail.php, row 238
@@ -4156,7 +4350,7 @@ return [
 "App" => "Aplikace", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1201
+// include/logs.php, row 1206
 "Version" => "Verze", // ai 2026-10
 
 // central/appstore.php, row 164
@@ -4299,11 +4493,11 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1202
+// include/logs.php, row 1207
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
-// src/Widget/RichtextMarkup.php, row 71
+// src/Widget/RichtextMarkup.php, row 84
 "Source" => "Zdroj",
 
 // central/installapp.php, row 452
@@ -4344,7 +4538,7 @@ return [
 "Hold Ctrl to choose more of them." => "Pro v\xFDb\xECr v\xEDce polo\x9Eek dr\x9Ete Ctrl.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 790, 1244
+// include/logs.php, row 795, 1249
 "Mode" => "Re\x9Eim", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4734,7 +4928,7 @@ return [
 "Stopped by an error" => "Zastaveno chybou", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 792
+// include/logs.php, row 797
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "Dokon\xE8eno", // ai 2026-10
@@ -4937,7 +5131,7 @@ return [
 "Compared and Updated ActionApps" => "Porovnan\xE9 a aktualizovan\xE9 ActionApps",
 
 // filldisc.php, row 106, 156
-// filler.php, row 423
+// filler.php, row 311, 427
 "Not accepted, sorry. Looks like spam." => "Nep\xF8ijato, omlouv\xE1me se. Vypad\xE1 to jako spam.",
 
 // filldisc.php, row 113
@@ -4959,22 +5153,22 @@ return [
 // filler.php, row 295
 "Not allowed to post comments" => "Vkl\xE1d\xE1n\xED koment\xE1\xF8\xF9 nen\xED povoleno",
 
-// filler.php, row 336, 382
+// filler.php, row 340, 386
 "Bad Token. Not allowed to post comments" => "Chybn\xFD token. Vkl\xE1d\xE1n\xED koment\xE1\xF8\xF9 nen\xED povoleno",
 
-// filler.php, row 362
+// filler.php, row 366
 "Slice ID not defined" => "ID web\xEDku nen\xED definov\xE1no",
 
-// filler.php, row 368
+// filler.php, row 372
 "Bad slice ID" => "Chybn\xE9 ID web\xEDku",
 
-// filler.php, row 397, 486
+// filler.php, row 401, 490
 "You are not allowed to update this item." => "Nem\xE1te pr\xE1vo upravovat tuto zpr\xE1vu.",
 
-// filler.php, row 444
+// filler.php, row 448
 "Anonymous posting not admitted." => "Anonymn\xED p\xF8id\xE1v\xE1n\xED nen\xED povoleno.",
 
-// filler.php, row 499
+// filler.php, row 503
 "Some error in store item." => "N\xECjak\xE1 chyba p\xF8i ukl\xE1d\xE1n\xED zpr\xE1vy.",
 
 // include/adminpage.class.php, row 68
@@ -4984,7 +5178,7 @@ return [
 "Short Id" => "ID (kr\xE1tk\xE9)",
 
 // include/constants.php, row 456
-// include/logs.php, row 950, 982
+// include/logs.php, row 955, 987
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "T\xF8\xEDda",
 
@@ -4993,7 +5187,7 @@ return [
 "Level" => "\xDArove\xF2",
 
 // include/constants.php, row 509
-// include/logs.php, row 1161
+// include/logs.php, row 1166
 "Feed" => "Kop\xEDrovat obsah",
 
 // include/constants.php, row 510
@@ -5634,8 +5828,8 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1294
-// src/Manageraction/Item_Move2Slice.php, row 52
+// include/logs.php, row 1299
+// src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID web\xEDku",
 
 // include/form.class.php, row 232
@@ -5695,7 +5889,7 @@ return [
 "import" => "na\xE8\xEDst",
 
 // include/formutil.php, row 1216
-// src/Widget/RichtextMarkup.php, row 70
+// src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Zobraz Editor",
 
@@ -5726,7 +5920,7 @@ return [
 "Offer" => "Nab\xEDdnout",
 
 // include/formutil.php, row 2179
-// include/stringexpand.php, row 11505, 11528
+// include/stringexpand.php, row 11506, 11529
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 287
@@ -5751,7 +5945,7 @@ return [
 "Group Name" => "Jm\xE9no skupiny",
 
 // include/formutil.php, row 3295
-// include/logs.php, row 747, 847, 1111
+// include/logs.php, row 752, 852, 1116
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Po\xE8et",
@@ -5767,9 +5961,6 @@ return [
 
 // include/formutil.php, row 3299
 "Updated by" => "Aktualizoval",
-
-// include/formutil.php, row 3300
-"Last used" => "Naposledy pou\x9Eito",
 
 // include/formutil.php, row 3307
 "All active items" => "V\x9Aechy aktu\xE1ln\xED \xE8l\xE1nky",
@@ -5787,7 +5978,7 @@ return [
 "All items in trash bin" => "V\x9Aechny \xE8l\xE1nky v ko\x9Ai",
 
 // include/init_page.php, row 84
-// include/locauth.php, row 100
+// include/locauth.php, row 137
 "Either your username or your password is not valid" => "Bu\xEF jm\xE9no nebo heslo nejsou v po\xF8\xE1dku",
 
 // include/init_page.php, row 136
@@ -6288,252 +6479,258 @@ return [
 // include/itemview.php, row 723, 731
 "exact group name" => "p\xF8esn\xFD n\xE1zev skupiny",
 
-// include/locauth.php, row 102
+// include/locauth.php, row 134
+"The login by the passkey did not succeed. Try it again." => "P\xF8ihl\xE1\x9Aen\xED p\xF8\xEDstupov\xFDm kl\xED\xE8em se nezda\xF8ilo. Zkuste to znovu.", // ai 2026-11
+
+// include/locauth.php, row 139
 "Please try again!" => "Zkuste to znovu, pros\xEDm!<br>Please try again!",
 
-// include/locauth.php, row 103
+// include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Pokud jste si jisti, \x9Ee zad\xE1v\xE1te spr\xE1vn\xE9 jm\xE9no a heslo, obra\x9Dte se pros\xEDm na <a href=\"mailto:%1\">%1</a>.<br>If you are sure you have typed the correct password, please e-mail  <a href=\"mailto:%1\">%1</a>.",
 
-// include/logs.php, row 541
+// include/logs.php, row 546
 "Created time" => "\xC8as vytvo\xF8en\xED",
 
-// include/logs.php, row 542
+// include/logs.php, row 547
 "Readers to be emailed" => "\xC8ten\xE1\xF8i, kter\xFDm se m\xE1 poslat e-mail",
 
-// include/logs.php, row 554
+// include/logs.php, row 559
 // src/Optimize/CheckCkeditorUse.php, row 97
+// src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
 "Page" => "Str\xE1nka",
 
-// include/logs.php, row 629, 673, 688
+// include/logs.php, row 634, 678, 693
 "Time [s]" => "\xC8as [s]",
 
-// include/logs.php, row 630, 675
+// include/logs.php, row 635, 680
 "Memory usage [MB]" => "Vyu\x9Eit\xED pam\xECti [MB]",
 
-// include/logs.php, row 631
+// include/logs.php, row 636
 "Memory peak [MB]" => "\x8Api\xE8ka pam\xECti [MB]",
 
-// include/logs.php, row 632
+// include/logs.php, row 637
 "Return code" => "N\xE1vratov\xFD k\xF3d",
 
-// include/logs.php, row 648
+// include/logs.php, row 653
 "Tasks done" => "Hotov\xE9 \xFAlohy", // ai 2026-06
 
-// include/logs.php, row 649
+// include/logs.php, row 654
 "Tasks started" => "Spu\x9At\xECn\xE9 \xFAlohy", // ai 2026-06
 
-// include/logs.php, row 650
+// include/logs.php, row 655
 "Duration [s]" => "Doba trv\xE1n\xED [s]", // ai 2026-06
 
-// include/logs.php, row 651
+// include/logs.php, row 656
 "Allowed [s]" => "\xC8asov\xFD limit [s]", // ai 2026-10
 
-// include/logs.php, row 671
+// include/logs.php, row 676
 "Cached" => "Z cache",
 
-// include/logs.php, row 672
+// include/logs.php, row 677
 "Not Modified (304)" => "Nezm\xECn\xECno (304)", // ai 2026-06
 
-// include/logs.php, row 674
+// include/logs.php, row 679
 "Time + Cached + 304" => "\xC8as + cache + 304",
 
-// include/logs.php, row 676, 689, 899, 1085
+// include/logs.php, row 681, 694, 904, 1090
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL",
 
-// include/logs.php, row 716
+// include/logs.php, row 721
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 717
+// include/logs.php, row 722
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 718
+// include/logs.php, row 723
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 719
+// include/logs.php, row 724
 "DB" => "",
 
-// include/logs.php, row 720
+// include/logs.php, row 725
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Pam\xEC\x9D",
 
-// include/logs.php, row 721
+// include/logs.php, row 726
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 722
+// include/logs.php, row 727
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Nastaven\xED serveru", // ai 2026-10
 
-// include/logs.php, row 746, 845
+// include/logs.php, row 751, 850
 "Severity" => "Z\xE1va\x9Enost", // ai 2026-10
 
-// include/logs.php, row 748, 843, 872
+// include/logs.php, row 753, 848, 877
 "Finding" => "Zji\x9At\xECn\xED", // ai 2026-10
 
-// include/logs.php, row 766
+// include/logs.php, row 771
 "Problems" => "Probl\xE9my", // ai 2026-10
 
-// include/logs.php, row 767
+// include/logs.php, row 772
 "Warnings" => "Varov\xE1n\xED", // ai 2026-10
 
-// include/logs.php, row 768
+// include/logs.php, row 773
 "Recommendations" => "Doporu\xE8en\xED", // ai 2026-10
 
-// include/logs.php, row 769
+// include/logs.php, row 774
 "Checks" => "Kontroly", // ai 2026-10
 
-// include/logs.php, row 789, 820
+// include/logs.php, row 794, 825
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Spustit", // ai 2026-10
 
-// include/logs.php, row 791
+// include/logs.php, row 796
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "Za\xE8\xE1tek", // ai 2026-10
 
-// include/logs.php, row 793
+// include/logs.php, row 798
 "Last full run" => "Posledn\xED \xFApln\xFD b\xECh", // ai 2026-10
 
-// include/logs.php, row 794
+// include/logs.php, row 799
 "Last full run started" => "Za\xE8\xE1tek posledn\xEDho \xFApln\xE9ho b\xEChu", // ai 2026-10
 
-// include/logs.php, row 819, 844
+// include/logs.php, row 824, 849
 "Pair" => "Dvojice", // ai 2026-10
 
-// include/logs.php, row 821
+// include/logs.php, row 826
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Spu\x9At\xECno", // ai 2026-10
 
-// include/logs.php, row 822, 846
+// include/logs.php, row 827, 851
 "Known issue" => "Zn\xE1m\xFD probl\xE9m", // ai 2026-10
 
-// include/logs.php, row 848
+// include/logs.php, row 853
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Poprv\xE9 zji\x9At\xECno", // ai 2026-10
 
-// include/logs.php, row 849
+// include/logs.php, row 854
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "B\xECh\xF9 po sob\xEC", // ai 2026-10
 
-// include/logs.php, row 873
+// include/logs.php, row 878
 "Evidence" => "Doklady", // ai 2026-10
 
-// include/logs.php, row 896
+// include/logs.php, row 901
 "Identifier" => "Identifik\xE1tor",
 
-// include/logs.php, row 897, 1261, 1276
+// include/logs.php, row 902, 1266, 1281
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "ID modulu",
 
-// include/logs.php, row 910
+// include/logs.php, row 915
 "Template id" => "ID \x9Aablony", // ai 2026-06
 
-// include/logs.php, row 912
+// include/logs.php, row 917
 "Emails sent" => "Odeslan\xE9 e-maily", // ai 2026-06
 
-// include/logs.php, row 951
+// include/logs.php, row 956
 "Object id" => "Id objektu", // ai 2026-10
 
-// include/logs.php, row 983
+// include/logs.php, row 988
 "Mail template" => "\x8Aablona e-mailu", // ai 2026-10
 
-// include/logs.php, row 984
+// include/logs.php, row 989
 "Reader item" => "\xC8l\xE1nek \xE8ten\xE1\xF8e", // ai 2026-10
 
-// include/logs.php, row 985
+// include/logs.php, row 990
 "Origin" => "P\xF9vod", // ai 2026-10
 
-// include/logs.php, row 1056
+// include/logs.php, row 1061
 "Transport" => "Zp\xF9sob odesl\xE1n\xED", // ai 2026-10
 
-// include/logs.php, row 1057
+// include/logs.php, row 1062
 "Recipients sent" => "Odesl\xE1no p\xF8\xEDjemc\xF9m", // ai 2026-10
 
-// include/logs.php, row 1058
+// include/logs.php, row 1063
 "Server response" => "Odpov\xEC\xEF serveru", // ai 2026-10
 
-// include/logs.php, row 1071
+// include/logs.php, row 1076
 "Items selected" => "Vybran\xE9 \xE8l\xE1nky", // ai 2026-10
 
-// include/logs.php, row 1072
+// include/logs.php, row 1077
 "Items updated" => "Aktualizovan\xE9 \xE8l\xE1nky", // ai 2026-10
 
-// include/logs.php, row 1073
+// include/logs.php, row 1078
 "Items planned" => "Napl\xE1novan\xE9 \xE8l\xE1nky", // ai 2026-10
 
-// include/logs.php, row 1084
+// include/logs.php, row 1089
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Zpr\xE1va", // ai 2026-06
 
-// include/logs.php, row 1086
+// include/logs.php, row 1091
 "Referer" => "Odkazuj\xEDc\xED str\xE1nka", // ai 2026-06
 
-// include/logs.php, row 1097
+// include/logs.php, row 1102
 "New name" => "Nov\xFD n\xE1zev", // ai 2026-06
 
-// include/logs.php, row 1098
+// include/logs.php, row 1103
 "Old name" => "Star\xFD n\xE1zev", // ai 2026-06
 
-// include/logs.php, row 1109, 1174
+// include/logs.php, row 1114, 1179
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "F\xE1ze", // ai 2026-06
 
-// include/logs.php, row 1110
+// include/logs.php, row 1115
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Kolekce", // ai 2026-06
 
-// include/logs.php, row 1112, 1163, 1175, 1310
+// include/logs.php, row 1117, 1168, 1180, 1315
 // src/Import/Definition.php, row 154
+// src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "Detail", // ai 2026-10
 
-// include/logs.php, row 1162
+// include/logs.php, row 1167
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Stav", // ai 2026-06
 
-// include/logs.php, row 1214
+// include/logs.php, row 1219
 "Processed" => "Zpracov\xE1no", // ai 2026-06
 
-// include/logs.php, row 1215
+// include/logs.php, row 1220
 "Stored" => "Ulo\x9Eeno", // ai 2026-06
 
-// include/logs.php, row 1216
+// include/logs.php, row 1221
 "Errors" => "Chyby", // ai 2026-06
 
-// include/logs.php, row 1229
+// include/logs.php, row 1234
 // src/Import/DetailPage.php, row 329
 "Outcome" => "V\xFDsledek", // ai 2026-06
 
-// include/logs.php, row 1245
+// include/logs.php, row 1250
 "Flags" => "P\xF8\xEDznaky", // ai 2026-06
 
-// include/logs.php, row 1246
+// include/logs.php, row 1251
 "Context" => "Kontext", // ai 2026-06
 
-// include/logs.php, row 1262
+// include/logs.php, row 1267
 "Feed counterpart" => "Prot\xECj\x9Aek ve v\xFDm\xECn\xEC zpr\xE1v", // ai 2026-10
 
-// include/logs.php, row 1277
+// include/logs.php, row 1282
 "Field ID" => "ID Pol\xED\xE8ka",
 
-// include/logs.php, row 1295
+// include/logs.php, row 1300
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckHttp.php, row 62
+// src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 88
 "Reason" => "D\xF9vod", // ai 2026-10
 
@@ -6546,7 +6743,7 @@ return [
 // include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Vlastn\xEDk",
 
@@ -6872,10 +7069,10 @@ return [
 // include/modutils.php, row 251
 "Select owner" => "Vyber vlastn\xEDka",
 
-// include/perm_core.php, row 1273, 1300
+// include/perm_core.php, row 1414, 1444
 "Reader Slice" => "Web\xEDk \xE8ten\xE1\xF8\xF9",
 
-// include/perm_core.php, row 1285, 1302
+// include/perm_core.php, row 1429, 1446
 "Reader Set" => "Mno\x9Eina \xE8ten\xE1\xF8\xF9",
 
 // include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
@@ -6984,9 +7181,6 @@ return [
 // include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Osobn\xED filtr (kliknut\xEDm pou\x9Eijete)",
 
-// include/searchbar.class.php, row 1124
-"Rename" => "P\xF8ejmenovat",
-
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Spr\xE1va filtr\xF9",
 
@@ -7021,7 +7215,7 @@ return [
 "is not" => "nen\xED",
 
 // include/searchlib.php, row 137, 140
-// include/statestore.php, row 1362
+// include/statestore.php, row 1367
 "select ..." => "vyber ...",
 
 // include/searchlib.php, row 370
@@ -7299,13 +7493,13 @@ return [
 // include/slicedit.php, row 372
 "Internal error when changing user role." => "Intern\xED chyba p\xF8i zm\xECn\xEC role u\x9Eivatele.",
 
-// include/statestore.php, row 1076
+// include/statestore.php, row 1081
 "Owner ID" => "ID vlastn\xEDka",
 
-// include/statestore.php, row 1170
+// include/statestore.php, row 1175
 "No object found" => "\x8E\xE1dn\xFD objekt nenalezen",
 
-// include/statestore.php, row 1444
+// include/statestore.php, row 1449
 "Manage components" => "Spr\xE1va komponent",
 
 // include/stringexpand.php, row 95
@@ -7347,84 +7541,84 @@ return [
 // include/stringexpand.php, row 6279
 "No module for dictionary slice" => "Chyb\xED modul pro slovn\xEDkov\xFD web\xEDk",
 
-// include/stringexpand.php, row 8195
+// include/stringexpand.php, row 8196
 "version" => "verze",
 
-// include/stringexpand.php, row 8383
+// include/stringexpand.php, row 8384
 "show" => "zobrazit",
 
-// include/stringexpand.php, row 8384
+// include/stringexpand.php, row 8385
 "hide" => "skr\xFDt",
 
-// include/stringexpand.php, row 8385
+// include/stringexpand.php, row 8386
 "loading" => "na\xE8\xEDt\xE1m",
 
-// include/stringexpand.php, row 9516
+// include/stringexpand.php, row 9517
 "E-mail confirmed." => "E-mail potvrzen.",
 
-// include/stringexpand.php, row 9520
+// include/stringexpand.php, row 9521
 "E-mail unsubscribed" => "E-mail odhl\xE1\x9Aen",
 
-// include/stringexpand.php, row 10279
+// include/stringexpand.php, row 10280
 "Forgot your password? Fill in your email." => "Zapomn\xECli jste heslo? Vypl\xF2te sv\xF9j e-mail.",
 
-// include/stringexpand.php, row 10281
+// include/stringexpand.php, row 10282
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-mail", // ai 2026-10
 
-// include/stringexpand.php, row 10299, 10303
+// include/stringexpand.php, row 10300, 10304
 "Unable to find user - please check if it has been misspelled." => "U\x9Eivatele se nepoda\xF8ilo naj\xEDt - zkontrolujte pros\xEDm p\xF8eklepy.",
 
-// include/stringexpand.php, row 10317
+// include/stringexpand.php, row 10318
 "Password link" => "Odkaz pro heslo",
 
-// include/stringexpand.php, row 10318
+// include/stringexpand.php, row 10319
 "Password change url parameter" => "URL parametr pro zm\xECnu hesla",
 
-// include/stringexpand.php, row 10330
+// include/stringexpand.php, row 10331
 "Password change" => "Zm\xECna hesla",
 
-// include/stringexpand.php, row 10331
+// include/stringexpand.php, row 10332
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Pro zm\xECnu hesla nav\x9Ativte pros\xEDm n\xE1sleduj\xEDc\xED adresu:<br>%1<br>Zm\xECna bude mo\x9En\xE1 po dobu dvou hodin - pot\xE9 platnost kl\xED\xE8e vypr\x9A\xED a budete muset po\x9E\xE1dat o nov\xFD.",
 
-// include/stringexpand.php, row 10340
+// include/stringexpand.php, row 10341
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail s kl\xED\xE8em pro zm\xECnu hesla byl pr\xE1v\xEC odesl\xE1n na e-mailovou adresu: %1",
 
-// include/stringexpand.php, row 10351, 10380
+// include/stringexpand.php, row 10352, 10381
 "Bad or expired key." => "Chybn\xFD nebo expirovan\xFD kl\xED\xE8.",
 
-// include/stringexpand.php, row 10356
+// include/stringexpand.php, row 10357
 "Fill in the new password" => "Vypl\xF2te nov\xE9 heslo",
 
-// include/stringexpand.php, row 10358
+// include/stringexpand.php, row 10359
 "New password" => "Nov\xE9 heslo",
 
-// include/stringexpand.php, row 10359
+// include/stringexpand.php, row 10360
 "Retype New Password" => "Zopakujte Nov\xE9 Heslo",
 
-// include/stringexpand.php, row 10383
+// include/stringexpand.php, row 10384
 "Passwords do not match - please try again." => "Hesla se neshoduj\xED - zkuste to pros\xEDm znovu.",
 
-// include/stringexpand.php, row 10386
+// include/stringexpand.php, row 10387
 "The password must be at least 6 characters long." => "Heslo mus\xED m\xEDt alespo\xF2 6 znak\xF9.",
 
-// include/stringexpand.php, row 10392
+// include/stringexpand.php, row 10393
 "Password changed." => "Heslo zm\xECn\xECno.",
 
-// include/stringexpand.php, row 10394
+// include/stringexpand.php, row 10395
 "An error occurred during password change - please contact: %1." => "P\xF8i zm\xECn\xEC hesla do\x9Alo k chyb\xEC - kontaktujte pros\xEDm: %1.",
 
-// include/stringexpand.php, row 11502, 11525
+// include/stringexpand.php, row 11503, 11526
 "Are you sure you want to permanently DELETE this record?" => "Chcete opravdu trvale SMAZAT tento z\xE1znam?",
 
-// include/stringexpand.php, row 11508, 11511, 11531, 11534
+// include/stringexpand.php, row 11509, 11512, 11532, 11535
 // src/Widget/RimWidget.php, row 270
 "edit" => "upravit",
 
-// include/stringexpand.php, row 11514, 11537
+// include/stringexpand.php, row 11515, 11538
 "back" => "zp\xECt",
 
-// include/stringexpand.php, row 11517, 11540
+// include/stringexpand.php, row 11518, 11541
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "p\xF8et\xE1hn\xECte soubory sem nebo klikn\xECte pro nahr\xE1n\xED",
 
@@ -7927,37 +8121,37 @@ return [
 // src/AA_Plannedtask.php, row 457
 "next run" => "p\xF8\xED\x9At\xED spu\x9At\xECn\xED",
 
-// src/Api/Controller/FilesController.php, row 54, 75
+// src/Api/Controller/FilesController.php, row 56, 77
 "The file is too big" => "Soubor je p\xF8\xEDli\x9A velk\xFD", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 67
+// src/Api/Controller/FilesController.php, row 69
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "Sem nesm\xEDte nahr\xE1vat soubory. Pokud jste editovali, mohlo v\xE1m vypr\x9Aet p\xF8ihl\xE1\x9Aen\xED \x96 na\xE8t\xECte str\xE1nku znovu.", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 70
+// src/Api/Controller/FilesController.php, row 72
 "Too many uploads - try again in an hour" => "P\xF8\xEDli\x9A mnoho nahr\xE1v\xE1n\xED \x96 zkuste to znovu za hodinu", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 78, 243
+// src/Api/Controller/FilesController.php, row 80, 291
 "No file received" => "Nebyl p\xF8ijat \x9E\xE1dn\xFD soubor", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 86
+// src/Api/Controller/FilesController.php, row 88
 "Files of this type cannot be uploaded here: %1" => "Soubory tohoto typu sem nelze nahr\xE1t: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 89
+// src/Api/Controller/FilesController.php, row 91
 "The content of the file does not match its extension %1" => "Obsah souboru neodpov\xEDd\xE1 jeho p\xF8\xEDpon\xEC %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 92
+// src/Api/Controller/FilesController.php, row 94
 "The image is bigger than %1 MB" => "Obr\xE1zek je v\xECt\x9A\xED ne\x9E %1 MB", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 95
+// src/Api/Controller/FilesController.php, row 97
 "The image has more than %1 megapixels" => "Obr\xE1zek m\xE1 v\xEDce ne\x9E %1 megapixel\xF9", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 100
+// src/Api/Controller/FilesController.php, row 102
 "The upload directory of the slice is not writable" => "Do adres\xE1\xF8e pro nahran\xE9 soubory web\xEDku nelze zapisovat", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 110
+// src/Api/Controller/FilesController.php, row 112
 "The file could not be stored" => "Soubor nelze ulo\x9Eit", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 132
+// src/Api/Controller/FilesController.php, row 134
 "Only editors of the slice can browse its files" => "Proch\xE1zet soubory web\xEDku mohou jen jeho edito\xF8i", // ai 2026-10
 
 // src/Central/Actionapps.php, row 178
@@ -9141,21 +9335,21 @@ return [
 // src/IO/Grabber/FilesFTP.php, row 106
 "Info to get" => "Kter\xE9 informace z\xEDskat",
 
-// src/IO/Grabber/Form.php, row 75
+// src/IO/Grabber/Form.php, row 76
 // src/IO/Grabber/ObjectForm.php, row 61
 "Form" => "Formul\xE1\xF8",
 
-// src/IO/Grabber/Form.php, row 83
+// src/IO/Grabber/Form.php, row 84
 // src/IO/Grabber/ObjectForm.php, row 69
 "Grabs data POSTed by AA form" => "Stahuje data odeslan\xE1 (POST) AA formul\xE1\xF8em",
 
-// src/IO/Grabber/Form.php, row 168
+// src/IO/Grabber/Form.php, row 193
 "No slice found: %1" => "Web\xEDk nenalezen: %1",
 
-// src/IO/Grabber/Form.php, row 171
+// src/IO/Grabber/Form.php, row 196
 "No file, img_upload, or img_src field type found in slice %1" => "Ve web\xEDku %1 nebylo nalezeno pol\xED\xE8ko typu file, img_upload ani img_src",
 
-// src/IO/Grabber/Form.php, row 204
+// src/IO/Grabber/Form.php, row 229
 "no POST nor FILES sent" => "nebyl odesl\xE1n POST ani FILES",
 
 // src/IO/Grabber/Ical.php, row 43
@@ -9182,13 +9376,13 @@ return [
 // src/IO/Grabber/PohodaStocks.php, row 42
 "Imports stock from POHODA accounting system" => "Importuje z\xE1soby z \xFA\xE8etn\xEDho syst\xE9mu POHODA",
 
-// src/IO/Grabber/SOAP.php, row 60
+// src/IO/Grabber/SOAP.php, row 62
 "SOAP" => "",
 
-// src/IO/Grabber/SOAP.php, row 68
+// src/IO/Grabber/SOAP.php, row 70
 "General SOAP request" => "Obecn\xFD SOAP po\x9Eadavek",
 
-// src/IO/Grabber/SOAP.php, row 78
+// src/IO/Grabber/SOAP.php, row 80
 "SOAP body request" => "T\xEClo SOAP po\x9Eadavku",
 
 // src/IO/Grabber/SQL.php, row 82
@@ -10871,10 +11065,6 @@ return [
 // src/Isds/Registry/Page.php, row 546
 "Write the data box %1 into %2" => "Zapsat datovou schr\xE1nku %1 k \xE8l\xE1nku %2", // ai 2026-10
 
-// src/Isds/Registry/Page.php, row 555, 653
-// src/Optimize/MissCacheRouting.php, row 98, 129
-"none" => "\x9E\xE1dn\xE1", // ai 2026-10
-
 // src/Isds/Registry/Page.php, row 571
 "I\xC4\x8CO %1" => "I\xC8O %1", // ai 2026-10
 
@@ -11126,12 +11316,12 @@ return [
 
 // src/Manageraction/Central_DeleteTrash.php, row 31
 // src/Manageraction/Item_DeleteTrash.php, row 34
-// src/Manageraction/Polls_DeleteTrash.php, row 71
+// src/Manageraction/Polls_DeleteTrash.php, row 73
 "Remove (delete from database)" => "Odstranit (z datab\xE1ze)",
 
 // src/Manageraction/Central_DeleteTrash.php, row 38
 // src/Manageraction/Item_DeleteTrash.php, row 43
-// src/Manageraction/Taskmanager_Execute.php, row 24
+// src/Manageraction/Taskmanager_Execute.php, row 26
 "You do not have permissions to remove items" => "Nem\xE1te pr\xE1vo mazat zpr\xE1vy",
 
 // src/Manageraction/Central_Linkcheck.php, row 17
@@ -11143,28 +11333,28 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 30
 "Status code" => "Stavov\xFD k\xF3d",
 
-// src/Manageraction/Central_MoveItem.php, row 26
-// src/Manageraction/Item_MoveItem.php, row 29
-// src/Manageraction/Links_Move.php, row 26
-// src/Manageraction/Polls_MoveItem.php, row 29
-"Move to Active" => "Vystavit",
-
-// src/Manageraction/Central_MoveItem.php, row 27
-// src/Manageraction/Item_MoveItem.php, row 30
-// src/Manageraction/Links_Move.php, row 27
-// src/Manageraction/Polls_MoveItem.php, row 30
-"Move to Holding bin" => "Poslat do z\xE1sobn\xEDku",
-
 // src/Manageraction/Central_MoveItem.php, row 28
 // src/Manageraction/Item_MoveItem.php, row 31
 // src/Manageraction/Links_Move.php, row 28
 // src/Manageraction/Polls_MoveItem.php, row 31
+"Move to Active" => "Vystavit",
+
+// src/Manageraction/Central_MoveItem.php, row 29
+// src/Manageraction/Item_MoveItem.php, row 32
+// src/Manageraction/Links_Move.php, row 29
+// src/Manageraction/Polls_MoveItem.php, row 32
+"Move to Holding bin" => "Poslat do z\xE1sobn\xEDku",
+
+// src/Manageraction/Central_MoveItem.php, row 30
+// src/Manageraction/Item_MoveItem.php, row 33
+// src/Manageraction/Links_Move.php, row 30
+// src/Manageraction/Polls_MoveItem.php, row 33
 "Move to Trash" => "Poslat do ko\x9Ae",
 
-// src/Manageraction/Central_MoveItem.php, row 41
+// src/Manageraction/Central_MoveItem.php, row 43
 "Activate" => "Aktivovat",
 
-// src/Manageraction/Central_MoveItem.php, row 42
+// src/Manageraction/Central_MoveItem.php, row 44
 "Hold" => "Do z\xE1sobn\xEDku",
 
 // src/Manageraction/Central_OptimizeType.php, row 34
@@ -11174,7 +11364,7 @@ return [
 "Error: %1" => "Chyba: %1", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 19
-// src/Manageraction/Object_Delete.php, row 17
+// src/Manageraction/Object_Delete.php, row 19
 // src/Manageraction/Table_Row_Delete.php, row 16
 "Delete row" => "Smazat \xF8\xE1dek",
 
@@ -11183,11 +11373,11 @@ return [
 
 // src/Manageraction/Import_Delete.php, row 38
 // src/Manageraction/Import_Run.php, row 42
-// src/Manageraction/Object_Delete.php, row 43
-// src/Manageraction/Object_Move2slice.php, row 50
+// src/Manageraction/Object_Delete.php, row 45
+// src/Manageraction/Object_Move2slice.php, row 52
 // src/Manageraction/Plannedtask_Runnow.php, row 41
-// src/Manageraction/Polls_DeleteTrash.php, row 83
-// src/Manageraction/Polls_MoveItem.php, row 41
+// src/Manageraction/Polls_DeleteTrash.php, row 85
+// src/Manageraction/Polls_MoveItem.php, row 43
 // src/Manageraction/Table_Row_Delete.php, row 40
 "This action does not work on this page." => "Tato akce na t\xE9to str\xE1nce nefunguje.", // ai 2026-10
 
@@ -11195,7 +11385,7 @@ return [
 "Some of the selected imports were not deleted." => "N\xECkter\xE9 z vybran\xFDch import\xF9 nebyly smaz\xE1ny.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 64
-// src/Manageraction/Object_Delete.php, row 51
+// src/Manageraction/Object_Delete.php, row 53
 "Some of the selected objects were not deleted - they belong to a module you can not change them in." => "N\xECkter\xE9 z vybran\xFDch objekt\xF9 nebyly smaz\xE1ny - pat\xF8\xED modulu, ve kter\xE9m je nem\xF9\x9Eete m\xECnit.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 23
@@ -11222,19 +11412,19 @@ return [
 // src/Manageraction/Import_Run.php, row 101
 "Imports not started: %1 (%2). The import detail tells more." => "Importy nespu\x9At\xECny: %1 (%2). V\xEDc \xF8ekne detail importu.", // ai 2026-10
 
-// src/Manageraction/Item_Duplicate.php, row 23
+// src/Manageraction/Item_Duplicate.php, row 25
 "Duplicate Item" => "Duplikovat \xE8l\xE1nek",
 
-// src/Manageraction/Item_Email.php, row 13
+// src/Manageraction/Item_Email.php, row 15
 "Send email" => "Poslat e-mail",
 
 // src/Manageraction/Item_Feed.php, row 31
 "Export to slice" => "Exportovat do web\xEDku",
 
 // src/Manageraction/Item_Feed.php, row 38, 58
-// src/Manageraction/Item_Move2Slice.php, row 85
-// src/Manageraction/Object_Move2slice.php, row 33
-// src/Manageraction/View_Move2slice.php, row 31
+// src/Manageraction/Item_Move2Slice.php, row 87
+// src/Manageraction/Object_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 33
 "No slice selected" => "Nebyl vybr\xE1n \x9E\xE1dn\xFD web\xEDk",
 
 // src/Manageraction/Item_Feed.php, row 50
@@ -11246,20 +11436,20 @@ return [
 // src/Manageraction/Item_Feed.php, row 68
 "Some of the selected items were not exported - they are not items of this slice." => "N\xECkter\xE9 z vybran\xFDch \xE8l\xE1nk\xF9 nebyly exportov\xE1ny - nejsou to \xE8l\xE1nky tohoto web\xEDku.", // ai 2026-10
 
-// src/Manageraction/Item_Modifycontent.php, row 13
+// src/Manageraction/Item_Modifycontent.php, row 15
 "Modify content" => "Hromadn\xEC zm\xECnit",
 
-// src/Manageraction/Item_Move2Slice.php, row 37
-// src/Manageraction/Object_Move2slice.php, row 25
+// src/Manageraction/Item_Move2Slice.php, row 39
+// src/Manageraction/Object_Move2slice.php, row 27
 "Move to another slice" => "P\xF8esunout do jin\xE9ho web\xEDku",
 
-// src/Manageraction/Item_Move2Slice.php, row 75
+// src/Manageraction/Item_Move2Slice.php, row 77
 "Move to slice" => "P\xF8esunout do web\xEDku",
 
-// src/Manageraction/Item_Move2Slice.php, row 89
+// src/Manageraction/Item_Move2Slice.php, row 91
 "Items can be moved only to a slice." => "\xC8l\xE1nky lze p\xF8esunout jen do web\xEDku.", // ai 2026-10
 
-// src/Manageraction/Item_Move2Slice.php, row 93
+// src/Manageraction/Item_Move2Slice.php, row 95
 "You do not have permissions to move items" => "Nem\xE1te pr\xE1vo p\xF8esouvat zpr\xE1vy",
 
 // src/Manageraction/Links_Add2Cat.php, row 21
@@ -11268,32 +11458,32 @@ return [
 // src/Manageraction/Links_Check.php, row 25
 "Check Link" => "Zkontrolovat odkaz",
 
-// src/Manageraction/Links_Delete.php, row 20
+// src/Manageraction/Links_Delete.php, row 22
 "Remove from category" => "Odebrat z kategorie",
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Highlight Link" => "Zv\xFDraznit odkaz",
 
-// src/Manageraction/Links_Highlight.php, row 24
+// src/Manageraction/Links_Highlight.php, row 26
 "Dehighlight Link" => "Zru\x9Ait zv\xFDrazn\xECn\xED odkazu",
 
 // src/Manageraction/Links_Move2Cat.php, row 21
 "Move to category" => "P\xF8esunout do kategorie",
 
-// src/Manageraction/Object_Delete.php, row 26
+// src/Manageraction/Object_Delete.php, row 28
 // src/Manageraction/Table_Row_Delete.php, row 25
 "Do you really want to delete this row?" => "Opravdu chcete tento \xF8\xE1dek smazat?",
 
-// src/Manageraction/Object_Move2slice.php, row 37
+// src/Manageraction/Object_Move2slice.php, row 39
 "Tasks can be moved only to a slice." => "\xDAlohy lze p\xF8esunout jen do web\xEDku.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 41
+// src/Manageraction/Object_Move2slice.php, row 43
 "You do not have permissions to move it" => "Nem\xE1te pr\xE1va k p\xF8esunut\xED",
 
-// src/Manageraction/Object_Move2slice.php, row 54
+// src/Manageraction/Object_Move2slice.php, row 56
 "Some of the selected objects were not moved - they belong to a module you can not change them in." => "N\xECkter\xE9 z vybran\xFDch objekt\xF9 nebyly p\xF8esunuty - pat\xF8\xED modulu, ve kter\xE9m je nem\xF9\x9Eete m\xECnit.", // ai 2026-10
 
-// src/Manageraction/Object_Move2slice.php, row 60
+// src/Manageraction/Object_Move2slice.php, row 62
 "The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "\xDAloha %1 nebyla p\xF8esunuta - \xFAlohu s {import} tam sm\xED p\xF8esunout jen u\x9Eivatel, kter\xFD spravuje v\xFDm\xECnu zpr\xE1v web\xEDku.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 20, 27
@@ -11311,34 +11501,34 @@ return [
 // src/Manageraction/Plannedtask_Runnow.php, row 60
 "The task %1 is already waiting in the queue." => "\xDAloha %1 u\x9E \xE8ek\xE1 ve front\xEC.", // ai 2026-10
 
-// src/Manageraction/Polls_DeleteTrash.php, row 78
+// src/Manageraction/Polls_DeleteTrash.php, row 80
 "You do not have permissions to remove polls" => "Nem\xE1te pr\xE1va k maz\xE1n\xED anket",
 
-// src/Manageraction/Polls_DeleteTrash.php, row 97
+// src/Manageraction/Polls_DeleteTrash.php, row 99
 "Some of the selected polls were not removed - they belong to another module." => "N\xECkter\xE9 z vybran\xFDch anket nebyly odstran\xECny - pat\xF8\xED jin\xE9mu modulu.", // ai 2026-10
 
-// src/Manageraction/Polls_MoveItem.php, row 47
+// src/Manageraction/Polls_MoveItem.php, row 49
 "Some of the selected polls were not moved - they belong to another module." => "N\xECkter\xE9 z vybran\xFDch anket nebyly p\xF8esunuty - pat\xF8\xED jin\xE9mu modulu.", // ai 2026-10
 
 // src/Manageraction/Table_Row_Delete.php, row 54
 "Some of the selected rows were not deleted - they belong to another module." => "N\xECkter\xE9 z vybran\xFDch \xF8\xE1dk\xF9 nebyly smaz\xE1ny - pat\xF8\xED jin\xE9mu modulu.", // ai 2026-10
 
-// src/Manageraction/Taskmanager_Delete.php, row 15
+// src/Manageraction/Taskmanager_Delete.php, row 17
 "Remove (cancel task)" => "Odstranit (zru\x9Ait \xFAlohu)",
 
-// src/Manageraction/Taskmanager_Delete.php, row 24
+// src/Manageraction/Taskmanager_Delete.php, row 26
 "You do not have permissions to remove tasks" => "Nem\xE1te pr\xE1va k maz\xE1n\xED \xFAloh",
 
-// src/Manageraction/Taskmanager_Execute.php, row 15
+// src/Manageraction/Taskmanager_Execute.php, row 17
 "Execute" => "Spustit",
 
-// src/Manageraction/View_Move2slice.php, row 23
+// src/Manageraction/View_Move2slice.php, row 25
 "Move view to another slice" => "P\xF8esunout pohled do jin\xE9ho web\xEDku",
 
-// src/Manageraction/View_Move2slice.php, row 35
+// src/Manageraction/View_Move2slice.php, row 37
 "Views can be moved only to a slice." => "Pohledy lze p\xF8esunout jen do web\xEDku.", // ai 2026-10
 
-// src/Manageraction/View_Move2slice.php, row 39
+// src/Manageraction/View_Move2slice.php, row 41
 "You do not have permissions to move views" => "Nem\xE1te pr\xE1va k p\xF8esouv\xE1n\xED pohled\xF9",
 
 // src/Module/Poll/Menu.php, row 25
@@ -11371,25 +11561,25 @@ return [
 // src/Optimize/AbstractOptimizeById.php, row 42
 "We found %1 problems" => "Nalezeno %1 probl\xE9m\xF9",
 
-// src/Optimize/AddAddressFieldTemplate.php, row 10
+// src/Optimize/AddAddressFieldTemplate.php, row 12
 "Add address field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka address",
 
-// src/Optimize/AddAuthGroupFieldTemplate.php, row 10
+// src/Optimize/AddAuthGroupFieldTemplate.php, row 12
 "Add auth_group...... field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka auth_group......",
 
-// src/Optimize/AddBitsetFieldTemplate.php, row 10
+// src/Optimize/AddBitsetFieldTemplate.php, row 12
 "Add bitset (flags, bitfield) field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka bitset (p\xF8\xEDznaky, bitov\xE9 pole)",
 
-// src/Optimize/AddCityFieldTemplate.php, row 10
+// src/Optimize/AddCityFieldTemplate.php, row 12
 "Add city field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka city",
 
-// src/Optimize/AddCodeFieldTemplate.php, row 10
+// src/Optimize/AddCodeFieldTemplate.php, row 12
 "Add code field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka code",
 
-// src/Optimize/AddComputedNumFieldTemplate.php, row 10
+// src/Optimize/AddComputedNumFieldTemplate.php, row 12
 "Add computed_num field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka computed_num",
 
-// src/Optimize/AddComputedTxtFieldTemplate.php, row 10
+// src/Optimize/AddComputedTxtFieldTemplate.php, row 12
 "Add computed_txt field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka computed_txt",
 
 // src/Optimize/AddContentFieldIndex.php, row 25
@@ -11410,37 +11600,37 @@ return [
 // src/Optimize/AddContentFieldIndex.php, row 67
 "The index %1 of the content table changed" => "Index %1 tabulky content byl zm\xECn\xECn", // ai 2026-10
 
-// src/Optimize/AddCountryFieldTemplate.php, row 10
+// src/Optimize/AddCountryFieldTemplate.php, row 12
 "Add country field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka country",
 
-// src/Optimize/AddDateFieldTemplate.php, row 10
+// src/Optimize/AddDateFieldTemplate.php, row 12
 "Add date field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka date",
 
-// src/Optimize/AddDurationLog.php, row 18
+// src/Optimize/AddDurationLog.php, row 20
 "Add hit duration log feature" => "P\xF8idat logov\xE1n\xED doby zpracov\xE1n\xED hitu",
 
-// src/Optimize/AddDurationLog.php, row 26
+// src/Optimize/AddDurationLog.php, row 28
 "Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit" => "P\xF8id\xE1 do tabulky hit_archive sloupec 'duration', do kter\xE9ho se budou ukl\xE1dat z\xE1znamy duration/cache/not_modified pro dan\xFD hit",
 
-// src/Optimize/AddDurationLog.php, row 47
+// src/Optimize/AddDurationLog.php, row 49
 "The \"duration\" column missing in hit_archive table" => "V tabulce hit_archive chyb\xED sloupec \"duration\"",
 
-// src/Optimize/AddDurationLog.php, row 50
+// src/Optimize/AddDurationLog.php, row 52
 "OK - The \"duration\" column found in hit_archive table. Duration evaluated from %1" => "OK - Sloupec \"duration\" v tabulce hit_archive nalezen. Doba zpracov\xE1n\xED se vyhodnocuje od %1",
 
-// src/Optimize/AddDurationLog.php, row 60
+// src/Optimize/AddDurationLog.php, row 62
 "Table already has the column \"duration\"" => "Tabulka u\x9E sloupec \"duration\" m\xE1",
 
-// src/Optimize/AddDurationLog.php, row 63
+// src/Optimize/AddDurationLog.php, row 65
 "Do alter table hit_archive to add duration column" => "Provede alter tabulky hit_archive - p\xF8id\xE1 sloupec duration",
 
-// src/Optimize/AddDurationLog.php, row 65
+// src/Optimize/AddDurationLog.php, row 67
 "Column added" => "Sloupec p\xF8id\xE1n",
 
-// src/Optimize/AddDurationLog.php, row 72
+// src/Optimize/AddDurationLog.php, row 74
 "Do alter table hit_archive to remove duration column - it disables the feature" => "Provede alter tabulky hit_archive - odstran\xED sloupec duration, \xE8\xEDm\x9E funkci vypne",
 
-// src/Optimize/AddDurationLog.php, row 74
+// src/Optimize/AddDurationLog.php, row 76
 "Column deleted" => "Sloupec smaz\xE1n",
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 14
@@ -11456,87 +11646,108 @@ return [
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 77
 "The e-mail templates updated" => "E-mailov\xE9 \x9Aablony aktualizov\xE1ny",
 
-// src/Optimize/AddFaxFieldTemplate.php, row 10
+// src/Optimize/AddFaxFieldTemplate.php, row 12
 "Add fax field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka fax",
 
-// src/Optimize/AddHit1FieldTemplate.php, row 10
+// src/Optimize/AddHit1FieldTemplate.php, row 12
 "Add hit_1 field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka hit_1",
 
-// src/Optimize/AddHit30FieldTemplate.php, row 10
+// src/Optimize/AddHit30FieldTemplate.php, row 12
 "Add hit_30 field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka hit_30",
 
-// src/Optimize/AddHit7FieldTemplate.php, row 10
+// src/Optimize/AddHit7FieldTemplate.php, row 12
 "Add hit_7 field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka hit_7",
 
-// src/Optimize/AddIntegerFieldTemplate.php, row 10
+// src/Optimize/AddIntegerFieldTemplate.php, row 12
 "Add integer field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka integer",
 
-// src/Optimize/AddIpBannedFieldTemplate.php, row 10
+// src/Optimize/AddIpBannedFieldTemplate.php, row 12
 "Add _ip_banned field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka _ip_banned",
 
-// src/Optimize/AddIpFieldTemplate.php, row 10
+// src/Optimize/AddIpFieldTemplate.php, row 12
 "Add ip field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka ip",
 
-// src/Optimize/AddLocationFieldTemplate.php, row 10
+// src/Optimize/AddLocationFieldTemplate.php, row 12
 "Add location field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka location",
 
-// src/Optimize/AddMailListsFieldTemplate.php, row 10
+// src/Optimize/AddMailListsFieldTemplate.php, row 12
 "Add mail_lists field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka mail_lists",
 
-// src/Optimize/AddMandatoryDiscApp.php, row 10
-// src/Optimize/AddMandatoryDiscCount.php, row 10
-// src/Optimize/AddMandatoryDisplayCount.php, row 10
-// src/Optimize/AddMandatoryId.php, row 10
-// src/Optimize/AddMandatoryShortId.php, row 10
-// src/Optimize/AddMandatoryStatusCode.php, row 13
+// src/Optimize/AddMandatoryDiscApp.php, row 12
+// src/Optimize/AddMandatoryDiscCount.php, row 12
+// src/Optimize/AddMandatoryDisplayCount.php, row 12
+// src/Optimize/AddMandatoryId.php, row 12
+// src/Optimize/AddMandatoryShortId.php, row 12
+// src/Optimize/AddMandatoryStatusCode.php, row 15
 "Fixing missing %1 field definitions in slices" => "Oprava chyb\xECj\xEDc\xEDch definic pol\xED\xE8ka %1 ve web\xEDc\xEDch",
 
-// src/Optimize/AddMandatoryStatusCode.php, row 19
+// src/Optimize/AddMandatoryStatusCode.php, row 21
 "Adds field definitions for slices, where missing" => "P\xF8id\xE1 definice pol\xED\xE8ek do web\xEDk\xF9, kde chyb\xED",
 
-// src/Optimize/AddMandatoryStatusCode.php, row 45
+// src/Optimize/AddMandatoryStatusCode.php, row 47
 "Missing %1 field definition in some slices - need to repair" => "V n\xECkter\xFDch web\xEDc\xEDch chyb\xED definice pol\xED\xE8ka %1 - je t\xF8eba opravit",
 
-// src/Optimize/AddMandatoryStatusCode.php, row 54
+// src/Optimize/AddMandatoryStatusCode.php, row 56
 "Fixing missing %1 fields in slices" => "Oprava chyb\xECj\xEDc\xEDch pol\xED\xE8ek %1 ve web\xEDc\xEDch",
 
-// src/Optimize/AddMandatoryStatusCode.php, row 69
+// src/Optimize/AddMandatoryStatusCode.php, row 71
 "Mandatory field %1 added to all slices" => "Povinn\xE9 pol\xED\xE8ko %1 p\xF8id\xE1no do v\x9Aech web\xEDk\xF9",
 
-// src/Optimize/AddMlxctrlFieldTemplate.php, row 10
+// src/Optimize/AddMlxctrlFieldTemplate.php, row 12
 "Add mlxctrl field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka mlxctrl",
 
-// src/Optimize/AddMsgBannedFieldTemplate.php, row 10
+// src/Optimize/AddMsgBannedFieldTemplate.php, row 12
 "Add _msg_banned field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka _msg_banned",
 
-// src/Optimize/AddMsgSpamFieldTemplate.php, row 10
+// src/Optimize/AddMsgSpamFieldTemplate.php, row 12
 "Add _msg_spam field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka _msg_spam",
 
-// src/Optimize/AddNameFieldTemplate.php, row 10
+// src/Optimize/AddNameFieldTemplate.php, row 12
 "Add name field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka name",
 
-// src/Optimize/AddPhoneFieldTemplate.php, row 10
+// src/Optimize/AddPasskeyTable.php, row 15
+"Table of passkeys" => "Tabulka p\xF8\xEDstupov\xFDch kl\xED\xE8\xF9", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 20
+"Creates the table authenticator, where the passkeys of the accounts are kept. Nothing else changes; without it, nobody can add a passkey." => "Vytvo\xF8\xED tabulku authenticator, v n\xED\x9E jsou ulo\x9Eeny p\xF8\xEDstupov\xE9 kl\xED\xE8e \xFA\xE8t\xF9. Nic jin\xE9ho se nem\xECn\xED; bez n\xED nikdo nem\xF9\x9Ee p\xF8idat p\xF8\xEDstupov\xFD kl\xED\xE8.", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 43
+"The table %1 is missing" => "Chyb\xED tabulka %1", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 46
+"OK - the table %1 exists" => "OK - tabulka %1 existuje", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 54
+"The table %1 exists already" => "Tabulka %1 u\x9E existuje", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 is created" => "Tabulka %1 byla vytvo\xF8ena", // ai 2026-11
+
+// src/Optimize/AddPasskeyTable.php, row 59
+"The table %1 could not be created" => "Tabulku %1 se nepoda\xF8ilo vytvo\xF8it", // ai 2026-11
+
+// src/Optimize/AddPhoneFieldTemplate.php, row 12
 "Add phone field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka phone",
 
-// src/Optimize/AddPolls.php, row 29
+// src/Optimize/AddPolls.php, row 31
 "Add Polls tables" => "P\xF8idat tabulky anket",
 
-// src/Optimize/AddPolls.php, row 37
+// src/Optimize/AddPolls.php, row 39
 "Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "Vytvo\xF8\xED tabulky pro nov\xFD modul Ankety a p\xF8id\xE1 prvn\xED - vzorov\xE9 ankety. Odstran\xED v\x9Aechny sou\xE8asn\xE9 ankety!",
 
-// src/Optimize/AddPolls.php, row 60
+// src/Optimize/AddPolls.php, row 62
 "Poll module is not installed" => "Modul Ankety nen\xED nainstalov\xE1n",
 
-// src/Optimize/AddPolls.php, row 95
+// src/Optimize/AddPolls.php, row 97
 "Polls module created" => "Modul Ankety vytvo\xF8en",
 
-// src/Optimize/AddRangeFieldTemplate.php, row 10
+// src/Optimize/AddRangeFieldTemplate.php, row 12
 "Add range field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka range",
 
-// src/Optimize/AddRealFieldTemplate.php, row 10
+// src/Optimize/AddRealFieldTemplate.php, row 12
 "Add real field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka real",
 
-// src/Optimize/AddSecretFieldTemplate.php, row 10
+// src/Optimize/AddSecretFieldTemplate.php, row 12
 "Add secret field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka secret",
 
 // src/Optimize/AddSeoFieldTemplate.php, row 16
@@ -11557,17 +11768,17 @@ return [
 // src/Optimize/AddSeoFieldTemplate.php, row 116
 "New \"%1\" field template added" => "Nov\xE1 \x9Aablona pol\xED\xE8ka \"%1\" p\xF8id\xE1na",
 
-// src/Optimize/AddUploadUrlFieldTemplate.php, row 10
+// src/Optimize/AddUploadUrlFieldTemplate.php, row 12
 "Add _upload_url field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka _upload_url",
 
-// src/Optimize/AddUrlPreviewFieldTemplate.php, row 10
+// src/Optimize/AddUrlPreviewFieldTemplate.php, row 12
 "Add _url_preview field template" => "P\xF8idat \x9Aablonu pol\xED\xE8ka _url_preview",
 
 // src/Optimize/BackupTables.php, row 19
 "Backup tables" => "Z\xE1loha tabulek",
 
 // src/Optimize/BackupTables.php, row 27
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 // src/Optimize/UpdateDbStructure.php, row 31
 "[experimental] " => "[experiment\xE1ln\xED]",
 
@@ -11607,10 +11818,10 @@ return [
 // src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Nahrad\xED alias f_h u pol\xED\xE8ka ozna\xE8en\xE9ho jako nev\xEDcehodnotov\xE9 a html rychlej\x9A\xED funkc\xED f_1 pro p\xF8\xEDm\xFD v\xFDpis obsahu",
 
-// src/Optimize/ChangeF_t2F_1.php, row 15
+// src/Optimize/ChangeF_t2F_1.php, row 17
 "Optimize f_t alias to f_1" => "Optimalizovat alias f_t na f_1",
 
-// src/Optimize/ChangeF_t2F_1.php, row 23
+// src/Optimize/ChangeF_t2F_1.php, row 25
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Nahrad\xED alias f_t u pol\xED\xE8ka ozna\xE8en\xE9ho jako nev\xEDcehodnotov\xE9 a html rychlej\x9A\xED funkc\xED f_1 pro p\xF8\xEDm\xFD v\xFDpis obsahu",
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -11619,22 +11830,22 @@ return [
 // src/Optimize/ChangeF_t2F__.php, row 27
 "Replaces f_t alias used for code by quicker f__ function" => "Nahrad\xED alias f_t pou\x9E\xEDvan\xFD pro k\xF3d rychlej\x9A\xED funkc\xED f__",
 
-// src/Optimize/ChangeModuleId.php, row 20
+// src/Optimize/ChangeModuleId.php, row 22
 "Change current module ID to new one" => "Zm\xECnit ID aktu\xE1ln\xEDho modulu na nov\xE9",
 
-// src/Optimize/ChangeModuleId.php, row 28
+// src/Optimize/ChangeModuleId.php, row 30
 "Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "Pou\x9E\xEDv\xE1 se ob\xE8as p\xF8i klonov\xE1n\xED datab\xE1ze nebo kop\xEDrov\xE1n\xED web\xEDk\xF9 do jin\xE9 datab\xE1ze pro jin\xE9ho klienta, kdy nechcete pou\x9E\xEDt stejn\xE1 id web\xEDk\xF9/site modul\xF9. Pravd\xECpodobn\xEC to mus\xEDte prov\xE9st pro v\x9Aechny web\xEDky i modul site.<br>M\xCCN\xCD ID AKTU\xC1LN\xCDHO WEB\xCDKU!",
 
-// src/Optimize/ChangeModuleId.php, row 42
+// src/Optimize/ChangeModuleId.php, row 44
 "Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "Nen\xED zde co testovat. Jen opatrn\xEC - M\xCCN\xCD ID AKTU\xC1LN\xCDHO WEB\xCDKU bez ptan\xED!",
 
-// src/Optimize/ChangeModuleId.php, row 63
+// src/Optimize/ChangeModuleId.php, row 65
 "Going to change module_id %1 -> %2 (%3 -> %4)" => "Bude zm\xECn\xECno module_id %1 -> %2 (%3 -> %4)",
 
-// src/Optimize/ChangeModuleId.php, row 76
+// src/Optimize/ChangeModuleId.php, row 78
 "Changing ID for table %1 (%2)" => "Zm\xECna ID pro tabulku %1 (%2)",
 
-// src/Optimize/ChangeModuleId.php, row 85
+// src/Optimize/ChangeModuleId.php, row 87
 // src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "P\xF8evedeno %1 tabulek",
 
@@ -11677,11 +11888,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckFormRobotRefusals.php, row 76
 // src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
 // src/Optimize/CheckIsdsConf.php, row 156, 189
 // src/Optimize/CheckIsdsViews.php, row 128
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 93
 // src/Optimize/CheckObjectFormRefusals.php, row 102
+// src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
 // src/Optimize/CheckSessionidUse.php, row 101
@@ -11697,11 +11910,13 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 100
 // src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckFormRobotRefusals.php, row 77
 // src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
 // src/Optimize/CheckIsdsViews.php, row 129
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 94
 // src/Optimize/CheckObjectFormRefusals.php, row 103
+// src/Optimize/CheckPasskeys.php, row 86
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
@@ -12000,6 +12215,21 @@ return [
 
 // src/Optimize/CheckEnvironment.php, row 66
 "AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4; beze zm\xECny od %5", // ai 2026-10
+
+// src/Optimize/CheckFormRobotRefusals.php, row 26
+"Forms refused as robots" => "Formul\xE1\xF8e odm\xEDtnut\xE9 jako roboti", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 31
+"Lists the slices whose new items from a form were refused in the last 30 days because the form posted an empty slice_id, which its JS fills only for a visitor who moves the mouse or presses a key." => "Vyp\xED\x9Ae web\xEDky, jejich\x9E nov\xE9 \xE8l\xE1nky z formul\xE1\xF8e byly za posledn\xEDch 30 dn\xED odm\xEDtnuty, proto\x9Ee formul\xE1\xF8 odeslal pr\xE1zdn\xE9 slice_id; jeho JS ho vypln\xED jen n\xE1v\x9At\xECvn\xEDkovi, kter\xFD pohne my\x9A\xED nebo stiskne kl\xE1vesu.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 70
+"A form adding items to slice %1 was refused as a robot" => "Formul\xE1\xF8 p\xF8id\xE1vaj\xEDc\xED \xE8l\xE1nky do web\xEDku %1 byl odm\xEDtnut jako robot", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 79
+"The form posted an empty slice_id. Forms with {formantispam:<slice_id>} or with their own anti-robot JS leave it empty and fill it when the visitor moves the mouse or presses a key, so this is mostly spam and needs no action. If real visitors complain that the form does not save, check that the JS of the form runs on the page (the browser console) and fills slice_id." => "Formul\xE1\xF8 odeslal pr\xE1zdn\xE9 slice_id. Formul\xE1\xF8e s {formantispam:<slice_id>} nebo s vlastn\xEDm JS proti robot\xF9m ho nech\xE1vaj\xED pr\xE1zdn\xE9 a vypln\xED ho, a\x9E n\xE1v\x9At\xECvn\xEDk pohne my\x9A\xED nebo stiskne kl\xE1vesu, tak\x9Ee jde v\xECt\x9Ainou o spam a nen\xED t\xF8eba nic d\xEClat. Pokud si skute\xE8n\xED n\xE1v\x9At\xECvn\xEDci st\xEC\x9Euj\xED, \x9Ee formul\xE1\xF8 neukl\xE1d\xE1, ov\xEC\xF8te, \x9Ee JS formul\xE1\xF8e na str\xE1nce b\xEC\x9E\xED (konzole prohl\xED\x9Ee\xE8e) a slice_id vypl\xF2uje.", // ai 2026-11
+
+// src/Optimize/CheckFormRobotRefusals.php, row 85
+"No form was refused as a robot in the last 30 days" => "Za posledn\xEDch 30 dn\xED nebyl jako robot odm\xEDtnut \x9E\xE1dn\xFD formul\xE1\xF8", // ai 2026-11
 
 // src/Optimize/CheckHttp.php, row 29
 "Outgoing HTTP" => "Odchoz\xED HTTP", // ai 2026-10
@@ -13174,6 +13404,75 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "Za posledn\xEDch 30 dn\xED nebyl odm\xEDtnut \x9E\xE1dn\xFD formul\xE1\xF8 objektu", // ai 2026-10
 
+// src/Optimize/CheckPasskeys.php, row 35
+"Passkey logins" => "P\xF8ihl\xE1\x9Aen\xED p\xF8\xEDstupov\xFDm kl\xED\xE8em", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 40
+"Lists the passkey logins refused in the last 30 days and the right passwords of accounts that log in by a passkey." => "Vyp\xED\x9Ae p\xF8ihl\xE1\x9Aen\xED p\xF8\xEDstupov\xFDm kl\xED\xE8em odm\xEDtnut\xE1 za posledn\xEDch 30 dn\xED a zadan\xE1 spr\xE1vn\xE1 hesla \xFA\xE8t\xF9, kter\xE9 se p\xF8ihla\x9Auj\xED p\xF8\xEDstupov\xFDm kl\xED\xE8em.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Passkeys cannot be used yet - the table authenticator is missing" => "P\xF8\xEDstupov\xE9 kl\xED\xE8e zat\xEDm nelze pou\x9E\xEDvat - chyb\xED tabulka authenticator", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 61
+"Run service/sql_update.php - it creates the table." => "Spus\x9Dte service/sql_update.php - tabulku vytvo\xF8\xED.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 95
+"No passkey login was refused in the last 30 days" => "Za posledn\xEDch 30 dn\xED nebylo odm\xEDtnuto \x9E\xE1dn\xE9 p\xF8ihl\xE1\x9Aen\xED p\xF8\xEDstupov\xFDm kl\xED\xE8em", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"Right password of a passkey account" => "Spr\xE1vn\xE9 heslo \xFA\xE8tu s p\xF8\xEDstupov\xFDm kl\xED\xE8em", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The right password of an account that logs in by a passkey (%1)" => "Spr\xE1vn\xE9 heslo \xFA\xE8tu, kter\xFD se p\xF8ihla\x9Auje p\xF8\xEDstupov\xFDm kl\xED\xE8em (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 102
+"The account logs in only by its passkey, so the password did not let anybody in - but someone knows it. If it was not the owner, the password should be changed; it is used again once the passkeys are deleted." => "\xDA\xE8et se p\xF8ihla\x9Auje jen p\xF8\xEDstupov\xFDm kl\xED\xE8em, tak\x9Ee heslo nikoho dovnit\xF8 nepustilo - ale n\xECkdo ho zn\xE1. Pokud to nebyl vlastn\xEDk, m\xEClo by se heslo zm\xECnit; znovu za\xE8ne platit, jakmile budou p\xF8\xEDstupov\xE9 kl\xED\xE8e smaz\xE1ny.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"Passkeys unknown - the directory did not answer" => "P\xF8\xEDstupov\xE9 kl\xED\xE8e nezn\xE1m\xE9 - adres\xE1\xF8 neodpov\xECd\xECl", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The directory did not answer whether %1 has a passkey" => "Adres\xE1\xF8 neodpov\xECd\xECl, zda m\xE1 %1 p\xF8\xEDstupov\xFD kl\xED\xE8", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 103
+"The password was refused, as the account may log in only by a passkey. Check the LDAP server and the bind account of AA." => "Heslo bylo odm\xEDtnuto, proto\x9Ee \xFA\xE8et se mo\x9En\xE1 sm\xED p\xF8ihl\xE1sit jen p\xF8\xEDstupov\xFDm kl\xED\xE8em. Zkontrolujte server LDAP a \xFA\xE8et, kter\xFDm se k n\xECmu AA p\xF8ipojuje (bind).", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"Passkey answer from another address" => "Odpov\xEC\xEF p\xF8\xEDstupov\xE9ho kl\xED\xE8e z jin\xE9 adresy", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"A passkey answer from another address than the page (%1)" => "Odpov\xEC\xEF p\xF8\xEDstupov\xE9ho kl\xED\xE8e z jin\xE9 adresy, ne\x9E je str\xE1nka (%1)", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 104
+"AA sees the page under another host or scheme than the browser - usually a reverse proxy missing from AA_TRUSTED_PROXIES, or a site reached by http." => "AA vid\xED str\xE1nku pod jin\xFDm hostitelem nebo sch\xE9matem ne\x9E prohl\xED\x9Ee\xE8 - obvykle jde o reverzn\xED proxy chyb\xECj\xEDc\xED v AA_TRUSTED_PROXIES, nebo o web otev\xF8en\xFD p\xF8es http.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"Security key counter went back" => "Po\xE8\xEDtadlo bezpe\xE8nostn\xEDho kl\xED\xE8e se vr\xE1tilo zp\xECt", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"A security key of %1 signed with a counter it had used before" => "Bezpe\xE8nostn\xED kl\xED\xE8 \xFA\xE8tu %1 podepsal s hodnotou po\xE8\xEDtadla, kterou u\x9E d\xF8\xEDve pou\x9Eil", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 105
+"The key may have been copied. The login was let through, so its owner is not locked out; ask the owner and delete the passkey on the page of the account if in doubt." => "Kl\xED\xE8 mohl b\xFDt zkop\xEDrov\xE1n. P\xF8ihl\xE1\x9Aen\xED bylo povoleno, aby vlastn\xEDk nep\xF8i\x9Ael o p\xF8\xEDstup; m\xE1te-li pochybnosti, zeptejte se vlastn\xEDka a p\xF8\xEDstupov\xFD kl\xED\xE8 sma\x9Ete na str\xE1nce \xFA\xE8tu.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Unknown passkey" => "Nezn\xE1m\xFD p\xF8\xEDstupov\xFD kl\xED\xE8", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"A login by a passkey this AA does not keep" => "P\xF8ihl\xE1\x9Aen\xED p\xF8\xEDstupov\xFDm kl\xED\xE8em, kter\xFD toto AA neuchov\xE1v\xE1", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 106
+"Usually a passkey deleted in AA but still in the browser or phone of its owner, or one of another AA on the same host. The owner can delete it in the device." => "Obvykle jde o p\xF8\xEDstupov\xFD kl\xED\xE8 smazan\xFD v AA, kter\xFD ale z\xF9stal v prohl\xED\x9Ee\xE8i nebo telefonu vlastn\xEDka, nebo o kl\xED\xE8 jin\xE9ho AA na stejn\xE9m hostiteli. Vlastn\xEDk ho m\xF9\x9Ee smazat v za\xF8\xEDzen\xED.", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"Passkey login refused" => "Odm\xEDtnut\xE9 p\xF8ihl\xE1\x9Aen\xED p\xF8\xEDstupov\xFDm kl\xED\xE8em", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"A passkey login refused: %1" => "Odm\xEDtnut\xE9 p\xF8ihl\xE1\x9Aen\xED p\xF8\xEDstupov\xFDm kl\xED\xE8em: %1", // ai 2026-11
+
+// src/Optimize/CheckPasskeys.php, row 107
+"An expired or repeated login, or an answer no browser sends. Nothing to do unless it repeats." => "Pro\x9Al\xE9 nebo opakovan\xE9 p\xF8ihl\xE1\x9Aen\xED, nebo odpov\xEC\xEF, kterou \x9E\xE1dn\xFD prohl\xED\x9Ee\xE8 nepos\xEDl\xE1. Nen\xED t\xF8eba nic d\xEClat, pokud se to neopakuje.", // ai 2026-11
+
 // src/Optimize/CheckPerVisitorReads.php, row 18
 "Pages left out of the page cache by {server:...}" => "Str\xE1nky vynechan\xE9 z cache str\xE1nek kv\xF9li {server:...}", // ai 2026-10
 
@@ -13705,7 +14004,7 @@ return [
 "Whole pagecache will be invalidated and deleted" => "Cel\xE1 pagecache bude zneplatn\xECna a smaz\xE1na",
 
 // src/Optimize/ClearPagecache.php, row 35
-// src/Optimize/CopyContent.php, row 35
+// src/Optimize/CopyContent.php, row 37
 // src/Optimize/CreateUploadDir.php, row 38
 "There is nothing to test." => "Nen\xED co testovat.",
 
@@ -13803,13 +14102,13 @@ return [
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 43
 "DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "DB_CHARACTER_SET v config.php je \x84%1\x93. Nejd\xF8\xEDv ho p\xF8epn\xECte na \x84utf8mb4\x93 a ov\xEC\xF8te, \x9Ee texty v AA vypadaj\xED spr\xE1vn\xEC - p\xF8evod zachov\xE1 to, co AA zobrazuje p\xF8es spojen\xED utf8mb4.", // ai 2026-10
 
-// src/Optimize/CopyContent.php, row 13
+// src/Optimize/CopyContent.php, row 15
 "Copy Content Table" => "Kop\xEDrovat tabulku content",
 
-// src/Optimize/CopyContent.php, row 21
+// src/Optimize/CopyContent.php, row 23
 "Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "Zkop\xEDruje data v\x9Aech \xE8l\xE1nk\xF9 nov\xECj\x9A\xEDch ne\x9E short_id=1941629 z tabulky content do tabulky content2. Pou\x9Eito pro obnovu tabulky content na serveru Ecn. Pro ostatn\xED u\x9Eivatele mysl\xEDm nepou\x9Eiteln\xE9.",
 
-// src/Optimize/CopyContent.php, row 67
+// src/Optimize/CopyContent.php, row 69
 "Copied" => "Zkop\xEDrov\xE1no",
 
 // src/Optimize/CopyItemsFromBackup.php, row 16
@@ -13824,34 +14123,34 @@ return [
 // src/Optimize/CopyItemsFromBackup.php, row 77
 "Deleted items to be recreated: %1." => "Smazan\xE9 \xE8l\xE1nky k obnoven\xED: %1.",
 
-// src/Optimize/CreateAppStoreAccount.php, row 14
+// src/Optimize/CreateAppStoreAccount.php, row 16
 "App store account" => "\xDA\xE8et katalogu aplikac\xED", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 19
+// src/Optimize/CreateAppStoreAccount.php, row 21
 "Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "Vytvo\xF8\xED ve\xF8ejn\xFD \xFA\xE8et, kter\xFDm ostatn\xED AA \xE8tou zve\xF8ejn\xECn\xE9 aplikace tohoto AA (u\x9Eivatel %1, bez pr\xE1v). Jeho heslo je ve\xF8ejn\xE9; \xFA\xE8et se nem\xF9\x9Ee p\xF8ihl\xE1sit do administrace.", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 34
+// src/Optimize/CreateAppStoreAccount.php, row 36
 "No app store account - this AA publishes no apps" => "\x8E\xE1dn\xFD \xFA\xE8et katalogu aplikac\xED - toto AA nezve\xF8ej\xF2uje \x9E\xE1dn\xE9 aplikace", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 39
+// src/Optimize/CreateAppStoreAccount.php, row 41
 "The user %1 exists, but not with the public password of the app store - rename it, then repair" => "U\x9Eivatel %1 existuje, ale nem\xE1 ve\xF8ejn\xE9 heslo katalogu aplikac\xED - p\xF8ejmenujte ho a pak opravte", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 44
+// src/Optimize/CreateAppStoreAccount.php, row 46
 "The app store account %1 has rights or groups - remove them" => "\xDA\xE8et katalogu aplikac\xED %1 m\xE1 pr\xE1va nebo skupiny - odeberte je", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 47
+// src/Optimize/CreateAppStoreAccount.php, row 49
 "The app store account is ready" => "\xDA\xE8et katalogu aplikac\xED je p\xF8ipraven", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 55
+// src/Optimize/CreateAppStoreAccount.php, row 57
 "Only a superadmin may create the app store account" => "\xDA\xE8et katalogu aplikac\xED sm\xED vytvo\xF8it jen superadmin", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 67
+// src/Optimize/CreateAppStoreAccount.php, row 69
 "The app store account could not be created" => "\xDA\xE8et katalogu aplikac\xED se nepoda\xF8ilo vytvo\xF8it", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 70
+// src/Optimize/CreateAppStoreAccount.php, row 72
 "The app store account %1 is created" => "\xDA\xE8et katalogu aplikac\xED %1 je vytvo\xF8en", // ai 2026-10
 
-// src/Optimize/CreateAppStoreAccount.php, row 77
+// src/Optimize/CreateAppStoreAccount.php, row 79
 "The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "\xDA\xE8et katalogu aplikac\xED pot\xF8ebuje u\x9Eivatele samotn\xE9ho AA (PERM_LIB sql); toto AA pou\x9E\xEDv\xE1 %1 - m\xF9\x9Ee z katalogu instalovat, ale samo katalogem b\xFDt nem\xF9\x9Ee", // ai 2026-10
 
 // src/Optimize/CreateUploadDir.php, row 16
@@ -13940,7 +14239,7 @@ return [
 "%1 duplicates found" => "Nalezeno %1 duplicit",
 
 // src/Optimize/DbRelationDups.php, row 46
-// src/Optimize/FieldDuplicates.php, row 51, 65
+// src/Optimize/FieldDuplicates.php, row 53, 67
 "No duplicates found" => "\x8E\xE1dn\xE9 duplicity nenalezeny",
 
 // src/Optimize/DbRelationStartsxy.php, row 22
@@ -13979,16 +14278,16 @@ return [
 // src/Optimize/DropBackupTables.php, row 28
 "Deletes all the current backup tables (bck_slice, bck_item, ...)." => "Sma\x9Ee v\x9Aechny sou\xE8asn\xE9 z\xE1lo\x9En\xED tabulky (bck_slice, bck_item, ...).",
 
-// src/Optimize/FieldDuplicates.php, row 16
+// src/Optimize/FieldDuplicates.php, row 18
 "Fix field definitions duplicates" => "Opravit duplicitn\xED definice pol\xED\xE8ek",
 
-// src/Optimize/FieldDuplicates.php, row 24
+// src/Optimize/FieldDuplicates.php, row 26
 "There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "Ve v\x9Aech web\xEDc\xEDch by m\xECla existovat ka\x9Ed\xE1 dvojice slice_id - field_id jen jednou, ale n\xECkdy jich je v\xEDc (hlavn\xEC kv\xF9li chyb\xEC v d\xF8\xEDv\xECj\x9A\xEDm skriptu sql_update.php, kter\xFD p\xF8idal v\xEDce pol\xED\xE8ek display_count...).",
 
-// src/Optimize/FieldDuplicates.php, row 55
+// src/Optimize/FieldDuplicates.php, row 57
 "Duplicate in slice - field: %1 - %2" => "Duplicita ve web\xEDku - pol\xED\xE8ko: %1 - %2",
 
-// src/Optimize/FieldDuplicates.php, row 83
+// src/Optimize/FieldDuplicates.php, row 85
 "Field %2 in slice %1 fixed" => "Pol\xED\xE8ko %2 ve web\xEDku %1 opraveno",
 
 // src/Optimize/FixContentColumn.php, row 23
@@ -14046,16 +14345,16 @@ return [
 // src/Optimize/FixPagecache.php, row 86
 "%1 inconsistent rows in pagecache removed" => "Odstran\xECno %1 nekonzistentn\xEDch \xF8\xE1dk\xF9 v pagecache",
 
-// src/Optimize/GenerateJslibsArray.php, row 17
+// src/Optimize/GenerateJslibsArray.php, row 19
 "Generate JS Library definition array" => "Generovat defini\xE8n\xED pole JS knihoven",
 
-// src/Optimize/GenerateJslibsArray.php, row 25
+// src/Optimize/GenerateJslibsArray.php, row 27
 "Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)" => "Vyp\xED\x9Ae defini\xE8n\xED pole JS knihoven pou\x9E\xEDvan\xE9 v include/stringexpand.php pro aktualizaci na posledn\xED verze knihoven na CDN jsDeliver (pou\x9E\xEDvaj\xED v\xFDvoj\xE1\xF8i AA k aktualizaci js knihoven v AA)",
 
-// src/Optimize/GenerateMetabase.php, row 42
+// src/Optimize/GenerateMetabase.php, row 44
 "Generate metabase definition row" => "Generovat defini\xE8n\xED \xF8\xE1dek metab\xE1ze",
 
-// src/Optimize/GenerateMetabase.php, row 50
+// src/Optimize/GenerateMetabase.php, row 52
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Jen pro program\xE1tory - vyp\xED\x9Ae obsah include/metabase_schema.php (o\xE8ek\xE1van\xE9 sch\xE9ma DB jako \xE8iteln\xE9 PHP pole) vygenerovan\xFD ze sou\xE8asn\xE9 datab\xE1ze; zkop\xEDrujte ho do souboru a commitn\xECte.",
 
 // src/Optimize/ImgCacheWritable.php, row 17
@@ -14118,92 +14417,98 @@ return [
 // src/Optimize/ItemDiscussion.php, row 65
 "%1 problems solved" => "%1 probl\xE9m\xF9 vy\xF8e\x9Aeno",
 
+// src/Optimize/LdapPermsToSql.php, row 44
+"Convert LDAP permissions to SQL" => "P\xF8ev\xE9st opr\xE1vn\xECn\xED z LDAP do SQL", // ai 2026-11
+
 // src/Optimize/LdapPermsToSql.php, row 49
-"Migrate LDAP perms to SQL perms" => "P\xF8evod pr\xE1v z LDAP do SQL",
+"Moves the users, groups and rights of this database from LDAP to the SQL tables under new numeric ids and rewrites the references to people in the data. Test only reads: its trial import is rolled back. Repair does everything in one transaction; then set PERM_LIB='sql' in every config of this database. Take a backup first - restoring it is the only way back." => "P\xF8esune u\x9Eivatele, skupiny a pr\xE1va t\xE9to datab\xE1ze z LDAP do tabulek SQL pod nov\xFDmi \xE8\xEDseln\xFDmi ID a p\xF8ep\xED\x9Ae odkazy na osoby v datech. \x84Otestovat\x93 jen \xE8te: jeho zku\x9Aebn\xED import se vr\xE1t\xED zp\xECt. \x84Opravit\x93 provede v\x9Ae v jedn\xE9 transakci; pot\xE9 nastavte PERM_LIB='sql' v ka\x9Ed\xE9m configu t\xE9to datab\xE1ze. Nejprve ud\xEClejte z\xE1lohu - jej\xED obnoven\xED je jedin\xE1 cesta zp\xECt.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 55
-"Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Zkop\xEDruje v\x9Aechny u\x9Eivatele, skupiny, \xE8lenstv\xED a pr\xE1va z LDAP backendu do tabulek SQL backendu (users, membership, perms) a p\xF8ep\xED\x9Ae item.posted_by / item.edited_by z LDAP DN podoby (uid=...,ou=...) na nov\xE1 SQL \xE8\xEDseln\xE1 id. Spus\x9Dte jednou pro ka\x9Edou instalaci, pot\xE9 v configu p\xF8epn\xECte PERM_LIB na 'sql'. 'Test' je zku\x9Aebn\xED b\xECh pouze pro \xE8ten\xED. 'Repair' provede migraci a lze jej spou\x9At\xECt opakovan\xEC. 'Revert' pomoc\xED mapovac\xED tabulky v\x9Ae vr\xE1t\xED zp\xECt.",
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check passed: SQL answers as LDAP does." => "Kontrola shody pro\x9Ala: SQL odpov\xEDd\xE1 stejn\xEC jako LDAP.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 72
-"This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Tato optimalizace b\xEC\x9E\xED jen p\xF8i PERM_LIB='ldap'. Aktu\xE1ln\xED PERM_LIB='%1'.",
+// src/Optimize/LdapPermsToSql.php, row 81
+"Parity check failed - Repair would stop at it." => "Kontrola shody selhala - \x84Opravit\x93 by se na n\xED zastavilo.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 83
+"The trial import is skipped: it would stop at the first blocking finding above. Fix them and run Test again." => "Zku\x9Aebn\xED import je p\xF8esko\xE8en: zastavil by se na prvn\xEDm blokuj\xEDc\xEDm zji\x9At\xECn\xED v\xFD\x9Ae. Opravte je a spus\x9Dte znovu \x84Otestovat\x93.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 87
-"Would create mapping table `%1`" => "Vytvo\xF8ila by se mapovac\xED tabulka `%1`",
-
-// src/Optimize/LdapPermsToSql.php, row 116
 "Test failed: %1" => "Test selhal: %1",
 
-// src/Optimize/LdapPermsToSql.php, row 119
-"Test finished (dry run - no changes made)." => "Test dokon\xE8en (zku\x9Aebn\xED b\xECh - nebyly provedeny \x9E\xE1dn\xE9 zm\xECny).",
+// src/Optimize/LdapPermsToSql.php, row 108
+"Nothing was changed: the findings above block the conversion." => "Nic nebylo zm\xECn\xECno: p\xF8evodu br\xE1n\xED zji\x9At\xECn\xED v\xFD\x9Ae.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 135
-"Repair failed: %1" => "Oprava selhala: %1",
+// src/Optimize/LdapPermsToSql.php, row 133
+"Repair failed, yet the database holds a finished conversion (its log row exists) - check it with Test: %1" => "Oprava selhala, p\xF8esto datab\xE1ze obsahuje dokon\xE8en\xFD p\xF8evod (jeho \xF8\xE1dek v logu existuje) - ov\xEC\xF8te ho tla\xE8\xEDtkem \x84Otestovat\x93: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 138
-"Repair finished." => "Oprava dokon\xE8ena.",
+// src/Optimize/LdapPermsToSql.php, row 134
+"Repair failed, nothing was changed: %1" => "Oprava selhala, nic nebylo zm\xECn\xECno: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 154
-"Revert failed: %1" => "Vr\xE1cen\xED zp\xECt selhalo: %1",
+// src/Optimize/LdapPermsToSql.php, row 144
+"The page cache was not cleared, clear it by hand: %1" => "Cache str\xE1nek nebyla vypr\xE1zdn\xECna, vypr\xE1zdn\xECte ji ru\xE8n\xEC: %1", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 157
-"Revert finished." => "Vr\xE1cen\xED zp\xECt dokon\xE8eno.",
+// src/Optimize/LdapPermsToSql.php, row 148
+"Rewritten %1: %2 rows" => "P\xF8eps\xE1no %1, \xF8\xE1dk\xF9: %2", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 178
-"LDAP findUsernames failed or returned: %1" => "LDAP findUsernames selhalo nebo vr\xE1tilo: %1",
+// src/Optimize/LdapPermsToSql.php, row 150
+"New ids of the directory entries:" => "Nov\xE1 ID z\xE1znam\xF9 adres\xE1\xF8e:", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 181
-"LDAP users found: %1" => "Nalezeno LDAP u\x9Eivatel\xF9: %1",
-
-// src/Optimize/LdapPermsToSql.php, row 197
-"Skipping user %1 - cannot determine login" => "P\xF8eskakuji u\x9Eivatele %1 - nelze ur\xE8it login",
-
-// src/Optimize/LdapPermsToSql.php, row 206
-"User %1 already exists in SQL (id %2), reusing" => "U\x9Eivatel %1 u\x9E v SQL existuje (id %2), pou\x9Eije se st\xE1vaj\xEDc\xED",
-
-// src/Optimize/LdapPermsToSql.php, row 220
-"Would create SQL user: %1 (from %2)" => "Vytvo\xF8il by se SQL u\x9Eivatel: %1 (z %2)",
-
-// src/Optimize/LdapPermsToSql.php, row 228
-"Failed to create SQL user %1" => "Nepoda\xF8ilo se vytvo\xF8it SQL u\x9Eivatele %1",
-
-// src/Optimize/LdapPermsToSql.php, row 235
-"Users: created=%1 reused=%2 failed=%3" => "U\x9Eivatel\xE9: vytvo\xF8eno=%1 pou\x9Eito st\xE1vaj\xEDc\xEDch=%2 selhalo=%3",
-
-// src/Optimize/LdapPermsToSql.php, row 243
-"LDAP groups found: %1" => "Nalezeno LDAP skupin: %1",
+// src/Optimize/LdapPermsToSql.php, row 151
+"Now set PERM_LIB='sql' in every config of this database - until then AA still asks LDAP." => "Nyn\xED nastavte PERM_LIB='sql' v ka\x9Ed\xE9m configu t\xE9to datab\xE1ze - do t\xE9 doby se AA st\xE1le pt\xE1 LDAP.", // ai 2026-11
 
 // src/Optimize/LdapPermsToSql.php, row 264
-"Group %1 already exists in SQL (id %2), reusing" => "Skupina %1 u\x9E v SQL existuje (id %2), pou\x9Eije se st\xE1vaj\xEDc\xED",
+"This database was already converted. A second run would give people other ids than the data now holds - restore the backup first if it really has to run again." => "Tato datab\xE1ze u\x9E byla p\xF8evedena. Druh\xFD b\xECh by lidem p\xF8id\xEClil jin\xE1 ID, ne\x9E jak\xE1 te\xEF obsahuj\xED data - pokud mus\xED opravdu prob\xEChnout znovu, nejprve obnovte z\xE1lohu.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 273
-"Would create SQL group: %1 (from %2)" => "Vytvo\xF8ila by se SQL skupina: %1 (z %2)",
+// src/Optimize/LdapPermsToSql.php, row 274
+"This database was converted to SQL permissions on %1 (%2). Its parity check ran inside the committed transaction; Repair does not run twice." => "Tato datab\xE1ze byla p\xF8evedena na opr\xE1vn\xECn\xED SQL dne %1 (%2). Kontrola shody prob\xEChla uvnit\xF8 potvrzen\xE9 transakce; \x84Opravit\x93 se nespou\x9At\xED dvakr\xE1t.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 280
-"Failed to create SQL group %1" => "Nepoda\xF8ilo se vytvo\xF8it SQL skupinu %1",
+// src/Optimize/LdapPermsToSql.php, row 279
+"DNs left in %1 (%2): %3" => "DN zbyl\xE1 v %1 (%2): %3", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 287
-"Groups: created=%1 reused=%2 failed=%3" => "Skupiny: vytvo\xF8eno=%1 pou\x9Eito st\xE1vaj\xEDc\xEDch=%2 selhalo=%3",
+// src/Optimize/LdapPermsToSql.php, row 282
+"These were written after the conversion or match no directory entry - fix them by hand if they matter." => "Tyto z\xE1znamy byly zaps\xE1ny po p\xF8evodu nebo neodpov\xEDdaj\xED \x9E\xE1dn\xE9mu z\xE1znamu adres\xE1\xF8e - pokud na nich z\xE1le\x9E\xED, opravte je ru\xE8n\xEC.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 325
-"Memberships: added=%1 skipped_unmapped=%2" => "\xC8lenstv\xED: p\xF8id\xE1no=%1 p\xF8esko\xE8eno_nenamapov\xE1no=%2",
+// src/Optimize/LdapPermsToSql.php, row 283
+"No DN is left in the columns referring to people." => "Ve sloupc\xEDch odkazuj\xEDc\xEDch na osoby nez\xF9stalo \x9E\xE1dn\xE9 DN.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 367
-"Permission rows migrated: %1" => "P\xF8evedeno \xF8\xE1dk\xF9 pr\xE1v: %1",
+// src/Optimize/LdapPermsToSql.php, row 291
+"This conversion runs only while PERM_LIB is 'ldap'; here it is '%1'." => "Tento p\xF8evod b\xEC\x9E\xED jen p\xF8i PERM_LIB 'ldap'; zde je '%1'.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 389
-"No mapping entries - nothing to rewrite." => "\x8E\xE1dn\xE9 z\xE1znamy v mapov\xE1n\xED - nen\xED co p\xF8epsat.",
+// src/Optimize/LdapPermsToSql.php, row 296
+"The conversion has no dry run - switch it off. Test itself changes nothing." => "P\xF8evod nem\xE1 re\x9Eim nane\xE8isto (dry run) - vypn\xECte ho. Samotn\xE9 \x84Otestovat\x93 nic nem\xECn\xED.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 408
-"Rewrite %1.%2: %3 rows" => "P\xF8epis %1.%2: %3 \xF8\xE1dk\xF9",
+// src/Optimize/LdapPermsToSql.php, row 310
+"Tables %1 must be InnoDB: on another engine a rollback restores nothing, so even the trial import of Test would delete the users for good. Convert them first - Optimize \"%2\"." => "Tabulky %1 mus\xED b\xFDt InnoDB: na jin\xE9m enginu rollback nic neobnov\xED, tak\x9Ee i zku\x9Aebn\xED import p\xF8i \x84Otestovat\x93 by u\x9Eivatele smazal natrvalo. Nejprve je p\xF8eve\xEFte - Optimalizovat \x84%2\x93.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 418
-"Mapping table is empty - nothing to revert." => "Mapovac\xED tabulka je pr\xE1zdn\xE1 - nen\xED co vracet.",
+// src/Optimize/LdapPermsToSql.php, row 316
+"The database connection uses \"%1\", not utf8mb4: a DN with a character outside it would silently not be found in the data. Set DB_CHARACTER_SET to \"utf8mb4\" in config.php first." => "P\xF8ipojen\xED k datab\xE1zi pou\x9E\xEDv\xE1 \x84%1\x93, ne utf8mb4: DN se znakem mimo tuto sadu by se v datech ti\x9Ae nena\x9Alo. Nejprve nastavte v config.php DB_CHARACTER_SET na \x84utf8mb4\x93.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 434
-"Revert %1.%2: %3 rows" => "Vr\xE1cen\xED %1.%2: %3 \xF8\xE1dk\xF9",
+// src/Optimize/LdapPermsToSql.php, row 368
+"Imported %1 people, %2 groups, %3 memberships and %4 rights; %5 old rows removed." => "Importov\xE1no osob: %1, skupin: %2, \xE8lenstv\xED: %3, pr\xE1v: %4; odstran\xECno star\xFDch \xF8\xE1dk\xF9: %5.", // ai 2026-11
 
-// src/Optimize/LdapPermsToSql.php, row 452
-"Deleted SQL users=%1 groups=%2" => "Smaz\xE1no SQL u\x9Eivatel\xF9=%1 skupin=%2",
+// src/Optimize/LdapPermsToSql.php, row 369
+"(Trial run - rolled back.)" => "(Zku\x9Aebn\xED b\xECh - vr\xE1ceno zp\xECt.)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 374
+"Plan: %1 people, %2 groups, %3 memberships, %4 rights; new ids from %5; %6 spellings of DNs in the data to rewrite." => "Pl\xE1n: osob %1, skupin %2, \xE8lenstv\xED %3, pr\xE1v %4; nov\xE1 ID od %5; z\xE1pis\xF9 DN v datech k p\xF8eps\xE1n\xED: %6.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Blocking" => "Blokuj\xEDc\xED", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 385
+"Info" => "Info", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 394
+"References in %1: %2 rows (%3 s)" => "Odkazy v %1: \xF8\xE1dk\xF9 %2 (%3 s)", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 396
+"Repair rewrites the references in about %1 s - each UPDATE scans its table as the count did." => "\x84Opravit\x93 p\xF8ep\xED\x9Ae odkazy p\xF8ibli\x9En\xEC za %1 s - ka\x9Ed\xFD UPDATE projde svou tabulku stejn\xEC jako po\xE8\xEDt\xE1n\xED.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 397
+"A DN stored as cp1250 bytes with diacritics is not UTF-8, so it matches no directory entry and stays as it is." => "DN ulo\x9Een\xE9 jako bajty cp1250 s diakritikou nen\xED UTF-8, tak\x9Ee neodpov\xEDd\xE1 \x9E\xE1dn\xE9mu z\xE1znamu adres\xE1\xF8e a z\xF9stane beze zm\xECny.", // ai 2026-11
+
+// src/Optimize/LdapPermsToSql.php, row 399
+"Mentions of ou=AA in %1: %2 rows - fix them by hand." => "Zm\xEDnky ou=AA v %1: \xF8\xE1dk\xF9 %2 - opravte je ru\xE8n\xEC.", // ai 2026-11
 
 // src/Optimize/MissCacheRouting.php, row 37
 "Image cache routing" => "Sm\xECrov\xE1n\xED cache obr\xE1zk\xF9", // ai 2026-10
@@ -14296,89 +14601,89 @@ return [
 // src/Optimize/MultivalueDuplicates.php, row 139
 "The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "Tabulka content nen\xED InnoDB, tak\x9Ee duplicity zde nelze opravit. Nejd\xF8\xEDv spus\x9Dte \x84%1\x93.", // ai 2026-10
 
-// src/Optimize/ReadersLogin2id.php, row 16
+// src/Optimize/ReadersLogin2id.php, row 18
 "Convert Readers login to reader id" => "P\xF8evod login\xF9 \xE8ten\xE1\xF8\xF9 na ID \xE8ten\xE1\xF8e",
 
-// src/Optimize/ReadersLogin2id.php, row 24
+// src/Optimize/ReadersLogin2id.php, row 26
 "There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "Ve verzi AA v2.8.1 do\x9Alo ke zm\xECn\xEC ve spr\xE1v\xEC \xE8ten\xE1\xF8\xF9 - \xE8ten\xE1\xF8i u\x9E nejsou intern\xEC identifikov\xE1ni sv\xFDm loginem, ale ID \xE8ten\xE1\xF8e (ID \xE8l\xE1nku \xE8ten\xE1\xF8e ve web\xEDku \xE8ten\xE1\xF8\xF9). To je mnohem mocn\xECj\x9A\xED - m\xF9\x9Eete vytv\xE1\xF8et vztahy stejn\xEC jako v b\xEC\x9En\xE9m web\xEDku. V\x9Ae funguje beze zm\xECny. Jedin\xFD probl\xE9m nast\xE1v\xE1, pokud jste nastavili n\xECkter\xFD web\xEDk jako editovateln\xFD u\x9Eivateli z web\xEDku \xE8ten\xE1\xF8\xF9. V tom p\xF8\xEDpad\xEC se pol\xED\xE8ka edited_by........ a posted_by........ pln\xED loginem \xE8ten\xE1\xF8e m\xEDsto ID \xE8ten\xE1\xF8e. Oprav\xEDte to volbou \"Repair\".",
 
-// src/Optimize/ReadersLogin2id.php, row 38, 82
+// src/Optimize/ReadersLogin2id.php, row 40, 84
 "Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "Nelze testovat - v\xE1\x9A syst\xE9m pr\xE1v neumo\x9E\xF2uje z\xEDskat seznam v\x9Aech u\x9Eivatelsk\xFDch jmen (LDAP?)",
 
-// src/Optimize/ReadersLogin2id.php, row 43
+// src/Optimize/ReadersLogin2id.php, row 45
 "%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "Nalezeno %1 login\xF9 z web\xEDku \xE8ten\xE1\xF8\xF9 v z\xE1znamech item.posted_by, co\x9E je \x9Apatn\xEC (od AA v2.8.1 tam m\xE1 b\xFDt ID \xE8ten\xE1\xF8e). \"Repair\" to oprav\xED.",
 
-// src/Optimize/ReadersLogin2id.php, row 48
+// src/Optimize/ReadersLogin2id.php, row 50
 "%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "Nalezeno %1 login\xF9 z web\xEDku \xE8ten\xE1\xF8\xF9 v z\xE1znamech item.edited_by, co\x9E je \x9Apatn\xEC (od AA v2.8.1 tam m\xE1 b\xFDt ID \xE8ten\xE1\xF8e). \"Repair\" to oprav\xED.",
 
-// src/Optimize/ReadersLogin2id.php, row 90
+// src/Optimize/ReadersLogin2id.php, row 92
 "Column item.posted_by updated for %1 (id: %2)." => "Sloupec item.posted_by aktualizov\xE1n pro %1 (id: %2).",
 
-// src/Optimize/ReadersLogin2id.php, row 96
+// src/Optimize/ReadersLogin2id.php, row 98
 "Column item.edited_by updated for %1 (id: %2)." => "Sloupec item.edited_by aktualizov\xE1n pro %1 (id: %2).",
 
-// src/Optimize/RedefineCoreConstants.php, row 18
+// src/Optimize/RedefineCoreConstants.php, row 20
 "Redefine core constants" => "P\xF8edefinovat z\xE1kladn\xED konstanty",
 
-// src/Optimize/RedefineCoreConstants.php, row 26
+// src/Optimize/RedefineCoreConstants.php, row 28
 "Updates core constants - like Code-pages, Language Constants and AA Bins" => "Aktualizuje z\xE1kladn\xED konstanty - jako znakov\xE9 sady (Code-pages), jazykov\xE9 konstanty a AA Bins",
 
-// src/Optimize/RedefineCoreConstants.php, row 46
+// src/Optimize/RedefineCoreConstants.php, row 48
 "Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "Konstanty znakov\xFDch sad (lt_codepages) nejsou aktu\xE1ln\xED - nalezeno: %1 z 9",
 
-// src/Optimize/RedefineCoreConstants.php, row 53
+// src/Optimize/RedefineCoreConstants.php, row 55
 "Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "Jazykov\xE9 konstanty (lt_languages) nejsou aktu\xE1ln\xED - nalezeno: %1 z 46",
 
-// src/Optimize/RedefineCoreConstants.php, row 60
+// src/Optimize/RedefineCoreConstants.php, row 62
 "AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "Konstanty AA Bins (AA_Core_Bins....) nejsou aktu\xE1ln\xED - nalezeno: %1 z 3",
 
-// src/Optimize/RedefineCoreConstants.php, row 67
+// src/Optimize/RedefineCoreConstants.php, row 69
 "APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "Kategorie spole\xE8n\xE9 pro APC (lt_apcCategories) nejsou aktu\xE1ln\xED - nalezeno: %1 z 82",
 
-// src/Optimize/RedefineCoreConstants.php, row 81
+// src/Optimize/RedefineCoreConstants.php, row 83
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "Maz\xE1n\xED znakov\xFDch sad, jazykov\xFDch konstant, konstant AA Bins a kategori\xED spole\xE8n\xFDch pro APC",
 
-// src/Optimize/RedefineCoreConstants.php, row 85
+// src/Optimize/RedefineCoreConstants.php, row 87
 "Recreate Code-pages" => "Znovu vytvo\xF8it znakov\xE9 sady (Code-pages)",
 
-// src/Optimize/RedefineCoreConstants.php, row 96
+// src/Optimize/RedefineCoreConstants.php, row 98
 "Recreate Languages" => "Znovu vytvo\xF8it jazyky",
 
-// src/Optimize/RedefineCoreConstants.php, row 144
+// src/Optimize/RedefineCoreConstants.php, row 146
 "Recreate AA Bins" => "Znovu vytvo\xF8it AA Bins",
 
-// src/Optimize/RedefineCoreConstants.php, row 149
+// src/Optimize/RedefineCoreConstants.php, row 151
 "APC wide categories" => "Kategorie spole\xE8n\xE9 pro APC",
 
-// src/Optimize/RedefineCoreConstants.php, row 233
+// src/Optimize/RedefineCoreConstants.php, row 235
 "Make sure, the constants are registered" => "Ov\xEC\xF8it, \x9Ee jsou konstanty registrov\xE1ny",
 
-// src/Optimize/RedefineCoreConstants.php, row 242
+// src/Optimize/RedefineCoreConstants.php, row 244
 "Redefine core constants - done." => "P\xF8edefinov\xE1n\xED z\xE1kladn\xEDch konstant - hotovo.",
 
-// src/Optimize/RedefineFieldTemplates.php, row 43
+// src/Optimize/RedefineFieldTemplates.php, row 45
 "Redefine field templates" => "P\xF8edefinovat \x9Aablony pol\xED\xE8ek",
 
-// src/Optimize/RedefineFieldTemplates.php, row 51
+// src/Optimize/RedefineFieldTemplates.php, row 53
 "Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice" => "Aktualizuje \x9Aablony pol\xED\xE8ek (ve web\xEDku ActionApps Core), kter\xE9 se pou\x9E\xEDvaj\xED p\xF8i p\xF8id\xE1v\xE1n\xED nov\xE9ho pol\xED\xE8ka do web\xEDku",
 
-// src/Optimize/RedefineFieldTemplates.php, row 77
+// src/Optimize/RedefineFieldTemplates.php, row 79
 "template fields are not present" => "\x9Aablonov\xE1 pol\xED\xE8ka chyb\xED",
 
-// src/Optimize/RedefineFieldTemplates.php, row 95
-// src/Optimize/RedefineSliceNewsTemplates.php, row 57
+// src/Optimize/RedefineFieldTemplates.php, row 97
+// src/Optimize/RedefineSliceNewsTemplates.php, row 59
 "Deleting all fields from \"ActionApps Core\" slice" => "Maz\xE1n\xED v\x9Aech pol\xED\xE8ek z web\xEDku \"ActionApps Core\"",
 
-// src/Optimize/RedefineFieldTemplates.php, row 99
+// src/Optimize/RedefineFieldTemplates.php, row 101
 "Make sure slice owner Action Applications System exists and reset to defaults" => "Ov\xEC\xF8it, \x9Ee vlastn\xEDk web\xEDku Action Applications System existuje, a obnovit v\xFDchoz\xED nastaven\xED",
 
-// src/Optimize/RedefineFieldTemplates.php, row 102
+// src/Optimize/RedefineFieldTemplates.php, row 104
 "Make sure \"ActionApps Core\" slice exists and reset to defaults" => "Ov\xEC\xF8it, \x9Ee web\xEDk \"ActionApps Core\" existuje, a obnovit v\xFDchoz\xED nastaven\xED",
 
-// src/Optimize/RedefineFieldTemplates.php, row 106
+// src/Optimize/RedefineFieldTemplates.php, row 108
 "Recreate field definitions" => "Znovu vytvo\xF8it definice pol\xED\xE8ek",
 
-// src/Optimize/RedefineFieldTemplates.php, row 197
+// src/Optimize/RedefineFieldTemplates.php, row 199
 "Redefine field defaults - done." => "P\xF8edefinov\xE1n\xED v\xFDchoz\xEDch pol\xED\xE8ek - hotovo.",
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
@@ -14391,127 +14696,127 @@ return [
 "There is no root Link Module category - Links module should be recreated" => "Chyb\xED ko\xF8enov\xE1 kategorie modulu Links - modul Links by m\xECl b\xFDt znovu vytvo\xF8en",
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
-// src/Optimize/RedefineSiteTemplates.php, row 47
+// src/Optimize/RedefineSiteTemplates.php, row 49
 "Replacing module definition" => "Nahrazov\xE1n\xED definice modulu",
 
 // src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Znovuvytvo\xF8en\xED \x9Aablony modulu Links - hotovo.",
 
-// src/Optimize/RedefineSiteTemplates.php, row 13
+// src/Optimize/RedefineSiteTemplates.php, row 15
 "Recreate Site module template" => "Znovu vytvo\xF8it \x9Aablonu modulu Site",
 
-// src/Optimize/RedefineSiteTemplates.php, row 19
+// src/Optimize/RedefineSiteTemplates.php, row 21
 "Deletes and recreates the default template for Site module" => "Sma\x9Ee a znovu vytvo\xF8\xED v\xFDchoz\xED \x9Aablonu modulu Site",
 
-// src/Optimize/RedefineSiteTemplates.php, row 36
+// src/Optimize/RedefineSiteTemplates.php, row 38
 "Site Module template should be recreated" => "\x8Aablona modulu Site by m\xECla b\xFDt znovu vytvo\xF8ena",
 
-// src/Optimize/RedefineSiteTemplates.php, row 53
+// src/Optimize/RedefineSiteTemplates.php, row 55
 "Site Module template recreation - done." => "Znovuvytvo\xF8en\xED \x9Aablony modulu Site - hotovo.",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 15
+// src/Optimize/RedefineSlicReaderTemplates.php, row 17
 "Redefine Reader Management template slice" => "P\xF8edefinovat \x9Aablonov\xFD web\xEDk Reader Management",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 23
+// src/Optimize/RedefineSlicReaderTemplates.php, row 25
 "Deletes and recreates the Reader Management slice, used as template or example slice" => "Sma\x9Ee a znovu vytvo\xF8\xED web\xEDk Reader Management, pou\x9E\xEDvan\xFD jako \x9Aablonov\xFD \xE8i uk\xE1zkov\xFD web\xEDk",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 42
+// src/Optimize/RedefineSlicReaderTemplates.php, row 44
 "\"Reader Management\" template slice is not defined" => "\x8Aablonov\xFD web\xEDk \"Reader Management\" nen\xED definov\xE1n",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 58
+// src/Optimize/RedefineSlicReaderTemplates.php, row 60
 "Deleting all fields from \"Reader Management\" slice" => "Maz\xE1n\xED v\x9Aech pol\xED\xE8ek z web\xEDku \"Reader Management\"",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 62
+// src/Optimize/RedefineSlicReaderTemplates.php, row 64
 "Make sure \"Reader Management\" slice exists and reset to defaults" => "Ov\xEC\xF8it, \x9Ee web\xEDk \"Reader Management\" existuje, a obnovit v\xFDchoz\xED nastaven\xED",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 66
+// src/Optimize/RedefineSlicReaderTemplates.php, row 68
 "Recreate field definitions for \"Reader Management\"" => "Znovu vytvo\xF8it definice pol\xED\xE8ek pro \"Reader Management\"",
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 92
+// src/Optimize/RedefineSlicReaderTemplates.php, row 94
 "Reader Management template slice creation - done." => "Vytvo\xF8en\xED \x9Aablonov\xE9ho web\xEDku Reader Management - hotovo.",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 15
+// src/Optimize/RedefineSliceNewsTemplates.php, row 17
 "Redefine News EN template slice" => "P\xF8edefinovat \x9Aablonov\xFD web\xEDk News EN",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 23
+// src/Optimize/RedefineSliceNewsTemplates.php, row 25
 "Deletes and recreates the News EN slice, used as template or example slice" => "Sma\x9Ee a znovu vytvo\xF8\xED web\xEDk News EN, pou\x9E\xEDvan\xFD jako \x9Aablonov\xFD \xE8i uk\xE1zkov\xFD web\xEDk",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 41
+// src/Optimize/RedefineSliceNewsTemplates.php, row 43
 "News EN template slice is not defined" => "\x8Aablonov\xFD web\xEDk News EN nen\xED definov\xE1n",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 61
+// src/Optimize/RedefineSliceNewsTemplates.php, row 63
 "Make sure \"News EN\" slice exists and reset to defaults" => "Ov\xEC\xF8it, \x9Ee web\xEDk \"News EN\" existuje, a obnovit v\xFDchoz\xED nastaven\xED",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 65
+// src/Optimize/RedefineSliceNewsTemplates.php, row 67
 "Recreate field definitions for \"News EN\"" => "Znovu vytvo\xF8it definice pol\xED\xE8ek pro \"News EN\"",
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 99
+// src/Optimize/RedefineSliceNewsTemplates.php, row 101
 "News EN template slice creation - done." => "Vytvo\xF8en\xED \x9Aablonov\xE9ho web\xEDku News EN - hotovo.",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 15
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 17
 "Redefine Noticas - ES template slice" => "P\xF8edefinovat \x9Aablonov\xFD web\xEDk Noticas - ES",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 23
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 25
 "Deletes and recreates the Noticas - ES slice, used as template or example slice" => "Sma\x9Ee a znovu vytvo\xF8\xED web\xEDk Noticas - ES, pou\x9E\xEDvan\xFD jako \x9Aablonov\xFD \xE8i uk\xE1zkov\xFD web\xEDk",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 42
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 44
 "\"Noticas - ES\" template slice is not defined" => "\x8Aablonov\xFD web\xEDk \"Noticas - ES\" nen\xED definov\xE1n",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 58
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 60
 "Deleting all fields from \"Noticas - ES\" slice" => "Maz\xE1n\xED v\x9Aech pol\xED\xE8ek z web\xEDku \"Noticas - ES\"",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 62
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 64
 "Make sure \"Noticas - ES\" slice exists and reset to defaults" => "Ov\xEC\xF8it, \x9Ee web\xEDk \"Noticas - ES\" existuje, a obnovit v\xFDchoz\xED nastaven\xED",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 66
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 68
 "Recreate field definitions for \"Noticas - ES\"" => "Znovu vytvo\xF8it definice pol\xED\xE8ek pro \"Noticas - ES\"",
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 100
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 102
 "Noticas - ES template slice creation - done." => "Vytvo\xF8en\xED \x9Aablonov\xE9ho web\xEDku Noticas - ES - hotovo.",
 
-// src/Optimize/RedefineViewCalendarTemplates.php, row 10
+// src/Optimize/RedefineViewCalendarTemplates.php, row 12
 "Redefine calendar template view" => "P\xF8edefinovat \x9Aablonov\xFD pohled calendar",
 
-// src/Optimize/RedefineViewCategoriesTemplates.php, row 10
+// src/Optimize/RedefineViewCategoriesTemplates.php, row 12
 "Redefine categories template view" => "P\xF8edefinovat \x9Aablonov\xFD pohled categories",
 
-// src/Optimize/RedefineViewConstTemplates.php, row 10
+// src/Optimize/RedefineViewConstTemplates.php, row 12
 "Redefine const template view" => "P\xF8edefinovat \x9Aablonov\xFD pohled const",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 13
+// src/Optimize/RedefineViewDiscusTemplates.php, row 15
 "Redefine discus template view" => "P\xF8edefinovat \x9Aablonov\xFD pohled discus",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 19
+// src/Optimize/RedefineViewDiscusTemplates.php, row 21
 "Deletes and recreates that view, which is used as template view of that type" => "Sma\x9Ee a znovu vytvo\xF8\xED pohled, kter\xFD se pou\x9E\xEDv\xE1 jako \x9Aablonov\xFD pohled dan\xE9ho typu",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 47
+// src/Optimize/RedefineViewDiscusTemplates.php, row 49
 "\"%1\" template view is not defined" => "\x8Aablonov\xFD pohled \"%1\" nen\xED definov\xE1n",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 58
+// src/Optimize/RedefineViewDiscusTemplates.php, row 60
 "Deleting the view template \"%1\"" => "Maz\xE1n\xED \x9Aablony pohledu \"%1\"",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 62
+// src/Optimize/RedefineViewDiscusTemplates.php, row 64
 "Inserting the view \"discus\" template" => "Vkl\xE1d\xE1n\xED \x9Aablony pohledu \"discus\"",
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 66
+// src/Optimize/RedefineViewDiscusTemplates.php, row 68
 "view \"%1\" redefinition - done." => "p\xF8edefinov\xE1n\xED pohledu \"%1\" - hotovo.",
 
-// src/Optimize/RedefineViewFullTemplates.php, row 10
+// src/Optimize/RedefineViewFullTemplates.php, row 12
 "Redefine full template view" => "P\xF8edefinovat \x9Aablonov\xFD pohled full",
 
-// src/Optimize/RedefineViewJavascriptTemplates.php, row 10
+// src/Optimize/RedefineViewJavascriptTemplates.php, row 12
 "Redefine javascript template view" => "P\xF8edefinovat \x9Aablonov\xFD pohled javascript",
 
-// src/Optimize/RedefineViewLinksTemplates.php, row 10
+// src/Optimize/RedefineViewLinksTemplates.php, row 12
 "Redefine links template view" => "P\xF8edefinovat \x9Aablonov\xFD pohled links",
 
-// src/Optimize/RedefineViewRssTemplates.php, row 10
+// src/Optimize/RedefineViewRssTemplates.php, row 12
 "Redefine rss template view" => "P\xF8edefinovat \x9Aablonov\xFD pohled rss",
 
-// src/Optimize/RedefineViewStaticTemplates.php, row 10
+// src/Optimize/RedefineViewStaticTemplates.php, row 12
 "Redefine static template view" => "P\xF8edefinovat \x9Aablonov\xFD pohled static",
 
-// src/Optimize/RedefineViewUrlsTemplates.php, row 10
+// src/Optimize/RedefineViewUrlsTemplates.php, row 12
 "Redefine urls template view" => "P\xF8edefinovat \x9Aablonov\xFD pohled urls",
 
 // src/Optimize/RemoveAaCronEntries.php, row 22
@@ -14565,19 +14870,19 @@ return [
 // src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "OK - \x9E\xE1dn\xE9 povinn\xE9 za\x9Akrt\xE1vac\xED pol\xED\xE8ko neexistuje",
 
-// src/Optimize/RestoreBckTables.php, row 20
+// src/Optimize/RestoreBckTables.php, row 22
 "Restore data from backup tables" => "Obnovit data ze z\xE1lo\x9En\xEDch tabulek",
 
-// src/Optimize/RestoreBckTables.php, row 28
+// src/Optimize/RestoreBckTables.php, row 30
 "Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "Sma\x9Ee v\x9Aechny sou\xE8asn\xE9 tabulky (slice, item, ...), ke kter\xFDm existuje bck_ tabulka, a p\xF8ejmenuje v\x9Aechny z\xE1lo\x9En\xED tabulky (bck_slice, bck_item, ...) na spr\xE1vn\xE1 jm\xE9na (slice, item, ...).",
 
-// src/Optimize/RestoreBckTables.php, row 40
+// src/Optimize/RestoreBckTables.php, row 42
 "The bck_ tables do not exist (or at least bck_content table)" => "Tabulky bck_ neexistuj\xED (nebo alespo\xF2 tabulka bck_content)",
 
-// src/Optimize/RestoreBckTables.php, row 59
+// src/Optimize/RestoreBckTables.php, row 61
 "There is no bck_%1 table - %1 not restored." => "Tabulka bck_%1 neexistuje - %1 nebyla obnovena.",
 
-// src/Optimize/RestoreBckTables.php, row 62
+// src/Optimize/RestoreBckTables.php, row 64
 "Replace table bck_%1 -> %1" => "Nahrazen\xED tabulky bck_%1 -> %1",
 
 // src/Optimize/SeoDuplicates.php, row 44
@@ -14829,6 +15134,30 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 141
 "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "z\xE1loha star\xE9 tabulky %1 -> bck_%1 a nasazen\xED nov\xFDch tabulek tmp_%1 -> %1",
 
+// src/Passkey/Notice.php, row 23
+"A passkey was added to your account" => "K va\x9Aemu \xFA\xE8tu byl p\xF8id\xE1n p\xF8\xEDstupov\xFD kl\xED\xE8", // ai 2026-11
+
+// src/Passkey/Notice.php, row 23
+"The passkey \"%1\" was added to your account %2 on %3. It logs you in on %4." => "P\xF8\xEDstupov\xFD kl\xED\xE8 \x84%1\x93 byl p\xF8id\xE1n k va\x9Aemu \xFA\xE8tu %2 dne %3. P\xF8ihla\x9Auje v\xE1s na %4.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"A passkey was deleted from your account" => "Z va\x9Aeho \xFA\xE8tu byl smaz\xE1n p\xF8\xEDstupov\xFD kl\xED\xE8", // ai 2026-11
+
+// src/Passkey/Notice.php, row 30
+"The passkey \"%1\" was deleted from your account %2 on %3." => "P\xF8\xEDstupov\xFD kl\xED\xE8 \x84%1\x93 byl smaz\xE1n z va\x9Aeho \xFA\xE8tu %2 dne %3.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"The passkeys of your account were deleted" => "P\xF8\xEDstupov\xE9 kl\xED\xE8e va\x9Aeho \xFA\xE8tu byly smaz\xE1ny", // ai 2026-11
+
+// src/Passkey/Notice.php, row 38
+"%1 deleted all passkeys of your account %2 on %3. You log in by your password again; you can add a new passkey after the login." => "U\x9Eivatel %1 smazal v\x9Aechny p\xF8\xEDstupov\xE9 kl\xED\xE8e va\x9Aeho \xFA\xE8tu %2 dne %3. Znovu se p\xF8ihla\x9Aujete heslem; po p\xF8ihl\xE1\x9Aen\xED m\xF9\x9Eete p\xF8idat nov\xFD p\xF8\xEDstupov\xFD kl\xED\xE8.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 60
+"If it was not you, tell the administrator of ActionApps at %1 at once." => "Pokud jste to nebyli vy, ihned informujte spr\xE1vce ActionApps na adrese %1.", // ai 2026-11
+
+// src/Passkey/Notice.php, row 61
+"Address: %1, browser: %2" => "Adresa: %1, prohl\xED\x9Ee\xE8: %2", // ai 2026-11
+
 // src/Security/LoginThrottle.php, row 156
 "Too many failed login attempts. Try again in %1 min." => "P\xF8\xEDli\x9A mnoho ne\xFAsp\xEC\x9An\xFDch pokus\xF9 o p\xF8ihl\xE1\x9Aen\xED. Zkuste to znovu za %1 min.", // ai 2026-10
 
@@ -15061,17 +15390,17 @@ return [
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Za\x9Akrt\xE1vac\xED pol\xED\xE8ko",
 
-// src/Widget/CodWidget.php, row 21
+// src/Widget/CodWidget.php, row 23
 "Code editor" => "Editor k\xF3du",
 
-// src/Widget/EdtWidget.php, row 21
+// src/Widget/EdtWidget.php, row 23
 "Rich Edit Text Area" => "Textov\xE1 oblast s form\xE1tov\xE1n\xEDm (Rich Edit)",
 
 // src/Widget/FilWidget.php, row 38
 "File Upload" => "Nahr\xE1n\xED souboru",
 
 // src/Widget/FilWidget.php, row 206, 236
-// src/Widget/RichtextMarkup.php, row 73
+// src/Widget/RichtextMarkup.php, row 86
 "Upload" => "Nahr\xE1t",
 
 // src/Widget/FilWidget.php, row 250
@@ -15094,13 +15423,13 @@ return [
 // src/Widget/GpsWidget.php, row 438
 "Use" => "Pou\x9E\xEDt",
 
-// src/Widget/HcoWidget.php, row 34
+// src/Widget/HcoWidget.php, row 36
 "hierarchical constants" => "Hierachie konstant",
 
 // src/Widget/HidWidget.php, row 28
 "Hidden field" => "Skryt\xE9 pole",
 
-// src/Widget/InfWidget.php, row 31
+// src/Widget/InfWidget.php, row 33
 "Info text - output" => "Informa\xE8n\xED text - v\xFDstup",
 
 // src/Widget/IsoWidget.php, row 35
@@ -15142,28 +15471,28 @@ return [
 // src/Widget/MngWidget.php, row 39
 "Best for galleries and other tabular data which is multivalue and different for each item" => "Nejvhodn\xECj\x9A\xED pro galerie a jin\xE1 tabulkov\xE1 data, kter\xE1 jsou v\xEDcehodnotov\xE1 a pro ka\x9Ed\xFD \xE8l\xE1nek jin\xE1",
 
-// src/Widget/MseWidget.php, row 25
+// src/Widget/MseWidget.php, row 27
 "Multiple Selectbox" => "V\xEDcen\xE1sobn\xFD selectbox",
 
-// src/Widget/NulWidget.php, row 23
+// src/Widget/NulWidget.php, row 25
 "Do not show" => "Nezobrazuj",
 
-// src/Widget/PreWidget.php, row 36
+// src/Widget/PreWidget.php, row 38
 "Text Field with Presets" => "Textov\xE9 pole s p\xF8ednastaven\xFDmi hodnotami",
 
 // src/Widget/PwdWidget.php, row 37
 "Password and Change password" => "Heslo a Zm\xECnit heslo",
 
-// src/Widget/RichtextMarkup.php, row 75
+// src/Widget/RichtextMarkup.php, row 88
 "Loading..." => "Na\xE8\xEDt\xE1m...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 76
+// src/Widget/RichtextMarkup.php, row 89
 "No files" => "\x8E\xE1dn\xE9 soubory", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 77
+// src/Widget/RichtextMarkup.php, row 90
 "Uploading..." => "Nahr\xE1v\xE1m...", // ai 2026-10
 
-// src/Widget/RichtextMarkup.php, row 78
+// src/Widget/RichtextMarkup.php, row 91
 "Upload failed" => "Nahr\xE1n\xED selhalo", // ai 2026-10
 
 // src/Widget/RimWidget.php, row 43
@@ -15184,25 +15513,25 @@ return [
 // src/Widget/TagWidget.php, row 44
 "Tags" => "\x8At\xEDtky (tags)",
 
-// src/Widget/TfaWidget.php, row 43
+// src/Widget/TfaWidget.php, row 45
 "2FA Secret generator" => "Gener\xE1tor 2FA tajn\xE9ho kl\xED\xE8e",
 
-// src/Widget/TfaWidget.php, row 79
+// src/Widget/TfaWidget.php, row 81
 "One time Code" => "Jednor\xE1zov\xFD k\xF3d",
 
-// src/Widget/TfaWidget.php, row 89
+// src/Widget/TfaWidget.php, row 91
 "Generate New Secret" => "Vygenerovat nov\xFD tajn\xFD kl\xED\xE8",
 
-// src/Widget/TfaWidget.php, row 90
+// src/Widget/TfaWidget.php, row 92
 "Get Secret" => "Z\xEDskat tajn\xFD kl\xED\xE8",
 
-// src/Widget/TprWidget.php, row 27
+// src/Widget/TprWidget.php, row 29
 "Textarea with Presets" => "Textov\xE1 oblast s p\xF8ednastaven\xFDmi hodnotami",
 
 // src/Widget/TxtWidget.php, row 40
 "Text Area" => "Textov\xE1 oblast",
 
-// src/Widget/Wi2Widget.php, row 32
+// src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "Dva seznamy",
 
 // src/Widget/Widget.php, row 603
