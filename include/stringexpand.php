@@ -4842,14 +4842,10 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercachenotrim {
  *  Example: {ifeqfield:{xid}:category.......1:Nature: class="green"}
  *  Example: {ifeqfield::category.......1:Nature: class="green"} // for current item
  */
-class AA_Stringexpand_Ifeqfield extends AA_Stringexpand {
+class AA_Stringexpand_Ifeqfield extends AA_Stringexpand_Nevercachenotrim {
+    // never cached, as the other conditions: without an item id the parameters are the same in every row of a listing
     public const PARAMS = ['item_id', 'field', 'var', 'text', 'else_text'];
 
-    /** Do not trim all parameters (maybe we can?) */
-    protected static function doTrimParams(): bool { return false; }
-
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
     /** expand function
      *
      * @param $item_id
