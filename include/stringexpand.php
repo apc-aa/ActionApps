@@ -859,6 +859,8 @@ class AA_Stringexpand_Yahoo extends AA_Stringexpand {
         if ( !$user_id ) {
             return "";
         }
+        // the name usually comes from an item field; encoded it cannot leave the URL attributes
+        $name = rawurlencode($user_id);
 
         // set your defaults for the style and action (addfriend, call or sendim) (0, 1, 2, 3 and 4)
 
@@ -880,31 +882,31 @@ class AA_Stringexpand_Yahoo extends AA_Stringexpand {
         switch( $style ) {
 
             case "0":
-                $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=0" ' ;
+                $image = '<img src="http://opi.yahoo.com/online?u='.$name.'&m=g&t=0" ' ;
                 $image .= ' style="border: none; width: 12px; height: 12px;" alt="My status" />' ;
                 break;
 
             case "1":
-                $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=1" ' ;
+                $image = '<img src="http://opi.yahoo.com/online?u='.$name.'&m=g&t=1" ' ;
                 $image .= ' style="border: none; width: 64px; height: 16px;" alt="My status" />' ;
                 break;
 
             case "2":
-                $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=2" ' ;
+                $image = '<img src="http://opi.yahoo.com/online?u='.$name.'&m=g&t=2" ' ;
                 $image .= ' style="border: none; width: 125px; height: 25px;" alt="My status" />' ;
                 break;
 
             case "3":
-                $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=3" ' ;
+                $image = '<img src="http://opi.yahoo.com/online?u='.$name.'&m=g&t=3" ' ;
                 $image .= ' style="border: none; width: 86px; height: 16px;" alt="My status" />' ;
                 break;
 
             case "4":
-                $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=4" ' ;
+                $image = '<img src="http://opi.yahoo.com/online?u='.$name.'&m=g&t=4" ' ;
                 $image .= ' style="border: none; width: 12px; height: 12px;" alt="My status" />' ;
                 break;
         }
-        return '<a href="ymsgr:'.$action.'?'.$user_id.'">'.$image.'</a>';
+        return '<a href="ymsgr:'.$action.'?'.$name.'">'.$image.'</a>';
     }
 }
 
