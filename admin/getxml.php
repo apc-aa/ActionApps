@@ -140,6 +140,21 @@ function Error($str): never
     exit();
 }
 
+/**
+ * The node $node_name exists and $password is its password. Strings only: a list would try them all
+ * in one request.
+ * @param mixed $node_name
+ * @param mixed $password
+ */
+function NodeAuthenticated($node_name, $password): bool
+{
+    if (!is_string($node_name) || !is_string($password) || ($node_name === '')) {
+        return false;
+    }
+    $node_password = DB_AA::select1('password', 'SELECT password FROM nodes', [['name', $node_name]]);
+    return is_string($node_password) && hash_equals($node_password, $password);
+}
+
 /** GetFeedingSlices function
  * Find correct feeding slices
  * @param $node_name
@@ -471,8 +486,9 @@ function RestrictIdsByCategory($ids, $categories, $slice_id, array $content, $ca
 
 //------------------------------------------------------------------------------
 
-// check the node_name and password against the nodes table's data
-if (!DB_AA::test("nodes", [['name',$node_name], ['password',$password]])) {
+// as sent, not the slashed copies above, which the queries would escape twice
+$node_name = $_REQUEST['node_name'] ?? '';
+if (!NodeAuthenticated($node_name, $_REQUEST['password'] ?? '')) {
     Error(FeedUtil::ERR_PASSWORD);
 }
 
