@@ -254,7 +254,7 @@ final class StringexpandIncludeTest extends TestCase
             self::assertSame('<p>disclaimer</p>', self::expand('disclaimer.html', 'site'));
 
             // the refusals log a row: seen already, so the test reaches no database
-            (new \ReflectionProperty(\AA\Util\LogOnce::class, 'seen'))->setValue(null, ["FILE_DENY\0fileman:../web/disclaimer.html" => true]);
+            (new \ReflectionProperty(\AA\Util\LogOnce::class, 'seen'))->setValue(null, ['FILE_DENY' . "\0fileman:" . realpath("$dir/disclaimer.html") => true]);
             self::assertSame('', self::expand('../web/disclaimer.html', 'fileman'), 'never up out of the directory');
             $GLOBALS['slice_id'] = 'fedcba9876543210fedcba9876543210';
             self::assertSame('', self::expand('disclaimer.html', 'fileman'), 'a slice without a File Manager directory reads nothing - not the directory of all of them');

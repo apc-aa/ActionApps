@@ -42,8 +42,11 @@ final class SiteFile
     private const SECRET_EXTENSIONS = [
         'ini', 'env', 'key', 'pem', 'crt', 'cer', 'der', 'p12', 'pfx', 'jks', 'keystore', 'asc', 'gpg', 'kdbx',
         'conf', 'cnf', 'cfg', 'inc', 'neon', 'yml', 'yaml', 'sql', 'sqlite', 'db', 'dump', 'log',
-        'bak', 'old', 'orig', 'save', 'swp', 'tmp', 'htaccess', 'htpasswd', 'passwd', 'sh', 'py', 'pl', 'rb',
+        'htaccess', 'htpasswd', 'passwd', 'sh', 'py', 'pl', 'rb',
     ];
+
+    /** a copy left by an editor, a tool or a hand - of anything, so refused itself */
+    private const BACKUP_EXTENSIONS = ['bak', 'old', 'orig', 'save', 'swp', 'tmp'];
 
     /** a file every AA tree has - its directory is the root of a tree */
     private const AA_TREE_MARK = 'include/locsess.php';
@@ -60,7 +63,8 @@ final class SiteFile
         try {
             return self::contents($base, $name, $roots, self::aaTree());
         } catch (\DomainException $e) {
-            LogOnce::daily(self::EVENT, "$purpose:$name", [$e->getMessage(), $where]);
+            // by the file, not the name: one file has endless spellings (./x, a/../x)
+            LogOnce::daily(self::EVENT, "$purpose:" . (self::resolved(rtrim($base, '/') . "/$name") ?: $name), [$e->getMessage(), $where]);
         } catch (\RuntimeException) {
             // a missing file, or no directory to read from (cron has no document root), is no refusal
         }
@@ -98,7 +102,7 @@ final class SiteFile
             throw new \DomainException(self::REASON_SECRET);
         }
         $root = self::rootOf($real, [$base, ...$roots]) ?? throw new \DomainException(self::REASON_OUTSIDE);
-        if (self::inAaTree($real, $aaTree, $roots)) {
+        if (self::inAaTree($real, $aaTree, [$base, ...$roots, ...self::uploadRoots()])) {
             throw new \DomainException(self::REASON_AA_TREE);
         }
         if (self::hasDotSegment(explode('/', substr($real, strlen($root))))) {
@@ -128,8 +132,8 @@ final class SiteFile
         }
         // also an upload directory set to the document root, which holds the AA tree
         $inTree = self::inAaTree($real, $aaTree, $bases);
-        if ($inTree || \Files::isExecutableName($real)) {
-            LogOnce::daily(self::EVENT, "mail:$path", [$inTree ? self::REASON_AA_TREE : self::REASON_SECRET, '']);
+        if ($inTree || self::isScriptName(basename($real))) {
+            LogOnce::daily(self::EVENT, "mail:$real", [$inTree ? self::REASON_AA_TREE : self::REASON_SECRET, '']);
             return '';
         }
         $dir = self::attachmentDir($real, $bases);
@@ -146,7 +150,7 @@ final class SiteFile
             }
             $content = self::contents('/', $real, $bases, $aaTree, self::ATTACHMENT_MAX_BYTES);
         } catch (\DomainException $e) {
-            LogOnce::daily(self::EVENT, "mail:$path", [$e->getMessage(), '']);
+            LogOnce::daily(self::EVENT, "mail:$real", [$e->getMessage(), '']);
             return '';
         } catch (\RuntimeException) {
             return '';
@@ -183,20 +187,38 @@ final class SiteFile
     }
 
     /**
-     * A file of settings or keys, a dump or backup ("config.ini~" too), or one the server runs - a script
-     * extension anywhere in the name counts ("x.php.bak", "config.php-old"), as mod_mime runs "x.php.jpg"
+     * A file of settings or keys, a dump or a backup ("config.ini~", "server.key.1"), or a script. The
+     * type is the last extension but numbers ("menu.inc.html" is a page, "error.log.2" a log).
      */
     public static function isSecretName(string $name): bool
     {
-        $dot = strpos($name, '.');
-        if ($dot === false) {
-            return false;
-        }
-        $extensions = preg_split('~[^a-z0-9]+~', strtolower(substr($name, $dot + 1)), -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        if (array_intersect($extensions, \Files::EXECUTABLE_EXTENSIONS)) {
+        if (self::isScriptName($name)) {
             return true;
         }
-        return in_array(end($extensions), self::SECRET_EXTENSIONS, true);
+        $extensions = self::extensions($name);
+        while ($extensions && (ctype_digit(end($extensions)) || in_array(end($extensions), self::BACKUP_EXTENSIONS, true))) {
+            if (!ctype_digit(array_pop($extensions))) {
+                return true;
+            }
+        }
+        return $extensions && in_array(end($extensions), self::SECRET_EXTENSIONS, true);
+    }
+
+    /** one the server may run - a script extension anywhere in the name ("x.php.bak", "config.php~"), as mod_mime runs "x.php.jpg" */
+    public static function isScriptName(string $name): bool
+    {
+        return (bool) array_intersect(self::extensions($name), \Files::EXECUTABLE_EXTENSIONS);
+    }
+
+    /**
+     * The extensions of $name: what follows its first dot, split at any other character than a letter or
+     * a digit ("config.php~", "#config.php#", "config.php-old" all have php)
+     * @return list<string>
+     */
+    private static function extensions(string $name): array
+    {
+        $dot = strpos($name, '.');
+        return ($dot === false) ? [] : (preg_split('~[^a-z0-9]+~', strtolower(substr($name, $dot + 1)), -1, PREG_SPLIT_NO_EMPTY) ?: []);
     }
 
     /**

@@ -175,10 +175,14 @@ final class SiteFileTest extends TestCase
         SiteFile::contents($this->docroot, 'page.html', [], $this->aa, 5);
     }
 
-    public function test_contents_base_inside_the_aa_tree_reads_nothing(): void
+    /** a File Manager kept inside an AA tree serves its files, its settings never */
+    public function test_contents_base_inside_the_aa_tree(): void
     {
+        file_put_contents("$this->aa/include/notes.txt", 'notes');
+
+        $this->assertSame('a{}', $this->contents('a.css', "$this->aa/css"));
         $this->expectException(\DomainException::class);
-        $this->contents('a.css', "$this->aa/css");
+        $this->contents('notes.txt', "$this->aa/include");
     }
 
     public function test_read_allowed_file(): void
@@ -213,6 +217,12 @@ final class SiteFileTest extends TestCase
             'language'      => ['disclaimer.pl.html', false],
             'old in name'   => ['index.old.html', false],
             'no extension'  => ['README', false],
+            'numbered key'  => ['hosting.pem.1', true],
+            'dated key'     => ['server.key_2025', true],
+            'rotated log'   => ['error.log.1', true],
+            'dated page'    => ['report.2025.pdf', false],
+            'backup'        => ['page.html.bak', true],
+            'script backup' => ['run.php~', true],
         ];
     }
 
@@ -225,8 +235,8 @@ final class SiteFileTest extends TestCase
     /** a refusal or a file from outside the uploads writes a log row; seen already, so the test reaches no database */
     private function attachment(string $path): string
     {
-        $real = str_contains($path, "\0") ? false : realpath($path);
-        (new \ReflectionProperty(LogOnce::class, 'seen'))->setValue(null, [SiteFile::EVENT . "\0mail:$path" => true, SiteFile::EVENT_OUTER . "\0mail:" . dirname((string) $real) => true]);
+        $real = str_contains($path, "\0") ? false : (string) realpath($path);
+        (new \ReflectionProperty(LogOnce::class, 'seen'))->setValue(null, [SiteFile::EVENT . "\0mail:$real" => true, SiteFile::EVENT_OUTER . "\0mail:" . dirname((string) $real) => true]);
         try {
             return SiteFile::readAttachment($path, ["$this->docroot/img_upload/"], $this->aa);
         } finally {
@@ -269,6 +279,7 @@ final class SiteFileTest extends TestCase
             'a missing file'           => ['/volume/img_upload/abc/missing.pdf'],
             'no extension elsewhere'   => ['/outside/passwd'],
             'a script in the upload'   => ['/volume/img_upload/abc/run.php'],
+            'a script backup in the upload' => ['/volume/img_upload/abc/run.php~'],
             'another AA tree'          => ['/www/aa-dev/css/a.css'],
             'a NUL byte'               => ["/volume/img_upload/abc/x.html\0.pdf"],
         ];
@@ -279,6 +290,7 @@ final class SiteFileTest extends TestCase
     {
         file_put_contents("$this->upload/abc/.htaccess", 'Deny from all');
         file_put_contents("$this->upload/abc/run.php", '<?php');
+        file_put_contents("$this->upload/abc/run.php~", '<?php');
         file_put_contents("$this->root/outside/passwd", 'root:x:0:0');
         symlink("$this->docroot/secret.key", "$this->upload/abc/key.pdf");
 
