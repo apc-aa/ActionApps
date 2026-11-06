@@ -311,9 +311,8 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         } finally {
             self::$running = $outer;
             AA::$slice_id  = $outer_slice;
-            if (is_long_id($this->item_id)) {
-                AA::Contentcache()->set('define:aa_event_for', ($outer_event === false) ? '' : $outer_event);
-            }
+            // also when the task template itself defined it
+            AA::Contentcache()->set('define:aa_event_for', ($outer_event === false) ? '' : $outer_event);
             $this->recordRun($result);
         }
         // AA_Log::write('TOEXECUTE', get_class($this) . ':' . $this->getId(), 'end' . ":$ret:x".AA::$slice_id);  // logged in Toexecute

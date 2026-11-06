@@ -58,4 +58,21 @@ final class PlannedtaskContextTest extends TestCase
         self::assertSame(self::OUTER_SLICE, AA::$slice_id);
         self::assertSame('outer', AA::Un('{var:aa_event_for}'));
     }
+
+    public function test_toexecutelater_withoutItem_restoresAnEventItsTemplateDefined(): void
+    {
+        AA::Un('{define:aa_event_for:outer}');
+
+        $task = new AA_Plannedtask();
+        $task->setNew('55556666777788885555666677778888', self::TASK_SLICE, 'defines');
+        (function (): void {
+            $this->task      = '{define:aa_event_for:inner}';
+            $this->condition = '';
+            $this->item_id   = '';
+        })->call($task);
+
+        $task->toexecutelater();
+
+        self::assertSame('outer', AA::Un('{var:aa_event_for}'));
+    }
 }
