@@ -2357,11 +2357,8 @@ function get_authorization_header(): string
     } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
         $ret = $_SERVER['HTTP_AUTHORIZATION'];
     } elseif (function_exists('apache_request_headers')) {
-        $apache_auth_tmp = apache_request_headers();
-        if (strlen($apache_auth_tmp['Authorization'])) {
-            // $ret = 'Bearer '.$apache_auth_tmp['Authorization'];  // no need to add Bearer - already included
-            $ret = $apache_auth_tmp['Authorization'];
-        }
+        // header names are case-insensitive (HTTP/2 sends them lower case); the value already holds "Bearer "
+        $ret = (string) (array_change_key_case(apache_request_headers() ?: [])['authorization'] ?? '');
     }
     return trim($ret);
 }

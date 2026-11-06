@@ -63,5 +63,32 @@ namespace Tests\Unit\Legacy {
             self::assertSame(0, $back->getItemCount());
             self::assertSame(1, $back->getCurrent());
         }
+
+        public function test_update_goesToPageFromUrl(): void
+        {
+            $_GET = ['scr_scr_Go' => '3'];
+            try {
+                $scr = new AA_Scroller_Easy('scr', 20, 57, 'https://example.org/');
+                $scr->update();
+                self::assertSame(3, $scr->getCurrent());
+            } finally {
+                $_GET = [];
+            }
+        }
+
+        public function test_update_withoutUrlParameters_keepsPageSilently(): void
+        {
+            $_GET = [];
+            $scr  = (new AA_Scroller_Easy('scr', 20, 57, 'https://example.org/'))->go2page(2);
+            set_error_handler(static function (int $no, string $msg): never {
+                throw new \ErrorException($msg, 0, $no);
+            });
+            try {
+                $scr->update();
+            } finally {
+                restore_error_handler();
+            }
+            self::assertSame(2, $scr->getCurrent());
+        }
     }
 }

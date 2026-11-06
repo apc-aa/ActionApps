@@ -173,11 +173,11 @@ class AA_Scroller extends AA_Storable {
      */
     function update(): void
     {
-        if ($_GET["scr_{$this->id}_Go"]) {
-            $this->go2page((int)$_GET["scr_{$this->id}_Go"]);
+        if ($page = \AA\Util\InputVars::intGET("scr_{$this->id}_Go")) {
+            $this->go2page($page);
         }
-        if ($_GET["scr_{$this->id}_Mv"]) {  // old Relative links - not used anymore
-            $this->go2page($this->current + (int)$_GET["scr_{$this->id}_Mv"]);
+        if ($move = \AA\Util\InputVars::intGET("scr_{$this->id}_Mv")) {  // old Relative links - not used anymore
+            $this->go2page($this->current + $move);
         }
     }
 
