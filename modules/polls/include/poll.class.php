@@ -321,7 +321,7 @@ class AA_Poll
 
         if ($request['convertto'] || $request['convertfrom']) {
             $ret = ConvertCharset::singleton()->Convert($ret, $request['convertfrom'], $request['convertto']);
-        } elseif (IsAjaxCall()) {
+        } elseif (IsAjaxCall() && isset($poll)) {   // no poll matched - nothing to convert
             $ret = ConvertCharset::singleton()->Convert($ret, AA_Module_Polls::getModule($poll->id())->getCharset(), 'utf-8');
         }
         return $ret;
