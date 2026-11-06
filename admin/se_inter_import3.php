@@ -76,45 +76,51 @@ foreach ($f_slices as $f_slice) {
     ];
 
     // the feed, its categories and its field mapping are stored together or not at all
-    DB_AA::transaction(static function () use ($data, $channel, $aa_rss, $l_categs, $remote_slice_id, &$err) {
-        if (!($feed_id = AA::Metabase()->doInsert('external_feeds', $data))) {
-            $err["DB"] .= MsgErr("Can't add external import");
-        }
-
-        // insert categories
-        foreach ($channel['categories'] as $cat_id => $v) {
-            $cat = $aa_rss['categories'][$cat_id];
-
-            $category = [
-                'feed_id'            => $feed_id,
-                'category'           => (string) $cat['value'],
-                'category_name'      => (string) $cat['name'],
-                'category_id'        => $cat_id,
-                'target_category_id' => FeedUtil::MapDefaultCategory($l_categs, $cat['value'], $cat['catparent']) ?: '',       // default category
-                'approved'           => 0,
-            ];
-            if (!AA::Metabase()->doReplace('ef_categories', $category)) {
-                $err["DB"] .= MsgErr("Can't add external import");
+    // a failed write throws, so the transaction rolls back and the page says so
+    try {
+        DB_AA::transaction(static function () use ($data, $channel, $aa_rss, $l_categs, $remote_slice_id) {
+            if (!($feed_id = AA::Metabase()->doInsert('external_feeds', $data))) {
+                throw new RuntimeException('external_feeds');
             }
-        }
 
-        // fill up feedmap table
-        $feedmap = [];
-        foreach ($channel['fields'] as $field_id => $v) {
-            $feedmap[] = [
-                'from_slice_id'   => $remote_slice_id,
-                'from_field_id'   => $field_id,
-                'to_slice_id'     => AA::$module_id,
-                'to_field_id'     => $field_id,
-                'flag'            => FEEDMAP_FLAG_EXTMAP,
-                'value'           => '',
-                'from_field_name' => (string) $aa_rss['fields'][$field_id]['name'],
-            ];
-        }
-        if (AA::Metabase()->doInsertMulti('feedmap', $feedmap) === false) {
-            $err["DB"] .= MsgErr("Can't add external import");
-        }
-    });
+            // insert categories
+            foreach ($channel['categories'] as $cat_id => $v) {
+                $cat = $aa_rss['categories'][$cat_id];
+
+                $category = [
+                    'feed_id'            => $feed_id,
+                    'category'           => (string) $cat['value'],
+                    'category_name'      => (string) $cat['name'],
+                    'category_id'        => $cat_id,
+                    'target_category_id' => FeedUtil::MapDefaultCategory($l_categs, $cat['value'], $cat['catparent']) ?: '',       // default category
+                    'approved'           => 0,
+                ];
+                if (!AA::Metabase()->doReplace('ef_categories', $category)) {
+                    throw new RuntimeException('ef_categories');
+                }
+            }
+
+            // fill up feedmap table
+            $feedmap = [];
+            foreach ($channel['fields'] as $field_id => $v) {
+                $feedmap[] = [
+                    'from_slice_id'   => $remote_slice_id,
+                    'from_field_id'   => $field_id,
+                    'to_slice_id'     => AA::$module_id,
+                    'to_field_id'     => $field_id,
+                    'flag'            => FEEDMAP_FLAG_EXTMAP,
+                    'value'           => '',
+                    'from_field_name' => (string) $aa_rss['fields'][$field_id]['name'],
+                ];
+            }
+            if (AA::Metabase()->doInsertMulti('feedmap', $feedmap) === false) {
+                throw new RuntimeException('feedmap');
+            }
+        });
+    } catch (RuntimeException $e) {
+        $msg = rawurlencode(_m("Can't add external import"));
+        continue;
+    }
     $msg = rawurlencode(_m("The import was successfully created"));
 }
 
