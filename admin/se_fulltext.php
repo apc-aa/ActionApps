@@ -28,13 +28,17 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
+
+const FULLTEXT_TOKEN = 'aa-fulltext';
 
 try {
     // array ( 'on' => 4, )
@@ -54,16 +58,27 @@ try {
     // array ( 1 => 15, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
 
+// the template runs as AA expressions on every item page, so any role in the slice is not enough
+if (!IfSlPerm(PS_FULLTEXT)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change fulltext view formatting"), "admin");
+    exit;
+}
+
 $err = [];          // error array (Init - just for initializing variable
 
 if ($update) {
     do {
+        if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(FULLTEXT_TOKEN, $token, $_SERVER)) {
+            $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+            break;
+        }
         ValidateInput("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, $err, false, "text");
         ValidateInput("fulltext_format", _m("Fulltext HTML code"), $fulltext_format, $err, false, "text");
         ValidateInput("fulltext_format_bottom", _m("Bottom HTML code"), $fulltext_format_bottom, $err, false, "text");
@@ -206,6 +221,7 @@ if ($discus_vids) {
 }
 
 $slice = AA_Slice::getModule(AA::$module_id);
+echo FormToken::field(FULLTEXT_TOKEN);
 FrmTabEnd($form_buttons);
 $apage->addHelpbox(_m("Use these aliases for database fields"), getAliasHelp(new AA_Aliases(new AA_Aliasgenerator_Slice(AA::$module_id)), $slice->getFields()));
 $apage->printFoot();
