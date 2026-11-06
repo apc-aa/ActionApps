@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Tests\Unit\Util;
 
 use AA\Util\InputVars;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 /**
- * Covers the typed input-validation boundary. The `id` type is intentionally
- * not exercised here: it calls the global is_long_id() from include/zids.php,
- * which is not autoloadable — it belongs to a zids characterization test that
- * loads that legacy file. Everything below is fully isolated (superglobals only).
+ * Covers the typed input-validation boundary (superglobals only; is_long_id() comes from
+ * include/zids.php, which tests/bootstrap.php loads).
  */
 final class InputVarsTest extends TestCase
 {
@@ -134,6 +133,113 @@ final class InputVarsTest extends TestCase
     {
         $_POST['n'] = '9';
         $this->assertSame(9, InputVars::intGETPOST('n', true));
+    }
+
+    // --- missing parameter and array instead of a scalar ---
+
+    /** runs $fn and fails on any PHP warning/notice/deprecation it raises */
+    private function silently(callable $fn): mixed
+    {
+        set_error_handler(static function (int $no, string $msg): never {
+            throw new \ErrorException($msg, 0, $no);
+        });
+        try {
+            return $fn();
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    public static function missingProvider(): array
+    {
+        return [
+            'intPOST'              => ['intPOST', 0],
+            'boolPOST'             => ['boolPOST', false],
+            'stringSlashedPOST'    => ['stringSlashedPOST', ''],
+            'stringPOST'           => ['stringPOST', ''],
+            'idPOST'               => ['idPOST', ''],
+            'arraySlashedPOST'     => ['arraySlashedPOST', []],
+            'arrayPOST'            => ['arrayPOST', []],
+            'intGET'               => ['intGET', 0],
+            'boolGET'              => ['boolGET', false],
+            'stringSlashedGET'     => ['stringSlashedGET', ''],
+            'stringGET'            => ['stringGET', ''],
+            'idGET'                => ['idGET', ''],
+            'arraySlashedGET'      => ['arraySlashedGET', []],
+            'arrayGET'             => ['arrayGET', []],
+            'boolGETPOST'          => ['boolGETPOST', false],
+            'intGETPOST'           => ['intGETPOST', 0],
+            'stringSlashedGETPOST' => ['stringSlashedGETPOST', ''],
+            'stringGETPOST'        => ['stringGETPOST', ''],
+            'idGETPOST'            => ['idGETPOST', ''],
+            'arrayGETPOST'         => ['arrayGETPOST', []],
+        ];
+    }
+
+    #[DataProvider('missingProvider')]
+    public function test_getter_missing_parameter_is_empty_without_warning(string $method, mixed $expected): void
+    {
+        $this->assertSame($expected, $this->silently(static fn() => InputVars::$method('missing')));
+    }
+
+    #[DataProvider('missingProvider')]
+    public function test_getter_missing_required_parameter_throws(string $method): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->silently(static fn() => InputVars::$method('missing', true));
+    }
+
+    public static function arrayForScalarProvider(): array
+    {
+        return [
+            ['stringPOST'], ['stringSlashedPOST'], ['idPOST'],
+            ['stringGET'], ['stringSlashedGET'], ['idGET'],
+            ['stringGETPOST'], ['stringSlashedGETPOST'], ['idGETPOST'],
+        ];
+    }
+
+    #[DataProvider('arrayForScalarProvider')]
+    public function test_string_getter_rejects_array_without_warning(string $method): void
+    {
+        // ?x[]=1 must not turn into the text "Array"
+        $_GET['x']  = ['1'];
+        $_POST['x'] = ['1'];
+        $this->assertSame('', $this->silently(static fn() => InputVars::$method('x')));
+    }
+
+    #[DataProvider('arrayForScalarProvider')]
+    public function test_string_getter_required_rejects_array(string $method): void
+    {
+        $_GET['x']  = ['1'];
+        $_POST['x'] = ['1'];
+        $this->expectException(RuntimeException::class);
+        $this->silently(static fn() => InputVars::$method('x', true));
+    }
+
+    public function test_boolPOST_required_rejects_array_without_warning(): void
+    {
+        $_POST['b'] = ['1'];
+        $this->expectException(RuntimeException::class);
+        $this->silently(static fn() => InputVars::boolPOST('b', true));
+    }
+
+    public function test_arraySlashedPOST_slashes_values(): void
+    {
+        $_POST['a'] = ["O'B"];
+        $this->assertSame(["O\\'B"], InputVars::arraySlashedPOST('a', true));
+    }
+
+    public function test_arraySlashedPOST_rejects_scalar(): void
+    {
+        $_POST['a'] = 'x';
+        $this->assertSame([], InputVars::arraySlashedPOST('a'));
+    }
+
+    public function test_idGET_returns_only_a_long_id(): void
+    {
+        $_GET = ['ok' => str_repeat('a1', 16), 'short' => str_repeat('a', 31)];
+        $this->assertSame(str_repeat('a1', 16), InputVars::idGET('ok', true));
+        $this->assertSame('', InputVars::idGET('short'));
     }
 
     // --- request (what {qs:} prints) ---

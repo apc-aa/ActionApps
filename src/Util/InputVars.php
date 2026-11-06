@@ -6,15 +6,17 @@ use RuntimeException;
 
 class InputVars
 {
-    /** @throws RuntimeException */
+    /** $value is null for a missing parameter; an array where a text is expected (?x[]=1) counts as empty
+     *  @throws RuntimeException
+     */
     private static function inputCheck(string $name, $value, string $type, bool $required): string|int|bool|array
     {
         $valid = !$required || match ($type) {
             'int'    => is_numeric($value) && (int) $value == $value,
-            'bool'   => in_array((string) $value, ['0', '1'], true),
+            'bool'   => is_scalar($value) && in_array((string) $value, ['0', '1'], true),
             'string' => is_string($value) && (trim($value) !== ''),
             'quoted' => is_string($value) && (trim($value) !== ''),    // @deprecated - use string
-            'id'     => is_long_id((string) $value),
+            'id'     => is_string($value) && is_long_id($value),
             'array'  => is_array($value),
             'qarray' => is_array($value),                             // @deprecated - use array
             default  => false,
@@ -26,11 +28,11 @@ class InputVars
         return match ($type) {
             'int'    => (int) $value,
             'bool'   => (bool) $value,
-            'string' => (string) $value,
-            'quoted' => addslashes((string) $value),                      // @deprecated - use string
-            'id'     => is_long_id((string) $value) ? (string) $value : '',
+            'string' => is_array($value) ? '' : (string) $value,
+            'quoted' => is_array($value) ? '' : addslashes((string) $value), // @deprecated - use string
+            'id'     => (is_string($value) && is_long_id($value)) ? $value : '',
             'array'  => is_array($value) ? $value : [],
-            'qarray' => (array) self::AddslashesArray($value),            // @deprecated - use array
+            'qarray' => is_array($value) ? self::AddslashesArray($value) : [], // @deprecated - use array
             default  => $value, // fallback for other types
         };
     }
@@ -40,13 +42,13 @@ class InputVars
     /** @throws RuntimeException */
     public static function intPOST(string $name, bool $required = false): int
     {
-        return self::inputCheck($name, $_POST[$name], 'int', $required);
+        return self::inputCheck($name, $_POST[$name] ?? null, 'int', $required);
     }
 
     /** @throws RuntimeException */
     public static function boolPOST(string $name, bool $required = false): bool
     {
-        return self::inputCheck($name, $_POST[$name], 'bool', $required);
+        return self::inputCheck($name, $_POST[$name] ?? null, 'bool', $required);
     }
 
     /** @deprecated - use rather stringPOST - without adding artificial quotes
@@ -54,13 +56,13 @@ class InputVars
      */
     public static function stringSlashedPOST(string $name, bool $required = false): string
     {
-        return self::inputCheck($name, $_POST[$name], 'quoted', $required);
+        return self::inputCheck($name, $_POST[$name] ?? null, 'quoted', $required);
     }
 
     /** @throws RuntimeException */
     public static function stringPOST(string $name, bool $required = false): string
     {
-        return self::inputCheck($name, $_POST[$name], 'string', $required);
+        return self::inputCheck($name, $_POST[$name] ?? null, 'string', $required);
     }
 
     /** Long ID
@@ -68,7 +70,7 @@ class InputVars
      */
     public static function idPOST(string $name, bool $required = false): string
     {
-        return self::inputCheck($name, $_POST[$name], 'id', $required);
+        return self::inputCheck($name, $_POST[$name] ?? null, 'id', $required);
     } // long id
 
     /** @deprecated - use rather arrayPOST - without adding artificial quotes
@@ -76,13 +78,13 @@ class InputVars
      */
     public static function arraySlashedPOST(string $name, bool $required = false): array
     {
-        return self::inputCheck($name, $_POST[$name], 'qarray', $required);
+        return self::inputCheck($name, $_POST[$name] ?? null, 'qarray', $required);
     }
 
     /** @throws RuntimeException */
     public static function arrayPOST(string $name, bool $required = false): array
     {
-        return self::inputCheck($name, $_POST[$name], 'array', $required);
+        return self::inputCheck($name, $_POST[$name] ?? null, 'array', $required);
     }
 
     // --- GET ---
@@ -90,13 +92,13 @@ class InputVars
     /** @throws RuntimeException */
     public static function intGET(string $name, bool $required = false): int
     {
-        return self::inputCheck($name, $_GET[$name], 'int', $required);
+        return self::inputCheck($name, $_GET[$name] ?? null, 'int', $required);
     }
 
     /** @throws RuntimeException */
     public static function boolGET(string $name, bool $required = false): bool
     {
-        return self::inputCheck($name, $_GET[$name], 'bool', $required);
+        return self::inputCheck($name, $_GET[$name] ?? null, 'bool', $required);
     }
 
     /** @deprecated - use rather stringGET - without adding artificial quotes
@@ -104,13 +106,13 @@ class InputVars
      */
     public static function stringSlashedGET(string $name, bool $required = false): string
     {
-        return self::inputCheck($name, $_GET[$name], 'quoted', $required);
+        return self::inputCheck($name, $_GET[$name] ?? null, 'quoted', $required);
     }
 
     /** @throws RuntimeException */
     public static function stringGET(string $name, bool $required = false): string
     {
-        return self::inputCheck($name, $_GET[$name], 'string', $required);
+        return self::inputCheck($name, $_GET[$name] ?? null, 'string', $required);
     }
 
     /** Long ID
@@ -118,7 +120,7 @@ class InputVars
      */
     public static function idGET(string $name, bool $required = false): string
     {
-        return self::inputCheck($name, $_GET[$name], 'id', $required);
+        return self::inputCheck($name, $_GET[$name] ?? null, 'id', $required);
     }
 
     /** @deprecated - use rather arrayGET - without adding artificial quotes
@@ -126,13 +128,13 @@ class InputVars
      */
     public static function arraySlashedGET(string $name, bool $required = false): array
     {
-        return self::inputCheck($name, $_GET[$name], 'qarray', $required);
+        return self::inputCheck($name, $_GET[$name] ?? null, 'qarray', $required);
     }
 
     /** @throws RuntimeException */
     public static function arrayGET(string $name, bool $required = false): array
     {
-        return self::inputCheck($name, $_GET[$name], 'array', $required);
+        return self::inputCheck($name, $_GET[$name] ?? null, 'array', $required);
     }
 
     // --- GET + POST ---
@@ -140,14 +142,14 @@ class InputVars
     /** @throws RuntimeException */
     public static function boolGETPOST(string $name, bool $required = false): bool
     {
-        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'bool', $required);
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name] ?? null, 'bool', $required);
 
     }
 
     /** @throws RuntimeException */
     public static function intGETPOST(string $name, bool $required = false): int
     {
-        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'int', $required);
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name] ?? null, 'int', $required);
     }
 
     /** @deprecated - use rather stringGETPOST - without adding artificial quotes
@@ -155,13 +157,13 @@ class InputVars
      */
     public static function stringSlashedGETPOST(string $name, bool $required = false): string
     {
-        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'quoted', $required);
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name] ?? null, 'quoted', $required);
     }
 
     /** @throws RuntimeException */
     public static function stringGETPOST(string $name, bool $required = false): string
     {
-        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'string', $required);
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name] ?? null, 'string', $required);
     }
 
     /** Long ID
@@ -169,13 +171,13 @@ class InputVars
      */
     public static function idGETPOST(string $name, bool $required = false): string
     {
-        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'id', $required);
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name] ?? null, 'id', $required);
     }
 
     /** @throws RuntimeException */
     public static function arrayGETPOST(string $name, bool $required = false): array
     {
-        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'array', $required);
+        return self::inputCheck($name, $_GET[$name] ?? $_POST[$name] ?? null, 'array', $required);
     }
 
     /** Status message passed in the URL after a redirect, as HTML ready to print ('' if none).
