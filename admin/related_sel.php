@@ -34,6 +34,7 @@
 
 use AA\Managed;
 use AA\Manager;
+use AA\Security\SignedExpression;
 use AA\Util\InputVars;
 
 $save_hidden = true;   // do not delete r_hidden session variable in init_page!
@@ -69,6 +70,13 @@ if (isset($_GET['sid'])) {
     $showcondsrw = InputVars::stringGET('showcondsrw');
     $sort        = InputVars::stringGET('sort');
     $slice_field = InputVars::stringGET('slice_field');
+    $is_field    = static fn(string $field_id): bool => !is_null(AA_Slice::getModule($sid)?->getField($field_id));
+    if (SignedExpression::isSigned($slice_field)) {
+        $slice_field = SignedExpression::fromRequest($slice_field, 'slice_field', $is_field) ?? '';
+    } elseif (strlen($slice_field)) {
+        // it runs inside {...} below, so it is tested wrapped - a bare "include:..." has no braces of its own
+        $slice_field = is_null(SignedExpression::fromRequest('{' . $slice_field . '}', 'slice_field', $is_field)) ? '' : $slice_field;
+    }
     $listlen     = InputVars::intGET('listlen');
     $r_state['related'] = [
         'sid'         => $sid,
