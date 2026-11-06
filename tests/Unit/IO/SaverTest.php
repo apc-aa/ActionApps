@@ -187,6 +187,24 @@ namespace Tests\Unit\IO {
             $this->assertContains('AA\IO\Saver->run(): id_mode: old, store_mode: overwrite, transformed item: ', $this->texts($saver, 2));
         }
 
+        public function test_run_transformationDoneInPlaceIsNotStoredAsValue(): void
+        {
+            // AA_Transformation_Recompute changes the item itself and answers true
+            $done  = new class extends \AA_Transformation {
+                public function transform($field_id, $itemcontent, $silent = true): \AA_Value|bool|null
+                {
+                    return true;
+                }
+            };
+            $saver = new Saver(new ArrayGrabber([$this->item(self::ITEM1)]), ['headline........' => $done], self::SLICE);
+
+            ob_start();
+            $result = $saver->run(false);
+            ob_end_clean();
+
+            $this->assertSame([1, 0], $result);
+        }
+
         public function test_run_emptyKeyFieldCountsError(): void
         {
             $grabber = new ArrayGrabber([$this->item(self::ITEM1, ['relation........' => '  '])]);

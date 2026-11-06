@@ -361,8 +361,8 @@ class Saver implements AA\Later\LaterInterface
             // if we want some Transformations, do them here
             foreach ($this->transformations as $field_id => $transformation) {
                 $field_content = $transformation->transform($field_id, $source_content4id);
-                if (!$field_content) {
-                    // no need to change, or something goes wrong - missing parameter for transformation, ....
+                if (!($field_content instanceof AA_Value)) {
+                    // true = done in the item itself (Recompute); false/null = no change or a missing parameter
                     continue;
                 }
                 $field_content->removeDuplicates();
