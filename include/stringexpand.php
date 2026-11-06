@@ -931,10 +931,11 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
             return "";
         }
         $port  = '800'.(int)$style;
+        $jid   = safe($user_id);   // from an item field; a JID keeps its "@" and "/"
 
         //  @see http://www.onlinestatus.org/
-        $output = "<a href=\"xmpp:$user_id\"><img
-          src=\"http://www.the-server.net:$port/jabber/$user_id\" align=\"absmiddle\" border=\"0\" alt=\""._m('Jabber Online Status Indicator') ."\"
+        $output = "<a href=\"xmpp:$jid\"><img
+          src=\"http://www.the-server.net:$port/jabber/$jid\" align=\"absmiddle\" border=\"0\" alt=\""._m('Jabber Online Status Indicator') ."\"
           onerror=\"this.onerror=null;this.src='http://www.the-server.net:$port/image/jabberunknown.gif';\"></a>";
 
         return $output;
