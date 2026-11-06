@@ -34,6 +34,8 @@
 
 use AA\Managed;
 use AA\Manager;
+use AA\Security\Protection;
+use AA\Security\ProtectionLog;
 use AA\Security\SignedExpression;
 use AA\Util\InputVars;
 
@@ -73,9 +75,10 @@ if (isset($_GET['sid'])) {
     $is_field    = static fn(string $field_id): bool => !is_null(AA_Slice::getModule($sid)?->getField($field_id));
     if (SignedExpression::isSigned($slice_field)) {
         $slice_field = SignedExpression::fromRequest($slice_field, 'slice_field', $is_field) ?? '';
-    } elseif (strlen($slice_field)) {
-        // it runs inside {...} below, so it is tested wrapped - a bare "include:..." has no braces of its own
-        $slice_field = is_null(SignedExpression::fromRequest('{' . $slice_field . '}', 'slice_field', $is_field)) ? '' : $slice_field;
+    } elseif (strlen($slice_field) && (!preg_match('/^(?:[a-z0-9_.]{16}|_#[0-9A-Z_]{8})$/D', $slice_field) || ((strlen($slice_field) === 16) && !$is_field($slice_field)))) {
+        // unsigned only a field or an alias like the default; anything else would be HTML here and an expression in {expand:} below
+        ProtectionLog::write(Protection::SignedExpressions, false, 'slice_field', ProtectionLog::referer());
+        $slice_field = '';
     }
     $listlen     = InputVars::intGET('listlen');
     $r_state['related'] = [
