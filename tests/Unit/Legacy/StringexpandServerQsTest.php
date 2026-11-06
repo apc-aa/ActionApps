@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * {server:...}, {qs:...}, {qss:...} and {cookie:...} read the request through AA\Cache\PageCache, so a cached site
+ * {server:...}, {qs:...} and {qss:...} read the request through AA\Cache\PageCache, so a cached site
  * page is stored once per value they read - the key leaves out the tracking parameters (utm_*, ...)
  * and holds the host without www. A value of the visitor's own (REMOTE_ADDR, ...) keeps the page
  * out of the cache.
@@ -173,16 +173,17 @@ namespace Tests\Unit\Legacy {
         {
             $_SERVER[$name] = 'AA_Session=0123';
             $_SERVER['HTTP_HOST'] = 'www.example.org';
-            $_SERVER['REQUEST_URI'] = '/cz/page';
+            $_SERVER['REQUEST_URI'] = '/cz/page?token=t1';
             self::assertSame('', (new \AA_Test_Stringexpand_Server())->expand($name));
             self::assertFalse(self::nostore(), 'the same empty string for everyone - the page may be cached');
+            self::assertFalse((new ReflectionProperty(PageCache::class, 'cache_nostore'))->getValue(AA::Pagecache()));
             self::assertSame([], self::readSince());
 
             $rows = RecordingDb::inserts('log');
             self::assertSame([CheckServerRefusals::EVENT], array_column($rows, 'type'));
             self::assertSame([$name], array_column($rows, 'selector'));
-            self::assertSame(['www.example.org/cz/page'], array_column($rows, 'params'));
-            self::assertLessThanOrEqual(10, strlen(CheckServerRefusals::EVENT));
+            self::assertSame(['www.example.org/cz/page'], array_column($rows, 'params'), 'no query - it may carry tokens');
+            self::assertLessThanOrEqual(\AA_Log::TYPE_MAX, strlen(CheckServerRefusals::EVENT));
         }
 
         public function test_refusal_is_logged_once_and_only_for_a_value_the_server_has(): void
@@ -212,10 +213,11 @@ namespace Tests\Unit\Legacy {
             return [
                 'logged in' => [['AA_Session' => 's1', 'lang' => 'cs'], true],
                 'anonymous' => [['lang' => 'cs'], false],
+                'empty'     => [['AA_Session' => ''], false],
             ];
         }
 
-        /** no key holds the session id, so a page cached with it would hand it to the next visitor */
+        /** PageCache::cookie(), which {cookie:...} calls: view.php and slice.php keys leave the session out */
         #[\PHPUnit\Framework\Attributes\DataProvider('sessionCookies')]
         public function test_a_render_reading_the_session_id_is_not_stored(array $cookies, bool $nostore): void
         {
@@ -225,15 +227,16 @@ namespace Tests\Unit\Legacy {
             self::assertSame($nostore, (new ReflectionProperty(PageCache::class, 'cache_nostore'))->getValue(AA::Pagecache()));
         }
 
-        public function test_listed_names_are_allowed(): void
+        public function test_listed_names_are_given(): void
         {
-            foreach (['HTTP_HOST', 'REQUEST_URI', 'QUERY_STRING', 'HTTPS', 'REMOTE_ADDR', 'HTTP_USER_AGENT', 'HTTP_REFERER', 'HTTP_ACCEPT_LANGUAGE', 'SCRIPT_NAME', 'PHP_SELF', 'DOCUMENT_URI', 'PATH_INFO', 'REDIRECT_URL'] as $name) {
-                self::assertTrue(PageCache::serverAllowed($name), $name);
+            foreach (['QUERY_STRING', 'HTTPS', 'HTTP_ACCEPT_LANGUAGE', 'SCRIPT_NAME', 'PHP_SELF', 'DOCUMENT_URI', 'PATH_INFO', 'REDIRECT_URL', 'HTTP_X_FORWARDED_FOR'] as $name) {
+                $_SERVER[$name] = 'v';
+                self::assertSame('v', (new \AA_Test_Stringexpand_Server())->expand($name), $name);
             }
-            foreach (['HTTP_COOKIE', 'HTTP_AUTHORIZATION', 'PHP_AUTH_PW', 'PHP_AUTH_USER', 'HTTP_X_AA_DEBUG_KEY', 'REDIRECT_HTTP_AUTHORIZATION', ''] as $name) {
-                self::assertFalse(PageCache::serverAllowed($name), $name);
+            foreach (['PHP_AUTH_USER', 'REMOTE_USER', 'AUTH_TYPE'] as $name) {
+                $_SERVER[$name] = 'v';
+                self::assertSame('', (new \AA_Test_Stringexpand_Server())->expand($name), "$name - {user} gives the login");
             }
-            self::assertSame([], RecordingDb::inserts('log'), 'asking is no read');
         }
 
         public function test_output_of_a_page_left_out_is_not_stored(): void

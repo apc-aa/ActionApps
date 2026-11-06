@@ -6540,9 +6540,9 @@ function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $d
 /** Get $_SERVER[<variable>] value
  *   {server:REMOTE_ADDR}, {server:SERVER_NAME}, {server:HTTP_HOST}, {server:HTTP_REFERER},...
  *   A cached site page is stored once per value read of the host, scheme or URI; a page reading
- *   anything else, which may be the visitor's own (REMOTE_ADDR, HTTP_USER_AGENT, HTTP_REFERER, ...),
- *   is not cached at all. Only the usual values of a request are given (AA\Cache\PageCache::server());
- *   cookies, credentials and other headers or variables of the web server are an empty string.
+ *   a value which may be the visitor's own (REMOTE_ADDR, HTTP_USER_AGENT, HTTP_REFERER, ...),
+ *   is not cached at all. Other values are not given (AA\Cache\PageCache::server()): cookies,
+ *   credentials and other headers or variables of the web server are an empty string.
  */
 class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
     /** expand function

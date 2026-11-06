@@ -26,7 +26,7 @@ class CheckServerRefusals extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Lists the names that templates asked for by {server:...} in the last 30 days and got an empty string, because AA does not hand that value to templates.');
+        return _m('Lists the names that templates asked for by {server:...} in the last 30 days and got an empty string, although the web server had the value, because AA does not hand it to templates.');
     }
 
     public static function types(): array
@@ -69,7 +69,7 @@ class CheckServerRefusals extends AbstractOptimize
                     _m('Days seen') => (string) (int) $row['days'],
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
                 ]],
-                advice: _m('Templates get the host, the URI and query string, the scheme and port, the visitor\'s address, browser, referer and Accept headers, and a few more values of the request; cookies, passwords, authorization and other headers or variables of the web server are not for templates. For a URL parameter use {qs:...}, for a cookie {cookie:...}, for the logged-in user {user}. If the page needs a value AA does not hand out, ask the administrator of AA.'),
+                advice: _m('Templates get the host, the URI and query string, the scheme and port, the visitor\'s address, browser, referer and Accept headers, and a few more values of the request; cookies, passwords, authorization and other headers or variables of the web server are not for templates. For a URL parameter use {qs:...}, for a cookie {cookie:...}, for the logged-in user {user}. A value that is no secret can be added to the list in AA\\Cache\\PageCache::SERVER_PER_VISITOR, which is a change of the AA code; otherwise change the template.'),
                 links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $name)],
                 key: $name,
                 last: (int) $row['last'],

@@ -36,6 +36,7 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA\Later\PagecachePurge;
 use AA\Later\Toexecute;
+use AA\Optimize\CheckCkeditorUse;
 use AA\Optimize\CheckServerRefusals;
 use AA\Util\DebugAccess;
 use AA\Util\InputVars;
@@ -93,21 +94,19 @@ class PageCache
         'SCRIPT_NAME' => 1, 'SCRIPT_FILENAME' => 1, 'PHP_SELF' => 1,
     ];
 
-
-    /** $_SERVER values with a few values per site - the page is cached once per value read. Any
-     *  other value may be the visitor's own (address, browser, referer, the cookie jar, time of
-     *  the request) and keeps the page out of the cache. */
+    /** $_SERVER values with a few values per site - the page is cached once per value read */
     private const SERVER_VARY = [
         'HTTP_HOST' => 1, 'SERVER_NAME' => 1, 'SERVER_PORT' => 1, 'HTTPS' => 1, 'REQUEST_SCHEME' => 1,
         'REQUEST_URI' => 1, 'QUERY_STRING' => 1, 'HTTP_X_REQUESTED_WITH' => 1,
     ];
 
-    /** Further $_SERVER values a template may read - each may be the visitor's own, so the page is
-     *  not stored. Any other name is refused: $_SERVER also holds the session cookie, credentials
-     *  (HTTP_AUTHORIZATION, PHP_AUTH_PW, their REDIRECT_ copies), headers such as the debug key and
-     *  the environment of the vhost, and a template is written by the admin of one site of many. */
-    private const SERVER_PUBLIC = [
-        'REMOTE_ADDR' => 1, 'REMOTE_PORT' => 1, 'REMOTE_HOST' => 1, 'REMOTE_USER' => 1,
+    /** Further $_SERVER values a template may read - each may be the visitor's own (address, browser,
+     *  referer, time of the request), so the page is not stored. Any other name is refused: $_SERVER
+     *  also holds the session cookie, credentials (HTTP_AUTHORIZATION, PHP_AUTH_PW, their REDIRECT_
+     *  copies), headers such as the debug key and the environment of the vhost, and a template is
+     *  written by the admin of one site of many. */
+    private const SERVER_PER_VISITOR = [
+        'REMOTE_ADDR' => 1, 'REMOTE_PORT' => 1, 'REMOTE_HOST' => 1,
         'REQUEST_TIME' => 1, 'REQUEST_TIME_FLOAT' => 1, 'SERVER_PROTOCOL' => 1, 'SERVER_SIGNATURE' => 1,
         'PATH_INFO' => 1, 'ORIG_PATH_INFO' => 1, 'PATH_TRANSLATED' => 1, 'DOCUMENT_URI' => 1,
         'SCRIPT_URL' => 1, 'SCRIPT_URI' => 1, 'UNIQUE_ID' => 1, 'CONTENT_TYPE' => 1, 'CONTENT_LENGTH' => 1,
@@ -305,6 +304,7 @@ class PageCache
 
     /** The one way rendering code reads a cookie. Cookies are not part of the site page-cache
      *  key; each one read here becomes part of it, with the value it had (see storeVaried()).
+     *  A render reading the session id is not stored at all.
      *
      * @return array|string|null null = the browser did not send it
      */
@@ -314,8 +314,8 @@ class PageCache
             return null;
         }
         $value = self::read($name);
-        if (($name === 'AA_Session') && ($value !== null)) {
-            // no key holds the session id (view.php, slice.php) - a render with it is this visitor's alone
+        if (($name === 'AA_Session') && (($value ?? '') !== '')) {
+            // view.php and slice.php keys leave the session out - the render would reach the next visitor
             AA::Pagecache()->switchCacheNostore();
         }
         return $value;
@@ -366,13 +366,13 @@ class PageCache
         if (isset(self::SERVER_KEYED[$name])) {
             return $_SERVER[$name] ?? null;
         }
-        if (!self::variesOnServer($name)) {
-            if (!isset(self::SERVER_PUBLIC[$name])) {
-                self::refuseServer($name);
-                return null;
-            }
+        if (self::isPerVisitorServer($name)) {
             AA::Pagecache()->switchPageNostore();
             return $_SERVER[$name] ?? null;
+        }
+        if (!isset(self::SERVER_VARY[$name])) {
+            self::refuseServer($name);
+            return null;
         }
         $value = self::read(self::SERVER . $name);
         if ((($name === 'REQUEST_URI') || ($name === 'QUERY_STRING')) && self::hasClickId((string) $value)) {
@@ -381,10 +381,10 @@ class PageCache
         return $value;
     }
 
-    /** Whether server() gives $name to the caller at all */
-    public static function serverAllowed(string $name): bool
+    /** Whether a page reading $_SERVER[$name] is left out of the cache - the value may be the visitor's own */
+    public static function isPerVisitorServer(string $name): bool
     {
-        return self::variesOnServer($name) || isset(self::SERVER_PUBLIC[$name]);
+        return isset(self::SERVER_PER_VISITOR[$name]);
     }
 
     /** Once a day per name, with the page, so the template can be found. Only a value the server
@@ -392,14 +392,8 @@ class PageCache
     private static function refuseServer(string $name): void
     {
         if (array_key_exists($name, $_SERVER)) {
-            LogOnce::daily(CheckServerRefusals::EVENT, $name, ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['REQUEST_URI'] ?? ''));
+            LogOnce::daily(CheckServerRefusals::EVENT, $name, CheckCkeditorUse::page($_SERVER));
         }
-    }
-
-    /** Whether a page reading $_SERVER[$name] may be cached (once per its value) */
-    public static function variesOnServer(string $name): bool
-    {
-        return isset(self::SERVER_KEYED[$name]) || isset(self::SERVER_VARY[$name]);
     }
 
     /** Whether the URI or query string $uri carries an id of one click */

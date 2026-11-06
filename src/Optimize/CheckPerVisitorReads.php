@@ -78,7 +78,7 @@ class CheckPerVisitorReads extends AbstractOptimize
                 _m('%1 has pages the page cache does not store - a template reads a value which may be the visitor\'s own', [$names[$module_id]]),
                 count: count($evidence),
                 evidence: $evidence,
-                advice: _m('Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached.'),
+                advice: _m('Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging; to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached.'),
                 key: $module_id,
                 place: $names[$module_id],
             );
@@ -91,6 +91,6 @@ class CheckPerVisitorReads extends AbstractOptimize
     public static function reads(string $code): array
     {
         preg_match_all('/\{server:([A-Za-z0-9_]+)\}/', CodePoints::withoutComments($code), $match);
-        return array_values(array_unique(array_filter($match[1], static fn(string $name): bool => !PageCache::variesOnServer($name) && PageCache::serverAllowed($name))));
+        return array_values(array_unique(array_filter($match[1], static fn(string $name): bool => PageCache::isPerVisitorServer($name))));
     }
 }
