@@ -28,7 +28,7 @@ final class CheckPerVisitorReadsTest extends TestCase
             'host is cached per value' => ['{server:HTTP_HOST}', []],
             'URI is cached per value'  => ['{server:REQUEST_URI}', []],
             'time of the request'   => ['?t={server:REQUEST_TIME}', ['REQUEST_TIME']],
-            'misspelt name'         => ['{server:REFERER}', ['REFERER']],
+            'refused name is no visitor\'s' => ['{server:REFERER}{server:HTTP_COOKIE}', []],
             'AA comment'            => ['{# agent: {server:HTTP_USER_AGENT}}', []],
             'HTML comment is output' => ['<!-- agent: {server:HTTP_USER_AGENT} -->', ['HTTP_USER_AGENT']],
         ];

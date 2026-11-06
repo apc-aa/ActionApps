@@ -86,10 +86,11 @@ class CheckPerVisitorReads extends AbstractOptimize
         return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No template reads a value of the visitor\'s own by {server:...}'))];
     }
 
-    /** @return list<string> the $_SERVER names the code reads by {server:...} which keep a page out of the cache, AA comments left out */
+    /** @return list<string> the $_SERVER names the code reads by {server:...} which keep a page out of the cache, AA comments left out;
+     *  a refused name gives '' to everyone and is CheckServerRefusals' business */
     public static function reads(string $code): array
     {
         preg_match_all('/\{server:([A-Za-z0-9_]+)\}/', CodePoints::withoutComments($code), $match);
-        return array_values(array_unique(array_filter($match[1], static fn(string $name): bool => !PageCache::variesOnServer($name))));
+        return array_values(array_unique(array_filter($match[1], static fn(string $name): bool => !PageCache::variesOnServer($name) && PageCache::serverAllowed($name))));
     }
 }

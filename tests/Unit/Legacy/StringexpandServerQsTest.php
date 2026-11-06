@@ -34,8 +34,11 @@ namespace Tests\Unit\Legacy {
 
     use AA;
     use AA\Cache\PageCache;
+    use AA\Optimize\CheckServerRefusals;
+    use AA\Util\LogOnce;
     use PHPUnit\Framework\TestCase;
     use ReflectionProperty;
+    use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
     final class StringexpandServerQsTest extends TestCase
     {
@@ -67,6 +70,9 @@ namespace Tests\Unit\Legacy {
             (new ReflectionProperty(AA::class, 'pagecache'))->setValue(null, new PageCache(600));
             self::readSince();
             $_COOKIE = [];
+            RecordingDb::reset();
+            LogOnce::reset();
+            $GLOBALS['spareDBs'] = [new RecordingDb()];   // a refused name writes a log row
         }
 
         protected function tearDown(): void
@@ -77,6 +83,9 @@ namespace Tests\Unit\Legacy {
             $_COOKIE  = $this->saved['cookie'];
             $_SERVER  = $this->saved['server'];
             (new ReflectionProperty(AA::class, 'pagecache'))->setValue(null, $this->saved['pagecache']);
+            $GLOBALS['spareDBs'] = [];
+            RecordingDb::reset();
+            LogOnce::reset();
         }
 
         /** Values read since the last call; starts a new request */
@@ -109,7 +118,7 @@ namespace Tests\Unit\Legacy {
                 'browser'    => ['HTTP_USER_AGENT'],
                 'referer'    => ['HTTP_REFERER'],
                 'time'       => ['REQUEST_TIME'],
-                'misspelt'   => ['REFERER'],
+                'proxy'      => ['HTTP_X_FORWARDED_FOR'],
             ];
         }
 
@@ -146,18 +155,66 @@ namespace Tests\Unit\Legacy {
         }
 
         /** @return array<string, array{string}> */
-        public static function secrets(): array
+        public static function refused(): array
         {
-            return ['cookie jar' => ['HTTP_COOKIE'], 'authorization' => ['HTTP_AUTHORIZATION'], 'password' => ['PHP_AUTH_PW']];
+            return [
+                'cookie jar'           => ['HTTP_COOKIE'],
+                'authorization'        => ['HTTP_AUTHORIZATION'],
+                'rewritten authorization' => ['REDIRECT_HTTP_AUTHORIZATION'],
+                'password'             => ['PHP_AUTH_PW'],
+                'debug key'            => ['HTTP_X_AA_DEBUG_KEY'],
+                'vhost environment'    => ['AA_DB_PASSWORD'],
+                'misspelt'             => ['REFERER'],
+            ];
         }
 
-        #[\PHPUnit\Framework\Attributes\DataProvider('secrets')]
-        public function test_server_secret_keeps_every_result_of_the_render_out(string $name): void
+        #[\PHPUnit\Framework\Attributes\DataProvider('refused')]
+        public function test_server_refuses_a_value_outside_the_list(string $name): void
         {
             $_SERVER[$name] = 'AA_Session=0123';
-            (new \AA_Test_Stringexpand_Server())->expand($name);
-            self::assertTrue((new ReflectionProperty(PageCache::class, 'cache_nostore'))->getValue(AA::Pagecache()));
+            $_SERVER['HTTP_HOST'] = 'www.example.org';
+            $_SERVER['REQUEST_URI'] = '/cz/page';
+            self::assertSame('', (new \AA_Test_Stringexpand_Server())->expand($name));
+            self::assertFalse(self::nostore(), 'the same empty string for everyone - the page may be cached');
             self::assertSame([], self::readSince());
+
+            $rows = RecordingDb::inserts('log');
+            self::assertSame([CheckServerRefusals::EVENT], array_column($rows, 'type'));
+            self::assertSame([$name], array_column($rows, 'selector'));
+            self::assertSame(['www.example.org/cz/page'], array_column($rows, 'params'));
+            self::assertLessThanOrEqual(10, strlen(CheckServerRefusals::EVENT));
+        }
+
+        public function test_refusal_is_logged_once_and_only_for_a_value_the_server_has(): void
+        {
+            $_SERVER['HTTP_COOKIE'] = 'AA_Session=0123';
+            unset($_SERVER['THIS_KEY_DOES_NOT_EXIST']);
+            (new \AA_Test_Stringexpand_Server())->expand('HTTP_COOKIE');
+            (new \AA_Test_Stringexpand_Server())->expand('HTTP_COOKIE');
+            self::assertSame('', (new \AA_Test_Stringexpand_Server())->expand('THIS_KEY_DOES_NOT_EXIST'), 'a misspelt name gave nothing before either');
+            (new \AA_Test_Stringexpand_Server())->expand('');
+            self::assertSame(['HTTP_COOKIE'], array_column(RecordingDb::inserts('log'), 'selector'));
+        }
+
+        /** the names templates on the ECN databases read (22 databases, 2026-11-06) */
+        public function test_names_used_by_templates_are_allowed(): void
+        {
+            foreach (['SERVER_NAME', 'HTTP_HOST', 'REMOTE_ADDR', 'REQUEST_URI', 'HTTP_USER_AGENT', 'HTTP_X_REQUESTED_WITH', 'HTTP_REFERER', 'REQUEST_METHOD'] as $name) {
+                $_SERVER[$name] = 'v';
+                self::assertSame('v', (new \AA_Test_Stringexpand_Server())->expand($name), $name);
+            }
+            self::assertSame([], RecordingDb::inserts('log'));
+        }
+
+        public function test_listed_names_are_allowed(): void
+        {
+            foreach (['HTTP_HOST', 'REQUEST_URI', 'QUERY_STRING', 'HTTPS', 'REMOTE_ADDR', 'HTTP_USER_AGENT', 'HTTP_REFERER', 'HTTP_ACCEPT_LANGUAGE', 'SCRIPT_NAME', 'PHP_SELF', 'DOCUMENT_URI', 'PATH_INFO', 'REDIRECT_URL'] as $name) {
+                self::assertTrue(PageCache::serverAllowed($name), $name);
+            }
+            foreach (['HTTP_COOKIE', 'HTTP_AUTHORIZATION', 'PHP_AUTH_PW', 'PHP_AUTH_USER', 'HTTP_X_AA_DEBUG_KEY', 'REDIRECT_HTTP_AUTHORIZATION', ''] as $name) {
+                self::assertFalse(PageCache::serverAllowed($name), $name);
+            }
+            self::assertSame([], RecordingDb::inserts('log'), 'asking is no read');
         }
 
         public function test_output_of_a_page_left_out_is_not_stored(): void

@@ -313,7 +313,7 @@ final class PageCacheVaryTest extends TestCase
 
     /** Files that get at cookies directly, how many lines, and why it cannot change a cached site page */
     private const COOKIE_ALLOWED = [
-        'src/Cache/PageCache.php'           => [7, 'the tracker itself; server(\'HTTP_COOKIE\') stores nothing'],
+        'src/Cache/PageCache.php'           => [6, 'the tracker itself; server() refuses HTTP_COOKIE'],
         'src/Optimize/CheckCookieReads.php' => [1, 'the detector'],
         'include/phplib.php'                => [3, 'the session; its user is keyed as $auth4cache'],
         'modules/site/site.php'             => [2, 'AA_Session -> $auth4cache, debug log'],
