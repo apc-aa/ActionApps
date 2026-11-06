@@ -24,7 +24,7 @@ final class CheckFileReadRefusalsTest extends TestCase
 
     public function test_a_refused_file_is_a_warning_with_its_reason(): void
     {
-        $row = ['selector' => 'readfile:../include/<b>config.php', 'days' => '2', 'first' => '1790000000', 'last' => '1790086400', 'params' => 'in the AA tree:0123456789abcdef0123456789abcdef'];
+        $row = ['selector' => 'readfile:../include/<b>config.php', 'days' => '2', 'first' => '1790000000', 'last' => '1790086400', 'params' => 'aa:0123456789abcdef0123456789abcdef'];
 
         [$finding] = CheckFileReadRefusals::findingsFor([$row]);
 
@@ -33,7 +33,7 @@ final class CheckFileReadRefusalsTest extends TestCase
         $this->assertStringContainsString('readfile', $finding->title);
         $this->assertSame(2, $finding->count);
         $this->assertSame('readfile:../include/<b>config.php', $finding->key);
-        $this->assertSame('in the AA tree', $finding->evidence[0][_m('Reason')]);
+        $this->assertSame('in the directory of an AA installation', $finding->evidence[0][_m('Reason')]);
         $this->assertSame('0123456789abcdef0123456789abcdef', $finding->evidence[0][_m('Slice')]);
         $this->assertSame('../include/&lt;b&gt;config.php', $finding->evidence[0][_m('File')]);
     }

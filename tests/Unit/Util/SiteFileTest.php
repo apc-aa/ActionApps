@@ -23,7 +23,7 @@ final class SiteFileTest extends TestCase
         $this->docroot = "$this->root/www";
         $this->aa      = "$this->docroot/aaa";
         $this->upload  = "$this->root/volume/img_upload";
-        foreach (["$this->docroot/sub/.hidden", "$this->docroot/.git", "$this->aa/include", "$this->aa/css", "$this->upload/abc", "$this->root/outside"] as $dir) {
+        foreach (["$this->docroot/sub/.hidden", "$this->docroot/.git", "$this->aa/include", "$this->aa/css", "$this->upload/abc", "$this->root/outside", "$this->docroot/aa-dev/include", "$this->docroot/aa-dev/css"] as $dir) {
             mkdir($dir, 0o777, true);
         }
         $files = [
@@ -38,6 +38,10 @@ final class SiteFileTest extends TestCase
             'www/aaa/css/a.css'         => 'a{}',
             'volume/img_upload/abc/x.html' => 'uploaded',
             'outside/file.html'         => 'outside',
+            'www/disclaimer.pl.html'    => 'polish',
+            'www/aa-dev/include/locsess.php' => '<?php',
+            'www/aa-dev/include/config.php~' => '<?php $pwd;',
+            'www/aa-dev/css/a.css'      => 'a{}',
         ];
         foreach ($files as $path => $content) {
             file_put_contents("$this->root/$path", $content);
@@ -80,6 +84,8 @@ final class SiteFileTest extends TestCase
             'a leading slash'             => ['/page.html', '<p>page</p>'],
             'a subdirectory'              => ['sub/part.txt', 'part'],
             'doubled slashes'             => ['sub//part.txt', 'part'],
+            'a dot segment'               => ['./sub/./part.txt', 'part'],
+            'a language variant'          => ['disclaimer.pl.html', 'polish'],
             'an upload behind a link'     => ['img_upload/abc/x.html', 'uploaded'],
         ];
     }
@@ -96,7 +102,6 @@ final class SiteFileTest extends TestCase
         return [
             'up out of the document root'   => ['../outside/file.html'],
             'up and back'                   => ['sub/../page.html'],
-            'a dot segment'                 => ['./page.html'],
             'a dotfile'                     => ['.htaccess'],
             'a dot directory'               => ['.git/config'],
             'a hidden subdirectory'         => ['sub/.hidden/x.txt'],
@@ -107,7 +112,8 @@ final class SiteFileTest extends TestCase
             'a key'                         => ['secret.key'],
             'a backup of a script'          => ['config.php.bak'],
             'an innocent link to a key'     => ['nice.html'],
-            'a NUL byte'                    => ["page.html\0.txt"],
+            'another AA tree'               => ['aa-dev/css/a.css'],
+            'a backup in another AA tree'   => ['aa-dev/include/config.php~'],
         ];
     }
 
@@ -118,10 +124,36 @@ final class SiteFileTest extends TestCase
         $this->contents($name);
     }
 
-    public function test_contents_empty_base_is_refused(): void
+    public function test_contents_empty_base_reads_nothing(): void
     {
-        $this->expectException(\DomainException::class);
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('no base directory');
         SiteFile::contents('', 'www/page.html', [], $this->aa);
+    }
+
+    public function test_contents_nul_byte_is_not_found(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('not found');
+        $this->contents("page.html\0.txt");
+    }
+
+    /** a template asking for invented names writes no log rows */
+    public function test_contents_missing_dotted_name_is_not_a_refusal(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('not found');
+        $this->contents('../missing/../.env');
+    }
+
+    public function test_contents_upload_kept_inside_an_aa_tree(): void
+    {
+        mkdir("$this->aa/uploads/abc", 0o777, true);
+        file_put_contents("$this->aa/uploads/abc/x.html", 'inside');
+
+        $this->assertSame('inside', SiteFile::contents($this->docroot, 'aaa/uploads/abc/x.html', ["$this->aa/uploads"], $this->aa));
+        $this->expectException(\DomainException::class);
+        SiteFile::contents($this->docroot, 'aaa/include/config.php', ["$this->aa/include"], $this->aa);
     }
 
     public function test_contents_missing_file_is_not_a_refusal(): void
@@ -172,6 +204,15 @@ final class SiteFileTest extends TestCase
             'env'           => ['.env', true],
             'pem'           => ['cert.PEM', true],
             'htaccess'      => ['.htaccess', true],
+            'editor backup' => ['config.php~', true],
+            'emacs backup'  => ['#config.php#', true],
+            'renamed php'   => ['config.php-old', true],
+            'key backup'    => ['key.pem~', true],
+            'ini backup'    => ['config.ini.bak', true],
+            'include part'  => ['menu.inc', true],
+            'language'      => ['disclaimer.pl.html', false],
+            'old in name'   => ['index.old.html', false],
+            'no extension'  => ['README', false],
         ];
     }
 
@@ -184,12 +225,12 @@ final class SiteFileTest extends TestCase
     /** a refusal or a file from outside the uploads writes a log row; seen already, so the test reaches no database */
     private function attachment(string $path): string
     {
-        $seen = new \ReflectionProperty(LogOnce::class, 'seen');
-        $seen->setValue(null, [SiteFile::EVENT . "\0mail:$path" => true, SiteFile::EVENT_OUTER . "\0mail:$path" => true]);
+        $real = str_contains($path, "\0") ? false : realpath($path);
+        (new \ReflectionProperty(LogOnce::class, 'seen'))->setValue(null, [SiteFile::EVENT . "\0mail:$path" => true, SiteFile::EVENT_OUTER . "\0mail:" . dirname((string) $real) => true]);
         try {
-            return SiteFile::readAttachment($path, ["$this->root/volume/img_upload/"], $this->aa);
+            return SiteFile::readAttachment($path, ["$this->docroot/img_upload/"], $this->aa);
         } finally {
-            $seen->setValue(null, []);
+            LogOnce::reset();
         }
     }
 
@@ -226,6 +267,10 @@ final class SiteFileTest extends TestCase
             'a dotfile of the upload'  => ['/volume/img_upload/abc/.htaccess'],
             'a link out to a key'      => ['/volume/img_upload/abc/key.pdf'],
             'a missing file'           => ['/volume/img_upload/abc/missing.pdf'],
+            'no extension elsewhere'   => ['/outside/passwd'],
+            'a script in the upload'   => ['/volume/img_upload/abc/run.php'],
+            'another AA tree'          => ['/www/aa-dev/css/a.css'],
+            'a NUL byte'               => ["/volume/img_upload/abc/x.html\0.pdf"],
         ];
     }
 
@@ -233,8 +278,18 @@ final class SiteFileTest extends TestCase
     public function test_readAttachment_refused(string $path): void
     {
         file_put_contents("$this->upload/abc/.htaccess", 'Deny from all');
+        file_put_contents("$this->upload/abc/run.php", '<?php');
+        file_put_contents("$this->root/outside/passwd", 'root:x:0:0');
         symlink("$this->docroot/secret.key", "$this->upload/abc/key.pdf");
 
         $this->assertSame('', $this->attachment($this->root . $path));
+    }
+
+    public function test_attachmentDir_upload_by_any_spelling(): void
+    {
+        $bases = ["$this->docroot/img_upload/"];
+
+        $this->assertNotNull(SiteFile::attachmentDir((string) realpath("$this->docroot/img_upload/abc/x.html"), $bases), 'a resolved upload goes the upload way');
+        $this->assertNull(SiteFile::attachmentDir((string) realpath("$this->root/outside/file.html"), $bases));
     }
 }

@@ -239,7 +239,8 @@ final class StringexpandIncludeTest extends TestCase
     /** fileman prints a file of the slice's File Manager directory, site one of the site module's */
     public function test_fileman_readsAFileOfTheFileManagerDirectory(): void
     {
-        defined('FILEMAN_BASE_DIR') || define('FILEMAN_BASE_DIR', sys_get_temp_dir() . '/aa-include-fileman-' . bin2hex(random_bytes(6)) . '/');
+        $created = !defined('FILEMAN_BASE_DIR');
+        $created && define('FILEMAN_BASE_DIR', sys_get_temp_dir() . '/aa-include-fileman-' . bin2hex(random_bytes(6)) . '/');
         $dir = FILEMAN_BASE_DIR . 'web';
         is_dir($dir) || mkdir($dir, 0o777, true);
         file_put_contents("$dir/disclaimer.html", '<p>disclaimer</p>');
@@ -253,19 +254,19 @@ final class StringexpandIncludeTest extends TestCase
             self::assertSame('<p>disclaimer</p>', self::expand('disclaimer.html', 'site'));
 
             // the refusals log a row: seen already, so the test reaches no database
-            $seen = new \ReflectionProperty(\AA\Util\LogOnce::class, 'seen');
-            $seen->setValue(null, ["FILE_DENY\0fileman:../web/disclaimer.html" => true, "FILE_DENY\0fileman:disclaimer.html" => true, "FILE_DENY\0site:disclaimer.html" => true]);
+            (new \ReflectionProperty(\AA\Util\LogOnce::class, 'seen'))->setValue(null, ["FILE_DENY\0fileman:../web/disclaimer.html" => true]);
             self::assertSame('', self::expand('../web/disclaimer.html', 'fileman'), 'never up out of the directory');
             $GLOBALS['slice_id'] = 'fedcba9876543210fedcba9876543210';
             self::assertSame('', self::expand('disclaimer.html', 'fileman'), 'a slice without a File Manager directory reads nothing - not the directory of all of them');
             $GLOBALS['site_fileman_dir'] = '..';
             self::assertSame('', self::expand('disclaimer.html', 'site'));
-            $seen->setValue(null, []);
         } finally {
+            \AA\Util\LogOnce::reset();
             [$GLOBALS['slice_id'], $GLOBALS['site_fileman_dir']] = $saved;
             unset($GLOBALS['aa_test_fileman_dir']);
             unlink("$dir/disclaimer.html");
             rmdir($dir);
+            $created && rmdir(FILEMAN_BASE_DIR);
         }
     }
 }

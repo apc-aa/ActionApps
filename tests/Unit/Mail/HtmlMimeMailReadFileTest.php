@@ -35,12 +35,11 @@ final class HtmlMimeMailReadFileTest extends TestCase
     /** a refusal or a file from outside the uploads writes a log row; seen already, so the test reaches no database */
     private static function readLocal(string $path): string
     {
-        $seen = new \ReflectionProperty(LogOnce::class, 'seen');
-        $seen->setValue(null, [SiteFile::EVENT . "\0mail:$path" => true, SiteFile::EVENT_OUTER . "\0mail:$path" => true]);
+        (new \ReflectionProperty(LogOnce::class, 'seen'))->setValue(null, [SiteFile::EVENT . "\0mail:$path" => true, SiteFile::EVENT_OUTER . "\0mail:" . dirname((string) realpath($path)) => true]);
         try {
             return \htmlMimeMail::readFile($path);
         } finally {
-            $seen->setValue(null, []);
+            LogOnce::reset();
         }
     }
 

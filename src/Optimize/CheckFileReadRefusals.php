@@ -8,7 +8,7 @@ use AA\Util\LogOnce;
 use AA\Util\SiteFile;
 use AA_Log;
 
-/** Files a template or a mail asked for in the last 30 days ({include:<file>:readfile|fileman}, a local
+/** Files a template or a mail asked for in the last 30 days ({include:<file>:readfile|fileman|site}, a local
  *  attachment) that AA refused to read: outside the site's own files, in the AA tree, a dotfile, a
  *  script or a file of settings or keys. The template printed nothing there, so the page may miss a
  *  part. Also the local files mails still took from outside the upload directories. Logged once a day
@@ -69,7 +69,7 @@ class CheckFileReadRefusals extends AbstractOptimize
                 since: (int) $row['first'],
                 evidence: [[
                     _m('File')      => safe($file),
-                    _m('Reason')    => safe((string) $reason),
+                    _m('Reason')    => safe(self::reason((string) $reason)),
                     _m('Slice')     => safe((string) $slice),
                     _m('Days seen') => (string) (int) $row['days'],
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
@@ -100,5 +100,19 @@ class CheckFileReadRefusals extends AbstractOptimize
             );
         }
         return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No file read was refused in the last 30 days'))];
+    }
+
+    /** the reason SiteFile logged, in words */
+    public static function reason(string $code): string
+    {
+        return match ($code) {
+            SiteFile::REASON_OUTSIDE => _m('outside the files of the site'),
+            SiteFile::REASON_AA_TREE => _m('in the directory of an AA installation'),
+            SiteFile::REASON_DOT     => _m('a name starting with a dot (.., .htaccess, .git)'),
+            SiteFile::REASON_SECRET  => _m('a script, a settings or key file, a dump or a backup'),
+            SiteFile::REASON_TYPE    => _m('not a regular file, or a file without an extension'),
+            SiteFile::REASON_CHANGED => _m('the file changed while it was read'),
+            default                  => $code,
+        };
     }
 }

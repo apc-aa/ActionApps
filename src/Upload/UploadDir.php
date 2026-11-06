@@ -8,7 +8,8 @@ use AA\Util\SafeFile;
 
 /**
  * The slice directory - where a slice keeps its uploaded files - read by the URLs AA stores for them:
- * the one way to turn such a URL back into the bytes on the disk. Nothing is ever fetched from the
+ * the one way to turn such a URL back into the bytes on the disk; a file known by its disk path (a mail
+ * attachment) is read by forPath() and readPath() with the same checks. Nothing is ever fetched from the
  * web: a URL must name a file below the directory's URL, on its host and port, and the opened file
  * must lie below the slice directory, links included - as the kernel's own path of the handle
  * (/proc/self/fd) says, or where PHP cannot list /proc/self/fd, the path resolved again: a weaker

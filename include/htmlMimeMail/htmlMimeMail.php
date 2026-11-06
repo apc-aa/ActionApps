@@ -141,7 +141,7 @@ class htmlMimeMail {
     {
         if (preg_match('~^https?://~i', $filename)) {
             try {
-                $answer = Client::publicOnly(timeout: 60, idle: 30, redirects: 5, maxBytes: 25 * 1024 * 1024)->request('GET', $filename);
+                $answer = Client::publicOnly(timeout: 60, idle: 30, redirects: 5, maxBytes: SiteFile::ATTACHMENT_MAX_BYTES)->request('GET', $filename);
             } catch (TransportException $e) {
                 CheckBlockedRequests::record($e, 'mail', '');
                 return '';
