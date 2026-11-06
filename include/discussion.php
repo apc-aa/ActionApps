@@ -426,16 +426,16 @@ function send2mailList($d_item_id, $new_id): void
                 $mail = new AA_Mail();
                 $mail->setSubject($maildef["subject"]);
                 $mail->setHtml($maildef["body"], html2text($maildef["body"]));
-                if ($mail["from"]) {
+                if ($maildef["from"]) {
                     $mail->setHeader("From", $maildef["from"]);
                 }
-                if ($mail["reply_to"]) {
+                if ($maildef["reply_to"]) {
                     $mail->setHeader("Reply-To", $maildef["reply_to"]);
                 }
-                if ($mail["errors_to"]) {
+                if ($maildef["errors_to"]) {
                     $mail->setHeader("Errors-To", $maildef["errors_to"]);
                 }
-                if ($mail["sender"]) {
+                if ($maildef["sender"]) {
                     $mail->setHeader("Sender", $maildef["sender"]);
                 }
 
