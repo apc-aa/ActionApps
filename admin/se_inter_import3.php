@@ -60,6 +60,10 @@ foreach ($f_slices as $f_slice) {
     $channel = $aa_rss['channels'][$f_slice];
 
     $remote_slice_id = $f_slice;
+    if (!is_long_id($remote_slice_id)) {
+        // the feed tables store it packed and look it up as a 32-hex id - anything else would never match
+        continue;
+    }
     if (DB_AA::test('external_feeds', [['slice_id', AA::$module_id, 'l'], ['remote_slice_id', $remote_slice_id, 'l']])) {
         // feed from $remote_slice_id to $slice_id is already contained in the table
         $msg = rawurlencode(_m("The import was already created"));
