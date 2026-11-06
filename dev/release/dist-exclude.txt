@@ -20,9 +20,6 @@
 - /misc/mgettext/
 - /misc/missCache/
 - /misc/smtp_smoketest.php
-# developer one-off scripts without a login check; file2slice/importer.php stays - an editorial import uses it
-- /misc/file2slice/array2constants.php
-- /misc/file2slice/importer_sql_example.php
 - /misc/doit_list_related_slices.php
 - /PRODUCT.md
 - /DESIGN.md
@@ -33,6 +30,23 @@
 - /.php-cs-fixer*
 - /.editorconfig
 - /.browserslistrc
+# per-install files: the per-install part of .gitignore (tests/Unit/Release/DistExcludeTest.php keeps them
+# in step), so a build from a working tree never ships an installation's configs, keys or code.
+# The first matching rule wins: a versioned file in such a directory needs its "+" line first.
 - /include/config.php
 - /include/config.php3
+- /include/config.*.php
+- /include/config.*.php3
+- /include/usr_aliasfnc.php
+- /include/usr_aliasfnc.php3
+- /include/custom/
++ /modules/site/sites/site_bayfm.php
++ /modules/site/sites/site_ecn_as_example.php
++ /modules/site/sites/site_greenpages.php
+- /modules/site/sites/site_*.php
+# the other scripts there are developer one-offs without a login check; an editorial import uses importer.php
++ /misc/file2slice/importer.php
+- /misc/file2slice/*
 - /misc/datovka/datovka_conf.php
++ /config/certs/README
+- /config/certs/*
