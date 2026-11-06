@@ -36,22 +36,28 @@ final class GetxmlNodeAuthenticatedTest extends TestCase
             }
         }
         self::assertNotSame('', $code, 'NodeAuthenticated() not found in admin/getxml.php');
-        eval('function aa_test_nodes_password($column, $sql, $where) { $GLOBALS["aa_test_nodes_where"] = $where; return $GLOBALS["aa_test_nodes"][$where[0][1]] ?? false; }');
         eval(strtr($code, [
             'function NodeAuthenticated(' => 'function aa_test_NodeAuthenticated(',
-            'DB_AA::select1('             => 'aa_test_nodes_password(',
+            'DB_AA::select1('             => '\\' . self::class . '::select1(',
         ]));
     }
 
+    /** the nodes table: name => password */
+    private const NODES = ['Ecn' => 'secret', "Children's Fund" => "it's\\x", 'Open' => ''];
+
+    /** @var list<array{mixed, mixed, mixed}> the arguments of every look-up */
+    private static array $queries = [];
+
     protected function setUp(): void
     {
-        $GLOBALS['aa_test_nodes'] = ['Ecn' => 'secret', "Children's Fund" => "it's\\x", 'Open' => ''];
-        $GLOBALS['aa_test_nodes_where'] = null;
+        self::$queries = [];
     }
 
-    protected function tearDown(): void
+    /** DB_AA::select1() over NODES, for the one look-up the function makes */
+    public static function select1(mixed $column, mixed $sql, mixed $where): string|false
     {
-        unset($GLOBALS['aa_test_nodes'], $GLOBALS['aa_test_nodes_where']);
+        self::$queries[] = [$column, $sql, $where];
+        return (($column === 'password') && ($sql === 'SELECT password FROM nodes') && (($where[0][0] ?? '') === 'name')) ? (self::NODES[$where[0][1]] ?? false) : false;
     }
 
     /** @return array<string, array{mixed, mixed, bool}> */
@@ -59,7 +65,8 @@ final class GetxmlNodeAuthenticatedTest extends TestCase
     {
         return [
             'the right password'        => ['Ecn', 'secret', true],
-            'quotes and a backslash'    => ["Children's Fund", "it's\\x", true],
+            'compared as sent'          => ["Children's Fund", "it's\\x", true],
+            'not unslashed'             => ["Children's Fund", "it\\'s\\\\x", false],
             'a node without a password' => ['Open', '', true],
             'a wrong password'          => ['Ecn', 'Secret', false],
             'a longer password'         => ['Ecn', 'secret ', false],
@@ -80,6 +87,6 @@ final class GetxmlNodeAuthenticatedTest extends TestCase
     {
         aa_test_NodeAuthenticated('Ecn', 'secret');
 
-        $this->assertSame([['name', 'Ecn']], $GLOBALS['aa_test_nodes_where'], 'the password is compared in PHP, not in the query');
+        $this->assertSame([['password', 'SELECT password FROM nodes', [['name', 'Ecn']]]], self::$queries, 'the password is compared in PHP, not in the query');
     }
 }

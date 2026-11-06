@@ -49,6 +49,7 @@
 use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
 use AA\IO\LastEditList;
+use AA\Util\InputVars;
 
 /**
  * @param $value
@@ -143,10 +144,8 @@ function Error($str): never
 /**
  * The node $node_name exists and $password is its password. Strings only: a list would try them all
  * in one request.
- * @param mixed $node_name
- * @param mixed $password
  */
-function NodeAuthenticated($node_name, $password): bool
+function NodeAuthenticated(mixed $node_name, mixed $password): bool
 {
     if (!is_string($node_name) || !is_string($password) || ($node_name === '')) {
         return false;
@@ -486,9 +485,9 @@ function RestrictIdsByCategory($ids, $categories, $slice_id, array $content, $ca
 
 //------------------------------------------------------------------------------
 
-// as sent, not the slashed copies above, which the queries would escape twice
-$node_name = $_REQUEST['node_name'] ?? '';
-if (!NodeAuthenticated($node_name, $_REQUEST['password'] ?? '')) {
+// as sent and never a cookie, not the slashed copies above, which the queries would escape twice
+$node_name = InputVars::request('node_name') ?? '';
+if (!NodeAuthenticated($node_name, InputVars::request('password') ?? '')) {
     Error(FeedUtil::ERR_PASSWORD);
 }
 
@@ -521,7 +520,7 @@ if (!$slice_id) {
 
 /**  item feeding mode -------------------------------- */
 if (!CheckFeedingPermissions($slice_id, $node_name, $user)) {
-    Error("Invalid permissions - slice_id: $slice_id, node_name: $node_name, user:$user");
+    Error('Invalid permissions - slice_id: ' . safe($slice_id) . ', node_name: ' . safe($node_name) . ', user:' . safe($user));
 }
 $slice = AA_Slice::getModule($slice_id);
 
