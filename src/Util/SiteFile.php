@@ -48,6 +48,9 @@ final class SiteFile
     /** a copy left by an editor, a tool or a hand - of anything, so refused itself */
     private const BACKUP_EXTENSIONS = ['bak', 'old', 'orig', 'save', 'swp', 'tmp'];
 
+    /** a wrapping that keeps the type of what it wraps ("error.log.1.gz" as logrotate leaves it) */
+    private const WRAP_EXTENSIONS = ['gz', 'bz2', 'xz', 'zst'];
+
     /** a file every AA tree has - its directory is the root of a tree */
     private const AA_TREE_MARK = 'include/locsess.php';
 
@@ -102,7 +105,7 @@ final class SiteFile
             throw new \DomainException(self::REASON_SECRET);
         }
         $root = self::rootOf($real, [$base, ...$roots]) ?? throw new \DomainException(self::REASON_OUTSIDE);
-        if (self::inAaTree($real, $aaTree, [$base, ...$roots, ...self::uploadRoots()])) {
+        if (self::inAaTree($real, $aaTree, [...$roots, ...self::uploadRoots()])) {
             throw new \DomainException(self::REASON_AA_TREE);
         }
         if (self::hasDotSegment(explode('/', substr($real, strlen($root))))) {
@@ -188,7 +191,8 @@ final class SiteFile
 
     /**
      * A file of settings or keys, a dump or a backup ("config.ini~", "server.key.1"), or a script. The
-     * type is the last extension but numbers ("menu.inc.html" is a page, "error.log.2" a log).
+     * type is the last extension but numbers, versions and compression ("menu.inc.html" is a page,
+     * "error.log.2.gz" a log).
      */
     public static function isSecretName(string $name): bool
     {
@@ -196,8 +200,8 @@ final class SiteFile
             return true;
         }
         $extensions = self::extensions($name);
-        while ($extensions && (ctype_digit(end($extensions)) || in_array(end($extensions), self::BACKUP_EXTENSIONS, true))) {
-            if (!ctype_digit(array_pop($extensions))) {
+        while ($extensions && (preg_match('~^v?\d+$~', end($extensions)) || in_array(end($extensions), [...self::BACKUP_EXTENSIONS, ...self::WRAP_EXTENSIONS], true))) {
+            if (in_array(array_pop($extensions), self::BACKUP_EXTENSIONS, true)) {
                 return true;
             }
         }

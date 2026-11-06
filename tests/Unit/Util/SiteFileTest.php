@@ -175,14 +175,12 @@ final class SiteFileTest extends TestCase
         SiteFile::contents($this->docroot, 'page.html', [], $this->aa, 5);
     }
 
-    /** a File Manager kept inside an AA tree serves its files, its settings never */
-    public function test_contents_base_inside_the_aa_tree(): void
-    {
-        file_put_contents("$this->aa/include/notes.txt", 'notes');
 
-        $this->assertSame('a{}', $this->contents('a.css', "$this->aa/css"));
+    /** a base inside an AA tree (a document root set to its misc/) opens nothing of it - only an upload directory there is the site's */
+    public function test_contents_base_inside_the_aa_tree_reads_nothing(): void
+    {
         $this->expectException(\DomainException::class);
-        $this->contents('notes.txt', "$this->aa/include");
+        $this->contents('a.css', "$this->aa/css");
     }
 
     public function test_read_allowed_file(): void
@@ -223,6 +221,10 @@ final class SiteFileTest extends TestCase
             'dated page'    => ['report.2025.pdf', false],
             'backup'        => ['page.html.bak', true],
             'script backup' => ['run.php~', true],
+            'rotated gzip'  => ['error.log.1.gz', true],
+            'gzipped key'   => ['server.key.gz', true],
+            'key version'   => ['hosting.pem.v2', true],
+            'gzipped data'  => ['data.csv.gz', false],
         ];
     }
 
