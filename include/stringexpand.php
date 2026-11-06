@@ -9635,7 +9635,7 @@ class AA_Stringexpand_Serverload extends AA_Stringexpand_Nevercache {
 }
 
 
-/** @return string - random string of given length
+/** @return string - random string of given length (at most 1000 characters)
  *  (for more advanced version see AA_Generator_Rnd)
  *  Usage: {randomstring:5}
  */
@@ -9647,6 +9647,8 @@ class AA_Stringexpand_Randomstring extends AA_Stringexpand_Nevercache {
      */
     function expand($len=''): string
     {
+        // compared with a non-numeric string the loop would never end; the cap keeps the memory
+        $len = min((int) $len, 1000);
         $ret = '';
         $salt_chars = "abcdefghijklmnoprstuvwxABCDEFGHIJKLMNOPQRSTUVWX0123456789";
         for ($i=0; $i < $len; $i++) {
