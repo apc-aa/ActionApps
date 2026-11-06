@@ -310,7 +310,15 @@ class PageCache
      */
     public static function cookie(string $name): array|string|null
     {
-        return str_starts_with($name, "\0") ? null : self::read($name);
+        if (str_starts_with($name, "\0")) {
+            return null;
+        }
+        $value = self::read($name);
+        if (($name === 'AA_Session') && ($value !== null)) {
+            // no key holds the session id (view.php, slice.php) - a render with it is this visitor's alone
+            AA::Pagecache()->switchCacheNostore();
+        }
+        return $value;
     }
 
     /** All cookies - the page then varies on every one */

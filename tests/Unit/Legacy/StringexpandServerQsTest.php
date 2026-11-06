@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * {server:...}, {qs:...} and {qss:...} read the request through AA\Cache\PageCache, so a cached site
+ * {server:...}, {qs:...}, {qss:...} and {cookie:...} read the request through AA\Cache\PageCache, so a cached site
  * page is stored once per value they read - the key leaves out the tracking parameters (utm_*, ...)
  * and holds the host without www. A value of the visitor's own (REMOTE_ADDR, ...) keeps the page
  * out of the cache.
@@ -204,6 +204,25 @@ namespace Tests\Unit\Legacy {
                 self::assertSame('v', (new \AA_Test_Stringexpand_Server())->expand($name), $name);
             }
             self::assertSame([], RecordingDb::inserts('log'));
+        }
+
+        /** @return array<string, array{array<string, string>, bool}> */
+        public static function sessionCookies(): array
+        {
+            return [
+                'logged in' => [['AA_Session' => 's1', 'lang' => 'cs'], true],
+                'anonymous' => [['lang' => 'cs'], false],
+            ];
+        }
+
+        /** no key holds the session id, so a page cached with it would hand it to the next visitor */
+        #[\PHPUnit\Framework\Attributes\DataProvider('sessionCookies')]
+        public function test_a_render_reading_the_session_id_is_not_stored(array $cookies, bool $nostore): void
+        {
+            $_COOKIE = $cookies;
+            // the value stays: a template passes it to the sign-on of another domain
+            self::assertSame($cookies['AA_Session'] ?? null, PageCache::cookie('AA_Session'));
+            self::assertSame($nostore, (new ReflectionProperty(PageCache::class, 'cache_nostore'))->getValue(AA::Pagecache()));
         }
 
         public function test_listed_names_are_allowed(): void
