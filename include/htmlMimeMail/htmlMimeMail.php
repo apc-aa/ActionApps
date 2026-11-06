@@ -14,6 +14,7 @@ use AA\Http\Client;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException;
 use AA\Optimize\CheckBlockedRequests;
+use AA\Util\SiteFile;
 
 require_once __DIR__."/mimePart.php";
 
@@ -132,8 +133,9 @@ class htmlMimeMail {
     }
 
     /**
-     * The mail may carry item content, so a web address goes through the SSRF guard, and no stream
-     * but a local path (php://, file://, ...) is opened.
+     * The mail may carry item content, so a web address goes through the SSRF guard, no stream
+     * but a local path (php://, file://, ...) is opened, and a local path is read only as a file
+     * of the sites (SiteFile::readAttachment()).
      */
     public static function readFile(string $filename): string
     {
@@ -148,7 +150,7 @@ class htmlMimeMail {
             }
             return $answer->ok() ? $answer->body : '';
         }
-        return str_contains($filename, '://') ? '' : AA_File_Wrapper::wrapper($filename)->contents();
+        return str_contains($filename, '://') ? '' : SiteFile::readAttachment($filename, SiteFile::uploadRoots());
     }
 
     /**

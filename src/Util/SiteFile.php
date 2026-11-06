@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Util;
 
+use AA\Upload\UploadDir;
+
 /**
  * A file of the site that a template prints ({include:<name>:readfile|fileman}). Read only when it lies,
  * links resolved, below the directory the name is relative to or below another directory of the site's
@@ -17,8 +19,14 @@ final class SiteFile
     /** log.type of a refused read - selector "<purpose>:<name>", params the reason and the slice */
     public const EVENT = 'FILE_DENY';
 
+    /** log.type of a mail file read from outside the upload directories - still sent, selector "mail:<path>" */
+    public const EVENT_OUTER = 'FILE_OUTER';
+
     /** the largest file printed - a page part, not a download */
     public const MAX_BYTES = 16 * 1024 * 1024;
+
+    /** the largest local file a mail carries, as for a web address */
+    public const ATTACHMENT_MAX_BYTES = 25 * 1024 * 1024;
 
     /** settings, keys and data dumps a server or a tool keeps next to the site - the scripts are Files::isExecutableName() */
     private const SECRET_EXTENSIONS = [
@@ -37,7 +45,7 @@ final class SiteFile
     public static function read(string $base, string $name, array $roots, string $purpose, string $where = ''): string
     {
         try {
-            return self::contents($base, $name, $roots, defined('AA_BASE_PATH') ? (string) constant('AA_BASE_PATH') : '');
+            return self::contents($base, $name, $roots, self::aaTree());
         } catch (\DomainException $e) {
             LogOnce::daily(self::EVENT, "$purpose:$name", [$e->getMessage(), $where]);
         } catch (\RuntimeException) {
@@ -108,6 +116,47 @@ final class SiteFile
     }
 
     /**
+     * A local file a mail attaches or embeds, '' when it is missing or refused (logged). From an upload
+     * directory - a slice's or the File Manager's - any file but a dotfile, as attachments are pdf,
+     * doc, xlsx... A file elsewhere is refused in the AA tree, as a dotfile, a script or a settings or
+     * key file; any other is still sent and logged (EVENT_OUTER) until the mails that use one are known.
+     * @param list<string> $bases  the upload directories (uploadRoots())
+     * @param ?string      $aaTree the directory AA is installed in - for tests
+     */
+    public static function readAttachment(string $path, array $bases, ?string $aaTree = null): string
+    {
+        $aaTree ??= self::aaTree();
+        $real = self::resolved($path);
+        if ($real === false) {
+            return '';
+        }
+        // an upload directory set to the document root would make the AA tree one of its "slice directories"
+        if (self::rootOf($real, [$aaTree]) !== null) {
+            LogOnce::daily(self::EVENT, "mail:$path", ['in the AA tree', '']);
+            return '';
+        }
+        // an attachment may name the upload directory through a link, or by its resolved path
+        $dir = UploadDir::forPath($path, [...$bases, ...array_filter(array_map(static fn(string $base): string|false => self::resolved($base), $bases))]);
+        if ($dir !== null) {
+            try {
+                return $dir->readPath($path, self::ATTACHMENT_MAX_BYTES);
+            } catch (\InvalidArgumentException|\RuntimeException) {
+                // a link out of the slice directory, a slice directory that is a link: the rules for other files decide
+            }
+        }
+        try {
+            $content = self::contents(str_starts_with($path, '/') ? '/' : (string) getcwd(), $path, [], $aaTree, self::ATTACHMENT_MAX_BYTES);
+        } catch (\DomainException $e) {
+            LogOnce::daily(self::EVENT, "mail:$path", [$e->getMessage(), '']);
+            return '';
+        } catch (\RuntimeException) {
+            return '';
+        }
+        LogOnce::daily(self::EVENT_OUTER, "mail:$path");
+        return $content;
+    }
+
+    /**
      * The directories of the install the sites' files are uploaded to: the slices' upload directory and
      * the File Manager's - a link of the document root may lead there (another volume)
      * @return list<string>
@@ -159,6 +208,12 @@ final class SiteFile
             }
         }
         return null;
+    }
+
+    /** where AA is installed - this file is in its src/Util */
+    private static function aaTree(): string
+    {
+        return dirname(__DIR__, 2);
     }
 
     private static function resolved(string $path): string|false

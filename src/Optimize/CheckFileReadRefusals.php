@@ -8,10 +8,11 @@ use AA\Util\LogOnce;
 use AA\Util\SiteFile;
 use AA_Log;
 
-/** Files a template asked for in the last 30 days ({include:<file>:readfile|fileman}, a local mail
+/** Files a template or a mail asked for in the last 30 days ({include:<file>:readfile|fileman}, a local
  *  attachment) that AA refused to read: outside the site's own files, in the AA tree, a dotfile, a
  *  script or a file of settings or keys. The template printed nothing there, so the page may miss a
- *  part. Logged once a day per file (LogOnce). Index-only, hence basic.
+ *  part. Also the local files mails still took from outside the upload directories. Logged once a day
+ *  per file (LogOnce). Index-only, hence basic.
  */
 class CheckFileReadRefusals extends AbstractOptimize
 {
@@ -25,7 +26,7 @@ class CheckFileReadRefusals extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Lists the files that templates asked for in the last 30 days and AA refused to read, as they are not files of the site.');
+        return _m('Lists the files that templates or e-mails asked for in the last 30 days and AA refused to read, as they are not files of the site, and the files e-mails took from outside the upload directories.');
     }
 
     public static function types(): array
@@ -45,14 +46,16 @@ class CheckFileReadRefusals extends AbstractOptimize
 
     public function findings(): array
     {
-        return self::findingsFor(LogOnce::recent(SiteFile::EVENT, now() - self::WINDOW_SECONDS, self::GROUPS));
+        $since = now() - self::WINDOW_SECONDS;
+        return self::findingsFor(LogOnce::recent(SiteFile::EVENT, $since, self::GROUPS), LogOnce::recent(SiteFile::EVENT_OUTER, $since, self::GROUPS));
     }
 
     /**
-     * @param list<array<string, ?string>> $rows LogOnce::recent() rows - selector "<purpose>:<file>", params "<reason>:<slice id>"
+     * @param list<array<string, ?string>> $rows  LogOnce::recent() rows - selector "<purpose>:<file>", params "<reason>:<slice id>"
+     * @param list<array<string, ?string>> $outer LogOnce::recent() rows of the files mails took from outside the upload directories
      * @return Finding[]
      */
-    public static function findingsFor(array $rows): array
+    public static function findingsFor(array $rows, array $outer = []): array
     {
         $findings = [];
         foreach ($rows as $row) {
@@ -74,6 +77,25 @@ class CheckFileReadRefusals extends AbstractOptimize
                 advice: _m('AA reads for templates and e-mails only the files of the site: below its document root, its File Manager directory or the upload directories - never from the directory AA is installed in, never a dotfile, a script or a file of settings or keys. Move the file among the files of the site, or remove it from the template.'),
                 links: [_m('Log rows') => AA_Log::getAdminUrl(SiteFile::EVENT, $selector)],
                 key: $selector,
+                last: (int) $row['last'],
+            );
+        }
+        foreach ($outer as $row) {
+            $selector = (string) $row['selector'];
+            $file     = explode(':', $selector, 2)[1] ?? '';
+            $findings[] = new Finding(
+                Finding::INFO,
+                _m('An e-mail took the file %1 from outside the upload directories', [$file]),
+                count: (int) $row['days'],
+                since: (int) $row['first'],
+                evidence: [[
+                    _m('File')      => safe($file),
+                    _m('Days seen') => (string) (int) $row['days'],
+                    _m('Last')      => date('Y-m-d', (int) $row['last']),
+                ]],
+                advice: _m('The file was sent. AA is to send local files only from the upload directories of the slices and the File Manager, so attach a file uploaded to the slice instead, or tell the AA developers the directory this site keeps its attachments in.'),
+                links: [_m('Log rows') => AA_Log::getAdminUrl(SiteFile::EVENT_OUTER, $selector)],
+                key: "outer:$selector",
                 last: (int) $row['last'],
             );
         }

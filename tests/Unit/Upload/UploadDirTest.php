@@ -488,4 +488,64 @@ final class UploadDirTest extends TestCase
 
         self::assertSame(self::PDF, (new UploadDir('https://example.org:443/img_upload/abc', $this->dir))->read('https://example.org/img_upload/abc/a.pdf', 1000));
     }
+
+    public function test_forPath_sliceDirectoryOfTheBase(): void
+    {
+        file_put_contents("$this->dir/a.pdf", self::PDF);
+        mkdir("$this->dir/sub");
+        file_put_contents("$this->dir/sub/b.pdf", self::PDF);
+        $bases = ["$this->root/other/", "$this->root/upload/"];
+
+        self::assertSame(self::PDF, UploadDir::forPath("$this->dir/a.pdf", $bases)?->readPath("$this->dir/a.pdf", 1000));
+        self::assertSame(self::PDF, UploadDir::forPath("$this->root/upload//abc/sub/b.pdf", $bases)?->readPath("$this->root/upload//abc/sub/b.pdf", 1000), 'doubled slashes of a joined path');
+    }
+
+    /** @return array<string, array{string}> */
+    public static function notBelowABase(): array
+    {
+        return [
+            'another directory'       => ['/etc/passwd'],
+            'the base itself'         => ['/upload/'],
+            'a file of the base'      => ['/upload/a.pdf'],
+            'a sibling with a prefix' => ['/uploads/abc/a.pdf'],
+            'up from the base'        => ['/upload/../outside/a.pdf'],
+            'an empty base'           => ['/abc/a.pdf'],
+        ];
+    }
+
+    #[DataProvider('notBelowABase')]
+    public function test_forPath_nullBelowNoBase(string $path): void
+    {
+        self::assertNull(UploadDir::forPath($this->root . $path, ["$this->root/upload", '']));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function refusedPaths(): array
+    {
+        return [
+            'up and out'       => ['/upload/abc/../../outside/secret.pdf'],
+            'a dot segment'    => ['/upload/abc/./a.pdf'],
+            'a dotfile'        => ['/upload/abc/.htaccess'],
+            'a dot directory'  => ['/upload/abc/.git/config'],
+            'a NUL byte'       => ["/upload/abc/a.pdf\0.txt"],
+            'another slice'    => ['/upload/abcd/a.pdf'],
+        ];
+    }
+
+    #[DataProvider('refusedPaths')]
+    public function test_readPath_refusesPathsOutOfTheDirectory(string $path): void
+    {
+        file_put_contents("$this->root/outside/secret.pdf", self::PDF);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->uploads()->readPath($this->root . $path, 1000);
+    }
+
+    public function test_readPath_refusesLinkOutOfTheDirectory(): void
+    {
+        file_put_contents("$this->root/outside/secret.pdf", self::PDF);
+        symlink("$this->root/outside/secret.pdf", "$this->dir/a.pdf");
+
+        $this->expectException(\InvalidArgumentException::class);
+        UploadDir::forPath("$this->dir/a.pdf", ["$this->root/upload"])?->readPath("$this->dir/a.pdf", 1000);
+    }
 }

@@ -23,6 +23,9 @@ final readonly class UploadDir
 {
     private const DEFAULT_PORTS = ['http' => 80, 'https' => 443];
 
+    /** the URL of a directory known only by its disk path (forPath()) - .invalid is no host of a real site */
+    private const NO_URL = 'http://upload.invalid';
+
     /** the directory's URL, for messages */
     private string $url;
     private string $host;
@@ -110,6 +113,55 @@ final readonly class UploadDir
     public function read(string $url, int $maxBytes): string
     {
         $relative = $this->relative($url) ?? throw new \InvalidArgumentException("$url is not a file uploaded to $this->url");
+        return $this->readRelative($relative, $url, $maxBytes);
+    }
+
+    /**
+     * The bytes of the file at the disk path $path below the directory, checked as read() checks it.
+     * No name on the way may start with a dot - a .htaccess, a tool's .git in the upload directory.
+     * @throws \InvalidArgumentException not a file of this directory, or larger than $maxBytes
+     * @throws \RuntimeException          see read()
+     */
+    public function readPath(string $path, int $maxBytes): string
+    {
+        $path     = self::squeezed($path);
+        $relative = str_starts_with($path, "$this->dir/") ? substr($path, strlen($this->dir) + 1) : '';
+        if (($relative === '') || str_contains($relative, "\0") || preg_match('~(^|/)(\.|$)~', $relative)) {
+            throw new \InvalidArgumentException("$path is not a file of the upload directory $this->dir");
+        }
+        return $this->readRelative($relative, $path, $maxBytes);
+    }
+
+    /**
+     * The slice directory the disk path $path lies in: an entry of one of $bases - of the upload
+     * directory (IMG_UPLOAD_PATH/<slice id>) or the File Manager's (FILEMAN_BASE_DIR/<directory>). For a
+     * file known by its path, as a mail attachment is; read it with readPath() - the directory gets no
+     * URL of a real site. The disk is not looked at.
+     * @param list<string> $bases
+     */
+    public static function forPath(string $path, array $bases): ?self
+    {
+        $path = self::squeezed($path);
+        foreach ($bases as $base) {
+            $base = rtrim(self::squeezed(trim($base)), '/');
+            if (($base === '') || !str_starts_with($path, "$base/")) {
+                continue;
+            }
+            $entry = strstr(substr($path, strlen($base) + 1), '/', true);
+            if (($entry === false) || ($entry === '') || str_starts_with($entry, '.')) {
+                return null;
+            }
+            return new self(self::NO_URL, "$base/$entry");
+        }
+        return null;
+    }
+
+    /**
+     * The bytes of the file $relative names below the directory - see read()
+     * @param string $url the URL - or the disk path - the caller named the file by, for messages
+     */
+    private function readRelative(string $relative, string $url, int $maxBytes): string
+    {
         $path     = "$this->dir/$relative";
         $kernel   = self::kernelPaths();
         // realpath() answers from a per-process cache of resolved paths (120 s), lstat() from its last
@@ -242,6 +294,12 @@ final readonly class UploadDir
     {
         $stat = $link ? @lstat($path) : @stat($path);
         return is_array($stat) && ($stat['dev'] === $opened['dev']) && ($stat['ino'] === $opened['ino']);
+    }
+
+    /** a disk path joined of parts with a slash each (IMG_UPLOAD_PATH . '/' . ...) - one slash between names */
+    private static function squeezed(string $path): string
+    {
+        return (string) preg_replace('~/{2,}~', '/', $path);
     }
 
     /** a host as DNS compares it: in any case, with or without the final dot of the root */

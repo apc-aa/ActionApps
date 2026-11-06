@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Mail;
 
+use AA\Util\LogOnce;
+use AA\Util\SiteFile;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -30,8 +32,32 @@ final class HtmlMimeMailReadFileTest extends TestCase
         ];
     }
 
+    /** a refusal or a file from outside the uploads writes a log row; seen already, so the test reaches no database */
+    private static function readLocal(string $path): string
+    {
+        $seen = new \ReflectionProperty(LogOnce::class, 'seen');
+        $seen->setValue(null, [SiteFile::EVENT . "\0mail:$path" => true, SiteFile::EVENT_OUTER . "\0mail:$path" => true]);
+        try {
+            return \htmlMimeMail::readFile($path);
+        } finally {
+            $seen->setValue(null, []);
+        }
+    }
+
     public function test_readFile_localPath_isRead(): void
     {
-        self::assertStringContainsString('HtmlMimeMailReadFileTest', \htmlMimeMail::readFile(__FILE__));
+        $file = sys_get_temp_dir() . '/aa-mail-attachment-' . bin2hex(random_bytes(6)) . '.pdf';
+        file_put_contents($file, '%PDF-1.4');
+        try {
+            self::assertSame('%PDF-1.4', self::readLocal($file));
+        } finally {
+            unlink($file);
+        }
+    }
+
+    public function test_readFile_fileOfTheAaTree_readsNothing(): void
+    {
+        self::assertSame('', self::readLocal(__FILE__));
+        self::assertSame('', self::readLocal(dirname(__DIR__, 3) . '/include/config.php.default'));
     }
 }

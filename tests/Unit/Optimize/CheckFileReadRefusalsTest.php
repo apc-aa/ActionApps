@@ -37,4 +37,15 @@ final class CheckFileReadRefusalsTest extends TestCase
         $this->assertSame('0123456789abcdef0123456789abcdef', $finding->evidence[0][_m('Slice')]);
         $this->assertSame('../include/&lt;b&gt;config.php', $finding->evidence[0][_m('File')]);
     }
+
+    public function test_a_mail_file_from_outside_the_uploads_is_info(): void
+    {
+        $row = ['selector' => 'mail:/data/webs/x/upload/a.pdf', 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
+
+        [$finding] = CheckFileReadRefusals::findingsFor([], [$row]);
+
+        $this->assertSame(Finding::INFO, $finding->severity);
+        $this->assertStringContainsString('/data/webs/x/upload/a.pdf', $finding->title);
+        $this->assertSame('outer:mail:/data/webs/x/upload/a.pdf', $finding->key);
+    }
 }

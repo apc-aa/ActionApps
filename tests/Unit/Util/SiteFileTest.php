@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Util;
 
+use AA\Util\LogOnce;
 use AA\Util\SiteFile;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -178,5 +179,62 @@ final class SiteFileTest extends TestCase
     public function test_isSecretName(string $name, bool $secret): void
     {
         $this->assertSame($secret, SiteFile::isSecretName($name));
+    }
+
+    /** a refusal or a file from outside the uploads writes a log row; seen already, so the test reaches no database */
+    private function attachment(string $path): string
+    {
+        $seen = new \ReflectionProperty(LogOnce::class, 'seen');
+        $seen->setValue(null, [SiteFile::EVENT . "\0mail:$path" => true, SiteFile::EVENT_OUTER . "\0mail:$path" => true]);
+        try {
+            return SiteFile::readAttachment($path, ["$this->root/volume/img_upload/"], $this->aa);
+        } finally {
+            $seen->setValue(null, []);
+        }
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function attachments(): array
+    {
+        return [
+            'an upload of any type'          => ['/volume/img_upload/abc/report.xlsx', 'xlsx'],
+            'a doubled slash of a join'      => ['/volume/img_upload//abc/x.html', 'uploaded'],
+            'an upload behind a link'        => ['/www/img_upload/abc/x.html', 'uploaded'],
+            'a harmless file elsewhere'      => ['/outside/file.html', 'outside'],
+            'a link out to a harmless file'  => ['/volume/img_upload/abc/out.html', 'outside'],
+        ];
+    }
+
+    #[DataProvider('attachments')]
+    public function test_readAttachment_sent(string $path, string $expected): void
+    {
+        file_put_contents("$this->upload/abc/report.xlsx", 'xlsx');
+        symlink("$this->root/outside/file.html", "$this->upload/abc/out.html");
+
+        $this->assertSame($expected, $this->attachment($this->root . $path));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function refusedAttachments(): array
+    {
+        return [
+            'the AA configuration'     => ['/www/aaa/include/config.php'],
+            'a file of the AA tree'    => ['/www/aaa/css/a.css'],
+            'up out of the upload'     => ['/volume/img_upload/abc/../../../www/secret.key'],
+            'a key elsewhere'          => ['/www/secret.key'],
+            'a dotfile elsewhere'      => ['/www/.htaccess'],
+            'a dotfile of the upload'  => ['/volume/img_upload/abc/.htaccess'],
+            'a link out to a key'      => ['/volume/img_upload/abc/key.pdf'],
+            'a missing file'           => ['/volume/img_upload/abc/missing.pdf'],
+        ];
+    }
+
+    #[DataProvider('refusedAttachments')]
+    public function test_readAttachment_refused(string $path): void
+    {
+        file_put_contents("$this->upload/abc/.htaccess", 'Deny from all');
+        symlink("$this->docroot/secret.key", "$this->upload/abc/key.pdf");
+
+        $this->assertSame('', $this->attachment($this->root . $path));
     }
 }
