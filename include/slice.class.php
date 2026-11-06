@@ -645,7 +645,7 @@ class AA_Slice extends AA_Module
     }
 
     /**
-     * @param bool $fname
+     * @param string $fname field id
      * @return bool
      */
     public function isField($fname): bool
