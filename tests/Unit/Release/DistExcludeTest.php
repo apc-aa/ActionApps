@@ -46,17 +46,21 @@ final class DistExcludeTest extends TestCase
     /** @return list<array{string, string}> [sign, pattern] in file order */
     private static function rules(): array
     {
-        $rules = [];
-        foreach (self::lines('dev/release/dist-exclude.txt') as $line) {
-            if (preg_match('/^([+-]) (\S+)$/', $line, $m)) {
-                $rules[] = [$m[1], $m[2]];
+        static $rules = null;
+        if ($rules === null) {
+            $rules = [];
+            foreach (self::lines('dev/release/dist-exclude.txt') as $line) {
+                if (preg_match('/^([+-]) (\S+)$/', $line, $m)) {
+                    $rules[] = [$m[1], $m[2]];
+                }
             }
         }
         return $rules;
     }
 
     /** rsync's first-match-wins over the path and each of its parent directories; an excluded
-     *  directory takes everything under it. Covers the pattern forms the file uses. */
+     *  directory takes everything under it; "*" matches a leading dot too. Covers the pattern forms
+     *  the file uses. */
     private static function excluded(string $path): bool
     {
         $parts = explode('/', $path);
@@ -70,8 +74,8 @@ final class DistExcludeTest extends TestCase
                     continue;
                 }
                 $match = str_starts_with($p, '/')
-                    ? fnmatch(substr($p, 1), $prefix, FNM_PATHNAME | FNM_PERIOD)
-                    : fnmatch($p, $parts[$i - 1], FNM_PERIOD);
+                    ? fnmatch(substr($p, 1), $prefix, FNM_PATHNAME)
+                    : fnmatch($p, $parts[$i - 1]);
                 if ($match) {
                     if ($sign === '-') {
                         return true;
@@ -89,15 +93,19 @@ final class DistExcludeTest extends TestCase
         $this->assertContains('/config/certs/*', self::perInstall());
     }
 
-    public function test_every_per_install_pattern_is_excluded_from_dist(): void
+    /** vendor/ is the one ignored path dist carries: the build installs it */
+    public function test_everything_gitignore_leaves_out_stays_out_of_dist(): void
     {
-        $excludes = array_map(static fn(array $r): string => $r[1], array_filter(self::rules(), static fn(array $r): bool => $r[0] === '-'));
-        foreach (self::perInstall() as $pattern) {
-            if (str_starts_with($pattern, '!')) {
-                $this->assertContains(['+', substr($pattern, 1)], self::rules(), "versioned $pattern must still ship");
+        foreach (self::lines('.gitignore') as $line) {
+            $pattern = trim($line);
+            if ($pattern === '' || str_starts_with($pattern, '#') || $pattern === '/vendor/') {
                 continue;
             }
-            $this->assertContains($pattern, $excludes, "$pattern is per-install in .gitignore, so dist-exclude.txt must leave it out");
+            $kept = str_starts_with($pattern, '!');
+            // a path the pattern matches: "*" stands for one name, a directory for a file in it
+            $path = str_replace('*', 'x', ltrim($pattern, '!/'));
+            $path = str_ends_with($path, '/') ? $path . 'x' : $path;
+            $this->assertSame(!$kept, self::excluded($path), $kept ? "versioned $pattern must still ship" : "$pattern is ignored by git, so dist-exclude.txt must leave $path out");
         }
     }
 
@@ -119,6 +127,8 @@ final class DistExcludeTest extends TestCase
                 continue;
             }
             $this->assertFileExists(self::root() . ltrim($pattern, '/'), "stale keep rule $pattern");
+            $this->assertFalse(self::excluded(ltrim($pattern, '/')), "an earlier exclude makes keep rule $pattern dead");
+            $this->assertContains('!' . $pattern, self::lines('dev/release/dist-gitignore'), "without it git add leaves $pattern out of the dist branch");
             $later = array_filter(array_slice($rules, $i + 1), static fn(array $r): bool => $r[0] === '-' && fnmatch(ltrim($r[1], '/'), ltrim($pattern, '/'), FNM_PATHNAME));
             $this->assertNotEmpty($later, "keep rule $pattern guards nothing - no later exclude matches it");
         }
@@ -135,6 +145,7 @@ final class DistExcludeTest extends TestCase
             'user alias functions' => ['include/usr_aliasfnc.php', true],
             'certificate key'      => ['config/certs/isds.key', true],
             'certificates readme'  => ['config/certs/README', false],
+            'certificates dotfile' => ['config/certs/.htaccess', true],
             'config htaccess'      => ['config/.htaccess', false],
             'site control file'    => ['modules/site/sites/site_mine.php', true],
             'site example'         => ['modules/site/sites/site_ecn_as_example.php', false],
@@ -143,6 +154,12 @@ final class DistExcludeTest extends TestCase
             'developer one-off'    => ['misc/file2slice/array2constants.php', true],
             'install own import'   => ['misc/file2slice/mine.php', true],
             'datovka config'       => ['misc/datovka/datovka_conf.php', true],
+            'datovka template'     => ['misc/datovka/datovka_conf.php.default', false],
+            'datovka backup'       => ['misc/datovka/datovka_conf.php.bak', true],
+            'config backup'        => ['include/config.php.bak', true],
+            'editor backup'        => ['include/config.php~', true],
+            'vim swap file'        => ['include/.config.php.swp', true],
+            'editor settings'      => ['.vscode/sftp.json', true],
             'runtime code'         => ['include/util.php', false],
             'nested git'           => ['include/custom/.git/config', true],
             'tests'                => ['tests/bootstrap.php', true],

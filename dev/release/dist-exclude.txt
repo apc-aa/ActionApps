@@ -30,15 +30,19 @@
 - /.php-cs-fixer*
 - /.editorconfig
 - /.browserslistrc
-# per-install files: the per-install part of .gitignore (tests/Unit/Release/DistExcludeTest.php keeps them
-# in step), so a build from a working tree never ships an installation's configs, keys or code.
-# The first matching rule wins: a versioned file in such a directory needs its "+" line first.
-- /include/config.php
-- /include/config.php3
-- /include/config.*.php
-- /include/config.*.php3
-- /include/usr_aliasfnc.php
-- /include/usr_aliasfnc.php3
+# what .gitignore leaves out stays out of dist too (tests/Unit/Release/DistExcludeTest.php keeps them in
+# step), so a build from a working tree never ships an installation's configs, keys, code or their
+# editor and backup copies. The first matching rule wins: a versioned file needs its "+" line first.
+- *~
+- *.swp
+- .DS_Store
+- Thumbs.db
+- /.vscode/
+- /.svn/
++ /include/config.php.default
+- /include/config.*
+- /include/.config*
+- /include/usr_aliasfnc.php*
 - /include/custom/
 + /modules/site/sites/site_bayfm.php
 + /modules/site/sites/site_ecn_as_example.php
@@ -48,5 +52,7 @@
 + /misc/file2slice/importer.php
 - /misc/file2slice/*
 - /misc/datovka/datovka_conf.php
++ /misc/datovka/datovka_conf.php.default
+- /misc/datovka/datovka_conf.php.*
 + /config/certs/README
 - /config/certs/*

@@ -11,3 +11,17 @@
 /misc/file2slice/*
 /misc/datovka/datovka_conf.php
 /config/certs/*
+# editor and backup copies of the files above
+/include/config.*
+/include/.config*
+/misc/datovka/datovka_conf.php*
+*~
+*.swp
+# versioned files the patterns above would hide from git add (the "+" lines of dist-exclude.txt)
+!/include/config.php.default
+!/modules/site/sites/site_bayfm.php
+!/modules/site/sites/site_ecn_as_example.php
+!/modules/site/sites/site_greenpages.php
+!/misc/file2slice/importer.php
+!/misc/datovka/datovka_conf.php.default
+!/config/certs/README

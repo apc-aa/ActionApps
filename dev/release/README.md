@@ -37,8 +37,8 @@ them from `git status`. `sync-svn.sh` deliberately leaves the `include/config.ph
 always shipped in place, because SVN installations `require_once` it.
 The same holds for every per-install path of `.gitignore`: `dist-exclude.txt` leaves each one out, so a build
 from a working tree ships none of them (`tests/Unit/Release/DistExcludeTest.php` keeps the two lists in step),
-and `commit-dist.sh` / `sync-svn.sh` refuse a tree that holds certificates, `include/config.*.php` or
-`include/custom/`.
+and `commit-dist.sh` / `sync-svn.sh` refuse a tree in which `per-install-files.sh` finds a config, a key,
+`include/custom/` or a backup copy of them.
 
 ## Keeping the exclude lists honest
 `collapse-keywords.sh <tree>` turns expanded SVN keywords (`$Id: … $`) into their bare form so an

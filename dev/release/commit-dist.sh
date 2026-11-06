@@ -5,8 +5,8 @@
 set -euo pipefail
 built=$(realpath "$1"); wc=$(realpath "$2"); sha=$3; subject=$4
 # per-install keys and configs are never published, whatever tree is passed in
-leak=$( { find "$built/config/certs" -mindepth 1 ! -name README; find "$built/include" -maxdepth 1 \( -name 'config.*.php' -o -name 'config.*.php3' -o -name custom \); } 2>/dev/null | head -n 1 || true)
-[ -z "$leak" ] || { echo "commit-dist: per-install file in the built tree, refusing: $leak" >&2; exit 2; }
+leak=$("$(dirname "$0")/per-install-files.sh" "$built")   # no || true: a missing helper must stop the run
+[ -z "$leak" ] || { echo "commit-dist: per-install files in the built tree, refusing:" >&2; echo "$leak" >&2; exit 2; }
 cd "$wc"
 git rev-parse --verify -q HEAD >/dev/null || git checkout -q --orphan dist   # very first build: start the branch
 rsync -a --delete --exclude=.git "$built/" "$wc/"
