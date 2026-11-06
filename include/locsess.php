@@ -44,7 +44,7 @@ use AA\Util\Txt;
 error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
 
 // should be set in config.php
-if (!defined(AA_INSTAL_PATH)) {
+if (!defined('AA_INSTAL_PATH')) {
     $url_components = parse_url(AA_INSTAL_URL);
     define('AA_INSTAL_PATH', $url_components['path']);
 }
