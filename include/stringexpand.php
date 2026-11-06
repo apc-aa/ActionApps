@@ -341,7 +341,8 @@ class AA_Stringexpand_User extends AA_Stringexpand {
         // this is message for pagecache to NOT store views (or slices), where we use {user:xxx} alias,
         // into cache (AUTH_USER is not in cache's keyString).
         AA::Pagecache()->switchCacheNostore();
-        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],AuthGetUname(),$_SERVER['REMOTE_USER']);
+        // an anonymous visitor has no name ("nobody" is only the {user:id})
+        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'] ?? '', AuthGetUname(), $_SERVER['REMOTE_USER'] ?? '');
         switch ($field) {
             case '':         return $auth_user;
             case 'password': return $_SERVER['PHP_AUTH_PW'] ?? '';
