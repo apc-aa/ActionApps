@@ -47,6 +47,7 @@ use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
 use AA\Util\NamedInterface;
 use AA\Util\Secret;
+use AA\Util\SiteFile;
 use AA\Util\Txt;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Renderer\GDLibRenderer;
@@ -6491,11 +6492,8 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
                 $file = AA_File_Wrapper::wrapper($filename);
                 // $file->contents(); opens the stream, reads the data and close the stream
                 return $file->contents();
-            case "readfile": //simple support for reading static html (use at own risk)
-                $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $fn;
-                $file = AA_File_Wrapper::wrapper($filename);
-                // $file->contents(); opens the stream, reads the data and close the stream
-                return $file->contents();
+            case "readfile": // a static file of the site, relative to its document root
+                return SiteFile::read((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''), (string) $fn, SiteFile::uploadRoots(), 'readfile', (string) ($GLOBALS['slice_id'] ?? ''));
         }
         return '';
     }

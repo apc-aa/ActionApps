@@ -58,6 +58,7 @@ final class StringexpandIncludeTest extends TestCase
         $rename = [
             // the extracted snippet has no `use` line of its own
             'HttpInclude::'           => '\AA\Expand\HttpInclude::',
+            'SiteFile::'              => '\AA\Util\SiteFile::',
             'PageCache::'             => '\AA\Cache\PageCache::',
             'self_server()'           => 'aa_test_self_server()',
             'shtml_query_string()'    => 'aa_test_shtml_query_string()',
@@ -210,5 +211,26 @@ final class StringexpandIncludeTest extends TestCase
 
         self::assertSame('POST', $this->lastCall()['method']);
         self::assertSame('q=kombucha', $this->lastCall()['body']);
+    }
+
+    /** readfile prints a static file of the site, relative to the document root */
+    public function test_readfile_readsAFileOfTheDocumentRoot(): void
+    {
+        $docroot = sys_get_temp_dir() . '/aa-include-readfile-' . bin2hex(random_bytes(6));
+        mkdir("$docroot/parts", 0o777, true);
+        file_put_contents("$docroot/parts/menu.html", '<ul></ul>');
+        $saved = $_SERVER['DOCUMENT_ROOT'] ?? null;
+        $_SERVER['DOCUMENT_ROOT'] = $docroot;
+        try {
+            self::assertSame('<ul></ul>', self::expand('parts/menu.html', 'readfile'));
+            self::assertSame('<ul></ul>', self::expand('/parts/menu.html', 'readfile'));
+            self::assertSame('', self::expand('parts/missing.html', 'readfile'));
+            self::assertSame([], $this->http->calls, 'a file is read from the disk, never fetched');
+        } finally {
+            $_SERVER['DOCUMENT_ROOT'] = $saved;
+            unlink("$docroot/parts/menu.html");
+            rmdir("$docroot/parts");
+            rmdir($docroot);
+        }
     }
 }
