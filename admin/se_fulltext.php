@@ -72,10 +72,11 @@ if (!IfSlPerm(PS_FULLTEXT)) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
+$foreign = ResponderPolicy::isForeignBrowserRequest($_SERVER);
 
 if ($update) {
     do {
-        if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(FULLTEXT_TOKEN, $token, $_SERVER)) {
+        if ($foreign || !FormToken::checkPost(FULLTEXT_TOKEN, $token, $_SERVER)) {
             $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
             break;
         }
@@ -115,7 +116,8 @@ if ($update) {
     }
 }
 
-if (AA::$module_id != "") {  // set variables from database
+// after a failed save the typed templates stay in the form, unless they came from another site
+if ((AA::$module_id != "") && (!$update || !count($err) || $foreign)) {  // set variables from database
     $rec = DB_AA::select1('', 'SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid FROM slice', [['id', AA::$module_id, 'l']]);
     if ($rec) {
         $fulltext_format_top    =  $rec['fulltext_format_top'];
