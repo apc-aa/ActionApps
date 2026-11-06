@@ -366,8 +366,7 @@ class sitetree
     }
 
     /** The tree of toArray() data - also as a reader gives it (numbers for ids, keys left out = null).
-     *  Ids (id, p, po, ch, start_id) become ints, as new_id() makes them: isOption() compares choices
-     *  strictly with the int getCurrentId().
+     *  Ids (id, p, po, ch, start_id) become ints, as new_id() makes them.
      *
      *  The gate of the import: only a tree walkTree() walks - the start is spot 1 (walkTree(), getSite()
      *  hard-wire it), its own parent, heading its sequence (po starts with the spot itself, as the

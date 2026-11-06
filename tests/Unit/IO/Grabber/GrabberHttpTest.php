@@ -336,12 +336,11 @@ final class GrabberHttpTest extends TestCase
     {
         $grabber = new CSV(sys_get_temp_dir() . '/aa-grabber-missing-' . uniqid() . '.csv', '', ';');
 
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('file not loaded: ');
         set_error_handler(static fn(): bool => true, E_WARNING);   // file_get_contents() warns first
         try {
             $grabber->getSources();
-            self::fail('a missing file must not read as empty data');
-        } catch (\Exception $e) {
-            self::assertStringStartsWith('file not loaded: ', $e->getMessage());
         } finally {
             restore_error_handler();
         }
