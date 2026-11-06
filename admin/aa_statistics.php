@@ -25,7 +25,9 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\Later\HitcounterStats;
+use AA\Util\FormToken;
 use AA\Util\HitcounterDisplay;
 use AA\Util\InputVars;
 use AA\Util\TaskProgress;
@@ -36,6 +38,8 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/mgettext.php";
 // ----------------------------------------------------------------------------------------
+const STATISTICS_TOKEN = 'aa-statistics';
+
 try {
     // GET-or-POST so diagnostics-card click links work (?item_sort=slowest&item_period=last_day)
     $items_code  = InputVars::stringGETPOST('items_code');
@@ -47,6 +51,7 @@ try {
     $date_from   = InputVars::stringGETPOST('date_from');
     $for_module  = InputVars::stringGETPOST('for_module');
     $show        = InputVars::boolGETPOST('show');
+    $token       = InputVars::stringPOST('token');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -70,6 +75,11 @@ if (!$item_sort && !$item_period && $item_set) {
         $item_period = $item_set;     // 'all' | 'year' | … | 'last_day'
     }
 }
+
+// an expression runs with the viewer's rights, so only this page's own form may send one;
+// a link with ids still shows the table, a link with an expression only fills the form
+$expression_refused = !preg_match('/^[\s0-9a-f-]*$/iD', $items_code)
+    && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(STATISTICS_TOKEN, $token, $_SERVER));
 
 $item_count  = $item_count ?: 5;
 $item_sort   = $item_sort ?: 'top';
@@ -244,9 +254,12 @@ FrmTabEnd();
 // ---- Section 3: Show for period (table time window) — Show button lives here ----
 FrmTabCaption(_m('Show for period'));
 FrmInputDatetime('date_from', _m('From date'), $date_from, );
+echo FormToken::field(STATISTICS_TOKEN);
 FrmTabEnd($form_buttons);
 
-if ($show) {
+if ($show && ($item_sort === 'exact') && $expression_refused) {
+    echo MsgOk(_m('Check the expression in "Exact items to show" and press Show to evaluate it.'));
+} elseif ($show) {
 
     // Per-day detail wrapped in <details class="aa-page-section" open>: the operator just submitted
     // the form to see these results, so this section is always expanded on render. The matching
@@ -271,7 +284,7 @@ if ($show) {
 
     // items selection — combine sort × period
     if ($item_sort === 'exact') {
-        $items = $items_code;
+        $items = $expression_refused ? $items_code : AA::Un($items_code);
     } elseif ($item_sort === 'top') {
         // ranking by hits — uses HitcounterStats::getStats (existing path)
         $items = implode('-', array_keys(HitcounterStats::getStats($slices, $rank_from, $rank_to, true, $item_count)));
@@ -331,16 +344,14 @@ if ($show) {
     }
 
     if (strlen($items)) {
-        $from = $date_from ? strtotime($date_from) : 0;
-        $template = '<div class=aa-table>';
-        foreach ($content->getValuesArray('stats') as $code) {
-            $name = HITCOUNTER_OPTIONS[$code];
-            $template .= "<h2>$name</h2>\n{hitcounter:$code:$items:$from}\n";
+        $from = $date_from ? (string) strtotime($date_from) : '0';
+        // values are passed as parameters, never put into a template, so a ':' or '{' in them stays data
+        echo '<div class=aa-table>';
+        foreach (array_intersect($content->getValuesArray('stats'), array_keys(HITCOUNTER_OPTIONS)) as $code) {
+            echo '<h2>' . HITCOUNTER_OPTIONS[$code] . "</h2>\n" . StrExp('hitcounter', [$code, $items, $from]) . "\n";
         }
-        $template .= '</div>';
-        $template .= '<div>' . _m('Items found') . ': ' . StrExp('count', [$items]) . '</div>';
-        //FrmStaticText(_m('Display Statistics for Item'), AA::Un($template), '', '', false);
-        echo AA::Un($template);
+        echo '</div>';
+        echo '<div>' . _m('Items found') . ': ' . StrExp('count', [$items]) . '</div>';
     } else {
         echo MsgOk(_m('No items found'));
     }
