@@ -16,9 +16,10 @@ use ReflectionProperty;
  *
  * DB_PDO::quote() just lazy-connects then delegates to the driver's PDO::quote().
  * We exercise its contract with a reflection-injected in-memory SQLite PDO, so
- * connect() short-circuits before its sqlite-function registration. The exact escaping is the driver's — SQLite
- * doubles the quote, production MySQL backslash-escapes — so we assert only the
- * driver-agnostic safety contract (value is wrapped and the inner quote escaped).
+ * connect() short-circuits before its sqlite-function registration. The exact
+ * escaping is the driver's — SQLite doubles the quote, production MySQL
+ * backslash-escapes — so we assert only the driver-agnostic safety contract
+ * (value is wrapped and the inner quote escaped).
  *
  * DB_PDO::fetch_first_column() — characterization of what callers get back. It returns
  * the first column by position (every query selecting its id first is the
@@ -122,7 +123,6 @@ final class DbPdoTest extends TestCase
         $this->assertNull($db->first_col());
     }
 
-    /** Inject a ready PDO into the protected $dbh so connect() short-circuits. */
     // --- connect(): SQLite gets the MySQL functions AA's SQL uses ---
 
     public function test_connect_sqlite_registers_rand_greatest_least(): void
@@ -131,13 +131,16 @@ final class DbPdoTest extends TestCase
         $pdo = $db->connect();
         $this->assertInstanceOf(PDO::class, $pdo);
 
-        $row = $pdo->query('SELECT rand() AS r, greatest(1, 3, 2) AS g, least(4, 2, 5) AS l')->fetch(PDO::FETCH_ASSOC);
+        $row = $pdo->query('SELECT rand() AS r, greatest(1, 3, 2) AS g, least(4, 2, 5) AS l, greatest(1, NULL) AS gn, least(1, NULL) AS ln')->fetch(PDO::FETCH_ASSOC);
         $this->assertGreaterThanOrEqual(0, $row['r']);
         $this->assertLessThanOrEqual(1, $row['r']);
         $this->assertEquals(3, $row['g']);
         $this->assertEquals(2, $row['l']);
+        $this->assertNull($row['gn'], 'as in MySQL, a NULL argument makes the result NULL');
+        $this->assertNull($row['ln']);
     }
 
+    /** Inject a ready PDO into the protected $dbh so connect() short-circuits. */
     private function injectPdo(DB_PDO $db, PDO $pdo): void
     {
         (new ReflectionProperty(DB_PDO::class, 'dbh'))->setValue($db, $pdo);

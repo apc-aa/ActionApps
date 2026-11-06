@@ -270,8 +270,9 @@ class DB_PDO
                         $sep = array_shift($args);
                         return implode($sep, $args);
                     });
-                    $this->dbh->sqliteCreateFunction('greatest', fn(...$args) => max($args));
-                    $this->dbh->sqliteCreateFunction('least', fn(...$args) => min($args));
+                    // as in MySQL, a NULL argument makes the result NULL
+                    $this->dbh->sqliteCreateFunction('greatest', fn(...$args) => in_array(null, $args, true) ? null : max($args));
+                    $this->dbh->sqliteCreateFunction('least', fn(...$args) => in_array(null, $args, true) ? null : min($args));
                     $this->dbh->sqliteCreateFunction('regexp', function ($pattern, $value) {
                         #mb_internal_encoding('UTF-8'); // multibyte character encoding
                         #mb_regex_encoding('UTF-8');    // should be set at the application level
