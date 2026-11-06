@@ -766,7 +766,7 @@ class Manager extends AA_Storable
      *  to another Manager page (the AA finder lists aliases with the buttons of aliases.php) */
     public const FORM_TOKEN = 'manager';
 
-    protected ?AA_Searchbar $searchbar;
+    protected ?AA_Searchbar $searchbar = null;
 
     /** @var string searchbar additional function name */
     protected $searchbar_funct;
