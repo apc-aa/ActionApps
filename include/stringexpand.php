@@ -2547,6 +2547,10 @@ class AA_Stringexpand_Xmlformat extends AA_Stringexpand_Nevercache {
      */
     function expand($xml = ''): string
     {
+        // loadXML() throws on an empty string - a blank field must not stop the page
+        if (trim($xml) === '') {
+            return '';
+        }
         $dom = new DOMDocument();
         // must be before load xml string
         $dom->preserveWhiteSpace = false;
