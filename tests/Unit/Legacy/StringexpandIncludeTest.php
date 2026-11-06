@@ -60,6 +60,8 @@ final class StringexpandIncludeTest extends TestCase
             // the extracted snippet has no `use` line of its own
             'HttpInclude::'           => '\AA\Expand\HttpInclude::',
             'SiteFile::'              => '\AA\Util\SiteFile::',
+            'LogOnce::'               => '\AA\Util\LogOnce::',
+            'AA::$site_id'            => '($GLOBALS["aa_test_site_id"] ?? null)',
             'AA_Slice::getModuleProperty(' => 'aa_test_module_property(',
             'PageCache::'             => '\AA\Cache\PageCache::',
             'self_server()'           => 'aa_test_self_server()',
@@ -215,21 +217,34 @@ final class StringexpandIncludeTest extends TestCase
         self::assertSame('q=kombucha', $this->lastCall()['body']);
     }
 
-    /** readfile prints a static file of the site, relative to the document root */
-    public function test_readfile_readsAFileOfTheDocumentRoot(): void
+    /** readfile prints nothing, not even a file of the document root, and is logged by the slice or site, not the name */
+    public function test_readfile_readsNothing(): void
     {
         $docroot = sys_get_temp_dir() . '/aa-include-readfile-' . bin2hex(random_bytes(6));
         mkdir("$docroot/parts", 0o777, true);
         file_put_contents("$docroot/parts/menu.html", '<ul></ul>');
-        $saved = $_SERVER['DOCUMENT_ROOT'] ?? null;
+        $saved = [$_SERVER['DOCUMENT_ROOT'] ?? null, $GLOBALS['slice_id'] ?? null];
         $_SERVER['DOCUMENT_ROOT'] = $docroot;
+        // seen already, so the test reaches no database; a row under another selector would add a key
+        $logged = [
+            'FILE_DENY' . "\0readfile:0123456789abcdef0123456789abcdef" => true,
+            'FILE_DENY' . "\0readfile:fedcba9876543210fedcba9876543210" => true,
+        ];
+        $seen = new \ReflectionProperty(\AA\Util\LogOnce::class, 'seen');
+        $seen->setValue(null, $logged);
         try {
-            self::assertSame('<ul></ul>', self::expand('parts/menu.html', 'readfile'));
-            self::assertSame('<ul></ul>', self::expand('/parts/menu.html', 'readfile'));
-            self::assertSame('', self::expand('parts/missing.html', 'readfile'));
-            self::assertSame([], $this->http->calls, 'a file is read from the disk, never fetched');
+            $GLOBALS['slice_id'] = '0123456789abcdef0123456789abcdef';
+            self::assertSame('', self::expand('parts/menu.html', 'readfile'));
+            self::assertSame('', self::expand('parts/{qs:p}.html', 'readfile'), 'a name built from the request adds no row');
+            $GLOBALS['slice_id'] = null;
+            $GLOBALS['aa_test_site_id'] = 'fedcba9876543210fedcba9876543210';
+            self::assertSame('', self::expand('parts/menu.html', 'readfile'), 'a site spot is logged by the site');
+            self::assertSame([], $this->http->calls, 'nor fetched in its place');
+            self::assertSame($logged, $seen->getValue());
         } finally {
-            $_SERVER['DOCUMENT_ROOT'] = $saved;
+            \AA\Util\LogOnce::reset();
+            [$_SERVER['DOCUMENT_ROOT'], $GLOBALS['slice_id']] = $saved;
+            unset($GLOBALS['aa_test_site_id']);
             unlink("$docroot/parts/menu.html");
             rmdir("$docroot/parts");
             rmdir($docroot);

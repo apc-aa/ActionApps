@@ -7,14 +7,13 @@ namespace AA\Util;
 use AA\Upload\UploadDir;
 
 /**
- * A file of the site that a template prints ({include:<name>:readfile|fileman|site}) or a mail attaches.
- * A template reads it only when it lies, links resolved, below the directory the name is relative to or
- * below another directory of the site's files (the upload directories). Never from an AA tree - the
- * running one or another on the same disk (staging, the copy an update leaves) - which keeps the
- * configuration and the keys and often lies in the document root itself, and never a file the server
- * runs, a dotfile or a file of settings or keys, whatever directory it is in. A mail reads any upload
- * (readAttachment()). A refused read gives '' and a log row (EVENT), so a site that loses a part of its
- * page can be found on State Check.
+ * A file of the site that a template prints ({include:<name>:fileman|site}) or a mail attaches.
+ * A template reads it only when it lies, links resolved, below the directory the name is relative to.
+ * Never from an AA tree - the running one or another on the same disk (staging, the copy an update
+ * leaves) - which keeps the configuration and the keys and often lies in the document root itself, and
+ * never a file the server runs, a dotfile or a file of settings or keys, whatever directory it is in.
+ * A mail reads any upload (readAttachment()). A refused read gives '' and a log row (EVENT), so a site
+ * that loses a part of its page can be found on State Check.
  */
 final class SiteFile
 {
@@ -56,15 +55,14 @@ final class SiteFile
 
     /**
      * The contents of $name, '' when it is missing or refused (refusals are logged)
-     * @param string       $base    the directory $name is relative to - the document root, the File Manager directory
-     * @param list<string> $roots   other directories of the site's files the name may lead to through a link
-     * @param string       $purpose the kind of read, for the log: readfile, fileman, ...
-     * @param string       $where   what else identifies the place, for the log - a slice id
+     * @param string $base    the directory $name is relative to - a File Manager directory
+     * @param string $purpose the kind of read, for the log: fileman, site
+     * @param string $where   what else identifies the place, for the log - a slice id
      */
-    public static function read(string $base, string $name, array $roots, string $purpose, string $where = ''): string
+    public static function read(string $base, string $name, string $purpose, string $where = ''): string
     {
         try {
-            return self::contents($base, $name, $roots, self::aaTree());
+            return self::contents($base, $name, [], self::aaTree());
         } catch (\DomainException $e) {
             // by the file, not the name: one file has endless spellings (./x, a/../x)
             LogOnce::daily(self::EVENT, "$purpose:" . (self::resolved(rtrim($base, '/') . "/$name") ?: $name), [$e->getMessage(), $where]);

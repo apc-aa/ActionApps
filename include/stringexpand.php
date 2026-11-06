@@ -45,6 +45,7 @@ use AA\Security\LoginThrottle;
 use AA\Util\ChangesMonitor;
 use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
+use AA\Util\LogOnce;
 use AA\Util\NamedInterface;
 use AA\Util\Secret;
 use AA\Util\SiteFile;
@@ -6412,7 +6413,7 @@ class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
         if (!$def) {
             $named = \AA\Import\Definition::named($slice, $ref);
             foreach ((count($named) > 1) ? $named : [] as $id) {
-                \AA\Util\LogOnce::daily(\AA\Import\Definition::ERROR_EVENT, "Import_$id", "#$id AMBIGUOUS");
+                LogOnce::daily(\AA\Import\Definition::ERROR_EVENT, "Import_$id", "#$id AMBIGUOUS");
             }
             return (count($named) > 1) ? 'imp:invalid' : 'imp:unknown';
         }
@@ -6430,14 +6431,15 @@ class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
 
 /** include file / URL {include:<url>:<type>:<headers>:<body>:<err>}
  *  $url     - filename / URL
- *  $type    - hint on where to find it  (http, ajax, site, readfile, GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, fileman) - http is default
+ *  $type    - hint on where to find it  (http, ajax, site, GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, fileman) - http is default
  *  $headers - additional headers for http request
  *  $body    - body for POST, PUT, DELETE, PATCH requests
  *  $err     - error message if the request fails
  *  {include:https#://api.example.cz/getdata/my_ID:GET:{jsonasoc:Content-Type:application/json:key:478484a5c4e54b584e54a54c5b7899}}
  *  {include:https#://example.cz/api/data:POST:{"Content-Type":"application/json"}:{"data":"xy"}:Error _#status, _#errmsg}
- *  {include:parts/menu.html:readfile} - a file below the document root; fileman - below the File Manager directory
- *  of the slice, site - of the site module. Never a file of the AA tree, a dotfile, a script or a settings or key file.
+ *  {include:parts/menu.html:fileman} - a file below the File Manager directory of the slice, site - of the site
+ *  module. Never a file of the AA tree, a dotfile, a script or a settings or key file. readfile prints nothing
+ *  and is logged: it read any file of the document root, past the access rules of the web server.
  */
 class AA_Stringexpand_Include extends AA_Stringexpand {
     /** expand function
@@ -6470,22 +6472,28 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
             case "ajax":
                 return expandFilenameWithHttp($fn, 'ajax', $headers, $data, $err);
             case "fileman":
-                // Note this won't work if called from a Static view because no slice_id available
-                // This should be fixed.
-                if ($this->itemview->slice_info["id"] ?? '') {
-                    $mysliceid = unpack_id($this->itemview->slice_info['id']);
-                } elseif ($GLOBALS['slice_id'] ?? '') {
-                    $mysliceid = $GLOBALS['slice_id'];
-                } else {
+                // a static view has no slice, so it reads nothing
+                if (!($mysliceid = $this->sliceId())) {
                     return "";
                 }
-                return SiteFile::read(self::filemanDir((string) AA_Slice::getModuleProperty($mysliceid, 'fileman_dir')), (string) $fn, [], 'fileman', (string) $mysliceid);
+                return SiteFile::read(self::filemanDir((string) AA_Slice::getModuleProperty($mysliceid, 'fileman_dir')), (string) $fn, 'fileman', $mysliceid);
             case "site":
-                return SiteFile::read(self::filemanDir((string) ($GLOBALS['site_fileman_dir'] ?? '')), (string) $fn, [], 'site');
-            case "readfile": // a static file of the site, relative to its document root
-                return SiteFile::read((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''), (string) $fn, SiteFile::uploadRoots(), 'readfile', (string) ($GLOBALS['slice_id'] ?? ''));
+                return SiteFile::read(self::filemanDir((string) ($GLOBALS['site_fileman_dir'] ?? '')), (string) $fn, 'site');
+            case "readfile":
+                // one row a day per slice or site whatever names the template builds, so State Check can point to the template
+                LogOnce::daily(SiteFile::EVENT, 'readfile:' . ($this->sliceId() ?: (string) AA::$site_id), (string) $fn);
+                return '';
         }
         return '';
+    }
+
+    /** the slice of the template, '' when there is none */
+    private function sliceId(): string
+    {
+        if ($this->itemview->slice_info['id'] ?? '') {
+            return unpack_id($this->itemview->slice_info['id']);
+        }
+        return (string) ($GLOBALS['slice_id'] ?? '');
     }
 
     /** The File Manager directory $name, '' (no base, nothing read) when there is none or the name leads
@@ -6623,7 +6631,6 @@ class AA_Unalias_Callback {
         // {include(file)}
         // {include:file} or {include:file:http}
         // {include:file:fileman|site}
-        // {include:file:readfile[:str_replace:<search>[;<search1>;..]:<replace>[:<replace1>;..]:<trim-to-tag>:<trim-from-tag>[:filter_func]]}
         // {scroller.....}
         // {pager:.....}
         // {#comments}

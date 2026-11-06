@@ -185,12 +185,12 @@ final class SiteFileTest extends TestCase
 
     public function test_read_allowed_file(): void
     {
-        $this->assertSame('part', SiteFile::read($this->docroot, 'sub/part.txt', [], 'readfile'));
+        $this->assertSame('part', SiteFile::read($this->docroot, 'sub/part.txt', 'fileman'));
     }
 
     public function test_read_missing_file_is_empty(): void
     {
-        $this->assertSame('', SiteFile::read($this->docroot, 'missing.html', [], 'readfile'));
+        $this->assertSame('', SiteFile::read($this->docroot, 'missing.html', 'fileman'));
     }
 
     /** @return array<string, array{string, bool}> */
