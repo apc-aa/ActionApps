@@ -319,6 +319,34 @@ final class GrabberHttpTest extends TestCase
         self::assertSame(['Content-Type: application/json'], $headers['content-type']);
     }
 
+    public function test_jsonld_withoutTokenOrLoginLoadsWithoutAuthorization(): void
+    {
+        $headers = [];
+        $mock    = new MockHttpClient(static function (string $method, string $url, array $options) use (&$headers): MockResponse {
+            $headers = $options['normalized_headers'];
+            return new MockResponse('[{"a":1}]');
+        });
+        $grabber = (new JsonLD('https://example.invalid/api'))->setHttp(new Client(http: $mock));
+
+        self::assertCount(1, $grabber->getAllItems());
+        self::assertArrayNotHasKey('authorization', $headers);
+    }
+
+    public function test_loadData_missingLocalFileIsAnException(): void
+    {
+        $grabber = new CSV(sys_get_temp_dir() . '/aa-grabber-missing-' . uniqid() . '.csv', '', ';');
+
+        set_error_handler(static fn(): bool => true, E_WARNING);   // file_get_contents() warns first
+        try {
+            $grabber->getSources();
+            self::fail('a missing file must not read as empty data');
+        } catch (\Exception $e) {
+            self::assertStringStartsWith('file not loaded: ', $e->getMessage());
+        } finally {
+            restore_error_handler();
+        }
+    }
+
     public function test_jsonld_tokenFetchedThroughClient(): void
     {
         $seen = [];

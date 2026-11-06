@@ -105,9 +105,9 @@ abstract class AbstractGrabber implements NamedInterface
      * @param  string       $url
      * @param  string|null  $post_body
      *
-     * @return string data
+     * @return string|false data, false when the URL or file could not be read
      */
-    protected function loadUrl(#[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $post_body = ''): string
+    protected function loadUrl(#[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $post_body = ''): string|false
     {
         if ($this->hasHttp()) {
             return $post_body ? $this->fetch('POST', $url, $post_body, ['Content-Type' => 'text/xml']) : $this->fetch('GET', $url);
