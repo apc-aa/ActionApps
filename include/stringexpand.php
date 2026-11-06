@@ -6676,7 +6676,7 @@ class AA_Unalias_Callback {
             case "\t":
                 return QuoteColons("{" . $out . "}");
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
-                if ($out[1] === "#") {
+                if (($out[1] ?? '') === "#") {
                     if (isset($als[aa_substr($out,2)])) {
                         return $this->expandUrlValue('als[' . aa_substr($out,2) . ']', $als[aa_substr($out,2)]);
                     }
@@ -9707,7 +9707,7 @@ class AA_Stringexpand__ extends AA_Stringexpand {
         static $saliases = [];
         static $smodules = null;
 
-        $name = trim(array_shift($arg_list));
+        $name = trim(array_shift($arg_list) ?? '');
         if (!strlen($name)) {
             return '';
         }
