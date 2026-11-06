@@ -73,12 +73,14 @@ if (isset($_GET['sid'])) {
     $sort        = InputVars::stringGET('sort');
     $slice_field = InputVars::stringGET('slice_field');
     $is_field    = static fn(string $field_id): bool => !is_null(AA_Slice::getModule($sid)?->getField($field_id));
-    if (SignedExpression::isSigned($slice_field)) {
-        $slice_field = SignedExpression::fromRequest($slice_field, 'slice_field', $is_field) ?? '';
-    } elseif (strlen($slice_field) && (!preg_match('/^(?:[a-z0-9_.]{16}|_#[0-9A-Z_]{8})$/D', $slice_field) || ((strlen($slice_field) === 16) && !$is_field($slice_field)))) {
-        // unsigned only a field or an alias like the default; anything else would be HTML here and an expression in {expand:} below
-        ProtectionLog::write(Protection::SignedExpressions, false, 'slice_field', ProtectionLog::referer());
-        $slice_field = '';
+    // unsigned only a field or an alias like the default - other text would be HTML here and an expression in {expand:}
+    // below; a stale signature just falls back to the headline, so the protection switch is not needed here
+    $plain = preg_match('/^(?:[a-z0-9_.]{16}|_#[0-9A-Z_]{8})$/D', $slice_field) && ((strlen($slice_field) !== 16) || $is_field($slice_field));
+    if (strlen($slice_field) && !$plain) {
+        $slice_field = SignedExpression::verify($slice_field) ?? '';
+        if ($slice_field === '') {
+            ProtectionLog::write(Protection::SignedExpressions, false, 'slice_field', ProtectionLog::referer());
+        }
     }
     $listlen     = InputVars::intGET('listlen');
     $r_state['related'] = [
