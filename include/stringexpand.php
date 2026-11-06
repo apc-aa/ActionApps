@@ -327,7 +327,7 @@ class AA_Stringexpand_User extends AA_Stringexpand {
      * @return string - for not cache, return random value
      */
     function additionalCacheParam(array $params= []): string {
-        return serialize([self::$auth_user_info, $GLOBALS['auth']]);
+        return serialize([self::$auth_user_info, $GLOBALS['auth'] ?? null]);   // pages without a login have no $auth
     }
 
     /** expand function
@@ -362,7 +362,8 @@ class AA_Stringexpand_User extends AA_Stringexpand {
                 }
                 return 'undefined';
             default:
-                $user_id = (!$_SERVER['PHP_AUTH_USER'] && !$_SERVER['REMOTE_USER']) ? AuthGetUid() : AA_Reader::name2Id(get_if($_SERVER['PHP_AUTH_USER'],$_SERVER['REMOTE_USER']));
+                $http_user = get_if($_SERVER['PHP_AUTH_USER'] ?? '', $_SERVER['REMOTE_USER'] ?? '');
+                $user_id   = $http_user ? (string) AA_Reader::name2Id($http_user) : AuthGetUid();   // '' when no reader has that name
                 if ($field === 'id') {
                     return $user_id;
                 }

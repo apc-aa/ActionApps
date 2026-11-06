@@ -62,19 +62,47 @@ final class StringexpandUserTest extends TestCase
         self::assertSame('remote', self::expand());
     }
 
-    private static function expand(): string
+    public function test_expand_anonymousVisitor_idWithoutWarnings(): void
     {
-        return (new \AA_Stringexpand_User([]))->expand();
+        $warnings = [];
+        set_error_handler(static function (int $no, string $msg) use (&$warnings): bool {
+            $warnings[] = $msg;
+            return true;
+        });
+        try {
+            // first: "global $auth" in AuthGetUid() would create the variable it checks
+            self::assertSame('', StrExpand('AA_Stringexpand_User', ['']), 'the cached path of a page without a login');
+            self::assertSame('', self::expand('id'));
+        } finally {
+            restore_error_handler();
+        }
+        self::assertSame([], $warnings);
     }
 
-    private static function login(string $uname): object
+    public function test_expand_nobodyLogin_idIsNobody(): void
     {
-        return new class ($uname) {
-            public function __construct(private string $uname) {}
+        $GLOBALS['auth'] = self::login('', 'nobody');
+        self::assertSame('nobody', self::expand('id'));
+    }
+
+    private static function expand(string $field = ''): string
+    {
+        return (new \AA_Stringexpand_User([]))->expand($field);
+    }
+
+    private static function login(string $uname, string $uid = ''): object
+    {
+        return new class ($uname, $uid) {
+            public function __construct(private string $uname, private string $uid) {}
 
             public function getUname(): string
             {
                 return $this->uname;
+            }
+
+            public function getUid(): string
+            {
+                return $this->uid;
             }
         };
     }
