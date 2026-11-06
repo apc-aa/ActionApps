@@ -7,7 +7,8 @@ namespace AA\Util;
 use AA\Upload\UploadDir;
 
 /**
- * A file of the site that a template prints ({include:<name>:fileman}) or a mail attaches.
+ * A file of the site that a template prints ({include:<name>:fileman}) or a mail attaches;
+ * {fileinfo} describes only uploaded files (uploadedFile()).
  * A template reads it only when it lies, links resolved, below the directory the name is relative to.
  * Never from an AA tree - the running one or another on the same disk (staging, the copy an update
  * leaves) - which keeps the configuration and the keys and often lies in the document root itself, and

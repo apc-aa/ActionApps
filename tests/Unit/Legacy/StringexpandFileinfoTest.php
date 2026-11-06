@@ -27,9 +27,6 @@ final class StringexpandFileinfoTest extends TestCase
         if (class_exists(self::CLS, false)) {
             return;
         }
-        // a parent of its own: StringexpandIncludeTest declares its one unguarded
-        eval('abstract class AA_Test_Stringexpand_Fileinfo_Parent { public $itemview = null; }');
-        eval('function aa_test_fileinfo_fetch($method, $url) { $GLOBALS["aa_test_fileinfo"]["fetched"][] = $url; return ""; }');
         $source = (string) file_get_contents(__DIR__ . '/../../../include/stringexpand.php');
         $tokens = token_get_all($source);
         $class  = '';
@@ -47,10 +44,10 @@ final class StringexpandFileinfoTest extends TestCase
             }
         }
         eval(strtr($class, [
-            'class AA_Stringexpand_Fileinfo extends AA_Stringexpand' => 'class ' . self::CLS . ' extends AA_Test_Stringexpand_Fileinfo_Parent',
+            'class AA_Stringexpand_Fileinfo extends AA_Stringexpand' => 'class ' . self::CLS,
             'SiteFile::uploadRoots()' => '[$GLOBALS["aa_test_fileinfo"]["path"]]',
             'SiteFile::'              => '\AA\Util\SiteFile::',
-            'HttpInclude::fetch('     => 'aa_test_fileinfo_fetch(',
+            'HttpInclude::fetch('     => '\\' . self::class . '::fetch(',
             'IMG_UPLOAD_URL'          => '$GLOBALS["aa_test_fileinfo"]["url"]',
             'IMG_UPLOAD_PATH'         => '$GLOBALS["aa_test_fileinfo"]["path"]',
         ]));
@@ -89,6 +86,13 @@ final class StringexpandFileinfoTest extends TestCase
         }
     }
 
+    /** HttpInclude::fetch() - nothing is fetched */
+    public static function fetch(string $method, string $url): string
+    {
+        $GLOBALS['aa_test_fileinfo']['fetched'][] = $url;
+        return '';
+    }
+
     private static function info(string $url, string $info): string
     {
         $cls = self::CLS;
@@ -125,8 +129,10 @@ final class StringexpandFileinfoTest extends TestCase
     #[DataProvider('outside')]
     public function test_expand_file_outside_the_upload_tells_nothing(string $url): void
     {
+        $url = str_replace('{root}', $this->root, $url);
         foreach (['crc', 'time', 'mime', 'bytesize'] as $info) {
-            $this->assertSame('', self::info(str_replace('{root}', $this->root, $url), $info), $info);
+            $this->assertSame('', self::info($url, $info), $info);
         }
+        $this->assertSame([($url[0] === '/') ? "https://example.org$url" : $url], $GLOBALS['aa_test_fileinfo']['fetched'], 'the size is asked of the web, as for a file elsewhere');
     }
 }

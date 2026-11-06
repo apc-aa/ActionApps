@@ -8,8 +8,8 @@ use AA\Util\LogOnce;
 use AA\Util\SiteFile;
 use AA_Log;
 
-/** Files a template or a mail asked for in the last 30 days ({include:<file>:fileman}, a local
- *  attachment) that AA refused to read: outside the site's own files, in the AA tree, a dotfile, a
+/** Files a template or a mail asked for in the last 30 days ({include:<file>:fileman},
+ *  {fileinfo:<url>}, a local attachment) that AA refused to read: outside the site's own files, in the AA tree, a dotfile, a
  *  script or a file of settings or keys - and the slices and sites whose templates use
  *  {include:<file>:readfile} or {include:<file>:site}, which read nothing. The template printed nothing
  *  there, so the page may miss a part. Also the local files mails still took from outside the upload
@@ -80,7 +80,9 @@ class CheckFileReadRefusals extends AbstractOptimize
                     _m('Days seen') => (string) (int) $row['days'],
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
                 ]],
-                advice: _m('AA reads for templates and e-mails only the files of the site: its File Manager directory or the upload directories - never from the directory AA is installed in, never a dotfile, a script or a file of settings or keys. Move the file among the files of the site, or remove it from the template.'),
+                advice: ($purpose === 'fileinfo')
+                    ? _m('{fileinfo} describes only the files uploaded to a slice or to the File Manager - never one from the directory AA is installed in or a dotfile. Give it the URL of an uploaded file, or remove it from the template.')
+                    : _m('AA reads for templates and e-mails only the files of the site: its File Manager directory or the upload directories - never from the directory AA is installed in, never a dotfile, a script or a file of settings or keys. Move the file among the files of the site, or remove it from the template.'),
                 links: [_m('Log rows') => AA_Log::getAdminUrl(SiteFile::EVENT, $selector)],
                 key: $selector,
                 last: (int) $row['last'],

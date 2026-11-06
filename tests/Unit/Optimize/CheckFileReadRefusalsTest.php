@@ -78,6 +78,16 @@ final class CheckFileReadRefusalsTest extends TestCase
         $this->assertSame($reasons, array_unique($reasons));
     }
 
+    public function test_a_file_fileinfo_refused_is_pointed_to_the_uploads(): void
+    {
+        $row = ['selector' => 'fileinfo:/etc/passwd', 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => 'outside:'];
+
+        [$finding] = CheckFileReadRefusals::findingsFor([$row]);
+
+        $this->assertSame(Finding::WARNING, $finding->severity);
+        $this->assertStringContainsString('uploaded to a slice', $finding->advice);
+    }
+
     public function test_a_mail_file_from_outside_the_uploads_is_info(): void
     {
         $row = ['selector' => 'mail:/data/webs/x/upload/a.pdf', 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
