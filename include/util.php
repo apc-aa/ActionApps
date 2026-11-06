@@ -2115,9 +2115,8 @@ function aa_version($format = 'full'): string
         'build'       => $build,      // commit and its date, for humans
         'aa'          => $version,
         'php'         => PHP_VERSION,
-        // built here, not above: it reads REMOTE_ADDR, which does not exist on the command line,
-        // so every cron and queue call used to warn for a string it did not ask for
-        default       => 'ActionApps ' . $version . ' (' . ($build ?: 'source checkout') . '), PHP ' . PHP_VERSION . ', REMOTE_ADDR: ' . ($_SERVER['REMOTE_ADDR'] ?? 'cli'),
+        // no visitor's address: {version} on a cached page would show the first visitor's to everyone
+        default       => 'ActionApps ' . $version . ' (' . ($build ?: 'source checkout') . '), PHP ' . PHP_VERSION,
     };
 }
 
