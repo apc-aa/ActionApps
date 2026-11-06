@@ -177,6 +177,34 @@ final class SiteFile
     }
 
     /**
+     * The resolved path of the file $path names below one of the upload directories $roots, null for a
+     * file elsewhere, in an AA tree or behind a dotted name, and for a missing one - for what a template
+     * asks of an uploaded file without printing it (its size, time, type). A refused file is logged.
+     * @param list<string> $roots   the upload directories (uploadRoots())
+     * @param string       $purpose the kind of read, for the log
+     * @param string       $where   what else identifies the place, for the log - a slice id
+     */
+    public static function uploadedFile(string $path, array $roots, string $purpose, string $where = ''): ?string
+    {
+        $real = self::resolved($path);
+        if (($real === false) || !is_file($real)) {
+            return null;
+        }
+        $root = self::rootOf($real, $roots);
+        if ($root === null) {
+            $reason = self::REASON_OUTSIDE;
+        } elseif (self::inAaTree($real, self::aaTree(), $roots)) {
+            $reason = self::REASON_AA_TREE;
+        } elseif (self::hasDotSegment(explode('/', substr($real, strlen($root))))) {
+            $reason = self::REASON_DOT;
+        } else {
+            return $real;
+        }
+        LogOnce::daily(self::EVENT, "$purpose:$real", [$reason, $where]);
+        return null;
+    }
+
+    /**
      * The directories of the install the sites' files are uploaded to: the slices' upload directory and
      * the File Manager's - a link of the document root may lead there (another volume)
      * @return list<string>

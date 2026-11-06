@@ -299,6 +299,65 @@ final class SiteFileTest extends TestCase
         $this->assertSame('', $this->attachment($this->root . $path));
     }
 
+    /** a refused file writes a log row; seen already, so the test reaches no database */
+    private function uploaded(string $path, ?array $roots = null): ?string
+    {
+        $real = str_contains($path, "\0") ? false : (string) realpath($path);
+        (new \ReflectionProperty(LogOnce::class, 'seen'))->setValue(null, [SiteFile::EVENT . "\0fileinfo:$real" => true]);
+        try {
+            return SiteFile::uploadedFile($path, $roots ?? ["$this->docroot/img_upload/"], 'fileinfo');
+        } finally {
+            LogOnce::reset();
+        }
+    }
+
+    /** @return array<string, array{string}> */
+    public static function uploadedFiles(): array
+    {
+        return [
+            'an upload'                 => ['/volume/img_upload/abc/x.html'],
+            'an upload behind a link'   => ['/www/img_upload/abc/x.html'],
+            'a doubled slash of a join' => ['/volume/img_upload//abc/x.html'],
+            'in the upload directory'   => ['/volume/img_upload/top.pdf'],
+        ];
+    }
+
+    #[DataProvider('uploadedFiles')]
+    public function test_uploadedFile_found(string $path): void
+    {
+        file_put_contents("$this->upload/top.pdf", 'pdf');
+
+        $this->assertSame(realpath($this->root . $path), $this->uploaded($this->root . $path));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function notUploadedFiles(): array
+    {
+        return [
+            'a file elsewhere'         => ['/outside/file.html'],
+            'up out of the upload'     => ['/volume/img_upload/abc/../../../www/secret.key'],
+            'a link out of the upload' => ['/volume/img_upload/abc/out.html'],
+            'a dotfile of the upload'  => ['/volume/img_upload/abc/.htaccess'],
+            'a directory'              => ['/volume/img_upload/abc'],
+            'a missing file'           => ['/volume/img_upload/abc/missing.pdf'],
+            'a NUL byte'               => ["/volume/img_upload/abc/x.html\0.pdf"],
+        ];
+    }
+
+    #[DataProvider('notUploadedFiles')]
+    public function test_uploadedFile_refused(string $path): void
+    {
+        file_put_contents("$this->upload/abc/.htaccess", 'Deny from all');
+        symlink("$this->root/outside/file.html", "$this->upload/abc/out.html");
+
+        $this->assertNull($this->uploaded($this->root . $path));
+    }
+
+    public function test_uploadedFile_never_from_an_aa_tree(): void
+    {
+        $this->assertNull($this->uploaded("$this->docroot/aa-dev/css/a.css", [$this->docroot]), 'an upload directory set to the document root');
+    }
+
     public function test_attachmentDir_upload_by_any_spelling(): void
     {
         $bases = ["$this->docroot/img_upload/"];

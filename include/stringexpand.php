@@ -9416,8 +9416,7 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
                 return basename(parse_url($url, PHP_URL_PATH));
             case 'bytesize':
             case 'size':
-                $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
-                if (is_file($filename)) {
+                if ($filename = self::uploadedFile($url)) {
                     $size = @filesize($filename);
                 } else {
                     $fullurl = $url[0] === '/' ? 'https://'.$_SERVER['HTTP_HOST'].$url : $url;
@@ -9439,14 +9438,12 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
                 $fileinfo = implode('&nbsp;-&nbsp;', [StrExp('fileinfo', [$url, 'type']), StrExp('fileinfo', [$url, 'size'])]);
                 return $fileinfo ? "&nbsp;<span class=\"fileinfo\"> [$fileinfo]</span>" : '';
             case 'crc':
-                $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
-                if (is_file($filename)) {
+                if ($filename = self::uploadedFile($url)) {
                     return  @hash_file('crc32',$filename);
                 }
                 break;
             case 'time':
-                $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
-                if (is_file($filename)) {
+                if ($filename = self::uploadedFile($url)) {
                     return  @filemtime($filename);
                 }
                 break;
@@ -9459,14 +9456,19 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
     }
 
     protected function getMimeType($url): string {
-        $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
         $mimeType = '';
-        if (is_file($filename)) {
+        if ($filename = self::uploadedFile($url)) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mimeType = finfo_file($finfo, $filename);
             finfo_close($finfo);
         }
         return $mimeType ?: '';
+    }
+
+    /** the disk path of the file $url names in an upload directory, null for any other - a template is told nothing of the rest of the disk */
+    private static function uploadedFile(string $url): ?string
+    {
+        return SiteFile::uploadedFile(str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url), SiteFile::uploadRoots(), 'fileinfo', (string) ($GLOBALS['slice_id'] ?? ''));
     }
 }
 
