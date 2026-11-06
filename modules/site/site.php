@@ -311,7 +311,8 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     require_once __DIR__ . "/legacy_util.php";
     require_once $state_path;
     $apc_state['4cacheQS'] = shtml_query_string();
-    $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
+    // a state file need not set $nocache
+    $_REQUEST['nocache'] = ($_REQUEST['nocache'] ?? null) ?: ($nocache ?? null);
 }
 
 if (!isset($apc_state)) {
