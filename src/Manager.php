@@ -1003,6 +1003,17 @@ class Manager extends AA_Storable
         return $this->getSet()->getSort();
     }
 
+    /** A page without a searchbar stores it as null - restore it as null, not as an empty searchbar
+     *  (AA_Storable would build one from the missing state)
+     */
+    public function _oneStatePropertyValue($obj, $property, $state)
+    {
+        if (is_null($obj) && is_null($state)) {
+            return null;
+        }
+        return parent::_oneStatePropertyValue($obj, $property, $state);
+    }
+
     /**
      * @return array 'id'=>'name'
      */
