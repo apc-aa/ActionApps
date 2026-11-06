@@ -1853,7 +1853,8 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
     function expand($name=''): string
     {
         if ($name) {
-            return PageCache::cookie($name) ?? '';
+            $value = PageCache::cookie($name);
+            return is_string($value) ? $value : '';   // a cookie named "name[key]" comes as an array - no text to print
         }
         AA::Pagecache()->switchCacheNostore();   // the whole jar - session id included - is no page for others
         return json_encode(PageCache::cookies());
