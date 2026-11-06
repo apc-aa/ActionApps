@@ -827,7 +827,7 @@ class AA_Item
         $fce      = $ali->getFnc();
 
         if (!is_callable([$this,$fce])) {
-            return _m('Error: wrong alias function %1 for %2', [$fce,$alias]);
+            return _m('Error: wrong alias function %1 for %2', [safe($fce), safe($alias)]);
         }
 
         // call function (called by function reference (pointer))
