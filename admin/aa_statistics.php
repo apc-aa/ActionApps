@@ -284,7 +284,7 @@ if ($show && ($item_sort === 'exact') && $expression_refused) {
 
     // items selection — combine sort × period
     if ($item_sort === 'exact') {
-        $items = $expression_refused ? $items_code : AA::Un($items_code);
+        $items = AA::Un($items_code);
     } elseif ($item_sort === 'top') {
         // ranking by hits — uses HitcounterStats::getStats (existing path)
         $items = implode('-', array_keys(HitcounterStats::getStats($slices, $rank_from, $rank_to, true, $item_count)));

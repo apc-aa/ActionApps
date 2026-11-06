@@ -169,7 +169,7 @@ if ($show && ($item_set === 'exact') && $expression_refused) {
         'last_month' => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 30 * 2, time() - 60 * 60 * 24 * 30, true, $item_count))),
         'last_week'  => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 7 * 2, time() - 60 * 60 * 24 * 7, true, $item_count))),
         'last_day'   => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 2, time() - 60 * 60 * 24, true, $item_count))),
-        'exact'      => StrExp('ids', [AA::$module_id, '', '', '-', ($expression_refused ? $items_code : AA::Un($items_code)) ?: 'xxx']),
+        'exact'      => StrExp('ids', [AA::$module_id, '', '', '-', AA::Un($items_code) ?: 'xxx']),
         default      => '',
     };
 
