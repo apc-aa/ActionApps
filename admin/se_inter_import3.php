@@ -55,13 +55,15 @@ try {
 
 $l_categs = FeedUtil::GetGroupConstants(AA::$module_id);        // get all categories belong to local slice
 
-$msg   = '';
+$msg    = '';
+$failed = false;   // one failed feed of several must not be hidden by the next success
 foreach ($f_slices as $f_slice) {
     $channel = $aa_rss['channels'][$f_slice];
 
     $remote_slice_id = $f_slice;
     if (!is_long_id($remote_slice_id)) {
         // the feed tables store it packed and look it up as a 32-hex id - anything else would never match
+        $failed = true;
         continue;
     }
     if (DB_AA::test('external_feeds', [['slice_id', AA::$module_id, 'l'], ['remote_slice_id', $remote_slice_id, 'l']])) {
@@ -121,11 +123,14 @@ foreach ($f_slices as $f_slice) {
                 throw new RuntimeException('feedmap');
             }
         });
-    } catch (RuntimeException $e) {
-        $msg = rawurlencode(_m("Can't add external import"));
+    } catch (RuntimeException) {
+        $failed = true;
         continue;
     }
     $msg = rawurlencode(_m("The import was successfully created"));
+}
+if ($failed) {
+    $msg = rawurlencode(_m("Can't add external import"));
 }
 
 go_url(StateUrl(self_base() . "se_inter_import.php") . "&Msg=" . $msg);
