@@ -50,7 +50,7 @@ final class StringexpandYahooTest extends TestCase
     public function test_expand_nameStaysInsideTheAttributes(): void
     {
         $out = self::expand('x" onmouseover="alert(1)<b>&y');
-        self::assertStringNotContainsString('"x"', $out);
+        self::assertStringNotContainsString('" onmouseover=', $out);
         self::assertStringNotContainsString('<b>', $out);
         self::assertStringContainsString('href="ymsgr:sendim?x%22%20onmouseover%3D%22alert%281%29%3Cb%3E%26y"', $out);
         self::assertStringContainsString('src="http://opi.yahoo.com/online?u=x%22%20onmouseover%3D%22alert%281%29%3Cb%3E%26y&m=g&t=2"', $out);

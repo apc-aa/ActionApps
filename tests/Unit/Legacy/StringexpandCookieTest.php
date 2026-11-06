@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Legacy;
 
-use AA;
 use AA\Cache\PageCache;
 use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +31,7 @@ final class StringexpandCookieTest extends TestCase
 
     protected function setUp(): void
     {
-        (new ReflectionProperty(AA::class, 'pagecache'))->setValue(null, new PageCache(600));
+        // values read stay for the request - each test is a new one
         (new ReflectionProperty(PageCache::class, 'vary_reads'))->setValue(null, []);
         $_COOKIE = [];
     }
