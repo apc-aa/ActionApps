@@ -187,13 +187,22 @@ namespace Tests\Unit\Legacy {
 
             $this->assertSame(['x' => 'x', 'xseo1' => 'xseo1'], $rebuilt->isOption($rebuilt->getCurrentId()));
             $this->assertFalse($rebuilt->isOption(2));      // in a sequence, no option
-            // string ids (the template, a reader) are rebuilt as ints - the option is found; in the legacy
-            // all-string tree itself isOption() misses it (strict in_array against the int current id)
+            // string ids (the template, a reader) are rebuilt as ints - the option is found
             $legacy = sitetree::fromArray(['start_id' => '1', 'spots' => [
                 ['id' => '1', 'n' => 'start', 'p' => '1', 'v' => ['x' => 'x'], 'po' => ['1'], 'ch' => ['2']],
                 ['id' => '2', 'n' => 'option', 'p' => '1', 'po' => ['2']],
             ]]);
             $this->assertSame(['x' => 'x'], $legacy->isOption(2));
+        }
+
+        /** a tree stored before the ids were ints keeps its choices as strings */
+        public function test_isOption_finds_an_option_listed_as_a_string_id(): void
+        {
+            $tree = sitetree::fromArray(self::site()->toArray());
+            $tree->set('choices', 3, ['5', '6']);
+
+            $this->assertSame(['x' => 'x', 'xseo1' => 'xseo1'], $tree->isOption(5));
+            $this->assertFalse($tree->isOption(2));
         }
 
         /** the template has no current_id at all - it starts at the start spot */

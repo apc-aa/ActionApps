@@ -803,7 +803,8 @@ class sitetree
         if (!$parent_spot_id || !($choices = $this->get('choices', $parent_spot_id))) {
             return false;
         }
-        if (is_array($choices) && in_array($spot_id, $choices, true)) {
+        // trees stored before the ids were ints list the choices as strings
+        if (is_array($choices) && in_array((int) $spot_id, array_map('intval', $choices), true)) {
             return $this->get('variables', $parent_spot_id);
         }
         return false;
