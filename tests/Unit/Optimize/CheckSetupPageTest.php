@@ -27,6 +27,12 @@ final class CheckSetupPageTest extends TestCase
         $this->assertStringContainsString("define('AA_SETUP_ENABLED', true);", $finding->advice);
     }
 
+    public function test_findings_reads_the_switch_of_this_installation(): void
+    {
+        // the test config does not switch the setup page on
+        $this->assertSame(Finding::OK, (new CheckSetupPage())->findings()[0]->severity);
+    }
+
     public function test_is_a_basic_security_check(): void
     {
         $this->assertSame([CheckSetupPage::CHECK_BASIC], CheckSetupPage::types());

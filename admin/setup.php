@@ -31,8 +31,6 @@
 // Superadmin-creation form inputs, read explicitly from the request. Kept RAW - the DB layer
 // escapes them on insert (the backend's addUser() stores them safely - Metabase quotes each column
 // by its type) and AA_Inputfield::inputText() safe()s them when the form is redisplayed.
-// The old $$k = AddslashesDeep() register_globals loop was removed (finding N14, 2026-09);
-// it also double-escaped these values on top of the quoting insert.
 // Plain $_REQUEST and not InputVars here: the composer autoloader is only registered by
 // locsess.php, which this page requires below.
 $phase     = $_REQUEST['phase']     ?? '';
@@ -125,7 +123,7 @@ function InitForm(): void
    echo _m("Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>");
    echo _m("If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>");
    ?>
-   <form method=get action="setup.php">
+   <form method="post" action="setup.php">
    <?php echo StateHidden(); ?>
    <input type=submit name=phase value="<?php echo _m(" Init "); ?>">
    <input type=submit name=phase value="<?php echo _m("Recover"); ?>">

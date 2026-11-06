@@ -115,7 +115,8 @@ The database script is protected by an access code, which you set in the script 
 The setup page creates the account without any login, so it is off until you switch it on:
 
 1. In `include/config.php`, add `define('AA_SETUP_ENABLED', true);`. Until then the page answers
-   *404 Not Found*.
+   *404 Not Found*. If one `config.php` serves several databases, add it only to the config file of
+   the database you are setting up, so the page does not open for the others.
 2. Open `https://example.org/apc-aa/admin/setup.php`, click **Init** and fill in the form. Once a
    superadmin exists, the page refuses to create another one.
 3. Remove the line from `config.php` again (State Check reports it while it is there).

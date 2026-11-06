@@ -82,7 +82,8 @@ define("AA_ID", "990111222333444555666777888999A9");
 /** admin/setup.php creates the superadmin account without any login, so it answers
  *  only while this is true. Switch it on for the installation (or to recover a lost
  *  superadmin), create the account and switch it off again - State Check reports it
- *  left on.
+ *  left on. With one config.php for several databases, put it in the config file of
+ *  the one database being set up, never into the shared part.
  */
 // define('AA_SETUP_ENABLED', true);
 

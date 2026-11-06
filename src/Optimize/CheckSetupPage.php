@@ -47,7 +47,7 @@ class CheckSetupPage extends AbstractOptimize
         return new Finding(
             Finding::ERROR,
             _m('The setup page is switched on - admin/setup.php creates a superadmin without login whenever the permission system finds none'),
-            advice: _m("Remove define('AA_SETUP_ENABLED', true); from include/config.php once the superadmin account exists."),
+            advice: _m("Remove define('AA_SETUP_ENABLED', true); from include/config.php (or from the config file of this database) once the superadmin account exists."),
         );
     }
 }
