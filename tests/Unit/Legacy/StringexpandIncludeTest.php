@@ -43,6 +43,7 @@ final class StringexpandIncludeTest extends TestCase
         eval('
             function aa_test_self_server() { return "https://example.org"; }
             function aa_test_shtml_query_string() { return "a=1&b=2"; }
+            function aa_test_module_property($module_id, $property) { return $GLOBALS["aa_test_fileman_dir"][$module_id] ?? ""; }
         ');
         // these keep their names - whichever definition is already loaded does the same job
         foreach ([
@@ -59,6 +60,7 @@ final class StringexpandIncludeTest extends TestCase
             // the extracted snippet has no `use` line of its own
             'HttpInclude::'           => '\AA\Expand\HttpInclude::',
             'SiteFile::'              => '\AA\Util\SiteFile::',
+            'AA_Slice::getModuleProperty(' => 'aa_test_module_property(',
             'PageCache::'             => '\AA\Cache\PageCache::',
             'self_server()'           => 'aa_test_self_server()',
             'shtml_query_string()'    => 'aa_test_shtml_query_string()',
@@ -231,6 +233,39 @@ final class StringexpandIncludeTest extends TestCase
             unlink("$docroot/parts/menu.html");
             rmdir("$docroot/parts");
             rmdir($docroot);
+        }
+    }
+
+    /** fileman prints a file of the slice's File Manager directory, site one of the site module's */
+    public function test_fileman_readsAFileOfTheFileManagerDirectory(): void
+    {
+        defined('FILEMAN_BASE_DIR') || define('FILEMAN_BASE_DIR', sys_get_temp_dir() . '/aa-include-fileman-' . bin2hex(random_bytes(6)) . '/');
+        $dir = FILEMAN_BASE_DIR . 'web';
+        is_dir($dir) || mkdir($dir, 0o777, true);
+        file_put_contents("$dir/disclaimer.html", '<p>disclaimer</p>');
+        $GLOBALS['aa_test_fileman_dir'] = ['0123456789abcdef0123456789abcdef' => 'web', 'fedcba9876543210fedcba9876543210' => ''];
+        $saved = [$GLOBALS['slice_id'] ?? null, $GLOBALS['site_fileman_dir'] ?? null];
+        try {
+            $GLOBALS['slice_id'] = '0123456789abcdef0123456789abcdef';
+            self::assertSame('<p>disclaimer</p>', self::expand('disclaimer.html', 'fileman'));
+            self::assertSame('', self::expand('missing.html', 'fileman'));
+            $GLOBALS['site_fileman_dir'] = 'web';
+            self::assertSame('<p>disclaimer</p>', self::expand('disclaimer.html', 'site'));
+
+            // the refusals log a row: seen already, so the test reaches no database
+            $seen = new \ReflectionProperty(\AA\Util\LogOnce::class, 'seen');
+            $seen->setValue(null, ["FILE_DENY\0fileman:../web/disclaimer.html" => true, "FILE_DENY\0fileman:disclaimer.html" => true, "FILE_DENY\0site:disclaimer.html" => true]);
+            self::assertSame('', self::expand('../web/disclaimer.html', 'fileman'), 'never up out of the directory');
+            $GLOBALS['slice_id'] = 'fedcba9876543210fedcba9876543210';
+            self::assertSame('', self::expand('disclaimer.html', 'fileman'), 'a slice without a File Manager directory reads nothing - not the directory of all of them');
+            $GLOBALS['site_fileman_dir'] = '..';
+            self::assertSame('', self::expand('disclaimer.html', 'site'));
+            $seen->setValue(null, []);
+        } finally {
+            [$GLOBALS['slice_id'], $GLOBALS['site_fileman_dir']] = $saved;
+            unset($GLOBALS['aa_test_fileman_dir']);
+            unlink("$dir/disclaimer.html");
+            rmdir($dir);
         }
     }
 }

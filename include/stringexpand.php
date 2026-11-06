@@ -6436,6 +6436,8 @@ class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
  *  $err     - error message if the request fails
  *  {include:https#://api.example.cz/getdata/my_ID:GET:{jsonasoc:Content-Type:application/json:key:478484a5c4e54b584e54a54c5b7899}}
  *  {include:https#://example.cz/api/data:POST:{"Content-Type":"application/json"}:{"data":"xy"}:Error _#status, _#errmsg}
+ *  {include:parts/menu.html:readfile} - a file below the document root; fileman - below the File Manager directory
+ *  of the slice, site - of the site module. Never a file of the AA tree, a dotfile, a script or a settings or key file.
  */
 class AA_Stringexpand_Include extends AA_Stringexpand {
     /** expand function
@@ -6470,32 +6472,27 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
             case "fileman":
                 // Note this won't work if called from a Static view because no slice_id available
                 // This should be fixed.
-                if ($this->itemview->slice_info["id"]) {
+                if ($this->itemview->slice_info["id"] ?? '') {
                     $mysliceid = unpack_id($this->itemview->slice_info['id']);
-                } elseif ($GLOBALS['slice_id']) {
+                } elseif ($GLOBALS['slice_id'] ?? '') {
                     $mysliceid = $GLOBALS['slice_id'];
                 } else {
-                    // if ($errcheck) huhl("No slice_id defined when expanding fileman");
                     return "";
                 }
-                $fileman_dir = AA_Slice::getModuleProperty($mysliceid,'fileman_dir');
-                $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $fn;
-                $file = AA_File_Wrapper::wrapper($filename);
-                // $file->contents(); opens the stream, reads the data and close the stream
-                return $file->contents();
+                return SiteFile::read(self::filemanDir((string) AA_Slice::getModuleProperty($mysliceid, 'fileman_dir')), (string) $fn, [], 'fileman', (string) $mysliceid);
             case "site":
-                if (!($fileman_dir = $GLOBALS['site_fileman_dir'])) {
-                    // if ($errcheck) huhl("No site_fileman_dir defined in site file");
-                    return "";
-                }
-                $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $fn;
-                $file = AA_File_Wrapper::wrapper($filename);
-                // $file->contents(); opens the stream, reads the data and close the stream
-                return $file->contents();
+                return SiteFile::read(self::filemanDir((string) ($GLOBALS['site_fileman_dir'] ?? '')), (string) $fn, [], 'site');
             case "readfile": // a static file of the site, relative to its document root
                 return SiteFile::read((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''), (string) $fn, SiteFile::uploadRoots(), 'readfile', (string) ($GLOBALS['slice_id'] ?? ''));
         }
         return '';
+    }
+
+    /** The File Manager directory $name, '' (no base, nothing read) when there is none or the name leads
+     *  elsewhere - an empty one would be the directory of all of them */
+    private static function filemanDir(string $name): string
+    {
+        return (defined('FILEMAN_BASE_DIR') && preg_match('~^[^./][^/]*$~', $name)) ? FILEMAN_BASE_DIR . $name : '';
     }
 }
 
