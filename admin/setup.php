@@ -44,6 +44,11 @@ $lname     = $_REQUEST['lname']     ?? '';
 $email     = $_REQUEST['email']     ?? '';
 
 require_once __DIR__."/../include/config.php";
+// Creates a superadmin without login, so it answers only while the administrator switches it on in config.php
+if (!defined('AA_SETUP_ENABLED') || AA_SETUP_ENABLED !== true) {
+    http_response_code(404);
+    exit;
+}
 require_once __DIR__ . "/../include/locsess.php";
 require_once __DIR__ . "/../include/perm_core.php";
 require_once __DIR__."/../include/perm_" . PERM_LIB . ".php";
@@ -89,7 +94,7 @@ function SuperForm(): void
 {
   global $login, $password1, $password2, $fname, $lname, $email;
   ?>
-  <form action="setup.php">
+  <form method="post" action="setup.php">
     <table
            class="aa-table">
       <tr class="aa-tbl-header"><th><?php echo _m("Superadmin account"); ?></th></tr>
@@ -212,14 +217,10 @@ switch ($phase) {
          break;
       }
 
-      if ($notusers) {                 // Delete orphan permissions
-         foreach ($notusers as $uid) {
-            if (!AA::$perm->delPerm($uid, AA_ID, "aa")) {
-               echo _m("Can't delete invalid permission."), "$uid<br>";
-            } else {
-               echo _m("Invalid permission deleted (no such user/group): "), "$uid<br>";
-            }
-         }
+      // Only listed: a permission backend that fails to describe a user (LDAP partly down) would make
+      // a real superadmin look orphaned, and deleting the permission would take the right away for good.
+      foreach ($notusers as $uid) {
+         echo _m("Permission of an unknown user/group (not deleted): "), safe((string) $uid), "<br>";
       }
 
       // Print the account form
