@@ -8,12 +8,13 @@ use AA\Util\LogOnce;
 use AA\Util\SiteFile;
 use AA_Log;
 
-/** Files a template or a mail asked for in the last 30 days ({include:<file>:fileman|site}, a local
+/** Files a template or a mail asked for in the last 30 days ({include:<file>:fileman}, a local
  *  attachment) that AA refused to read: outside the site's own files, in the AA tree, a dotfile, a
  *  script or a file of settings or keys - and the slices and sites whose templates use
- *  {include:<file>:readfile}, which reads nothing. The template printed nothing there, so the page may
- *  miss a part. Also the local files mails still took from outside the upload directories. Logged once
- *  a day per file, readfile per slice or site (LogOnce). Index-only, hence basic.
+ *  {include:<file>:readfile} or {include:<file>:site}, which read nothing. The template printed nothing
+ *  there, so the page may miss a part. Also the local files mails still took from outside the upload
+ *  directories. Logged once a day per file, readfile and site per slice or site (LogOnce). Index-only,
+ *  hence basic.
  */
 class CheckFileReadRefusals extends AbstractOptimize
 {
@@ -27,7 +28,7 @@ class CheckFileReadRefusals extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Lists the files that templates or e-mails asked for in the last 30 days and AA refused to read, as they are not files of the site, the templates that still use {include:…:readfile}, which reads no file, and the files e-mails took from outside the upload directories.');
+        return _m('Lists the files that templates or e-mails asked for in the last 30 days and AA refused to read, as they are not files of the site, the templates that still use {include:…:readfile} or {include:…:site}, which read no file, and the files e-mails took from outside the upload directories.');
     }
 
     public static function types(): array
@@ -52,7 +53,7 @@ class CheckFileReadRefusals extends AbstractOptimize
     }
 
     /**
-     * @param list<array<string, ?string>> $rows  LogOnce::recent() rows - selector "<purpose>:<file>", params "<reason>:<slice id>"; readfile: selector "readfile:<slice or site id>", params the file
+     * @param list<array<string, ?string>> $rows  LogOnce::recent() rows - selector "<purpose>:<file>", params "<reason>:<slice id>"; readfile and site: selector "<type>:<slice or site id>", params the file
      * @param list<array<string, ?string>> $outer LogOnce::recent() rows of the files mails took from outside the upload directories
      * @return Finding[]
      */
@@ -62,8 +63,8 @@ class CheckFileReadRefusals extends AbstractOptimize
         foreach ($rows as $row) {
             $selector = (string) $row['selector'];
             [$purpose, $file] = explode(':', $selector, 2) + [1 => ''];
-            if ($purpose === 'readfile') {
-                $findings[] = self::readfileFinding($row, $file);
+            if (in_array($purpose, SiteFile::REMOVED_TYPES, true)) {
+                $findings[] = self::removedTypeFinding($row, $purpose, $file);
                 continue;
             }
             [$reason, $slice] = ParamExplode((string) $row['params']) + [1 => ''];
@@ -108,15 +109,22 @@ class CheckFileReadRefusals extends AbstractOptimize
     }
 
     /**
-     * A template of the slice or site $where using {include:<file>:readfile} - params one file name it used (a row a day keeps the first)
-     * @param array<string, ?string> $row
+     * A template of the slice or site $where using {include:<file>:<type>} of a removed type - params one file name it used (a row a day keeps the first);
+     * $where is '' for a static view or cron, so the name is what leads to the template
+     * @param array<string, ?string>             $row
+     * @param value-of<SiteFile::REMOVED_TYPES> $type
      */
-    private static function readfileFinding(array $row, string $where): Finding
+    private static function removedTypeFinding(array $row, string $type, string $where): Finding
     {
         $file = (string) $row['params'];
+        // no default: a type added to SiteFile::REMOVED_TYPES needs its own reason
+        $why  = match ($type) {
+            'readfile' => _m('readfile read any file of the document root, past the access rules of the web server, so it reads nothing now.'),
+            'site'     => _m('site read from a directory that a visitor could choose by a parameter of the address, so it reads nothing now.'),
+        };
         return new Finding(
             Finding::WARNING,
-            _m('A template uses {include:%1:readfile}, which prints nothing', [$file]),
+            _m('A template uses {include:%1:%2}, which prints nothing', [$file, $type]),
             count: (int) $row['days'],
             since: (int) $row['first'],
             evidence: [[
@@ -125,7 +133,7 @@ class CheckFileReadRefusals extends AbstractOptimize
                 _m('Days seen')     => (string) (int) $row['days'],
                 _m('Last')          => date('Y-m-d', (int) $row['last']),
             ]],
-            advice: _m('readfile read any file of the document root, past the access rules of the web server, so it reads nothing now. In a slice put the file into its File Manager directory and use {include:<file>:fileman}; elsewhere include the file by its full web address, {include:https#://<domain>/<file>}.'),
+            advice: $why . ' ' . _m('In a slice put the file into its File Manager directory and use {include:<file>:fileman}; elsewhere include the file by its full web address, {include:https#://<domain>/<file>}.'),
             links: [_m('Log rows') => AA_Log::getAdminUrl(SiteFile::EVENT, (string) $row['selector'])],
             key: (string) $row['selector'],
             last: (int) $row['last'],

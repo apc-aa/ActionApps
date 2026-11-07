@@ -6431,15 +6431,16 @@ class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
 
 /** include file / URL {include:<url>:<type>:<headers>:<body>:<err>}
  *  $url     - filename / URL
- *  $type    - hint on where to find it  (http, ajax, site, GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, fileman) - http is default
+ *  $type    - hint on where to find it  (http, ajax, GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, fileman) - http is default
  *  $headers - additional headers for http request
  *  $body    - body for POST, PUT, DELETE, PATCH requests
  *  $err     - error message if the request fails
  *  {include:https#://api.example.cz/getdata/my_ID:GET:{jsonasoc:Content-Type:application/json:key:478484a5c4e54b584e54a54c5b7899}}
  *  {include:https#://example.cz/api/data:POST:{"Content-Type":"application/json"}:{"data":"xy"}:Error _#status, _#errmsg}
- *  {include:parts/menu.html:fileman} - a file below the File Manager directory of the slice, site - of the site
- *  module. Never a file of the AA tree, a dotfile, a script or a settings or key file. readfile prints nothing
- *  and is logged: it read any file of the document root, past the access rules of the web server.
+ *  {include:parts/menu.html:fileman} - a file below the File Manager directory of the slice. Never a file of the
+ *  AA tree, a dotfile, a script or a settings or key file. readfile and site print nothing and are logged:
+ *  readfile read any file of the document root, past the access rules of the web server, and site a directory
+ *  a visitor could choose by a parameter of the address.
  */
 class AA_Stringexpand_Include extends AA_Stringexpand {
     /** expand function
@@ -6477,23 +6478,25 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
                     return "";
                 }
                 return SiteFile::read(self::filemanDir((string) AA_Slice::getModuleProperty($mysliceid, 'fileman_dir')), (string) $fn, 'fileman', $mysliceid);
-            case "site":
-                return SiteFile::read(self::filemanDir((string) ($GLOBALS['site_fileman_dir'] ?? '')), (string) $fn, 'site');
-            case "readfile":
-                // one row a day per slice or site whatever names the template builds, so State Check can point to the template
-                LogOnce::daily(SiteFile::EVENT, 'readfile:' . ($this->sliceId() ?: (string) AA::$site_id), (string) $fn);
-                return '';
+        }
+        if (in_array($type, SiteFile::REMOVED_TYPES, true)) {
+            // one row a day per slice or site, whatever name the template builds; not the request's slice_id,
+            // which would add a row for every value a visitor sends
+            LogOnce::daily(SiteFile::EVENT, "$type:" . ($this->templateSliceId() ?: (string) AA::$site_id), (string) $fn);
         }
         return '';
     }
 
     /** the slice of the template, '' when there is none */
+    private function templateSliceId(): string
+    {
+        return ($this->itemview->slice_info['id'] ?? '') ? unpack_id($this->itemview->slice_info['id']) : '';
+    }
+
+    /** the slice of the template, else the slice of the request (a static view has none of its own) */
     private function sliceId(): string
     {
-        if ($this->itemview->slice_info['id'] ?? '') {
-            return unpack_id($this->itemview->slice_info['id']);
-        }
-        return (string) ($GLOBALS['slice_id'] ?? '');
+        return $this->templateSliceId() ?: (string) ($GLOBALS['slice_id'] ?? '');
     }
 
     /** The File Manager directory $name, '' (no base, nothing read) when there is none or the name leads
@@ -6630,7 +6633,7 @@ class AA_Unalias_Callback {
         // {math(<format>)expression}
         // {include(file)}
         // {include:file} or {include:file:http}
-        // {include:file:fileman|site}
+        // {include:file:fileman}
         // {scroller.....}
         // {pager:.....}
         // {#comments}

@@ -7,7 +7,7 @@ namespace AA\Util;
 use AA\Upload\UploadDir;
 
 /**
- * A file of the site that a template prints ({include:<name>:fileman|site}) or a mail attaches.
+ * A file of the site that a template prints ({include:<name>:fileman}) or a mail attaches.
  * A template reads it only when it lies, links resolved, below the directory the name is relative to.
  * Never from an AA tree - the running one or another on the same disk (staging, the copy an update
  * leaves) - which keeps the configuration and the keys and often lies in the document root itself, and
@@ -22,6 +22,11 @@ final class SiteFile
 
     /** log.type of a mail file read from outside the upload directories - still sent, selector "mail:<its directory>" */
     public const EVENT_OUTER = 'FILE_OUTER';
+
+    /** {include:<name>:<type>} types that read no file any more, logged under EVENT - selector "<type>:<slice or
+     *  site id>", params the name: readfile read past the access rules of the web server, site from a directory
+     *  a visitor could choose */
+    public const REMOVED_TYPES = ['readfile', 'site'];
 
     /** why a read was refused, as logged */
     public const REASON_OUTSIDE = 'outside';
@@ -56,7 +61,7 @@ final class SiteFile
     /**
      * The contents of $name, '' when it is missing or refused (refusals are logged)
      * @param string $base    the directory $name is relative to - a File Manager directory
-     * @param string $purpose the kind of read, for the log: fileman, site
+     * @param string $purpose the kind of read, for the log: fileman
      * @param string $where   what else identifies the place, for the log - a slice id
      */
     public static function read(string $base, string $name, string $purpose, string $where = ''): string

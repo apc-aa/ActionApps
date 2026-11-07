@@ -52,6 +52,32 @@ final class CheckFileReadRefusalsTest extends TestCase
         $this->assertSame('readfile:0123456789abcdef0123456789abcdef', $finding->key);
     }
 
+    public function test_a_site_use_says_why_it_reads_nothing(): void
+    {
+        $row = ['selector' => 'site:fedcba9876543210fedcba9876543210', 'days' => '3', 'first' => '1790000000', 'last' => '1790172800', 'params' => 'menu.html'];
+
+        [$finding] = CheckFileReadRefusals::findingsFor([$row]);
+
+        $this->assertSame(Finding::WARNING, $finding->severity);
+        $this->assertStringContainsString('{include:menu.html:site}', $finding->title);
+        $this->assertSame('fedcba9876543210fedcba9876543210', $finding->evidence[0][_m('Slice or site')]);
+        $this->assertStringStartsWith('site read from a directory that a visitor could choose', $finding->advice);
+        $this->assertStringContainsString('{include:https#://<domain>/<file>}', $finding->advice);
+        $this->assertSame(3, $finding->count);
+    }
+
+    public function test_every_removed_type_has_its_own_reason(): void
+    {
+        $reasons = [];
+        foreach (\AA\Util\SiteFile::REMOVED_TYPES as $type) {
+            $row = ['selector' => "$type:", 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => 'x.html'];
+            [$finding] = CheckFileReadRefusals::findingsFor([$row]);
+            $this->assertStringStartsWith("$type ", $finding->advice);
+            $reasons[] = $finding->advice;
+        }
+        $this->assertSame($reasons, array_unique($reasons));
+    }
+
     public function test_a_mail_file_from_outside_the_uploads_is_info(): void
     {
         $row = ['selector' => 'mail:/data/webs/x/upload/a.pdf', 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];

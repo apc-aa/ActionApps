@@ -29,6 +29,11 @@ final class StringexpandIncludeTest extends TestCase
 
     private FakeHttp $http;
 
+    /** LogOnce::daily() calls of the class under test: [event, selector, params] */
+    private static array $logged = [];
+
+    private static bool $fileman_created = false;
+
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/FakeHttp.php';
@@ -60,7 +65,8 @@ final class StringexpandIncludeTest extends TestCase
             // the extracted snippet has no `use` line of its own
             'HttpInclude::'           => '\AA\Expand\HttpInclude::',
             'SiteFile::'              => '\AA\Util\SiteFile::',
-            'LogOnce::'               => '\AA\Util\LogOnce::',
+            'LogOnce::daily('         => '\Tests\Unit\Legacy\StringexpandIncludeTest::recordLog(',
+            'unpack_id('              => 'bin2hex(',
             'AA::$site_id'            => '($GLOBALS["aa_test_site_id"] ?? null)',
             'AA_Slice::getModuleProperty(' => 'aa_test_module_property(',
             'PageCache::'             => '\AA\Cache\PageCache::',
@@ -74,6 +80,19 @@ final class StringexpandIncludeTest extends TestCase
         if (!function_exists('json2asoc')) {   // another test may have loaded the real file already
             eval(self::extract($source, T_FUNCTION, 'json2asoc'));
         }
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        self::$fileman_created && is_dir(FILEMAN_BASE_DIR) && rmdir(FILEMAN_BASE_DIR);
+    }
+
+    /** stands in for LogOnce::daily(), so the test sees every call and reaches no database */
+    public static function recordLog(string $event, string $selector, string|array $params = ''): bool
+    {
+        self::$logged[] = [$event, $selector, $params];
+
+        return true;
     }
 
     protected function setUp(): void
@@ -122,6 +141,29 @@ final class StringexpandIncludeTest extends TestCase
         $cls = self::CLS;
 
         return (new $cls())->expand($fn, $type, $headers, $data, $err);
+    }
+
+    /** expand() in a template of the slice $slice_id */
+    private static function expandIn(string $slice_id, string $fn, string $type): string
+    {
+        $cls      = self::CLS;
+        $expander = new $cls();
+        $expander->itemview = (object) ['slice_info' => ['id' => hex2bin($slice_id)]];
+
+        return $expander->expand($fn, $type);
+    }
+
+    /** a File Manager directory below FILEMAN_BASE_DIR, defined here unless another test did */
+    private static function filemanDir(string $name): string
+    {
+        if (!defined('FILEMAN_BASE_DIR')) {
+            define('FILEMAN_BASE_DIR', sys_get_temp_dir() . '/aa-include-fileman-' . bin2hex(random_bytes(6)) . '/');
+            self::$fileman_created = true;
+        }
+        $dir = FILEMAN_BASE_DIR . $name;
+        is_dir($dir) || mkdir($dir, 0o777, true);
+
+        return $dir;
     }
 
     /** @return array{method: string, url: string, body: ?string, headers: array<string, string>} */
@@ -217,71 +259,67 @@ final class StringexpandIncludeTest extends TestCase
         self::assertSame('q=kombucha', $this->lastCall()['body']);
     }
 
-    /** readfile prints nothing, not even a file of the document root, and is logged by the slice or site, not the name */
-    public function test_readfile_readsNothing(): void
+    /** readfile and site print nothing, not even a file of the document root or of a File Manager directory, and log the slice or site of the template, not the name */
+    public function test_removedTypes_readNothing(): void
     {
         $docroot = sys_get_temp_dir() . '/aa-include-readfile-' . bin2hex(random_bytes(6));
         mkdir("$docroot/parts", 0o777, true);
         file_put_contents("$docroot/parts/menu.html", '<ul></ul>');
-        $saved = [$_SERVER['DOCUMENT_ROOT'] ?? null, $GLOBALS['slice_id'] ?? null];
+        $dir = self::filemanDir('parts');
+        file_put_contents("$dir/menu.html", '<ul></ul>');
+        $saved = [$_SERVER['DOCUMENT_ROOT'] ?? null, $GLOBALS['slice_id'] ?? null, $GLOBALS['site_fileman_dir'] ?? null];
         $_SERVER['DOCUMENT_ROOT'] = $docroot;
-        // seen already, so the test reaches no database; a row under another selector would add a key
-        $logged = [
-            'FILE_DENY' . "\0readfile:0123456789abcdef0123456789abcdef" => true,
-            'FILE_DENY' . "\0readfile:fedcba9876543210fedcba9876543210" => true,
-        ];
-        $seen = new \ReflectionProperty(\AA\Util\LogOnce::class, 'seen');
-        $seen->setValue(null, $logged);
+        self::$logged = [];
         try {
-            $GLOBALS['slice_id'] = '0123456789abcdef0123456789abcdef';
-            self::assertSame('', self::expand('parts/menu.html', 'readfile'));
-            self::assertSame('', self::expand('parts/{qs:p}.html', 'readfile'), 'a name built from the request adds no row');
-            $GLOBALS['slice_id'] = null;
-            $GLOBALS['aa_test_site_id'] = 'fedcba9876543210fedcba9876543210';
-            self::assertSame('', self::expand('parts/menu.html', 'readfile'), 'a site spot is logged by the site');
+            $slice = '0123456789abcdef0123456789abcdef';
+            self::assertSame('', self::expandIn($slice, 'parts/menu.html', 'readfile'));
+            self::assertSame('', self::expandIn($slice, 'parts/{qs:p}.html', 'readfile'));
+            $GLOBALS['site_fileman_dir'] = 'parts';   // a visitor could set it by ?site_fileman_dir=
+            self::assertSame('', self::expandIn($slice, 'menu.html', 'site'), 'the file is there, yet not read');
+            $GLOBALS['slice_id'] = 'fedcba9876543210fedcba9876543210';   // a static view has only the slice_id of the request
+            $GLOBALS['aa_test_site_id'] = '00112233445566778899aabbccddeeff';
+            self::assertSame('', self::expand('menu.html', 'site'));
             self::assertSame([], $this->http->calls, 'nor fetched in its place');
-            self::assertSame($logged, $seen->getValue());
+            self::assertSame([
+                ['FILE_DENY', "readfile:$slice", 'parts/menu.html'],
+                ['FILE_DENY', "readfile:$slice", 'parts/{qs:p}.html'],
+                ['FILE_DENY', "site:$slice", 'menu.html'],
+                ['FILE_DENY', 'site:00112233445566778899aabbccddeeff', 'menu.html'],
+            ], self::$logged, 'one selector per slice or site whatever the name, never the slice_id of the request');
         } finally {
-            \AA\Util\LogOnce::reset();
-            [$_SERVER['DOCUMENT_ROOT'], $GLOBALS['slice_id']] = $saved;
+            [$_SERVER['DOCUMENT_ROOT'], $GLOBALS['slice_id'], $GLOBALS['site_fileman_dir']] = $saved;
             unset($GLOBALS['aa_test_site_id']);
             unlink("$docroot/parts/menu.html");
             rmdir("$docroot/parts");
             rmdir($docroot);
+            unlink("$dir/menu.html");
+            rmdir($dir);
         }
     }
 
-    /** fileman prints a file of the slice's File Manager directory, site one of the site module's */
+    /** fileman prints a file of the slice's File Manager directory */
     public function test_fileman_readsAFileOfTheFileManagerDirectory(): void
     {
-        $created = !defined('FILEMAN_BASE_DIR');
-        $created && define('FILEMAN_BASE_DIR', sys_get_temp_dir() . '/aa-include-fileman-' . bin2hex(random_bytes(6)) . '/');
-        $dir = FILEMAN_BASE_DIR . 'web';
-        is_dir($dir) || mkdir($dir, 0o777, true);
+        $dir = self::filemanDir('web');
         file_put_contents("$dir/disclaimer.html", '<p>disclaimer</p>');
         $GLOBALS['aa_test_fileman_dir'] = ['0123456789abcdef0123456789abcdef' => 'web', 'fedcba9876543210fedcba9876543210' => ''];
-        $saved = [$GLOBALS['slice_id'] ?? null, $GLOBALS['site_fileman_dir'] ?? null];
+        $saved = $GLOBALS['slice_id'] ?? null;
         try {
             $GLOBALS['slice_id'] = '0123456789abcdef0123456789abcdef';
             self::assertSame('<p>disclaimer</p>', self::expand('disclaimer.html', 'fileman'));
             self::assertSame('', self::expand('missing.html', 'fileman'));
-            $GLOBALS['site_fileman_dir'] = 'web';
-            self::assertSame('<p>disclaimer</p>', self::expand('disclaimer.html', 'site'));
 
             // the refusals log a row: seen already, so the test reaches no database
             (new \ReflectionProperty(\AA\Util\LogOnce::class, 'seen'))->setValue(null, ['FILE_DENY' . "\0fileman:" . realpath("$dir/disclaimer.html") => true]);
             self::assertSame('', self::expand('../web/disclaimer.html', 'fileman'), 'never up out of the directory');
             $GLOBALS['slice_id'] = 'fedcba9876543210fedcba9876543210';
             self::assertSame('', self::expand('disclaimer.html', 'fileman'), 'a slice without a File Manager directory reads nothing - not the directory of all of them');
-            $GLOBALS['site_fileman_dir'] = '..';
-            self::assertSame('', self::expand('disclaimer.html', 'site'));
         } finally {
             \AA\Util\LogOnce::reset();
-            [$GLOBALS['slice_id'], $GLOBALS['site_fileman_dir']] = $saved;
+            $GLOBALS['slice_id'] = $saved;
             unset($GLOBALS['aa_test_fileman_dir']);
             unlink("$dir/disclaimer.html");
             rmdir($dir);
-            $created && rmdir(FILEMAN_BASE_DIR);
         }
     }
 }
