@@ -165,7 +165,7 @@ class Langs
     {
         $lang = substr($lang, 0, 2);
         $LANGS = ['cz' => 'cs'];
-        return $LANGS[$lang] ?: $lang;
+        return $LANGS[$lang] ?? $lang;
     }
 
     /** is current (or provided) $charset Unicode?
