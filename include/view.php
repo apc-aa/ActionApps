@@ -310,7 +310,7 @@ class AA_Showview
             } else {
                 // second parameter is not specified - take listlen parameter
                 // we can also specify both - page and from, which means from the item xy on the page p
-                $list_from += $listlen * ((int) $page - 1);
+                $list_from = max(0, $list_from + $listlen * ((int) $page - 1));   // page 0.5 from the URL is (int) 0
             }
         }
         // the site router counts the listings paged by {xpage} (accepted by the view, or passed as
