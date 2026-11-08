@@ -1467,7 +1467,7 @@ class AA_Item
                 // These next two return values from globals that would actually be better coming froom the item or itemview,
                 // otherwise won't work if there are nested views.
             case "itemcount":
-                return (string) $GLOBALS['QueryIDsCount'];
+                return (string) ($GLOBALS['QueryIDsCount'] ?? '');
             case "itemindex":       // stacks of the listings in progress (itemview), the innermost last;
             case "pageindex":       // outside a listing - an item expanded by the slice export - there is none
             case "groupindex":

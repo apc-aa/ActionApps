@@ -68,6 +68,20 @@ namespace Tests\Unit\Legacy {
             self::assertSame('', self::item()->f_e('', $param));
         }
 
+        /** _#ID_COUNT (f_e:itemcount) outside a listing - no count, and no warning */
+        public function test_f_e_itemcountOutsideListing_isEmpty(): void
+        {
+            unset($GLOBALS['QueryIDsCount']);
+            set_error_handler(static function (int $no, string $msg): never {
+                throw new \ErrorException($msg, 0, $no);
+            });
+            try {
+                self::assertSame('', self::item()->f_e('', 'itemcount'));
+            } finally {
+                restore_error_handler();
+            }
+        }
+
         private static function item(): AA_Item
         {
             return new AA_Item(['headline........' => [['value' => 'x']]], new AA_Aliases());

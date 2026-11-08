@@ -60,7 +60,9 @@ if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
 }
 
 $item_count = $item_count ?: 5;
-$date_from  = $date_from ?: date('Y-m-d', strtotime('-1 month'));   // from 0 a day table of one item ran to 2.7 MB
+if (($date_from === '') || (strtotime($date_from) === false)) {
+    $date_from = date('Y-m-d', strtotime('-1 month'));   // from 0 a day table of one item ran to 2.7 MB
+}
 
 // an expression runs with the viewer's rights, so only this page's own form may send one;
 // a link with ids still shows the table, a link with an expression only fills the form
@@ -175,7 +177,7 @@ if ($show && ($item_set === 'exact') && $expression_refused) {
     };
 
     if (strlen($items)) {
-        $from = $date_from ? (string) strtotime($date_from) : '0';
+        $from = (string) strtotime($date_from);
         // values are passed as parameters, never put into a template, so a ':' or '{' in them stays data
         echo '<div class=aa-table>';
         foreach (array_intersect($content->getValuesArray('stats'), array_keys(HITCOUNTER_OPTIONS)) as $code) {

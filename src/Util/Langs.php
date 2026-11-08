@@ -102,7 +102,7 @@ class Langs
     public static function getLangCode2Name($code)
     {
         $LANGS = ['cs' => 'cz'];
-        return $LANGS[$code] ?: $code;
+        return $LANGS[$code] ?? $code;
     }
 
     /** converts two letter lang code into number used for translation fields in $content4id array

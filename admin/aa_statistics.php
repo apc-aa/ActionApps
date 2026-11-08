@@ -86,7 +86,9 @@ $item_sort   = $item_sort ?: 'top';
 $item_period = $item_period ?: 'last_day';
 $tip_period  = $tip_period ?: 'last_day';   // diagnostics window — default last day (cheap on heavy sites)
 $for_module  = $for_module ?: 'all';
-$date_from   = $date_from ?: date('Y-m-d', strtotime('-1 month'));
+if (($date_from === '') || (strtotime($date_from) === false)) {
+    $date_from = date('Y-m-d', strtotime('-1 month'));   // from 0 the day tables of all slices run from 1970
+}
 
 //$script2run = '
 //   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
@@ -344,7 +346,7 @@ if ($show && ($item_sort === 'exact') && $expression_refused) {
     }
 
     if (strlen($items)) {
-        $from = $date_from ? (string) strtotime($date_from) : '0';
+        $from = (string) strtotime($date_from);
         // values are passed as parameters, never put into a template, so a ':' or '{' in them stays data
         echo '<div class=aa-table>';
         foreach (array_intersect($content->getValuesArray('stats'), array_keys(HITCOUNTER_OPTIONS)) as $code) {
