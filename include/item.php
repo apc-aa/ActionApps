@@ -1468,14 +1468,12 @@ class AA_Item
                 // otherwise won't work if there are nested views.
             case "itemcount":
                 return (string) $GLOBALS['QueryIDsCount'];
-            case "itemindex": /*mimo hack, this is now a stack*/
-                return "" . end($GLOBALS['QueryIDsIndex']);   // Need to append to "" so doesn't return "false" on 0th item
-            case "pageindex": /*mimo hack, this is now a stack*/
-                return "" . end($GLOBALS['QueryIDsPageIndex']);   // Need to append to "" so doesn't return "false" on 0th item
-            case "groupindex": /*mimo hack, this is now a stack*/
-                return "" . end($GLOBALS['QueryIDsGroupIndex']);   // Need to append to "" so doesn't return "false" on 0th item
-            case "itemgroupindex": /*mimo hack, this is now a stack*/
-                return "" . end($GLOBALS['QueryIDsItemGroupIndex']);   // Need to append to "" so doesn't return "false" on 0th item
+            case "itemindex":       // stacks of the listings in progress (itemview), the innermost last;
+            case "pageindex":       // outside a listing - an item expanded by the slice export - there is none
+            case "groupindex":
+            case "itemgroupindex":
+                $stack = $GLOBALS[['itemindex' => 'QueryIDsIndex', 'pageindex' => 'QueryIDsPageIndex', 'groupindex' => 'QueryIDsGroupIndex', 'itemgroupindex' => 'QueryIDsItemGroupIndex'][$p[0]]] ?? null;
+                return is_array($stack) ? (string) end($stack) : '';   // (string): the 0th item is "0", an empty stack ""
             case "safe":         // safe, javascript, urlencode, csv - for backward
             case "javascript":   // compatibility
             case "urlencode":
