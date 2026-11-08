@@ -612,7 +612,7 @@ return [
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 79
+// admin/se_statistics.php, row 80
 // admin/se_views.php, row 148
 // include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
@@ -824,39 +824,39 @@ return [
 "You do not have permissions to see statistics" => "Nemate dozvolu za pregled statistike", // ai 2026-06
 
 // admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 74
+// admin/se_statistics.php, row 75
 "Admin - Statistics" => "Admin - Statistika", // ai 2026-06
 
 // admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 82
+// admin/se_statistics.php, row 83
 "years" => "godine", // ai 2026-06
 
 // admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 83
+// admin/se_statistics.php, row 84
 "months" => "mjeseci", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 85
 "weeks" => "tjedni", // ai 2026-06
 
 // admin/aa_statistics.php, row 107
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 86
 "days" => "dani", // ai 2026-06
 
 // admin/aa_statistics.php, row 108
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 87
 "hours" => "sati", // ai 2026-06
 
 // admin/aa_statistics.php, row 109
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 88
 "minutes" => "minute", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 89
 "day-hours" => "sati u danu", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 90
 "week-days" => "dani u tjednu", // ai 2026-06
 
 // admin/aa_statistics.php, row 115
@@ -887,7 +887,7 @@ return [
 "Sped up vs prior period" => "Ubrzanje u odnosu na prethodno razdoblje", // ai 2026-06
 
 // admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 93
+// admin/se_statistics.php, row 94
 "Specified below" => "Navedeno niže", // ai 2026-06
 
 // admin/aa_statistics.php, row 128
@@ -944,7 +944,7 @@ return [
 "Slice comparison" => "Usporedba stranica", // ai 2026-06
 
 // admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 148
+// admin/se_statistics.php, row 149
 "Stats to show" => "Statistike za prikaz", // ai 2026-06
 
 // admin/aa_statistics.php, row 242
@@ -963,42 +963,42 @@ return [
 "Period (item ranking)" => "Razdoblje (poredak stavki)", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "Exact items to show" => "Točne stavke za prikaz", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "crticom odvojen popis ID-ova/short_id-ova stavki ili AA izraz poput {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
 // admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 109
+// admin/se_statistics.php, row 110
 "Number of items to show" => "Broj stavki za prikaz", // ai 2026-06
 
 // admin/aa_statistics.php, row 255
 "Show for period" => "Prikaži za razdoblje", // ai 2026-06
 
 // admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 110
+// admin/se_statistics.php, row 111
 "From date" => "Od datuma", // ai 2026-06
 
 // admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 154
+// admin/se_statistics.php, row 155
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Provjerite izraz u polju „Točne stavke za prikaz“ i pritisnite „Prikaži“ da se izračuna.", // ai 2026-11
 
 // admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 157
+// admin/se_statistics.php, row 158
 "Display Statistics for Item" => "Prikaži statistiku za stavku", // ai 2026-06
 
 // admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 184
+// admin/se_statistics.php, row 185
 "Items found" => "Pronađene stavke", // ai 2026-06
 
 // admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 193
+// admin/se_statistics.php, row 194
 "No items found" => "Nema pronađenih stavki", // ai 2026-06
 
 // admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 190
+// admin/se_statistics.php, row 191
 "Server configuration changes" => "Promjene konfiguracije poslužitelja", // ai 2026-06
 
 // admin/aa_tasks.php, row 35
@@ -2561,11 +2561,7 @@ return [
 "Do not import" => "Nemojte uvesti",
 
 // admin/se_import.php, row 197
-// include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
-// src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
-"Import" => "Uvezite",
+"Import from" => "Uvezite", // ai 2026-11
 
 // admin/se_inputform.php, row 186, 481
 "Before HTML code" => "Ispred HTML koda",
@@ -3277,37 +3273,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Koristite uvjete \"headline........,publish_date....-\" ili \"sort[]\"", // ai 2026-06
 
-// admin/se_statistics.php, row 94
+// admin/se_statistics.php, row 95
 "Top all time" => "Top svih vremena", // ai 2026-06
 
-// admin/se_statistics.php, row 95
+// admin/se_statistics.php, row 96
 "Top this year" => "Top ove godine", // ai 2026-06
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 97
 "Top this month" => "Top ovog mjeseca", // ai 2026-06
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 98
 "Top this week" => "Top ovog tjedna", // ai 2026-06
 
-// admin/se_statistics.php, row 98
+// admin/se_statistics.php, row 99
 "Top this day" => "Top ovog dana", // ai 2026-06
 
-// admin/se_statistics.php, row 99
+// admin/se_statistics.php, row 100
 "Top last year" => "Top prošle godine", // ai 2026-06
 
-// admin/se_statistics.php, row 100
+// admin/se_statistics.php, row 101
 "Top last month" => "Top prošlog mjeseca", // ai 2026-06
 
-// admin/se_statistics.php, row 101
+// admin/se_statistics.php, row 102
 "Top last week" => "Top prošlog tjedna", // ai 2026-06
 
-// admin/se_statistics.php, row 102
+// admin/se_statistics.php, row 103
 "Top last day" => "Top prošlog dana", // ai 2026-06
 
-// admin/se_statistics.php, row 106
+// admin/se_statistics.php, row 107
 "Item Statistics" => "Statistika stavki", // ai 2026-06
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 108
 "Show items" => "Prikaži stavke", // ai 2026-06
 
 // admin/se_taskmanager.php, row 39
@@ -6981,6 +6977,12 @@ return [
 
 // include/menu_util.php, row 94
 "Slice structure" => "Struktura stranice",
+
+// include/menu_util.php, row 96
+// src/Import/Definition.php, row 135, 161
+// src/Optimize/CheckImportStores.php, row 53
+// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+"Import" => "Uvoz", // ai 2026-11
 
 // include/menu_util.php, row 98
 "Wizard" => "Čarobnjak",

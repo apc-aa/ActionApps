@@ -194,7 +194,7 @@ FrmTabCaption(_m("Enable export to slice:"));
 <tr>
     <th width="45%"><?php echo _m("Do not import") ?></th>
     <th width="10%">&nbsp;</th>
-    <th width="45%"><?php echo _m("Import") ?></th>
+    <th width="45%"><?php echo _m("Import from") ?></th>
 </tr>
 <tr>
 <td>

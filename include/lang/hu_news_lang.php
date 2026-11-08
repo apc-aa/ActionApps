@@ -312,7 +312,7 @@ return [
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 79
+// admin/se_statistics.php, row 80
 // admin/se_views.php, row 148
 // include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
@@ -524,39 +524,39 @@ return [
 "You do not have permissions to see statistics" => "Nincs jogosults\xE1ga a statisztik\xE1k megtekint\xE9s\xE9hez", // ai 2026-06
 
 // admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 74
+// admin/se_statistics.php, row 75
 "Admin - Statistics" => "Admin - Statisztik\xE1k", // ai 2026-06
 
 // admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 82
+// admin/se_statistics.php, row 83
 "years" => "\xE9vek", // ai 2026-06
 
 // admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 83
+// admin/se_statistics.php, row 84
 "months" => "h\xF3napok", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 85
 "weeks" => "hetek", // ai 2026-06
 
 // admin/aa_statistics.php, row 107
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 86
 "days" => "napok", // ai 2026-06
 
 // admin/aa_statistics.php, row 108
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 87
 "hours" => "\xF3r\xE1k", // ai 2026-06
 
 // admin/aa_statistics.php, row 109
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 88
 "minutes" => "percek", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 89
 "day-hours" => "a nap \xF3r\xE1i", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 90
 "week-days" => "a h\xE9t napjai", // ai 2026-06
 
 // admin/aa_statistics.php, row 115
@@ -587,7 +587,7 @@ return [
 "Sped up vs prior period" => "Gyorsul\xE1s az el\xF5z\xF5 id\xF5szakhoz k\xE9pest", // ai 2026-06
 
 // admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 93
+// admin/se_statistics.php, row 94
 "Specified below" => "Al\xE1bb megadott", // ai 2026-06
 
 // admin/aa_statistics.php, row 128
@@ -644,7 +644,7 @@ return [
 "Slice comparison" => "Rovatok \xF6sszehasonl\xEDt\xE1sa", // ai 2026-06
 
 // admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 148
+// admin/se_statistics.php, row 149
 "Stats to show" => "Megjelen\xEDtend\xF5 statisztik\xE1k", // ai 2026-06
 
 // admin/aa_statistics.php, row 242
@@ -663,42 +663,42 @@ return [
 "Period (item ranking)" => "Id\xF5szak (cikkrangsor)", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "Exact items to show" => "Megjelen\xEDtend\xF5 konkr\xE9t cikkek", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "cikkazonos\xEDt\xF3k (id/short_id) k\xF6t\xF5jellel elv\xE1lasztott list\xE1ja, vagy AA-kifejez\xE9s, p\xE9ld\xE1ul {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
 // admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 109
+// admin/se_statistics.php, row 110
 "Number of items to show" => "Megjelen\xEDtend\xF5 cikkek sz\xE1ma", // ai 2026-06
 
 // admin/aa_statistics.php, row 255
 "Show for period" => "Megjelen\xEDtend\xF5 id\xF5szak", // ai 2026-06
 
 // admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 110
+// admin/se_statistics.php, row 111
 "From date" => "Kezd\xF5 d\xE1tum", // ai 2026-06
 
 // admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 154
+// admin/se_statistics.php, row 155
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Ellen\xF5rizze a kifejez\xE9st a ,,Megjelen\xEDtend\xF5 konkr\xE9t cikkek\" mez\xF5ben, majd a ki\xE9rt\xE9kel\xE9s\xE9hez nyomja meg a ,,Megjelen\xEDt\xE9s\" gombot.", // ai 2026-11
 
 // admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 157
+// admin/se_statistics.php, row 158
 "Display Statistics for Item" => "Cikk statisztik\xE1j\xE1nak megjelen\xEDt\xE9se", // ai 2026-06
 
 // admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 184
+// admin/se_statistics.php, row 185
 "Items found" => "Tal\xE1lt cikkek", // ai 2026-06
 
 // admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 193
+// admin/se_statistics.php, row 194
 "No items found" => "Nem tal\xE1lhat\xF3 cikk", // ai 2026-06
 
 // admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 190
+// admin/se_statistics.php, row 191
 "Server configuration changes" => "Szerverkonfigur\xE1ci\xF3s v\xE1ltoz\xE1sok", // ai 2026-06
 
 // admin/aa_tasks.php, row 35
@@ -2268,11 +2268,7 @@ return [
 "Do not import" => "Nincs import\xE1l\xE1s", // ai 2026-06
 
 // admin/se_import.php, row 197
-// include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
-// src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
-"Import" => "Import\xE1l\xE1s", // ai 2026-06
+"Import from" => "Import\xE1l\xE1s", // ai 2026-11
 
 // admin/se_inputform.php, row 186, 481
 "Before HTML code" => "HTML-k\xF3d a mez\xF5 el\xF5tt", // ai 2026-06
@@ -2984,37 +2980,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Haszn\xE1ljon \"headline........,publish_date....-\" vagy \"sort[]\" felt\xE9teleket", // ai 2026-06
 
-// admin/se_statistics.php, row 94
+// admin/se_statistics.php, row 95
 "Top all time" => "Top \xF6sszes\xEDtve", // ai 2026-06
 
-// admin/se_statistics.php, row 95
+// admin/se_statistics.php, row 96
 "Top this year" => "Top id\xE9n", // ai 2026-06
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 97
 "Top this month" => "Top ebben a h\xF3napban", // ai 2026-06
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 98
 "Top this week" => "Top ezen a h\xE9ten", // ai 2026-06
 
-// admin/se_statistics.php, row 98
+// admin/se_statistics.php, row 99
 "Top this day" => "Top ma", // ai 2026-06
 
-// admin/se_statistics.php, row 99
+// admin/se_statistics.php, row 100
 "Top last year" => "Top tavaly", // ai 2026-06
 
-// admin/se_statistics.php, row 100
+// admin/se_statistics.php, row 101
 "Top last month" => "Top m\xFAlt h\xF3napban", // ai 2026-06
 
-// admin/se_statistics.php, row 101
+// admin/se_statistics.php, row 102
 "Top last week" => "Top m\xFAlt h\xE9ten", // ai 2026-06
 
-// admin/se_statistics.php, row 102
+// admin/se_statistics.php, row 103
 "Top last day" => "Top tegnap", // ai 2026-06
 
-// admin/se_statistics.php, row 106
+// admin/se_statistics.php, row 107
 "Item Statistics" => "Cikkstatisztika", // ai 2026-06
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 108
 "Show items" => "Cikkek megjelen\xEDt\xE9se", // ai 2026-06
 
 // admin/se_taskmanager.php, row 39
@@ -6699,6 +6695,12 @@ return [
 
 // include/menu_util.php, row 94
 "Slice structure" => "Rovatszerkezet", // ai 2026-06
+
+// include/menu_util.php, row 96
+// src/Import/Definition.php, row 135, 161
+// src/Optimize/CheckImportStores.php, row 53
+// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+"Import" => "Import\xE1l\xE1s", // ai 2026-06
 
 // include/menu_util.php, row 98
 "Wizard" => "Var\xE1zsl\xF3", // ai 2026-06

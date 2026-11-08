@@ -315,7 +315,7 @@ return [
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 79
+// admin/se_statistics.php, row 80
 // admin/se_views.php, row 148
 // include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
@@ -527,39 +527,39 @@ return [
 "You do not have permissions to see statistics" => "Nie masz uprawnień do przeglądania statystyk", // ai 2026-06
 
 // admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 74
+// admin/se_statistics.php, row 75
 "Admin - Statistics" => "Admin - Statystyki", // ai 2026-06
 
 // admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 82
+// admin/se_statistics.php, row 83
 "years" => "lata", // ai 2026-06
 
 // admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 83
+// admin/se_statistics.php, row 84
 "months" => "miesiące", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 85
 "weeks" => "tygodnie", // ai 2026-06
 
 // admin/aa_statistics.php, row 107
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 86
 "days" => "dni", // ai 2026-06
 
 // admin/aa_statistics.php, row 108
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 87
 "hours" => "godziny", // ai 2026-06
 
 // admin/aa_statistics.php, row 109
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 88
 "minutes" => "minuty", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 89
 "day-hours" => "godziny dnia", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 90
 "week-days" => "dni tygodnia", // ai 2026-06
 
 // admin/aa_statistics.php, row 115
@@ -590,7 +590,7 @@ return [
 "Sped up vs prior period" => "Przyspieszenie wzgl. poprzedniego okresu", // ai 2026-06
 
 // admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 93
+// admin/se_statistics.php, row 94
 "Specified below" => "Określone poniżej", // ai 2026-06
 
 // admin/aa_statistics.php, row 128
@@ -647,7 +647,7 @@ return [
 "Slice comparison" => "Porównanie rubryk", // ai 2026-06
 
 // admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 148
+// admin/se_statistics.php, row 149
 "Stats to show" => "Statystyki do pokazania", // ai 2026-06
 
 // admin/aa_statistics.php, row 242
@@ -666,42 +666,42 @@ return [
 "Period (item ranking)" => "Okres (ranking artykułów)", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "Exact items to show" => "Konkretne artykuły do pokazania", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "lista id/short_id artykułów rozdzielona myślnikami lub wyrażenie AA jak {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
 // admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 109
+// admin/se_statistics.php, row 110
 "Number of items to show" => "Liczba pokazywanych artykułów", // ai 2026-06
 
 // admin/aa_statistics.php, row 255
 "Show for period" => "Pokaż za okres", // ai 2026-06
 
 // admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 110
+// admin/se_statistics.php, row 111
 "From date" => "Od daty", // ai 2026-06
 
 // admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 154
+// admin/se_statistics.php, row 155
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Sprawdź wyrażenie w polu „Konkretne artykuły do pokazania” i naciśnij „Pokaż”, aby je obliczyć.", // ai 2026-11
 
 // admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 157
+// admin/se_statistics.php, row 158
 "Display Statistics for Item" => "Pokaż statystyki artykułu", // ai 2026-06
 
 // admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 184
+// admin/se_statistics.php, row 185
 "Items found" => "Znalezione artykuły", // ai 2026-06
 
 // admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 193
+// admin/se_statistics.php, row 194
 "No items found" => "Nie znaleziono artykułów", // ai 2026-06
 
 // admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 190
+// admin/se_statistics.php, row 191
 "Server configuration changes" => "Zmiany konfiguracji serwera", // ai 2026-06
 
 // admin/aa_tasks.php, row 35
@@ -1237,7 +1237,7 @@ return [
 // admin/se_export.php, row 123
 // include/exporter.class.php, row 657
 // include/menu_util.php, row 95
-"Export" => "Eksport", // ai 2026-06
+"Export" => "Eksportuj", // ai 2026-11
 
 // admin/fileman.php, row 85
 "No permissions for file manager." => "Brak uprawnień do menedżera plików.", // ai 2026-06
@@ -1923,7 +1923,7 @@ return [
 "Admin - Export Items" => "Administracja - Eksport artykułów", // ai 2026-06
 
 // admin/se_export.php, row 119
-"Check the settings and press Export." => "Sprawdź ustawienia i naciśnij „Eksport”.", // ai 2026-11
+"Check the settings and press Export." => "Sprawdź ustawienia i naciśnij „Eksportuj”.", // ai 2026-11
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 531
@@ -2271,11 +2271,7 @@ return [
 "Do not import" => "Nie importuj", // ai 2026-06
 
 // admin/se_import.php, row 197
-// include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
-// src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
-"Import" => "Importuj", // ai 2026-06
+"Import from" => "Importuj", // ai 2026-11
 
 // admin/se_inputform.php, row 186, 481
 "Before HTML code" => "Kod HTML przed polem", // ai 2026-06
@@ -2987,37 +2983,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Użyj warunków \"headline........,publish_date....-\" lub \"sort[]\"", // ai 2026-06
 
-// admin/se_statistics.php, row 94
+// admin/se_statistics.php, row 95
 "Top all time" => "Top w całym okresie", // ai 2026-06
 
-// admin/se_statistics.php, row 95
+// admin/se_statistics.php, row 96
 "Top this year" => "Top w tym roku", // ai 2026-06
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 97
 "Top this month" => "Top w tym miesiącu", // ai 2026-06
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 98
 "Top this week" => "Top w tym tygodniu", // ai 2026-06
 
-// admin/se_statistics.php, row 98
+// admin/se_statistics.php, row 99
 "Top this day" => "Top dzisiaj", // ai 2026-06
 
-// admin/se_statistics.php, row 99
+// admin/se_statistics.php, row 100
 "Top last year" => "Top w zeszłym roku", // ai 2026-06
 
-// admin/se_statistics.php, row 100
+// admin/se_statistics.php, row 101
 "Top last month" => "Top w zeszłym miesiącu", // ai 2026-06
 
-// admin/se_statistics.php, row 101
+// admin/se_statistics.php, row 102
 "Top last week" => "Top w zeszłym tygodniu", // ai 2026-06
 
-// admin/se_statistics.php, row 102
+// admin/se_statistics.php, row 103
 "Top last day" => "Top wczoraj", // ai 2026-06
 
-// admin/se_statistics.php, row 106
+// admin/se_statistics.php, row 107
 "Item Statistics" => "Statystyka artykułów", // ai 2026-06
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 108
 "Show items" => "Pokaż artykuły", // ai 2026-06
 
 // admin/se_taskmanager.php, row 39
@@ -6701,6 +6697,12 @@ return [
 
 // include/menu_util.php, row 94
 "Slice structure" => "Struktura rubryki", // ai 2026-06
+
+// include/menu_util.php, row 96
+// src/Import/Definition.php, row 135, 161
+// src/Optimize/CheckImportStores.php, row 53
+// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+"Import" => "Import", // ai 2026-11
 
 // include/menu_util.php, row 98
 "Wizard" => "Kreator", // ai 2026-06

@@ -390,7 +390,7 @@ return [
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 79
+// admin/se_statistics.php, row 80
 // admin/se_views.php, row 148
 // include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
@@ -602,39 +602,39 @@ return [
 "You do not have permissions to see statistics" => "Sie haben keine Berechtigung, Statistiken einzusehen", // ai 2026-06
 
 // admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 74
+// admin/se_statistics.php, row 75
 "Admin - Statistics" => "Admin - Statistiken", // ai 2026-06
 
 // admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 82
+// admin/se_statistics.php, row 83
 "years" => "Jahre", // ai 2026-06
 
 // admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 83
+// admin/se_statistics.php, row 84
 "months" => "Monate", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 85
 "weeks" => "Wochen", // ai 2026-06
 
 // admin/aa_statistics.php, row 107
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 86
 "days" => "Tage", // ai 2026-06
 
 // admin/aa_statistics.php, row 108
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 87
 "hours" => "Stunden", // ai 2026-06
 
 // admin/aa_statistics.php, row 109
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 88
 "minutes" => "Minuten", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 89
 "day-hours" => "Tagesstunden", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 90
 "week-days" => "Wochentage", // ai 2026-06
 
 // admin/aa_statistics.php, row 115
@@ -665,7 +665,7 @@ return [
 "Sped up vs prior period" => "Beschleunigung gegen\xFCber Vorperiode", // ai 2026-06
 
 // admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 93
+// admin/se_statistics.php, row 94
 "Specified below" => "Unten angegeben", // ai 2026-06
 
 // admin/aa_statistics.php, row 128
@@ -722,7 +722,7 @@ return [
 "Slice comparison" => "Rubriken-Vergleich", // ai 2026-06
 
 // admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 148
+// admin/se_statistics.php, row 149
 "Stats to show" => "Anzuzeigende Statistiken", // ai 2026-06
 
 // admin/aa_statistics.php, row 242
@@ -741,42 +741,42 @@ return [
 "Period (item ranking)" => "Zeitraum (Artikel-Rangfolge)", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "Exact items to show" => "Konkrete Artikel zum Anzeigen", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "Liste von Artikel-ids/short_ids, getrennt durch Bindestriche, oder AA-Ausdruck wie {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
 // admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 109
+// admin/se_statistics.php, row 110
 "Number of items to show" => "Anzahl der anzuzeigenden Artikel", // ai 2026-06
 
 // admin/aa_statistics.php, row 255
 "Show for period" => "F\xFCr Zeitraum anzeigen", // ai 2026-06
 
 // admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 110
+// admin/se_statistics.php, row 111
 "From date" => "Ab Datum", // ai 2026-06
 
 // admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 154
+// admin/se_statistics.php, row 155
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Pr\xFCfen Sie den Ausdruck in ,,Konkrete Artikel zum Anzeigen\" und klicken Sie auf ,,Zeigen\", um ihn auszuwerten.", // ai 2026-11
 
 // admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 157
+// admin/se_statistics.php, row 158
 "Display Statistics for Item" => "Statistiken f\xFCr Artikel anzeigen", // ai 2026-06
 
 // admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 184
+// admin/se_statistics.php, row 185
 "Items found" => "Gefundene Artikel", // ai 2026-06
 
 // admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 193
+// admin/se_statistics.php, row 194
 "No items found" => "Keine Artikel gefunden", // ai 2026-06
 
 // admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 190
+// admin/se_statistics.php, row 191
 "Server configuration changes" => "\xC4nderungen der Serverkonfiguration", // ai 2026-06
 
 // admin/aa_tasks.php, row 35
@@ -2341,14 +2341,10 @@ return [
 "Import from slice:" => "Importiere von Rubrik:",
 
 // admin/se_import.php, row 195
-"Do not import" => "Nicht Importieren",
+"Do not import" => "Nicht importieren", // ai 2026-11
 
 // admin/se_import.php, row 197
-// include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
-// src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
-"Import" => "Importieren",
+"Import from" => "Importieren", // ai 2026-11
 
 // admin/se_inputform.php, row 186, 481
 "Before HTML code" => "Vor HTML-Code",
@@ -3060,37 +3056,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "\"headline........,publish_date....-\"- oder \"sort[]\"-Bedingungen verwenden", // ai 2026-06
 
-// admin/se_statistics.php, row 94
+// admin/se_statistics.php, row 95
 "Top all time" => "Top insgesamt", // ai 2026-06
 
-// admin/se_statistics.php, row 95
+// admin/se_statistics.php, row 96
 "Top this year" => "Top dieses Jahr", // ai 2026-06
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 97
 "Top this month" => "Top dieser Monat", // ai 2026-06
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 98
 "Top this week" => "Top diese Woche", // ai 2026-06
 
-// admin/se_statistics.php, row 98
+// admin/se_statistics.php, row 99
 "Top this day" => "Top heute", // ai 2026-06
 
-// admin/se_statistics.php, row 99
+// admin/se_statistics.php, row 100
 "Top last year" => "Top letztes Jahr", // ai 2026-06
 
-// admin/se_statistics.php, row 100
+// admin/se_statistics.php, row 101
 "Top last month" => "Top letzter Monat", // ai 2026-06
 
-// admin/se_statistics.php, row 101
+// admin/se_statistics.php, row 102
 "Top last week" => "Top letzte Woche", // ai 2026-06
 
-// admin/se_statistics.php, row 102
+// admin/se_statistics.php, row 103
 "Top last day" => "Top gestern", // ai 2026-06
 
-// admin/se_statistics.php, row 106
+// admin/se_statistics.php, row 107
 "Item Statistics" => "Artikel-Statistik", // ai 2026-06
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 108
 "Show items" => "Artikel anzeigen", // ai 2026-06
 
 // admin/se_taskmanager.php, row 39
@@ -6775,6 +6771,12 @@ return [
 
 // include/menu_util.php, row 94
 "Slice structure" => "Rubrikstruktur", // ai 2026-06
+
+// include/menu_util.php, row 96
+// src/Import/Definition.php, row 135, 161
+// src/Optimize/CheckImportStores.php, row 53
+// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+"Import" => "Import", // ai 2026-11
 
 // include/menu_util.php, row 98
 "Wizard" => "Assistent",
@@ -11045,7 +11047,7 @@ return [
 "Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "Artikel der Rubrik ,,%1\" werden an andere Rubriken weitergegeben - beenden Sie die \xDCbernahme in den Rubriken, die ihre Seite ,,Pooling\" unter ,,Derzeit exportiert nach\" auff\xFChrt", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 281
-"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "Rubrik ,,%1\" \xFCbernimmt Artikel aus anderen Rubriken - verschieben Sie diese auf ihrer Seite ,,Pooling\" nach ,,Nicht Importieren\"", // ai 2026-11
+"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "Rubrik ,,%1\" \xFCbernimmt Artikel aus anderen Rubriken - verschieben Sie diese auf ihrer Seite ,,Pooling\" nach ,,Nicht importieren\"", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 284
 "Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "Rubrik ,,%1\" sendet ihre Artikel an die Adressen ihrer ,,E-Mail-Benachrichtigung\" - entfernen Sie die Adressen dort", // ai 2026-11

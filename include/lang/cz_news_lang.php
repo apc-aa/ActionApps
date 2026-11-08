@@ -564,7 +564,7 @@ return [
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 79
+// admin/se_statistics.php, row 80
 // admin/se_views.php, row 148
 // include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
@@ -776,39 +776,39 @@ return [
 "You do not have permissions to see statistics" => "Nem\xE1te opr\xE1vn\xECn\xED zobrazit statistiky",
 
 // admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 74
+// admin/se_statistics.php, row 75
 "Admin - Statistics" => "Admin - Statistiky",
 
 // admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 82
+// admin/se_statistics.php, row 83
 "years" => "roky",
 
 // admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 83
+// admin/se_statistics.php, row 84
 "months" => "m\xECs\xEDce",
 
 // admin/aa_statistics.php, row 106
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 85
 "weeks" => "t\xFDdny",
 
 // admin/aa_statistics.php, row 107
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 86
 "days" => "dny",
 
 // admin/aa_statistics.php, row 108
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 87
 "hours" => "hodiny",
 
 // admin/aa_statistics.php, row 109
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 88
 "minutes" => "minuty",
 
 // admin/aa_statistics.php, row 110
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 89
 "day-hours" => "hodiny dne",
 
 // admin/aa_statistics.php, row 111
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 90
 "week-days" => "dny t\xFDdne",
 
 // admin/aa_statistics.php, row 115
@@ -839,7 +839,7 @@ return [
 "Sped up vs prior period" => "Zrychlen\xED oproti p\xF8edchoz\xEDmu obdob\xED",
 
 // admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 93
+// admin/se_statistics.php, row 94
 "Specified below" => "Ur\xE8eno n\xED\x9Ee",
 
 // admin/aa_statistics.php, row 128
@@ -896,7 +896,7 @@ return [
 "Slice comparison" => "Porovn\xE1n\xED web\xEDk\xF9",
 
 // admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 148
+// admin/se_statistics.php, row 149
 "Stats to show" => "Zobrazen\xE9 statistiky",
 
 // admin/aa_statistics.php, row 242
@@ -915,42 +915,42 @@ return [
 "Period (item ranking)" => "Obdob\xED (po\xF8ad\xED \xE8l\xE1nk\xF9)",
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "Exact items to show" => "Konkr\xE9tn\xED \xE8l\xE1nky k zobrazen\xED",
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "seznam id/short_id \xE8l\xE1nk\xF9 odd\xEClen\xFD poml\xE8kami nebo AA v\xFDraz jako {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}",
 
 // admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 109
+// admin/se_statistics.php, row 110
 "Number of items to show" => "Po\xE8et zobrazen\xFDch \xE8l\xE1nk\xF9",
 
 // admin/aa_statistics.php, row 255
 "Show for period" => "Zobrazit za obdob\xED",
 
 // admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 110
+// admin/se_statistics.php, row 111
 "From date" => "Od data",
 
 // admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 154
+// admin/se_statistics.php, row 155
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Zkontrolujte v\xFDraz v poli \x84Konkr\xE9tn\xED \xE8l\xE1nky k zobrazen\xED\x93 a vyhodno\x9Dte ho tla\xE8\xEDtkem \x84Zobrazit\x93.", // ai 2026-11
 
 // admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 157
+// admin/se_statistics.php, row 158
 "Display Statistics for Item" => "Zobrazit statistiky \xE8l\xE1nku",
 
 // admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 184
+// admin/se_statistics.php, row 185
 "Items found" => "Nalezen\xE9 \xE8l\xE1nky",
 
 // admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 193
+// admin/se_statistics.php, row 194
 "No items found" => "\x8E\xE1dn\xE9 \xE8l\xE1nky nenalezeny",
 
 // admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 190
+// admin/se_statistics.php, row 191
 "Server configuration changes" => "Zm\xECny konfigurace serveru",
 
 // admin/aa_tasks.php, row 35
@@ -1487,7 +1487,7 @@ return [
 // admin/se_export.php, row 123
 // include/exporter.class.php, row 657
 // include/menu_util.php, row 95
-"Export" => "V\xFDm\xECna zpr\xE1v",
+"Export" => "Export", // ai 2026-11
 
 // admin/fileman.php, row 85
 "No permissions for file manager." => "Chyb\xED pr\xE1va pro spr\xE1vce soubor\xF9.",
@@ -2173,7 +2173,7 @@ return [
 "Admin - Export Items" => "Admin - Export \xE8l\xE1nk\xF9",
 
 // admin/se_export.php, row 119
-"Check the settings and press Export." => "Zkontrolujte nastaven\xED a stiskn\xECte tla\xE8\xEDtko \x84V\xFDm\xECna zpr\xE1v\x93.", // ai 2026-11
+"Check the settings and press Export." => "Zkontrolujte nastaven\xED a stiskn\xECte tla\xE8\xEDtko \x84Export\x93.", // ai 2026-11
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 531
@@ -2524,11 +2524,7 @@ return [
 "Do not import" => "Nep\xF8ij\xEDmat",
 
 // admin/se_import.php, row 197
-// include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
-// src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
-"Import" => "P\xF8ij\xEDmat",
+"Import from" => "P\xF8ij\xEDmat", // ai 2026-11
 
 // admin/se_inputform.php, row 186, 481
 "Before HTML code" => "HTML k\xF3d p\xF8ed t\xEDmto polem",
@@ -3240,37 +3236,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Pou\x9Eijte podm\xEDnky \"headline........,publish_date....-\" nebo \"sort[]\"",
 
-// admin/se_statistics.php, row 94
+// admin/se_statistics.php, row 95
 "Top all time" => "Top za celou dobu",
 
-// admin/se_statistics.php, row 95
+// admin/se_statistics.php, row 96
 "Top this year" => "Top tento rok",
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 97
 "Top this month" => "Top tento m\xECs\xEDc",
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 98
 "Top this week" => "Top tento t\xFDden",
 
-// admin/se_statistics.php, row 98
+// admin/se_statistics.php, row 99
 "Top this day" => "Top dnes",
 
-// admin/se_statistics.php, row 99
+// admin/se_statistics.php, row 100
 "Top last year" => "Top minul\xFD rok",
 
-// admin/se_statistics.php, row 100
+// admin/se_statistics.php, row 101
 "Top last month" => "Top minul\xFD m\xECs\xEDc",
 
-// admin/se_statistics.php, row 101
+// admin/se_statistics.php, row 102
 "Top last week" => "Top minul\xFD t\xFDden",
 
-// admin/se_statistics.php, row 102
+// admin/se_statistics.php, row 103
 "Top last day" => "Top v\xE8era",
 
-// admin/se_statistics.php, row 106
+// admin/se_statistics.php, row 107
 "Item Statistics" => "Statistika \xE8l\xE1nk\xF9",
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 108
 "Show items" => "Zobrazit \xE8l\xE1nky",
 
 // admin/se_taskmanager.php, row 39
@@ -6954,6 +6950,12 @@ return [
 
 // include/menu_util.php, row 94
 "Slice structure" => "Struktura web\xEDku",
+
+// include/menu_util.php, row 96
+// src/Import/Definition.php, row 135, 161
+// src/Optimize/CheckImportStores.php, row 53
+// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+"Import" => "Import", // ai 2026-11
 
 // include/menu_util.php, row 98
 "Wizard" => "Pr\xF9vodce",

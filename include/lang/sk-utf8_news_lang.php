@@ -401,7 +401,7 @@ return [
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 79
+// admin/se_statistics.php, row 80
 // admin/se_views.php, row 148
 // include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
@@ -613,39 +613,39 @@ return [
 "You do not have permissions to see statistics" => "Nemáte právo prezerať štatistiky", // ai 2026-06
 
 // admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 74
+// admin/se_statistics.php, row 75
 "Admin - Statistics" => "Admin - Štatistika", // ai 2026-06
 
 // admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 82
+// admin/se_statistics.php, row 83
 "years" => "roky", // ai 2026-06
 
 // admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 83
+// admin/se_statistics.php, row 84
 "months" => "mesiace", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 85
 "weeks" => "týždne", // ai 2026-06
 
 // admin/aa_statistics.php, row 107
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 86
 "days" => "dni", // ai 2026-06
 
 // admin/aa_statistics.php, row 108
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 87
 "hours" => "hodiny", // ai 2026-06
 
 // admin/aa_statistics.php, row 109
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 88
 "minutes" => "minúty", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 89
 "day-hours" => "hodiny dňa", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 90
 "week-days" => "dni týždňa", // ai 2026-06
 
 // admin/aa_statistics.php, row 115
@@ -676,7 +676,7 @@ return [
 "Sped up vs prior period" => "Zrýchlenie oproti predchádzajúcemu obdobiu", // ai 2026-06
 
 // admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 93
+// admin/se_statistics.php, row 94
 "Specified below" => "Určené nižšie", // ai 2026-06
 
 // admin/aa_statistics.php, row 128
@@ -733,7 +733,7 @@ return [
 "Slice comparison" => "Porovnanie modulov", // ai 2026-06
 
 // admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 148
+// admin/se_statistics.php, row 149
 "Stats to show" => "Zobrazované štatistiky", // ai 2026-06
 
 // admin/aa_statistics.php, row 242
@@ -752,42 +752,42 @@ return [
 "Period (item ranking)" => "Obdobie (poradie správ)", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "Exact items to show" => "Konkrétne správy na zobrazenie", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "zoznam id/short_id správ oddelený pomlčkami alebo AA výraz ako {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
 // admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 109
+// admin/se_statistics.php, row 110
 "Number of items to show" => "Počet zobrazovaných správ", // ai 2026-06
 
 // admin/aa_statistics.php, row 255
 "Show for period" => "Zobraziť za obdobie", // ai 2026-06
 
 // admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 110
+// admin/se_statistics.php, row 111
 "From date" => "Od dátumu", // ai 2026-06
 
 // admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 154
+// admin/se_statistics.php, row 155
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Skontrolujte výraz v „Konkrétne správy na zobrazenie“ a vyhodnoťte ho tlačidlom „Zobraziť“.", // ai 2026-11
 
 // admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 157
+// admin/se_statistics.php, row 158
 "Display Statistics for Item" => "Zobraziť štatistiky správy", // ai 2026-06
 
 // admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 184
+// admin/se_statistics.php, row 185
 "Items found" => "Nájdené správy", // ai 2026-06
 
 // admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 193
+// admin/se_statistics.php, row 194
 "No items found" => "Neboli nájdené žiadne správy", // ai 2026-06
 
 // admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 190
+// admin/se_statistics.php, row 191
 "Server configuration changes" => "Zmeny konfigurácie servera", // ai 2026-06
 
 // admin/aa_tasks.php, row 35
@@ -1323,7 +1323,7 @@ return [
 // admin/se_export.php, row 123
 // include/exporter.class.php, row 657
 // include/menu_util.php, row 95
-"Export" => "Výmena správ",
+"Export" => "Export", // ai 2026-11
 
 // admin/fileman.php, row 85
 "No permissions for file manager." => "Nemáte právo používať správcu súborov.", // ai 2026-06
@@ -2008,7 +2008,7 @@ return [
 "Admin - Export Items" => "Nastavenia modulu - Export správ", // ai 2026-06
 
 // admin/se_export.php, row 119
-"Check the settings and press Export." => "Skontrolujte nastavenia a stlačte „Výmena správ“.", // ai 2026-11
+"Check the settings and press Export." => "Skontrolujte nastavenia a stlačte „Export“.", // ai 2026-11
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 531
@@ -2353,14 +2353,10 @@ return [
 "Import from slice:" => "Príjmať správy z:",
 
 // admin/se_import.php, row 195
-"Do not import" => "Nepríjmať",
+"Do not import" => "Neprijímať", // ai 2026-11
 
 // admin/se_import.php, row 197
-// include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
-// src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
-"Import" => "Príjmať",
+"Import from" => "Prijímať", // ai 2026-11
 
 // admin/se_inputform.php, row 186, 481
 "Before HTML code" => "HTML kód pred týmto poľom",
@@ -3072,37 +3068,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Použite podmienky \"headline........,publish_date....-\" alebo \"sort[]\"", // ai 2026-06
 
-// admin/se_statistics.php, row 94
+// admin/se_statistics.php, row 95
 "Top all time" => "Top za celé obdobie", // ai 2026-06
 
-// admin/se_statistics.php, row 95
+// admin/se_statistics.php, row 96
 "Top this year" => "Top tento rok", // ai 2026-06
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 97
 "Top this month" => "Top tento mesiac", // ai 2026-06
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 98
 "Top this week" => "Top tento týždeň", // ai 2026-06
 
-// admin/se_statistics.php, row 98
+// admin/se_statistics.php, row 99
 "Top this day" => "Top dnes", // ai 2026-06
 
-// admin/se_statistics.php, row 99
+// admin/se_statistics.php, row 100
 "Top last year" => "Top minulý rok", // ai 2026-06
 
-// admin/se_statistics.php, row 100
+// admin/se_statistics.php, row 101
 "Top last month" => "Top minulý mesiac", // ai 2026-06
 
-// admin/se_statistics.php, row 101
+// admin/se_statistics.php, row 102
 "Top last week" => "Top minulý týždeň", // ai 2026-06
 
-// admin/se_statistics.php, row 102
+// admin/se_statistics.php, row 103
 "Top last day" => "Top včera", // ai 2026-06
 
-// admin/se_statistics.php, row 106
+// admin/se_statistics.php, row 107
 "Item Statistics" => "Štatistika správ", // ai 2026-06
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 108
 "Show items" => "Zobraziť správy", // ai 2026-06
 
 // admin/se_taskmanager.php, row 39
@@ -6787,6 +6783,12 @@ return [
 
 // include/menu_util.php, row 94
 "Slice structure" => "Štruktúra modulu",
+
+// include/menu_util.php, row 96
+// src/Import/Definition.php, row 135, 161
+// src/Optimize/CheckImportStores.php, row 53
+// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+"Import" => "Import", // ai 2026-11
 
 // include/menu_util.php, row 98
 "Wizard" => "Sprievodca", // ai 2026-06
@@ -11057,7 +11059,7 @@ return [
 "Items of slice \"%1\" are fed to other slices - stop the import in the slices its Inner Node Feeding page lists as Currently exported to" => "Správy modulu „%1“ sa posielajú do iných modulov – zastavte preberanie v moduloch, ktoré jeho stránka „Lokálna výmena“ uvádza v „Momentálne poskytované do“", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 281
-"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "Modul „%1“ preberá správy z iných modulov – na jeho stránke „Lokálna výmena“ ich presuňte do „Nepríjmať“", // ai 2026-11
+"Slice \"%1\" imports items from other slices - move them to Do not import on its Inner Node Feeding page" => "Modul „%1“ preberá správy z iných modulov – na jeho stránke „Lokálna výmena“ ich presuňte do „Neprijímať“", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 284
 "Slice \"%1\" mails its items to the addresses of its Email Notification - remove the addresses there" => "Modul „%1“ posiela svoje správy na adresy v „Upozornenie e-mailom“ – tam adresy odstráňte", // ai 2026-11

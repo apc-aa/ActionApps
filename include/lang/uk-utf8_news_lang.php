@@ -315,7 +315,7 @@ return [
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 79
+// admin/se_statistics.php, row 80
 // admin/se_views.php, row 148
 // include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
@@ -527,39 +527,39 @@ return [
 "You do not have permissions to see statistics" => "Ви не маєте права переглядати статистику", // ai 2026-06
 
 // admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 74
+// admin/se_statistics.php, row 75
 "Admin - Statistics" => "Адмін - Статистика", // ai 2026-06
 
 // admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 82
+// admin/se_statistics.php, row 83
 "years" => "роки", // ai 2026-06
 
 // admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 83
+// admin/se_statistics.php, row 84
 "months" => "місяці", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 85
 "weeks" => "тижні", // ai 2026-06
 
 // admin/aa_statistics.php, row 107
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 86
 "days" => "дні", // ai 2026-06
 
 // admin/aa_statistics.php, row 108
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 87
 "hours" => "години", // ai 2026-06
 
 // admin/aa_statistics.php, row 109
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 88
 "minutes" => "хвилини", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 89
 "day-hours" => "години доби", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 90
 "week-days" => "дні тижня", // ai 2026-06
 
 // admin/aa_statistics.php, row 115
@@ -590,7 +590,7 @@ return [
 "Sped up vs prior period" => "Прискорення проти попереднього періоду", // ai 2026-06
 
 // admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 93
+// admin/se_statistics.php, row 94
 "Specified below" => "Зазначено нижче", // ai 2026-06
 
 // admin/aa_statistics.php, row 128
@@ -647,7 +647,7 @@ return [
 "Slice comparison" => "Порівняння рубрик", // ai 2026-06
 
 // admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 148
+// admin/se_statistics.php, row 149
 "Stats to show" => "Статистика для показу", // ai 2026-06
 
 // admin/aa_statistics.php, row 242
@@ -666,42 +666,42 @@ return [
 "Period (item ranking)" => "Період (рейтинг статей)", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "Exact items to show" => "Конкретні статті для показу", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "список id/short_id статей, розділених дефісами, або AA-вираз на кшталт {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
 // admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 109
+// admin/se_statistics.php, row 110
 "Number of items to show" => "Кількість статей для показу", // ai 2026-06
 
 // admin/aa_statistics.php, row 255
 "Show for period" => "Показати за період", // ai 2026-06
 
 // admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 110
+// admin/se_statistics.php, row 111
 "From date" => "Від дати", // ai 2026-06
 
 // admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 154
+// admin/se_statistics.php, row 155
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Перевірте вираз у полі «Конкретні статті для показу» і натисніть «Показати», щоб його обчислити.", // ai 2026-11
 
 // admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 157
+// admin/se_statistics.php, row 158
 "Display Statistics for Item" => "Показати статистику статті", // ai 2026-06
 
 // admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 184
+// admin/se_statistics.php, row 185
 "Items found" => "Знайдені статті", // ai 2026-06
 
 // admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 193
+// admin/se_statistics.php, row 194
 "No items found" => "Статей не знайдено", // ai 2026-06
 
 // admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 190
+// admin/se_statistics.php, row 191
 "Server configuration changes" => "Зміни конфігурації сервера", // ai 2026-06
 
 // admin/aa_tasks.php, row 35
@@ -1237,7 +1237,7 @@ return [
 // admin/se_export.php, row 123
 // include/exporter.class.php, row 657
 // include/menu_util.php, row 95
-"Export" => "Передавання", // ai 2026-06
+"Export" => "Експорт", // ai 2026-11
 
 // admin/fileman.php, row 85
 "No permissions for file manager." => "Немає прав для файлового менеджера.", // ai 2026-06
@@ -1923,7 +1923,7 @@ return [
 "Admin - Export Items" => "Адміністрування - Експорт статей", // ai 2026-06
 
 // admin/se_export.php, row 119
-"Check the settings and press Export." => "Перевірте налаштування і натисніть «Передавання».", // ai 2026-11
+"Check the settings and press Export." => "Перевірте налаштування і натисніть «Експорт».", // ai 2026-11
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 531
@@ -2271,11 +2271,7 @@ return [
 "Do not import" => "Не імпортувати", // ai 2026-06
 
 // admin/se_import.php, row 197
-// include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
-// src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
-"Import" => "Імпортувати", // ai 2026-06
+"Import from" => "Імпортувати", // ai 2026-11
 
 // admin/se_inputform.php, row 186, 481
 "Before HTML code" => "HTML-код перед полем", // ai 2026-06
@@ -2987,37 +2983,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Використовуйте умови \"headline........,publish_date....-\" або \"sort[]\"", // ai 2026-06
 
-// admin/se_statistics.php, row 94
+// admin/se_statistics.php, row 95
 "Top all time" => "Топ за весь час", // ai 2026-06
 
-// admin/se_statistics.php, row 95
+// admin/se_statistics.php, row 96
 "Top this year" => "Топ цього року", // ai 2026-06
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 97
 "Top this month" => "Топ цього місяця", // ai 2026-06
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 98
 "Top this week" => "Топ цього тижня", // ai 2026-06
 
-// admin/se_statistics.php, row 98
+// admin/se_statistics.php, row 99
 "Top this day" => "Топ сьогодні", // ai 2026-06
 
-// admin/se_statistics.php, row 99
+// admin/se_statistics.php, row 100
 "Top last year" => "Топ минулого року", // ai 2026-06
 
-// admin/se_statistics.php, row 100
+// admin/se_statistics.php, row 101
 "Top last month" => "Топ минулого місяця", // ai 2026-06
 
-// admin/se_statistics.php, row 101
+// admin/se_statistics.php, row 102
 "Top last week" => "Топ минулого тижня", // ai 2026-06
 
-// admin/se_statistics.php, row 102
+// admin/se_statistics.php, row 103
 "Top last day" => "Топ учора", // ai 2026-06
 
-// admin/se_statistics.php, row 106
+// admin/se_statistics.php, row 107
 "Item Statistics" => "Статистика статей", // ai 2026-06
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 108
 "Show items" => "Показати статті", // ai 2026-06
 
 // admin/se_taskmanager.php, row 39
@@ -6702,6 +6698,12 @@ return [
 
 // include/menu_util.php, row 94
 "Slice structure" => "Структура рубрики", // ai 2026-06
+
+// include/menu_util.php, row 96
+// src/Import/Definition.php, row 135, 161
+// src/Optimize/CheckImportStores.php, row 53
+// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+"Import" => "Імпорт", // ai 2026-11
 
 // include/menu_util.php, row 98
 "Wizard" => "Майстер", // ai 2026-06

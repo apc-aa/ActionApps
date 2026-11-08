@@ -565,7 +565,7 @@ return [
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 79
+// admin/se_statistics.php, row 80
 // admin/se_views.php, row 148
 // include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
@@ -777,39 +777,39 @@ return [
 "You do not have permissions to see statistics" => "Nemáte oprávnění zobrazit statistiky",
 
 // admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 74
+// admin/se_statistics.php, row 75
 "Admin - Statistics" => "Admin - Statistiky",
 
 // admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 82
+// admin/se_statistics.php, row 83
 "years" => "roky",
 
 // admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 83
+// admin/se_statistics.php, row 84
 "months" => "měsíce",
 
 // admin/aa_statistics.php, row 106
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 85
 "weeks" => "týdny",
 
 // admin/aa_statistics.php, row 107
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 86
 "days" => "dny",
 
 // admin/aa_statistics.php, row 108
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 87
 "hours" => "hodiny",
 
 // admin/aa_statistics.php, row 109
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 88
 "minutes" => "minuty",
 
 // admin/aa_statistics.php, row 110
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 89
 "day-hours" => "hodiny dne",
 
 // admin/aa_statistics.php, row 111
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 90
 "week-days" => "dny týdne",
 
 // admin/aa_statistics.php, row 115
@@ -840,7 +840,7 @@ return [
 "Sped up vs prior period" => "Zrychlení oproti předchozímu období",
 
 // admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 93
+// admin/se_statistics.php, row 94
 "Specified below" => "Určeno níže",
 
 // admin/aa_statistics.php, row 128
@@ -897,7 +897,7 @@ return [
 "Slice comparison" => "Porovnání webíků",
 
 // admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 148
+// admin/se_statistics.php, row 149
 "Stats to show" => "Zobrazené statistiky",
 
 // admin/aa_statistics.php, row 242
@@ -916,42 +916,42 @@ return [
 "Period (item ranking)" => "Období (pořadí článků)",
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "Exact items to show" => "Konkrétní články k zobrazení",
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "seznam id/short_id článků oddělený pomlčkami nebo AA výraz jako {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}",
 
 // admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 109
+// admin/se_statistics.php, row 110
 "Number of items to show" => "Počet zobrazených článků",
 
 // admin/aa_statistics.php, row 255
 "Show for period" => "Zobrazit za období",
 
 // admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 110
+// admin/se_statistics.php, row 111
 "From date" => "Od data",
 
 // admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 154
+// admin/se_statistics.php, row 155
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Zkontrolujte výraz v poli „Konkrétní články k zobrazení“ a vyhodnoťte ho tlačítkem „Zobrazit“.", // ai 2026-11
 
 // admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 157
+// admin/se_statistics.php, row 158
 "Display Statistics for Item" => "Zobrazit statistiky článku",
 
 // admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 184
+// admin/se_statistics.php, row 185
 "Items found" => "Nalezené články",
 
 // admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 193
+// admin/se_statistics.php, row 194
 "No items found" => "Žádné články nenalezeny",
 
 // admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 190
+// admin/se_statistics.php, row 191
 "Server configuration changes" => "Změny konfigurace serveru",
 
 // admin/aa_tasks.php, row 35
@@ -1488,7 +1488,7 @@ return [
 // admin/se_export.php, row 123
 // include/exporter.class.php, row 657
 // include/menu_util.php, row 95
-"Export" => "Výměna zpráv",
+"Export" => "Export", // ai 2026-11
 
 // admin/fileman.php, row 85
 "No permissions for file manager." => "Chybí práva pro správce souborů.",
@@ -2174,7 +2174,7 @@ return [
 "Admin - Export Items" => "Admin - Export článků",
 
 // admin/se_export.php, row 119
-"Check the settings and press Export." => "Zkontrolujte nastavení a stiskněte tlačítko „Výměna zpráv“.", // ai 2026-11
+"Check the settings and press Export." => "Zkontrolujte nastavení a stiskněte tlačítko „Export“.", // ai 2026-11
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 531
@@ -2525,11 +2525,7 @@ return [
 "Do not import" => "Nepřijímat",
 
 // admin/se_import.php, row 197
-// include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
-// src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
-"Import" => "Přijímat",
+"Import from" => "Přijímat", // ai 2026-11
 
 // admin/se_inputform.php, row 186, 481
 "Before HTML code" => "HTML kód před tímto polem",
@@ -3241,37 +3237,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Použijte podmínky \"headline........,publish_date....-\" nebo \"sort[]\"",
 
-// admin/se_statistics.php, row 94
+// admin/se_statistics.php, row 95
 "Top all time" => "Top za celou dobu",
 
-// admin/se_statistics.php, row 95
+// admin/se_statistics.php, row 96
 "Top this year" => "Top tento rok",
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 97
 "Top this month" => "Top tento měsíc",
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 98
 "Top this week" => "Top tento týden",
 
-// admin/se_statistics.php, row 98
+// admin/se_statistics.php, row 99
 "Top this day" => "Top dnes",
 
-// admin/se_statistics.php, row 99
+// admin/se_statistics.php, row 100
 "Top last year" => "Top minulý rok",
 
-// admin/se_statistics.php, row 100
+// admin/se_statistics.php, row 101
 "Top last month" => "Top minulý měsíc",
 
-// admin/se_statistics.php, row 101
+// admin/se_statistics.php, row 102
 "Top last week" => "Top minulý týden",
 
-// admin/se_statistics.php, row 102
+// admin/se_statistics.php, row 103
 "Top last day" => "Top včera",
 
-// admin/se_statistics.php, row 106
+// admin/se_statistics.php, row 107
 "Item Statistics" => "Statistika článků",
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 108
 "Show items" => "Zobrazit články",
 
 // admin/se_taskmanager.php, row 39
@@ -6955,6 +6951,12 @@ return [
 
 // include/menu_util.php, row 94
 "Slice structure" => "Struktura webíku",
+
+// include/menu_util.php, row 96
+// src/Import/Definition.php, row 135, 161
+// src/Optimize/CheckImportStores.php, row 53
+// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+"Import" => "Import", // ai 2026-11
 
 // include/menu_util.php, row 98
 "Wizard" => "Průvodce",

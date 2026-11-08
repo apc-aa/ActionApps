@@ -312,7 +312,7 @@ return [
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 79
+// admin/se_statistics.php, row 80
 // admin/se_views.php, row 148
 // include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
@@ -524,39 +524,39 @@ return [
 "You do not have permissions to see statistics" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xE2\xE8\xE6\xE4\xE0\xF2\xE5 \xF1\xF2\xE0\xF2\xE8\xF1\xF2\xE8\xEA\xE8\xF2\xE5", // ai 2026-06
 
 // admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 74
+// admin/se_statistics.php, row 75
 "Admin - Statistics" => "\xC0\xE4\xEC\xE8\xED - \xD1\xF2\xE0\xF2\xE8\xF1\xF2\xE8\xEA\xE0", // ai 2026-06
 
 // admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 82
+// admin/se_statistics.php, row 83
 "years" => "\xE3\xEE\xE4\xE8\xED\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 83
+// admin/se_statistics.php, row 84
 "months" => "\xEC\xE5\xF1\xE5\xF6\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 85
 "weeks" => "\xF1\xE5\xE4\xEC\xE8\xF6\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 107
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 86
 "days" => "\xE4\xED\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 108
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 87
 "hours" => "\xF7\xE0\xF1\xEE\xE2\xE5", // ai 2026-06
 
 // admin/aa_statistics.php, row 109
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 88
 "minutes" => "\xEC\xE8\xED\xF3\xF2\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 89
 "day-hours" => "\xF7\xE0\xF1\xEE\xE2\xE5 \xEE\xF2 \xE4\xE5\xED\xFF", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 90
 "week-days" => "\xE4\xED\xE8 \xEE\xF2 \xF1\xE5\xE4\xEC\xE8\xF6\xE0\xF2\xE0", // ai 2026-06
 
 // admin/aa_statistics.php, row 115
@@ -587,7 +587,7 @@ return [
 "Sped up vs prior period" => "\xD3\xF1\xEA\xEE\xF0\xFF\xE2\xE0\xED\xE5 \xF1\xEF\xF0\xFF\xEC\xEE \xEF\xF0\xE5\xE4\xE8\xF8\xED\xE8\xFF \xEF\xE5\xF0\xE8\xEE\xE4", // ai 2026-06
 
 // admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 93
+// admin/se_statistics.php, row 94
 "Specified below" => "\xCF\xEE\xF1\xEE\xF7\xE5\xED\xEE \xEF\xEE-\xE4\xEE\xEB\xF3", // ai 2026-06
 
 // admin/aa_statistics.php, row 128
@@ -644,7 +644,7 @@ return [
 "Slice comparison" => "\xD1\xF0\xE0\xE2\xED\xE5\xED\xE8\xE5 \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 148
+// admin/se_statistics.php, row 149
 "Stats to show" => "\xCF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xF1\xF2\xE8\xEA\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 242
@@ -663,42 +663,42 @@ return [
 "Period (item ranking)" => "\xCF\xE5\xF0\xE8\xEE\xE4 (\xEA\xEB\xE0\xF1\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xE8\xF2\xE5)", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "Exact items to show" => "\xCA\xEE\xED\xEA\xF0\xE5\xF2\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8 \xE7\xE0 \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE5", // ai 2026-06
 
 // admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 109
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "\xF1\xEF\xE8\xF1\xFA\xEA \xEE\xF2 id/short_id \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xE8, \xF0\xE0\xE7\xE4\xE5\xEB\xE5\xED\xE8 \xF1 \xF2\xE8\xF0\xE5\xF2\xE0, \xE8\xEB\xE8 AA \xE8\xE7\xF0\xE0\xE7 \xEA\xE0\xF2\xEE {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
 // admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 109
+// admin/se_statistics.php, row 110
 "Number of items to show" => "\xC1\xF0\xEE\xE9 \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 255
 "Show for period" => "\xCF\xEE\xEA\xE0\xE6\xE8 \xE7\xE0 \xEF\xE5\xF0\xE8\xEE\xE4", // ai 2026-06
 
 // admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 110
+// admin/se_statistics.php, row 111
 "From date" => "\xCE\xF2 \xE4\xE0\xF2\xE0", // ai 2026-06
 
 // admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 154
+// admin/se_statistics.php, row 155
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "\xCF\xF0\xEE\xE2\xE5\xF0\xE5\xF2\xE5 \xE8\xE7\xF0\xE0\xE7\xE0 \xE2 \x84\xCA\xEE\xED\xEA\xF0\xE5\xF2\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8 \xE7\xE0 \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE5\x93 \xE8 \xED\xE0\xF2\xE8\xF1\xED\xE5\xF2\xE5 \x84\xCF\xEE\xEA\xE0\xE6\xE8\x93, \xE7\xE0 \xE4\xE0 \xE3\xEE \xE8\xE7\xF7\xE8\xF1\xEB\xE8\xF2\xE5.", // ai 2026-11
 
 // admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 157
+// admin/se_statistics.php, row 158
 "Display Statistics for Item" => "\xCF\xEE\xEA\xE0\xE6\xE8 \xF1\xF2\xE0\xF2\xE8\xF1\xF2\xE8\xEA\xE8\xF2\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0", // ai 2026-06
 
 // admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 184
+// admin/se_statistics.php, row 185
 "Items found" => "\xCD\xE0\xEC\xE5\xF0\xE5\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 193
+// admin/se_statistics.php, row 194
 "No items found" => "\xCD\xFF\xEC\xE0 \xED\xE0\xEC\xE5\xF0\xE5\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 190
+// admin/se_statistics.php, row 191
 "Server configuration changes" => "\xCF\xF0\xEE\xEC\xE5\xED\xE8 \xE2 \xEA\xEE\xED\xF4\xE8\xE3\xF3\xF0\xE0\xF6\xE8\xFF\xF2\xE0 \xED\xE0 \xF1\xFA\xF0\xE2\xFA\xF0\xE0", // ai 2026-06
 
 // admin/aa_tasks.php, row 35
@@ -2268,11 +2268,7 @@ return [
 "Do not import" => "\xC1\xE5\xE7 \xE8\xEC\xEF\xEE\xF0\xF2", // ai 2026-06
 
 // admin/se_import.php, row 197
-// include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
-// src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
-"Import" => "\xC8\xEC\xEF\xEE\xF0\xF2", // ai 2026-06
+"Import from" => "\xC8\xEC\xEF\xEE\xF0\xF2", // ai 2026-11
 
 // admin/se_inputform.php, row 186, 481
 "Before HTML code" => "HTML \xEA\xEE\xE4 \xEF\xF0\xE5\xE4\xE8 \xEF\xEE\xEB\xE5\xF2\xEE", // ai 2026-06
@@ -2984,37 +2980,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "\xC8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xE9\xF2\xE5 \xF3\xF1\xEB\xEE\xE2\xE8\xFF \"headline........,publish_date....-\" \xE8\xEB\xE8 \"sort[]\"", // ai 2026-06
 
-// admin/se_statistics.php, row 94
+// admin/se_statistics.php, row 95
 "Top all time" => "\xD2\xEE\xEF \xE7\xE0 \xF6\xFF\xEB\xEE\xF2\xEE \xE2\xF0\xE5\xEC\xE5", // ai 2026-06
 
-// admin/se_statistics.php, row 95
+// admin/se_statistics.php, row 96
 "Top this year" => "\xD2\xEE\xEF \xF2\xE0\xE7\xE8 \xE3\xEE\xE4\xE8\xED\xE0", // ai 2026-06
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 97
 "Top this month" => "\xD2\xEE\xEF \xF2\xEE\xE7\xE8 \xEC\xE5\xF1\xE5\xF6", // ai 2026-06
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 98
 "Top this week" => "\xD2\xEE\xEF \xF2\xE0\xE7\xE8 \xF1\xE5\xE4\xEC\xE8\xF6\xE0", // ai 2026-06
 
-// admin/se_statistics.php, row 98
+// admin/se_statistics.php, row 99
 "Top this day" => "\xD2\xEE\xEF \xE4\xED\xE5\xF1", // ai 2026-06
 
-// admin/se_statistics.php, row 99
+// admin/se_statistics.php, row 100
 "Top last year" => "\xD2\xEE\xEF \xEC\xE8\xED\xE0\xEB\xE0\xF2\xE0 \xE3\xEE\xE4\xE8\xED\xE0", // ai 2026-06
 
-// admin/se_statistics.php, row 100
+// admin/se_statistics.php, row 101
 "Top last month" => "\xD2\xEE\xEF \xEC\xE8\xED\xE0\xEB\xE8\xFF \xEC\xE5\xF1\xE5\xF6", // ai 2026-06
 
-// admin/se_statistics.php, row 101
+// admin/se_statistics.php, row 102
 "Top last week" => "\xD2\xEE\xEF \xEC\xE8\xED\xE0\xEB\xE0\xF2\xE0 \xF1\xE5\xE4\xEC\xE8\xF6\xE0", // ai 2026-06
 
-// admin/se_statistics.php, row 102
+// admin/se_statistics.php, row 103
 "Top last day" => "\xD2\xEE\xEF \xE2\xF7\xE5\xF0\xE0", // ai 2026-06
 
-// admin/se_statistics.php, row 106
+// admin/se_statistics.php, row 107
 "Item Statistics" => "\xD1\xF2\xE0\xF2\xE8\xF1\xF2\xE8\xEA\xE0 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xE8\xF2\xE5", // ai 2026-06
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 108
 "Show items" => "\xCF\xEE\xEA\xE0\xE6\xE8 \xF1\xF2\xE0\xF2\xE8\xE8\xF2\xE5", // ai 2026-06
 
 // admin/se_taskmanager.php, row 39
@@ -6699,6 +6695,12 @@ return [
 
 // include/menu_util.php, row 94
 "Slice structure" => "\xD1\xF2\xF0\xF3\xEA\xF2\xF3\xF0\xE0 \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0", // ai 2026-06
+
+// include/menu_util.php, row 96
+// src/Import/Definition.php, row 135, 161
+// src/Optimize/CheckImportStores.php, row 53
+// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+"Import" => "\xC8\xEC\xEF\xEE\xF0\xF2", // ai 2026-06
 
 // include/menu_util.php, row 98
 "Wizard" => "\xD1\xFA\xE2\xE5\xF2\xED\xE8\xEA", // ai 2026-06
