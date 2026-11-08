@@ -60,6 +60,7 @@ if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
 }
 
 $item_count = $item_count ?: 5;
+$date_from  = $date_from ?: date('Y-m-d', strtotime('-1 month'));   // from 0 a day table of one item ran to 2.7 MB
 
 // an expression runs with the viewer's rights, so only this page's own form may send one;
 // a link with ids still shows the table, a link with an expression only fills the form
