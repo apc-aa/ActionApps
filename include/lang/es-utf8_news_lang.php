@@ -28,6 +28,9 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Can't delete invalid permission." => "No se puede borrar permiso inválido.",
+// "Invalid permission deleted (no such user/group): " => "Borrado permiso inválido (usuario/grupo inexistente): ",
+// "Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Cada visita vuelve a generar esa página. Una redirección, un contador de clics o un formulario pueden quedarse como están. En otros casos, sobre todo en una plantilla de todas las páginas (cabecera, pie): elimine un valor impreso solo para depuración y compruebe la ortografía del nombre ({server:HTTP_REFERER}); para distinguir a los visitantes que llegan de una campaña use {qs:utm_source}, para el dispositivo {detect}. El host, el esquema y la URI ({server:HTTP_HOST}, {server:REQUEST_URI}) mantienen la página en la caché.", // ai 2026-11
 // "Migrate LDAP perms to SQL perms" => "Migrar permisos LDAP a permisos SQL",
 // "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Copia todos los usuarios, grupos, membresías y permisos del backend LDAP a las tablas del backend SQL (users, membership, perms), y reescribe item.posted_by / item.edited_by del formato DN de LDAP (uid=...,ou=...) a los nuevos ids numéricos SQL. Ejecútelo una vez por instalación y luego cambie PERM_LIB a 'sql' en config. 'Test' es una prueba de solo lectura. 'Repair' realiza la migración y puede ejecutarse varias veces. 'Revert' usa la tabla de mapeo para deshacerlo todo.",
 // "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Este optimizador solo se ejecuta cuando PERM_LIB='ldap'. PERM_LIB actual='%1'.",
@@ -575,6 +578,7 @@ return [
 // admin/aafinder.php, row 98
 // admin/console.php, row 73
 // admin/fileman.php, row 110
+// admin/se_fulltext.php, row 80
 // admin/slicedel2.php, row 70
 // admin/um_passkeys.php, row 73
 // admin/um_passwd.php, row 80
@@ -627,7 +631,7 @@ return [
 "Type their login name to see its failed logins of the last 12 hours, and let it log in at once." => "Escriba el nombre de usuario para ver sus inicios de sesión fallidos de las últimas 12 horas y dejarlo entrar de inmediato.", // ai 2026-10
 
 // admin/aa_security.php, row 85
-// admin/setup.php, row 99, 240
+// admin/setup.php, row 102, 239
 // admin/slicewiz.php, row 84
 // admin/um_passwd.php, row 128
 // admin/um_uedit.php, row 314, 328
@@ -637,13 +641,13 @@ return [
 
 // admin/aa_security.php, row 87
 // admin/aa_statecheck.php, row 177
-// admin/aa_statistics.php, row 91
+// admin/aa_statistics.php, row 101
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 69
+// admin/se_statistics.php, row 79
 // admin/se_views.php, row 148
-// include/formutil.php, row 1431, 1434, 2020
+// include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
 // src/Widget/FldWidget.php, row 156
 "Show" => "Mostrar",
@@ -701,6 +705,7 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 103
 // src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckFileReadRefusals.php, row 86, 105, 139
 // src/Optimize/CheckFormRobotRefusals.php, row 80
 // src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
 // src/Optimize/CheckIsdsConf.php, row 160, 193
@@ -713,6 +718,7 @@ return [
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
 // src/Optimize/CheckSecurityProtections.php, row 106
+// src/Optimize/CheckServerRefusals.php, row 73
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckTrustedProxies.php, row 109
 // src/Optimize/CheckUploadRefusals.php, row 101
@@ -846,111 +852,111 @@ return [
 // admin/aa_statecheck.php, row 397
 "Run slow checks now" => "Ejecutar comprobaciones lentas", // ai 2026-10
 
-// admin/aa_statistics.php, row 58
-// admin/se_statistics.php, row 53
+// admin/aa_statistics.php, row 63
+// admin/se_statistics.php, row 58
 "You do not have permissions to see statistics" => "No tiene permisos para ver estadísticas",
-
-// admin/aa_statistics.php, row 86
-// admin/se_statistics.php, row 64
-"Admin - Statistics" => "Admin - Estadísticas",
-
-// admin/aa_statistics.php, row 94
-// admin/se_statistics.php, row 72
-"years" => "años",
-
-// admin/aa_statistics.php, row 95
-// admin/se_statistics.php, row 73
-"months" => "meses",
 
 // admin/aa_statistics.php, row 96
 // admin/se_statistics.php, row 74
-"weeks" => "semanas",
+"Admin - Statistics" => "Admin - Estadísticas",
 
-// admin/aa_statistics.php, row 97
-// admin/se_statistics.php, row 75
-"days" => "días",
-
-// admin/aa_statistics.php, row 98
-// admin/se_statistics.php, row 76
-"hours" => "horas",
-
-// admin/aa_statistics.php, row 99
-// admin/se_statistics.php, row 77
-"minutes" => "minutos",
-
-// admin/aa_statistics.php, row 100
-// admin/se_statistics.php, row 78
-"day-hours" => "horas del día",
-
-// admin/aa_statistics.php, row 101
-// admin/se_statistics.php, row 79
-"week-days" => "días de la semana",
+// admin/aa_statistics.php, row 104
+// admin/se_statistics.php, row 82
+"years" => "años",
 
 // admin/aa_statistics.php, row 105
-"Most hits" => "Más visitas",
+// admin/se_statistics.php, row 83
+"months" => "meses",
 
 // admin/aa_statistics.php, row 106
-"Most server time" => "Más tiempo de servidor",
+// admin/se_statistics.php, row 84
+"weeks" => "semanas",
 
 // admin/aa_statistics.php, row 107
-"Slowest (avg ms)" => "Más lentos (ms promedio)",
+// admin/se_statistics.php, row 85
+"days" => "días",
 
 // admin/aa_statistics.php, row 108
-"Fastest (avg ms)" => "Más rápidos (ms promedio)",
+// admin/se_statistics.php, row 86
+"hours" => "horas",
 
 // admin/aa_statistics.php, row 109
-"Worst cached" => "Peor uso de caché",
+// admin/se_statistics.php, row 87
+"minutes" => "minutos",
 
 // admin/aa_statistics.php, row 110
-"Best cached" => "Mejor uso de caché",
+// admin/se_statistics.php, row 88
+"day-hours" => "horas del día",
 
 // admin/aa_statistics.php, row 111
-"Most wasted (NC+NM)" => "Más desperdiciados (NC+NM)",
+// admin/se_statistics.php, row 89
+"week-days" => "días de la semana",
 
-// admin/aa_statistics.php, row 112
-"Slowed down vs prior period" => "Más lentos respecto al período anterior",
+// admin/aa_statistics.php, row 115
+"Most hits" => "Más visitas",
 
-// admin/aa_statistics.php, row 113
-"Sped up vs prior period" => "Más rápidos respecto al período anterior",
+// admin/aa_statistics.php, row 116
+"Most server time" => "Más tiempo de servidor",
 
-// admin/aa_statistics.php, row 114
-// admin/se_statistics.php, row 83
-"Specified below" => "Especificado abajo",
+// admin/aa_statistics.php, row 117
+"Slowest (avg ms)" => "Más lentos (ms promedio)",
 
 // admin/aa_statistics.php, row 118
-"Last day" => "Último día",
+"Fastest (avg ms)" => "Más rápidos (ms promedio)",
 
 // admin/aa_statistics.php, row 119
-"Last week" => "Última semana",
+"Worst cached" => "Peor uso de caché",
 
 // admin/aa_statistics.php, row 120
-"Last month" => "Último mes",
+"Best cached" => "Mejor uso de caché",
 
 // admin/aa_statistics.php, row 121
-"Last year" => "Último año",
+"Most wasted (NC+NM)" => "Más desperdiciados (NC+NM)",
 
 // admin/aa_statistics.php, row 122
-"This day" => "Este día",
+"Slowed down vs prior period" => "Más lentos respecto al período anterior",
 
 // admin/aa_statistics.php, row 123
-"This week" => "Esta semana",
+"Sped up vs prior period" => "Más rápidos respecto al período anterior",
 
 // admin/aa_statistics.php, row 124
-"This month" => "Este mes",
+// admin/se_statistics.php, row 93
+"Specified below" => "Especificado abajo",
 
-// admin/aa_statistics.php, row 125
-"This year" => "Este año",
+// admin/aa_statistics.php, row 128
+"Last day" => "Último día",
 
-// admin/aa_statistics.php, row 126
-"All time" => "Todo el tiempo",
+// admin/aa_statistics.php, row 129
+"Last week" => "Última semana",
 
 // admin/aa_statistics.php, row 130
-"All AA" => "Todo AA",
+"Last month" => "Último mes",
 
 // admin/aa_statistics.php, row 131
-"Sites" => "Sitios",
+"Last year" => "Último año",
+
+// admin/aa_statistics.php, row 132
+"This day" => "Este día",
+
+// admin/aa_statistics.php, row 133
+"This week" => "Esta semana",
+
+// admin/aa_statistics.php, row 134
+"This month" => "Este mes",
 
 // admin/aa_statistics.php, row 135
+"This year" => "Este año",
+
+// admin/aa_statistics.php, row 136
+"All time" => "Todo el tiempo",
+
+// admin/aa_statistics.php, row 140
+"All AA" => "Todo AA",
+
+// admin/aa_statistics.php, row 141
+"Sites" => "Sitios",
+
+// admin/aa_statistics.php, row 145
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 294
 // central/appstore.php, row 164
@@ -958,70 +964,74 @@ return [
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Canales",
 
-// admin/aa_statistics.php, row 162
+// admin/aa_statistics.php, row 172
 "Version progress" => "Evolución entre versiones", // ai 2026-10
 
-// admin/aa_statistics.php, row 173
+// admin/aa_statistics.php, row 183
 "Queue progress" => "Evolución de la cola", // ai 2026-10
 
-// admin/aa_statistics.php, row 184
+// admin/aa_statistics.php, row 194
 "Quick diagnostics" => "Diagnóstico rápido",
 
-// admin/aa_statistics.php, row 208
+// admin/aa_statistics.php, row 218
 "Slice comparison" => "Comparación de canales",
 
-// admin/aa_statistics.php, row 231
-// admin/se_statistics.php, row 138
+// admin/aa_statistics.php, row 241
+// admin/se_statistics.php, row 148
 "Stats to show" => "Estadísticas a mostrar",
 
-// admin/aa_statistics.php, row 232
+// admin/aa_statistics.php, row 242
 "Granularity" => "Granularidad",
 
-// admin/aa_statistics.php, row 236
+// admin/aa_statistics.php, row 246
 "Items to show" => "Ítems a mostrar",
 
-// admin/aa_statistics.php, row 237
+// admin/aa_statistics.php, row 247
 "Display for module" => "Mostrar para el módulo",
 
-// admin/aa_statistics.php, row 238
+// admin/aa_statistics.php, row 248
 "Sort items by" => "Ordenar ítems por",
 
-// admin/aa_statistics.php, row 239
+// admin/aa_statistics.php, row 249
 "Period (item ranking)" => "Período (ranking de ítems)",
 
-// admin/aa_statistics.php, row 240
-// admin/se_statistics.php, row 98
+// admin/aa_statistics.php, row 250
+// admin/se_statistics.php, row 108
 "Exact items to show" => "Ítems exactos a mostrar",
 
-// admin/aa_statistics.php, row 240
-// admin/se_statistics.php, row 98
+// admin/aa_statistics.php, row 250
+// admin/se_statistics.php, row 108
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "lista de ids/short_ids de ítems separados por guiones o expresión AA como {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}",
 
-// admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 99
+// admin/aa_statistics.php, row 251
+// admin/se_statistics.php, row 109
 "Number of items to show" => "Número de ítems a mostrar",
 
-// admin/aa_statistics.php, row 245
+// admin/aa_statistics.php, row 255
 "Show for period" => "Mostrar para el período",
 
-// admin/aa_statistics.php, row 246
-// admin/se_statistics.php, row 100
+// admin/aa_statistics.php, row 256
+// admin/se_statistics.php, row 110
 "From date" => "Desde la fecha",
 
-// admin/aa_statistics.php, row 255
-// admin/se_statistics.php, row 144
+// admin/aa_statistics.php, row 261
+// admin/se_statistics.php, row 154
+"Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Compruebe la expresión en «Ítems exactos a mostrar» y pulse «Mostrar» para evaluarla.", // ai 2026-11
+
+// admin/aa_statistics.php, row 268
+// admin/se_statistics.php, row 157
 "Display Statistics for Item" => "Mostrar estadísticas del ítem",
 
-// admin/aa_statistics.php, row 341
-// admin/se_statistics.php, row 171
+// admin/aa_statistics.php, row 354
+// admin/se_statistics.php, row 184
 "Items found" => "Ítems encontrados",
 
-// admin/aa_statistics.php, row 345
-// admin/se_statistics.php, row 182
+// admin/aa_statistics.php, row 356
+// admin/se_statistics.php, row 193
 "No items found" => "No se encontraron ítems",
 
-// admin/aa_statistics.php, row 357
-// admin/se_statistics.php, row 179
+// admin/aa_statistics.php, row 368
+// admin/se_statistics.php, row 190
 "Server configuration changes" => "Cambios en la configuración del servidor",
 
 // admin/aa_tasks.php, row 35
@@ -1078,7 +1088,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1218
+// include/logs.php, row 1220
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -1087,6 +1097,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
+// src/Optimize/CheckFileReadRefusals.php, row 79
 // src/Optimize/CheckFormRobotRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
 // src/Optimize/CheckIsdsRegistry.php, row 179
@@ -1114,7 +1125,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 363
+// include/logs.php, row 365
 // src/AA_Plannedtask.php, row 204
 "Log" => "Registro",
 
@@ -1253,7 +1264,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 10285, 10364
+// include/stringexpand.php, row 10301, 10380
 "Send" => "Enviar",
 
 // admin/anonym_wizard.php, row 151
@@ -1352,7 +1363,7 @@ return [
 
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
-// include/stringexpand.php, row 96
+// include/stringexpand.php, row 98
 // src/Import/DetailPage.php, row 1025, 1091
 // src/Optimize/CheckImports.php, row 236, 238
 "Code" => "Código",
@@ -1411,7 +1422,7 @@ return [
 "Author" => "Autor",
 
 // admin/discedit.php, row 133
-// include/logs.php, row 903, 1314
+// include/logs.php, row 905, 1316
 "IP Address" => "Dirección IP",
 
 // admin/discedit.php, row 134
@@ -1420,7 +1431,7 @@ return [
 "Date" => "Fecha",
 
 // admin/discedit.php, row 135
-// admin/related_sel.php, row 155
+// admin/related_sel.php, row 168
 // admin/se_views.php, row 136
 // src/Import/DetailPage.php, row 313
 // src/Manager.php, row 230
@@ -1437,7 +1448,7 @@ return [
 // admin/um_uedit.php, row 266
 // include/field.class.php, row 744
 // include/filedit.php, row 113
-// include/formutil.php, row 1777, 3394
+// include/formutil.php, row 1778, 3395
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
 // include/statestore.php, row 1143
@@ -1458,7 +1469,7 @@ return [
 // admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
 // include/field.class.php, row 748
-// include/formutil.php, row 1788, 1925
+// include/formutil.php, row 1789, 1926
 // include/menu_util.php, row 61
 // include/profile.php, row 69
 // include/searchbar.class.php, row 1126
@@ -1486,13 +1497,13 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1065
+// include/logs.php, row 1067
 // include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Asunto",
 
 // admin/discedit2.php, row 94, 148
-// admin/setup.php, row 104, 247
+// admin/setup.php, row 107, 246
 // admin/slicewiz.php, row 89
 // admin/um_passwd.php, row 140
 // admin/um_uedit.php, row 336
@@ -1535,7 +1546,7 @@ return [
 "Holding bin" => "Por aprobar",
 
 // admin/feed_to.php, row 67
-// admin/se_export.php, row 119
+// admin/se_export.php, row 131
 // admin/se_filters.php, row 183
 // admin/slicedit.php, row 141, 147
 // include/exporter.class.php, row 511
@@ -1552,7 +1563,7 @@ return [
 "No permission to set feeding for any slice" => "Sin permisos para configurar opciones de alimentación para ningún canal",
 
 // admin/feed_to.php, row 88
-// admin/se_export.php, row 111
+// admin/se_export.php, row 123
 // include/exporter.class.php, row 657
 // include/menu_util.php, row 95
 "Export" => "Exportar",
@@ -1690,22 +1701,22 @@ return [
 "Admin password" => "Clave administrador",
 
 // admin/mailman_create_list.php, row 163
-// admin/setup.php, row 109, 233
+// admin/setup.php, row 112, 232
 // modules/jump/modedit.php, row 179
 "Create" => "Crear",
 
 // admin/preview.php, row 49
 "Wrong slice_id." => "slice_id incorrecto.",
 
-// admin/related_sel.php, row 155
+// admin/related_sel.php, row 168
 // src/Manager.php, row 230
 "Publish date" => "Fecha de publicación",
 
-// admin/related_sel.php, row 155
+// admin/related_sel.php, row 168
 // src/Manager.php, row 230
 "Headline" => "Encabezado",
 
-// admin/related_sel.php, row 183
+// admin/related_sel.php, row 196
 "Editor window - item manager, related selection window" => "Ventana de edición - Gestor de ítems, ventana de ítems relacionados",
 
 // admin/rsstest.php, row 36
@@ -1733,7 +1744,7 @@ return [
 
 // admin/se_admin.php, row 85, 209
 // admin/se_compact.php, row 95, 260
-// admin/se_fulltext.php, row 70, 193
+// admin/se_fulltext.php, row 86, 210
 // include/constants.php, row 660, 707, 783, 872, 917, 943, 972, 1006, 1038
 "Remove strings" => "Borrar cadena",
 
@@ -1742,12 +1753,12 @@ return [
 "HTML code for \"No item found\" message" => "Código HTML cuando no se encuentran ítems",
 
 // admin/se_admin.php, row 87
-// admin/se_fulltext.php, row 71, 201, 205
+// admin/se_fulltext.php, row 87, 218, 222
 "Show discussion" => "Mostrar comentarios",
 
 // admin/se_admin.php, row 101
 // admin/se_compact.php, row 128
-// admin/se_fulltext.php, row 91
+// admin/se_fulltext.php, row 107
 // admin/se_view.php, row 170, 339
 "Can't change slice settings" => "No se puede cambiar configuración del canal",
 
@@ -1759,7 +1770,7 @@ return [
 
 // admin/se_admin.php, row 163
 // admin/se_compact.php, row 212
-// admin/se_fulltext.php, row 146
+// admin/se_fulltext.php, row 163
 // admin/se_inputform.php, row 189, 426
 // src/Util/UiPrefs.php, row 56
 "Default" => "Predeterminado",
@@ -1769,12 +1780,12 @@ return [
 
 // admin/se_admin.php, row 175
 // admin/se_compact.php, row 223, 252
-// admin/se_fulltext.php, row 159
+// admin/se_fulltext.php, row 176
 "HTML code which appears at the top of slice area" => "Código HTML que aparece en el área de encabezado del canal",
 
 // admin/se_admin.php, row 188
 // admin/se_compact.php, row 226, 255
-// admin/se_fulltext.php, row 172
+// admin/se_fulltext.php, row 189
 "Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"
  => "Coloque aquí el código HTML combinado con alias para mostrar al final de la página. \n"
@@ -1782,12 +1793,12 @@ return [
 
 // admin/se_admin.php, row 201
 // admin/se_compact.php, row 233, 258
-// admin/se_fulltext.php, row 185
+// admin/se_fulltext.php, row 202
 "HTML code which appears at the bottom of slice area" => "Código HTML que aparece en el área de pie de página del canal",
 
 // admin/se_admin.php, row 214
 // admin/se_compact.php, row 261
-// admin/se_fulltext.php, row 198
+// admin/se_fulltext.php, row 215
 "Removes empty brackets etc. Use ## as delimiter." => "Remueve brackets vacios etc. <b>Utilice ## como separador</b>.",
 
 // admin/se_admin.php, row 223
@@ -1801,7 +1812,7 @@ return [
 
 // admin/se_admin.php, row 241
 // admin/se_compact.php, row 269
-// admin/se_fulltext.php, row 210
+// admin/se_fulltext.php, row 228
 // admin/se_view.php, row 572
 "Use these aliases for database fields" => "Utilice estos alias para los campos de la base de datos",
 
@@ -1896,7 +1907,7 @@ return [
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1205
+// include/logs.php, row 1207
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1904,6 +1915,7 @@ return [
 // src/Import/DetailCatalog.php, row 143
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
+// src/Optimize/CheckServerRefusals.php, row 67
 "Name" => "Nombre",
 
 // admin/se_constant.php, row 176, 378
@@ -1921,7 +1933,7 @@ return [
 // admin/um_gedit.php, row 299, 302
 // include/constants.php, row 459
 // include/constedit.php, row 84
-// include/stringexpand.php, row 97
+// include/stringexpand.php, row 99
 // include/um_gedit.php, row 33
 // src/Manageraction/Central_Linkcheck.php, row 31
 // src/Optimize/AbstractOptimize.php, row 174
@@ -2057,8 +2069,9 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1235
+// include/logs.php, row 1237
 // src/Optimize/CheckCookieReads.php, row 55
+// src/Optimize/CheckFileReadRefusals.php, row 77, 100, 133
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
 // src/Optimize/CheckIsdsConf.php, row 342, 372
 // src/Optimize/CheckUserAliasFunctionLog.php, row 87
@@ -2209,7 +2222,7 @@ return [
 // admin/se_csv_import2.php, row 492
 "Save setting as" => "Guardar configuración como",
 
-// admin/se_csv_import2.php, row 533
+// admin/se_csv_import2.php, row 537
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Admin - Importar CSV (2/2) - Relacionamiento y Acciones",
 
 // admin/se_dataimport.php, row 59
@@ -2231,66 +2244,69 @@ return [
 // admin/se_dataimports.php, row 41
 "An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes." => "Una importación llena el canal con datos de otra fuente, ahora o mediante una tarea planificada. «Ejecutar» la inicia; la importación continúa en segundo plano y su detalle muestra cómo avanza.", // ai 2026-10
 
-// admin/se_export.php, row 74
+// admin/se_export.php, row 79
 "You do not have permissions to export" => "No tiene permisos para exportar",
 
-// admin/se_export.php, row 100
+// admin/se_export.php, row 109
 "Admin - Export Items" => "Admin - Exportar ítems",
 
-// admin/se_export.php, row 113
+// admin/se_export.php, row 119
+"Check the settings and press Export." => "Compruebe la configuración y pulse «Exportar».", // ai 2026-11
+
+// admin/se_export.php, row 125
 // include/exporter.class.php, row 531
 "Item Contents" => "Contenido de los ítems",
 
-// admin/se_export.php, row 114
+// admin/se_export.php, row 126
 // include/constants.php, row 723
 // include/exporter.class.php, row 532
 "Discussion" => "Comentarios",
 
-// admin/se_export.php, row 118
+// admin/se_export.php, row 130
 // include/exporter.class.php, row 510
 // include/scroller.php, row 88
 // src/Isds/Registry/Page.php, row 532
 "All" => "Todos",
 
-// admin/se_export.php, row 120
+// admin/se_export.php, row 132
 // include/exporter.class.php, row 512
 "Pending" => "Pendientes",
 
-// admin/se_export.php, row 121
+// admin/se_export.php, row 133
 // include/exporter.class.php, row 513
 // include/itemfunc.php, row 146
 "Expired" => "Caducados",
 
-// admin/se_export.php, row 122
+// admin/se_export.php, row 134
 // include/exporter.class.php, row 514
 "Approved" => "Aprobados",
 
-// admin/se_export.php, row 123
+// admin/se_export.php, row 135
 // include/exporter.class.php, row 515
 "Holding" => "Por aprobar",
 
-// admin/se_export.php, row 124
+// admin/se_export.php, row 136
 // include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 45
 "Trash" => "Papelera",
 
-// admin/se_export.php, row 134
+// admin/se_export.php, row 146
 // include/exporter.class.php, row 520
 "Database backup (as stored in DB)" => "Copia de seguridad de la base de datos (tal como se almacena en la BD)",
 
-// admin/se_export.php, row 135
+// admin/se_export.php, row 147
 // include/exporter.class.php, row 521
 "Human - dates converted to Y-m-d format, ..." => "Humano - fechas convertidas al formato Y-m-d, ...",
 
-// admin/se_export.php, row 148
+// admin/se_export.php, row 161
 "Export Items" => "Exportar ítems",
 
-// admin/se_export.php, row 150
+// admin/se_export.php, row 163
 // include/exporter.class.php, row 536
 "Output Format" => "Formato de salida",
 
-// admin/se_export.php, row 151
+// admin/se_export.php, row 164
 // admin/se_history.php, row 142
 // admin/se_users.php, row 185
 // admin/se_views.php, row 135
@@ -2298,47 +2314,47 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 558
+// include/logs.php, row 560
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
 "Type" => "Tipo",
 
-// admin/se_export.php, row 152
+// admin/se_export.php, row 165
 // include/exporter.class.php, row 538
 "Bins" => "Bandejas",
 
-// admin/se_export.php, row 153
+// admin/se_export.php, row 166
 // include/exporter.class.php, row 552
 "Filename" => "Nombre de archivo",
 
-// admin/se_export.php, row 153
+// admin/se_export.php, row 166
 // include/exporter.class.php, row 552
 "save as..." => "guardar como...",
 
-// admin/se_export.php, row 154
+// admin/se_export.php, row 167
 // include/exporter.class.php, row 553
 // include/searchlib.php, row 1012
 "Conditions" => "Condiciones",
 
-// admin/se_export.php, row 154
+// admin/se_export.php, row 167
 // include/exporter.class.php, row 553
 "conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)" => "las condiciones tienen la forma \"d-...\" o \"conds[]\" - por ejemplo:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (¡el operador predeterminado aquí es RLIKE!)",
 
-// admin/se_export.php, row 155
+// admin/se_export.php, row 168
 // include/exporter.class.php, row 554
 // include/searchlib.php, row 1014
 "Sort" => "Ordenar",
 
-// admin/se_export.php, row 155
+// admin/se_export.php, row 168
 // include/exporter.class.php, row 554
 "like: publish_date....-" => "por ejemplo: publish_date....-",
 
-// admin/se_export.php, row 156
+// admin/se_export.php, row 169
 // include/exporter.class.php, row 551
 "Custom columns" => "Columnas personalizadas",
 
-// admin/se_export.php, row 156
+// admin/se_export.php, row 169
 "Add any AA {expression} as extra column - each row = one column" => "Agregue cualquier {expression} de AA como columna adicional - cada fila = una columna",
 
 // admin/se_fieldid.php, row 210
@@ -2421,7 +2437,7 @@ return [
 "Required" => "Requerido",
 
 // admin/se_fields.php, row 305
-// include/stringexpand.php, row 110
+// include/stringexpand.php, row 112
 "Aliases" => "Alias",
 
 // admin/se_filters.php, row 83
@@ -2440,7 +2456,7 @@ return [
 // admin/um_gedit.php, row 280
 // admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
-// include/formutil.php, row 190, 2940
+// include/formutil.php, row 191, 2941
 // modules/jump/modedit.php, row 179
 // src/Import/DetailCatalog.php, row 151
 "Update" => "Actualizar",
@@ -2461,7 +2477,7 @@ return [
 "No category defined" => "Categoría no definida",
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1404
+// src/Manager.php, row 1415
 "Select all" => "Marcar visibles",
 
 // admin/se_filters.php, row 320
@@ -2478,34 +2494,37 @@ return [
 // admin/se_forms.php, row 37
 "You do not have permissions to manage forms" => "No tiene permisos para administrar formularios",
 
-// admin/se_fulltext.php, row 67, 154
+// admin/se_fulltext.php, row 70
+"You do not have permissions to change fulltext view formatting" => "No tiene permisos para cambiar el formato de la vista de texto completo", // ai 2026-11
+
+// admin/se_fulltext.php, row 83, 171
 "Top HTML code" => "Código HTML para encabezado",
 
-// admin/se_fulltext.php, row 68, 167
+// admin/se_fulltext.php, row 84, 184
 "Fulltext HTML code" => "Código HTML para texto",
 
-// admin/se_fulltext.php, row 69, 180
+// admin/se_fulltext.php, row 85, 197
 "Bottom HTML code" => "Código HTML para pie",
 
-// admin/se_fulltext.php, row 99
+// admin/se_fulltext.php, row 115
 "Fulltext format update successful" => "Formato de texto completo actualizado con éxito",
 
-// admin/se_fulltext.php, row 127
+// admin/se_fulltext.php, row 144
 "Admin - design Fulltext view" => "Administración - diseño para texto completo",
 
-// admin/se_fulltext.php, row 128
+// admin/se_fulltext.php, row 145
 "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item" => "Utilice estas casillas ( con los tags listados abajo ) para controlar lo que aparece en la vista de texto completo para cada ítem",
 
-// admin/se_fulltext.php, row 151
+// admin/se_fulltext.php, row 168
 "HTML code for fulltext view" => "Código HTML para vista de texto completo del ítem",
 
-// admin/se_fulltext.php, row 201, 205
+// admin/se_fulltext.php, row 218, 222
 "The template for discussion you can set on \"Design\" -> \"View\" page" => "La plantilla para discusión puede ser seleccionada en la página \"Diseño\" -> \"Vista\"",
 
-// admin/se_fulltext.php, row 202
+// admin/se_fulltext.php, row 219
 "Use HTML tags" => "Usar tags HTML",
 
-// admin/se_fulltext.php, row 203
+// admin/se_fulltext.php, row 220
 "New comments disabled" => "Nuevos comentarios desactivados",
 
 // admin/se_history.php, row 57
@@ -2599,7 +2618,7 @@ return [
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "El alias debe ser siempre _# + 8 letras MAYÚSCULAS, p. ej. _#<b>SOMTHING</b>.",
 
 // admin/se_inputform.php, row 197, 512
-// include/stringexpand.php, row 95
+// include/stringexpand.php, row 97
 // src/Optimize/CheckUserAliasFunctions.php, row 89
 "Alias" => "Alias", // ai 2026-10
 
@@ -2620,7 +2639,7 @@ return [
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "ADVERTENCIA: ¡No cambie esta configuración si no está seguro de lo que hace!",
 
 // admin/se_inputform.php, row 388
-// include/formutil.php, row 191
+// include/formutil.php, row 192
 "Update & Edit" => "Actualizar y editar",
 
 // admin/se_inputform.php, row 389
@@ -2670,7 +2689,7 @@ return [
 // admin/se_inputform.php, row 467
 // admin/sliceimp.php, row 425
 // include/form.class.php, row 474, 476
-// include/formutil.php, row 209, 2951
+// include/formutil.php, row 210, 2952
 "Insert" => "Publicar",
 
 // admin/se_inputform.php, row 470
@@ -2728,7 +2747,7 @@ return [
 "Reset" => "Restablecer",
 
 // admin/se_inputform.php, row 514
-// include/logs.php, row 638
+// include/logs.php, row 640
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Parámetros",
 
@@ -2828,11 +2847,14 @@ return [
 // admin/se_inter_import2.php, row 116
 "The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master." => "El canal será una copia exacta del sitio remoto. Todos los ítems serán copiados incluyendo la carpeta Por Aprobar y la Papelera. También, cualquier cambio en el ítem remoto será copiado al ítem local. Los ítems tendrán los mismo id largos (no los cortos!). No tiene sentido realizar cambios en los ítems locales ya que serán sobreescribidos por el sitio remoto principal.",
 
-// admin/se_inter_import3.php, row 65
+// admin/se_inter_import3.php, row 71
 "The import was already created" => "La importación ya estaba creada",
 
-// admin/se_inter_import3.php, row 118
+// admin/se_inter_import3.php, row 130
 "The import was successfully created" => "La importación se creó con éxito",
+
+// admin/se_inter_import3.php, row 133
+"Can't add external import" => "No se puede añadir la importación externa", // ai 2026-11
 
 // admin/se_isds_registry.php, row 54
 "You do not have permissions to pair the items of this slice with the register of data boxes" => "No tiene permisos para emparejar los ítems de este canal con el registro de buzones de datos", // ai 2026-11
@@ -3162,9 +3184,9 @@ return [
 "Rule" => "Regla",
 
 // admin/se_profile.php, row 210
-// include/formutil.php, row 1226
+// include/formutil.php, row 1227
 // include/transformation.class.php, row 192, 381, 454, 548, 738
-// include/widget.class.php, row 657
+// include/widget.class.php, row 664
 "HTML" => "",
 
 // admin/se_profile.php, row 217
@@ -3290,37 +3312,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Use condiciones \"headline........,publish_date....-\" o \"sort[]\"",
 
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 94
 "Top all time" => "Top de todos los tiempos",
 
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 95
 "Top this year" => "Top de este año",
 
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 96
 "Top this month" => "Top de este mes",
 
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 97
 "Top this week" => "Top de esta semana",
 
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 98
 "Top this day" => "Top de este día",
 
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 99
 "Top last year" => "Top del último año",
 
-// admin/se_statistics.php, row 90
+// admin/se_statistics.php, row 100
 "Top last month" => "Top del último mes",
 
-// admin/se_statistics.php, row 91
+// admin/se_statistics.php, row 101
 "Top last week" => "Top de la última semana",
 
-// admin/se_statistics.php, row 92
+// admin/se_statistics.php, row 102
 "Top last day" => "Top del último día",
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 106
 "Item Statistics" => "Estadísticas de ítems",
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 107
 "Show items" => "Mostrar ítems",
 
 // admin/se_taskmanager.php, row 39
@@ -3418,7 +3440,7 @@ return [
 // admin/se_view.php, row 545
 // central/installapp.php, row 1167
 // include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1882
+// include/stringexpand.php, row 1890
 "No" => "No", // ai 2026-10
 
 // admin/se_view.php, row 545
@@ -3446,7 +3468,7 @@ return [
 "Create new view from this one" => "Crear nueva vista a partir de esta",
 
 // admin/se_views.php, row 149, 203, 223
-// include/formutil.php, row 1774, 1781
+// include/formutil.php, row 1775, 1782
 // src/Import/DetailPage.php, row 329, 666
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
@@ -3490,7 +3512,7 @@ return [
 "View items" => "Ver ítems",
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1409
+// src/Manager.php, row 1420
 "Selected items" => "Items marcados",
 
 // admin/search_replace.php, row 180
@@ -3514,17 +3536,17 @@ return [
 // src/Widget/RichtextMarkup.php, row 87
 "Close" => "Cerrar",
 
-// admin/setup.php, row 61, 64
+// admin/setup.php, row 64, 67
 "ActionApps Setup" => "Configuración de ActionApps",
 
-// admin/setup.php, row 72
+// admin/setup.php, row 75
 "This script can't be used on a configured system." => "Este script no se puede usar en un sistema ya configurado.",
 
-// admin/setup.php, row 95
+// admin/setup.php, row 98
 // admin/um_uedit.php, row 341
 "Superadmin account" => "Cuenta de superadministrador",
 
-// admin/setup.php, row 100, 241
+// admin/setup.php, row 103, 240
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 136
 // admin/um_uedit.php, row 332
@@ -3535,33 +3557,33 @@ return [
 // src/Widget/TfaWidget.php, row 77
 "Password" => "Clave",
 
-// admin/setup.php, row 101, 243
-// include/formutil.php, row 2200
+// admin/setup.php, row 104, 242
+// include/formutil.php, row 2201
 "Retype Password" => "Reescriba la Clave",
 
-// admin/setup.php, row 102, 245
+// admin/setup.php, row 105, 244
 // admin/slicewiz.php, row 87
 // admin/um_passwd.php, row 138
 // admin/um_uedit.php, row 334
 // include/um_util.php, row 298
 "First name" => "Nombre",
 
-// admin/setup.php, row 103, 246
+// admin/setup.php, row 106, 245
 "Last name" => "Apellido",
 
-// admin/setup.php, row 120
+// admin/setup.php, row 123
 "Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>" => "Bienvenido! Utilice este programa para crear la cuenta de super-administrador.<p>Si Usted está instalando una nueva copia de las AA, pulse <b>Init</b>.<br>",
 
-// admin/setup.php, row 121
+// admin/setup.php, row 124
 "If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>" => "Si usted borró su cuenta de superadministrador por error, pulse <b>Recuperar</b>.<br>",
 
-// admin/setup.php, row 125, 194
+// admin/setup.php, row 128, 197
 " Init " => "Inicializar",
 
-// admin/setup.php, row 126, 208
+// admin/setup.php, row 129, 211
 "Recover" => "Recuperar",
 
-// admin/setup.php, row 149
+// admin/setup.php, row 152
 "Database is not configured correctly or the database is empty.<br>\n"
    ."             Check please the database credentials in <b>include/config.php</b>\n"
    ."             file <br>or run <a href=\"../service/sql_update.php\">/service/sql_update.php</a> script,\n"
@@ -3571,34 +3593,31 @@ return [
    ."             <br>o ejecute el script <a href=\"../service/sql_update.php\">/service/sql_update.php</a>,\n"
    ."             que crea las tablas de AA por usted.",
 
-// admin/setup.php, row 203
+// admin/setup.php, row 206
 "Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>" => "No se pudo añadir el objeto básico de permisos.<br>Por favor verifique el acceso a su sistema de permisos.<br>Si usted borró su cuenta de superadministrador, utilice <b>Recuperar</b>",
 
-// admin/setup.php, row 218
-"Can't delete invalid permission." => "No se puede borrar permiso inválido.",
+// admin/setup.php, row 221
+"Permission of an unknown user/group (not deleted): " => "Permiso de un usuario/grupo desconocido (no eliminado): ", // ai 2026-11
 
-// admin/setup.php, row 220
-"Invalid permission deleted (no such user/group): " => "Borrado permiso inválido (usuario/grupo inexistente): ",
-
-// admin/setup.php, row 250
+// admin/setup.php, row 249
 // include/um_util.php, row 304
 "Retyped password is not the same as the first one" => "Las claves no coinciden",
 
-// admin/setup.php, row 272
+// admin/setup.php, row 271
 // include/um_util.php, row 337
 "It is impossible to add user to permission system" => "Imposible añadir el usuario al sistema de permisos",
 
-// admin/setup.php, row 285
+// admin/setup.php, row 284
 "Congratulations! The account was created." => "¡Enhorabuena! La cuenta ha sido creada.",
 
-// admin/setup.php, row 287
+// admin/setup.php, row 286
 "Use this account to login and add your first slice:" => "A continuación, puede usar esta cuenta para crear su primer canal:",
 
-// admin/setup.php, row 288
+// admin/setup.php, row 287
 // admin/slicedit.php, row 240
 "Add Slice" => "Añadir canal",
 
-// admin/setup.php, row 291
+// admin/setup.php, row 290
 "Can't assign super access permission." => "No se pudo asignar permisos de super administrador.",
 
 // admin/sliceadd.php, row 75
@@ -3610,12 +3629,12 @@ return [
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
 // admin/um_uedit.php, row 389
-// include/formutil.php, row 1771
+// include/formutil.php, row 1772
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
 // src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1261
+// src/Manager.php, row 239, 1272
 "Add" => "Añadir",
 
 // admin/slicedel.php, row 51
@@ -3671,7 +3690,7 @@ return [
 "Hold bin" => "Por Aprobar",
 
 // admin/slicedit.php, row 154
-// include/formutil.php, row 3308
+// include/formutil.php, row 3309
 // src/Central/FindingText.php, row 417
 "All items" => "Todos los items",
 
@@ -4064,7 +4083,7 @@ return [
 
 // admin/um_gedit.php, row 312
 // admin/um_uedit.php, row 231, 242
-// include/logs.php, row 916
+// include/logs.php, row 918
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -4142,7 +4161,7 @@ return [
 "Added" => "Añadida", // ai 2026-11
 
 // admin/um_passkeys.php, row 149
-// include/formutil.php, row 3300
+// include/formutil.php, row 3301
 "Last used" => "Usado por última vez",
 
 // admin/um_passkeys.php, row 149
@@ -4348,7 +4367,7 @@ return [
 "Write email to users" => "Escribir correo a usuarios",
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1064
+// include/logs.php, row 1066
 "Recipients" => "Destinatarios",
 
 // admin/write_mail.php, row 238
@@ -4422,7 +4441,7 @@ return [
 "App" => "Aplicación", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1206
+// include/logs.php, row 1208
 "Version" => "Versión", // ai 2026-10
 
 // central/appstore.php, row 164
@@ -4565,7 +4584,7 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1207
+// include/logs.php, row 1209
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
@@ -4610,7 +4629,7 @@ return [
 "Hold Ctrl to choose more of them." => "Mantenga pulsado Ctrl para elegir varios.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 795, 1249
+// include/logs.php, row 797, 1251
 "Mode" => "Modo", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4911,7 +4930,7 @@ return [
 
 // central/installapp.php, row 1167
 // include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1882
+// include/stringexpand.php, row 1890
 "Yes" => "Sí",
 
 // central/installapp.php, row 1178
@@ -5000,7 +5019,7 @@ return [
 "Stopped by an error" => "Detenido por un error", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 797
+// include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "Terminado", // ai 2026-10
@@ -5250,7 +5269,7 @@ return [
 "Short Id" => "Id corto",
 
 // include/constants.php, row 456
-// include/logs.php, row 955, 987
+// include/logs.php, row 957, 989
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Clase",
 
@@ -5259,7 +5278,7 @@ return [
 "Level" => "Nivel",
 
 // include/constants.php, row 509
-// include/logs.php, row 1166
+// include/logs.php, row 1168
 "Feed" => "Alimentar",
 
 // include/constants.php, row 510
@@ -5857,37 +5876,37 @@ return [
 // include/fileman.php, row 582
 "Are you sure you want to delete the selected files and folders?" => "¿Está seguro/a que quiere borrar los archivos y carpetas seleccionados?",
 
-// include/files.class.php, row 116
+// include/files.class.php, row 117
 "No destination directory for image uploads specified" => "No se especificó directorio de destino para la subida de imágenes",
 
-// include/files.class.php, row 120
+// include/files.class.php, row 121
 "Can't create directory for image uploads" => "No se puede crear el directorio para copiado de imágenes",
 
-// include/files.class.php, row 174
+// include/files.class.php, row 175
 "Can't read the file %1" => "No se puede leer el archivo %1",
 
-// include/files.class.php, row 207
+// include/files.class.php, row 208
 "No destination file specified" => "Archivo destino no especificado",
 
-// include/files.class.php, row 212, 227
+// include/files.class.php, row 213, 228
 "type of uploaded file not allowed" => "tipo de archivo para copiado (upload) no permitido",
 
-// include/files.class.php, row 251
+// include/files.class.php, row 253
 "Can't move image  %1 to %2 (%3)" => "No se puede mover la imagen  %1 a %2 (%3)",
 
-// include/files.class.php, row 258
+// include/files.class.php, row 263
 "Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php" => "No se puede cambiar los permisos del archivo copiado: %1 - %2. Vea el parámetro IMG_UPLOAD_FILE_MODE en el archivo de configuración config.php",
 
-// include/files.class.php, row 283
+// include/files.class.php, row 288
 "Can't open file for writing: %1" => "No se puede abrir el archivo para escritura: %1",
 
-// include/files.class.php, row 289
+// include/files.class.php, row 294
 "Can't write to file: %1" => "No se puede escribir el archivo: %1",
 
-// include/files.class.php, row 363
+// include/files.class.php, row 368
 "can't create backup of the file" => "No es posible crear la copia del archivo",
 
-// include/files.class.php, row 1438
+// include/files.class.php, row 1447
 ": No such directory" => ": No existe ese directorio",
 
 // include/form.class.php, row 104
@@ -5900,7 +5919,7 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1299
+// include/logs.php, row 1301
 // src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID del canal",
 
@@ -5922,131 +5941,131 @@ return [
 // include/menu.php, row 148
 "Forms" => "Formularios",
 
-// include/formutil.php, row 193
+// include/formutil.php, row 194
 "Update & View" => "Publicar y vista preliminar",
 
-// include/formutil.php, row 200
+// include/formutil.php, row 201
 "Insert as new" => "Publicar como Nuevo",
 
-// include/formutil.php, row 204, 2972
+// include/formutil.php, row 205, 2973
 "Reset form" => "Deshacer cambios",
 
-// include/formutil.php, row 207, 212, 2964, 2968
+// include/formutil.php, row 208, 213, 2965, 2969
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Cancelar",
 
-// include/formutil.php, row 210
+// include/formutil.php, row 211
 "Insert & Edit" => "Publicar y Editar",
 
-// include/formutil.php, row 211
+// include/formutil.php, row 212
 "Insert & View" => "Publicar y vista preliminar",
 
-// include/formutil.php, row 303
+// include/formutil.php, row 304
 "Part" => "Parte",
 
-// include/formutil.php, row 367
+// include/formutil.php, row 368
 "No fields defined for this slice" => "No hay campos definidos para este canal",
 
-// include/formutil.php, row 919
+// include/formutil.php, row 920
 "set" => "activo",
 
-// include/formutil.php, row 919
+// include/formutil.php, row 920
 "unset" => "inactivo",
 
-// include/formutil.php, row 1049
+// include/formutil.php, row 1050
 "Unable to find tagprefix table %1" => "No se encontró la tabla (tagprefix) %1",
 
-// include/formutil.php, row 1201
+// include/formutil.php, row 1202
 "import" => "importar",
 
-// include/formutil.php, row 1216
+// include/formutil.php, row 1217
 // src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Editar en área HTML",
 
-// include/formutil.php, row 1229
+// include/formutil.php, row 1230
 // include/transformation.class.php, row 193, 382, 455, 549, 739
-// include/widget.class.php, row 658
+// include/widget.class.php, row 665
 "Plain text" => "Texto plano",
 
-// include/formutil.php, row 1271
+// include/formutil.php, row 1272
 // include/transformation.class.php, row 661
 "Translate" => "Traducir",
 
-// include/formutil.php, row 1781, 1785
+// include/formutil.php, row 1782, 1786
 "Enter the value" => "Entre el valor",
 
-// include/formutil.php, row 1785
+// include/formutil.php, row 1786
 // include/menu.php, row 141
 // src/Import/DetailCatalog.php, row 124
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Cambiar",
 
-// include/formutil.php, row 1928, 2115
+// include/formutil.php, row 1929, 2116
 // src/Widget/MchWidget.php, row 135
 // src/Widget/Widget.php, row 837
 "Selected" => "Marcados",
 
-// include/formutil.php, row 2114
+// include/formutil.php, row 2115
 "Offer" => "Ofrecer",
 
-// include/formutil.php, row 2179
-// include/stringexpand.php, row 11506, 11529
+// include/formutil.php, row 2180
+// include/stringexpand.php, row 11522, 11545
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
-// src/Widget/RimWidget.php, row 287
+// src/Widget/RimWidget.php, row 288
 "new" => "nuevo",
 
-// include/formutil.php, row 2199
+// include/formutil.php, row 2200
 "Change Password" => "Cambiar Clave",
 
-// include/formutil.php, row 2201
+// include/formutil.php, row 2202
 "Delete Password" => "Borrar Clave",
 
-// include/formutil.php, row 2210
+// include/formutil.php, row 2211
 // include/searchlib.php, row 60, 128, 131, 134, 137, 140
 // src/Central/FindingText.php, row 412
 // src/Credential/Store.php, row 53
 "not set" => "no asignado",
 
-// include/formutil.php, row 2975
+// include/formutil.php, row 2976
 "Submit" => "Enviar",
 
-// include/formutil.php, row 3294
+// include/formutil.php, row 3295
 "Group Name" => "Nombre de grupo",
 
-// include/formutil.php, row 3295
-// include/logs.php, row 752, 852, 1116
+// include/formutil.php, row 3296
+// include/logs.php, row 754, 854, 1118
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Cantidad",
 
-// include/formutil.php, row 3296
+// include/formutil.php, row 3297
 "Created on" => "Creado en",
 
-// include/formutil.php, row 3297
+// include/formutil.php, row 3298
 "Created by" => "Creado por",
 
-// include/formutil.php, row 3298
+// include/formutil.php, row 3299
 "Last updated" => "Ultima actualización",
 
-// include/formutil.php, row 3299
+// include/formutil.php, row 3300
 "Updated by" => "Actualizado por",
 
-// include/formutil.php, row 3307
+// include/formutil.php, row 3308
 "All active items" => "Todos los ítems activos",
 
-// include/formutil.php, row 3309
+// include/formutil.php, row 3310
 "All pending items" => "Todos los ítems pendientes",
 
-// include/formutil.php, row 3310
+// include/formutil.php, row 3311
 "All expired items" => "Todos los ítems expirados",
 
-// include/formutil.php, row 3311
+// include/formutil.php, row 3312
 "All items in holding bin" => "Todos los ítems en por aprobar",
 
-// include/formutil.php, row 3312
+// include/formutil.php, row 3313
 "All items in trash bin" => "Todos los ítems en la papelera",
 
 // include/init_page.php, row 84
@@ -6559,247 +6578,249 @@ return [
 // include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Si Usted está seguro que tecleó bien su clave de acceso, por favor contacte a <a href=mailto:%1>%1</a>.",
 
-// include/logs.php, row 546
+// include/logs.php, row 548
 "Created time" => "Fecha de creación",
 
-// include/logs.php, row 547
+// include/logs.php, row 549
 "Readers to be emailed" => "Lectores a los que enviar correo",
 
-// include/logs.php, row 559
+// include/logs.php, row 561
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
+// src/Optimize/CheckServerRefusals.php, row 68
 "Page" => "Página",
 
-// include/logs.php, row 634, 678, 693
+// include/logs.php, row 636, 680, 695
 "Time [s]" => "Tiempo [s]",
 
-// include/logs.php, row 635, 680
+// include/logs.php, row 637, 682
 "Memory usage [MB]" => "Uso de memoria [MB]",
 
-// include/logs.php, row 636
+// include/logs.php, row 638
 "Memory peak [MB]" => "Pico de memoria [MB]",
 
-// include/logs.php, row 637
+// include/logs.php, row 639
 "Return code" => "Código de retorno",
 
-// include/logs.php, row 653
+// include/logs.php, row 655
 "Tasks done" => "Tareas completadas", // ai 2026-06
 
-// include/logs.php, row 654
+// include/logs.php, row 656
 "Tasks started" => "Tareas iniciadas", // ai 2026-06
 
-// include/logs.php, row 655
+// include/logs.php, row 657
 "Duration [s]" => "Duración [s]", // ai 2026-06
 
-// include/logs.php, row 656
+// include/logs.php, row 658
 "Allowed [s]" => "Permitido [s]", // ai 2026-06
 
-// include/logs.php, row 676
+// include/logs.php, row 678
 "Cached" => "En caché",
 
-// include/logs.php, row 677
+// include/logs.php, row 679
 "Not Modified (304)" => "No modificado (304)",
 
-// include/logs.php, row 679
+// include/logs.php, row 681
 "Time + Cached + 304" => "Tiempo + En caché + 304",
 
-// include/logs.php, row 681, 694, 904, 1090
+// include/logs.php, row 683, 696, 906, 1092
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 721
+// include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 722
+// include/logs.php, row 724
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 723
+// include/logs.php, row 725
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 724
+// include/logs.php, row 726
 "DB" => "",
 
-// include/logs.php, row 725
+// include/logs.php, row 727
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Memoria",
 
-// include/logs.php, row 726
+// include/logs.php, row 728
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 727
+// include/logs.php, row 729
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Configuración del servidor", // ai 2026-10
 
-// include/logs.php, row 751, 850
+// include/logs.php, row 753, 852
 "Severity" => "Gravedad", // ai 2026-10
 
-// include/logs.php, row 753, 848, 877
+// include/logs.php, row 755, 850, 879
 "Finding" => "Hallazgo", // ai 2026-10
 
-// include/logs.php, row 771
+// include/logs.php, row 773
 "Problems" => "Problemas", // ai 2026-10
 
-// include/logs.php, row 772
+// include/logs.php, row 774
 "Warnings" => "Advertencias", // ai 2026-10
 
-// include/logs.php, row 773
+// include/logs.php, row 775
 "Recommendations" => "Recomendaciones", // ai 2026-10
 
-// include/logs.php, row 774
+// include/logs.php, row 776
 "Checks" => "Comprobaciones", // ai 2026-10
 
-// include/logs.php, row 794, 825
+// include/logs.php, row 796, 827
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Ejecutar", // ai 2026-10
 
-// include/logs.php, row 796
+// include/logs.php, row 798
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "Inicio", // ai 2026-10
 
-// include/logs.php, row 798
+// include/logs.php, row 800
 "Last full run" => "Última ejecución completa", // ai 2026-10
 
-// include/logs.php, row 799
+// include/logs.php, row 801
 "Last full run started" => "Inicio de la última ejecución completa", // ai 2026-10
 
-// include/logs.php, row 824, 849
+// include/logs.php, row 826, 851
 "Pair" => "Par", // ai 2026-10
 
-// include/logs.php, row 826
+// include/logs.php, row 828
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Ejecutada", // ai 2026-10
 
-// include/logs.php, row 827, 851
+// include/logs.php, row 829, 853
 "Known issue" => "Problema conocido", // ai 2026-10
 
-// include/logs.php, row 853
+// include/logs.php, row 855
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Primera aparición", // ai 2026-10
 
-// include/logs.php, row 854
+// include/logs.php, row 856
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "Ejecuciones seguidas", // ai 2026-10
 
-// include/logs.php, row 878
+// include/logs.php, row 880
 "Evidence" => "Evidencia", // ai 2026-10
 
-// include/logs.php, row 901
+// include/logs.php, row 903
 "Identifier" => "Identificador",
 
-// include/logs.php, row 902, 1266, 1281
+// include/logs.php, row 904, 1268, 1283
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "ID del módulo",
 
-// include/logs.php, row 915
+// include/logs.php, row 917
 "Template id" => "Id de plantilla", // ai 2026-06
 
-// include/logs.php, row 917
+// include/logs.php, row 919
 "Emails sent" => "Emails enviados", // ai 2026-06
 
-// include/logs.php, row 956
+// include/logs.php, row 958
 "Object id" => "Id del objeto", // ai 2026-10
 
-// include/logs.php, row 988
+// include/logs.php, row 990
 "Mail template" => "Plantilla de correo", // ai 2026-10
 
-// include/logs.php, row 989
+// include/logs.php, row 991
 "Reader item" => "Ítem del lector", // ai 2026-10
 
-// include/logs.php, row 990
+// include/logs.php, row 992
 "Origin" => "Origen", // ai 2026-10
 
-// include/logs.php, row 1061
+// include/logs.php, row 1063
 "Transport" => "Transporte", // ai 2026-10
 
-// include/logs.php, row 1062
+// include/logs.php, row 1064
 "Recipients sent" => "Destinatarios enviados", // ai 2026-10
 
-// include/logs.php, row 1063
+// include/logs.php, row 1065
 "Server response" => "Respuesta del servidor", // ai 2026-10
 
-// include/logs.php, row 1076
+// include/logs.php, row 1078
 "Items selected" => "Ítems seleccionados", // ai 2026-06
 
-// include/logs.php, row 1077
+// include/logs.php, row 1079
 "Items updated" => "Ítems actualizados", // ai 2026-06
 
-// include/logs.php, row 1078
+// include/logs.php, row 1080
 "Items planned" => "Ítems planificados", // ai 2026-06
 
-// include/logs.php, row 1089
+// include/logs.php, row 1091
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Mensaje", // ai 2026-06
 
-// include/logs.php, row 1091
+// include/logs.php, row 1093
 "Referer" => "Referente", // ai 2026-10
 
-// include/logs.php, row 1102
+// include/logs.php, row 1104
 "New name" => "Nombre nuevo", // ai 2026-06
 
-// include/logs.php, row 1103
+// include/logs.php, row 1105
 "Old name" => "Nombre antiguo", // ai 2026-06
 
-// include/logs.php, row 1114, 1179
+// include/logs.php, row 1116, 1181
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Fase", // ai 2026-06
 
-// include/logs.php, row 1115
+// include/logs.php, row 1117
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Colección", // ai 2026-06
 
-// include/logs.php, row 1117, 1168, 1180, 1315
+// include/logs.php, row 1119, 1170, 1182, 1317
 // src/Import/Definition.php, row 154
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "Detalle", // ai 2026-06
 
-// include/logs.php, row 1167
+// include/logs.php, row 1169
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Estado", // ai 2026-06
 
-// include/logs.php, row 1219
+// include/logs.php, row 1221
 "Processed" => "Procesados", // ai 2026-06
 
-// include/logs.php, row 1220
+// include/logs.php, row 1222
 "Stored" => "Almacenados", // ai 2026-06
 
-// include/logs.php, row 1221
+// include/logs.php, row 1223
 "Errors" => "Errores", // ai 2026-06
 
-// include/logs.php, row 1234
+// include/logs.php, row 1236
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Resultado", // ai 2026-06
 
-// include/logs.php, row 1250
+// include/logs.php, row 1252
 "Flags" => "Banderas", // ai 2026-06
 
-// include/logs.php, row 1251
+// include/logs.php, row 1253
 "Context" => "Contexto", // ai 2026-06
 
-// include/logs.php, row 1267
+// include/logs.php, row 1269
 "Feed counterpart" => "Contraparte de alimentación", // ai 2026-06
 
-// include/logs.php, row 1282
+// include/logs.php, row 1284
 "Field ID" => "ID Campo",
 
-// include/logs.php, row 1300
+// include/logs.php, row 1302
 // src/Optimize/CheckAjaxUnsigned.php, row 82
+// src/Optimize/CheckFileReadRefusals.php, row 78
 // src/Optimize/CheckHttp.php, row 62
 // src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 88
@@ -7575,124 +7596,124 @@ return [
 // include/statestore.php, row 1449
 "Manage components" => "Gestionar componentes",
 
-// include/stringexpand.php, row 95
+// include/stringexpand.php, row 97
 "Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "El alias se llamará como {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}",
 
-// include/stringexpand.php, row 96
+// include/stringexpand.php, row 98
 "Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "Código impreso por el alias. El alias puede tener parámetros y puede usarlos mediante las variables _#P1, _#P2, ...",
 
-// include/stringexpand.php, row 98
+// include/stringexpand.php, row 100
 "Usage example" => "Ejemplo de uso",
 
-// include/stringexpand.php, row 933
+// include/stringexpand.php, row 940
 "Jabber Online Status Indicator" => "Indicador de estado en línea de Jabber",
 
-// include/stringexpand.php, row 5507
+// include/stringexpand.php, row 5515
 "save changes" => "guardar cambios",
 
-// include/stringexpand.php, row 5726
+// include/stringexpand.php, row 5734
 "No item ID" => "Sin ID de ítem",
 
-// include/stringexpand.php, row 5733
+// include/stringexpand.php, row 5741
 "No transformations" => "Sin transformaciones",
 
-// include/stringexpand.php, row 5747
+// include/stringexpand.php, row 5755
 "No slice for item" => "El ítem no tiene canal",
 
-// include/stringexpand.php, row 5748
+// include/stringexpand.php, row 5756
 "No current slice(s)" => "Sin canal(es) actual(es)",
 
-// include/stringexpand.php, row 5749
+// include/stringexpand.php, row 5757
 "Item slice is not in list of allowed slices" => "El canal del ítem no está en la lista de canales permitidos",
 
-// include/stringexpand.php, row 5754
+// include/stringexpand.php, row 5762
 "No permit_anonymous_edit permission for the slice" => "El canal no tiene el permiso permit_anonymous_edit",
 
-// include/stringexpand.php, row 6149
+// include/stringexpand.php, row 6157
 "No dictionaries specified for {dictionary}" => "No se especificaron diccionarios para {dictionary}",
 
-// include/stringexpand.php, row 6279
+// include/stringexpand.php, row 6287
 "No module for dictionary slice" => "No hay módulo para el canal de diccionario",
 
-// include/stringexpand.php, row 8196
+// include/stringexpand.php, row 8208
 "version" => "versión",
 
-// include/stringexpand.php, row 8384
+// include/stringexpand.php, row 8396
 "show" => "mostrar",
 
-// include/stringexpand.php, row 8385
+// include/stringexpand.php, row 8397
 "hide" => "ocultar",
 
-// include/stringexpand.php, row 8386
+// include/stringexpand.php, row 8398
 "loading" => "cargando",
 
-// include/stringexpand.php, row 9517
+// include/stringexpand.php, row 9531
 "E-mail confirmed." => "E-mail confirmado.",
 
-// include/stringexpand.php, row 9521
+// include/stringexpand.php, row 9535
 "E-mail unsubscribed" => "E-mail dado de baja",
 
-// include/stringexpand.php, row 10280
+// include/stringexpand.php, row 10296
 "Forgot your password? Fill in your email." => "¿Olvidó su contraseña? Escriba su email.",
 
-// include/stringexpand.php, row 10282
+// include/stringexpand.php, row 10298
 // src/Central/FindingText.php, row 457
 "e-mail" => "Correo-e:",
 
-// include/stringexpand.php, row 10300, 10304
+// include/stringexpand.php, row 10316, 10320
 "Unable to find user - please check if it has been misspelled." => "No se pudo encontrar al usuario - compruebe si está mal escrito.",
 
-// include/stringexpand.php, row 10318
+// include/stringexpand.php, row 10334
 "Password link" => "Enlace de contraseña",
 
-// include/stringexpand.php, row 10319
+// include/stringexpand.php, row 10335
 "Password change url parameter" => "Parámetro url de cambio de contraseña",
 
-// include/stringexpand.php, row 10331
+// include/stringexpand.php, row 10347
 "Password change" => "Cambio de contraseña",
 
-// include/stringexpand.php, row 10332
+// include/stringexpand.php, row 10348
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Para cambiar la contraseña, visite la siguiente dirección:<br>%1<br>El cambio será posible durante dos horas - después la clave expirará y deberá solicitar una nueva.",
 
-// include/stringexpand.php, row 10341
+// include/stringexpand.php, row 10357
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "Se acaba de enviar un correo electrónico con una clave para cambiar la contraseña a la dirección: %1",
 
-// include/stringexpand.php, row 10352, 10381
+// include/stringexpand.php, row 10368, 10397
 "Bad or expired key." => "Clave incorrecta o caducada.",
 
-// include/stringexpand.php, row 10357
+// include/stringexpand.php, row 10373
 "Fill in the new password" => "Introduzca la nueva contraseña",
 
-// include/stringexpand.php, row 10359
+// include/stringexpand.php, row 10375
 "New password" => "Nueva contraseña",
 
-// include/stringexpand.php, row 10360
+// include/stringexpand.php, row 10376
 "Retype New Password" => "Reescriba nueva clave",
 
-// include/stringexpand.php, row 10384
+// include/stringexpand.php, row 10400
 "Passwords do not match - please try again." => "Las contraseñas no coinciden - inténtelo de nuevo.",
 
-// include/stringexpand.php, row 10387
+// include/stringexpand.php, row 10403
 "The password must be at least 6 characters long." => "La contraseña debe tener al menos 6 caracteres.",
 
-// include/stringexpand.php, row 10393
+// include/stringexpand.php, row 10409
 "Password changed." => "Contraseña cambiada.",
 
-// include/stringexpand.php, row 10395
+// include/stringexpand.php, row 10411
 "An error occurred during password change - please contact: %1." => "Se produjo un error al cambiar la contraseña - por favor contacte con: %1.",
 
-// include/stringexpand.php, row 11503, 11526
+// include/stringexpand.php, row 11519, 11542
 "Are you sure you want to permanently DELETE this record?" => "¿Está seguro/a que quiere borrar PERMANENTEMENTE este registro?",
 
-// include/stringexpand.php, row 11509, 11512, 11532, 11535
+// include/stringexpand.php, row 11525, 11528, 11548, 11551
 // src/Widget/RimWidget.php, row 270
 "edit" => "editar",
 
-// include/stringexpand.php, row 11515, 11538
+// include/stringexpand.php, row 11531, 11554
 "back" => "volver",
 
-// include/stringexpand.php, row 11518, 11541
-// src/Widget/RimWidget.php, row 296
+// include/stringexpand.php, row 11534, 11557
+// src/Widget/RimWidget.php, row 297
 "drop files here or click to upload" => "suelte los archivos aquí o haga clic para subirlos",
 
 // include/transformation.class.php, row 159
@@ -7979,7 +8000,7 @@ return [
 // src/Optimize/CheckTrustedProxies.php, row 69
 "default" => "por defecto",
 
-// include/widget.class.php, row 470
+// include/widget.class.php, row 477
 "Not filled (%1)" => "No rellenado (%1)",
 
 // misc/datovka/datovka.php, row 154
@@ -8182,16 +8203,16 @@ return [
 // src/AA_Plannedtask.php, row 269
 "failed" => "falló", // ai 2026-10
 
-// src/AA_Plannedtask.php, row 386
+// src/AA_Plannedtask.php, row 391
 "The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "La tarea no se guardó - una tarea ejecutada por un evento no puede llamar a {import}: los ítems que importa volverían a ejecutar la tarea.", // ai 2026-10
 
-// src/AA_Plannedtask.php, row 389
+// src/AA_Plannedtask.php, row 394
 "The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "La tarea no se guardó - solo un usuario que administra la alimentación del canal puede guardar una tarea con {import}.", // ai 2026-10
 
-// src/AA_Plannedtask.php, row 453
+// src/AA_Plannedtask.php, row 458
 "not scheduled, yet" => "aún no programada",
 
-// src/AA_Plannedtask.php, row 457
+// src/AA_Plannedtask.php, row 462
 "next run" => "próxima ejecución",
 
 // src/Api/Controller/FilesController.php, row 56, 77
@@ -11357,25 +11378,25 @@ return [
 // src/Manager.php, row 817
 "Manager ID" => "ID del administrador",
 
-// src/Manager.php, row 1180
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "La acción no se realizó - use el botón de la página.", // ai 2026-10
 
-// src/Manager.php, row 1261
+// src/Manager.php, row 1272
 "Edit id" => "Editar id",
 
-// src/Manager.php, row 1275
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Mantenga pulsada la tecla Mayús y haga clic para seleccionar varias filas",
 
-// src/Manager.php, row 1313
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "Está seguro de vaciar la papelera?",
 
-// src/Manager.php, row 1415
+// src/Manager.php, row 1426
 "Go" => "Ir",
 
-// src/Manager.php, row 1428
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "Ningún ítem seleccionado. ¿Realizar la acción para todos los ítems filtrados?",
 
-// src/Manager.php, row 1428
+// src/Manager.php, row 1439
 "Run for %1 items" => "Ejecutar para %1 ítems",
 
 // src/Manageraction/AbstractManageraction.php, row 47
@@ -11961,6 +11982,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckFileReadRefusals.php, row 80, 101, 135
 // src/Optimize/CheckFormRobotRefusals.php, row 76
 // src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
 // src/Optimize/CheckIsdsConf.php, row 156, 189
@@ -11970,6 +11992,7 @@ return [
 // src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
+// src/Optimize/CheckServerRefusals.php, row 69
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckTrustedProxies.php, row 104
 // src/Optimize/CheckUploadRefusals.php, row 91
@@ -11983,6 +12006,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 100
 // src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckFileReadRefusals.php, row 81, 102, 136
 // src/Optimize/CheckFormRobotRefusals.php, row 77
 // src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
@@ -11993,6 +12017,7 @@ return [
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
+// src/Optimize/CheckServerRefusals.php, row 70
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckTrustedProxies.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 92
@@ -12288,6 +12313,63 @@ return [
 
 // src/Optimize/CheckEnvironment.php, row 66
 "AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4; sin cambios desde %5", // ai 2026-10
+
+// src/Optimize/CheckFileReadRefusals.php, row 26
+"Refused file reads" => "Lecturas de archivos rechazadas", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 31
+"Lists the files that templates or e-mails asked for in the last 30 days and AA refused to read, as they are not files of the site, the templates that still use {include:…:readfile} or {include:…:site}, which read no file, and the files e-mails took from outside the upload directories." => "Muestra los archivos que las plantillas o los correos electrónicos solicitaron en los últimos 30 días y que AA se negó a leer por no ser archivos del sitio, las plantillas que aún usan {include:…:readfile} o {include:…:site}, que no leen ningún archivo, y los archivos que los correos tomaron de fuera de los directorios de subida.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 73
+"The file %1 was not read (%2)" => "El archivo %1 no se leyó (%2)", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 84
+"{fileinfo} describes only the files uploaded to a slice or to the File Manager - never one from the directory AA is installed in or a dotfile. Give it the URL of an uploaded file, or remove it from the template." => "{fileinfo} describe solo los archivos subidos a un canal o al Administrador de Archivos - nunca uno del directorio donde está instalado AA ni un archivo cuyo nombre empieza por punto. Indíquele la URL de un archivo subido o elimínelo de la plantilla.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 85
+"AA reads for templates and e-mails only the files of the site: its File Manager directory or the upload directories - never from the directory AA is installed in, never a dotfile, a script or a file of settings or keys. Move the file among the files of the site, or remove it from the template." => "Para plantillas y correos electrónicos, AA lee solo los archivos del sitio: su directorio del Administrador de Archivos o los directorios de subida - nunca del directorio donde está instalado AA, nunca un archivo cuyo nombre empieza por punto, un script ni un archivo de configuración o de claves. Mueva el archivo a los archivos del sitio o elimínelo de la plantilla.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 96
+"An e-mail took the file %1 from outside the upload directories" => "Un correo electrónico tomó el archivo %1 de fuera de los directorios de subida", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 104
+"The file was sent. AA is to send local files only from the upload directories of the slices and the File Manager, so attach a file uploaded to the slice instead, or tell the AA developers the directory this site keeps its attachments in." => "El archivo se envió. AA debe enviar archivos locales solo desde los directorios de subida de los canales y del Administrador de Archivos; adjunte en su lugar un archivo subido al canal o indique a los desarrolladores de AA el directorio en el que este sitio guarda sus adjuntos.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 110
+"No file read was refused in the last 30 days" => "En los últimos 30 días no se rechazó ninguna lectura de archivo", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 124
+"readfile read any file of the document root, past the access rules of the web server, so it reads nothing now." => "La opción readfile leía cualquier archivo de la raíz de documentos, saltándose las reglas de acceso del servidor web, por lo que ahora no lee nada.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 125
+"site read from a directory that a visitor could choose by a parameter of the address, so it reads nothing now." => "La opción site leía de un directorio que un visitante podía elegir mediante un parámetro de la dirección, por lo que ahora no lee nada.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 129
+"A template uses {include:%1:%2}, which prints nothing" => "Una plantilla usa {include:%1:%2}, que no muestra nada", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 134
+"Slice or site" => "Canal o sitio", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 138
+"In a slice put the file into its File Manager directory and use {include:<file>:fileman}; elsewhere include the file by its full web address, {include:https#://<domain>/<file>}." => "En un canal, coloque el archivo en su directorio del Administrador de Archivos y use {include:<file>:fileman}; en otros lugares, incluya el archivo por su dirección web completa, {include:https#://<domain>/<file>}.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 149
+"outside the files of the site" => "fuera de los archivos del sitio", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 150
+"in the directory of an AA installation" => "en el directorio de una instalación de AA", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 151
+"a name starting with a dot (.., .htaccess, .git)" => "un nombre que empieza por punto (.., .htaccess, .git)", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 152
+"a script, a settings or key file, a dump or a backup" => "un script, un archivo de configuración o de claves, un volcado o una copia de seguridad", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 153
+"not a regular file, or a file without an extension" => "no es un archivo regular o no tiene extensión", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 154
+"the file changed while it was read" => "el archivo cambió mientras se leía", // ai 2026-11
 
 // src/Optimize/CheckFormRobotRefusals.php, row 26
 "Forms refused as robots" => "Formularios rechazados como robots", // ai 2026-11
@@ -13559,7 +13641,7 @@ return [
 "%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "%1 tiene páginas que la caché de páginas no guarda: una plantilla lee un valor que puede ser propio del visitante", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 81
-"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Cada visita vuelve a generar esa página. Una redirección, un contador de clics o un formulario pueden quedarse como están. En otros casos, sobre todo en una plantilla de todas las páginas (cabecera, pie): elimine un valor impreso solo para depuración y compruebe la ortografía del nombre ({server:HTTP_REFERER}); para distinguir a los visitantes que llegan de una campaña use {qs:utm_source}, para el dispositivo {detect}. El host, el esquema y la URI ({server:HTTP_HOST}, {server:REQUEST_URI}) mantienen la página en la caché.", // ai 2026-11
+"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging; to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Cada visita vuelve a generar una página así. Una redirección, un contador de clics o un formulario pueden quedarse como están. En otros casos, sobre todo en una plantilla de todas las páginas (cabecera, pie): elimine un valor mostrado solo para depuración; para distinguir a los visitantes que llegan de una campaña use {qs:utm_source}, para el dispositivo {detect}. El host, el esquema y la URI ({server:HTTP_HOST}, {server:REQUEST_URI}) mantienen la página en caché.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 86
 "No template reads a value of the visitor's own by {server:...}" => "Ninguna plantilla lee mediante {server:...} un valor propio del visitante", // ai 2026-11
@@ -13772,6 +13854,21 @@ return [
 // src/Optimize/CheckSecurityProtections.php, row 113
 "All protections are on and none of them refused anything in the last %1 days" => "Todas las protecciones están activadas y ninguna rechazó nada en los últimos %1 días", // ai 2026-10
 
+// src/Optimize/CheckServerRefusals.php, row 24
+"Values refused to {server:...}" => "Valores denegados a {server:...}", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 29
+"Lists the names that templates asked for by {server:...} in the last 30 days and got an empty string, although the web server had the value, because AA does not hand it to templates." => "Muestra los nombres que las plantillas solicitaron mediante {server:...} en los últimos 30 días y por los que obtuvieron una cadena vacía, aunque el servidor web tenía el valor, porque AA no lo entrega a las plantillas.", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 63
+"A template asked for {server:%1} and got an empty string" => "Una plantilla solicitó {server:%1} y obtuvo una cadena vacía", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 72
+"Templates get the host, the URI and query string, the scheme and port, the visitor's address, browser, referer and Accept headers, and a few more values of the request; cookies, passwords, authorization and other headers or variables of the web server are not for templates. For a URL parameter use {qs:...}, for a cookie {cookie:...}, for the logged-in user {user}. A value that is no secret can be added to the list in AA\\Cache\\PageCache::SERVER_PER_VISITOR, which is a change of the AA code; otherwise change the template." => "Las plantillas obtienen el host, la URI y la cadena de consulta, el esquema y el puerto, la dirección del visitante, su navegador, el referer y las cabeceras Accept, y algunos valores más de la petición; las cookies, contraseñas, la autorización y otras cabeceras o variables del servidor web no son para las plantillas. Para un parámetro de URL use {qs:...}, para una cookie {cookie:...}, para el usuario conectado {user}. Un valor que no sea secreto puede añadirse a la lista de AA\\Cache\\PageCache::SERVER_PER_VISITOR, lo que supone un cambio del código de AA; si no, cambie la plantilla.", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 78
+"No template asked {server:...} for a value AA does not hand out in the last 30 days" => "En los últimos 30 días ninguna plantilla solicitó a {server:...} un valor que AA no entrega", // ai 2026-11
+
 // src/Optimize/CheckSessionidUse.php, row 45
 "Get_Sessionid use" => "Uso de Get_Sessionid", // ai 2026-10
 
@@ -13792,6 +13889,21 @@ return [
 
 // src/Optimize/CheckSessionidUse.php, row 111
 "Nobody called Get_Sessionid in the last 30 days" => "Nadie llamó a Get_Sessionid en los últimos 30 días", // ai 2026-10
+
+// src/Optimize/CheckSetupPage.php, row 14
+"Setup page" => "Página de instalación", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 19
+"Checks that admin/setup.php is switched off (AA_SETUP_ENABLED in config.php)." => "Comprueba que la página admin/setup.php esté desactivada (AA_SETUP_ENABLED en config.php).", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 45
+"The setup page is switched off" => "La página de instalación está desactivada", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 49
+"The setup page is switched on - admin/setup.php creates a superadmin without login whenever the permission system finds none" => "La página de instalación está activada - admin/setup.php crea un superadministrador sin iniciar sesión siempre que el sistema de permisos no encuentre ninguno", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 50
+"Remove define('AA_SETUP_ENABLED', true); from include/config.php (or from the config file of this database) once the superadmin account exists." => "Elimine define('AA_SETUP_ENABLED', true); de include/config.php (o del archivo de configuración de esta base de datos) una vez que exista la cuenta de superadministrador.", // ai 2026-11
 
 // src/Optimize/CheckSiteStateFiles.php, row 18
 "Site state files" => "Archivos de estado de sitios", // ai 2026-10
@@ -14478,16 +14590,16 @@ return [
 // src/Optimize/ImgMeasuring.php, row 85
 "the parameters do not tell the size" => "los parámetros no determinan el tamaño", // ai 2026-10
 
-// src/Optimize/ItemDiscussion.php, row 17
+// src/Optimize/ItemDiscussion.php, row 16
 "Delete discussion comments for non-existent items" => "Eliminar comentarios de discusión de ítems inexistentes",
 
-// src/Optimize/ItemDiscussion.php, row 40, 58
+// src/Optimize/ItemDiscussion.php, row 39, 56
 "No problems found" => "No se encontraron problemas",
 
-// src/Optimize/ItemDiscussion.php, row 44
+// src/Optimize/ItemDiscussion.php, row 43
 "Problem for item %1 - %2 comments found" => "Problema en el ítem %1 - %2 comentarios encontrados",
 
-// src/Optimize/ItemDiscussion.php, row 65
+// src/Optimize/ItemDiscussion.php, row 61
 "%1 problems solved" => "%1 problemas resueltos",
 
 // src/Optimize/LdapPermsToSql.php, row 44
@@ -15574,7 +15686,7 @@ return [
 // src/Widget/RimWidget.php, row 239
 "No record matches your search condition." => "No hay registros para estas condiciones.",
 
-// src/Widget/RimWidget.php, row 283
+// src/Widget/RimWidget.php, row 284
 "search in existing" => "buscar en existentes",
 
 // src/Widget/RioWidget.php, row 40

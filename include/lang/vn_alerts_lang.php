@@ -339,7 +339,7 @@ return [
 // modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "Đã xóa %1 trường và %2 nhóm hằng số", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 222
+// modules/alerts/synchro2.php, row 219
 "not set" => "chưa đặt", // ai 2026-06
 
 // modules/alerts/util.php, row 53

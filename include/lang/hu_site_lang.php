@@ -22,44 +22,44 @@ return [
 // modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "Nincs jogosults\xE1ga a cikkek szerkeszt\xE9s\xE9hez ebben a rovatban", // ai 2026-06
 
-// modules/site/index.php, row 68
+// modules/site/index.php, row 69
 "Starting spot not found" => "A kezd\xF5 spot nem tal\xE1lhat\xF3", // ai 2026-06
 
-// modules/site/index.php, row 151
+// modules/site/index.php, row 152
 "Editor window - site code manager" => "Szerkeszt\xF5ablak - webhelyk\xF3d-kezel\xF5", // ai 2026-06
 
-// modules/site/index.php, row 163
+// modules/site/index.php, row 164
 "Add&nbsp;spot" => "Spot&nbsp;hozz\xE1ad\xE1sa", // ai 2026-06
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 165
 "Add&nbsp;choice" => "V\xE1laszt\xE1s&nbsp;hozz\xE1ad\xE1sa", // ai 2026-06
 
-// modules/site/index.php, row 167
+// modules/site/index.php, row 168
 "Move&nbsp;up" => "Mozgat\xE1s&nbsp;fel", // ai 2026-06
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 169
 "Move&nbsp;down" => "Mozgat\xE1s&nbsp;le", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 172
 "Move&nbsp;left" => "Mozgat\xE1s&nbsp;balra", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 173
 "Move&nbsp;right" => "Mozgat\xE1s&nbsp;jobbra", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "T\xF6rl\xE9s", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 "Are you sure you want to delete the spot?" => "Biztosan t\xF6r\xF6lni szeretn\xE9 a spotot?", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 179
 "Enable" => "Enged\xE9lyez\xE9s", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 180
 "Disable" => "Letilt\xE1s", // ai 2026-06
 
-// modules/site/index.php, row 200
+// modules/site/index.php, row 201
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Lehets\xE9ges rendszer require-ok - &lcub;require:...&rcub; vagy &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

@@ -339,7 +339,7 @@ return [
 // modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "Vymazaných položiek: %1, skupín hodnôt: %2", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 222
+// modules/alerts/synchro2.php, row 219
 "not set" => "nenastavené", // ai 2026-06
 
 // modules/alerts/util.php, row 53

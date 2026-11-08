@@ -398,7 +398,7 @@ return [
 // modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "%1 políček a %2 skupin hodnot smazáno",
 
-// modules/alerts/synchro2.php, row 222
+// modules/alerts/synchro2.php, row 219
 "not set" => "nenastaveno",
 
 // modules/alerts/util.php, row 53

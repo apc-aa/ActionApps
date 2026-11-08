@@ -336,7 +336,7 @@ return [
 // modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "\xE8\xE7\xF2\xF0\xE8\xF2\xE8 \xEF\xEE\xEB\xE5\xF2\xE0: %1 \xE8 \xE3\xF0\xF3\xEF\xE8 \xEA\xEE\xED\xF1\xF2\xE0\xED\xF2\xE8: %2", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 222
+// modules/alerts/synchro2.php, row 219
 "not set" => "\xED\xE5 \xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xED\xEE", // ai 2026-06
 
 // modules/alerts/util.php, row 53

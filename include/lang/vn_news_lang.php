@@ -18,6 +18,9 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Can't delete invalid permission." => "Không thể xóa quyền không hợp lệ.", // ai 2026-06
+// "Invalid permission deleted (no such user/group): " => "Đã xóa quyền không hợp lệ (không có người dùng/nhóm này):", // ai 2026-06
+// "Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Mỗi lượt truy cập sẽ kết xuất lại trang như vậy. Chuyển hướng, bộ đếm lượt nhấp hoặc biểu mẫu có thể giữ nguyên. Ở những chỗ khác, nhất là trong mẫu dùng cho mọi trang (đầu trang, chân trang): hãy xóa giá trị chỉ được in ra để gỡ lỗi và kiểm tra chính tả của tên ({server:HTTP_REFERER}); để nhận biết người truy cập đến từ một chiến dịch, hãy dùng {qs:utm_source}, để nhận biết thiết bị, dùng {detect}. Host, scheme và URI ({server:HTTP_HOST}, {server:REQUEST_URI}) vẫn giữ trang trong bộ nhớ đệm.", // ai 2026-11
 // "Migrate LDAP perms to SQL perms" => "Chuyển quyền từ LDAP sang SQL", // ai 2026-06
 // "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Sao chép tất cả người dùng, nhóm, thành viên và quyền từ backend LDAP vào các bảng backend SQL (users, membership, perms), và viết lại item.posted_by / item.edited_by từ dạng LDAP DN (uid=...,ou=...) sang các id số SQL mới. Chạy một lần cho mỗi bản cài đặt, sau đó chuyển PERM_LIB sang 'sql' trong config. 'Test' là lần chạy thử chỉ đọc. 'Repair' thực hiện việc chuyển đổi và có thể chạy lại nhiều lần. 'Revert' dùng bảng đối chiếu để hoàn tác mọi thứ.", // ai 2026-06
 // "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Trình tối ưu hóa này chỉ chạy khi PERM_LIB='ldap'. PERM_LIB hiện tại='%1'.", // ai 2026-06
@@ -245,6 +248,7 @@ return [
 // admin/aafinder.php, row 98
 // admin/console.php, row 73
 // admin/fileman.php, row 110
+// admin/se_fulltext.php, row 80
 // admin/slicedel2.php, row 70
 // admin/um_passkeys.php, row 73
 // admin/um_passwd.php, row 80
@@ -297,7 +301,7 @@ return [
 "Type their login name to see its failed logins of the last 12 hours, and let it log in at once." => "Nhập tên đăng nhập của người đó để xem các lần đăng nhập thất bại trong 12 giờ qua và cho phép đăng nhập ngay.", // ai 2026-10
 
 // admin/aa_security.php, row 85
-// admin/setup.php, row 99, 240
+// admin/setup.php, row 102, 239
 // admin/slicewiz.php, row 84
 // admin/um_passwd.php, row 128
 // admin/um_uedit.php, row 314, 328
@@ -307,13 +311,13 @@ return [
 
 // admin/aa_security.php, row 87
 // admin/aa_statecheck.php, row 177
-// admin/aa_statistics.php, row 91
+// admin/aa_statistics.php, row 101
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 69
+// admin/se_statistics.php, row 79
 // admin/se_views.php, row 148
-// include/formutil.php, row 1431, 1434, 2020
+// include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
 // src/Widget/FldWidget.php, row 156
 "Show" => "Hiển thị", // ai 2026-06
@@ -371,6 +375,7 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 103
 // src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckFileReadRefusals.php, row 86, 105, 139
 // src/Optimize/CheckFormRobotRefusals.php, row 80
 // src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
 // src/Optimize/CheckIsdsConf.php, row 160, 193
@@ -383,6 +388,7 @@ return [
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
 // src/Optimize/CheckSecurityProtections.php, row 106
+// src/Optimize/CheckServerRefusals.php, row 73
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckTrustedProxies.php, row 109
 // src/Optimize/CheckUploadRefusals.php, row 101
@@ -516,111 +522,111 @@ return [
 // admin/aa_statecheck.php, row 397
 "Run slow checks now" => "Chạy kiểm tra chậm ngay", // ai 2026-10
 
-// admin/aa_statistics.php, row 58
-// admin/se_statistics.php, row 53
+// admin/aa_statistics.php, row 63
+// admin/se_statistics.php, row 58
 "You do not have permissions to see statistics" => "Bạn không có quyền xem thống kê", // ai 2026-06
-
-// admin/aa_statistics.php, row 86
-// admin/se_statistics.php, row 64
-"Admin - Statistics" => "Admin - Thống kê", // ai 2026-06
-
-// admin/aa_statistics.php, row 94
-// admin/se_statistics.php, row 72
-"years" => "năm", // ai 2026-06
-
-// admin/aa_statistics.php, row 95
-// admin/se_statistics.php, row 73
-"months" => "tháng", // ai 2026-06
 
 // admin/aa_statistics.php, row 96
 // admin/se_statistics.php, row 74
-"weeks" => "tuần", // ai 2026-06
+"Admin - Statistics" => "Admin - Thống kê", // ai 2026-06
 
-// admin/aa_statistics.php, row 97
-// admin/se_statistics.php, row 75
-"days" => "ngày", // ai 2026-06
-
-// admin/aa_statistics.php, row 98
-// admin/se_statistics.php, row 76
-"hours" => "giờ", // ai 2026-06
-
-// admin/aa_statistics.php, row 99
-// admin/se_statistics.php, row 77
-"minutes" => "phút", // ai 2026-06
-
-// admin/aa_statistics.php, row 100
-// admin/se_statistics.php, row 78
-"day-hours" => "giờ trong ngày", // ai 2026-06
-
-// admin/aa_statistics.php, row 101
-// admin/se_statistics.php, row 79
-"week-days" => "ngày trong tuần", // ai 2026-06
+// admin/aa_statistics.php, row 104
+// admin/se_statistics.php, row 82
+"years" => "năm", // ai 2026-06
 
 // admin/aa_statistics.php, row 105
-"Most hits" => "Nhiều lượt truy cập nhất", // ai 2026-06
+// admin/se_statistics.php, row 83
+"months" => "tháng", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
-"Most server time" => "Nhiều thời gian máy chủ nhất", // ai 2026-06
+// admin/se_statistics.php, row 84
+"weeks" => "tuần", // ai 2026-06
 
 // admin/aa_statistics.php, row 107
-"Slowest (avg ms)" => "Chậm nhất (ms trung bình)", // ai 2026-06
+// admin/se_statistics.php, row 85
+"days" => "ngày", // ai 2026-06
 
 // admin/aa_statistics.php, row 108
-"Fastest (avg ms)" => "Nhanh nhất (ms trung bình)", // ai 2026-06
+// admin/se_statistics.php, row 86
+"hours" => "giờ", // ai 2026-06
 
 // admin/aa_statistics.php, row 109
-"Worst cached" => "Lưu cache kém nhất", // ai 2026-06
+// admin/se_statistics.php, row 87
+"minutes" => "phút", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
-"Best cached" => "Lưu cache tốt nhất", // ai 2026-06
+// admin/se_statistics.php, row 88
+"day-hours" => "giờ trong ngày", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
-"Most wasted (NC+NM)" => "Lãng phí nhiều nhất (NC+NM)", // ai 2026-06
+// admin/se_statistics.php, row 89
+"week-days" => "ngày trong tuần", // ai 2026-06
 
-// admin/aa_statistics.php, row 112
-"Slowed down vs prior period" => "Chậm hơn so với kỳ trước", // ai 2026-06
+// admin/aa_statistics.php, row 115
+"Most hits" => "Nhiều lượt truy cập nhất", // ai 2026-06
 
-// admin/aa_statistics.php, row 113
-"Sped up vs prior period" => "Nhanh hơn so với kỳ trước", // ai 2026-06
+// admin/aa_statistics.php, row 116
+"Most server time" => "Nhiều thời gian máy chủ nhất", // ai 2026-06
 
-// admin/aa_statistics.php, row 114
-// admin/se_statistics.php, row 83
-"Specified below" => "Chỉ định bên dưới", // ai 2026-06
+// admin/aa_statistics.php, row 117
+"Slowest (avg ms)" => "Chậm nhất (ms trung bình)", // ai 2026-06
 
 // admin/aa_statistics.php, row 118
-"Last day" => "Ngày cuối", // ai 2026-06
+"Fastest (avg ms)" => "Nhanh nhất (ms trung bình)", // ai 2026-06
 
 // admin/aa_statistics.php, row 119
-"Last week" => "Tuần cuối", // ai 2026-06
+"Worst cached" => "Lưu cache kém nhất", // ai 2026-06
 
 // admin/aa_statistics.php, row 120
-"Last month" => "Tháng cuối", // ai 2026-06
+"Best cached" => "Lưu cache tốt nhất", // ai 2026-06
 
 // admin/aa_statistics.php, row 121
-"Last year" => "Năm cuối", // ai 2026-06
+"Most wasted (NC+NM)" => "Lãng phí nhiều nhất (NC+NM)", // ai 2026-06
 
 // admin/aa_statistics.php, row 122
-"This day" => "Ngày này", // ai 2026-06
+"Slowed down vs prior period" => "Chậm hơn so với kỳ trước", // ai 2026-06
 
 // admin/aa_statistics.php, row 123
-"This week" => "Tuần này", // ai 2026-06
+"Sped up vs prior period" => "Nhanh hơn so với kỳ trước", // ai 2026-06
 
 // admin/aa_statistics.php, row 124
-"This month" => "Tháng này", // ai 2026-06
+// admin/se_statistics.php, row 93
+"Specified below" => "Chỉ định bên dưới", // ai 2026-06
 
-// admin/aa_statistics.php, row 125
-"This year" => "Năm này", // ai 2026-06
+// admin/aa_statistics.php, row 128
+"Last day" => "Ngày cuối", // ai 2026-06
 
-// admin/aa_statistics.php, row 126
-"All time" => "Toàn bộ thời gian", // ai 2026-06
+// admin/aa_statistics.php, row 129
+"Last week" => "Tuần cuối", // ai 2026-06
 
 // admin/aa_statistics.php, row 130
-"All AA" => "Toàn bộ AA", // ai 2026-06
+"Last month" => "Tháng cuối", // ai 2026-06
 
 // admin/aa_statistics.php, row 131
-"Sites" => "Trang web", // ai 2026-06
+"Last year" => "Năm cuối", // ai 2026-06
+
+// admin/aa_statistics.php, row 132
+"This day" => "Ngày này", // ai 2026-06
+
+// admin/aa_statistics.php, row 133
+"This week" => "Tuần này", // ai 2026-06
+
+// admin/aa_statistics.php, row 134
+"This month" => "Tháng này", // ai 2026-06
 
 // admin/aa_statistics.php, row 135
+"This year" => "Năm này", // ai 2026-06
+
+// admin/aa_statistics.php, row 136
+"All time" => "Toàn bộ thời gian", // ai 2026-06
+
+// admin/aa_statistics.php, row 140
+"All AA" => "Toàn bộ AA", // ai 2026-06
+
+// admin/aa_statistics.php, row 141
+"Sites" => "Trang web", // ai 2026-06
+
+// admin/aa_statistics.php, row 145
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 294
 // central/appstore.php, row 164
@@ -628,70 +634,74 @@ return [
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Chuyên mục", // ai 2026-06
 
-// admin/aa_statistics.php, row 162
+// admin/aa_statistics.php, row 172
 "Version progress" => "Diễn biến qua các phiên bản", // ai 2026-10
 
-// admin/aa_statistics.php, row 173
+// admin/aa_statistics.php, row 183
 "Queue progress" => "Diễn biến hàng đợi", // ai 2026-10
 
-// admin/aa_statistics.php, row 184
+// admin/aa_statistics.php, row 194
 "Quick diagnostics" => "Chẩn đoán nhanh", // ai 2026-06
 
-// admin/aa_statistics.php, row 208
+// admin/aa_statistics.php, row 218
 "Slice comparison" => "So sánh chuyên mục", // ai 2026-06
 
-// admin/aa_statistics.php, row 231
-// admin/se_statistics.php, row 138
+// admin/aa_statistics.php, row 241
+// admin/se_statistics.php, row 148
 "Stats to show" => "Thống kê hiển thị", // ai 2026-06
 
-// admin/aa_statistics.php, row 232
+// admin/aa_statistics.php, row 242
 "Granularity" => "Độ chi tiết", // ai 2026-06
 
-// admin/aa_statistics.php, row 236
+// admin/aa_statistics.php, row 246
 "Items to show" => "Bài viết hiển thị", // ai 2026-06
 
-// admin/aa_statistics.php, row 237
+// admin/aa_statistics.php, row 247
 "Display for module" => "Hiển thị cho mô-đun", // ai 2026-06
 
-// admin/aa_statistics.php, row 238
+// admin/aa_statistics.php, row 248
 "Sort items by" => "Sắp xếp bài viết theo", // ai 2026-06
 
-// admin/aa_statistics.php, row 239
+// admin/aa_statistics.php, row 249
 "Period (item ranking)" => "Kỳ (xếp hạng bài viết)", // ai 2026-06
 
-// admin/aa_statistics.php, row 240
-// admin/se_statistics.php, row 98
+// admin/aa_statistics.php, row 250
+// admin/se_statistics.php, row 108
 "Exact items to show" => "Bài viết cụ thể cần hiển thị", // ai 2026-06
 
-// admin/aa_statistics.php, row 240
-// admin/se_statistics.php, row 98
+// admin/aa_statistics.php, row 250
+// admin/se_statistics.php, row 108
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "danh sách id/short_id bài viết phân cách bằng dấu gạch ngang hoặc biểu thức AA như {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
-// admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 99
+// admin/aa_statistics.php, row 251
+// admin/se_statistics.php, row 109
 "Number of items to show" => "Số bài viết cần hiển thị", // ai 2026-06
 
-// admin/aa_statistics.php, row 245
+// admin/aa_statistics.php, row 255
 "Show for period" => "Hiển thị theo kỳ", // ai 2026-06
 
-// admin/aa_statistics.php, row 246
-// admin/se_statistics.php, row 100
+// admin/aa_statistics.php, row 256
+// admin/se_statistics.php, row 110
 "From date" => "Từ ngày", // ai 2026-06
 
-// admin/aa_statistics.php, row 255
-// admin/se_statistics.php, row 144
+// admin/aa_statistics.php, row 261
+// admin/se_statistics.php, row 154
+"Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Hãy kiểm tra biểu thức trong “Bài viết cụ thể cần hiển thị” và nhấn “Hiển thị” để tính giá trị biểu thức.", // ai 2026-11
+
+// admin/aa_statistics.php, row 268
+// admin/se_statistics.php, row 157
 "Display Statistics for Item" => "Hiển thị thống kê cho bài viết", // ai 2026-06
 
-// admin/aa_statistics.php, row 341
-// admin/se_statistics.php, row 171
+// admin/aa_statistics.php, row 354
+// admin/se_statistics.php, row 184
 "Items found" => "Số bài viết tìm thấy", // ai 2026-06
 
-// admin/aa_statistics.php, row 345
-// admin/se_statistics.php, row 182
+// admin/aa_statistics.php, row 356
+// admin/se_statistics.php, row 193
 "No items found" => "Không tìm thấy bài viết nào", // ai 2026-06
 
-// admin/aa_statistics.php, row 357
-// admin/se_statistics.php, row 179
+// admin/aa_statistics.php, row 368
+// admin/se_statistics.php, row 190
 "Server configuration changes" => "Thay đổi cấu hình máy chủ", // ai 2026-06
 
 // admin/aa_tasks.php, row 35
@@ -748,7 +758,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1218
+// include/logs.php, row 1220
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -757,6 +767,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
+// src/Optimize/CheckFileReadRefusals.php, row 79
 // src/Optimize/CheckFormRobotRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
 // src/Optimize/CheckIsdsRegistry.php, row 179
@@ -784,7 +795,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 363
+// include/logs.php, row 365
 // src/AA_Plannedtask.php, row 204
 "Log" => "Nhật ký", // ai 2026-06
 
@@ -923,7 +934,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 10285, 10364
+// include/stringexpand.php, row 10301, 10380
 "Send" => "Gửi", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -1023,7 +1034,7 @@ return [
 
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
-// include/stringexpand.php, row 96
+// include/stringexpand.php, row 98
 // src/Import/DetailPage.php, row 1025, 1091
 // src/Optimize/CheckImports.php, row 236, 238
 "Code" => "Mã", // ai 2026-06
@@ -1082,7 +1093,7 @@ return [
 "Author" => "Tác giả", // ai 2026-06
 
 // admin/discedit.php, row 133
-// include/logs.php, row 903, 1314
+// include/logs.php, row 905, 1316
 "IP Address" => "Địa chỉ IP", // ai 2026-06
 
 // admin/discedit.php, row 134
@@ -1091,7 +1102,7 @@ return [
 "Date" => "Ngày", // ai 2026-06
 
 // admin/discedit.php, row 135
-// admin/related_sel.php, row 155
+// admin/related_sel.php, row 168
 // admin/se_views.php, row 136
 // src/Import/DetailPage.php, row 313
 // src/Manager.php, row 230
@@ -1108,7 +1119,7 @@ return [
 // admin/um_uedit.php, row 266
 // include/field.class.php, row 744
 // include/filedit.php, row 113
-// include/formutil.php, row 1777, 3394
+// include/formutil.php, row 1778, 3395
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
 // include/statestore.php, row 1143
@@ -1129,7 +1140,7 @@ return [
 // admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
 // include/field.class.php, row 748
-// include/formutil.php, row 1788, 1925
+// include/formutil.php, row 1789, 1926
 // include/menu_util.php, row 61
 // include/profile.php, row 69
 // include/searchbar.class.php, row 1126
@@ -1157,13 +1168,13 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1065
+// include/logs.php, row 1067
 // include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Chủ đề", // ai 2026-06
 
 // admin/discedit2.php, row 94, 148
-// admin/setup.php, row 104, 247
+// admin/setup.php, row 107, 246
 // admin/slicewiz.php, row 89
 // admin/um_passwd.php, row 140
 // admin/um_uedit.php, row 336
@@ -1206,7 +1217,7 @@ return [
 "Holding bin" => "Khu chờ duyệt", // ai 2026-06
 
 // admin/feed_to.php, row 67
-// admin/se_export.php, row 119
+// admin/se_export.php, row 131
 // admin/se_filters.php, row 183
 // admin/slicedit.php, row 141, 147
 // include/exporter.class.php, row 511
@@ -1223,7 +1234,7 @@ return [
 "No permission to set feeding for any slice" => "Không có quyền thiết lập trao đổi bài viết cho bất kỳ chuyên mục nào", // ai 2026-06
 
 // admin/feed_to.php, row 88
-// admin/se_export.php, row 111
+// admin/se_export.php, row 123
 // include/exporter.class.php, row 657
 // include/menu_util.php, row 95
 "Export" => "Xuất", // ai 2026-06
@@ -1362,22 +1373,22 @@ return [
 "Admin password" => "Mật khẩu quản trị", // ai 2026-06
 
 // admin/mailman_create_list.php, row 163
-// admin/setup.php, row 109, 233
+// admin/setup.php, row 112, 232
 // modules/jump/modedit.php, row 179
 "Create" => "Tạo", // ai 2026-06
 
 // admin/preview.php, row 49
 "Wrong slice_id." => "slice_id không hợp lệ.", // ai 2026-06
 
-// admin/related_sel.php, row 155
+// admin/related_sel.php, row 168
 // src/Manager.php, row 230
 "Publish date" => "Ngày xuất bản", // ai 2026-06
 
-// admin/related_sel.php, row 155
+// admin/related_sel.php, row 168
 // src/Manager.php, row 230
 "Headline" => "Tiêu đề", // ai 2026-06
 
-// admin/related_sel.php, row 183
+// admin/related_sel.php, row 196
 "Editor window - item manager, related selection window" => "Cửa sổ chỉnh sửa - trình quản lý bài viết, cửa sổ chọn mục liên quan", // ai 2026-06
 
 // admin/rsstest.php, row 36
@@ -1405,7 +1416,7 @@ return [
 
 // admin/se_admin.php, row 85, 209
 // admin/se_compact.php, row 95, 260
-// admin/se_fulltext.php, row 70, 193
+// admin/se_fulltext.php, row 86, 210
 // include/constants.php, row 660, 707, 783, 872, 917, 943, 972, 1006, 1038
 "Remove strings" => "Chuỗi cần loại bỏ", // ai 2026-06
 
@@ -1414,12 +1425,12 @@ return [
 "HTML code for \"No item found\" message" => "Mã HTML cho thông báo \"Không tìm thấy bài viết nào\"", // ai 2026-06
 
 // admin/se_admin.php, row 87
-// admin/se_fulltext.php, row 71, 201, 205
+// admin/se_fulltext.php, row 87, 218, 222
 "Show discussion" => "Hiển thị thảo luận", // ai 2026-06
 
 // admin/se_admin.php, row 101
 // admin/se_compact.php, row 128
-// admin/se_fulltext.php, row 91
+// admin/se_fulltext.php, row 107
 // admin/se_view.php, row 170, 339
 "Can't change slice settings" => "Không thể thay đổi cài đặt chuyên mục", // ai 2026-06
 
@@ -1431,7 +1442,7 @@ return [
 
 // admin/se_admin.php, row 163
 // admin/se_compact.php, row 212
-// admin/se_fulltext.php, row 146
+// admin/se_fulltext.php, row 163
 // admin/se_inputform.php, row 189, 426
 // src/Util/UiPrefs.php, row 56
 "Default" => "Mặc định", // ai 2026-06
@@ -1441,12 +1452,12 @@ return [
 
 // admin/se_admin.php, row 175
 // admin/se_compact.php, row 223, 252
-// admin/se_fulltext.php, row 159
+// admin/se_fulltext.php, row 176
 "HTML code which appears at the top of slice area" => "Mã HTML hiển thị ở đầu vùng chuyên mục", // ai 2026-06
 
 // admin/se_admin.php, row 188
 // admin/se_compact.php, row 226, 255
-// admin/se_fulltext.php, row 172
+// admin/se_fulltext.php, row 189
 "Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"
  => "Đặt vào đây mã HTML kết hợp với các bí danh liệt kê ở cuối trang này\n"
@@ -1454,12 +1465,12 @@ return [
 
 // admin/se_admin.php, row 201
 // admin/se_compact.php, row 233, 258
-// admin/se_fulltext.php, row 185
+// admin/se_fulltext.php, row 202
 "HTML code which appears at the bottom of slice area" => "Mã HTML hiển thị ở cuối vùng chuyên mục", // ai 2026-06
 
 // admin/se_admin.php, row 214
 // admin/se_compact.php, row 261
-// admin/se_fulltext.php, row 198
+// admin/se_fulltext.php, row 215
 "Removes empty brackets etc. Use ## as delimiter." => "Loại bỏ các dấu ngoặc trống v.v. Dùng ## làm dấu phân cách.", // ai 2026-06
 
 // admin/se_admin.php, row 223
@@ -1473,7 +1484,7 @@ return [
 
 // admin/se_admin.php, row 241
 // admin/se_compact.php, row 269
-// admin/se_fulltext.php, row 210
+// admin/se_fulltext.php, row 228
 // admin/se_view.php, row 572
 "Use these aliases for database fields" => "Dùng các bí danh sau cho các trường cơ sở dữ liệu", // ai 2026-06
 
@@ -1568,7 +1579,7 @@ return [
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1205
+// include/logs.php, row 1207
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1576,6 +1587,7 @@ return [
 // src/Import/DetailCatalog.php, row 143
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
+// src/Optimize/CheckServerRefusals.php, row 67
 "Name" => "Tên", // ai 2026-06
 
 // admin/se_constant.php, row 176, 378
@@ -1593,7 +1605,7 @@ return [
 // admin/um_gedit.php, row 299, 302
 // include/constants.php, row 459
 // include/constedit.php, row 84
-// include/stringexpand.php, row 97
+// include/stringexpand.php, row 99
 // include/um_gedit.php, row 33
 // src/Manageraction/Central_Linkcheck.php, row 31
 // src/Optimize/AbstractOptimize.php, row 174
@@ -1729,8 +1741,9 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1235
+// include/logs.php, row 1237
 // src/Optimize/CheckCookieReads.php, row 55
+// src/Optimize/CheckFileReadRefusals.php, row 77, 100, 133
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
 // src/Optimize/CheckIsdsConf.php, row 342, 372
 // src/Optimize/CheckUserAliasFunctionLog.php, row 87
@@ -1881,7 +1894,7 @@ return [
 // admin/se_csv_import2.php, row 492
 "Save setting as" => "Lưu cài đặt thành", // ai 2026-06
 
-// admin/se_csv_import2.php, row 533
+// admin/se_csv_import2.php, row 537
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Quản trị - Nhập CSV (2/2) - Đối chiếu và Hành động", // ai 2026-06
 
 // admin/se_dataimport.php, row 59
@@ -1903,66 +1916,69 @@ return [
 // admin/se_dataimports.php, row 41
 "An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes." => "Một lần nhập điền vào chuyên mục dữ liệu từ nguồn khác, ngay lập tức hoặc qua tác vụ theo lịch. Nút “Chạy” khởi động nó; việc nhập tiếp tục chạy nền và trang chi tiết của nó cho thấy tiến trình.", // ai 2026-10
 
-// admin/se_export.php, row 74
+// admin/se_export.php, row 79
 "You do not have permissions to export" => "Bạn không có quyền xuất", // ai 2026-06
 
-// admin/se_export.php, row 100
+// admin/se_export.php, row 109
 "Admin - Export Items" => "Quản trị - Xuất bài viết", // ai 2026-06
 
-// admin/se_export.php, row 113
+// admin/se_export.php, row 119
+"Check the settings and press Export." => "Hãy kiểm tra thiết lập và nhấn “Xuất”.", // ai 2026-11
+
+// admin/se_export.php, row 125
 // include/exporter.class.php, row 531
 "Item Contents" => "Nội dung bài viết", // ai 2026-06
 
-// admin/se_export.php, row 114
+// admin/se_export.php, row 126
 // include/constants.php, row 723
 // include/exporter.class.php, row 532
 "Discussion" => "Thảo luận", // ai 2026-06
 
-// admin/se_export.php, row 118
+// admin/se_export.php, row 130
 // include/exporter.class.php, row 510
 // include/scroller.php, row 88
 // src/Isds/Registry/Page.php, row 532
 "All" => "Tất cả", // ai 2026-06
 
-// admin/se_export.php, row 120
+// admin/se_export.php, row 132
 // include/exporter.class.php, row 512
 "Pending" => "Chờ xử lý", // ai 2026-06
 
-// admin/se_export.php, row 121
+// admin/se_export.php, row 133
 // include/exporter.class.php, row 513
 // include/itemfunc.php, row 146
 "Expired" => "Đã hết hạn", // ai 2026-06
 
-// admin/se_export.php, row 122
+// admin/se_export.php, row 134
 // include/exporter.class.php, row 514
 "Approved" => "Đã duyệt", // ai 2026-06
 
-// admin/se_export.php, row 123
+// admin/se_export.php, row 135
 // include/exporter.class.php, row 515
 "Holding" => "Khu chờ duyệt", // ai 2026-06
 
-// admin/se_export.php, row 124
+// admin/se_export.php, row 136
 // include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 45
 "Trash" => "Thùng rác", // ai 2026-06
 
-// admin/se_export.php, row 134
+// admin/se_export.php, row 146
 // include/exporter.class.php, row 520
 "Database backup (as stored in DB)" => "Sao lưu cơ sở dữ liệu (như lưu trong CSDL)", // ai 2026-06
 
-// admin/se_export.php, row 135
+// admin/se_export.php, row 147
 // include/exporter.class.php, row 521
 "Human - dates converted to Y-m-d format, ..." => "Dạng dễ đọc - ngày được chuyển sang định dạng Y-m-d, ...", // ai 2026-06
 
-// admin/se_export.php, row 148
+// admin/se_export.php, row 161
 "Export Items" => "Xuất bài viết", // ai 2026-06
 
-// admin/se_export.php, row 150
+// admin/se_export.php, row 163
 // include/exporter.class.php, row 536
 "Output Format" => "Định dạng đầu ra", // ai 2026-06
 
-// admin/se_export.php, row 151
+// admin/se_export.php, row 164
 // admin/se_history.php, row 142
 // admin/se_users.php, row 185
 // admin/se_views.php, row 135
@@ -1970,47 +1986,47 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 558
+// include/logs.php, row 560
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
 "Type" => "Loại", // ai 2026-06
 
-// admin/se_export.php, row 152
+// admin/se_export.php, row 165
 // include/exporter.class.php, row 538
 "Bins" => "Thùng", // ai 2026-06
 
-// admin/se_export.php, row 153
+// admin/se_export.php, row 166
 // include/exporter.class.php, row 552
 "Filename" => "Tên tệp", // ai 2026-06
 
-// admin/se_export.php, row 153
+// admin/se_export.php, row 166
 // include/exporter.class.php, row 552
 "save as..." => "lưu thành...", // ai 2026-06
 
-// admin/se_export.php, row 154
+// admin/se_export.php, row 167
 // include/exporter.class.php, row 553
 // include/searchlib.php, row 1012
 "Conditions" => "Điều kiện", // ai 2026-06
 
-// admin/se_export.php, row 154
+// admin/se_export.php, row 167
 // include/exporter.class.php, row 553
 "conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)" => "điều kiện ở dạng \"d-...\" hoặc \"conds[]\" - giống như:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (toán tử mặc định ở đây là RLIKE!)", // ai 2026-06
 
-// admin/se_export.php, row 155
+// admin/se_export.php, row 168
 // include/exporter.class.php, row 554
 // include/searchlib.php, row 1014
 "Sort" => "Sắp xếp", // ai 2026-06
 
-// admin/se_export.php, row 155
+// admin/se_export.php, row 168
 // include/exporter.class.php, row 554
 "like: publish_date....-" => "ví dụ: publish_date....-", // ai 2026-06
 
-// admin/se_export.php, row 156
+// admin/se_export.php, row 169
 // include/exporter.class.php, row 551
 "Custom columns" => "Cột tùy chỉnh", // ai 2026-06
 
-// admin/se_export.php, row 156
+// admin/se_export.php, row 169
 "Add any AA {expression} as extra column - each row = one column" => "Thêm bất kỳ {expression} AA nào làm cột bổ sung - mỗi hàng = một cột", // ai 2026-06
 
 // admin/se_fieldid.php, row 210
@@ -2096,7 +2112,7 @@ return [
 "Required" => "Bắt buộc", // ai 2026-06
 
 // admin/se_fields.php, row 305
-// include/stringexpand.php, row 110
+// include/stringexpand.php, row 112
 "Aliases" => "Bí danh", // ai 2026-06
 
 // admin/se_filters.php, row 83
@@ -2115,7 +2131,7 @@ return [
 // admin/um_gedit.php, row 280
 // admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
-// include/formutil.php, row 190, 2940
+// include/formutil.php, row 191, 2941
 // modules/jump/modedit.php, row 179
 // src/Import/DetailCatalog.php, row 151
 "Update" => "Cập nhật", // ai 2026-06
@@ -2136,7 +2152,7 @@ return [
 "No category defined" => "Chưa định nghĩa danh mục", // ai 2026-06
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1404
+// src/Manager.php, row 1415
 "Select all" => "Chọn tất cả", // ai 2026-06
 
 // admin/se_filters.php, row 320
@@ -2153,34 +2169,37 @@ return [
 // admin/se_forms.php, row 37
 "You do not have permissions to manage forms" => "Bạn không có quyền quản lý biểu mẫu", // ai 2026-06
 
-// admin/se_fulltext.php, row 67, 154
+// admin/se_fulltext.php, row 70
+"You do not have permissions to change fulltext view formatting" => "Bạn không có quyền thay đổi định dạng hiển thị toàn văn", // ai 2026-11
+
+// admin/se_fulltext.php, row 83, 171
 "Top HTML code" => "Mã HTML phía trên", // ai 2026-06
 
-// admin/se_fulltext.php, row 68, 167
+// admin/se_fulltext.php, row 84, 184
 "Fulltext HTML code" => "Mã HTML toàn văn", // ai 2026-06
 
-// admin/se_fulltext.php, row 69, 180
+// admin/se_fulltext.php, row 85, 197
 "Bottom HTML code" => "Mã HTML phía dưới", // ai 2026-06
 
-// admin/se_fulltext.php, row 99
+// admin/se_fulltext.php, row 115
 "Fulltext format update successful" => "Cập nhật định dạng toàn văn thành công", // ai 2026-06
 
-// admin/se_fulltext.php, row 127
+// admin/se_fulltext.php, row 144
 "Admin - design Fulltext view" => "Quản trị - thiết kế khung hiển thị Toàn văn", // ai 2026-06
 
-// admin/se_fulltext.php, row 128
+// admin/se_fulltext.php, row 145
 "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item" => "Dùng các ô này ( với các thẻ liệt kê bên dưới ) để kiểm soát những gì hiển thị ở khung toàn văn của mỗi bài viết", // ai 2026-06
 
-// admin/se_fulltext.php, row 151
+// admin/se_fulltext.php, row 168
 "HTML code for fulltext view" => "Mã HTML cho khung hiển thị toàn văn", // ai 2026-06
 
-// admin/se_fulltext.php, row 201, 205
+// admin/se_fulltext.php, row 218, 222
 "The template for discussion you can set on \"Design\" -> \"View\" page" => "Bạn có thể đặt mẫu cho thảo luận ở trang \"Giao diện\" -> \"Khung hiển thị\"", // ai 2026-06
 
-// admin/se_fulltext.php, row 202
+// admin/se_fulltext.php, row 219
 "Use HTML tags" => "Dùng thẻ HTML", // ai 2026-06
 
-// admin/se_fulltext.php, row 203
+// admin/se_fulltext.php, row 220
 "New comments disabled" => "Đã tắt bình luận mới", // ai 2026-06
 
 // admin/se_history.php, row 57
@@ -2274,7 +2293,7 @@ return [
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "Bí danh phải luôn là _# + 8 chữ cái IN HOA, ví dụ _#<b>SOMTHING</b>.", // ai 2026-06
 
 // admin/se_inputform.php, row 197, 512
-// include/stringexpand.php, row 95
+// include/stringexpand.php, row 97
 // src/Optimize/CheckUserAliasFunctions.php, row 89
 "Alias" => "Bí danh", // ai 2026-10
 
@@ -2295,7 +2314,7 @@ return [
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "CẢNH BÁO: Đừng thay đổi thiết lập này nếu bạn không chắc mình đang làm gì!", // ai 2026-06
 
 // admin/se_inputform.php, row 388
-// include/formutil.php, row 191
+// include/formutil.php, row 192
 "Update & Edit" => "Cập nhật & Sửa", // ai 2026-06
 
 // admin/se_inputform.php, row 389
@@ -2345,7 +2364,7 @@ return [
 // admin/se_inputform.php, row 467
 // admin/sliceimp.php, row 425
 // include/form.class.php, row 474, 476
-// include/formutil.php, row 209, 2951
+// include/formutil.php, row 210, 2952
 "Insert" => "Chèn", // ai 2026-06
 
 // admin/se_inputform.php, row 470
@@ -2403,7 +2422,7 @@ return [
 "Reset" => "Đặt lại", // ai 2026-06
 
 // admin/se_inputform.php, row 514
-// include/logs.php, row 638
+// include/logs.php, row 640
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Tham số", // ai 2026-06
 
@@ -2503,11 +2522,14 @@ return [
 // admin/se_inter_import2.php, row 116
 "The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master." => "Chuyên mục sẽ là bản sao chính xác của chuyên mục từ xa. Mọi bài viết sẽ được sao chép, bao gồm cả bài trong khu chờ duyệt và thùng rác. Ngoài ra, mỗi khi bài viết từ xa thay đổi, nội dung sẽ được sao chép sang bản sao cục bộ của bài viết. Các bài viết sẽ có cùng id dài (không phải id ngắn!). Việc thay đổi bài viết trong bản sao cục bộ là vô nghĩa - chúng sẽ bị ghi đè từ bản gốc từ xa.", // ai 2026-06
 
-// admin/se_inter_import3.php, row 65
+// admin/se_inter_import3.php, row 71
 "The import was already created" => "Bản nhập đã được tạo từ trước", // ai 2026-06
 
-// admin/se_inter_import3.php, row 118
+// admin/se_inter_import3.php, row 130
 "The import was successfully created" => "Bản nhập đã được tạo thành công", // ai 2026-06
+
+// admin/se_inter_import3.php, row 133
+"Can't add external import" => "Không thể thêm tác vụ nhập từ bên ngoài", // ai 2026-11
 
 // admin/se_isds_registry.php, row 54
 "You do not have permissions to pair the items of this slice with the register of data boxes" => "Bạn không có quyền ghép nối các bài viết của chuyên mục này với sổ đăng ký hộp dữ liệu", // ai 2026-11
@@ -2837,9 +2859,9 @@ return [
 "Rule" => "Quy tắc", // ai 2026-06
 
 // admin/se_profile.php, row 210
-// include/formutil.php, row 1226
+// include/formutil.php, row 1227
 // include/transformation.class.php, row 192, 381, 454, 548, 738
-// include/widget.class.php, row 657
+// include/widget.class.php, row 664
 "HTML" => "",
 
 // admin/se_profile.php, row 217
@@ -2965,37 +2987,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Dùng điều kiện \"headline........,publish_date....-\" hoặc \"sort[]\"", // ai 2026-06
 
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 94
 "Top all time" => "Hàng đầu mọi thời điểm", // ai 2026-06
 
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 95
 "Top this year" => "Hàng đầu năm nay", // ai 2026-06
 
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 96
 "Top this month" => "Hàng đầu tháng này", // ai 2026-06
 
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 97
 "Top this week" => "Hàng đầu tuần này", // ai 2026-06
 
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 98
 "Top this day" => "Hàng đầu hôm nay", // ai 2026-06
 
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 99
 "Top last year" => "Hàng đầu năm ngoái", // ai 2026-06
 
-// admin/se_statistics.php, row 90
+// admin/se_statistics.php, row 100
 "Top last month" => "Hàng đầu tháng trước", // ai 2026-06
 
-// admin/se_statistics.php, row 91
+// admin/se_statistics.php, row 101
 "Top last week" => "Hàng đầu tuần trước", // ai 2026-06
 
-// admin/se_statistics.php, row 92
+// admin/se_statistics.php, row 102
 "Top last day" => "Hàng đầu hôm qua", // ai 2026-06
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 106
 "Item Statistics" => "Thống kê bài viết", // ai 2026-06
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 107
 "Show items" => "Hiển thị bài viết", // ai 2026-06
 
 // admin/se_taskmanager.php, row 39
@@ -3093,7 +3115,7 @@ return [
 // admin/se_view.php, row 545
 // central/installapp.php, row 1167
 // include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1882
+// include/stringexpand.php, row 1890
 "No" => "Không", // ai 2026-06
 
 // admin/se_view.php, row 545
@@ -3121,7 +3143,7 @@ return [
 "Create new view from this one" => "Tạo khung hiển thị mới từ khung này", // ai 2026-06
 
 // admin/se_views.php, row 149, 203, 223
-// include/formutil.php, row 1774, 1781
+// include/formutil.php, row 1775, 1782
 // src/Import/DetailPage.php, row 329, 666
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
@@ -3165,7 +3187,7 @@ return [
 "View items" => "Xem bài viết", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1409
+// src/Manager.php, row 1420
 "Selected items" => "Bài viết đã chọn", // ai 2026-06
 
 // admin/search_replace.php, row 180
@@ -3189,17 +3211,17 @@ return [
 // src/Widget/RichtextMarkup.php, row 87
 "Close" => "Đóng", // ai 2026-06
 
-// admin/setup.php, row 61, 64
+// admin/setup.php, row 64, 67
 "ActionApps Setup" => "Cài đặt ActionApps", // ai 2026-06
 
-// admin/setup.php, row 72
+// admin/setup.php, row 75
 "This script can't be used on a configured system." => "Không thể dùng script này trên hệ thống đã được cấu hình.", // ai 2026-06
 
-// admin/setup.php, row 95
+// admin/setup.php, row 98
 // admin/um_uedit.php, row 341
 "Superadmin account" => "Tài khoản superadmin", // ai 2026-06
 
-// admin/setup.php, row 100, 241
+// admin/setup.php, row 103, 240
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 136
 // admin/um_uedit.php, row 332
@@ -3210,33 +3232,33 @@ return [
 // src/Widget/TfaWidget.php, row 77
 "Password" => "Mật khẩu", // ai 2026-06
 
-// admin/setup.php, row 101, 243
-// include/formutil.php, row 2200
+// admin/setup.php, row 104, 242
+// include/formutil.php, row 2201
 "Retype Password" => "Nhập lại mật khẩu", // ai 2026-06
 
-// admin/setup.php, row 102, 245
+// admin/setup.php, row 105, 244
 // admin/slicewiz.php, row 87
 // admin/um_passwd.php, row 138
 // admin/um_uedit.php, row 334
 // include/um_util.php, row 298
 "First name" => "Tên", // ai 2026-06
 
-// admin/setup.php, row 103, 246
+// admin/setup.php, row 106, 245
 "Last name" => "Họ", // ai 2026-06
 
-// admin/setup.php, row 120
+// admin/setup.php, row 123
 "Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>" => "Chào mừng! Hãy dùng script này để tạo tài khoản superadmin.<p>Nếu bạn đang cài đặt một bản AA mới, hãy nhấn <b>Init</b>.<br>", // ai 2026-06
 
-// admin/setup.php, row 121
+// admin/setup.php, row 124
 "If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>" => "Nếu bạn xóa nhầm tài khoản superadmin, hãy nhấn <b>Recover</b>.<br>", // ai 2026-06
 
-// admin/setup.php, row 125, 194
+// admin/setup.php, row 128, 197
 " Init " => " Init", // ai 2026-06
 
-// admin/setup.php, row 126, 208
+// admin/setup.php, row 129, 211
 "Recover" => "Khôi phục", // ai 2026-06
 
-// admin/setup.php, row 149
+// admin/setup.php, row 152
 "Database is not configured correctly or the database is empty.<br>\n"
    ."             Check please the database credentials in <b>include/config.php</b>\n"
    ."             file <br>or run <a href=\"../service/sql_update.php\">/service/sql_update.php</a> script,\n"
@@ -3246,34 +3268,31 @@ return [
    ."             <br>hoặc chạy script <a href=\"../service/sql_update.php\">/service/sql_update.php</a>,\n"
    ."             script này sẽ tạo các bảng AA cho bạn.", // ai 2026-10
 
-// admin/setup.php, row 203
+// admin/setup.php, row 206
 "Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>" => "Không thể thêm đối tượng quyền chính.<br>Vui lòng kiểm tra cài đặt truy cập đến hệ thống quyền của bạn.<br>Nếu bạn vừa xóa tài khoản superadmin, hãy dùng <b>Recover</b>", // ai 2026-06
 
-// admin/setup.php, row 218
-"Can't delete invalid permission." => "Không thể xóa quyền không hợp lệ.", // ai 2026-06
+// admin/setup.php, row 221
+"Permission of an unknown user/group (not deleted): " => "Quyền của người dùng/nhóm không xác định (chưa bị xóa): ", // ai 2026-11
 
-// admin/setup.php, row 220
-"Invalid permission deleted (no such user/group): " => "Đã xóa quyền không hợp lệ (không có người dùng/nhóm này):", // ai 2026-06
-
-// admin/setup.php, row 250
+// admin/setup.php, row 249
 // include/um_util.php, row 304
 "Retyped password is not the same as the first one" => "Mật khẩu nhập lại không giống mật khẩu đầu tiên", // ai 2026-06
 
-// admin/setup.php, row 272
+// admin/setup.php, row 271
 // include/um_util.php, row 337
 "It is impossible to add user to permission system" => "Không thể thêm người dùng vào hệ thống quyền", // ai 2026-06
 
-// admin/setup.php, row 285
+// admin/setup.php, row 284
 "Congratulations! The account was created." => "Chúc mừng! Tài khoản đã được tạo.", // ai 2026-06
 
-// admin/setup.php, row 287
+// admin/setup.php, row 286
 "Use this account to login and add your first slice:" => "Hãy dùng tài khoản này để đăng nhập và thêm chuyên mục đầu tiên của bạn:", // ai 2026-06
 
-// admin/setup.php, row 288
+// admin/setup.php, row 287
 // admin/slicedit.php, row 240
 "Add Slice" => "Thêm chuyên mục", // ai 2026-06
 
-// admin/setup.php, row 291
+// admin/setup.php, row 290
 "Can't assign super access permission." => "Không thể gán quyền truy cập superadmin.", // ai 2026-06
 
 // admin/sliceadd.php, row 75
@@ -3285,12 +3304,12 @@ return [
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
 // admin/um_uedit.php, row 389
-// include/formutil.php, row 1771
+// include/formutil.php, row 1772
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
 // src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1261
+// src/Manager.php, row 239, 1272
 "Add" => "Thêm", // ai 2026-06
 
 // admin/slicedel.php, row 51
@@ -3346,7 +3365,7 @@ return [
 "Hold bin" => "Khu chờ duyệt", // ai 2026-06
 
 // admin/slicedit.php, row 154
-// include/formutil.php, row 3308
+// include/formutil.php, row 3309
 // src/Central/FindingText.php, row 417
 "All items" => "Tất cả bài viết", // ai 2026-06
 
@@ -3739,7 +3758,7 @@ return [
 
 // admin/um_gedit.php, row 312
 // admin/um_uedit.php, row 231, 242
-// include/logs.php, row 916
+// include/logs.php, row 918
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -3817,7 +3836,7 @@ return [
 "Added" => "Ngày thêm", // ai 2026-11
 
 // admin/um_passkeys.php, row 149
-// include/formutil.php, row 3300
+// include/formutil.php, row 3301
 "Last used" => "Dùng lần cuối", // ai 2026-06
 
 // admin/um_passkeys.php, row 149
@@ -4023,7 +4042,7 @@ return [
 "Write email to users" => "Gửi e-mail tới người dùng", // ai 2026-06
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1064
+// include/logs.php, row 1066
 "Recipients" => "Người nhận", // ai 2026-06
 
 // admin/write_mail.php, row 238
@@ -4097,7 +4116,7 @@ return [
 "App" => "Ứng dụng", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1206
+// include/logs.php, row 1208
 "Version" => "Phiên bản", // ai 2026-10
 
 // central/appstore.php, row 164
@@ -4240,7 +4259,7 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1207
+// include/logs.php, row 1209
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
@@ -4285,7 +4304,7 @@ return [
 "Hold Ctrl to choose more of them." => "Giữ Ctrl để chọn nhiều mục.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 795, 1249
+// include/logs.php, row 797, 1251
 "Mode" => "Chế độ", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4586,7 +4605,7 @@ return [
 
 // central/installapp.php, row 1167
 // include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1882
+// include/stringexpand.php, row 1890
 "Yes" => "Có", // ai 2026-06
 
 // central/installapp.php, row 1178
@@ -4675,7 +4694,7 @@ return [
 "Stopped by an error" => "Đã dừng do lỗi", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 797
+// include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "Đã hoàn tất", // ai 2026-10
@@ -4925,7 +4944,7 @@ return [
 "Short Id" => "ID ngắn", // ai 2026-06
 
 // include/constants.php, row 456
-// include/logs.php, row 955, 987
+// include/logs.php, row 957, 989
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Lớp", // ai 2026-06
 
@@ -4934,7 +4953,7 @@ return [
 "Level" => "Cấp độ", // ai 2026-06
 
 // include/constants.php, row 509
-// include/logs.php, row 1166
+// include/logs.php, row 1168
 "Feed" => "Nạp", // ai 2026-06
 
 // include/constants.php, row 510
@@ -5532,37 +5551,37 @@ return [
 // include/fileman.php, row 582
 "Are you sure you want to delete the selected files and folders?" => "Bạn có chắc muốn xóa các tệp và thư mục đã chọn không?", // ai 2026-06
 
-// include/files.class.php, row 116
+// include/files.class.php, row 117
 "No destination directory for image uploads specified" => "Chưa chỉ định thư mục đích để tải ảnh lên", // ai 2026-06
 
-// include/files.class.php, row 120
+// include/files.class.php, row 121
 "Can't create directory for image uploads" => "Không thể tạo thư mục để tải ảnh lên", // ai 2026-06
 
-// include/files.class.php, row 174
+// include/files.class.php, row 175
 "Can't read the file %1" => "Không thể đọc tệp %1", // ai 2026-06
 
-// include/files.class.php, row 207
+// include/files.class.php, row 208
 "No destination file specified" => "Chưa chỉ định tệp đích", // ai 2026-06
 
-// include/files.class.php, row 212, 227
+// include/files.class.php, row 213, 228
 "type of uploaded file not allowed" => "loại tệp tải lên không được phép", // ai 2026-06
 
-// include/files.class.php, row 251
+// include/files.class.php, row 253
 "Can't move image  %1 to %2 (%3)" => "Không thể chuyển ảnh %1 sang %2 (%3)", // ai 2026-06
 
-// include/files.class.php, row 258
+// include/files.class.php, row 263
 "Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php" => "Không thể thay đổi quyền cho tập tin đã tải lên: %1 - %2. Xem IMG_UPLOAD_FILE_MODE trong config.php của bạn", // ai 2026-06
 
-// include/files.class.php, row 283
+// include/files.class.php, row 288
 "Can't open file for writing: %1" => "Không thể mở tập tin để ghi: %1", // ai 2026-06
 
-// include/files.class.php, row 289
+// include/files.class.php, row 294
 "Can't write to file: %1" => "Không thể ghi vào tập tin: %1", // ai 2026-06
 
-// include/files.class.php, row 363
+// include/files.class.php, row 368
 "can't create backup of the file" => "không thể tạo bản sao lưu của tập tin", // ai 2026-06
 
-// include/files.class.php, row 1438
+// include/files.class.php, row 1447
 ": No such directory" => ": Không có thư mục đó", // ai 2026-06
 
 // include/form.class.php, row 104
@@ -5575,7 +5594,7 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1299
+// include/logs.php, row 1301
 // src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID chuyên mục", // ai 2026-06
 
@@ -5597,131 +5616,131 @@ return [
 // include/menu.php, row 148
 "Forms" => "Biểu mẫu", // ai 2026-06
 
-// include/formutil.php, row 193
+// include/formutil.php, row 194
 "Update & View" => "Cập nhật & Xem", // ai 2026-06
 
-// include/formutil.php, row 200
+// include/formutil.php, row 201
 "Insert as new" => "Thêm như mới", // ai 2026-06
 
-// include/formutil.php, row 204, 2972
+// include/formutil.php, row 205, 2973
 "Reset form" => "Đặt lại biểu mẫu", // ai 2026-06
 
-// include/formutil.php, row 207, 212, 2964, 2968
+// include/formutil.php, row 208, 213, 2965, 2969
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Hủy", // ai 2026-06
 
-// include/formutil.php, row 210
+// include/formutil.php, row 211
 "Insert & Edit" => "Thêm & Sửa", // ai 2026-06
 
-// include/formutil.php, row 211
+// include/formutil.php, row 212
 "Insert & View" => "Thêm & Xem", // ai 2026-06
 
-// include/formutil.php, row 303
+// include/formutil.php, row 304
 "Part" => "Phần", // ai 2026-06
 
-// include/formutil.php, row 367
+// include/formutil.php, row 368
 "No fields defined for this slice" => "Không có trường nào được định nghĩa cho chuyên mục này", // ai 2026-06
 
-// include/formutil.php, row 919
+// include/formutil.php, row 920
 "set" => "bật", // ai 2026-06
 
-// include/formutil.php, row 919
+// include/formutil.php, row 920
 "unset" => "tắt", // ai 2026-06
 
-// include/formutil.php, row 1049
+// include/formutil.php, row 1050
 "Unable to find tagprefix table %1" => "Không tìm thấy bảng tagprefix %1", // ai 2026-06
 
-// include/formutil.php, row 1201
+// include/formutil.php, row 1202
 "import" => "nhập vào", // ai 2026-06
 
-// include/formutil.php, row 1216
+// include/formutil.php, row 1217
 // src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Sửa trong Trình soạn thảo", // ai 2026-06
 
-// include/formutil.php, row 1229
+// include/formutil.php, row 1230
 // include/transformation.class.php, row 193, 382, 455, 549, 739
-// include/widget.class.php, row 658
+// include/widget.class.php, row 665
 "Plain text" => "Văn bản thuần", // ai 2026-06
 
-// include/formutil.php, row 1271
+// include/formutil.php, row 1272
 // include/transformation.class.php, row 661
 "Translate" => "Dịch", // ai 2026-06
 
-// include/formutil.php, row 1781, 1785
+// include/formutil.php, row 1782, 1786
 "Enter the value" => "Nhập giá trị", // ai 2026-06
 
-// include/formutil.php, row 1785
+// include/formutil.php, row 1786
 // include/menu.php, row 141
 // src/Import/DetailCatalog.php, row 124
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Thay đổi", // ai 2026-06
 
-// include/formutil.php, row 1928, 2115
+// include/formutil.php, row 1929, 2116
 // src/Widget/MchWidget.php, row 135
 // src/Widget/Widget.php, row 837
 "Selected" => "Đã chọn", // ai 2026-06
 
-// include/formutil.php, row 2114
+// include/formutil.php, row 2115
 "Offer" => "Có sẵn", // ai 2026-06
 
-// include/formutil.php, row 2179
-// include/stringexpand.php, row 11506, 11529
+// include/formutil.php, row 2180
+// include/stringexpand.php, row 11522, 11545
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
-// src/Widget/RimWidget.php, row 287
+// src/Widget/RimWidget.php, row 288
 "new" => "mới", // ai 2026-06
 
-// include/formutil.php, row 2199
+// include/formutil.php, row 2200
 "Change Password" => "Đổi mật khẩu", // ai 2026-06
 
-// include/formutil.php, row 2201
+// include/formutil.php, row 2202
 "Delete Password" => "Xóa mật khẩu", // ai 2026-06
 
-// include/formutil.php, row 2210
+// include/formutil.php, row 2211
 // include/searchlib.php, row 60, 128, 131, 134, 137, 140
 // src/Central/FindingText.php, row 412
 // src/Credential/Store.php, row 53
 "not set" => "chưa đặt", // ai 2026-06
 
-// include/formutil.php, row 2975
+// include/formutil.php, row 2976
 "Submit" => "Gửi", // ai 2026-06
 
-// include/formutil.php, row 3294
+// include/formutil.php, row 3295
 "Group Name" => "Tên nhóm", // ai 2026-06
 
-// include/formutil.php, row 3295
-// include/logs.php, row 752, 852, 1116
+// include/formutil.php, row 3296
+// include/logs.php, row 754, 854, 1118
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Số lượng", // ai 2026-06
 
-// include/formutil.php, row 3296
+// include/formutil.php, row 3297
 "Created on" => "Tạo lúc", // ai 2026-06
 
-// include/formutil.php, row 3297
+// include/formutil.php, row 3298
 "Created by" => "Người tạo", // ai 2026-06
 
-// include/formutil.php, row 3298
+// include/formutil.php, row 3299
 "Last updated" => "Cập nhật lần cuối", // ai 2026-06
 
-// include/formutil.php, row 3299
+// include/formutil.php, row 3300
 "Updated by" => "Người cập nhật", // ai 2026-06
 
-// include/formutil.php, row 3307
+// include/formutil.php, row 3308
 "All active items" => "Tất cả bài viết đang hoạt động", // ai 2026-06
 
-// include/formutil.php, row 3309
+// include/formutil.php, row 3310
 "All pending items" => "Tất cả bài viết đang chờ xử lý", // ai 2026-06
 
-// include/formutil.php, row 3310
+// include/formutil.php, row 3311
 "All expired items" => "Tất cả bài viết đã hết hạn", // ai 2026-06
 
-// include/formutil.php, row 3311
+// include/formutil.php, row 3312
 "All items in holding bin" => "Tất cả bài viết trong khu chờ duyệt", // ai 2026-06
 
-// include/formutil.php, row 3312
+// include/formutil.php, row 3313
 "All items in trash bin" => "Tất cả bài viết trong thùng rác", // ai 2026-06
 
 // include/init_page.php, row 84
@@ -6235,247 +6254,249 @@ return [
 // include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Nếu bạn chắc chắn đã nhập đúng mật khẩu, vui lòng gửi e-mail đến <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 546
+// include/logs.php, row 548
 "Created time" => "Thời gian tạo", // ai 2026-06
 
-// include/logs.php, row 547
+// include/logs.php, row 549
 "Readers to be emailed" => "Người đọc sẽ được gửi e-mail", // ai 2026-06
 
-// include/logs.php, row 559
+// include/logs.php, row 561
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
+// src/Optimize/CheckServerRefusals.php, row 68
 "Page" => "Trang", // ai 2026-06
 
-// include/logs.php, row 634, 678, 693
+// include/logs.php, row 636, 680, 695
 "Time [s]" => "Thời gian [s]", // ai 2026-06
 
-// include/logs.php, row 635, 680
+// include/logs.php, row 637, 682
 "Memory usage [MB]" => "Dung lượng bộ nhớ [MB]", // ai 2026-06
 
-// include/logs.php, row 636
+// include/logs.php, row 638
 "Memory peak [MB]" => "Đỉnh bộ nhớ [MB]", // ai 2026-06
 
-// include/logs.php, row 637
+// include/logs.php, row 639
 "Return code" => "Mã trả về", // ai 2026-06
 
-// include/logs.php, row 653
+// include/logs.php, row 655
 "Tasks done" => "Tác vụ đã hoàn thành", // ai 2026-06
 
-// include/logs.php, row 654
+// include/logs.php, row 656
 "Tasks started" => "Tác vụ đã bắt đầu", // ai 2026-06
 
-// include/logs.php, row 655
+// include/logs.php, row 657
 "Duration [s]" => "Thời lượng [giây]", // ai 2026-06
 
-// include/logs.php, row 656
+// include/logs.php, row 658
 "Allowed [s]" => "Cho phép [giây]", // ai 2026-06
 
-// include/logs.php, row 676
+// include/logs.php, row 678
 "Cached" => "Từ bộ nhớ đệm", // ai 2026-06
 
-// include/logs.php, row 677
+// include/logs.php, row 679
 "Not Modified (304)" => "Không sửa đổi (304)", // ai 2026-06
 
-// include/logs.php, row 679
+// include/logs.php, row 681
 "Time + Cached + 304" => "Thời gian + Bộ nhớ đệm + 304", // ai 2026-06
 
-// include/logs.php, row 681, 694, 904, 1090
+// include/logs.php, row 683, 696, 906, 1092
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 721
+// include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 722
+// include/logs.php, row 724
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 723
+// include/logs.php, row 725
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 724
+// include/logs.php, row 726
 "DB" => "",
 
-// include/logs.php, row 725
+// include/logs.php, row 727
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Bộ nhớ", // ai 2026-06
 
-// include/logs.php, row 726
+// include/logs.php, row 728
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 727
+// include/logs.php, row 729
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Cài đặt máy chủ", // ai 2026-10
 
-// include/logs.php, row 751, 850
+// include/logs.php, row 753, 852
 "Severity" => "Mức độ", // ai 2026-10
 
-// include/logs.php, row 753, 848, 877
+// include/logs.php, row 755, 850, 879
 "Finding" => "Phát hiện", // ai 2026-10
 
-// include/logs.php, row 771
+// include/logs.php, row 773
 "Problems" => "Vấn đề", // ai 2026-10
 
-// include/logs.php, row 772
+// include/logs.php, row 774
 "Warnings" => "Cảnh báo", // ai 2026-10
 
-// include/logs.php, row 773
+// include/logs.php, row 775
 "Recommendations" => "Khuyến nghị", // ai 2026-10
 
-// include/logs.php, row 774
+// include/logs.php, row 776
 "Checks" => "Lượt kiểm tra", // ai 2026-10
 
-// include/logs.php, row 794, 825
+// include/logs.php, row 796, 827
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Chạy", // ai 2026-10
 
-// include/logs.php, row 796
+// include/logs.php, row 798
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "Bắt đầu", // ai 2026-10
 
-// include/logs.php, row 798
+// include/logs.php, row 800
 "Last full run" => "Lần chạy đầy đủ gần nhất", // ai 2026-10
 
-// include/logs.php, row 799
+// include/logs.php, row 801
 "Last full run started" => "Lần chạy đầy đủ gần nhất bắt đầu lúc", // ai 2026-10
 
-// include/logs.php, row 824, 849
+// include/logs.php, row 826, 851
 "Pair" => "Cặp", // ai 2026-10
 
-// include/logs.php, row 826
+// include/logs.php, row 828
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Chạy lúc", // ai 2026-10
 
-// include/logs.php, row 827, 851
+// include/logs.php, row 829, 853
 "Known issue" => "Vấn đề đã biết", // ai 2026-10
 
-// include/logs.php, row 853
+// include/logs.php, row 855
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Thấy lần đầu", // ai 2026-10
 
-// include/logs.php, row 854
+// include/logs.php, row 856
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "Số lần chạy liên tiếp", // ai 2026-10
 
-// include/logs.php, row 878
+// include/logs.php, row 880
 "Evidence" => "Bằng chứng", // ai 2026-10
 
-// include/logs.php, row 901
+// include/logs.php, row 903
 "Identifier" => "Định danh", // ai 2026-06
 
-// include/logs.php, row 902, 1266, 1281
+// include/logs.php, row 904, 1268, 1283
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "ID mô-đun", // ai 2026-06
 
-// include/logs.php, row 915
+// include/logs.php, row 917
 "Template id" => "ID mẫu", // ai 2026-06
 
-// include/logs.php, row 917
+// include/logs.php, row 919
 "Emails sent" => "Email đã gửi", // ai 2026-06
 
-// include/logs.php, row 956
+// include/logs.php, row 958
 "Object id" => "ID đối tượng", // ai 2026-10
 
-// include/logs.php, row 988
+// include/logs.php, row 990
 "Mail template" => "Mẫu e-mail", // ai 2026-10
 
-// include/logs.php, row 989
+// include/logs.php, row 991
 "Reader item" => "Bài viết người đọc", // ai 2026-10
 
-// include/logs.php, row 990
+// include/logs.php, row 992
 "Origin" => "Nguồn gốc", // ai 2026-10
 
-// include/logs.php, row 1061
+// include/logs.php, row 1063
 "Transport" => "Cách gửi", // ai 2026-10
 
-// include/logs.php, row 1062
+// include/logs.php, row 1064
 "Recipients sent" => "Số người nhận đã được gửi", // ai 2026-10
 
-// include/logs.php, row 1063
+// include/logs.php, row 1065
 "Server response" => "Phản hồi máy chủ", // ai 2026-10
 
-// include/logs.php, row 1076
+// include/logs.php, row 1078
 "Items selected" => "Mục đã chọn", // ai 2026-06
 
-// include/logs.php, row 1077
+// include/logs.php, row 1079
 "Items updated" => "Mục đã cập nhật", // ai 2026-06
 
-// include/logs.php, row 1078
+// include/logs.php, row 1080
 "Items planned" => "Mục đã lên kế hoạch", // ai 2026-06
 
-// include/logs.php, row 1089
+// include/logs.php, row 1091
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Thông báo", // ai 2026-06
 
-// include/logs.php, row 1091
+// include/logs.php, row 1093
 "Referer" => "Nguồn giới thiệu", // ai 2026-06
 
-// include/logs.php, row 1102
+// include/logs.php, row 1104
 "New name" => "Tên mới", // ai 2026-06
 
-// include/logs.php, row 1103
+// include/logs.php, row 1105
 "Old name" => "Tên cũ", // ai 2026-06
 
-// include/logs.php, row 1114, 1179
+// include/logs.php, row 1116, 1181
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Giai đoạn", // ai 2026-06
 
-// include/logs.php, row 1115
+// include/logs.php, row 1117
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Bộ sưu tập", // ai 2026-06
 
-// include/logs.php, row 1117, 1168, 1180, 1315
+// include/logs.php, row 1119, 1170, 1182, 1317
 // src/Import/Definition.php, row 154
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "Chi tiết", // ai 2026-06
 
-// include/logs.php, row 1167
+// include/logs.php, row 1169
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Trạng thái", // ai 2026-06
 
-// include/logs.php, row 1219
+// include/logs.php, row 1221
 "Processed" => "Đã xử lý", // ai 2026-06
 
-// include/logs.php, row 1220
+// include/logs.php, row 1222
 "Stored" => "Đã lưu", // ai 2026-06
 
-// include/logs.php, row 1221
+// include/logs.php, row 1223
 "Errors" => "Lỗi", // ai 2026-06
 
-// include/logs.php, row 1234
+// include/logs.php, row 1236
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Kết quả", // ai 2026-06
 
-// include/logs.php, row 1250
+// include/logs.php, row 1252
 "Flags" => "Cờ", // ai 2026-06
 
-// include/logs.php, row 1251
+// include/logs.php, row 1253
 "Context" => "Ngữ cảnh", // ai 2026-06
 
-// include/logs.php, row 1267
+// include/logs.php, row 1269
 "Feed counterpart" => "Đối tác nạp", // ai 2026-06
 
-// include/logs.php, row 1282
+// include/logs.php, row 1284
 "Field ID" => "ID trường", // ai 2026-06
 
-// include/logs.php, row 1300
+// include/logs.php, row 1302
 // src/Optimize/CheckAjaxUnsigned.php, row 82
+// src/Optimize/CheckFileReadRefusals.php, row 78
 // src/Optimize/CheckHttp.php, row 62
 // src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 88
@@ -7252,124 +7273,124 @@ return [
 // include/statestore.php, row 1449
 "Manage components" => "Quản lý thành phần", // ai 2026-06
 
-// include/stringexpand.php, row 95
+// include/stringexpand.php, row 97
 "Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "Bí danh sẽ được gọi như {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}", // ai 2026-06
 
-// include/stringexpand.php, row 96
+// include/stringexpand.php, row 98
 "Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "Mã được bí danh in ra. Bí danh có thể có tham số và bạn dùng chúng qua các biến _#P1, _#P2, ...", // ai 2026-06
 
-// include/stringexpand.php, row 98
+// include/stringexpand.php, row 100
 "Usage example" => "Ví dụ sử dụng", // ai 2026-06
 
-// include/stringexpand.php, row 933
+// include/stringexpand.php, row 940
 "Jabber Online Status Indicator" => "Chỉ báo trạng thái trực tuyến Jabber", // ai 2026-06
 
-// include/stringexpand.php, row 5507
+// include/stringexpand.php, row 5515
 "save changes" => "lưu thay đổi", // ai 2026-06
 
-// include/stringexpand.php, row 5726
+// include/stringexpand.php, row 5734
 "No item ID" => "Không có ID bài viết", // ai 2026-06
 
-// include/stringexpand.php, row 5733
+// include/stringexpand.php, row 5741
 "No transformations" => "Không có phép biến đổi", // ai 2026-06
 
-// include/stringexpand.php, row 5747
+// include/stringexpand.php, row 5755
 "No slice for item" => "Không có chuyên mục cho bài viết", // ai 2026-06
 
-// include/stringexpand.php, row 5748
+// include/stringexpand.php, row 5756
 "No current slice(s)" => "Không có chuyên mục hiện tại", // ai 2026-06
 
-// include/stringexpand.php, row 5749
+// include/stringexpand.php, row 5757
 "Item slice is not in list of allowed slices" => "Chuyên mục của bài viết không nằm trong danh sách chuyên mục được phép", // ai 2026-06
 
-// include/stringexpand.php, row 5754
+// include/stringexpand.php, row 5762
 "No permit_anonymous_edit permission for the slice" => "Chuyên mục không có quyền permit_anonymous_edit", // ai 2026-06
 
-// include/stringexpand.php, row 6149
+// include/stringexpand.php, row 6157
 "No dictionaries specified for {dictionary}" => "Không có từ điển nào được chỉ định cho {dictionary}", // ai 2026-06
 
-// include/stringexpand.php, row 6279
+// include/stringexpand.php, row 6287
 "No module for dictionary slice" => "Không có mô-đun cho chuyên mục từ điển", // ai 2026-06
 
-// include/stringexpand.php, row 8196
+// include/stringexpand.php, row 8208
 "version" => "phiên bản", // ai 2026-06
 
-// include/stringexpand.php, row 8384
+// include/stringexpand.php, row 8396
 "show" => "hiển thị", // ai 2026-06
 
-// include/stringexpand.php, row 8385
+// include/stringexpand.php, row 8397
 "hide" => "ẩn", // ai 2026-06
 
-// include/stringexpand.php, row 8386
+// include/stringexpand.php, row 8398
 "loading" => "đang tải", // ai 2026-06
 
-// include/stringexpand.php, row 9517
+// include/stringexpand.php, row 9531
 "E-mail confirmed." => "Đã xác nhận e-mail.", // ai 2026-06
 
-// include/stringexpand.php, row 9521
+// include/stringexpand.php, row 9535
 "E-mail unsubscribed" => "Đã hủy đăng ký e-mail", // ai 2026-06
 
-// include/stringexpand.php, row 10280
+// include/stringexpand.php, row 10296
 "Forgot your password? Fill in your email." => "Quên mật khẩu? Hãy điền e-mail của bạn.", // ai 2026-06
 
-// include/stringexpand.php, row 10282
+// include/stringexpand.php, row 10298
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-mail", // ai 2026-10
 
-// include/stringexpand.php, row 10300, 10304
+// include/stringexpand.php, row 10316, 10320
 "Unable to find user - please check if it has been misspelled." => "Không thể tìm thấy người dùng - vui lòng kiểm tra xem có viết sai chính tả không.", // ai 2026-06
 
-// include/stringexpand.php, row 10318
+// include/stringexpand.php, row 10334
 "Password link" => "Liên kết mật khẩu", // ai 2026-06
 
-// include/stringexpand.php, row 10319
+// include/stringexpand.php, row 10335
 "Password change url parameter" => "Tham số url thay đổi mật khẩu", // ai 2026-06
 
-// include/stringexpand.php, row 10331
+// include/stringexpand.php, row 10347
 "Password change" => "Thay đổi mật khẩu", // ai 2026-06
 
-// include/stringexpand.php, row 10332
+// include/stringexpand.php, row 10348
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Để thay đổi mật khẩu, vui lòng truy cập địa chỉ sau:<br>%1<br>Việc thay đổi có thể thực hiện trong hai giờ - sau đó khóa sẽ hết hạn và bạn cần yêu cầu khóa mới.", // ai 2026-06
 
-// include/stringexpand.php, row 10341
+// include/stringexpand.php, row 10357
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail kèm khóa để thay đổi mật khẩu vừa được gửi đến địa chỉ e-mail: %1", // ai 2026-06
 
-// include/stringexpand.php, row 10352, 10381
+// include/stringexpand.php, row 10368, 10397
 "Bad or expired key." => "Khóa sai hoặc đã hết hạn.", // ai 2026-06
 
-// include/stringexpand.php, row 10357
+// include/stringexpand.php, row 10373
 "Fill in the new password" => "Điền mật khẩu mới", // ai 2026-06
 
-// include/stringexpand.php, row 10359
+// include/stringexpand.php, row 10375
 "New password" => "Mật khẩu mới", // ai 2026-06
 
-// include/stringexpand.php, row 10360
+// include/stringexpand.php, row 10376
 "Retype New Password" => "Nhập lại mật khẩu mới", // ai 2026-06
 
-// include/stringexpand.php, row 10384
+// include/stringexpand.php, row 10400
 "Passwords do not match - please try again." => "Mật khẩu không khớp - vui lòng thử lại.", // ai 2026-06
 
-// include/stringexpand.php, row 10387
+// include/stringexpand.php, row 10403
 "The password must be at least 6 characters long." => "Mật khẩu phải dài ít nhất 6 ký tự.", // ai 2026-06
 
-// include/stringexpand.php, row 10393
+// include/stringexpand.php, row 10409
 "Password changed." => "Đã thay đổi mật khẩu.", // ai 2026-06
 
-// include/stringexpand.php, row 10395
+// include/stringexpand.php, row 10411
 "An error occurred during password change - please contact: %1." => "Đã xảy ra lỗi khi thay đổi mật khẩu - vui lòng liên hệ: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 11503, 11526
+// include/stringexpand.php, row 11519, 11542
 "Are you sure you want to permanently DELETE this record?" => "Bạn có chắc chắn muốn XÓA vĩnh viễn bản ghi này không?", // ai 2026-06
 
-// include/stringexpand.php, row 11509, 11512, 11532, 11535
+// include/stringexpand.php, row 11525, 11528, 11548, 11551
 // src/Widget/RimWidget.php, row 270
 "edit" => "sửa", // ai 2026-06
 
-// include/stringexpand.php, row 11515, 11538
+// include/stringexpand.php, row 11531, 11554
 "back" => "quay lại", // ai 2026-06
 
-// include/stringexpand.php, row 11518, 11541
-// src/Widget/RimWidget.php, row 296
+// include/stringexpand.php, row 11534, 11557
+// src/Widget/RimWidget.php, row 297
 "drop files here or click to upload" => "kéo tệp vào đây hoặc nhấp để tải lên", // ai 2026-06
 
 // include/transformation.class.php, row 159
@@ -7656,7 +7677,7 @@ return [
 // src/Optimize/CheckTrustedProxies.php, row 69
 "default" => "mặc định", // ai 2026-06
 
-// include/widget.class.php, row 470
+// include/widget.class.php, row 477
 "Not filled (%1)" => "Chưa điền (%1)", // ai 2026-06
 
 // misc/datovka/datovka.php, row 154
@@ -7859,16 +7880,16 @@ return [
 // src/AA_Plannedtask.php, row 269
 "failed" => "thất bại", // ai 2026-10
 
-// src/AA_Plannedtask.php, row 386
+// src/AA_Plannedtask.php, row 391
 "The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "Tác vụ chưa được lưu - tác vụ chạy theo sự kiện không được gọi {import}: các bài viết mà nó nhập sẽ chạy lại tác vụ.", // ai 2026-10
 
-// src/AA_Plannedtask.php, row 389
+// src/AA_Plannedtask.php, row 394
 "The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "Tác vụ chưa được lưu - chỉ người dùng quản lý việc nạp của chuyên mục mới được lưu tác vụ có {import}.", // ai 2026-10
 
-// src/AA_Plannedtask.php, row 453
+// src/AA_Plannedtask.php, row 458
 "not scheduled, yet" => "chưa được lên lịch", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 457
+// src/AA_Plannedtask.php, row 462
 "next run" => "lần chạy kế tiếp", // ai 2026-06
 
 // src/Api/Controller/FilesController.php, row 56, 77
@@ -11034,25 +11055,25 @@ return [
 // src/Manager.php, row 817
 "Manager ID" => "ID trình quản lý", // ai 2026-06
 
-// src/Manager.php, row 1180
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "Thao tác chưa được thực hiện - hãy dùng nút trên trang.", // ai 2026-10
 
-// src/Manager.php, row 1261
+// src/Manager.php, row 1272
 "Edit id" => "Id để sửa", // ai 2026-06
 
-// src/Manager.php, row 1275
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Giữ Shift và nhấn để chọn nhiều hàng", // ai 2026-06
 
-// src/Manager.php, row 1313
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "Bạn có chắc muốn dọn thùng rác không?", // ai 2026-06
 
-// src/Manager.php, row 1415
+// src/Manager.php, row 1426
 "Go" => "Chạy", // ai 2026-06
 
-// src/Manager.php, row 1428
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "Chưa chọn bài viết nào. Thực hiện hành động cho tất cả bài viết đã lọc?", // ai 2026-06
 
-// src/Manager.php, row 1428
+// src/Manager.php, row 1439
 "Run for %1 items" => "Chạy cho %1 bài viết", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47
@@ -11638,6 +11659,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckFileReadRefusals.php, row 80, 101, 135
 // src/Optimize/CheckFormRobotRefusals.php, row 76
 // src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
 // src/Optimize/CheckIsdsConf.php, row 156, 189
@@ -11647,6 +11669,7 @@ return [
 // src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
+// src/Optimize/CheckServerRefusals.php, row 69
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckTrustedProxies.php, row 104
 // src/Optimize/CheckUploadRefusals.php, row 91
@@ -11660,6 +11683,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 100
 // src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckFileReadRefusals.php, row 81, 102, 136
 // src/Optimize/CheckFormRobotRefusals.php, row 77
 // src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
@@ -11670,6 +11694,7 @@ return [
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
+// src/Optimize/CheckServerRefusals.php, row 70
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckTrustedProxies.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 92
@@ -11965,6 +11990,63 @@ return [
 
 // src/Optimize/CheckEnvironment.php, row 66
 "AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4; không đổi từ %5", // ai 2026-10
+
+// src/Optimize/CheckFileReadRefusals.php, row 26
+"Refused file reads" => "Đọc tệp bị từ chối", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 31
+"Lists the files that templates or e-mails asked for in the last 30 days and AA refused to read, as they are not files of the site, the templates that still use {include:…:readfile} or {include:…:site}, which read no file, and the files e-mails took from outside the upload directories." => "Liệt kê các tệp mà mẫu hoặc e-mail đã yêu cầu trong 30 ngày qua nhưng AA từ chối đọc vì chúng không phải là tệp của trang web; các mẫu vẫn dùng {include:…:readfile} hoặc {include:…:site}, vốn không còn đọc tệp nào; và các tệp mà e-mail đã lấy từ bên ngoài các thư mục tải lên.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 73
+"The file %1 was not read (%2)" => "Tệp %1 không được đọc (%2)", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 84
+"{fileinfo} describes only the files uploaded to a slice or to the File Manager - never one from the directory AA is installed in or a dotfile. Give it the URL of an uploaded file, or remove it from the template." => "{fileinfo} chỉ mô tả các tệp đã tải lên chuyên mục hoặc Trình quản lý tập tin - không bao giờ mô tả tệp trong thư mục cài đặt AA hay tệp có tên bắt đầu bằng dấu chấm. Hãy truyền cho nó URL của một tệp đã tải lên, hoặc xóa nó khỏi mẫu.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 85
+"AA reads for templates and e-mails only the files of the site: its File Manager directory or the upload directories - never from the directory AA is installed in, never a dotfile, a script or a file of settings or keys. Move the file among the files of the site, or remove it from the template." => "Với mẫu và e-mail, AA chỉ đọc các tệp của trang web: thư mục Trình quản lý tập tin của trang hoặc các thư mục tải lên - không bao giờ đọc từ thư mục cài đặt AA, không bao giờ đọc tệp có tên bắt đầu bằng dấu chấm, tập lệnh hay tệp thiết lập hoặc khóa. Hãy chuyển tệp vào trong các tệp của trang web, hoặc xóa nó khỏi mẫu.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 96
+"An e-mail took the file %1 from outside the upload directories" => "Một e-mail đã lấy tệp %1 từ bên ngoài các thư mục tải lên", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 104
+"The file was sent. AA is to send local files only from the upload directories of the slices and the File Manager, so attach a file uploaded to the slice instead, or tell the AA developers the directory this site keeps its attachments in." => "Tệp đã được gửi. AA chỉ nên gửi tệp cục bộ từ các thư mục tải lên của chuyên mục và Trình quản lý tập tin, vì vậy hãy đính kèm một tệp đã tải lên chuyên mục, hoặc cho các nhà phát triển AA biết thư mục mà trang web này dùng để lưu tệp đính kèm.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 110
+"No file read was refused in the last 30 days" => "Không có yêu cầu đọc tệp nào bị từ chối trong 30 ngày qua", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 124
+"readfile read any file of the document root, past the access rules of the web server, so it reads nothing now." => "Tùy chọn readfile từng đọc được mọi tệp trong thư mục gốc tài liệu (document root), vượt qua quy tắc truy cập của máy chủ web, nên giờ đây nó không đọc gì nữa.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 125
+"site read from a directory that a visitor could choose by a parameter of the address, so it reads nothing now." => "Tùy chọn site từng đọc từ một thư mục mà người truy cập có thể chọn bằng một tham số của địa chỉ, nên giờ đây nó không đọc gì nữa.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 129
+"A template uses {include:%1:%2}, which prints nothing" => "Một mẫu dùng {include:%1:%2}, vốn không in ra gì", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 134
+"Slice or site" => "Chuyên mục hoặc trang web", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 138
+"In a slice put the file into its File Manager directory and use {include:<file>:fileman}; elsewhere include the file by its full web address, {include:https#://<domain>/<file>}." => "Trong chuyên mục, hãy đặt tệp vào thư mục Trình quản lý tập tin của chuyên mục và dùng {include:<file>:fileman}; ở nơi khác, hãy chèn tệp bằng địa chỉ web đầy đủ, {include:https#://<domain>/<file>}.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 149
+"outside the files of the site" => "nằm ngoài các tệp của trang web", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 150
+"in the directory of an AA installation" => "trong thư mục của một bản cài đặt AA", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 151
+"a name starting with a dot (.., .htaccess, .git)" => "tên bắt đầu bằng dấu chấm (.., .htaccess, .git)", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 152
+"a script, a settings or key file, a dump or a backup" => "tập lệnh, tệp thiết lập hoặc khóa, bản kết xuất hoặc bản sao lưu", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 153
+"not a regular file, or a file without an extension" => "không phải tệp thông thường, hoặc tệp không có phần mở rộng", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 154
+"the file changed while it was read" => "tệp đã thay đổi trong khi đang được đọc", // ai 2026-11
 
 // src/Optimize/CheckFormRobotRefusals.php, row 26
 "Forms refused as robots" => "Biểu mẫu bị từ chối do nghi là robot", // ai 2026-11
@@ -13236,7 +13318,7 @@ return [
 "%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "%1 có các trang mà bộ nhớ đệm trang không lưu - một mẫu đọc giá trị có thể thuộc về riêng người truy cập", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 81
-"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Mỗi lượt truy cập sẽ kết xuất lại trang như vậy. Chuyển hướng, bộ đếm lượt nhấp hoặc biểu mẫu có thể giữ nguyên. Ở những chỗ khác, nhất là trong mẫu dùng cho mọi trang (đầu trang, chân trang): hãy xóa giá trị chỉ được in ra để gỡ lỗi và kiểm tra chính tả của tên ({server:HTTP_REFERER}); để nhận biết người truy cập đến từ một chiến dịch, hãy dùng {qs:utm_source}, để nhận biết thiết bị, dùng {detect}. Host, scheme và URI ({server:HTTP_HOST}, {server:REQUEST_URI}) vẫn giữ trang trong bộ nhớ đệm.", // ai 2026-11
+"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging; to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Mỗi lượt truy cập sẽ kết xuất lại trang như vậy. Chuyển hướng, bộ đếm lượt nhấp hoặc biểu mẫu có thể giữ nguyên. Ở những chỗ khác, nhất là trong mẫu dùng cho mọi trang (đầu trang, chân trang): hãy xóa giá trị chỉ được in ra để gỡ lỗi; để nhận biết người truy cập đến từ một chiến dịch, hãy dùng {qs:utm_source}, để nhận biết thiết bị, dùng {detect}. Host, scheme và URI ({server:HTTP_HOST}, {server:REQUEST_URI}) vẫn giữ trang trong bộ nhớ đệm.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 86
 "No template reads a value of the visitor's own by {server:...}" => "Không có mẫu nào đọc qua {server:...} giá trị thuộc về riêng người truy cập", // ai 2026-11
@@ -13449,6 +13531,21 @@ return [
 // src/Optimize/CheckSecurityProtections.php, row 113
 "All protections are on and none of them refused anything in the last %1 days" => "Tất cả biện pháp bảo vệ đều bật và không biện pháp nào từ chối gì trong %1 ngày qua", // ai 2026-10
 
+// src/Optimize/CheckServerRefusals.php, row 24
+"Values refused to {server:...}" => "Giá trị bị từ chối cho {server:...}", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 29
+"Lists the names that templates asked for by {server:...} in the last 30 days and got an empty string, although the web server had the value, because AA does not hand it to templates." => "Liệt kê các tên mà mẫu đã yêu cầu qua {server:...} trong 30 ngày qua và nhận về chuỗi rỗng, dù máy chủ web có giá trị đó, vì AA không cung cấp giá trị ấy cho mẫu.", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 63
+"A template asked for {server:%1} and got an empty string" => "Một mẫu đã yêu cầu {server:%1} và nhận về chuỗi rỗng", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 72
+"Templates get the host, the URI and query string, the scheme and port, the visitor's address, browser, referer and Accept headers, and a few more values of the request; cookies, passwords, authorization and other headers or variables of the web server are not for templates. For a URL parameter use {qs:...}, for a cookie {cookie:...}, for the logged-in user {user}. A value that is no secret can be added to the list in AA\\Cache\\PageCache::SERVER_PER_VISITOR, which is a change of the AA code; otherwise change the template." => "Mẫu nhận được host, URI và chuỗi truy vấn, scheme và cổng, địa chỉ, trình duyệt, referer và các header Accept của người truy cập, cùng một vài giá trị khác của yêu cầu; cookie, mật khẩu, thông tin xác thực (authorization) cùng các header hoặc biến khác của máy chủ web không dành cho mẫu. Với tham số URL, hãy dùng {qs:...}, với cookie dùng {cookie:...}, với người dùng đã đăng nhập dùng {user}. Giá trị không phải bí mật có thể được thêm vào danh sách trong AA\\Cache\\PageCache::SERVER_PER_VISITOR, tức là thay đổi mã của AA; nếu không, hãy sửa mẫu.", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 78
+"No template asked {server:...} for a value AA does not hand out in the last 30 days" => "Trong 30 ngày qua, không có mẫu nào yêu cầu {server:...} một giá trị mà AA không cung cấp", // ai 2026-11
+
 // src/Optimize/CheckSessionidUse.php, row 45
 "Get_Sessionid use" => "Sử dụng Get_Sessionid", // ai 2026-10
 
@@ -13469,6 +13566,21 @@ return [
 
 // src/Optimize/CheckSessionidUse.php, row 111
 "Nobody called Get_Sessionid in the last 30 days" => "Không ai gọi Get_Sessionid trong 30 ngày qua", // ai 2026-10
+
+// src/Optimize/CheckSetupPage.php, row 14
+"Setup page" => "Trang cài đặt", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 19
+"Checks that admin/setup.php is switched off (AA_SETUP_ENABLED in config.php)." => "Kiểm tra rằng admin/setup.php đã được tắt (AA_SETUP_ENABLED trong config.php).", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 45
+"The setup page is switched off" => "Trang cài đặt đã được tắt", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 49
+"The setup page is switched on - admin/setup.php creates a superadmin without login whenever the permission system finds none" => "Trang cài đặt đang bật - admin/setup.php sẽ tạo quản trị viên cấp cao mà không cần đăng nhập bất cứ khi nào hệ thống phân quyền không tìm thấy quản trị viên cấp cao nào", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 50
+"Remove define('AA_SETUP_ENABLED', true); from include/config.php (or from the config file of this database) once the superadmin account exists." => "Hãy xóa define('AA_SETUP_ENABLED', true); khỏi include/config.php (hoặc khỏi tệp cấu hình của cơ sở dữ liệu này) khi tài khoản quản trị viên cấp cao đã tồn tại.", // ai 2026-11
 
 // src/Optimize/CheckSiteStateFiles.php, row 18
 "Site state files" => "Tệp trạng thái của trang web", // ai 2026-10
@@ -14155,16 +14267,16 @@ return [
 // src/Optimize/ImgMeasuring.php, row 85
 "the parameters do not tell the size" => "tham số không xác định kích thước", // ai 2026-10
 
-// src/Optimize/ItemDiscussion.php, row 17
+// src/Optimize/ItemDiscussion.php, row 16
 "Delete discussion comments for non-existent items" => "Xóa các bình luận thảo luận của những bài viết không tồn tại", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 40, 58
+// src/Optimize/ItemDiscussion.php, row 39, 56
 "No problems found" => "Không tìm thấy vấn đề nào", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 44
+// src/Optimize/ItemDiscussion.php, row 43
 "Problem for item %1 - %2 comments found" => "Vấn đề ở bài viết %1 - tìm thấy %2 bình luận", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 65
+// src/Optimize/ItemDiscussion.php, row 61
 "%1 problems solved" => "Đã giải quyết %1 vấn đề", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 44
@@ -15251,7 +15363,7 @@ return [
 // src/Widget/RimWidget.php, row 239
 "No record matches your search condition." => "Không có bản ghi nào khớp với điều kiện tìm kiếm của bạn.", // ai 2026-06
 
-// src/Widget/RimWidget.php, row 283
+// src/Widget/RimWidget.php, row 284
 "search in existing" => "tìm trong các mục hiện có", // ai 2026-06
 
 // src/Widget/RioWidget.php, row 40

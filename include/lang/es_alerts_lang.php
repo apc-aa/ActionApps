@@ -389,7 +389,7 @@ return [
 // modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "%1 campo(s) y %2 grupo(s) de constantes borrado(s)",
 
-// modules/alerts/synchro2.php, row 222
+// modules/alerts/synchro2.php, row 219
 "not set" => "no activado",
 
 // modules/alerts/util.php, row 53

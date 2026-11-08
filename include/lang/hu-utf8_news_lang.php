@@ -18,6 +18,9 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Can't delete invalid permission." => "Nem sikerült törölni az érvénytelen jogosultságot.", // ai 2026-06
+// "Invalid permission deleted (no such user/group): " => "Érvénytelen jogosultság törölve (nincs ilyen felhasználó/csoport): ", // ai 2026-06
+// "Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Minden látogatás újra előállítja az ilyen oldalt. Átirányítás, kattintásszámláló vagy űrlap maradhat úgy, ahogy van. Máshol, főként a minden oldalon szereplő sablonban (fejléc, lábléc): törölje a csak hibakereséshez kiírt értéket, és ellenőrizze a név helyesírását ({server:HTTP_REFERER}); a kampányból érkező látogatók felismeréséhez használja a {qs:utm_source}, az eszközéhez a {detect} kifejezést. A gazdagép, a séma és az URI ({server:HTTP_HOST}, {server:REQUEST_URI}) mellett az oldal a gyorsítótárban marad.", // ai 2026-11
 // "Migrate LDAP perms to SQL perms" => "LDAP jogosultságok migrálása SQL-be", // ai 2026-06
 // "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Átmásolja az összes felhasználót, csoportot, tagságot és jogosultságot az LDAP backendből az SQL backend tábláiba (users, membership, perms), és átírja az item.posted_by / item.edited_by mezőket LDAP DN formából (uid=...,ou=...) az új SQL numerikus azonosítókra. Telepítésenként egyszer futtassa, majd állítsa a PERM_LIB-et 'sql'-re a konfigurációban. A 'Test' csak olvasó próbafuttatás. A 'Repair' elvégzi a migrációt, és újrafuttatható. A 'Revert' a leképezési tábla alapján mindent visszavon.", // ai 2026-06
 // "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Ez az optimalizáló csak PERM_LIB='ldap' esetén fut. Jelenlegi PERM_LIB='%1'.", // ai 2026-06
@@ -245,6 +248,7 @@ return [
 // admin/aafinder.php, row 98
 // admin/console.php, row 73
 // admin/fileman.php, row 110
+// admin/se_fulltext.php, row 80
 // admin/slicedel2.php, row 70
 // admin/um_passkeys.php, row 73
 // admin/um_passwd.php, row 80
@@ -297,7 +301,7 @@ return [
 "Type their login name to see its failed logins of the last 12 hours, and let it log in at once." => "Írja be az illető bejelentkezési nevét: megjelennek az elmúlt 12 óra sikertelen bejelentkezései, és azonnal beengedheti.", // ai 2026-10
 
 // admin/aa_security.php, row 85
-// admin/setup.php, row 99, 240
+// admin/setup.php, row 102, 239
 // admin/slicewiz.php, row 84
 // admin/um_passwd.php, row 128
 // admin/um_uedit.php, row 314, 328
@@ -307,13 +311,13 @@ return [
 
 // admin/aa_security.php, row 87
 // admin/aa_statecheck.php, row 177
-// admin/aa_statistics.php, row 91
+// admin/aa_statistics.php, row 101
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
 // admin/se_fields.php, row 303
-// admin/se_statistics.php, row 69
+// admin/se_statistics.php, row 79
 // admin/se_views.php, row 148
-// include/formutil.php, row 1431, 1434, 2020
+// include/formutil.php, row 1432, 1435, 2021
 // src/Widget/FilWidget.php, row 154, 233
 // src/Widget/FldWidget.php, row 156
 "Show" => "Megjelenítés", // ai 2026-06
@@ -371,6 +375,7 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 103
 // src/Optimize/CheckDiscussionRefusals.php, row 80
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckFileReadRefusals.php, row 86, 105, 139
 // src/Optimize/CheckFormRobotRefusals.php, row 80
 // src/Optimize/CheckIsdsAccounts.php, row 139, 174, 210
 // src/Optimize/CheckIsdsConf.php, row 160, 193
@@ -383,6 +388,7 @@ return [
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
 // src/Optimize/CheckSecurityProtections.php, row 106
+// src/Optimize/CheckServerRefusals.php, row 73
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckTrustedProxies.php, row 109
 // src/Optimize/CheckUploadRefusals.php, row 101
@@ -516,111 +522,111 @@ return [
 // admin/aa_statecheck.php, row 397
 "Run slow checks now" => "Lassú ellenőrzések futtatása", // ai 2026-10
 
-// admin/aa_statistics.php, row 58
-// admin/se_statistics.php, row 53
+// admin/aa_statistics.php, row 63
+// admin/se_statistics.php, row 58
 "You do not have permissions to see statistics" => "Nincs jogosultsága a statisztikák megtekintéséhez", // ai 2026-06
-
-// admin/aa_statistics.php, row 86
-// admin/se_statistics.php, row 64
-"Admin - Statistics" => "Admin - Statisztikák", // ai 2026-06
-
-// admin/aa_statistics.php, row 94
-// admin/se_statistics.php, row 72
-"years" => "évek", // ai 2026-06
-
-// admin/aa_statistics.php, row 95
-// admin/se_statistics.php, row 73
-"months" => "hónapok", // ai 2026-06
 
 // admin/aa_statistics.php, row 96
 // admin/se_statistics.php, row 74
-"weeks" => "hetek", // ai 2026-06
+"Admin - Statistics" => "Admin - Statisztikák", // ai 2026-06
 
-// admin/aa_statistics.php, row 97
-// admin/se_statistics.php, row 75
-"days" => "napok", // ai 2026-06
-
-// admin/aa_statistics.php, row 98
-// admin/se_statistics.php, row 76
-"hours" => "órák", // ai 2026-06
-
-// admin/aa_statistics.php, row 99
-// admin/se_statistics.php, row 77
-"minutes" => "percek", // ai 2026-06
-
-// admin/aa_statistics.php, row 100
-// admin/se_statistics.php, row 78
-"day-hours" => "a nap órái", // ai 2026-06
-
-// admin/aa_statistics.php, row 101
-// admin/se_statistics.php, row 79
-"week-days" => "a hét napjai", // ai 2026-06
+// admin/aa_statistics.php, row 104
+// admin/se_statistics.php, row 82
+"years" => "évek", // ai 2026-06
 
 // admin/aa_statistics.php, row 105
-"Most hits" => "Legtöbb találat", // ai 2026-06
+// admin/se_statistics.php, row 83
+"months" => "hónapok", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
-"Most server time" => "Legtöbb szerveridő", // ai 2026-06
+// admin/se_statistics.php, row 84
+"weeks" => "hetek", // ai 2026-06
 
 // admin/aa_statistics.php, row 107
-"Slowest (avg ms)" => "Leglassabb (átl. ms)", // ai 2026-06
+// admin/se_statistics.php, row 85
+"days" => "napok", // ai 2026-06
 
 // admin/aa_statistics.php, row 108
-"Fastest (avg ms)" => "Leggyorsabb (átl. ms)", // ai 2026-06
+// admin/se_statistics.php, row 86
+"hours" => "órák", // ai 2026-06
 
 // admin/aa_statistics.php, row 109
-"Worst cached" => "Legrosszabbul gyorsítótárazott", // ai 2026-06
+// admin/se_statistics.php, row 87
+"minutes" => "percek", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
-"Best cached" => "Legjobban gyorsítótárazott", // ai 2026-06
+// admin/se_statistics.php, row 88
+"day-hours" => "a nap órái", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
-"Most wasted (NC+NM)" => "Legtöbb veszteség (NC+NM)", // ai 2026-06
+// admin/se_statistics.php, row 89
+"week-days" => "a hét napjai", // ai 2026-06
 
-// admin/aa_statistics.php, row 112
-"Slowed down vs prior period" => "Lassulás az előző időszakhoz képest", // ai 2026-06
+// admin/aa_statistics.php, row 115
+"Most hits" => "Legtöbb találat", // ai 2026-06
 
-// admin/aa_statistics.php, row 113
-"Sped up vs prior period" => "Gyorsulás az előző időszakhoz képest", // ai 2026-06
+// admin/aa_statistics.php, row 116
+"Most server time" => "Legtöbb szerveridő", // ai 2026-06
 
-// admin/aa_statistics.php, row 114
-// admin/se_statistics.php, row 83
-"Specified below" => "Alább megadott", // ai 2026-06
+// admin/aa_statistics.php, row 117
+"Slowest (avg ms)" => "Leglassabb (átl. ms)", // ai 2026-06
 
 // admin/aa_statistics.php, row 118
-"Last day" => "Elmúlt nap", // ai 2026-06
+"Fastest (avg ms)" => "Leggyorsabb (átl. ms)", // ai 2026-06
 
 // admin/aa_statistics.php, row 119
-"Last week" => "Elmúlt hét", // ai 2026-06
+"Worst cached" => "Legrosszabbul gyorsítótárazott", // ai 2026-06
 
 // admin/aa_statistics.php, row 120
-"Last month" => "Elmúlt hónap", // ai 2026-06
+"Best cached" => "Legjobban gyorsítótárazott", // ai 2026-06
 
 // admin/aa_statistics.php, row 121
-"Last year" => "Elmúlt év", // ai 2026-06
+"Most wasted (NC+NM)" => "Legtöbb veszteség (NC+NM)", // ai 2026-06
 
 // admin/aa_statistics.php, row 122
-"This day" => "Mai nap", // ai 2026-06
+"Slowed down vs prior period" => "Lassulás az előző időszakhoz képest", // ai 2026-06
 
 // admin/aa_statistics.php, row 123
-"This week" => "Ez a hét", // ai 2026-06
+"Sped up vs prior period" => "Gyorsulás az előző időszakhoz képest", // ai 2026-06
 
 // admin/aa_statistics.php, row 124
-"This month" => "Ez a hónap", // ai 2026-06
+// admin/se_statistics.php, row 93
+"Specified below" => "Alább megadott", // ai 2026-06
 
-// admin/aa_statistics.php, row 125
-"This year" => "Ez az év", // ai 2026-06
+// admin/aa_statistics.php, row 128
+"Last day" => "Elmúlt nap", // ai 2026-06
 
-// admin/aa_statistics.php, row 126
-"All time" => "Teljes időszak", // ai 2026-06
+// admin/aa_statistics.php, row 129
+"Last week" => "Elmúlt hét", // ai 2026-06
 
 // admin/aa_statistics.php, row 130
-"All AA" => "Teljes AA", // ai 2026-06
+"Last month" => "Elmúlt hónap", // ai 2026-06
 
 // admin/aa_statistics.php, row 131
-"Sites" => "Webhelyek", // ai 2026-06
+"Last year" => "Elmúlt év", // ai 2026-06
+
+// admin/aa_statistics.php, row 132
+"This day" => "Mai nap", // ai 2026-06
+
+// admin/aa_statistics.php, row 133
+"This week" => "Ez a hét", // ai 2026-06
+
+// admin/aa_statistics.php, row 134
+"This month" => "Ez a hónap", // ai 2026-06
 
 // admin/aa_statistics.php, row 135
+"This year" => "Ez az év", // ai 2026-06
+
+// admin/aa_statistics.php, row 136
+"All time" => "Teljes időszak", // ai 2026-06
+
+// admin/aa_statistics.php, row 140
+"All AA" => "Teljes AA", // ai 2026-06
+
+// admin/aa_statistics.php, row 141
+"Sites" => "Webhelyek", // ai 2026-06
+
+// admin/aa_statistics.php, row 145
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 294
 // central/appstore.php, row 164
@@ -628,70 +634,74 @@ return [
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Rovatok", // ai 2026-06
 
-// admin/aa_statistics.php, row 162
+// admin/aa_statistics.php, row 172
 "Version progress" => "Változások verziónként", // ai 2026-10
 
-// admin/aa_statistics.php, row 173
+// admin/aa_statistics.php, row 183
 "Queue progress" => "A feladatsor alakulása", // ai 2026-10
 
-// admin/aa_statistics.php, row 184
+// admin/aa_statistics.php, row 194
 "Quick diagnostics" => "Gyors diagnosztika", // ai 2026-06
 
-// admin/aa_statistics.php, row 208
+// admin/aa_statistics.php, row 218
 "Slice comparison" => "Rovatok összehasonlítása", // ai 2026-06
 
-// admin/aa_statistics.php, row 231
-// admin/se_statistics.php, row 138
+// admin/aa_statistics.php, row 241
+// admin/se_statistics.php, row 148
 "Stats to show" => "Megjelenítendő statisztikák", // ai 2026-06
 
-// admin/aa_statistics.php, row 232
+// admin/aa_statistics.php, row 242
 "Granularity" => "Felbontás", // ai 2026-06
 
-// admin/aa_statistics.php, row 236
+// admin/aa_statistics.php, row 246
 "Items to show" => "Megjelenítendő cikkek", // ai 2026-06
 
-// admin/aa_statistics.php, row 237
+// admin/aa_statistics.php, row 247
 "Display for module" => "Megjelenítendő modul", // ai 2026-06
 
-// admin/aa_statistics.php, row 238
+// admin/aa_statistics.php, row 248
 "Sort items by" => "Cikkek rendezése", // ai 2026-06
 
-// admin/aa_statistics.php, row 239
+// admin/aa_statistics.php, row 249
 "Period (item ranking)" => "Időszak (cikkrangsor)", // ai 2026-06
 
-// admin/aa_statistics.php, row 240
-// admin/se_statistics.php, row 98
+// admin/aa_statistics.php, row 250
+// admin/se_statistics.php, row 108
 "Exact items to show" => "Megjelenítendő konkrét cikkek", // ai 2026-06
 
-// admin/aa_statistics.php, row 240
-// admin/se_statistics.php, row 98
+// admin/aa_statistics.php, row 250
+// admin/se_statistics.php, row 108
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "cikkazonosítók (id/short_id) kötőjellel elválasztott listája, vagy AA-kifejezés, például {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
-// admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 99
+// admin/aa_statistics.php, row 251
+// admin/se_statistics.php, row 109
 "Number of items to show" => "Megjelenítendő cikkek száma", // ai 2026-06
 
-// admin/aa_statistics.php, row 245
+// admin/aa_statistics.php, row 255
 "Show for period" => "Megjelenítendő időszak", // ai 2026-06
 
-// admin/aa_statistics.php, row 246
-// admin/se_statistics.php, row 100
+// admin/aa_statistics.php, row 256
+// admin/se_statistics.php, row 110
 "From date" => "Kezdő dátum", // ai 2026-06
 
-// admin/aa_statistics.php, row 255
-// admin/se_statistics.php, row 144
+// admin/aa_statistics.php, row 261
+// admin/se_statistics.php, row 154
+"Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Ellenőrizze a kifejezést a „Megjelenítendő konkrét cikkek” mezőben, majd a kiértékeléséhez nyomja meg a „Megjelenítés” gombot.", // ai 2026-11
+
+// admin/aa_statistics.php, row 268
+// admin/se_statistics.php, row 157
 "Display Statistics for Item" => "Cikk statisztikájának megjelenítése", // ai 2026-06
 
-// admin/aa_statistics.php, row 341
-// admin/se_statistics.php, row 171
+// admin/aa_statistics.php, row 354
+// admin/se_statistics.php, row 184
 "Items found" => "Talált cikkek", // ai 2026-06
 
-// admin/aa_statistics.php, row 345
-// admin/se_statistics.php, row 182
+// admin/aa_statistics.php, row 356
+// admin/se_statistics.php, row 193
 "No items found" => "Nem található cikk", // ai 2026-06
 
-// admin/aa_statistics.php, row 357
-// admin/se_statistics.php, row 179
+// admin/aa_statistics.php, row 368
+// admin/se_statistics.php, row 190
 "Server configuration changes" => "Szerverkonfigurációs változások", // ai 2026-06
 
 // admin/aa_tasks.php, row 35
@@ -748,7 +758,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1218
+// include/logs.php, row 1220
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -757,6 +767,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
+// src/Optimize/CheckFileReadRefusals.php, row 79
 // src/Optimize/CheckFormRobotRefusals.php, row 74
 // src/Optimize/CheckImports.php, row 367
 // src/Optimize/CheckIsdsRegistry.php, row 179
@@ -784,7 +795,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 363
+// include/logs.php, row 365
 // src/AA_Plannedtask.php, row 204
 "Log" => "Napló", // ai 2026-06
 
@@ -923,7 +934,7 @@ return [
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 10285, 10364
+// include/stringexpand.php, row 10301, 10380
 "Send" => "Küldés", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -1023,7 +1034,7 @@ return [
 
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
-// include/stringexpand.php, row 96
+// include/stringexpand.php, row 98
 // src/Import/DetailPage.php, row 1025, 1091
 // src/Optimize/CheckImports.php, row 236, 238
 "Code" => "Kód", // ai 2026-06
@@ -1082,7 +1093,7 @@ return [
 "Author" => "Szerző", // ai 2026-06
 
 // admin/discedit.php, row 133
-// include/logs.php, row 903, 1314
+// include/logs.php, row 905, 1316
 "IP Address" => "IP-cím", // ai 2026-06
 
 // admin/discedit.php, row 134
@@ -1091,7 +1102,7 @@ return [
 "Date" => "Dátum", // ai 2026-06
 
 // admin/discedit.php, row 135
-// admin/related_sel.php, row 155
+// admin/related_sel.php, row 168
 // admin/se_views.php, row 136
 // src/Import/DetailPage.php, row 313
 // src/Manager.php, row 230
@@ -1108,7 +1119,7 @@ return [
 // admin/um_uedit.php, row 266
 // include/field.class.php, row 744
 // include/filedit.php, row 113
-// include/formutil.php, row 1777, 3394
+// include/formutil.php, row 1778, 3395
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
 // include/statestore.php, row 1143
@@ -1129,7 +1140,7 @@ return [
 // admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
 // include/field.class.php, row 748
-// include/formutil.php, row 1788, 1925
+// include/formutil.php, row 1789, 1926
 // include/menu_util.php, row 61
 // include/profile.php, row 69
 // include/searchbar.class.php, row 1126
@@ -1157,13 +1168,13 @@ return [
 
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 119, 248
-// include/logs.php, row 1065
+// include/logs.php, row 1067
 // include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Tárgy", // ai 2026-06
 
 // admin/discedit2.php, row 94, 148
-// admin/setup.php, row 104, 247
+// admin/setup.php, row 107, 246
 // admin/slicewiz.php, row 89
 // admin/um_passwd.php, row 140
 // admin/um_uedit.php, row 336
@@ -1206,7 +1217,7 @@ return [
 "Holding bin" => "Várólista", // ai 2026-06
 
 // admin/feed_to.php, row 67
-// admin/se_export.php, row 119
+// admin/se_export.php, row 131
 // admin/se_filters.php, row 183
 // admin/slicedit.php, row 141, 147
 // include/exporter.class.php, row 511
@@ -1223,7 +1234,7 @@ return [
 "No permission to set feeding for any slice" => "Nincs jogosultsága tartalomcserét beállítani egyik rovathoz sem", // ai 2026-06
 
 // admin/feed_to.php, row 88
-// admin/se_export.php, row 111
+// admin/se_export.php, row 123
 // include/exporter.class.php, row 657
 // include/menu_util.php, row 95
 "Export" => "Exportálás", // ai 2026-06
@@ -1362,22 +1373,22 @@ return [
 "Admin password" => "Admin jelszó", // ai 2026-06
 
 // admin/mailman_create_list.php, row 163
-// admin/setup.php, row 109, 233
+// admin/setup.php, row 112, 232
 // modules/jump/modedit.php, row 179
 "Create" => "Létrehozás", // ai 2026-06
 
 // admin/preview.php, row 49
 "Wrong slice_id." => "Hibás slice_id.", // ai 2026-06
 
-// admin/related_sel.php, row 155
+// admin/related_sel.php, row 168
 // src/Manager.php, row 230
 "Publish date" => "Közzététel dátuma", // ai 2026-06
 
-// admin/related_sel.php, row 155
+// admin/related_sel.php, row 168
 // src/Manager.php, row 230
 "Headline" => "Cím", // ai 2026-06
 
-// admin/related_sel.php, row 183
+// admin/related_sel.php, row 196
 "Editor window - item manager, related selection window" => "ActionApps - Kapcsolódó cikkek kiválasztása", // ai 2026-06
 
 // admin/rsstest.php, row 36
@@ -1405,7 +1416,7 @@ return [
 
 // admin/se_admin.php, row 85, 209
 // admin/se_compact.php, row 95, 260
-// admin/se_fulltext.php, row 70, 193
+// admin/se_fulltext.php, row 86, 210
 // include/constants.php, row 660, 707, 783, 872, 917, 943, 972, 1006, 1038
 "Remove strings" => "Eltávolítandó szövegek", // ai 2026-06
 
@@ -1414,12 +1425,12 @@ return [
 "HTML code for \"No item found\" message" => "A „Nem található cikk” üzenet HTML-kódja", // ai 2026-06
 
 // admin/se_admin.php, row 87
-// admin/se_fulltext.php, row 71, 201, 205
+// admin/se_fulltext.php, row 87, 218, 222
 "Show discussion" => "Hozzászólások megjelenítése", // ai 2026-06
 
 // admin/se_admin.php, row 101
 // admin/se_compact.php, row 128
-// admin/se_fulltext.php, row 91
+// admin/se_fulltext.php, row 107
 // admin/se_view.php, row 170, 339
 "Can't change slice settings" => "Nem módosíthatja a rovat beállításait", // ai 2026-06
 
@@ -1431,7 +1442,7 @@ return [
 
 // admin/se_admin.php, row 163
 // admin/se_compact.php, row 212
-// admin/se_fulltext.php, row 146
+// admin/se_fulltext.php, row 163
 // admin/se_inputform.php, row 189, 426
 // src/Util/UiPrefs.php, row 56
 "Default" => "Alapértelmezett", // ai 2026-06
@@ -1441,12 +1452,12 @@ return [
 
 // admin/se_admin.php, row 175
 // admin/se_compact.php, row 223, 252
-// admin/se_fulltext.php, row 159
+// admin/se_fulltext.php, row 176
 "HTML code which appears at the top of slice area" => "A rovatterület tetején megjelenő HTML-kód", // ai 2026-06
 
 // admin/se_admin.php, row 188
 // admin/se_compact.php, row 226, 255
-// admin/se_fulltext.php, row 172
+// admin/se_fulltext.php, row 189
 "Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"
  => "Ide írja be a HTML-kódot, kombinálva az oldal alján található aliasokkal\n"
@@ -1454,12 +1465,12 @@ return [
 
 // admin/se_admin.php, row 201
 // admin/se_compact.php, row 233, 258
-// admin/se_fulltext.php, row 185
+// admin/se_fulltext.php, row 202
 "HTML code which appears at the bottom of slice area" => "A rovatterület alján megjelenő HTML-kód", // ai 2026-06
 
 // admin/se_admin.php, row 214
 // admin/se_compact.php, row 261
-// admin/se_fulltext.php, row 198
+// admin/se_fulltext.php, row 215
 "Removes empty brackets etc. Use ## as delimiter." => "Eltávolítja az üres zárójeleket stb. Elválasztóként a ## jelet használja.", // ai 2026-06
 
 // admin/se_admin.php, row 223
@@ -1473,7 +1484,7 @@ return [
 
 // admin/se_admin.php, row 241
 // admin/se_compact.php, row 269
-// admin/se_fulltext.php, row 210
+// admin/se_fulltext.php, row 228
 // admin/se_view.php, row 572
 "Use these aliases for database fields" => "Az adatbázismezőkhöz ezeket az aliasokat használja", // ai 2026-06
 
@@ -1568,7 +1579,7 @@ return [
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1205
+// include/logs.php, row 1207
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1576,6 +1587,7 @@ return [
 // src/Import/DetailCatalog.php, row 143
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
+// src/Optimize/CheckServerRefusals.php, row 67
 "Name" => "Név", // ai 2026-06
 
 // admin/se_constant.php, row 176, 378
@@ -1593,7 +1605,7 @@ return [
 // admin/um_gedit.php, row 299, 302
 // include/constants.php, row 459
 // include/constedit.php, row 84
-// include/stringexpand.php, row 97
+// include/stringexpand.php, row 99
 // include/um_gedit.php, row 33
 // src/Manageraction/Central_Linkcheck.php, row 31
 // src/Optimize/AbstractOptimize.php, row 174
@@ -1729,8 +1741,9 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1235
+// include/logs.php, row 1237
 // src/Optimize/CheckCookieReads.php, row 55
+// src/Optimize/CheckFileReadRefusals.php, row 77, 100, 133
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
 // src/Optimize/CheckIsdsConf.php, row 342, 372
 // src/Optimize/CheckUserAliasFunctionLog.php, row 87
@@ -1881,7 +1894,7 @@ return [
 // admin/se_csv_import2.php, row 492
 "Save setting as" => "Beállítás mentése másként", // ai 2026-06
 
-// admin/se_csv_import2.php, row 533
+// admin/se_csv_import2.php, row 537
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Admin - CSV importálása (2/2) - Megfeleltetés és műveletek", // ai 2026-06
 
 // admin/se_dataimport.php, row 59
@@ -1903,66 +1916,69 @@ return [
 // admin/se_dataimports.php, row 41
 "An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes." => "Az import egy másik forrás adataival tölti fel a rovatot, azonnal vagy ütemezett feladattal. A „Futtatás” gomb elindítja; az import ezután a háttérben fut, előrehaladása a részleteinél látható.", // ai 2026-10
 
-// admin/se_export.php, row 74
+// admin/se_export.php, row 79
 "You do not have permissions to export" => "Nincs jogosultsága az exportáláshoz", // ai 2026-06
 
-// admin/se_export.php, row 100
+// admin/se_export.php, row 109
 "Admin - Export Items" => "Admin - Cikkek exportálása", // ai 2026-06
 
-// admin/se_export.php, row 113
+// admin/se_export.php, row 119
+"Check the settings and press Export." => "Ellenőrizze a beállításokat, majd nyomja meg az „Exportálás” gombot.", // ai 2026-11
+
+// admin/se_export.php, row 125
 // include/exporter.class.php, row 531
 "Item Contents" => "Cikkek tartalma", // ai 2026-06
 
-// admin/se_export.php, row 114
+// admin/se_export.php, row 126
 // include/constants.php, row 723
 // include/exporter.class.php, row 532
 "Discussion" => "Hozzászólások", // ai 2026-06
 
-// admin/se_export.php, row 118
+// admin/se_export.php, row 130
 // include/exporter.class.php, row 510
 // include/scroller.php, row 88
 // src/Isds/Registry/Page.php, row 532
 "All" => "Összes", // ai 2026-06
 
-// admin/se_export.php, row 120
+// admin/se_export.php, row 132
 // include/exporter.class.php, row 512
 "Pending" => "Időzített", // ai 2026-06
 
-// admin/se_export.php, row 121
+// admin/se_export.php, row 133
 // include/exporter.class.php, row 513
 // include/itemfunc.php, row 146
 "Expired" => "Lejárt", // ai 2026-06
 
-// admin/se_export.php, row 122
+// admin/se_export.php, row 134
 // include/exporter.class.php, row 514
 "Approved" => "Jóváhagyott", // ai 2026-06
 
-// admin/se_export.php, row 123
+// admin/se_export.php, row 135
 // include/exporter.class.php, row 515
 "Holding" => "Várólista", // ai 2026-06
 
-// admin/se_export.php, row 124
+// admin/se_export.php, row 136
 // include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 45
 "Trash" => "Lomtár", // ai 2026-06
 
-// admin/se_export.php, row 134
+// admin/se_export.php, row 146
 // include/exporter.class.php, row 520
 "Database backup (as stored in DB)" => "Adatbázis-mentés (ahogy a DB-ben tárolva van)", // ai 2026-06
 
-// admin/se_export.php, row 135
+// admin/se_export.php, row 147
 // include/exporter.class.php, row 521
 "Human - dates converted to Y-m-d format, ..." => "Olvasható - a dátumok Y-m-d formátumra alakítva, ...", // ai 2026-06
 
-// admin/se_export.php, row 148
+// admin/se_export.php, row 161
 "Export Items" => "Cikkek exportálása", // ai 2026-06
 
-// admin/se_export.php, row 150
+// admin/se_export.php, row 163
 // include/exporter.class.php, row 536
 "Output Format" => "Kimeneti formátum", // ai 2026-06
 
-// admin/se_export.php, row 151
+// admin/se_export.php, row 164
 // admin/se_history.php, row 142
 // admin/se_users.php, row 185
 // admin/se_views.php, row 135
@@ -1970,47 +1986,47 @@ return [
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 558
+// include/logs.php, row 560
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
 // src/Widget/Widget.php, row 753
 "Type" => "Típus", // ai 2026-06
 
-// admin/se_export.php, row 152
+// admin/se_export.php, row 165
 // include/exporter.class.php, row 538
 "Bins" => "Tárolók", // ai 2026-06
 
-// admin/se_export.php, row 153
+// admin/se_export.php, row 166
 // include/exporter.class.php, row 552
 "Filename" => "Fájlnév", // ai 2026-06
 
-// admin/se_export.php, row 153
+// admin/se_export.php, row 166
 // include/exporter.class.php, row 552
 "save as..." => "mentés másként...", // ai 2026-06
 
-// admin/se_export.php, row 154
+// admin/se_export.php, row 167
 // include/exporter.class.php, row 553
 // include/searchlib.php, row 1012
 "Conditions" => "Feltételek", // ai 2026-06
 
-// admin/se_export.php, row 154
+// admin/se_export.php, row 167
 // include/exporter.class.php, row 553
 "conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)" => "a feltételek \"d-...\" vagy \"conds[]\" formában adhatók meg - például:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (az alapértelmezett operátor itt a RLIKE!)", // ai 2026-06
 
-// admin/se_export.php, row 155
+// admin/se_export.php, row 168
 // include/exporter.class.php, row 554
 // include/searchlib.php, row 1014
 "Sort" => "Rendezés", // ai 2026-06
 
-// admin/se_export.php, row 155
+// admin/se_export.php, row 168
 // include/exporter.class.php, row 554
 "like: publish_date....-" => "például: publish_date....-", // ai 2026-06
 
-// admin/se_export.php, row 156
+// admin/se_export.php, row 169
 // include/exporter.class.php, row 551
 "Custom columns" => "Egyéni oszlopok", // ai 2026-06
 
-// admin/se_export.php, row 156
+// admin/se_export.php, row 169
 "Add any AA {expression} as extra column - each row = one column" => "Tetszőleges AA {expression} hozzáadása extra oszlopként - minden sor = egy oszlop", // ai 2026-06
 
 // admin/se_fieldid.php, row 210
@@ -2096,7 +2112,7 @@ return [
 "Required" => "Kötelező", // ai 2026-06
 
 // admin/se_fields.php, row 305
-// include/stringexpand.php, row 110
+// include/stringexpand.php, row 112
 "Aliases" => "Aliasok", // ai 2026-06
 
 // admin/se_filters.php, row 83
@@ -2115,7 +2131,7 @@ return [
 // admin/um_gedit.php, row 280
 // admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
-// include/formutil.php, row 190, 2940
+// include/formutil.php, row 191, 2941
 // modules/jump/modedit.php, row 179
 // src/Import/DetailCatalog.php, row 151
 "Update" => "Frissítés", // ai 2026-06
@@ -2136,7 +2152,7 @@ return [
 "No category defined" => "Nincs kategória megadva", // ai 2026-06
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1404
+// src/Manager.php, row 1415
 "Select all" => "Összes kijelölése", // ai 2026-06
 
 // admin/se_filters.php, row 320
@@ -2153,34 +2169,37 @@ return [
 // admin/se_forms.php, row 37
 "You do not have permissions to manage forms" => "Nincs jogosultsága az űrlapok kezeléséhez", // ai 2026-06
 
-// admin/se_fulltext.php, row 67, 154
+// admin/se_fulltext.php, row 70
+"You do not have permissions to change fulltext view formatting" => "Nincs jogosultsága a teljes szöveg kinézetének módosítására", // ai 2026-11
+
+// admin/se_fulltext.php, row 83, 171
 "Top HTML code" => "Felső HTML-kód", // ai 2026-06
 
-// admin/se_fulltext.php, row 68, 167
+// admin/se_fulltext.php, row 84, 184
 "Fulltext HTML code" => "Teljes szöveg HTML-kód", // ai 2026-06
 
-// admin/se_fulltext.php, row 69, 180
+// admin/se_fulltext.php, row 85, 197
 "Bottom HTML code" => "Alsó HTML-kód", // ai 2026-06
 
-// admin/se_fulltext.php, row 99
+// admin/se_fulltext.php, row 115
 "Fulltext format update successful" => "A teljes szöveges formátum frissítése sikeres", // ai 2026-06
 
-// admin/se_fulltext.php, row 127
+// admin/se_fulltext.php, row 144
 "Admin - design Fulltext view" => "Adminisztráció - Teljes szöveges nézet kialakítása", // ai 2026-06
 
-// admin/se_fulltext.php, row 128
+// admin/se_fulltext.php, row 145
 "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item" => "Ezekben a szövegdobozokban ( az alább felsorolt címkékkel ) szabályozhatja, mi jelenjen meg az egyes cikkek teljes szöveges nézetében", // ai 2026-06
 
-// admin/se_fulltext.php, row 151
+// admin/se_fulltext.php, row 168
 "HTML code for fulltext view" => "A teljes szöveges nézet HTML-kódja", // ai 2026-06
 
-// admin/se_fulltext.php, row 201, 205
+// admin/se_fulltext.php, row 218, 222
 "The template for discussion you can set on \"Design\" -> \"View\" page" => "A hozzászólások sablonját a \"Megjelenés\" -> \"Nézet\" oldalon állíthatja be", // ai 2026-06
 
-// admin/se_fulltext.php, row 202
+// admin/se_fulltext.php, row 219
 "Use HTML tags" => "HTML-címkék használata", // ai 2026-06
 
-// admin/se_fulltext.php, row 203
+// admin/se_fulltext.php, row 220
 "New comments disabled" => "Új hozzászólások letiltva", // ai 2026-06
 
 // admin/se_history.php, row 57
@@ -2274,7 +2293,7 @@ return [
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "Az alias mindig _# + 8 NAGYBETŰ legyen, pl. _#<b>SOMTHING</b>.", // ai 2026-06
 
 // admin/se_inputform.php, row 197, 512
-// include/stringexpand.php, row 95
+// include/stringexpand.php, row 97
 // src/Optimize/CheckUserAliasFunctions.php, row 89
 "Alias" => "Alias", // ai 2026-10
 
@@ -2295,7 +2314,7 @@ return [
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "FIGYELEM: Ne módosítsa ezt a beállítást, ha nem biztos abban, hogy mit csinál!", // ai 2026-06
 
 // admin/se_inputform.php, row 388
-// include/formutil.php, row 191
+// include/formutil.php, row 192
 "Update & Edit" => "Frissítés és szerkesztés", // ai 2026-06
 
 // admin/se_inputform.php, row 389
@@ -2345,7 +2364,7 @@ return [
 // admin/se_inputform.php, row 467
 // admin/sliceimp.php, row 425
 // include/form.class.php, row 474, 476
-// include/formutil.php, row 209, 2951
+// include/formutil.php, row 210, 2952
 "Insert" => "Beszúrás", // ai 2026-06
 
 // admin/se_inputform.php, row 470
@@ -2403,7 +2422,7 @@ return [
 "Reset" => "Visszaállítás", // ai 2026-06
 
 // admin/se_inputform.php, row 514
-// include/logs.php, row 638
+// include/logs.php, row 640
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Paraméterek", // ai 2026-06
 
@@ -2503,11 +2522,14 @@ return [
 // admin/se_inter_import2.php, row 116
 "The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master." => "A rovat a távoli rovat pontos másolata lesz. Minden cikk átmásolásra kerül, beleértve a Várólistán és a Lomtárban lévő cikkeket is. A távoli cikk bármilyen módosításakor a tartalom átmásolódik a cikk helyi másolatába. A cikkek azonos hosszú azonosítókat kapnak (nem a rövideket!). Nincs értelme a helyi másolatban módosítani a cikkeket – a távoli forrás felülírja őket.", // ai 2026-06
 
-// admin/se_inter_import3.php, row 65
+// admin/se_inter_import3.php, row 71
 "The import was already created" => "Az importálás már korábban létrejött", // ai 2026-06
 
-// admin/se_inter_import3.php, row 118
+// admin/se_inter_import3.php, row 130
 "The import was successfully created" => "Az importálás sikeresen létrejött", // ai 2026-06
+
+// admin/se_inter_import3.php, row 133
+"Can't add external import" => "A külső importálás nem adható hozzá", // ai 2026-11
 
 // admin/se_isds_registry.php, row 54
 "You do not have permissions to pair the items of this slice with the register of data boxes" => "Nincs jogosultsága e rovat cikkeit az adatdobozok nyilvántartásával párosítani", // ai 2026-11
@@ -2837,9 +2859,9 @@ return [
 "Rule" => "Szabály", // ai 2026-06
 
 // admin/se_profile.php, row 210
-// include/formutil.php, row 1226
+// include/formutil.php, row 1227
 // include/transformation.class.php, row 192, 381, 454, 548, 738
-// include/widget.class.php, row 657
+// include/widget.class.php, row 664
 "HTML" => "",
 
 // admin/se_profile.php, row 217
@@ -2965,37 +2987,37 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Használjon \"headline........,publish_date....-\" vagy \"sort[]\" feltételeket", // ai 2026-06
 
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 94
 "Top all time" => "Top összesítve", // ai 2026-06
 
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 95
 "Top this year" => "Top idén", // ai 2026-06
 
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 96
 "Top this month" => "Top ebben a hónapban", // ai 2026-06
 
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 97
 "Top this week" => "Top ezen a héten", // ai 2026-06
 
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 98
 "Top this day" => "Top ma", // ai 2026-06
 
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 99
 "Top last year" => "Top tavaly", // ai 2026-06
 
-// admin/se_statistics.php, row 90
+// admin/se_statistics.php, row 100
 "Top last month" => "Top múlt hónapban", // ai 2026-06
 
-// admin/se_statistics.php, row 91
+// admin/se_statistics.php, row 101
 "Top last week" => "Top múlt héten", // ai 2026-06
 
-// admin/se_statistics.php, row 92
+// admin/se_statistics.php, row 102
 "Top last day" => "Top tegnap", // ai 2026-06
 
-// admin/se_statistics.php, row 96
+// admin/se_statistics.php, row 106
 "Item Statistics" => "Cikkstatisztika", // ai 2026-06
 
-// admin/se_statistics.php, row 97
+// admin/se_statistics.php, row 107
 "Show items" => "Cikkek megjelenítése", // ai 2026-06
 
 // admin/se_taskmanager.php, row 39
@@ -3093,7 +3115,7 @@ return [
 // admin/se_view.php, row 545
 // central/installapp.php, row 1167
 // include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1882
+// include/stringexpand.php, row 1890
 "No" => "Nem", // ai 2026-06
 
 // admin/se_view.php, row 545
@@ -3121,7 +3143,7 @@ return [
 "Create new view from this one" => "Új nézet létrehozása ez alapján", // ai 2026-06
 
 // admin/se_views.php, row 149, 203, 223
-// include/formutil.php, row 1774, 1781
+// include/formutil.php, row 1775, 1782
 // src/Import/DetailPage.php, row 329, 666
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
@@ -3165,7 +3187,7 @@ return [
 "View items" => "Cikkek megtekintése", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1409
+// src/Manager.php, row 1420
 "Selected items" => "Kijelölt cikkek", // ai 2026-06
 
 // admin/search_replace.php, row 180
@@ -3189,17 +3211,17 @@ return [
 // src/Widget/RichtextMarkup.php, row 87
 "Close" => "Bezárás", // ai 2026-06
 
-// admin/setup.php, row 61, 64
+// admin/setup.php, row 64, 67
 "ActionApps Setup" => "ActionApps telepítése", // ai 2026-06
 
-// admin/setup.php, row 72
+// admin/setup.php, row 75
 "This script can't be used on a configured system." => "Ez a szkript nem használható már beállított rendszeren.", // ai 2026-06
 
-// admin/setup.php, row 95
+// admin/setup.php, row 98
 // admin/um_uedit.php, row 341
 "Superadmin account" => "Szuperadmin fiók", // ai 2026-06
 
-// admin/setup.php, row 100, 241
+// admin/setup.php, row 103, 240
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 136
 // admin/um_uedit.php, row 332
@@ -3210,33 +3232,33 @@ return [
 // src/Widget/TfaWidget.php, row 77
 "Password" => "Jelszó", // ai 2026-06
 
-// admin/setup.php, row 101, 243
-// include/formutil.php, row 2200
+// admin/setup.php, row 104, 242
+// include/formutil.php, row 2201
 "Retype Password" => "Jelszó még egyszer", // ai 2026-06
 
-// admin/setup.php, row 102, 245
+// admin/setup.php, row 105, 244
 // admin/slicewiz.php, row 87
 // admin/um_passwd.php, row 138
 // admin/um_uedit.php, row 334
 // include/um_util.php, row 298
 "First name" => "Keresztnév", // ai 2026-06
 
-// admin/setup.php, row 103, 246
+// admin/setup.php, row 106, 245
 "Last name" => "Vezetéknév", // ai 2026-06
 
-// admin/setup.php, row 120
+// admin/setup.php, row 123
 "Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>" => "Üdvözöljük! Ezzel a szkripttel hozhatja létre a szuperadmin fiókot.<p>Ha új AA-példányt telepít, nyomja meg az <b>Inicializálás</b> gombot.<br>", // ai 2026-06
 
-// admin/setup.php, row 121
+// admin/setup.php, row 124
 "If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>" => "Ha véletlenül törölte a szuperadmin fiókját, nyomja meg a <b>Helyreállítás</b> gombot.<br>", // ai 2026-06
 
-// admin/setup.php, row 125, 194
+// admin/setup.php, row 128, 197
 " Init " => " Inicializálás ", // ai 2026-06
 
-// admin/setup.php, row 126, 208
+// admin/setup.php, row 129, 211
 "Recover" => "Helyreállítás", // ai 2026-06
 
-// admin/setup.php, row 149
+// admin/setup.php, row 152
 "Database is not configured correctly or the database is empty.<br>\n"
    ."             Check please the database credentials in <b>include/config.php</b>\n"
    ."             file <br>or run <a href=\"../service/sql_update.php\">/service/sql_update.php</a> script,\n"
@@ -3246,34 +3268,31 @@ return [
    ."             fájlban,<br>vagy futtassa a <a href=\"../service/sql_update.php\">/service/sql_update.php</a> szkriptet,\n"
    ."             amely létrehozza az AA táblákat.", // ai 2026-06
 
-// admin/setup.php, row 203
+// admin/setup.php, row 206
 "Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>" => "Nem sikerült hozzáadni az elsődleges jogosultsági objektumot.<br>Kérjük, ellenőrizze a jogosultsági rendszer hozzáférési beállításait.<br>Ha véletlenül törölte a szuperadmin fiókját, használja a <b>Helyreállítás</b> gombot", // ai 2026-06
 
-// admin/setup.php, row 218
-"Can't delete invalid permission." => "Nem sikerült törölni az érvénytelen jogosultságot.", // ai 2026-06
+// admin/setup.php, row 221
+"Permission of an unknown user/group (not deleted): " => "Ismeretlen felhasználó/csoport jogosultsága (nem törölve): ", // ai 2026-11
 
-// admin/setup.php, row 220
-"Invalid permission deleted (no such user/group): " => "Érvénytelen jogosultság törölve (nincs ilyen felhasználó/csoport): ", // ai 2026-06
-
-// admin/setup.php, row 250
+// admin/setup.php, row 249
 // include/um_util.php, row 304
 "Retyped password is not the same as the first one" => "A megismételt jelszó nem egyezik az elsővel", // ai 2026-06
 
-// admin/setup.php, row 272
+// admin/setup.php, row 271
 // include/um_util.php, row 337
 "It is impossible to add user to permission system" => "Nem lehet hozzáadni a felhasználót a jogosultsági rendszerhez", // ai 2026-06
 
-// admin/setup.php, row 285
+// admin/setup.php, row 284
 "Congratulations! The account was created." => "Gratulálunk! A fiók létrejött.", // ai 2026-06
 
-// admin/setup.php, row 287
+// admin/setup.php, row 286
 "Use this account to login and add your first slice:" => "Ezzel a fiókkal jelentkezzen be, és hozza létre első rovatát:", // ai 2026-06
 
-// admin/setup.php, row 288
+// admin/setup.php, row 287
 // admin/slicedit.php, row 240
 "Add Slice" => "Rovat hozzáadása", // ai 2026-06
 
-// admin/setup.php, row 291
+// admin/setup.php, row 290
 "Can't assign super access permission." => "Nem sikerült hozzárendelni a szuper hozzáférési jogosultságot.", // ai 2026-06
 
 // admin/sliceadd.php, row 75
@@ -3285,12 +3304,12 @@ return [
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
 // admin/um_uedit.php, row 389
-// include/formutil.php, row 1771
+// include/formutil.php, row 1772
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
 // src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1261
+// src/Manager.php, row 239, 1272
 "Add" => "Hozzáadás", // ai 2026-06
 
 // admin/slicedel.php, row 51
@@ -3346,7 +3365,7 @@ return [
 "Hold bin" => "Várólista", // ai 2026-06
 
 // admin/slicedit.php, row 154
-// include/formutil.php, row 3308
+// include/formutil.php, row 3309
 // src/Central/FindingText.php, row 417
 "All items" => "Minden cikk", // ai 2026-06
 
@@ -3739,7 +3758,7 @@ return [
 
 // admin/um_gedit.php, row 312
 // admin/um_uedit.php, row 231, 242
-// include/logs.php, row 916
+// include/logs.php, row 918
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -3817,7 +3836,7 @@ return [
 "Added" => "Hozzáadva", // ai 2026-11
 
 // admin/um_passkeys.php, row 149
-// include/formutil.php, row 3300
+// include/formutil.php, row 3301
 "Last used" => "Utoljára használva", // ai 2026-06
 
 // admin/um_passkeys.php, row 149
@@ -4023,7 +4042,7 @@ return [
 "Write email to users" => "E-mail írása a felhasználóknak", // ai 2026-06
 
 // admin/write_mail.php, row 236
-// include/logs.php, row 1064
+// include/logs.php, row 1066
 "Recipients" => "Címzettek", // ai 2026-06
 
 // admin/write_mail.php, row 238
@@ -4097,7 +4116,7 @@ return [
 "App" => "Alkalmazás", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1206
+// include/logs.php, row 1208
 "Version" => "Verzió", // ai 2026-10
 
 // central/appstore.php, row 164
@@ -4240,7 +4259,7 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1207
+// include/logs.php, row 1209
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
@@ -4285,7 +4304,7 @@ return [
 "Hold Ctrl to choose more of them." => "Több elem kiválasztásához tartsa lenyomva a Ctrl billentyűt.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 795, 1249
+// include/logs.php, row 797, 1251
 "Mode" => "Mód", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4586,7 +4605,7 @@ return [
 
 // central/installapp.php, row 1167
 // include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1882
+// include/stringexpand.php, row 1890
 "Yes" => "Igen", // ai 2026-06
 
 // central/installapp.php, row 1178
@@ -4675,7 +4694,7 @@ return [
 "Stopped by an error" => "Hiba miatt leállt", // ai 2026-10
 
 // central/installapp.php, row 1369
-// include/logs.php, row 797
+// include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
 "Finished" => "Befejezve", // ai 2026-10
@@ -4925,7 +4944,7 @@ return [
 "Short Id" => "Rövid ID", // ai 2026-06
 
 // include/constants.php, row 456
-// include/logs.php, row 955, 987
+// include/logs.php, row 957, 989
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Osztály", // ai 2026-06
 
@@ -4934,7 +4953,7 @@ return [
 "Level" => "Szint", // ai 2026-06
 
 // include/constants.php, row 509
-// include/logs.php, row 1166
+// include/logs.php, row 1168
 "Feed" => "Tartalom átadása", // ai 2026-06
 
 // include/constants.php, row 510
@@ -5533,37 +5552,37 @@ return [
 // include/fileman.php, row 582
 "Are you sure you want to delete the selected files and folders?" => "Biztosan törli a kijelölt fájlokat és mappákat?", // ai 2026-06
 
-// include/files.class.php, row 116
+// include/files.class.php, row 117
 "No destination directory for image uploads specified" => "Nincs megadva célkönyvtár a képfeltöltésekhez", // ai 2026-06
 
-// include/files.class.php, row 120
+// include/files.class.php, row 121
 "Can't create directory for image uploads" => "Nem hozható létre könyvtár a képfeltöltésekhez", // ai 2026-06
 
-// include/files.class.php, row 174
+// include/files.class.php, row 175
 "Can't read the file %1" => "A(z) %1 fájl nem olvasható", // ai 2026-06
 
-// include/files.class.php, row 207
+// include/files.class.php, row 208
 "No destination file specified" => "Nincs megadva célfájl", // ai 2026-06
 
-// include/files.class.php, row 212, 227
+// include/files.class.php, row 213, 228
 "type of uploaded file not allowed" => "a feltöltött fájl típusa nem engedélyezett", // ai 2026-06
 
-// include/files.class.php, row 251
+// include/files.class.php, row 253
 "Can't move image  %1 to %2 (%3)" => "Nem sikerült a(z) %1 kép áthelyezése ide: %2 (%3)", // ai 2026-06
 
-// include/files.class.php, row 258
+// include/files.class.php, row 263
 "Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php" => "Nem sikerült módosítani a feltöltött fájl jogosultságait: %1 - %2. Lásd az IMG_UPLOAD_FILE_MODE beállítást a config.php fájlban", // ai 2026-06
 
-// include/files.class.php, row 283
+// include/files.class.php, row 288
 "Can't open file for writing: %1" => "Nem sikerült írásra megnyitni a fájlt: %1", // ai 2026-06
 
-// include/files.class.php, row 289
+// include/files.class.php, row 294
 "Can't write to file: %1" => "Nem sikerült írni a fájlba: %1", // ai 2026-06
 
-// include/files.class.php, row 363
+// include/files.class.php, row 368
 "can't create backup of the file" => "nem sikerült biztonsági másolatot készíteni a fájlról", // ai 2026-06
 
-// include/files.class.php, row 1438
+// include/files.class.php, row 1447
 ": No such directory" => ": Nincs ilyen könyvtár", // ai 2026-06
 
 // include/form.class.php, row 104
@@ -5576,7 +5595,7 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1299
+// include/logs.php, row 1301
 // src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "Rovatazonosító", // ai 2026-06
 
@@ -5598,131 +5617,131 @@ return [
 // include/menu.php, row 148
 "Forms" => "Űrlapok", // ai 2026-06
 
-// include/formutil.php, row 193
+// include/formutil.php, row 194
 "Update & View" => "Frissítés és megtekintés", // ai 2026-06
 
-// include/formutil.php, row 200
+// include/formutil.php, row 201
 "Insert as new" => "Beszúrás újként", // ai 2026-06
 
-// include/formutil.php, row 204, 2972
+// include/formutil.php, row 205, 2973
 "Reset form" => "Űrlap visszaállítása", // ai 2026-06
 
-// include/formutil.php, row 207, 212, 2964, 2968
+// include/formutil.php, row 208, 213, 2965, 2969
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Mégse", // ai 2026-06
 
-// include/formutil.php, row 210
+// include/formutil.php, row 211
 "Insert & Edit" => "Beszúrás és szerkesztés", // ai 2026-06
 
-// include/formutil.php, row 211
+// include/formutil.php, row 212
 "Insert & View" => "Beszúrás és megtekintés", // ai 2026-06
 
-// include/formutil.php, row 303
+// include/formutil.php, row 304
 "Part" => "Rész", // ai 2026-06
 
-// include/formutil.php, row 367
+// include/formutil.php, row 368
 "No fields defined for this slice" => "Ehhez a rovathoz nincsenek mezők definiálva", // ai 2026-06
 
-// include/formutil.php, row 919
+// include/formutil.php, row 920
 "set" => "bekapcsolva", // ai 2026-06
 
-// include/formutil.php, row 919
+// include/formutil.php, row 920
 "unset" => "kikapcsolva", // ai 2026-06
 
-// include/formutil.php, row 1049
+// include/formutil.php, row 1050
 "Unable to find tagprefix table %1" => "Nem található a(z) %1 tagprefix tábla", // ai 2026-06
 
-// include/formutil.php, row 1201
+// include/formutil.php, row 1202
 "import" => "importálás", // ai 2026-06
 
-// include/formutil.php, row 1216
+// include/formutil.php, row 1217
 // src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Szerkesztés a szerkesztőben", // ai 2026-06
 
-// include/formutil.php, row 1229
+// include/formutil.php, row 1230
 // include/transformation.class.php, row 193, 382, 455, 549, 739
-// include/widget.class.php, row 658
+// include/widget.class.php, row 665
 "Plain text" => "Egyszerű szöveg", // ai 2026-06
 
-// include/formutil.php, row 1271
+// include/formutil.php, row 1272
 // include/transformation.class.php, row 661
 "Translate" => "Fordítás", // ai 2026-06
 
-// include/formutil.php, row 1781, 1785
+// include/formutil.php, row 1782, 1786
 "Enter the value" => "Adja meg az értéket", // ai 2026-06
 
-// include/formutil.php, row 1785
+// include/formutil.php, row 1786
 // include/menu.php, row 141
 // src/Import/DetailCatalog.php, row 124
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Módosítás", // ai 2026-06
 
-// include/formutil.php, row 1928, 2115
+// include/formutil.php, row 1929, 2116
 // src/Widget/MchWidget.php, row 135
 // src/Widget/Widget.php, row 837
 "Selected" => "Kiválasztott", // ai 2026-06
 
-// include/formutil.php, row 2114
+// include/formutil.php, row 2115
 "Offer" => "Kínálat", // ai 2026-06
 
-// include/formutil.php, row 2179
-// include/stringexpand.php, row 11506, 11529
+// include/formutil.php, row 2180
+// include/stringexpand.php, row 11522, 11545
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
-// src/Widget/RimWidget.php, row 287
+// src/Widget/RimWidget.php, row 288
 "new" => "új", // ai 2026-06
 
-// include/formutil.php, row 2199
+// include/formutil.php, row 2200
 "Change Password" => "Jelszó módosítása", // ai 2026-06
 
-// include/formutil.php, row 2201
+// include/formutil.php, row 2202
 "Delete Password" => "Jelszó törlése", // ai 2026-06
 
-// include/formutil.php, row 2210
+// include/formutil.php, row 2211
 // include/searchlib.php, row 60, 128, 131, 134, 137, 140
 // src/Central/FindingText.php, row 412
 // src/Credential/Store.php, row 53
 "not set" => "nincs beállítva", // ai 2026-06
 
-// include/formutil.php, row 2975
+// include/formutil.php, row 2976
 "Submit" => "Küldés", // ai 2026-06
 
-// include/formutil.php, row 3294
+// include/formutil.php, row 3295
 "Group Name" => "Csoport neve", // ai 2026-06
 
-// include/formutil.php, row 3295
-// include/logs.php, row 752, 852, 1116
+// include/formutil.php, row 3296
+// include/logs.php, row 754, 854, 1118
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Darabszám", // ai 2026-06
 
-// include/formutil.php, row 3296
+// include/formutil.php, row 3297
 "Created on" => "Létrehozva", // ai 2026-06
 
-// include/formutil.php, row 3297
+// include/formutil.php, row 3298
 "Created by" => "Létrehozta", // ai 2026-06
 
-// include/formutil.php, row 3298
+// include/formutil.php, row 3299
 "Last updated" => "Utoljára frissítve", // ai 2026-06
 
-// include/formutil.php, row 3299
+// include/formutil.php, row 3300
 "Updated by" => "Frissítette", // ai 2026-06
 
-// include/formutil.php, row 3307
+// include/formutil.php, row 3308
 "All active items" => "Minden aktív cikk", // ai 2026-06
 
-// include/formutil.php, row 3309
+// include/formutil.php, row 3310
 "All pending items" => "Minden időzített cikk", // ai 2026-06
 
-// include/formutil.php, row 3310
+// include/formutil.php, row 3311
 "All expired items" => "Minden lejárt cikk", // ai 2026-06
 
-// include/formutil.php, row 3311
+// include/formutil.php, row 3312
 "All items in holding bin" => "Minden cikk a várólistán", // ai 2026-06
 
-// include/formutil.php, row 3312
+// include/formutil.php, row 3313
 "All items in trash bin" => "Minden cikk a lomtárban", // ai 2026-06
 
 // include/init_page.php, row 84
@@ -6236,247 +6255,249 @@ return [
 // include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Ha biztos benne, hogy a helyes jelszót írta be, kérjük, írjon e-mailt: <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 546
+// include/logs.php, row 548
 "Created time" => "Létrehozás ideje", // ai 2026-06
 
-// include/logs.php, row 547
+// include/logs.php, row 549
 "Readers to be emailed" => "E-mailben értesítendő olvasók", // ai 2026-06
 
-// include/logs.php, row 559
+// include/logs.php, row 561
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
 // src/Optimize/CheckSecurityProtections.php, row 101
+// src/Optimize/CheckServerRefusals.php, row 68
 "Page" => "Oldal", // ai 2026-06
 
-// include/logs.php, row 634, 678, 693
+// include/logs.php, row 636, 680, 695
 "Time [s]" => "Idő [s]", // ai 2026-06
 
-// include/logs.php, row 635, 680
+// include/logs.php, row 637, 682
 "Memory usage [MB]" => "Memóriahasználat [MB]", // ai 2026-06
 
-// include/logs.php, row 636
+// include/logs.php, row 638
 "Memory peak [MB]" => "Memóriacsúcs [MB]", // ai 2026-06
 
-// include/logs.php, row 637
+// include/logs.php, row 639
 "Return code" => "Visszatérési kód", // ai 2026-06
 
-// include/logs.php, row 653
+// include/logs.php, row 655
 "Tasks done" => "Elvégzett feladatok", // ai 2026-06
 
-// include/logs.php, row 654
+// include/logs.php, row 656
 "Tasks started" => "Elindított feladatok", // ai 2026-06
 
-// include/logs.php, row 655
+// include/logs.php, row 657
 "Duration [s]" => "Időtartam [s]", // ai 2026-06
 
-// include/logs.php, row 656
+// include/logs.php, row 658
 "Allowed [s]" => "Engedélyezett [s]", // ai 2026-06
 
-// include/logs.php, row 676
+// include/logs.php, row 678
 "Cached" => "Gyorsítótárból", // ai 2026-06
 
-// include/logs.php, row 677
+// include/logs.php, row 679
 "Not Modified (304)" => "Nem módosult (304)", // ai 2026-06
 
-// include/logs.php, row 679
+// include/logs.php, row 681
 "Time + Cached + 304" => "Idő + gyorsítótár + 304", // ai 2026-06
 
-// include/logs.php, row 681, 694, 904, 1090
+// include/logs.php, row 683, 696, 906, 1092
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 721
+// include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 722
+// include/logs.php, row 724
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 723
+// include/logs.php, row 725
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 724
+// include/logs.php, row 726
 "DB" => "Adatbázis", // ai 2026-06
 
-// include/logs.php, row 725
+// include/logs.php, row 727
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Memória", // ai 2026-06
 
-// include/logs.php, row 726
+// include/logs.php, row 728
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 727
+// include/logs.php, row 729
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Szerverbeállítások", // ai 2026-10
 
-// include/logs.php, row 751, 850
+// include/logs.php, row 753, 852
 "Severity" => "Súlyosság", // ai 2026-10
 
-// include/logs.php, row 753, 848, 877
+// include/logs.php, row 755, 850, 879
 "Finding" => "Megállapítás", // ai 2026-10
 
-// include/logs.php, row 771
+// include/logs.php, row 773
 "Problems" => "Problémák", // ai 2026-10
 
-// include/logs.php, row 772
+// include/logs.php, row 774
 "Warnings" => "Figyelmeztetések", // ai 2026-10
 
-// include/logs.php, row 773
+// include/logs.php, row 775
 "Recommendations" => "Javaslatok", // ai 2026-10
 
-// include/logs.php, row 774
+// include/logs.php, row 776
 "Checks" => "Ellenőrzések", // ai 2026-10
 
-// include/logs.php, row 794, 825
+// include/logs.php, row 796, 827
 // src/Import/DetailPage.php, row 300, 367, 800
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Futtatás", // ai 2026-10
 
-// include/logs.php, row 796
+// include/logs.php, row 798
 // src/Import/DetailPage.php, row 329
 // src/Optimize/CheckImports.php, row 150, 154
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 "Started" => "Kezdés", // ai 2026-10
 
-// include/logs.php, row 798
+// include/logs.php, row 800
 "Last full run" => "Utolsó teljes futtatás", // ai 2026-10
 
-// include/logs.php, row 799
+// include/logs.php, row 801
 "Last full run started" => "Utolsó teljes futtatás kezdete", // ai 2026-10
 
-// include/logs.php, row 824, 849
+// include/logs.php, row 826, 851
 "Pair" => "Pár", // ai 2026-10
 
-// include/logs.php, row 826
+// include/logs.php, row 828
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Futtatva", // ai 2026-10
 
-// include/logs.php, row 827, 851
+// include/logs.php, row 829, 853
 "Known issue" => "Ismert probléma", // ai 2026-10
 
-// include/logs.php, row 853
+// include/logs.php, row 855
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Első észlelés", // ai 2026-10
 
-// include/logs.php, row 854
+// include/logs.php, row 856
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "Egymást követő futtatások", // ai 2026-10
 
-// include/logs.php, row 878
+// include/logs.php, row 880
 "Evidence" => "Bizonyíték", // ai 2026-10
 
-// include/logs.php, row 901
+// include/logs.php, row 903
 "Identifier" => "Azonosító", // ai 2026-06
 
-// include/logs.php, row 902, 1266, 1281
+// include/logs.php, row 904, 1268, 1283
 // modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "Modul azonosítója", // ai 2026-06
 
-// include/logs.php, row 915
+// include/logs.php, row 917
 "Template id" => "Sablon azonosítója", // ai 2026-06
 
-// include/logs.php, row 917
+// include/logs.php, row 919
 "Emails sent" => "Elküldött e-mailek", // ai 2026-06
 
-// include/logs.php, row 956
+// include/logs.php, row 958
 "Object id" => "Objektumazonosító", // ai 2026-10
 
-// include/logs.php, row 988
+// include/logs.php, row 990
 "Mail template" => "E-mail-sablon", // ai 2026-10
 
-// include/logs.php, row 989
+// include/logs.php, row 991
 "Reader item" => "Olvasó cikke", // ai 2026-10
 
-// include/logs.php, row 990
+// include/logs.php, row 992
 "Origin" => "Eredet", // ai 2026-10
 
-// include/logs.php, row 1061
+// include/logs.php, row 1063
 "Transport" => "Küldési mód", // ai 2026-10
 
-// include/logs.php, row 1062
+// include/logs.php, row 1064
 "Recipients sent" => "Elküldött címzettek", // ai 2026-10
 
-// include/logs.php, row 1063
+// include/logs.php, row 1065
 "Server response" => "Szerver válasza", // ai 2026-10
 
-// include/logs.php, row 1076
+// include/logs.php, row 1078
 "Items selected" => "Kijelölt tételek", // ai 2026-06
 
-// include/logs.php, row 1077
+// include/logs.php, row 1079
 "Items updated" => "Frissített tételek", // ai 2026-06
 
-// include/logs.php, row 1078
+// include/logs.php, row 1080
 "Items planned" => "Tervezett tételek", // ai 2026-06
 
-// include/logs.php, row 1089
+// include/logs.php, row 1091
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Üzenet", // ai 2026-06
 
-// include/logs.php, row 1091
+// include/logs.php, row 1093
 "Referer" => "Hivatkozó", // ai 2026-06
 
-// include/logs.php, row 1102
+// include/logs.php, row 1104
 "New name" => "Új név", // ai 2026-06
 
-// include/logs.php, row 1103
+// include/logs.php, row 1105
 "Old name" => "Régi név", // ai 2026-06
 
-// include/logs.php, row 1114, 1179
+// include/logs.php, row 1116, 1181
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Fázis", // ai 2026-06
 
-// include/logs.php, row 1115
+// include/logs.php, row 1117
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Gyűjtemény", // ai 2026-06
 
-// include/logs.php, row 1117, 1168, 1180, 1315
+// include/logs.php, row 1119, 1170, 1182, 1317
 // src/Import/Definition.php, row 154
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 90
 "Detail" => "Részletek", // ai 2026-06
 
-// include/logs.php, row 1167
+// include/logs.php, row 1169
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Állapot", // ai 2026-06
 
-// include/logs.php, row 1219
+// include/logs.php, row 1221
 "Processed" => "Feldolgozva", // ai 2026-06
 
-// include/logs.php, row 1220
+// include/logs.php, row 1222
 "Stored" => "Tárolva", // ai 2026-06
 
-// include/logs.php, row 1221
+// include/logs.php, row 1223
 "Errors" => "Hibák", // ai 2026-06
 
-// include/logs.php, row 1234
+// include/logs.php, row 1236
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Eredmény", // ai 2026-06
 
-// include/logs.php, row 1250
+// include/logs.php, row 1252
 "Flags" => "Jelzők", // ai 2026-06
 
-// include/logs.php, row 1251
+// include/logs.php, row 1253
 "Context" => "Kontextus", // ai 2026-06
 
-// include/logs.php, row 1267
+// include/logs.php, row 1269
 "Feed counterpart" => "Feed-megfelelő", // ai 2026-06
 
-// include/logs.php, row 1282
+// include/logs.php, row 1284
 "Field ID" => "Mezőazonosító", // ai 2026-06
 
-// include/logs.php, row 1300
+// include/logs.php, row 1302
 // src/Optimize/CheckAjaxUnsigned.php, row 82
+// src/Optimize/CheckFileReadRefusals.php, row 78
 // src/Optimize/CheckHttp.php, row 62
 // src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 88
@@ -7253,124 +7274,124 @@ return [
 // include/statestore.php, row 1449
 "Manage components" => "Komponensek kezelése", // ai 2026-06
 
-// include/stringexpand.php, row 95
+// include/stringexpand.php, row 97
 "Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "Az alias így hívható: {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}", // ai 2026-06
 
-// include/stringexpand.php, row 96
+// include/stringexpand.php, row 98
 "Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "Az alias által kiírt kód. Az aliasnak lehetnek paraméterei, amelyeket az _#P1, _#P2, ... változókkal használhat", // ai 2026-06
 
-// include/stringexpand.php, row 98
+// include/stringexpand.php, row 100
 "Usage example" => "Használati példa", // ai 2026-06
 
-// include/stringexpand.php, row 933
+// include/stringexpand.php, row 940
 "Jabber Online Status Indicator" => "Jabber online állapotjelző", // ai 2026-06
 
-// include/stringexpand.php, row 5507
+// include/stringexpand.php, row 5515
 "save changes" => "változtatások mentése", // ai 2026-06
 
-// include/stringexpand.php, row 5726
+// include/stringexpand.php, row 5734
 "No item ID" => "Nincs cikkazonosító", // ai 2026-06
 
-// include/stringexpand.php, row 5733
+// include/stringexpand.php, row 5741
 "No transformations" => "Nincsenek transzformációk", // ai 2026-06
 
-// include/stringexpand.php, row 5747
+// include/stringexpand.php, row 5755
 "No slice for item" => "Nincs rovat a cikkhez", // ai 2026-06
 
-// include/stringexpand.php, row 5748
+// include/stringexpand.php, row 5756
 "No current slice(s)" => "Nincs aktuális rovat", // ai 2026-06
 
-// include/stringexpand.php, row 5749
+// include/stringexpand.php, row 5757
 "Item slice is not in list of allowed slices" => "A cikk rovata nem szerepel az engedélyezett rovatok listáján", // ai 2026-06
 
-// include/stringexpand.php, row 5754
+// include/stringexpand.php, row 5762
 "No permit_anonymous_edit permission for the slice" => "Nincs permit_anonymous_edit jogosultság a rovathoz", // ai 2026-06
 
-// include/stringexpand.php, row 6149
+// include/stringexpand.php, row 6157
 "No dictionaries specified for {dictionary}" => "Nincs szótár megadva a {dictionary} számára", // ai 2026-06
 
-// include/stringexpand.php, row 6279
+// include/stringexpand.php, row 6287
 "No module for dictionary slice" => "Nincs modul a szótárrovathoz", // ai 2026-06
 
-// include/stringexpand.php, row 8196
+// include/stringexpand.php, row 8208
 "version" => "verzió", // ai 2026-06
 
-// include/stringexpand.php, row 8384
+// include/stringexpand.php, row 8396
 "show" => "megjelenítés", // ai 2026-06
 
-// include/stringexpand.php, row 8385
+// include/stringexpand.php, row 8397
 "hide" => "elrejtés", // ai 2026-06
 
-// include/stringexpand.php, row 8386
+// include/stringexpand.php, row 8398
 "loading" => "betöltés", // ai 2026-06
 
-// include/stringexpand.php, row 9517
+// include/stringexpand.php, row 9531
 "E-mail confirmed." => "E-mail megerősítve.", // ai 2026-06
 
-// include/stringexpand.php, row 9521
+// include/stringexpand.php, row 9535
 "E-mail unsubscribed" => "E-mail leiratkoztatva", // ai 2026-06
 
-// include/stringexpand.php, row 10280
+// include/stringexpand.php, row 10296
 "Forgot your password? Fill in your email." => "Elfelejtette jelszavát? Adja meg e-mail-címét.", // ai 2026-06
 
-// include/stringexpand.php, row 10282
+// include/stringexpand.php, row 10298
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-mail", // ai 2026-10
 
-// include/stringexpand.php, row 10300, 10304
+// include/stringexpand.php, row 10316, 10320
 "Unable to find user - please check if it has been misspelled." => "A felhasználó nem található – ellenőrizze, nem írta-e el.", // ai 2026-06
 
-// include/stringexpand.php, row 10318
+// include/stringexpand.php, row 10334
 "Password link" => "Jelszó-hivatkozás", // ai 2026-06
 
-// include/stringexpand.php, row 10319
+// include/stringexpand.php, row 10335
 "Password change url parameter" => "Jelszóváltoztatási URL-paraméter", // ai 2026-06
 
-// include/stringexpand.php, row 10331
+// include/stringexpand.php, row 10347
 "Password change" => "Jelszóváltoztatás", // ai 2026-06
 
-// include/stringexpand.php, row 10332
+// include/stringexpand.php, row 10348
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "A jelszó megváltoztatásához keresse fel a következő címet:<br>%1<br>A változtatás két órán belül lehetséges – utána a kulcs lejár, és újat kell kérnie.", // ai 2026-06
 
-// include/stringexpand.php, row 10341
+// include/stringexpand.php, row 10357
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "A jelszóváltoztatáshoz szükséges kulcsot tartalmazó e-mailt elküldtük a következő címre: %1", // ai 2026-06
 
-// include/stringexpand.php, row 10352, 10381
+// include/stringexpand.php, row 10368, 10397
 "Bad or expired key." => "Hibás vagy lejárt kulcs.", // ai 2026-06
 
-// include/stringexpand.php, row 10357
+// include/stringexpand.php, row 10373
 "Fill in the new password" => "Adja meg az új jelszót", // ai 2026-06
 
-// include/stringexpand.php, row 10359
+// include/stringexpand.php, row 10375
 "New password" => "Új jelszó", // ai 2026-06
 
-// include/stringexpand.php, row 10360
+// include/stringexpand.php, row 10376
 "Retype New Password" => "Új jelszó még egyszer", // ai 2026-06
 
-// include/stringexpand.php, row 10384
+// include/stringexpand.php, row 10400
 "Passwords do not match - please try again." => "A jelszavak nem egyeznek – próbálja újra.", // ai 2026-06
 
-// include/stringexpand.php, row 10387
+// include/stringexpand.php, row 10403
 "The password must be at least 6 characters long." => "A jelszónak legalább 6 karakter hosszúnak kell lennie.", // ai 2026-06
 
-// include/stringexpand.php, row 10393
+// include/stringexpand.php, row 10409
 "Password changed." => "A jelszó megváltozott.", // ai 2026-06
 
-// include/stringexpand.php, row 10395
+// include/stringexpand.php, row 10411
 "An error occurred during password change - please contact: %1." => "Hiba történt a jelszóváltoztatás során – kérjük, forduljon a következőhöz: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 11503, 11526
+// include/stringexpand.php, row 11519, 11542
 "Are you sure you want to permanently DELETE this record?" => "Biztosan VÉGLEGESEN törli ezt a rekordot?", // ai 2026-06
 
-// include/stringexpand.php, row 11509, 11512, 11532, 11535
+// include/stringexpand.php, row 11525, 11528, 11548, 11551
 // src/Widget/RimWidget.php, row 270
 "edit" => "szerkesztés", // ai 2026-06
 
-// include/stringexpand.php, row 11515, 11538
+// include/stringexpand.php, row 11531, 11554
 "back" => "vissza", // ai 2026-06
 
-// include/stringexpand.php, row 11518, 11541
-// src/Widget/RimWidget.php, row 296
+// include/stringexpand.php, row 11534, 11557
+// src/Widget/RimWidget.php, row 297
 "drop files here or click to upload" => "húzza ide a fájlokat, vagy kattintson a feltöltéshez", // ai 2026-06
 
 // include/transformation.class.php, row 159
@@ -7657,7 +7678,7 @@ return [
 // src/Optimize/CheckTrustedProxies.php, row 69
 "default" => "alapértelmezett", // ai 2026-06
 
-// include/widget.class.php, row 470
+// include/widget.class.php, row 477
 "Not filled (%1)" => "Nincs kitöltve (%1)", // ai 2026-06
 
 // misc/datovka/datovka.php, row 154
@@ -7860,16 +7881,16 @@ return [
 // src/AA_Plannedtask.php, row 269
 "failed" => "sikertelen", // ai 2026-10
 
-// src/AA_Plannedtask.php, row 386
+// src/AA_Plannedtask.php, row 391
 "The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "A feladat nem lett mentve – eseményre induló feladat nem hívhatja a {import} parancsot: az általa importált cikkek újra elindítanák a feladatot.", // ai 2026-10
 
-// src/AA_Plannedtask.php, row 389
+// src/AA_Plannedtask.php, row 394
 "The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "A feladat nem lett mentve – {import} parancsot tartalmazó feladatot csak a rovat tartalomcseréjét kezelő felhasználó menthet.", // ai 2026-10
 
-// src/AA_Plannedtask.php, row 453
+// src/AA_Plannedtask.php, row 458
 "not scheduled, yet" => "még nincs ütemezve", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 457
+// src/AA_Plannedtask.php, row 462
 "next run" => "következő futás", // ai 2026-06
 
 // src/Api/Controller/FilesController.php, row 56, 77
@@ -11035,25 +11056,25 @@ return [
 // src/Manager.php, row 817
 "Manager ID" => "Kezelő azonosító", // ai 2026-06
 
-// src/Manager.php, row 1180
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "A művelet nem lett végrehajtva - használja az oldalon lévő gombot.", // ai 2026-10
 
-// src/Manager.php, row 1261
+// src/Manager.php, row 1272
 "Edit id" => "Szerkesztendő id", // ai 2026-06
 
-// src/Manager.php, row 1275
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Több sor kijelöléséhez tartsa nyomva a Shiftet, és kattintson", // ai 2026-06
 
-// src/Manager.php, row 1313
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "Biztosan üríti a kukát?", // ai 2026-06
 
-// src/Manager.php, row 1415
+// src/Manager.php, row 1426
 "Go" => "Mehet", // ai 2026-06
 
-// src/Manager.php, row 1428
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "Nincs kijelölt cikk. Végrehajtja a műveletet az összes szűrt cikken?", // ai 2026-06
 
-// src/Manager.php, row 1428
+// src/Manager.php, row 1439
 "Run for %1 items" => "Futtatás %1 cikken", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47
@@ -11639,6 +11660,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckDiscussionRefusals.php, row 75
+// src/Optimize/CheckFileReadRefusals.php, row 80, 101, 135
 // src/Optimize/CheckFormRobotRefusals.php, row 76
 // src/Optimize/CheckIsdsAccounts.php, row 133, 170, 206
 // src/Optimize/CheckIsdsConf.php, row 156, 189
@@ -11648,6 +11670,7 @@ return [
 // src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
+// src/Optimize/CheckServerRefusals.php, row 69
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckTrustedProxies.php, row 104
 // src/Optimize/CheckUploadRefusals.php, row 91
@@ -11661,6 +11684,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 100
 // src/Optimize/CheckDiscussionRefusals.php, row 76
+// src/Optimize/CheckFileReadRefusals.php, row 81, 102, 136
 // src/Optimize/CheckFormRobotRefusals.php, row 77
 // src/Optimize/CheckIsdsAccounts.php, row 134, 171, 207
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
@@ -11671,6 +11695,7 @@ return [
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 103
+// src/Optimize/CheckServerRefusals.php, row 70
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckTrustedProxies.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 92
@@ -11966,6 +11991,63 @@ return [
 
 // src/Optimize/CheckEnvironment.php, row 66
 "AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4; %5 óta változatlan", // ai 2026-10
+
+// src/Optimize/CheckFileReadRefusals.php, row 26
+"Refused file reads" => "Elutasított fájlolvasások", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 31
+"Lists the files that templates or e-mails asked for in the last 30 days and AA refused to read, as they are not files of the site, the templates that still use {include:…:readfile} or {include:…:site}, which read no file, and the files e-mails took from outside the upload directories." => "Felsorolja azokat a fájlokat, amelyeket a sablonok vagy e-mailek az elmúlt 30 napban kértek, de az AA nem olvasta be őket, mert nem a webhely fájljai; azokat a sablonokat, amelyek még mindig {include:…:readfile} vagy {include:…:site} kifejezést használnak, amely semmilyen fájlt nem olvas be; valamint azokat a fájlokat, amelyeket e-mailek a feltöltési könyvtárakon kívülről vettek.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 73
+"The file %1 was not read (%2)" => "A(z) %1 fájlt az AA nem olvasta be (%2)", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 84
+"{fileinfo} describes only the files uploaded to a slice or to the File Manager - never one from the directory AA is installed in or a dotfile. Give it the URL of an uploaded file, or remove it from the template." => "A {fileinfo} csak a rovatba vagy a Fájlkezelőbe feltöltött fájlokat írja le – soha nem az AA telepítési könyvtárában lévő fájlt vagy ponttal kezdődő nevű fájlt. Adja meg neki egy feltöltött fájl URL-jét, vagy távolítsa el a sablonból.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 85
+"AA reads for templates and e-mails only the files of the site: its File Manager directory or the upload directories - never from the directory AA is installed in, never a dotfile, a script or a file of settings or keys. Move the file among the files of the site, or remove it from the template." => "Az AA a sablonokhoz és e-mailekhez csak a webhely fájljait olvassa be: a Fájlkezelő könyvtárát vagy a feltöltési könyvtárakat – soha nem az AA telepítési könyvtárából, soha nem ponttal kezdődő nevű fájlt, szkriptet, beállítás- vagy kulcsfájlt. Helyezze át a fájlt a webhely fájljai közé, vagy távolítsa el a sablonból.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 96
+"An e-mail took the file %1 from outside the upload directories" => "Egy e-mail a feltöltési könyvtárakon kívülről vette a(z) %1 fájlt", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 104
+"The file was sent. AA is to send local files only from the upload directories of the slices and the File Manager, so attach a file uploaded to the slice instead, or tell the AA developers the directory this site keeps its attachments in." => "A fájlt az AA elküldte. Az AA helyi fájlokat csak a rovatok feltöltési könyvtáraiból és a Fájlkezelőből küldhet, ezért helyette csatoljon a rovatba feltöltött fájlt, vagy közölje az AA fejlesztőivel, melyik könyvtárban tárolja ez a webhely a mellékleteit.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 110
+"No file read was refused in the last 30 days" => "Az elmúlt 30 napban az AA egyetlen fájl beolvasását sem utasította el", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 124
+"readfile read any file of the document root, past the access rules of the web server, so it reads nothing now." => "A readfile opció a dokumentumgyökér bármely fájlját be tudta olvasni, a webszerver hozzáférési szabályait megkerülve, ezért most már semmit sem olvas be.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 125
+"site read from a directory that a visitor could choose by a parameter of the address, so it reads nothing now." => "A site opció olyan könyvtárból olvasott, amelyet a látogató a webcím egy paraméterével megválaszthatott, ezért most már semmit sem olvas be.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 129
+"A template uses {include:%1:%2}, which prints nothing" => "Egy sablon {include:%1:%2} kifejezést használ, amely semmit sem ír ki", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 134
+"Slice or site" => "Rovat vagy webhely", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 138
+"In a slice put the file into its File Manager directory and use {include:<file>:fileman}; elsewhere include the file by its full web address, {include:https#://<domain>/<file>}." => "Rovatban tegye a fájlt a rovat Fájlkezelőjének könyvtárába, és használja ezt: {include:<file>:fileman}; máshol a fájlt a teljes webcímével illessze be: {include:https#://<domain>/<file>}.", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 149
+"outside the files of the site" => "a webhely fájljain kívül", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 150
+"in the directory of an AA installation" => "egy AA-telepítés könyvtárában", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 151
+"a name starting with a dot (.., .htaccess, .git)" => "ponttal kezdődő név (.., .htaccess, .git)", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 152
+"a script, a settings or key file, a dump or a backup" => "szkript, beállítás- vagy kulcsfájl, dump vagy biztonsági mentés", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 153
+"not a regular file, or a file without an extension" => "nem közönséges fájl, vagy kiterjesztés nélküli fájl", // ai 2026-11
+
+// src/Optimize/CheckFileReadRefusals.php, row 154
+"the file changed while it was read" => "a fájl beolvasás közben megváltozott", // ai 2026-11
 
 // src/Optimize/CheckFormRobotRefusals.php, row 26
 "Forms refused as robots" => "Robotként elutasított űrlapok", // ai 2026-11
@@ -13237,7 +13319,7 @@ return [
 "%1 has pages the page cache does not store - a template reads a value which may be the visitor's own" => "A(z) %1 oldalait az oldal-gyorsítótár nem tárolja – egy sablon olyan értéket olvas, amely a látogatóé lehet", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 81
-"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Minden látogatás újra előállítja az ilyen oldalt. Átirányítás, kattintásszámláló vagy űrlap maradhat úgy, ahogy van. Máshol, főként a minden oldalon szereplő sablonban (fejléc, lábléc): törölje a csak hibakereséshez kiírt értéket, és ellenőrizze a név helyesírását ({server:HTTP_REFERER}); a kampányból érkező látogatók felismeréséhez használja a {qs:utm_source}, az eszközéhez a {detect} kifejezést. A gazdagép, a séma és az URI ({server:HTTP_HOST}, {server:REQUEST_URI}) mellett az oldal a gyorsítótárban marad.", // ai 2026-11
+"Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging; to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Minden látogatás újra előállítja az ilyen oldalt. Átirányítás, kattintásszámláló vagy űrlap maradhat úgy, ahogy van. Máshol, főleg a minden oldalon megjelenő sablonban (fejléc, lábléc): törölje a csak hibakereséshez kiírt értéket; a kampányból érkező látogatók felismeréséhez használja ezt: {qs:utm_source}, az eszközéhez ezt: {detect}. A gazdagép, a séma és az URI ({server:HTTP_HOST}, {server:REQUEST_URI}) mellett az oldal gyorsítótárazható marad.", // ai 2026-11
 
 // src/Optimize/CheckPerVisitorReads.php, row 86
 "No template reads a value of the visitor's own by {server:...}" => "Egyetlen sablon sem olvas {server:...} segítségével a látogatóhoz tartozó értéket", // ai 2026-11
@@ -13450,6 +13532,21 @@ return [
 // src/Optimize/CheckSecurityProtections.php, row 113
 "All protections are on and none of them refused anything in the last %1 days" => "Minden védelem be van kapcsolva, és az elmúlt %1 napban egyik sem utasított el semmit", // ai 2026-10
 
+// src/Optimize/CheckServerRefusals.php, row 24
+"Values refused to {server:...}" => "Megtagadott {server:...} értékek", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 29
+"Lists the names that templates asked for by {server:...} in the last 30 days and got an empty string, although the web server had the value, because AA does not hand it to templates." => "Felsorolja azokat a neveket, amelyeket a sablonok az elmúlt 30 napban {server:...} kifejezéssel kértek le, és üres karakterláncot kaptak, bár a webszerver ismerte az értéket, mert az AA nem adja át a sablonoknak.", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 63
+"A template asked for {server:%1} and got an empty string" => "Egy sablon {server:%1} értéket kért, és üres karakterláncot kapott", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 72
+"Templates get the host, the URI and query string, the scheme and port, the visitor's address, browser, referer and Accept headers, and a few more values of the request; cookies, passwords, authorization and other headers or variables of the web server are not for templates. For a URL parameter use {qs:...}, for a cookie {cookie:...}, for the logged-in user {user}. A value that is no secret can be added to the list in AA\\Cache\\PageCache::SERVER_PER_VISITOR, which is a change of the AA code; otherwise change the template." => "A sablonok megkapják a gazdagépet, az URI-t és a lekérdezési karakterláncot, a sémát és a portot, a látogató címét, böngészőjét, a referer és az Accept fejléceket, valamint a kérés néhány további értékét; a sütik, jelszavak, hitelesítési adatok és a webszerver egyéb fejlécei vagy változói nem a sablonoknak valók. URL-paraméterhez használja ezt: {qs:...}, sütihez ezt: {cookie:...}, a bejelentkezett felhasználóhoz ezt: {user}. Nem titkos érték felvehető az AA\\Cache\\PageCache::SERVER_PER_VISITOR listába – ez az AA kódjának módosítása –, egyébként módosítsa a sablont.", // ai 2026-11
+
+// src/Optimize/CheckServerRefusals.php, row 78
+"No template asked {server:...} for a value AA does not hand out in the last 30 days" => "Az elmúlt 30 napban egyetlen sablon sem kért {server:...} kifejezéssel olyan értéket, amelyet az AA nem ad ki", // ai 2026-11
+
 // src/Optimize/CheckSessionidUse.php, row 45
 "Get_Sessionid use" => "Get_Sessionid használata", // ai 2026-10
 
@@ -13470,6 +13567,21 @@ return [
 
 // src/Optimize/CheckSessionidUse.php, row 111
 "Nobody called Get_Sessionid in the last 30 days" => "Az elmúlt 30 napban senki sem hívta a Get_Sessionid parancsot", // ai 2026-10
+
+// src/Optimize/CheckSetupPage.php, row 14
+"Setup page" => "Telepítőoldal", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 19
+"Checks that admin/setup.php is switched off (AA_SETUP_ENABLED in config.php)." => "Ellenőrzi, hogy az admin/setup.php ki van-e kapcsolva (AA_SETUP_ENABLED a config.php fájlban).", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 45
+"The setup page is switched off" => "A telepítőoldal ki van kapcsolva", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 49
+"The setup page is switched on - admin/setup.php creates a superadmin without login whenever the permission system finds none" => "A telepítőoldal be van kapcsolva – az admin/setup.php bejelentkezés nélkül létrehoz egy szuperadmint, valahányszor a jogosultsági rendszer egyet sem talál", // ai 2026-11
+
+// src/Optimize/CheckSetupPage.php, row 50
+"Remove define('AA_SETUP_ENABLED', true); from include/config.php (or from the config file of this database) once the superadmin account exists." => "Amint létezik a szuperadmin fiók, törölje az include/config.php fájlból (vagy ennek az adatbázisnak a konfigurációs fájljából) ezt a sort: define('AA_SETUP_ENABLED', true);", // ai 2026-11
 
 // src/Optimize/CheckSiteStateFiles.php, row 18
 "Site state files" => "Webhelyek állapotfájljai", // ai 2026-10
@@ -14156,16 +14268,16 @@ return [
 // src/Optimize/ImgMeasuring.php, row 85
 "the parameters do not tell the size" => "a paraméterekből nem derül ki a méret", // ai 2026-10
 
-// src/Optimize/ItemDiscussion.php, row 17
+// src/Optimize/ItemDiscussion.php, row 16
 "Delete discussion comments for non-existent items" => "A nem létező cikkekhez tartozó hozzászólások törlése", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 40, 58
+// src/Optimize/ItemDiscussion.php, row 39, 56
 "No problems found" => "Nem találtunk problémát", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 44
+// src/Optimize/ItemDiscussion.php, row 43
 "Problem for item %1 - %2 comments found" => "Probléma a(z) %1 cikknél - %2 hozzászólás található", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 65
+// src/Optimize/ItemDiscussion.php, row 61
 "%1 problems solved" => "%1 probléma megoldva", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 44
@@ -15252,7 +15364,7 @@ return [
 // src/Widget/RimWidget.php, row 239
 "No record matches your search condition." => "Egyetlen rekord sem felel meg a keresési feltételnek.", // ai 2026-06
 
-// src/Widget/RimWidget.php, row 283
+// src/Widget/RimWidget.php, row 284
 "search in existing" => "keresés a meglévők között", // ai 2026-06
 
 // src/Widget/RioWidget.php, row 40
