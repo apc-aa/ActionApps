@@ -31,6 +31,7 @@ use AA\IO\DB\DB_AA;
 use AA\Later\AlertsSweep;
 use AA\Optimize\CheckAlertitemRefusals;
 use AA\Util\LogOnce;
+use AA\Util\Url;
 
 require_once __DIR__ . "/../../include/item.php";
 require_once __DIR__ . "/../../include/view.php";
@@ -398,7 +399,7 @@ class AA_Collection
 
             foreach ($slice["views"] as $vid => $view) {
                 foreach ($view["filters"] as $fid => $filter) {
-                    parse_str($filter["conds"], $dbconds_arr);
+                    $dbconds_arr = Url::parseQuery((string) $filter["conds"]);
                     $conds = $dbconds_arr['conds'];
                     $sort  = $dbconds_arr['sort'];
                     $zids  = new zids(null, "p");
@@ -467,7 +468,7 @@ class AA_Collection
                 // WARNING - HACK: we need to sort the zids according to the common
                 // sort[]: we use the same global trick as in createFilterText
                 if ($last_fprop["sort"]) {
-                    parse_str($last_fprop["sort"], $dbconds_arr);
+                    $dbconds_arr = Url::parseQuery((string) $last_fprop["sort"]);
                     $sort      = $dbconds_arr['sort'];
                     $set       = get_view_settings_cached($last_fprop["vid"]);
                     $user_zids = QueryZids([unpack_id($set["info"]->f("slice_id"))], "", $sort, "ACTIVE", 0, $user_zids);

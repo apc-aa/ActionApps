@@ -61,8 +61,7 @@ final class PhpThumbParams
         if (isset(self::$parsed[$params])) {
             return self::$parsed[$params];
         }
-        $parsed = [];
-        parse_str(str_replace('&amp;', '&', $params), $parsed);
+        $parsed = Url::parseQuery(str_replace('&amp;', '&', $params));
         if (count(self::$parsed) > 256) {  // a page uses some dozens of distinct parameter strings (srcset
             self::$parsed = [];            // candidates included) - guard against templates interpolating values into them
         }

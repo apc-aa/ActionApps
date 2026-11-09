@@ -38,6 +38,7 @@ use AA\Optimize\CheckBlockedRequests;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\SingletonTrait;
+use AA\Util\Url;
 
 require_once __DIR__ . '/locsess.php';
 require_once __DIR__ . '/constants.php';
@@ -301,7 +302,7 @@ function add_vars($query_string = "", $where = 'GLOBALS'): array
         $varstring = substr($varstring, 0, $pos);
     }
 
-    parse_str($varstring, $aa_query_arr);
+    $aa_query_arr = Url::parseQuery($varstring);
     // we need PHP to think a['key'] is the same as a[key], that's why we
     // call NormalizeArrayIndex()
 

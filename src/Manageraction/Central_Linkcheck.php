@@ -41,7 +41,6 @@ class Central_Linkcheck extends AbstractManageraction
             $response  = $aa->getResponse(new AA_Request('Get_Aaname'));
             $auth      = $response->isError() ? Actionapps::responseText($response) : _m('OK');
             $results[] = [$aa->getName(), $url, $status['code'], $status['comment'], $auth];
-            // $ret[] = $aa->doOptimize($this->optimize_class, $this->optimize_method);
         }
         // 'th' keeps the header row markup, 'td' escapes the data - the checked AA controls the comment and the response
         return GetHtmlTable($results, 'th', '', 'td') . "<br>";                     // OK - no error

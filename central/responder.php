@@ -234,10 +234,10 @@ class AA_Responder_Do_Synchronize extends AA_Responder
     }
 }
 
-/** Run an Optimize class method on this AA — used by Central's optimize buttons
- *  (Update_Db_Structure_Test/Repair, Field_Duplicates_Test/Repair, ...).
+/** Test or repair one Optimize class on this AA - used by Central's Optimize runs (AA\Central\OptimizeRun).
+ *  Answers as Do_Optimize_Type does: 'OK ' or 'Err ' first, a repair only where the test fails.
  *  $param['class']  - fully qualified Optimize class, e.g. 'AA\Optimize\UpdateDbStructure'
- *  $param['method'] - one of the actions declared by that class (typically 'test' or 'repair')
+ *  $param['method'] - 'test' or 'repair', one the class has
  */
 class AA_Responder_Do_Optimize extends AA_Responder
 {
@@ -257,25 +257,26 @@ class AA_Responder_Do_Optimize extends AA_Responder
         }
         /** @var \AA\Optimize\AbstractOptimize $optimizer */
         $optimizer = new $this->class();
-        if (!$optimizer->hasAction($this->method)) {
+        if (!in_array($this->method, ['test', 'repair'], true) || !$optimizer->hasAction($this->method)) {
             return new AA_Response("Unsupported method '$this->method' for $this->class", 5);
         }
-        // a repair (UpdateDbStructure, ...) must not run next to a whole sql_update
-        $release = null;
-        if (($this->method === 'repair') && !($release = \AA\Optimize\Chain::tryLock('sql_update', $holder))) {
+        // a repair (UpdateDbStructure, ...) must not run next to a whole sql_update, nor a test read a repair half done
+        if (!($release = \AA\Optimize\Chain::tryLock('sql_update', $holder))) {
             return new AA_Response(\AA\Optimize\Chain::runningMessage('sql_update', $holder), ResponderPolicy::ERR_OPTIMIZE_TYPE_RUNNING);
         }
         try {
-            $optimizer->{$this->method}();
+            // Central stops waiting much sooner - this AA finishes the work
+            MoreTimeLimit(360);
+            ignore_user_abort(true);
+            return new AA_Response(\AA\Optimize\Chain::run($this->method, [$optimizer])[1]);
         } finally {
-            $release && $release();
+            $release();
         }
-        return new AA_Response($optimizer->report());
     }
 }
 
 /** Run all Optimize classes of a type on this AA, as service/sql_update.php does - used by Central's
- *  "Update DB (sql_update)" actions. This AA picks the classes of its own version (AA\Optimize\Chain).
+ *  Optimize runs. This AA picks the classes of its own version (AA\Optimize\Chain).
  *  $param['type']   - 'sql_update'
  *  $param['method'] - 'test' (sql_update.php "Test") or 'repair' ("Install / Update")
  */
@@ -299,7 +300,9 @@ class AA_Responder_Do_Optimize_Type extends AA_Responder
             return new AA_Response(\AA\Optimize\Chain::runningMessage($this->type, $holder), ResponderPolicy::ERR_OPTIMIZE_TYPE_RUNNING);
         }
         try {
-            MoreTimeLimit(360);   // a whole update (table rebuilds) takes minutes
+            // a whole update (table rebuilds) takes minutes - longer than Central waits
+            MoreTimeLimit(360);
+            ignore_user_abort(true);
             [, $report] = \AA\Optimize\Chain::run($this->method, \AA\Optimize\Chain::optimizers($this->type));
         } finally {
             $release();

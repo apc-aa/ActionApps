@@ -155,11 +155,11 @@ class AA_Router
             $query_string = trim(preg_replace($flag, '', (string) $query_string), '&');
         }
         // parameters the template sets ({go:xqs_utm_campaign=x}, {go:xqs=...}) are its own, not the visit's
-        parse_str((string) $query_string, $asked);
+        $asked = Url::parseQuery((string) $query_string);
         $own = [];
         foreach ($asked as $var => $v) {
             if (($var === 'xqs') && is_string($v)) {
-                parse_str($v, $xqs);
+                $xqs = Url::parseQuery($v);
                 array_push($own, ...array_map('strval', array_keys($xqs)));
             } elseif (str_starts_with((string) $var, 'xqs_')) {
                 $own[] = substr((string) $var, 4);
@@ -488,8 +488,7 @@ class AA_Router_Seo extends AA_Router
      */
     public static function newState($apc_state, $query_string): array
     {
-        $new_arr = [];
-        parse_str($query_string, $new_arr);   // now we have $new_arr['x'], $new_arr['p'], etc.
+        $new_arr = Url::parseQuery((string) $query_string);   // now we have $new_arr['x'], $new_arr['p'], etc.
 
         if (!empty($new_arr['xlang'])) { //change language
             $apc_state = self::parseApc($new_arr['xlang']);
@@ -552,7 +551,7 @@ class AA_Router_Seo extends AA_Router
             }
         }
         if ($xqs_subst) {
-            parse_str($apc_state['xqs'], $current_xqs);
+            $current_xqs = Url::parseQuery((string) $apc_state['xqs']);
             $apc_state['xqs'] = http_build_query(array_merge($current_xqs, $xqs_subst));
 
         }

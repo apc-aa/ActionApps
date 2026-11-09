@@ -100,7 +100,11 @@ class Imgfunc
         }
 
         //determine type, width, height of image.
-        [$simg_w, $simg_h, $simg_type] = getimagesize($simage);
+        $size = getimagesize($simage);
+        if ($size === false) {   // not an image - copied as it is (PHP 8.5 warns on destructuring false)
+            return self::copyImage2Destination($simage, $dimage);
+        }
+        [$simg_w, $simg_h, $simg_type] = $size;
 
         //set ratio of width and height
         if ($new_w != 0) {

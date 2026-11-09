@@ -1003,7 +1003,7 @@ class AA_Transformator implements LaterInterface
     /** @var bool just in special cases of silent bulk change - last_edit.. must be the field_id to work*/
     protected $allow_last_edit;
 
-    public function __construct(AA_Transformation $transformation, string $field_id = '', zids $zids = null, bool $silent = true, bool $allow_last_edit = false)
+    public function __construct(AA_Transformation $transformation, string $field_id = '', ?zids $zids = null, bool $silent = true, bool $allow_last_edit = false)
     {
         $this->transformation   = $transformation;
         $this->field_id         = $field_id;

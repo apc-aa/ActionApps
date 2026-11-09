@@ -41,7 +41,7 @@ use AA\Util\Langs;
 use AA\Util\Txt;
 
 // supress PHP notices
-error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
+error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED));
 
 // should be set in config.php
 if (!defined('AA_INSTAL_PATH')) {

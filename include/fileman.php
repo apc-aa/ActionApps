@@ -71,6 +71,11 @@ function fileman_text(string $name): string
 function fileman_refused(string $name): bool
 {
     global $err;
+    // PHP 8.6 file functions throw on a NUL byte
+    if (str_contains($name, "\0")) {
+        $err[] = _m("Wrong file name.");
+        return true;
+    }
     if (str_starts_with(basename($name), '.') || Files::isExecutableName($name)) {
         $err[] = _m('Scripts and server settings (such as .php or .htaccess) cannot be kept in the File Manager.');
         return true;
@@ -83,7 +88,8 @@ function fileman_refused(string $name): bool
  */
 function make_secure(&$filename): void
 {
-    $filename = str_replace("..", "", $filename);
+    // the NUL first, so that ".\0." cannot become ".."; PHP 8.6 file functions throw on it
+    $filename = str_replace(["\0", '..'], '', (string) $filename);
 }
 
 /** set_directory function

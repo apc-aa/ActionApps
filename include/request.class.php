@@ -202,8 +202,8 @@ class AA_Request
         }
         if (!$answer->ok()) {
             // The status and, for a 3xx, where it pointed - but not a word of the remote body.
-            // Central_Optimize joins these messages with <br> and the Manager renders them as HTML
-            // in a superadmin's page, so a remote install behind a captive portal or a compromised
+            // A Central page may render these messages as HTML in a superadmin's page, so a
+            // remote install behind a captive portal or a compromised
             // one could put a script there. The redirect target is ours to read and is what an
             // admin needs: it names the address AA_Request should have been configured with.
             $where = $answer->redirect === '' ? '' : ' - it points at ' . $answer->redirect;

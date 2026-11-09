@@ -1119,7 +1119,7 @@ class AA_Object extends AA_Storable implements AA_iEditable
      *
      * @return Managed
      */
-    public static function getManagerConf(Manageractions $actions = null, Manageractions $switches = null): Managed
+    public static function getManagerConf(?Manageractions $actions = null, ?Manageractions $switches = null): Managed
     {
         $object_class  = static::class;
         $aliases       = new AA_Aliases(new AA_Aliasgenerator_Object(static::class));
@@ -1383,7 +1383,7 @@ class AA_Components
      * @param Manageractions|null $switches
      * @return Managed
      */
-    public static function getManagerConf(string $mask, string $base_class, Manageractions $actions = null, Manageractions $switches = null): Managed
+    public static function getManagerConf(string $mask, string $base_class, ?Manageractions $actions = null, ?Manageractions $switches = null): Managed
     {
         // trying to live without aliases
         // $aliases       = new AA_Aliases(new AA_Aliasgenerator_Object(static::class));

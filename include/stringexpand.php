@@ -50,6 +50,7 @@ use AA\Util\NamedInterface;
 use AA\Util\Secret;
 use AA\Util\SiteFile;
 use AA\Util\Txt;
+use AA\Util\Url;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Renderer\GDLibRenderer;
 use BaconQrCode\Writer;
@@ -2344,11 +2345,11 @@ class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercachenotrim {
         }
         $arr = explode($delimiter, $values);
         switch ($type) {
-            case 'locale':   sort($arr,  SORT_LOCALE_STRING); break;
+            case 'locale':   Langs::sortLocale($arr);          break;
             case 'string':   sort($arr,  SORT_STRING);        break;
             case 'rnumeric': rsort($arr, SORT_NUMERIC);       break;
             case 'rstring':  rsort($arr, SORT_STRING);        break;
-            case 'rlocale':  rsort($arr, SORT_LOCALE_STRING); break;
+            case 'rlocale':  Langs::sortLocale($arr, true);    break;
             default:         sort($arr,  SORT_NUMERIC);       break;
         }
         if ($unique=='1')  {
@@ -3299,10 +3300,7 @@ class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
         require_once __DIR__ . "/../modules/polls/include/util.php";
         require_once __DIR__ . "/../modules/polls/include/stringexpand.php";
 
-        $request = [];
-        if ($params) {
-            parse_str($params, $request);
-        }
+        $request = $params ? Url::parseQuery((string) $params) : [];
         $request['pid']=$pid;
 
         return AA_Poll::processPoll($request);
@@ -3763,9 +3761,9 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                 switch ($parameter) {
                     case 'rnumeric': arsort($results, SORT_NUMERIC);       break;
                     case 'rstring':  arsort($results, SORT_STRING);        break;
-                    case 'rlocale':  arsort($results, SORT_LOCALE_STRING); break;
+                    case 'rlocale':  Langs::sortLocale($results, true); break;
                     case 'string':   asort($results, SORT_STRING);         break;
-                    case 'locale':   asort($results, SORT_LOCALE_STRING);  break;
+                    case 'locale':   Langs::sortLocale($results);  break;
                     default:         asort($results, SORT_NUMERIC);        break;
                 }
                 $ret = implode('-', array_keys($results));
@@ -8696,7 +8694,8 @@ class AA_Stringexpand_Ord extends AA_Stringexpand_Nevercachenotrim {
 
     /** @param string $string  */
     function expand($string=''): string {
-        return (string)ord($string);
+        // the first byte, as ever; PHP 8.5 deprecates ord() of '' or of more bytes (Ž is two)
+        return ($string === '') ? '0' : (string)ord($string[0]);
     }
 }
 
@@ -9458,9 +9457,7 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
     protected function getMimeType($url): string {
         $mimeType = '';
         if ($filename = self::uploadedFile($url)) {
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mimeType = finfo_file($finfo, $filename);
-            finfo_close($finfo);
+            $mimeType = (new finfo(FILEINFO_MIME_TYPE))->file($filename);
         }
         return $mimeType ?: '';
     }
@@ -10927,7 +10924,8 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        page be the page of their item.
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
  *        no campaign id only to save a new campaign. Actions: save (a draft - the form adds isds_subject,
- *        isds_to_hands, isds_header, isds_body (rich text), isds_footer (at most 4 lines of plain text at the bottom of
+ *        isds_to_hands, isds_header, isds_body (rich text; left empty, with the header and the footer, the attachments
+ *        go alone, the first one the main document), isds_footer (at most 4 lines of plain text at the bottom of
  *        every page), and for its recipients isds_membership, isds_types[], isds_include and
  *        isds_exclude, item ids separated by "-"; a field left out stays as it is, the recipients only with
  *        isds_membership and only when the filter stored is still the one the page read - the fields carry
@@ -10977,6 +10975,9 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *    {datovkabulk:env}    - test | production, as datovka_conf.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
  *    {datovkabulk:testboxes} - the test boxes of the page, dash-separated: the options of isds_box
+ *    {datovkabulk:testbox:<box>} - whose a test box of the page is, as test_boxes of datovka_conf.php says it
+ *        ('kaqbsig' => 'David Novák'); '' when it does not: {foreach:{datovkabulk:testboxes}:{(<option value="_#1">_#1
+ *        {ifset:{datovkabulk:testbox:_#1}:- {datovkabulk:testbox:_#1}}</option>)}}
  *    {datovkabulk:regbox:<item id>} - the isds_box of the form of fixbox for an item of the source slice: the box
  *        the register offers for it, with a hash of the box it has; '' where fields:fixbox is '', the register
  *        offers nothing that sure or the item has the box - put the form only on rows that get a value. The
@@ -11117,6 +11118,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'sender'     => $gate->sender(),
             'result'     => $gate->result((string)$settings),
             'testboxes'  => $gate->testBoxes(),
+            'testbox'    => $gate->testBox((string)$settings),
             'regbox'     => $gate->regbox((string)$settings),
             'campaign'   => $gate->campaign(),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),

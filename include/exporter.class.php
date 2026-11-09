@@ -172,12 +172,12 @@ class AA_Exporter_Csv extends AA_Exporter
         for ($i = 0; $i < $count; $i++) {
             $out_arr[]  = $fs->getName($i) . ' (' . $fs->getDefinition($i) . ')';
         }
-        fputcsv($file, $out_arr);
+        fputcsv($file, $out_arr, escape: '\\');
     }
 
     public function _outputItemFile($file, $item): void
     {
-        fputcsv($file, $this->field_set->getValueArray($item));
+        fputcsv($file, $this->field_set->getValueArray($item), escape: '\\');
     }
 }
 

@@ -580,7 +580,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable
     /** use mainly for table data save
      * @return array
      */
-    public function getAllAsScalar(string $delimiter = null): array
+    public function getAllAsScalar(?string $delimiter = null): array
     {
         $ret = [];
         if (is_null($delimiter)) {

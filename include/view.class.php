@@ -413,7 +413,8 @@ class AA_View
      */
     public static function parseSettings($set_arr): array
     {
-        define('ALLOW_MULTIPLE', ['banner' => true]);  // you can use set[245]=banner-2-260,banner-10-261
+        // a variable, not a constant: this runs more than once in a request
+        $allow_multiple = ['banner' => true];  // you can use set[245]=banner-2-260,banner-10-261
 
         $ret = [];
         foreach ($set_arr as $set) {
@@ -422,7 +423,7 @@ class AA_View
                 $pos = strpos($v, '-');
                 if ($pos) {
                     $seting_name = substr($v, 0, $pos);
-                    if (ALLOW_MULTIPLE[$seting_name]) {
+                    if ($allow_multiple[$seting_name] ?? false) {
                         $ret[$seting_name][] = substr($v, $pos + 1);  // always array (for banner for example)
                     } else {
                         $ret[$seting_name] = substr($v, $pos + 1);

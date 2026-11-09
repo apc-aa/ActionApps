@@ -1607,7 +1607,7 @@ class AA_Reader {
      * @param null|string[] $slices
      * @param               $bin
      */
-    static function name2Id($username, array $slices=null, $bin=null ): ?string
+    static function name2Id($username, ?array $slices=null, $bin=null ): ?string
     {
         return self::_find(FIELDID_USERNAME, $username, $slices, $bin );
     }
@@ -1617,7 +1617,7 @@ class AA_Reader {
      * @param null|string[] $slices
      * @param int|null $bin     AA_BIN_* bits; null = the active bin
      */
-    static function email2Id($email, array $slices=null, $bin=null): ?string
+    static function email2Id($email, ?array $slices=null, $bin=null): ?string
     {
         return self::_find(FIELDID_EMAIL, $email, $slices, $bin);
     }
