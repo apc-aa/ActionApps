@@ -3,14 +3,12 @@
 declare(strict_types=1);
 
 /**
- * {sort:<values>:locale|rlocale} and {aggregate:order:<ids>:<expr>:locale|rlocale} sort by the locale the
- * language file set - with Collator, as PHP 8.6 deprecates SORT_LOCALE_STRING. Numbers stay text, as
- * SORT_LOCALE_STRING had them ("10" before "9"), and equal values keep their order in the reverse sort.
+ * {sort:<values>:locale|rlocale} sorts by the locale the language file set (Langs::sortLocale(), tested on
+ * its own in LangsTest): Czech puts ch after h. Numbers stay text, "10" before "9".
  */
 
 namespace Tests\Unit\Legacy;
 
-use AA\Util\Langs;
 use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 
@@ -42,11 +40,6 @@ final class StringexpandSortLocaleTest extends TestCase
     protected function tearDown(): void
     {
         setlocale(LC_COLLATE, self::$locale);
-    }
-
-    public function test_collator_followsTheLocale(): void
-    {
-        self::assertSame('cs', Langs::collator()->getLocale(\Locale::VALID_LOCALE));
     }
 
     public function test_sort_locale_putsChAfterH(): void

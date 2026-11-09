@@ -2345,11 +2345,11 @@ class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercachenotrim {
         }
         $arr = explode($delimiter, $values);
         switch ($type) {
-            case 'locale':   Langs::collator()->sort($arr, Collator::SORT_STRING); break;
+            case 'locale':   Langs::sortLocale($arr);          break;
             case 'string':   sort($arr,  SORT_STRING);        break;
             case 'rnumeric': rsort($arr, SORT_NUMERIC);       break;
             case 'rstring':  rsort($arr, SORT_STRING);        break;
-            case 'rlocale':  Langs::collator()->sort($arr, Collator::SORT_STRING); $arr = array_reverse($arr); break;
+            case 'rlocale':  Langs::sortLocale($arr, true);    break;
             default:         sort($arr,  SORT_NUMERIC);       break;
         }
         if ($unique=='1')  {
@@ -3761,9 +3761,9 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                 switch ($parameter) {
                     case 'rnumeric': arsort($results, SORT_NUMERIC);       break;
                     case 'rstring':  arsort($results, SORT_STRING);        break;
-                    case 'rlocale':  $collator = Langs::collator(); uasort($results, static fn($a, $b): int => (int) $collator->compare((string) $b, (string) $a)); break;
+                    case 'rlocale':  Langs::sortLocale($results, true); break;
                     case 'string':   asort($results, SORT_STRING);         break;
-                    case 'locale':   Langs::collator()->asort($results, Collator::SORT_STRING); break;
+                    case 'locale':   Langs::sortLocale($results);  break;
                     default:         asort($results, SORT_NUMERIC);        break;
                 }
                 $ret = implode('-', array_keys($results));

@@ -78,13 +78,41 @@ class Langs
         return (stripos($charset, 'utf') !== false) ? $lang . '-utf8' : $lang;
     }
 
-    /** Sorts by the locale the language file set (setlocale) - in place of SORT_LOCALE_STRING, which
-     *  PHP 8.6 deprecates. Sort with Collator::SORT_STRING: its default compares numbers as numbers. */
-    public static function collator(): \Collator
+    /** Sorts the values as text by the locale the language file set (setlocale), keeping the keys and the
+     *  order of equal values. By ICU, since PHP 8.6 deprecates SORT_LOCALE_STRING and strcoll(); it puts
+     *  digits before letters, where glibc puts them after.
+     *  @param array<int|string, mixed> $arr */
+    public static function sortLocale(array &$arr, bool $desc = false): void
+    {
+        $collator = self::collator();
+        $keys = [];
+        foreach ($arr as $k => $v) {
+            $keys[$k] = (string) $collator->getSortKey(self::utf8((string) $v));
+        }
+        uksort($arr, $desc ? static fn($a, $b): int => strcmp($keys[$b], $keys[$a]) : static fn($a, $b): int => strcmp($keys[$a], $keys[$b]));
+    }
+
+    /** Spaces and punctuation are ignored unless the letters tie (shifted), as glibc does: „Ekolist sorts under E. */
+    private static function collator(): \Collator
     {
         static $collators = [];
         $locale = (string) setlocale(LC_COLLATE, '0');
-        return $collators[$locale] ??= new \Collator($locale);
+        if (!isset($collators[$locale])) {
+            $collators[$locale] = new \Collator($locale);
+            $collators[$locale]->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED);
+        }
+        return $collators[$locale];
+    }
+
+    /** ICU reads UTF-8 only and fails on anything else: text of a non-UTF install is converted, invalid bytes replaced */
+    private static function utf8(string $s): string
+    {
+        if (mb_check_encoding($s, 'UTF-8')) {
+            return $s;
+        }
+        $charset = self::getCharset();
+        $utf = self::isUTF($charset) ? false : @iconv($charset, 'UTF-8', $s);   // false on a byte the charset lacks
+        return ($utf === false) ? mb_scrub($s, 'UTF-8') : $utf;
     }
 
     /** get current lang
