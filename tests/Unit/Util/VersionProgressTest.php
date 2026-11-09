@@ -9,6 +9,8 @@ use AA\Util\AA_Packtime;
 use AA\Util\VersionProgress;
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__ . '/../../../include/mgettext.php';
+
 /**
  * The arithmetic behind the Version progress panel.
  *
@@ -473,5 +475,95 @@ final class VersionProgressTest extends TestCase
         self::assertSame([0 => [100, 0], 1 => [100, 0]], $summary['items']['b']);
         self::assertSame(300, $summary['rows'][1]['hits_nc']);
         self::assertSame(60, $summary['rows'][1]['hits_c'], 'cached hits of the items the cached column rests on');
+    }
+
+    /** A configuration as ConfigTimeline::getChanges() lists it. */
+    private static function deployment(string $when, string $tree, string $php = '8.2.34'): array
+    {
+        return ['time' => (int) strtotime($when), 'aa' => '2026.9', 'tree' => $tree, 'rev' => $tree, 'php' => $php,
+            'db' => '10.11.19-MariaDB-log/DB_PDO', 'mem' => '128318 MB', 'cpu' => 'AMD', 'server' => ''];
+    }
+
+    /** @param callable():void $test */
+    private static function inPrague(callable $test): void
+    {
+        $tz = date_default_timezone_get();
+        date_default_timezone_set('Europe/Prague');
+        try {
+            $test();
+        } finally {
+            date_default_timezone_set($tz);
+        }
+    }
+
+    /** The deployments of mid-October 2026 as an ECN install logged them. */
+    private static function october(): array
+    {
+        return [
+            self::deployment('2026-10-01 10:00:00', '49439bf'),
+            self::deployment('2026-10-15 04:00:57', '6cc4266'),   // built before the release
+            self::deployment('2026-10-15 17:10:03', '5649a88'),   // the first build carrying it
+            self::deployment('2026-10-19 23:12:00', '8fb550e'),
+        ];
+    }
+
+    public function testAChangeToMeasuringIsNotedOnTheDeploymentThatBroughtIt(): void
+    {
+        self::inPrague(static function () {
+            $changes = VersionProgress::withMeasuringChanges(self::october(), (int) strtotime('2026-09-25'));
+
+            self::assertSame(['6cc4266', '5649a88'], [$changes[2]['tree'], $changes[3]['tree']]);
+            self::assertSame(['measuring: view time'], array_column($changes[3]['notes'], 0));
+            self::assertArrayNotHasKey('notes', $changes[2]);
+        });
+    }
+
+    public function testAChangeToGroupingStartsOnTheFirstDayItGrouped(): void
+    {
+        self::inPrague(static function () {
+            // A day is grouped nine days after it starts: deployed on the 15th, the
+            // new grouping got the 7th first, while 49439bf was running.
+            $changes = VersionProgress::withMeasuringChanges(self::october(), (int) strtotime('2026-09-25'));
+
+            self::assertCount(5, $changes);
+            self::assertSame((int) strtotime('2026-10-07'), $changes[1]['time']);
+            self::assertSame('49439bf', $changes[1]['tree']);
+            self::assertSame(['measuring: mean time'], array_column($changes[1]['notes'], 0));
+            self::assertArrayNotHasKey('notes', $changes[0]);
+        });
+    }
+
+    public function testTheRowOfTheGroupingChangeNamesNothingElse(): void
+    {
+        self::inPrague(static function () {
+            $from      = (int) strtotime('2026-09-25');
+            $intervals = ConfigTimeline::buildIntervals(VersionProgress::withMeasuringChanges(self::october(), $from), $from, (int) strtotime('2026-10-25'), ConfigTimeline::MIN_SPAN, (int) strtotime('2026-10-17'));
+
+            self::assertSame((int) strtotime('2026-10-07'), $intervals[2]['from']);
+            $previous = $intervals[1]['changes'][count($intervals[1]['changes']) - 1];
+            self::assertSame(['measuring: mean time'], array_column(ConfigTimeline::describeDiff($intervals[2]['changes'], $previous), 0));
+        });
+    }
+
+    public function testAChangeToGroupingBeforeThePeriodIsLeftOut(): void
+    {
+        self::inPrague(static function () {
+            // it would stand in for the configuration the leading row names
+            $changes = VersionProgress::withMeasuringChanges(self::october(), (int) strtotime('2026-10-10'));
+
+            self::assertCount(4, $changes);
+            self::assertSame(['measuring: view time'], array_column($changes[2]['notes'], 0));
+        });
+    }
+
+    public function testOnlyNewCodeAfterTheReleaseOfAnInstallOlderThanItChangedTheMeasuring(): void
+    {
+        self::inPrague(static function () {
+            $php_only = [self::deployment('2026-10-01 10:00:00', '49439bf'), self::deployment('2026-10-16 10:00:00', '49439bf', '8.3.35')];
+            $fresh    = [self::deployment('2026-10-20 10:00:00', '8fb550e'), self::deployment('2026-11-03 10:00:00', 'fdca6c9')];
+
+            self::assertSame($php_only, VersionProgress::withMeasuringChanges($php_only, 0));
+            self::assertSame($fresh, VersionProgress::withMeasuringChanges($fresh, 0), 'an install that started on the new code never changed');
+        });
     }
 }

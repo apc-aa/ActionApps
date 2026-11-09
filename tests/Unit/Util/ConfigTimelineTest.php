@@ -555,6 +555,26 @@ namespace Tests\Unit\Util {
             );
         }
 
+        public function testAChangeExactlyAtMidnightOpensItsWindowThere(): void
+        {
+            // the whole day is the new configuration's, so it is not left out
+            $changes = self::fold([[self::day('2026-07-07'), self::sys('5313M', '5297')]]);
+
+            $intervals = ConfigTimeline::buildIntervals($changes, self::day('2026-07-01'), self::day('2026-07-15'));
+
+            self::assertSame(self::day('2026-07-07'), $intervals[0]['to']);
+            self::assertSame(self::day('2026-07-07'), $intervals[1]['from']);
+        }
+
+        public function testDiffEndsWithTheNotesOfItsChanges(): void
+        {
+            $before = self::fold([[1000, self::sys('5313M', '5297', '8.2.32')]])[0];
+            $after  = self::fold([[2000, self::sys('5313M', '5297', '8.2.33')]])[0];
+            $after['notes'] = [['noted', 'why']];
+
+            self::assertSame([['PHP 8.2.33', ''], ['noted', 'why']], ConfigTimeline::describeDiff([$after], $before));
+        }
+
         public function testDatabaseVersionReadsAsAName(): void
         {
             self::assertSame('MariaDB 10.11.19', ConfigTimeline::dbLabel('10.11.19-MariaDB-log/DB_PDO'));
