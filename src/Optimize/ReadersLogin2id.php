@@ -89,13 +89,13 @@ class ReadersLogin2id extends AbstractOptimize
         if (count($posted_by_found)) {
             foreach ($posted_by_found as $r_id => $r_login) {
                 DB_AA::update('item', [['posted_by', $r_id, 's']], [['posted_by', $r_login]]);
-                $this->message(_m('Column item.posted_by updated for %1 (id: %2).', [$r_login, $r_id]));
+                $this->message(_m('Column item.posted_by updated for %1 (id: %2).', [safe($r_login), safe($r_id)]));
             }
         }
         if (count($edited_by_found)) {
             foreach ($edited_by_found as $r_id => $r_login) {
                 DB_AA::update('item', [['edited_by', $r_id, 's']], [['edited_by', $r_login]]);
-                $this->message(_m('Column item.edited_by updated for %1 (id: %2).', [$r_login, $r_id]));
+                $this->message(_m('Column item.edited_by updated for %1 (id: %2).', [safe($r_login), safe($r_id)]));
             }
         }
         return true;

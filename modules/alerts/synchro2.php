@@ -204,17 +204,14 @@ function delete_fields_from_slice($collectionid, $slice_id)
 *   all fields listed in $required_fields_in_reader_management. */
 function getReaderManagementSlices(): array
 {
-    global $slice_id, $collectionprop;
+    global $collectionprop;
 
-    $slices = GetUserSlices();
-    $where  = [['type', 'ReaderManagement'], ['id', $collectionprop["sliceid"], 's<>']];
+    $slices = GetUserSlices();   // an array, or 'all' for a superadmin
+    $where  = [['type', 'ReaderManagement']];
     if (is_array($slices)) {
-        $ids = [];
-        foreach (array_keys($slices) as $slice_id) {
-            $ids[] = $slice_id;
-        }
-        $where[] = ['id', $ids, 'l'];
+        $where[] = ['id', array_keys($slices), 'l'];
     }
+    $retval = [];
     foreach (DB_AA::select([], 'SELECT id, name FROM slice', $where) as $row) {
         $retval[unpack_id($row["id"])] = $row["name"];
     }

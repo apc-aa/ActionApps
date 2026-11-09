@@ -239,7 +239,7 @@ $rows = DB_AA::select([], 'SELECT * FROM wizard_template');
 if (count($rows)) {
     $i = "<select name=\"arg[copytmp]\">";
     foreach ($rows as $row) {
-        $i .= "<option value=\"" . $row["dir"] . "\">" . $row["dir"] . " (" . $row["description"] . ")";
+        $i .= "<option value=\"" . safe($row["dir"]) . "\">" . safe($row["dir"]) . " (" . safe($row["description"]) . ")";
     }
     $i .= "</select>";
     echo uilr($i, fileAction("copytmp", _m("Copy template dir")));

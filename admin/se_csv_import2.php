@@ -64,7 +64,7 @@ try {
     // array ( '🦆' => 1, '🦆ú)¨§…' => 1, )
     $itemIdMappedParams = InputVars::stringPOST('itemIdMappedParams');
     // array ( 0 => 1, '' => 1, )
-    $load_id = InputVars::boolPOST('load_id'); // empty
+    $load_id = InputVars::idPOST('load_id'); // empty
     // array ( )
     $mapping = InputVars::arrayPOST('mapping');
     // array ( )
@@ -502,7 +502,11 @@ if ( $load ) {
     // $SQL      = "SELECT value FROM object_text WHERE object_id = '$load_id' AND property='importer'";
     // $ret      = GetTable2Array($SQL, 'aa_first', 'aa_fields');
     // $importer = unserialize($ret['value']);
-    $importer = unserialize( DB_AA::select1('val', "SELECT LOWER(HEX(`value`)) as val FROM object_text", [['object_id', $load_id], ['property', 'importer']]), ['allowed_classes' => [AA_Csv_Importer::class]] );
+    $importer = unserialize( (string) DB_AA::select1('value', "SELECT `value` FROM object_text", [['object_id', $load_id], ['property', 'importer']]), ['allowed_classes' => [AA_Csv_Importer::class]] );
+    if (!($importer instanceof AA_Csv_Importer)) {   // no such setting - go on with the form as posted
+        $importer = new AA_Csv_Importer();
+        $importer->loadFromRequest();
+    }
     $importer->setFilename($_REQUEST['fileName']);
     // a stored setting is only the mapping - it runs as the current user, into the current slice
     $importer->slice_id = AA::$module_id;

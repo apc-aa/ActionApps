@@ -21,44 +21,44 @@ return [
 // modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "",
 
-// modules/site/index.php, row 68
+// modules/site/index.php, row 69
 "Starting spot not found" => "",
 
-// modules/site/index.php, row 151
+// modules/site/index.php, row 152
 "Editor window - site code manager" => "",
 
-// modules/site/index.php, row 163
+// modules/site/index.php, row 164
 "Add&nbsp;spot" => "",
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 165
 "Add&nbsp;choice" => "",
 
-// modules/site/index.php, row 167
+// modules/site/index.php, row 168
 "Move&nbsp;up" => "",
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 169
 "Move&nbsp;down" => "",
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 172
 "Move&nbsp;left" => "",
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 173
 "Move&nbsp;right" => "",
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "",
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 "Are you sure you want to delete the spot?" => "",
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 179
 "Enable" => "",
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 180
 "Disable" => "",
 
-// modules/site/index.php, row 200
+// modules/site/index.php, row 201
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "",
 
 // modules/site/menu.php, row 47

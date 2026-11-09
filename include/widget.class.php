@@ -371,10 +371,17 @@ class AA_Property extends AA_Storable
         if ($this->isMulti()) {
             $val = $aa_value->getValues();
             foreach ($val as &$value) {
+                // the validators take a string; a crafted POST may send an array
+                if (is_array($value) || is_object($value)) {
+                    $value = '';
+                }
                 $validator->validate($value);
             }
         } else {
             $val = $aa_value->getValue();
+            if (is_array($val) || is_object($val)) {
+                $val = '';
+            }
             $validator->validate($val);
         }
         return $val;

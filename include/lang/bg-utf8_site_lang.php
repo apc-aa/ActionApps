@@ -25,44 +25,44 @@ return [
 // modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "Нямате право да редактирате статии в тази рубрика", // ai 2026-06
 
-// modules/site/index.php, row 68
+// modules/site/index.php, row 69
 "Starting spot not found" => "Началният спот не е намерен", // ai 2026-06
 
-// modules/site/index.php, row 151
+// modules/site/index.php, row 152
 "Editor window - site code manager" => "Прозорец за редактиране - управление на кода на сайта", // ai 2026-06
 
-// modules/site/index.php, row 163
+// modules/site/index.php, row 164
 "Add&nbsp;spot" => "Добавяне&nbsp;спот", // ai 2026-06
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 165
 "Add&nbsp;choice" => "Добавяне&nbsp;избор", // ai 2026-06
 
-// modules/site/index.php, row 167
+// modules/site/index.php, row 168
 "Move&nbsp;up" => "Нагоре", // ai 2026-06
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 169
 "Move&nbsp;down" => "Надолу", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 172
 "Move&nbsp;left" => "Наляво", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 173
 "Move&nbsp;right" => "Надясно", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Изтрий", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 "Are you sure you want to delete the spot?" => "Наистина ли искате да изтриете спота?", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 179
 "Enable" => "Разреши", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 180
 "Disable" => "Забрани", // ai 2026-06
 
-// modules/site/index.php, row 200
+// modules/site/index.php, row 201
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Възможни системни require - &lcub;require:...&rcub; или &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

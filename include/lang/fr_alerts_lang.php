@@ -336,7 +336,7 @@ return [
 // modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "%1 champ(s) et %2 groupe(s) de constantes supprim\xE9s", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 222
+// modules/alerts/synchro2.php, row 219
 "not set" => "non-d\xE9sign\xE9", // ai 2026-10
 
 // modules/alerts/util.php, row 53

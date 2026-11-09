@@ -31,8 +31,6 @@
 // Superadmin-creation form inputs, read explicitly from the request. Kept RAW - the DB layer
 // escapes them on insert (the backend's addUser() stores them safely - Metabase quotes each column
 // by its type) and AA_Inputfield::inputText() safe()s them when the form is redisplayed.
-// The old $$k = AddslashesDeep() register_globals loop was removed (finding N14, 2026-09);
-// it also double-escaped these values on top of the quoting insert.
 // Plain $_REQUEST and not InputVars here: the composer autoloader is only registered by
 // locsess.php, which this page requires below.
 $phase     = $_REQUEST['phase']     ?? '';
@@ -44,6 +42,11 @@ $lname     = $_REQUEST['lname']     ?? '';
 $email     = $_REQUEST['email']     ?? '';
 
 require_once __DIR__."/../include/config.php";
+// Creates a superadmin without login, so it answers only while the administrator switches it on in config.php
+if (!defined('AA_SETUP_ENABLED') || AA_SETUP_ENABLED !== true) {
+    http_response_code(404);
+    exit;
+}
 require_once __DIR__ . "/../include/locsess.php";
 require_once __DIR__ . "/../include/perm_core.php";
 require_once __DIR__."/../include/perm_" . PERM_LIB . ".php";
@@ -89,7 +92,7 @@ function SuperForm(): void
 {
   global $login, $password1, $password2, $fname, $lname, $email;
   ?>
-  <form action="setup.php">
+  <form method="post" action="setup.php">
     <table
            class="aa-table">
       <tr class="aa-tbl-header"><th><?php echo _m("Superadmin account"); ?></th></tr>
@@ -120,7 +123,7 @@ function InitForm(): void
    echo _m("Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>");
    echo _m("If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>");
    ?>
-   <form method=get action="setup.php">
+   <form method="post" action="setup.php">
    <?php echo StateHidden(); ?>
    <input type=submit name=phase value="<?php echo _m(" Init "); ?>">
    <input type=submit name=phase value="<?php echo _m("Recover"); ?>">
@@ -212,14 +215,10 @@ switch ($phase) {
          break;
       }
 
-      if ($notusers) {                 // Delete orphan permissions
-         foreach ($notusers as $uid) {
-            if (!AA::$perm->delPerm($uid, AA_ID, "aa")) {
-               echo _m("Can't delete invalid permission."), "$uid<br>";
-            } else {
-               echo _m("Invalid permission deleted (no such user/group): "), "$uid<br>";
-            }
-         }
+      // Only listed: a permission backend that fails to describe a user (LDAP partly down) would make
+      // a real superadmin look orphaned, and deleting the permission would take the right away for good.
+      foreach ($notusers as $uid) {
+         echo _m("Permission of an unknown user/group (not deleted): "), safe((string) $uid), "<br>";
       }
 
       // Print the account form

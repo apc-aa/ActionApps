@@ -2115,9 +2115,8 @@ function aa_version($format = 'full'): string
         'build'       => $build,      // commit and its date, for humans
         'aa'          => $version,
         'php'         => PHP_VERSION,
-        // built here, not above: it reads REMOTE_ADDR, which does not exist on the command line,
-        // so every cron and queue call used to warn for a string it did not ask for
-        default       => 'ActionApps ' . $version . ' (' . ($build ?: 'source checkout') . '), PHP ' . PHP_VERSION . ', REMOTE_ADDR: ' . ($_SERVER['REMOTE_ADDR'] ?? 'cli'),
+        // no visitor's address: {version} on a cached page would show the first visitor's to everyone
+        default       => 'ActionApps ' . $version . ' (' . ($build ?: 'source checkout') . '), PHP ' . PHP_VERSION,
     };
 }
 
@@ -2358,11 +2357,8 @@ function get_authorization_header(): string
     } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
         $ret = $_SERVER['HTTP_AUTHORIZATION'];
     } elseif (function_exists('apache_request_headers')) {
-        $apache_auth_tmp = apache_request_headers();
-        if (strlen($apache_auth_tmp['Authorization'])) {
-            // $ret = 'Bearer '.$apache_auth_tmp['Authorization'];  // no need to add Bearer - already included
-            $ret = $apache_auth_tmp['Authorization'];
-        }
+        // header names are case-insensitive (HTTP/2 sends them lower case); the value already holds "Bearer "
+        $ret = (string) (array_change_key_case(apache_request_headers() ?: [])['authorization'] ?? '');
     }
     return trim($ret);
 }

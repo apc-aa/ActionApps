@@ -35,44 +35,44 @@ return [
 // modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "Ud. no tiene permisos para editar ítems en este canal",
 
-// modules/site/index.php, row 68
+// modules/site/index.php, row 69
 "Starting spot not found" => "No se encontró el nodo inicial",
 
-// modules/site/index.php, row 151
+// modules/site/index.php, row 152
 "Editor window - site code manager" => "Edición - Administrador de sitios",
 
-// modules/site/index.php, row 163
+// modules/site/index.php, row 164
 "Add&nbsp;spot" => "Nuevo&nbsp;nodo",
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 165
 "Add&nbsp;choice" => "Nueva&nbsp;opción",
 
-// modules/site/index.php, row 167
+// modules/site/index.php, row 168
 "Move&nbsp;up" => "Mover&nbsp;arriba",
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 169
 "Move&nbsp;down" => "Mover&nbsp;abajo",
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 172
 "Move&nbsp;left" => "Mover&nbsp;Derecha",
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 173
 "Move&nbsp;right" => "Mover&nbsp;Izquierda",
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Borrar",
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 "Are you sure you want to delete the spot?" => "Está seguro de borrar este nodo?",
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 179
 "Enable" => "Activar",
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 180
 "Disable" => "Desactivar",
 
-// modules/site/index.php, row 200
+// modules/site/index.php, row 201
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Posibles 'requires' del sistema - &lcub;require:...&rcub; o &lcub;require:[\"...\",\"...\"]&rcub;",
 
 // modules/site/menu.php, row 47

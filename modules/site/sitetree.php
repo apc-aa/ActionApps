@@ -366,8 +366,7 @@ class sitetree
     }
 
     /** The tree of toArray() data - also as a reader gives it (numbers for ids, keys left out = null).
-     *  Ids (id, p, po, ch, start_id) become ints, as new_id() makes them: isOption() compares choices
-     *  strictly with the int getCurrentId().
+     *  Ids (id, p, po, ch, start_id) become ints, as new_id() makes them.
      *
      *  The gate of the import: only a tree walkTree() walks - the start is spot 1 (walkTree(), getSite()
      *  hard-wire it), its own parent, heading its sequence (po starts with the spot itself, as the
@@ -803,7 +802,8 @@ class sitetree
         if (!$parent_spot_id || !($choices = $this->get('choices', $parent_spot_id))) {
             return false;
         }
-        if (is_array($choices) && in_array($spot_id, $choices, true)) {
+        // trees stored before the ids were ints list the choices as strings
+        if (is_array($choices) && in_array((int) $spot_id, array_map('intval', $choices), true)) {
             return $this->get('variables', $parent_spot_id);
         }
         return false;

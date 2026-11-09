@@ -65,7 +65,8 @@ if (!IfSlPerm(PS_MODW_EDIT_CODE)) {
 }
 
 if (!($tree = $module->getTree())) {
-    MsgPage(_m("Starting spot not found"));
+    // Back to the settings that fix it - the default Back is this very page
+    MsgPage(_m("Starting spot not found"), self_base() . 'modedit.php');
 }
 
 if ($spot_id) {

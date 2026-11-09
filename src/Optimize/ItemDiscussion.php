@@ -3,7 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use Cvarset;
 
 /** Delete discussion comments for not existing items
  */
@@ -51,19 +50,15 @@ class ItemDiscussion extends AbstractOptimize
      */
     public function repair(): bool
     {
-        $db = getDb();
         $SQL = 'SELECT count(*) as disc_count, item_id FROM `discussion` LEFT JOIN item ON discussion.item_id = item.id WHERE item.short_id IS NULL GROUP BY discussion.item_id';
-        $problems = GetTable2Array($SQL, "", 'item_id');
-        if (count((array) $problems) < 1) {
+        $problems = DB_AA::select('item_id', $SQL);   // packed ids, as stored
+        if (!$problems) {
             $this->message(_m('No problems found'));
             return true;
         }
-        $SQL = 'DELETE FROM `discussion` WHERE ' . Cvarset::sqlin('item_id', $problems);
-        $db->query($SQL);
-        $SQL = "DELETE FROM `discussion` WHERE item_id = ''";
-        $db->query($SQL);
-        $this->message(_m('%1 problems solved', [count((array) $problems)]));
-        freeDb($db);
+        DB_AA::delete('discussion', [['item_id', $problems, 'b']]);
+        DB_AA::delete('discussion', [['item_id', '']]);
+        $this->message(_m('%1 problems solved', [count($problems)]));
         return true;
     }
 }

@@ -22,44 +22,44 @@ return [
 // modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "Nu ave\xFEi dreptul s\xE3 edita\xFEi articole \xEEn aceast\xE3 sec\xFEiune",
 
-// modules/site/index.php, row 68
+// modules/site/index.php, row 69
 "Starting spot not found" => "Spotul de pornire nu a fost g\xE3sit", // ai 2026-06
 
-// modules/site/index.php, row 151
+// modules/site/index.php, row 152
 "Editor window - site code manager" => "Fereastr\xE3 editor - administrare cod site", // ai 2026-06
 
-// modules/site/index.php, row 163
+// modules/site/index.php, row 164
 "Add&nbsp;spot" => "Adaug\xE3&nbsp;spot", // ai 2026-06
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 165
 "Add&nbsp;choice" => "Adaug\xE3&nbsp;optiune", // ai 2026-06
 
-// modules/site/index.php, row 167
+// modules/site/index.php, row 168
 "Move&nbsp;up" => "Mut\xE3&nbsp;sus", // ai 2026-06
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 169
 "Move&nbsp;down" => "Mut\xE3&nbsp;jos", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 172
 "Move&nbsp;left" => "Mut\xE3&nbsp;la&nbsp;st\xE2nga", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 173
 "Move&nbsp;right" => "Mut\xE3&nbsp;la&nbsp;dreapta", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "\xAAterge",
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 "Are you sure you want to delete the spot?" => "Sigur doriti s\xE3 stergeti spotul?", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 179
 "Enable" => "Activeaz\xE3", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 180
 "Disable" => "Dezactiveaz\xE3", // ai 2026-06
 
-// modules/site/index.php, row 200
+// modules/site/index.php, row 201
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Posibile require de sistem - &lcub;require:...&rcub; sau &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

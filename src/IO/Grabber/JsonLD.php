@@ -155,10 +155,13 @@ class JsonLD extends AbstractGrabber
     /** You can get token dynamically, so you will set it through  setAuth, or you already have token, then you setToken directly */
     protected function loadAuth(): bool
     {
+        if (!strlen((string) ($this->authdata['tokenurl'] ?? ''))) {
+            return true;   // a public source - no login, no Authorization header
+        }
         if (!$this->token) {
             $post_body = json_encode(["username" => $this->authdata['username'], "password" => $this->authdata['password']]);
             $data      = $this->loadUrl($this->authdata['tokenurl'], $post_body);
-            $data      = json_decode($data, true);
+            $data      = ($data === false) ? null : json_decode($data, true);
             if ($this->hasHttp()) {
                 $this->token = (is_array($data) && is_string($data['token'] ?? null)) ? $data['token'] : throw new SourceRefused('AUTH', 'No token from ' . self::host((string) $this->authdata['tokenurl']));
             } else {
@@ -201,9 +204,9 @@ class JsonLD extends AbstractGrabber
      * @param  string       $url
      * @param  string|null  $post_body
      *
-     * @return string data
+     * @return string|false data, false when the URL or file could not be read
      */
-    protected function loadUrl(#[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $post_body = ''): string
+    protected function loadUrl(#[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $post_body = ''): string|false
     {
         if ($this->hasHttp()) {
             $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];

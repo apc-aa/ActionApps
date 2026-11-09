@@ -25,44 +25,44 @@ return [
 // modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "このスライスの項目を編集する許可がありません", // ai 2026-06
 
-// modules/site/index.php, row 68
+// modules/site/index.php, row 69
 "Starting spot not found" => "開始スポットが見つかりません", // ai 2026-06
 
-// modules/site/index.php, row 151
+// modules/site/index.php, row 152
 "Editor window - site code manager" => "編集ウィンドウ - サイトコード管理", // ai 2026-06
 
-// modules/site/index.php, row 163
+// modules/site/index.php, row 164
 "Add&nbsp;spot" => "スポットを追加", // ai 2026-06
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 165
 "Add&nbsp;choice" => "選択肢を追加", // ai 2026-06
 
-// modules/site/index.php, row 167
+// modules/site/index.php, row 168
 "Move&nbsp;up" => "上へ移動", // ai 2026-06
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 169
 "Move&nbsp;down" => "下へ移動", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 172
 "Move&nbsp;left" => "左へ移動", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 173
 "Move&nbsp;right" => "右へ移動", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "削除", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 "Are you sure you want to delete the spot?" => "このスポットを削除してもよろしいですか？", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 179
 "Enable" => "有効にする", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 180
 "Disable" => "無効にする", // ai 2026-06
 
-// modules/site/index.php, row 200
+// modules/site/index.php, row 201
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "使用可能なシステムrequire - &lcub;require:...&rcub; または &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

@@ -84,7 +84,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
     public static function isValidFieldId(string $field_id): bool
     {
         // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
-        return strlen($field_id) === 16 && preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/', $field_id);
+        return strlen($field_id) === 16 && preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*\z/', $field_id);
     }
 
     /**
@@ -1093,7 +1093,7 @@ class AA_Fields implements IteratorAggregate, Countable
     public function isField(string $field_id): bool
     {
         $this->loadField($field_id);
-        return is_object($this->fields[$field_id]);
+        return is_object($this->fields[$field_id] ?? null);
     }
 
     /** getProperty function

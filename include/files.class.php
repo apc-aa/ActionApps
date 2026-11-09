@@ -28,6 +28,7 @@
  *
 */
 
+use AA\Cache\ImgCache;
 use AA\Util\Langs;
 use AA\Util\LastErrTrait;
 use AA\Util\Txt;
@@ -244,12 +245,16 @@ class Files
                 $dest_file = self::generateUnusedFilename($dest_file);
         }  // else - mode 'overwrite' - file is overwritten
 
+        $replaces = is_file($dest_file);   // 'overwrite' or 'backup' of a name in use - 'new' never is
         // copy the file from the temp directory to the upload directory, and test for success
         // (if the file already exists, move_uploaded_file will overwrite it!)
         if (!move_uploaded_file($up_file['tmp_name'], $dest_file)) {
             $last_error = error_get_last();
             self::lastErr(FILE_ERROR_COPY_FAILED, _m("Can't move image  %1 to %2 (%3)", [$up_file['tmp_name'], $dest_file, $last_error['message']]));  // set error code
             return false;
+        }
+        if ($replaces) {
+            ImgCache::forget($dest_file);   // the thumbnails of the old content are cached under the very same name
         }
 
         // now change permissions (if we have to)
@@ -522,7 +527,11 @@ class Files
      */
     public static function delFile($file): bool
     {
-        return @is_file($file) ? @unlink($file) : false;
+        if (!@is_file($file) || !@unlink($file)) {
+            return false;
+        }
+        ImgCache::forget($file);   // no thumbnail of a deleted file stays served
+        return true;
     }
 
     /** delFolder function

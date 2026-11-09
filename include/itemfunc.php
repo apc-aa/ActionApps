@@ -523,7 +523,7 @@ function GetItemStatsHtml($item, $item_id): string
     $html .= $table !== '' ? $table : '<p class="aa-empty-note">' . _m('No detailed view statistics have been recorded for this item yet.') . '</p>';
 
     $html .= '<p>' . a_href(
-        get_admin_url('aa_statistics.php', ['items_code' => $item_id, 'for_module' => $item->getSliceID(), 'show' => 1]),
+        get_admin_url('aa_statistics.php', ['items_code' => $item_id, 'item_sort' => 'exact', 'for_module' => $item->getSliceID(), 'show' => 1]),
         _m('Open full statistics') . ' &raquo;',
         ['class' => 'btn btn-l btn-secondary'],
     ) . '</p>';

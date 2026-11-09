@@ -102,7 +102,7 @@ class Langs
     public static function getLangCode2Name($code)
     {
         $LANGS = ['cs' => 'cz'];
-        return $LANGS[$code] ?: $code;
+        return $LANGS[$code] ?? $code;
     }
 
     /** converts two letter lang code into number used for translation fields in $content4id array
@@ -165,7 +165,7 @@ class Langs
     {
         $lang = substr($lang, 0, 2);
         $LANGS = ['cz' => 'cs'];
-        return $LANGS[$lang] ?: $lang;
+        return $LANGS[$lang] ?? $lang;
     }
 
     /** is current (or provided) $charset Unicode?

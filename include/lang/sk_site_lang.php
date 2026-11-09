@@ -22,44 +22,44 @@ return [
 // modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "Nem\xE1te pr\xE1vo upravova\x9D spr\xE1vy v tomto module",
 
-// modules/site/index.php, row 68
+// modules/site/index.php, row 69
 "Starting spot not found" => "V\xFDchodiskov\xFD spot nebol n\xE1jden\xFD", // ai 2026-06
 
-// modules/site/index.php, row 151
+// modules/site/index.php, row 152
 "Editor window - site code manager" => "Edita\xE8n\xE9 okno - spr\xE1vca k\xF3du webu", // ai 2026-06
 
-// modules/site/index.php, row 163
+// modules/site/index.php, row 164
 "Add&nbsp;spot" => "Prida\x9D&nbsp;spot", // ai 2026-06
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 165
 "Add&nbsp;choice" => "Prida\x9D&nbsp;vo\xBEbu", // ai 2026-06
 
-// modules/site/index.php, row 167
+// modules/site/index.php, row 168
 "Move&nbsp;up" => "Posun\xFA\x9D&nbsp;nahor", // ai 2026-06
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 169
 "Move&nbsp;down" => "Posun\xFA\x9D&nbsp;nadol", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 172
 "Move&nbsp;left" => "Posun\xFA\x9D&nbsp;do\xBEava", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 173
 "Move&nbsp;right" => "Posun\xFA\x9D&nbsp;doprava", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Vymaza\x9D",
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 "Are you sure you want to delete the spot?" => "Naozaj chcete tento spot vymaza\x9D?", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 179
 "Enable" => "Povoli\x9D", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 180
 "Disable" => "Zak\xE1za\x9D", // ai 2026-06
 
-// modules/site/index.php, row 200
+// modules/site/index.php, row 201
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Mo\x9En\xE9 syst\xE9mov\xE9 require - &lcub;require:...&rcub; alebo &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

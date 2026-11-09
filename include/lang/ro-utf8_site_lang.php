@@ -25,44 +25,44 @@ return [
 // modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "Nu aveţi dreptul să editaţi articole în această secţiune",
 
-// modules/site/index.php, row 68
+// modules/site/index.php, row 69
 "Starting spot not found" => "Spotul de pornire nu a fost găsit", // ai 2026-06
 
-// modules/site/index.php, row 151
+// modules/site/index.php, row 152
 "Editor window - site code manager" => "Fereastră editor - administrare cod site", // ai 2026-06
 
-// modules/site/index.php, row 163
+// modules/site/index.php, row 164
 "Add&nbsp;spot" => "Adaugă&nbsp;spot", // ai 2026-06
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 165
 "Add&nbsp;choice" => "Adaugă&nbsp;opțiune", // ai 2026-06
 
-// modules/site/index.php, row 167
+// modules/site/index.php, row 168
 "Move&nbsp;up" => "Mută&nbsp;sus", // ai 2026-06
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 169
 "Move&nbsp;down" => "Mută&nbsp;jos", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 172
 "Move&nbsp;left" => "Mută&nbsp;la&nbsp;stânga", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 173
 "Move&nbsp;right" => "Mută&nbsp;la&nbsp;dreapta", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Şterge",
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 "Are you sure you want to delete the spot?" => "Sigur doriți să ștergeți spotul?", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 179
 "Enable" => "Activează", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 180
 "Disable" => "Dezactivează", // ai 2026-06
 
-// modules/site/index.php, row 200
+// modules/site/index.php, row 201
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Posibile require de sistem - &lcub;require:...&rcub; sau &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

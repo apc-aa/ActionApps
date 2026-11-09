@@ -302,21 +302,15 @@ class AARSS extends AbstractGrabber
             . ' -> ' . $slice->getName();
         // Get XML Data
         if ($debugfeed >= 1) {
-            print("\n<br>$feed_debug_name");
+            print("\n<br>" . safe($feed_debug_name));
         }
 
         [$xml_data] = $this->getSources();
 
-        // Special option - it only dispays fed data
-        if ($this->fire === 'display') {
-            echo $xml_data;
-            return false;
-        }
-
         if (!$xml_data) {
             AA_Log::write("CSN", $this->getLogSelector(), AA_Logentry_Csn::make($feed_debug_name, 'No data returned'));
             if ($debugfeed >= 1) {
-                print("\n<br>$feed_debug_name: no data returned");
+                print("\n<br>" . safe($feed_debug_name) . ": no data returned");
             }
             return false;
         }
@@ -328,7 +322,7 @@ class AARSS extends AbstractGrabber
         if (($first_char = $xml_data[0]) !== "<") {
             AA_Log::write("CSN", $this->getLogSelector(), AA_Logentry_Csn::make($feed_debug_name, 'Bad data (not XML)', $xml_data));
             if ($debugfeed >= 1) {
-                print("\n<br>$feed_debug_name:bad data returned (first character &quot;$first_char&quot; (ord=" . ord($first_char) . ") is not &quot;&lt;&quot;):$xml_data");
+                print("\n<br>" . safe($feed_debug_name) . ":bad data returned (first character &quot;" . safe($first_char) . "&quot; (ord=" . ord($first_char) . ") is not &quot;&lt;&quot;):" . safe($xml_data));
             }
             return false;
         }
@@ -341,7 +335,7 @@ class AARSS extends AbstractGrabber
         if (!($this->aa_rss = aa_rss_parse($xml_data, "{$this->feed_id} ({$this->feed['server_url']})"))) {
             AA_Log::write("CSN", $this->getLogSelector(), AA_Logentry_Csn::make($feed_debug_name, 'Unable to parse XML'));
             if ($debugfeed >= 1) {
-                print("\n<br>$feed_debug_name:" . $this->feed['server_url'] . ":unparsable: <hr>" . safe($xml_data) . "<hr>");
+                print("\n<br>" . safe($feed_debug_name) . ":" . safe($this->feed['server_url']) . ":unparsable: <hr>" . safe($xml_data) . "<hr>");
             }
             return false;
         }

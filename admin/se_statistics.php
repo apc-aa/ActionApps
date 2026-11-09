@@ -25,7 +25,9 @@
  *
  */
 
+use AA\Central\ResponderPolicy;
 use AA\Later\HitcounterStats;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 use AA\Widget\Widget;
 
@@ -33,6 +35,8 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/mgettext.php";
 // ----------------------------------------------------------------------------------------
+const STATISTICS_TOKEN = 'aa-se-statistics';
+
 try {
     $items_code = InputVars::stringGETPOST('items_code');  // could be posted as url parameter as well
     $item_count = InputVars::intPOST('item_count');
@@ -45,6 +49,7 @@ try {
     $for_module = InputVars::stringPOST('for_module');
     $show       = InputVars::boolGETPOST('show');
     $stats_code = InputVars::stringGETPOST('stats');       // deep-link granularity, e.g. 'days' or 'days,weeks'
+    $token      = InputVars::stringPOST('token');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -55,6 +60,14 @@ if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
 }
 
 $item_count = $item_count ?: 5;
+if (($date_from === '') || (strtotime($date_from) === false)) {
+    $date_from = date('Y-m-d', strtotime('-1 month'));   // from 0 a day table of one item ran to 2.7 MB
+}
+
+// an expression runs with the viewer's rights, so only this page's own form may send one;
+// a link with ids still shows the table, a link with an expression only fills the form
+$expression_refused = !preg_match('/^[\s0-9a-f-]*$/iD', $items_code)
+    && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(STATISTICS_TOKEN, $token, $_SERVER));
 
 //$script2run = '
 //   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
@@ -137,9 +150,12 @@ if ($show && !is_array($_POST['aa'] ?? null)) {
 
 echo $w->getHtml(new AA_Property('stats', _m('Stats to show'), 'string', true), $content);
 
+echo FormToken::field(STATISTICS_TOKEN);
 FrmTabEnd($form_buttons);
 
-if ($show) {
+if ($show && ($item_set === 'exact') && $expression_refused) {
+    echo MsgOk(_m('Check the expression in "Exact items to show" and press Show to evaluate it.'));
+} elseif ($show) {
 
     echo '<br><br><div class=aa-tab-title>' . _m('Display Statistics for Item') . '</div>';
 
@@ -161,16 +177,14 @@ if ($show) {
     };
 
     if (strlen($items)) {
-        $from = $date_from ? strtotime($date_from) : 0;
-        $template = '<div class=aa-table>';
-        foreach ($content->getValuesArray('stats') as $code) {
-            $name = HITCOUNTER_OPTIONS[$code];
-            $template .= "<h2>$name</h2>\n{hitcounter:$code:$items:$from}\n";
+        $from = (string) strtotime($date_from);
+        // values are passed as parameters, never put into a template, so a ':' or '{' in them stays data
+        echo '<div class=aa-table>';
+        foreach (array_intersect($content->getValuesArray('stats'), array_keys(HITCOUNTER_OPTIONS)) as $code) {
+            echo '<h2>' . HITCOUNTER_OPTIONS[$code] . "</h2>\n" . StrExp('hitcounter', [$code, $items, $from]) . "\n";
         }
-        $template .= '</div>';
-        $template .= '<div>' . _m('Items found') . ': ' . StrExp('count', [$items]) . '</div>';
-        //FrmStaticText(_m('Display Statistics for Item'), AA::Un($template), '', '', false);
-        echo AA::Un($template);
+        echo '</div>';
+        echo '<div>' . _m('Items found') . ': ' . StrExp('count', [$items]) . '</div>';
 
         // Most recent server-config snapshots (newest first, capped at 20). SYS_STAT
         // rows are written only on change, so a period filter would hide everything on

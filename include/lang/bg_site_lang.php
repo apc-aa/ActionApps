@@ -22,44 +22,44 @@ return [
 // modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xF0\xE5\xE4\xE0\xEA\xF2\xE8\xF0\xE0\xF2\xE5 \xF1\xF2\xE0\xF2\xE8\xE8 \xE2 \xF2\xE0\xE7\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
-// modules/site/index.php, row 68
+// modules/site/index.php, row 69
 "Starting spot not found" => "\xCD\xE0\xF7\xE0\xEB\xED\xE8\xFF\xF2 \xF1\xEF\xEE\xF2 \xED\xE5 \xE5 \xED\xE0\xEC\xE5\xF0\xE5\xED", // ai 2026-06
 
-// modules/site/index.php, row 151
+// modules/site/index.php, row 152
 "Editor window - site code manager" => "\xCF\xF0\xEE\xE7\xEE\xF0\xE5\xF6 \xE7\xE0 \xF0\xE5\xE4\xE0\xEA\xF2\xE8\xF0\xE0\xED\xE5 - \xF3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xEA\xEE\xE4\xE0 \xED\xE0 \xF1\xE0\xE9\xF2\xE0", // ai 2026-06
 
-// modules/site/index.php, row 163
+// modules/site/index.php, row 164
 "Add&nbsp;spot" => "\xC4\xEE\xE1\xE0\xE2\xFF\xED\xE5&nbsp;\xF1\xEF\xEE\xF2", // ai 2026-06
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 165
 "Add&nbsp;choice" => "\xC4\xEE\xE1\xE0\xE2\xFF\xED\xE5&nbsp;\xE8\xE7\xE1\xEE\xF0", // ai 2026-06
 
-// modules/site/index.php, row 167
+// modules/site/index.php, row 168
 "Move&nbsp;up" => "\xCD\xE0\xE3\xEE\xF0\xE5", // ai 2026-06
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 169
 "Move&nbsp;down" => "\xCD\xE0\xE4\xEE\xEB\xF3", // ai 2026-06
 
-// modules/site/index.php, row 171
+// modules/site/index.php, row 172
 "Move&nbsp;left" => "\xCD\xE0\xEB\xFF\xE2\xEE", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 173
 "Move&nbsp;right" => "\xCD\xE0\xE4\xFF\xF1\xED\xEE", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "\xC8\xE7\xF2\xF0\xE8\xE9", // ai 2026-06
 
-// modules/site/index.php, row 175
+// modules/site/index.php, row 176
 "Are you sure you want to delete the spot?" => "\xCD\xE0\xE8\xF1\xF2\xE8\xED\xE0 \xEB\xE8 \xE8\xF1\xEA\xE0\xF2\xE5 \xE4\xE0 \xE8\xE7\xF2\xF0\xE8\xE5\xF2\xE5 \xF1\xEF\xEE\xF2\xE0?", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 179
 "Enable" => "\xD0\xE0\xE7\xF0\xE5\xF8\xE8", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 180
 "Disable" => "\xC7\xE0\xE1\xF0\xE0\xED\xE8", // ai 2026-06
 
-// modules/site/index.php, row 200
+// modules/site/index.php, row 201
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "\xC2\xFA\xE7\xEC\xEE\xE6\xED\xE8 \xF1\xE8\xF1\xF2\xE5\xEC\xED\xE8 require - &lcub;require:...&rcub; \xE8\xEB\xE8 &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47

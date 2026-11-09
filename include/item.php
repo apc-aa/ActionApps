@@ -827,7 +827,7 @@ class AA_Item
         $fce      = $ali->getFnc();
 
         if (!is_callable([$this,$fce])) {
-            return _m('Error: wrong alias function %1 for %2', [$fce,$alias]);
+            return _m('Error: wrong alias function %1 for %2', [safe($fce), safe($alias)]);
         }
 
         // call function (called by function reference (pointer))
@@ -1467,15 +1467,13 @@ class AA_Item
                 // These next two return values from globals that would actually be better coming froom the item or itemview,
                 // otherwise won't work if there are nested views.
             case "itemcount":
-                return (string) $GLOBALS['QueryIDsCount'];
-            case "itemindex": /*mimo hack, this is now a stack*/
-                return "" . end($GLOBALS['QueryIDsIndex']);   // Need to append to "" so doesn't return "false" on 0th item
-            case "pageindex": /*mimo hack, this is now a stack*/
-                return "" . end($GLOBALS['QueryIDsPageIndex']);   // Need to append to "" so doesn't return "false" on 0th item
-            case "groupindex": /*mimo hack, this is now a stack*/
-                return "" . end($GLOBALS['QueryIDsGroupIndex']);   // Need to append to "" so doesn't return "false" on 0th item
-            case "itemgroupindex": /*mimo hack, this is now a stack*/
-                return "" . end($GLOBALS['QueryIDsItemGroupIndex']);   // Need to append to "" so doesn't return "false" on 0th item
+                return (string) ($GLOBALS['QueryIDsCount'] ?? '');
+            case "itemindex":       // stacks of the listings in progress (itemview), the innermost last;
+            case "pageindex":       // outside a listing - an item expanded by the slice export - there is none
+            case "groupindex":
+            case "itemgroupindex":
+                $stack = $GLOBALS[['itemindex' => 'QueryIDsIndex', 'pageindex' => 'QueryIDsPageIndex', 'groupindex' => 'QueryIDsGroupIndex', 'itemgroupindex' => 'QueryIDsItemGroupIndex'][$p[0]]] ?? null;
+                return is_array($stack) ? (string) end($stack) : '';   // (string): the 0th item is "0", an empty stack ""
             case "safe":         // safe, javascript, urlencode, csv - for backward
             case "javascript":   // compatibility
             case "urlencode":

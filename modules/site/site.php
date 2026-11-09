@@ -99,7 +99,7 @@ $cache_key = get_hash(
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
-$site_nocache = (((int) $_REQUEST['nocache'] & 1) || isset($_POST['aa']) || (isset($_REQUEST['username']) && isset($_REQUEST['password'])) || $_REQUEST['logout']);
+$site_nocache = (((int) ($_REQUEST['nocache'] ?? 0) & 1) || isset($_POST['aa']) || (isset($_REQUEST['username']) && isset($_REQUEST['password'])) || !empty($_REQUEST['logout']));
 
 // cookie names only: the page would show the HttpOnly session id to its scripts
 AA::$debug & 2 && AA::$dbg->log("Pagecache site_nocache: $site_nocache, REQUEST:" . var_export($_REQUEST, true) . ", GET:" . var_export($_GET, true) . ", POST:" . var_export($_POST, true) . ", COOKIE:" . implode(', ', array_keys($_COOKIE)));
@@ -311,7 +311,8 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     require_once __DIR__ . "/legacy_util.php";
     require_once $state_path;
     $apc_state['4cacheQS'] = shtml_query_string();
-    $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
+    // a state file need not set $nocache
+    $_REQUEST['nocache'] = ($_REQUEST['nocache'] ?? null) ?: ($nocache ?? null);
 }
 
 if (!isset($apc_state)) {
@@ -324,7 +325,7 @@ require_once __DIR__ . "/../../include/view.php";
 require_once __DIR__ . "/../../include/discussion.php";
 require_once __DIR__ . "/../../include/item.php";
 
-if ((int) $_REQUEST['nocache'] & 2) {  // nocache=2 or nocache=3, ... - second bit set
+if ((int) ($_REQUEST['nocache'] ?? 0) & 2) {  // nocache=2 or nocache=3, ... - second bit set
     AA_Stringexpand::switchCacheOff();
 }
 

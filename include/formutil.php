@@ -30,6 +30,7 @@
  */
 
 use AA\Cache\CacheStr2find;
+use AA\Security\SignedExpression;
 use AA\Util\Langs;
 use AA\Util\JsTriggers;
 use AA\Util\Txt;
@@ -1768,7 +1769,7 @@ class AA_Inputfield {
         }
         $this->echoo("</div>\n <div class='aa-iso-foot'>\n");
         if (str_contains($actions, 'R')) {
-            $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\", \"".rawurlencode($slice_field)."\",\"".get_admin_url('related_sel.php')."\", \"".rawurlencode($sort_by)."\", \"".rawurlencode($listlen)."\" )'>\n");
+            $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\", \"".rawurlencode(strlen($slice_field) ? SignedExpression::sign($slice_field) : '')."\",\"".get_admin_url('related_sel.php')."\", \"".rawurlencode($sort_by)."\", \"".rawurlencode($listlen)."\" )'>\n");
         }
         if (str_contains($actions, 'N')) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $name) .  "');\">\n");

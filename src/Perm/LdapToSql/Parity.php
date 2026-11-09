@@ -146,7 +146,7 @@ final class Parity
         if (!$parity->hasSuperadmin($aa_id)) {
             $findings[] = [
                 'blocking' => true,
-                'text'     => "In SQL no user and no group with a member holds the superadmin right (4) on aa $aa_id, so admin/setup.php would let anyone create a new superadmin.",
+                'text'     => "In SQL no user and no group with a member holds the superadmin right (4) on aa $aa_id, so nobody could administer this AA and admin/setup.php, once switched on in config.php, would create a new superadmin.",
             ];
         }
         foreach (self::CATEGORIES as $category => [$blocking, $text]) {

@@ -38,7 +38,9 @@
  *  @example https://example.org/apc-aa/export.php?id=353399822763422617723728a7787b77&name=Jane
  */
 
+use AA\Central\ResponderPolicy;
 use AA\Manager;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -49,24 +51,27 @@ require_once __DIR__ . "/../include/searchlib.php";
 require_once __DIR__ . "/../include/locsess.php";    // DB_AA object definition
 require_once __DIR__ . "/../include/exporter.class.php";
 
+const EXPORT_TOKEN = 'aa-export';
+
 try {
     // array ( 16 => 6, 31 => 1, )
-    $bins = InputVars::intGET('bins');
+    $bins = InputVars::intGETPOST('bins');
     // array ( '' => 2, '[ne][nejsem…' => 1, '[ne][nejsem]' => 4, )
-    $conds = InputVars::stringGET('conds'); // empty
+    $conds = InputVars::stringGETPOST('conds'); // empty
     // array ( 'Export' => 7, )
-    $export = InputVars::stringGET('export'); // alpha
+    $export = InputVars::stringGETPOST('export'); // alpha
     // array ( 'jsem boe' => 1, 'jsem borec�…' => 1, 'jsem borec' => 4, '' => 1, )
-    $filename = InputVars::stringGET('filename'); // empty
+    $filename = InputVars::stringGETPOST('filename'); // empty
     // array ( 'AA_Exporter…' => 7, )
-    $format = InputVars::stringGET('format');
+    $format = InputVars::stringGETPOST('format');
     // array ( '' => 5, 'nejlepsi' => 2, )
-    $sort = InputVars::stringGET('sort'); // alpha, empty
+    $sort = InputVars::stringGETPOST('sort'); // alpha, empty
     // array ( 'human' => 4, 'db' => 3, )
-    $type = InputVars::stringGET('type'); // alpha
+    $type = InputVars::stringGETPOST('type'); // alpha
     $cancel = InputVars::boolPOST('cancel');
-    
-    $expressions = InputVars::stringGET('expressions');
+    $token  = InputVars::stringPOST('token');
+
+    $expressions = InputVars::stringGETPOST('expressions');
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -75,7 +80,11 @@ if (!IfSlPerm(PS_FEEDING)) {
     exit;
 }
 
-if ($_GET['export']) {
+// conditions, sort, filename and columns are AA expressions run with the viewer's rights, so only
+// this page's own form exports; a link only fills the form
+$export_refused = $export && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(EXPORT_TOKEN, $token, $_SERVER));
+
+if ($export && !$export_refused) {
 
     $exportset_params = [
         'grabber_type' => $grabber_name,
@@ -106,6 +115,9 @@ $manager = new Manager('exportsetings'.AA::$module_id, AA_Exportsetings::getMana
 $manager->performActions();
 $manager_html =  $manager->getDisplayPage(); // zids should be generated in manager now.
 
+if ($export_refused) {
+    $Msg .= MsgOk(_m('Check the settings and press Export.'));
+}
 $apage->printHead($err, $Msg);
 
 $form_buttons = ['export' => ['type'=>'submit', 'value'=> _m('Export')]];
@@ -143,8 +155,9 @@ foreach ($format_classes as $fclass) {
 }
 
 ?>
-<form name="f" method="get" action="<?php echo StateUrl() ?>">
+<form name="f" method="post" action="<?php echo StateUrl() ?>">
 <?php
+echo FormToken::field(EXPORT_TOKEN);
 FrmTabCaption(_m("Export Items"), $form_buttons);
 
 FrmInputSelect('format', _m("Output Format"),    $format_arr, $format, true);

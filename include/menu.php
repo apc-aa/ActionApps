@@ -171,7 +171,7 @@ function get_aamenus(): array
             "anonym_wizard" => ["cond" => IfSlPerm(PS_FIELDS),     "href" => "admin/anonym_wizard.php",            "label" => _m("Anonymous Form Wizard")],
             "email"         => ["cond" => IfSlPerm(PS_USERS),      "href" => "admin/se_emails.php",                 "label" => _m("Email templates")],
             "taskmanager"   => ["cond" => IfSlPerm(PS_EDIT),       "href" => "admin/se_taskmanager.php",           "label" => _m("Task Manager")],
-            "tasks"         => ["cond" => IsSuperadmin(),          "href" => "admin/se_tasks.php",                 "label" => _m("Planned Tasks")],
+            "tasks"         => ["cond" => IfSlPerm(PS_FORMS),      "href" => "admin/se_tasks.php",                 "label" => _m("Planned Tasks")],
         ],
     ];
 

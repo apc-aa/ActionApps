@@ -27,6 +27,7 @@ https://www.apc.org/
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\Chain;
 use AA\Optimize\RestoreBckTables;
+use AA\Util\InputVars;
 use AA\Util\ReportTrait;
 
 /** FILL SOME ACCESS CODE HERE !!!
@@ -107,12 +108,16 @@ require_once __DIR__ . "/../include/metabase.class.php";
 require_once __DIR__ . "/../include/varset.php";
 
 
-if (!$_GET['silent']) {
-    echo '<form name="f" action="' . $_SERVER['PHP_SELF'] . '">
-            Access Code
-            <input type="password" name="acccode" value="' . safe($_GET['acccode']) . '"><br>
+$acccode = InputVars::stringGET('acccode');
+$fire    = InputVars::boolGET('fire');
 
-            Write to database <input type="checkbox" name="fire" value="1"' . ($_GET['fire'] ? ' checked' : '') . '><br>
+if (!$silent) {
+    // SCRIPT_NAME: PHP_SELF also holds the path info after the script name, which comes from the URL
+    echo '<form name="f" action="' . safe($_SERVER['SCRIPT_NAME']) . '">
+            Access Code
+            <input type="password" name="acccode" value="' . safe($acccode) . '"><br>
+
+            Write to database <input type="checkbox" name="fire" value="1"' . ($fire ? ' checked' : '') . '><br>
             <small>Check this for real work with writing to database</small>
             <br><br>
 
@@ -122,7 +127,7 @@ if (!$_GET['silent']) {
           </form>';
 }
 
-if (strlen($_GET['acccode']) < 10 || $_GET['acccode'] != constant('ACCESS_CODE')) {
+if (strlen($acccode) < 10 || !hash_equals((string) constant('ACCESS_CODE'), $acccode)) {
     echo '</body></html>';
     exit;
 }
@@ -166,8 +171,8 @@ class AA_SQL_Updater
 
 $updater = new AA_SQL_Updater();
 
-if ($_GET['update']) {
-    if (!$_GET['fire']) {
+if (InputVars::stringGET('update')) {
+    if (!$fire) {
         AbstractOptimize::justPrint(true);
     }
     // the same lock as Central's Do_Optimize_Type - two updates at once would rebuild the same tables
@@ -181,8 +186,8 @@ if ($_GET['update']) {
         }
         echo ($status ? 'OK ' : 'Err ') . $updater->report();
     }
-} elseif ($_GET['restore']) {
-    if (!$_GET['fire']) {
+} elseif (InputVars::stringGET('restore')) {
+    if (!$fire) {
         AbstractOptimize::justPrint(true);
     }
     if (!($release = Chain::tryLock('sql_update', $holder))) {   // restores the tables an update rebuilds
@@ -195,11 +200,11 @@ if ($_GET['update']) {
         }
         echo ($status ? 'OK ' : 'Err ') . $updater->report();
     }
-} elseif ($_GET['dotest']) {
+} elseif (InputVars::stringGET('dotest')) {
     $status = $updater->test();
     echo ($status ? 'OK ' : 'Err ') . $updater->report();
 }
 
-if (!$_GET['silent']) {
+if (!$silent) {
     echo '</body></html>';
 }

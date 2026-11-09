@@ -766,7 +766,7 @@ class Manager extends AA_Storable
      *  to another Manager page (the AA finder lists aliases with the buttons of aliases.php) */
     public const FORM_TOKEN = 'manager';
 
-    protected ?AA_Searchbar $searchbar;
+    protected ?AA_Searchbar $searchbar = null;
 
     /** @var string searchbar additional function name */
     protected $searchbar_funct;
@@ -1001,6 +1001,17 @@ class Manager extends AA_Storable
     public function getSort(): array
     {
         return $this->getSet()->getSort();
+    }
+
+    /** A page without a searchbar stores it as null - restore it as null, not as an empty searchbar
+     *  (AA_Storable would build one from the missing state)
+     */
+    public function _oneStatePropertyValue($obj, $property, $state)
+    {
+        if (is_null($obj) && is_null($state)) {
+            return null;
+        }
+        return parent::_oneStatePropertyValue($obj, $property, $state);
     }
 
     /**

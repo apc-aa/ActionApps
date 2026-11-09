@@ -45,8 +45,10 @@ use AA\Security\LoginThrottle;
 use AA\Util\ChangesMonitor;
 use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
+use AA\Util\LogOnce;
 use AA\Util\NamedInterface;
 use AA\Util\Secret;
+use AA\Util\SiteFile;
 use AA\Util\Txt;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Renderer\GDLibRenderer;
@@ -327,7 +329,7 @@ class AA_Stringexpand_User extends AA_Stringexpand {
      * @return string - for not cache, return random value
      */
     function additionalCacheParam(array $params= []): string {
-        return serialize([self::$auth_user_info, $GLOBALS['auth']]);
+        return serialize([self::$auth_user_info, $GLOBALS['auth'] ?? null]);   // pages without a login have no $auth
     }
 
     /** expand function
@@ -341,7 +343,8 @@ class AA_Stringexpand_User extends AA_Stringexpand {
         // this is message for pagecache to NOT store views (or slices), where we use {user:xxx} alias,
         // into cache (AUTH_USER is not in cache's keyString).
         AA::Pagecache()->switchCacheNostore();
-        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],AuthGetUname(),$_SERVER['REMOTE_USER']);
+        // an anonymous visitor has no name ("nobody" is only the {user:id})
+        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'] ?? '', AuthGetUname(), $_SERVER['REMOTE_USER'] ?? '');
         switch ($field) {
             case '':         return $auth_user;
             case 'password': return $_SERVER['PHP_AUTH_PW'] ?? '';
@@ -361,7 +364,8 @@ class AA_Stringexpand_User extends AA_Stringexpand {
                 }
                 return 'undefined';
             default:
-                $user_id = (!$_SERVER['PHP_AUTH_USER'] && !$_SERVER['REMOTE_USER']) ? AuthGetUid() : AA_Reader::name2Id(get_if($_SERVER['PHP_AUTH_USER'],$_SERVER['REMOTE_USER']));
+                $http_user = get_if($_SERVER['PHP_AUTH_USER'] ?? '', $_SERVER['REMOTE_USER'] ?? '');
+                $user_id   = $http_user ? (string) AA_Reader::name2Id($http_user) : AuthGetUid();   // '' when no reader has that name
                 if ($field === 'id') {
                     return $user_id;
                 }
@@ -858,6 +862,8 @@ class AA_Stringexpand_Yahoo extends AA_Stringexpand {
         if ( !$user_id ) {
             return "";
         }
+        // the name usually comes from an item field; encoded it cannot leave the URL attributes
+        $name = rawurlencode($user_id);
 
         // set your defaults for the style and action (addfriend, call or sendim) (0, 1, 2, 3 and 4)
 
@@ -879,31 +885,31 @@ class AA_Stringexpand_Yahoo extends AA_Stringexpand {
         switch( $style ) {
 
             case "0":
-                $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=0" ' ;
+                $image = '<img src="http://opi.yahoo.com/online?u='.$name.'&m=g&t=0" ' ;
                 $image .= ' style="border: none; width: 12px; height: 12px;" alt="My status" />' ;
                 break;
 
             case "1":
-                $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=1" ' ;
+                $image = '<img src="http://opi.yahoo.com/online?u='.$name.'&m=g&t=1" ' ;
                 $image .= ' style="border: none; width: 64px; height: 16px;" alt="My status" />' ;
                 break;
 
             case "2":
-                $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=2" ' ;
+                $image = '<img src="http://opi.yahoo.com/online?u='.$name.'&m=g&t=2" ' ;
                 $image .= ' style="border: none; width: 125px; height: 25px;" alt="My status" />' ;
                 break;
 
             case "3":
-                $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=3" ' ;
+                $image = '<img src="http://opi.yahoo.com/online?u='.$name.'&m=g&t=3" ' ;
                 $image .= ' style="border: none; width: 86px; height: 16px;" alt="My status" />' ;
                 break;
 
             case "4":
-                $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=4" ' ;
+                $image = '<img src="http://opi.yahoo.com/online?u='.$name.'&m=g&t=4" ' ;
                 $image .= ' style="border: none; width: 12px; height: 12px;" alt="My status" />' ;
                 break;
         }
-        return '<a href="ymsgr:'.$action.'?'.$user_id.'">'.$image.'</a>';
+        return '<a href="ymsgr:'.$action.'?'.$name.'">'.$image.'</a>';
     }
 }
 
@@ -927,10 +933,11 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
             return "";
         }
         $port  = '800'.(int)$style;
+        $jid   = safe($user_id);   // from an item field; a JID keeps its "@" and "/"
 
         //  @see http://www.onlinestatus.org/
-        $output = "<a href=\"xmpp:$user_id\"><img
-          src=\"http://www.the-server.net:$port/jabber/$user_id\" align=\"absmiddle\" border=\"0\" alt=\""._m('Jabber Online Status Indicator') ."\"
+        $output = "<a href=\"xmpp:$jid\"><img
+          src=\"http://www.the-server.net:$port/jabber/$jid\" align=\"absmiddle\" border=\"0\" alt=\""._m('Jabber Online Status Indicator') ."\"
           onerror=\"this.onerror=null;this.src='http://www.the-server.net:$port/image/jabberunknown.gif';\"></a>";
 
         return $output;
@@ -1850,7 +1857,8 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
     function expand($name=''): string
     {
         if ($name) {
-            return PageCache::cookie($name) ?? '';
+            $value = PageCache::cookie($name);
+            return is_string($value) ? $value : '';   // a cookie named "name[key]" comes as an array - no text to print
         }
         AA::Pagecache()->switchCacheNostore();   // the whole jar - session id included - is no page for others
         return json_encode(PageCache::cookies());
@@ -2546,6 +2554,10 @@ class AA_Stringexpand_Xmlformat extends AA_Stringexpand_Nevercache {
      */
     function expand($xml = ''): string
     {
+        // loadXML() throws on an empty string - a blank field must not stop the page
+        if (trim($xml) === '') {
+            return '';
+        }
         $dom = new DOMDocument();
         // must be before load xml string
         $dom->preserveWhiteSpace = false;
@@ -2798,11 +2810,11 @@ class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
         ' m²' =>'&nbsp;m²',
         ' cm²' =>'&nbsp;cm²',
         ' dm²' =>'&nbsp;dm²',
-        ' mm²' =>'&nbsp;dm²',
+        ' mm²' =>'&nbsp;mm²',
         ' m³' =>'&nbsp;m³',
         ' cm³' =>'&nbsp;cm³',
         ' dm³' =>'&nbsp;dm³',
-        ' mm³' =>'&nbsp;dm³',
+        ' mm³' =>'&nbsp;mm³',
         ' kg' =>'&nbsp;kg',
      // ' h' =>'&nbsp;h',
         ' %' =>'&nbsp;%',
@@ -4834,14 +4846,10 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercachenotrim {
  *  Example: {ifeqfield:{xid}:category.......1:Nature: class="green"}
  *  Example: {ifeqfield::category.......1:Nature: class="green"} // for current item
  */
-class AA_Stringexpand_Ifeqfield extends AA_Stringexpand {
+class AA_Stringexpand_Ifeqfield extends AA_Stringexpand_Nevercachenotrim {
+    // never cached, as the other conditions: without an item id the parameters are the same in every row of a listing
     public const PARAMS = ['item_id', 'field', 'var', 'text', 'else_text'];
 
-    /** Do not trim all parameters (maybe we can?) */
-    protected static function doTrimParams(): bool { return false; }
-
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
     /** expand function
      *
      * @param $item_id
@@ -6405,7 +6413,7 @@ class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
         if (!$def) {
             $named = \AA\Import\Definition::named($slice, $ref);
             foreach ((count($named) > 1) ? $named : [] as $id) {
-                \AA\Util\LogOnce::daily(\AA\Import\Definition::ERROR_EVENT, "Import_$id", "#$id AMBIGUOUS");
+                LogOnce::daily(\AA\Import\Definition::ERROR_EVENT, "Import_$id", "#$id AMBIGUOUS");
             }
             return (count($named) > 1) ? 'imp:invalid' : 'imp:unknown';
         }
@@ -6423,12 +6431,16 @@ class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
 
 /** include file / URL {include:<url>:<type>:<headers>:<body>:<err>}
  *  $url     - filename / URL
- *  $type    - hint on where to find it  (http, ajax, site, readfile, GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, fileman) - http is default
+ *  $type    - hint on where to find it  (http, ajax, GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, fileman) - http is default
  *  $headers - additional headers for http request
  *  $body    - body for POST, PUT, DELETE, PATCH requests
  *  $err     - error message if the request fails
  *  {include:https#://api.example.cz/getdata/my_ID:GET:{jsonasoc:Content-Type:application/json:key:478484a5c4e54b584e54a54c5b7899}}
  *  {include:https#://example.cz/api/data:POST:{"Content-Type":"application/json"}:{"data":"xy"}:Error _#status, _#errmsg}
+ *  {include:parts/menu.html:fileman} - a file below the File Manager directory of the slice. Never a file of the
+ *  AA tree, a dotfile, a script or a settings or key file. readfile and site print nothing and are logged:
+ *  readfile read any file of the document root, past the access rules of the web server, and site a directory
+ *  a visitor could choose by a parameter of the address.
  */
 class AA_Stringexpand_Include extends AA_Stringexpand {
     /** expand function
@@ -6461,37 +6473,37 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
             case "ajax":
                 return expandFilenameWithHttp($fn, 'ajax', $headers, $data, $err);
             case "fileman":
-                // Note this won't work if called from a Static view because no slice_id available
-                // This should be fixed.
-                if ($this->itemview->slice_info["id"]) {
-                    $mysliceid = unpack_id($this->itemview->slice_info['id']);
-                } elseif ($GLOBALS['slice_id']) {
-                    $mysliceid = $GLOBALS['slice_id'];
-                } else {
-                    // if ($errcheck) huhl("No slice_id defined when expanding fileman");
+                // a static view has no slice, so it reads nothing
+                if (!($mysliceid = $this->sliceId())) {
                     return "";
                 }
-                $fileman_dir = AA_Slice::getModuleProperty($mysliceid,'fileman_dir');
-                $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $fn;
-                $file = AA_File_Wrapper::wrapper($filename);
-                // $file->contents(); opens the stream, reads the data and close the stream
-                return $file->contents();
-            case "site":
-                if (!($fileman_dir = $GLOBALS['site_fileman_dir'])) {
-                    // if ($errcheck) huhl("No site_fileman_dir defined in site file");
-                    return "";
-                }
-                $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $fn;
-                $file = AA_File_Wrapper::wrapper($filename);
-                // $file->contents(); opens the stream, reads the data and close the stream
-                return $file->contents();
-            case "readfile": //simple support for reading static html (use at own risk)
-                $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $fn;
-                $file = AA_File_Wrapper::wrapper($filename);
-                // $file->contents(); opens the stream, reads the data and close the stream
-                return $file->contents();
+                return SiteFile::read(self::filemanDir((string) AA_Slice::getModuleProperty($mysliceid, 'fileman_dir')), (string) $fn, 'fileman', $mysliceid);
+        }
+        if (in_array($type, SiteFile::REMOVED_TYPES, true)) {
+            // one row a day per slice or site, whatever name the template builds; not the request's slice_id,
+            // which would add a row for every value a visitor sends
+            LogOnce::daily(SiteFile::EVENT, "$type:" . ($this->templateSliceId() ?: (string) AA::$site_id), (string) $fn);
         }
         return '';
+    }
+
+    /** the slice of the template, '' when there is none */
+    private function templateSliceId(): string
+    {
+        return ($this->itemview->slice_info['id'] ?? '') ? unpack_id($this->itemview->slice_info['id']) : '';
+    }
+
+    /** the slice of the template, else the slice of the request (a static view has none of its own) */
+    private function sliceId(): string
+    {
+        return $this->templateSliceId() ?: (string) ($GLOBALS['slice_id'] ?? '');
+    }
+
+    /** The File Manager directory $name, '' (no base, nothing read) when there is none or the name leads
+     *  elsewhere - an empty one would be the directory of all of them */
+    private static function filemanDir(string $name): string
+    {
+        return (defined('FILEMAN_BASE_DIR') && preg_match('~^[^./][^/]*$~', $name)) ? FILEMAN_BASE_DIR . $name : '';
     }
 }
 
@@ -6534,8 +6546,9 @@ function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $d
 /** Get $_SERVER[<variable>] value
  *   {server:REMOTE_ADDR}, {server:SERVER_NAME}, {server:HTTP_HOST}, {server:HTTP_REFERER},...
  *   A cached site page is stored once per value read of the host, scheme or URI; a page reading
- *   anything else, which may be the visitor's own (REMOTE_ADDR, HTTP_USER_AGENT, HTTP_REFERER, ...),
- *   is not cached at all.
+ *   a value which may be the visitor's own (REMOTE_ADDR, HTTP_USER_AGENT, HTTP_REFERER, ...),
+ *   is not cached at all. Other values are not given (AA\Cache\PageCache::server()): cookies,
+ *   credentials and other headers or variables of the web server are an empty string.
  */
 class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
     /** expand function
@@ -6620,8 +6633,7 @@ class AA_Unalias_Callback {
         // {math(<format>)expression}
         // {include(file)}
         // {include:file} or {include:file:http}
-        // {include:file:fileman|site}
-        // {include:file:readfile[:str_replace:<search>[;<search1>;..]:<replace>[:<replace1>;..]:<trim-to-tag>:<trim-from-tag>[:filter_func]]}
+        // {include:file:fileman}
         // {scroller.....}
         // {pager:.....}
         // {#comments}
@@ -6664,7 +6676,7 @@ class AA_Unalias_Callback {
             case "\t":
                 return QuoteColons("{" . $out . "}");
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
-                if ($out[1] === "#") {
+                if (($out[1] ?? '') === "#") {
                     if (isset($als[aa_substr($out,2)])) {
                         return $this->expandUrlValue('als[' . aa_substr($out,2) . ']', $als[aa_substr($out,2)]);
                     }
@@ -9404,8 +9416,7 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
                 return basename(parse_url($url, PHP_URL_PATH));
             case 'bytesize':
             case 'size':
-                $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
-                if (is_file($filename)) {
+                if ($filename = self::uploadedFile($url)) {
                     $size = @filesize($filename);
                 } else {
                     $fullurl = $url[0] === '/' ? 'https://'.$_SERVER['HTTP_HOST'].$url : $url;
@@ -9427,14 +9438,12 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
                 $fileinfo = implode('&nbsp;-&nbsp;', [StrExp('fileinfo', [$url, 'type']), StrExp('fileinfo', [$url, 'size'])]);
                 return $fileinfo ? "&nbsp;<span class=\"fileinfo\"> [$fileinfo]</span>" : '';
             case 'crc':
-                $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
-                if (is_file($filename)) {
+                if ($filename = self::uploadedFile($url)) {
                     return  @hash_file('crc32',$filename);
                 }
                 break;
             case 'time':
-                $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
-                if (is_file($filename)) {
+                if ($filename = self::uploadedFile($url)) {
                     return  @filemtime($filename);
                 }
                 break;
@@ -9447,14 +9456,19 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
     }
 
     protected function getMimeType($url): string {
-        $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
         $mimeType = '';
-        if (is_file($filename)) {
+        if ($filename = self::uploadedFile($url)) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mimeType = finfo_file($finfo, $filename);
             finfo_close($finfo);
         }
         return $mimeType ?: '';
+    }
+
+    /** the disk path of the file $url names in an upload directory, null for any other - a template is told nothing of the rest of the disk */
+    private static function uploadedFile(string $url): ?string
+    {
+        return SiteFile::uploadedFile(str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url), SiteFile::uploadRoots(), 'fileinfo', (string) ($GLOBALS['slice_id'] ?? ''));
     }
 }
 
@@ -9630,7 +9644,7 @@ class AA_Stringexpand_Serverload extends AA_Stringexpand_Nevercache {
 }
 
 
-/** @return string - random string of given length
+/** @return string - random string of given length (at most 1000 characters)
  *  (for more advanced version see AA_Generator_Rnd)
  *  Usage: {randomstring:5}
  */
@@ -9642,6 +9656,8 @@ class AA_Stringexpand_Randomstring extends AA_Stringexpand_Nevercache {
      */
     function expand($len=''): string
     {
+        // compared with a non-numeric string the loop would never end; the cap keeps the memory
+        $len = min((int) $len, 1000);
         $ret = '';
         $salt_chars = "abcdefghijklmnoprstuvwxABCDEFGHIJKLMNOPQRSTUVWX0123456789";
         for ($i=0; $i < $len; $i++) {
@@ -9693,7 +9709,7 @@ class AA_Stringexpand__ extends AA_Stringexpand {
         static $saliases = [];
         static $smodules = null;
 
-        $name = trim(array_shift($arg_list));
+        $name = trim(array_shift($arg_list) ?? '');
         if (!strlen($name)) {
             return '';
         }

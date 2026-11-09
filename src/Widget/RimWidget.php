@@ -277,6 +277,7 @@ class RimWidget extends Widget
         $actions2show = $this->getProperty('show_buttons', 'MRND');
 
         $actbuttonsdown = [];
+        $dz_setup_code  = '';
         if (str_contains($actions2show, 'R')) {
             //            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')."' value onkeyup=\"DisplayAaResponse('flt$base_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>";
             // we use setTimeout here - we do not want to close the section before the user click on the selected item is prossecced (copied to the itemgroup). 100 ms was too low, sometimes (the click just closed the selection and did not add the item)

@@ -339,7 +339,7 @@ return [
 // modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "%1 пол(е/ів) і %2 груп(а/) констант видалено", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 222
+// modules/alerts/synchro2.php, row 219
 "not set" => "не задано", // ai 2026-06
 
 // modules/alerts/util.php, row 53
