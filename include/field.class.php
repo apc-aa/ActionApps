@@ -208,6 +208,10 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         if (is_a($params['class'] ?? '', CodWidget::class, true)) {
             return _m('code - its indentation and the last new line are kept on purpose');
         }
+        if ($this->isMultiline()) {
+            // a text area or HTML editor: templates may rely on a new line at the start or end
+            return _m('multi-line text - its new lines at the start or end may be relied on');
+        }
         // the widget offers the values array (const_arr) before the constants of a group or slice
         if (empty($params['const_arr'])) {
             $const = (string) ($params['const'] ?? '');

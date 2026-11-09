@@ -64,7 +64,8 @@ namespace Tests\Unit\Legacy {
         {
             return [
                 'text'                          => ['trm', 'fld'],
-                'text area'                     => ['trm', 'txt', ['rows' => '2']],
+                'text area'                     => ['qte', 'txt', ['rows' => '2']],
+                'HTML editor'                   => ['qte', 'edt'],
                 'file'                          => ['fil', 'fil'],
                 'file, upper case'              => ['fil', 'FIL'],
                 'password'                      => ['qte', 'pwd'],

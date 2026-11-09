@@ -26,7 +26,7 @@ class ChangeQte2Trm extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m("Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed.");
+        return _m("Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Text areas, HTML editors, fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed.");
     }
 
     public static function actions(): array

@@ -41,7 +41,7 @@ class TrimFieldValues extends AbstractOptimize implements LaterInterface
 
     public static function description(): string
     {
-        return _m('Trims the values stored before the field got the Trim insert function (see "%1") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked.', [ChangeQte2Trm::name()]);
+        return _m('Trims the values stored before the field got the Trim insert function (see "%1") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported; text areas, HTML editors and fields defined in a field slice are not checked.', [ChangeQte2Trm::name()]);
     }
 
     public static function actions(): array
@@ -113,8 +113,9 @@ class TrimFieldValues extends AbstractOptimize implements LaterInterface
     {
         $count = 0;
         foreach (ChangeQte2Trm::textFields(AA_Fields::factoryFor($slice_id), 'trm') as $field) {
-            // a password copy or a secret is neither shown in the report nor stored again
-            if ($field->isProtected()) {
+            // a password copy or a secret is neither shown in the report nor stored again; templates may rely
+            // on a new line at the start or end of a multi-line text
+            if ($field->isProtected() || $field->isMultiline()) {
                 continue;
             }
             [$ids, $example] = self::itemsToTrim($slice_id, $field->getId());

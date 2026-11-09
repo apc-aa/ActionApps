@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * AA_Field::trimRefusal() (include/field.class.php) - where the Trim insert function would break a field:
- * a unique value (the form checks it before Trim), code, constants with spaces around, the text of related
+ * a unique value (the form checks it before Trim), code, multi-line text, constants with spaces around, the text of related
  * items. The constants of a group come from the database, so the values array of the widget (const_arr)
  * stands for them here.
  */
@@ -81,6 +81,22 @@ namespace Tests\Unit\Legacy {
         public function test_a_code_field_is_refused(): void
         {
             $this->assertStringContainsString('code', $this->field('full_text.......', ['input_show_func' => 'cod:8'])->trimRefusal());
+        }
+
+        public static function multiline(): array
+        {
+            return [
+                'text area'           => ['txt:8'],
+                'text area, no rows'  => ['txt:'],
+                'HTML editor'         => ['edt:8'],
+                'text area w/presets' => ['tpr:'],
+            ];
+        }
+
+        #[DataProvider('multiline')]
+        public function test_a_multi_line_field_is_refused(string $show): void
+        {
+            $this->assertStringContainsString('multi-line', $this->field('abstract........', ['input_show_func' => $show])->trimRefusal());
         }
 
         public function test_constants_with_spaces_around_are_refused(): void
