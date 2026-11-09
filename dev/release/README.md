@@ -9,17 +9,21 @@ built from, shown by `aa_version()`).
 `.github/workflows/ci.yml`, on every push to `main`: `composer check` → `build-dist.sh` → `commit-dist.sh`
 (push to `dist`) → `sync-svn.sh` (SourceForge SVN trunk; needs the `SF_SVN_SSH_KEY` repository secret,
 the job is skipped without it). A push that changes no runtime file produces no dist commit.
+Both commit messages (`commit-message.sh`) list every `main` commit since the previous dist build, or since
+the previous SVN commit for SVN, so the SourceForge commit mail shows the whole push.
 
 ## Doing it by hand (no CI, no AI)
 ```bash
 git clone https://github.com/apc-aa/ActionApps.git src            # or any checkout of main
 src/dev/release/build-dist.sh src /tmp/dist                        # needs php + composer + rsync
 git clone --branch dist --single-branch https://github.com/apc-aa/ActionApps.git distwc
-src/dev/release/commit-dist.sh /tmp/dist distwc "$(git -C src rev-parse HEAD)" "$(git -C src log -1 --format=%s)"
+msg=$(src/dev/release/commit-message.sh src HEAD "$(git -C distwc log -1 --format=%B)")
+src/dev/release/commit-dist.sh /tmp/dist distwc "$msg"
 git -C distwc push origin HEAD:dist
 svn checkout svn+ssh://honzam@svn.code.sf.net/p/apc-aa/svn/trunk svnwc  # once; keep it around
-DRY_RUN=1 src/dev/release/sync-svn.sh /tmp/dist svnwc "dist: $(git -C src rev-parse --short HEAD)"   # review
-src/dev/release/sync-svn.sh /tmp/dist svnwc "dist: $(git -C src rev-parse --short HEAD)"
+svn update -q svnwc && msg=$(src/dev/release/commit-message.sh src HEAD "$(svn log -l 1 svnwc)")
+DRY_RUN=1 src/dev/release/sync-svn.sh /tmp/dist svnwc "$msg"   # review
+src/dev/release/sync-svn.sh /tmp/dist svnwc "$msg"
 ```
 
 ## Fixes made on a server (staging /aa-dev/ runs a `dist` checkout)

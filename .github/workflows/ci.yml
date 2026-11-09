@@ -43,6 +43,8 @@ jobs:
       - uses: actions/checkout@v7
         with:
           path: src
+          fetch-depth: 0       # the commit list in the message reaches back to the previous build
+          filter: blob:none    # history without old file contents
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
@@ -60,7 +62,9 @@ jobs:
             git init -q distwc && git -C distwc remote add origin "$REPO_URL"
           fi
       - id: commit
-        run: src/dev/release/commit-dist.sh "$RUNNER_TEMP/dist" distwc "${{ github.sha }}" "$(git -C src log -1 --format=%s)"
+        run: |
+          msg=$(src/dev/release/commit-message.sh src "${{ github.sha }}" "$(git -C distwc log -1 --format=%B 2>/dev/null || true)")
+          src/dev/release/commit-dist.sh "$RUNNER_TEMP/dist" distwc "$msg"
       - if: steps.commit.outputs.changed == 'true'
         run: git -C distwc push -q origin HEAD:dist
 
@@ -82,6 +86,8 @@ jobs:
         uses: actions/checkout@v7
         with:
           path: src
+          fetch-depth: 0
+          filter: blob:none
       - if: steps.key.outputs.present == 'true'
         name: Install svn and the SourceForge key
         env:
@@ -99,4 +105,7 @@ jobs:
           export SVN_SSH="ssh -i $HOME/.ssh/id_sf -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
           git clone -q --branch dist --single-branch --depth 1 "$REPO_URL" dist
           svn checkout -q --non-interactive svn+ssh://honzam@svn.code.sf.net/p/apc-aa/svn/trunk svnwc
-          src/dev/release/sync-svn.sh dist svnwc "$(git -C dist log -1 --format=%s)"
+          # listed since the last SVN commit, not the last dist one, so a skipped or failed sync loses nothing
+          built=$(git -C dist log -1 --format=%B)
+          msg=$(src/dev/release/commit-message.sh src "$built" "$(svn log --non-interactive -l 1 svnwc)") || msg=$built
+          src/dev/release/sync-svn.sh dist svnwc "$msg"
