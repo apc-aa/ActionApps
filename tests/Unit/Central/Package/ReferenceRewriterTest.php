@@ -83,7 +83,7 @@ final class ReferenceRewriterTest extends TestCase
             '+v is encoded, not rewritten' => ['cmd[12]=+v-12', 'cmd[13]=+v-12'],
             'x-12abc not numeric'         => ['cmd[12]=x-12abc', 'cmd[13]=x-12abc'],
             'xcmd is another param'       => ['xcmd[12]=x-12', 'xcmd[12]=x-12'],
-            // banner-POS-N - AA_View::parseSettings() ALLOW_MULTIPLE, parseBannerParam() view.class.php:352-396
+            // banner-POS-N - AA_View::parseSettings() $allow_multiple, parseBannerParam() view.class.php:352-396
             'set banner list'             => ['set[5]=banner-2-260,banner-10-261', 'set[6]=banner-2-400,banner-10-261'],
             'set[N][] banner norandom'    => ['set[5][]=banner-2-260-norandom', 'set[6][]=banner-2-400-norandom'],
             'banner after other setting'  => ['set[5]=listlen-5,banner-2-260', 'set[6]=listlen-5,banner-2-400'],

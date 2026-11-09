@@ -413,7 +413,7 @@ class AA_View
      */
     public static function parseSettings($set_arr): array
     {
-        // not define(): this runs more than once in a request, and redefining a constant is an Error in PHP 9
+        // a variable, not a constant: this runs more than once in a request
         $allow_multiple = ['banner' => true];  // you can use set[245]=banner-2-260,banner-10-261
 
         $ret = [];

@@ -377,14 +377,14 @@ class cattree
         // row since Firefox (at least 1.0.6) say "too much recursion", so we
         // the asignments to group of max 100 categories
         $names_count = [];
-        define('MAX_JS_NODES_AT_LINE', 100);
+        $max_js_nodes_at_line = 100;
         $js_arr = [];
         foreach ($this->catnames as $allId => $allName) {
             if (!$names_count[$allName]) {
                 $names_count[$allName] = 1;
             }
             $names_count[$allName]++;
-            $index_name = (string) floor($names_count[$allName] / MAX_JS_NODES_AT_LINE) . "~$allName";
+            $index_name = (string) floor($names_count[$allName] / $max_js_nodes_at_line) . "~$allName";
             $js_arr[$index_name] .= "a[$allId]=";
         }
         foreach ($js_arr as $allName => $allIds) {
