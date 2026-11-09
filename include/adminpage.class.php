@@ -56,8 +56,7 @@ class AA_Adminpageutil {
     {
         $this->menu    = $menu;
         $this->submenu = $submenu;
-        $formsetup = "document.querySelectorAll('form').forEach(function(el) { el.addEventListener('submit', function(e) { e.target.classList.add('aa-updating'); }); });";
-        $this->addRequire($formsetup, 'AA_Req_Load');
+        self::addSubmitGuard();
     }
 
     public static function pageParameterError(Exception $e): never
@@ -282,6 +281,49 @@ class AA_Adminpageutil {
     {
         AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(f => f.addEventListener('submit', () => sessionStorage.setItem('aa_pgtop', window.pageYOffset)));", 'AA_Req_Load');
         AA::Stringexpander()->addRequire("{ const pos = Number(sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); if (pos > 0 && !document.querySelector('.aa-page-msg .aa-err')) { window.scrollTo(0, pos); } }", 'AA_Req_Load');
+    }
+
+    /** Marks a submitted form busy, and a form sent by an .aa-once button refuses every further
+     *  submit until the next page comes - a second click would run the action twice (a mail to all
+     *  readers, a new item). The button is not disabled: a disabled submitter is left out of the POST,
+     *  and pages read its name (update, send). One listener on window serves forms added later too.
+     */
+    public static function addSubmitGuard(): void
+    {
+        // a block, no return: AJAX responses run all requires in one function body
+        AA::Stringexpander()->addRequire(<<<'JS'
+            if (!window.AA_SubmitGuard) {
+                window.AA_SubmitGuard = true;
+                let newWindowBtn = null;   // Ctrl/Shift+click sends the form to another window - this page stays
+                const unlock = () => {
+                    document.querySelectorAll('form.aa-updating, .aa-once.aa-updating').forEach(el => el.classList.remove('aa-updating'));
+                    document.querySelectorAll('.aa-once[aria-disabled]').forEach(btn => btn.removeAttribute('aria-disabled'));
+                };
+                window.addEventListener('click', e => { newWindowBtn = (e.ctrlKey || e.shiftKey || e.metaKey) ? e.target.closest?.('button, input') : null; }, true);
+                window.addEventListener('submit', e => {
+                    const form      = e.target;
+                    const elsewhere = (newWindowBtn !== null) && (newWindowBtn === e.submitter);
+                    newWindowBtn = null;
+                    if (form.querySelector('.aa-once.aa-updating')) {
+                        e.preventDefault();
+                        return;
+                    }
+                    const target = e.submitter?.getAttribute('formtarget') || form.getAttribute('target');
+                    if (e.defaultPrevented || elsewhere || (target && target !== '_self')) {
+                        return;
+                    }
+                    form.classList.add('aa-updating');
+                    if (e.submitter?.classList.contains('aa-once')) {
+                        e.submitter.classList.add('aa-updating');
+                        e.submitter.setAttribute('aria-disabled', 'true');
+                    }
+                });
+                // the page stays: back from the bfcache, Esc stops the load, an aborted navigation
+                window.addEventListener('pageshow', e => e.persisted && unlock());
+                window.addEventListener('keydown', e => e.key === 'Escape' && !e.defaultPrevented && unlock());
+                window.navigation?.addEventListener('navigateerror', unlock);
+            }
+            JS, 'AA_Req_Load');
     }
 
     /** Positioner for the reusable .aa-overflow-menu popover (HTML5 popover API,

@@ -132,7 +132,7 @@ class inputform {
     /** static */
     static function _getButton($key, $type, $default_text, $profile_text, $url = null): array
     {
-        return ($profile_text === '') ? [] : [$key => ['type' => $type, 'value' => get_if($profile_text, $default_text), 'url' => $url]];
+        return ($profile_text === '') ? [] : [$key => ['type' => $type, 'value' => get_if($profile_text, $default_text), 'url' => $url, 'once' => $type === 'submit']];
     }
 
 
@@ -260,6 +260,7 @@ class inputform {
         }
 
         AA_Adminpageutil::addScrollKeeper();
+        AA_Adminpageutil::addSubmitGuard();   // here: the buttons come after the page requires are printed
 
         // Now that the top header / left rail let the editor navigate away mid-edit, warn before
         // leaving a full-page admin form with unsaved changes (submitting clears the flag).
@@ -2933,18 +2934,20 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
             $properties = [];
         }
         $title = $properties['title'] ? ' title="'.safe($properties['title']).'"' : '';
+        // the saving buttons by default; 'once' => true for any other action that must not run twice
+        $once  = ($properties['once'] ?? in_array($name, ['update', 'insert', 'submit'], true)) ? ' aa-once' : '';
         switch($name) {
             case 'update':
                 if ($properties['type'] === 'hidden') {
                     $ret .= ' <input type="hidden" name="update" id="'.$prefix .'update"'.$title.' value="'. safe(get_if($properties['value'], "")) .'">';
                 } else {
                     $save_btn_id = $prefix .'update';
-                    $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$save_btn_id.'"'.$title.' accesskey="S" value=" '. safe(get_if($properties['value'], _m("Update"))) ." [^S] " .' ">';
+                    $ret .= ' <input type="submit" class="btn-l'.$once.'" name="update" id="'.$save_btn_id.'"'.$title.' accesskey="S" value=" '. safe(get_if($properties['value'], _m("Update"))) ." [^S] " .' ">';
                     $noaccess = true; // use for update of item, bug was, that both "update" and "insert" has accesskey S
                 }
                 break;
             case 'insert':
-                $ret .= ' <input type="submit" class="btn-l" name="insert"'.$title.' id="'.$prefix .'insert" ';
+                $ret .= ' <input type="submit" class="btn-l'.$once.'" name="insert"'.$title.' id="'.$prefix .'insert" ';
                 if (!$noaccess) { // was accesskey used ?
                     $save_btn_id = $prefix .'insert';
                     $ret .= 'accesskey="S" ';
@@ -2973,7 +2976,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                 $ret .= ' <input type="reset" id="'.$prefix .'reset"'.$title.' value=" '. _m("Reset form") .' " class="btn-l btn-secondary"> ';
                 break;
             case 'submit': // name is not submit because it breaks document.f.submit() function call
-                $ret .= ' <input type="submit" class="btn-l" name="submitbtn"'.$title.' id="'.$prefix .'submit" accesskey="S" value=" '. safe(get_if($properties['value'], _m("Submit"))) ."  [^S] ". ' "> ';
+                $ret .= ' <input type="submit" class="btn-l'.$once.'" name="submitbtn"'.$title.' id="'.$prefix .'submit" accesskey="S" value=" '. safe(get_if($properties['value'], _m("Submit"))) ."  [^S] ". ' "> ';
                 $save_btn_id = $prefix .'submit';
                 break;
             default:
@@ -2998,7 +3001,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                     ' name="'.  $name .
                     '" id="'.  $prefix . $name .
                     '" value="'. safe($properties['value']) . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
-                    '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . ' class="btn-l btn-secondary"'.$title.'>'.$nbsp;
+                    '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . ' class="btn-l btn-secondary'.$once.'"'.$title.'>'.$nbsp;
         }
         $ret .= "\n";
     }
