@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Isds;
 
+use AA\Isds\Body\PdfBody;
 use AA\Later\BatchRun;
 
 /**
@@ -193,6 +194,8 @@ final class Advice
             Drafts::SUBJECT    => _m('The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved.', [Message::MAX_ANNOTATION]),
             Drafts::TO_HANDS   => _m('"To hands" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved.', [Message::MAX_TO_HANDS]),
             Drafts::BODY       => _m('The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved.', [self::size(Drafts::MAX_BODY)]),
+            Drafts::HEADER     => _m('The header cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved.', [self::size(Drafts::MAX_BODY)]),
+            Drafts::FOOTER     => _m('The footer cannot be saved: it may have at most %1 lines of at most %2 characters each - fewer when they are wide -, and no control character. Nothing of the draft was saved.', [PdfBody::FOOTER_LINES, PdfBody::FOOTER_CHARS]),
             Drafts::RECIPIENTS => _m('The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it.'),
             Drafts::TOO_MANY   => _m('The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved.', [Setup::MAX_RECIPIENTS]),
             Drafts::TOO_MANY_FILES => _m('A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first.', [Message::MAX_FILES - 1]),

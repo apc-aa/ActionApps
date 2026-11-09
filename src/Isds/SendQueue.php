@@ -276,7 +276,7 @@ class SendQueue
     /**
      * The checksum of what the recipient sees: the subject, "to hands" and each file - its name, type
      * and content - in the order of the message. The main file counts by what it is made of, as the
-     * same draft need not give the same bytes; the letterhead is in it. Whatever changes the checksum
+     * same draft need not give the same bytes; its header and footer are in it. Whatever changes the checksum
      * of the same letter - another way of counting it, another dompdf or look of the PDF (PdfBody::source()),
      * an update of libgd that draws the images of the letter - lets it be tested once more.
      * @param string $mainSource Letter::$source of the main file
@@ -448,7 +448,7 @@ class SendQueue
             return SendStart::refused(SendStart::SETTINGS, _m('The campaign slice has no upload directory for the files of the letter - the administrator of the server sets it.'));
         }
         try {
-            return Letter::of($item, $setup->letterhead, $uploads, fn(int $bytes): string => $this->memoryFor($bytes, 1));
+            return Letter::of($item, $uploads, fn(int $bytes): string => $this->memoryFor($bytes, 1));
         } catch (\OverflowException $e) {
             return SendStart::refused(SendStart::MEMORY, $e->getMessage());
         } catch (ServerException $e) {

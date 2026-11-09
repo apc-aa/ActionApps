@@ -13,7 +13,7 @@
  *                                        is the draft: it saves itself (fetch) and swaps the fragments
  *   [data-aa-isds-fragment="<name>"]     what a save may change: replaced by the one of the answer
  *   [data-aa-isds-code] [-status]        on the fragment result: what the action did
- *   [data-aa-isds-field="subject|toHands|body"]  a field of the letter: counter, height, autosave
+ *   [data-aa-isds-field="subject|toHands|header|body|footer"]  a field of the letter: counter, height, autosave
  *   input[data-aa-isds-confirm="<n>"]    the buttons of its form stay locked until n is typed
  *   [data-aa-isds-fragment="progress"][data-aa-isds-state]  read again while sending (isds_part=progress);
  *                                        in it [data-aa-isds-done][data-aa-isds-total] - the sentence a
@@ -32,7 +32,7 @@
 const done = new WeakSet();
 
 /** the fields of the letter; their change saves after a pause in typing */
-export const LETTER = Object.freeze(['isds_subject', 'isds_to_hands', 'isds_body']);
+export const LETTER = Object.freeze(['isds_subject', 'isds_to_hands', 'isds_header', 'isds_body', 'isds_footer']);
 
 /** the controls of the recipient filter: a change saves at once; an answer may bring a filter saved elsewhere */
 export const FILTER = Object.freeze(['isds_membership', 'isds_types[]', 'isds_include', 'isds_exclude']);
@@ -969,7 +969,8 @@ const setupForms = (root) => {
         } else {
             announce(root, box?.textContent.trim() ?? '');
         }
-        if (box && (entries.find(([name]) => name === 'isds_body')?.[1].length > BIG_BODY)) {
+        // the header may hold pasted images as the body does
+        if (box && (entries.filter(([name]) => ['isds_header', 'isds_body'].includes(name)).reduce((n, [, value]) => n + value.length, 0) > BIG_BODY)) {
             sources.delete(box);
             box.append(Object.assign(document.createElement('p'), { className: 'ai-help', textContent: text(root, 'big') }));
         }

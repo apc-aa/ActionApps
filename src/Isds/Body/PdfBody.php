@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Isds\Body;
 
 use AA\Isds\File;
+use AA\Isds\Text;
 use Composer\InstalledVersions;
 use Dompdf\Canvas;
 use Dompdf\Dompdf;
@@ -25,8 +26,9 @@ final class PdfBody
 {
     public const NAME = 'Dopis.pdf';
 
-    /** points of the highest image, with room for a line of text or the padding of a cell on its page */
-    public const IMAGE_HEIGHT = 700;
+    /** points of the highest image, with room for a line of text or the padding of a cell on its page - also above a
+     *  footer of FOOTER_LINES */
+    public const IMAGE_HEIGHT = 655;
     /** points of a line of A4 within the margins of CSS */
     public const LINE_WIDTH = 481;
 
@@ -43,7 +45,13 @@ final class PdfBody
         . 'img{vertical-align:top !important;max-height:' . self::IMAGE_HEIGHT . 'pt}';
 
     /** raised with every change of how a letter looks - a test message of the same draft goes again */
-    public const FORMAT = 2;
+    public const FORMAT = 3;
+
+    /** the footer (footer()): lines at most, and characters of a line - at most: a wide letter fills the line sooner */
+    public const FOOTER_LINES = 4;
+    public const FOOTER_CHARS = 120;
+    public const FOOTER_TOO_LONG = 'The footer has more than ' . self::FOOTER_LINES . ' lines - shorten it';
+    public const FOOTER_TOO_WIDE = 'A line of the footer is wider than the page - shorten it or split it into two lines';
 
     /** the page number of a letter of more pages, small and grey: its top this many points above the bottom edge, in the 20 mm margin */
     private const NUMBER_SIZE        = 8.0;
@@ -51,6 +59,21 @@ final class PdfBody
     private const NUMBER_FROM_BOTTOM = 32.0;
     /** Czech, not _m(): ISDS is Czech, the letter goes to a Czech box - and the page of a site sending it would not translate it anyway */
     private const NUMBER_TEXT = 'strana %1/%2';
+
+    /**
+     * The footer on every page, small and grey, each line to the right edge of the text: the top of its last
+     * line this many points above the bottom edge - over the page number -, a thin rule above its first. The
+     * bottom margin grows by its lines, so that no text of the letter runs into it
+     */
+    private const FOOTER_SIZE        = 8.0;
+    private const FOOTER_LEADING     = 11.0;
+    private const FOOTER_COLOR       = [0.35, 0.35, 0.35];
+    private const FOOTER_FROM_BOTTOM = 46.0;
+    private const FOOTER_RULE_GAP    = 5.0;
+    /** between the rule and the last line of the text above it */
+    private const FOOTER_SPACE = 14.0;
+    /** points of the 20 mm margin of CSS, on each side of the page */
+    private const MARGIN = 56.69;
 
     public const MAX_PAGES   = 50;
     /** processor time, checked also while a line is measured: the slowest letter measured stopped at 5.1 s */
@@ -114,18 +137,19 @@ final class PdfBody
     public function __construct(private readonly int $maxPages = self::MAX_PAGES, private readonly float $maxSeconds = self::MAX_SECONDS) {}
 
     /**
-     * @param string $document of HtmlBody::document() with CSS
+     * @param string       $document of HtmlBody::document() with CSS
+     * @param list<string> $footer   footer(): drawn on every page, the bottom margin made room for it
      * @throws \InvalidArgumentException a letter that is no PDF whole; the message says what to change
      * @throws ServerException no directory for dompdf, PCRE failed to measure the letter or lost an image of it
      */
-    public function render(string $document): File
+    public function render(string $document, array $footer = []): File
     {
         $size = self::measure($document);
         if (self::tooLong($size) || self::tooMany(PdfTables::check($size['markup']))) {
             throw new \InvalidArgumentException(self::TOO_LONG);
         }
         unset($size);
-        [$document, $this->numbers] = PdfTables::flow($document);
+        [$document, $this->numbers] = PdfTables::flow(self::withFooterRoom($document, $footer));
         $dir = sys_get_temp_dir() . '/aa-pdf-' . bin2hex(random_bytes(8));
         if (!@mkdir($dir, 0o700)) {
             throw new ServerException('There is no temporary directory for the PDF letter');
@@ -134,6 +158,7 @@ final class PdfBody
         register_shutdown_function(TempDir::remove(...), $dir);
         // thrown by the callbacks, known by itself: anything else thrown inside dompdf says only that it failed
         $limit            = new \LengthException();
+        $wide             = new \LengthException();
         $this->pages      = 0;
         $this->pageRoom   = INF;
         $this->tallestRow = 0.0;
@@ -157,15 +182,22 @@ final class PdfBody
             $dompdf = new Dompdf(self::options($dir));
             $clock  = $this->clock($limit);
             $dompdf->setFontMetrics(self::metrics($dompdf, $clock));
+            if (self::tooWide($footer, $dompdf->getFontMetrics())) {
+                throw $wide;
+            }
             $dompdf->setCallbacks($this->callbacks($limit, $clock));
             $dompdf->loadHtml($document, 'UTF-8');
             $dompdf->render();
-            self::numberPages($dompdf->getCanvas());
+            self::drawMargins($dompdf->getCanvas(), $footer);
             $pdf          = (string) $dompdf->output();
             $warnings     = self::warnings($GLOBALS['_dompdf_warnings'] ?? []);
             $this->spanAt = $this->spanSplit();
         } catch (\Throwable $e) {
-            throw new \InvalidArgumentException(($e === $limit) ? self::TOO_LONG : self::NOT_LAID_OUT);
+            throw new \InvalidArgumentException(match ($e) {
+                $limit  => self::TOO_LONG,
+                $wide   => self::FOOTER_TOO_WIDE,
+                default => self::NOT_LAID_OUT,
+            });
         } finally {
             $this->rows    = [];
             $this->groups  = [];
@@ -202,31 +234,105 @@ final class PdfBody
     }
 
     /**
-     * What a test message compares instead of the bytes, which differ each time: the document and all
-     * else that changes the PDF of it
+     * What a test message compares instead of the bytes, which differ each time: the document, the footer
+     * and all else that changes the PDF of them
+     * @param list<string> $footer
      * @return string 32 hexadecimal digits
      */
-    public static function source(string $document): string
+    public static function source(string $document, array $footer = []): string
     {
         $dompdf = InstalledVersions::getPrettyVersion('dompdf/dompdf') . '@' . InstalledVersions::getReference('dompdf/dompdf');
-        return hash('xxh128', self::FORMAT . "\0$dompdf\0$document");
+        return hash('xxh128', self::FORMAT . "\0$dompdf\0$document\0" . implode("\n", $footer));
     }
 
     /**
-     * "strana 1/3" in the middle of the bottom margin of each page, a page of one left as it is. Drawn
-     * after the layout, it is no frame of the letter: what lies off the page is never looked for in it
+     * The lines of the footer of a letter, plain text: none for a text of spaces only. A blank line among them
+     * stays, a tab is a space
+     * @return list<string>
+     * @throws \InvalidArgumentException more than FOOTER_LINES, a line too long or of control characters
      */
-    private static function numberPages(Canvas $canvas): void
+    public static function footer(string $text): array
     {
-        if ($canvas->get_page_count() < 2) {
+        // a blank line around the text - also of a no-break space or another invisible character - draws only the rule
+        $lines = preg_split('~\R~u', str_replace("\t", ' ', $text));
+        if ($lines === false) {
+            throw new \InvalidArgumentException('The footer is not plain UTF-8 text');
+        }
+        $blank = static fn(string $line): bool => preg_match('~^[\s\p{Z}\p{Cf}]*+$~u', $line) === 1;
+        while (($lines !== []) && $blank($lines[0])) {
+            array_shift($lines);
+        }
+        while (($lines !== []) && $blank($lines[array_key_last($lines)])) {
+            array_pop($lines);
+        }
+        if (count($lines) > self::FOOTER_LINES) {
+            throw new \InvalidArgumentException(self::FOOTER_TOO_LONG);
+        }
+        return array_map(static fn(string $line): string => Text::check('A line of the footer', $line, self::FOOTER_CHARS), $lines);
+    }
+
+    /**
+     * $document with the bottom margin made room for the footer, after CSS: whoever lays out the letter knows the
+     * footer, the document need not
+     * @param list<string> $footer footer()
+     */
+    private static function withFooterRoom(string $document, array $footer): string
+    {
+        if ($footer === []) {
+            return $document;
+        }
+        $margin = self::FOOTER_FROM_BOTTOM + (count($footer) - 1) * self::FOOTER_LEADING + self::FOOTER_RULE_GAP + self::FOOTER_SPACE;
+        $style  = '<style>@page{margin-bottom:' . max(self::MARGIN, $margin) . 'pt}</style>';
+        // HtmlBody writes one </head>, before the letter
+        $at = strpos($document, '</head>');
+
+        return ($at === false) ? $style . $document : substr_replace($document, $style, $at, 0);
+    }
+
+    /**
+     * a line of the footer wider than the text of the page: on the canvas it would run off the page unseen
+     * @param list<string> $footer
+     */
+    private static function tooWide(array $footer, FontMetrics $metrics): bool
+    {
+        $font = $metrics->getFont(null);
+        foreach ($footer as $line) {
+            if ($metrics->getTextWidth($line, $font, self::FOOTER_SIZE) > self::LINE_WIDTH) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * The footer on every page, and "strana 1/3" in the middle of the bottom margin of each page of a letter of
+     * more. Drawn after the layout, they are no frames of the letter: what lies off the page is never looked
+     * for in them - tooWide() measured the footer before
+     * @param list<string> $footer
+     */
+    private static function drawMargins(Canvas $canvas, array $footer): void
+    {
+        if (($footer === []) && ($canvas->get_page_count() < 2)) {
             return;
         }
-        $canvas->page_script(static function (int $page, int $count, Canvas $canvas, FontMetrics $metrics): void {
+        $canvas->page_script(static function (int $page, int $count, Canvas $canvas, FontMetrics $metrics) use ($footer): void {
             // the font of the letter, DejaVu Sans, or what dompdf lays the letter out in without it
-            $font  = $metrics->getFont(null);
-            $text  = strtr(self::NUMBER_TEXT, ['%1' => (string) $page, '%2' => (string) $count]);
-            $width = $metrics->getTextWidth($text, $font, self::NUMBER_SIZE);
-            $canvas->text(($canvas->get_width() - $width) / 2, $canvas->get_height() - self::NUMBER_FROM_BOTTOM, $text, $font, self::NUMBER_SIZE, self::NUMBER_COLOR);
+            $font   = $metrics->getFont(null);
+            $height = $canvas->get_height();
+            $right  = $canvas->get_width() - self::MARGIN;
+            $top    = $height - self::FOOTER_FROM_BOTTOM - (count($footer) - 1) * self::FOOTER_LEADING;
+            if ($footer !== []) {
+                $canvas->line(self::MARGIN, $top - self::FOOTER_RULE_GAP, $right, $top - self::FOOTER_RULE_GAP, self::FOOTER_COLOR, 0.5);
+            }
+            foreach ($footer as $i => $line) {
+                $width = $metrics->getTextWidth($line, $font, self::FOOTER_SIZE);
+                $canvas->text($right - $width, $top + $i * self::FOOTER_LEADING, $line, $font, self::FOOTER_SIZE, self::FOOTER_COLOR);
+            }
+            if ($count > 1) {
+                $text  = strtr(self::NUMBER_TEXT, ['%1' => (string) $page, '%2' => (string) $count]);
+                $width = $metrics->getTextWidth($text, $font, self::NUMBER_SIZE);
+                $canvas->text(($canvas->get_width() - $width) / 2, $height - self::NUMBER_FROM_BOTTOM, $text, $font, self::NUMBER_SIZE, self::NUMBER_COLOR);
+            }
         });
     }
 

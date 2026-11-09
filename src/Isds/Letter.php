@@ -43,29 +43,28 @@ final readonly class Letter
     }
 
     /**
-     * The letter of a campaign item: the letterhead above the body as Dopis.pdf, then the files of
-     * its attachment field
-     * @param string                $letterhead lines of plain text (Setup::$letterhead) - the sender, an address
-     * @param UploadDir             $uploads    of the campaign slice: images of the body and the attachments
-     * @param \Closure(int): string $makeRoom   memory for the PDF, given the bytes it needs: '' = there is
-     *                                          room, else why not - the message of \OverflowException
+     * The letter of a campaign item: its header above the body and its footer on every page as Dopis.pdf,
+     * then the files of its attachment field
+     * @param UploadDir             $uploads  of the campaign slice: images of the header, the body and the attachments
+     * @param \Closure(int): string $makeRoom memory for the PDF, given the bytes it needs: '' = there is
+     *                                        room, else why not - the message of \OverflowException
      * @throws \OverflowException no memory for the PDF
      * @throws ServerException the server could not make it - no temporary directory, a limit of PCRE
      * @throws \InvalidArgumentException|\RuntimeException what to fix in the campaign; the message
      *                                   quotes file names and URLs - escape it when shown
      */
-    public static function of(\AA_Content $campaign, string $letterhead, UploadDir $uploads, \Closure $makeRoom): self
+    public static function of(\AA_Content $campaign, UploadDir $uploads, \Closure $makeRoom): self
     {
         $subject  = (string) $campaign->getValue(Schema::CAMPAIGN_SUBJECT);
-        // getFlag() of the content warns about a field the item has no value of
-        $html     = ($campaign->getAaValue(Schema::CAMPAIGN_BODY)->getFlag() & FLAG_HTML) !== 0;
-        $document = (new HtmlBody($uploads))->document($subject, (string) $campaign->getValue(Schema::CAMPAIGN_BODY), $html, $letterhead, PdfBody::CSS);
+        $html     = self::isHtml($campaign, Schema::CAMPAIGN_BODY);
+        $footer   = PdfBody::footer((string) $campaign->getValue(Schema::CAMPAIGN_FOOTER));
+        $document = (new HtmlBody($uploads))->document($subject, (string) $campaign->getValue(Schema::CAMPAIGN_BODY), $html, (string) $campaign->getValue(Schema::CAMPAIGN_HEADER), PdfBody::CSS, self::isHtml($campaign, Schema::CAMPAIGN_HEADER));
         $short    = $makeRoom(PdfBody::memory($document));
         if ($short !== '') {
             throw new \OverflowException($short);
         }
-        $files  = [(new PdfBody())->render($document)];
-        $source = PdfBody::source($document);
+        $files  = [(new PdfBody())->render($document, $footer)];
+        $source = PdfBody::source($document, $footer);
         // up to 20 MB of images, before the attachments are read
         unset($document);
         $bytes  = $files[0]->size();
@@ -80,5 +79,12 @@ final readonly class Letter
             $bytes  += $file->size();
         }
         return new self($subject, $files, (string) $campaign->getValue(Schema::CAMPAIGN_TO_HANDS), $source);
+    }
+
+    /** a field of rich text, as the editor of the slice stores it */
+    private static function isHtml(\AA_Content $campaign, string $field): bool
+    {
+        // getFlag() of the content warns about a field the item has no value of
+        return ($campaign->getAaValue($field)->getFlag() & FLAG_HTML) !== 0;
     }
 }

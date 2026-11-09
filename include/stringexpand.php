@@ -10927,7 +10927,8 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        page be the page of their item.
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
  *        no campaign id only to save a new campaign. Actions: save (a draft - the form adds isds_subject,
- *        isds_to_hands, isds_body, and for its recipients isds_membership, isds_types[], isds_include and
+ *        isds_to_hands, isds_header, isds_body (rich text), isds_footer (at most 4 lines of plain text at the bottom of
+ *        every page), and for its recipients isds_membership, isds_types[], isds_include and
  *        isds_exclude, item ids separated by "-"; a field left out stays as it is, the recipients only with
  *        isds_membership and only when the filter stored is still the one the page read - the fields carry
  *        it. Else the letter is saved, the choice is not: FILTER_CHANGED - as for a pick of an item gone
@@ -10938,8 +10939,8 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        after FILTER_CHANGED the page stays at the step of its URL. Enter in a text field posts the first
  *        button of its form: put Save first, before any isds_pick or isds_step button. Every save of the
  *        form of a new campaign - autosaves too - writes the one new draft, whose id the page gets in
- *        {datovkabulk:campaign} after the save. The body is stored as posted HTML: a template must escape
- *        it wherever it shows it, in a <textarea> too.
+ *        {datovkabulk:campaign} after the save. The header and the body are stored as posted HTML: a template must
+ *        escape them wherever it shows them, in a <textarea> too.
  *        Attachments: a form with enctype="multipart/form-data" adds files as isds_files[] and drops attachments by their URLs in
  *        isds_remove[]; at most 99, of the types both the editor uploads and a data message carries, and none
  *        is saved if one is refused. They go into the upload directory of the slice, public to whoever knows
@@ -11090,8 +11091,8 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        of the campaign has it) in it, escaped as in events - _#TYPE_#CHECKED side by side reads as one
  *        alias, keep the closing quote between them. No campaign id: the filter a new campaign
  *        starts with; none checked for a filter that cannot be read; '' for another item
- *    {datovkabulk:letterhead} - the letterhead of the settings as the letter shows it above its text,
- *        escaped: <p> for each paragraph, <br> between its lines; '' for none
+ *    {datovkabulk:previous} - the id of the campaign of the page whose sending started last (in the active bin),
+ *        '' for none: a new campaign takes its header and footer from it - {item:{datovkabulk:previous}:...}
  *    {datovkabulk:members} - 1 when the page tells members (member_field), else '': offer the choice of
  *        membership only then, else post isds_membership all - but not while the stored filter cannot be
  *        read: then the choice waits for the editor
@@ -11132,7 +11133,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'events'     => $gate->events((string)$settings, (string)$ui, $expand),
             'files'      => $gate->files((string)$settings, (string)$ui, $expand),
             'types'      => $gate->types((string)$settings, (string)$ui, $expand),
-            'letterhead' => $gate->letterhead(),
+            'previous'   => $gate->previous(),
             'members'    => $gate->members(),
             'url'        => $gate->url((string)$settings),
             default      => '',
