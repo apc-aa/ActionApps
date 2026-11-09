@@ -2150,6 +2150,16 @@ final class GateTest extends TestCase
         self::assertSame([$code, ($code === '') ? '' : ActionResult::DONE], array_slice(self::shown($gate), 1, 2));
     }
 
+    // whose a test box of the page is, escaped; '' for a box with no name or not of the page
+    public function test_testbox_nameEscaped(): void
+    {
+        $gate        = self::gate();
+        $gate->setup = Setup::fromSnapshot(self::SITE, self::CAMPAIGN, self::MESSAGE, self::SOURCE, ['mesto' => 'Cities'], testBoxes: ['dj7j6mk', 'ab12cde'], testBoxNames: ['dj7j6mk' => 'Jan <b>Malík</b>']);
+
+        self::assertSame(['Jan &lt;b&gt;Malík&lt;/b&gt;', 'Jan &lt;b&gt;Malík&lt;/b&gt;', '', '', ''], self::inside($gate, static fn(): array => [$gate->testBox('dj7j6mk'), $gate->testBox(' DJ7J6MK '), $gate->testBox('ab12cde'), $gate->testBox('kv62bqf'), $gate->testBox('')]));
+        self::assertSame('', $gate->testBox('dj7j6mk'), 'outside the UI');
+    }
+
     public function test_testboxes_escapedDashSeparated(): void
     {
         $gate        = self::gate();

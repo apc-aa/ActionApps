@@ -45,6 +45,7 @@ final readonly class Setup
      * @param string                   $environment  Account::TEST or Account::PRODUCTION, as datovka_conf.php binds it
      * @param string                   $senderBox    the box a hosted filing service sends from; '' = ISDS tells it
      *                                               when asked, which a page never does
+     * @param array<string, string>    $testBoxNames whose a box of $testBoxes is, as the account says it: box id => name
      */
     private function __construct(
         public string $site,
@@ -58,6 +59,7 @@ final readonly class Setup
         public int $maxRecipients,
         public string $environment,
         public string $senderBox,
+        public array $testBoxNames = [],
     ) {}
 
     /**
@@ -66,6 +68,7 @@ final readonly class Setup
      * @param array<array-key, string> $types
      * @param list<string>             $defaultTypes
      * @param list<string>             $testBoxes
+     * @param array<string, string>    $testBoxNames
      */
     public static function fromSnapshot(
         string $site,
@@ -79,8 +82,9 @@ final readonly class Setup
         int $maxRecipients = self::DEFAULT_RECIPIENTS,
         string $environment = Account::TEST,
         string $senderBox = '',
+        array $testBoxNames = [],
     ): self {
-        return new self($site, $campaignSlice, $messageSlice, $sourceSlice, $types, $defaultTypes, $memberField, $testBoxes, $maxRecipients, $environment, $senderBox);
+        return new self($site, $campaignSlice, $messageSlice, $sourceSlice, $types, $defaultTypes, $memberField, $testBoxes, $maxRecipients, $environment, $senderBox, $testBoxNames);
     }
 
     /**
@@ -159,7 +163,9 @@ final readonly class Setup
             throw new SetupException($problems, $campaign);
         }
 
-        return new self($site, $campaign, $message, $source, $types, $defaults, $memberField, $testBoxes, $max, $account->environment, ($account->kind === Account::HOSTED) ? $account->login : '');
+        $names = array_intersect_key($binding->testBoxNames, array_flip($testBoxes));
+
+        return new self($site, $campaign, $message, $source, $types, $defaults, $memberField, $testBoxes, $max, $account->environment, ($account->kind === Account::HOSTED) ? $account->login : '', $names);
     }
 
     /**

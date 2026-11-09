@@ -422,6 +422,16 @@ final class DatovkaConfTest extends TestCase
         $this->assertInstanceOf(Secret::class, $read['PROD']['test_boxes'][0]['x']);
     }
 
+    // a box with whose it is: the name is no secret either; what is no text in it stays hidden
+    public function test_accounts_testBoxNamesAsWritten(): void
+    {
+        $read = DatovkaConf::fromArray(['accounts' => ['NSZM' => ['test_boxes' => ['dj7j6mk', 'kaqbsig' => 'David Novák', 'k89jce8' => ['x' => self::SECRET], 'password' => self::SECRET]]]])->accounts();
+
+        $this->assertSame(['dj7j6mk', 'David Novák'], [$read['NSZM']['test_boxes'][0], $read['NSZM']['test_boxes']['kaqbsig']]);
+        $this->assertInstanceOf(Secret::class, $read['NSZM']['test_boxes']['k89jce8']['x']);
+        $this->assertInstanceOf(Secret::class, $read['NSZM']['test_boxes']['password'], 'a password misplaced there');
+    }
+
     // true or false of paid_tests as written; anything else hidden, a password misplaced there too
     public function test_accounts_paidTestsAsWritten(): void
     {

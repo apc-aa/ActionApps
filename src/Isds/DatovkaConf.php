@@ -84,7 +84,7 @@ final class DatovkaConf
     /** the keys of an account whose text is read as it is; any other value is kept as Secret - a misspelt password too */
     private const PLAIN = [Accounts::ENVIRONMENT, Accounts::AUTH, Accounts::CERT, Accounts::KEY, Accounts::BOX, Accounts::LOGIN];
 
-    /** the keys of an account whose list of texts is read as it is */
+    /** the keys of an account whose list of texts is read as it is - of test_boxes a text by a box id too */
     private const LISTS = [Accounts::SITES, Accounts::SLICES, Accounts::TEST_BOXES];
 
     /** the keys of an account whose true or false is read as it is */
@@ -415,7 +415,9 @@ final class DatovkaConf
                 };
             } elseif (in_array($key, self::LISTS, true) && is_array($value)) {
                 foreach ($value as $i => $item) {
-                    $fields[$key][$i] = (is_int($i) && is_string($item)) ? $item : self::secret($item);
+                    // test_boxes may say whose a box is: 'kaqbsig' => 'David Novák'; a password misplaced there stays hidden
+                    $listed           = ($key === Accounts::TEST_BOXES) ? (is_int($i) || Accounts::namedBox($i)) : is_int($i);
+                    $fields[$key][$i] = ($listed && is_string($item)) ? $item : self::secret($item);
                 }
             } elseif (in_array($key, self::FLAGS, true) && is_bool($value)) {
                 continue;
@@ -471,8 +473,9 @@ final class DatovkaConf
     /**
      * The accounts of mass sending as the file writes them, name => their keys. Password and passphrase
      * are Secret, or false when they are neither a text nor a list. Only the texts of environment, auth,
-     * cert, key, box and login, the texts listed in sites, slices and test_boxes by number and true or
-     * false of paid_tests are as written; the rest is Secret - an account that is no array too. Accounts
+     * cert, key, box and login, the texts listed in sites, slices and test_boxes by number, the names of
+     * test_boxes by a box id and true or false of paid_tests are as written; the rest is Secret - an account
+     * that is no array too. Accounts
      * reads them.
      *
      * @return array<array-key, mixed>

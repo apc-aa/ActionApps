@@ -215,7 +215,7 @@ class CheckIsdsConf extends AbstractOptimize
             _m('Test boxes of ISDS accounts AA cannot read: %1', [count($settings)]),
             count: count($settings),
             evidence: array_map(static fn(string $setting): array => [_m('Setting') => safe($setting)], $settings),
-            advice: _m("Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it."),
+            advice: _m("Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each; a box may say whose it is: '<data box id>' => '<name>', at most %1 characters. Until then the account sends, but no test message of a draft goes from it.", [Accounts::MAX_BOX_NAME]),
             key: 'test-boxes',
         );
     }

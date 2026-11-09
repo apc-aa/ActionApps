@@ -20,7 +20,7 @@ use AA\Isds\Registry\Box;
  *             'slices'      => ['<campaign slice id>', '<message slice id>'],
  *             'box'         => '<data box id>',
  *             'cert'        => '/etc/aa-isds/nszm.pem',      // outside the directory of AA
- *             'test_boxes'  => ['<data box id>'],
+ *             'test_boxes'  => ['<data box id>', '<data box id>' => '<whose it is>'],
  *             'paid_tests'  => true,                         // optional: each test may cost money
  *         ],
  *     ],
@@ -33,12 +33,13 @@ use AA\Isds\Registry\Box;
  * box. cert holds the key too unless key names a file of its own; passphrase opens an encrypted key. A
  * relative path starts in DatovkaConf::CERT_DIR, which the web server serves - a key belongs outside it.
  * test_boxes lists the only boxes a test message of a production account may go to: a template of the site
- * may narrow them, never add one (Setup). A list AA cannot read leaves the account sending, without tests.
+ * may narrow them, never add one (Setup). A box may say whose it is, for the page to show: 'kaqbsig' => 'David
+ * Novák'. A list AA cannot read leaves the account sending, without tests.
  * A test message of a production account goes only free of charge, unless paid_tests is true: then also a
  * paid one, and one of which ISDS does not say. Anything but true - false, or a value AA cannot read, which
  * State Check tells - allows no paid test. A test account has no paid_tests: State Check names it there.
  *
- * @phpstan-type Found array{name: string, environment: string, sites: list<string>, slices: array{string, string}, problems: list<string>, kind: string, testBoxes: list<string>, paidTests: bool}
+ * @phpstan-type Found array{name: string, environment: string, sites: list<string>, slices: array{string, string}, problems: list<string>, kind: string, testBoxes: list<string>, testBoxNames: array<string, string>, paidTests: bool}
  */
 final class Accounts
 {
@@ -55,6 +56,9 @@ final class Accounts
     public const PASSPHRASE  = 'passphrase';
     public const TEST_BOXES  = 'test_boxes';
     public const PAID_TESTS  = 'paid_tests';
+
+    /** characters of whose a test box is, as test_boxes may say: 'kaqbsig' => 'David Novák' */
+    public const MAX_BOX_NAME = 100;
 
     /** the keys of every account */
     private const COMMON = [self::ENVIRONMENT, self::AUTH, self::SITES, self::SLICES, self::TEST_BOXES];
@@ -154,7 +158,7 @@ final class Accounts
         $shared   = self::shared($found);
         $bindings = [];
         foreach ($found as $i => $f) {
-            $bindings[] = new Binding($f['name'], $f['environment'], $f['sites'], $f['slices'][0], $f['slices'][1], [...$f['problems'], ...($shared[$i] ?? [])], $f['kind'], $f['testBoxes'], $f['paidTests']);
+            $bindings[] = new Binding($f['name'], $f['environment'], $f['sites'], $f['slices'][0], $f['slices'][1], [...$f['problems'], ...($shared[$i] ?? [])], $f['kind'], $f['testBoxes'], $f['paidTests'], $f['testBoxNames']);
         }
 
         return $bindings;
@@ -233,7 +237,7 @@ final class Accounts
     /** @return Found */
     private static function read(string $name, #[\SensitiveParameter] mixed $fields): array
     {
-        $found = ['name' => $name, 'environment' => self::environment($fields), 'sites' => [], 'slices' => ['', ''], 'problems' => [], 'kind' => '', 'testBoxes' => [], 'paidTests' => false];
+        $found = ['name' => $name, 'environment' => self::environment($fields), 'sites' => [], 'slices' => ['', ''], 'problems' => [], 'kind' => '', 'testBoxes' => [], 'testBoxNames' => [], 'paidTests' => false];
         if (!is_array($fields)) {
             $found['problems'][] = self::setting($name) . ' is not an array - give the account its keys in one';
 
@@ -260,7 +264,9 @@ final class Accounts
             $found['problems'][] = $e->getMessage();
         }
         // only for tests of a draft: a mistake there must not stop a sending (brokenTestBoxes())
-        $found['testBoxes'] = self::testBoxes($fields) ?? [];
+        $boxes                 = self::testBoxes($fields) ?? [];
+        $found['testBoxes']    = array_map('strval', array_keys($boxes));
+        $found['testBoxNames'] = array_filter($boxes, static fn(string $name): bool => $name !== '');
         $found['paidTests'] = self::paidTests($fields) ?? false;
         // an environment misspelt is to fix first: which keys belong is not known before
         if ($written) {
@@ -383,7 +389,8 @@ final class Accounts
 
     /**
      * @param array<array-key, mixed> $fields
-     * @return ?list<string> box ids as ISDS knows them, [] when not set; null = no list of box ids
+     * @return ?array<string, string> box ids as ISDS knows them => whose the box is ('' = not said), [] when not set;
+     *                                null = no list of box ids
      */
     private static function testBoxes(#[\SensitiveParameter] array $fields): ?array
     {
@@ -391,12 +398,30 @@ final class Accounts
         if (!is_array($list)) {
             return null;
         }
+        $boxes = [];
         try {
-            // DatovkaConf keeps what is no text of the list as Secret
-            return array_values(array_unique(array_map(static fn(mixed $box): string => Box::normalizeId(is_string($box) ? $box : ''), $list)));
+            foreach ($list as $key => $value) {
+                // 'kaqbsig' => 'David Novák' or just 'kaqbsig'; DatovkaConf keeps what is no text of the list as Secret
+                [$box, $name] = self::namedBox($key) ? [(string) $key, $value] : [$value, ''];
+                $box          = Box::normalizeId(is_string($box) ? $box : '');
+                $name         = Text::check('Whose a test box is', is_string($name) ? $name : throw new \InvalidArgumentException(), self::MAX_BOX_NAME);
+                // a box listed twice keeps the last name it was given
+                $boxes[$box]  = ($name === '') ? ($boxes[$box] ?? '') : $name;
+            }
         } catch (\InvalidArgumentException) {
             return null;
         }
+
+        return $boxes;
+    }
+
+    /**
+     * Whether a key of test_boxes is the box of a name - 'kaqbsig' => 'David Novák' - rather than the number of a
+     * box listed alone; PHP makes the key of a box of digits a number
+     */
+    public static function namedBox(int|string $key): bool
+    {
+        return preg_match(Box::ID, strtolower(trim((string) $key))) === 1;
     }
 
     /**

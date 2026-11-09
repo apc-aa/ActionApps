@@ -913,6 +913,23 @@ final class AccountsTest extends TestCase
         self::assertSame([], Accounts::brokenTestBoxes(self::conf(self::testAccount() + ['nszm' => ['test_boxes' => 'x'], 'BARE' => 'x'])), 'only accounts AA reads');
     }
 
+    // a box may say whose it is: the page names it in the choice of a test message; a name AA cannot read is a list AA cannot read
+    public function test_bindings_testBoxNames(): void
+    {
+        $with = static fn(mixed $boxes): array => ['NSZM' => ['test_boxes' => $boxes] + self::testAccount('NSZM')['NSZM']];
+
+        $binding = self::binding($with(['ymxxxpf', ' KAQBSIG ' => ' David Novák ', 'k89jce8' => 'Petr Švec', 'dj7j6mk' => ' ', 'YMXXXPF' => 'Jan Malík']));
+        self::assertSame(['ymxxxpf', 'kaqbsig', 'k89jce8', 'dj7j6mk'], $binding->testBoxes);
+        self::assertSame(['ymxxxpf' => 'Jan Malík', 'kaqbsig' => 'David Novák', 'k89jce8' => 'Petr Švec'], $binding->testBoxNames, 'in the order of the list');
+        self::assertSame([], self::binding($with(['dj7j6mk']))->testBoxNames, 'none named');
+        self::assertSame(['1234567' => 'Eva'], self::binding($with(['1234567' => 'Eva']))->testBoxNames, 'a box of digits, which PHP keys by a number');
+        foreach (['no text' => ['kaqbsig' => 5], 'a control character' => ['kaqbsig' => "David"], 'too long' => ['kaqbsig' => str_repeat('ř', Accounts::MAX_BOX_NAME + 1)], 'not a box' => ['kaqbsi' => 'David']] as $what => $boxes) {
+            $binding = self::binding($with($boxes));
+            self::assertSame([[], [], []], [$binding->problems, $binding->testBoxes, $binding->testBoxNames], $what);
+            self::assertSame(['NSZM'], Accounts::brokenTestBoxes(self::conf($with($boxes))), $what);
+        }
+    }
+
     // only true lets a test message of production be paid; a value AA cannot read allows nothing and is told
     public function test_bindings_paidTests(): void
     {

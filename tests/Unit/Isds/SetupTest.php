@@ -264,6 +264,15 @@ final class SetupTest extends TestCase
         self::assertSame([], self::build(['test_box' => ['kv62bqf']] + self::settings(), conf: $conf)->testBoxes, 'none left: no test message');
     }
 
+    // whose a box is, of the boxes the page offers only
+    public function test_fromTemplate_testBoxNames(): void
+    {
+        $conf = Sending::conf(['NSZM' => Sending::account(over: ['environment' => 'production', 'auth' => 'cert', 'login' => null, 'password' => null, 'cert' => '/etc/aa/nszm.pem', 'test_boxes' => ['dj7j6mk' => 'Jan Malík', 'ab12cde' => 'Eva', 'kv62bqf']])]);
+
+        self::assertSame(['dj7j6mk' => 'Jan Malík'], self::build(self::settings(), conf: $conf)->testBoxNames);
+        self::assertSame(['dj7j6mk' => 'Jan Malík', 'ab12cde' => 'Eva'], self::build(['test_box' => []] + self::settings(), conf: $conf)->testBoxNames, 'all of the account');
+    }
+
     // the test ISDS reaches nobody: the template may name its own boxes
     public function test_fromTemplate_testBoxesOfTheTestAccount(): void
     {

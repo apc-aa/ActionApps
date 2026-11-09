@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\IO\DB\DB_AA;
+use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Sync;
 use AA\Later\BatchFailed;
 use AA\Upload\UploadDir;
@@ -523,6 +524,19 @@ class Gate
     public function testBoxes(): string
     {
         return safe(implode('-', self::$open->testBoxes ?? []));
+    }
+
+    /** whose a test box of the page is, as test_boxes of the account says it; '' when it does not, or for another box */
+    public function testBox(string $box): string
+    {
+        if (is_null(self::$open)) {
+            return '';
+        }
+        try {
+            return safe(self::$open->testBoxNames[Box::normalizeId($box)] ?? '');
+        } catch (\InvalidArgumentException) {
+            return '';
+        }
     }
 
     /**

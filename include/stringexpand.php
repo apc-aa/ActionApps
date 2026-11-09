@@ -10975,6 +10975,9 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *    {datovkabulk:env}    - test | production, as datovka_conf.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
  *    {datovkabulk:testboxes} - the test boxes of the page, dash-separated: the options of isds_box
+ *    {datovkabulk:testbox:<box>} - whose a test box of the page is, as test_boxes of datovka_conf.php says it
+ *        ('kaqbsig' => 'David Novák'); '' when it does not: {foreach:{datovkabulk:testboxes}:{(<option value="_#1">_#1
+ *        {ifset:{datovkabulk:testbox:_#1}:- {datovkabulk:testbox:_#1}}</option>)}}
  *    {datovkabulk:regbox:<item id>} - the isds_box of the form of fixbox for an item of the source slice: the box
  *        the register offers for it, with a hash of the box it has; '' where fields:fixbox is '', the register
  *        offers nothing that sure or the item has the box - put the form only on rows that get a value. The
@@ -11115,6 +11118,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'sender'     => $gate->sender(),
             'result'     => $gate->result((string)$settings),
             'testboxes'  => $gate->testBoxes(),
+            'testbox'    => $gate->testBox((string)$settings),
             'regbox'     => $gate->regbox((string)$settings),
             'campaign'   => $gate->campaign(),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),
