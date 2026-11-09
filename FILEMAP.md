@@ -170,8 +170,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Manageraction/Central_DeleteTrash.php | Delete all items in trash | Central_DeleteTrash | S |
 | Manageraction/Central_Linkcheck.php | Check links in central | Central_Linkcheck | S |
 | Manageraction/Central_MoveItem.php | Move items to another slice | Central_MoveItem | S |
-| Manageraction/Central_Optimize.php | Run optimizations | Central_Optimize | S |
-| Manageraction/Central_OptimizeType.php | Run all optimizers of a type (sql_update) on remote AAs | Central_OptimizeType | S |
+| Manageraction/Central_OptimizeRun.php | Opens central/optimize.php with the selected AAs (Optimize run) | Central_OptimizeRun | S |
 | Manageraction/Central_Tab.php | Central tab action | Central_Tab | S |
 | Manageraction/Item_DeleteTrash.php | Delete item to trash | Item_DeleteTrash | S |
 | Manageraction/Item_Duplicate.php | Duplicate item | Item_Duplicate | S |
@@ -327,6 +326,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Optimize/CheckImports.php | State Check: imports stopped, stuck, unable to run, damaged keys, leftovers | CheckImports | M |
 | Optimize/CheckImportStores.php | State Check: unreadable import stream states and catalogs | CheckImportStores | S |
 | Optimize/CheckInstallRuns.php | State Check: hanging or failed app transfers | CheckInstallRuns | S |
+| Optimize/CheckOptimizeRuns.php | State Check: hanging or failed Optimize runs of Central | CheckOptimizeRuns | S |
 | Optimize/CheckIsdsConf.php | State Check: misc/datovka/datovka_conf.php unreadable or broken, settings left out or not read, keys written twice, permissions, copies; problems other sites met and unknown installations, logged | CheckIsdsConf::notChecked() | S |
 | Optimize/CheckObjectFormRefusals.php | State Check: settings/Manager forms refused for posting a foreign object | CheckObjectFormRefusals | S |
 | Optimize/CheckPhpFatals.php | State Check: PHP fatal errors of the last 7 days by file and line | CheckPhpFatals | S |

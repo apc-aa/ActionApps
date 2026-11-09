@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Central;
 
 use AA\Central\Actionapps;
+use AA\Central\OptimizeRun;
 use AA\Central\ResponderPolicy;
 use AA\Central\SourceFailed;
 use AA\Util\Txt;
@@ -308,8 +309,8 @@ final class ActionappsCredentialTest extends TestCase
             'requestSlices'      => [static fn(Actionapps $aa) => $aa->requestSlices(), 'Get_Modules', []],
             'requestDefinitions' => [static fn(Actionapps $aa) => $aa->requestDefinitions('Slice', ['x']), 'Get_Module_Defs', []],
             'synchronize'        => [static fn(Actionapps $aa) => $aa->synchronize(['cmd']), 'Do_Synchronize', []],
-            'doOptimize'         => [static fn(Actionapps $aa) => $aa->doOptimize('AA\Optimize\UpdateDbStructure', 'test'), 'Do_Optimize', 'OK'],
-            'doOptimizeType'     => [static fn(Actionapps $aa) => $aa->doOptimizeType('sql_update', 'test'), 'Do_Optimize_Type', 'OK'],
+            'optimize a class'   => [static fn(Actionapps $aa) => $aa->getResponse(OptimizeRun::request('AA\Optimize\UpdateDbStructure', 'test')), 'Do_Optimize', 'OK'],
+            'optimize sql_update' => [static fn(Actionapps $aa) => $aa->getResponse(OptimizeRun::request(OptimizeRun::SQL_UPDATE, 'test')), 'Do_Optimize_Type', 'OK'],
         ];
     }
 
@@ -367,6 +368,18 @@ final class ActionappsCredentialTest extends TestCase
         self::assertStringNotContainsString(self::TOKEN, (string) $aa->getLastError());
     }
 
+    public function test_no_answer_in_time_has_its_own_code(): void
+    {
+        $aa = new StubbedActionapps(self::content([]), ['no serialized answer']);
+        $aa->setAuthToken(self::TOKEN);
+        $aa->refuse = new SourceFailed(SourceFailed::TIMEOUT, 'The remote AA did not answer in time');
+
+        $response = $aa->getResponse(new AA_Request('Get_Aaname'));
+
+        self::assertSame(Actionapps::ERR_TIMEOUT, $response->getError(), 'the remote AA may still work on it');
+        self::assertStringContainsString('in time', (string) $response->getResponse());
+    }
+
     public function test_an_http_row_gets_no_token_sent(): void
     {
         $aa = self::authenticated([new AA_Response(['ok'])], ['AA_HTTP_DOMAIN' => 'http://r.example.org/']);
@@ -391,10 +404,24 @@ final class ActionappsCredentialTest extends TestCase
 
     public function test_a_report_may_be_a_few_megabytes(): void
     {
-        self::assertSame(str_repeat('x', 3 * 1024 * 1024), self::authenticated([new AA_Response(str_repeat('x', 3 * 1024 * 1024))])->doOptimize('AA\Optimize\UpdateDbStructure', 'test'));
+        self::assertSame(str_repeat('x', 3 * 1024 * 1024), self::authenticated([new AA_Response(str_repeat('x', 3 * 1024 * 1024))])->getResponse(OptimizeRun::request('AA\Optimize\UpdateDbStructure', 'test'))->getResponse());
 
         $aa = self::authenticated([new AA_Response(str_repeat('x', 5 * 1024 * 1024))]);
-        self::assertStringContainsString('too big', $aa->doOptimizeType('sql_update', 'test'));
+        self::assertStringContainsString('too big', Actionapps::responseText($aa->getResponse(OptimizeRun::request(OptimizeRun::SQL_UPDATE, 'test'))));
+    }
+
+    public function test_an_optimize_request_names_the_task_and_waits_as_long_as_it_is_told(): void
+    {
+        $aa = self::authenticated([new AA_Response('OK <table></table>')]);
+
+        $aa->getResponse(OptimizeRun::request('AA\Optimize\ChangeQte2Trm', 'repair'), 17);
+        $request = unserialize($aa->posted()['request'], ['allowed_classes' => [AA_Request::class]]);
+        self::assertSame(['Do_Optimize', ['class' => 'AA\Optimize\ChangeQte2Trm', 'method' => 'repair']], [$request->getCommand(), $request->getParameters()]);
+        self::assertEquals(17, $aa->opened[0]['options']['timeout']);
+
+        $aa->getResponse(OptimizeRun::request(OptimizeRun::SQL_UPDATE, 'test'));
+        $request = unserialize($aa->posted()['request'], ['allowed_classes' => [AA_Request::class]]);
+        self::assertSame(['Do_Optimize_Type', ['type' => 'sql_update', 'method' => 'test']], [$request->getCommand(), $request->getParameters()]);
     }
 
     public function test_no_other_object_is_unserialized(): void

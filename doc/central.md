@@ -26,13 +26,39 @@ Columns and actions:
   sends no 2FA code, so a superadmin with two-factor login cannot get a row token this way.
 - **Apps** - "Install an app from this AA..." opens `installapp.php?aa=<row id>` (approved bin only).
   The link carries the row id, never a URL.
-- Bulk actions: SQL update test/update (`Do_Optimize_Type`), link check, Update DB structure and Field
-  duplicates test/repair (`Do_Optimize`), moving between bins, emptying the trash. Actions run only
-  when started from the Central page itself (a forged link or cross-site form is refused).
+- Bulk actions: Optimize (opens `optimize.php` with the selected AAs, below), link check, moving
+  between bins, emptying the trash. Actions run only when started from the Central page itself (a
+  forged link or cross-site form is refused).
 - `import_csv.php` imports `central_conf` rows from CSV.
 
 A row should name the final `https://` address of the AA: the install page refuses `http://` and
 redirects (below).
+
+## Optimize on several AAs
+
+`optimize.php` (the bulk action "Optimize - run a test or repair..." or the menu), superadmin only:
+one task on chosen AAs of the approved bin. The task is the whole sql_update of each AA's own version
+(`Do_Optimize_Type`) or any `AA\Optimize\*` class with a name and a test (`Do_Optimize`) - Trim text
+fields, f_t to f__, the hit duration log, … The list comes from this AA's classes; an AA without the
+class says so.
+
+- **Test only** asks each AA for the test: OK / Problem with its report.
+- **Repair where the test fails** asks for the test first; only when it fails for the repair, then for
+  the test again in a new request (the repair's own request may hold stale caches): OK - nothing to
+  repair / Repaired with the repair's report / Repair failed (with what the test still finds).
+
+The run (`AA\Central\OptimizeRun`, a `BatchRun` of this AA) asks the AAs one after another in the task
+queue, several in one step while its ~27 s last; each request waits only what is left of the step, and
+one with less than 15 s left goes to the next step - the test, the repair and the test after it may each
+come in a step of their own, so **a single request has ~25 s at most**. An AA that answers 11 (another
+update runs there) or does not answer in time is asked again after one to five minutes - the remote AA
+goes on with its work meanwhile; after three tries in a row without an answer its result says so and
+the run goes on. One repair is sent at most: after a repair without an answer in time the AA is only
+tested. Any other error (no token, the token refused, HTTP 500, an AA too old) is the result of that AA.
+The page shows the results with each report in a sandbox, reloads itself while the run goes on (after
+the retry when it waits, never while a report is open), and lists the last 20 runs; Continue asks now
+instead of waiting, End stops the run with the results so far. The run needs the AAs' tokens for its
+whole time - a day at most.
 
 ## Synchronize
 
@@ -362,6 +388,15 @@ the sites whose modules it may edit.
 `['filters' => sha256 of the canonical JSON of the filters, 'answer' => ...]` - the target refuses an
 answer without that echo ("update the source AA"): an older source would answer for all the items.
 
+**`Do_Optimize`** - params `class` (an `AA\Optimize\*` class) and `method` (`test` | `repair`, one
+the class has); superadmin. Answers the report with `OK ` or `Err ` first (`AA\Optimize\Chain::run()`);
+a repair runs only when the test fails. Both hold the `sql_update` lock (11 while another holds it), so
+a test never reads a repair half done.
+
+**`Do_Optimize_Type`** - params `type` (`sql_update` only) and `method` (`test` | `repair`): the whole
+chain of the AA's own version, answered the same way, under the same lock; superadmin. Both commands go
+on to the end (up to 6 minutes) when Central stops waiting.
+
 Error codes (`AA\Central\ResponderPolicy`, plus the responder's own):
 
 | Code | Meaning |
@@ -372,7 +407,12 @@ Error codes (`AA\Central\ResponderPolicy`, plus the responder's own):
 | 104 / 105 / 106 | remote command in the URL / POST-only command by GET / request from another site |
 | 13 | `Get_Jwt` of a superadmin logged in otherwise than by the password in this request (cookie, token), or whose password change AA cannot detect |
 | 14 | Bearer token refused (older than a day, password changed, bad signature) - authenticate again |
+| 4 / 5 | `Do_Optimize`: no such Optimize class / no `test` or `repair` of the class |
+| 9 / 10 | `Do_Optimize_Type`: unknown type / method |
+| 11 | another sql_update (or a repair) runs on the AA now - asked again later |
 | 15 | Central side only: no token stored for the row, nothing was asked |
+| 2 | Central side only: no answer in the time given - the remote AA may still work on it |
+| 3 | Central side only: no usable answer - no connection, an HTTP error, an answer of no plain data |
 | 16 | `Get_App`: no such app, or you may not export it (one answer for both) |
 | 17 | `Get_App`: the export found errors; the answer lists up to 50 lines `code path ref` |
 | 18 | `Get_App`: a parameter missing or of a wrong form |
@@ -489,6 +529,7 @@ On `admin/aa_statecheck.php`:
 
 - **App transfers** - W for a run that hangs (no step has come for longer than its retries and an
   hour - a queue that does not run), E for one stopped by an error; links to its progress page.
+- **Optimize runs of Central** - the same for the runs of `optimize.php`; links to the run.
 - **Required slice settings** - W for slices whose required settings fields (`_` ids) have no value.
 - **Central logins** - W for `central_conf` rows holding anything but an encrypted token (a password
   or a plain `jwt:` token of older Central lying in the database). Central never sends them; press

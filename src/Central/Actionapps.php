@@ -40,8 +40,10 @@ class Actionapps
 
     private const SEALED = 'v1:';
 
-    /** no usable answer */
-    private const ERR_TRANSPORT = 3;
+    /** no answer in the time given - the remote AA may still work on the request */
+    public const ERR_TIMEOUT = 2;
+    /** no usable answer: no connection, an HTTP error, an answer of no plain data */
+    public const ERR_TRANSPORT = 3;
 
     /** a report comes after the remote AA did the work - a long one must not be lost */
     private const REPORT_BYTES = 4 * 1024 * 1024;
@@ -226,7 +228,7 @@ class Actionapps
      */
     public function requestJwt(string $username, string $password): string
     {
-        $response = $this->send(new AA_Request('Get_Jwt'), ['username' => $username, 'password' => $password], '');
+        $response = $this->send(new AA_Request('Get_Jwt'), ['username' => $username, 'password' => $password], '', RemoteSource::TIMEOUT);
         $jwt      = $response->getResponse();
         $this->last_error = match (true) {
             // a failed password check leaves the remote request anonymous, so it answers the generic 101
@@ -318,29 +320,6 @@ class Actionapps
         return ($response->isError()) ? self::responseText($response) : $response->getResponse();
     }
 
-    /** This command calls optimize method
-     *  return the report on the optimize
-     */
-    public function doOptimize($optimize_class, $optimize_method): string
-    {
-        return self::responseText($this->getResponse(new AA_Request('Do_Optimize', ['class' => $optimize_class, 'method' => $optimize_method])));
-    }
-
-    /** Runs all Optimize classes of the type ('sql_update') on the remote AA - the remote picks
-     *  the classes of its own version (AA\Optimize\Chain)
-     *  @param string $method 'test' | 'repair'
-     *  @return string the remote report (HTML, 'OK ' or 'Err ' first) or the error
-     */
-    public function doOptimizeType(string $type, string $method): string
-    {
-        $response = $this->getResponse(new AA_Request('Do_Optimize_Type', ['type' => $type, 'method' => $method]));
-        $text     = self::responseText($response);
-        if ($response->getError() === self::ERR_TRANSPORT) {   // timed out or unreadable - the remote run goes on
-            $text .= ' - ' . _m('the update may still be running on the remote AA - wait, then run Test before retrying');
-        }
-        return $text;
-    }
-
     /** The answer of a remote command as text for a report: the response, or the error code and detail */
     public static function responseText(AA_Response $response): string
     {
@@ -355,12 +334,13 @@ class Actionapps
         return $response->getError() . (is_scalar($detail) ? ' ' . $detail : '');
     }
 
-    /** Main communication function - returns AA_Response object; getLastError() tells why this call failed */
-    public function getResponse($request)
+    /** Main communication function - returns AA_Response object; getLastError() tells why this call failed
+     *  @param int $timeout seconds the answer may take */
+    public function getResponse($request, int $timeout = RemoteSource::TIMEOUT)
     {
         [$state, $jwt] = $this->credential();
         $response = match (true) {
-            $jwt !== null => $this->send($request, [], $jwt),
+            $jwt !== null => $this->send($request, [], $jwt, $timeout),
             $state === self::CREDENTIAL_UNREADABLE => new AA_Response(_m('The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page'), ResponderPolicy::ERR_NOT_AUTHENTICATED),
             default => new AA_Response(_m('No login token for this AA - Authenticate this AA on the ActionApps Central page'), ResponderPolicy::ERR_NOT_AUTHENTICATED),
         };
@@ -370,13 +350,13 @@ class Actionapps
 
     /** The one way a login or a token leaves Central: RemoteSource - https only, no redirect, the peer
      *  verified, a capped answer of plain data. A failure is an error answer. */
-    private function send(AA_Request $request, array $post, string $jwt): AA_Response
+    private function send(AA_Request $request, array $post, string $jwt, int $timeout): AA_Response
     {
         $command = (string) $request->getCommand();
         try {
-            return $this->remote()->ask($request, $post, $jwt, self::answerBytes($command), ($command === 'Get_Module_Defs') ? self::DEFINITION_CLASSES : []);
+            return $this->remote($timeout)->ask($request, $post, $jwt, self::answerBytes($command), ($command === 'Get_Module_Defs') ? self::DEFINITION_CLASSES : []);
         } catch (SourceFailed $e) {
-            return new AA_Response($e->getMessage(), self::ERR_TRANSPORT);
+            return new AA_Response($e->getMessage(), ($e->reason === SourceFailed::TIMEOUT) ? self::ERR_TIMEOUT : self::ERR_TRANSPORT);
         }
     }
 
@@ -392,9 +372,9 @@ class Actionapps
     }
 
     /** the client for the responder of this AA */
-    protected function remote(): RemoteSource
+    protected function remote(int $timeout): RemoteSource
     {
-        return new RemoteSource($this->getComunicatorUrl());
+        return new RemoteSource($this->getComunicatorUrl(), timeout: $timeout);
     }
 
     /** the error of the last call as a line for $err of a Central page, '' after a success */

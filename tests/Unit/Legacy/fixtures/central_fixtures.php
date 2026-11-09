@@ -51,9 +51,9 @@ final class StubbedActionapps extends \AA\Central\Actionapps
         return new self($content, array_map('serialize', $answers));
     }
 
-    protected function remote(): \AA\Central\RemoteSource
+    protected function remote(int $timeout): \AA\Central\RemoteSource
     {
-        return new \AA\Central\RemoteSource($this->getComunicatorUrl(), transport: new \Symfony\Component\HttpClient\MockHttpClient(\Closure::fromCallable([$this, 'answer'])));
+        return new \AA\Central\RemoteSource($this->getComunicatorUrl(), timeout: $timeout, transport: new \Symfony\Component\HttpClient\MockHttpClient(\Closure::fromCallable([$this, 'answer'])));
     }
 
     /** the POST fields of the last request

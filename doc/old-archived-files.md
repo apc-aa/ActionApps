@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/src/Manageraction/**Central_Optimize.php**, **Central_OptimizeType.php**, /tests/Unit/Legacy/**CentralOptimizeTypeTest.php**  
+Actions of the Central list: one Optimize class (Update DB structure, Field duplicates - test or repair) or the whole sql_update on the selected AAs, all of them in the one request of the page, the reports shown at its end.  
+_Replaced by the action "Optimize - run a test or repair..." (src/Manageraction/Central_OptimizeRun.php) and the page central/optimize.php: any Optimize class or the whole sql_update, run in the task queue an AA after another (src/Central/OptimizeRun.php), repair only where the test fails, the results kept with the run. A long update no longer outlives the page's request. Actionapps::doOptimize() and doOptimizeType() went with them - Actionapps::optimize() asks for both. Removed 2026-11-09 - honzam_
+
 /misc/datovka/**datovka_conf.php**  
 Settings of the data-box client behind {datovka}: the installations sharing one registration of the ISDS authentication service, the certificate and atsId of each environment, and the addresses of ISDS.  
 _Belongs to the installation now, like include/config.php: git ignores it, so an update never overwrites the settings of a server; misc/datovka/datovka_conf.php.default is the template to copy. The addresses of ISDS moved into the code (AA\Isds\DatovkaConf::ATS), and AA runs without the file. Removed 2026-10-19 - honzam_

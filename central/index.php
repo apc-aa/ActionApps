@@ -36,8 +36,7 @@ use AA\Manager;
 use AA\Manageraction\Central_DeleteTrash;
 use AA\Manageraction\Central_Linkcheck;
 use AA\Manageraction\Central_MoveItem;
-use AA\Manageraction\Central_Optimize;
-use AA\Manageraction\Central_OptimizeType;
+use AA\Manageraction\Central_OptimizeRun;
 use AA\Manageraction\Central_Tab;
 use AA\Manageraction\Manageractions;
 
@@ -104,13 +103,8 @@ $actions   = new Manageractions;
 $actions->addAction(new Central_MoveItem('Activate', 1));
 $actions->addAction(new Central_MoveItem('Folder2',  2));
 $actions->addAction(new Central_MoveItem('Folder3',  3));
-$actions->addAction(new Central_OptimizeType('Sqlupdate_Test',   'sql_update', 'test'));
-$actions->addAction(new Central_OptimizeType('Sqlupdate_Update', 'sql_update', 'repair'));
+$actions->addAction(new Central_OptimizeRun('Optimize'));
 $actions->addAction(new Central_Linkcheck('AA\Util\Linkcheck'));
-$actions->addAction(new Central_Optimize('Update_Db_Structure_Test', 'AA\Optimize\UpdateDbStructure', 'test'));
-$actions->addAction(new Central_Optimize('Update_Db_Structure_Repair', 'AA\Optimize\UpdateDbStructure', 'repair'));
-$actions->addAction(new Central_Optimize('Field_Duplicates_Test', 'AA\Optimize\FieldDuplicates', 'test'));
-$actions->addAction(new Central_Optimize('Field_Duplicates_Repair', 'AA\Optimize\FieldDuplicates', 'repair'));
 $actions->addAction(new Central_DeleteTrash('DeleteTrashAction',true));
 
 $switches  = new Manageractions;

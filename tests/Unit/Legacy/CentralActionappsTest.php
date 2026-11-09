@@ -32,7 +32,7 @@ class CentralScriptedAa extends AA_Actionapps
         parent::__construct(new ItemContent());
     }
 
-    public function getResponse($request)
+    public function getResponse($request, int $timeout = \AA\Central\RemoteSource::TIMEOUT)
     {
         $this->requests[] = $request;
         return count($this->answers) > 1 ? array_shift($this->answers) : $this->answers[0];

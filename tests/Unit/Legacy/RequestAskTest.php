@@ -126,8 +126,8 @@ final class RequestAskTest extends TestCase
     }
 
     /**
-     * Central_Optimize joins these messages with <br> and the Manager renders them as HTML in a
-     * superadmin's page, so nothing the remote end wrote may travel in them.
+     * A Central page may render these messages as HTML in a superadmin's page, so nothing the
+     * remote end wrote may travel in them.
      */
     public function test_theRemoteBodyNeverReachesTheCentralAdminPage(): void
     {
