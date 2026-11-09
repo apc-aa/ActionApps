@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds\Body;
 
+use AA\Isds\Body\EmptyLetter;
 use AA\Isds\Body\HtmlBody;
 use AA\Isds\Message;
 use AA\Upload\UploadDir;
@@ -150,6 +151,23 @@ final class HtmlBodyTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('empty');
         (new HtmlBody())->document('Pozvánka', $html, true, '<p>Zdravá města<br>Palackého 1</p>');
+    }
+
+    // a campaign sends the attachments alone only when nothing of the header would be lost
+    #[DataProvider('headersOfEmpty')]
+    public function test_document_emptyTellsOfTheHeader(string $header, bool $shown): void
+    {
+        try {
+            (new HtmlBody())->document('Pozvánka', '<p>&nbsp;</p>', true, $header);
+            self::fail('An empty body is no letter');
+        } catch (EmptyLetter $e) {
+            self::assertSame($shown, $e->header);
+        }
+    }
+
+    public static function headersOfEmpty(): array
+    {
+        return ['none' => ['', false], 'blank' => ['<p>&nbsp;</p><p><br></p>', false], 'text' => ['<p>NSZM</p>', true]];
     }
 
     #[DataProvider('notUtf8Headers')]

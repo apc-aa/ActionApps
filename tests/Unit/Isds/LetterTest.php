@@ -61,6 +61,14 @@ final class LetterTest extends TestCase
         return Letter::of(new ItemContent($content), new UploadDir(self::URL, $this->dir), $makeRoom ?? static fn(int $bytes): string => '');
     }
 
+    /** a small banner as the editor inlines one */
+    private static function png(): string
+    {
+        ob_start();
+        imagepng(imagecreatetruecolor(40, 10));
+        return 'data:image/png;base64,' . base64_encode((string) ob_get_clean());
+    }
+
     /** the text of the letter as its PDF shows it, a line of each run of text */
     private static function body(Letter $letter): string
     {
@@ -76,6 +84,38 @@ final class LetterTest extends TestCase
         self::assertSame('application/pdf', $letter->files[0]->mimeType);
         self::assertSame(self::PDF, $letter->files[1]->content);
         self::assertSame("Vážení, \nzveme\n Vás\n", self::body($letter));
+    }
+
+    // without a text no Dopis.pdf: the attachments alone, the first one the main document
+    #[DataProvider('noText')]
+    public function test_of_attachmentsAloneWithoutText(array $body, bool $html): void
+    {
+        file_put_contents("$this->dir/priloha.pdf", self::PDF . '%2');
+        $over   = $body + [Schema::CAMPAIGN_FILES => [' ', self::URL . '/pozvanka.pdf', self::URL . '/priloha.pdf'], Schema::CAMPAIGN_HEADER => $html ? '<p>&nbsp;</p>' : ' ', Schema::CAMPAIGN_FOOTER => " \n "];
+        $letter = $this->letter($over, $html);
+
+        self::assertSame([['pozvanka.pdf', File::MAIN], ['priloha.pdf', File::ENCLOSURE]], array_map(static fn(File $f): array => [$f->name, $f->metaType], $letter->files));
+        self::assertSame(['Pozvánka', 'starosta'], [$letter->annotation, $letter->toHands]);
+        // a test message compares the main file by what it is made of: here its bytes
+        self::assertSame(hash('xxh128', self::PDF), $letter->source);
+    }
+
+    public static function noText(): array
+    {
+        return [
+            'empty paragraph' => [[Schema::CAMPAIGN_BODY => '<p>&nbsp;</p><p><br></p>'], true],
+            'empty field'     => [[Schema::CAMPAIGN_BODY => ''], true],
+            'no field'        => [[Schema::CAMPAIGN_BODY => []], true],
+            'plain spaces'    => [[Schema::CAMPAIGN_BODY => " \n\n "], false],
+        ];
+    }
+
+    // no memory is asked for a PDF that is not made
+    public function test_of_noPdfNoMemory(): void
+    {
+        $letter = $this->letter([Schema::CAMPAIGN_BODY => ''], makeRoom: static fn(int $bytes): string => 'mb:300');
+
+        self::assertSame(['pozvanka.pdf'], array_map(static fn(File $f): string => $f->name, $letter->files));
     }
 
     // what a test message compares: the document the PDF was made of and the footer, not its bytes
@@ -177,11 +217,17 @@ final class LetterTest extends TestCase
             'invisible subject'    => [[Schema::CAMPAIGN_SUBJECT => "\u{200B}\u{2061}"], 'The subject is empty'],
             'long subject'         => [[Schema::CAMPAIGN_SUBJECT => str_repeat('ř', Message::MAX_ANNOTATION + 1)], 'The subject is longer'],
             'long to hands'        => [[Schema::CAMPAIGN_TO_HANDS => str_repeat('ž', Message::MAX_TO_HANDS + 1)], 'To hands is longer'],
-            'no body'              => [[Schema::CAMPAIGN_BODY => '<p> </p>'], 'The letter is empty'],
-            // the header alone is no letter
-            'no body, header'      => [[Schema::CAMPAIGN_BODY => '<p> </p>', Schema::CAMPAIGN_HEADER => '<p>NSZM</p>'], 'The letter is empty'],
-            'no text, header'      => [[Schema::CAMPAIGN_BODY => '', Schema::CAMPAIGN_HEADER => 'NSZM'], 'The letter is empty', false],
-            'no field, header'     => [[Schema::CAMPAIGN_BODY => [], Schema::CAMPAIGN_HEADER => '<p>NSZM</p>'], 'The letter is empty'],
+            'no body, no file'     => [[Schema::CAMPAIGN_BODY => '<p> </p>', Schema::CAMPAIGN_FILES => []], Letter::NOTHING],
+            'no body, blank file'  => [[Schema::CAMPAIGN_BODY => '<p> </p>', Schema::CAMPAIGN_FILES => ' '], Letter::NOTHING],
+            // the header alone is no letter, and it would not go without one
+            'no body, header'      => [[Schema::CAMPAIGN_BODY => '<p> </p>', Schema::CAMPAIGN_HEADER => '<p>NSZM</p>'], Letter::FRAME_ONLY],
+            'no text, header'      => [[Schema::CAMPAIGN_BODY => '', Schema::CAMPAIGN_HEADER => 'NSZM'], Letter::FRAME_ONLY, false],
+            'no field, header'     => [[Schema::CAMPAIGN_BODY => [], Schema::CAMPAIGN_HEADER => '<p>NSZM</p>'], Letter::FRAME_ONLY],
+            'no body, footer'      => [[Schema::CAMPAIGN_BODY => '<p> </p>', Schema::CAMPAIGN_FOOTER => 'NSZM, Praha'], Letter::FRAME_ONLY],
+            // what HtmlBody leaves out the editor sees in the draft
+            'body left out'        => [[Schema::CAMPAIGN_BODY => '<p><img src="https://other.example/dopis.png"></p>'], Letter::LEFT_OUT],
+            'header left out'      => [[Schema::CAMPAIGN_BODY => '', Schema::CAMPAIGN_HEADER => '<p><img src="https://other.example/logo.png"></p>'], Letter::LEFT_OUT],
+            'no body, image only'  => [[Schema::CAMPAIGN_BODY => '<p> </p>', Schema::CAMPAIGN_HEADER => '<p><img src="' . self::png() . '" alt="Zdravá města"></p>'], Letter::FRAME_ONLY],
             'text not UTF-8'       => [[Schema::CAMPAIGN_BODY => "Vá\xE9ení", Schema::CAMPAIGN_HEADER => 'NSZM'], 'The letter is not UTF-8', false],
             'header not UTF-8'     => [[Schema::CAMPAIGN_HEADER => "<p>Vá\xE9ení</p>"], 'The header is not UTF-8'],
             'footer of 5 lines'    => [[Schema::CAMPAIGN_FOOTER => "a\nb\nc\nd\ne"], PdfBody::FOOTER_TOO_LONG],

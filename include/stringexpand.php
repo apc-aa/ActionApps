@@ -10924,7 +10924,8 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        page be the page of their item.
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
  *        no campaign id only to save a new campaign. Actions: save (a draft - the form adds isds_subject,
- *        isds_to_hands, isds_header, isds_body (rich text), isds_footer (at most 4 lines of plain text at the bottom of
+ *        isds_to_hands, isds_header, isds_body (rich text; left empty, with the header and the footer, the attachments
+ *        go alone, the first one the main document), isds_footer (at most 4 lines of plain text at the bottom of
  *        every page), and for its recipients isds_membership, isds_types[], isds_include and
  *        isds_exclude, item ids separated by "-"; a field left out stays as it is, the recipients only with
  *        isds_membership and only when the filter stored is still the one the page read - the fields carry

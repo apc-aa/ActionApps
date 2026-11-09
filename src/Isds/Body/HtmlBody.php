@@ -246,7 +246,8 @@ final class HtmlBody
      * @param string $header     above the body - the sender, a logo; cleaned as the body is
      * @param string $css        appended to the style of the letter: the code's own, never a user's (PdfBody::CSS)
      * @param bool   $headerHtml as $html, of $header
-     * @throws \InvalidArgumentException not UTF-8, cut off by libxml, empty, larger than a message may be, or
+     * @throws EmptyLetter the body shows nothing
+     * @throws \InvalidArgumentException not UTF-8, cut off by libxml, larger than a message may be, or
      *                                   of too many pixels; a message may quote the letter - escape it when shown
      * @throws ServerException no temporary directory for the images
      * @throws \RuntimeException an image among the uploads cannot be read; the message names it
@@ -273,14 +274,16 @@ final class HtmlBody
         $this->sizes       = [];
         $this->omitted     = [];
         $this->append(self::HEAD . '<title>' . self::escape($title) . "</title>\n<style>" . self::CSS . $css . "</style>\n</head>\n<body>\n");
+        $headerShown = false;
         if (trim($header) !== '') {
             $this->children(self::parse($headerHtml ? $header : self::plainText($header)));
             // a header alone is no letter
+            $headerShown   = $this->visible;
             $this->visible = false;
         }
         $this->children(self::parse($html ? $body : self::plainText($body)));
         if (!$this->visible) {
-            throw new \InvalidArgumentException('The letter is empty');
+            throw new EmptyLetter($headerShown, $this->omitted());
         }
         $this->append("\n</body>\n</html>\n");
         $document  = $this->out;
