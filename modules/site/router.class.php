@@ -488,8 +488,7 @@ class AA_Router_Seo extends AA_Router
      */
     public static function newState($apc_state, $query_string): array
     {
-        $new_arr = [];
-        parse_str($query_string, $new_arr);   // now we have $new_arr['x'], $new_arr['p'], etc.
+        $new_arr = Url::parseQuery((string) $query_string);   // now we have $new_arr['x'], $new_arr['p'], etc.
 
         if (!empty($new_arr['xlang'])) { //change language
             $apc_state = self::parseApc($new_arr['xlang']);
@@ -552,7 +551,7 @@ class AA_Router_Seo extends AA_Router
             }
         }
         if ($xqs_subst) {
-            parse_str($apc_state['xqs'], $current_xqs);
+            $current_xqs = Url::parseQuery((string) $apc_state['xqs']);
             $apc_state['xqs'] = http_build_query(array_merge($current_xqs, $xqs_subst));
 
         }

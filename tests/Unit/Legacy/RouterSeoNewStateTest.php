@@ -75,6 +75,13 @@ namespace Tests\Unit\Legacy {
             $this->assertSame('a=1&year=2026', $state['xqs']);
         }
 
+        /** a template can put a decoded value of the visitor's URL into {go:...}; PHP 8.6 parse_str() throws on a NUL */
+        public function test_newState_drops_a_nul_byte(): void
+        {
+            $this->assertSame('a=1&q=ab&r=2', AA_Router_Seo::newState(self::STATE, "xqs_q=a\0b&xqs_r=2")['xqs']);
+            $this->assertSame('b=1&year=2026', AA_Router_Seo::newState(self::STATE, 'xqs=b%3D1%00&xqs_year=2026')['xqs']);
+        }
+
         public function test_parseApc_reads_page_flag_and_category(): void
         {
             $state = AA_Router_Seo::parseApc('/cz2t-bio_plyn.2/articles/biogas?year=2026', '/cz/home', ['cz']);
