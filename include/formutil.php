@@ -3017,19 +3017,6 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                         });
                         JS;
         AA::Stringexpander()->addRequire( $shotcuts_js, 'AA_Req_Load');
-     }
-
-    if ($save_btn_id || $esc_btn_id) {
-        $shotcuts_js =  <<<JS
-                        document.addEventListener('keydown', e => {
-                            if (e.repeat || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
-                            const btn = document.getElementById(({ s:'{$save_btn_id}', Escape:'{$esc_btn_id}' })[e.key.length===1 ? e.key.toLowerCase() : e.key]);
-                            if (!btn || btn.disabled) return;
-                            e.preventDefault();
-                            btn.click();
-                        });
-                        JS;
-        AA::Stringexpander()->addRequire( $shotcuts_js, 'AA_Req_Load');
     }
 
     if ($print_hidden) {
