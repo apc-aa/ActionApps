@@ -92,7 +92,7 @@ class Langs
         uksort($arr, $desc ? static fn($a, $b): int => strcmp($keys[$b], $keys[$a]) : static fn($a, $b): int => strcmp($keys[$a], $keys[$b]));
     }
 
-    /** Spaces and punctuation are ignored unless the letters tie (shifted), as glibc does: „Ekolist sorts under E. */
+    /** Spaces and punctuation count only when the text ties otherwise (shifted, quaternary), as in glibc: „Ekolist sorts under E. */
     private static function collator(): \Collator
     {
         static $collators = [];
@@ -100,6 +100,7 @@ class Langs
         if (!isset($collators[$locale])) {
             $collators[$locale] = new \Collator($locale);
             $collators[$locale]->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED);
+            $collators[$locale]->setStrength(\Collator::QUATERNARY);
         }
         return $collators[$locale];
     }
