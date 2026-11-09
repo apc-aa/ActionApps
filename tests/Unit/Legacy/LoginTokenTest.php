@@ -592,8 +592,11 @@ namespace Tests\Unit\Legacy {
                 }
                 $this->assertNotFalse($up, 'php -S did not start');
                 fclose($up);
-                $body    = file_get_contents("http://$addr/page.php");
-                $headers = implode("\n", $http_response_header);
+                // the headers from the stream: PHP 8.5 deprecates $http_response_header
+                $page    = fopen("http://$addr/page.php", 'r');
+                $headers = implode("\n", stream_get_meta_data($page)['wrapper_data']);
+                $body    = stream_get_contents($page);
+                fclose($page);
             } finally {
                 proc_terminate($server);
                 proc_close($server);

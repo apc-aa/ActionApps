@@ -368,7 +368,6 @@ function aa_rss_parse($xml_data, string $feed_id = ''): ?array
     if ($GLOBALS['debugfeed'] >= 8) {
         huhl("aa_rss_parse:Parsed ok array=", $aa_rss);
     }
-    xml_parser_free($xml_parser);
     return $aa_rss;
 }
 

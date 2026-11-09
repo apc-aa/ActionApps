@@ -111,9 +111,8 @@ class xml_unserializer
     public function __construct()
     {
         $this->parser      = xml_parser_create();
-        xml_set_object($this->parser, $this);
-        xml_set_element_handler($this->parser, "startElement", "endElement");
-        xml_set_character_data_handler($this->parser, "charD");
+        xml_set_element_handler($this->parser, $this->startElement(...), $this->endElement(...));
+        xml_set_character_data_handler($this->parser, $this->charD(...));
     }
 
     /** parse function
@@ -124,7 +123,6 @@ class xml_unserializer
     {
         if (!xml_parse($this->parser, $xml_data, true)) {
             $ret =  sprintf("XML parse error: %s at line %d", xml_error_string(xml_get_error_code($this->parser)), xml_get_current_line_number($this->parser));
-            xml_parser_free($this->parser);
             return $ret;
         }
         return $this->top;

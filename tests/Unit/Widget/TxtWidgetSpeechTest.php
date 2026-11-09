@@ -80,7 +80,6 @@ final class TxtWidgetSpeechTest extends TestCase
     private function invokeSpeechEnabled(TxtWidget $widget): bool
     {
         $ref = new \ReflectionMethod(TxtWidget::class, 'speechEnabled');
-        $ref->setAccessible(true);
         return (bool) $ref->invoke($widget);
     }
 }

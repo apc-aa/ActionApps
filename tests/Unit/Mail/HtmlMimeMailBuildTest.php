@@ -44,14 +44,12 @@ final class HtmlMimeMailBuildTest extends TestCase
     private function invoke(object $obj, string $method, array $args = []): mixed
     {
         $ref = new \ReflectionMethod($obj, $method);
-        $ref->setAccessible(true);
         return $ref->invokeArgs($obj, $args);
     }
 
     private function readHeaders(object $obj): array
     {
         $ref = new \ReflectionProperty(\htmlMimeMail::class, 'headers');
-        $ref->setAccessible(true);
         return $ref->getValue($obj);
     }
 

@@ -78,6 +78,15 @@ class Langs
         return (stripos($charset, 'utf') !== false) ? $lang . '-utf8' : $lang;
     }
 
+    /** Sorts by the locale the language file set (setlocale) - in place of SORT_LOCALE_STRING, which
+     *  PHP 8.6 deprecates. Sort with Collator::SORT_STRING: its default compares numbers as numbers. */
+    public static function collator(): \Collator
+    {
+        static $collators = [];
+        $locale = (string) setlocale(LC_COLLATE, '0');
+        return $collators[$locale] ??= new \Collator($locale);
+    }
+
     /** get current lang
      */
     public static function currentLang(): string

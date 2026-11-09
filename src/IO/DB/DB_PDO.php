@@ -183,7 +183,8 @@ class DB_PDO
                         if ($this->Debug) {
                             echo "Opening $Database<br>\n";
                         }
-                        $this->dbh = new PDO("$this->Server:$Database", null, null, [PDO::ATTR_PERSISTENT => true]);
+                        // PDO::connect() (PHP 8.4+) gives Pdo\Sqlite, whose createFunction() replaces the deprecated PDO::sqliteCreateFunction()
+                        $this->dbh = method_exists(PDO::class, 'connect') ? PDO::connect("$this->Server:$Database", null, null, [PDO::ATTR_PERSISTENT => true]) : new PDO("$this->Server:$Database", null, null, [PDO::ATTR_PERSISTENT => true]);
                         break;
                     case "pgsql":
                         $this->dbh = new PDO("$this->Server:host=$Host;dbname=$Database;port=5432", $User);
@@ -227,57 +228,56 @@ class DB_PDO
                     if ($this->Debug) {
                         echo "Creating sqlite functions...";
                     }
-                    $this->dbh->sqliteCreateFunction('now', function (): string {
+                    $create = method_exists($this->dbh, 'createFunction') ? $this->dbh->createFunction(...) : $this->dbh->sqliteCreateFunction(...);
+                    $create('now', function (): string {
                         return date('Y-m-d H:i:s');
                     }, 0);
-                    $this->dbh->sqliteCreateFunction('year', function (): string {
+                    $create('year', function (): string {
                         return date('Y');
                     }, 0);
-                    $this->dbh->sqliteCreateFunction('month', function (): string {
+                    $create('month', function (): string {
                         return date('n');
                     }, 0);
-                    $this->dbh->sqliteCreateFunction('day', function (): string {
+                    $create('day', function (): string {
                         return date('j');
                     }, 0);
-                    $this->dbh->sqliteCreateFunction('hour', function (): string {
+                    $create('hour', function (): string {
                         return date('G');
                     }, 0);
-                    $this->dbh->sqliteCreateFunction('minute', function (): string {
+                    $create('minute', function (): string {
                         return date('i');
                     }, 0);
-                    $this->dbh->sqliteCreateFunction('second', function (): string {
+                    $create('second', function (): string {
                         return date('s');
                     }, 0);
-                    $this->dbh->sqliteCreateFunction('unix_timestamp', function ($string = '') {
+                    $create('unix_timestamp', function ($string = '') {
                         return strtotime($string);
                     });
-                    $this->dbh->sqliteCreateFunction('compress', 'gzcompress');
-                    $this->dbh->sqliteCreateFunction('uncompress', 'gzuncompress');
-                    $this->dbh->sqliteCreateFunction('length', 'strlen', 1);
-                    $this->dbh->sqliteCreateFunction('substring', function ($string, $from, $length): string {
+                    $create('compress', 'gzcompress');
+                    $create('uncompress', 'gzuncompress');
+                    $create('length', 'strlen', 1);
+                    $create('substring', function ($string, $from, $length): string {
                         return substr($string, $from - 1, $length);
                     }, 3);
-                    $this->dbh->sqliteCreateFunction('md5', 'md5', 1);
-                    $this->dbh->sqliteCreateFunction('pow', 'pow', 2);
-                    $this->dbh->sqliteCreateFunction('rand', fn(): float => mt_rand() / mt_getrandmax());
-                    $this->dbh->sqliteCreateFunction('if', function ($condition, $expr1, $expr2 = null) {
+                    $create('md5', 'md5', 1);
+                    $create('pow', 'pow', 2);
+                    $create('rand', fn(): float => mt_rand() / mt_getrandmax());
+                    $create('if', function ($condition, $expr1, $expr2 = null) {
                         return $condition ? $expr1 : $expr2;
                     });
-                    $this->dbh->sqliteCreateFunction('concat', function (...$args): string {
+                    $create('concat', function (...$args): string {
                         return implode('', $args);
                     });
-                    $this->dbh->sqliteCreateFunction('concat_ws', function (...$args): string {
+                    $create('concat_ws', function (...$args): string {
                         $sep = array_shift($args);
                         return implode($sep, $args);
                     });
                     // as in MySQL, a NULL argument makes the result NULL
-                    $this->dbh->sqliteCreateFunction('greatest', fn(...$args) => in_array(null, $args, true) ? null : max($args));
-                    $this->dbh->sqliteCreateFunction('least', fn(...$args) => in_array(null, $args, true) ? null : min($args));
-                    $this->dbh->sqliteCreateFunction('regexp', function ($pattern, $value) {
-                        #mb_internal_encoding('UTF-8'); // multibyte character encoding
-                        #mb_regex_encoding('UTF-8');    // should be set at the application level
-                        return (mb_ereg($pattern, $value)) ? 1 : 0;
-                    });
+                    $create('greatest', fn(...$args) => in_array(null, $args, true) ? null : max($args));
+                    $create('least', fn(...$args) => in_array(null, $args, true) ? null : min($args));
+                    // PCRE as in MariaDB; mbregex is deprecated in PHP 8.6. The bracket delimiters need
+                    // no escaping of a pattern with balanced or escaped brackets.
+                    $create('regexp', fn($pattern, $value): int => (preg_match('(' . $pattern . ')u', (string) $value) === 1) ? 1 : 0);
                     break;
             }
 

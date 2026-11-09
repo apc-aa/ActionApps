@@ -73,7 +73,8 @@ namespace Tests\Unit\Later {
             SqliteDb::$others = [];
             LogOnce::reset();   // one row a day per class - per process, so another test's row would hide this one's
             set_time_limit(0);   // the round size comes from the limit - another test may have left one
-            $this->pdo = new PDO('sqlite::memory:');
+            // Pdo\Sqlite (PHP 8.4+) - lockable() adds functions, and PHP 8.5 deprecates PDO::sqliteCreateFunction()
+            $this->pdo = method_exists(PDO::class, 'connect') ? PDO::connect('sqlite::memory:') : new PDO('sqlite::memory:');
             $this->pdo->exec('CREATE TABLE toexecute (id INTEGER PRIMARY KEY, created INTEGER NOT NULL DEFAULT 0, execute_after INTEGER NOT NULL, aa_user TEXT NOT NULL DEFAULT \'\', priority INTEGER NOT NULL, selector TEXT NOT NULL, object BLOB NOT NULL, params BLOB NOT NULL)');
             $this->pdo->exec('CREATE TABLE log (id INTEGER PRIMARY KEY, time INTEGER NOT NULL, user TEXT, type TEXT, selector TEXT, params TEXT)');
             $GLOBALS['spareDBs'] = [$this->handle(), $this->handle()];
@@ -687,9 +688,10 @@ namespace Tests\Unit\Later {
         /** MySQL's named lock, which SQLite does not have; DB_AA takes it on a connection of its own */
         private function lockable(): void
         {
-            $this->pdo->sqliteCreateFunction('GET_LOCK', static fn(string $name, int $timeout): int => 1, 2);
-            $this->pdo->sqliteCreateFunction('IS_USED_LOCK', static fn(string $name): int => 7, 1);
-            $this->pdo->sqliteCreateFunction('RELEASE_LOCK', static fn(string $name): int => 1, 1);
+            $create = method_exists($this->pdo, 'createFunction') ? $this->pdo->createFunction(...) : $this->pdo->sqliteCreateFunction(...);
+            $create('GET_LOCK', static fn(string $name, int $timeout): int => 1, 2);
+            $create('IS_USED_LOCK', static fn(string $name): int => 7, 1);
+            $create('RELEASE_LOCK', static fn(string $name): int => 1, 1);
             (new ReflectionProperty(DB_AA::class, 'lock_db'))->setValue(null, $this->lock = $this->handle());
         }
 

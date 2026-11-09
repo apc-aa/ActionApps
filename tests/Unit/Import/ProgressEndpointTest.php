@@ -498,7 +498,8 @@ final class ProgressEndpointTest extends TestCase
         session_id('');
         session_name('AA_Session');
         session_id(self::SID);
-        session_start();
+        // the id is chosen here, and PHP 8.6 starts in strict mode, which refuses an id it did not issue
+        session_start(['use_strict_mode' => false]);
         $auth = new \AA_Auth();
         // an id of a user system logged in to this database - other sessions are logged out
         (new \ReflectionProperty(\Auth::class, 'auth'))->setValue($auth, ['uid' => '1', 'uname' => 'tester', 'perm' => '', 'exp' => $exp, 'refresh' => 0, 'db' => DB_NAME]);

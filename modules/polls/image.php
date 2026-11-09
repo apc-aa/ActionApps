@@ -76,7 +76,6 @@ if (isset($width) && isset($height) && isset($color)) {
     imagefill($image, 0, 0, $bgcolor);
 
     imagejpeg($image);
-    imagedestroy($image);
 } else {
     echo "Ko";
 }

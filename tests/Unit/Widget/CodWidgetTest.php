@@ -54,7 +54,6 @@ final class CodWidgetTest extends TestCase
     {
         $widget = new CodWidget();
         $method = new ReflectionMethod($widget, 'requireLibs');
-        $method->setAccessible(true);
 
         return $method->invoke($widget, $this->propertyStub(), null);
     }
