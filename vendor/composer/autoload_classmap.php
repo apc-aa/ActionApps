@@ -455,6 +455,7 @@ return array(
     'AA\\Optimize\\FixPagecache' => $baseDir . '/src/Optimize/FixPagecache.php',
     'AA\\Optimize\\GenerateJslibsArray' => $baseDir . '/src/Optimize/GenerateJslibsArray.php',
     'AA\\Optimize\\GenerateMetabase' => $baseDir . '/src/Optimize/GenerateMetabase.php',
+    'AA\\Optimize\\HitArchiveDstStamps' => $baseDir . '/src/Optimize/HitArchiveDstStamps.php',
     'AA\\Optimize\\ImgCacheWritable' => $baseDir . '/src/Optimize/ImgCacheWritable.php',
     'AA\\Optimize\\ImgMeasuring' => $baseDir . '/src/Optimize/ImgMeasuring.php',
     'AA\\Optimize\\ItemDiscussion' => $baseDir . '/src/Optimize/ItemDiscussion.php',

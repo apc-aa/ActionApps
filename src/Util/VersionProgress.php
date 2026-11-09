@@ -35,7 +35,8 @@ use AA\Later\HitcounterGroup;
  *    says whether a move is real.
  *  - Days grouped by an AA older than mid-October 2026 hold the mean of the
  *    logs, which runs lower than the mean time, so a window made of such days
- *    reads too fast against the later ones.
+ *    reads too fast against the later ones. Changes like this one are named in
+ *    the Changed column of the row where they start (withMeasuringChanges()).
  *  - Within the last week hits keep their time, so windows start at the change
  *    itself. Each window is measured over its freshest whole days only
  *    (ConfigTimeline::measuredSpan()): pages are built faster at night than in
@@ -89,8 +90,9 @@ final class VersionProgress
         $now        = time();
         $exact_from = HitcounterGroup::exactSince($now);
         $changes    = ConfigTimeline::getChanges();
+        $from       = self::periodStart($changes, $now, $window_days);
         $intervals  = array_slice(
-            ConfigTimeline::buildIntervals($changes, self::periodStart($changes, $now, $window_days), $now, ConfigTimeline::MIN_SPAN, $exact_from),
+            ConfigTimeline::buildIntervals(self::withMeasuringChanges($changes, $from), $from, $now, ConfigTimeline::MIN_SPAN, $exact_from),
             -self::MAX_INTERVALS,
         );
         $measured = array_values(array_filter($intervals, static fn($interval) => !$interval['short']));
@@ -137,6 +139,64 @@ final class VersionProgress
             $from = min($from, ConfigTimeline::nextDayStart($oldest_row['time']));
         }
         return max($from, ConfigTimeline::dayStart($now - (self::MAX_DAYS * ConfigTimeline::DAY)));
+    }
+
+    /**
+     * The changes with the changes to how hits are measured noted on them ('notes',
+     * see ConfigTimeline::describeDiff()). They move the numbers with no page any
+     * faster or slower, so the row where they start must say so.
+     *
+     * Both came with the dist build of 2026-10-15, and an install took them up with
+     * its first deployment of new code after it. Hits counted from then on carry
+     * their own view's time: noted on that deployment. Days grouped from then on
+     * keep the mean time: that reached back to the days still waiting for grouping,
+     * so it opens a window of its own on the first of them, as a copy of the
+     * configuration then running - give or take a day, by when the queue ran.
+     * Only after $from: before it, it would stand in for the configuration the
+     * leading row names.
+     *
+     * @param  list<array<string,mixed>> $changes  from ConfigTimeline::getChanges(), oldest first
+     * @return list<array<string,mixed>>
+     */
+    public static function withMeasuringChanges(array $changes, int $from): array
+    {
+        $released = 1792067991;   // 2026-10-15 12:39:51 UTC, the build of main@5649a88
+        $before   = null;
+        $deployed = null;
+        foreach ($changes as $i => $change) {
+            if ($change['time'] < $released) {
+                $before = $change;
+            } elseif ($before === null) {
+                return $changes;   // started on the new code: nothing ever changed
+            } elseif (!ConfigTimeline::sameCode($change, $before)) {
+                $deployed = $i;
+                break;
+            }
+        }
+        if ($deployed === null) {
+            return $changes;
+        }
+        $changes[$deployed]['notes'][] = [
+            \_m('measuring: view time'),
+            \_m('From here on, a hit counted from a template (an item listed by a view, a banner) carries the time of its own view, not the time of the page so far. Such items read faster with no page any faster.'),
+        ];
+
+        $first_day = HitcounterGroup::days($changes[$deployed]['time'], 0, 1)[0][0];   // queued, but not run yet
+        $running   = null;
+        foreach ($changes as $i => $change) {
+            if ($change['time'] > $first_day) {
+                break;
+            }
+            $running = $i;
+        }
+        if ($running !== null && $first_day > $from) {
+            $copy = ['time' => $first_day, 'notes' => [[
+                \_m('measuring: mean time'),
+                \_m('From this day on, grouped days keep the mean time of their hits. The days before keep the mean of the logarithm of their times, which reads lower, so this row reads slower than the one before it with no page any slower.'),
+            ]]] + $changes[$running];
+            array_splice($changes, $running + 1, 0, [$copy]);
+        }
+        return $changes;
     }
 
     /**

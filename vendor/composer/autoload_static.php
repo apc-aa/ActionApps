@@ -633,6 +633,7 @@ class ComposerStaticInit1ba294ada09b3ce260f871e643990d2b
         'AA\\Optimize\\FixPagecache' => __DIR__ . '/../..' . '/src/Optimize/FixPagecache.php',
         'AA\\Optimize\\GenerateJslibsArray' => __DIR__ . '/../..' . '/src/Optimize/GenerateJslibsArray.php',
         'AA\\Optimize\\GenerateMetabase' => __DIR__ . '/../..' . '/src/Optimize/GenerateMetabase.php',
+        'AA\\Optimize\\HitArchiveDstStamps' => __DIR__ . '/../..' . '/src/Optimize/HitArchiveDstStamps.php',
         'AA\\Optimize\\ImgCacheWritable' => __DIR__ . '/../..' . '/src/Optimize/ImgCacheWritable.php',
         'AA\\Optimize\\ImgMeasuring' => __DIR__ . '/../..' . '/src/Optimize/ImgMeasuring.php',
         'AA\\Optimize\\ItemDiscussion' => __DIR__ . '/../..' . '/src/Optimize/ItemDiscussion.php',

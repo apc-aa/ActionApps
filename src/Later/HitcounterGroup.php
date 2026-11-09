@@ -6,6 +6,7 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA\Optimize\AddDurationLog;
 use AA\Util\AA_Packtime;
+use AA\Util\ConfigTimeline;
 
 /** Groups data in hit_archive table
  *  We store all the hits into the hit_archive table. It is good for counting
@@ -143,24 +144,42 @@ class HitcounterGroup implements LaterInterface
      */
     public function plan(int $max_task = 0): void
     {
-        $oldest = DB_AA::select1('oldest', 'SELECT MIN(time) AS oldest FROM `hit_archive`');
+        $oldest = self::oldestHit();
         if (!$oldest) {   // an empty hit_archive - nothing to group
             return;
         }
-        // the day just before exactSince(); mktime(), not "- 86400", which misses midnight on a DST switch
-        $grouping_start = mktime(0, 0, 0, date("m"), date("d") - self::EXACT_DAYS - 1, date("Y"));
-        $step = 60 * 60 * 24;                        // day
-
         $toexecute = new Toexecute();
-        // run for all the days from $oldest to week ago
-        $no_task = 0;
-        for ($begin = $grouping_start; $begin + $step >= $oldest; $begin -= $step) {
+        foreach (self::days(time(), $oldest, $max_task) as [$begin, $step]) {
             $toexecute->laterOnce($this, [$begin, $step], "HitcounterGroup_$begin", 40, time() + 60 * 60 * 24); // once a day
+        }
+    }
 
-            // by default, we plan all the task
-            if (++$no_task === $max_task) {
+    /**
+     * The days to group, newest first, each as [its midnight, its length]: from the
+     * day before exactSince() back to the day of the oldest hit, at most $max_days
+     * of them (0 = all).
+     *
+     * Each day is read off the calendar: a day of a clock change has 23 or 25 hours,
+     * so 86400 s back from a midnight is an hour off the one before it.
+     *
+     * @return list<array{0:int,1:int}>
+     */
+    public static function days(int $now, int $oldest, int $max_days = 0): array
+    {
+        $days = [];
+        for ($end = self::exactSince($now); $end >= $oldest; $end = $begin) {
+            $begin  = ConfigTimeline::dayStart($end - 1);
+            $days[] = [$begin, $end - $begin];
+            if (count($days) === $max_days) {
                 break;
             }
         }
+        return $days;
+    }
+
+    /** Time of the oldest hit_archive row, 0 when there is none. */
+    public static function oldestHit(): int
+    {
+        return (int) DB_AA::select1('oldest', 'SELECT MIN(`time`) AS oldest FROM `hit_archive`');
     }
 }

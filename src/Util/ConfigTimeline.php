@@ -195,7 +195,8 @@ final class ConfigTimeline
      * $exact_from on, the measured data carries its own time, so the window
      * starts at the change itself. Before that the data exists only per whole
      * day: the change day holds both configurations and belongs to neither
-     * window, the new one opening the day after.
+     * window, the new one opening the day after - or at the change, when that
+     * falls exactly on a midnight.
      *
      * The newest window is always listed, however short: it is what is running
      * now, and flagged `short` until it has run for $min_span.
@@ -269,7 +270,9 @@ final class ConfigTimeline
                 }
             } elseif ($next_change !== null) {
                 array_shift($queue);
-                $opens       = $exact ? $next_change['time'] : self::nextDayStart($next_change['time']);
+                // On whole days: the midnight after the change, or the change itself when
+                // it falls exactly on one - that day is wholly the new configuration's.
+                $opens       = $exact ? $next_change['time'] : self::nextDayStart($next_change['time'] - 1);
                 $next_window = ['start' => $opens, 'exact' => $exact, 'changes' => [$next_change]];
             }
 
@@ -414,7 +417,16 @@ final class ConfigTimeline
             $parts[] = [\_m('memory') . ' ' . $now['mem'], ''];
         }
         $server = array_map(static fn(string $change) => [$change, ''], self::serverDiff((string) ($previous['server'] ?? ''), (string) ($now['server'] ?? '')));
-        return array_merge($parts, $server);
+        // What a caller noted on a change ('notes' => [label, tooltip] pairs), the
+        // way VersionProgress names a change to how hits are measured.
+        $notes = array_merge(...array_map(static fn(array $change) => $change['notes'] ?? [], $changes));
+        return array_merge($parts, $server, $notes);
+    }
+
+    /** Whether two configurations run the same code, whatever else changed. */
+    public static function sameCode(array $a, array $b): bool
+    {
+        return self::revKey($a) === self::revKey($b);
     }
 
     /**
