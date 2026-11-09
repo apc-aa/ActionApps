@@ -30,6 +30,7 @@
  * @param $chb[] - array of selected users (in reader management slice)
 */
 
+use AA\Mail\RepeatedBulkMail;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 
@@ -82,6 +83,7 @@ try {
     // array ( 'malik@sezna…' => 4, )
     $testemail = InputVars::stringPOST('testemail');
     $cancel = InputVars::boolPOST('cancel');
+    $resend = InputVars::boolPOST('resend');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -89,6 +91,8 @@ try {
 }
 
 $err = [];          // error array (Init - just for initializing variable
+$queued  = false;   // a bulk send went to the queue - the page hides the form, so it is not sent twice
+$earlier = null;    // the same email already sent to the same group
 
 $searchbar = new AA_Searchbar(AA::$module_id);   // mainly for bookmarks
 $items     = $chb;
@@ -149,6 +153,17 @@ if (!$send) {               // for the first time - directly from item manager
             break;
         }
 
+        if ((string) $group === "sel_item") {
+            $sel = "LIST";
+            $sel_description = ' - ' . _m("Manually selected");
+        } elseif ((string) $group === "testuser") {
+            $sel = "TEST";
+            $sel_description = " - ($testemail)";
+        } else {
+            $sel = get_if($group, "0");  // bookmarks groups are identified by numbers
+            $sel_description = ' - ' . _m('Filter') . " $sel";
+        }
+
         $email = [
             'description'     => $description,
             'subject'         => $subject,
@@ -169,6 +184,11 @@ if (!$send) {               // for the first time - directly from item manager
             $email['body'] = $body;
         }
 
+        if (!$resend && ($sel !== 'TEST') && ($earlier = RepeatedBulkMail::lastSend(AA::$module_id, AuthGetUid(), $sel, $subject, $email['body'], time() - 86400))) {
+            $Msg = MsgErr(_m("This email (the same subject and text) already went to the same group on %1, to %2 recipients. If it should go out once more, tick \"%3\" and send it.", [date('Y-m-d H:i', $earlier['time']), $earlier['users'], _m('Send again')]));
+            break;
+        }
+
         $mail_id = AA::Metabase()->doInsert('email', $email);  // get mail template id - last_insert_id
 
         if (!ctype_digit((string) $mail_id)) {
@@ -177,10 +197,11 @@ if (!$send) {               // for the first time - directly from item manager
         }
 
         // --- send emails
-        if ($group === 'testuser') {
+        if ($sel === 'TEST') {
             $mails_to    = explode(',', $testemail);
             $mails_sent  = AA_Mail::sendTemplate($mail_id, $mails_to);
             $users_count = count($mails_to);
+            $Msg         = MsgOk(_m("Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", [$users_count, $mails_sent, $mail_id]));
         } else {
             // get reader's zids
             $zids = getZidsFromGroupSelect($group, $items, $searchbar);
@@ -188,22 +209,16 @@ if (!$send) {               // for the first time - directly from item manager
             // parameter $recipient (for testing e-mail)
             $mails_sent  = AA_Mail::sendToReader($mail_id, $zids, AA::$module_id);
             $users_count = $zids->count();
+            $queued      = ($users_count > 0);
+            $Msg         = $queued
+                ? MsgOk(_m("The email is queued for %1 recipients. AA sends it in the background, so the first copies may take several minutes to arrive.", [$users_count]))
+                : MsgErr(_m("The selected group has no recipients - nothing was sent."));
         }
-        $Msg = MsgOk(_m("Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", [$users_count, $mails_sent, $mail_id]));
+        $resend = false;    // a next send asks again
 
-        if ((string) $group === "sel_item") {
-            $sel = "LIST";
-            $description .= ' - ' . _m("Manually selected");
-        } elseif ((string) $group === "testuser") {
-            $sel = "TEST";
-            $description .= " - ($testemail)";
-        } else {
-            $sel = get_if($group, "0");  // bookmarks groups are identified by numbers
-            $description .= ' - ' . _m('Filter') . " $sel";
-        }
         AA_Log::write("EMAIL_SENT", $sel, new AA_Logentry_Em(['mail_id' => $mail_id, 'users' => $users_count, 'sent' => $mails_sent]));
         // remove temporary email template from database
-        if (!AA::Metabase()->doUpdate('email', ['id' => $mail_id, 'description' => $description . " - $mails_sent/$users_count"])) {
+        if (!AA::Metabase()->doUpdate('email', ['id' => $mail_id, 'description' => $description . $sel_description . " - $mails_sent/$users_count"])) {
             $err["DB"] = MsgErr(_m("Can't update email template"));
             break;    // not necessary - we have set the halt_on_error
         }
@@ -229,6 +244,10 @@ $apage->addRequire(get_aa_url('javascript/inputform.min.js', ['v' => AA_JS_VERSI
 
 $apage->printHead($err, $Msg);
 
+if ($queued) {
+    // closed: the filled form with its Send button right under the message invited a second send
+    echo '<details class="aa-page-section"><summary><h2 class="aa-tab-title">' . _m('Send this email to other recipients') . '</h2></summary>';
+}
 echo '
   <form name="mailform" method="post" enctype="multipart/form-data">';
 
@@ -262,15 +281,21 @@ FrmInputSelect('html', _m('Use HTML'), [_m('no'), _m('yes')], $_POST['html'], tr
 FrmInputFile('attachment1', _m("Attachment 1"), $attachment1, false, "*/*");
 FrmInputFile('attachment2', _m("Attachment 2"), $attachment2, false, "*/*");
 FrmInputFile('attachment3', _m("Attachment 3"), $attachment3, false, "*/*");
+if ($earlier || $resend) {
+    FrmInputChBox('resend', _m('Send again'), $resend);
+}
 
 
 FrmTabEnd([
-    'send' => ['type' => 'submit', 'value' => _m('Send')],
+    'send' => ['type' => 'submit', 'value' => _m('Send'), 'once' => true],
     'close' => ['type' => 'button', 'value' => _m('Close'), 'add' => 'onclick="window.close()"'],
 ]);
 
 // list selected items to special form - used by manager.min.js to show items (recipients)
 echo "\n  </form>";
+if ($queued) {
+    echo '</details>';
+}
 FrmItemListForm($items);
 
 //$form = AA_Mail::getNewForm($slice_id);

@@ -911,6 +911,10 @@ class AA_Logentry_Qa extends AA_Logentry
 /** EMAIL_SENT log entry (admin/write_mail.php) */
 class AA_Logentry_Em extends AA_Logentry
 {
+    public string $mail_id = '';
+    public string $users   = '';
+    public string $sent    = '';
+
     public static function getClassProperties(): array
     {
         return [
