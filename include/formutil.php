@@ -252,13 +252,14 @@ class inputform {
             // you can add some html code by user profiles, above the form
             $html_start .= get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_tophtml' : 'add_tophtml'), '');
 
-            $html_start .= GetPrintArray( $this->messages['err'] );     // prints err or OK messages
+            if (($messages = GetPrintArray($this->messages['err'])) !== '') {     // err or OK messages
+                $html_start .= "<div class=\"aa-page-msg\">$messages</div>";
+            }
 
             $html_end = "</div></div>{generate:FOOT}</body></html>";
         }
 
-        AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
-        AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
+        AA_Adminpageutil::addScrollKeeper();
 
         // Now that the top header / left rail let the editor navigate away mid-edit, warn before
         // leaving a full-page admin form with unsaved changes (submitting clears the flag).
@@ -2939,7 +2940,6 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                 } else {
                     $save_btn_id = $prefix .'update';
                     $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$save_btn_id.'"'.$title.' accesskey="S" value=" '. safe(get_if($properties['value'], _m("Update"))) ." [^S] " .' ">';
-                    AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
                     $noaccess = true; // use for update of item, bug was, that both "update" and "insert" has accesskey S
                 }
                 break;

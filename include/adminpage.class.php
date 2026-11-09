@@ -234,14 +234,12 @@ class AA_Adminpageutil {
         }
 
         if (!empty($Msg)) {
-            echo "<div class='mb-3 mt-3'>$Msg</div>";
+            echo "<div class='mb-3 mt-3 aa-page-msg'>$Msg</div>";
         }
 
-        // Remember the scroll position over a submit. Outside the $this->form branch:
-        // it listens on every form of the page, and a page without the wrapper form
-        // (State Check, whose rows carry their own) is exactly where it is needed.
-        AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
-        AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
+        // Outside the $this->form branch: it listens on every form of the page, and a page without
+        // the wrapper form (State Check, whose rows carry their own) is exactly where it is needed.
+        self::addScrollKeeper();
 
         if ($this->form) {
             $frm = "\n<form";
@@ -274,6 +272,16 @@ class AA_Adminpageutil {
                 echo '<br>'.$html;
             }
         }
+    }
+
+    /** Keeps the scroll position over a submit, so a long form reopens where the user saved it.
+     *  An error printed on the page (.aa-page-msg .aa-err) wins and the page opens at the top: below
+     *  the hidden message the form looks untouched, and users send it again.
+     */
+    public static function addScrollKeeper(): void
+    {
+        AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(f => f.addEventListener('submit', () => sessionStorage.setItem('aa_pgtop', window.pageYOffset)));", 'AA_Req_Load');
+        AA::Stringexpander()->addRequire("{ const pos = Number(sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); if (pos > 0 && !document.querySelector('.aa-page-msg .aa-err')) { window.scrollTo(0, pos); } }", 'AA_Req_Load');
     }
 
     /** Positioner for the reusable .aa-overflow-menu popover (HTML5 popover API,
