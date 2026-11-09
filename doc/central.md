@@ -40,7 +40,11 @@ redirects (below).
 one task on chosen AAs of the approved bin. The task is the whole sql_update of each AA's own version
 (`Do_Optimize_Type`) or any `AA\Optimize\*` class with a name and a test (`Do_Optimize`) - Trim text
 fields, f_t to f__, the hit duration log, … The list comes from this AA's classes; an AA without the
-class says so.
+class says so. It is grouped by `types()` and whether the class has a repair, the recommended first:
+the whole sql_update, the repairs, the repairs reading whole big tables (`check_slow` - they hardly fit
+the time a request waits), the tests by their State Check `category()`, the steps of sql_update one by
+one, the fixes of one website (`private_fix`). `RestoreBckTables` is not offered: its test passes when
+backups exist, so "repair where the test fails" would be wrong for it.
 
 - **Test only** asks each AA for the test: OK / Problem with its report.
 - **Repair where the test fails** asks for the test first; only when it fails for the repair, then for

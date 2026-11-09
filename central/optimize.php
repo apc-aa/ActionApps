@@ -138,7 +138,16 @@ function optimize_form(array $checked, string $task, string $method): void
     }
     echo '<form method="post" action="' . safe(optimize_url()) . '">' . FormToken::field(OptimizeRun::FORM_TOKEN) . '<input type="hidden" name="action" value="start">';
     FrmTabCaption(_m('Run an Optimize task on several AAs'));
-    FrmInputSelect('task', _m('Task'), OptimizeRun::tasks(), $task, true, _m('Each AA runs the task of its own version; an AA without it says so.'));
+    $options = [];
+    foreach (OptimizeRun::taskGroups() as $group => $tasks) {
+        $options['AA_OPTGROUP ' . $group] = $group;
+        $options += $tasks;
+    }
+    // a task this AA does not offer is not chosen again
+    $task  = (isset($options[$task]) && !str_starts_with($task, 'AA_OPTGROUP')) ? $task : OptimizeRun::SQL_UPDATE;
+    $input = new AA_Inputfield(getFrmSelectEasy('task', $options, $task, ['aria-label' => _m('Task'), 'required' => 'required']), false, 'normal', '', _m('Task'), '', true, _m('Each AA runs the task of its own version; an AA without it says so.'));
+    $input->staticText(false);
+    echo $input->get_result();
     FrmInputRadio('method', _m('Do'), optimize_methods(), $method, true, _m('Repair tests first, repairs only where the test fails, then tests again.'));
     FrmTabEnd();
     echo '<table class="aa-optimize"><tr><th></th><th>' . _m('AA') . '</th><th>' . _m('Auth') . '</th></tr>';

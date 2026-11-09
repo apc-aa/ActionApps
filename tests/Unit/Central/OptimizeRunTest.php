@@ -194,6 +194,38 @@ namespace Tests\Unit\Central {
             OptimizeRun::begin($task, $method, $aas, self::USER);
         }
 
+        public function test_task_groups_put_the_recommended_and_the_repairs_first(): void
+        {
+            $groups = OptimizeRun::taskGroups();
+            $groupOf = static function (string $task) use ($groups): int {
+                foreach (array_keys($groups) as $n => $group) {
+                    if (isset($groups[$group][$task])) {
+                        return $n;
+                    }
+                }
+                return -1;
+            };
+
+            $this->assertSame([OptimizeRun::SQL_UPDATE], array_keys(reset($groups)), 'the whole sql_update alone first');
+            $this->assertSame(1, $groupOf('AA\Optimize\ChangeQte2Trm'), 'a repair next');
+            $this->assertSame(1, $groupOf('AA\Optimize\AddDurationLog'), 'an optional feature is a repair');
+            $this->assertSame(2, $groupOf('AA\Optimize\DbInconsistency'), 'a repair over whole big tables apart');
+            $order = [
+                'AA\Optimize\DbInconsistency',
+                'AA\Optimize\CheckQueue',
+                'AA\Optimize\UpdateDbStructure',
+                'AA\Optimize\LdapPermsToSql',
+            ];
+            $ranks = array_map($groupOf, $order);
+            $this->assertNotContains(-1, $ranks);
+            $this->assertSame($ranks, array_values(array_unique($ranks)), 'slow repairs, tests, steps of sql_update, fixes of one site - each its own group');
+            $sorted = $ranks;
+            sort($sorted);
+            $this->assertSame($sorted, $ranks, 'in this order');
+            $this->assertCount(count(OptimizeRun::tasks()), array_merge(...array_values(array_map('array_keys', $groups))), 'each task once');
+            $this->assertArrayNotHasKey('AA\Optimize\RestoreBckTables', OptimizeRun::tasks(), 'its test passes when backups exist - no repair where it fails');
+        }
+
         public function test_tasks_start_with_the_whole_sql_update_and_name_the_classes(): void
         {
             $tasks = OptimizeRun::tasks();

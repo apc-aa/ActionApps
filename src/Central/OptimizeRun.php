@@ -61,6 +61,10 @@ final class OptimizeRun extends BatchRun
     /** what the form of central/optimize.php sends with its token */
     public const FORM_TOKEN = 'central-optimize';
 
+    /** Optimize classes a run never offers: their test does not say "nothing to repair" - RestoreBckTables
+     *  passes when backups exist, and its repair replaces the tables that have a backup by it */
+    private const EXCLUDED = [\AA\Optimize\RestoreBckTables::class];
+
     /** finished runs kept for their results */
     private const KEEP = 20;
     /** AAs one run asks at most */
@@ -130,18 +134,46 @@ final class OptimizeRun extends BatchRun
         return self::get($id) ?? throw new LogicException('The new optimize run is gone');
     }
 
-    /** What a run may do: the whole sql_update, then every Optimize class with a name and a test, by name
+    /** What a run may do: every task of taskGroups()
      *  @return array<string, string> task => name */
     public static function tasks(): array
     {
-        $classes = [];
+        return array_replace(...array_values(self::taskGroups()));
+    }
+
+    /** The tasks in groups for the choice, the recommended first: the whole sql_update; the repairs; the
+     *  repairs that read whole big tables (CHECK_SLOW - minutes on a big database, longer than a request
+     *  waits); the tests by their State Check category; the steps of sql_update one by one; the fixes
+     *  made for one website. An Optimize class is a task when it has a name and a test (and is not EXCLUDED);
+     *  the group comes from its types() and whether it has a repair.
+     *  @return array<string, array<string, string>> group => task => name, by name */
+    public static function taskGroups(): array
+    {
+        $found = [];
         foreach (AA_Components::getClassNames('AA\\Optimize\\', null, false) as $class) {
-            if (is_subclass_of($class, AbstractOptimize::class) && ($class::name() !== '') && in_array('test', $class::actions(), true)) {
-                $classes[$class] = $class::name();
+            if (!is_subclass_of($class, AbstractOptimize::class) || ($class::name() === '') || !in_array('test', $class::actions(), true) || in_array($class, self::EXCLUDED, true)) {
+                continue;
+            }
+            $types = $class::types();
+            [$rank, $group] = match (true) {
+                in_array('private_fix', $types, true)                => [5, _m('Fixes made for one website')],
+                in_array(self::SQL_UPDATE, $types, true)             => [4, _m('Steps of the DB update one by one')],
+                !in_array('repair', $class::actions(), true)         => [3, _m('Tests - %1', [$class::category() ?: 'db'])],
+                in_array(AbstractOptimize::CHECK_SLOW, $types, true) => [2, _m('Repairs reading whole big tables - minutes on a big database')],
+                default                                              => [1, _m('Repairs')],
+            };
+            $found[$rank][$group][$class] = $class::name();
+        }
+        ksort($found);
+        $groups = [_m('Recommended') => [self::SQL_UPDATE => self::taskName(self::SQL_UPDATE)]];
+        foreach ($found as $ofRank) {
+            ksort($ofRank, SORT_NATURAL | SORT_FLAG_CASE);
+            foreach ($ofRank as $group => $tasks) {
+                asort($tasks, SORT_NATURAL | SORT_FLAG_CASE);
+                $groups[$group] = $tasks;
             }
         }
-        asort($classes, SORT_NATURAL | SORT_FLAG_CASE);
-        return [self::SQL_UPDATE => self::taskName(self::SQL_UPDATE)] + $classes;
+        return $groups;
     }
 
     /** the name of a task as tasks() gives it - without reading all the classes */
