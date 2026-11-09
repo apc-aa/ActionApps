@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
-use AA;
 use AA\Central\Package\AaAfterCommit;
 use AA\Central\Package\AfterCommit;
 use AA\Central\Package\CollectOptions;
@@ -21,7 +20,6 @@ use AA\IO\DB\DB_AA;
 use AA\Later\BatchBudget;
 use AA\Later\BatchBudgetSpent;
 use AA\Later\BatchFailed;
-use AA\Later\BatchRun;
 use AA\Later\BatchStates;
 use AA\Later\BatchStepResult;
 use AA_Property;
@@ -41,7 +39,7 @@ use Throwable;
  *
  *  A step reads its batch from the source with no transaction open (fetch()) and writes it in the
  *  transaction that moves the run on (work()): a batch commits with its position or not at all. */
-final class InstallRun extends BatchRun
+final class InstallRun extends CentralRun
 {
     public const PREVIEW = 'preview';
     public const ITEMS   = 'items';
@@ -59,9 +57,7 @@ final class InstallRun extends BatchRun
     /** the form token of the install page (central/installapp.php) - the app store page posts to it too */
     public const FORM_TOKEN = 'central-installapp';
 
-    // error codes of a step besides the source's (SourceFailed) and the write's (Importer::errorCode())
-    /** the user who started the run is no superadmin any more - Continue once the rights are back */
-    public const DENIED = 'DENIED';
+    // error codes of a step besides DENIED, the source's (SourceFailed) and the write's (Importer::errorCode())
     /** the source could not read the batch */
     public const COLLECT_FAILED = 'COLLECT_FAILED';
     /** the source gives no batch of the slice: the user may not export it, or it is gone there */
@@ -77,7 +73,7 @@ final class InstallRun extends BatchRun
     private const KEPT_FINDINGS = 200;
     /** seconds before a failed source is asked again: after a step that still moved on, after the first
      *  and the second failure in a row (the third stops the run) - the user waits at the progress page */
-    private const RETRY = [60, 300, 900];
+    protected const RETRY = [60, 300, 900];
     /** seconds for each answer of the source in the final check - it has no budget of its own */
     private const CHECK_TIMEOUT = 10;
 
@@ -246,11 +242,6 @@ final class InstallRun extends BatchRun
         self::$testAfter   = $after;
     }
 
-    private static function subject(): string
-    {
-        return strtolower((string) constant('AA_ID'));
-    }
-
     private static function filtersJson(?ImportChoices $choices): string
     {
         return $choices?->filters ? json_encode($choices->filters, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : '';
@@ -297,11 +288,6 @@ final class InstallRun extends BatchRun
         return ['item', 'content'];
     }
 
-    protected function retryDelay(int $failures): int
-    {
-        return self::RETRY[$failures] ?? self::RETRY[count(self::RETRY) - 1];
-    }
-
     /** the write of a full batch after the budget is spent */
     protected function overrun(): int
     {
@@ -341,9 +327,7 @@ final class InstallRun extends BatchRun
      *  @return array{package: \AA\Central\Package\Model\Package, found: list<array{string, LintFinding}>, items: int}|BatchStepResult */
     protected function fetch(array $from, BatchBudget $budget): mixed
     {
-        if (!self::isSuperadmin($this->user())) {
-            throw new BatchFailed(self::DENIED, 'user');
-        }
+        $this->requireSuperadmin();
         $slice = (string) ($from['slice'] ?? '');
         $left  = $budget->secondsLeft();
         try {
@@ -481,13 +465,6 @@ final class InstallRun extends BatchRun
         return ($this->source() === self::STORE) ? AppStore::source($remote, $token) : new RemoteAppSource($remote, $token);
     }
 
-    /** read from the perm storage, not by IsSuperadmin(): the step may run in a request of another user */
-    private static function isSuperadmin(string $uid): bool
-    {
-        class_exists(\AA_Perm::class);           // include/perm_core.php sets AA::$perm - a queue step may not have loaded it
-        return ($uid !== '') && AA::$perm->isSuperadminUser($uid);
-    }
-
     /** the items on the source as the preview counted them; 0 = unknown - a slice it did not count would
      *  make the sum promise too little */
     public function total(): int
@@ -543,11 +520,6 @@ final class InstallRun extends BatchRun
     public function source(): string
     {
         return (string) $this->source;
-    }
-
-    public function user(): string
-    {
-        return (string) $this->user;
     }
 
     /** unixtime of the export the preview read - the definitions, the batches and the check name it */

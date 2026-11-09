@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
-use AA;
 use AA\IO\DB\DB_AA;
 use AA\Later\BatchBudget;
 use AA\Later\BatchBudgetSpent;
 use AA\Later\BatchFailed;
-use AA\Later\BatchRun;
 use AA\Later\BatchStates;
 use AA\Later\BatchStepResult;
 use AA\Optimize\AbstractOptimize;
@@ -28,8 +26,8 @@ use LogicException;
  *  three requests may come in a step of its own (position: i and next), and one repair is sent at most:
  *  after a repair that did not answer in time the AA is only tested.
  *  An AA that is busy (another sql_update runs there) or does not answer in time is asked again later;
- *  after BatchRun::MAX_FAILURES tries in a row its result says so and the run goes on with the next AA. */
-final class OptimizeRun extends BatchRun
+ *  after MAX_FAILURES tries in a row its result says so and the run goes on with the next AA. */
+final class OptimizeRun extends CentralRun
 {
     public const RUNNING = 'running';
     public const ERROR   = 'error';
@@ -52,8 +50,6 @@ final class OptimizeRun extends BatchRun
     /** the AA refused or could not be asked - the message says why */
     public const REFUSED  = 'refused';
 
-    /** the user who started the run is no superadmin any more - Continue once the rights are back */
-    public const DENIED = 'DENIED';
     /** retry codes: the AA runs another sql_update now; the AA did not answer (in time) */
     public const AA_BUSY      = 'AA_BUSY';
     public const AA_NO_ANSWER = 'AA_NO_ANSWER';
@@ -76,7 +72,7 @@ final class OptimizeRun extends BatchRun
     private const MAX_REPORT = 100_000;
     /** seconds before a busy or silent AA is asked again: after a step that still moved on, after the
      *  first and the second failure in a row - longer together than a remote sql_update may run (360 s) */
-    private const RETRY = [60, 120, 300];
+    protected const RETRY = [60, 120, 300];
 
     /** @var ?Closure(int, string, string, int): ?AA_Response */
     private static ?Closure $testRemote = null;
@@ -213,11 +209,6 @@ final class OptimizeRun extends BatchRun
         self::$testRemote = $ask;
     }
 
-    private static function subject(): string
-    {
-        return strtolower((string) constant('AA_ID'));
-    }
-
     /** the position: the index of the AA asked now and what it is asked: '' the test, 'repair' (its test
      *  failed), 'check' (the test after the repair this run sent it)
      *  @return array{i: int, next?: string} */
@@ -247,11 +238,6 @@ final class OptimizeRun extends BatchRun
         return self::isSuperadmin($uid);
     }
 
-    protected function retryDelay(int $failures): int
-    {
-        return self::RETRY[$failures] ?? self::RETRY[count(self::RETRY) - 1];
-    }
-
     /** a step starts only with time for an answer of an AA */
     protected function minStepSeconds(): int
     {
@@ -264,9 +250,7 @@ final class OptimizeRun extends BatchRun
      *  dead step then shows as OK. */
     protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult
     {
-        if (!self::isSuperadmin($this->user())) {
-            throw new BatchFailed(self::DENIED, 'user');
-        }
+        $this->requireSuperadmin();
         $aas     = $this->aas();
         $i       = (int) ($from['i'] ?? 0);
         $next    = (string) ($from['next'] ?? '');
@@ -415,13 +399,6 @@ final class OptimizeRun extends BatchRun
         return (strlen($report) > self::MAX_REPORT) ? mb_strcut($report, 0, self::MAX_REPORT) . '<p>' . _m('(the report is cut - see the Optimize page of that AA)') . '</p>' : $report;
     }
 
-    /** read from the perm storage, not by IsSuperadmin(): the step runs in the queue, not in the user's request */
-    private static function isSuperadmin(string $uid): bool
-    {
-        class_exists(\AA_Perm::class);           // include/perm_core.php sets AA::$perm - a queue step may not have loaded it
-        return ($uid !== '') && AA::$perm->isSuperadminUser($uid);
-    }
-
     // ---------------------------------------------------------------- the record
 
     /** @return list<int> central_conf ids */
@@ -438,11 +415,6 @@ final class OptimizeRun extends BatchRun
     public function method(): string
     {
         return (string) $this->method;
-    }
-
-    public function user(): string
-    {
-        return (string) $this->user;
     }
 
     public function started(): int
