@@ -1616,7 +1616,7 @@ class AA_Metabase
      *
      * @return Managed
      */
-    public function getManagerConf(string $tablename, Manageractions $actions = null, Manageractions $switches = null, array $set = [], array $addbuttons = []): Managed
+    public function getManagerConf(string $tablename, ?Manageractions $actions = null, ?Manageractions $switches = null, array $set = [], array $addbuttons = []): Managed
     {
         $table         = $this->tables[$tablename];
         $aliases       = $table->generateAliases();

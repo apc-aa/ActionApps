@@ -52,7 +52,7 @@ function getCSV($handle, $delimiter = ';', $enclosure = '"'): array
         $enclosure = 0x00;  // unlikely character (not possible to use '' with fgetcsv) - @todo - test it
     }
 
-    return fgetcsv($handle, 0, $delimiter, $enclosure) ?: [];
+    return fgetcsv($handle, 0, $delimiter, $enclosure, '\\') ?: [];
 }
 
 /** createFieldNames function

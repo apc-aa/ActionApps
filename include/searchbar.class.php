@@ -61,7 +61,7 @@ class AA_Searchbar_Row extends AA_Storable
      * @param  AA_Condition|null  $condition  AA_Condition
      * @param                     $readonly   bool
      */
-    public function __construct(AA_Condition $condition = null, $readonly = false)
+    public function __construct(?AA_Condition $condition = null, $readonly = false)
     {
         $this->condition = $condition;
         $this->readonly  = $readonly;
