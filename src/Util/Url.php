@@ -87,4 +87,16 @@ final class Url
     {
         return (str_starts_with($url, 'http://') && self::isHttps()) ? 'https://' . substr($url, 7) : $url;
     }
+
+    /**
+     * parse_str() that returns the variables. A NUL byte is dropped first: since PHP 8.6 parse_str()
+     * throws on one (a 500), and a template can put a decoded value of the visitor's URL (?q=%00) or
+     * of an item into the query string it parses.
+     * @return array<int|string, mixed>
+     */
+    public static function parseQuery(string $query): array
+    {
+        parse_str(str_replace("\0", '', $query), $vars);
+        return $vars;
+    }
 }

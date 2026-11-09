@@ -50,6 +50,7 @@ use AA\Util\NamedInterface;
 use AA\Util\Secret;
 use AA\Util\SiteFile;
 use AA\Util\Txt;
+use AA\Util\Url;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Renderer\GDLibRenderer;
 use BaconQrCode\Writer;
@@ -3299,10 +3300,7 @@ class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
         require_once __DIR__ . "/../modules/polls/include/util.php";
         require_once __DIR__ . "/../modules/polls/include/stringexpand.php";
 
-        $request = [];
-        if ($params) {
-            parse_str($params, $request);
-        }
+        $request = $params ? Url::parseQuery((string) $params) : [];
         $request['pid']=$pid;
 
         return AA_Poll::processPoll($request);

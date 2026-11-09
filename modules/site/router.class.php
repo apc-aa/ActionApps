@@ -155,11 +155,11 @@ class AA_Router
             $query_string = trim(preg_replace($flag, '', (string) $query_string), '&');
         }
         // parameters the template sets ({go:xqs_utm_campaign=x}, {go:xqs=...}) are its own, not the visit's
-        parse_str((string) $query_string, $asked);
+        $asked = Url::parseQuery((string) $query_string);
         $own = [];
         foreach ($asked as $var => $v) {
             if (($var === 'xqs') && is_string($v)) {
-                parse_str($v, $xqs);
+                $xqs = Url::parseQuery($v);
                 array_push($own, ...array_map('strval', array_keys($xqs)));
             } elseif (str_starts_with((string) $var, 'xqs_')) {
                 $own[] = substr((string) $var, 4);

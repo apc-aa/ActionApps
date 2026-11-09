@@ -28,6 +28,7 @@
 use AA\IO\DB\DB_AA;
 use AA\Security\ViewSlices;
 use AA\Util\Langs;
+use AA\Util\Url;
 
 require_once __DIR__ . "/sql_parser.php";
 require_once __DIR__ . "/zids.php";
@@ -610,7 +611,7 @@ class AA_Set extends AA_Object
         if (empty($conds_string)) {
             return;
         }
-        parse_str($conds_string, $aa_query_arr);
+        $aa_query_arr = Url::parseQuery((string) $conds_string);
         // we also need PHP to think a['key'] is the same as a[key], that's why we
         // call NormalizeArrayIndex()
         $aa_query_arr = NormalizeArrayIndex($aa_query_arr);
@@ -756,8 +757,7 @@ class AA_Set extends AA_Object
     public function addSortFromString($sort): void
     {
         if (str_starts_with(ltrim($sort), 'sort[')) {
-            $ret = [];
-            parse_str($sort, $ret);
+            $ret = Url::parseQuery($sort);
             $this->addSortFromArray($ret['sort']);
         } else {
             $this->addSortFromBasicString($sort);

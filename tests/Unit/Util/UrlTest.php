@@ -153,4 +153,15 @@ final class UrlTest extends TestCase
     {
         self::assertFalse(Url::isTrackingParam($name));
     }
+
+    public function test_parseQuery_readsLikeParseStr(): void
+    {
+        self::assertSame(['conds' => [['headline........' => 'Bio']], 'x' => "a\0"], Url::parseQuery('conds[0][headline........]=Bio&x=a%00'));
+    }
+
+    /** PHP 8.6 throws ValueError on a NUL in the string itself; the value of ?q=%00 put into a template is one */
+    public function test_parseQuery_dropsANulByte(): void
+    {
+        self::assertSame(['conds' => [['headline........' => 'Bio']]], Url::parseQuery("conds[0][headline........]=B\0io"));
+    }
 }

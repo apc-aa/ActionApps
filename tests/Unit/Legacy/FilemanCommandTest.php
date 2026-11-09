@@ -129,4 +129,25 @@ final class FilemanCommandTest extends TestCase
         fileman_execute_command($this->base, 'site/', 'createfile', ['createfile' => 'page'], [], []);
         self::assertFileExists($this->base . 'site/page.html');
     }
+
+    /** PHP 8.6 file functions throw ValueError on a NUL byte - the request value fmset[directory]=a%00 is one */
+    public function test_chdir_dropsANulByte(): void
+    {
+        fileman_execute_command($this->base, '', 'chdir', ['chdir' => "si\0te"], [], []);
+        self::assertSame('site/', $GLOBALS['directory']);
+    }
+
+    /** removing the NUL must not join two dots into ".." */
+    public function test_delete_withANulBetweenDotsStaysInsideTheBase(): void
+    {
+        fileman_execute_command($this->base, '', 'delete', ['delete' => ''], [".\0./outside.txt" => 'on'], []);
+        self::assertFileExists($this->root . '/outside.txt');
+    }
+
+    public function test_rename_refusesANulByte(): void
+    {
+        fileman_execute_command($this->base, 'site/', 'rename', ['rename' => "b\0.txt"], [], ['filename' => 'site/a.txt']);
+        self::assertFileExists($this->base . 'site/a.txt');
+        self::assertNotEmpty($GLOBALS['err']);
+    }
 }
