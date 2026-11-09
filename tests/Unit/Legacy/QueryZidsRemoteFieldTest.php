@@ -290,12 +290,11 @@ namespace Tests\Unit\Legacy {
         private static function selected(array $items, array $content, string $sql, int $mode = \PDO::FETCH_COLUMN): array
         {
             $id = static fn(int $n): string => str_repeat('0', 30) . sprintf('%02x', $n);
-            $db = method_exists(\PDO::class, 'connect') ? \PDO::connect('sqlite::memory:') : new \PDO('sqlite::memory:');
+            $db = \AA\IO\DB\DB_PDO::sqlite('sqlite::memory:');
             try {
                 $db->query("SELECT UNHEX('00')");
             } catch (\PDOException) {   // SQLite before 3.41
-                $create = method_exists($db, 'createFunction') ? $db->createFunction(...) : $db->sqliteCreateFunction(...);
-                $create('UNHEX', static fn(?string $hex) => (is_null($hex) || !ctype_xdigit($hex)) ? null : hex2bin($hex), 1);
+                \AA\IO\DB\DB_PDO::sqliteFunctionCreator($db)('UNHEX', static fn(?string $hex) => (is_null($hex) || !ctype_xdigit($hex)) ? null : hex2bin($hex), 1);
             }
             $db->exec('CREATE TABLE item (id BLOB PRIMARY KEY, slice_id BLOB, status_code INTEGER, publish_date INTEGER, expiry_date INTEGER)');
             $db->exec('CREATE TABLE content (item_id BLOB, field_id TEXT, number INTEGER, text TEXT)');

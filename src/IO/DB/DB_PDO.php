@@ -183,8 +183,7 @@ class DB_PDO
                         if ($this->Debug) {
                             echo "Opening $Database<br>\n";
                         }
-                        // PDO::connect() (PHP 8.4+) gives Pdo\Sqlite, whose createFunction() replaces the deprecated PDO::sqliteCreateFunction()
-                        $this->dbh = method_exists(PDO::class, 'connect') ? PDO::connect("$this->Server:$Database", null, null, [PDO::ATTR_PERSISTENT => true]) : new PDO("$this->Server:$Database", null, null, [PDO::ATTR_PERSISTENT => true]);
+                        $this->dbh = self::sqlite("$this->Server:$Database", [PDO::ATTR_PERSISTENT => true]);
                         break;
                     case "pgsql":
                         $this->dbh = new PDO("$this->Server:host=$Host;dbname=$Database;port=5432", $User);
@@ -228,7 +227,7 @@ class DB_PDO
                     if ($this->Debug) {
                         echo "Creating sqlite functions...";
                     }
-                    $create = method_exists($this->dbh, 'createFunction') ? $this->dbh->createFunction(...) : $this->dbh->sqliteCreateFunction(...);
+                    $create = self::sqliteFunctionCreator($this->dbh);
                     $create('now', function (): string {
                         return date('Y-m-d H:i:s');
                     }, 0);
@@ -275,14 +274,28 @@ class DB_PDO
                     // as in MySQL, a NULL argument makes the result NULL
                     $create('greatest', fn(...$args) => in_array(null, $args, true) ? null : max($args));
                     $create('least', fn(...$args) => in_array(null, $args, true) ? null : min($args));
-                    // PCRE as in MariaDB; mbregex is deprecated in PHP 8.6. The bracket delimiters need
-                    // no escaping of a pattern with balanced or escaped brackets.
-                    $create('regexp', fn($pattern, $value): int => (preg_match('(' . $pattern . ')u', (string) $value) === 1) ? 1 : 0);
+                    // PCRE as in MariaDB; mbregex is deprecated in PHP 8.6. A control character as the delimiter:
+                    // a pattern may hold any printable one, an unbalanced bracket in [(] too.
+                    $create('regexp', fn($pattern, $value): int => (preg_match("\x01" . $pattern . "\x01u", (string) $value) === 1) ? 1 : 0);
                     break;
             }
 
         }
         return $this->dbh;
+    }
+
+    /** A sqlite connection - Pdo\Sqlite where PHP has it (8.4+): its createFunction() replaces
+     *  PDO::sqliteCreateFunction(), which PHP 8.5 deprecates.
+     *  @param array<int, mixed> $options */
+    public static function sqlite(string $dsn, array $options = []): PDO
+    {
+        return method_exists(PDO::class, 'connect') ? PDO::connect($dsn, null, null, $options) : new PDO($dsn, null, null, $options);
+    }
+
+    /** fn(string $name, callable $callback, int $num_args = -1) registering a PHP function in the sqlite connection */
+    public static function sqliteFunctionCreator(PDO $dbh): \Closure
+    {
+        return method_exists($dbh, 'createFunction') ? $dbh->createFunction(...) : $dbh->sqliteCreateFunction(...);
     }
 
     /* public: discard the query result */

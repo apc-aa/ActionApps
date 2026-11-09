@@ -140,6 +140,15 @@ final class DbPdoTest extends TestCase
         $this->assertNull($row['ln']);
     }
 
+    public function test_connect_sqlite_regexp_takesAnyBracketInAPattern(): void
+    {
+        $pdo = $this->dbPdo('db_pdo:sqlite', ':memory:')->connect();
+        $this->assertInstanceOf(PDO::class, $pdo);
+
+        $row = $pdo->query("SELECT '(x a) 12' REGEXP '[(]x' AS open, 'a)' REGEXP 'a[)]' AS close, 'čaj' REGEXP '^.aj$' AS utf, 'abc' REGEXP 'x' AS miss")->fetch(PDO::FETCH_ASSOC);
+        $this->assertEquals(['open' => 1, 'close' => 1, 'utf' => 1, 'miss' => 0], $row);
+    }
+
     /** Inject a ready PDO into the protected $dbh so connect() short-circuits. */
     private function injectPdo(DB_PDO $db, PDO $pdo): void
     {
