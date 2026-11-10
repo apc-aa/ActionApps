@@ -135,13 +135,12 @@ namespace Tests\Unit\Legacy {
             [$usr] = CheckUserAliasFunctions::findingsFor([self::row(self::SLICE, 'text...........1', 'f_u:usr_aa_test_missing_fu:x')]);
             [$plain] = CheckUserAliasFunctions::findingsFor([self::row(self::SLICE, 'text...........1', 'f_u:aa_test_missing_fu:x')]);
 
-            $this->assertStringContainsString('define usr_aa_test_missing_fu in include/usr_aliasfnc.php or remove', $usr->advice);
-            $this->assertStringNotContainsString('usr_usr_', $usr->advice);
-            $this->assertStringContainsString('define usr_aa_test_missing_fu in include/usr_aliasfnc.php and name it in the alias', $plain->advice);
+            $this->assertStringEndsWith('define usr_aa_test_missing_fu in include/usr_aliasfnc.php or remove the alias.', $usr->advice);
+            $this->assertStringEndsWith('define usr_aa_test_missing_fu in include/usr_aliasfnc.php or remove the alias. Then change the alias to that name.', $plain->advice);
 
             $runtime = static fn(string $name): string => CheckUserAliasFunctions::advice(UserAliasFunction::REJECTED, UserAliasFunction::UNDEFINED, $name, '');
-            $this->assertStringContainsString('Define usr_aa_test_missing_fu in include/usr_aliasfnc.php or remove', $runtime('usr_aa_test_missing_fu'));
-            $this->assertStringContainsString('Define usr_aa_test_missing_fu in include/usr_aliasfnc.php and name it in the alias', $runtime('aa_test_missing_fu'));
+            $this->assertSame('The page had no such function, the alias showed nothing. Define usr_aa_test_missing_fu in include/usr_aliasfnc.php or remove the alias.', $runtime('usr_aa_test_missing_fu'));
+            $this->assertSame('The page had no such function, the alias showed nothing. Define usr_aa_test_missing_fu in include/usr_aliasfnc.php or remove the alias. Then change the alias to that name.', $runtime('aa_test_missing_fu'));
         }
 
         public function test_evidence_names_the_field_and_slice_escaped(): void
