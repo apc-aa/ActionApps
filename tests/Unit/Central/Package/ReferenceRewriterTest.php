@@ -268,12 +268,12 @@ final class ReferenceRewriterTest extends TestCase
         return [
             'select'          => ['sel:ct_rubriky:', 'ct_rubriky'],
             'spaces, case'    => ['MCH: ct_x :3:', 'ct_x'],
-            'tpr: third'      => ['tpr:5:40:ct_w', 'ct_w'],
+            'tpr: first'      => ['tpr:ct_w:5:40', 'ct_w'],
             'items of slice'  => ['mse:#sLiCe-0f1e2d3c4b5a69788796a5b4c3d2e1f0:', '#sLiCe-0f1e2d3c4b5a69788796a5b4c3d2e1f0'],
             'no group widget' => ['fld:ct_x', null],
             'empty'           => ['sel::', null],
             'no parameter'    => ['sel', null],
-            'escaped colon'   => ['tpr:5#:1:40:ct_w', 'ct_w'],
+            'escaped colon'   => ['tpr:ct_w:5#:1:40', 'ct_w'],
         ];
     }
 

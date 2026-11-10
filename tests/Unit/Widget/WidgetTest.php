@@ -20,6 +20,34 @@ final class WidgetTest extends TestCase
         require_once __DIR__ . '/../fixtures/util_shims.php';
     }
 
+    /** Data and the form keep the constant group of tpr first (`tpr:Ecn - kl. slova:3:20`). */
+    public function test_parseClassProperties_tprReadsTheGroupFirst(): void
+    {
+        $props = Widget::parseClassProperties('tpr:Ecn - kl. slova:3:20');
+
+        $this->assertSame('Ecn - kl. slova', $props['const']);
+        $this->assertSame('3', $props['rows']);
+        $this->assertSame('20', $props['cols']);
+    }
+
+    /** The field form keeps the group in its own select and joins it in as the first parameter. */
+    public function test_everyWidgetWithConstantsHasThemFirst(): void
+    {
+        $checked = 0;
+        foreach (glob(__DIR__ . '/../../../src/Widget/*Widget.php') as $file) {
+            $class = 'AA\\Widget\\' . basename($file, '.php');
+            if ($class === Widget::class || (new \ReflectionClass($class))->isAbstract()) {
+                continue;
+            }
+            $props = array_keys($class::getClassProperties());
+            if (in_array('const', $props, true)) {
+                $this->assertSame('const', $props[0], $class);
+                ++$checked;
+            }
+        }
+        $this->assertGreaterThan(5, $checked);
+    }
+
     public function test_ifSelected_onlyTheSelectedOption(): void
     {
         $widget = new Widget([]);

@@ -192,7 +192,7 @@ namespace Tests\Unit\Central\Package {
                     self::field(self::SLICE_A, 'password.......1', 'pwd:', 'Password', 'pwd:'),
                     self::field(self::SLICE_B, 'category.......1', 'sel:ct_b:'),
                     self::field(self::SLICE_W, 'headline........', 'fld:', "\xC8\xEDslo"),
-                    self::field(self::SLICE_W, 'category.......1', 'TPR:5:40:ct_w'),
+                    self::field(self::SLICE_W, 'category.......1', 'TPR:ct_w:5:40'),
                     self::field(self::SLICE_W, 'category.......2', "sel:ct_\xE8:"),         // a windows-1250 group name
                 ],
                 'view'      => [
@@ -576,7 +576,7 @@ namespace Tests\Unit\Central\Package {
             $this->assertSame('Školy', $slice->rows['slice'][0]['name']);
             $this->assertSame('Číslo', $slice->rows['field'][0]['name']);
             $this->assertSame('Česko', $batch->package->modules[0]->items[0]['content']['headline........'][0]['value']);
-            $this->assertSame('škola', self::groupOf($result, 'ct_w')->rows['constant'][0]['name']);   // tpr: the group is the third parameter
+            $this->assertSame('škola', self::groupOf($result, 'ct_w')->rows['constant'][0]['name']);   // tpr: the group is the first parameter
             // the group name is looked up as stored (windows-1250), the package has it in UTF-8
             $this->assertSame('č', self::groupOf($result, 'ct_č')?->rows['constant'][0]['name']);
         }

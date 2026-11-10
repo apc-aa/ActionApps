@@ -136,7 +136,7 @@ final class ReferenceRewriter
     /** widget code (any case) => index of its `const` parameter among getClassProperties() */
     public const CONST_POSITION = [
         'sel' => 0, 'mch' => 0, 'rio' => 0, 'mse' => 0, 'wi2' => 0, 'hco' => 0,
-        'pre' => 0, 'tag' => 0, 'rim' => 0, 'mng' => 0, 'iso' => 0, 'tpr' => 2,
+        'pre' => 0, 'tag' => 0, 'rim' => 0, 'mng' => 0, 'iso' => 0, 'tpr' => 0,
     ];
 
     /** The column of a row AA reads as a constant group - no template, so no {constant:} reference finds
