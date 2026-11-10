@@ -464,6 +464,12 @@ Exact host as RP ID; an account with a passkey no longer logs in by password alo
 | Expand/HttpInclude.php | What {include:url:type:headers:body:err} promises a template | HttpInclude::fetch() | S |
 | Expand/InternalExpandInterface.php | Internal expand aliases interface for admin | Interface only | S |
 
+### Form (admin item form)
+
+| File | Purpose | Key API | Size |
+|------|---------|---------|------|
+| Form/ShowConditions.php | Named display conditions of a slice (slice.aditional), the one each field picks (field.aditional); hides fields in the item form and decides what saving a hidden field does | ShowConditions::forSlice(), hiddenFor(), apply(), formConfig(), fromPost() | M |
+
 ### Widget (UI Components)
 
 | File | Purpose | Key API | Size |
@@ -545,6 +551,7 @@ Exact host as RP ID; an account with a passkey no longer logs in by password alo
 | se_export.php | Data export form | Procedural | M |
 | se_fieldid.php | Change field IDs | ChangeFieldID() | L |
 | se_fields.php | Slice field definition editor | ShowNewField() | L |
+| se_showif.php | Display condition editor (dialog of the Fields page) | ShowIfRuleRow(), ShowIfDone() | M |
 | se_filters.php | Feeding filter settings | PrintOneRow() | L |
 | se_filters2.php | Feeding filter assignment | Procedural | M |
 | se_forms.php | Input form editor | Procedural | S |
