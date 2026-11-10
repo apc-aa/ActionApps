@@ -39,6 +39,15 @@ require_once __DIR__ . "/include/locsess.php";
 /** Caching functions */
 require_once __DIR__ . "/include/util.php";
 
+$content = AA::Pagecache()->getById((string) ($_REQUEST['keystr'] ?? ''));
+header('Content-Type: application/javascript');
+if ($content === false) {
+    // the row lives only minutes - an empty answer must not stay in the browser for a day under the same key
+    http_response_code(404);
+    header('Cache-Control: no-store');
+    exit;
+}
+
 // headers copied from include/extsess.php file
 $allowcache_expire = 24 * 3600; // 1 day
 $exp_gmt           = gmdate("D, d M Y H:i:s", time() + $allowcache_expire) . " GMT";
@@ -48,8 +57,4 @@ header('Expires: ' . $exp_gmt);
 header('Last-Modified: ' . $mod_gmt);
 header('Cache-Control: public');
 header('Cache-Control: max-age=' . $allowcache_expire);
-header('Content-Type: application/javascript');
-if (!$keystr) {
-    $keystr = $_REQUEST['keystr'];
-}
-echo AA::Pagecache()->getById($keystr);
+echo $content;
