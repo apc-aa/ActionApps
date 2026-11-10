@@ -30,6 +30,7 @@ use AA\IO\DB\DB_AA;
 use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 use AA\Util\Langs;
+use AA\Util\Paramwizard;
 use AA\Widget\Widget;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -374,6 +375,8 @@ $apage = new AA_Adminpageutil('sliceadmin', ($slice_fields ? 'slice_fields' : 'f
 $apage->setTitle(_m("Admin - configure Fields"));
 $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
 $apage->addRequire('aa-code@1');
+$apage->addRequire('aa-params@1');
+$apage->addRequire('<script>' . Paramwizard::script(['INPUT_TYPES', 'DEFAULT_VALUE_TYPES', 'VALIDATE_TYPES', 'INSERT_TYPES']) . '</script>', 'AA_Req_Headcode');
 $apage->addRequire('aa-jslib');   // just for AA_Message() copy to clipboard
 $apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v' => AA_JS_VERSION], false));
 
@@ -402,6 +405,7 @@ echo "
       <td>";
 FrmSelectEasy("input_show_func_f", $isc_arr, $input_show_func_f);
 echo "<div class=tabhlp>" . _m("Input field type in Add / Edit item.") . "</div>";
+echo '<aa-params' . htmlattr(['list' => 'INPUT_TYPES', 'type-name' => 'input_show_func_f', 'store-key' => AA::$module_id . '/' . $fid]) . '>';
 echo "\n<div class='flex aa-input-const'>\n<strong>" . _m("Constants") . "</strong>\n<div>";
 FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
 
@@ -416,8 +420,8 @@ echo " <div class=tabhlp>" . _m("Choose a Constant Group or a Slice.") . "</div>
              </div>
             </div>";
 
-echo getParamWizardLink("INPUT_TYPES", "input_show_func_f", "input_show_func_p", true);
-echo "<textarea name=input_show_func_p id=input_show_func_p rows=4 cols=50 wrap=\"virtual\">" . safe($input_show_func_p) . "</textarea>
+echo '<div class="aa-params-raw"><label for="input_show_func_p"><strong>' . _m("Parameters") . '</strong></label>';
+echo "<textarea name=input_show_func_p id=input_show_func_p rows=4 cols=50 wrap=\"virtual\">" . safe($input_show_func_p) . "</textarea></div></aa-params>
       </td>
       </tr>";
 
@@ -431,8 +435,9 @@ if ($input_default_f === 'qte') {
 }
 FrmSelectEasy("input_default_f", AA_Components::getClassArray('AA_Generator_'), $input_default_f);
 echo "<div class=tabhlp>" . _m("How to generate the default value") . "</div>";
-echo getParamWizardLink("DEFAULT_VALUE_TYPES", "input_default_f", "input_default", true);
-echo "<input type=\"text\" name=input_default id=input_default class=aa-w-full value=\"" . safe($input_default) . "\">
+echo '<aa-params' . htmlattr(['list' => 'DEFAULT_VALUE_TYPES', 'type-name' => 'input_default_f', 'store-key' => AA::$module_id . '/' . $fid]) . '>';
+echo '<div class="aa-params-raw"><label for="input_default"><strong>' . _m("Parameters") . '</strong></label>';
+echo "<input type=\"text\" name=input_default id=input_default class=aa-w-full value=\"" . safe($input_default) . "\"></div></aa-params>
       </td>
      </tr>";
 echo "
@@ -441,8 +446,9 @@ echo "
          <td>";
 FrmSelectEasy("input_validate_f", getSelectBoxFromParamWizard($VALIDATE_TYPES), $input_validate_f);
 
-echo getParamWizardLink("VALIDATE_TYPES", "input_validate_f", "input_validate_p", true);
-echo "<input type=text name=input_validate_p id=input_validate_p class=aa-w-full value=\"" . safe($input_validate_p) . "\">
+echo '<aa-params' . htmlattr(['list' => 'VALIDATE_TYPES', 'type-name' => 'input_validate_f', 'store-key' => AA::$module_id . '/' . $fid]) . '>';
+echo '<div class="aa-params-raw"><label for="input_validate_p"><strong>' . _m("Parameters") . '</strong></label>';
+echo "<input type=text name=input_validate_p id=input_validate_p class=aa-w-full value=\"" . safe($input_validate_p) . "\"></div></aa-params>
          </td>
       </td>
      </tr>";
@@ -468,8 +474,9 @@ echo "
          <td>";
 FrmSelectEasy("input_insert_func_f", AA_Components::getClassArray('AA_Inserter_'), $input_insert_func_f);
 echo "<div class=tabhlp>" . _m("Defines how value is stored in database.") . "</div>";
-echo getParamWizardLink("INSERT_TYPES", "input_insert_func_f", "input_insert_func_p", true);
-echo "<textarea name=input_insert_func_p id=input_insert_func_p rows=3 cols=50 wrap=virtual>" . safe($input_insert_func_p) . "</textarea>
+echo '<aa-params' . htmlattr(['list' => 'INSERT_TYPES', 'type-name' => 'input_insert_func_f', 'store-key' => AA::$module_id . '/' . $fid]) . '>';
+echo '<div class="aa-params-raw"><label for="input_insert_func_p"><strong>' . _m("Parameters") . '</strong></label>';
+echo "<textarea name=input_insert_func_p id=input_insert_func_p rows=3 cols=50 wrap=virtual>" . safe($input_insert_func_p) . "</textarea></div></aa-params>
          </td>
      </tr>";
 echo $tab_separator;

@@ -8164,6 +8164,8 @@ class AA_Requires {
             'aa-fillform@1'               => new AA_Req_Lib(get_aa_url('javascript/fillform.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-constedit@1'              => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-code@1'                   => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-code.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
+            'aa-params@1'                 => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-params.js', ['v'=>AA_JS_VERSION],false).' module', '', ['_css-aa-params@1']),
+            '_css-aa-params@1'            => new AA_Req_Css(get_aa_url('css/aa-params.css', ['v'=>AA_JS_VERSION],false)),
             'aa-isds@1'                   => new AA_Req_Lib(get_aa_url('javascript/aa-isds.js', ['v'=>AA_JS_VERSION],false).' module', '', ['_css-aa-isds@1', 'aa-richtext@1']),
             '_css-aa-isds@1'              => new AA_Req_Css(get_aa_url('css/aa-isds.css', ['v'=>AA_JS_VERSION],false)),
             'aa-passkey@1'                => new AA_Req_Lib(get_aa_url('javascript/aa-passkey.js', ['v'=>AA_JS_VERSION],false).' module'),
