@@ -26,14 +26,13 @@ aa-params [hidden] { display: none !important; }   /* .flex of the constants blo
 .aa-params-more:hover { text-decoration: underline; }
 
 .aa-params-text { margin-top: 6px; max-width: 60rem; }
-.aa-params-text > summary { cursor: pointer; color: var(--clr-text-accent, #6a5e22); width: fit-content; }
+.aa-params-text > summary, .aa-params-help > summary { cursor: pointer; color: var(--clr-text-accent, #6a5e22); width: fit-content; }
 .aa-params-text[open] > summary { margin-bottom: 6px; }
 .aa-params-textline { display: flex; gap: 6px; flex-wrap: wrap; }
 .aa-params-textline input { flex: 1 1 18rem; min-width: 0; font-family: ui-monospace, 'DejaVu Sans Mono', Menlo, Consolas, monospace; font-size: 12px; }
 .aa-params-msg { font-size: var(--sz-s, .955rem); color: #5d574a; min-height: 1.4em; }
 
 .aa-params-help { max-width: 48rem; }
-.aa-params-help > summary { cursor: pointer; color: var(--clr-text-accent, #6a5e22); width: fit-content; }
 .aa-params-help > div { margin-top: 4px; padding: 6px 10px; border: 1px solid var(--clr-border, #dcd5c2); background: #fff; }
 .aa-params-list { margin: 4px 0; padding-left: 1.4rem; }
 .aa-params-list li { margin: 2px 0; }

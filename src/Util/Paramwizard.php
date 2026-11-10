@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  *
- * PHP version 7.2+
+ * PHP version 8.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ namespace AA\Util;
 
 use AA_Components;
 use AA_Property;
+use AA_Validate;
 
 /**
  * Class Paramwizard
@@ -52,15 +53,24 @@ class Paramwizard
             default               => null,
         };
         if ($mask !== null) {
-            // only the types the select offers (a class with a name)
-            $items = self::fromClasses(array_intersect_key(AA_Components::getClassNames($mask), AA_Components::getClassArray($mask)));
+            // only the types the select offers (a class with a name, as AA_Components::getClassArray())
+            $items = self::fromClasses(AA_Components::getClassNames($mask, static fn($class) => is_callable([$class, 'name']) && trim((string) $class::name()) !== ''));
             if ($list === 'INPUT_TYPES' && isset($items['dte'])) {
                 $items['dte']['quote'] = true;   // AA_Field::widgetParams() reads ' as : in old date fields
             }
             return ['items' => $items];
         }
         $wizard = $GLOBALS[$list] ?? [];
-        $ret    = ['items' => self::fromArray($wizard)];
+        $items  = self::fromArray($wizard);
+        if ($list === 'VALIDATE_TYPES') {
+            // the validators read the string by their own properties - the array lists some of them, in another order
+            foreach ($items as $code => $item) {
+                if (class_exists($class = AA_Validate::constructClassName((string) $code, 'AA_Validate_'))) {
+                    $items[$code]['params'] = self::classParams($class);
+                }
+            }
+        }
+        $ret = ['items' => $items];
         if (isset($wizard['hint'])) {
             $ret['hint'] = (string) $wizard['hint'];
         }
@@ -74,27 +84,36 @@ class Paramwizard
     {
         $items = [];
         foreach ($classes as $code => $class) {
-            $params = [];
-            /** @var AA_Property $prop */
-            foreach ($class::getClassProperties() as $id => $prop) {
-                $param   = ['id' => (string) $id, 'name' => (string) $prop->getName(), 'type' => 'string', 'help' => $prop->getHelp(), 'example' => $prop->getExample()];
-                $options = $prop->getConstants();
-                if ($prop->isMulti()) {
-                    $param['type'] = 'text';
-                } elseif (is_array($options) && $options) {
-                    $param['type']    = 'enum';
-                    $param['options'] = array_map('strval', $options);
-                } else {
-                    $param['type'] = match ($prop->getType()) {
-                        'int', 'bool', 'text' => $prop->getType(),
-                        default               => 'string',
-                    };
-                }
-                $params[] = $param;
-            }
-            $items[(string) $code] = ['desc' => (string) $class::description(), 'params' => $params];
+            $items[(string) $code] = ['desc' => (string) $class::description(), 'params' => self::classParams($class)];
         }
         return $items;
+    }
+
+    /** @param class-string $class with getClassProperties()
+     *  @return array<int, array> parameters in the order the stored string has them
+     */
+    private static function classParams(string $class): array
+    {
+        $params = [];
+        /** @var AA_Property $prop */
+        foreach ($class::getClassProperties() as $id => $prop) {
+            // the form takes plain values, the examples are written as in the stored string
+            $param   = ['id' => (string) $id, 'name' => (string) $prop->getName(), 'type' => '', 'help' => $prop->getHelp(), 'example' => str_replace('#:', ':', $prop->getExample())];
+            $options = $prop->getConstants();
+            if ($prop->isMulti()) {
+                $param['type'] = 'text';
+            } elseif (is_array($options) && $options) {
+                $param['type']    = 'enum';
+                $param['options'] = array_map('strval', $options);
+            } else {
+                $param['type'] = match ($prop->getType()) {
+                    'int', 'bool', 'text' => $prop->getType(),
+                    default               => 'string',
+                };
+            }
+            $params[] = $param;
+        }
+        return $params;
     }
 
     /** @param array $wizard an array as in include/constants_param_wizard.php

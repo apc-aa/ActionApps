@@ -48,7 +48,11 @@ export function readParams(params, text, quote = false) {
 export function writeParams(params, values) {
     const out = params.map(({ id }, i) => {
         const value = values.get(id) ?? '';
-        return (i === params.length - 1) ? value : value.replaceAll(':', '#:');
+        if (i === params.length - 1) {
+            return value;
+        }
+        // "C#" before the separator would read as an escaped colon; PHP trims the space away
+        return value.replaceAll(':', '#:') + (value.endsWith('#') ? ' ' : '');
     });
     while (out.length && (out[out.length - 1] === '')) {
         out.pop();

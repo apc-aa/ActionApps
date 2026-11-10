@@ -31,7 +31,7 @@ final class WidgetTest extends TestCase
     }
 
     /** The field form keeps the group in its own select and joins it in as the first parameter. */
-    public function test_everyWidgetWithConstantsHasThemFirst(): void
+    public function test_getClassProperties_constantsComeFirst(): void
     {
         $checked = 0;
         foreach (glob(__DIR__ . '/../../../src/Widget/*Widget.php') as $file) {

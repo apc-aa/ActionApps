@@ -55,7 +55,6 @@ use the escape character \ - the help will translate the characters. Remember yo
 
 // require_once __DIR__."/../modules/alerts/reader_field_ids.php";
 
-
 // $INSERT_TYPES[...] - now uses class approach with AA\Util\Paramwizard
 // $DEFAULT_VALUE_TYPES[...] - now uses class approach with AA\Util\Paramwizard
 

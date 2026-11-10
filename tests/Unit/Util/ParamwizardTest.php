@@ -16,7 +16,8 @@ final class ParamwizardTest extends TestCase
 {
     private const FIXTURE = ['name' => 'x', 'hint' => 'H', 'items' => ['a' => ['name' => 'A', 'desc' => 'D']]];
 
-    private mixed $trans_actions = null;
+    /** @var array<string, mixed> globals the tests replace, as they were */
+    private array $saved = [];
 
     public static function setUpBeforeClass(): void
     {
@@ -25,12 +26,22 @@ final class ParamwizardTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->trans_actions = $GLOBALS['TRANS_ACTIONS'] ?? null;
+        foreach (['TRANS_ACTIONS', 'VALIDATE_TYPES'] as $name) {
+            if (array_key_exists($name, $GLOBALS)) {
+                $this->saved[$name] = $GLOBALS[$name];
+            }
+        }
     }
 
     protected function tearDown(): void
     {
-        $GLOBALS['TRANS_ACTIONS'] = $this->trans_actions;
+        foreach (['TRANS_ACTIONS', 'VALIDATE_TYPES'] as $name) {
+            if (array_key_exists($name, $this->saved)) {
+                $GLOBALS[$name] = $this->saved[$name];
+            } else {
+                unset($GLOBALS[$name]);
+            }
+        }
     }
 
     public function test_fromClasses_describesParameters(): void
@@ -53,6 +64,31 @@ final class ParamwizardTest extends TestCase
                 $this->assertArrayHasKey($key, $param);
             }
         }
+    }
+
+    /** The form fields take plain values; the examples are written as in the stored string. */
+    public function test_fromClasses_examplesArePlainValues(): void
+    {
+        $params = array_column(Paramwizard::fromClasses(['sel' => SelWidget::class])['sel']['params'], null, 'id');
+
+        $this->assertSame('{"1":"Yes","0":"No"}', $params['const_arr']['example']);
+    }
+
+    /** The validators read the string by their own properties, the old array has them in another order. */
+    public function test_definitions_validateTypesTakeParametersFromTheValidators(): void
+    {
+        $GLOBALS['VALIDATE_TYPES'] = ['name' => 'v', 'items' => [
+            'regexp' => ['name' => 'R', 'desc' => 'D', 'params' => [['name' => 'Regular Expressions'], ['name' => 'Error text']]],
+            'e-mail' => ['name' => 'E'],
+            'xyz'    => ['name' => 'X', 'params' => [['name' => 'p']]],
+        ]];
+
+        $items = Paramwizard::definitions('VALIDATE_TYPES')['items'];
+
+        $this->assertSame(['pattern', 'empty_expression', 'maxlength'], array_column($items['regexp']['params'], 'id'));
+        $this->assertSame('D', $items['regexp']['desc']);
+        $this->assertSame(array_keys(\AA_Validate_Email::getClassProperties()), array_column($items['e-mail']['params'], 'id'));
+        $this->assertSame(['p'], array_column($items['xyz']['params'], 'id'));
     }
 
     public function test_fromArray_mapsNamesTypesAndEscapes(): void

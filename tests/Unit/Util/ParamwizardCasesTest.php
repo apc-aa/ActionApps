@@ -30,7 +30,7 @@ final class ParamwizardCasesTest extends TestCase
         return json_decode((string) file_get_contents(__DIR__ . '/../../js/aa-params-cases.json'), true, 512, JSON_THROW_ON_ERROR);
     }
 
-    public function test_fixtureOrderIsTheRealOne(): void
+    public function test_getClassProperties_isTheOrderOfTheCases(): void
     {
         $types = self::cases()['types'];
         foreach (['fld' => FldWidget::class, 'sel' => SelWidget::class, 'rio' => RioWidget::class, 'dte' => DteWidget::class] as $code => $class) {
@@ -52,7 +52,7 @@ final class ParamwizardCasesTest extends TestCase
 
     /** @param array<string, string> $values */
     #[DataProvider('readCases')]
-    public function test_readCasesMatchParseProperties(string $type, string $text, array $values): void
+    public function test_parseClassProperties_readsTheCasesAsTheForm(string $type, string $text, array $values): void
     {
         $props = Widget::parseClassProperties("$type:$text");
         unset($props['class']);

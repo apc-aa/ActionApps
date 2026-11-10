@@ -108,7 +108,7 @@ $LANG_GROUPS = [
         'misc/proposefieldchange.php',
         'modules/site/site.php',    // site dispatcher - the only domain it binds (site.php:305)
     ],
-    // _param_wizard_lang.php — parameter wizard only
+    // _param_wizard_lang.php — types and parameters described in include/constants_param_wizard.php
     'param_wizard' => [
         'include/constants_param_wizard.php',
     ],

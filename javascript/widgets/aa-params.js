@@ -56,25 +56,27 @@ class AaParamsElement extends HTMLElement {
         }
         this.#uid = 'aa-params-' + (++instances);
         try {
+            this.#list = window.AA_PARAMS?.lists?.[this.getAttribute('list')];
+            this.#labels = window.AA_PARAMS?.labels;
+            const typeSelect = this.closest('form')?.elements[this.getAttribute('type-name')];
+            if (!this.#list || !this.#labels || !(typeSelect instanceof HTMLSelectElement)) {
+                return;
+            }
             if (this.getAttribute('view') === 'help') {
-                this.#startHelp();
+                this.#startHelp(typeSelect);
             } else {
-                this.#startForm();
+                this.#startForm(typeSelect);
             }
         } catch (e) {
             console.error('aa-params', e);
         }
     }
 
-    #startForm() {
-        const list = window.AA_PARAMS?.lists?.[this.getAttribute('list')];
-        const typeSelect = this.closest('form')?.elements[this.getAttribute('type-name')];
+    #startForm(typeSelect) {
         const raw = this.querySelector('.aa-params-raw :is(input, textarea)');
-        if (!list || !(typeSelect instanceof HTMLSelectElement) || !raw) {
+        if (!raw) {
             return;
         }
-        this.#list = list;
-        this.#labels = window.AA_PARAMS.labels ?? {};
         this.#typeSelect = typeSelect;
         this.#raw = raw;
         this.#constBlock = this.querySelector('.aa-input-const');
@@ -91,7 +93,7 @@ class AaParamsElement extends HTMLElement {
         this.#desc = el('div', 'aa-params-desc');
         this.#box = el('div', 'aa-params-box');
         const title = el('h3');
-        title.textContent = this.#labels.params ?? '';
+        title.textContent = this.#labels.params;
         this.#rows = el('div', 'aa-params-rows');
         this.#box.append(title, this.#rows);
         const details = this.#buildText();
@@ -102,6 +104,7 @@ class AaParamsElement extends HTMLElement {
             this.#type = typeSelect.value;
             this.#render();
             this.#write();
+            this.#saveAside();
         });
         this.#constSelect?.addEventListener('change', () => this.#refreshText());
 
@@ -115,16 +118,12 @@ class AaParamsElement extends HTMLElement {
         this.querySelector('.aa-params-raw').hidden = true;
     }
 
-    #startHelp() {
-        const list = window.AA_PARAMS?.lists?.[this.getAttribute('list')];
-        const typeSelect = this.closest('form')?.elements[this.getAttribute('type-name')];
-        if (!list || !(typeSelect instanceof HTMLSelectElement)) {
-            return;
-        }
-        const labels = window.AA_PARAMS.labels ?? {};
+    #startHelp(typeSelect) {
+        const list = this.#list;
+        const labels = this.#labels;
         const details = el('details', 'aa-params-help');
         const summary = el('summary');
-        summary.textContent = labels.help ?? '';
+        summary.textContent = labels.help;
         const body = el('div');
         details.append(summary, body);
         const html = (tag, className, text) => {
@@ -146,7 +145,7 @@ class AaParamsElement extends HTMLElement {
                     name.textContent = param.name;
                     li.append(name, ' ', html('span', '', param.help ?? ''));
                     if (param.example) {
-                        const [before, after = ''] = (labels.eg ?? '%1').split('%1');
+                        const [before, after = ''] = labels.eg.split('%1');
                         const code = el('code');
                         code.textContent = param.example;
                         li.append(' (' + before, code, after + ')');
@@ -158,7 +157,7 @@ class AaParamsElement extends HTMLElement {
             if (item?.examples?.length) {
                 const box = el('div', 'aa-params-examples');
                 const title = el('h4');
-                title.textContent = labels.examples ?? '';
+                title.textContent = labels.examples;
                 box.append(title);
                 for (const example of item.examples) {
                     const code = el('code');
@@ -211,12 +210,12 @@ class AaParamsElement extends HTMLElement {
 
     #row(param) {
         const labels = this.#labels;
-        const id = `${this.#uid}-p-${param.id}`;
+        const id = `${this.#uid}-p-${param.id.replace(/[^\w-]/g, '_')}`;   // ids of the old lists are names with spaces
         const value = this.#values.get(param.id) ?? '';
         const row = el('div', 'aa-params-row');
         const label = el('label');
         label.htmlFor = id;
-        label.textContent = param.id.startsWith('*') ? (labels.other ?? '') : (param.name || param.id);
+        label.textContent = param.id.startsWith('*') ? labels.other : (param.name || param.id);
         const ctl = el('div', 'aa-params-ctl');
 
         let input;
@@ -228,7 +227,7 @@ class AaParamsElement extends HTMLElement {
                 break;
             case 'enum': {
                 input = el('select');
-                const options = [['', labels.default ?? ''], ...Object.entries(param.options ?? {})];
+                const options = [['', labels.default], ...Object.entries(param.options ?? {})];
                 if (!options.some(([v]) => v === value)) {
                     options.push([value, value]);   // a stored value the type does not offer must not get lost
                 }
@@ -257,7 +256,7 @@ class AaParamsElement extends HTMLElement {
         input.id = id;
         input.dataset.param = param.id;
         if (param.example && ((input.type === 'text') || (input.tagName === 'TEXTAREA'))) {
-            input.placeholder = (labels.eg ?? '%1').replace('%1', param.example);
+            input.placeholder = labels.eg.replace('%1', param.example);
         }
         ctl.append(input);
 
@@ -271,7 +270,7 @@ class AaParamsElement extends HTMLElement {
                 hlp.classList.add('is-clamped');
                 const more = el('button', 'aa-params-more');
                 more.type = 'button';
-                more.textContent = labels.more ?? '';
+                more.textContent = labels.more;
                 more.setAttribute('aria-expanded', 'false');
                 more.setAttribute('aria-controls', hlp.id);
                 ctl.append(more);
@@ -298,7 +297,7 @@ class AaParamsElement extends HTMLElement {
         }
         const open = more.getAttribute('aria-expanded') !== 'true';
         more.setAttribute('aria-expanded', String(open));
-        more.textContent = (open ? this.#labels.less : this.#labels.more) ?? '';
+        more.textContent = open ? this.#labels.less : this.#labels.more;
         document.getElementById(more.getAttribute('aria-controls'))?.classList.toggle('is-clamped', !open);
     }
 
@@ -306,7 +305,6 @@ class AaParamsElement extends HTMLElement {
     #write() {
         this.#raw.value = writeParams(this.#params(), this.#values);
         this.#refreshText();
-        this.#saveAside();
     }
 
     // --- values the current type does not have ---------------------------------------------------
@@ -350,25 +348,27 @@ class AaParamsElement extends HTMLElement {
         const labels = this.#labels;
         const details = el('details', 'aa-params-text');
         const summary = el('summary');
-        summary.textContent = labels.as_text ?? '';
+        summary.textContent = labels.as_text;
         const line = el('div', 'aa-params-textline');
         this.#text = el('input');
         this.#text.type = 'text';
         this.#text.id = this.#uid + '-text';
-        this.#text.setAttribute('aria-label', labels.as_text ?? '');
+        this.#text.setAttribute('aria-label', labels.as_text);
         this.#text.spellcheck = false;
         const copy = el('button');
         copy.type = 'button';
-        copy.title = labels.copy ?? '';
-        copy.setAttribute('aria-label', labels.copy ?? '');
+        copy.title = labels.copy;
+        copy.setAttribute('aria-label', labels.copy);
         copy.textContent = '⧉';
         copy.addEventListener('click', () => {
-            navigator.clipboard.writeText(this.#text.value).then(() => window.AA_Message?.(labels.copied, 'info'));
+            // no clipboard (plain http, refused): the text is selected for Ctrl+C
+            const copied = navigator.clipboard?.writeText(this.#text.value) ?? Promise.reject();
+            copied.then(() => window.AA_Message?.(labels.copied, 'info'), () => this.#text.select());
         });
         line.append(this.#text, copy);
         this.#msg = el('div', 'aa-params-msg');
         this.#msg.setAttribute('role', 'status');
-        this.#msg.textContent = labels.text_note ?? '';
+        this.#msg.textContent = labels.text_note;
         details.append(summary, line, this.#msg);
 
         // not on every keystroke - a type half typed would be read as parameters
@@ -387,13 +387,16 @@ class AaParamsElement extends HTMLElement {
             parts.push(constToText(this.#constSelect.value).replaceAll(':', '#:'));
         }
         parts.push(this.#raw.value);
-        this.#text.value = parts.join(':').replace(/(?<!#):+$/, '');
+        while (parts.at(-1) === '') {
+            parts.pop();   // the parameters keep their own trailing colons
+        }
+        this.#text.value = parts.join(':');
     }
 
     #applyText(input) {
         const labels = this.#labels;
         const text = input.trim();
-        let msg = labels.text_note ?? '';
+        let msg = labels.text_note;
         let { first, rest } = splitFirst(text);
         const typeSelect = this.#typeSelect;
         if ([...typeSelect.options].some((o) => o.value === first)) {
@@ -406,11 +409,11 @@ class AaParamsElement extends HTMLElement {
                 if (option) {
                     this.#constSelect.value = option.value;
                 } else {
-                    msg = (labels.unknown_const ?? '').replace('%1', group.first);
+                    msg = labels.unknown_const.replace('%1', group.first);
                 }
             }
         } else {
-            msg = (labels.no_type ?? '').replace('%1', typeSelect.selectedOptions[0]?.text ?? this.#type);
+            msg = labels.no_type.replace('%1', typeSelect.selectedOptions[0]?.text ?? this.#type);
             rest = text;
         }
         for (const [id, value] of readParams(this.#params(), rest, this.#quote())) {
@@ -418,6 +421,7 @@ class AaParamsElement extends HTMLElement {
         }
         this.#render();
         this.#write();
+        this.#saveAside();
         this.#msg.textContent = msg;
     }
 }

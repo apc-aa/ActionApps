@@ -12,7 +12,6 @@ namespace AA\Widget;
 use AA;
 use AA\FormArray;
 use AA\Util\NamedInterface;
-use AA\Util\Paramwizard;
 use AA_Components;
 use AA_Condition;
 use AA_Content;
