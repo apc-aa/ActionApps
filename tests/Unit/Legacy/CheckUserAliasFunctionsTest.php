@@ -129,6 +129,21 @@ namespace Tests\Unit\Legacy {
             $this->assertStringContainsString('f_u calls on pages', $finding->advice);
         }
 
+        /** f_u calls the name as written - the advice must not prefix usr_ twice */
+        public function test_undefined_advice_names_the_function_to_define(): void
+        {
+            [$usr] = CheckUserAliasFunctions::findingsFor([self::row(self::SLICE, 'text...........1', 'f_u:usr_aa_test_missing_fu:x')]);
+            [$plain] = CheckUserAliasFunctions::findingsFor([self::row(self::SLICE, 'text...........1', 'f_u:aa_test_missing_fu:x')]);
+
+            $this->assertStringContainsString('define usr_aa_test_missing_fu in include/usr_aliasfnc.php or remove', $usr->advice);
+            $this->assertStringNotContainsString('usr_usr_', $usr->advice);
+            $this->assertStringContainsString('define usr_aa_test_missing_fu in include/usr_aliasfnc.php and name it in the alias', $plain->advice);
+
+            $runtime = static fn(string $name): string => CheckUserAliasFunctions::advice(UserAliasFunction::REJECTED, UserAliasFunction::UNDEFINED, $name, '');
+            $this->assertStringContainsString('Define usr_aa_test_missing_fu in include/usr_aliasfnc.php or remove', $runtime('usr_aa_test_missing_fu'));
+            $this->assertStringContainsString('Define usr_aa_test_missing_fu in include/usr_aliasfnc.php and name it in the alias', $runtime('aa_test_missing_fu'));
+        }
+
         public function test_evidence_names_the_field_and_slice_escaped(): void
         {
             [$finding] = CheckUserAliasFunctions::findingsFor([self::row(self::SLICE, 'text...........1', 'f_u:phpinfo:<b>', name: 'A <i>slice</i>')]);
