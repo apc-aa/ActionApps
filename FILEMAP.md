@@ -367,7 +367,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Util/Linkcheck.php | Link validation utility | Linkcheck | L |
 | Util/LogarithmIndex.php | Logarithmic indexing | LogarithmIndex | S |
 | Util/NamedInterface.php | Named object interface | NamedInterface | S |
-| Util/Paramwizard.php | Parameter wizard utility | Paramwizard | S |
+| Util/Paramwizard.php | Types and their parameters as JSON for `<aa-params>` (javascript/widgets/aa-params.js + aa-params-core.js, css/aa-params.css): parameter form / help on the field and CSV import pages | Paramwizard::definitions(), script() | S |
 | Util/PhpThumbParams.php | What a phpThumb parameter string says about the image: size known without measuring, aoe for zc, output format | PhpThumbParams::knownSize(), pinnedSize(), parse(), setFormat() | S |
 | Util/Preconnect.php | `Link: rel=preconnect` header for a page linking the upload host or Google Fonts (Cacheentry) | Preconnect::header() | S |
 | Util/ReportTrait.php | Reporting trait | ReportTrait | S |
@@ -536,7 +536,6 @@ Exact host as RP ID; an account with a passkey no longer logs in by password alo
 | itemstats.php | Per-item view counts and per-day hit table | (stats view) | S |
 | logout.php | Session logout | Procedural | S |
 | mailman_create_list.php | Mailman list creation | Procedural | M |
-| param_wizard.php | Parameter wizard | processSlashes(), processValue() | M |
 | prev_navigation.php | Preview navigation | Procedural | M |
 | preview.php | Item preview | Procedural | M |
 | related_sel.php | Related item selection | Procedural | M |

@@ -32,7 +32,6 @@ namespace AA\Util;
 
 use AA_Components;
 use AA_Property;
-use AA_Serializable;
 
 /**
  * Class Paramwizard
@@ -160,35 +159,5 @@ class Paramwizard
             $data['lists'][$list] = self::definitions($list);
         }
         return 'window.AA_PARAMS = ' . json_encode($data, ScriptTag::JS_JSON | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE) . ';';
-    }
-
-    /** getParamWizardArr - get array for ParamWizard from widgets
-     *  (replaces array in constants_param_wizard.php)
-     *  called as AA\Widget\Widget::getParamWizardArr('fld');
-     */
-    public function getParamWizardArr($type, $class_mask): array
-    {
-        $ret = [];
-
-        /** @var NamedInterface $class */
-        if (class_exists($class = AA_Serializable::constructClassName($type, $class_mask))) {
-            $ret['name'] = $class::name();
-            $ret['desc'] = $class::description();
-            $ret['params'] = [];
-
-            $props = $class::getClassProperties();
-            if (key($props) === 'const') { // const or slice is not presented in popup
-                array_shift($props);
-            }
-            foreach ($props as $prop) {
-                $ret['params'][] = [
-                    'name'    => $prop->getName(),
-                    'desc'    => $prop->getHelp(),
-                    'type'    => $prop->getType(),
-                    'example' => $prop->getExample(),
-                ];
-            }
-        }
-        return $ret;
     }
 }

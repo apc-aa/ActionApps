@@ -72,7 +72,6 @@ $LANG_GROUPS = [
         'misc/datovka/',
         'misc/msconvert/',
         '-./slice.php',
-        '-admin/param_wizard.php',
         '-include/lang/',
         '-include/htmlMimeMail/',
         '-include/ConvertTables/',
@@ -111,7 +110,6 @@ $LANG_GROUPS = [
     ],
     // _param_wizard_lang.php — parameter wizard only
     'param_wizard' => [
-        'admin/param_wizard.php',
         'include/constants_param_wizard.php',
     ],
 ];

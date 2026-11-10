@@ -61,14 +61,3 @@ function GetUrl(url, params) {
     return url_path + ((url_path.search(/\?/) === -1) ? '?' : '&') + url_params + url_fragment;
 }
 
-/* Calls the parameters wizard. Parameters are as follows:
-  list = name of the array containing all the needed data for the wizard
-  combo_list = a combobox of which the selected item will be shown in the wizard
-  text_param = the text field where the parameters are placed
-*/
-function CallParamWizard(url, list, combo_list, text_param) {
-    let combo_list_el = document.f.elements[combo_list];
-    let page = GetUrl(url, ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.value]);
-    window.open(page, "somename", "width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes").focus();
-}
-

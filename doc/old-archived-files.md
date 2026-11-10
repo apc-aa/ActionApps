@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/admin/**param_wizard.php**  
+"Parameter Wizard" - a popup from the field page (input type, default, validation, insert, alias functions) and from the CSV import: a form for the parameters of the selected type that wrote them back into the text field of the opener, by position.  
+_Replaced by the element <aa-params> right in the page (javascript/widgets/aa-params.js, definitions from AA\Util\Paramwizard): it keeps parameters by name when the type changes, and the alias functions and import actions show a help of the selected function. getParamWizardLink(), Paramwizard::getParamWizardArr() and the JS CallParamWizard() went with it. Removed 2026-11-10 - honzam_
+
 /src/Manageraction/**Central_Optimize.php**, **Central_OptimizeType.php**, /tests/Unit/Legacy/**CentralOptimizeTypeTest.php**  
 Actions of the Central list: one Optimize class (Update DB structure, Field duplicates - test or repair) or the whole sql_update on the selected AAs, all of them in the one request of the page, the reports shown at its end.  
 _Replaced by the action "Optimize - run a test or repair..." (src/Manageraction/Central_OptimizeRun.php) and the page central/optimize.php: any Optimize class or the whole sql_update, run in the task queue an AA after another (src/Central/OptimizeRun.php), repair only where the test fails, the results kept with the run. A long update no longer outlives the page's request. Actionapps::doOptimize() and doOptimizeType() went with them - Actionapps::optimize() asks for both. Removed 2026-11-09 - honzam_
