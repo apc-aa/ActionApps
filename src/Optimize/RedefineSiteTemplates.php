@@ -38,8 +38,24 @@ class RedefineSiteTemplates extends \AA\Optimize\AbstractOptimize
         if ($row_count !== 1) {
             $this->message(_m('Site Module template should be recreated'));
             $ret = false;
+        } elseif (self::staleControlFile(DB_AA::select1('', 'SELECT `flag`, `state_file` FROM `site`', [['id', AA_Module_Site::TEMPLATE_ID]]) ?: [])) {
+            $this->message(_m('The Site Module template names a control file that does not exist, and the form of a new site offers it - the template should be recreated'));
+            $ret = false;
         }
         return $ret;
+    }
+
+    /** The template's site row is of the legacy kind (flag <> 1) and its control file is not there - old
+     *  installs keep "template.php3", which AA never had. A new site copies both into its form.
+     *  @param array<string, mixed> $site flag and state_file of the row */
+    private static function staleControlFile(array $site): bool
+    {
+        if ((int) ($site['flag'] ?? 0) === 1) {
+            return false;
+        }
+        $name = AA_Module_Site::stateFileName((string) ($site['state_file'] ?? ''));
+        $path = AA_Module_Site::stateFilePath($name);
+        return ($name !== '') && !(is_file($path) && is_readable($path));
     }
 
     /** Main update function @return bool */
