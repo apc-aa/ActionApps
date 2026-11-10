@@ -309,15 +309,17 @@ class FilesController
      */
     protected static function reencode(string $tmp, string $path): void
     {
-        $error = Imgfunc::reencode($tmp, $path, UploadPolicy::ANON_MAX_PX, UploadPolicy::ANON_MAX_PIXELS, refusal: $refusal);
+        $existed = file_exists($path);
+        $error   = Imgfunc::reencode($tmp, $path, UploadPolicy::ANON_MAX_PX, UploadPolicy::ANON_MAX_PIXELS, refusal: $refusal);
         if ($error === null) {
             return;
         }
         if ($refusal !== null) {
             throw new RefusedImage($refusal, $error);
         }
-        // GD opens the file before it writes - what a failed write left must not stay public
-        if (is_file($path)) {
+        // a write that failed part-way (a full disk) must not leave a broken image in the public directory -
+        // only a file this call made: a name taken by another file is not this upload's
+        if (!$existed && is_file($path)) {
             unlink($path);
         }
         throw new RuntimeException($error);

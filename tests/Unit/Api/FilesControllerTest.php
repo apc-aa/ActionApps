@@ -96,6 +96,44 @@ final class FakeFilesController extends FilesController
     }
 }
 
+/** A disk that takes the first bytes of a file and then is full - a stream wrapper, no real disk needed */
+final class FullDisk
+{
+    /** @var array<string, string> path => what was written */
+    public static array $files = [];
+    /** @var list<string> paths opened for writing */
+    public static array $written = [];
+    /** @var resource|null set by PHP */
+    public $context;
+    private string $path = '';
+
+    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
+    {
+        self::$files[$this->path = $path] = '';
+        self::$written[] = $path;
+        return true;
+    }
+
+    public function stream_write(string $data): int
+    {
+        $room = max(0, 16 - strlen(self::$files[$this->path]));
+        self::$files[$this->path] .= substr($data, 0, $room);
+        return min($room, strlen($data));
+    }
+
+    /** @return array<string, int>|false */
+    public function url_stat(string $path, int $flags): array|false
+    {
+        return isset(self::$files[$path]) ? ['mode' => 0o100644, 'size' => strlen(self::$files[$path])] : false;
+    }
+
+    public function unlink(string $path): bool
+    {
+        unset(self::$files[$path]);
+        return true;
+    }
+}
+
 final class FilesControllerTest extends TestCase
 {
     private const SLICE = '0123456789abcdef0123456789abcdef';
@@ -319,8 +357,37 @@ final class FilesControllerTest extends TestCase
         $this->assertSame('store', $this->c->refused[0][1]);
     }
 
-    /** the write fails after GD opened the file - here the file is there and cannot be written */
-    public function test_a_failed_write_leaves_no_file_in_the_upload_directory(): void
+    private function png(): string
+    {
+        imagepng(imagecreatetruecolor(30, 20), $src = "$this->dir/src.png");
+        return $src;
+    }
+
+    /** a full disk: the file is made, part of the image written - nothing broken may stay public */
+    public function test_a_write_that_failed_part_way_leaves_no_file(): void
+    {
+        if (!extension_loaded('gd')) {
+            $this->markTestSkipped('GD is not loaded');
+        }
+        $src = $this->png();
+        FullDisk::$files = FullDisk::$written = [];
+        stream_wrapper_register('aafull', FullDisk::class);
+        set_error_handler(static fn(): bool => true);    // PHP warns that only part was written
+        try {
+            FakeFilesController::reencodeTo($src, 'aafull://upload/out.png');
+            $this->fail('a failed write throws');
+        } catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(\AA\Upload\RefusedImage::class, $e, 'the server failed, not the image');
+        } finally {
+            restore_error_handler();
+            stream_wrapper_unregister('aafull');
+        }
+        $this->assertSame(['aafull://upload/out.png'], FullDisk::$written, 'it was written to');
+        $this->assertSame([], FullDisk::$files, 'and is gone');
+    }
+
+    /** the name of another file is not this upload's to delete, even when writing over it failed */
+    public function test_a_failed_write_leaves_a_file_it_did_not_make(): void
     {
         if (!extension_loaded('gd')) {
             $this->markTestSkipped('GD is not loaded');
@@ -328,20 +395,18 @@ final class FilesControllerTest extends TestCase
         if (function_exists('posix_geteuid') && (posix_geteuid() === 0)) {
             $this->markTestSkipped('root writes a read-only file');
         }
-        $img = imagecreatetruecolor(30, 20);
-        imagepng($img, $src = "$this->dir/src.png");
+        $src = $this->png();
         touch($path = "$this->dir/out.png");
         chmod($path, 0o444);
-        set_error_handler(static fn(): bool => true);    // GD warns that it cannot open the file
+        set_error_handler(static fn(): bool => true);    // PHP warns that it cannot open the file
         try {
             FakeFilesController::reencodeTo($src, $path);
             $this->fail('a failed write throws');
-        } catch (\RuntimeException $e) {
-            $this->assertNotInstanceOf(\AA\Upload\RefusedImage::class, $e, 'the server failed, not the image');
+        } catch (\RuntimeException) {
         } finally {
             restore_error_handler();
         }
-        $this->assertFileDoesNotExist($path);
+        $this->assertFileExists($path);
     }
 
     public function test_unknown_slice_is_refused_without_a_log_row(): void

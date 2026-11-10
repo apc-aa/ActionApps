@@ -285,22 +285,23 @@ class Imgfunc
                 $png  = self::encoded($out, IMAGETYPE_PNG);
                 $data = (($png !== '') && (strlen($png) <= 2 * strlen($data))) ? $png : $data;
             }
-            return (($data !== '') && (file_put_contents($dest, $data) === strlen($data))) ? null : _m('Cannot write %1', [$dest]);
+        } else {
+            $data = self::encoded($out, $type);
         }
-        $ok = match ($type) {
-            IMAGETYPE_JPEG => imagejpeg($out, $dest, 85),
-            IMAGETYPE_PNG  => imagepng($out, $dest),
-            IMAGETYPE_AVIF => imageavif($out, $dest),
-            default        => imagewebp($out, $dest, 85),
-        };
-        return $ok ? null : _m('Cannot write %1', [$dest]);
+        // written whole or reported: GD writing to a file says true even when the disk is full
+        return (($data !== '') && (file_put_contents($dest, $data) === strlen($data))) ? null : _m('Cannot write %1', [$dest]);
     }
 
-    /** the bytes of $img as JPEG or PNG, '' when GD cannot write it */
+    /** the bytes of $img as an image of $as (IMAGETYPE_*), '' when GD cannot write it */
     private static function encoded(\GdImage $img, int $as): string
     {
         ob_start();
-        $ok   = ($as === IMAGETYPE_PNG) ? imagepng($img) : imagejpeg($img, null, 85);
+        $ok   = match ($as) {
+            IMAGETYPE_PNG  => imagepng($img),
+            IMAGETYPE_WEBP => imagewebp($img, null, 85),
+            IMAGETYPE_AVIF => imageavif($img),
+            default        => imagejpeg($img, null, 85),
+        };
         $data = (string) ob_get_clean();
         return $ok ? $data : '';
     }
