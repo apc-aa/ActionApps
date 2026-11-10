@@ -66,8 +66,9 @@ class CheckImports extends AbstractOptimize
      */
     public static function findingsAt(int $now, ?array $constants = null): array
     {
-        $o        = self::objects();
-        $findings = [
+        $o         = self::objects();
+        $o['defs'] = self::withSliceNames($o['defs']);
+        $findings  = [
             ...self::runFindings($o, $now),
             ...self::definitionFindings($o, $now),
             ...self::orphanFindings($o, $now),
@@ -210,7 +211,8 @@ class CheckImports extends AbstractOptimize
                 }
             }
             if ((($r['enabled'] ?? '') === '1') && !isset($planned[$id])) {
-                $findings[] = new Finding(Finding::INFO, _m('An enabled import has no planned task'), evidence: [$about], advice: _m('No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off.'), links: $links, key: "plan:$id");
+                // the switch is in the edit form of the Imports list, not in the detail the finding links to
+                $findings[] = new Finding(Finding::INFO, _m('An enabled import has no planned task'), evidence: [$about], advice: _m('No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch the import off: in "%1" of the slice click "%2" at the import and untick "%3".', [_m('Imports'), _m('Edit'), _m('Enabled')]), links: $links + self::edit($r, $id), key: "plan:$id");
             }
         }
         foreach ($named as $key => $ids) {
@@ -361,16 +363,37 @@ class CheckImports extends AbstractOptimize
         return preg_match('/^[0-9a-f]{32}\z/', $id) === 1;
     }
 
+    /**
+     * $defs with the name of their slice as slice_name ('' for none) - one read of `module` by its key
+     * @param array<string, array<string, string>> $defs
+     * @return array<string, array<string, string>>
+     */
+    private static function withSliceNames(array $defs): array
+    {
+        $slices = array_values(array_unique(array_filter(array_map(static fn(array $r): string => (string) ($r['aa_owner'] ?? ''), $defs), is_long_id(...))));
+        $names  = $slices ? DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', [['id', $slices, 'l']]) : [];
+        foreach ($defs as $id => $r) {
+            $defs[$id]['slice_name'] = (string) ($names[$r['aa_owner'] ?? ''] ?? '');
+        }
+        return $defs;
+    }
+
     /** @return array<string, string> the definition in the evidence, escaped */
     private static function about(array $r, string $id): array
     {
-        return [_m('Import') => safe(($r['aa_name'] ?? '') ?: $id), _m('Slice') => safe($r['aa_owner'] ?? '')];
+        return [_m('Import') => safe(($r['aa_name'] ?? '') ?: $id), _m('Slice') => safe(($r['slice_name'] ?? '') ?: ($r['aa_owner'] ?? ''))];
     }
 
     /** @return array<string, string> the import detail - its page decides who may open it */
     private static function detail(array $r, string $id): array
     {
         return [_m('Import detail') => AA_INSTAL_PATH . 'admin/se_dataimport.php?change_id=' . rawurlencode($r['aa_owner'] ?? '') . '&id=' . $id];
+    }
+
+    /** @return array<string, string> the edit form of the import in the Imports list - name, source, Enabled */
+    private static function edit(array $r, string $id): array
+    {
+        return [_m('Edit') => AA_INSTAL_PATH . 'admin/se_dataimports.php?change_id=' . rawurlencode($r['aa_owner'] ?? '') . '&id=' . $id];
     }
 
     private static function date(int $time): string

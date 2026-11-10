@@ -82,7 +82,7 @@ final class CheckImportsTest extends TestCase
     {
         $this->tablesSetUp();
         Registry::setCustomRootForTests(self::$root, self::$root . '/import');
-        TableDb::$answer = self::logAnswer(...);
+        TableDb::$answer = static fn(string $sql): ?array => self::moduleAnswer($sql) ?? self::logAnswer($sql);
         // the planned tasks are read once a request - here once a test
         \AA::Contentcache()->clear_soft();
     }
@@ -358,6 +358,24 @@ final class CheckImportsTest extends TestCase
         $this->assertNotContains('condition', self::plannedTaskProperties(), 'the condition never starts an import');
     }
 
+    /** the slice by its name, and the advice names the switch where it is - in the edit form of the Imports list */
+    public function test_enabledWithoutPlannedTask_namesTheSliceAndTheSwitch(): void
+    {
+        TableDb::$tables['module'] = [['id' => self::SLICE, 'name' => 'Price <b>list</b>']];
+        self::definition(self::DEF, 'prices', ['enabled' => '1']);
+        self::definition(self::DEF2, 'rates', ['enabled' => '1'], self::SLICE2);
+
+        $findings = self::findings(time());
+
+        $plan = self::only($findings, 'plan:' . self::DEF);
+        $this->assertSame(safe('Price <b>list</b>'), $plan->evidence[0]['Slice']);
+        $this->assertSame(self::SLICE2, self::only($findings, 'plan:' . self::DEF2)->evidence[0]['Slice'], 'no name known - the id');
+        $this->assertStringContainsString('"Imports"', $plan->advice);
+        $this->assertStringContainsString('"Edit"', $plan->advice);
+        $this->assertStringContainsString('"Enabled"', $plan->advice);
+        $this->assertStringEndsWith('admin/se_dataimports.php?change_id=' . self::SLICE . '&id=' . self::DEF, $plan->links['Edit']);
+    }
+
     /** a task counts as the import detail lists it: {import(x)} does not reach the import x when it
      *  runs, {import} trims its parameters */
     public function test_plannedAsTheDetailListsIt(): void
@@ -584,7 +602,8 @@ final class CheckImportsTest extends TestCase
     /**
      * CHECK_BASIC runs on every load of State Check: object_text only through its (property, value)
      * and object_id indexes and only the listed small properties - never the streams or entries of a
-     * definition - the log through (type, time). As many reads for three imports as for one.
+     * definition - the log through (type, time), the slice names by the key of `module`. As many reads
+     * for three imports as for one.
      */
     public function test_basic_readsOnlyThroughIndexes(): void
     {
@@ -606,7 +625,7 @@ final class CheckImportsTest extends TestCase
         }
         $this->assertSame(count($selects[0]), count($selects[2]));
         foreach ($selects[2] as $sql) {
-            $this->assertMatchesRegularExpression('/ FROM (`object_text` WHERE (property = \'\w+\' AND value |object_id IN \(.*\) AND property IN \()|`log` WHERE type IN |information_schema\.tables WHERE )/', $sql);
+            $this->assertMatchesRegularExpression('/ FROM (`object_text` WHERE (property = \'\w+\' AND value |object_id IN \(.*\) AND property IN \()|`log` WHERE type IN |`module` WHERE id = 0x|information_schema\.tables WHERE )/', $sql);
         }
         $this->assertSame([], TableDb::writes(), 'a check writes nothing');
     }
@@ -687,6 +706,17 @@ final class CheckImportsTest extends TestCase
     private static function logged(int $time, string $type, string $selector, string $params): void
     {
         TableDb::$tables['log'][] = ['id' => count(TableDb::rows('log')) + 1, 'time' => $time, 'user' => '', 'type' => $type, 'selector' => $selector, 'params' => $params];
+    }
+
+    /** the slice names - TableDb gives whole rows, the check reads the hex id as unpackid
+     *  @return list<array<string, string>>|null null for any other statement */
+    private static function moduleAnswer(string $sql): ?array
+    {
+        if (!str_contains($sql, 'FROM `module`')) {
+            return null;
+        }
+        $rows = array_filter(TableDb::rows('module'), static fn(array $r): bool => str_contains($sql, '0x' . $r['id']));
+        return array_values(array_map(static fn(array $r): array => ['unpackid' => (string) $r['id'], 'name' => (string) $r['name']], $rows));
     }
 
     /**
