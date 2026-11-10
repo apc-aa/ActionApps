@@ -209,16 +209,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "\xC2\xF1\xE8\xF7\xEA\xE8 \xEA\xE0\xF2\xE5\xE3\xEE\xF0\xE8\xE8", // ai 2026-06
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "\xC3\xF0\xE5\xF8\xEA\xE0: \xCB\xE8\xEF\xF1\xE2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0 \xE7\xE0 \xF7\xE5\xF2\xE5\xED\xE5", // ai 2026-06
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "\xD1\xFA\xEE\xE1\xF9\xE5\xED\xE8\xE5 \xEE\xF2 \xEF\xF0\xE8\xEB\xEE\xE6\xE5\xED\xE8\xE5\xF2\xEE", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "\xCD\xE0\xE7\xE0\xE4", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "\xCF\xEE\xE2\xF2\xEE\xF0\xED\xEE \xE2\xEB\xE8\xE7\xE0\xED\xE5", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110

@@ -212,16 +212,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Tất cả danh mục", // ai 2026-06
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Lỗi: Thiếu mật khẩu đọc", // ai 2026-06
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Thông báo tin tức Toolkit", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Quay lại", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Đăng nhập lại", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110

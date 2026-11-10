@@ -12,122 +12,89 @@ setlocale(LC_ALL, 'sk_SK.utf8', 'sk_SK');  // sort, date, uppercase, ..
 setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)
 
 return [
+// Unused messages — no longer found in the sources; kept commented for reference.
+// "field&nbsp;id" => "id&nbsp;položky", // ai 2026-06
+// "boolean:&nbsp;0=false,1=true" => "boolean:&nbsp;0=nepravda,1=pravda", // ai 2026-06
+// "This is an undocumented %s. We don't recommend using it." => "Toto je nezdokumentovaný %s. Neodporúčame ho používať.", // ai 2026-06
+// "Close the wizard" => "Zavrieť sprievodcu", // ai 2026-06
+// "Available parameters: " => "Dostupné parametre: ", // ai 2026-06
+// "This %s has no parameters." => "Tento %s nemá žiadne parametre.", // ai 2026-06
+// "Have a look at these examples of parameters sets:" => "Pozrite si tieto príklady sád parametrov:", // ai 2026-06
+// "OK - Save" => "OK - Uložiť", // ai 2026-06
+// "Show example params" => "Zobraziť príklady parametrov", // ai 2026-06
+// "Help: Parameter Wizard" => "Pomocník: Sprievodca parametrami", // ai 2026-06
+// End of unused messages
 
-// admin/param_wizard.php, row 110
-"field&nbsp;id" => "id&nbsp;položky", // ai 2026-06
-
-// admin/param_wizard.php, row 113
-"boolean:&nbsp;0=false,1=true" => "boolean:&nbsp;0=nepravda,1=pravda", // ai 2026-06
-
-// admin/param_wizard.php, row 137
-"Wizard" => "Sprievodca", // ai 2026-06
-
-// admin/param_wizard.php, row 220
-"This is an undocumented %s. We don't recommend using it." => "Toto je nezdokumentovaný %s. Neodporúčame ho používať.", // ai 2026-06
-
-// admin/param_wizard.php, row 221
-"Close the wizard" => "Zavrieť sprievodcu", // ai 2026-06
-
-// admin/param_wizard.php, row 235
-"Available parameters: " => "Dostupné parametre: ", // ai 2026-06
-
-// admin/param_wizard.php, row 255
-"This %s has no parameters." => "Tento %s nemá žiadne parametre.", // ai 2026-06
-
-// admin/param_wizard.php, row 265
-"Have a look at these examples of parameters sets:" => "Pozrite si tieto príklady sád parametrov:", // ai 2026-06
-
-// admin/param_wizard.php, row 272
-"Show" => "Zobraziť",
-
-// admin/param_wizard.php, row 283
-"OK - Save" => "OK - Uložiť", // ai 2026-06
-
-// admin/param_wizard.php, row 284
-"Cancel" => "Zrušiť",
-
-// admin/param_wizard.php, row 285
-"Show example params" => "Zobraziť príklady parametrov", // ai 2026-06
-
-// admin/param_wizard.php, row 289
-"OK" => "OK", // ai 2026-10
-
-// include/constants_param_wizard.php, row 68
-"Parameters" => "Parametre",
-
-// include/constants_param_wizard.php, row 70
-"Help: Parameter Wizard" => "Pomocník: Sprievodca parametrami", // ai 2026-06
-
-// include/constants_param_wizard.php, row 77
+// include/constants_param_wizard.php, row 61
 "Input Validate Type" => "Typ kontroly vstupu (validácia)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 79
+// include/constants_param_wizard.php, row 63
 "No validation" => "Bez validácie", // ai 2026-06
 
-// include/constants_param_wizard.php, row 82
+// include/constants_param_wizard.php, row 66
 "URL" => "",
 
-// include/constants_param_wizard.php, row 85
+// include/constants_param_wizard.php, row 69
 "E-mail" => "E-mail", // ai 2026-10
 
-// include/constants_param_wizard.php, row 88
+// include/constants_param_wizard.php, row 72
 "Number = positive integer number" => "Number = kladné celé číslo", // ai 2026-06
 
-// include/constants_param_wizard.php, row 91, 113
+// include/constants_param_wizard.php, row 75, 97
 "Min" => "Min", // ai 2026-10
 
-// include/constants_param_wizard.php, row 92, 114
+// include/constants_param_wizard.php, row 76, 98
 "Allowed minimum value" => "Minimálna povolená hodnota", // ai 2026-06
 
-// include/constants_param_wizard.php, row 97, 119
+// include/constants_param_wizard.php, row 81, 103
 "Max" => "Max", // ai 2026-10
 
-// include/constants_param_wizard.php, row 98, 120
+// include/constants_param_wizard.php, row 82, 104
 "Allowed maximum value" => "Maximálna povolená hodnota", // ai 2026-06
 
-// include/constants_param_wizard.php, row 103, 125
+// include/constants_param_wizard.php, row 87, 109
 "Step" => "Krok", // ai 2026-06
 
-// include/constants_param_wizard.php, row 110
+// include/constants_param_wizard.php, row 94
 "Number = (signed) integer number" => "Number = celé číslo (so znamienkom)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 132
+// include/constants_param_wizard.php, row 116
 "Float - including scientific notation 1.2E+9" => "Float - vrátane vedeckého zápisu 1.2E+9", // ai 2026-06
 
-// include/constants_param_wizard.php, row 135
+// include/constants_param_wizard.php, row 119
 "Decimal" => "Desatinné číslo", // ai 2026-06
 
-// include/constants_param_wizard.php, row 138
+// include/constants_param_wizard.php, row 122
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 hexadecimálnych číslic [0-9a-f]", // ai 2026-06
 
-// include/constants_param_wizard.php, row 141
+// include/constants_param_wizard.php, row 125
 "Date = store as date" => "Date = uloží sa ako dátum", // ai 2026-06
 
-// include/constants_param_wizard.php, row 144
+// include/constants_param_wizard.php, row 128
 "Bool = store as bool" => "Bool = uloží sa ako logická hodnota", // ai 2026-06
 
-// include/constants_param_wizard.php, row 147
+// include/constants_param_wizard.php, row 131
 "User = does nothing ???" => "User = nerobí nič ???", // ai 2026-06
 
-// include/constants_param_wizard.php, row 150
+// include/constants_param_wizard.php, row 134
 "Unique = prove uniqueness" => "Unique = overí jedinečnosť", // ai 2026-06
 
-// include/constants_param_wizard.php, row 151
+// include/constants_param_wizard.php, row 135
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
  => "Hodnota je platná, len ak ešte nie je použitá. Užitočné napr.\n"
    ."        pre e-maily alebo užívateľské mená.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 155, 197
+// include/constants_param_wizard.php, row 139, 181
 "Field ID" => "ID položky", // ai 2026-06
 
-// include/constants_param_wizard.php, row 156, 198
+// include/constants_param_wizard.php, row 140, 182
 "Field in which to look for matching values (default is current field)." => "Položka, v ktorej sa hľadajú zhodné hodnoty (predvolená je aktuálna položka).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 161
+// include/constants_param_wizard.php, row 145
 "Scope" => "Rozsah", // ai 2026-06
 
-// include/constants_param_wizard.php, row 163
+// include/constants_param_wizard.php, row 147
 "<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
@@ -137,46 +104,46 @@ return [
    ."                <b>0</b> = (predvolené) Užívateľské meno, špeciálne: kontroluje jedinečnosť v moduloch\n"
    ."                pre správu čitateľov a v systéme oprávnení. Vždy používa položku s ID %1", // ai 2026-06
 
-// include/constants_param_wizard.php, row 175
+// include/constants_param_wizard.php, row 159
 "Regular Expression" => "Regulárny výraz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 176
+// include/constants_param_wizard.php, row 160
 "Validation based on Regular Expressions" => "Validácia pomocou regulárnych výrazov", // ai 2026-06
 
-// include/constants_param_wizard.php, row 179
+// include/constants_param_wizard.php, row 163
 "Regular Expressions" => "Regulárne výrazy", // ai 2026-06
 
-// include/constants_param_wizard.php, row 180
+// include/constants_param_wizard.php, row 164
 "use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "použite napríklad: /^[0-9]*\$/ - viď manuál \"Regular Expressions\".", // ai 2026-06
 
-// include/constants_param_wizard.php, row 185
+// include/constants_param_wizard.php, row 169
 "Error text" => "Text chyby", // ai 2026-06
 
-// include/constants_param_wizard.php, row 186
+// include/constants_param_wizard.php, row 170
 "error message" => "chybové hlásenie", // ai 2026-06
 
-// include/constants_param_wizard.php, row 188
+// include/constants_param_wizard.php, row 172
 "Wrong value" => "Nesprávna hodnota", // ai 2026-06
 
-// include/constants_param_wizard.php, row 193
+// include/constants_param_wizard.php, row 177
 "Unique e-mail" => "Jedinečný e-mail", // ai 2026-06
 
-// include/constants_param_wizard.php, row 194
+// include/constants_param_wizard.php, row 178
 "Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "Kombinuje validácie e-mail a unique. Hodnota prejde kontrolou len vtedy, ak je platnou e-mailovou adresou a ešte nie je použitá.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 203
+// include/constants_param_wizard.php, row 187
 "Slice only" => "Len tento modul", // ai 2026-06
 
-// include/constants_param_wizard.php, row 204
+// include/constants_param_wizard.php, row 188
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
  => "Chcete kontrolovať jedinečnosť len v tomto module\n"
    ."                  alebo vo všetkých moduloch?", // ai 2026-06
 
-// include/constants_param_wizard.php, row 212
+// include/constants_param_wizard.php, row 196
 "Password and Change Password" => "Heslo a Zmena hesla", // ai 2026-06
 
-// include/constants_param_wizard.php, row 213
+// include/constants_param_wizard.php, row 197
 "Validates the passwords do not differ when changing password.\n"
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
@@ -186,466 +153,466 @@ return [
    ."        pretože vkladacia\n"
    ."        funkcia vykoná kontrolu znova pred uložením nového hesla.</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 228
+// include/constants_param_wizard.php, row 212
 "Function" => "Funkcia",
 
-// include/constants_param_wizard.php, row 229
+// include/constants_param_wizard.php, row 213
 "How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "Ako je použité formátovanie textu na tejto stránke:<br><i>položka</i> kurzívou označuje položku upravovanú v okne \"Pole správ\",<br><b>názov parametra</b> tučným písmom označuje parameter na tejto obrazovke.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 232
+// include/constants_param_wizard.php, row 216
 "just code" => "len kód", // ai 2026-06
 
-// include/constants_param_wizard.php, row 233
+// include/constants_param_wizard.php, row 217
 "prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "vypíše kód z parametra - dá sa použiť _#this - jednoduchšie ako f_t (bez ďalšieho parametra)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 236
+// include/constants_param_wizard.php, row 220
 "null function" => "nulová funkcia", // ai 2026-06
 
-// include/constants_param_wizard.php, row 237
+// include/constants_param_wizard.php, row 221
 "prints nothing" => "nevypíše nič", // ai 2026-06
 
-// include/constants_param_wizard.php, row 240
+// include/constants_param_wizard.php, row 224
 "first value" => "prvá hodnota", // ai 2026-06
 
-// include/constants_param_wizard.php, row 241
+// include/constants_param_wizard.php, row 225
 "prints first value, even if the field is multivalue" => "vypíše prvú hodnotu, aj keď je položka viachodnotová", // ai 2026-06
 
-// include/constants_param_wizard.php, row 244
+// include/constants_param_wizard.php, row 228
 "translated" => "preložené", // ai 2026-06
 
-// include/constants_param_wizard.php, row 245
+// include/constants_param_wizard.php, row 229
 "prints translated field based on currently selected language" => "vypíše preloženú položku podľa aktuálne zvoleného jazyka", // ai 2026-06
 
-// include/constants_param_wizard.php, row 248
+// include/constants_param_wizard.php, row 232
 "abstract" => "abstrakt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 249
+// include/constants_param_wizard.php, row 233
 "prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "vypíše abstrakt (ak existuje) alebo začiatok položky <b>fulltext</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 252
+// include/constants_param_wizard.php, row 236
 "length" => "dĺžka", // ai 2026-06
 
-// include/constants_param_wizard.php, row 253
+// include/constants_param_wizard.php, row 237
 "max number of characters grabbed from the <b>fulltext</b> field" => "maximálny počet znakov prevzatých z položky <b>fulltext</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 258
+// include/constants_param_wizard.php, row 242
 "fulltext" => "plný text", // ai 2026-10
 
-// include/constants_param_wizard.php, row 259
+// include/constants_param_wizard.php, row 243
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "id položky s fulltextom (napr. full_text.......), z ktorej sa preberá text. Ak je prázdne, text sa preberá priamo zo samotnej <i>položky</i>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 261, 303, 600
+// include/constants_param_wizard.php, row 245, 287, 584
 "full_text......." => "",
 
-// include/constants_param_wizard.php, row 264
+// include/constants_param_wizard.php, row 248
 "paragraph" => "odsek", // ai 2026-06
 
-// include/constants_param_wizard.php, row 265
+// include/constants_param_wizard.php, row 249
 "take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "vezme prvý odsek (text po \\<BR\\> alebo \\<P\\> alebo \\</P\\> alebo aspoň po '.' (bodku)), ak je kratší ako <b>dĺžka</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 272
+// include/constants_param_wizard.php, row 256
 "extended fulltext link" => "rozšírený odkaz na celý text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 273
+// include/constants_param_wizard.php, row 257
 "Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "Vypíše zadaný <b>text</b> (alebo obsah položky) s odkazom na celý text. Všeobecnejšia verzia funkcie f_f. Táto funkcia nepoužíva <i>položku</i>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 276, 410
+// include/constants_param_wizard.php, row 260, 394
 "link only" => "len odkaz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 277
+// include/constants_param_wizard.php, row 261
 "field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "id položky (napr. 'link_only.......'), v ktorej je uložený prepínač medzi externou a internou správou. (Stránka by mala obsahovať SSI include ../slice.php.). Ak nie je vyplnené, pre celý text sa použije rovnaká stránka ako pre prehľad správ (čo je prirodzené správanie).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 279, 413
+// include/constants_param_wizard.php, row 263, 397
 "link_only......." => "",
 
-// include/constants_param_wizard.php, row 282
+// include/constants_param_wizard.php, row 266
 "url_field" => "položka s URL", // ai 2026-06
 
-// include/constants_param_wizard.php, row 283
+// include/constants_param_wizard.php, row 267
 "field id if field, where external URL is stored (like hl_href.........)" => "id položky, v ktorej je uložená externá URL (napr. hl_href.........)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 285
+// include/constants_param_wizard.php, row 269
 "hl_href........." => "",
 
-// include/constants_param_wizard.php, row 288, 416
+// include/constants_param_wizard.php, row 272, 400
 "redirect" => "presmerovanie", // ai 2026-06
 
-// include/constants_param_wizard.php, row 289, 417
+// include/constants_param_wizard.php, row 273, 401
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL inej stránky, ktorá zobrazuje obsah správy. (Stránka by mala obsahovať SSI include ../slice.php.). Ak nie je vyplnené, pre celý text sa použije rovnaká stránka ako pre prehľad správ (čo je prirodzené správanie).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 291, 419
+// include/constants_param_wizard.php, row 275, 403
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanky/solarne.shtml", // ai 2026-10
 
-// include/constants_param_wizard.php, row 294
+// include/constants_param_wizard.php, row 278
 "text" => "text", // ai 2026-10
 
-// include/constants_param_wizard.php, row 295
+// include/constants_param_wizard.php, row 279
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Text, ktorý bude obklopený odkazom. Ak je tento parameter id položky, použije sa obsah položky, inak sa použije tak, ako je zadaný.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 300
+// include/constants_param_wizard.php, row 284
 "condition field" => "položka podmienky", // ai 2026-06
 
-// include/constants_param_wizard.php, row 301
+// include/constants_param_wizard.php, row 285
 "when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "ak zadaná položka nemá žiadny obsah, nevypíše sa odkaz, ale len <b>text</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 306, 533
+// include/constants_param_wizard.php, row 290, 517
 "tag addition" => "doplnenie tagu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 307, 534
+// include/constants_param_wizard.php, row 291, 518
 "additional text to the \"\\<a\\>\" tag" => "ďalší text do tagu \"\\<a\\>\"", // ai 2026-06
 
-// include/constants_param_wizard.php, row 309, 536
+// include/constants_param_wizard.php, row 293, 520
 "target=_blank" => "",
 
-// include/constants_param_wizard.php, row 312, 422
+// include/constants_param_wizard.php, row 296, 406
 "no session id" => "bez session id", // ai 2026-06
 
-// include/constants_param_wizard.php, row 313, 423
+// include/constants_param_wizard.php, row 297, 407
 "If 1, the session id (AA_Session=...) is not added to url" => "Ak je 1, session id (AA_Session=...) sa nepridáva do url", // ai 2026-06
 
-// include/constants_param_wizard.php, row 320, 324
+// include/constants_param_wizard.php, row 304, 308
 "condition" => "podmienka", // ai 2026-06
 
-// include/constants_param_wizard.php, row 321
+// include/constants_param_wizard.php, row 305
 "This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "Toto je veľmi mocná funkcia. Môže sa použiť ako lepšia náhrada niektorých starších funkcií. Ak <b>položka_podmienky</b> = <b>podmienka</b>, vypíše <b>začiatok</b> <i>položka</i> <b>koniec</b>, inak vypíše <b>inak</b>. Ak <b>položka_podmienky</b> nie je zadaná, použije sa <i>položka</i>. Podmienku je možné obrátiť (negovať) znakom \"!\" na jej začiatku.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 325
+// include/constants_param_wizard.php, row 309
 "you may use \"!\" to reverse (negate) the condition" => "znakom \"!\" môžete podmienku obrátiť (negovať)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 330, 509
+// include/constants_param_wizard.php, row 314, 493
 "begin" => "začiatok", // ai 2026-06
 
-// include/constants_param_wizard.php, row 331
+// include/constants_param_wizard.php, row 315
 "text to print before <i>field</i>, if condition is true" => "text, ktorý sa vypíše pred <i>položkou</i>, ak je podmienka splnená", // ai 2026-06
 
-// include/constants_param_wizard.php, row 333
+// include/constants_param_wizard.php, row 317
 "Yes" => "Áno", // ai 2026-06
 
-// include/constants_param_wizard.php, row 336
+// include/constants_param_wizard.php, row 320
 "end" => "koniec", // ai 2026-06
 
-// include/constants_param_wizard.php, row 337
+// include/constants_param_wizard.php, row 321
 "text to print after <i>field</i>, if condition is true" => "text, ktorý sa vypíše za <i>položkou</i>, ak je podmienka splnená", // ai 2026-06
 
-// include/constants_param_wizard.php, row 342
+// include/constants_param_wizard.php, row 326
 "else" => "inak", // ai 2026-06
 
-// include/constants_param_wizard.php, row 343
+// include/constants_param_wizard.php, row 327
 "text to print when condition is not satisfied" => "text, ktorý sa vypíše, ak podmienka nie je splnená", // ai 2026-06
 
-// include/constants_param_wizard.php, row 345
+// include/constants_param_wizard.php, row 329
 "No" => "Nie", // ai 2026-06
 
-// include/constants_param_wizard.php, row 348
+// include/constants_param_wizard.php, row 332
 "cond_field" => "položka_podmienky", // ai 2026-06
 
-// include/constants_param_wizard.php, row 349
+// include/constants_param_wizard.php, row 333
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "položka, ktorá sa porovnáva s <b>podmienkou</b> - ak nie je vyplnená, použije sa <i>položka</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 354
+// include/constants_param_wizard.php, row 338
 "skip_the_field" => "vynechať_položku", // ai 2026-06
 
-// include/constants_param_wizard.php, row 355
+// include/constants_param_wizard.php, row 339
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "ak je nastavené na 1, vynechá <i>položku</i> (vypíše len <b>začiatok koniec</b> alebo <b>inak</b>)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 362
+// include/constants_param_wizard.php, row 346
 "This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Tento príklad je použiteľný napr. pre položku Highlight - zobrazí Áno alebo Nie podľa obsahu položky", // ai 2026-06
 
-// include/constants_param_wizard.php, row 363
+// include/constants_param_wizard.php, row 347
 "1:Yes::No::1" => "1:Áno::Nie::1", // ai 2026-06
 
-// include/constants_param_wizard.php, row 366
+// include/constants_param_wizard.php, row 350
 "When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "Ak je položka e-mail vyplnená, vypíše niečo ako \"Email: email@apc.org\", ak je prázdna, nevypíše nič", // ai 2026-06
 
-// include/constants_param_wizard.php, row 367
+// include/constants_param_wizard.php, row 351
 "!:Email#:&nbsp;" => "",
 
-// include/constants_param_wizard.php, row 370
+// include/constants_param_wizard.php, row 354
 "Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "Vypíše atribút výšky obrázka, ak je <i>položka</i> vyplnená, inak nič.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 371
+// include/constants_param_wizard.php, row 355
 "!:height=" => "",
 
-// include/constants_param_wizard.php, row 376
+// include/constants_param_wizard.php, row 360
 "date" => "dátum", // ai 2026-06
 
-// include/constants_param_wizard.php, row 377
+// include/constants_param_wizard.php, row 361
 "prints date in a user defined format" => "vypíše dátum vo formáte definovanom užívateľom", // ai 2026-06
 
-// include/constants_param_wizard.php, row 380
+// include/constants_param_wizard.php, row 364
 "format" => "formát", // ai 2026-06
 
-// include/constants_param_wizard.php, row 381
+// include/constants_param_wizard.php, row 365
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "formát v štýle PHP - viď <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manuál</a>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 383
+// include/constants_param_wizard.php, row 367
 "m-d-Y" => "d-m-Y", // ai 2026-06
 
-// include/constants_param_wizard.php, row 388
+// include/constants_param_wizard.php, row 372
 "edit item" => "úprava správy", // ai 2026-06
 
-// include/constants_param_wizard.php, row 389
+// include/constants_param_wizard.php, row 373
 "_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM sa používa na administratívnej stránke index.php pre url itemedit", // ai 2026-06
 
-// include/constants_param_wizard.php, row 392
+// include/constants_param_wizard.php, row 376
 "type" => "typ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 393
+// include/constants_param_wizard.php, row 377
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - pre úpravu diskusie<br>itemcount - vypíše počet správ<br>safe - pre bezpečné html<br>slice_info - vyberie položku z informácií o module<br>edit - URL na úpravu správy<br>add - URL na pridanie novej správy", // ai 2026-06
 
-// include/constants_param_wizard.php, row 395
+// include/constants_param_wizard.php, row 379
 "edit" => "upraviť", // ai 2026-06
 
-// include/constants_param_wizard.php, row 398
+// include/constants_param_wizard.php, row 382
 "return url" => "návratové url", // ai 2026-06
 
-// include/constants_param_wizard.php, row 399
+// include/constants_param_wizard.php, row 383
 "Return url being called from, usually leave blank and allow default" => "Návratové url, z ktorého sa volá; obvykle nechajte prázdne a použije sa predvolené", // ai 2026-06
 
-// include/constants_param_wizard.php, row 401
+// include/constants_param_wizard.php, row 385
 "/mysite.shtml" => "/mojastranka.shtml", // ai 2026-06
 
-// include/constants_param_wizard.php, row 406
+// include/constants_param_wizard.php, row 390
 "fulltext link" => "odkaz na celý text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 407
+// include/constants_param_wizard.php, row 391
 "Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "Vypíše URL do odkazu na celý text - umožňuje používať externé správy. Použite bezprostredne za \"\\<a href=\"", // ai 2026-06
 
-// include/constants_param_wizard.php, row 411
+// include/constants_param_wizard.php, row 395
 "field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "id položky (napr. 'link_only.......'), v ktorej je uložený prepínač medzi externou a internou správou. Obvykle je táto položka zobrazená ako zaškrtávacie políčko. Ak je políčko zaškrtnuté, vypíše sa <i>položka</i>, ak nie je zaškrtnuté, vypíše sa odkaz na celý text (záleží aj na parametri <b>redirect</b>).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 430
+// include/constants_param_wizard.php, row 414
 "image height" => "výška obrázka", // ai 2026-06
 
-// include/constants_param_wizard.php, row 431
+// include/constants_param_wizard.php, row 415
 "An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "Staršia funkcia. Vypíše <i>položku</i> ako hodnotu výšky obrázka (\\<img height=...\\>) alebo odstráni atribút height. Použite bezprostredne za \"height=\". Funkcia f_c poskytuje lepší spôsob, ako to dosiahnuť, s parametrami \":height=\".", // ai 2026-06
 
-// include/constants_param_wizard.php, row 434
+// include/constants_param_wizard.php, row 418
 "print HTML multiple" => "výpis HTML (viachodnotový)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 435
+// include/constants_param_wizard.php, row 419
 "prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "vypíše obsah <i>položky</i> v závislosti od príznaku html (ošetrí špeciálne html znaky, alebo len vypíše)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 438
+// include/constants_param_wizard.php, row 422
 "delimiter" => "oddeľovač", // ai 2026-06
 
-// include/constants_param_wizard.php, row 439
+// include/constants_param_wizard.php, row 423
 "if specified, a field with multiple values is displayed with the values delimited by it" => "ak je zadaný, položka s viacerými hodnotami sa zobrazí s hodnotami oddelenými týmto oddeľovačom", // ai 2026-06
 
-// include/constants_param_wizard.php, row 446
+// include/constants_param_wizard.php, row 430
 "image src" => "zdroj obrázka", // ai 2026-06
 
-// include/constants_param_wizard.php, row 447
+// include/constants_param_wizard.php, row 431
 "prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "vypíše <i>položku</i> ako zdroj obrázka (\\<img src=...\\>) - NO_PICTURE pre žiadny obrázok. To isté možno dosiahnuť funkciou f_c s parametrami :::NO_PICTURE.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 450
+// include/constants_param_wizard.php, row 434
 "image size" => "veľkosť obrázka", // ai 2026-06
 
-// include/constants_param_wizard.php, row 451
+// include/constants_param_wizard.php, row 435
 "prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "vypíše <i>položku</i> ako veľkosť obrázka (height='xxx' width='yyy') (alebo inú informáciu o obrázku) alebo prázdny reťazec, ak sa ju nepodarí zistiť; nerieši špeciálne URL z adresára uploads, možno doplníme neskôr!", // ai 2026-06
 
-// include/constants_param_wizard.php, row 454, 830
+// include/constants_param_wizard.php, row 438, 814
 "information" => "informácia", // ai 2026-06
 
-// include/constants_param_wizard.php, row 455
+// include/constants_param_wizard.php, row 439
 "specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "určuje vrátenú informáciu: <br> - <i>html</i> - (predvolené) - vráti veľkosť obrázka ako HTML atribúty (height='xxx' width='yyy')<br> - <i>width</i> - vráti šírku obrázka v pixeloch<br> - <i>height</i> - vráti výšku obrázka v pixeloch<br> - <i>imgtype</i> - vráti príznak označujúci typ obrázka: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - vráti mimetype obrázka (napr. 'image/gif', 'application/x-shockwave-flash', ...)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 462
+// include/constants_param_wizard.php, row 446
 "substring with case change" => "podreťazec so zmenou veľkosti písmen", // ai 2026-06
 
-// include/constants_param_wizard.php, row 463
+// include/constants_param_wizard.php, row 447
 "prints a part of <i>the field</i>" => "vypíše časť <i>položky</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 466
+// include/constants_param_wizard.php, row 450
 "start" => "začiatok", // ai 2026-06
 
-// include/constants_param_wizard.php, row 467
+// include/constants_param_wizard.php, row 451
 "position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "pozícia začiatku podreťazca (0=prvý, 1=druhý, -1=posledný,-2=dva od konca)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 472
+// include/constants_param_wizard.php, row 456
 "count" => "počet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 473
+// include/constants_param_wizard.php, row 457
 "count of characters (0=until the end)" => "počet znakov (0=do konca)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 478
+// include/constants_param_wizard.php, row 462
 "case" => "veľkosť písmen", // ai 2026-06
 
-// include/constants_param_wizard.php, row 479
+// include/constants_param_wizard.php, row 463
 "upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "upper - konvertuje na VEĽKÉ PÍSMENÁ, lower - konvertuje na malé písmená, first - konvertuje na Prvé Veľké; predvolene sa nemení", // ai 2026-06
 
-// include/constants_param_wizard.php, row 484
+// include/constants_param_wizard.php, row 468
 "add string" => "pridaný reťazec", // ai 2026-06
 
-// include/constants_param_wizard.php, row 485
+// include/constants_param_wizard.php, row 469
 "if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "ak je reťazec skrátený, <i>pridaný reťazec</i> sa pripojí na jeho koniec (pravdepodobne niečo ako [...])", // ai 2026-06
 
-// include/constants_param_wizard.php, row 491
+// include/constants_param_wizard.php, row 475
 "Auto Update Checkbox" => "Zaškrtávacie políčko s automatickou aktualizáciou", // ai 2026-06
 
-// include/constants_param_wizard.php, row 493
+// include/constants_param_wizard.php, row 477
 "linked field" => "položka s odkazom", // ai 2026-06
 
-// include/constants_param_wizard.php, row 494
+// include/constants_param_wizard.php, row 478
 "prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "vypíše <i>položku</i> ako odkaz, ak <b>URL odkazu</b> nie je NULL, inak vypíše len <i>položku</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 497
+// include/constants_param_wizard.php, row 481
 "link URL" => "URL odkazu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 500
+// include/constants_param_wizard.php, row 484
 "source_href....." => "",
 
-// include/constants_param_wizard.php, row 505
+// include/constants_param_wizard.php, row 489
 "e-mail or link" => "e-mail alebo odkaz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 506
+// include/constants_param_wizard.php, row 490
 "mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "mailto odkaz - vypíše: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>položka</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. Ak <i>položka</i> nie je vyplnená, vypíše <b>else_field/text</b>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 510
+// include/constants_param_wizard.php, row 494
 "text before the link" => "text pred odkazom", // ai 2026-06
 
-// include/constants_param_wizard.php, row 512
+// include/constants_param_wizard.php, row 496
 "e-mail" => "e-mail", // ai 2026-10
 
-// include/constants_param_wizard.php, row 515
+// include/constants_param_wizard.php, row 499
 "field/text" => "pole/text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 516
+// include/constants_param_wizard.php, row 500
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "ak je tento parameter id položky, použije sa obsah položky, inak sa použije tak, ako je zadaný", // ai 2026-06
 
-// include/constants_param_wizard.php, row 521
+// include/constants_param_wizard.php, row 505
 "else_field/text" => "inak_pole/text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 522
+// include/constants_param_wizard.php, row 506
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "ak je <i>položka</i> prázdna, vypíše sa len tento text (alebo obsah položky)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 527
+// include/constants_param_wizard.php, row 511
 "linktype" => "typ odkazu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 528
+// include/constants_param_wizard.php, row 512
 "mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (predvolené je mailto) - funkciu f_m možno použiť aj pre odkazy - stačí ako tento parameter zadať 'href'", // ai 2026-06
 
-// include/constants_param_wizard.php, row 530
+// include/constants_param_wizard.php, row 514
 "href" => "",
 
-// include/constants_param_wizard.php, row 539
+// include/constants_param_wizard.php, row 523
 "hide email" => "skryť e-mail", // ai 2026-06
 
-// include/constants_param_wizard.php, row 540
+// include/constants_param_wizard.php, row 524
 "if 1 then hide email from spam robots. Default is 0." => "ak je 1, skryje e-mail pred spamovými robotmi. Predvolené je 0.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 547
+// include/constants_param_wizard.php, row 531
 "id" => "",
 
-// include/constants_param_wizard.php, row 548
+// include/constants_param_wizard.php, row 532
 "prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "vypíše nezabalené (unpacked) id (použite, ak chcete zobraziť 'id správy' alebo 'id modulu')", // ai 2026-06
 
-// include/constants_param_wizard.php, row 551
+// include/constants_param_wizard.php, row 535
 "'New' sign" => "značka 'New'", // ai 2026-06
 
-// include/constants_param_wizard.php, row 552
+// include/constants_param_wizard.php, row 536
 "prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "vypíše 'New' alebo 'Old' alebo ľubovoľný iný text zadaný v <b>novší text</b> alebo <b>starší text</b> v závislosti od hodnoty <b>čas</b>. Čas sa udáva v minútach od aktuálneho času.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 555
+// include/constants_param_wizard.php, row 539
 "time" => "čas", // ai 2026-06
 
-// include/constants_param_wizard.php, row 556
+// include/constants_param_wizard.php, row 540
 "Time in minutes from current time." => "Čas v minútach od aktuálneho času.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 558
+// include/constants_param_wizard.php, row 542
 "1440" => "",
 
-// include/constants_param_wizard.php, row 561
+// include/constants_param_wizard.php, row 545
 "newer text" => "novší text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 562
+// include/constants_param_wizard.php, row 546
 "Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "Text, ktorý sa vypíše, ak je dátum v <i>položke</i> novší ako <i>aktuálny čas</i> - <b>čas</b>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 564
+// include/constants_param_wizard.php, row 548
 "NEW" => "NOVÉ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 567
+// include/constants_param_wizard.php, row 551
 "older text" => "starší text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 568
+// include/constants_param_wizard.php, row 552
 "Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "Text, ktorý sa vypíše, ak je dátum v <i>položke</i> starší ako <i>aktuálny čas</i> - <b>čas</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 575
+// include/constants_param_wizard.php, row 559
 "text (blurb) from another slice" => "text (blurb) z iného modulu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 576
+// include/constants_param_wizard.php, row 560
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "vypíše 'blurb' (kúsok textu) z iného modulu na základe jednoduchej podmienky.<br>Ak sa <i>položka</i> (alebo položka určená parametrom <b>stringToMatch</b>) v aktuálnom module zhoduje s obsahom <b>fieldToMatch</b> v <b>blurbSliceId</b>, vráti obsah <b>fieldToReturn</b> v <b>blurbSliceId</b>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 579
+// include/constants_param_wizard.php, row 563
 "stringToMatch" => "stringToMatch", // ai 2026-10
 
-// include/constants_param_wizard.php, row 580
+// include/constants_param_wizard.php, row 564
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Štandardne je to <i>položka</i>. Môže byť zadaný buď ako id položky (headline........), ALEBO ako statický text.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 582
+// include/constants_param_wizard.php, row 566
 "category........" => "",
 
-// include/constants_param_wizard.php, row 585
+// include/constants_param_wizard.php, row 569
 "blurbSliceId" => "blurbSliceId", // ai 2026-10
 
-// include/constants_param_wizard.php, row 586
+// include/constants_param_wizard.php, row 570
 "unpacked slice id of the slice where the blurb text is stored" => "nezabalené (unpacked) id modulu, v ktorom je uložený text blurbu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 588
+// include/constants_param_wizard.php, row 572
 "41415f436f72655f4669656c64732e2e" => "",
 
-// include/constants_param_wizard.php, row 591
+// include/constants_param_wizard.php, row 575
 "fieldToMatch" => "fieldToMatch", // ai 2026-10
 
-// include/constants_param_wizard.php, row 592
+// include/constants_param_wizard.php, row 576
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id položky v <b>blurbSliceId</b>, v ktorej sa má hľadať <b>stringToMatch</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 594
+// include/constants_param_wizard.php, row 578
 "headline........" => "",
 
-// include/constants_param_wizard.php, row 597
+// include/constants_param_wizard.php, row 581
 "fieldToReturn" => "fieldToReturn", // ai 2026-10
 
-// include/constants_param_wizard.php, row 598
+// include/constants_param_wizard.php, row 582
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id položky v <b>blurbSliceId</b>, v ktorej je uložený text blurbu (čo sa má vypísať)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 605
+// include/constants_param_wizard.php, row 589
 "RSS tag" => "RSS tag", // ai 2026-10
 
-// include/constants_param_wizard.php, row 606
+// include/constants_param_wizard.php, row 590
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "slúži na interné účely preddefinovaných RSS aliasov (napr. _#RSS_TITL). Pridáva tagy podľa špecifikácie RSS 0.91.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 609, 613, 805
+// include/constants_param_wizard.php, row 593, 597, 789
 "default" => "predvolená hodnota", // ai 2026-06
 
-// include/constants_param_wizard.php, row 610
+// include/constants_param_wizard.php, row 594
 "prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "vypíše <i>položku</i> alebo predvolenú hodnotu, ak je <i>položka</i> prázdna. To isté sa dá dosiahnuť funkciou f_c s parametrami :::<b>default</b>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 614
+// include/constants_param_wizard.php, row 598
 "default value" => "predvolená hodnota", // ai 2026-06
 
-// include/constants_param_wizard.php, row 616
+// include/constants_param_wizard.php, row 600
 "javascript: window.alert('No source url specified')" => "javascript: window.alert('Nebola zadaná zdrojová url')", // ai 2026-06
 
-// include/constants_param_wizard.php, row 621
+// include/constants_param_wizard.php, row 605
 "print field" => "výpis položky", // ai 2026-06
 
-// include/constants_param_wizard.php, row 622
+// include/constants_param_wizard.php, row 606
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "vypíše obsah <i>položky</i> (alebo <i>unalias string</i>) v závislosti od príznaku html (ak príznak html nie je nastavený, prevedie obsah do html. Na rozdiel od funkcie f_h prevádza do html aj konce riadkov (vo svojom základnom variante)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 625
+// include/constants_param_wizard.php, row 609
 "unalias string" => "reťazec s aliasmi", // ai 2026-10
 
-// include/constants_param_wizard.php, row 626
+// include/constants_param_wizard.php, row 610
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "ak je <i>unalias string</i> definovaný, funkcia ignoruje <i>položku</i> a vypíše radšej <i>unalias string</i>. V tomto reťazci môžete samozrejme použiť ľubovoľné aliasy (alebo položky ako {headline.........})", // ai 2026-06
 
-// include/constants_param_wizard.php, row 628
+// include/constants_param_wizard.php, row 612
 "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>" => "",
 
-// include/constants_param_wizard.php, row 631
+// include/constants_param_wizard.php, row 615
 "output modify" => "úprava výstupu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 632
+// include/constants_param_wizard.php, row 616
 "You can use some output modifications:<br>\n"
    ."                   &nbsp; - [<i>empty</i>] - no modification<br>\n"
    ."                   &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>\n"
@@ -664,175 +631,175 @@ return [
    ."                   &nbsp; - <i>striptags</i>  - odstráni HTML a PHP tagy z reťazca<br>\n"
    ."                   &nbsp; - <i>asis</i>  - vypíše obsah položky 'tak ako je' - nepridáva &lt;br&gt; na konce riadkov, ani keď je položka označená ako 'Plain text'. Parameter 'asis' je vhodný napríklad pre funkciu 'Modify content...' v Item Manageri<br>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 647
+// include/constants_param_wizard.php, row 631
 "user function" => "užívateľská funkcia", // ai 2026-06
 
-// include/constants_param_wizard.php, row 648
+// include/constants_param_wizard.php, row 632
 "calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "zavolá funkciu definovanú užívateľom (pozri 'How to create new aliases' v <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 651
+// include/constants_param_wizard.php, row 635
 "function" => "funkcia", // ai 2026-06
 
-// include/constants_param_wizard.php, row 652
+// include/constants_param_wizard.php, row 636
 "name of the function in the include/usr_aliasfnc.php file" => "názov funkcie v súbore include/usr_aliasfnc.php", // ai 2026-06
 
-// include/constants_param_wizard.php, row 654
+// include/constants_param_wizard.php, row 638
 "usr_start_end_date_cz" => "",
 
-// include/constants_param_wizard.php, row 657
+// include/constants_param_wizard.php, row 641
 "parameter" => "parameter", // ai 2026-10
 
-// include/constants_param_wizard.php, row 658
+// include/constants_param_wizard.php, row 642
 "a parameter passed to the function" => "parameter odovzdaný funkcii", // ai 2026-06
 
-// include/constants_param_wizard.php, row 665
+// include/constants_param_wizard.php, row 649
 "view" => "pohľad", // ai 2026-06
 
-// include/constants_param_wizard.php, row 666
+// include/constants_param_wizard.php, row 650
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "umožňuje manipulovať s pohľadmi. Je to zložitá a mocná funkcia, popísaná v <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, ktorá umožňuje zobraziť ľubovoľný pohľad na mieste aliasu. Dá sa použiť napríklad pre tabuľku 'súvisiacich správ' alebo pre zobrazenie obsahu súvisiaceho modulu.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 669
+// include/constants_param_wizard.php, row 653
 "complex parameter" => "komplexný parameter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 670
+// include/constants_param_wizard.php, row 654
 "this parameter is the same as we use in view.php url parameter - see the FAQ" => "tento parameter je rovnaký, ako používame v URL parametri view.php - pozri FAQ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 672
+// include/constants_param_wizard.php, row 656
 "vid=4&amp;cmd[23]=v-25" => "",
 
-// include/constants_param_wizard.php, row 677
+// include/constants_param_wizard.php, row 661
 "image width" => "šírka obrázka", // ai 2026-06
 
-// include/constants_param_wizard.php, row 678
+// include/constants_param_wizard.php, row 662
 "An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "Funkcia starého štýlu. Vypíše <i>položku</i> ako hodnotu šírky obrázka (\\<img width=...\\>) alebo odstráni tag width. Má sa použiť bezprostredne za \"width=\". Funkcia f_c poskytuje lepší spôsob, ako to urobiť, pomocou parametra \":width=\".", // ai 2026-06
 
-// include/constants_param_wizard.php, row 681
+// include/constants_param_wizard.php, row 665
 "transformation" => "transformácia", // ai 2026-06
 
-// include/constants_param_wizard.php, row 682
+// include/constants_param_wizard.php, row 666
 "Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Umožňuje transformovať hodnotu položky na inú hodnotu.<br>Použitie: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>Ak je obsah <i>položky</i> rovný <b>content_1</b>, vráti sa <b>return_value_1</b>. Ak je obsah <i>položky</i> rovný <b>content_2</b>, vráti sa <b>return_value_2</b>. Ak <i>sa položka nerovná žiadnemu <b>content_x</b>, vráti sa <b>default</b></i>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 685, 697, 709, 721, 733, 745, 757, 769, 781, 793
+// include/constants_param_wizard.php, row 669, 681, 693, 705, 717, 729, 741, 753, 765, 777
 "content" => "obsah", // ai 2026-06
 
-// include/constants_param_wizard.php, row 686, 698, 710, 722, 734, 746, 758, 770, 782, 794
+// include/constants_param_wizard.php, row 670, 682, 694, 706, 718, 730, 742, 754, 766, 778
 "string for comparison with <i>the field</i> for following return value" => "reťazec na porovnanie s <i>položkou</i> pre nasledujúcu návratovú hodnotu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 691, 703, 715, 727, 739, 751, 763, 775, 787, 799
+// include/constants_param_wizard.php, row 675, 687, 699, 711, 723, 735, 747, 759, 771, 783
 "return value" => "návratová hodnota", // ai 2026-06
 
-// include/constants_param_wizard.php, row 692, 704, 716, 728, 740, 752, 764, 776, 788, 800
+// include/constants_param_wizard.php, row 676, 688, 700, 712, 724, 736, 748, 760, 772, 784
 "string to return if previous content matches - You can use field_id too" => "reťazec, ktorý sa vráti, ak predchádzajúci obsah zodpovedá - môžete použiť aj field_id", // ai 2026-06
 
-// include/constants_param_wizard.php, row 694, 706, 718, 730, 742, 754, 766, 778, 790, 802, 808
+// include/constants_param_wizard.php, row 678, 690, 702, 714, 726, 738, 750, 762, 774, 786, 792
 "Environment" => "Ekológia", // ai 2026-06
 
-// include/constants_param_wizard.php, row 806
+// include/constants_param_wizard.php, row 790
 "if no content matches, use this string as return value" => "ak nezodpovedá žiadny obsah, použije sa tento reťazec ako návratová hodnota", // ai 2026-06
 
-// include/constants_param_wizard.php, row 813
+// include/constants_param_wizard.php, row 797
 "expanded string" => "expandovaný reťazec", // ai 2026-06
 
-// include/constants_param_wizard.php, row 814
+// include/constants_param_wizard.php, row 798
 "expands the string in the parameter" => "expanduje reťazec v parametri", // ai 2026-06
 
-// include/constants_param_wizard.php, row 817
+// include/constants_param_wizard.php, row 801
 "string to expand" => "reťazec na expandovanie", // ai 2026-06
 
-// include/constants_param_wizard.php, row 818
+// include/constants_param_wizard.php, row 802
 "if specified then this string is expanded, if not specified then expands the contents of the field" => "ak je zadaný, expanduje sa tento reťazec; ak nie je zadaný, expanduje sa obsah položky", // ai 2026-06
 
-// include/constants_param_wizard.php, row 826
+// include/constants_param_wizard.php, row 810
 "file information" => "informácie o súbore", // ai 2026-06
 
-// include/constants_param_wizard.php, row 827
+// include/constants_param_wizard.php, row 811
 "prints <i>the field</i> as file information, its size or type" => "vypíše <i>položku</i> ako informáciu o súbore, jeho veľkosť alebo typ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 831
+// include/constants_param_wizard.php, row 815
 "specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "určuje vrátenú informáciu: <br> - <i>name</i> - názov súboru<br> - <i>type</i> - vráti typ súboru (napr. TXT)<br> - <i>size</i> - vráti veľkosť súboru v kB alebo MB (napr. 12.1 kB)<br> - <i>bytesize</i> - (napr. 12128)<br> - <i>link</i><br> - <i>typesize</i> - [typ - veľkosť] v elemente span<br> - <i>crc</i><br> - <i>time</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 845
+// include/constants_param_wizard.php, row 829
 "Transformation action" => "Transformačná akcia", // ai 2026-06
 
-// include/constants_param_wizard.php, row 847
+// include/constants_param_wizard.php, row 831
 "AA Expression" => "AA výraz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 848
+// include/constants_param_wizard.php, row 832
 "AA expression where we can use any AA {expressions}" => "AA výraz, v ktorom môžeme použiť ľubovoľné AA {expressions}", // ai 2026-06
 
-// include/constants_param_wizard.php, row 851
+// include/constants_param_wizard.php, row 835
 "expression" => "výraz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 860
+// include/constants_param_wizard.php, row 844
 "Store" => "Uložiť", // ai 2026-06
 
-// include/constants_param_wizard.php, row 861
+// include/constants_param_wizard.php, row 845
 "Simply store a value from the input field" => "Jednoducho uloží hodnotu zo vstupného poľa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 864
+// include/constants_param_wizard.php, row 848
 "lang (optional)" => "lang (nepovinné)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 865
+// include/constants_param_wizard.php, row 849
 "two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "dve písmená - cz | en | es | de. Ak je zadané, hodnota sa uloží do určeného jazyka (položka musí používať preklady)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 873
+// include/constants_param_wizard.php, row 857
 "Remove string" => "Odstrániť reťazec", // ai 2026-06
 
-// include/constants_param_wizard.php, row 874
+// include/constants_param_wizard.php, row 858
 "Remove all occurrences of a string from the input field." => "Odstráni všetky výskyty reťazca zo vstupného poľa.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 877, 898
+// include/constants_param_wizard.php, row 861, 882
 "string parameter" => "reťazcový parameter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 878
+// include/constants_param_wizard.php, row 862
 "Removed string" => "Odstraňovaný reťazec", // ai 2026-06
 
-// include/constants_param_wizard.php, row 884
+// include/constants_param_wizard.php, row 868
 "Format date" => "Formátovať dátum", // ai 2026-06
 
-// include/constants_param_wizard.php, row 885
+// include/constants_param_wizard.php, row 869
 "Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "Spracuje dátum vo vstupnej položke, ktorý sa očakáva v anglickom formáte dátumu. V prípade chyby transformácia zlyhá", // ai 2026-06
 
-// include/constants_param_wizard.php, row 889
+// include/constants_param_wizard.php, row 873
 "Add http prefix" => "Pridať prefix http", // ai 2026-06
 
-// include/constants_param_wizard.php, row 890
+// include/constants_param_wizard.php, row 874
 "Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "Pridá prefix 'https://' k položke, ak nezačína na 'https://' a nie je prázdna.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 894
+// include/constants_param_wizard.php, row 878
 "Store parameter" => "Uložiť parameter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 895
+// include/constants_param_wizard.php, row 879
 "Store parameter instead of the input field" => "Uloží parameter namiesto vstupnej položky", // ai 2026-06
 
-// include/constants_param_wizard.php, row 905
+// include/constants_param_wizard.php, row 889
 "Store as long id" => "Uložiť ako dlhé id", // ai 2026-06
 
-// include/constants_param_wizard.php, row 906
+// include/constants_param_wizard.php, row 890
 "Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "Vytvorí z reťazca dlhé id. Reťazec sa kombinuje s parametrom!! alebo so slice_id (ak parameter nie je zadaný). Z rovnakého reťazca (a rovnakého parametra) vždy vytvoríme rovnaké id.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 909
+// include/constants_param_wizard.php, row 893
 "string to add" => "pripájaný reťazec", // ai 2026-06
 
-// include/constants_param_wizard.php, row 910
+// include/constants_param_wizard.php, row 894
 "this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "tento parameter sa pridá k reťazcu pred prevodom (dôvodom je vyhnúť sa prázdnym reťazcom a tiež aby sme negenerovali vždy rovnaké id pre bežné reťazce (v rôznych importoch). Ak tento parameter nie je zadaný, použije sa namiesto neho slice_id.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 918
+// include/constants_param_wizard.php, row 902
 "Split input field by string" => "Rozdeliť vstupnú položku podľa reťazca", // ai 2026-06
 
-// include/constants_param_wizard.php, row 919
+// include/constants_param_wizard.php, row 903
 "Split input field by string parameter and store the result as multi-value." => "Rozdelí vstupnú položku podľa reťazcového parametra a výsledok uloží ako viachodnotovú položku.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 922
+// include/constants_param_wizard.php, row 906
 "delimiter (+ possible languages)" => "oddeľovač (+ prípadné jazyky)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 923
+// include/constants_param_wizard.php, row 907
 "string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "reťazcový oddeľovač, ktorý oddeľuje hodnoty vstupnej položky (napr. \"|\"). Ďalšou možnosťou je pridať aj jazyky oddelené \"##\" v tvare <delimiter>##<lang1>##<lang2> (\"|##cz##en\" pre \"Ahoj|Hi\") - tým sa naplnia prekladané položky", // ai 2026-06
 
-// include/constants_param_wizard.php, row 930
+// include/constants_param_wizard.php, row 914
 "Store default value" => "Uložiť predvolenú hodnotu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 931
+// include/constants_param_wizard.php, row 915
 "Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
    ."    <table>\n"
    ."        <tr><td><b>Output field</b></td><td><b>Value</b></td><td><b>Description</b></td></tr></b>\n"

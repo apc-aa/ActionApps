@@ -209,16 +209,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Minden kateg\xF3ria", // ai 2026-06
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Hiba: hi\xE1nyzik az olvas\xE1si jelsz\xF3", // ai 2026-06
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Toolkit h\xEDr\xFCzenet", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Vissza", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "\xDAjra bejelentkez\xE9s", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110

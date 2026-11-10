@@ -17,6 +17,17 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Parameter wizard" => "Asistent parametri", // ai 2026-06
+// "the update may still be running on the remote AA - wait, then run Test before retrying" => "actualizarea poate rula \xEEnc\xE3 pe AA-ul distant - asteptati, apoi rulati ,,Testeaz\xE3\" \xEEnainte de a re\xEEncerca", // ai 2026-10
+// "Set letterhead to a text" => "Setati letterhead la un text", // ai 2026-11
+// "Update DB (sql_update)" => "Actualizare DB (sql_update)", // ai 2026-06
+// "Error: %1" => "Eroare: %1", // ai 2026-10
+// "Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "Trece c\xE2mpurile text de la functia de inserare ,,Text = nu modifica\" la ,,Elimin\xE3 spatiile\", astfel \xEEnc\xE2t spatiile si liniile noi din jurul unei valori s\xE3 nu fie stocate. C\xE2mpurile pentru cod, valori unice, copii ale parolelor si c\xE2mpurile ale c\xE3ror constante au astfel de spatii \xEEsi p\xE3streaz\xE3 setarea. Valorile stocate anterior nu se modific\xE3.", // ai 2026-10
+// "No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "Nicio sarcin\xE3 planificat\xE3 a sectiunii nu apeleaz\xE3 {import} cu numele sau id-ul lui, asa c\xE3 ruleaz\xE3 doar manual. Planificati o sarcin\xE3 sau dezactivati optiunea ,,Activat\".", // ai 2026-10
+// "Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "Scrieti test_boxes ca list\xE3 de ID-uri de c\xE3sute de date: ['<data box id>', ...], fiecare cu 7 litere sau cifre. P\xE2n\xE3 atunci contul trimite, dar niciun mesaj de test al unei ciorne nu pleac\xE3 din el.", // ai 2026-11
+// "The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Functia nu este definit\xE3 pe aceast\xE3 pagin\xE3 de administrare. Un site o poate totusi defini (un fisier de control al site-ului, un fisier \xEEnc\xE3rcat doar de paginile lui) - ce au apelat paginile \xEEn realitate arat\xE3 verificarea ,,Apeluri f_u \xEEn pagini\"; aveti \xEEncredere \xEEn aceea. Dac\xE3 nu apare nici acolo, definiti usr_%1 \xEEn include/usr_aliasfnc.php sau eliminati aliasul.", // ai 2026-10
+// "The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Pagina nu avea o astfel de functie, aliasul nu a afisat nimic. Definiti usr_%1 \xEEn include/usr_aliasfnc.php sau eliminati aliasul.", // ai 2026-10
+// "Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "Elimin\xE3 spatiile din valorile stocate \xEEnainte ca acel c\xE2mp s\xE3 primeasc\xE3 functia de inserare ,,Elimin\xE3 spatiile\" (vezi ,,%1\") - spatiile si r\xE2ndurile noi de la margini, diacriticele necompuse. Reparatia o planific\xE3 \xEEn coad\xE3: articolele sunt stocate din nou \xEEn mod silentios, astfel \xEEnc\xE2t ultima editare, c\xE2mpurile calculate, evenimentele si alimentarea r\xE3m\xE2n neatinse; istoricul \xEEnregistreaz\xE3 modificarea. C\xE2mpurile unice sunt doar raportate, c\xE2mpurile definite \xEEntr-o sectiune de c\xE2mpuri nu sunt verificate.", // ai 2026-10
 // "Can't delete invalid permission." => "Nu pot \xBAterge drept invalid.",
 // "Invalid permission deleted (no such user/group): " => "Drept invalid \xBAters (nu exist\xE3 astfel de utilizator/grup)",
 // "Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Fiecare vizit\xE3 randeaz\xE3 din nou o astfel de pagin\xE3. O redirectionare, un contor de clicuri sau un formular pot r\xE3m\xE2ne asa cum sunt. \xCEn rest, mai ales \xEEntr-un sablon al fiec\xE3rei pagini (antet, subsol): stergeti o valoare afisat\xE3 doar pentru depanare si verificati scrierea numelui ({server:HTTP_REFERER}); pentru a recunoaste vizitatorii veniti dintr-o campanie folositi {qs:utm_source}, iar pentru dispozitiv {detect}. Host-ul, schema si URI-ul ({server:HTTP_HOST}, {server:REQUEST_URI}) p\xE3streaz\xE3 pagina \xEEn cache.", // ai 2026-11
@@ -308,7 +319,7 @@ return [
 "never" => "niciodat\xE3", // ai 2026-06
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 762
+// include/field.class.php, row 767
 // src/Util/Adminlink.php, row 31
 "disabled" => "dezactivat", // ai 2026-06
 
@@ -384,6 +395,7 @@ return [
 // admin/um_passwd.php, row 80
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
+// central/optimize.php, row 65
 // src/Import/DetailPage.php, row 510
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Formularul a expirat; re\xEEnc\xE3rcati pagina si \xEEncercati din nou.", // ai 2026-10
@@ -441,13 +453,13 @@ return [
 
 // admin/aa_security.php, row 87
 // admin/aa_statecheck.php, row 177
-// admin/aa_statistics.php, row 101
+// admin/aa_statistics.php, row 103
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
-// admin/se_fields.php, row 303
-// admin/se_statistics.php, row 80
+// admin/se_fields.php, row 361
+// admin/se_statistics.php, row 82
 // admin/se_views.php, row 148
-// include/formutil.php, row 1432, 1435, 2021
+// include/formutil.php, row 1475, 1478, 2064
 // src/Widget/FilWidget.php, row 154, 233
 // src/Widget/FldWidget.php, row 156
 "Show" => "Arat\xE3",
@@ -460,7 +472,7 @@ return [
 // src/Optimize/CheckLoginAddresses.php, row 88, 101
 // src/Optimize/CheckSessionidUse.php, row 99
 // src/Optimize/CheckTrustedProxies.php, row 103
-// src/Optimize/CheckUploadRefusals.php, row 89
+// src/Optimize/CheckUploadRefusals.php, row 93
 // src/Security/Protection.php, row 93
 "Address" => "Adres\xE3", // ai 2026-10
 
@@ -521,7 +533,7 @@ return [
 // src/Optimize/CheckServerRefusals.php, row 73
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckTrustedProxies.php, row 109
-// src/Optimize/CheckUploadRefusals.php, row 101
+// src/Optimize/CheckUploadRefusals.php, row 106
 // src/Optimize/CheckUserAliasFunctionLog.php, row 75
 // src/Optimize/CheckViewSliceRefusals.php, row 167, 199
 "Log rows" => "\xCEnregistr\xE3ri jurnal", // ai 2026-10
@@ -557,12 +569,13 @@ return [
 "State Check reminds you until it is on again." => ",,Verificare stare\" v\xE3 va aminti acest lucru p\xE2n\xE3 c\xE2nd o reactivati.", // ai 2026-10
 
 // admin/aa_security.php, row 206
-// admin/se_csv_import2.php, row 392
+// admin/se_csv_import2.php, row 395
+// admin/se_showif.php, row 176
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 110
-// src/Widget/Widget.php, row 445
+// src/Widget/Widget.php, row 444
 "Save" => "Salveaz\xE3", // ai 2026-06
 
 // admin/aa_statecheck.php, row 72
@@ -656,182 +669,182 @@ return [
 // admin/se_statistics.php, row 58
 "You do not have permissions to see statistics" => "Nu aveti dreptul s\xE3 vedeti statisticile", // ai 2026-06
 
-// admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 75
+// admin/aa_statistics.php, row 98
+// admin/se_statistics.php, row 77
 "Admin - Statistics" => "Admin - Statistici", // ai 2026-06
-
-// admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 83
-"years" => "ani", // ai 2026-06
-
-// admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 84
-"months" => "luni", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
 // admin/se_statistics.php, row 85
-"weeks" => "s\xE3pt\xE3m\xE2ni", // ai 2026-06
+"years" => "ani", // ai 2026-06
 
 // admin/aa_statistics.php, row 107
 // admin/se_statistics.php, row 86
-"days" => "zile", // ai 2026-06
+"months" => "luni", // ai 2026-06
 
 // admin/aa_statistics.php, row 108
 // admin/se_statistics.php, row 87
-"hours" => "ore", // ai 2026-06
+"weeks" => "s\xE3pt\xE3m\xE2ni", // ai 2026-06
 
 // admin/aa_statistics.php, row 109
 // admin/se_statistics.php, row 88
-"minutes" => "minute", // ai 2026-06
+"days" => "zile", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
 // admin/se_statistics.php, row 89
-"day-hours" => "orele zilei", // ai 2026-06
+"hours" => "ore", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
 // admin/se_statistics.php, row 90
+"minutes" => "minute", // ai 2026-06
+
+// admin/aa_statistics.php, row 112
+// admin/se_statistics.php, row 91
+"day-hours" => "orele zilei", // ai 2026-06
+
+// admin/aa_statistics.php, row 113
+// admin/se_statistics.php, row 92
 "week-days" => "zilele s\xE3pt\xE3m\xE2nii", // ai 2026-06
 
-// admin/aa_statistics.php, row 115
+// admin/aa_statistics.php, row 117
 "Most hits" => "Cele mai multe acces\xE3ri", // ai 2026-06
 
-// admin/aa_statistics.php, row 116
+// admin/aa_statistics.php, row 118
 "Most server time" => "Cel mai mult timp de server", // ai 2026-06
 
-// admin/aa_statistics.php, row 117
+// admin/aa_statistics.php, row 119
 "Slowest (avg ms)" => "Cele mai lente (medie ms)", // ai 2026-06
 
-// admin/aa_statistics.php, row 118
+// admin/aa_statistics.php, row 120
 "Fastest (avg ms)" => "Cele mai rapide (medie ms)", // ai 2026-06
 
-// admin/aa_statistics.php, row 119
+// admin/aa_statistics.php, row 121
 "Worst cached" => "Cel mai slab cache", // ai 2026-06
 
-// admin/aa_statistics.php, row 120
+// admin/aa_statistics.php, row 122
 "Best cached" => "Cel mai bun cache", // ai 2026-06
 
-// admin/aa_statistics.php, row 121
+// admin/aa_statistics.php, row 123
 "Most wasted (NC+NM)" => "Cele mai irosite (NC+NM)", // ai 2026-06
 
-// admin/aa_statistics.php, row 122
+// admin/aa_statistics.php, row 124
 "Slowed down vs prior period" => "\xCEncetinire fat\xE3 de perioada anterioar\xE3", // ai 2026-06
 
-// admin/aa_statistics.php, row 123
+// admin/aa_statistics.php, row 125
 "Sped up vs prior period" => "Accelerare fat\xE3 de perioada anterioar\xE3", // ai 2026-06
 
-// admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 94
+// admin/aa_statistics.php, row 126
+// admin/se_statistics.php, row 96
 "Specified below" => "Specificat mai jos", // ai 2026-06
 
-// admin/aa_statistics.php, row 128
+// admin/aa_statistics.php, row 130
 "Last day" => "Ultima zi", // ai 2026-06
 
-// admin/aa_statistics.php, row 129
+// admin/aa_statistics.php, row 131
 "Last week" => "Ultima s\xE3pt\xE3m\xE2n\xE3", // ai 2026-06
 
-// admin/aa_statistics.php, row 130
+// admin/aa_statistics.php, row 132
 "Last month" => "Ultima lun\xE3", // ai 2026-06
 
-// admin/aa_statistics.php, row 131
+// admin/aa_statistics.php, row 133
 "Last year" => "Ultimul an", // ai 2026-06
 
-// admin/aa_statistics.php, row 132
+// admin/aa_statistics.php, row 134
 "This day" => "Aceast\xE3 zi", // ai 2026-06
 
-// admin/aa_statistics.php, row 133
+// admin/aa_statistics.php, row 135
 "This week" => "Aceast\xE3 s\xE3pt\xE3m\xE2n\xE3", // ai 2026-06
 
-// admin/aa_statistics.php, row 134
+// admin/aa_statistics.php, row 136
 "This month" => "Aceast\xE3 lun\xE3", // ai 2026-06
 
-// admin/aa_statistics.php, row 135
+// admin/aa_statistics.php, row 137
 "This year" => "Acest an", // ai 2026-06
 
-// admin/aa_statistics.php, row 136
+// admin/aa_statistics.php, row 138
 "All time" => "Tot timpul", // ai 2026-06
 
-// admin/aa_statistics.php, row 140
+// admin/aa_statistics.php, row 142
 "All AA" => "Tot AA", // ai 2026-06
 
-// admin/aa_statistics.php, row 141
+// admin/aa_statistics.php, row 143
 "Sites" => "Site-uri", // ai 2026-06
 
-// admin/aa_statistics.php, row 145
+// admin/aa_statistics.php, row 147
 // admin/aafinder.php, row 484, 497
-// admin/se_inputform.php, row 294
+// admin/se_inputform.php, row 295
 // central/appstore.php, row 164
 // include/searchlib.php, row 1016
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Sectiuni", // ai 2026-06
 
-// admin/aa_statistics.php, row 172
+// admin/aa_statistics.php, row 174
 "Version progress" => "Evolutie \xEEntre versiuni", // ai 2026-10
 
-// admin/aa_statistics.php, row 183
+// admin/aa_statistics.php, row 185
 "Queue progress" => "Evolutia cozii", // ai 2026-10
 
-// admin/aa_statistics.php, row 194
+// admin/aa_statistics.php, row 196
 "Quick diagnostics" => "Diagnostic rapid", // ai 2026-06
 
-// admin/aa_statistics.php, row 218
+// admin/aa_statistics.php, row 220
 "Slice comparison" => "Comparare sectiuni", // ai 2026-06
 
-// admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 149
+// admin/aa_statistics.php, row 243
+// admin/se_statistics.php, row 151
 "Stats to show" => "Statistici de afisat", // ai 2026-06
 
-// admin/aa_statistics.php, row 242
+// admin/aa_statistics.php, row 244
 "Granularity" => "Granularitate", // ai 2026-06
 
-// admin/aa_statistics.php, row 246
+// admin/aa_statistics.php, row 248
 "Items to show" => "Articole de afisat", // ai 2026-06
 
-// admin/aa_statistics.php, row 247
+// admin/aa_statistics.php, row 249
 "Display for module" => "Afisare pentru modul", // ai 2026-06
 
-// admin/aa_statistics.php, row 248
+// admin/aa_statistics.php, row 250
 "Sort items by" => "Sortare articole dup\xE3", // ai 2026-06
 
-// admin/aa_statistics.php, row 249
+// admin/aa_statistics.php, row 251
 "Period (item ranking)" => "Perioad\xE3 (clasament articole)", // ai 2026-06
 
-// admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 109
+// admin/aa_statistics.php, row 252
+// admin/se_statistics.php, row 111
 "Exact items to show" => "Articolele exacte de afisat", // ai 2026-06
 
-// admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 109
+// admin/aa_statistics.php, row 252
+// admin/se_statistics.php, row 111
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "list\xE3 de id/short_id de articole separate prin cratim\xE3 sau expresie AA precum {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
-// admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 110
+// admin/aa_statistics.php, row 253
+// admin/se_statistics.php, row 112
 "Number of items to show" => "Num\xE3r de articole de afisat", // ai 2026-06
 
-// admin/aa_statistics.php, row 255
+// admin/aa_statistics.php, row 257
 "Show for period" => "Arat\xE3 pentru perioada", // ai 2026-06
 
-// admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 111
+// admin/aa_statistics.php, row 258
+// admin/se_statistics.php, row 113
 "From date" => "De la data", // ai 2026-06
 
-// admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 155
+// admin/aa_statistics.php, row 263
+// admin/se_statistics.php, row 157
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Verificati expresia din ,,Articolele exacte de afisat\" si ap\xE3sati ,,Arat\xE3\" pentru a o evalua.", // ai 2026-11
 
-// admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 158
+// admin/aa_statistics.php, row 270
+// admin/se_statistics.php, row 160
 "Display Statistics for Item" => "Afiseaz\xE3 statistici pentru articol", // ai 2026-06
 
-// admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 185
+// admin/aa_statistics.php, row 356
+// admin/se_statistics.php, row 187
 "Items found" => "Articole g\xE3site", // ai 2026-06
 
-// admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 194
+// admin/aa_statistics.php, row 358
+// admin/se_statistics.php, row 196
 "No items found" => "Nu am g\xE3sit articole", // ai 2026-06
 
-// admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 191
+// admin/aa_statistics.php, row 370
+// admin/se_statistics.php, row 193
 "Server configuration changes" => "Modific\xE3ri de configurare a serverului", // ai 2026-06
 
 // admin/aa_tasks.php, row 35
@@ -884,11 +897,11 @@ return [
 
 // admin/aafinder.php, row 135
 // admin/feed_to.php, row 65
-// admin/se_fields.php, row 110
+// admin/se_fields.php, row 113
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1220
+// include/logs.php, row 1224
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -899,12 +912,12 @@ return [
 // src/Optimize/CheckDiscussionRefusals.php, row 74
 // src/Optimize/CheckFileReadRefusals.php, row 79
 // src/Optimize/CheckFormRobotRefusals.php, row 74
-// src/Optimize/CheckImports.php, row 367
+// src/Optimize/CheckImports.php, row 390
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 87
 // src/Optimize/CheckRelatedSlices.php, row 76
-// src/Optimize/CheckUploadRefusals.php, row 87
+// src/Optimize/CheckUploadRefusals.php, row 91
 // src/Optimize/CheckUserAliasFunctionLog.php, row 85
 // src/Optimize/CheckUserAliasFunctions.php, row 87
 // src/Optimize/CheckViewSliceRefusals.php, row 161
@@ -982,7 +995,7 @@ return [
 // include/exporter.class.php, row 550
 // include/itemfunc.php, row 383
 // include/menu.php, row 135
-// include/searchlib.php, row 172
+// include/searchlib.php, row 173
 // src/Isds/SliceRules.php, row 176
 "Fields" => "C\xEEmpuri",
 
@@ -1024,12 +1037,13 @@ return [
 
 // admin/aafinder.php, row 526
 // include/searchbar.class.php, row 576
-// include/searchlib.php, row 49, 50, 128, 137
+// include/searchlib.php, row 50, 51, 129, 138
 "contains" => "contine", // ai 2026-06
 
 // admin/aafinder.php, row 527
+// admin/se_showif.php, row 118
 // include/searchbar.class.php, row 584
-// include/searchlib.php, row 128, 137
+// include/searchlib.php, row 129, 138
 "is" => "este", // ai 2026-06
 
 // admin/aafinder.php, row 528
@@ -1062,9 +1076,9 @@ return [
 "ActionApps Anonymous form" => "Formular anonim ActionApps", // ai 2026-06
 
 // admin/anonym_wizard.php, row 129
-// admin/write_mail.php, row 268
-// include/menu_util.php, row 629
-// include/stringexpand.php, row 10301, 10380
+// admin/write_mail.php, row 290
+// include/menu_util.php, row 630
+// include/stringexpand.php, row 10316, 10395
 "Send" => "Trimite", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -1072,9 +1086,10 @@ return [
 // admin/se_constant.php, row 87
 // admin/se_constant_import.php, row 63
 // admin/se_fieldid.php, row 89
-// admin/se_fields.php, row 86
-// admin/se_inputform.php, row 130
+// admin/se_fields.php, row 89
+// admin/se_inputform.php, row 131
 // admin/se_javascript.php, row 50
+// admin/se_showif.php, row 55
 "You do not have permissions to change fields settings" => "Nu ave\xFEi dreptul s\xE3 schimba\xFEi set\xE3rile de c\xEEmpuri",
 
 // admin/anonym_wizard.php, row 166
@@ -1093,6 +1108,8 @@ return [
 "Show Form" => "Arat\xE3 formularul", // ai 2026-06
 
 // admin/anonym_wizard.php, row 211
+// admin/se_csv_import2.php, row 418
+// src/Util/Paramwizard.php, row 166
 "Help" => "Ajutor", // ai 2026-06
 
 // admin/anonym_wizard.php, row 211
@@ -1112,14 +1129,15 @@ return [
 
 // admin/anonym_wizard.php, row 221
 // admin/se_fieldid.php, row 296
-// admin/se_fields.php, row 299
+// admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
+// admin/se_showif.php, row 123
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1380, 1384
+// include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 368
+// include/searchlib.php, row 369
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1133,14 +1151,14 @@ return [
 
 // admin/anonym_wizard.php, row 222
 // admin/se_fieldid.php, row 296
-// admin/se_fields.php, row 300
+// admin/se_fields.php, row 358
 // admin/se_history.php, row 140
 // admin/se_javascript.php, row 86
 // admin/slicedit.php, row 282
 // central/installapp.php, row 1271
 // include/constants.php, row 458
 // src/Central/FindingText.php, row 186, 192
-// src/Optimize/CheckImports.php, row 218
+// src/Optimize/CheckImports.php, row 220
 "Id" => "ID", // ai 2026-06
 
 // admin/anonym_wizard.php, row 224
@@ -1164,15 +1182,16 @@ return [
 
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
-// include/stringexpand.php, row 98
+// include/stringexpand.php, row 99
 // src/Import/DetailPage.php, row 1025, 1091
-// src/Optimize/CheckImports.php, row 236, 238
+// src/Optimize/CheckImports.php, row 239, 241
 "Code" => "Cod", // ai 2026-06
 
 // admin/console.php, row 71
 "HTML output" => "Iesire HTML", // ai 2026-06
 
 // admin/console.php, row 73, 75
+// central/optimize.php, row 210
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "Rezultat", // ai 2026-06
 
@@ -1187,6 +1206,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
+// central/optimize.php, row 248
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "Bine",
@@ -1223,7 +1243,7 @@ return [
 "Author" => "Autor",
 
 // admin/discedit.php, row 133
-// include/logs.php, row 905, 1316
+// include/logs.php, row 905, 1320
 "IP Address" => "Adres\xE3 IP", // ai 2026-06
 
 // admin/discedit.php, row 134
@@ -1247,14 +1267,15 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 266
-// include/field.class.php, row 744
+// include/field.class.php, row 749
 // include/filedit.php, row 113
-// include/formutil.php, row 1778, 3395
+// include/formutil.php, row 1821, 3428
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
 // include/statestore.php, row 1143
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
+// src/Optimize/CheckImports.php, row 215
 "Edit" => "Editare",
 
 // admin/discedit.php, row 165
@@ -1263,14 +1284,15 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
+// admin/se_showif.php, row 179
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
 // admin/um_passkeys.php, row 158
 // admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 748
-// include/formutil.php, row 1789, 1926
+// include/field.class.php, row 753
+// include/formutil.php, row 1832, 1969
 // include/menu_util.php, row 61
 // include/profile.php, row 69
 // include/searchbar.class.php, row 1126
@@ -1282,9 +1304,9 @@ return [
 "Delete" => "\xAAterge",
 
 // admin/discedit.php, row 172
-// include/adminpage.class.php, row 345
+// include/adminpage.class.php, row 395
 // include/se_users.php, row 128
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "\xCEnapoi",
 
 // admin/discedit.php, row 173
@@ -1297,9 +1319,9 @@ return [
 "You do not have permission to edit items in this slice" => "Nu ave\xFEi dreptul s\xE3 edita\xFEi articole \xEEn aceast\xE3 sec\xFEiune",
 
 // admin/discedit2.php, row 92, 146
-// admin/write_mail.php, row 119, 248
-// include/logs.php, row 1067
-// include/mail.php, row 663
+// admin/write_mail.php, row 123, 267
+// include/logs.php, row 1071
+// include/mail.php, row 699
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Subiect",
 
@@ -1387,7 +1409,7 @@ return [
 "File Manager" => "Administrator fi\xBAiere",
 
 // admin/fileman.php, row 131
-// include/fileman.php, row 159, 177
+// include/fileman.php, row 165, 183
 // src/Optimize/ImgCacheWritable.php, row 47
 "Directory" => "Director",
 
@@ -1420,27 +1442,27 @@ return [
 // admin/index.php, row 182
 "ActionApps - Item Manager" => "ActionApps - Administrare articole", // ai 2026-06
 
-// admin/itemedit.php, row 236, 326
+// admin/itemedit.php, row 237, 331
 "Error: You have no rights to edit item." => "Eroare: Nu aveti dreptul s\xE3 editati articolul.", // ai 2026-06
 
-// admin/itemedit.php, row 318
+// admin/itemedit.php, row 323
 // include/date.php, row 189
-// include/field.class.php, row 1380
+// include/field.class.php, row 1405
 // include/validate.php, row 54, 58
 "Error in" => "Eroare introducere",
 
-// admin/itemedit.php, row 369
+// admin/itemedit.php, row 382
 // admin/slicefieldsedit.php, row 131
 "Error: no fields." => "Eroare: niciun c\xE2mp.", // ai 2026-06
 
-// admin/itemedit.php, row 377
+// admin/itemedit.php, row 390
 // admin/slicefieldsedit.php, row 139
 "Bad item ID id=%1" => "ID de articol gresit id=%1", // ai 2026-06
 
-// admin/itemedit.php, row 414, 415
+// admin/itemedit.php, row 427, 428
 "Edit Item" => "Editare articol",
 
-// admin/itemedit.php, row 414, 415
+// admin/itemedit.php, row 427, 428
 // include/menu.php, row 84
 "Add Item" => "Ad\xE3ugare articol",
 
@@ -1573,7 +1595,7 @@ return [
 // admin/se_admin.php, row 163
 // admin/se_compact.php, row 212
 // admin/se_fulltext.php, row 163
-// admin/se_inputform.php, row 189, 426
+// admin/se_inputform.php, row 190, 431
 // src/Util/UiPrefs.php, row 56
 "Default" => "Implicit",
 
@@ -1676,7 +1698,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 369
+// include/searchlib.php, row 370
 "Descending" => "Descresc\xE3tor",
 
 // admin/se_compact.php, row 244
@@ -1701,6 +1723,7 @@ return [
 "Can't delete constant group" => "Grupul de constante nu poate fi sters", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
+// admin/se_showif.php, row 157
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1709,7 +1732,7 @@ return [
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1207
+// include/logs.php, row 1211
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1725,33 +1748,33 @@ return [
 // admin/se_profile.php, row 209
 // include/constants.php, row 453
 // include/constedit.php, row 76
-// include/searchlib.php, row 176
+// include/searchlib.php, row 177
 // src/Central/FindingText.php, row 94, 98
 "Value" => "Valoare",
 
 // admin/se_constant.php, row 177, 379
-// admin/se_inputform.php, row 515
+// admin/se_inputform.php, row 523
 // admin/se_view.php, row 153
 // admin/um_gedit.php, row 299, 302
 // include/constants.php, row 459
 // include/constedit.php, row 84
-// include/stringexpand.php, row 99
+// include/stringexpand.php, row 100
 // include/um_gedit.php, row 33
 // src/Manageraction/Central_Linkcheck.php, row 31
 // src/Optimize/AbstractOptimize.php, row 174
 "Description" => "Descriere",
 
 // admin/se_constant.php, row 178, 380
-// admin/se_fields.php, row 301
+// admin/se_fields.php, row 359
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1384
+// include/field.class.php, row 1409
 // src/Optimize/AbstractOptimize.php, row 177
 "Priority" => "Prioritate",
 
 // admin/se_constant.php, row 184, 327
 // admin/se_constant_import.php, row 74, 126
-// admin/se_inputform.php, row 284
+// admin/se_inputform.php, row 285
 // include/constants.php, row 784
 "Constant Group" => "Grup constante",
 
@@ -1783,7 +1806,7 @@ return [
 
 // admin/se_constant.php, row 319
 // admin/se_constant_import.php, row 75, 125, 136
-// admin/se_inputform.php, row 405
+// admin/se_inputform.php, row 410
 "Constants" => "Constante",
 
 // admin/se_constant.php, row 333
@@ -1851,7 +1874,7 @@ return [
 "Missing slice" => "Lipseste sectiunea", // ai 2026-06
 
 // admin/se_csv_import.php, row 133
-// admin/se_csv_import2.php, row 214
+// admin/se_csv_import2.php, row 217
 "The data to import are no longer on the server - load them again" => "Datele de importat nu mai sunt pe server - \xEEnc\xE3rcati-le din nou", // ai 2026-10
 
 // admin/se_csv_import.php, row 142
@@ -1871,7 +1894,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1237
+// include/logs.php, row 1241
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckFileReadRefusals.php, row 77, 100, 133
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
@@ -1881,11 +1904,11 @@ return [
 
 // admin/se_csv_import.php, row 239, 244
 // src/Manageraction/Central_Linkcheck.php, row 29
-// src/Widget/Widget.php, row 903
+// src/Widget/Widget.php, row 902
 "URL" => "",
 
 // admin/se_csv_import.php, row 240, 245
-// admin/se_inputform.php, row 458, 459
+// admin/se_inputform.php, row 465, 466
 // include/itemfunc.php, row 668, 777, 806
 // src/Util/Note.php, row 63
 "Text" => "Text", // ai 2026-10
@@ -1894,7 +1917,7 @@ return [
 "Source of CSV data" => "Sursa datelor CSV", // ai 2026-06
 
 // admin/se_csv_import.php, row 277
-// admin/se_csv_import2.php, row 382
+// admin/se_csv_import2.php, row 385
 // central/installapp.php, row 434, 558, 1368
 // src/Manageraction/Item_Preview.php, row 13
 "Preview" => "Vizualizare",
@@ -1904,50 +1927,50 @@ return [
 // src/Import/DetailPage.php, row 422
 "Next" => "Urm\xE3tor",
 
-// admin/se_csv_import2.php, row 196
+// admin/se_csv_import2.php, row 199
 "You have not permissions to setting " => "Nu aveti dreptul la aceste set\xE3ri", // ai 2026-06
 
-// admin/se_csv_import2.php, row 202
+// admin/se_csv_import2.php, row 205
 "Invalid additional parameters for import" => "Parametri suplimentari nevalizi pentru import", // ai 2026-06
 
-// admin/se_csv_import2.php, row 280
+// admin/se_csv_import2.php, row 283
 "Item:" => "Articol:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 288
+// admin/se_csv_import2.php, row 291
 "Cannot store item to DB" => "Nu se poate salva articolul \xEEn baza de date", // ai 2026-06
 
-// admin/se_csv_import2.php, row 293
+// admin/se_csv_import2.php, row 296
 "Transformation error:" => "Eroare de transformare:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 295
+// admin/se_csv_import2.php, row 298
 "Ok: Item %1 stored" => "Ok: Articolul %1 a fost salvat", // ai 2026-06
 
-// admin/se_csv_import2.php, row 313
+// admin/se_csv_import2.php, row 316
 "Added to slice" => "Ad\xE3ugat \xEEn sectiune", // ai 2026-06
 
-// admin/se_csv_import2.php, row 336
+// admin/se_csv_import2.php, row 339
 "Mapping preview" => "Previzualizare mapare", // ai 2026-06
 
-// admin/se_csv_import2.php, row 387
+// admin/se_csv_import2.php, row 390
 "Finish" => "Finalizare", // ai 2026-06
 
-// admin/se_csv_import2.php, row 397
+// admin/se_csv_import2.php, row 400
 "Load" => "\xCEncarc\xE3", // ai 2026-06
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 410
 "Mapping settings" => "Set\xE3ri mapare", // ai 2026-06
 
-// admin/se_csv_import2.php, row 410
+// admin/se_csv_import2.php, row 413
 // admin/se_filters.php, row 182
 // admin/se_mapping.php, row 177
 "To" => "C\xE3tre",
 
-// admin/se_csv_import2.php, row 411
+// admin/se_csv_import2.php, row 414
 // admin/se_filters.php, row 181
 // admin/se_mapping.php, row 178
 "From" => "De la",
 
-// admin/se_csv_import2.php, row 412
+// admin/se_csv_import2.php, row 415
 // admin/search_replace.php, row 185
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
@@ -1957,74 +1980,71 @@ return [
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Actiune", // ai 2026-06
 
-// admin/se_csv_import2.php, row 413
+// admin/se_csv_import2.php, row 416
 "Html" => "HTML", // ai 2026-06
 
-// admin/se_csv_import2.php, row 414
+// admin/se_csv_import2.php, row 417
 "Action parameters" => "Parametri actiune", // ai 2026-06
 
-// admin/se_csv_import2.php, row 415
-"Parameter wizard" => "Asistent parametri", // ai 2026-06
-
-// admin/se_csv_import2.php, row 440
+// admin/se_csv_import2.php, row 443
 "Import options" => "Optiuni import", // ai 2026-06
 
-// admin/se_csv_import2.php, row 455
+// admin/se_csv_import2.php, row 458
 "Map item id from" => "Mapeaz\xE3 ID-ul articolului din", // ai 2026-06
 
-// admin/se_csv_import2.php, row 459
+// admin/se_csv_import2.php, row 462
 "unpacked long id (32 characters)" => "ID lung despachetat (32 de caractere)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 460
+// admin/se_csv_import2.php, row 463
 "packed long id (16 characters)" => "ID lung \xEEmpachetat (16 caractere)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 464
 "string to be converted (string2id) - with param:" => "sir de convertit (string2id) - cu parametrul:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 472
 "Select, how to store the items" => "Selectati cum se salveaz\xE3 articolele", // ai 2026-06
 
-// admin/se_csv_import2.php, row 471
+// admin/se_csv_import2.php, row 474
 "Do not store the item" => "Nu salva articolul", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 475
 "Store the item with new id" => "Salveaz\xE3 articolul cu ID nou", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 476
 "Update the item (overwrite)" => "Actualizeaz\xE3 articolul (suprascrie)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 477
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "Adaug\xE3 valorile \xEEn paralel cu valorile curente (valorile multiple sunt stocate, unde este posibil)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 478
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Rescrie doar c\xE2mpurile pentru care este definit\xE3 actiunea si calculeaz\xE3 toate c\xE2mpurile calculate, ...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 476
+// admin/se_csv_import2.php, row 479
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Rescrie doar c\xE2mpurile pentru care este definit\xE3 actiunea (nu actualizeaz\xE3 c\xE2mpurile lastedit, calculate, ... = Silentios)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 480
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Rescrie doar c\xE2mpurile pentru care este definit\xE3 actiunea si a c\xE3ror valoare nu este goal\xE3 (c\xE2mpurile calculate vor fi calculate)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 480
+// admin/se_csv_import2.php, row 483
 "If the item id is already in the slice" => "Dac\xE3 id-ul articolului este deja \xEEn sectiune", // ai 2026-06
 
-// admin/se_csv_import2.php, row 481
+// admin/se_csv_import2.php, row 484
 // admin/search_replace.php, row 183
 "Silent" => "Silentios", // ai 2026-06
 
-// admin/se_csv_import2.php, row 481
+// admin/se_csv_import2.php, row 484
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Nu efectua alte operatii precum calcularea c\xE2mpurilor calculate, alimentare, trimitere de e-mail cititorilor de alerte...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 486
 "Store settings..." => "Salveaz\xE3 set\xE3rile...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 490
+// admin/se_csv_import2.php, row 493
 "Load setting" => "\xCEncarc\xE3 setarea", // ai 2026-06
 
-// admin/se_csv_import2.php, row 492
+// admin/se_csv_import2.php, row 495
 "Save setting as" => "Salveaz\xE3 setarea ca", // ai 2026-06
 
-// admin/se_csv_import2.php, row 537
+// admin/se_csv_import2.php, row 540
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Admin - Import CSV (2/2) - Mapare si actiuni", // ai 2026-06
 
 // admin/se_dataimport.php, row 59
@@ -2040,7 +2060,7 @@ return [
 // admin/se_dataimports.php, row 40
 // include/menu.php, row 157
 // include/menu_util.php, row 92
-// src/Optimize/CheckImports.php, row 35
+// src/Optimize/CheckImports.php, row 35, 215
 "Imports" => "Importuri", // ai 2026-10
 
 // admin/se_dataimports.php, row 41
@@ -2119,7 +2139,7 @@ return [
 // include/logs.php, row 560
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
-// src/Widget/Widget.php, row 753
+// src/Widget/Widget.php, row 752
 "Type" => "Tip",
 
 // admin/se_export.php, row 165
@@ -2200,49 +2220,49 @@ return [
 // admin/sliceexp.php, row 132
 "to" => "\xEEn",
 
-// admin/se_fields.php, row 108
+// admin/se_fields.php, row 111
 "Add new field from template" => "Adaug\xE3 c\xE2mp nou din sablon", // ai 2026-06
 
-// admin/se_fields.php, row 139
+// admin/se_fields.php, row 142
 "Field delete OK" => "\xAAtergere c\xEEmp reu\xBAit",
 
-// admin/se_fields.php, row 147
+// admin/se_fields.php, row 150
 "Invalid move alias parameters" => "Parametri nevalizi pentru mutarea aliasului", // ai 2026-06
 
-// admin/se_fields.php, row 159
+// admin/se_fields.php, row 162
 "No free space for alias in this field" => "Nu exist\xE3 loc liber pentru alias \xEEn acest c\xE2mp", // ai 2026-06
 
-// admin/se_fields.php, row 170
+// admin/se_fields.php, row 173
 "Alias moved OK" => "Alias mutat cu succes", // ai 2026-06
 
-// admin/se_fields.php, row 184
-// admin/se_inputform.php, row 278
+// admin/se_fields.php, row 187
+// admin/se_inputform.php, row 279
 "Fields update successful" => "Actualizare c\xEEmpuri reu\xBAit",
 
-// admin/se_fields.php, row 204
+// admin/se_fields.php, row 207
 "Alias <b>%1</b> is duplicated" => "Aliasul <b>%1</b> este duplicat", // ai 2026-06
 
-// admin/se_fields.php, row 211
+// admin/se_fields.php, row 214
 "Do you really want to move alias to another field?" => "Chiar doriti s\xE3 mutati aliasul \xEEn alt c\xE2mp?", // ai 2026-06
 
-// admin/se_fields.php, row 234
+// admin/se_fields.php, row 237
 "Do you really want to delete this field from this slice?" => "Chiar doriti s\xE3 stergeti acest c\xE2mp din aceast\xE3 sectiune?", // ai 2026-06
 
-// admin/se_fields.php, row 249
-// admin/se_inputform.php, row 374
+// admin/se_fields.php, row 304
+// admin/se_inputform.php, row 375
 "Admin - configure Fields" => "Admin - configurare C\xEEmpuri",
 
-// admin/se_fields.php, row 281
+// admin/se_fields.php, row 339
 "change all" => "schimb\xE3 tot", // ai 2026-06
 
-// admin/se_fields.php, row 294
+// admin/se_fields.php, row 352
 "Analyze" => "Analizeaz\xE3", // ai 2026-06
 
-// admin/se_fields.php, row 302
+// admin/se_fields.php, row 360
 "Required" => "Necesar",
 
-// admin/se_fields.php, row 305
-// include/stringexpand.php, row 112
+// admin/se_fields.php, row 363
+// include/stringexpand.php, row 113
 "Aliases" => "Aliasuri", // ai 2026-06
 
 // admin/se_filters.php, row 83
@@ -2261,7 +2281,7 @@ return [
 // admin/um_gedit.php, row 280
 // admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
-// include/formutil.php, row 191, 2941
+// include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
 // src/Import/DetailCatalog.php, row 151
 "Update" => "Actualizare",
@@ -2282,7 +2302,7 @@ return [
 "No category defined" => "Nici o categorie definit\xE3",
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1415
+// src/Manager.php, row 1424
 "Select all" => "Selecteaz\xE3 tot",
 
 // admin/se_filters.php, row 320
@@ -2351,11 +2371,12 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
+// src/Optimize/CheckOptimizeRuns.php, row 56
 "User" => "Utilizator",
 
 // admin/se_history.php, row 144
 // src/AA_Plannedtask.php, row 182
-// src/Optimize/CheckImports.php, row 287
+// src/Optimize/CheckImports.php, row 290
 // src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "Timp", // ai 2026-06
 
@@ -2403,154 +2424,156 @@ return [
 // admin/se_import.php, row 197
 "Import from" => "Import\xE3", // ai 2026-11
 
-// admin/se_inputform.php, row 186, 481
+// admin/se_inputform.php, row 187, 489
 "Before HTML code" => "\xCEnaintea codului HTML",
 
-// admin/se_inputform.php, row 187, 479
+// admin/se_inputform.php, row 188, 487
 "Help for this field" => "Ajutor pentru acest c\xEEmp",
 
-// admin/se_inputform.php, row 188, 480
+// admin/se_inputform.php, row 189, 488
 "More help" => "Ajutor mai detaliat",
 
-// admin/se_inputform.php, row 190
+// admin/se_inputform.php, row 191
 "Input show function" => "Functie de afisare", // ai 2026-06
 
-// admin/se_inputform.php, row 192
+// admin/se_inputform.php, row 193
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "Aliasul trebuie s\xE3 fie \xEEntotdeauna _# + 8 litere MAJUSCULE, de ex. _#<b>SOMTHING</b>.", // ai 2026-06
 
-// admin/se_inputform.php, row 197, 512
-// include/stringexpand.php, row 97
+// admin/se_inputform.php, row 198, 520
+// include/stringexpand.php, row 98
 // src/Optimize/CheckUserAliasFunctions.php, row 89
 "Alias" => "Alias", // ai 2026-10
 
-// admin/se_inputform.php, row 201, 513
+// admin/se_inputform.php, row 202, 521
 // admin/se_profile.php, row 208
 "Function" => "Func\xFEie",
 
-// admin/se_inputform.php, row 257
+// admin/se_inputform.php, row 258
 "You can relate only to a slice where you may edit all items" => "Puteti crea o relatie doar cu o sectiune \xEEn care aveti dreptul s\xE3 editati toate articolele", // ai 2026-11
 
-// admin/se_inputform.php, row 305
+// admin/se_inputform.php, row 306
 "No field found" => "Nu am g\xE3sit niciun c\xE2mp", // ai 2026-06
 
-// admin/se_inputform.php, row 352
+// admin/se_inputform.php, row 353
 "You selected slice and not constant group. It is impossible to create slice from here." => "Ati selectat o sectiune, nu un grup de constante. Nu este posibil s\xE3 creati o sectiune de aici.", // ai 2026-06
 
-// admin/se_inputform.php, row 375
+// admin/se_inputform.php, row 376
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "ATENTIE: Nu schimbati aceast\xE3 setare dac\xE3 nu sunteti sigur de ceea ce faceti!", // ai 2026-06
 
-// admin/se_inputform.php, row 388
-// include/formutil.php, row 192
+// admin/se_inputform.php, row 392
+// include/formutil.php, row 203
 "Update & Edit" => "Actualizeaz\xE3 si editeaz\xE3", // ai 2026-06
 
-// admin/se_inputform.php, row 389
+// admin/se_inputform.php, row 393
 // admin/se_view.php, row 485
-// include/slice.class.php, row 1324
+// include/slice.class.php, row 1327
 "Show History" => "Arat\xE3 istoricul", // ai 2026-06
 
-// admin/se_inputform.php, row 393
+// admin/se_inputform.php, row 397
 "Field properties" => "Propriet\xE3ti c\xE2mp", // ai 2026-06
 
-// admin/se_inputform.php, row 401
-// src/Widget/Widget.php, row 765
+// admin/se_inputform.php, row 405
+// src/Widget/Widget.php, row 764
 "Input type" => "Tip introducere",
 
-// admin/se_inputform.php, row 404
+// admin/se_inputform.php, row 408
 "Input field type in Add / Edit item." => "Tipul c\xE2mpului de introducere \xEEn Ad\xE3ugare / Editare articol.", // ai 2026-06
 
-// admin/se_inputform.php, row 408
+// admin/se_inputform.php, row 413
 "Edit|Use as new|New" => "Editare|Foloseste ca nou|Nou", // ai 2026-06
 
-// admin/se_inputform.php, row 410
+// admin/se_inputform.php, row 415
 "Choose a Constant Group or a Slice." => "Alege\xFEi un Grup de Constante sau o Sec\xFEiune.",
 
-// admin/se_inputform.php, row 424
+// admin/se_inputform.php, row 424, 440, 451, 479, 522
+// include/logs.php, row 640
+// src/Import/DetailConfig.php, row 369
+// src/Util/Paramwizard.php, row 154
+"Parameters" => "Parametrii",
+
+// admin/se_inputform.php, row 429
 "Allow translation" => "Permite traducerea", // ai 2026-06
 
-// admin/se_inputform.php, row 424
+// admin/se_inputform.php, row 429
 "Only Text Area and Text Field widgets allow translation. Languages should be set on Slice Setting page." => "Doar widgeturile Text Area si Text Field permit traducerea. Limbile se seteaz\xE3 pe pagina de set\xE3ri a sectiunii.", // ai 2026-06
 
-// admin/se_inputform.php, row 433
+// admin/se_inputform.php, row 438
 "How to generate the default value" => "Cum se genereaz\xE3 valoarea implicit\xE3", // ai 2026-06
 
-// admin/se_inputform.php, row 440
+// admin/se_inputform.php, row 446
 // include/feeding.php, row 453
 "Validate" => "Valideaz\xE3",
 
-// admin/se_inputform.php, row 451
+// admin/se_inputform.php, row 458
 "Stored as" => "Stocat ca", // ai 2026-06
 
-// admin/se_inputform.php, row 454
+// admin/se_inputform.php, row 461
 "Stored in <em>item</em> table - it is not possible to change store method" => "Stocat \xEEn tabelul <em>item</em> - nu este posibil\xE3 schimbarea metodei de stocare", // ai 2026-06
 
-// admin/se_inputform.php, row 458, 459
+// admin/se_inputform.php, row 465, 466
 // src/Central/FindingText.php, row 176, 186
 "Number" => "Num\xE3r",
 
-// admin/se_inputform.php, row 467
+// admin/se_inputform.php, row 474
 // admin/sliceimp.php, row 425
 // include/form.class.php, row 474, 476
-// include/formutil.php, row 210, 2952
+// include/formutil.php, row 221, 2996
 "Insert" => "Inserare",
 
-// admin/se_inputform.php, row 470
+// admin/se_inputform.php, row 477
 "Defines how value is stored in database." => "Defineste modul \xEEn care valoarea este stocat\xE3 \xEEn baza de date.", // ai 2026-06
 
-// admin/se_inputform.php, row 477
+// admin/se_inputform.php, row 485
 "Show 'HTML' / 'plain text' option" => "Arat\xE3 op\xFEiunea 'HTML' / 'text simplu'",
 
-// admin/se_inputform.php, row 478
+// admin/se_inputform.php, row 486
 "'HTML' as default" => "'HTML' ca implicit", // ai 2026-06
 
-// admin/se_inputform.php, row 478
+// admin/se_inputform.php, row 486
 "HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least." => "Optiunea HTML \xEEnseamn\xE3 c\xE3 c\xE2mpul este afisat exact cum a fost completat, folosind aliasul {field...........}. Text simplu \xEEnseamn\xE3 c\xE3 trecerile la linie nou\xE3 sunt convertite \xEEn &lt;br&gt; etc. HTML este o optiune bun\xE3 cel putin pentru orice date netextuale.", // ai 2026-06
 
-// admin/se_inputform.php, row 479
+// admin/se_inputform.php, row 487
 "Shown help for this field" => "Afi\xBAeaz\xE3 ajutor pentru acest c\xEEmp",
 
-// admin/se_inputform.php, row 480
+// admin/se_inputform.php, row 488
 "Text shown after user click on '?' in input form" => "Text afi\xBAat dup\xE3 ce utilizatorul face click pe '?' \xEEn formularul de introducere",
 
-// admin/se_inputform.php, row 481
+// admin/se_inputform.php, row 489
 "Code shown in input form before this field" => "Cod afi\xBAat \xEEn formularul de introducere \xEEnaintea acestui c\xEEmp",
 
-// admin/se_inputform.php, row 483
+// admin/se_inputform.php, row 491
 "Searchable in AA Item Manager" => "C\xE3utabil \xEEn Administrare articole AA", // ai 2026-06
 
-// admin/se_inputform.php, row 483
+// admin/se_inputform.php, row 491
 "The field is shown in Search box in Item Manager." => "C\xE2mpul este afisat \xEEn caseta de c\xE3utare din Administrare articole.", // ai 2026-06
 
-// admin/se_inputform.php, row 484
+// admin/se_inputform.php, row 492
 "Feeding mode" => "Mod alimentare",
 
-// admin/se_inputform.php, row 484
+// admin/se_inputform.php, row 492
 "Should the content of this field be copied to another slice if it is fed?" => "Se poate copia con\xFEinutul acestui c\xEEmp \xEEn alt\xE3 sec\xFEiune dac\xE3 este alimentat?",
 
-// admin/se_inputform.php, row 486
+// admin/se_inputform.php, row 494
 "ALIASES used in views to print field content (%1)" => "ALIASURI folosite \xEEn vederi pentru afisarea continutului c\xE2mpului (%1)", // ai 2026-06
 
-// admin/se_inputform.php, row 506
+// admin/se_inputform.php, row 514
 "8 CHARS" => "8 CARACTERE", // ai 2026-06
 
-// admin/se_inputform.php, row 506
+// admin/se_inputform.php, row 514
 "8 UPPERCASE letters or _" => "8 litere MAJUSCULE sau _", // ai 2026-06
 
-// admin/se_inputform.php, row 507
+// admin/se_inputform.php, row 515
 // src/Import/DetailPage.php, row 604
 // src/Import/RunView.php, row 188
 "Disabled" => "Dezactivat", // ai 2026-06
 
-// admin/se_inputform.php, row 508
+// admin/se_inputform.php, row 516
 // src/Util/ChangesMonitor.php, row 509
+// src/Util/Paramwizard.php, row 161
 "Copy to clipboard" => "Copiaz\xE3 \xEEn clipboard", // ai 2026-06
 
-// admin/se_inputform.php, row 509
+// admin/se_inputform.php, row 517
 "Reset" => "Reseteaz\xE3", // ai 2026-06
-
-// admin/se_inputform.php, row 514
-// include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
-"Parameters" => "Parametrii",
 
 // admin/se_inter_export.php, row 97
 "No selected export" => "Niciun export selectat", // ai 2026-06
@@ -2595,6 +2618,7 @@ return [
 "Node" => "Nod", // ai 2026-06
 
 // admin/se_inter_import.php, row 96
+// central/optimize.php, row 171
 // misc/datovka/datovka.php, row 158
 // src/Import/DetailConfig.php, row 291
 // src/Import/DetailPage.php, row 377
@@ -2985,7 +3009,7 @@ return [
 "Rule" => "Regul\xE3",
 
 // admin/se_profile.php, row 210
-// include/formutil.php, row 1227
+// include/formutil.php, row 1270
 // include/transformation.class.php, row 192, 381, 454, 548, 738
 // include/widget.class.php, row 664
 "HTML" => "",
@@ -3113,37 +3137,140 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Folositi \"headline........,publish_date....-\" sau conditii \"sort[]\"", // ai 2026-06
 
-// admin/se_statistics.php, row 95
-"Top all time" => "Top din toate timpurile", // ai 2026-06
+// admin/se_showif.php, row 77
+"The form has expired. Close it and open it again." => "Formularul a expirat. \xCEnchideti-l si deschideti-l din nou.", // ai 2026-11
 
-// admin/se_statistics.php, row 96
-"Top this year" => "Top anul acesta", // ai 2026-06
+// admin/se_showif.php, row 117
+"is checked" => "este bifat", // ai 2026-11
+
+// admin/se_showif.php, row 117
+"is not checked" => "nu este bifat", // ai 2026-11
+
+// admin/se_showif.php, row 118
+// include/searchlib.php, row 129, 138
+"is not" => "nu este", // ai 2026-06
+
+// admin/se_showif.php, row 118
+"is filled" => "este completat", // ai 2026-11
+
+// admin/se_showif.php, row 118
+"is empty" => "este gol", // ai 2026-11
+
+// admin/se_showif.php, row 120
+"\xE2\x80\x94 add a rule \xE2\x80\x94" => "-- ad\xE3ugati o regul\xE3 --", // ai 2026-11
+
+// admin/se_showif.php, row 128
+"Comparison" => "Comparatie", // ai 2026-11
+
+// admin/se_showif.php, row 144
+"Values, one per line" => "Valori, c\xE2te una pe r\xE2nd", // ai 2026-11
+
+// admin/se_showif.php, row 151
+// include/field.class.php, row 797
+"Display condition" => "Conditie de afisare", // ai 2026-11
+
+// admin/se_showif.php, row 163
+"Show the field when all of these hold" => "Afiseaz\xE3 c\xE2mpul c\xE2nd toate acestea sunt \xEEndeplinite", // ai 2026-11
+
+// admin/se_showif.php, row 165
+"AA expression (optional)" => "Expresie AA (optional)", // ai 2026-11
+
+// admin/se_showif.php, row 166
+// src/Optimize/ImgMeasuring.php, row 54
+"Expression" => "Expresie", // ai 2026-10
+
+// admin/se_showif.php, row 166
+"Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "L\xE3sati gol pentru a folosi doar regulile. C\xE2nd este completat\xE3, c\xE2mpul se afiseaz\xE3 doar dac\xE3 rezultatul nu este gol si nu este 0. Se evalueaz\xE3 la deschiderea formularului si la salvarea articolului.", // ai 2026-11
+
+// admin/se_showif.php, row 169
+"Clear the field when a rule hides it" => "Goleste c\xE2mpul c\xE2nd o regul\xE3 \xEEl ascunde", // ai 2026-11
+
+// admin/se_showif.php, row 169
+"Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "Nebifat: un articol editat \xEEsi p\xE3streaz\xE3 valoarea, un articol nou primeste valoarea implicit\xE3 a c\xE2mpului. Un c\xE2mp ascuns de expresie nu este modificat niciodat\xE3.", // ai 2026-11
+
+// admin/se_showif.php, row 173
+"Used by" => "Folosit\xE3 de", // ai 2026-11
+
+// admin/se_showif.php, row 173
+"no field" => "niciun c\xE2mp", // ai 2026-11
+
+// admin/se_showif.php, row 176
+"Save the changes to this condition. They apply to every field that uses it." => "Salveaz\xE3 modific\xE3rile acestei conditii. Ele se aplic\xE3 tuturor c\xE2mpurilor care o folosesc.", // ai 2026-11
+
+// admin/se_showif.php, row 178
+// admin/se_view.php, row 486
+"Save as new" => "Salveaz\xE3 ca nou", // ai 2026-06
+
+// admin/se_showif.php, row 178
+"Keep the original condition as it is and save this form as another condition under a new name." => "P\xE3streaz\xE3 conditia original\xE3 neschimbat\xE3 si salveaz\xE3 acest formular ca alt\xE3 conditie, sub un nume nou.", // ai 2026-11
+
+// admin/se_showif.php, row 179
+"Delete the condition. The fields that use it will be shown always." => "Sterge conditia. C\xE2mpurile care o folosesc vor fi afisate \xEEntotdeauna.", // ai 2026-11
+
+// admin/se_showif.php, row 180
+"Delete the condition? The fields that use it will be shown always." => "Stergeti conditia? C\xE2mpurile care o folosesc vor fi afisate \xEEntotdeauna.", // ai 2026-11
+
+// admin/se_showif.php, row 183
+// include/formutil.php, row 219, 224, 3009, 3013
+// include/searchbar.class.php, row 771
+// src/Widget/LupWidget.php, row 118
+"Cancel" => "Anulare",
+
+// admin/se_showif.php, row 183
+"Close without saving." => "\xCEnchide f\xE3r\xE3 salvare.", // ai 2026-11
+
+// admin/se_showif.php, row 187
+"How it works" => "Cum functioneaz\xE3", // ai 2026-11
+
+// admin/se_showif.php, row 188
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => ",,este\" e valabil c\xE2nd una dintre valorile c\xE2mpului se afl\xE3 printre valorile bifate, ,,nu este\" c\xE2nd niciuna nu se afl\xE3. ,,este completat\" e valabil pentru orice valoare \xEEn afar\xE3 de gol si 0, deci si pentru o caset\xE3 bifat\xE3.", // ai 2026-11
+
+// admin/se_showif.php, row 189
+"The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "Regulile urm\xE3resc formularul \xEEn timp ce utilizatorul \xEEl editeaz\xE3. Expresia se evalueaz\xE3 doar la deschiderea formularului si la salvarea articolului, \xEEntotdeauna asupra articolului stocat (la un articol nou: asupra valorilor implicite).", // ai 2026-11
+
+// admin/se_showif.php, row 190
+"A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "Un c\xE2mp ascuns de o regul\xE3 se salveaz\xE3 gol, cu exceptia cazului \xEEn care ,,Goleste c\xE2mpul\" este debifat. Un c\xE2mp de parol\xE3, datele, starea si un c\xE2mp ascuns de expresie \xEEsi p\xE3streaz\xE3 valoarea.", // ai 2026-11
+
+// admin/se_showif.php, row 191
+"A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "Un c\xE2mp cu o conditie este afisat si ascuns de conditie, nu de un script ,,Trigger c\xEEmp\".", // ai 2026-11
+
+// admin/se_showif.php, row 192
+"With an input form template from a view, a field hidden by the expression stays in the source of the page." => "Cu un sablon de formular de introducere dintr-o vedere, un c\xE2mp ascuns de expresie r\xE3m\xE2ne \xEEn sursa paginii.", // ai 2026-11
+
+// admin/se_showif.php, row 193
+"Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "Conditiile se aplic\xE3 doar formularului de articol din administrare. \xCEn formularele anonime si la importuri, un c\xE2mp obligatoriu este obligatoriu \xEEntotdeauna.", // ai 2026-11
 
 // admin/se_statistics.php, row 97
-"Top this month" => "Top luna aceasta", // ai 2026-06
+"Top all time" => "Top din toate timpurile", // ai 2026-06
 
 // admin/se_statistics.php, row 98
-"Top this week" => "Top s\xE3pt\xE3m\xE2na aceasta", // ai 2026-06
+"Top this year" => "Top anul acesta", // ai 2026-06
 
 // admin/se_statistics.php, row 99
-"Top this day" => "Top ast\xE3zi", // ai 2026-06
+"Top this month" => "Top luna aceasta", // ai 2026-06
 
 // admin/se_statistics.php, row 100
-"Top last year" => "Top anul trecut", // ai 2026-06
+"Top this week" => "Top s\xE3pt\xE3m\xE2na aceasta", // ai 2026-06
 
 // admin/se_statistics.php, row 101
-"Top last month" => "Top luna trecut\xE3", // ai 2026-06
+"Top this day" => "Top ast\xE3zi", // ai 2026-06
 
 // admin/se_statistics.php, row 102
-"Top last week" => "Top s\xE3pt\xE3m\xE2na trecut\xE3", // ai 2026-06
+"Top last year" => "Top anul trecut", // ai 2026-06
 
 // admin/se_statistics.php, row 103
+"Top last month" => "Top luna trecut\xE3", // ai 2026-06
+
+// admin/se_statistics.php, row 104
+"Top last week" => "Top s\xE3pt\xE3m\xE2na trecut\xE3", // ai 2026-06
+
+// admin/se_statistics.php, row 105
 "Top last day" => "Top ieri", // ai 2026-06
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 109
 "Item Statistics" => "Statistici articole", // ai 2026-06
 
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 110
 "Show items" => "Arat\xE3 articolele", // ai 2026-06
 
 // admin/se_taskmanager.php, row 39
@@ -3176,7 +3303,7 @@ return [
 "Change current permissions" => "Schimb\xE3 drepturi curente",
 
 // admin/se_users.php, row 185
-// central/index.php, row 139
+// central/index.php, row 133
 // include/se_users.php, row 180
 // src/Widget/TfaWidget.php, row 73
 "Username" => "Nume utilizator", // ai 2026-06
@@ -3228,9 +3355,6 @@ return [
 // admin/se_views.php, row 103
 "Admin - design View" => "Admin - design Vedere",
 
-// admin/se_view.php, row 486
-"Save as new" => "Salveaz\xE3 ca nou", // ai 2026-06
-
 // admin/se_view.php, row 494
 "Defined Views" => "Vederi definite",
 
@@ -3240,8 +3364,8 @@ return [
 
 // admin/se_view.php, row 545
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1890
+// include/slice.class.php, row 1650, 1654
+// include/stringexpand.php, row 1891
 "No" => "Nu", // ai 2026-06
 
 // admin/se_view.php, row 545
@@ -3269,7 +3393,7 @@ return [
 "Create new view from this one" => "Creeaz\xE3 o vedere nou\xE3 din aceasta", // ai 2026-06
 
 // admin/se_views.php, row 149, 203, 223
-// include/formutil.php, row 1775, 1782
+// include/formutil.php, row 1818, 1825
 // src/Import/DetailPage.php, row 329, 666
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
@@ -3306,14 +3430,14 @@ return [
 "Items" => "Articole", // ai 2026-06
 
 // admin/search_replace.php, row 167
-// admin/write_mail.php, row 236
+// admin/write_mail.php, row 255
 "Stored searches for " => "C\xE3ut\xE3ri salvate pentru ", // ai 2026-06
 
 // admin/search_replace.php, row 169
 "View items" => "Arat\xE3 articolele", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1420
+// src/Manager.php, row 1429
 "Selected items" => "Elemente selectate",
 
 // admin/search_replace.php, row 180
@@ -3333,7 +3457,7 @@ return [
 
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
-// admin/write_mail.php, row 269
+// admin/write_mail.php, row 291
 // src/Widget/RichtextMarkup.php, row 87
 "Close" => "\xCEnchide", // ai 2026-06
 
@@ -3351,7 +3475,7 @@ return [
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 136
 // admin/um_uedit.php, row 332
-// central/index.php, row 140
+// central/index.php, row 134
 // central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
@@ -3359,7 +3483,7 @@ return [
 "Password" => "Parola",
 
 // admin/setup.php, row 104, 242
-// include/formutil.php, row 2201
+// include/formutil.php, row 2244
 "Retype Password" => "Reintroduceti parola", // ai 2026-06
 
 // admin/setup.php, row 105, 244
@@ -3430,12 +3554,12 @@ return [
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
 // admin/um_uedit.php, row 389
-// include/formutil.php, row 1772
+// include/formutil.php, row 1815
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
 // src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1272
+// src/Manager.php, row 239, 1281
 "Add" => "Adaug\xE3",
 
 // admin/slicedel.php, row 51
@@ -3491,7 +3615,7 @@ return [
 "Hold bin" => "Re\xFEinut",
 
 // admin/slicedit.php, row 154
-// include/formutil.php, row 3309
+// include/formutil.php, row 3342
 // src/Central/FindingText.php, row 417
 "All items" => "Toate articolele", // ai 2026-06
 
@@ -3519,7 +3643,7 @@ return [
 "Admin - Slice settings" => "Admin - Set\xE3ri sec\xFEiune",
 
 // admin/slicedit.php, row 258
-// include/menu_util.php, row 635
+// include/menu_util.php, row 636
 "Language" => "Limb\xE3", // ai 2026-06
 
 // admin/slicedit.php, row 260
@@ -3581,7 +3705,7 @@ return [
 // include/constants.php, row 688, 803, 829, 860, 893, 957, 991, 1025
 // include/slicedit.php, row 198
 // src/Isds/SliceRules.php, row 398
-// src/Widget/Widget.php, row 810
+// src/Widget/Widget.php, row 809
 "Listing length" => "Lungime text",
 
 // admin/slicedit.php, row 294
@@ -3884,7 +4008,7 @@ return [
 
 // admin/um_gedit.php, row 312
 // admin/um_uedit.php, row 231, 242
-// include/logs.php, row 918
+// include/logs.php, row 922
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -3962,7 +4086,7 @@ return [
 "Added" => "Ad\xE3ugat\xE3", // ai 2026-11
 
 // admin/um_passkeys.php, row 149
-// include/formutil.php, row 3301
+// include/formutil.php, row 3334
 "Last used" => "Ultima utilizare", // ai 2026-06
 
 // admin/um_passkeys.php, row 149
@@ -4114,92 +4238,107 @@ return [
 // admin/usershow.php, row 122
 "Show selected users" => "Arat\xE3 utilizatorii selectati", // ai 2026-06
 
-// admin/write_mail.php, row 120, 255
-// include/mail.php, row 666
+// admin/write_mail.php, row 124, 274
+// include/mail.php, row 700
 "Body" => "Text", // ai 2026-06
 
-// admin/write_mail.php, row 121, 256
+// admin/write_mail.php, row 125, 275
 "From (email)" => "De la (email)", // ai 2026-06
 
-// admin/write_mail.php, row 122, 257
-// include/mail.php, row 668
+// admin/write_mail.php, row 126, 276
+// include/mail.php, row 702
 "Reply to (email)" => "R\xE3spunde la (email)", // ai 2026-06
 
-// admin/write_mail.php, row 123, 258
-// include/mail.php, row 669
+// admin/write_mail.php, row 127, 277
+// include/mail.php, row 703
 "Errors to (email)" => "Erori c\xE3tre (email)", // ai 2026-06
 
-// admin/write_mail.php, row 124, 259
+// admin/write_mail.php, row 128, 278
 "Sender (email)" => "Expeditor (email)", // ai 2026-06
 
-// admin/write_mail.php, row 125, 260
-// include/mail.php, row 658
+// admin/write_mail.php, row 129, 279
+// include/mail.php, row 694
 "Language (charset)" => "Limb\xE3 (set de caractere)", // ai 2026-06
 
-// admin/write_mail.php, row 126, 261
-// include/mail.php, row 656
+// admin/write_mail.php, row 130, 280
+// include/mail.php, row 692
 "Use HTML" => "Foloseste HTML", // ai 2026-06
 
-// admin/write_mail.php, row 127, 252
+// admin/write_mail.php, row 131, 271
 "Email template" => "Sablon de email", // ai 2026-06
 
-// admin/write_mail.php, row 175
-"No template set (which is strange - template was just written to the database)" => "Niciun sablon setat (ceea ce e ciudat - sablonul tocmai a fost scris \xEEn baza de date)", // ai 2026-06
-
-// admin/write_mail.php, row 192
-"Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "Email trimis cu succes (Utilizatori: %1, Emailuri trimise (adrese valide...): %2, id sablon: %3)", // ai 2026-06
-
-// admin/write_mail.php, row 196
+// admin/write_mail.php, row 158
 "Manually selected" => "Alesi manual", // ai 2026-06
 
-// admin/write_mail.php, row 202
+// admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
 // src/Import/Definition.php, row 92
 // src/Import/DetailConfig.php, row 394
 "Filter" => "Filtru",
 
-// admin/write_mail.php, row 207
-"Can't update email template" => "Nu pot actualiza sablonul de email", // ai 2026-06
+// admin/write_mail.php, row 188
+"This email (the same subject and text) already went to the same group on %1, to %2 recipients. If it should go out once more, tick \"%3\" and send it." => "Acest e-mail (acelasi subiect si text) a fost deja trimis aceluiasi grup pe %1 (destinatari: %2). Dac\xE3 trebuie trimis \xEEnc\xE3 o dat\xE3, bifati ,,%3\" si trimiteti-l.", // ai 2026-11
+
+// admin/write_mail.php, row 188, 285
+"Send again" => "Trimite din nou", // ai 2026-11
+
+// admin/write_mail.php, row 195
+"No template set (which is strange - template was just written to the database)" => "Niciun sablon setat (ceea ce e ciudat - sablonul tocmai a fost scris \xEEn baza de date)", // ai 2026-06
+
+// admin/write_mail.php, row 204
+"Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "Email trimis cu succes (Utilizatori: %1, Emailuri trimise (adrese valide...): %2, id sablon: %3)", // ai 2026-06
 
 // admin/write_mail.php, row 214
-"Bulk Email Wizard" => "Asistent email \xEEn mas\xE3", // ai 2026-06
+"The email is queued for %1 recipients. AA sends it in the background, so the first copies may take several minutes to arrive." => "E-mailul a fost pus \xEEn coad\xE3 (destinatari: %1). AA \xEEl trimite \xEEn fundal, asa c\xE3 primele exemplare pot sosi abia dup\xE3 c\xE2teva minute.", // ai 2026-11
 
 // admin/write_mail.php, row 215
+"The selected group has no recipients - nothing was sent." => "Grupul selectat nu are destinatari - nu s-a trimis nimic.", // ai 2026-11
+
+// admin/write_mail.php, row 222
+"Can't update email template" => "Nu pot actualiza sablonul de email", // ai 2026-06
+
+// admin/write_mail.php, row 229
+"Bulk Email Wizard" => "Asistent email \xEEn mas\xE3", // ai 2026-06
+
+// admin/write_mail.php, row 230
 "Write email to users" => "Scrieti email utilizatorilor", // ai 2026-06
 
-// admin/write_mail.php, row 236
-// include/logs.php, row 1066
+// admin/write_mail.php, row 249
+"Send this email to other recipients" => "Trimiteti acest e-mail altor destinatari", // ai 2026-11
+
+// admin/write_mail.php, row 255
+// include/logs.php, row 1070
 "Recipients" => "Destinatari", // ai 2026-06
 
-// admin/write_mail.php, row 238
+// admin/write_mail.php, row 257
 "View Recipients" => "Vezi destinatarii", // ai 2026-06
 
-// admin/write_mail.php, row 239
+// admin/write_mail.php, row 258
 "Selected users" => "Utilizatori selectati", // ai 2026-06
 
-// admin/write_mail.php, row 240
+// admin/write_mail.php, row 259
 "Test email address(es)" => "Adres\xE3(e) de email pentru test", // ai 2026-06
 
-// admin/write_mail.php, row 246
+// admin/write_mail.php, row 265
 "Write the email" => "Scrieti emailul", // ai 2026-06
 
-// admin/write_mail.php, row 261
+// admin/write_mail.php, row 280
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "no" => "nu",
 
-// admin/write_mail.php, row 261
+// admin/write_mail.php, row 280
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "yes" => "da",
 
-// admin/write_mail.php, row 262
+// admin/write_mail.php, row 281
 "Attachment 1" => "Atasament 1", // ai 2026-06
 
-// admin/write_mail.php, row 263
+// admin/write_mail.php, row 282
 "Attachment 2" => "Atasament 2", // ai 2026-06
 
-// admin/write_mail.php, row 264
+// admin/write_mail.php, row 283
 "Attachment 3" => "Atasament 3", // ai 2026-06
 
 // central/appstore.php, row 64
@@ -4229,6 +4368,7 @@ return [
 
 // central/appstore.php, row 130
 // central/installapp.php, row 387
+// central/optimize.php, row 77
 "A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "Un tabel al acestui AA nu suport\xE3 tranzactii (nu este InnoDB) - convertiti-l \xEEn AA > Optimizare: %1", // ai 2026-10
 
 // central/appstore.php, row 142
@@ -4242,14 +4382,14 @@ return [
 "App" => "Aplicatie", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1208
+// include/logs.php, row 1212
 "Version" => "Versiune", // ai 2026-10
 
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 235
-// include/menu_util.php, row 448, 758
-// include/slice.class.php, row 1412
+// include/menu_util.php, row 449, 759
+// include/slice.class.php, row 1415
 // src/Central/FindingText.php, row 496
 "Alerts" => "Alerte", // ai 2026-06
 
@@ -4312,39 +4452,41 @@ return [
 // include/menu_util.php, row 59
 "Create new" => "Creaz\xE3 nou",
 
-// central/index.php, row 71
+// central/index.php, row 70
+// central/optimize.php, row 62
 "You do not have permission to manage ActionApps installations" => "Nu aveti dreptul s\xE3 administrati instal\xE3rile ActionApps", // ai 2026-06
 
-// central/index.php, row 78
+// central/index.php, row 77
 "The authentication was not performed - start it from the ActionApps Central page" => "Autentificarea nu a fost efectuat\xE3 - porniti-o din pagina ActionApps Central", // ai 2026-10
 
-// central/index.php, row 89
+// central/index.php, row 88
 "Successfully authenticated to %1" => "Autentificare reusit\xE3 la %1", // ai 2026-06
 
-// central/index.php, row 91, 95
+// central/index.php, row 90, 94
 "Authentication failed for %1: %2" => "Autentificare esuat\xE3 pentru %1: %2", // ai 2026-06
 
-// central/index.php, row 126
+// central/index.php, row 120
 // src/Optimize/CheckCentralCredentials.php, row 63
 "ActionApps Central" => "",
 
-// central/index.php, row 129
+// central/index.php, row 123
 "Admin Link" => "Link administrare", // ai 2026-06
 
-// central/index.php, row 137
+// central/index.php, row 131
 "Authenticate" => "Autentificare", // ai 2026-06
 
-// central/index.php, row 141
+// central/index.php, row 135
 "Get Token" => "Obtine token", // ai 2026-06
 
-// central/index.php, row 145
+// central/index.php, row 139
+// central/optimize.php, row 153
 // src/Manageraction/Central_Linkcheck.php, row 32
 "Auth" => "Autentificare", // ai 2026-06
 
-// central/index.php, row 148
+// central/index.php, row 142
 "Apps" => "Aplicatii", // ai 2026-10
 
-// central/index.php, row 148
+// central/index.php, row 142
 "Install an app from this AA..." => "Instaleaz\xE3 o aplicatie din acest AA...", // ai 2026-10
 
 // central/installapp.php, row 135, 136
@@ -4385,10 +4527,10 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1209
+// include/logs.php, row 1213
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
-// src/Optimize/CheckImports.php, row 176, 178
+// src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "Surs\xE3", // ai 2026-06
 
@@ -4414,7 +4556,7 @@ return [
 "slices and Alerts" => "sectiuni si Alerte", // ai 2026-10
 
 // central/installapp.php, row 484, 1357
-// include/slice.class.php, row 1147
+// include/slice.class.php, row 1150
 // src/Central/FindingText.php, row 496
 // src/Optimize/CheckIsdsRegistry.php, row 88
 // src/Optimize/SeoDuplicates.php, row 66
@@ -4430,7 +4572,7 @@ return [
 "Hold Ctrl to choose more of them." => "Tineti ap\xE3sat Ctrl pentru a alege mai multe.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 797, 1251
+// include/logs.php, row 797, 1255
 "Mode" => "Mod", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4667,6 +4809,7 @@ return [
 // central/installapp.php, row 1087
 // src/Optimize/CheckIsdsRunItems.php, row 93
 // src/Optimize/CheckIsdsRuns.php, row 185, 206
+// src/Util/Paramwizard.php, row 167
 "Examples" => "Exemple", // ai 2026-10
 
 // central/installapp.php, row 1088
@@ -4676,7 +4819,7 @@ return [
 "Operators" => "Operatori", // ai 2026-10
 
 // central/installapp.php, row 1089
-// include/searchlib.php, row 174
+// include/searchlib.php, row 175
 "Operator" => "Operator", // ai 2026-10
 
 // central/installapp.php, row 1089
@@ -4730,8 +4873,8 @@ return [
 "keep the value of the app" => "p\xE3streaz\xE3 valoarea aplicatiei", // ai 2026-10
 
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1890
+// include/slice.class.php, row 1650, 1654
+// include/stringexpand.php, row 1891
 "Yes" => "Da", // ai 2026-06
 
 // central/installapp.php, row 1178
@@ -4816,16 +4959,19 @@ return [
 "Transferring the items" => "Transferul articolelor", // ai 2026-10
 
 // central/installapp.php, row 1368
+// central/optimize.php, row 261
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Oprit de o eroare", // ai 2026-10
 
 // central/installapp.php, row 1369
+// central/optimize.php, row 259
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
-// src/Optimize/CheckImports.php, row 206, 209
+// src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Terminat", // ai 2026-10
 
 // central/installapp.php, row 1369
+// central/optimize.php, row 260
 "Ended" => "\xCEncheiat", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -4889,10 +5035,12 @@ return [
 "Show the final check" => "Afisati verificarea final\xE3", // ai 2026-10
 
 // central/installapp.php, row 1436
+// central/optimize.php, row 206
 // src/Import/DetailPage.php, row 938, 947
 "Continue" => "Continu\xE3", // ai 2026-06
 
 // central/installapp.php, row 1436
+// central/optimize.php, row 207
 // src/Import/DetailPage.php, row 958
 "End" => "\xCEncheie", // ai 2026-10
 
@@ -4911,6 +5059,148 @@ return [
 // central/installapp.php, row 1479
 "Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it." => "Fisierele \xEEnc\xE3rcate nu se transfer\xE3 - copiati-le manual. Comutati domeniul pe noul site numai dup\xE3 ce l-ati verificat.", // ai 2026-10
 
+// central/optimize.php, row 75
+"Choose a task, a method the task has and at least one AA of the list." => "Alegeti o sarcin\xE3, o metod\xE3 a sarcinii si cel putin un AA din list\xE3.", // ai 2026-11
+
+// central/optimize.php, row 85
+"An AA may still be asked - press Continue again in a few minutes." => "Un AA poate fi \xEEnc\xE3 \xEEn curs de interogare - ap\xE3sati din nou ,,Continu\xE3\" peste c\xE2teva minute.", // ai 2026-11
+
+// central/optimize.php, row 86, 187
+"No such run." => "Nu exist\xE3 o astfel de rulare.", // ai 2026-11
+
+// central/optimize.php, row 87
+"The run has moved on meanwhile - see its state below." => "\xCEntre timp rularea a avansat - vedeti starea ei mai jos.", // ai 2026-11
+
+// central/optimize.php, row 93
+"Optimize on several AAs" => "Optimizare pe mai multe AA-uri", // ai 2026-11
+
+// central/optimize.php, row 123
+"Test only" => "Doar test", // ai 2026-11
+
+// central/optimize.php, row 123
+"Repair where the test fails" => "Reparare acolo unde testul esueaz\xE3", // ai 2026-11
+
+// central/optimize.php, row 136
+"The Central list holds no active AA." => "Lista Central nu contine niciun AA activ.", // ai 2026-11
+
+// central/optimize.php, row 140
+"Run an Optimize task on several AAs" => "Rularea unei sarcini de optimizare pe mai multe AA-uri", // ai 2026-11
+
+// central/optimize.php, row 148, 171
+// src/AA_Plannedtask.php, row 71, 182
+// src/Optimize/CheckOptimizeRuns.php, row 55
+// src/Optimize/CheckQueue.php, row 98, 178
+"Task" => "Sarcin\xE3", // ai 2026-06
+
+// central/optimize.php, row 148
+"Each AA runs the task of its own version; an AA without it says so." => "Fiecare AA ruleaz\xE3 sarcina din propria versiune; un AA care nu o are raporteaz\xE3 acest lucru.", // ai 2026-11
+
+// central/optimize.php, row 151
+"Do" => "Efectueaz\xE3", // ai 2026-11
+
+// central/optimize.php, row 151
+"Repair tests first, repairs only where the test fails, then tests again." => "Repararea testeaz\xE3 mai \xEEnt\xE2i, repar\xE3 doar unde testul esueaz\xE3, apoi testeaz\xE3 din nou.", // ai 2026-11
+
+// central/optimize.php, row 153, 210
+// include/logs.php, row 723
+// include/menu_util.php, row 45
+// src/Optimize/CheckCentralCredentials.php, row 51
+// src/Optimize/CheckEnvironment.php, row 50
+"AA" => "",
+
+// central/optimize.php, row 159
+"An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "Un AA f\xE3r\xE3 un token valid nu r\xE3spunde - obtineti mai \xEEnt\xE2i tokenul lui din lista Central (este valabil o zi).", // ai 2026-11
+
+// central/optimize.php, row 160
+"Start" => "Porneste", // ai 2026-11
+
+// central/optimize.php, row 171
+"Last runs" => "Ultimele rul\xE3ri", // ai 2026-11
+
+// central/optimize.php, row 171
+// include/logs.php, row 798
+// src/Import/DetailPage.php, row 329
+// src/Optimize/CheckImports.php, row 151, 155
+// src/Optimize/CheckInstallRuns.php, row 54
+// src/Optimize/CheckIsdsRuns.php, row 310
+// src/Optimize/CheckOptimizeRuns.php, row 54
+"Started" => "Pornire", // ai 2026-10
+
+// central/optimize.php, row 171
+"Results" => "Rezultate", // ai 2026-11
+
+// central/optimize.php, row 197
+"Started %1 by %2" => "Pornit\xE3 la %1 de %2", // ai 2026-11
+
+// central/optimize.php, row 198
+"%1 of %2 AAs done" => "AA-uri finalizate: %1 din %2", // ai 2026-11
+
+// central/optimize.php, row 208
+"The run goes on in the task queue of this AA - you may close this page." => "Rularea continu\xE3 \xEEn coada de sarcini a acestui AA - puteti \xEEnchide aceast\xE3 pagin\xE3.", // ai 2026-11
+
+// central/optimize.php, row 210, 229
+"Report" => "Raport", // ai 2026-11
+
+// central/optimize.php, row 216
+"Waiting" => "Asteapt\xE3", // ai 2026-11
+
+// central/optimize.php, row 216
+"Not asked" => "Neinterogat", // ai 2026-11
+
+// central/optimize.php, row 225
+"The test after the repair comes next." => "Urmeaz\xE3 testul de dup\xE3 reparare.", // ai 2026-11
+
+// central/optimize.php, row 232
+"The test after the repair" => "Testul de dup\xE3 reparare", // ai 2026-11
+
+// central/optimize.php, row 242
+"Another run" => "Alt\xE3 rulare", // ai 2026-11
+
+// central/optimize.php, row 248
+"OK - nothing to repair" => "OK - nimic de reparat", // ai 2026-11
+
+// central/optimize.php, row 249
+// src/Optimize/CheckAlerts.php, row 145
+// src/Optimize/CheckIsds.php, row 142, 154
+// src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
+// src/Optimize/CheckIsdsConf.php, row 104, 107, 156
+// src/Optimize/CheckIsdsRegistry.php, row 119, 172
+// src/Optimize/StateCheckModel.php, row 219
+"Problem" => "Problem\xE3", // ai 2026-10
+
+// central/optimize.php, row 250
+"Repaired" => "Reparat", // ai 2026-11
+
+// central/optimize.php, row 251
+"Repair failed" => "Reparare esuat\xE3", // ai 2026-11
+
+// central/optimize.php, row 252
+"Not done" => "Neefectuat", // ai 2026-11
+
+// central/optimize.php, row 262
+"No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "De mult timp nu a mai venit niciun pas - ruleaz\xE3 coada de sarcini a acestui AA? ,,Continu\xE3\" \xEEncearc\xE3 imediat.", // ai 2026-11
+
+// central/optimize.php, row 263
+"Waiting to ask an AA again" => "Se asteapt\xE3 reinterogarea unui AA", // ai 2026-11
+
+// central/optimize.php, row 264
+"Running in the task queue" => "\xCEn curs \xEEn coada de sarcini", // ai 2026-11
+
+// central/optimize.php, row 274
+"%1 runs another update now." => "%1 ruleaz\xE3 acum o alt\xE3 actualizare.", // ai 2026-11
+
+// central/optimize.php, row 275
+"%1 did not answer in time." => "%1 nu a r\xE3spuns la timp.", // ai 2026-11
+
+// central/optimize.php, row 276
+"The user who started the run is no superadmin any more." => "Utilizatorul care a pornit rularea nu mai este superadmin.", // ai 2026-11
+
+// central/optimize.php, row 277
+"Error %1" => "Eroare %1", // ai 2026-11
+
+// central/optimize.php, row 279
+"Asked again at %1 - Continue asks now." => "Reinterogare la %1 - ,,Continu\xE3\" interogheaz\xE3 acum.", // ai 2026-11
+
 // central/responder.php, row 112
 "Get_Jwt needs ttl as seconds and scope admin or apps" => "Get_Jwt necesit\xE3 ttl \xEEn secunde si scope admin sau apps", // ai 2026-10
 
@@ -4926,34 +5216,34 @@ return [
 // central/responder.php, row 230
 "Wrong command - %1" => "Comand\xE3 gresit\xE3 - %1", // ai 2026-10
 
-// central/responder.php, row 785
+// central/responder.php, row 788
 "Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central" => "Token de autentificare refuzat (este valabil o zi, iar o schimbare de parol\xE3 \xEEl anuleaz\xE3) - autentificati din nou acest AA \xEEn Central", // ai 2026-10
 
-// central/responder.php, row 816
+// central/responder.php, row 819
 "No request sent for responder.php" => "Nicio cerere trimis\xE3 pentru responder.php", // ai 2026-06
 
-// central/responder.php, row 822
+// central/responder.php, row 825
 "Bad request sent for responder.php - %1" => "Cerere gresit\xE3 trimis\xE3 pentru responder.php - %1", // ai 2026-06
 
-// central/responder.php, row 829
+// central/responder.php, row 832
 "This command is not accepted in the URL" => "Aceast\xE3 comand\xE3 nu este acceptat\xE3 \xEEn URL", // ai 2026-10
 
-// central/responder.php, row 833
+// central/responder.php, row 836
 "This command must be sent by POST" => "Aceast\xE3 comand\xE3 trebuie trimis\xE3 prin POST", // ai 2026-10
 
-// central/responder.php, row 839
+// central/responder.php, row 842
 "Request from another site refused" => "Cerere de pe alt site refuzat\xE3", // ai 2026-10
 
-// central/responder.php, row 856
+// central/responder.php, row 859
 "The login token does not allow %1" => "Tokenul de autentificare nu permite %1", // ai 2026-10
 
-// central/responder.php, row 857
+// central/responder.php, row 860
 "The app store account may not run %1" => "Contul magazinului de aplicatii nu poate rula %1", // ai 2026-10
 
-// central/responder.php, row 858
+// central/responder.php, row 861
 "The app store is busy - try again later" => "Magazinul de aplicatii este ocupat - \xEEncercati mai t\xE2rziu", // ai 2026-10
 
-// central/responder.php, row 859
+// central/responder.php, row 862
 "You (%2) don't have permissions to run %1" => "Dvs. (%2) nu aveti dreptul s\xE3 rulati %1", // ai 2026-06
 
 // central/synchronize.php, row 31
@@ -5063,14 +5353,14 @@ return [
 // filler.php, row 503
 "Some error in store item." => "Eroare la salvarea articolului.", // ai 2026-06
 
-// include/adminpage.class.php, row 68
+// include/adminpage.class.php, row 67
 "Error in page parameter: %1" => "Eroare \xEEn parametrul de pagin\xE3: %1", // ai 2026-06
 
 // include/constants.php, row 451
 "Short Id" => "ID scurt", // ai 2026-06
 
 // include/constants.php, row 456
-// include/logs.php, row 957, 989
+// include/logs.php, row 961, 993
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Clas\xE3", // ai 2026-06
 
@@ -5079,7 +5369,7 @@ return [
 "Level" => "Nivel",
 
 // include/constants.php, row 509
-// include/logs.php, row 1168
+// include/logs.php, row 1172
 "Feed" => "Alimenteaz\xE3",
 
 // include/constants.php, row 510
@@ -5388,7 +5678,7 @@ return [
 "Levels horizontal" => "Nivele orizontal",
 
 // include/constedit.php, row 102
-// src/Widget/Widget.php, row 870
+// src/Widget/Widget.php, row 869
 "Level count" => "Num\xE3r nivele",
 
 // include/constedit_util.php, row 137, 140
@@ -5503,75 +5793,87 @@ return [
 // include/field.class.php, row 209
 "code - its indentation and the last new line are kept on purpose" => "cod - indentarea si ultimul r\xE2nd nou sunt p\xE3strate intentionat", // ai 2026-10
 
-// include/field.class.php, row 216
+// include/field.class.php, row 213
+"multi-line text - its new lines at the start or end may be relied on" => "text pe mai multe r\xE2nduri - sabloanele se pot baza pe r\xE2ndurile noi de la \xEEnceput sau de la sf\xE2rsit", // ai 2026-11
+
+// include/field.class.php, row 220
 "stores the text of the selected items" => "stocheaz\xE3 textul articolelor selectate", // ai 2026-10
 
-// include/field.class.php, row 222
+// include/field.class.php, row 226
 "constants of a group" => "constante ale unui grup", // ai 2026-10
 
-// include/field.class.php, row 229
+// include/field.class.php, row 233
 "the constant \"%1\" has spaces or new lines around - trim the constants first" => "constanta ,,%1\" are spatii sau r\xE2nduri noi \xEEn jur - eliminati mai \xEEnt\xE2i spatiile din constante", // ai 2026-10
 
-// include/field.class.php, row 757
+// include/field.class.php, row 762
 "Move to another field" => "Mut\xE3 \xEEn alt c\xE2mp", // ai 2026-06
 
-// include/field.class.php, row 1132
+// include/field.class.php, row 789
+"always" => "\xEEntotdeauna", // ai 2026-11
+
+// include/field.class.php, row 794
+"(missing condition)" => "(conditie lips\xE3)", // ai 2026-11
+
+// include/field.class.php, row 798
+"Edit the condition" => "Editeaz\xE3 conditia", // ai 2026-11
+
+// include/field.class.php, row 1156
 // include/itemview.php, row 130
 "number of found items" => "num\xE3rul articolelor g\xE3site",
 
-// include/field.class.php, row 1133
+// include/field.class.php, row 1157
 "index of item within whole listing (begins with 0)" => "indexul articolului \xEEn \xEEntreaga list\xE3 (\xEEncepe cu 0)", // ai 2026-06
 
-// include/field.class.php, row 1134
+// include/field.class.php, row 1158
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "indexul articolului \xEEn cadrul unei pagini (\xEEncepe de la 0 pe fiecare pagin\xE3 listat\xE3 de pagescroller)", // ai 2026-06
 
-// include/field.class.php, row 1135
+// include/field.class.php, row 1159
 "index of a group on page (it begins from 0 on each page)" => "indexul unui grup pe pagin\xE3 (\xEEncepe de la 0 pe fiecare pagin\xE3)", // ai 2026-06
 
-// include/field.class.php, row 1136
+// include/field.class.php, row 1160
 "index of item within a group on page (it begins from 0 on each group)" => "indexul articolului \xEEn cadrul unui grup pe pagin\xE3 (\xEEncepe de la 0 \xEEn fiecare grup)", // ai 2026-06
 
-// include/field.class.php, row 1137
+// include/field.class.php, row 1161
 "alias for Item ID" => "denumire pentru ID articol",
 
-// include/field.class.php, row 1138
+// include/field.class.php, row 1162
 "alias for Short Item ID" => "alias pentru ID scurt de articol",
 
-// include/field.class.php, row 1146, 1147
+// include/field.class.php, row 1170, 1171
 "alias used on admin page index.php for itemedit url" => "alias folosit pe pagina de administrare index.php pentru URL-ul itemedit", // ai 2026-06
 
-// include/field.class.php, row 1148
+// include/field.class.php, row 1172
 "Alias used on admin page index.php for edit discussion url" => "Alias folosit pe pagina de administrare index.php pentru URL-ul de editare discutie", // ai 2026-06
 
-// include/field.class.php, row 1149
+// include/field.class.php, row 1173
 "Title of Slice for RSS" => "Titlul sec\xFEiunii pentru RSS",
 
-// include/field.class.php, row 1150
+// include/field.class.php, row 1174
 "Link to the Slice for RSS" => "Link la sec\xFEiunea pentru RSS",
 
-// include/field.class.php, row 1151
+// include/field.class.php, row 1175
 "Short description (owner and name) of slice for RSS" => "Descriere scurt\xE3 (proprietar \xBAi nume) a sec\xFEiunii pentru RSS",
 
-// include/field.class.php, row 1152
+// include/field.class.php, row 1176
 "Date RSS information is generated, in RSS date format" => "Informa\xFEia dat\xE3 RSS este generat, \xEEn format dat\xE3 RSS",
 
-// include/field.class.php, row 1153
+// include/field.class.php, row 1177
 "Slice name" => "Denumire sec\xFEiune",
 
-// include/field.class.php, row 1155
+// include/field.class.php, row 1179
 "Current MLX language" => "Limba MLX curent\xE3", // ai 2026-06
 
-// include/field.class.php, row 1156
+// include/field.class.php, row 1180
 "HTML markup direction tag (e.g. DIR=RTL)" => "Tag HTML pentru directia textului (de ex. DIR=RTL)", // ai 2026-06
 
-// include/field.class.php, row 1239, 1520
+// include/field.class.php, row 1263, 1554
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- orice c\xE2mp text --", // ai 2026-06
 
-// include/field.class.php, row 1348
+// include/field.class.php, row 1372
 " (this)" => " (aceasta)", // ai 2026-06
 
-// include/field.class.php, row 1402, 1415, 1428
+// include/field.class.php, row 1435, 1448, 1462
 "Can't copy field" => "C\xE2mpul nu poate fi copiat", // ai 2026-10
 
 // include/filedit.php, row 82
@@ -5584,15 +5886,15 @@ return [
 "Rename to" => "Redenumire \xEEn",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 158, 535
+// include/fileman.php, row 164, 541
 "Text file" => "Fi\xBAier text",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 156
+// include/fileman.php, row 162
 "Web file" => "Fi\xBAier web",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 155, 535
+// include/fileman.php, row 161, 541
 "HTML file" => "Fi\xBAier HTML",
 
 // include/filedit.php, row 121
@@ -5605,7 +5907,7 @@ return [
 "File content" => "Stocare con\xFEinut",
 
 // include/filedit.php, row 135
-// include/fileman.php, row 157
+// include/fileman.php, row 163
 "Image file" => "Fi\xBAier imagine",
 
 // include/filedit.php, row 138
@@ -5620,62 +5922,62 @@ return [
 // include/fileman.php, row 37
 "Last modified" => "Ultima modificare",
 
-// include/fileman.php, row 75
-"Scripts and server settings (such as .php or .htaccess) cannot be kept in the File Manager." => "Scripturile si set\xE3rile serverului (precum .php sau .htaccess) nu pot fi p\xE3strate \xEEn ,,Administrator fi\xBAiere\".", // ai 2026-10
-
-// include/fileman.php, row 160, 173
-"Parent" => "P\xE3rinte",
-
-// include/fileman.php, row 161, 189
-"Other" => "Altceva",
-
-// include/fileman.php, row 365
+// include/fileman.php, row 76, 371
 "Wrong file name." => "Nume fi\xBAier necorespunz\xE3tor.",
 
-// include/fileman.php, row 376
+// include/fileman.php, row 80
+"Scripts and server settings (such as .php or .htaccess) cannot be kept in the File Manager." => "Scripturile si set\xE3rile serverului (precum .php sau .htaccess) nu pot fi p\xE3strate \xEEn ,,Administrator fi\xBAiere\".", // ai 2026-10
+
+// include/fileman.php, row 166, 179
+"Parent" => "P\xE3rinte",
+
+// include/fileman.php, row 167, 195
+"Other" => "Altceva",
+
+// include/fileman.php, row 382
 "File already exists" => "Fi\xBAier deja existent",
 
-// include/fileman.php, row 380, 538
+// include/fileman.php, row 386, 544
 "Unable to create file" => "Nu pot crea fi\xBAierul",
 
-// include/fileman.php, row 391
+// include/fileman.php, row 397
 // include/slicedit.php, row 205
 "Wrong directory name." => "Nume director gre\xBAit.",
 
-// include/fileman.php, row 397
+// include/fileman.php, row 403
 "Unable to create directory" => "Nu pot crea directorul",
 
-// include/fileman.php, row 408
+// include/fileman.php, row 414
 "First delete all files from directory" => "Prima dat\xE3 \xBAterge\xFEi toate fi\xBAierele din director",
 
-// include/fileman.php, row 410
+// include/fileman.php, row 416
 "Unable to delete directory" => "Nu pot \xBAterge directorul",
 
-// include/fileman.php, row 413
+// include/fileman.php, row 419
 "Unable to delete file" => "Nu pot \xBAterge fi\xBAierul",
 
-// include/fileman.php, row 432
+// include/fileman.php, row 438
 "Error: " => "Eroare: ", // ai 2026-06
 
-// include/fileman.php, row 448
+// include/fileman.php, row 454
 "Unable to open file for writing" => "Nu pot deschide fi\xBAierul pentru scriere",
 
-// include/fileman.php, row 452
+// include/fileman.php, row 458
 "Error writing to file" => "Eroare scriere \xEEn fi\xBAier",
 
-// include/fileman.php, row 464
+// include/fileman.php, row 470
 "File with this name already exists" => "Fi\xBAierul cu acest nume deja exist\xE3",
 
-// include/fileman.php, row 466
+// include/fileman.php, row 472
 "Unable to rename" => "Nu pot redenumi",
 
-// include/fileman.php, row 522
+// include/fileman.php, row 528
 "Wrong directory name" => "Nume director gre\xBAit",
 
-// include/fileman.php, row 531
+// include/fileman.php, row 537
 "Files with the same names as some in the template already exist. Please change the file names first." => "Fi\xBAiere cu acela\xBAi nume ca unele din \xBAablon deja exist\xE3. Schimba\xFEi numele fi\xBAierelor prima dat\xE3.",
 
-// include/fileman.php, row 582
+// include/fileman.php, row 588
 "Are you sure you want to delete the selected files and folders?" => "Sunte\xFEi sigur c\xE3 vre\xFEi s\xE3 \xBAterge\xFEi fi\xBAierele \xBAi directoarele selectate?",
 
 // include/files.class.php, row 117
@@ -5721,7 +6023,7 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1301
+// include/logs.php, row 1305
 // src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID sectiune", // ai 2026-06
 
@@ -5729,145 +6031,140 @@ return [
 "Form Row - special widget for form setting" => "R\xE2nd de formular - widget special pentru setarea formularului", // ai 2026-06
 
 // include/form.class.php, row 248
-// src/Widget/Widget.php, row 750
+// src/Widget/Widget.php, row 749
 "Values array" => "Tablou de valori", // ai 2026-06
 
 // include/form.class.php, row 248
 "Directly specified array of values (do not use Constants, if filled)" => "Tablou de valori specificat direct (nu folositi Constante, dac\xE3 este completat)", // ai 2026-06
 
 // include/form.class.php, row 332
-// src/Widget/Widget.php, row 738
+// src/Widget/Widget.php, row 737
 "Rows" => "R\xE2nduri", // ai 2026-06
 
 // include/form.class.php, row 343
 // include/menu.php, row 148
 "Forms" => "Formulare", // ai 2026-06
 
-// include/formutil.php, row 194
+// include/formutil.php, row 205
 "Update & View" => "Trimite & Vizualizeaz\xE3",
 
-// include/formutil.php, row 201
+// include/formutil.php, row 212
 "Insert as new" => "Insereaz\xE3 ca nou", // ai 2026-06
 
-// include/formutil.php, row 205, 2973
+// include/formutil.php, row 216, 3017
 "Reset form" => "Resetare formular",
 
-// include/formutil.php, row 208, 213, 2965, 2969
-// include/searchbar.class.php, row 771
-// src/Widget/LupWidget.php, row 118
-"Cancel" => "Anulare",
-
-// include/formutil.php, row 211
+// include/formutil.php, row 222
 "Insert & Edit" => "Insereaz\xE3 si editeaz\xE3", // ai 2026-06
 
-// include/formutil.php, row 212
+// include/formutil.php, row 223
 "Insert & View" => "Insereaz\xE3 si vizualizeaz\xE3", // ai 2026-06
 
-// include/formutil.php, row 304
+// include/formutil.php, row 317
 "Part" => "Partea", // ai 2026-06
 
-// include/formutil.php, row 368
+// include/formutil.php, row 410
 "No fields defined for this slice" => "Nici un c\xEEmp definit pentru aceast\xE3 sec\xFEiune",
 
-// include/formutil.php, row 920
+// include/formutil.php, row 963
 "set" => "activat", // ai 2026-06
 
-// include/formutil.php, row 920
+// include/formutil.php, row 963
 "unset" => "dezactivat", // ai 2026-06
 
-// include/formutil.php, row 1050
+// include/formutil.php, row 1093
 "Unable to find tagprefix table %1" => "Nu s-a putut g\xE3si tabelul tagprefix %1", // ai 2026-06
 
-// include/formutil.php, row 1202
+// include/formutil.php, row 1245
 "import" => "import\xE3", // ai 2026-06
 
-// include/formutil.php, row 1217
+// include/formutil.php, row 1260
 // src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Editare \xEEn editor", // ai 2026-06
 
-// include/formutil.php, row 1230
+// include/formutil.php, row 1273
 // include/transformation.class.php, row 193, 382, 455, 549, 739
 // include/widget.class.php, row 665
 "Plain text" => "Text simplu",
 
-// include/formutil.php, row 1272
+// include/formutil.php, row 1315
 // include/transformation.class.php, row 661
 "Translate" => "Tradu", // ai 2026-06
 
-// include/formutil.php, row 1782, 1786
+// include/formutil.php, row 1825, 1829
 "Enter the value" => "Introduceti valoarea", // ai 2026-06
 
-// include/formutil.php, row 1786
+// include/formutil.php, row 1829
 // include/menu.php, row 141
 // src/Import/DetailCatalog.php, row 124
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Schimb\xE3",
 
-// include/formutil.php, row 1929, 2116
+// include/formutil.php, row 1972, 2159
 // src/Widget/MchWidget.php, row 135
-// src/Widget/Widget.php, row 837
+// src/Widget/Widget.php, row 836
 "Selected" => "Selectat",
 
-// include/formutil.php, row 2115
+// include/formutil.php, row 2158
 "Offer" => "Ofer\xE3",
 
-// include/formutil.php, row 2180
-// include/stringexpand.php, row 11522, 11545
+// include/formutil.php, row 2223
+// include/stringexpand.php, row 11543, 11566
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "nou", // ai 2026-06
 
-// include/formutil.php, row 2200
+// include/formutil.php, row 2243
 "Change Password" => "Schimb\xE3 parola", // ai 2026-06
 
-// include/formutil.php, row 2202
+// include/formutil.php, row 2245
 "Delete Password" => "Sterge parola", // ai 2026-06
 
-// include/formutil.php, row 2211
-// include/searchlib.php, row 60, 128, 131, 134, 137, 140
+// include/formutil.php, row 2254
+// include/searchlib.php, row 61, 129, 132, 135, 138, 141
 // src/Central/FindingText.php, row 412
 // src/Credential/Store.php, row 53
 "not set" => "nesetat", // ai 2026-06
 
-// include/formutil.php, row 2976
+// include/formutil.php, row 3020
 "Submit" => "Trimite",
 
-// include/formutil.php, row 3295
+// include/formutil.php, row 3328
 "Group Name" => "Nume grup", // ai 2026-06
 
-// include/formutil.php, row 3296
-// include/logs.php, row 754, 854, 1118
+// include/formutil.php, row 3329
+// include/logs.php, row 754, 854, 1122
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Num\xE3r", // ai 2026-06
 
-// include/formutil.php, row 3297
+// include/formutil.php, row 3330
 "Created on" => "Creat la", // ai 2026-06
 
-// include/formutil.php, row 3298
+// include/formutil.php, row 3331
 "Created by" => "Creat de", // ai 2026-06
 
-// include/formutil.php, row 3299
+// include/formutil.php, row 3332
 "Last updated" => "Ultima actualizare", // ai 2026-06
 
-// include/formutil.php, row 3300
+// include/formutil.php, row 3333
 "Updated by" => "Actualizat de", // ai 2026-06
 
-// include/formutil.php, row 3308
+// include/formutil.php, row 3341
 "All active items" => "Toate articolele active", // ai 2026-06
 
-// include/formutil.php, row 3310
+// include/formutil.php, row 3343
 "All pending items" => "Toate articolele programate", // ai 2026-06
 
-// include/formutil.php, row 3311
+// include/formutil.php, row 3344
 "All expired items" => "Toate articolele expirate", // ai 2026-06
 
-// include/formutil.php, row 3312
+// include/formutil.php, row 3345
 "All items in holding bin" => "Toate articolele \xEEn asteptare", // ai 2026-06
 
-// include/formutil.php, row 3313
+// include/formutil.php, row 3346
 "All items in trash bin" => "Toate articolele din cos", // ai 2026-06
 
 // include/init_page.php, row 84
@@ -6006,25 +6303,25 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Eroare: functie de alias %1 gresit\xE3 pentru %2", // ai 2026-06
 
-// include/item_content.php, row 1133, 1191
+// include/item_content.php, row 1134, 1192
 "No Slice Id specified" => "Nu a fost specificat ID-ul sectiunii", // ai 2026-06
 
-// include/item_content.php, row 1179
+// include/item_content.php, row 1180
 "No Permission to insert Item for user %1" => "Utilizatorul %1 nu are dreptul s\xE3 insereze articole", // ai 2026-06
 
-// include/item_content.php, row 1195
+// include/item_content.php, row 1196
 "Bad Item Id" => "ID de articol invalid", // ai 2026-06
 
-// include/item_content.php, row 1336
+// include/item_content.php, row 1337
 "No Id specified (%1 - %2)" => "Niciun ID specificat (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1341
+// include/item_content.php, row 1342
 "Duplicated ID - skipped (%1 - %2)" => "ID duplicat - omis (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1366
+// include/item_content.php, row 1367
 "StoreItem for slice %1 - failed parameter check for id = '%2'" => "StoreItem pentru sectiunea %1 - verificarea parametrilor a esuat pentru id = '%2'", // ai 2026-06
 
-// include/item_content.php, row 1376
+// include/item_content.php, row 1377
 "No Status code" => "Lipseste codul de stare", // ai 2026-06
 
 // include/itemfunc.php, row 67
@@ -6428,15 +6725,9 @@ return [
 // include/logs.php, row 681
 "Time + Cached + 304" => "Timp + cache + 304", // ai 2026-06
 
-// include/logs.php, row 683, 696, 906, 1092
+// include/logs.php, row 683, 696, 906, 1096
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
-
-// include/logs.php, row 723
-// include/menu_util.php, row 45
-// src/Optimize/CheckCentralCredentials.php, row 51
-// src/Optimize/CheckEnvironment.php, row 50
-"AA" => "",
 
 // include/logs.php, row 724
 "SVN AA (util.php)" => "",
@@ -6484,13 +6775,6 @@ return [
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Ruleaz\xE3", // ai 2026-10
 
-// include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
-// src/Optimize/CheckImports.php, row 150, 154
-// src/Optimize/CheckInstallRuns.php, row 54
-// src/Optimize/CheckIsdsRuns.php, row 310
-"Started" => "Pornire", // ai 2026-10
-
 // include/logs.php, row 800
 "Last full run" => "Ultima rulare complet\xE3", // ai 2026-10
 
@@ -6521,137 +6805,137 @@ return [
 // include/logs.php, row 903
 "Identifier" => "Identificator", // ai 2026-06
 
-// include/logs.php, row 904, 1268, 1283
+// include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 816
+// src/Manager.php, row 825
 "Module ID" => "ID modul", // ai 2026-06
 
-// include/logs.php, row 917
+// include/logs.php, row 921
 "Template id" => "ID \xBAablon", // ai 2026-06
 
-// include/logs.php, row 919
+// include/logs.php, row 923
 "Emails sent" => "E-mailuri trimise", // ai 2026-06
 
-// include/logs.php, row 958
+// include/logs.php, row 962
 "Object id" => "Id obiect", // ai 2026-10
 
-// include/logs.php, row 990
+// include/logs.php, row 994
 "Mail template" => "Sablon e-mail", // ai 2026-10
 
-// include/logs.php, row 991
+// include/logs.php, row 995
 "Reader item" => "Articol cititor", // ai 2026-10
 
-// include/logs.php, row 992
+// include/logs.php, row 996
 "Origin" => "Origine", // ai 2026-10
 
-// include/logs.php, row 1063
+// include/logs.php, row 1067
 "Transport" => "Transport", // ai 2026-10
 
-// include/logs.php, row 1064
+// include/logs.php, row 1068
 "Recipients sent" => "Destinatari trimisi", // ai 2026-10
 
-// include/logs.php, row 1065
+// include/logs.php, row 1069
 "Server response" => "R\xE3spuns server", // ai 2026-10
 
-// include/logs.php, row 1078
+// include/logs.php, row 1082
 "Items selected" => "Articole selectate", // ai 2026-06
 
-// include/logs.php, row 1079
+// include/logs.php, row 1083
 "Items updated" => "Articole actualizate", // ai 2026-06
 
-// include/logs.php, row 1080
+// include/logs.php, row 1084
 "Items planned" => "Articole planificate", // ai 2026-06
 
-// include/logs.php, row 1091
+// include/logs.php, row 1095
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Mesaj", // ai 2026-06
 
-// include/logs.php, row 1093
+// include/logs.php, row 1097
 "Referer" => "Referent", // ai 2026-06
 
-// include/logs.php, row 1104
+// include/logs.php, row 1108
 "New name" => "Nume nou", // ai 2026-06
 
-// include/logs.php, row 1105
+// include/logs.php, row 1109
 "Old name" => "Nume vechi", // ai 2026-06
 
-// include/logs.php, row 1116, 1181
+// include/logs.php, row 1120, 1185
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Faz\xE3", // ai 2026-06
 
-// include/logs.php, row 1117
+// include/logs.php, row 1121
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Colec\xFEie", // ai 2026-06
 
-// include/logs.php, row 1119, 1170, 1182, 1317
+// include/logs.php, row 1123, 1174, 1186, 1321
 // src/Import/Definition.php, row 154
 // src/Optimize/CheckPasskeys.php, row 84
-// src/Optimize/CheckUploadRefusals.php, row 90
+// src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Detaliu", // ai 2026-06
 
-// include/logs.php, row 1169
+// include/logs.php, row 1173
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Stare", // ai 2026-06
 
-// include/logs.php, row 1221
+// include/logs.php, row 1225
 "Processed" => "Procesate", // ai 2026-06
 
-// include/logs.php, row 1222
+// include/logs.php, row 1226
 "Stored" => "Stocate", // ai 2026-06
 
-// include/logs.php, row 1223
+// include/logs.php, row 1227
 "Errors" => "Erori", // ai 2026-06
 
-// include/logs.php, row 1236
+// include/logs.php, row 1240
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Rezultat", // ai 2026-06
 
-// include/logs.php, row 1252
+// include/logs.php, row 1256
 "Flags" => "Indicatori", // ai 2026-06
 
-// include/logs.php, row 1253
+// include/logs.php, row 1257
 "Context" => "Context", // ai 2026-10
 
-// include/logs.php, row 1269
+// include/logs.php, row 1273
 "Feed counterpart" => "Corespondent alimentare", // ai 2026-06
 
-// include/logs.php, row 1284
+// include/logs.php, row 1288
 "Field ID" => "ID c\xE2mp", // ai 2026-06
 
-// include/logs.php, row 1302
+// include/logs.php, row 1306
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckFileReadRefusals.php, row 78
 // src/Optimize/CheckHttp.php, row 62
 // src/Optimize/CheckPasskeys.php, row 83
-// src/Optimize/CheckUploadRefusals.php, row 88
+// src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "Motiv", // ai 2026-10
 
-// include/mail.php, row 657
+// include/mail.php, row 693
 "Email type" => "Tip email", // ai 2026-06
 
-// include/mail.php, row 661
+// include/mail.php, row 697
 "\xE2\x80\x94 all modules (global) \xE2\x80\x94" => "-- toate modulele (global) --", // ai 2026-10
 
-// include/mail.php, row 661
+// include/mail.php, row 697
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Proprietar",
 
-// include/mail.php, row 662
+// include/mail.php, row 698
 "Description/Result" => "Descriere/Rezultat", // ai 2026-06
 
-// include/mail.php, row 667
+// include/mail.php, row 701
 "From (email) " => "De la (email)", // ai 2026-06
 
-// include/mail.php, row 670
+// include/mail.php, row 704
 "Envelop sender (email)" => "Expeditor plic (email)", // ai 2026-06
 
-// include/mail.php, row 671
+// include/mail.php, row 705
 // misc/datovka/datovka.php, row 156
 "Attachments" => "Atasamente", // ai 2026-06
 
@@ -6770,7 +7054,7 @@ return [
 "Bookmarks" => "Marcaje", // ai 2026-06
 
 // include/menu.php, row 223
-// include/menu_util.php, row 130
+// include/menu_util.php, row 131
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Gole\xBAte co\xBA",
 
@@ -6832,7 +7116,7 @@ return [
 // include/menu_util.php, row 96
 // src/Import/Definition.php, row 135, 161
 // src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+// src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "Import", // ai 2026-11
 
 // include/menu_util.php, row 98
@@ -6865,75 +7149,78 @@ return [
 // include/menu_util.php, row 129
 "Synchronize..." => "Sincronizare...", // ai 2026-06
 
-// include/menu_util.php, row 131
+// include/menu_util.php, row 130
+"Optimize on several AAs..." => "Optimizare pe mai multe AA-uri...", // ai 2026-11
+
+// include/menu_util.php, row 132
 "Import conf from CSV..." => "Import conf din CSV...", // ai 2026-06
 
-// include/menu_util.php, row 426
+// include/menu_util.php, row 427
 "Part of %s" => "Parte din %s", // ai 2026-06
 
-// include/menu_util.php, row 443
+// include/menu_util.php, row 444
 "Other slices" => "Alte sectiuni", // ai 2026-06
 
-// include/menu_util.php, row 447
+// include/menu_util.php, row 448
 "Reader Management Slice" => "Sectiune administrare cititori", // ai 2026-06
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 450
 "Jump inside control panel" => "Salt \xEEn panoul de control", // ai 2026-06
 
-// include/menu_util.php, row 450
-// include/slice.class.php, row 1447
+// include/menu_util.php, row 451
+// include/slice.class.php, row 1450
 // src/Central/FindingText.php, row 311
 "Links" => "Leg\xE3turi", // ai 2026-06
 
-// include/menu_util.php, row 451
+// include/menu_util.php, row 452
 "MySQL Auth (old version)" => "Autentificare MySQL (versiune veche)", // ai 2026-06
 
-// include/menu_util.php, row 452
+// include/menu_util.php, row 453
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Sondaje", // ai 2026-06
 
-// include/menu_util.php, row 473
+// include/menu_util.php, row 474
 "New slice" => "Sec\xFEiune nou\xE3",
 
-// include/menu_util.php, row 477
+// include/menu_util.php, row 478
 "Switch module" => "Schimb\xE3 modulul", // ai 2026-06
 
-// include/menu_util.php, row 611, 622
+// include/menu_util.php, row 612, 623
 "Apply" => "Aplic\xE3", // ai 2026-06
 
-// include/menu_util.php, row 615
+// include/menu_util.php, row 616
 "-- Default for module --" => "-- Implicit pentru modul --", // ai 2026-06
 
-// include/menu_util.php, row 623
+// include/menu_util.php, row 624
 "Switches the admin interface language; the page reloads." => "Schimb\xE3 limba interfe\xFEei de administrare; pagina se re\xEEncarc\xE3.", // ai 2026-06
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 629
 "What's working, what isn't \xE2\x80\x94 tell the AA team." => "Ce func\xFEioneaz\xE3, ce nu -- spune\xFEi echipei AA.", // ai 2026-06
 
-// include/menu_util.php, row 631
+// include/menu_util.php, row 632
 // src/Import/Definition.php, row 86
 "Settings" => "Set\xE3ri", // ai 2026-06
 
-// include/menu_util.php, row 634
+// include/menu_util.php, row 635
 "Theme" => "Tem\xE3", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 637
 "Feedback" => "Feedback", // ai 2026-10
 
-// include/menu_util.php, row 762
+// include/menu_util.php, row 763
 // include/slice.class.php, row 678
 "Reader management" => "Administrare cititori", // ai 2026-06
 
-// include/menu_util.php, row 774
+// include/menu_util.php, row 775
 "logout" => "deconectare", // ai 2026-06
 
-// include/menu_util.php, row 782
+// include/menu_util.php, row 783
 "Search.." => "C\xE3utare..", // ai 2026-06
 
-// include/menu_util.php, row 861
+// include/menu_util.php, row 862
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 871
+// include/menu_util.php, row 872
 "Collapse / expand menu" => "Restr\xE2nge / extinde meniul", // ai 2026-06
 
 // include/metabase.class.php, row 1662
@@ -7037,7 +7324,7 @@ return [
 "And" => "Si", // ai 2026-06
 
 // include/searchbar.class.php, row 580
-// include/searchlib.php, row 52, 55, 128, 137
+// include/searchlib.php, row 53, 56, 129, 138
 "begins with" => "\xEEncepe cu", // ai 2026-06
 
 // include/searchbar.class.php, row 608
@@ -7085,41 +7372,38 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Administrare filtre", // ai 2026-06
 
-// include/searchlib.php, row 56
+// include/searchlib.php, row 57
 "LLIKE" => "",
 
-// include/searchlib.php, row 57
+// include/searchlib.php, row 58
 "XLIKE" => "",
 
-// include/searchlib.php, row 58
+// include/searchlib.php, row 59
 "BETWEEN" => "",
 
-// include/searchlib.php, row 59
+// include/searchlib.php, row 60
 "bit is set" => "bitul este setat", // ai 2026-06
 
-// include/searchlib.php, row 61, 128, 131, 134, 137, 140
+// include/searchlib.php, row 62, 129, 132, 135, 138, 141
 "is set" => "are valoare", // ai 2026-06
 
-// include/searchlib.php, row 62, 128
+// include/searchlib.php, row 63, 129
 "is e-mail" => "este e-mail", // ai 2026-06
 
-// include/searchlib.php, row 63, 128
+// include/searchlib.php, row 64, 129
 "not e-mail" => "nu este e-mail", // ai 2026-06
 
-// include/searchlib.php, row 64, 128, 137
+// include/searchlib.php, row 65, 129, 138
 "match (RegExp)" => "se potriveste (RegExp)", // ai 2026-06
 
-// include/searchlib.php, row 65, 128, 137
+// include/searchlib.php, row 66, 129, 138
 "not match (RegExp)" => "nu se potriveste (RegExp)", // ai 2026-06
 
-// include/searchlib.php, row 128, 137
-"is not" => "nu este", // ai 2026-06
-
-// include/searchlib.php, row 137, 140
+// include/searchlib.php, row 138, 141
 // include/statestore.php, row 1367
 "select ..." => "selectati ...", // ai 2026-06
 
-// include/searchlib.php, row 370
+// include/searchlib.php, row 371
 "Limit" => "Limit\xE3", // ai 2026-06
 
 // include/slice.class.php, row 428
@@ -7132,7 +7416,7 @@ return [
 "Code - Views / Snippets" => "Cod - Vederi / Fragmente", // ai 2026-06
 
 // include/slice.class.php, row 681
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "Constant" => "Constant\xE3", // ai 2026-06
 
 // include/slice.class.php, row 682
@@ -7143,190 +7427,190 @@ return [
 "Field definitions" => "Definitii de c\xE2mpuri", // ai 2026-06
 
 // include/slice.class.php, row 914
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Eroare: Lipseste parola de citire", // ai 2026-06
 
-// include/slice.class.php, row 1314
+// include/slice.class.php, row 1317
 "Spot ID" => "ID spot", // ai 2026-06
 
-// include/slice.class.php, row 1314
+// include/slice.class.php, row 1317
 "You can include this spot code in another spot by using {sitespot:%1}" => "Puteti include codul acestui spot \xEEn alt spot folosind {sitespot:%1}", // ai 2026-06
 
-// include/slice.class.php, row 1332
+// include/slice.class.php, row 1335
 "Spot name" => "Nume spot", // ai 2026-06
 
-// include/slice.class.php, row 1475
+// include/slice.class.php, row 1478
 "Jump inside AA control panel" => "Salt \xEEn panoul de control AA", // ai 2026-06
 
-// include/slice.class.php, row 1500
+// include/slice.class.php, row 1503
 "Polls for AA" => "Sondaje pentru AA", // ai 2026-06
 
-// include/slice.class.php, row 1569
+// include/slice.class.php, row 1572
 "Languages for translation" => "Limbi pentru traducere", // ai 2026-06
 
-// include/slice.class.php, row 1569
+// include/slice.class.php, row 1572
 "specify language codes in which you want to translate content - small caps, two letters - like: en, es, de, ..." => "specificati codurile de limb\xE3 \xEEn care doriti s\xE3 traduceti continutul - litere mici, dou\xE3 litere - de ex.: en, es, de, ...", // ai 2026-06
 
-// include/slice.class.php, row 1570
+// include/slice.class.php, row 1573
 "Automatic field creation" => "Creare automat\xE3 de c\xE2mpuri", // ai 2026-06
 
-// include/slice.class.php, row 1570
+// include/slice.class.php, row 1573
 "If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template." => "Dac\xE3 este bifat, sectiunea permite stocarea valorilor \xEEn c\xE2mpul text....*, chiar dac\xE3 respectivul c\xE2mp text....* nu este definit \xEEn sectiune. C\xE2mpul va fi creat folosind c\xE2mpul text............ ca sablon.", // ai 2026-06
 
-// include/slice.class.php, row 1571
+// include/slice.class.php, row 1574
 "Fields defined by another slice" => "C\xE2mpuri definite de alt\xE3 sectiune", // ai 2026-06
 
-// include/slice.class.php, row 1571
+// include/slice.class.php, row 1574
 "You can use special slice for additional fields definition. There you can write slice ID, which defines the fields.<br>Could be used for data slice, which stores values for user created forms." => "Puteti folosi o sectiune special\xE3 pentru definirea c\xE2mpurilor suplimentare. Aici puteti scrie ID-ul sectiunii care defineste c\xE2mpurile.<br>Poate fi folosit pentru o sectiune de date, care stocheaz\xE3 valorile formularelor create de utilizatori.", // ai 2026-06
 
-// include/slice.class.php, row 1572
+// include/slice.class.php, row 1575
 "Store item history for N days" => "P\xE3streaz\xE3 istoricul articolelor N zile", // ai 2026-06
 
-// include/slice.class.php, row 1572
+// include/slice.class.php, row 1575
 "ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted" => "ALL - nu sterge jurnalul de istoric (implicit)<br>0 - nu p\xE3stra istoricul articolelor (nici evenimentele ITEM_UPD/ITEM_NEW \xEEn jurnal)<br><em>num\xE3r</em> - num\xE3rul de zile dup\xE3 care istoricul articolelor va fi sters", // ai 2026-06
 
-// include/slice.class.php, row 1573
+// include/slice.class.php, row 1576
 "No pending items" => "F\xE3r\xE3 articole preg\xE3tite", // ai 2026-06
 
-// include/slice.class.php, row 1573
+// include/slice.class.php, row 1576
 "1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - dezactiveaz\xE3 complet cosul ,,Preg\xE3tite\" \xEEn aceast\xE3 sectiune (c\xE2mpul publish_date functioneaz\xE3 ca un c\xE2mp normal)<br>{aa-expression} - dac\xE3 este evaluat\xE3 ca 1, dezactiveaz\xE3 verificarea articolelor preg\xE3tite (pentru vedere, sectiune, {ids...}) (folositi aici expresia {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
-// include/slice.class.php, row 1574
+// include/slice.class.php, row 1577
 "No expired items" => "F\xE3r\xE3 articole expirate", // ai 2026-06
 
-// include/slice.class.php, row 1574
+// include/slice.class.php, row 1577
 "1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - dezactiveaz\xE3 complet cosul ,,Expirate\" \xEEn aceast\xE3 sectiune (c\xE2mpul expiry_date functioneaz\xE3 ca un c\xE2mp normal)<br>{aa-expression} - dac\xE3 este evaluat\xE3 ca 1, dezactiveaz\xE3 verificarea datei de expirare (pentru vedere, sectiune, {ids...}) (folositi aici expresia {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
-// include/slice.class.php, row 1636
+// include/slice.class.php, row 1639
 "Slice with translations" => "Sectiune cu traduceri", // ai 2026-06
 
-// include/slice.class.php, row 1636
+// include/slice.class.php, row 1639
 "the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')" => "sectiunea folosit\xE3 pentru traducerile {tr:text...} (sectiunea trebuie s\xE3 aib\xE3 doar c\xE2mpul headline........ setat ca ,,Permite traducerea\")", // ai 2026-06
 
-// include/slice.class.php, row 1637
+// include/slice.class.php, row 1640
 "Additional aliases" => "Aliasuri suplimentare", // ai 2026-06
 
-// include/slice.class.php, row 1637
+// include/slice.class.php, row 1640
 "Select sitemodule, where we have to look for additional {_:...} aliases" => "Selectati modulul site \xEEn care se vor c\xE3uta aliasurile {_:...} suplimentare", // ai 2026-06
 
-// include/slice.class.php, row 1638
+// include/slice.class.php, row 1641
 "sitemap.xml alias" => "Alias sitemap.xml", // ai 2026-06
 
-// include/slice.class.php, row 1638
+// include/slice.class.php, row 1641
 "The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown." => "Sitemap.xml va fi generat din toate sectiunile (\xEEn ordinea de mai sus) \xEEn care exist\xE3 aliasul specificat (de ex. _#SMAP_URL). Aliasul trebuie s\xE3 genereze URL-ul complet al articolului din fiecare sectiune. Pentru articolele private/ascunse trebuie s\xE3 genereze un sir gol, astfel \xEEnc\xE2t URL-ul s\xE3 nu fie afisat.", // ai 2026-06
 
-// include/slice.class.php, row 1639
+// include/slice.class.php, row 1642
 "Permission alias" => "Alias de permisiune", // ai 2026-06
 
-// include/slice.class.php, row 1639
+// include/slice.class.php, row 1642
 "You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word \"Valid\", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule." => "Puteti defini aliasul care va fi verificat pentru toate {xid}-urile afisate (=paginile). Dac\xE3 valoarea este cuv\xE2ntul ,,Valid\", pagina va fi afisat\xE3. Altfel se va afisa formularul de autentificare (vezi mai jos). Desigur, nu sunteti obligat s\xE3 folositi aceast\xE3 functie - puteti proceda \xEEn modul vechi, direct \xEEn arborele modulului site.", // ai 2026-06
 
-// include/slice.class.php, row 1640
+// include/slice.class.php, row 1643
 "HTML code for \"Login page\"" => "Cod HTML pentru ,,Pagina de autentificare\"", // ai 2026-06
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 434
 "User login databases" => "Baze de date pentru autentificarea utilizatorilor", // ai 2026-06
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 409
 "first Reader Management slice listed in Uses slices" => "prima sectiune de gestionare a cititorilor din lista ,,Foloseste sectiunile\"", // ai 2026-06
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 410
 "all Reader Management slices listed in Uses slices" => "toate sectiunile de gestionare a cititorilor din lista ,,Foloseste sectiunile\"", // ai 2026-06
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 411
 // src/Isds/SliceRules.php, row 99
 // src/Optimize/CheckIsdsAccounts.php, row 137
 "AA + all Reader Management slices in AA (old behavior)" => "AA + toate sectiunile de gestionare a cititorilor din AA (comportamentul vechi)", // ai 2026-06
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 "First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used." => "Optiunea recomandat\xE3 este prima sectiune de gestionare a cititorilor - doar persoanele din aceast\xE3 sectiune se pot autentifica pe paginile publice. Dac\xE3 nu este selectat\xE3, se foloseste optiunea ,,AA + toate sectiunile de gestionare a cititorilor\".", // ai 2026-06
 
-// include/slice.class.php, row 1642
+// include/slice.class.php, row 1645
 "Google analytics tracking id" => "ID de urm\xE3rire Google Analytics", // ai 2026-06
 
-// include/slice.class.php, row 1642
+// include/slice.class.php, row 1645
 "If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site." => "Dac\xE3 folositi {generate:HEAD} si {generate:FOOT} \xEEn codul modulului de site, codul Google Analytics este generat cu acest ID de urm\xE3rire. Codul generat se poate schimba \xEEn viitor, c\xE2nd Google modific\xE3 fragmentul de cod.<br>Pentru a folosi bara de consimt\xE3m\xE2nt pentru cookie-uri, ad\xE3ugati {eucookies} sau {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} \xEEn site.", // ai 2026-06
 
-// include/slice.class.php, row 1643
+// include/slice.class.php, row 1646
 "Alternate URL" => "URL alternativ", // ai 2026-06
 
-// include/slice.class.php, row 1643
+// include/slice.class.php, row 1646
 "Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "Alte domenii pentru care site-ul s\xE3 fie vizibil. Totusi, luati \xEEn considerare o redirectionare pe server c\xE3tre un singur domeniu, mai bun\xE3 pentru SEO.", // ai 2026-06
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1647
 "Languages on website" => "Limbi pe site", // ai 2026-06
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1647
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Enumerati toate limbile pentru care doriti s\xE3 folositi modulul site - en, es, cz, ..<br>V\xE3 rug\xE3m <b>s\xE3 o faceti</b>, chiar dac\xE3 folositi o singur\xE3 limb\xE3. <br>Este necesar dac\xE3 doriti s\xE3 apelati modulul site \xEEn modul nou, din Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
-// include/slice.class.php, row 1645
+// include/slice.class.php, row 1648
 "Allowed {xflag} values" => "Valori permise pentru {xflag}", // ai 2026-11
 
-// include/slice.class.php, row 1645
+// include/slice.class.php, row 1648
 "Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "Expresie regulat\xE3 c\xE3reia trebuie s\xE3-i corespund\xE3 \xEEn \xEEntregime partea {xflag} a URL-ului (f\xE3r\xE3 ^ sau \$), altfel pagina r\xE3spunde cu 404. {xflag} sunt caracterele imediat dup\xE3 limb\xE3 si num\xE3rul optional al paginii {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... Nu contine niciodat\xE3 o cifr\xE3 sau ,,-\" - acestea \xEEl \xEEncheie.<br>Trebuie s\xE3 treac\xE3 si paginile f\xE3r\xE3 {xflag} - \xEEncheiati modelul cu ? sau ad\xE3ugati o alternativ\xE3 goal\xE3.<br><b>Gol</b> - orice valoare f\xE3r\xE3 ,,=\".<br><b>^\$</b> - {xflag} nu se foloseste, doar pagini f\xE3r\xE3 el.<br>Exemple:<br>[a-z]? - o liter\xE3 sau nimic<br>[tp]? - ,,t\" sau ,,p\" sau nimic<br>(print|pdf)? - unul dintre cuvintele enumerate sau nimic", // ai 2026-11
 
-// include/slice.class.php, row 1646
+// include/slice.class.php, row 1649
 "Allowed {xcat} values" => "Valori permise pentru {xcat}", // ai 2026-11
 
-// include/slice.class.php, row 1646
+// include/slice.class.php, row 1649
 "Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "Expresie regulat\xE3 c\xE3reia trebuie s\xE3-i corespund\xE3 \xEEn \xEEntregime partea {xcat} a URL-ului (f\xE3r\xE3 ^ sau \$), altfel pagina r\xE3spunde cu 404. {xcat} este tot ce urmeaz\xE3 dup\xE3 primul ,,-\" din primul director: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... Poate contine orice \xEEn afar\xE3 de ,,/\".<br>Trebuie s\xE3 treac\xE3 si paginile f\xE3r\xE3 {xcat} - \xEEncheiati modelul cu ? sau ad\xE3ugati o alternativ\xE3 goal\xE3.<br><b>Gol</b> - orice valoare f\xE3r\xE3 ,,=\".<br><b>^\$</b> - {xcat} nu se foloseste, doar pagini f\xE3r\xE3 el.<br>Exemple:<br>[a-z0-9-]* - litere mici, cifre si cratime sau nimic<br>([0-9]+)? - un num\xE3r sau nimic<br>(bioplyn|kompost)? - unul dintre cuvintele enumerate sau nimic", // ai 2026-11
 
-// include/slice.class.php, row 1647
+// include/slice.class.php, row 1650
 "Check the page path" => "Verific\xE3 calea paginii", // ai 2026-11
 
-// include/slice.class.php, row 1647
+// include/slice.class.php, row 1650
 "Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "R\xE3spunde cu 404 c\xE2nd o parte a c\xE3ii ({xseo1}, {xseo2}, ...) nu este un articol publicat, astfel \xEEnc\xE2t /cz/nonsense/about-us nu afiseaz\xE3 pagina about-us. R\xE3spunde cu 404 si c\xE2nd ,,Pagin\xE3 neg\xE3sit\xE3\" este setat la ,,Ignor\xE3\".", // ai 2026-11
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Page not Found (404)" => "Pagin\xE3 neg\xE3sit\xE3 (404)", // ai 2026-06
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Do not care" => "Ignor\xE3", // ai 2026-06
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Send standard 404 page, when {xid} is empty" => "Trimite pagina 404 standard c\xE2nd {xid} este gol", // ai 2026-06
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Send code below" => "Trimite codul de mai jos", // ai 2026-06
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "C\xE2nd este selectat\xE3 prima optiune ,,Ignor\xE3\" (comportamentul vechi), trebuie s\xE3 verificati singur {xid} necompletat \xEEn modulul site", // ai 2026-06
 
-// include/slice.class.php, row 1649
+// include/slice.class.php, row 1652
 "HTML code for \"Page not Found\" (404)" => "Cod HTML pentru ,,Pagin\xE3 neg\xE3sit\xE3\" (404)", // ai 2026-06
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1654
 "Publish in the app store" => "Publicare \xEEn magazinul de aplicatii", // ai 2026-10
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1654
 "Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too." => "Orice AA poate apoi instala acest site cu sectiunile si Alertele pe care le foloseste - sabloanele, c\xE2mpurile si vederile lor, niciodat\xE3 articolele. Grupurile de constante ale altor sectiuni trebuie s\xE3 apartin\xE3, de asemenea, unui site publicat.", // ai 2026-10
 
-// include/slice.class.php, row 1652
+// include/slice.class.php, row 1655
 "App description" => "Descriere aplicatie", // ai 2026-10
 
-// include/slice.class.php, row 1652
+// include/slice.class.php, row 1655
 "What the app does, for the list of the app store." => "Ce face aplicatia, pentru lista din magazinul de aplicatii.", // ai 2026-10
 
-// include/slice.class.php, row 1653
+// include/slice.class.php, row 1656
 "App version" => "Versiune aplicatie", // ai 2026-10
 
-// include/slice.class.php, row 1653
+// include/slice.class.php, row 1656
 "Like 1.2.0." => "De exemplu 1.2.0.", // ai 2026-10
 
-// include/slice.class.php, row 1655
+// include/slice.class.php, row 1658
 "Published modules" => "Module publicate", // ai 2026-10
 
-// include/slice.class.php, row 1664
+// include/slice.class.php, row 1667
 "Page address (URL)" => "Adresa paginii (URL)", // ai 2026-11
 
-// include/slice.class.php, row 1665
+// include/slice.class.php, row 1668
 "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} este un num\xE3r, {xflag} literele de dup\xE3 el, {xcat} tot ce urmeaz\xE3 dup\xE3 primul ,,-\" - toate trei sunt optionale. {xlang} poate lipsi c\xE2nd sunt setate ,,Limbi pe site\".<br>De exemplu /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka", // ai 2026-11
 
-// include/slice.class.php, row 1707
+// include/slice.class.php, row 1710
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "Versiunea aplicatiei are cel mult 32 de litere, cifre si caractere . + - (de exemplu 1.2.0), descrierea cel mult %1 caractere.", // ai 2026-10
 
 // include/slice.php, row 69
@@ -7406,43 +7690,43 @@ return [
 // include/statestore.php, row 1449
 "Manage components" => "Gestionare componente", // ai 2026-06
 
-// include/stringexpand.php, row 97
+// include/stringexpand.php, row 98
 "Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "Aliasul va fi apelat ca {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}", // ai 2026-06
 
-// include/stringexpand.php, row 98
+// include/stringexpand.php, row 99
 "Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "Codul afisat de alias. Aliasul poate avea parametri, pe care \xEEi puteti folosi prin variabilele _#P1, _#P2, ...", // ai 2026-06
 
-// include/stringexpand.php, row 100
+// include/stringexpand.php, row 101
 "Usage example" => "Exemplu de utilizare", // ai 2026-06
 
-// include/stringexpand.php, row 940
+// include/stringexpand.php, row 941
 "Jabber Online Status Indicator" => "Indicator de stare online Jabber", // ai 2026-06
 
-// include/stringexpand.php, row 5515
+// include/stringexpand.php, row 5513
 "save changes" => "salveaz\xE3 modific\xE3rile", // ai 2026-06
 
-// include/stringexpand.php, row 5734
+// include/stringexpand.php, row 5732
 "No item ID" => "Lipseste ID-ul articolului", // ai 2026-06
 
-// include/stringexpand.php, row 5741
+// include/stringexpand.php, row 5739
 "No transformations" => "F\xE3r\xE3 transform\xE3ri", // ai 2026-06
 
-// include/stringexpand.php, row 5755
+// include/stringexpand.php, row 5753
 "No slice for item" => "Nicio sectiune pentru articol", // ai 2026-06
 
-// include/stringexpand.php, row 5756
+// include/stringexpand.php, row 5754
 "No current slice(s)" => "Nicio sectiune curent\xE3", // ai 2026-06
 
-// include/stringexpand.php, row 5757
+// include/stringexpand.php, row 5755
 "Item slice is not in list of allowed slices" => "Sectiunea articolului nu este \xEEn lista sectiunilor permise", // ai 2026-06
 
-// include/stringexpand.php, row 5762
+// include/stringexpand.php, row 5760
 "No permit_anonymous_edit permission for the slice" => "Lipseste permisiunea permit_anonymous_edit pentru sectiune", // ai 2026-06
 
-// include/stringexpand.php, row 6157
+// include/stringexpand.php, row 6155
 "No dictionaries specified for {dictionary}" => "Niciun dictionar specificat pentru {dictionary}", // ai 2026-06
 
-// include/stringexpand.php, row 6287
+// include/stringexpand.php, row 6285
 "No module for dictionary slice" => "Niciun modul pentru sectiunea de dictionar", // ai 2026-06
 
 // include/stringexpand.php, row 8208
@@ -7457,72 +7741,72 @@ return [
 // include/stringexpand.php, row 8398
 "loading" => "se \xEEncarc\xE3", // ai 2026-06
 
-// include/stringexpand.php, row 9531
+// include/stringexpand.php, row 9546
 "E-mail confirmed." => "E-mail confirmat.", // ai 2026-06
 
-// include/stringexpand.php, row 9535
+// include/stringexpand.php, row 9550
 "E-mail unsubscribed" => "E-mail dezabonat", // ai 2026-06
 
-// include/stringexpand.php, row 10296
+// include/stringexpand.php, row 10311
 "Forgot your password? Fill in your email." => "Ati uitat parola? Introduceti adresa de e-mail.", // ai 2026-06
 
-// include/stringexpand.php, row 10298
+// include/stringexpand.php, row 10313
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-mail", // ai 2026-10
 
-// include/stringexpand.php, row 10316, 10320
+// include/stringexpand.php, row 10331, 10335
 "Unable to find user - please check if it has been misspelled." => "Utilizatorul nu a fost g\xE3sit - verificati dac\xE3 nu a fost scris gresit.", // ai 2026-06
 
-// include/stringexpand.php, row 10334
+// include/stringexpand.php, row 10349
 "Password link" => "Link pentru parol\xE3", // ai 2026-06
 
-// include/stringexpand.php, row 10335
+// include/stringexpand.php, row 10350
 "Password change url parameter" => "Parametru URL pentru schimbarea parolei", // ai 2026-06
 
-// include/stringexpand.php, row 10347
+// include/stringexpand.php, row 10362
 "Password change" => "Schimbarea parolei", // ai 2026-06
 
-// include/stringexpand.php, row 10348
+// include/stringexpand.php, row 10363
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Pentru a schimba parola, accesati urm\xE3toarea adres\xE3:<br>%1<br>Schimbarea va fi posibil\xE3 timp de dou\xE3 ore - dup\xE3 aceea cheia va expira si va trebui s\xE3 solicitati una nou\xE3.", // ai 2026-06
 
-// include/stringexpand.php, row 10357
+// include/stringexpand.php, row 10372
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "Un e-mail cu cheia pentru schimbarea parolei tocmai a fost trimis la adresa de e-mail: %1", // ai 2026-06
 
-// include/stringexpand.php, row 10368, 10397
+// include/stringexpand.php, row 10383, 10412
 "Bad or expired key." => "Cheie gresit\xE3 sau expirat\xE3.", // ai 2026-06
 
-// include/stringexpand.php, row 10373
+// include/stringexpand.php, row 10388
 "Fill in the new password" => "Introduceti parola nou\xE3", // ai 2026-06
 
-// include/stringexpand.php, row 10375
+// include/stringexpand.php, row 10390
 "New password" => "Parol\xE3 nou\xE3", // ai 2026-06
 
-// include/stringexpand.php, row 10376
+// include/stringexpand.php, row 10391
 "Retype New Password" => "Reintroduceti parola nou\xE3", // ai 2026-06
 
-// include/stringexpand.php, row 10400
+// include/stringexpand.php, row 10415
 "Passwords do not match - please try again." => "Parolele nu se potrivesc - v\xE3 rug\xE3m s\xE3 \xEEncercati din nou.", // ai 2026-06
 
-// include/stringexpand.php, row 10403
+// include/stringexpand.php, row 10418
 "The password must be at least 6 characters long." => "Parola trebuie s\xE3 aib\xE3 cel putin 6 caractere.", // ai 2026-06
 
-// include/stringexpand.php, row 10409
+// include/stringexpand.php, row 10424
 "Password changed." => "Parola a fost schimbat\xE3.", // ai 2026-06
 
-// include/stringexpand.php, row 10411
+// include/stringexpand.php, row 10426
 "An error occurred during password change - please contact: %1." => "A ap\xE3rut o eroare la schimbarea parolei - v\xE3 rug\xE3m s\xE3 contactati: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 11519, 11542
+// include/stringexpand.php, row 11540, 11563
 "Are you sure you want to permanently DELETE this record?" => "Sunte\xFEi sigur c\xE3 vre\xFEi s\xE3 \xAATERGE\xDEI irevocabil aceast\xE3 \xEEnregistrare?",
 
-// include/stringexpand.php, row 11525, 11528, 11548, 11551
+// include/stringexpand.php, row 11546, 11549, 11569, 11572
 // src/Widget/RimWidget.php, row 270
 "edit" => "editare",
 
-// include/stringexpand.php, row 11531, 11554
+// include/stringexpand.php, row 11552, 11575
 "back" => "\xEEnapoi", // ai 2026-06
 
-// include/stringexpand.php, row 11534, 11557
+// include/stringexpand.php, row 11555, 11578
 // src/Widget/RimWidget.php, row 297
 "drop files here or click to upload" => "trageti fisierele aici sau dati clic pentru a \xEEnc\xE3rca", // ai 2026-06
 
@@ -7646,10 +7930,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Nu pot schimba utilizatorul",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Mesaj stiri toolkit",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Reautentificare", // ai 2026-06
 
 // include/validate.php, row 54
@@ -7658,25 +7942,25 @@ return [
 // include/validate.php, row 187
 "Bad validator type: %1" => "Tip de validator gresit: %1", // ai 2026-06
 
-// include/validate.php, row 280, 585, 638
+// include/validate.php, row 280, 598, 651
 "Allowed minimum value" => "Valoarea minim\xE3 permis\xE3", // ai 2026-06
 
-// include/validate.php, row 281, 586, 639
+// include/validate.php, row 281, 599, 652
 "Allowed maximum value" => "Valoarea maxim\xE3 permis\xE3", // ai 2026-06
 
 // include/validate.php, row 282
 "Step" => "Pas", // ai 2026-06
 
-// include/validate.php, row 283, 419, 911
+// include/validate.php, row 283, 419, 924
 "Maximum length" => "Lungime maxim\xE3", // ai 2026-06
 
 // include/validate.php, row 296
 "No integer value" => "Nu este num\xE3r \xEEntreg", // ai 2026-06
 
-// include/validate.php, row 300, 603, 656
+// include/validate.php, row 300, 616, 669
 "Out of range - too big" => "\xCEn afara intervalului - prea mare", // ai 2026-06
 
-// include/validate.php, row 303, 606, 659
+// include/validate.php, row 303, 619, 672
 "Out of range - too small" => "\xCEn afara intervalului - prea mic", // ai 2026-06
 
 // include/validate.php, row 417
@@ -7685,79 +7969,79 @@ return [
 // include/validate.php, row 418
 "Empty expression" => "Expresie goal\xE3", // ai 2026-06
 
-// include/validate.php, row 432, 716, 746, 924
+// include/validate.php, row 432, 729, 759, 937
 "Too long" => "Prea lung", // ai 2026-06
 
 // include/validate.php, row 437
 "Do not match the pattern" => "Nu corespunde modelului", // ai 2026-06
 
-// include/validate.php, row 530, 563
+// include/validate.php, row 543, 576
 "No ID value" => "Valoarea nu este ID", // ai 2026-06
 
-// include/validate.php, row 547
+// include/validate.php, row 560
 "No packed ID value" => "Valoarea nu este packed ID", // ai 2026-06
 
-// include/validate.php, row 599
+// include/validate.php, row 612
 "No float value" => "Valoarea nu este un num\xE3r cu virgul\xE3 mobil\xE3 (float)", // ai 2026-06
 
-// include/validate.php, row 652
+// include/validate.php, row 665
 "No decimal value" => "Valoarea nu este un num\xE3r zecimal (decimal)", // ai 2026-06
 
-// include/validate.php, row 684
+// include/validate.php, row 697
 "Possible values" => "Valori posibile", // ai 2026-06
 
-// include/validate.php, row 696
+// include/validate.php, row 709
 "Out of range - not in the list" => "\xCEn afara intervalului - nu este \xEEn list\xE3", // ai 2026-06
 
-// include/validate.php, row 713, 743
+// include/validate.php, row 726, 756
 "Too short" => "Prea scurt", // ai 2026-06
 
-// include/validate.php, row 718
+// include/validate.php, row 731
 "Wrong characters - you should use a-z, A-Z and 0-9 characters" => "Caractere nepermise - folositi doar caractere a-z, A-Z si 0-9", // ai 2026-06
 
-// include/validate.php, row 784, 869
+// include/validate.php, row 797, 882
 "Field id" => "ID c\xE2mp", // ai 2026-06
 
-// include/validate.php, row 785, 870
+// include/validate.php, row 798, 883
 "Scope" => "Domeniu", // ai 2026-06
 
-// include/validate.php, row 785
+// include/validate.php, row 798
 "username | slice | allslices" => "",
 
-// include/validate.php, row 786, 871
+// include/validate.php, row 799, 884
 "Item id which we do not count" => "ID-ul articolului pe care nu \xEEl num\xE3r\xE3m", // ai 2026-06
 
-// include/validate.php, row 812
+// include/validate.php, row 825
 "Username is not unique" => "Numele de utilizator nu este unic", // ai 2026-06
 
-// include/validate.php, row 819, 827
+// include/validate.php, row 832, 840
 "Wrong parameter field_id for unique check" => "Parametru field_id gresit pentru verificarea unicit\xE3tii", // ai 2026-06
 
-// include/validate.php, row 839
+// include/validate.php, row 852
 "Not unique - value already used" => "Nu este unic - valoarea este deja folosit\xE3", // ai 2026-06
 
-// include/validate.php, row 870
+// include/validate.php, row 883
 "username | slice | <b>allslices</b>" => "",
 
-// include/validate.php, row 957
+// include/validate.php, row 970
 "Not a valid regular expression" => "Expresie regulat\xE3 nevalid\xE3", // ai 2026-11
 
-// include/validate.php, row 992
+// include/validate.php, row 1005
 "This field is required." => "Acest c\xE2mp este obligatoriu.", // ai 2026-06
 
-// include/validate.php, row 992
+// include/validate.php, row 1005
 "This field is required (marked by *)." => "Acest c\xEEmp este obligatoriu (marcat cu *).",
 
-// include/validate.php, row 999
+// include/validate.php, row 1012
 "Not a valid integer number." => "Nu este un num\xE3r \xEEntreg valid.",
 
-// include/validate.php, row 1002
+// include/validate.php, row 1015
 "Not a valid file name." => "Nu este un nume fi\xBAier valid.",
 
-// include/validate.php, row 1006
+// include/validate.php, row 1019
 "Not a valid email address." => "Nu este o adres\xE3 e-mail valid\xE3.",
 
-// include/validate.php, row 1009
+// include/validate.php, row 1022
 "The two password copies differ." => "Cele dou\xE3 copii ale parolei difer\xE3.", // ai 2026-06
 
 // include/view.class.php, row 326
@@ -7943,12 +8227,8 @@ return [
 "page length (number of items)" => "lungimea paginii (num\xE3r de articole)", // ai 2026-06
 
 // slice.php, row 621
-// src/Manager.php, row 881
+// src/Manager.php, row 890
 "No item found" => "Nu am g\xE3sit nici un articol",
-
-// src/AA_Plannedtask.php, row 71, 182
-// src/Optimize/CheckQueue.php, row 98, 178
-"Task" => "Sarcin\xE3", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 72
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "Dac\xE3 este specificat\xE3, sarcina este executat\xE3 doar dac\xE3 Conditia se evalueaz\xE3 la o valoare diferit\xE3 de zero sau goal\xE3", // ai 2026-06
@@ -8025,79 +8305,76 @@ return [
 // src/AA_Plannedtask.php, row 462
 "next run" => "urm\xE3toarea rulare", // ai 2026-06
 
-// src/Api/Controller/FilesController.php, row 56, 77
+// src/Api/Controller/FilesController.php, row 57, 78
 "The file is too big" => "Fisierul este prea mare", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 69
+// src/Api/Controller/FilesController.php, row 70
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "Nu aveti dreptul s\xE3 \xEEnc\xE3rcati fisiere aici. Dac\xE3 editati, este posibil ca autentificarea s\xE3 fi expirat - re\xEEnc\xE3rcati pagina.", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 72
+// src/Api/Controller/FilesController.php, row 73
 "Too many uploads - try again in an hour" => "Prea multe \xEEnc\xE3rc\xE3ri - \xEEncercati din nou peste o or\xE3", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 80, 291
+// src/Api/Controller/FilesController.php, row 81, 294
 "No file received" => "Nu a fost primit niciun fisier", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 88
+// src/Api/Controller/FilesController.php, row 89
 "Files of this type cannot be uploaded here: %1" => "Fisierele de acest tip nu pot fi \xEEnc\xE3rcate aici: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 91
+// src/Api/Controller/FilesController.php, row 92
 "The content of the file does not match its extension %1" => "Continutul fisierului nu corespunde extensiei sale %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 94
+// src/Api/Controller/FilesController.php, row 95
 "The image is bigger than %1 MB" => "Imaginea este mai mare de %1 MB", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 97
-"The image has more than %1 megapixels" => "Imaginea are mai mult de %1 megapixeli", // ai 2026-10
-
-// src/Api/Controller/FilesController.php, row 102
+// src/Api/Controller/FilesController.php, row 100
 "The upload directory of the slice is not writable" => "\xCEn directorul de \xEEnc\xE3rcare al sectiunii nu se poate scrie", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 112
+// src/Api/Controller/FilesController.php, row 111
+"The image has more than %1 megapixels" => "Imaginea are mai mult de %1 megapixeli", // ai 2026-10
+
+// src/Api/Controller/FilesController.php, row 115
 "The file could not be stored" => "Fisierul nu a putut fi stocat", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 134
+// src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Doar editorii sectiunii \xEEi pot r\xE3sfoi fisierele", // ai 2026-10
 
-// src/Central/Actionapps.php, row 178
+// src/Central/Actionapps.php, row 185
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Acest PHP nu are AES-GCM (sodium) - tokenul de autentificare nu poate fi stocat criptat", // ai 2026-10
 
-// src/Central/Actionapps.php, row 206
+// src/Central/Actionapps.php, row 215
 "Not configured" => "Neconfigurat", // ai 2026-06
 
-// src/Central/Actionapps.php, row 206
+// src/Central/Actionapps.php, row 215
 "Not authenticated - get a token" => "Neautentificat - obtineti un token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 209
+// src/Central/Actionapps.php, row 218
 "Authenticated until %1" => "Autentificat p\xE2n\xE3 la %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 209
+// src/Central/Actionapps.php, row 218
 "Expired - get a token" => "Expirat - obtineti un token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 234
+// src/Central/Actionapps.php, row 245
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "AA-ul la distant\xE3 a refuzat autentificarea: nume de utilizator sau parol\xE3 gresite, un cont cu autentificare \xEEn doi pasi (Central nu poate trimite \xEEnc\xE3 codul) sau utilizatorul nu este superadmin acolo", // ai 2026-11
 
-// src/Central/Actionapps.php, row 236
+// src/Central/Actionapps.php, row 247
 "The remote AA gave no login token - update it" => "AA-ul distant nu a dat niciun token de autentificare - actualizati-l", // ai 2026-10
 
-// src/Central/Actionapps.php, row 237
+// src/Central/Actionapps.php, row 248
 "The remote AA gave a token for longer than a day - update the remote AA" => "AA-ul distant a dat un token pentru mai mult de o zi - actualizati AA-ul distant", // ai 2026-10
 
-// src/Central/Actionapps.php, row 273
+// src/Central/Actionapps.php, row 284
 "Can't get org_name - " => "Nu pot obtine org_name - ", // ai 2026-06
 
-// src/Central/Actionapps.php, row 339
-"the update may still be running on the remote AA - wait, then run Test before retrying" => "actualizarea poate rula \xEEnc\xE3 pe AA-ul distant - asteptati, apoi rulati ,,Testeaz\xE3\" \xEEnainte de a re\xEEncerca", // ai 2026-10
-
-// src/Central/Actionapps.php, row 350
+// src/Central/Actionapps.php, row 338
 "Unexpected response from remote AA" => "R\xE3spuns neasteptat de la AA-ul distant", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 341
 "This AA does not support this command (update it first)" => "Acest AA nu accept\xE3 aceast\xE3 comand\xE3 (actualizati-l mai \xEEnt\xE2i)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 364
+// src/Central/Actionapps.php, row 353
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Tokenul de autentificare stocat nu poate fi folosit (s-a schimbat AA_SECRET, parola bazei de date sau adresa acestui AA) - autentificati din nou acest AA pe pagina ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 365
+// src/Central/Actionapps.php, row 354
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Niciun token de autentificare pentru acest AA - folositi ,,Autentificare\" pentru acest AA pe pagina ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -8811,7 +9088,7 @@ return [
 "Correct the condition, or empty its field to transfer all the items of the slice, then check the changes again." => "Corectati conditia sau goliti c\xE2mpul ei pentru a transfera toate articolele sectiunii, apoi verificati din nou modific\xE3rile.", // ai 2026-10
 
 // src/Central/FindingText.php, row 303
-// src/Optimize/CheckImports.php, row 176, 178
+// src/Optimize/CheckImports.php, row 177, 179
 // src/Optimize/ImgMeasuring.php, row 55
 "Why" => "Motiv", // ai 2026-10
 
@@ -9067,6 +9344,63 @@ return [
 // src/Central/FindingText.php, row 467
 "condition" => "conditie", // ai 2026-06
 
+// src/Central/OptimizeRun.php, row 155
+"Fixes made for one website" => "Corecturi f\xE3cute pentru un singur site", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 156
+"Steps of the DB update one by one" => "Pasii actualiz\xE3rii DB, unul c\xE2te unul", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 157
+"Tests - %1" => "Teste - %1", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 158
+"Repairs reading whole big tables - minutes on a big database" => "Repar\xE3ri care citesc tabele mari \xEEntregi - minute pe o baz\xE3 de date mare", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 159
+"Repairs" => "Repar\xE3ri", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 164
+"Recommended" => "Recomandate", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 179
+"Update DB (sql_update) - all its steps" => "Actualizare DB (sql_update) - toti pasii", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 308
+"The repair did not start or its answer is unusable: %1 - run Test to see the state of the AA." => "Repararea nu a pornit sau r\xE3spunsul ei este inutilizabil: %1 - rulati ,,Doar test\" pentru a vedea starea AA-ului.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 309
+"The test after the repair failed: %1" => "Testul de dup\xE3 reparare a esuat: %1", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 310
+"The repair was sent, but: %1 - run Test to see what it did." => "Repararea a fost trimis\xE3, dar: %1 - rulati ,,Doar test\" pentru a vedea ce a f\xE3cut.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 317
+"The repair did not answer in time and the test still fails - it may still work; run Test later." => "Repararea nu a r\xE3spuns la timp si testul \xEEnc\xE3 esueaz\xE3 - este posibil s\xE3 fie \xEEnc\xE3 \xEEn curs; rulati ,,Doar test\" mai t\xE2rziu.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 339
+"The test fails, but the AA ran another update the whole time - run this again later." => "Testul esueaz\xE3, dar AA-ul a rulat tot timpul o alt\xE3 actualizare - rulati din nou mai t\xE2rziu.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 341
+"The test after the repair got no answer - run Test later." => "Testul de dup\xE3 reparare nu a primit r\xE3spuns - rulati ,,Doar test\" mai t\xE2rziu.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 342
+"The repair was sent, but the AA has not answered since - it may still work; run Test later to see the result." => "Repararea a fost trimis\xE3, dar AA-ul nu a mai r\xE3spuns de atunci - este posibil s\xE3 fie \xEEnc\xE3 \xEEn curs; rulati ,,Doar test\" mai t\xE2rziu pentru a vedea rezultatul.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 344
+"The AA ran another update the whole time - run this again later." => "AA-ul a rulat tot timpul o alt\xE3 actualizare - rulati din nou mai t\xE2rziu.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 345
+"The AA did not answer in time - it may still work; run Test later to see the result." => "AA-ul nu a r\xE3spuns la timp - este posibil s\xE3 fie \xEEnc\xE3 \xEEn curs; rulati ,,Doar test\" mai t\xE2rziu pentru a vedea rezultatul.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 367
+"No such AA in the Central list any more" => "Acest AA nu mai exist\xE3 \xEEn lista Central", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 387
+"The AA answered in an older way - update it first" => "AA-ul a r\xE3spuns \xEEn formatul vechi - actualizati-l mai \xEEnt\xE2i", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 399
+"(the report is cut - see the Optimize page of that AA)" => "(raportul este trunchiat - vedeti pagina Optimizare a acelui AA)", // ai 2026-11
+
 // src/Central/RemoteHtml.php, row 22
 "(no output)" => "(f\xE3r\xE3 iesire)", // ai 2026-10
 
@@ -9165,6 +9499,24 @@ return [
 
 // src/Credential/Store.php, row 55
 "set (%1)" => "setat (%1)", // ai 2026-10
+
+// src/Form/ShowConditions.php, row 317
+"Fill in the name of the condition." => "Completati numele conditiei.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 321
+"Another condition of this slice is called %1." => "O alt\xE3 conditie a acestei sectiuni se numeste %1.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 333
+"The field %1 is not in this slice." => "C\xE2mpul %1 nu este \xEEn aceast\xE3 sectiune.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 335
+"Choose how to compare the field %1." => "Alegeti cum se compar\xE3 c\xE2mpul %1.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 337
+"Fill in the values of the field %1." => "Completati valorile c\xE2mpului %1.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 344
+"Add a rule or an expression." => "Ad\xE3ugati o regul\xE3 sau o expresie.", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
 "AA RSS" => "",
@@ -9373,6 +9725,7 @@ return [
 
 // src/Import/Definition.php, row 93
 // src/Import/DetailPage.php, row 604
+// src/Optimize/CheckImports.php, row 215
 "Enabled" => "Activat", // ai 2026-10
 
 // src/Import/Definition.php, row 113
@@ -9607,7 +9960,7 @@ return [
 "The source needs no key." => "Sursa nu are nevoie de cheie.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 291
-// src/Widget/Widget.php, row 849
+// src/Widget/Widget.php, row 848
 "Hint" => "Sugestie", // ai 2026-06
 
 // src/Import/DetailConfig.php, row 297
@@ -10446,7 +10799,7 @@ return [
 "http or https only, on a public address, without a user name and password" => "doar http sau https, la o adres\xE3 public\xE3, f\xE3r\xE3 nume de utilizator si parol\xE3", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 55
-// src/Widget/Widget.php, row 744, 813
+// src/Widget/Widget.php, row 743, 812
 "Columns" => "Coloane", // ai 2026-06
 
 // src/Import/Source/CsvurlSource.php, row 55
@@ -10458,298 +10811,304 @@ return [
 // src/Import/Source/CsvurlSource.php, row 56
 "The column that identifies the item; it must be one of the columns" => "Coloana care identific\xE3 articolul; trebuie s\xE3 fie una dintre coloane", // ai 2026-10
 
-// src/Isds/Advice.php, row 47
+// src/Isds/Advice.php, row 48
 "The form has expired, or it does not belong to this page. Load the page again." => "Formularul a expirat sau nu apartine acestei pagini. \xCEnc\xE3rcati din nou pagina.", // ai 2026-11
 
-// src/Isds/Advice.php, row 49
+// src/Isds/Advice.php, row 50
 "The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "Formularul trimis este mai mare dec\xE2t accept\xE3 serverul (%1). Nu s-a salvat nimic - micsorati atasamentele.", // ai 2026-11
 
-// src/Isds/Advice.php, row 50
+// src/Isds/Advice.php, row 51
 "The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "Formularul trimis este mai mare dec\xE2t accept\xE3 serverul. Nu s-a salvat nimic - micsorati atasamentele.", // ai 2026-11
 
-// src/Isds/Advice.php, row 51
+// src/Isds/Advice.php, row 52
 "The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "Actiunea a esuat din cauza unei erori interne a AA si poate c\xE3 si-a f\xE3cut deja o parte din treab\xE3. \xCEnc\xE3rcati din nou pagina si verificati starea \xEEnainte de a \xEEncerca \xEEnc\xE3 o dat\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 52
+// src/Isds/Advice.php, row 53
 "Someone else, or another window, is working with this now. Try it again in a while." => "Altcineva sau o alt\xE3 fereastr\xE3 lucreaz\xE3 acum cu aceasta. \xCEncercati din nou peste putin timp.", // ai 2026-11
 
-// src/Isds/Advice.php, row 53
+// src/Isds/Advice.php, row 54
 "You may not do this." => "Nu aveti dreptul s\xE3 faceti aceasta.", // ai 2026-11
 
-// src/Isds/Advice.php, row 54
+// src/Isds/Advice.php, row 55
 "This sending is not on this page." => "Aceast\xE3 trimitere nu se afl\xE3 pe aceast\xE3 pagin\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 55
+// src/Isds/Advice.php, row 56
 "The sending does not wait for this now." => "Trimiterea nu asteapt\xE3 acum aceast\xE3 actiune.", // ai 2026-11
 
-// src/Isds/Advice.php, row 56
+// src/Isds/Advice.php, row 57
 "A step of the sending is still running. Try it again in a few minutes." => "Un pas al trimiterii \xEEnc\xE3 ruleaz\xE3. \xCEncercati din nou peste c\xE2teva minute.", // ai 2026-11
 
-// src/Isds/Advice.php, row 57
+// src/Isds/Advice.php, row 58
 "The sending goes on." => "Trimiterea continu\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 58
+// src/Isds/Advice.php, row 59
 "The sending is stopping - no further message will go." => "Trimiterea se opreste - nu va mai pleca niciun mesaj.", // ai 2026-11
 
-// src/Isds/Advice.php, row 59
+// src/Isds/Advice.php, row 60
 "Every message has been sent or tried already - there is nothing left to stop." => "Toate mesajele au fost deja trimise sau \xEEncercate - nu mai este nimic de oprit.", // ai 2026-11
 
-// src/Isds/Advice.php, row 60
+// src/Isds/Advice.php, row 61
 "The sending has been ended for good. Any message of unknown fate stays for you to verify." => "Trimiterea a fost \xEEncheiat\xE3 definitiv. Mesajele cu soart\xE3 necunoscut\xE3 r\xE3m\xE2n s\xE3 le verificati dvs.", // ai 2026-11
 
-// src/Isds/Advice.php, row 61
+// src/Isds/Advice.php, row 62
 "The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "Trimiterea s-a oprit deja din cauza unei erori, deci ,,Opreste\" nu schimb\xE3 nimic aici. Puteti alege ,,Continu\xE3\" sau puteti \xEEncheia definitiv trimiterea - mesajele cu soart\xE3 necunoscut\xE3 si livr\xE3rile \xEEnc\xE3 necitite nu vor mai fi urm\xE3rite.", // ai 2026-11
 
-// src/Isds/Advice.php, row 63
+// src/Isds/Advice.php, row 64
 "The draft is saved." => "Ciorna a fost salvat\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 64
+// src/Isds/Advice.php, row 65
 "The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "Scrisoarea a fost salvat\xE3, dar nu si alegerea destinatarilor: s-a schimbat \xEEntre timp - \xEEn alt\xE3 fereastr\xE3 sau un destinatar ales nu mai exist\xE3. Pagina arat\xE3 destinatarii salvati acum; alegeti-i din nou dac\xE3 este nevoie.", // ai 2026-11
 
-// src/Isds/Advice.php, row 65
+// src/Isds/Advice.php, row 66
 "The copy is ready as a new draft." => "Copia este preg\xE3tit\xE3 ca ciorn\xE3 nou\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 66
+// src/Isds/Advice.php, row 67
 "The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "Ciorna a fost mutat\xE3 \xEEn cosul de gunoi. Un editor al sectiunii o poate restaura \xEEn ,,Admin articole\".", // ai 2026-11
 
-// src/Isds/Advice.php, row 67
+// src/Isds/Advice.php, row 68
 "The sending of this campaign has started, so it stays - its messages must remain traceable." => "Trimiterea acestei campanii a \xEEnceput, deci r\xE3m\xE2ne - mesajele sale trebuie s\xE3 poat\xE3 fi urm\xE3rite \xEEn continuare.", // ai 2026-11
 
-// src/Isds/Advice.php, row 68
+// src/Isds/Advice.php, row 69
 "The sending left no recipient unsent - there is nothing to copy." => "Trimiterea nu a l\xE3sat niciun destinatar netrimis - nu este nimic de copiat.", // ai 2026-11
 
-// src/Isds/Advice.php, row 69
+// src/Isds/Advice.php, row 70
 "The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "Scrisoarea poate fi trimis\xE3 din nou acestui destinatar doar dac\xE3 mesajul s\xE3u a esuat sau trimiterea s-a oprit \xEEnainte de a ajunge la el. Acest mesaj a plecat, mai poate pleca sau a fost omis - ori nu se stie dac\xE3 a plecat: verificati-l de \xEEndat\xE3 ce pagina ofer\xE3 aceast\xE3 posibilitate (nu c\xE2t timp AA \xEEnc\xE3 \xEEl caut\xE3), iar apoi poate fi trimis din nou.", // ai 2026-11
 
-// src/Isds/Advice.php, row 70
+// src/Isds/Advice.php, row 71
 "Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "\xCEnregistrat: mesajul nu a plecat. Scrisoarea poate fi trimis\xE3 din nou acelui destinatar \xEEntr-o campanie nou\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 71
+// src/Isds/Advice.php, row 72
 "The fate of this message is known - there is nothing to verify." => "Soarta acestui mesaj este cunoscut\xE3 - nu este nimic de verificat.", // ai 2026-11
 
-// src/Isds/Advice.php, row 72
+// src/Isds/Advice.php, row 73
 "This message does not belong to the sending." => "Acest mesaj nu apartine trimiterii.", // ai 2026-11
 
-// src/Isds/Advice.php, row 73
+// src/Isds/Advice.php, row 74
 "The data box of the recipient is taken from the register." => "C\xE3suta de date a destinatarului a fost preluat\xE3 din registru.", // ai 2026-11
 
-// src/Isds/Advice.php, row 74
+// src/Isds/Advice.php, row 75
 "The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "Registrul nu ofer\xE3 aceast\xE3 c\xE3sut\xE3 de date pentru destinatar cu suficient\xE3 sigurant\xE3 pentru a fi preluat\xE3 aici. Un editor al sectiunii de destinatari o compar\xE3 pe pagina acesteia ,,C\xE3sute de date din registru\" sau corecteaz\xE3 articolul.", // ai 2026-11
 
-// src/Isds/Advice.php, row 75
+// src/Isds/Advice.php, row 76
 "The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "Registrul c\xE3sutelor de date nu a fost desc\xE3rcat sau este vechi. Un editor al sectiunii de destinatari \xEEl descarc\xE3 pe pagina acesteia ,,C\xE3sute de date din registru\".", // ai 2026-11
 
-// src/Isds/Advice.php, row 76
+// src/Isds/Advice.php, row 77
 "This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "Acest destinatar nu se afl\xE3 printre cei asociati cu registrul: a fost sters, mutat \xEEn cosul de gunoi sau are alt tip. \xCEnc\xE3rcati din nou pagina.", // ai 2026-11
 
-// src/Isds/Advice.php, row 77
+// src/Isds/Advice.php, row 78
 "A page in the test environment changes no recipient." => "O pagin\xE3 din mediul de test nu modific\xE3 niciun destinatar.", // ai 2026-11
 
-// src/Isds/Advice.php, row 78
+// src/Isds/Advice.php, row 79
 "The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "Trimiterea a fost pus\xE3 \xEEn coad\xE3 - destinatari: %1. Continu\xE3 singur\xE3, puteti \xEEnchide pagina.", // ai 2026-11
 
-// src/Isds/Advice.php, row 79
+// src/Isds/Advice.php, row 80
 "The test message has gone (ID %1 in ISDS, reference number %2)." => "Mesajul de test a plecat (ID %1 \xEEn ISDS, num\xE3r de \xEEnregistrare %2).", // ai 2026-11
 
-// src/Isds/Advice.php, row 80
+// src/Isds/Advice.php, row 81
 "It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "Nu se stie dac\xE3 mesajul de test a plecat. C\xE3utati-l printre mesajele trimise ale c\xE3sutei de date dup\xE3 num\xE3rul de \xEEnregistrare %1.", // ai 2026-11
 
-// src/Isds/Advice.php, row 81
+// src/Isds/Advice.php, row 82
 "ISDS refused the test message." => "ISDS a refuzat mesajul de test.", // ai 2026-11
 
-// src/Isds/Advice.php, row 82
+// src/Isds/Advice.php, row 83
 "Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "Un alt mesaj de test al acestei pagini este pe drum sau s-a oprit acum c\xE2teva momente. \xCEncercati din nou peste c\xE2teva minute.", // ai 2026-11
 
-// src/Isds/Advice.php, row 83
+// src/Isds/Advice.php, row 84
 "The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "Trimiterea a fost deja pus\xE3 \xEEn coad\xE3 sau trimis\xE3, deci nu mai poate fi modificat\xE3 sau trimis\xE3 din nou. Pentru a trimite scrisoarea \xEEnc\xE3 o dat\xE3, creati o copie a ei.", // ai 2026-11
 
-// src/Isds/Advice.php, row 84
+// src/Isds/Advice.php, row 85
 "Choose the recipients and save the draft." => "Alegeti destinatarii si salvati ciorna.", // ai 2026-11
 
-// src/Isds/Advice.php, row 85
+// src/Isds/Advice.php, row 86
 "This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "Aceast\xE3 pagin\xE3 nu mai ofer\xE3 destinatarii salvati cu ciorna, deci nu afiseaz\xE3 nicio alegere a lor. Alegeti din nou destinatarii si salvati ciorna - noua alegere o \xEEnlocuieste pe cea salvat\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 86
+// src/Isds/Advice.php, row 87
 "The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "Num\xE3rul destinatarilor s-a schimbat de c\xE2nd ati confirmat %1. Verificati alegerea si trimiteti din nou.", // ai 2026-11
 
-// src/Isds/Advice.php, row 87
+// src/Isds/Advice.php, row 88
 "There are more recipients than this page may send to (%1). Narrow the choice." => "Sunt mai multi destinatari dec\xE2t poate trimite aceast\xE3 pagin\xE3 (%1). Restr\xE2ngeti alegerea.", // ai 2026-11
 
-// src/Isds/Advice.php, row 88
+// src/Isds/Advice.php, row 89
 "The letter would reach no one: none of the recipients chosen has a data box it can go to." => "Scrisoarea nu ar ajunge la nimeni: niciunul dintre destinatarii alesi nu are o c\xE3sut\xE3 de date \xEEn care s\xE3 poat\xE3 fi trimis\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 89
+// src/Isds/Advice.php, row 90
 "No data box account is set up for this page. Ask the administrator." => "Pentru aceast\xE3 pagin\xE3 nu este configurat niciun cont de c\xE3sut\xE3 de date. Adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 90
+// src/Isds/Advice.php, row 91
 "This page or its slices are not ready to send. Ask the administrator." => "Aceast\xE3 pagin\xE3 sau sectiunile ei nu sunt preg\xE3tite pentru trimitere. Adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 91
+// src/Isds/Advice.php, row 92
 "The letter cannot go as a data message:" => "Scrisoarea nu poate pleca ca mesaj de date:", // ai 2026-11
 
-// src/Isds/Advice.php, row 92
+// src/Isds/Advice.php, row 93
 "The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "Serverul nu a putut alc\xE3tui scrisoarea acum - \xEEn ciorn\xE3 nu este nimic de corectat. \xCEncercati din nou mai t\xE2rziu sau adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 93
+// src/Isds/Advice.php, row 94
 "The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "Serverul are prea putin\xE3 memorie pentru scrisoare si atasamentele ei (sunt necesari %1 MB). Adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 93
+// src/Isds/Advice.php, row 94
 "The server has too little memory for the letter and its attachments. Ask the administrator." => "Serverul are prea putin\xE3 memorie pentru scrisoare si atasamentele ei. Adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 94
+// src/Isds/Advice.php, row 95
 "The database cannot queue a sending safely. Ask the administrator." => "Baza de date nu poate pune \xEEn sigurant\xE3 o trimitere \xEEn coad\xE3. Adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 95
+// src/Isds/Advice.php, row 96
 "ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "ISDS a refuzat autentificarea contului, nu s-a trimis nimic. Rugati administratorul s\xE3 verifice datele de autentificare.", // ai 2026-11
 
-// src/Isds/Advice.php, row 96
+// src/Isds/Advice.php, row 97
 "ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "ISDS a blocat autentific\xE3rile de pe acest server, nu s-a trimis nimic. O parol\xE3 nou\xE3 nu ajut\xE3: AA \xEEncearc\xE3 din nou s\xE3 se autentifice la o zi dup\xE3 blocare - \xEEncercati din nou m\xE2ine sau adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 97
+// src/Isds/Advice.php, row 98
 "The settings of the account are not complete, nothing was sent. Ask the administrator." => "Set\xE3rile contului nu sunt complete, nu s-a trimis nimic. Adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 98
+// src/Isds/Advice.php, row 99
 "ISDS does not answer, nothing was sent. Try it again in a while." => "ISDS nu r\xE3spunde, nu s-a trimis nimic. \xCEncercati din nou peste putin timp.", // ai 2026-11
 
-// src/Isds/Advice.php, row 99
+// src/Isds/Advice.php, row 100
 "ISDS refused to tell whose the login of the account is, nothing was sent." => "ISDS a refuzat s\xE3 spun\xE3 cui apartine autentificarea contului, nu s-a trimis nimic.", // ai 2026-11
 
-// src/Isds/Advice.php, row 100
+// src/Isds/Advice.php, row 101
 "No test data box is set up for this page - in production the administrator of the server sets it." => "Pentru aceast\xE3 pagin\xE3 nu este configurat\xE3 nicio c\xE3sut\xE3 de date de test - \xEEn productie o configureaz\xE3 administratorul serverului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 101
+// src/Isds/Advice.php, row 102
 "Choose one of the test data boxes of this page." => "Alegeti una dintre cutiile de date de test ale acestei pagini.", // ai 2026-11
 
-// src/Isds/Advice.php, row 102
+// src/Isds/Advice.php, row 103
 "A test message cannot go to the data box it is sent from. Choose another test box." => "Un mesaj de test nu poate fi trimis \xEEn c\xE3suta de date din care este trimis. Alegeti alt\xE3 c\xE3sut\xE3 de test.", // ai 2026-11
 
-// src/Isds/Advice.php, row 103
+// src/Isds/Advice.php, row 104
 "ISDS is being maintained until %1. Try it again then." => "ISDS este \xEEn mentenant\xE3 p\xE2n\xE3 la %1. \xCEncercati din nou atunci.", // ai 2026-11
 
-// src/Isds/Advice.php, row 103
+// src/Isds/Advice.php, row 104
 "ISDS is being maintained. Try it again later." => "ISDS este \xEEn mentenant\xE3. \xCEncercati din nou mai t\xE2rziu.", // ai 2026-11
 
-// src/Isds/Advice.php, row 105
+// src/Isds/Advice.php, row 106
 "This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "Aceast\xE3 scrisoare a plecat deja, sau poate s\xE3 fi plecat, c\xE3tre aceast\xE3 c\xE3sut\xE3 de test la %2 (num\xE3r de \xEEnregistrare %1). Modificati ciorna pentru a o testa din nou.", // ai 2026-11
 
-// src/Isds/Advice.php, row 106
+// src/Isds/Advice.php, row 107
 "This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "Aceast\xE3 scrisoare a plecat deja, sau poate s\xE3 fi plecat, c\xE3tre aceast\xE3 c\xE3sut\xE3 de test (num\xE3r de \xEEnregistrare %1). Modificati ciorna pentru a o testa din nou.", // ai 2026-11
 
-// src/Isds/Advice.php, row 107
+// src/Isds/Advice.php, row 108
 "A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "Un mesaj c\xE3tre aceast\xE3 c\xE3sut\xE3 de date ar fi cu plat\xE3 (mesaj de date postal), iar \xEEn productie un mesaj de test se trimite doar gratuit. Testati cu c\xE3suta de date a unei autorit\xE3ti.", // ai 2026-11
 
-// src/Isds/Advice.php, row 108
+// src/Isds/Advice.php, row 109
 "It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "Nu s-a putut verifica dac\xE3 mesajul ar fi gratuit, nu s-a trimis nimic. Verificati cutia de test si \xEEncercati din nou peste putin timp.", // ai 2026-11
 
-// src/Isds/Advice.php, row 109
+// src/Isds/Advice.php, row 110
 "The test message went as a paid postal data message." => "Mesajul de test a plecat ca mesaj de date postal cu plat\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 110
+// src/Isds/Advice.php, row 111
 "The test message may have cost money: it may have gone as a paid postal data message." => "Mesajul de test poate s\xE3 fi costat bani: poate s\xE3 fi plecat ca mesaj de date postal cu plat\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 141
+// src/Isds/Advice.php, row 142
 "ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "ISDS a refuzat mai multe mesaje la r\xE2nd cu aceeasi stare sau a refuzat o interogare a trimiterii - cui apartine autentificarea contului ori ce mesaje au fost trimise.", // ai 2026-11
 
-// src/Isds/Advice.php, row 142
+// src/Isds/Advice.php, row 143
 "After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "Dup\xE3 mesaje refuzate, ,,Continu\xE3\" mai trimite unul, iar trimiterea se opreste din nou dac\xE3 ISDS \xEEl refuz\xE3 si pe acela; dup\xE3 o interogare refuzat\xE3, ,,Continu\xE3\" o repet\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 144
+// src/Isds/Advice.php, row 145
 "Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "Se asteapt\xE3 ca ISDS s\xE3 listeze mesajele a c\xE3ror soart\xE3 nu este \xEEnc\xE3 cunoscut\xE3. Trimiterea le caut\xE3 singur\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 145
+// src/Isds/Advice.php, row 146
 "The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "Trimiterea s-a \xEEncheiat - ceea ce nu \xEEnseamn\xE3 c\xE3 toate mesajele au plecat; cifrele arat\xE3 aceasta. Livrarea este urm\xE3rit\xE3 \xEEn runde; urm\xE3toarea vine de la sine.", // ai 2026-11
 
-// src/Isds/Advice.php, row 146
+// src/Isds/Advice.php, row 147
 "ISDS is being maintained. The sending waits till the end and goes on by itself." => "ISDS este \xEEn mentenant\xE3. Trimiterea asteapt\xE3 p\xE2n\xE3 la final si continu\xE3 singur\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 147
+// src/Isds/Advice.php, row 148
 "The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "Contul de c\xE3sut\xE3 de date al acestei pagini nu mai este cel cu care a fost pus\xE3 trimiterea \xEEn coad\xE3. Adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 148
+// src/Isds/Advice.php, row 149
 "ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "ISDS nu r\xE3spunde. AA \xEEncearc\xE3 din nou singur; dac\xE3 trimiterea s-a oprit din aceast\xE3 cauz\xE3, alegeti ,,Continu\xE3\" de \xEEndat\xE3 ce ISDS r\xE3spunde.", // ai 2026-11
 
-// src/Isds/Advice.php, row 149
+// src/Isds/Advice.php, row 150
 "ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "ISDS refuz\xE3 autentificarea contului. Rugati administratorul s\xE3 verifice datele de autentificare, apoi alegeti ,,Continu\xE3\".", // ai 2026-11
 
-// src/Isds/Advice.php, row 150
+// src/Isds/Advice.php, row 151
 "ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "ISDS a blocat autentific\xE3rile de pe acest server. O parol\xE3 nou\xE3 nu ajut\xE3: alegeti ,,Continu\xE3\" m\xE2ine sau adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 151
+// src/Isds/Advice.php, row 152
 "The settings of the account are not complete. Ask the administrator." => "Set\xE3rile contului nu sunt complete. Adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 152
+// src/Isds/Advice.php, row 153
 "What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "Ceea ce a fost \xEEnghetat pentru trimitere - scrisoarea, atasamentele ei sau destinatarii - lipseste sau s-a schimbat, deci trimiterea nu poate continua. Adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 153
+// src/Isds/Advice.php, row 154
 "The database cannot record the sending safely. Ask the administrator." => "Baza de date nu poate \xEEnregistra \xEEn sigurant\xE3 trimiterea. Adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 154
+// src/Isds/Advice.php, row 155
 "A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "Un pas al trimiterii nu a avansat \xEEn mod repetat. Alegeti ,,Continu\xE3\"; dac\xE3 se opreste din nou, adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 155
+// src/Isds/Advice.php, row 156
 "A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Un pas al trimiterii s-a oprit \xEEnainte de final. AA \xEEncearc\xE3 din nou singur; dac\xE3 trimiterea s-a oprit din aceast\xE3 cauz\xE3, adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 156
+// src/Isds/Advice.php, row 157
 "The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Finalul trimiterii nu a putut fi \xEEnregistrat. AA \xEEncearc\xE3 din nou singur; dac\xE3 trimiterea s-a oprit din aceast\xE3 cauz\xE3, adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 157
+// src/Isds/Advice.php, row 158
 "A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "Un pas al trimiterii a esuat din cauza unei erori interne a AA. Alegeti ,,Continu\xE3\"; dac\xE3 esueaz\xE3 din nou, adresati-v\xE3 administratorului.", // ai 2026-11
 
-// src/Isds/Advice.php, row 173
+// src/Isds/Advice.php, row 174
 "The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "C\xE3suta de date a destinatarului accept\xE3 doar mesaje de date postale cu plat\xE3, iar c\xE3suta de date expeditoare nu are voie s\xE3 le trimit\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 173
+// src/Isds/Advice.php, row 174
 "Test with the data box of an authority." => "Testati cu c\xE3suta de date a unei autorit\xE3ti.", // ai 2026-11
 
-// src/Isds/Advice.php, row 174
+// src/Isds/Advice.php, row 175
 "The sending data box has been made inaccessible - no message can go from it now." => "C\xE3suta de date expeditoare a fost f\xE3cut\xE3 inaccesibil\xE3 - acum nu poate pleca niciun mesaj din ea.", // ai 2026-11
 
-// src/Isds/Advice.php, row 175
+// src/Isds/Advice.php, row 176
 "The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "Subiectul, ,,\xCEn atentia\" sau numele unui atasament contine un caracter pe care ISDS nu \xEEl accept\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 183
+// src/Isds/Advice.php, row 184
 "ISDS answered with status %1." => "ISDS a r\xE3spuns cu starea %1.", // ai 2026-11
 
-// src/Isds/Advice.php, row 193
+// src/Isds/Advice.php, row 194
 "The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "Subiectul nu poate fi salvat: poate avea cel mult %1 caractere si niciun caracter tab sau alt caracter de control. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 194
+// src/Isds/Advice.php, row 195
 "\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => ",,\xCEn atentia\" nu poate fi salvat: poate avea cel mult %1 caractere si niciun caracter tab sau alt caracter de control. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 195
+// src/Isds/Advice.php, row 196
 "The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "Textul scrisorii nu poate fi salvat: este mai mare de %1 sau nu este un text valid. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
 
-// src/Isds/Advice.php, row 196
-"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "Alegerea destinatarilor nu poate fi salvat\xE3: aceast\xE3 pagin\xE3 nu o ofer\xE3. Nu s-a salvat nimic din ciorn\xE3 - alegeti-i \xEEnc\xE3 o dat\xE3 si salvati-o.", // ai 2026-11
-
 // src/Isds/Advice.php, row 197
-"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "Alegerea destinatarilor nu poate fi salvat\xE3: pot fi alesi cel mult %1 destinatari individual si tot at\xE2tia omisi individual. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
+"The header cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "Antetul nu poate fi salvat: este mai mare de %1 sau nu este un text valid. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
 
 // src/Isds/Advice.php, row 198
-"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Un mesaj de date contine pe l\xE2ng\xE3 scrisoare cel mult %1 atasamente. Nu s-a salvat nimic din ciorn\xE3 - eliminati mai \xEEnt\xE2i c\xE2teva dintre ele.", // ai 2026-11
+"The footer cannot be saved: it may have at most %1 lines of at most %2 characters each - fewer when they are wide -, and no control character. Nothing of the draft was saved." => "Subsolul nu poate fi salvat: r\xE2nduri cel mult %1, caractere pe r\xE2nd cel mult %2 (mai putine dac\xE3 sunt late), f\xE3r\xE3 caractere de control. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
 
 // src/Isds/Advice.php, row 199
-"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "Fisierul %1 nu poate fi atasat: aceast\xE3 pagin\xE3 accept\xE3 doar fisiere de tipurile %2. Salvati-l ca PDF sau atasati pe r\xE2nd fisierele dintr-o arhiv\xE3. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
+"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "Alegerea destinatarilor nu poate fi salvat\xE3: aceast\xE3 pagin\xE3 nu o ofer\xE3. Nu s-a salvat nimic din ciorn\xE3 - alegeti-i \xEEnc\xE3 o dat\xE3 si salvati-o.", // ai 2026-11
 
 // src/Isds/Advice.php, row 200
-"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "Fisierul %1 nu poate fi atasat: continutul s\xE3u nu corespunde tipului indicat de extensie. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
+"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "Alegerea destinatarilor nu poate fi salvat\xE3: pot fi alesi cel mult %1 destinatari individual si tot at\xE2tia omisi individual. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
 
 // src/Isds/Advice.php, row 201
-"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "Fisierul %1 este mai mare dec\xE2t poate fi aici un fisier (%2). Nu s-a salvat nimic din ciorn\xE3. Toate atasamentele si scrisoarea \xEEmpreun\xE3 pot avea cel mult %3 - un mesaj de test verific\xE3 aceasta.", // ai 2026-11
+"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Un mesaj de date contine pe l\xE2ng\xE3 scrisoare cel mult %1 atasamente. Nu s-a salvat nimic din ciorn\xE3 - eliminati mai \xEEnt\xE2i c\xE2teva dintre ele.", // ai 2026-11
 
 // src/Isds/Advice.php, row 202
-"The file %1 is empty. Nothing of the draft was saved." => "Fisierul %1 este gol. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
+"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "Fisierul %1 nu poate fi atasat: aceast\xE3 pagin\xE3 accept\xE3 doar fisiere de tipurile %2. Salvati-l ca PDF sau atasati pe r\xE2nd fisierele dintr-o arhiv\xE3. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
 
 // src/Isds/Advice.php, row 203
-"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "Fisierul %1 nu a sosit \xEEntreg. \xCEncercati din nou. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
+"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "Fisierul %1 nu poate fi atasat: continutul s\xE3u nu corespunde tipului indicat de extensie. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
 
 // src/Isds/Advice.php, row 204
+"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "Fisierul %1 este mai mare dec\xE2t poate fi aici un fisier (%2). Nu s-a salvat nimic din ciorn\xE3. Toate atasamentele si scrisoarea \xEEmpreun\xE3 pot avea cel mult %3 - un mesaj de test verific\xE3 aceasta.", // ai 2026-11
+
+// src/Isds/Advice.php, row 205
+"The file %1 is empty. Nothing of the draft was saved." => "Fisierul %1 este gol. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
+
+// src/Isds/Advice.php, row 206
+"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "Fisierul %1 nu a sosit \xEEntreg. \xCEncercati din nou. Nu s-a salvat nimic din ciorn\xE3.", // ai 2026-11
+
+// src/Isds/Advice.php, row 207
 "A value of the form cannot be taken. Load the page again and try it once more." => "O valoare din formular nu poate fi preluat\xE3. \xCEnc\xE3rcati din nou pagina si \xEEncercati \xEEnc\xE3 o dat\xE3.", // ai 2026-11
 
-// src/Isds/Gate.php, row 1139
+// src/Isds/Gate.php, row 1143
 "The mass sending on this page is not ready - fix this first:" => "Trimiterea \xEEn mas\xE3 de pe aceast\xE3 pagin\xE3 nu este preg\xE3tit\xE3 - corectati mai \xEEnt\xE2i urm\xE3toarele:", // ai 2026-11
 
-// src/Isds/Gate.php, row 1140
+// src/Isds/Gate.php, row 1144
 "Where to fix it:" => "Unde se corecteaz\xE3:", // ai 2026-11
 
 // src/Isds/Registry/Config.php, row 53
@@ -11011,37 +11370,34 @@ return [
 // src/Isds/Setup.php, row 115
 "Unknown settings of the mass sending: %1 - the settings are %2" => "Set\xE3ri necunoscute ale trimiterii \xEEn mas\xE3: %1 - set\xE3rile posibile sunt %2", // ai 2026-11
 
-// src/Isds/Setup.php, row 130
+// src/Isds/Setup.php, row 129
 "default_types names types that are not among types: %1" => "default_types numeste tipuri care nu sunt \xEEn types: %1", // ai 2026-11
 
-// src/Isds/Setup.php, row 133
+// src/Isds/Setup.php, row 132
 "environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "environment poate fi doar ,,%1\" - c\xE2nd se foloseste productia decide misc/datovka/datovka_conf.php", // ai 2026-11
 
-// src/Isds/Setup.php, row 136
-"Set letterhead to a text" => "Setati letterhead la un text", // ai 2026-11
-
-// src/Isds/Setup.php, row 146
+// src/Isds/Setup.php, row 142
 "The settings of data boxes cannot be read now - ask the administrator of the server" => "Set\xE3rile c\xE3sutelor de date nu pot fi citite acum - adresati-v\xE3 administratorului serverului", // ai 2026-11
 
-// src/Isds/Setup.php, row 240
+// src/Isds/Setup.php, row 238
 "Set %1 to the id of a slice - 32 hexadecimal digits" => "Setati %1 la ID-ul unei sectiuni - 32 de cifre hexazecimale", // ai 2026-11
 
-// src/Isds/Setup.php, row 258
+// src/Isds/Setup.php, row 256
 "Set %1 to the id of a field - 16 characters like text...........1" => "Setati %1 la ID-ul unui c\xE2mp - 16 caractere, de ex. text...........1", // ai 2026-11
 
-// src/Isds/Setup.php, row 283
+// src/Isds/Setup.php, row 281
 "Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "Setati types la un obiect cu tipurile de articole oferite, fiecare cu eticheta sa: {jsonasoc:<type>:<label>:...}", // ai 2026-11
 
-// src/Isds/Setup.php, row 288
+// src/Isds/Setup.php, row 286
 "An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "Un tip de articol din types poate contine doar litere, cifre, spatii si caracterele - _ . : %1", // ai 2026-11
 
-// src/Isds/Setup.php, row 303
+// src/Isds/Setup.php, row 301
 "Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "Setati %1 la un text sau la o list\xE3 de texte: [\"...\",\"...\"]", // ai 2026-11
 
-// src/Isds/Setup.php, row 321
+// src/Isds/Setup.php, row 319
 "test_box: %1 is not the id of a data box - 7 letters or digits" => "test_box: %1 nu este ID-ul unei c\xE3sute de date - 7 litere sau cifre", // ai 2026-11
 
-// src/Isds/Setup.php, row 351
+// src/Isds/Setup.php, row 349
 "Set max_recipients to a number from 1 to %1" => "Setati max_recipients la un num\xE3r de la 1 la %1", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 67
@@ -11078,7 +11434,7 @@ return [
 "The field %1 of slice \"%2\" is protected - name the field that tells a member" => "C\xE2mpul %1 al sectiunii ,,%2\" este protejat - indicati c\xE2mpul care marcheaz\xE3 un membru", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 179
-// src/Optimize/CheckSiteStateFiles.php, row 72
+// src/Optimize/CheckSiteStateFiles.php, row 81
 // src/Optimize/CheckUniversalAnalytics.php, row 71
 "Site settings" => "Set\xE3rile site-ului", // ai 2026-10
 
@@ -11137,7 +11493,7 @@ return [
 "Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "Sectiunea ,,%1\" adaug\xE3 la constante ce stocheaz\xE3 trimiterea \xEEn c\xE2mpurile %2 - \xEEn set\xE3rile fiec\xE3rui c\xE2mp dezactivati ,,%3\"", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
-// src/Widget/Widget.php, row 786
+// src/Widget/Widget.php, row 785
 "Add to Constant" => "Adaug\xE3 la constante", // ai 2026-06
 
 // src/Later/ComputedfieldsUpdater.php, row 84
@@ -11173,40 +11529,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "Nu puteti salva acest r\xE2nd aici.", // ai 2026-10
 
-// src/Manager.php, row 812
+// src/Manager.php, row 821
 "Searchbar" => "Bar\xE3 de c\xE3utare", // ai 2026-06
 
-// src/Manager.php, row 813
+// src/Manager.php, row 822
 "Scroller" => "Paginare", // ai 2026-06
 
-// src/Manager.php, row 814
+// src/Manager.php, row 823
 "Msg" => "Mesaj", // ai 2026-06
 
-// src/Manager.php, row 815
+// src/Manager.php, row 824
 "Bin" => "Dosar", // ai 2026-06
 
-// src/Manager.php, row 817
+// src/Manager.php, row 826
 "Manager ID" => "ID manager", // ai 2026-06
 
-// src/Manager.php, row 1191
+// src/Manager.php, row 1200
 "The action was not performed - use the button on the page." => "Actiunea nu a fost efectuat\xE3 - folositi butonul de pe pagin\xE3.", // ai 2026-10
 
-// src/Manager.php, row 1272
+// src/Manager.php, row 1281
 "Edit id" => "Editare id", // ai 2026-06
 
-// src/Manager.php, row 1286
+// src/Manager.php, row 1295
 "Hold Shift and click to select multiple rows" => "Tineti ap\xE3sat Shift si dati clic pentru a selecta mai multe r\xE2nduri", // ai 2026-06
 
-// src/Manager.php, row 1324
+// src/Manager.php, row 1333
 "Are you sure you want to empty trash?" => "Sigur doriti s\xE3 goliti cosul de gunoi?", // ai 2026-06
 
-// src/Manager.php, row 1426
+// src/Manager.php, row 1435
 "Go" => "Dute",
 
-// src/Manager.php, row 1439
+// src/Manager.php, row 1448
 "No item selected. Perform action for all filtered items? " => "Niciun articol selectat. Efectuati actiunea pentru toate articolele filtrate? ", // ai 2026-06
 
-// src/Manager.php, row 1439
+// src/Manager.php, row 1448
 "Run for %1 items" => "Execut\xE3 pentru %1 articole", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47
@@ -11261,11 +11617,8 @@ return [
 // src/Manageraction/Central_MoveItem.php, row 44
 "Hold" => "\xCEn asteptare", // ai 2026-06
 
-// src/Manageraction/Central_OptimizeType.php, row 34
-"Update DB (sql_update)" => "Actualizare DB (sql_update)", // ai 2026-06
-
-// src/Manageraction/Central_OptimizeType.php, row 49
-"Error: %1" => "Eroare: %1", // ai 2026-10
+// src/Manageraction/Central_OptimizeRun.php, row 16
+"Optimize - run a test or repair..." => "Optimizare - ruleaz\xE3 un test sau o reparare...", // ai 2026-11
 
 // src/Manageraction/Import_Delete.php, row 19
 // src/Manageraction/Object_Delete.php, row 19
@@ -11757,7 +12110,7 @@ return [
 "Trim text fields" => "Elimin\xE3 spatiile din c\xE2mpurile text", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 29
-"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "Trece c\xE2mpurile text de la functia de inserare ,,Text = nu modifica\" la ,,Elimin\xE3 spatiile\", astfel \xEEnc\xE2t spatiile si liniile noi din jurul unei valori s\xE3 nu fie stocate. C\xE2mpurile pentru cod, valori unice, copii ale parolelor si c\xE2mpurile ale c\xE3ror constante au astfel de spatii \xEEsi p\xE3streaz\xE3 setarea. Valorile stocate anterior nu se modific\xE3.", // ai 2026-10
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Text areas, HTML editors, fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "Schimb\xE3 c\xE2mpurile text de la functia de inserare ,,Text = nu modifica\" la ,,Elimin\xE3 spatiile\", astfel \xEEnc\xE2t spatiile si r\xE2ndurile noi din jurul unei valori s\xE3 nu fie stocate. Zonele de text, editoarele HTML, c\xE2mpurile pentru cod, valorile unice, copiile parolelor si c\xE2mpurile ale c\xE3ror constante au astfel de spatii \xEEsi p\xE3streaz\xE3 setarea. Valorile stocate anterior nu se modific\xE3.", // ai 2026-11
 
 // src/Optimize/ChangeQte2Trm.php, row 77
 "%1 text fields switched to Trim" => "C\xE2mpuri text trecute la ,,Elimin\xE3 spatiile\": %1", // ai 2026-10
@@ -11805,7 +12158,7 @@ return [
 // src/Optimize/CheckServerRefusals.php, row 69
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckTrustedProxies.php, row 104
-// src/Optimize/CheckUploadRefusals.php, row 91
+// src/Optimize/CheckUploadRefusals.php, row 95
 // src/Optimize/CheckUserAliasFunctionLog.php, row 88
 // src/Optimize/CheckViewSliceRefusals.php, row 163, 195
 "Days seen" => "Zile cu aparitii", // ai 2026-10
@@ -11830,7 +12183,7 @@ return [
 // src/Optimize/CheckServerRefusals.php, row 70
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckTrustedProxies.php, row 105
-// src/Optimize/CheckUploadRefusals.php, row 92
+// src/Optimize/CheckUploadRefusals.php, row 96
 // src/Optimize/CheckUserAliasFunctionLog.php, row 89
 // src/Optimize/CheckViewSliceRefusals.php, row 164, 196
 // src/Optimize/StateCheckModel.php, row 270
@@ -11901,14 +12254,6 @@ return [
 
 // src/Optimize/CheckAlerts.php, row 144
 "Selection" => "Selectie", // ai 2026-11
-
-// src/Optimize/CheckAlerts.php, row 145
-// src/Optimize/CheckIsds.php, row 142, 154
-// src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
-// src/Optimize/CheckIsdsConf.php, row 104, 107, 156
-// src/Optimize/CheckIsdsRegistry.php, row 119, 172
-// src/Optimize/StateCheckModel.php, row 219
-"Problem" => "Problem\xE3", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 146
 "the selection was deleted" => "selectia a fost stears\xE3", // ai 2026-11
@@ -12250,7 +12595,7 @@ return [
 "Reads the stored stream versions and catalogs of the imports and lists those that cannot be read." => "Citeste versiunile stocate ale fluxurilor si cataloagele importurilor si le listeaz\xE3 pe cele care nu pot fi citite.", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 48
-// src/Optimize/CheckImports.php, row 80
+// src/Optimize/CheckImports.php, row 81
 "No import is defined" => "Nu este definit niciun import", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 60
@@ -12271,144 +12616,145 @@ return [
 // src/Optimize/CheckImports.php, row 40
 "Lists imports stopped by an error or not moving on, imports that cannot run, damaged keys, failures in the log and records left by deleted imports." => "Listeaz\xE3 importurile oprite de o eroare sau care nu avanseaz\xE3, importurile care nu pot rula, cheile deteriorate, esecurile din jurnal si \xEEnregistr\xE3rile r\xE3mase de la importuri sterse.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 80
+// src/Optimize/CheckImports.php, row 81
 "%1 imports, none needs attention" => "Importuri: %1, niciunul nu necesit\xE3 atentie", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 93
+// src/Optimize/CheckImports.php, row 94
 "Removed %1 runs and %2 stream states and catalogs of deleted imports." => "Eliminate de la importurile sterse - rul\xE3ri: %1, st\xE3ri ale fluxurilor si cataloage: %2.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 150
+// src/Optimize/CheckImports.php, row 151
 "An import stopped by an error" => "Un import oprit de o eroare", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 150, 287
+// src/Optimize/CheckImports.php, row 151, 290
 // src/Optimize/CheckInstallRuns.php, row 62
 // src/Optimize/CheckIsdsRegistry.php, row 142
 // src/Optimize/CheckIsdsRuns.php, row 163, 200
+// src/Optimize/CheckOptimizeRuns.php, row 60
 // src/Optimize/CheckQueue.php, row 88, 98
 "Error" => "Eroare", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 150
+// src/Optimize/CheckImports.php, row 151
 "Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported." => "Nu se mai import\xE3 nimic p\xE2n\xE3 c\xE2nd cineva intervine sau o sarcin\xE3 planificat\xE3 porneste din nou importul (ceea ce \xEEncheie aceast\xE3 rulare). Deschideti importul, vedeti eroarea, remediati-i cauza si alegeti ,,Continu\xE3\" - sau ,,\xCEncheie\", care p\xE3streaz\xE3 ce a fost importat.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 154
+// src/Optimize/CheckImports.php, row 155
 "An import has not moved on for %1 hours" => "Un import nu a avansat de %1 h", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 154
+// src/Optimize/CheckImports.php, row 155
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Idle since" => "Inactiv din", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 154
+// src/Optimize/CheckImports.php, row 155
 "No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run." => "Niciun pas al cozii nu lucreaz\xE3 la el. Verificati c\xE3 cron ruleaz\xE3 coada de sarcini si c\xE3 rundele ei sunt suficient de lungi pentru un pas (TOEXECUTE_ALLOWED_TIME \xEEn config.php), apoi alegeti ,,Continu\xE3\" la import. O pornire planificat\xE3 a importului \xEEl \xEEncheie si \xEEncepe o nou\xE3 rulare.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 171
+// src/Optimize/CheckImports.php, row 172
 "Imports cannot run: a table does not support transactions" => "Importurile nu pot rula: un tabel nu suport\xE3 tranzactii", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 171
+// src/Optimize/CheckImports.php, row 172
 "Table" => "Tabel", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 171
+// src/Optimize/CheckImports.php, row 172
 "Every run is refused. Convert the table to InnoDB or ask the server administrator." => "Fiecare rulare este refuzat\xE3. Convertiti tabelul \xEEn InnoDB sau adresati-v\xE3 administratorului serverului.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 176
+// src/Optimize/CheckImports.php, row 177
 "not found" => "neg\xE3sit", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 180
+// src/Optimize/CheckImports.php, row 181
 "%1 imports have a source that is not available" => "Importuri cu o surs\xE3 indisponibil\xE3: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 180
+// src/Optimize/CheckImports.php, row 181
 "A run of such an import stops in error at once. Fix or put back the source file, or delete the import." => "O rulare a unui astfel de import se opreste imediat cu eroare. Reparati sau puneti la loc fisierul surs\xE3, ori stergeti importul.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 197
+// src/Optimize/CheckImports.php, row 198
 "Another record holds the place of the stream state or catalog of an import" => "Locul st\xE3rii fluxurilor sau al catalogului unui import este ocupat de o alt\xE3 \xEEnregistrare", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 197
+// src/Optimize/CheckImports.php, row 198
 "The end of each step of its runs fails on it, and deleting the import leaves it. Delete the object at the id of its stream state or catalog." => "Finalul fiec\xE3rui pas al rul\xE3rilor sale esueaz\xE3 din cauza ei, iar stergerea importului o las\xE3 pe loc. Stergeti obiectul cu id-ul st\xE3rii fluxurilor sau al catalogului s\xE3u.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 206
+// src/Optimize/CheckImports.php, row 207
 "The last run of an import skipped 1 stream: the source went round" => "Ultima rulare a unui import a s\xE3rit 1 flux: sursa s-a ciclat", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 206
+// src/Optimize/CheckImports.php, row 207
 "The last run of an import skipped %1 streams: the source went round" => "Ultima rulare a unui import a s\xE3rit fluxuri (%1): sursa s-a ciclat", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 206
+// src/Optimize/CheckImports.php, row 207
 "The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams." => "Sursa a dat din nou aceeasi sarcin\xE3 sau mai multe sarcini dec\xE2t permite, asa c\xE3 rularea a s\xE3rit restul acestor fluxuri, iar datele lor pot lipsi. Sursa pagineaz\xE3 gresit sau si-a schimbat paginarea; verificati sursa, apoi rulati importul din nou. Detaliul importului numeste fluxurile.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 209
+// src/Optimize/CheckImports.php, row 210
 "The last run of an import had %1 item errors" => "Ultima rulare a unui import a avut erori la articole: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 209
+// src/Optimize/CheckImports.php, row 210
 "The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again." => "Celelalte articole au fost salvate. Detaliul importului listeaz\xE3 primele erori; corectati datele sau maparea si rulati importul din nou.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 213
+// src/Optimize/CheckImports.php, row 215
 "An enabled import has no planned task" => "Un import activat nu are nicio sarcin\xE3 planificat\xE3", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 213
-"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "Nicio sarcin\xE3 planificat\xE3 a sectiunii nu apeleaz\xE3 {import} cu numele sau id-ul lui, asa c\xE3 ruleaz\xE3 doar manual. Planificati o sarcin\xE3 sau dezactivati optiunea ,,Activat\".", // ai 2026-10
+// src/Optimize/CheckImports.php, row 215
+"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch the import off: in \"%1\" of the slice click \"%2\" at the import and untick \"%3\"." => "Nicio sarcin\xE3 planificat\xE3 a sectiunii nu apeleaz\xE3 {import} cu numele sau id-ul lui, deci ruleaz\xE3 doar manual. Planificati o sarcin\xE3 sau dezactivati importul: \xEEn ,,%1\" din sectiune faceti clic pe ,,%2\" la import si debifati ,,%3\".", // ai 2026-11
 
-// src/Optimize/CheckImports.php, row 218
+// src/Optimize/CheckImports.php, row 220
 "%1 imports of one slice have the same name" => "Importuri ale aceleiasi sectiuni cu acelasi nume: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 218
+// src/Optimize/CheckImports.php, row 220
 "{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one." => "{import} nu le poate deosebi si refuz\xE3 numele, asa c\xE3 o sarcin\xE3 planificat\xE3 cu el esueaz\xE3. Redenumiti-le pe toate \xEEn afar\xE3 de unul.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 233
+// src/Optimize/CheckImports.php, row 236
 "The last check of an import source cannot be read" => "Ultima verificare a sursei unui import nu poate fi citit\xE3", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 233
+// src/Optimize/CheckImports.php, row 236
 "Its stored result is damaged. The next check of the source stores it again." => "Rezultatul salvat este deteriorat. Urm\xE3toarea verificare a sursei \xEEl salveaz\xE3 din nou.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 236
+// src/Optimize/CheckImports.php, row 239
 "The last check of an import source failed" => "Ultima verificare a sursei unui import a esuat", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 236, 238
+// src/Optimize/CheckImports.php, row 239, 241
 "Checked" => "Verificat", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 236
+// src/Optimize/CheckImports.php, row 239
 "A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again." => "O rulare real\xE3 se opreste cu eroare c\xE2nd sursa nu trece verificarea. Detaliul importului arat\xE3 ce a r\xE3spuns sursa; corectati cheia sau set\xE3rile si verificati din nou sursa.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 238
+// src/Optimize/CheckImports.php, row 241
 "The last check of an import source passed with a remark" => "Ultima verificare a sursei unui import a trecut cu o observatie", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 238
+// src/Optimize/CheckImports.php, row 241
 "The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said." => "Importul ruleaz\xE3, dar sursa semnaleaz\xE3 ceva de corectat - de exemplu definitii pe care le omite. Detaliul importului arat\xE3 ce a r\xE3spuns sursa.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 244
+// src/Optimize/CheckImports.php, row 247
 "The catalog of an import source is incomplete" => "Catalogul sursei unui import este incomplet", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 244
+// src/Optimize/CheckImports.php, row 247
 "The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again." => "Ultima verificare nu a terminat listarea sursei, asa c\xE3 detaliul importului nu poate stabili ce fluxuri nu mai are sursa. Verificati din nou sursa.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 260
+// src/Optimize/CheckImports.php, row 263
 "%1 records of deleted imports are left: runs, stream states, catalogs" => "Au r\xE3mas \xEEnregistr\xE3ri ale importurilor sterse (%1): rul\xE3ri, st\xE3ri ale fluxurilor, cataloage", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 262
+// src/Optimize/CheckImports.php, row 265
 "A step of a deleted import is still working and may store items until its time runs out. Repair deletes the records; the step then writes nothing back." => "Un pas al unui import sters \xEEnc\xE3 lucreaz\xE3 si poate salva articole p\xE2n\xE3 \xEEi expir\xE3 timpul. ,,Repar\xE3\" sterge \xEEnregistr\xE3rile; pasul nu mai scrie apoi nimic \xEEnapoi.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 262
+// src/Optimize/CheckImports.php, row 265
 "Nothing uses them and nothing else removes them. Repair deletes them with their queued steps." => "Nimic nu le foloseste si nimic altceva nu le elimin\xE3. ,,Repar\xE3\" le sterge \xEEmpreun\xE3 cu pasii lor din coad\xE3.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "A key in config.php is damaged" => "O cheie din config.php este deteriorat\xE3", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "Cheia contine un salt de r\xE2nd sau NUL, asa c\xE3 nicio surs\xE3 de import nu o poate folosi. Corectati constanta \xEEn config.php.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "O cheie JSON (cont de serviciu Google) \xEEncape pe un r\xE2nd: lipiti r\xE2ndul pe care \xEEl afiseaz\xE3 %1.", // ai 2026-11
 
-// src/Optimize/CheckImports.php, row 291
+// src/Optimize/CheckImports.php, row 294
 "Imports logged %1 failures in the last 7 days" => "Esecuri \xEEnregistrate de importuri \xEEn ultimele 7 zile: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 295
+// src/Optimize/CheckImports.php, row 298
 "A failed queue step stops its import in error; the other rows are failures outside a step, such as refreshing cached pages after an import was deleted. Only the error class and place, or the code of a refusal, are logged - the message may hold a key." => "Un pas esuat al cozii opreste importul s\xE3u cu eroare; celelalte r\xE2nduri sunt esecuri \xEEn afara unui pas, de exemplu re\xEEmprosp\xE3tarea paginilor din cache dup\xE3 stergerea unui import. Se \xEEnregistreaz\xE3 doar clasa si locul erorii sau codul unui refuz - mesajul poate contine o cheie.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 296
+// src/Optimize/CheckImports.php, row 299
 "Failed steps" => "Pasi esuati", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 296
+// src/Optimize/CheckImports.php, row 299
 "Other failures" => "Alte esecuri", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 373
+// src/Optimize/CheckImports.php, row 397
 "Import detail" => "Detaliul importului", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 16
@@ -12793,7 +13139,7 @@ return [
 "Test boxes of ISDS accounts AA cannot read: %1" => "C\xE3sute de test ale conturilor ISDS pe care AA nu le poate citi: %1", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 218
-"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "Scrieti test_boxes ca list\xE3 de ID-uri de c\xE3sute de date: ['<data box id>', ...], fiecare cu 7 litere sau cifre. P\xE2n\xE3 atunci contul trimite, dar niciun mesaj de test al unei ciorne nu pleac\xE3 din el.", // ai 2026-11
+"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each; a box may say whose it is: '<data box id>' => '<name>', at most %1 characters. Until then the account sends, but no test message of a draft goes from it." => "Scrieti test_boxes ca list\xE3 de id-uri de cutii de date: ['<data box id>', ...], fiecare din 7 litere sau cifre; o cutie poate indica al cui este: '<data box id>' => '<name>', lungimea numelui: max. %1 caractere. P\xE2n\xE3 atunci contul trimite, dar niciun mesaj de test al unei ciorne nu pleac\xE3 din el.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 235
 "Paid tests of ISDS accounts AA cannot read: %1" => "Teste pl\xE3tite ale conturilor ISDS pe care AA nu le poate citi: %1", // ai 2026-11
@@ -12837,28 +13183,28 @@ return [
 // src/Optimize/CheckIsdsConf.php, row 398
 "Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "Dati fisierului proprietarul, grupul si modul lui include/config.php, deoarece fiecare site poate rula PHP sub propriul utilizator, si verificati c\xE3 open_basedir al fiec\xE3rui site permite PHP accesul la fisier (si la tinta unei leg\xE3turi). P\xE2n\xE3 atunci AA ruleaz\xE3 ca si cum fisierul nu ar exista.", // ai 2026-11
 
-// src/Optimize/CheckIsdsPdf.php, row 37
+// src/Optimize/CheckIsdsPdf.php, row 38
 "Letters to data boxes as a PDF" => "Scrisori c\xE3tre c\xE3sute de date ca PDF", // ai 2026-11
 
-// src/Optimize/CheckIsdsPdf.php, row 42
+// src/Optimize/CheckIsdsPdf.php, row 43
 "Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "Transform\xE3 o scrisoare scurt\xE3 \xEEn PDF, asa cum face trimiterea \xEEn mas\xE3 c\xE3tre c\xE3sute de date cu scrisoarea fiec\xE3rei campanii - doar c\xE2nd un cont ISDS din misc/datovka/datovka_conf.php trimite pentru un site al acestei baze de date.", // ai 2026-11
 
-// src/Optimize/CheckIsdsPdf.php, row 81
+// src/Optimize/CheckIsdsPdf.php, row 82
 "AA makes letters to data boxes into a PDF" => "AA transform\xE3 scrisorile c\xE3tre c\xE3sute de date \xEEn PDF", // ai 2026-11
 
-// src/Optimize/CheckIsdsPdf.php, row 86
+// src/Optimize/CheckIsdsPdf.php, row 87
 "A letter to a data box cannot be made into a PDF" => "O scrisoare c\xE3tre o c\xE3sut\xE3 de date nu poate fi transformat\xE3 \xEEn PDF", // ai 2026-11
 
-// src/Optimize/CheckIsdsPdf.php, row 87
+// src/Optimize/CheckIsdsPdf.php, row 88
 "Until then no campaign can be sent to data boxes." => "P\xE2n\xE3 atunci nicio campanie nu poate fi trimis\xE3 \xEEn c\xE3sute de date.", // ai 2026-11
 
-// src/Optimize/CheckIsdsPdf.php, row 88
+// src/Optimize/CheckIsdsPdf.php, row 89
 "dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "Lipseste dompdf, care creeaz\xE3 PDF-ul: rulati composer install \xEEn directorul AA.", // ai 2026-11
 
-// src/Optimize/CheckIsdsPdf.php, row 89
+// src/Optimize/CheckIsdsPdf.php, row 90
 "PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "PHP nu are extensia GD, care deseneaz\xE3 imaginile scrisorii: instalati-o si reporniti PHP.", // ai 2026-11
 
-// src/Optimize/CheckIsdsPdf.php, row 90
+// src/Optimize/CheckIsdsPdf.php, row 91
 "Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "Rulati composer install \xEEn directorul AA - aduce dompdf si fonturile lui - si verificati c\xE3 PHP poate scrie \xEEn directorul s\xE3u temporar (sys_temp_dir).", // ai 2026-11
 
 // src/Optimize/CheckIsdsRegistry.php, row 30
@@ -13138,7 +13484,7 @@ return [
 // src/Optimize/CheckLoginAddresses.php, row 107
 "Logins come from %1 addresses; no address slowed down after failed logins is shared by several users" => "Num\xE3rul de adrese din care provin autentific\xE3rile: %1; nicio adres\xE3 \xEEncetinit\xE3 dup\xE3 autentific\xE3ri esuate nu este folosit\xE3 \xEEn comun de mai multi utilizatori", // ai 2026-10
 
-// src/Optimize/CheckLoginAddresses.php, row 112
+// src/Optimize/CheckLoginAddresses.php, row 124
 "If %1 is a proxy in front of AA, add it to AA_TRUSTED_PROXIES in include/config.php: %2 - AA then counts each visitor by their own address." => "Dac\xE3 %1 este un proxy \xEEn fata AA, ad\xE3ugati-l la AA_TRUSTED_PROXIES \xEEn include/config.php: %2 - AA va num\xE3ra apoi fiecare vizitator dup\xE3 propria adres\xE3.", // ai 2026-10
 
 // src/Optimize/CheckNightly.php, row 30
@@ -13368,6 +13714,30 @@ return [
 
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "Niciun formular de obiect nu a fost refuzat \xEEn ultimele 30 de zile", // ai 2026-10
+
+// src/Optimize/CheckOptimizeRuns.php, row 16
+"Optimize runs of Central" => "Rul\xE3ri Optimizare din Central", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 21
+"Warns about Optimize runs on several AAs that hang and lists those stopped by an error." => "Avertizeaz\xE3 despre rul\xE3rile Optimizare pe mai multe AA-uri care s-au blocat si le listeaz\xE3 pe cele oprite de o eroare.", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 57
+"AAs done" => "AA-uri finalizate", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 64
+"An Optimize run on several AAs stopped by an error" => "O rulare Optimizare pe mai multe AA-uri s-a oprit din cauza unei erori", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 64
+"An Optimize run on several AAs has not moved on for %1 hours" => "O rulare Optimizare pe mai multe AA-uri nu a mai avansat de %1 h", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 67
+"Some AAs of the run were not asked. Check that the task queue of this AA runs; on the page of the run Continue goes on, End keeps the results so far." => "Unele AA-uri ale rul\xE3rii nu au fost interogate. Verificati c\xE3 ruleaz\xE3 coada de sarcini a acestui AA; pe pagina rul\xE3rii ,,Continu\xE3\" merge mai departe, ,,\xCEncheie\" p\xE3streaz\xE3 rezultatele de p\xE2n\xE3 acum.", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 68
+"The run" => "Rularea", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 72
+"No Optimize run of Central is stuck" => "Nicio rulare Optimizare din Central nu este blocat\xE3", // ai 2026-11
 
 // src/Optimize/CheckPasskeys.php, row 35
 "Passkey logins" => "Autentific\xE3ri cu cheie de acces", // ai 2026-11
@@ -13721,22 +14091,22 @@ return [
 // src/Optimize/CheckSiteStateFiles.php, row 23
 "Checks that every site module using a state file (the legacy control file) has that file present and readable in modules/site/sites/." => "Verific\xE3 dac\xE3 fiecare modul Site care foloseste un fisier de stare (vechiul fisier de control) are acel fisier prezent si lizibil \xEEn modules/site/sites/.", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 66
+// src/Optimize/CheckSiteStateFiles.php, row 75
 "Site module \"%1\" has no state file" => "Modulul Site ,,%1\" nu are fisier de stare", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 68
+// src/Optimize/CheckSiteStateFiles.php, row 77
 "Missing file" => "Fisier lips\xE3", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 69
+// src/Optimize/CheckSiteStateFiles.php, row 78
 "State file setting" => "Setarea fisierului de stare", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 71
+// src/Optimize/CheckSiteStateFiles.php, row 80
 "Every public page of that site answers HTTP 500 (logged as SITE_CONF). Add the file, or fix the \"State file\" setting of the site module." => "Fiecare pagin\xE3 public\xE3 a acelui site r\xE3spunde cu HTTP 500 (\xEEnregistrat ca SITE_CONF). Ad\xE3ugati fisierul sau corectati setarea ,,Fisier de stare\" a modulului Site.", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 77
+// src/Optimize/CheckSiteStateFiles.php, row 86
 "All %1 site state files are in place" => "Toate fisierele de stare ale site-urilor (%1) sunt la locul lor", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 77
+// src/Optimize/CheckSiteStateFiles.php, row 86
 "No site module uses a state file" => "Niciun modul Site nu foloseste un fisier de stare", // ai 2026-10
 
 // src/Optimize/CheckTrustedProxies.php, row 31
@@ -13817,31 +14187,34 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 30
 "Lists the uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason, and the slices whose upload directory is not writable." => "Listeaz\xE3 \xEEnc\xE3rc\xE3rile din editorul de text formatat pe care AA le-a refuzat \xEEn ultimele 30 de zile, pe sectiuni si motive, precum si sectiunile al c\xE3ror director de \xEEnc\xE3rcare nu permite scrierea.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 80
+// src/Optimize/CheckUploadRefusals.php, row 84
 "Slice %1 cannot store uploads - its directory is not writable" => "Sectiunea %1 nu poate salva \xEEnc\xE3rc\xE3ri - directorul ei nu permite scrierea", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 81
+// src/Optimize/CheckUploadRefusals.php, row 85
 "Slice %1 could not store an upload" => "Sectiunea %1 nu a putut salva o \xEEnc\xE3rcare", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 82
+// src/Optimize/CheckUploadRefusals.php, row 86
 "Uploads to slice %1 refused: %2" => "\xCEnc\xE3rc\xE3ri \xEEn sectiunea %1 refuzate: %2", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 95
+// src/Optimize/CheckUploadRefusals.php, row 99
 "PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server." => "PHP nu poate scrie \xEEn directorul de \xEEnc\xE3rcare al sectiunii (IMG_UPLOAD_PATH/<slice id> sau directorul administratorului ei de fisiere). Corectati proprietarul sau permisiunile pe server.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 96
+// src/Optimize/CheckUploadRefusals.php, row 100
 "An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log." => "O adres\xE3 a \xEEnc\xE3rcat \xEEntr-o or\xE3 mai multe imagini anonime dec\xE2t permite AA (%1 per adres\xE3, %2 per sectiune). Cel mai probabil un robot - adresa este \xEEn jurnal.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 97
+// src/Optimize/CheckUploadRefusals.php, row 101
 "Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address." => "Cineva a \xEEncercat s\xE3 \xEEncarce f\xE3r\xE3 drept: un editor a c\xE3rui autentificare a expirat (ajut\xE3 re\xEEnc\xE3rcarea paginii) sau o sondare - multe zile de la aceeasi adres\xE3.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 98
+// src/Optimize/CheckUploadRefusals.php, row 102
 "Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP." => "Vizitatorii anonimi pot \xEEnc\xE3rca imagini de p\xE2n\xE3 la %1 MB; editorii sunt limitati de upload_max_filesize si post_max_size din PHP.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 99
+// src/Optimize/CheckUploadRefusals.php, row 103
+"An anonymous visitor sent an image AA could not read - damaged, cut short, or not the type it claims to be. It was not stored and the visitor was told why. Nothing to fix on the server." => "Un vizitator anonim a trimis o imagine pe care AA nu a putut-o citi - deteriorat\xE3, trunchiat\xE3 sau de alt tip dec\xE2t pretinde. Nu a fost stocat\xE3, iar vizitatorului i s-a spus motivul. Pe server nu este nimic de remediat.", // ai 2026-11
+
+// src/Optimize/CheckUploadRefusals.php, row 104
 "The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\\Upload\\UploadPolicy; nothing a browser or PHP would run ever passes." => "Editorul a refuzat un tip de fisier sau un fisier al c\xE3rui continut nu corespundea extensiei. Tipurile permise sunt fixate \xEEn AA\\Upload\\UploadPolicy; nimic din ce ar rula un browser sau PHP nu trece vreodat\xE3.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 106
+// src/Optimize/CheckUploadRefusals.php, row 111
 "No refused uploads in the last 30 days" => "Nicio \xEEnc\xE3rcare refuzat\xE3 \xEEn ultimele 30 de zile", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 25
@@ -13898,25 +14271,28 @@ return [
 // src/Optimize/CheckUserAliasFunctions.php, row 139
 "f_u names \"%1\", which is not a function name - not called" => "f_u indic\xE3 ,,%1\", care nu este un nume de functie - nu se apeleaz\xE3", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 147
-"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "AA \xEEnc\xE3 o apeleaz\xE3 pentru ca site-urile vechi s\xE3 functioneze \xEEn continuare, dar f_u este destinat doar functiilor usr_*. Redenumiti functia \xEEn usr_%1 (definit\xE3 \xEEn %2) si modificati definitiile.", // ai 2026-10
-
-// src/Optimize/CheckUserAliasFunctions.php, row 148
-"The alias shows nothing (it never did). Remove it or name a usr_* function." => "Aliasul nu afiseaz\xE3 nimic (nu a afisat niciodat\xE3). Eliminati-l sau indicati o functie usr_*.", // ai 2026-10
-
 // src/Optimize/CheckUserAliasFunctions.php, row 149
-"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Functia nu este definit\xE3 pe aceast\xE3 pagin\xE3 de administrare. Un site o poate totusi defini (un fisier de control al site-ului, un fisier \xEEnc\xE3rcat doar de paginile lui) - ce au apelat paginile \xEEn realitate arat\xE3 verificarea ,,Apeluri f_u \xEEn pagini\"; aveti \xEEncredere \xEEn aceea. Dac\xE3 nu apare nici acolo, definiti usr_%1 \xEEn include/usr_aliasfnc.php sau eliminati aliasul.", // ai 2026-10
-
-// src/Optimize/CheckUserAliasFunctions.php, row 150
-"The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Pagina nu avea o astfel de functie, aliasul nu a afisat nimic. Definiti usr_%1 \xEEn include/usr_aliasfnc.php sau eliminati aliasul.", // ai 2026-10
+"Then change the alias to that name." => "Apoi schimbati aliasul la acel nume.", // ai 2026-11
 
 // src/Optimize/CheckUserAliasFunctions.php, row 151
-"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "Se apeleaz\xE3 doar functiile instal\xE3rii: cele usr_*, cele definite de include/usr_aliasfnc.php (si de fisierele pe care le include), include/custom/ sau modules/site/sites/. Definiti functia acolo ca usr_%1.", // ai 2026-10
+"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "AA \xEEnc\xE3 o apeleaz\xE3 pentru ca site-urile vechi s\xE3 functioneze \xEEn continuare, dar f_u este destinat doar functiilor usr_*. Redenumiti functia \xEEn usr_%1 (definit\xE3 \xEEn %2) si modificati definitiile.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 152
-"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "Apelul a esuat: %1. Fie functia nu accept\xE3 ce \xEEi transmite f_u (continutul ca array, id-ul c\xE2mpului ca sir, parametrii ca sir), fie a esuat \xEEn interior. P\xE2n\xE3 la remediere aliasul nu afiseaz\xE3 nimic.", // ai 2026-10
+"The alias shows nothing (it never did). Remove it or name a usr_* function." => "Aliasul nu afiseaz\xE3 nimic (nu a afisat niciodat\xE3). Eliminati-l sau indicati o functie usr_*.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 153
+"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define %1 in include/usr_aliasfnc.php or remove the alias." => "Functia nu este definit\xE3 pe aceast\xE3 pagin\xE3 de administrare. Un site o poate totusi defini (un fisier de control al site-ului, un fisier \xEEnc\xE3rcat doar de paginile lui) - ce au apelat paginile \xEEn realitate arat\xE3 verificarea ,,Apeluri f_u \xEEn pagini\"; aveti \xEEncredere \xEEn aceea. Dac\xE3 nu apare nici acolo, definiti %1 \xEEn include/usr_aliasfnc.php sau eliminati aliasul.", // ai 2026-11
+
+// src/Optimize/CheckUserAliasFunctions.php, row 154
+"The page had no such function, the alias showed nothing. Define %1 in include/usr_aliasfnc.php or remove the alias." => "Pagina nu avea o astfel de functie, aliasul nu a afisat nimic. Definiti %1 \xEEn include/usr_aliasfnc.php sau eliminati aliasul.", // ai 2026-11
+
+// src/Optimize/CheckUserAliasFunctions.php, row 155
+"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "Se apeleaz\xE3 doar functiile instal\xE3rii: cele usr_*, cele definite de include/usr_aliasfnc.php (si de fisierele pe care le include), include/custom/ sau modules/site/sites/. Definiti functia acolo ca usr_%1.", // ai 2026-10
+
+// src/Optimize/CheckUserAliasFunctions.php, row 156
+"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "Apelul a esuat: %1. Fie functia nu accept\xE3 ce \xEEi transmite f_u (continutul ca array, id-ul c\xE2mpului ca sir, parametrii ca sir), fie a esuat \xEEn interior. P\xE2n\xE3 la remediere aliasul nu afiseaz\xE3 nimic.", // ai 2026-10
+
+// src/Optimize/CheckUserAliasFunctions.php, row 157
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "Aliasul nu afiseaz\xE3 nimic: f_u apeleaz\xE3 doar functii ale instal\xE3rii (usr_* \xEEn include/usr_aliasfnc.php), niciodat\xE3 functii PHP sau AA. Scrieti o functie usr_* care face ce este necesar sau folositi \xEEn schimb o expresie AA.", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 35
@@ -14352,6 +14728,21 @@ return [
 // src/Optimize/GenerateMetabase.php, row 52
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Doar pentru programatori - afiseaz\xE3 continutul include/metabase_schema.php (schema DB asteptat\xE3, ca array PHP lizibil) generat din baza de date curent\xE3; copiati-l \xEEn fisier si faceti commit.", // ai 2026-06
 
+// src/Optimize/HitArchiveDstStamps.php, row 28
+"Hit statistics around clock changes" => "Statistici de acces\xE3ri \xEEn jurul schimb\xE3rilor de or\xE3", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 33
+"Until November 2026, hits grouped by day around a switch to or from summer time were stamped an hour off midnight, so the statistics show one day twice and the next one empty. Repair moves them to their own day." => "P\xE2n\xE3 \xEEn noiembrie 2026, acces\xE3rile grupate pe zile \xEEn jurul trecerii la ora de var\xE3 sau \xEEnapoi erau marcate decalat cu o or\xE3 fat\xE3 de miezul noptii, asa c\xE3 statisticile arat\xE3 o zi de dou\xE3 ori si pe urm\xE3toarea goal\xE3. Repararea le mut\xE3 \xEEn ziua lor.", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 52
+"Hits stamped %1 belong to %2" => "Acces\xE3rile marcate %1 apartin zilei %2", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 55
+"No hits stamped off midnight around a clock change" => "Nicio accesare marcat\xE3 decalat fat\xE3 de miezul noptii \xEEn jurul unei schimb\xE3ri de or\xE3", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 67
+"%1 rows moved from %2 to %3" => "R\xE2nduri mutate de la %2 la %3: %1", // ai 2026-11
+
 // src/Optimize/ImgCacheWritable.php, row 17
 "Image cache can store" => "Cache-ul de imagini poate salva", // ai 2026-10
 
@@ -14378,9 +14769,6 @@ return [
 
 // src/Optimize/ImgMeasuring.php, row 27
 "Lists the {img} expressions in views, fields, site spots and other code which print the image size, but whose parameters do not tell it - so the resized image is loaded over HTTP on every expansion." => "Listeaz\xE3 expresiile {img} din vederi, c\xE2mpuri, locuri din site si alt cod care afiseaz\xE3 dimensiunea imaginii, dar ai c\xE3ror parametri nu o specific\xE3 - asa c\xE3 imaginea redimensionat\xE3 se \xEEncarc\xE3 prin HTTP la fiecare expandare.", // ai 2026-10
-
-// src/Optimize/ImgMeasuring.php, row 54
-"Expression" => "Expresie", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 60
 "No {img} in the templates measures its image" => "Niciun {img} din sabloane nu \xEEsi m\xE3soar\xE3 imaginea", // ai 2026-10
@@ -14518,7 +14906,7 @@ return [
 "AA_INSTAL_PATH %1 cannot go into a rewrite rule" => "AA_INSTAL_PATH %1 nu poate fi folosit \xEEntr-o regul\xE3 rewrite", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 78
-// src/Util/Imgfunc.php, row 265, 273
+// src/Util/Imgfunc.php, row 292
 "Cannot write %1" => "Nu se poate scrie %1", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 87
@@ -14691,22 +15079,28 @@ return [
 "There is no root Link Module category - Links module should be recreated" => "Nu exist\xE3 categoria r\xE3d\xE3cin\xE3 a modulului Links - modulul Links ar trebui recreat", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
-// src/Optimize/RedefineSiteTemplates.php, row 49
+// src/Optimize/RedefineSiteTemplates.php, row 91
 "Replacing module definition" => "Se \xEEnlocuieste definitia modulului", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Recreare sablon modul Links - gata.", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 15
+// src/Optimize/RedefineSiteTemplates.php, row 18
 "Recreate Site module template" => "Recreeaz\xE3 sablonul modulului Site", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 21
+// src/Optimize/RedefineSiteTemplates.php, row 24
 "Deletes and recreates the default template for Site module" => "Sterge si recreeaz\xE3 sablonul implicit al modulului Site", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 38
+// src/Optimize/RedefineSiteTemplates.php, row 41
 "Site Module template should be recreated" => "Sablonul modulului Site ar trebui recreat", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 55
+// src/Optimize/RedefineSiteTemplates.php, row 42
+"The Site Module template names a control file that does not exist, and the form of a new site offers it - it should use the router home %1" => "Sablonul modulului Site numeste un fisier de control care nu exist\xE3, iar formularul unui site nou \xEEl ofer\xE3 - ar trebui s\xE3 foloseasc\xE3 pagina de start a routerului %1", // ai 2026-11
+
+// src/Optimize/RedefineSiteTemplates.php, row 87
+"The Site Module template now uses the router home %1" => "Sablonul modulului Site foloseste acum pagina de start a routerului %1", // ai 2026-11
+
+// src/Optimize/RedefineSiteTemplates.php, row 97
 "Site Module template recreation - done." => "Recreare sablon modul Site - gata.", // ai 2026-06
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 17
@@ -15070,7 +15464,7 @@ return [
 "Trim stored values" => "Elimin\xE3 spatiile din valorile stocate", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 44
-"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "Elimin\xE3 spatiile din valorile stocate \xEEnainte ca acel c\xE2mp s\xE3 primeasc\xE3 functia de inserare ,,Elimin\xE3 spatiile\" (vezi ,,%1\") - spatiile si r\xE2ndurile noi de la margini, diacriticele necompuse. Reparatia o planific\xE3 \xEEn coad\xE3: articolele sunt stocate din nou \xEEn mod silentios, astfel \xEEnc\xE2t ultima editare, c\xE2mpurile calculate, evenimentele si alimentarea r\xE3m\xE2n neatinse; istoricul \xEEnregistreaz\xE3 modificarea. C\xE2mpurile unice sunt doar raportate, c\xE2mpurile definite \xEEntr-o sectiune de c\xE2mpuri nu sunt verificate.", // ai 2026-10
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported; text areas, HTML editors and fields defined in a field slice are not checked." => "Elimin\xE3 spatiile din valorile stocate \xEEnainte ca c\xE2mpul s\xE3 primeasc\xE3 functia de inserare ,,Elimin\xE3 spatiile\" (vedeti ,,%1\") - spatiile si r\xE2ndurile noi din jur, accentele necompuse. Repararea o planific\xE3 \xEEn coad\xE3: articolele sunt stocate din nou \xEEn mod silentios, astfel \xEEnc\xE2t ultima editare, c\xE2mpurile calculate, evenimentele si alimentarea r\xE3m\xE2n neatinse; istoricul \xEEnregistreaz\xE3 modificarea. C\xE2mpurile unice sunt doar raportate; zonele de text, editoarele HTML si c\xE2mpurile definite \xEEntr-o sectiune de c\xE2mpuri nu sunt verificate.", // ai 2026-11
 
 // src/Optimize/TrimFieldValues.php, row 63
 "Time is up - %1 of %2 slices checked. Repair plans all of them." => "Timpul a expirat - sectiuni verificate: %1 din %2. Reparatia le planific\xE3 pe toate.", // ai 2026-10
@@ -15084,10 +15478,10 @@ return [
 // src/Optimize/TrimFieldValues.php, row 91
 "%1 items planned to be trimmed in the queue" => "Articole planificate pentru cur\xE3tare \xEEn coad\xE3: %1", // ai 2026-10
 
-// src/Optimize/TrimFieldValues.php, row 129
+// src/Optimize/TrimFieldValues.php, row 130
 "%1 items with a unique value to trim by hand, e.g. %2" => "Articole cu valoare unic\xE3 de cur\xE3tat manual: %1, de ex. %2", // ai 2026-10
 
-// src/Optimize/TrimFieldValues.php, row 139
+// src/Optimize/TrimFieldValues.php, row 140
 "%1 items to trim, e.g. %2" => "Articole de cur\xE3tat: %1, de ex. %2", // ai 2026-10
 
 // src/Optimize/UpdateDbStructure.php, row 23
@@ -15282,19 +15676,22 @@ return [
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "Nu se poate copia %1 \xEEn %2", // ai 2026-06
 
-// src/Util/Imgfunc.php, row 119
+// src/Util/Imgfunc.php, row 123
 "Type not supported for resize" => "Tip nesuportat pentru redimensionare", // ai 2026-06
 
-// src/Util/Imgfunc.php, row 178
+// src/Util/Imgfunc.php, row 182
 "ResampleImage unable to %1" => "ResampleImage nu poate %1", // ai 2026-06
 
-// src/Util/Imgfunc.php, row 224
+// src/Util/Imgfunc.php, row 234
+"Cannot read %1" => "Nu se poate citi %1", // ai 2026-11
+
+// src/Util/Imgfunc.php, row 244
 "This type of image cannot be uploaded here" => "Acest tip de imagine nu poate fi \xEEnc\xE3rcat aici", // ai 2026-10
 
-// src/Util/Imgfunc.php, row 227
+// src/Util/Imgfunc.php, row 248
 "The image has too many pixels" => "Imaginea are prea multi pixeli", // ai 2026-10
 
-// src/Util/Imgfunc.php, row 231
+// src/Util/Imgfunc.php, row 253
 "The image cannot be read" => "Imaginea nu poate fi citit\xE3", // ai 2026-10
 
 // src/Util/Note.php, row 52
@@ -15376,6 +15773,36 @@ return [
 // src/Util/Notes.php, row 129
 "Resolve" => "Rezolv\xE3", // ai 2026-10
 
+// src/Util/Paramwizard.php, row 155
+"Other parameters (the type does not describe them)" => "Alti parametri (tipul nu \xEEi descrie)", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 156
+"e.g. %1" => "de ex. %1", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 157
+"(default)" => "(implicit)", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 158
+"more" => "mai mult", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 159
+"less" => "mai putin", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 160
+"As text" => "Ca text", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 162
+"Copied to clipboard" => "Copiat \xEEn clipboard", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 163
+"The whole setting: type and parameters. Paste a text copied from another field and the form follows it." => "\xCEntreaga setare: tipul si parametrii. Lipiti un text copiat dintr-un alt c\xE2mp si formularul se va adapta.", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 164
+"The text does not start with a type offered here, taken as parameters of %1." => "Textul nu \xEEncepe cu un tip oferit aici; este tratat ca parametri pentru %1.", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 165
+"Constant group %1 is not known here, the current one stays." => "Grupul de constante %1 nu este cunoscut aici, r\xE3m\xE2ne cel actual.", // ai 2026-11
+
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- orice c\xE2mp numeric --", // ai 2026-06
 
@@ -15399,7 +15826,7 @@ return [
 "Upload" => "\xCEncarc\xE3", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 250
-// src/Widget/Widget.php, row 604
+// src/Widget/Widget.php, row 603
 "EXIT WITHOUT CHANGE" => "IESIRE F\xC3R\xC3 MODIFIC\xC3RI", // ai 2026-06
 
 // src/Widget/FldWidget.php, row 34
@@ -15457,7 +15884,7 @@ return [
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 110
-// src/Widget/Widget.php, row 445
+// src/Widget/Widget.php, row 444
 "To save changes click here or outside the field." => "Pentru a salva modific\xE3rile dati clic aici sau \xEEn afara c\xE2mpului.", // ai 2026-06
 
 // src/Widget/MngWidget.php, row 33
@@ -15529,435 +15956,435 @@ return [
 // src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "Dou\xE3 selec\xFEii",
 
-// src/Widget/Widget.php, row 603
+// src/Widget/Widget.php, row 602
 "SAVE CHANGE" => "SALVEAZ\xC3 MODIFICAREA", // ai 2026-06
 
-// src/Widget/Widget.php, row 741
+// src/Widget/Widget.php, row 740
 "Max characters" => "Maxim caractere", // ai 2026-06
 
-// src/Widget/Widget.php, row 741
+// src/Widget/Widget.php, row 740
 "max count of characters entered (maxlength parameter)" => "num\xE3rul maxim de caractere introduse (parametrul maxlength)", // ai 2026-06
 
-// src/Widget/Widget.php, row 747
+// src/Widget/Widget.php, row 746
 "Constants or slice" => "Constante sau sectiune", // ai 2026-06
 
-// src/Widget/Widget.php, row 747
+// src/Widget/Widget.php, row 746
 "Constants (or slice) which is used for value selection" => "Constantele (sau sectiunea) folosite pentru selectarea valorilor", // ai 2026-06
 
-// src/Widget/Widget.php, row 750
+// src/Widget/Widget.php, row 749
 "Directly specified array of values like [\"1\",\"2\",\"3\"] or {\"1\":\"Yes\",\"0\":\"No\"}. (do not use Constants, if filled)" => "List\xE3 de valori specificat\xE3 direct, precum [\"1\",\"2\",\"3\"] sau {\"1\":\"Yes\",\"0\":\"No\"}. (nu folositi Constante, dac\xE3 e completat\xE3)", // ai 2026-06
 
-// src/Widget/Widget.php, row 759
+// src/Widget/Widget.php, row 758
 "type: class (default) / iframe" => "tip: class (implicit) / iframe", // ai 2026-06
 
-// src/Widget/Widget.php, row 762, 976
+// src/Widget/Widget.php, row 761, 975
 "Width" => "L\xE3time", // ai 2026-06
 
-// src/Widget/Widget.php, row 762
+// src/Widget/Widget.php, row 761
 "width of the field in characters (size parameter)" => "l\xE3timea c\xE2mpului \xEEn caractere (parametrul size)", // ai 2026-06
 
-// src/Widget/Widget.php, row 765
+// src/Widget/Widget.php, row 764
 "type of input - email|tel|url|number. Can be used for other types (time), but in most cases it will be better to create new Widget type - like checkbox, password, color" => "tip de input - email|tel|url|number. Poate fi folosit si pentru alte tipuri (time), dar \xEEn majoritatea cazurilor e mai bine s\xE3 creati un nou tip de Widget - precum checkbox, password, color", // ai 2026-06
 
-// src/Widget/Widget.php, row 768, 867
+// src/Widget/Widget.php, row 767, 866
 "Buttons to show" => "Butoane afisate", // ai 2026-06
 
-// src/Widget/Widget.php, row 768
+// src/Widget/Widget.php, row 767
 "Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important." => "Ce butoane de actiune s\xE3 fie afisate:<br>M - Mutare (sus si jos)<br>D - Stergere valoare,<br>A - Ad\xE3ugare valoare nou\xE3<br>C - Modificarea valorii<br>Folositi 'MDAC' (implicit), 'DAC', doar 'M' sau orice alt\xE3 combinatie. Ordinea literelor M,D,A,C nu conteaz\xE3.", // ai 2026-06
 
-// src/Widget/Widget.php, row 771
+// src/Widget/Widget.php, row 770
 "Row count" => "Num\xE3r de r\xE2nduri", // ai 2026-06
 
-// src/Widget/Widget.php, row 774
+// src/Widget/Widget.php, row 773
 "Slice field" => "C\xE2mp sectiune", // ai 2026-06
 
-// src/Widget/Widget.php, row 774
+// src/Widget/Widget.php, row 773
 "field (or format string) that will be displayed in select box. if not specified, headlines or constant name for constants are displayed in select box. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))." => "c\xE2mpul (sau sirul de format) care va fi afisat \xEEn lista de selectie. dac\xE3 nu e specificat, se afiseaz\xE3 titlurile sau, pentru constante, numele constantei. puteti folosi aici si orice sir de format AA (precum: _#HEADLINE, _#PUB_DATE (pentru sectiuni) sau _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (pentru constante)).", // ai 2026-06
 
-// src/Widget/Widget.php, row 777
+// src/Widget/Widget.php, row 776
 "Use name" => "Foloseste numele", // ai 2026-06
 
-// src/Widget/Widget.php, row 777
+// src/Widget/Widget.php, row 776
 "if set (=1), then the name of selected constant is used, instead of the value. Default is 0" => "dac\xE3 e setat (=1), se foloseste numele constantei selectate \xEEn locul valorii. Implicit este 0", // ai 2026-06
 
-// src/Widget/Widget.php, row 780
+// src/Widget/Widget.php, row 779
 "Adding" => "Ad\xE3ugare", // ai 2026-06
 
-// src/Widget/Widget.php, row 780
+// src/Widget/Widget.php, row 779
 "adding the selected items to input field comma separated" => "ad\xE3ugarea articolelor selectate \xEEn c\xE2mpul de introducere, separate prin virgul\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 783
+// src/Widget/Widget.php, row 782
 "Second Field" => "Al doilea c\xE2mp", // ai 2026-06
 
-// src/Widget/Widget.php, row 783
+// src/Widget/Widget.php, row 782
 "field_id of another text field, where value of this selectbox will be propagated too (in main text area will be text and there will be value)" => "field_id al altui c\xE2mp text, \xEEn care se va propaga si valoarea acestui selectbox (\xEEn zona de text principal\xE3 va fi textul, iar acolo valoarea)", // ai 2026-06
 
-// src/Widget/Widget.php, row 786
+// src/Widget/Widget.php, row 785
 "if set to 1, user typed value in inputform is stored into constants (only if the value is not already there)" => "dac\xE3 este setat la 1, valoarea introdus\xE3 de utilizator \xEEn formular este stocat\xE3 \xEEn constante (doar dac\xE3 valoarea nu exist\xE3 deja acolo)", // ai 2026-06
 
-// src/Widget/Widget.php, row 789
+// src/Widget/Widget.php, row 788
 "Show items from bins" => "Arat\xE3 articolele din compartimente", // ai 2026-06
 
-// src/Widget/Widget.php, row 789
+// src/Widget/Widget.php, row 788
 "(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want to show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13" => "(doar pentru sectiuni) Pentru a ar\xE3ta articole din compartimentele selectate, folositi urm\xE3toarele valori:<br>Active - '%1'<br>Preg\xE3tite - '%2'<br>Expirate - '%3'<br>\xCEn asteptare - '%4'<br>Cos de gunoi - '%5'<br>Valoarea se formeaz\xE3 astfel: de ex. doriti s\xE3 ar\xE3tati titluri din compartimentele Active, Expirate si \xCEn asteptare. Valoarea pentru aceast\xE3 combinatie se calculeaz\xE3 ca %1+%3+%4&nbsp;=&nbsp;13", // ai 2026-06
 
-// src/Widget/Widget.php, row 798
+// src/Widget/Widget.php, row 797
 "Filtering conditions" => "Conditii de filtrare", // ai 2026-06
 
-// src/Widget/Widget.php, row 798
+// src/Widget/Widget.php, row 797
 "(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array." => "(doar pentru sectiuni) Conditii pentru filtrarea articolelor din selectie. Folositi conditia d-.. sau array-ul conds[].", // ai 2026-06
 
-// src/Widget/Widget.php, row 801
+// src/Widget/Widget.php, row 800
 "Sort by" => "Sortare dup\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 801
+// src/Widget/Widget.php, row 800
 "(for slices only) Sort the items in specified order. Use <fld>[+-]<fld>[+-]... or even any alias _#SOME_ALS." => "(doar pentru sectiuni) Sorteaz\xE3 articolele \xEEn ordinea specificat\xE3. Folositi <fld>[+-]<fld>[+-]... sau chiar orice alias _#SOME_ALS.", // ai 2026-06
 
-// src/Widget/Widget.php, row 804
+// src/Widget/Widget.php, row 803
 "Slice password" => "Parola sectiunii", // ai 2026-06
 
-// src/Widget/Widget.php, row 804
+// src/Widget/Widget.php, row 803
 "(for slices only) If the related slice is protected by 'Slice Password', fill it here" => "(doar pentru sectiuni) Dac\xE3 sectiunea asociat\xE3 este protejat\xE3 prin ,,Parola sectiunii\", completati-o aici", // ai 2026-06
 
-// src/Widget/Widget.php, row 807
+// src/Widget/Widget.php, row 806
 "Filtering conditions - changeable" => "Conditii de filtrare - modificabile", // ai 2026-06
 
-// src/Widget/Widget.php, row 807
+// src/Widget/Widget.php, row 806
 "Conditions for filtering items. This conds site admin change through widget_property parameter." => "Conditii pentru filtrarea articolelor. Administratorul site-ului poate modifica aceste conditii prin parametrul widget_property.", // ai 2026-06
 
-// src/Widget/Widget.php, row 810
+// src/Widget/Widget.php, row 809
 "Items per page. Default is 20." => "Articole pe pagin\xE3. Implicit 20.", // ai 2026-06
 
-// src/Widget/Widget.php, row 813
+// src/Widget/Widget.php, row 812
 "Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table." => "Num\xE3rul de coloane. Dac\xE3 nu este completat, casetele de bifat sunt toate pe o singur\xE3 linie. Dac\xE3 este completat, sunt aranjate \xEEntr-un tabel.", // ai 2026-06
 
-// src/Widget/Widget.php, row 816
+// src/Widget/Widget.php, row 815
 "Move right" => "Deplasare la dreapta", // ai 2026-06
 
-// src/Widget/Widget.php, row 816
+// src/Widget/Widget.php, row 815
 "Should the function move right or down to the next value?" => "Trebuie functia s\xE3 treac\xE3 la urm\xE3toarea valoare spre dreapta sau \xEEn jos?", // ai 2026-06
 
-// src/Widget/Widget.php, row 819
+// src/Widget/Widget.php, row 818
 "Starting Year" => "Anul de \xEEnceput", // ai 2026-06
 
-// src/Widget/Widget.php, row 819
+// src/Widget/Widget.php, row 818
 "The (relative) start of the year interval" => "\xCEnceputul (relativ) al intervalului de ani", // ai 2026-06
 
-// src/Widget/Widget.php, row 822
+// src/Widget/Widget.php, row 821
 "Ending Year" => "Anul de sf\xE2rsit", // ai 2026-06
 
-// src/Widget/Widget.php, row 822
+// src/Widget/Widget.php, row 821
 "The (relative) end of the year interval" => "Sf\xE2rsitul (relativ) al intervalului de ani", // ai 2026-06
 
-// src/Widget/Widget.php, row 825
+// src/Widget/Widget.php, row 824
 "Relative" => "Relativ", // ai 2026-06
 
-// src/Widget/Widget.php, row 825
+// src/Widget/Widget.php, row 824
 "If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute." => "Dac\xE3 este 1, anul de \xEEnceput si anul de sf\xE2rsit vor fi considerati relativi - intervalul va \xEEncepe la (anul curent - anul de \xEEnceput) si se va \xEEncheia la (anul curent + anul de sf\xE2rsit). Dac\xE3 este 0, anii de \xEEnceput si de sf\xE2rsit vor fi considerati absoluti.", // ai 2026-06
 
-// src/Widget/Widget.php, row 828
+// src/Widget/Widget.php, row 827
 "Date-time input type" => "Tip de introducere dat\xE3-or\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 828
+// src/Widget/Widget.php, row 827
 "0 - three selects for <b>date</b><br>1 - three selects for date + the <b>time</b> input<br>2 - HTML5 <b>input type=date</b>" => "0 - trei selecturi pentru <b>dat\xE3</b><br>1 - trei selecturi pentru dat\xE3 + c\xE2mp pentru <b>or\xE3</b><br>2 - HTML5 <b>input type=date</b>", // ai 2026-06
 
-// src/Widget/Widget.php, row 831
+// src/Widget/Widget.php, row 830
 "Height" => "\xCEn\xE3ltime", // ai 2026-06
 
-// src/Widget/Widget.php, row 831
+// src/Widget/Widget.php, row 830
 "Max height of the widget in pixels" => "\xCEn\xE3ltimea maxim\xE3 a widgetului, \xEEn pixeli", // ai 2026-06
 
-// src/Widget/Widget.php, row 834
+// src/Widget/Widget.php, row 833
 "Title of \"Offer\" selectbox" => "Titlul selectbox-ului ,,Ofert\xE3\"", // ai 2026-06
 
-// src/Widget/Widget.php, row 834
+// src/Widget/Widget.php, row 833
 "Our offer" => "Oferta noastr\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 837
+// src/Widget/Widget.php, row 836
 "Title of \"Selected\" selectbox" => "Titlul selectbox-ului ,,Selectate\"", // ai 2026-06
 
-// src/Widget/Widget.php, row 840
+// src/Widget/Widget.php, row 839
 "Add Form" => "Formular de ad\xE3ugare", // ai 2026-06
 
-// src/Widget/Widget.php, row 840
+// src/Widget/Widget.php, row 839
 "(for slices only) ID of the form for adding items into related slice" => "(doar pentru sectiuni) ID-ul formularului pentru ad\xE3ugarea articolelor \xEEn sectiunea asociat\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 843
+// src/Widget/Widget.php, row 842
 "Allowed file types" => "Tipuri de fisiere permise", // ai 2026-06
 
-// src/Widget/Widget.php, row 843
+// src/Widget/Widget.php, row 842
 "Used for accept attribute - image/*,.doc,.docx,.pdf" => "Folosit pentru atributul accept - image/*,.doc,.docx,.pdf", // ai 2026-06
 
-// src/Widget/Widget.php, row 846
+// src/Widget/Widget.php, row 845
 "Label" => "Etichet\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 846
+// src/Widget/Widget.php, row 845
 "To be printed before the file upload field" => "Se afiseaz\xE3 \xEEnaintea c\xE2mpului de \xEEnc\xE3rcare a fisierului", // ai 2026-06
 
-// src/Widget/Widget.php, row 846
+// src/Widget/Widget.php, row 845
 "File: " => "Fi\xBAier:", // ai 2026-06
 
-// src/Widget/Widget.php, row 849
+// src/Widget/Widget.php, row 848
 "appears beneath the file upload field" => "apare sub c\xE2mpul de \xEEnc\xE3rcare a fisierului", // ai 2026-06
 
-// src/Widget/Widget.php, row 849
+// src/Widget/Widget.php, row 848
 "You can select a file ..." => "Puteti selecta un fisier ...", // ai 2026-06
 
-// src/Widget/Widget.php, row 852
+// src/Widget/Widget.php, row 851
 "Display URL" => "Afiseaz\xE3 URL", // ai 2026-06
 
-// src/Widget/Widget.php, row 852
+// src/Widget/Widget.php, row 851
 "0 - show, 1 - show if not empty, 2 - do not show" => "0 - arat\xE3, 1 - arat\xE3 dac\xE3 nu e gol, 2 - nu ar\xE3ta", // ai 2026-06
 
-// src/Widget/Widget.php, row 855
+// src/Widget/Widget.php, row 854
 "Multiple" => "Multiplu", // ai 2026-06
 
-// src/Widget/Widget.php, row 855
+// src/Widget/Widget.php, row 854
 "Allows to upload multiple files in the field" => "Permite \xEEnc\xE3rcarea mai multor fisiere \xEEn c\xE2mp", // ai 2026-06
 
-// src/Widget/Widget.php, row 858
+// src/Widget/Widget.php, row 857
 "Actions to show" => "Actiuni de afisat", // ai 2026-06
 
-// src/Widget/Widget.php, row 858
+// src/Widget/Widget.php, row 857
 "Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important." => "Defineste ce butoane se afiseaz\xE3 la selectarea articolelor:<br>A - Adaug\xE3 (Add)<br>M - adaug\xE3 reciproc (Mutual)<br>B - \xCEnapoi (Backward)<br> Folositi 'AMB' (implicit), 'MA', doar 'A' sau orice alt\xE3 combinatie. Ordinea literelor A,M,B este important\xE3.", // ai 2026-06
 
-// src/Widget/Widget.php, row 861
+// src/Widget/Widget.php, row 860
 "Admin design" => "Design admin", // ai 2026-06
 
-// src/Widget/Widget.php, row 861
+// src/Widget/Widget.php, row 860
 "If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)." => "Dac\xE3 este setat (=1), articolele din fereastra de selectie a articolelor relationate vor fi listate \xEEn acelasi design ca \xEEn Administrarea articolelor - se vor folosi set\xE3rile 'Design - Administrare articole'. Doar caseta de bifare va fi \xEEnlocuit\xE3 de butoane (vezi mai sus). Este important ca aceast\xE3 caset\xE3 s\xE3 fie definit\xE3 ca:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (care este implicit).<br> Dac\xE3 nu este setat (=0), se afiseaz\xE3 doar titlul (implicit).", // ai 2026-06
 
-// src/Widget/Widget.php, row 864
+// src/Widget/Widget.php, row 863
 "Tag Prefix" => "Prefix taguri", // ai 2026-06
 
-// src/Widget/Widget.php, row 864
+// src/Widget/Widget.php, row 863
 "Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details." => "\xCEnvechit: selecteaz\xE3 setul de taguri ('AMB' / 'GYR'). \xCEntrebati-l pe Mitra pentru detalii.", // ai 2026-06
 
-// src/Widget/Widget.php, row 867
+// src/Widget/Widget.php, row 866
 "Which action to show:<br>M - Move (change order)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert New item in related slice and make it related<br>E - Edit related item<br>F - File upload to related slice (just for Related Item Manager Widget)<br><br>Use 'DR' (default), 'MDRNEF', just 'N' or any other combination. The order of letters M,D,R,N,E,F is not important." => "Ce actiuni se afiseaz\xE3:<br>M - Mutare (schimb\xE3 ordinea)<br>D - Stergere relatie,<br>R - adaug\xE3 Relatie la un articol existent<br>N - insereaz\xE3 articol Nou \xEEn sectiunea relationat\xE3 si \xEEl face relationat<br>E - Editare articol relationat<br>F - \xEEnc\xE3rcare Fisier \xEEn sectiunea relationat\xE3 (doar pentru widgetul Administrare articole relationate)<br><br>Folositi 'DR' (implicit), 'MDRNEF', doar 'N' sau orice alt\xE3 combinatie. Ordinea literelor M,D,R,N,E,F nu este important\xE3.", // ai 2026-06
 
-// src/Widget/Widget.php, row 870
+// src/Widget/Widget.php, row 869
 "Count of level boxes" => "Num\xE3r de casete de nivel", // ai 2026-06
 
-// src/Widget/Widget.php, row 873
+// src/Widget/Widget.php, row 872
 "Box width" => "L\xE3time caset\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 873
+// src/Widget/Widget.php, row 872
 "Width in characters" => "L\xE3time \xEEn caractere", // ai 2026-06
 
-// src/Widget/Widget.php, row 876
+// src/Widget/Widget.php, row 875
 "Size of target" => "Dimensiune caset\xE3 tint\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 876
+// src/Widget/Widget.php, row 875
 "Lines in the target select box" => "R\xE2nduri \xEEn caseta de selectie tint\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 879
+// src/Widget/Widget.php, row 878
 "Horizontal" => "Orizontal", // ai 2026-06
 
-// src/Widget/Widget.php, row 879
+// src/Widget/Widget.php, row 878
 "Show levels horizontally" => "Arat\xE3 nivelurile orizontal", // ai 2026-06
 
-// src/Widget/Widget.php, row 882
+// src/Widget/Widget.php, row 881
 "First selectable" => "Primul selectabil", // ai 2026-06
 
-// src/Widget/Widget.php, row 882
+// src/Widget/Widget.php, row 881
 "First level which will have a Select button" => "Primul nivel care va avea buton de selectare", // ai 2026-06
 
-// src/Widget/Widget.php, row 885
+// src/Widget/Widget.php, row 884
 "Level names" => "Nume niveluri", // ai 2026-06
 
-// src/Widget/Widget.php, row 885
+// src/Widget/Widget.php, row 884
 "Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..." => "Numele casetelor de nivel, separate prin tild\xE3 (~). \xCEnlocuiesc implicitele Nivel 0, Nivel 1, ...", // ai 2026-06
 
-// src/Widget/Widget.php, row 885
+// src/Widget/Widget.php, row 884
 "Top level~Second level~Keyword" => "Nivel superior~Al doilea nivel~Cuv\xE2nt cheie", // ai 2026-06
 
-// src/Widget/Widget.php, row 888
+// src/Widget/Widget.php, row 887
 "Label for Change Password" => "Etichet\xE3 pentru Schimbare parol\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 888
+// src/Widget/Widget.php, row 887
 "Replaces the default 'Change Password'" => "\xCEnlocuieste implicitul 'Schimbare parol\xE3'", // ai 2026-06
 
-// src/Widget/Widget.php, row 888
+// src/Widget/Widget.php, row 887
 "Change your password" => "Schimbati-v\xE3 parola", // ai 2026-06
 
-// src/Widget/Widget.php, row 891
+// src/Widget/Widget.php, row 890
 "Label for Retype New Password" => "Etichet\xE3 pentru Repetati parola nou\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 891
+// src/Widget/Widget.php, row 890
 "Replaces the default \"Retype New Password\"" => "\xCEnlocuieste implicitul \"Repetati parola nou\xE3\"", // ai 2026-06
 
-// src/Widget/Widget.php, row 891
+// src/Widget/Widget.php, row 890
 "Retype the new password" => "Repetati parola nou\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 894
+// src/Widget/Widget.php, row 893
 "Label for Delete Password" => "Etichet\xE3 pentru Stergere parol\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 894
+// src/Widget/Widget.php, row 893
 "Replaces the default \"Delete Password\"" => "\xCEnlocuieste implicitul \"Stergere parol\xE3\"", // ai 2026-06
 
-// src/Widget/Widget.php, row 894
+// src/Widget/Widget.php, row 893
 "Delete password (set to empty)" => "Sterge parola (o seteaz\xE3 goal\xE3)", // ai 2026-06
 
-// src/Widget/Widget.php, row 897
+// src/Widget/Widget.php, row 896
 "Help for Change Password" => "Ajutor pentru Schimbare parol\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 897
+// src/Widget/Widget.php, row 896
 "Help text under the Change Password box (default: no text)" => "Text de ajutor sub caseta Schimbare parol\xE3 (implicit: f\xE3r\xE3 text)", // ai 2026-06
 
-// src/Widget/Widget.php, row 897
+// src/Widget/Widget.php, row 896
 "To change password, enter the new password here and below" => "Pentru a schimba parola, introduceti parola nou\xE3 aici si mai jos", // ai 2026-06
 
-// src/Widget/Widget.php, row 900
+// src/Widget/Widget.php, row 899
 "Help for Retype New Password" => "Ajutor pentru Repetati parola nou\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 900
+// src/Widget/Widget.php, row 899
 "Help text under the Retype New Password box (default: no text)" => "Text de ajutor sub caseta Repetati parola nou\xE3 (implicit: f\xE3r\xE3 text)", // ai 2026-06
 
-// src/Widget/Widget.php, row 900
+// src/Widget/Widget.php, row 899
 "Retype the new password exactly the same as you entered into \"Change Password\"." => "Repetati parola nou\xE3 exact asa cum ati introdus-o \xEEn \"Schimbare parol\xE3\".", // ai 2026-06
 
-// src/Widget/Widget.php, row 903
+// src/Widget/Widget.php, row 902
 "The URL of your local web server from where you want to start browsing for a particular URL." => "URL-ul serverului dumneavoastr\xE3 web local de unde doriti s\xE3 \xEEncepeti navigarea pentru un anumit URL.", // ai 2026-06
 
-// src/Widget/Widget.php, row 903
+// src/Widget/Widget.php, row 902
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.siteulmeu.ro/stiri.shtml", // ai 2026-06
 
-// src/Widget/Widget.php, row 906
+// src/Widget/Widget.php, row 905
 "Ajax inline" => "Ajax \xEEn linie", // ai 2026-06
 
-// src/Widget/Widget.php, row 906
+// src/Widget/Widget.php, row 905
 "If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "Dac\xE3 este apelat ca {ajax...}, modific\xE3 aspectul - inline: \xEEn stil vechi (nu \xEEn fereastr\xE3, ci \xEEn linie)", // ai 2026-06
 
-// src/Widget/Widget.php, row 909
+// src/Widget/Widget.php, row 908
 "Enable voice dictation" => "Activeaz\xE3 dictarea vocal\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 909
+// src/Widget/Widget.php, row 908
 "Show a microphone button next to the textarea. Uses the browser's Web Speech API when available, otherwise falls back to server-side OpenAI transcription (requires AA_APIKEY_OPENAI define)." => "Afiseaz\xE3 un buton cu microfon l\xE2ng\xE3 zona de text. Foloseste Web Speech API al browserului c\xE2nd este disponibil, altfel recurge la transcrierea OpenAI pe server (necesit\xE3 definitia AA_APIKEY_OPENAI).", // ai 2026-06
 
-// src/Widget/Widget.php, row 912
+// src/Widget/Widget.php, row 911
 "Max dictation seconds" => "Secunde maxime de dictare", // ai 2026-06
 
-// src/Widget/Widget.php, row 912
+// src/Widget/Widget.php, row 911
 "Upper bound for a single dictation recording. Overrides the AA_SPEECH_MAX_SECONDS define. Enforced client-side (auto-stop) and server-side (reject oversized uploads)." => "Limita superioar\xE3 pentru o singur\xE3 \xEEnregistrare de dictare. Suprascrie definitia AA_SPEECH_MAX_SECONDS. Aplicat\xE3 pe client (oprire automat\xE3) si pe server (respinge \xEEnc\xE3rc\xE3rile prea mari).", // ai 2026-06
 
-// src/Widget/Widget.php, row 915
+// src/Widget/Widget.php, row 914
 "Dictation language" => "Limba dict\xE3rii", // ai 2026-06
 
-// src/Widget/Widget.php, row 915
+// src/Widget/Widget.php, row 914
 "BCP-47 locale code for voice recognition (e.g. cs-CZ, en-US, sk-SK, de-DE). Leave blank to auto-infer from the page's &lt;html lang&gt; attribute \xE2\x80\x94 which is usually the admin UI language, not the content language, so setting this explicitly is recommended." => "Cod de localizare BCP-47 pentru recunoasterea vocal\xE3 (de ex. cs-CZ, en-US, sk-SK, de-DE). L\xE3sati gol pentru deducere automat\xE3 din atributul &lt;html lang&gt; al paginii -- care este de obicei limba interfetei de administrare, nu limba continutului, deci se recomand\xE3 setarea explicit\xE3.", // ai 2026-06
 
-// src/Widget/Widget.php, row 918
+// src/Widget/Widget.php, row 917
 "Dictation engine" => "Motor de dictare", // ai 2026-06
 
-// src/Widget/Widget.php, row 921
+// src/Widget/Widget.php, row 920
 "Auto \xE2\x80\x94 browser Web Speech when available, server OpenAI as fallback" => "Auto -- Web Speech din browser c\xE2nd este disponibil, OpenAI pe server ca rezerv\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 922
+// src/Widget/Widget.php, row 921
 "Browser Web Speech API only (free, no server key, Chromium-based browsers)" => "Doar Web Speech API din browser (gratuit, f\xE3r\xE3 cheie pe server, browsere bazate pe Chromium)", // ai 2026-06
 
-// src/Widget/Widget.php, row 923
+// src/Widget/Widget.php, row 922
 "Server-side OpenAI gpt-4o-transcribe only (requires AA_APIKEY_OPENAI, better accuracy)" => "Doar OpenAI gpt-4o-transcribe pe server (necesit\xE3 AA_APIKEY_OPENAI, acuratete mai bun\xE3)", // ai 2026-06
 
-// src/Widget/Widget.php, row 925
+// src/Widget/Widget.php, row 924
 "Which speech-to-text engine to use." => "Ce motor de transcriere vocal\xE3 s\xE3 fie folosit.", // ai 2026-06
 
-// src/Widget/Widget.php, row 928
+// src/Widget/Widget.php, row 927
 "Store audio recording" => "Stocheaz\xE3 \xEEnregistrarea audio", // ai 2026-06
 
-// src/Widget/Widget.php, row 928
+// src/Widget/Widget.php, row 927
 "Save the uploaded audio to the slice's upload directory (img_upload/&lt;slice_id&gt;/) as audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Server enforces this flag from the field config \xE2\x80\x94 clients cannot opt in by themselves." => "Salveaz\xE3 fisierul audio \xEEnc\xE3rcat \xEEn directorul de \xEEnc\xE3rcare al sectiunii (img_upload/&lt;slice_id&gt;/) ca audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Serverul impune acest indicator din configuratia c\xE2mpului -- clientii nu \xEEl pot activa singuri.", // ai 2026-06
 
-// src/Widget/Widget.php, row 931
+// src/Widget/Widget.php, row 930
 "New item template ID" => "ID sablon articol nou", // ai 2026-06
 
-// src/Widget/Widget.php, row 931
+// src/Widget/Widget.php, row 930
 "The ID of item in destination slice used as Template for new items (probably in Holding bin)" => "ID-ul articolului din sectiunea destinatie folosit ca sablon pentru articole noi (probabil din \xCEn asteptare)", // ai 2026-06
 
-// src/Widget/Widget.php, row 934
+// src/Widget/Widget.php, row 933
 "Code to show" => "Cod de afisat", // ai 2026-06
 
-// src/Widget/Widget.php, row 934
+// src/Widget/Widget.php, row 933
 "HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed" => "Cod HTML (eventual cu expresii AA) care se afiseaz\xE3. Dac\xE3 nu este completat, se va afisa {_#this}", // ai 2026-06
 
-// src/Widget/Widget.php, row 937
+// src/Widget/Widget.php, row 936
 "Disable new tags" => "Dezactiveaz\xE3 etichete noi", // ai 2026-06
 
-// src/Widget/Widget.php, row 937
+// src/Widget/Widget.php, row 936
 "Disallow creation of new tags - new items in related slice" => "Interzice crearea de etichete noi - articole noi \xEEn sectiunea asociat\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 940
+// src/Widget/Widget.php, row 939
 "Max values" => "Num\xE3r maxim de valori", // ai 2026-06
 
-// src/Widget/Widget.php, row 940
+// src/Widget/Widget.php, row 939
 "Limit the number of values entered. If 0 or empty, the number is unlimited" => "Limiteaz\xE3 num\xE3rul de valori introduse. Dac\xE3 este 0 sau gol, num\xE3rul este nelimitat", // ai 2026-06
 
-// src/Widget/Widget.php, row 943
+// src/Widget/Widget.php, row 942
 "Related field" => "C\xE2mp asociat", // ai 2026-06
 
-// src/Widget/Widget.php, row 943
+// src/Widget/Widget.php, row 942
 "Field to use for related items (relation........ is default)" => "C\xE2mpul folosit pentru articolele asociate (implicit relation........)", // ai 2026-06
 
-// src/Widget/Widget.php, row 946
+// src/Widget/Widget.php, row 945
 "Row Code" => "Cod r\xE2nd", // ai 2026-06
 
-// src/Widget/Widget.php, row 946
+// src/Widget/Widget.php, row 945
 "Alias in constant slice or HTML code to use for each related item (_#ROW_CODE is default)" => "Alias din sectiunea de constante sau cod HTML folosit pentru fiecare articol asociat (implicit _#ROW_CODE)", // ai 2026-06
 
-// src/Widget/Widget.php, row 949
+// src/Widget/Widget.php, row 948
 "Row Edit Code" => "Cod editare r\xE2nd", // ai 2026-06
 
-// src/Widget/Widget.php, row 949
+// src/Widget/Widget.php, row 948
 "Alias in constant slice or HTML code to use for editing related item (_#ROW_EDIT is default)" => "Alias din sectiunea de constante sau cod HTML folosit pentru editarea articolului asociat (implicit _#ROW_EDIT)", // ai 2026-06
 
-// src/Widget/Widget.php, row 952
+// src/Widget/Widget.php, row 951
 "Buttons to Show" => "Butoane de afisat", // ai 2026-06
 
-// src/Widget/Widget.php, row 952
+// src/Widget/Widget.php, row 951
 "N - new<br>D - delete (with json you can specify also Dconfirm:&lt;question&gt;<br>S - setting (edit item in Toolbox)<br>E - edit - used with \"Row Edit Code\" parameter<br>B - back - used with \"Row Edit Code\" parameter<br>F - file upload to first file...........x or img_upload.....x or img_src........x field<br>- - no manage (just view)<br>Could be also defined as JSON asoc array - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}" => "N - nou<br>D - stergere (cu json puteti specifica si Dconfirm:&lt;\xEEntrebare&gt;<br>S - setare (editare articol \xEEn Toolbox)<br>E - editare - folosit cu parametrul \"Cod editare r\xE2nd\"<br>B - \xEEnapoi - folosit cu parametrul \"Cod editare r\xE2nd\"<br>F - \xEEnc\xE3rcare fisier \xEEn primul c\xE2mp file...........x sau img_upload.....x sau img_src........x<br>- - f\xE3r\xE3 administrare (doar vizualizare)<br>Poate fi definit si ca tablou asociativ JSON - {\"N\":\"Adaug\xE3 articol\",\"D\":\"Sterge articol\",\"Dconfirm\":\"Sigur stergeti articolul?\"}", // ai 2026-06
 
-// src/Widget/Widget.php, row 955
+// src/Widget/Widget.php, row 954
 "Class prefix" => "Prefix clas\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 955
+// src/Widget/Widget.php, row 954
 "Component identifier to select from" => "Identificator de component\xE3 din care se selecteaz\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 958
+// src/Widget/Widget.php, row 957
 "Address field" => "C\xE2mp adres\xE3", // ai 2026-06
 
-// src/Widget/Widget.php, row 958
+// src/Widget/Widget.php, row 957
 "field_id of another text field, from which user can grab address search" => "field_id al unui alt c\xE2mp text, din care utilizatorul poate prelua adresa de c\xE3utat", // ai 2026-06
 
-// src/Widget/Widget.php, row 961
+// src/Widget/Widget.php, row 960
 "Allowed shapes" => "Forme permise", // ai 2026-06
 
-// src/Widget/Widget.php, row 961
+// src/Widget/Widget.php, row 960
 "M - Marker (point) - default<br>L - Line<br>P - Polygon<br>R - Rectangle" => "M - Marcator (punct) - implicit<br>L - Linie<br>P - Poligon<br>R - Dreptunghi", // ai 2026-06
 
-// src/Widget/Widget.php, row 964
+// src/Widget/Widget.php, row 963
 "Multiple shapes" => "Forme multiple", // ai 2026-06
 
-// src/Widget/Widget.php, row 964
+// src/Widget/Widget.php, row 963
 "Allow multiple shapes at a time" => "Permite mai multe forme simultan", // ai 2026-06
 
-// src/Widget/Widget.php, row 967
+// src/Widget/Widget.php, row 966
 "Text option for Other" => "Optiune text pentru ,,Altele\"", // ai 2026-06
 
-// src/Widget/Widget.php, row 967
+// src/Widget/Widget.php, row 966
 "Last option is considered as \"Other\" with the possibility to write text value" => "Ultima optiune este considerat\xE3 ,,Altele\", cu posibilitatea de a scrie o valoare text", // ai 2026-06
 
-// src/Widget/Widget.php, row 970
+// src/Widget/Widget.php, row 969
 "Searchable" => "Cu c\xE3utare", // ai 2026-06
 
-// src/Widget/Widget.php, row 970
+// src/Widget/Widget.php, row 969
 "Uses special selectbox widget, which is searchable as substring.<br>Do not rely on current implementation in your possible scripts." => "Foloseste un widget selectbox special, cu c\xE3utare dup\xE3 subsir.<br>Nu v\xE3 bazati pe implementarea actual\xE3 \xEEn eventualele scripturi proprii.", // ai 2026-06
 
-// src/Widget/Widget.php, row 973
+// src/Widget/Widget.php, row 972
 "Placeholder" => "Substituent", // ai 2026-06
 
-// src/Widget/Widget.php, row 973
+// src/Widget/Widget.php, row 972
 "Placeholder for input" => "Placeholder (text indicativ) pentru c\xE2mpul de introducere", // ai 2026-06
 
-// src/Widget/Widget.php, row 976
+// src/Widget/Widget.php, row 975
 "Width of one displayed item in pixels (300) or in % (50%)<br>Minimum is 150px, default is 250px.<br>For one item per row use 100%." => "L\xE3timea unui articol afisat \xEEn pixeli (300) sau \xEEn % (50%)<br>Minimul este 150px, implicit 250px.<br>Pentru un articol pe r\xE2nd folositi 100%.", // ai 2026-06
 ];

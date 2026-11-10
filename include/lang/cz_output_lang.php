@@ -250,16 +250,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "V\x9Aechny kategorie",
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Chyba: chyb\xED heslo pro \xE8ten\xED",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Zpr\xE1va s novinkami Toolkitu",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Zp\xECt",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Znovu p\xF8ihl\xE1sit",
 
 // misc/proposefieldchange.php, row 110

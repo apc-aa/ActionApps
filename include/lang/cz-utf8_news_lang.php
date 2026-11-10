@@ -26,6 +26,17 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Parameter wizard" => "Průvodce Parametry",
+// "the update may still be running on the remote AA - wait, then run Test before retrying" => "aktualizace na vzdáleném AA možná ještě běží – počkejte a před dalším pokusem spusťte test", // ai 2026-10
+// "Set letterhead to a text" => "Nastavte letterhead na text", // ai 2026-10
+// "Update DB (sql_update)" => "Aktualizovat DB (sql_update)",
+// "Error: %1" => "Chyba: %1", // ai 2026-10
+// "Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "Přepne textová políčka z vkládací funkce „Text = neměnit“ na „Oříznout“, takže se mezery a nové řádky kolem hodnoty neukládají. Políčka pro kód, jedinečné hodnoty, kopie hesel a políčka, jejichž hodnoty takové mezery mají, si nastavení ponechají. Dříve uložené hodnoty se nemění.", // ai 2026-10
+// "No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "Žádná naplánovaná úloha webíku nevolá {import} s jeho jménem nebo id, takže běží jen ručně. Naplánujte úlohu, nebo vypněte volbu Zapnuto.", // ai 2026-10
+// "Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "Zapište test_boxes jako seznam ID datových schránek: ['<ID schránky>', ...], každé 7 písmen nebo číslic. Do té doby účet odesílá, ale žádná testovací zpráva konceptu z něj neodejde.", // ai 2026-10
+// "The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Funkce není na této stránce administrace definovaná. Web ji přesto může definovat (řídicí soubor webu, soubor, který načítají jen jeho stránky) - co stránky skutečně volaly, říká kontrola „Volání f_u na stránkách“; věřte té. Pokud ani tam není, definujte usr_%1 v include/usr_aliasfnc.php nebo alias odstraňte.", // ai 2026-10
+// "The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Stránka takovou funkci neměla, alias nic nezobrazil. Definujte usr_%1 v include/usr_aliasfnc.php nebo alias odstraňte.", // ai 2026-10
+// "Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "Ořízne hodnoty uložené dřív, než políčko dostalo vkládací funkci „Oříznout“ (viz „%1“) – mezery a nové řádky kolem, nesložené znaky s diakritikou. „Opravit“ to naplánuje do fronty: články se tiše uloží znovu, takže poslední úprava, počítaná políčka, události a výměna zpráv zůstanou nedotčené; historie změnu zaznamená. Jedinečná políčka se jen vypíšou, políčka definovaná ve webíku políček se nekontrolují.", // ai 2026-10
 // "Can't delete invalid permission." => "Nemohu smazat chybné nastavení.",
 // "Invalid permission deleted (no such user/group): " => "Chybné nastavení smazáno (neexistuje tento uživatel/skupina): ",
 // "Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Každá návštěva takovou stránku vykreslí znovu. Přesměrování, počítadlo kliknutí nebo formulář mohou zůstat, jak jsou. Jinde, především v šabloně každé stránky (hlavička, patička): smažte hodnotu vypisovanou jen pro ladění a zkontrolujte pravopis názvu ({server:HTTP_REFERER}); k rozpoznání návštěvníků přicházejících z kampaně použijte {qs:utm_source}, zařízení {detect}. Hostitel, schéma a URI ({server:HTTP_HOST}, {server:REQUEST_URI}) stránku v cache ponechají.", // ai 2026-10
@@ -428,7 +439,7 @@ return [
 "never" => "nikdy",
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 762
+// include/field.class.php, row 767
 // src/Util/Adminlink.php, row 31
 "disabled" => "vypnuto",
 
@@ -504,6 +515,7 @@ return [
 // admin/um_passwd.php, row 80
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
+// central/optimize.php, row 65
 // src/Import/DetailPage.php, row 510
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Platnost formuláře vypršela; obnovte stránku a zkuste to znovu.", // ai 2026-10
@@ -561,13 +573,13 @@ return [
 
 // admin/aa_security.php, row 87
 // admin/aa_statecheck.php, row 177
-// admin/aa_statistics.php, row 101
+// admin/aa_statistics.php, row 103
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
-// admin/se_fields.php, row 303
-// admin/se_statistics.php, row 80
+// admin/se_fields.php, row 361
+// admin/se_statistics.php, row 82
 // admin/se_views.php, row 148
-// include/formutil.php, row 1432, 1435, 2021
+// include/formutil.php, row 1475, 1478, 2064
 // src/Widget/FilWidget.php, row 154, 233
 // src/Widget/FldWidget.php, row 156
 "Show" => "Zobrazit",
@@ -580,7 +592,7 @@ return [
 // src/Optimize/CheckLoginAddresses.php, row 88, 101
 // src/Optimize/CheckSessionidUse.php, row 99
 // src/Optimize/CheckTrustedProxies.php, row 103
-// src/Optimize/CheckUploadRefusals.php, row 89
+// src/Optimize/CheckUploadRefusals.php, row 93
 // src/Security/Protection.php, row 93
 "Address" => "Adresa", // ai 2026-10
 
@@ -641,7 +653,7 @@ return [
 // src/Optimize/CheckServerRefusals.php, row 73
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckTrustedProxies.php, row 109
-// src/Optimize/CheckUploadRefusals.php, row 101
+// src/Optimize/CheckUploadRefusals.php, row 106
 // src/Optimize/CheckUserAliasFunctionLog.php, row 75
 // src/Optimize/CheckViewSliceRefusals.php, row 167, 199
 "Log rows" => "Záznamy logu", // ai 2026-10
@@ -677,12 +689,13 @@ return [
 "State Check reminds you until it is on again." => "Kontrola stavu vám to bude připomínat, dokud ji znovu nezapnete.", // ai 2026-10
 
 // admin/aa_security.php, row 206
-// admin/se_csv_import2.php, row 392
+// admin/se_csv_import2.php, row 395
+// admin/se_showif.php, row 176
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 110
-// src/Widget/Widget.php, row 445
+// src/Widget/Widget.php, row 444
 "Save" => "Uložit",
 
 // admin/aa_statecheck.php, row 72
@@ -776,182 +789,182 @@ return [
 // admin/se_statistics.php, row 58
 "You do not have permissions to see statistics" => "Nemáte oprávnění zobrazit statistiky",
 
-// admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 75
+// admin/aa_statistics.php, row 98
+// admin/se_statistics.php, row 77
 "Admin - Statistics" => "Admin - Statistiky",
-
-// admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 83
-"years" => "roky",
-
-// admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 84
-"months" => "měsíce",
 
 // admin/aa_statistics.php, row 106
 // admin/se_statistics.php, row 85
-"weeks" => "týdny",
+"years" => "roky",
 
 // admin/aa_statistics.php, row 107
 // admin/se_statistics.php, row 86
-"days" => "dny",
+"months" => "měsíce",
 
 // admin/aa_statistics.php, row 108
 // admin/se_statistics.php, row 87
-"hours" => "hodiny",
+"weeks" => "týdny",
 
 // admin/aa_statistics.php, row 109
 // admin/se_statistics.php, row 88
-"minutes" => "minuty",
+"days" => "dny",
 
 // admin/aa_statistics.php, row 110
 // admin/se_statistics.php, row 89
-"day-hours" => "hodiny dne",
+"hours" => "hodiny",
 
 // admin/aa_statistics.php, row 111
 // admin/se_statistics.php, row 90
+"minutes" => "minuty",
+
+// admin/aa_statistics.php, row 112
+// admin/se_statistics.php, row 91
+"day-hours" => "hodiny dne",
+
+// admin/aa_statistics.php, row 113
+// admin/se_statistics.php, row 92
 "week-days" => "dny týdne",
 
-// admin/aa_statistics.php, row 115
+// admin/aa_statistics.php, row 117
 "Most hits" => "Nejvíce přístupů",
 
-// admin/aa_statistics.php, row 116
+// admin/aa_statistics.php, row 118
 "Most server time" => "Nejvíce času serveru",
 
-// admin/aa_statistics.php, row 117
+// admin/aa_statistics.php, row 119
 "Slowest (avg ms)" => "Nejpomalejší (prům. ms)",
 
-// admin/aa_statistics.php, row 118
+// admin/aa_statistics.php, row 120
 "Fastest (avg ms)" => "Nejrychlejší (prům. ms)",
 
-// admin/aa_statistics.php, row 119
+// admin/aa_statistics.php, row 121
 "Worst cached" => "Nejhůře kešované",
 
-// admin/aa_statistics.php, row 120
+// admin/aa_statistics.php, row 122
 "Best cached" => "Nejlépe kešované",
 
-// admin/aa_statistics.php, row 121
+// admin/aa_statistics.php, row 123
 "Most wasted (NC+NM)" => "Nejvíce promarněno (NC+NM)",
 
-// admin/aa_statistics.php, row 122
+// admin/aa_statistics.php, row 124
 "Slowed down vs prior period" => "Zpomalení oproti předchozímu období",
 
-// admin/aa_statistics.php, row 123
+// admin/aa_statistics.php, row 125
 "Sped up vs prior period" => "Zrychlení oproti předchozímu období",
 
-// admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 94
+// admin/aa_statistics.php, row 126
+// admin/se_statistics.php, row 96
 "Specified below" => "Určeno níže",
 
-// admin/aa_statistics.php, row 128
+// admin/aa_statistics.php, row 130
 "Last day" => "Poslední den",
 
-// admin/aa_statistics.php, row 129
+// admin/aa_statistics.php, row 131
 "Last week" => "Poslední týden",
 
-// admin/aa_statistics.php, row 130
+// admin/aa_statistics.php, row 132
 "Last month" => "Poslední měsíc",
 
-// admin/aa_statistics.php, row 131
+// admin/aa_statistics.php, row 133
 "Last year" => "Poslední rok",
 
-// admin/aa_statistics.php, row 132
+// admin/aa_statistics.php, row 134
 "This day" => "Tento den",
 
-// admin/aa_statistics.php, row 133
+// admin/aa_statistics.php, row 135
 "This week" => "Tento týden",
 
-// admin/aa_statistics.php, row 134
+// admin/aa_statistics.php, row 136
 "This month" => "Tento měsíc",
 
-// admin/aa_statistics.php, row 135
+// admin/aa_statistics.php, row 137
 "This year" => "Tento rok",
 
-// admin/aa_statistics.php, row 136
+// admin/aa_statistics.php, row 138
 "All time" => "Za celou dobu",
 
-// admin/aa_statistics.php, row 140
+// admin/aa_statistics.php, row 142
 "All AA" => "Celé AA",
 
-// admin/aa_statistics.php, row 141
+// admin/aa_statistics.php, row 143
 "Sites" => "Weby",
 
-// admin/aa_statistics.php, row 145
+// admin/aa_statistics.php, row 147
 // admin/aafinder.php, row 484, 497
-// admin/se_inputform.php, row 294
+// admin/se_inputform.php, row 295
 // central/appstore.php, row 164
 // include/searchlib.php, row 1016
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Webíky",
 
-// admin/aa_statistics.php, row 172
+// admin/aa_statistics.php, row 174
 "Version progress" => "Vývoj mezi verzemi", // ai 2026-10
 
-// admin/aa_statistics.php, row 183
+// admin/aa_statistics.php, row 185
 "Queue progress" => "Vývoj fronty", // ai 2026-10
 
-// admin/aa_statistics.php, row 194
+// admin/aa_statistics.php, row 196
 "Quick diagnostics" => "Rychlá diagnostika",
 
-// admin/aa_statistics.php, row 218
+// admin/aa_statistics.php, row 220
 "Slice comparison" => "Porovnání webíků",
 
-// admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 149
+// admin/aa_statistics.php, row 243
+// admin/se_statistics.php, row 151
 "Stats to show" => "Zobrazené statistiky",
 
-// admin/aa_statistics.php, row 242
+// admin/aa_statistics.php, row 244
 "Granularity" => "Granularita",
 
-// admin/aa_statistics.php, row 246
+// admin/aa_statistics.php, row 248
 "Items to show" => "Zobrazené články",
 
-// admin/aa_statistics.php, row 247
+// admin/aa_statistics.php, row 249
 "Display for module" => "Zobrazit pro modul",
 
-// admin/aa_statistics.php, row 248
+// admin/aa_statistics.php, row 250
 "Sort items by" => "Řadit články podle",
 
-// admin/aa_statistics.php, row 249
+// admin/aa_statistics.php, row 251
 "Period (item ranking)" => "Období (pořadí článků)",
 
-// admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 109
+// admin/aa_statistics.php, row 252
+// admin/se_statistics.php, row 111
 "Exact items to show" => "Konkrétní články k zobrazení",
 
-// admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 109
+// admin/aa_statistics.php, row 252
+// admin/se_statistics.php, row 111
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "seznam id/short_id článků oddělený pomlčkami nebo AA výraz jako {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}",
 
-// admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 110
+// admin/aa_statistics.php, row 253
+// admin/se_statistics.php, row 112
 "Number of items to show" => "Počet zobrazených článků",
 
-// admin/aa_statistics.php, row 255
+// admin/aa_statistics.php, row 257
 "Show for period" => "Zobrazit za období",
 
-// admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 111
+// admin/aa_statistics.php, row 258
+// admin/se_statistics.php, row 113
 "From date" => "Od data",
 
-// admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 155
+// admin/aa_statistics.php, row 263
+// admin/se_statistics.php, row 157
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Zkontrolujte výraz v poli „Konkrétní články k zobrazení“ a vyhodnoťte ho tlačítkem „Zobrazit“.", // ai 2026-11
 
-// admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 158
+// admin/aa_statistics.php, row 270
+// admin/se_statistics.php, row 160
 "Display Statistics for Item" => "Zobrazit statistiky článku",
 
-// admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 185
+// admin/aa_statistics.php, row 356
+// admin/se_statistics.php, row 187
 "Items found" => "Nalezené články",
 
-// admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 194
+// admin/aa_statistics.php, row 358
+// admin/se_statistics.php, row 196
 "No items found" => "Žádné články nenalezeny",
 
-// admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 191
+// admin/aa_statistics.php, row 370
+// admin/se_statistics.php, row 193
 "Server configuration changes" => "Změny konfigurace serveru",
 
 // admin/aa_tasks.php, row 35
@@ -1004,11 +1017,11 @@ return [
 
 // admin/aafinder.php, row 135
 // admin/feed_to.php, row 65
-// admin/se_fields.php, row 110
+// admin/se_fields.php, row 113
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1220
+// include/logs.php, row 1224
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -1019,12 +1032,12 @@ return [
 // src/Optimize/CheckDiscussionRefusals.php, row 74
 // src/Optimize/CheckFileReadRefusals.php, row 79
 // src/Optimize/CheckFormRobotRefusals.php, row 74
-// src/Optimize/CheckImports.php, row 367
+// src/Optimize/CheckImports.php, row 390
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 87
 // src/Optimize/CheckRelatedSlices.php, row 76
-// src/Optimize/CheckUploadRefusals.php, row 87
+// src/Optimize/CheckUploadRefusals.php, row 91
 // src/Optimize/CheckUserAliasFunctionLog.php, row 85
 // src/Optimize/CheckUserAliasFunctions.php, row 87
 // src/Optimize/CheckViewSliceRefusals.php, row 161
@@ -1102,7 +1115,7 @@ return [
 // include/exporter.class.php, row 550
 // include/itemfunc.php, row 383
 // include/menu.php, row 135
-// include/searchlib.php, row 172
+// include/searchlib.php, row 173
 // src/Isds/SliceRules.php, row 176
 "Fields" => "Políčka",
 
@@ -1144,12 +1157,13 @@ return [
 
 // admin/aafinder.php, row 526
 // include/searchbar.class.php, row 576
-// include/searchlib.php, row 49, 50, 128, 137
+// include/searchlib.php, row 50, 51, 129, 138
 "contains" => "obsahuje",
 
 // admin/aafinder.php, row 527
+// admin/se_showif.php, row 118
 // include/searchbar.class.php, row 584
-// include/searchlib.php, row 128, 137
+// include/searchlib.php, row 129, 138
 "is" => "je",
 
 // admin/aafinder.php, row 528
@@ -1182,9 +1196,9 @@ return [
 "ActionApps Anonymous form" => "ActionApps Anonymní formulář",
 
 // admin/anonym_wizard.php, row 129
-// admin/write_mail.php, row 268
-// include/menu_util.php, row 629
-// include/stringexpand.php, row 10301, 10380
+// admin/write_mail.php, row 290
+// include/menu_util.php, row 630
+// include/stringexpand.php, row 10316, 10395
 "Send" => "Pošli",
 
 // admin/anonym_wizard.php, row 151
@@ -1192,9 +1206,10 @@ return [
 // admin/se_constant.php, row 87
 // admin/se_constant_import.php, row 63
 // admin/se_fieldid.php, row 89
-// admin/se_fields.php, row 86
-// admin/se_inputform.php, row 130
+// admin/se_fields.php, row 89
+// admin/se_inputform.php, row 131
 // admin/se_javascript.php, row 50
+// admin/se_showif.php, row 55
 "You do not have permissions to change fields settings" => "Nemáte právo měnit nastavení položek",
 
 // admin/anonym_wizard.php, row 166
@@ -1213,6 +1228,8 @@ return [
 "Show Form" => "Zobraz formulář",
 
 // admin/anonym_wizard.php, row 211
+// admin/se_csv_import2.php, row 418
+// src/Util/Paramwizard.php, row 166
 "Help" => "Nápověda",
 
 // admin/anonym_wizard.php, row 211
@@ -1232,14 +1249,15 @@ return [
 
 // admin/anonym_wizard.php, row 221
 // admin/se_fieldid.php, row 296
-// admin/se_fields.php, row 299
+// admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
+// admin/se_showif.php, row 123
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1380, 1384
+// include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 368
+// include/searchlib.php, row 369
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1253,14 +1271,14 @@ return [
 
 // admin/anonym_wizard.php, row 222
 // admin/se_fieldid.php, row 296
-// admin/se_fields.php, row 300
+// admin/se_fields.php, row 358
 // admin/se_history.php, row 140
 // admin/se_javascript.php, row 86
 // admin/slicedit.php, row 282
 // central/installapp.php, row 1271
 // include/constants.php, row 458
 // src/Central/FindingText.php, row 186, 192
-// src/Optimize/CheckImports.php, row 218
+// src/Optimize/CheckImports.php, row 220
 "Id" => "ID",
 
 // admin/anonym_wizard.php, row 224
@@ -1285,15 +1303,16 @@ return [
 
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
-// include/stringexpand.php, row 98
+// include/stringexpand.php, row 99
 // src/Import/DetailPage.php, row 1025, 1091
-// src/Optimize/CheckImports.php, row 236, 238
+// src/Optimize/CheckImports.php, row 239, 241
 "Code" => "Kód",
 
 // admin/console.php, row 71
 "HTML output" => "HTML výstup",
 
 // admin/console.php, row 73, 75
+// central/optimize.php, row 210
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "Výsledek",
 
@@ -1308,6 +1327,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
+// central/optimize.php, row 248
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "OK", // ai 2026-10
@@ -1344,7 +1364,7 @@ return [
 "Author" => "Autor",
 
 // admin/discedit.php, row 133
-// include/logs.php, row 905, 1316
+// include/logs.php, row 905, 1320
 "IP Address" => "IP adresa",
 
 // admin/discedit.php, row 134
@@ -1368,14 +1388,15 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 266
-// include/field.class.php, row 744
+// include/field.class.php, row 749
 // include/filedit.php, row 113
-// include/formutil.php, row 1778, 3395
+// include/formutil.php, row 1821, 3428
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
 // include/statestore.php, row 1143
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
+// src/Optimize/CheckImports.php, row 215
 "Edit" => "Editace",
 
 // admin/discedit.php, row 165
@@ -1384,14 +1405,15 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
+// admin/se_showif.php, row 179
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
 // admin/um_passkeys.php, row 158
 // admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 748
-// include/formutil.php, row 1789, 1926
+// include/field.class.php, row 753
+// include/formutil.php, row 1832, 1969
 // include/menu_util.php, row 61
 // include/profile.php, row 69
 // include/searchbar.class.php, row 1126
@@ -1403,9 +1425,9 @@ return [
 "Delete" => "Smazat",
 
 // admin/discedit.php, row 172
-// include/adminpage.class.php, row 345
+// include/adminpage.class.php, row 395
 // include/se_users.php, row 128
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Zpět",
 
 // admin/discedit.php, row 173
@@ -1418,9 +1440,9 @@ return [
 "You do not have permission to edit items in this slice" => "Nemáte právo upravovat zprávy v tomto webíku",
 
 // admin/discedit2.php, row 92, 146
-// admin/write_mail.php, row 119, 248
-// include/logs.php, row 1067
-// include/mail.php, row 663
+// admin/write_mail.php, row 123, 267
+// include/logs.php, row 1071
+// include/mail.php, row 699
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Předmět",
 
@@ -1508,7 +1530,7 @@ return [
 "File Manager" => "Správce Souborů",
 
 // admin/fileman.php, row 131
-// include/fileman.php, row 159, 177
+// include/fileman.php, row 165, 183
 // src/Optimize/ImgCacheWritable.php, row 47
 "Directory" => "Adresář",
 
@@ -1541,27 +1563,27 @@ return [
 // admin/index.php, row 182
 "ActionApps - Item Manager" => "ActionApps - Správce zpráv",
 
-// admin/itemedit.php, row 236, 326
+// admin/itemedit.php, row 237, 331
 "Error: You have no rights to edit item." => "Nemáte práva měnit článek",
 
-// admin/itemedit.php, row 318
+// admin/itemedit.php, row 323
 // include/date.php, row 189
-// include/field.class.php, row 1380
+// include/field.class.php, row 1405
 // include/validate.php, row 54, 58
 "Error in" => "Chyba v",
 
-// admin/itemedit.php, row 369
+// admin/itemedit.php, row 382
 // admin/slicefieldsedit.php, row 131
 "Error: no fields." => "Chyba: žádné políčko.",
 
-// admin/itemedit.php, row 377
+// admin/itemedit.php, row 390
 // admin/slicefieldsedit.php, row 139
 "Bad item ID id=%1" => "Špatné číslo článku id=%1",
 
-// admin/itemedit.php, row 414, 415
+// admin/itemedit.php, row 427, 428
 "Edit Item" => "Upravit zprávu",
 
-// admin/itemedit.php, row 414, 415
+// admin/itemedit.php, row 427, 428
 // include/menu.php, row 84
 "Add Item" => "Přidat zprávu",
 
@@ -1694,7 +1716,7 @@ return [
 // admin/se_admin.php, row 163
 // admin/se_compact.php, row 212
 // admin/se_fulltext.php, row 163
-// admin/se_inputform.php, row 189, 426
+// admin/se_inputform.php, row 190, 431
 // src/Util/UiPrefs.php, row 56
 "Default" => "Implicitní",
 
@@ -1797,7 +1819,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 369
+// include/searchlib.php, row 370
 "Descending" => "Sestupně",
 
 // admin/se_compact.php, row 244
@@ -1822,6 +1844,7 @@ return [
 "Can't delete constant group" => "Skupinu hodnot nelze smazat", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
+// admin/se_showif.php, row 157
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1830,7 +1853,7 @@ return [
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1207
+// include/logs.php, row 1211
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1846,33 +1869,33 @@ return [
 // admin/se_profile.php, row 209
 // include/constants.php, row 453
 // include/constedit.php, row 76
-// include/searchlib.php, row 176
+// include/searchlib.php, row 177
 // src/Central/FindingText.php, row 94, 98
 "Value" => "Hodnota",
 
 // admin/se_constant.php, row 177, 379
-// admin/se_inputform.php, row 515
+// admin/se_inputform.php, row 523
 // admin/se_view.php, row 153
 // admin/um_gedit.php, row 299, 302
 // include/constants.php, row 459
 // include/constedit.php, row 84
-// include/stringexpand.php, row 99
+// include/stringexpand.php, row 100
 // include/um_gedit.php, row 33
 // src/Manageraction/Central_Linkcheck.php, row 31
 // src/Optimize/AbstractOptimize.php, row 174
 "Description" => "Popis",
 
 // admin/se_constant.php, row 178, 380
-// admin/se_fields.php, row 301
+// admin/se_fields.php, row 359
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1384
+// include/field.class.php, row 1409
 // src/Optimize/AbstractOptimize.php, row 177
 "Priority" => "Řazení",
 
 // admin/se_constant.php, row 184, 327
 // admin/se_constant_import.php, row 74, 126
-// admin/se_inputform.php, row 284
+// admin/se_inputform.php, row 285
 // include/constants.php, row 784
 "Constant Group" => "Skupina hodnot",
 
@@ -1904,7 +1927,7 @@ return [
 
 // admin/se_constant.php, row 319
 // admin/se_constant_import.php, row 75, 125, 136
-// admin/se_inputform.php, row 405
+// admin/se_inputform.php, row 410
 "Constants" => "Hodnoty",
 
 // admin/se_constant.php, row 333
@@ -1972,7 +1995,7 @@ return [
 "Missing slice" => "Webík nenalezen",
 
 // admin/se_csv_import.php, row 133
-// admin/se_csv_import2.php, row 214
+// admin/se_csv_import2.php, row 217
 "The data to import are no longer on the server - load them again" => "Data k importu už na serveru nejsou – načtěte je znovu", // ai 2026-10
 
 // admin/se_csv_import.php, row 142
@@ -1992,7 +2015,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1237
+// include/logs.php, row 1241
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckFileReadRefusals.php, row 77, 100, 133
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
@@ -2002,11 +2025,11 @@ return [
 
 // admin/se_csv_import.php, row 239, 244
 // src/Manageraction/Central_Linkcheck.php, row 29
-// src/Widget/Widget.php, row 903
+// src/Widget/Widget.php, row 902
 "URL" => "",
 
 // admin/se_csv_import.php, row 240, 245
-// admin/se_inputform.php, row 458, 459
+// admin/se_inputform.php, row 465, 466
 // include/itemfunc.php, row 668, 777, 806
 // src/Util/Note.php, row 63
 "Text" => "Text", // ai 2026-10
@@ -2015,7 +2038,7 @@ return [
 "Source of CSV data" => "Zdroj CSV dat",
 
 // admin/se_csv_import.php, row 277
-// admin/se_csv_import2.php, row 382
+// admin/se_csv_import2.php, row 385
 // central/installapp.php, row 434, 558, 1368
 // src/Manageraction/Item_Preview.php, row 13
 "Preview" => "Náhled",
@@ -2025,50 +2048,50 @@ return [
 // src/Import/DetailPage.php, row 422
 "Next" => "Další",
 
-// admin/se_csv_import2.php, row 196
+// admin/se_csv_import2.php, row 199
 "You have not permissions to setting " => "Nemáte právo pro nastavení",
 
-// admin/se_csv_import2.php, row 202
+// admin/se_csv_import2.php, row 205
 "Invalid additional parameters for import" => "Chybné dodatečné parametry pro import",
 
-// admin/se_csv_import2.php, row 280
+// admin/se_csv_import2.php, row 283
 "Item:" => "Zpráva:",
 
-// admin/se_csv_import2.php, row 288
+// admin/se_csv_import2.php, row 291
 "Cannot store item to DB" => "Zprávu nelze uložit do databáze",
 
-// admin/se_csv_import2.php, row 293
+// admin/se_csv_import2.php, row 296
 "Transformation error:" => "Chyba při transformaci:",
 
-// admin/se_csv_import2.php, row 295
+// admin/se_csv_import2.php, row 298
 "Ok: Item %1 stored" => "OK: Článek %1 je uložen",
 
-// admin/se_csv_import2.php, row 313
+// admin/se_csv_import2.php, row 316
 "Added to slice" => "Přidáno do webíku",
 
-// admin/se_csv_import2.php, row 336
+// admin/se_csv_import2.php, row 339
 "Mapping preview" => "Náhled mapování",
 
-// admin/se_csv_import2.php, row 387
+// admin/se_csv_import2.php, row 390
 "Finish" => "Dokončit",
 
-// admin/se_csv_import2.php, row 397
+// admin/se_csv_import2.php, row 400
 "Load" => "Načíst",
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 410
 "Mapping settings" => "Nastavení mapování",
 
-// admin/se_csv_import2.php, row 410
+// admin/se_csv_import2.php, row 413
 // admin/se_filters.php, row 182
 // admin/se_mapping.php, row 177
 "To" => "Do",
 
-// admin/se_csv_import2.php, row 411
+// admin/se_csv_import2.php, row 414
 // admin/se_filters.php, row 181
 // admin/se_mapping.php, row 178
 "From" => "Z",
 
-// admin/se_csv_import2.php, row 412
+// admin/se_csv_import2.php, row 415
 // admin/search_replace.php, row 185
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
@@ -2078,74 +2101,71 @@ return [
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Akce",
 
-// admin/se_csv_import2.php, row 413
+// admin/se_csv_import2.php, row 416
 "Html" => "",
 
-// admin/se_csv_import2.php, row 414
+// admin/se_csv_import2.php, row 417
 "Action parameters" => "Parametry akce",
 
-// admin/se_csv_import2.php, row 415
-"Parameter wizard" => "Průvodce Parametry",
-
-// admin/se_csv_import2.php, row 440
+// admin/se_csv_import2.php, row 443
 "Import options" => "Nastavení importu",
 
-// admin/se_csv_import2.php, row 455
+// admin/se_csv_import2.php, row 458
 "Map item id from" => "ID zprávy namapuj z",
 
-// admin/se_csv_import2.php, row 459
+// admin/se_csv_import2.php, row 462
 "unpacked long id (32 characters)" => "nezabalené dlouhé id (32 znaků)",
 
-// admin/se_csv_import2.php, row 460
+// admin/se_csv_import2.php, row 463
 "packed long id (16 characters)" => "zabalené dlouhé id (16 znaků)",
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 464
 "string to be converted (string2id) - with param:" => "řetězec ke konverzi (string2id) - s parametrem:",
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 472
 "Select, how to store the items" => "Zvolte, jak uložit články",
 
-// admin/se_csv_import2.php, row 471
+// admin/se_csv_import2.php, row 474
 "Do not store the item" => "Přeskoč danou zprávu (neukládat)",
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 475
 "Store the item with new id" => "Ulož zprávu pod novým ID",
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 476
 "Update the item (overwrite)" => "Aktualizovat článek (přepsat)",
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 477
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "Přidat hodnoty souběžně k současným hodnotám (kde je to možné, ukládají se vícenásobné hodnoty)",
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 478
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Přepsat jen políčka, pro která je akce definována, a přepočítat všechna počítaná políčka, ...",
 
-// admin/se_csv_import2.php, row 476
+// admin/se_csv_import2.php, row 479
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Přepsat jen políčka, pro která je akce definována (neaktualizovat lastedit, počítaná, ... políčka = Silent)",
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 480
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Přepsat jen políčka, pro která je akce definována a jejichž hodnota není prázdná (počítaná políčka budou přepočítána)",
 
-// admin/se_csv_import2.php, row 480
+// admin/se_csv_import2.php, row 483
 "If the item id is already in the slice" => "Pokud je id článku už ve webíku",
 
-// admin/se_csv_import2.php, row 481
+// admin/se_csv_import2.php, row 484
 // admin/search_replace.php, row 183
 "Silent" => "Tichý režim", // ai 2026-06
 
-// admin/se_csv_import2.php, row 481
+// admin/se_csv_import2.php, row 484
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Neprovádět žádné další operace jako přepočet počítaných políček, výměnu zpráv, posílání e-mailů čtenářům zasílání...",
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 486
 "Store settings..." => "Uložit nastavení...",
 
-// admin/se_csv_import2.php, row 490
+// admin/se_csv_import2.php, row 493
 "Load setting" => "Načíst nastavení",
 
-// admin/se_csv_import2.php, row 492
+// admin/se_csv_import2.php, row 495
 "Save setting as" => "Uložit nastavení jako",
 
-// admin/se_csv_import2.php, row 537
+// admin/se_csv_import2.php, row 540
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Správa webíku - Načtení .csv (2/2) - Mapování",
 
 // admin/se_dataimport.php, row 59
@@ -2161,7 +2181,7 @@ return [
 // admin/se_dataimports.php, row 40
 // include/menu.php, row 157
 // include/menu_util.php, row 92
-// src/Optimize/CheckImports.php, row 35
+// src/Optimize/CheckImports.php, row 35, 215
 "Imports" => "Importy", // ai 2026-10
 
 // admin/se_dataimports.php, row 41
@@ -2240,7 +2260,7 @@ return [
 // include/logs.php, row 560
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
-// src/Widget/Widget.php, row 753
+// src/Widget/Widget.php, row 752
 "Type" => "Typ",
 
 // admin/se_export.php, row 165
@@ -2324,49 +2344,49 @@ return [
 // admin/sliceexp.php, row 132
 "to" => "do",
 
-// admin/se_fields.php, row 108
+// admin/se_fields.php, row 111
 "Add new field from template" => "Přidat nové políčko ze šablony",
 
-// admin/se_fields.php, row 139
+// admin/se_fields.php, row 142
 "Field delete OK" => "Pole odstraněno",
 
-// admin/se_fields.php, row 147
+// admin/se_fields.php, row 150
 "Invalid move alias parameters" => "Neplatné parametry přesunu aliasu",
 
-// admin/se_fields.php, row 159
+// admin/se_fields.php, row 162
 "No free space for alias in this field" => "V tomto políčku není pro alias volné místo",
 
-// admin/se_fields.php, row 170
+// admin/se_fields.php, row 173
 "Alias moved OK" => "Alias úspěšně přesunut",
 
-// admin/se_fields.php, row 184
-// admin/se_inputform.php, row 278
+// admin/se_fields.php, row 187
+// admin/se_inputform.php, row 279
 "Fields update successful" => "Nastavení položek úspěšně změněno",
 
-// admin/se_fields.php, row 204
+// admin/se_fields.php, row 207
 "Alias <b>%1</b> is duplicated" => "Alias <b>%1</b> je duplicitní",
 
-// admin/se_fields.php, row 211
+// admin/se_fields.php, row 214
 "Do you really want to move alias to another field?" => "Opravdu chcete přesunout alias do jiného políčka?",
 
-// admin/se_fields.php, row 234
+// admin/se_fields.php, row 237
 "Do you really want to delete this field from this slice?" => "Opravdu chcete vymazat toto políčko z webíku?",
 
-// admin/se_fields.php, row 249
-// admin/se_inputform.php, row 374
+// admin/se_fields.php, row 304
+// admin/se_inputform.php, row 375
 "Admin - configure Fields" => "Správa webíku - Nastavení políček",
 
-// admin/se_fields.php, row 281
+// admin/se_fields.php, row 339
 "change all" => "změnit vše",
 
-// admin/se_fields.php, row 294
+// admin/se_fields.php, row 352
 "Analyze" => "Analyzovat",
 
-// admin/se_fields.php, row 302
+// admin/se_fields.php, row 360
 "Required" => "Povinná",
 
-// admin/se_fields.php, row 305
-// include/stringexpand.php, row 112
+// admin/se_fields.php, row 363
+// include/stringexpand.php, row 113
 "Aliases" => "Aliasy",
 
 // admin/se_filters.php, row 83
@@ -2385,7 +2405,7 @@ return [
 // admin/um_gedit.php, row 280
 // admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
-// include/formutil.php, row 191, 2941
+// include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
 // src/Import/DetailCatalog.php, row 151
 "Update" => "Změnit",
@@ -2406,7 +2426,7 @@ return [
 "No category defined" => "Kategorie nebyly definovány",
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1415
+// src/Manager.php, row 1424
 "Select all" => "Vybrat vše",
 
 // admin/se_filters.php, row 320
@@ -2475,11 +2495,12 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
+// src/Optimize/CheckOptimizeRuns.php, row 56
 "User" => "Uživatel",
 
 // admin/se_history.php, row 144
 // src/AA_Plannedtask.php, row 182
-// src/Optimize/CheckImports.php, row 287
+// src/Optimize/CheckImports.php, row 290
 // src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "Čas",
 
@@ -2527,154 +2548,156 @@ return [
 // admin/se_import.php, row 197
 "Import from" => "Přijímat", // ai 2026-11
 
-// admin/se_inputform.php, row 186, 481
+// admin/se_inputform.php, row 187, 489
 "Before HTML code" => "HTML kód před tímto polem",
 
-// admin/se_inputform.php, row 187, 479
+// admin/se_inputform.php, row 188, 487
 "Help for this field" => "Nápověda",
 
-// admin/se_inputform.php, row 188, 480
+// admin/se_inputform.php, row 189, 488
 "More help" => "Více informací",
 
-// admin/se_inputform.php, row 190
+// admin/se_inputform.php, row 191
 "Input show function" => "Zobrazovací funkce",
 
-// admin/se_inputform.php, row 192
+// admin/se_inputform.php, row 193
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "Alias musí být vždy _# + 8 VELKÝCH písmen, např. _#<b>SOMTHING</b>.",
 
-// admin/se_inputform.php, row 197, 512
-// include/stringexpand.php, row 97
+// admin/se_inputform.php, row 198, 520
+// include/stringexpand.php, row 98
 // src/Optimize/CheckUserAliasFunctions.php, row 89
 "Alias" => "Alias", // ai 2026-10
 
-// admin/se_inputform.php, row 201, 513
+// admin/se_inputform.php, row 202, 521
 // admin/se_profile.php, row 208
 "Function" => "Funkce",
 
-// admin/se_inputform.php, row 257
+// admin/se_inputform.php, row 258
 "You can relate only to a slice where you may edit all items" => "Vazbu lze nastavit jen na webík, v němž smíte upravovat všechny články", // ai 2026-10
 
-// admin/se_inputform.php, row 305
+// admin/se_inputform.php, row 306
 "No field found" => "Žádné políčko nenalezeno",
 
-// admin/se_inputform.php, row 352
+// admin/se_inputform.php, row 353
 "You selected slice and not constant group. It is impossible to create slice from here." => "Vybral jste webík a ne konstanty. Odtud nelze nový webík vytvořit.",
 
-// admin/se_inputform.php, row 375
+// admin/se_inputform.php, row 376
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "POZOR: Neměňte toto nastavení, pokud si nejste jisti, co děláte!",
 
-// admin/se_inputform.php, row 388
-// include/formutil.php, row 192
+// admin/se_inputform.php, row 392
+// include/formutil.php, row 203
 "Update & Edit" => "Změnit a editovat dále",
 
-// admin/se_inputform.php, row 389
+// admin/se_inputform.php, row 393
 // admin/se_view.php, row 485
-// include/slice.class.php, row 1324
+// include/slice.class.php, row 1327
 "Show History" => "Zobrazit historii",
 
-// admin/se_inputform.php, row 393
+// admin/se_inputform.php, row 397
 "Field properties" => "Vlastnosti políčka",
 
-// admin/se_inputform.php, row 401
-// src/Widget/Widget.php, row 765
+// admin/se_inputform.php, row 405
+// src/Widget/Widget.php, row 764
 "Input type" => "Typ Vstupu",
 
-// admin/se_inputform.php, row 404
+// admin/se_inputform.php, row 408
 "Input field type in Add / Edit item." => "Typ políčka v Přidat / Upravit zprávu.",
 
-// admin/se_inputform.php, row 408
+// admin/se_inputform.php, row 413
 "Edit|Use as new|New" => "Upravit|Upravit kopii|Nová skupina",
 
-// admin/se_inputform.php, row 410
+// admin/se_inputform.php, row 415
 "Choose a Constant Group or a Slice." => "Vyberte Skupinu Konstant nebo Webík.",
 
-// admin/se_inputform.php, row 424
+// admin/se_inputform.php, row 424, 440, 451, 479, 522
+// include/logs.php, row 640
+// src/Import/DetailConfig.php, row 369
+// src/Util/Paramwizard.php, row 154
+"Parameters" => "Parametry",
+
+// admin/se_inputform.php, row 429
 "Allow translation" => "Povolit překlad",
 
-// admin/se_inputform.php, row 424
+// admin/se_inputform.php, row 429
 "Only Text Area and Text Field widgets allow translation. Languages should be set on Slice Setting page." => "Překlad umožňují pouze widgety Text Area a Text Field. Jazyky se nastavují na stránce Nastavení webíku.",
 
-// admin/se_inputform.php, row 433
+// admin/se_inputform.php, row 438
 "How to generate the default value" => "Jak vytvořit implicitní hodnotu",
 
-// admin/se_inputform.php, row 440
+// admin/se_inputform.php, row 446
 // include/feeding.php, row 453
 "Validate" => "Zkontrolovat",
 
-// admin/se_inputform.php, row 451
+// admin/se_inputform.php, row 458
 "Stored as" => "Uloženo jako",
 
-// admin/se_inputform.php, row 454
+// admin/se_inputform.php, row 461
 "Stored in <em>item</em> table - it is not possible to change store method" => "Uloženo v tabulce <em>item</em> - způsob uložení nelze změnit",
 
-// admin/se_inputform.php, row 458, 459
+// admin/se_inputform.php, row 465, 466
 // src/Central/FindingText.php, row 176, 186
 "Number" => "Číslo",
 
-// admin/se_inputform.php, row 467
+// admin/se_inputform.php, row 474
 // admin/sliceimp.php, row 425
 // include/form.class.php, row 474, 476
-// include/formutil.php, row 210, 2952
+// include/formutil.php, row 221, 2996
 "Insert" => "Vložit",
 
-// admin/se_inputform.php, row 470
+// admin/se_inputform.php, row 477
 "Defines how value is stored in database." => "Určuje způsob uložení hodnoty v databázi",
 
-// admin/se_inputform.php, row 477
+// admin/se_inputform.php, row 485
 "Show 'HTML' / 'plain text' option" => "Zobrazit volbu 'HTML' / 'prostý text'",
 
-// admin/se_inputform.php, row 478
+// admin/se_inputform.php, row 486
 "'HTML' as default" => "'HTML' implicitně",
 
-// admin/se_inputform.php, row 478
+// admin/se_inputform.php, row 486
 "HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least." => "Volba HTML znamená, že políčko se vypíše přesně tak, jak je vyplněno, pomocí aliasu {field...........}. Prostý text znamená, že nové řádky se převedou na &lt;br&gt; atd. HTML je vhodná volba přinejmenším pro jakákoli netextová data.",
 
-// admin/se_inputform.php, row 479
+// admin/se_inputform.php, row 487
 "Shown help for this field" => "Nápověda zobrazená pro toto pole ve vstupním formuláři",
 
-// admin/se_inputform.php, row 480
+// admin/se_inputform.php, row 488
 "Text shown after user click on '?' in input form" => "Nápověda, která se zobrazí po stisku '?' ve vstupním formuláři",
 
-// admin/se_inputform.php, row 481
+// admin/se_inputform.php, row 489
 "Code shown in input form before this field" => "HTML kód, který se zobrazí ve vstupním formuláři před tímto polem",
 
-// admin/se_inputform.php, row 483
+// admin/se_inputform.php, row 491
 "Searchable in AA Item Manager" => "Prohledávatelné ve Správci článků AA",
 
-// admin/se_inputform.php, row 483
+// admin/se_inputform.php, row 491
 "The field is shown in Search box in Item Manager." => "Políčko se zobrazí ve vyhledávacím poli Správce článků.",
 
-// admin/se_inputform.php, row 484
+// admin/se_inputform.php, row 492
 "Feeding mode" => "Sdílení tohoto pole",
 
-// admin/se_inputform.php, row 484
+// admin/se_inputform.php, row 492
 "Should the content of this field be copied to another slice if it is fed?" => "Má se kopírovat obsah tohoto políčka do dalších webíků při výměně zpráv mezi webíky?",
 
-// admin/se_inputform.php, row 486
+// admin/se_inputform.php, row 494
 "ALIASES used in views to print field content (%1)" => "ALIASY používané v pohledech pro výpis obsahu políčka (%1)",
 
-// admin/se_inputform.php, row 506
+// admin/se_inputform.php, row 514
 "8 CHARS" => "8 ZNAKŮ",
 
-// admin/se_inputform.php, row 506
+// admin/se_inputform.php, row 514
 "8 UPPERCASE letters or _" => "8 VELKÝCH písmen nebo _",
 
-// admin/se_inputform.php, row 507
+// admin/se_inputform.php, row 515
 // src/Import/DetailPage.php, row 604
 // src/Import/RunView.php, row 188
 "Disabled" => "Zakázáno",
 
-// admin/se_inputform.php, row 508
+// admin/se_inputform.php, row 516
 // src/Util/ChangesMonitor.php, row 509
+// src/Util/Paramwizard.php, row 161
 "Copy to clipboard" => "Kopírovat do schránky",
 
-// admin/se_inputform.php, row 509
+// admin/se_inputform.php, row 517
 "Reset" => "Resetovat", // ai 2026-06
-
-// admin/se_inputform.php, row 514
-// include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
-"Parameters" => "Parametry",
 
 // admin/se_inter_export.php, row 97
 "No selected export" => "Není vybrán žádný export",
@@ -2719,6 +2742,7 @@ return [
 "Node" => "Uzel",
 
 // admin/se_inter_import.php, row 96
+// central/optimize.php, row 171
 // misc/datovka/datovka.php, row 158
 // src/Import/DetailConfig.php, row 291
 // src/Import/DetailPage.php, row 377
@@ -3109,7 +3133,7 @@ return [
 "Rule" => "Pravidlo",
 
 // admin/se_profile.php, row 210
-// include/formutil.php, row 1227
+// include/formutil.php, row 1270
 // include/transformation.class.php, row 192, 381, 454, 548, 738
 // include/widget.class.php, row 664
 "HTML" => "",
@@ -3237,37 +3261,140 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Použijte podmínky \"headline........,publish_date....-\" nebo \"sort[]\"",
 
-// admin/se_statistics.php, row 95
-"Top all time" => "Top za celou dobu",
+// admin/se_showif.php, row 77
+"The form has expired. Close it and open it again." => "Formulář vypršel. Zavřete ho a otevřete znovu.", // ai 2026-11
 
-// admin/se_statistics.php, row 96
-"Top this year" => "Top tento rok",
+// admin/se_showif.php, row 117
+"is checked" => "je zaškrtnuto", // ai 2026-11
+
+// admin/se_showif.php, row 117
+"is not checked" => "není zaškrtnuto", // ai 2026-11
+
+// admin/se_showif.php, row 118
+// include/searchlib.php, row 129, 138
+"is not" => "není",
+
+// admin/se_showif.php, row 118
+"is filled" => "je vyplněno", // ai 2026-11
+
+// admin/se_showif.php, row 118
+"is empty" => "je prázdné", // ai 2026-11
+
+// admin/se_showif.php, row 120
+"— add a rule —" => "— přidat pravidlo —", // ai 2026-11
+
+// admin/se_showif.php, row 128
+"Comparison" => "Porovnání", // ai 2026-11
+
+// admin/se_showif.php, row 144
+"Values, one per line" => "Hodnoty, jedna na řádek", // ai 2026-11
+
+// admin/se_showif.php, row 151
+// include/field.class.php, row 797
+"Display condition" => "Podmínka zobrazení", // ai 2026-11
+
+// admin/se_showif.php, row 163
+"Show the field when all of these hold" => "Políčko zobrazit, když platí všechna tato pravidla", // ai 2026-11
+
+// admin/se_showif.php, row 165
+"AA expression (optional)" => "AA výraz (nepovinné)", // ai 2026-11
+
+// admin/se_showif.php, row 166
+// src/Optimize/ImgMeasuring.php, row 54
+"Expression" => "Výraz", // ai 2026-10
+
+// admin/se_showif.php, row 166
+"Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "Ponechte prázdné, chcete-li použít jen pravidla. Je-li vyplněno, políčko se zobrazí jen tehdy, když výsledek není prázdný ani 0. Vyhodnocuje se při otevření formuláře a při uložení článku.", // ai 2026-11
+
+// admin/se_showif.php, row 169
+"Clear the field when a rule hides it" => "Vyčistit políčko, když ho pravidlo skryje", // ai 2026-11
+
+// admin/se_showif.php, row 169
+"Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "Nezaškrtnuto: upravovaný článek si hodnotu ponechá, nový článek dostane výchozí hodnotu políčka. Políčko skryté výrazem se nikdy nemění.", // ai 2026-11
+
+// admin/se_showif.php, row 173
+"Used by" => "Políčka s touto podmínkou", // ai 2026-11
+
+// admin/se_showif.php, row 173
+"no field" => "žádné políčko", // ai 2026-11
+
+// admin/se_showif.php, row 176
+"Save the changes to this condition. They apply to every field that uses it." => "Uložit změny této podmínky. Platí pro všechna políčka, která ji používají.", // ai 2026-11
+
+// admin/se_showif.php, row 178
+// admin/se_view.php, row 486
+"Save as new" => "Uložit jako nový",
+
+// admin/se_showif.php, row 178
+"Keep the original condition as it is and save this form as another condition under a new name." => "Ponechat původní podmínku beze změny a uložit tento formulář jako další podmínku pod novým názvem.", // ai 2026-11
+
+// admin/se_showif.php, row 179
+"Delete the condition. The fields that use it will be shown always." => "Smazat podmínku. Políčka, která ji používají, se budou zobrazovat vždy.", // ai 2026-11
+
+// admin/se_showif.php, row 180
+"Delete the condition? The fields that use it will be shown always." => "Smazat podmínku? Políčka, která ji používají, se budou zobrazovat vždy.", // ai 2026-11
+
+// admin/se_showif.php, row 183
+// include/formutil.php, row 219, 224, 3009, 3013
+// include/searchbar.class.php, row 771
+// src/Widget/LupWidget.php, row 118
+"Cancel" => "Storno",
+
+// admin/se_showif.php, row 183
+"Close without saving." => "Zavřít bez uložení.", // ai 2026-11
+
+// admin/se_showif.php, row 187
+"How it works" => "Jak to funguje", // ai 2026-11
+
+// admin/se_showif.php, row 188
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "„je“ platí, když je některá z hodnot políčka mezi zaškrtnutými hodnotami, „není“, když není žádná. „je vyplněno“ platí pro jakoukoli hodnotu kromě prázdné a 0, tedy i pro zaškrtnutý checkbox.", // ai 2026-11
+
+// admin/se_showif.php, row 189
+"The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "Pravidla sledují formulář průběžně, jak ho uživatel vyplňuje. Výraz se vyhodnocuje jen při otevření formuláře a při uložení článku, vždy nad uloženým článkem (u nového článku nad výchozími hodnotami).", // ai 2026-11
+
+// admin/se_showif.php, row 190
+"A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "Políčko skryté pravidlem se uloží prázdné, ledaže je „Vyčistit políčko“ nezaškrtnuté. Políčko pro heslo, políčka s datem, stav a políčko skryté výrazem si hodnotu ponechají.", // ai 2026-11
+
+// admin/se_showif.php, row 191
+"A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "Políčko s podmínkou zobrazuje a skrývá podmínka, ne skript z „Javascript pro políčka“.", // ai 2026-11
+
+// admin/se_showif.php, row 192
+"With an input form template from a view, a field hidden by the expression stays in the source of the page." => "Se šablonou vstupního formuláře z pohledu zůstává políčko skryté výrazem ve zdrojovém kódu stránky.", // ai 2026-11
+
+// admin/se_showif.php, row 193
+"Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "Podmínky platí jen pro formulář článku v administraci. V anonymních formulářích a importech je povinné políčko povinné vždy.", // ai 2026-11
 
 // admin/se_statistics.php, row 97
-"Top this month" => "Top tento měsíc",
+"Top all time" => "Top za celou dobu",
 
 // admin/se_statistics.php, row 98
-"Top this week" => "Top tento týden",
+"Top this year" => "Top tento rok",
 
 // admin/se_statistics.php, row 99
-"Top this day" => "Top dnes",
+"Top this month" => "Top tento měsíc",
 
 // admin/se_statistics.php, row 100
-"Top last year" => "Top minulý rok",
+"Top this week" => "Top tento týden",
 
 // admin/se_statistics.php, row 101
-"Top last month" => "Top minulý měsíc",
+"Top this day" => "Top dnes",
 
 // admin/se_statistics.php, row 102
-"Top last week" => "Top minulý týden",
+"Top last year" => "Top minulý rok",
 
 // admin/se_statistics.php, row 103
+"Top last month" => "Top minulý měsíc",
+
+// admin/se_statistics.php, row 104
+"Top last week" => "Top minulý týden",
+
+// admin/se_statistics.php, row 105
 "Top last day" => "Top včera",
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 109
 "Item Statistics" => "Statistika článků",
 
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 110
 "Show items" => "Zobrazit články",
 
 // admin/se_taskmanager.php, row 39
@@ -3300,7 +3427,7 @@ return [
 "Change current permissions" => "Změna současných práv",
 
 // admin/se_users.php, row 185
-// central/index.php, row 139
+// central/index.php, row 133
 // include/se_users.php, row 180
 // src/Widget/TfaWidget.php, row 73
 "Username" => "Uživatelské jméno",
@@ -3352,9 +3479,6 @@ return [
 // admin/se_views.php, row 103
 "Admin - design View" => "Správa webíku - definice Pohledu",
 
-// admin/se_view.php, row 486
-"Save as new" => "Uložit jako nový",
-
 // admin/se_view.php, row 494
 "Defined Views" => "Definované pohledy",
 
@@ -3364,8 +3488,8 @@ return [
 
 // admin/se_view.php, row 545
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1890
+// include/slice.class.php, row 1650, 1654
+// include/stringexpand.php, row 1891
 "No" => "Ne",
 
 // admin/se_view.php, row 545
@@ -3393,7 +3517,7 @@ return [
 "Create new view from this one" => "Vytvořit z tohoto pohledu nový",
 
 // admin/se_views.php, row 149, 203, 223
-// include/formutil.php, row 1775, 1782
+// include/formutil.php, row 1818, 1825
 // src/Import/DetailPage.php, row 329, 666
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
@@ -3430,14 +3554,14 @@ return [
 "Items" => "Články",
 
 // admin/search_replace.php, row 167
-// admin/write_mail.php, row 236
+// admin/write_mail.php, row 255
 "Stored searches for " => "Uložené filtry pro ",
 
 // admin/search_replace.php, row 169
 "View items" => "Zobrazit články",
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1420
+// src/Manager.php, row 1429
 "Selected items" => "Změnit vybrané",
 
 // admin/search_replace.php, row 180
@@ -3457,7 +3581,7 @@ return [
 
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
-// admin/write_mail.php, row 269
+// admin/write_mail.php, row 291
 // src/Widget/RichtextMarkup.php, row 87
 "Close" => "Zavřít",
 
@@ -3475,7 +3599,7 @@ return [
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 136
 // admin/um_uedit.php, row 332
-// central/index.php, row 140
+// central/index.php, row 134
 // central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
@@ -3483,7 +3607,7 @@ return [
 "Password" => "Heslo",
 
 // admin/setup.php, row 104, 242
-// include/formutil.php, row 2201
+// include/formutil.php, row 2244
 "Retype Password" => "Zopakujte heslo",
 
 // admin/setup.php, row 105, 244
@@ -3554,12 +3678,12 @@ return [
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
 // admin/um_uedit.php, row 389
-// include/formutil.php, row 1772
+// include/formutil.php, row 1815
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
 // src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1272
+// src/Manager.php, row 239, 1281
 "Add" => "Přidat",
 
 // admin/slicedel.php, row 51
@@ -3615,7 +3739,7 @@ return [
 "Hold bin" => "Zásobník",
 
 // admin/slicedit.php, row 154
-// include/formutil.php, row 3309
+// include/formutil.php, row 3342
 // src/Central/FindingText.php, row 417
 "All items" => "Všechny články",
 
@@ -3643,7 +3767,7 @@ return [
 "Admin - Slice settings" => "Správa webíku - Úprava webíku",
 
 // admin/slicedit.php, row 258
-// include/menu_util.php, row 635
+// include/menu_util.php, row 636
 "Language" => "Jazyk",
 
 // admin/slicedit.php, row 260
@@ -3705,7 +3829,7 @@ return [
 // include/constants.php, row 688, 803, 829, 860, 893, 957, 991, 1025
 // include/slicedit.php, row 198
 // src/Isds/SliceRules.php, row 398
-// src/Widget/Widget.php, row 810
+// src/Widget/Widget.php, row 809
 "Listing length" => "Počet vypisovaných zpráv",
 
 // admin/slicedit.php, row 294
@@ -4008,7 +4132,7 @@ return [
 
 // admin/um_gedit.php, row 312
 // admin/um_uedit.php, row 231, 242
-// include/logs.php, row 918
+// include/logs.php, row 922
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -4086,7 +4210,7 @@ return [
 "Added" => "Přidáno", // ai 2026-11
 
 // admin/um_passkeys.php, row 149
-// include/formutil.php, row 3301
+// include/formutil.php, row 3334
 "Last used" => "Naposledy použito",
 
 // admin/um_passkeys.php, row 149
@@ -4238,92 +4362,107 @@ return [
 // admin/usershow.php, row 122
 "Show selected users" => "Zobraz vybrané uživatele",
 
-// admin/write_mail.php, row 120, 255
-// include/mail.php, row 666
+// admin/write_mail.php, row 124, 274
+// include/mail.php, row 700
 "Body" => "Text",
 
-// admin/write_mail.php, row 121, 256
+// admin/write_mail.php, row 125, 275
 "From (email)" => "Od (e-mail)",
 
-// admin/write_mail.php, row 122, 257
-// include/mail.php, row 668
+// admin/write_mail.php, row 126, 276
+// include/mail.php, row 702
 "Reply to (email)" => "Odpověď na (e-mail)",
 
-// admin/write_mail.php, row 123, 258
-// include/mail.php, row 669
+// admin/write_mail.php, row 127, 277
+// include/mail.php, row 703
 "Errors to (email)" => "Chyby na (e-mail)",
 
-// admin/write_mail.php, row 124, 259
+// admin/write_mail.php, row 128, 278
 "Sender (email)" => "Odesílatel (email)",
 
-// admin/write_mail.php, row 125, 260
-// include/mail.php, row 658
+// admin/write_mail.php, row 129, 279
+// include/mail.php, row 694
 "Language (charset)" => "Jazyk (charset)",
 
-// admin/write_mail.php, row 126, 261
-// include/mail.php, row 656
+// admin/write_mail.php, row 130, 280
+// include/mail.php, row 692
 "Use HTML" => "Použít HTML",
 
-// admin/write_mail.php, row 127, 252
+// admin/write_mail.php, row 131, 271
 "Email template" => "Šablona emailu",
 
-// admin/write_mail.php, row 175
-"No template set (which is strange - template was just written to the database)" => "Není nastavena šablona (což je divné - šablona právě byla zapsána do databáze)",
-
-// admin/write_mail.php, row 192
-"Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "E-mail úspěšně odeslán (Uživatelé: %1, Odeslané e-maily (platné adresy...): %2, ID šablony: %3)",
-
-// admin/write_mail.php, row 196
+// admin/write_mail.php, row 158
 "Manually selected" => "Vybráno ručně",
 
-// admin/write_mail.php, row 202
+// admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
 // src/Import/Definition.php, row 92
 // src/Import/DetailConfig.php, row 394
 "Filter" => "Filtr",
 
-// admin/write_mail.php, row 207
-"Can't update email template" => "Nelze aktualizovat šablonu e-mailu",
+// admin/write_mail.php, row 188
+"This email (the same subject and text) already went to the same group on %1, to %2 recipients. If it should go out once more, tick \"%3\" and send it." => "Tento e-mail (stejný předmět i text) už odešel stejné skupině %1, příjemců: %2. Má-li odejít ještě jednou, zaškrtněte „%3“ a odešlete ho.", // ai 2026-11
+
+// admin/write_mail.php, row 188, 285
+"Send again" => "Odeslat znovu", // ai 2026-11
+
+// admin/write_mail.php, row 195
+"No template set (which is strange - template was just written to the database)" => "Není nastavena šablona (což je divné - šablona právě byla zapsána do databáze)",
+
+// admin/write_mail.php, row 204
+"Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "E-mail úspěšně odeslán (Uživatelé: %1, Odeslané e-maily (platné adresy...): %2, ID šablony: %3)",
 
 // admin/write_mail.php, row 214
-"Bulk Email Wizard" => "Zaslání hromadného e-mailu",
+"The email is queued for %1 recipients. AA sends it in the background, so the first copies may take several minutes to arrive." => "E-mail je zařazen do fronty, příjemců: %1. AA ho rozesílá na pozadí, takže první kopie mohou dorazit až za několik minut.", // ai 2026-11
 
 // admin/write_mail.php, row 215
+"The selected group has no recipients - nothing was sent." => "Vybraná skupina nemá žádné příjemce - nic nebylo odesláno.", // ai 2026-11
+
+// admin/write_mail.php, row 222
+"Can't update email template" => "Nelze aktualizovat šablonu e-mailu",
+
+// admin/write_mail.php, row 229
+"Bulk Email Wizard" => "Zaslání hromadného e-mailu",
+
+// admin/write_mail.php, row 230
 "Write email to users" => "Hromadný e-mail uživatelům",
 
-// admin/write_mail.php, row 236
-// include/logs.php, row 1066
+// admin/write_mail.php, row 249
+"Send this email to other recipients" => "Odeslat tento e-mail dalším příjemcům", // ai 2026-11
+
+// admin/write_mail.php, row 255
+// include/logs.php, row 1070
 "Recipients" => "Příjemci",
 
-// admin/write_mail.php, row 238
+// admin/write_mail.php, row 257
 "View Recipients" => "Zobraz příjemce",
 
-// admin/write_mail.php, row 239
+// admin/write_mail.php, row 258
 "Selected users" => "Vybraní uživatelé",
 
-// admin/write_mail.php, row 240
+// admin/write_mail.php, row 259
 "Test email address(es)" => "Testovací e-mailová adresa (adresy)",
 
-// admin/write_mail.php, row 246
+// admin/write_mail.php, row 265
 "Write the email" => "Napište e-mail",
 
-// admin/write_mail.php, row 261
+// admin/write_mail.php, row 280
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "no" => "ne",
 
-// admin/write_mail.php, row 261
+// admin/write_mail.php, row 280
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "yes" => "ano",
 
-// admin/write_mail.php, row 262
+// admin/write_mail.php, row 281
 "Attachment 1" => "Příloha 1",
 
-// admin/write_mail.php, row 263
+// admin/write_mail.php, row 282
 "Attachment 2" => "Příloha 2",
 
-// admin/write_mail.php, row 264
+// admin/write_mail.php, row 283
 "Attachment 3" => "Příloha 3",
 
 // central/appstore.php, row 64
@@ -4353,6 +4492,7 @@ return [
 
 // central/appstore.php, row 130
 // central/installapp.php, row 387
+// central/optimize.php, row 77
 "A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "Tabulka tohoto AA nepodporuje transakce (není InnoDB) – převeďte ji v AA > Optimalizovat: %1", // ai 2026-10
 
 // central/appstore.php, row 142
@@ -4366,14 +4506,14 @@ return [
 "App" => "Aplikace", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1208
+// include/logs.php, row 1212
 "Version" => "Verze", // ai 2026-10
 
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 235
-// include/menu_util.php, row 448, 758
-// include/slice.class.php, row 1412
+// include/menu_util.php, row 449, 759
+// include/slice.class.php, row 1415
 // src/Central/FindingText.php, row 496
 "Alerts" => "Zasílání",
 
@@ -4436,39 +4576,41 @@ return [
 // include/menu_util.php, row 59
 "Create new" => "Nový",
 
-// central/index.php, row 71
+// central/index.php, row 70
+// central/optimize.php, row 62
 "You do not have permission to manage ActionApps installations" => "Nemáte právo spravovat instalace ActionApps",
 
-// central/index.php, row 78
+// central/index.php, row 77
 "The authentication was not performed - start it from the ActionApps Central page" => "Ověření neproběhlo – spusťte ho ze stránky ActionApps Central", // ai 2026-10
 
-// central/index.php, row 89
+// central/index.php, row 88
 "Successfully authenticated to %1" => "Úspěšně přihlášeno k %1",
 
-// central/index.php, row 91, 95
+// central/index.php, row 90, 94
 "Authentication failed for %1: %2" => "Přihlášení k %1 selhalo: %2",
 
-// central/index.php, row 126
+// central/index.php, row 120
 // src/Optimize/CheckCentralCredentials.php, row 63
 "ActionApps Central" => "",
 
-// central/index.php, row 129
+// central/index.php, row 123
 "Admin Link" => "Odkaz do administrace",
 
-// central/index.php, row 137
+// central/index.php, row 131
 "Authenticate" => "Přihlásit",
 
-// central/index.php, row 141
+// central/index.php, row 135
 "Get Token" => "Získat token",
 
-// central/index.php, row 145
+// central/index.php, row 139
+// central/optimize.php, row 153
 // src/Manageraction/Central_Linkcheck.php, row 32
 "Auth" => "Autentizace",
 
-// central/index.php, row 148
+// central/index.php, row 142
 "Apps" => "Aplikace", // ai 2026-10
 
-// central/index.php, row 148
+// central/index.php, row 142
 "Install an app from this AA..." => "Instalovat aplikaci z tohoto AA...", // ai 2026-10
 
 // central/installapp.php, row 135, 136
@@ -4509,10 +4651,10 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1209
+// include/logs.php, row 1213
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
-// src/Optimize/CheckImports.php, row 176, 178
+// src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "Zdroj",
 
@@ -4538,7 +4680,7 @@ return [
 "slices and Alerts" => "webíky a Zasílání", // ai 2026-10
 
 // central/installapp.php, row 484, 1357
-// include/slice.class.php, row 1147
+// include/slice.class.php, row 1150
 // src/Central/FindingText.php, row 496
 // src/Optimize/CheckIsdsRegistry.php, row 88
 // src/Optimize/SeoDuplicates.php, row 66
@@ -4554,7 +4696,7 @@ return [
 "Hold Ctrl to choose more of them." => "Pro výběr více položek držte Ctrl.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 797, 1251
+// include/logs.php, row 797, 1255
 "Mode" => "Režim", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4791,6 +4933,7 @@ return [
 // central/installapp.php, row 1087
 // src/Optimize/CheckIsdsRunItems.php, row 93
 // src/Optimize/CheckIsdsRuns.php, row 185, 206
+// src/Util/Paramwizard.php, row 167
 "Examples" => "Příklady", // ai 2026-10
 
 // central/installapp.php, row 1088
@@ -4800,7 +4943,7 @@ return [
 "Operators" => "Operátory", // ai 2026-10
 
 // central/installapp.php, row 1089
-// include/searchlib.php, row 174
+// include/searchlib.php, row 175
 "Operator" => "Operátor",
 
 // central/installapp.php, row 1089
@@ -4854,8 +4997,8 @@ return [
 "keep the value of the app" => "ponechat hodnotu aplikace", // ai 2026-10
 
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1890
+// include/slice.class.php, row 1650, 1654
+// include/stringexpand.php, row 1891
 "Yes" => "Ano",
 
 // central/installapp.php, row 1178
@@ -4940,16 +5083,19 @@ return [
 "Transferring the items" => "Přenášení článků", // ai 2026-10
 
 // central/installapp.php, row 1368
+// central/optimize.php, row 261
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Zastaveno chybou", // ai 2026-10
 
 // central/installapp.php, row 1369
+// central/optimize.php, row 259
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
-// src/Optimize/CheckImports.php, row 206, 209
+// src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Dokončeno", // ai 2026-10
 
 // central/installapp.php, row 1369
+// central/optimize.php, row 260
 "Ended" => "Ukončeno", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -5013,10 +5159,12 @@ return [
 "Show the final check" => "Zobrazit závěrečnou kontrolu", // ai 2026-10
 
 // central/installapp.php, row 1436
+// central/optimize.php, row 206
 // src/Import/DetailPage.php, row 938, 947
 "Continue" => "Pokračovat",
 
 // central/installapp.php, row 1436
+// central/optimize.php, row 207
 // src/Import/DetailPage.php, row 958
 "End" => "Ukončit", // ai 2026-10
 
@@ -5035,6 +5183,148 @@ return [
 // central/installapp.php, row 1479
 "Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it." => "Nahrané soubory se nepřenášejí – zkopírujte je ručně. Doménu přepněte na nový web až po jeho kontrole.", // ai 2026-10
 
+// central/optimize.php, row 75
+"Choose a task, a method the task has and at least one AA of the list." => "Zvolte úlohu, způsob, který úloha nabízí, a aspoň jedno AA ze seznamu.", // ai 2026-11
+
+// central/optimize.php, row 85
+"An AA may still be asked - press Continue again in a few minutes." => "Dotaz na některé AA možná ještě běží - za několik minut stiskněte znovu „Pokračovat“.", // ai 2026-11
+
+// central/optimize.php, row 86, 187
+"No such run." => "Takový běh neexistuje.", // ai 2026-11
+
+// central/optimize.php, row 87
+"The run has moved on meanwhile - see its state below." => "Běh mezitím pokročil - jeho stav vidíte níže.", // ai 2026-11
+
+// central/optimize.php, row 93
+"Optimize on several AAs" => "Optimalizace na více AA", // ai 2026-11
+
+// central/optimize.php, row 123
+"Test only" => "Jen otestovat", // ai 2026-11
+
+// central/optimize.php, row 123
+"Repair where the test fails" => "Opravit, kde test selže", // ai 2026-11
+
+// central/optimize.php, row 136
+"The Central list holds no active AA." => "Seznam Central neobsahuje žádné aktivní AA.", // ai 2026-11
+
+// central/optimize.php, row 140
+"Run an Optimize task on several AAs" => "Spuštění úlohy optimalizace na více AA", // ai 2026-11
+
+// central/optimize.php, row 148, 171
+// src/AA_Plannedtask.php, row 71, 182
+// src/Optimize/CheckOptimizeRuns.php, row 55
+// src/Optimize/CheckQueue.php, row 98, 178
+"Task" => "Úloha",
+
+// central/optimize.php, row 148
+"Each AA runs the task of its own version; an AA without it says so." => "Každé AA spustí úlohu ze své vlastní verze; AA, které ji nemá, to ohlásí.", // ai 2026-11
+
+// central/optimize.php, row 151
+"Do" => "Provést", // ai 2026-11
+
+// central/optimize.php, row 151
+"Repair tests first, repairs only where the test fails, then tests again." => "Oprava nejdřív otestuje, opraví jen tam, kde test selže, a pak otestuje znovu.", // ai 2026-11
+
+// central/optimize.php, row 153, 210
+// include/logs.php, row 723
+// include/menu_util.php, row 45
+// src/Optimize/CheckCentralCredentials.php, row 51
+// src/Optimize/CheckEnvironment.php, row 50
+"AA" => "",
+
+// central/optimize.php, row 159
+"An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "AA bez platného tokenu neodpoví - nejdřív pro něj získejte token v seznamu Central (platí jeden den).", // ai 2026-11
+
+// central/optimize.php, row 160
+"Start" => "Spustit", // ai 2026-11
+
+// central/optimize.php, row 171
+"Last runs" => "Poslední běhy", // ai 2026-11
+
+// central/optimize.php, row 171
+// include/logs.php, row 798
+// src/Import/DetailPage.php, row 329
+// src/Optimize/CheckImports.php, row 151, 155
+// src/Optimize/CheckInstallRuns.php, row 54
+// src/Optimize/CheckIsdsRuns.php, row 310
+// src/Optimize/CheckOptimizeRuns.php, row 54
+"Started" => "Začátek", // ai 2026-10
+
+// central/optimize.php, row 171
+"Results" => "Výsledky", // ai 2026-11
+
+// central/optimize.php, row 197
+"Started %1 by %2" => "Spuštěno %1 uživatelem %2", // ai 2026-11
+
+// central/optimize.php, row 198
+"%1 of %2 AAs done" => "Hotovo AA: %1 z %2", // ai 2026-11
+
+// central/optimize.php, row 208
+"The run goes on in the task queue of this AA - you may close this page." => "Běh pokračuje ve frontě úloh tohoto AA - stránku můžete zavřít.", // ai 2026-11
+
+// central/optimize.php, row 210, 229
+"Report" => "Zpráva", // ai 2026-11
+
+// central/optimize.php, row 216
+"Waiting" => "Čeká", // ai 2026-11
+
+// central/optimize.php, row 216
+"Not asked" => "Nedotázáno", // ai 2026-11
+
+// central/optimize.php, row 225
+"The test after the repair comes next." => "Na řadě je test po opravě.", // ai 2026-11
+
+// central/optimize.php, row 232
+"The test after the repair" => "Test po opravě", // ai 2026-11
+
+// central/optimize.php, row 242
+"Another run" => "Další běh", // ai 2026-11
+
+// central/optimize.php, row 248
+"OK - nothing to repair" => "OK - není co opravit", // ai 2026-11
+
+// central/optimize.php, row 249
+// src/Optimize/CheckAlerts.php, row 145
+// src/Optimize/CheckIsds.php, row 142, 154
+// src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
+// src/Optimize/CheckIsdsConf.php, row 104, 107, 156
+// src/Optimize/CheckIsdsRegistry.php, row 119, 172
+// src/Optimize/StateCheckModel.php, row 219
+"Problem" => "Problém", // ai 2026-10
+
+// central/optimize.php, row 250
+"Repaired" => "Opraveno", // ai 2026-11
+
+// central/optimize.php, row 251
+"Repair failed" => "Oprava selhala", // ai 2026-11
+
+// central/optimize.php, row 252
+"Not done" => "Neprovedeno", // ai 2026-11
+
+// central/optimize.php, row 262
+"No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "Dlouho nepřišel žádný krok - běží fronta úloh tohoto AA? „Pokračovat“ to zkusí hned.", // ai 2026-11
+
+// central/optimize.php, row 263
+"Waiting to ask an AA again" => "Čeká na nový dotaz na AA", // ai 2026-11
+
+// central/optimize.php, row 264
+"Running in the task queue" => "Běží ve frontě úloh", // ai 2026-11
+
+// central/optimize.php, row 274
+"%1 runs another update now." => "%1 právě provádí jinou aktualizaci.", // ai 2026-11
+
+// central/optimize.php, row 275
+"%1 did not answer in time." => "Od %1 nepřišla včas odpověď.", // ai 2026-11
+
+// central/optimize.php, row 276
+"The user who started the run is no superadmin any more." => "Uživatel, který běh spustil, už není superadmin.", // ai 2026-11
+
+// central/optimize.php, row 277
+"Error %1" => "Chyba %1", // ai 2026-11
+
+// central/optimize.php, row 279
+"Asked again at %1 - Continue asks now." => "Další dotaz v %1 - „Pokračovat“ se zeptá hned.", // ai 2026-11
+
 // central/responder.php, row 112
 "Get_Jwt needs ttl as seconds and scope admin or apps" => "Get_Jwt vyžaduje ttl v sekundách a scope admin nebo apps", // ai 2026-10
 
@@ -5050,34 +5340,34 @@ return [
 // central/responder.php, row 230
 "Wrong command - %1" => "Chybný příkaz – %1", // ai 2026-10
 
-// central/responder.php, row 785
+// central/responder.php, row 788
 "Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central" => "Přihlašovací token odmítnut (platí jeden den a změna hesla ho ukončí) – ověřte toto AA znovu v Central", // ai 2026-10
 
-// central/responder.php, row 816
+// central/responder.php, row 819
 "No request sent for responder.php" => "Pro responder.php nebyl odeslán žádný požadavek",
 
-// central/responder.php, row 822
+// central/responder.php, row 825
 "Bad request sent for responder.php - %1" => "Pro responder.php byl odeslán chybný požadavek - %1",
 
-// central/responder.php, row 829
+// central/responder.php, row 832
 "This command is not accepted in the URL" => "Tento příkaz nelze poslat v URL", // ai 2026-10
 
-// central/responder.php, row 833
+// central/responder.php, row 836
 "This command must be sent by POST" => "Tento příkaz musí být poslán metodou POST", // ai 2026-10
 
-// central/responder.php, row 839
+// central/responder.php, row 842
 "Request from another site refused" => "Požadavek z jiného webu odmítnut", // ai 2026-10
 
-// central/responder.php, row 856
+// central/responder.php, row 859
 "The login token does not allow %1" => "Přihlašovací token nepovoluje %1", // ai 2026-10
 
-// central/responder.php, row 857
+// central/responder.php, row 860
 "The app store account may not run %1" => "Účet katalogu aplikací nesmí spouštět %1", // ai 2026-10
 
-// central/responder.php, row 858
+// central/responder.php, row 861
 "The app store is busy - try again later" => "Katalog aplikací je zaneprázdněn – zkuste to později", // ai 2026-10
 
-// central/responder.php, row 859
+// central/responder.php, row 862
 "You (%2) don't have permissions to run %1" => "Nemáte (%2) práva spustit %1",
 
 // central/synchronize.php, row 31
@@ -5187,14 +5477,14 @@ return [
 // filler.php, row 503
 "Some error in store item." => "Nějaká chyba při ukládání zprávy.",
 
-// include/adminpage.class.php, row 68
+// include/adminpage.class.php, row 67
 "Error in page parameter: %1" => "Chyba v parametru stránky: %1",
 
 // include/constants.php, row 451
 "Short Id" => "ID (krátké)",
 
 // include/constants.php, row 456
-// include/logs.php, row 957, 989
+// include/logs.php, row 961, 993
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Třída",
 
@@ -5203,7 +5493,7 @@ return [
 "Level" => "Úroveň",
 
 // include/constants.php, row 509
-// include/logs.php, row 1168
+// include/logs.php, row 1172
 "Feed" => "Kopírovat obsah",
 
 // include/constants.php, row 510
@@ -5511,7 +5801,7 @@ return [
 "Levels horizontal" => "Úrovně horizontálně",
 
 // include/constedit.php, row 102
-// src/Widget/Widget.php, row 870
+// src/Widget/Widget.php, row 869
 "Level count" => "Počet úrovní",
 
 // include/constedit_util.php, row 137, 140
@@ -5626,75 +5916,87 @@ return [
 // include/field.class.php, row 209
 "code - its indentation and the last new line are kept on purpose" => "kód – jeho odsazení a poslední nový řádek se zachovávají záměrně", // ai 2026-10
 
-// include/field.class.php, row 216
+// include/field.class.php, row 213
+"multi-line text - its new lines at the start or end may be relied on" => "víceřádkový text - na odřádkování na jeho začátku či konci se může spoléhat", // ai 2026-11
+
+// include/field.class.php, row 220
 "stores the text of the selected items" => "ukládá text vybraných položek", // ai 2026-10
 
-// include/field.class.php, row 222
+// include/field.class.php, row 226
 "constants of a group" => "hodnoty skupiny", // ai 2026-10
 
-// include/field.class.php, row 229
+// include/field.class.php, row 233
 "the constant \"%1\" has spaces or new lines around - trim the constants first" => "hodnota „%1“ má kolem sebe mezery nebo nové řádky – nejdřív hodnoty ořízněte", // ai 2026-10
 
-// include/field.class.php, row 757
+// include/field.class.php, row 762
 "Move to another field" => "Přesunout do jiného políčka",
 
-// include/field.class.php, row 1132
+// include/field.class.php, row 789
+"always" => "vždy", // ai 2026-11
+
+// include/field.class.php, row 794
+"(missing condition)" => "(chybějící podmínka)", // ai 2026-11
+
+// include/field.class.php, row 798
+"Edit the condition" => "Upravit podmínku", // ai 2026-11
+
+// include/field.class.php, row 1156
 // include/itemview.php, row 130
 "number of found items" => "počet nalezených článků",
 
-// include/field.class.php, row 1133
+// include/field.class.php, row 1157
 "index of item within whole listing (begins with 0)" => "pořadí článku v celém výpisu (číslováno od 0)",
 
-// include/field.class.php, row 1134
+// include/field.class.php, row 1158
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "pořadí článku v na stránce (číslováno od 0 pro každou stránku)",
 
-// include/field.class.php, row 1135
+// include/field.class.php, row 1159
 "index of a group on page (it begins from 0 on each page)" => "index skupiny na stránce (na každé stránce začíná od 0)",
 
-// include/field.class.php, row 1136
+// include/field.class.php, row 1160
 "index of item within a group on page (it begins from 0 on each group)" => "index článku ve skupině na stránce (v každé skupině začíná od 0)",
 
-// include/field.class.php, row 1137
+// include/field.class.php, row 1161
 "alias for Item ID" => "alias pro číslo článku",
 
-// include/field.class.php, row 1138
+// include/field.class.php, row 1162
 "alias for Short Item ID" => "alias pro zkrácené číslo článku",
 
-// include/field.class.php, row 1146, 1147
+// include/field.class.php, row 1170, 1171
 "alias used on admin page index.php for itemedit url" => "alias používaný v administrativních stránkách index.php pro URL itemedit.php",
 
-// include/field.class.php, row 1148
+// include/field.class.php, row 1172
 "Alias used on admin page index.php for edit discussion url" => "Alias používaný v administrativních stránkách index.php pro URL discedit.php",
 
-// include/field.class.php, row 1149
+// include/field.class.php, row 1173
 "Title of Slice for RSS" => "Jméno webíku pro RSS",
 
-// include/field.class.php, row 1150
+// include/field.class.php, row 1174
 "Link to the Slice for RSS" => "Odkaz na webík pro RSS",
 
-// include/field.class.php, row 1151
+// include/field.class.php, row 1175
 "Short description (owner and name) of slice for RSS" => "Krátký popisek (vlastník a jméno) webíku pro RSS",
 
-// include/field.class.php, row 1152
+// include/field.class.php, row 1176
 "Date RSS information is generated, in RSS date format" => "Datum v RSS přehledu je generováno v datovém formátu RSS",
 
-// include/field.class.php, row 1153
+// include/field.class.php, row 1177
 "Slice name" => "Název webíku",
 
-// include/field.class.php, row 1155
+// include/field.class.php, row 1179
 "Current MLX language" => "Současný jazyk MLX",
 
-// include/field.class.php, row 1156
+// include/field.class.php, row 1180
 "HTML markup direction tag (e.g. DIR=RTL)" => "HTML značka směru textu (např. DIR=RTL)",
 
-// include/field.class.php, row 1239, 1520
+// include/field.class.php, row 1263, 1554
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- libovolné textové políčko --",
 
-// include/field.class.php, row 1348
+// include/field.class.php, row 1372
 " (this)" => " (toto)",
 
-// include/field.class.php, row 1402, 1415, 1428
+// include/field.class.php, row 1435, 1448, 1462
 "Can't copy field" => "Políčko nelze zkopírovat", // ai 2026-10
 
 // include/filedit.php, row 82
@@ -5707,15 +6009,15 @@ return [
 "Rename to" => "Přejmenovat na",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 158, 535
+// include/fileman.php, row 164, 541
 "Text file" => "Text",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 156
+// include/fileman.php, row 162
 "Web file" => "Web",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 155, 535
+// include/fileman.php, row 161, 541
 "HTML file" => "HTML",
 
 // include/filedit.php, row 121
@@ -5728,7 +6030,7 @@ return [
 "File content" => "Obsah souboru",
 
 // include/filedit.php, row 135
-// include/fileman.php, row 157
+// include/fileman.php, row 163
 "Image file" => "Obrázek",
 
 // include/filedit.php, row 138
@@ -5743,62 +6045,62 @@ return [
 // include/fileman.php, row 37
 "Last modified" => "Naposled upraveno",
 
-// include/fileman.php, row 75
-"Scripts and server settings (such as .php or .htaccess) cannot be kept in the File Manager." => "Skripty a nastavení serveru (např. .php nebo .htaccess) nelze ve Správci Souborů ukládat.", // ai 2026-10
-
-// include/fileman.php, row 160, 173
-"Parent" => "Nadkategorie",
-
-// include/fileman.php, row 161, 189
-"Other" => "Jiné",
-
-// include/fileman.php, row 365
+// include/fileman.php, row 76, 371
 "Wrong file name." => "Chybný název souboru.",
 
-// include/fileman.php, row 376
+// include/fileman.php, row 80
+"Scripts and server settings (such as .php or .htaccess) cannot be kept in the File Manager." => "Skripty a nastavení serveru (např. .php nebo .htaccess) nelze ve Správci Souborů ukládat.", // ai 2026-10
+
+// include/fileman.php, row 166, 179
+"Parent" => "Nadkategorie",
+
+// include/fileman.php, row 167, 195
+"Other" => "Jiné",
+
+// include/fileman.php, row 382
 "File already exists" => "Soubor již existuje.",
 
-// include/fileman.php, row 380, 538
+// include/fileman.php, row 386, 544
 "Unable to create file" => "Nepodařilo se vytvořit soubor",
 
-// include/fileman.php, row 391
+// include/fileman.php, row 397
 // include/slicedit.php, row 205
 "Wrong directory name." => "Chybný název adresáře.",
 
-// include/fileman.php, row 397
+// include/fileman.php, row 403
 "Unable to create directory" => "Nepodařilo se vytvořit adresář",
 
-// include/fileman.php, row 408
+// include/fileman.php, row 414
 "First delete all files from directory" => "Nejdříve odstraňte všechny soubory z adresáře",
 
-// include/fileman.php, row 410
+// include/fileman.php, row 416
 "Unable to delete directory" => "Nepodařilo se smazat adresář",
 
-// include/fileman.php, row 413
+// include/fileman.php, row 419
 "Unable to delete file" => "Nepodařilo se smazat soubor",
 
-// include/fileman.php, row 432
+// include/fileman.php, row 438
 "Error: " => "Chyba: ",
 
-// include/fileman.php, row 448
+// include/fileman.php, row 454
 "Unable to open file for writing" => "Nepodařilo se otevřít soubor pro psaní",
 
-// include/fileman.php, row 452
+// include/fileman.php, row 458
 "Error writing to file" => "Chyba při zápisu do souboru",
 
-// include/fileman.php, row 464
+// include/fileman.php, row 470
 "File with this name already exists" => "Soubor s tímto jménem již existuje",
 
-// include/fileman.php, row 466
+// include/fileman.php, row 472
 "Unable to rename" => "Nepodařilo se přejmenovat",
 
-// include/fileman.php, row 522
+// include/fileman.php, row 528
 "Wrong directory name" => "Chybný název adresáře",
 
-// include/fileman.php, row 531
+// include/fileman.php, row 537
 "Files with the same names as some in the template already exist. Please change the file names first." => "Soubory se stejnými názvy jako některé v šabloně již existují. Nejprve prosím změňte názvy souborů.",
 
-// include/fileman.php, row 582
+// include/fileman.php, row 588
 "Are you sure you want to delete the selected files and folders?" => "Jste si jisti, že chcete smazat zvolené soubory a adresáře?",
 
 // include/files.class.php, row 117
@@ -5844,7 +6146,7 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1301
+// include/logs.php, row 1305
 // src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID webíku",
 
@@ -5852,145 +6154,140 @@ return [
 "Form Row - special widget for form setting" => "Řádek formuláře - speciální widget pro nastavení formuláře",
 
 // include/form.class.php, row 248
-// src/Widget/Widget.php, row 750
+// src/Widget/Widget.php, row 749
 "Values array" => "Pole hodnot",
 
 // include/form.class.php, row 248
 "Directly specified array of values (do not use Constants, if filled)" => "Přímo zadané pole hodnot (je-li vyplněno, nepoužívejte Konstanty)",
 
 // include/form.class.php, row 332
-// src/Widget/Widget.php, row 738
+// src/Widget/Widget.php, row 737
 "Rows" => "Řádky",
 
 // include/form.class.php, row 343
 // include/menu.php, row 148
 "Forms" => "Formuláře",
 
-// include/formutil.php, row 194
+// include/formutil.php, row 205
 "Update & View" => "Změnit a prohlédnout",
 
-// include/formutil.php, row 201
+// include/formutil.php, row 212
 "Insert as new" => "Vložit jako nový",
 
-// include/formutil.php, row 205, 2973
+// include/formutil.php, row 216, 3017
 "Reset form" => "Vymazat formulář",
 
-// include/formutil.php, row 208, 213, 2965, 2969
-// include/searchbar.class.php, row 771
-// src/Widget/LupWidget.php, row 118
-"Cancel" => "Storno",
-
-// include/formutil.php, row 211
+// include/formutil.php, row 222
 "Insert & Edit" => "Vložit a editovat dále",
 
-// include/formutil.php, row 212
+// include/formutil.php, row 223
 "Insert & View" => "Vložit a prohlédnout",
 
-// include/formutil.php, row 304
+// include/formutil.php, row 317
 "Part" => "Strana",
 
-// include/formutil.php, row 368
+// include/formutil.php, row 410
 "No fields defined for this slice" => "V tomto webíku nejsou definována žádná pole (což je divné)",
 
-// include/formutil.php, row 920
+// include/formutil.php, row 963
 "set" => "zapnuto",
 
-// include/formutil.php, row 920
+// include/formutil.php, row 963
 "unset" => "vypnuto",
 
-// include/formutil.php, row 1050
+// include/formutil.php, row 1093
 "Unable to find tagprefix table %1" => "Nelze najít tabulku tagprefix %1",
 
-// include/formutil.php, row 1202
+// include/formutil.php, row 1245
 "import" => "načíst",
 
-// include/formutil.php, row 1217
+// include/formutil.php, row 1260
 // src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Zobraz Editor",
 
-// include/formutil.php, row 1230
+// include/formutil.php, row 1273
 // include/transformation.class.php, row 193, 382, 455, 549, 739
 // include/widget.class.php, row 665
 "Plain text" => "Prostý text",
 
-// include/formutil.php, row 1272
+// include/formutil.php, row 1315
 // include/transformation.class.php, row 661
 "Translate" => "Přeložit",
 
-// include/formutil.php, row 1782, 1786
+// include/formutil.php, row 1825, 1829
 "Enter the value" => "Vložte hodnotu",
 
-// include/formutil.php, row 1786
+// include/formutil.php, row 1829
 // include/menu.php, row 141
 // src/Import/DetailCatalog.php, row 124
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Změnit",
 
-// include/formutil.php, row 1929, 2116
+// include/formutil.php, row 1972, 2159
 // src/Widget/MchWidget.php, row 135
-// src/Widget/Widget.php, row 837
+// src/Widget/Widget.php, row 836
 "Selected" => "Vybrané",
 
-// include/formutil.php, row 2115
+// include/formutil.php, row 2158
 "Offer" => "Nabídnout",
 
-// include/formutil.php, row 2180
-// include/stringexpand.php, row 11522, 11545
+// include/formutil.php, row 2223
+// include/stringexpand.php, row 11543, 11566
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "nový",
 
-// include/formutil.php, row 2200
+// include/formutil.php, row 2243
 "Change Password" => "Změna Hesla",
 
-// include/formutil.php, row 2202
+// include/formutil.php, row 2245
 "Delete Password" => "Smazat Heslo",
 
-// include/formutil.php, row 2211
-// include/searchlib.php, row 60, 128, 131, 134, 137, 140
+// include/formutil.php, row 2254
+// include/searchlib.php, row 61, 129, 132, 135, 138, 141
 // src/Central/FindingText.php, row 412
 // src/Credential/Store.php, row 53
 "not set" => "nenastaveno",
 
-// include/formutil.php, row 2976
+// include/formutil.php, row 3020
 "Submit" => "Poslat",
 
-// include/formutil.php, row 3295
+// include/formutil.php, row 3328
 "Group Name" => "Jméno skupiny",
 
-// include/formutil.php, row 3296
-// include/logs.php, row 754, 854, 1118
+// include/formutil.php, row 3329
+// include/logs.php, row 754, 854, 1122
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Počet",
 
-// include/formutil.php, row 3297
+// include/formutil.php, row 3330
 "Created on" => "Vytvořeno",
 
-// include/formutil.php, row 3298
+// include/formutil.php, row 3331
 "Created by" => "Vytvořil",
 
-// include/formutil.php, row 3299
+// include/formutil.php, row 3332
 "Last updated" => "Naposledy aktualizováno",
 
-// include/formutil.php, row 3300
+// include/formutil.php, row 3333
 "Updated by" => "Aktualizoval",
 
-// include/formutil.php, row 3308
+// include/formutil.php, row 3341
 "All active items" => "Všechy aktuální články",
 
-// include/formutil.php, row 3310
+// include/formutil.php, row 3343
 "All pending items" => "Všechny připravované články",
 
-// include/formutil.php, row 3311
+// include/formutil.php, row 3344
 "All expired items" => "Všechny expirované články",
 
-// include/formutil.php, row 3312
+// include/formutil.php, row 3345
 "All items in holding bin" => "Všechny články v zásobníku",
 
-// include/formutil.php, row 3313
+// include/formutil.php, row 3346
 "All items in trash bin" => "Všechny články v koši",
 
 // include/init_page.php, row 84
@@ -6129,25 +6426,25 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: špatná funkce aliasu %1 pro %2",
 
-// include/item_content.php, row 1133, 1191
+// include/item_content.php, row 1134, 1192
 "No Slice Id specified" => "Není zadáno ID webíku",
 
-// include/item_content.php, row 1179
+// include/item_content.php, row 1180
 "No Permission to insert Item for user %1" => "Uživatel %1 nemá právo vkládat články",
 
-// include/item_content.php, row 1195
+// include/item_content.php, row 1196
 "Bad Item Id" => "Špatné ID článku",
 
-// include/item_content.php, row 1336
+// include/item_content.php, row 1337
 "No Id specified (%1 - %2)" => "ID nezadáno (%1 - %2)",
 
-// include/item_content.php, row 1341
+// include/item_content.php, row 1342
 "Duplicated ID - skipped (%1 - %2)" => "Duplicitní ID - přeskočeno (%1 - %2)",
 
-// include/item_content.php, row 1366
+// include/item_content.php, row 1367
 "StoreItem for slice %1 - failed parameter check for id = '%2'" => "StoreItem pro webík %1 - selhala kontrola parametru pro id = '%2'",
 
-// include/item_content.php, row 1376
+// include/item_content.php, row 1377
 "No Status code" => "Chybí stavový kód",
 
 // include/itemfunc.php, row 67
@@ -6551,15 +6848,9 @@ return [
 // include/logs.php, row 681
 "Time + Cached + 304" => "Čas + cache + 304",
 
-// include/logs.php, row 683, 696, 906, 1092
+// include/logs.php, row 683, 696, 906, 1096
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL",
-
-// include/logs.php, row 723
-// include/menu_util.php, row 45
-// src/Optimize/CheckCentralCredentials.php, row 51
-// src/Optimize/CheckEnvironment.php, row 50
-"AA" => "",
 
 // include/logs.php, row 724
 "SVN AA (util.php)" => "",
@@ -6607,13 +6898,6 @@ return [
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Spustit", // ai 2026-10
 
-// include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
-// src/Optimize/CheckImports.php, row 150, 154
-// src/Optimize/CheckInstallRuns.php, row 54
-// src/Optimize/CheckIsdsRuns.php, row 310
-"Started" => "Začátek", // ai 2026-10
-
 // include/logs.php, row 800
 "Last full run" => "Poslední úplný běh", // ai 2026-10
 
@@ -6644,137 +6928,137 @@ return [
 // include/logs.php, row 903
 "Identifier" => "Identifikátor",
 
-// include/logs.php, row 904, 1268, 1283
+// include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 816
+// src/Manager.php, row 825
 "Module ID" => "ID modulu",
 
-// include/logs.php, row 917
+// include/logs.php, row 921
 "Template id" => "ID šablony", // ai 2026-06
 
-// include/logs.php, row 919
+// include/logs.php, row 923
 "Emails sent" => "Odeslané e-maily", // ai 2026-06
 
-// include/logs.php, row 958
+// include/logs.php, row 962
 "Object id" => "Id objektu", // ai 2026-10
 
-// include/logs.php, row 990
+// include/logs.php, row 994
 "Mail template" => "Šablona e-mailu", // ai 2026-10
 
-// include/logs.php, row 991
+// include/logs.php, row 995
 "Reader item" => "Článek čtenáře", // ai 2026-10
 
-// include/logs.php, row 992
+// include/logs.php, row 996
 "Origin" => "Původ", // ai 2026-10
 
-// include/logs.php, row 1063
+// include/logs.php, row 1067
 "Transport" => "Způsob odeslání", // ai 2026-10
 
-// include/logs.php, row 1064
+// include/logs.php, row 1068
 "Recipients sent" => "Odesláno příjemcům", // ai 2026-10
 
-// include/logs.php, row 1065
+// include/logs.php, row 1069
 "Server response" => "Odpověď serveru", // ai 2026-10
 
-// include/logs.php, row 1078
+// include/logs.php, row 1082
 "Items selected" => "Vybrané články", // ai 2026-10
 
-// include/logs.php, row 1079
+// include/logs.php, row 1083
 "Items updated" => "Aktualizované články", // ai 2026-10
 
-// include/logs.php, row 1080
+// include/logs.php, row 1084
 "Items planned" => "Naplánované články", // ai 2026-10
 
-// include/logs.php, row 1091
+// include/logs.php, row 1095
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Zpráva", // ai 2026-06
 
-// include/logs.php, row 1093
+// include/logs.php, row 1097
 "Referer" => "Odkazující stránka", // ai 2026-06
 
-// include/logs.php, row 1104
+// include/logs.php, row 1108
 "New name" => "Nový název", // ai 2026-06
 
-// include/logs.php, row 1105
+// include/logs.php, row 1109
 "Old name" => "Starý název", // ai 2026-06
 
-// include/logs.php, row 1116, 1181
+// include/logs.php, row 1120, 1185
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Fáze", // ai 2026-06
 
-// include/logs.php, row 1117
+// include/logs.php, row 1121
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Kolekce", // ai 2026-06
 
-// include/logs.php, row 1119, 1170, 1182, 1317
+// include/logs.php, row 1123, 1174, 1186, 1321
 // src/Import/Definition.php, row 154
 // src/Optimize/CheckPasskeys.php, row 84
-// src/Optimize/CheckUploadRefusals.php, row 90
+// src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Detail", // ai 2026-10
 
-// include/logs.php, row 1169
+// include/logs.php, row 1173
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Stav", // ai 2026-06
 
-// include/logs.php, row 1221
+// include/logs.php, row 1225
 "Processed" => "Zpracováno", // ai 2026-06
 
-// include/logs.php, row 1222
+// include/logs.php, row 1226
 "Stored" => "Uloženo", // ai 2026-06
 
-// include/logs.php, row 1223
+// include/logs.php, row 1227
 "Errors" => "Chyby", // ai 2026-06
 
-// include/logs.php, row 1236
+// include/logs.php, row 1240
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Výsledek", // ai 2026-06
 
-// include/logs.php, row 1252
+// include/logs.php, row 1256
 "Flags" => "Příznaky", // ai 2026-06
 
-// include/logs.php, row 1253
+// include/logs.php, row 1257
 "Context" => "Kontext", // ai 2026-06
 
-// include/logs.php, row 1269
+// include/logs.php, row 1273
 "Feed counterpart" => "Protějšek ve výměně zpráv", // ai 2026-10
 
-// include/logs.php, row 1284
+// include/logs.php, row 1288
 "Field ID" => "ID Políčka",
 
-// include/logs.php, row 1302
+// include/logs.php, row 1306
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckFileReadRefusals.php, row 78
 // src/Optimize/CheckHttp.php, row 62
 // src/Optimize/CheckPasskeys.php, row 83
-// src/Optimize/CheckUploadRefusals.php, row 88
+// src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "Důvod", // ai 2026-10
 
-// include/mail.php, row 657
+// include/mail.php, row 693
 "Email type" => "Typ e-mailu",
 
-// include/mail.php, row 661
+// include/mail.php, row 697
 "— all modules (global) —" => "— všechny moduly (globální) —", // ai 2026-10
 
-// include/mail.php, row 661
+// include/mail.php, row 697
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Vlastník",
 
-// include/mail.php, row 662
+// include/mail.php, row 698
 "Description/Result" => "Popis/Výsledek",
 
-// include/mail.php, row 667
+// include/mail.php, row 701
 "From (email) " => "Od (e-mail)",
 
-// include/mail.php, row 670
+// include/mail.php, row 704
 "Envelop sender (email)" => "Odesílatel obálky (e-mail)",
 
-// include/mail.php, row 671
+// include/mail.php, row 705
 // misc/datovka/datovka.php, row 156
 "Attachments" => "Přílohy",
 
@@ -6893,7 +7177,7 @@ return [
 "Bookmarks" => "Záložky",
 
 // include/menu.php, row 223
-// include/menu_util.php, row 130
+// include/menu_util.php, row 131
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Vysypat koš",
 
@@ -6955,7 +7239,7 @@ return [
 // include/menu_util.php, row 96
 // src/Import/Definition.php, row 135, 161
 // src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+// src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "Import", // ai 2026-11
 
 // include/menu_util.php, row 98
@@ -6988,75 +7272,78 @@ return [
 // include/menu_util.php, row 129
 "Synchronize..." => "Synchronizovat...",
 
-// include/menu_util.php, row 131
+// include/menu_util.php, row 130
+"Optimize on several AAs..." => "Optimalizace na více AA...", // ai 2026-11
+
+// include/menu_util.php, row 132
 "Import conf from CSV..." => "Import konfigurace z CSV...",
 
-// include/menu_util.php, row 426
+// include/menu_util.php, row 427
 "Part of %s" => "Součást %s",
 
-// include/menu_util.php, row 443
+// include/menu_util.php, row 444
 "Other slices" => "Ostatní webíky",
 
-// include/menu_util.php, row 447
+// include/menu_util.php, row 448
 "Reader Management Slice" => "Webík Správa Čtenářů",
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 450
 "Jump inside control panel" => "Skok uvnitř administrace",
 
-// include/menu_util.php, row 450
-// include/slice.class.php, row 1447
+// include/menu_util.php, row 451
+// include/slice.class.php, row 1450
 // src/Central/FindingText.php, row 311
 "Links" => "Správa odkazů",
 
-// include/menu_util.php, row 451
+// include/menu_util.php, row 452
 "MySQL Auth (old version)" => "MySQL autentizace (stará verze)",
 
-// include/menu_util.php, row 452
+// include/menu_util.php, row 453
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Ankety",
 
-// include/menu_util.php, row 473
+// include/menu_util.php, row 474
 "New slice" => "Nový webík",
 
-// include/menu_util.php, row 477
+// include/menu_util.php, row 478
 "Switch module" => "Přepnout modul",
 
-// include/menu_util.php, row 611, 622
+// include/menu_util.php, row 612, 623
 "Apply" => "Použít", // ai 2026-06
 
-// include/menu_util.php, row 615
+// include/menu_util.php, row 616
 "-- Default for module --" => "-- Výchozí pro modul --", // ai 2026-06
 
-// include/menu_util.php, row 623
+// include/menu_util.php, row 624
 "Switches the admin interface language; the page reloads." => "Přepne jazyk administračního rozhraní; stránka se znovu načte.", // ai 2026-06
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 629
 "What's working, what isn't — tell the AA team." => "Co funguje a co ne — dejte vědět týmu AA.", // ai 2026-06
 
-// include/menu_util.php, row 631
+// include/menu_util.php, row 632
 // src/Import/Definition.php, row 86
 "Settings" => "Nastavení",
 
-// include/menu_util.php, row 634
+// include/menu_util.php, row 635
 "Theme" => "Vzhled", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 637
 "Feedback" => "Zpětná vazba", // ai 2026-06
 
-// include/menu_util.php, row 762
+// include/menu_util.php, row 763
 // include/slice.class.php, row 678
 "Reader management" => "Správa čtenářů",
 
-// include/menu_util.php, row 774
+// include/menu_util.php, row 775
 "logout" => "odhlásit",
 
-// include/menu_util.php, row 782
+// include/menu_util.php, row 783
 "Search.." => "Hledat..",
 
-// include/menu_util.php, row 861
+// include/menu_util.php, row 862
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>",
 
-// include/menu_util.php, row 871
+// include/menu_util.php, row 872
 "Collapse / expand menu" => "Sbalit / rozbalit menu",
 
 // include/metabase.class.php, row 1662
@@ -7160,7 +7447,7 @@ return [
 "And" => "a zároveň",
 
 // include/searchbar.class.php, row 580
-// include/searchlib.php, row 52, 55, 128, 137
+// include/searchlib.php, row 53, 56, 129, 138
 "begins with" => "začíná",
 
 // include/searchbar.class.php, row 608
@@ -7208,41 +7495,38 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Správa filtrů",
 
-// include/searchlib.php, row 56
+// include/searchlib.php, row 57
 "LLIKE" => "",
 
-// include/searchlib.php, row 57
+// include/searchlib.php, row 58
 "XLIKE" => "",
 
-// include/searchlib.php, row 58
+// include/searchlib.php, row 59
 "BETWEEN" => "",
 
-// include/searchlib.php, row 59
+// include/searchlib.php, row 60
 "bit is set" => "bit je nastaven",
 
-// include/searchlib.php, row 61, 128, 131, 134, 137, 140
+// include/searchlib.php, row 62, 129, 132, 135, 138, 141
 "is set" => "vyplněno",
 
-// include/searchlib.php, row 62, 128
+// include/searchlib.php, row 63, 129
 "is e-mail" => "je e-mail",
 
-// include/searchlib.php, row 63, 128
+// include/searchlib.php, row 64, 129
 "not e-mail" => "není e-mail",
 
-// include/searchlib.php, row 64, 128, 137
+// include/searchlib.php, row 65, 129, 138
 "match (RegExp)" => "odpovídá (RegExp)",
 
-// include/searchlib.php, row 65, 128, 137
+// include/searchlib.php, row 66, 129, 138
 "not match (RegExp)" => "neodpovídá (RegExp)",
 
-// include/searchlib.php, row 128, 137
-"is not" => "není",
-
-// include/searchlib.php, row 137, 140
+// include/searchlib.php, row 138, 141
 // include/statestore.php, row 1367
 "select ..." => "vyber ...",
 
-// include/searchlib.php, row 370
+// include/searchlib.php, row 371
 "Limit" => "Limit", // ai 2026-10
 
 // include/slice.class.php, row 428
@@ -7255,7 +7539,7 @@ return [
 "Code - Views / Snippets" => "Kód - Pohledy / Snippety",
 
 // include/slice.class.php, row 681
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "Constant" => "Konstanta",
 
 // include/slice.class.php, row 682
@@ -7266,190 +7550,190 @@ return [
 "Field definitions" => "Definice políček",
 
 // include/slice.class.php, row 914
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Chyba: Schází Heslo pro Čtení",
 
-// include/slice.class.php, row 1314
+// include/slice.class.php, row 1317
 "Spot ID" => "ID spotu",
 
-// include/slice.class.php, row 1314
+// include/slice.class.php, row 1317
 "You can include this spot code in another spot by using {sitespot:%1}" => "Kód tohoto spotu můžete vložit do jiného spotu pomocí {sitespot:%1}",
 
-// include/slice.class.php, row 1332
+// include/slice.class.php, row 1335
 "Spot name" => "Název spotu",
 
-// include/slice.class.php, row 1475
+// include/slice.class.php, row 1478
 "Jump inside AA control panel" => "Skok uvnitř administrace",
 
-// include/slice.class.php, row 1500
+// include/slice.class.php, row 1503
 "Polls for AA" => "Anketa v AA",
 
-// include/slice.class.php, row 1569
+// include/slice.class.php, row 1572
 "Languages for translation" => "Jazyky pro překlad",
 
-// include/slice.class.php, row 1569
+// include/slice.class.php, row 1572
 "specify language codes in which you want to translate content - small caps, two letters - like: en, es, de, ..." => "zadejte kódy jazyků, do kterých chcete obsah překládat - malými písmeny, dvě písmena - např.: en, es, de, ...",
 
-// include/slice.class.php, row 1570
+// include/slice.class.php, row 1573
 "Automatic field creation" => "Automatické vytváření políček",
 
-// include/slice.class.php, row 1570
+// include/slice.class.php, row 1573
 "If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template." => "Je-li zaškrtnuto, webík umožní ukládat hodnoty do políčka text....*, i když příslušné text....* není ve webíku definováno. Políčko bude vytvořeno s použitím políčka text............ jako šablony.",
 
-// include/slice.class.php, row 1571
+// include/slice.class.php, row 1574
 "Fields defined by another slice" => "Políčka definovaná jiným webíkem",
 
-// include/slice.class.php, row 1571
+// include/slice.class.php, row 1574
 "You can use special slice for additional fields definition. There you can write slice ID, which defines the fields.<br>Could be used for data slice, which stores values for user created forms." => "Pro definici dalších políček můžete použít speciální webík. Sem napište ID webíku, který políčka definuje.<br>Lze využít pro datový webík, který ukládá hodnoty uživatelsky vytvořených formulářů.",
 
-// include/slice.class.php, row 1572
+// include/slice.class.php, row 1575
 "Store item history for N days" => "Ukládat historii článků po N dní",
 
-// include/slice.class.php, row 1572
+// include/slice.class.php, row 1575
 "ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted" => "ALL - nemazat log historie (výchozí)<br>0 - neukládat historii článků (ani události ITEM_UPD/ITEM_NEW v Logu)<br><em>číslo</em> - počet dní, po kterých bude historie článků smazána",
 
-// include/slice.class.php, row 1573
+// include/slice.class.php, row 1576
 "No pending items" => "Bez připravovaných článků",
 
-// include/slice.class.php, row 1573
+// include/slice.class.php, row 1576
 "1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - zcela vypne připravované v tomto webíku (políčko publish_date funguje jako běžné)<br>{aa-expression} - vyhodnotí-li se jako 1, vypne kontrolu připravovaných (pro pohled, webík, {ids...}) (použijte zde výrazy {if:{qss:..}, {var:..}, {server:..})",
 
-// include/slice.class.php, row 1574
+// include/slice.class.php, row 1577
 "No expired items" => "Bez expirovaných článků",
 
-// include/slice.class.php, row 1574
+// include/slice.class.php, row 1577
 "1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - zcela vypne expirované v tomto webíku (políčko expiry_date funguje jako běžné)<br>{aa-expression} - vyhodnotí-li se jako 1, vypne kontrolu data expirace (pro pohled, webík, {ids...}) (použijte zde výrazy {if:{qss:..}, {var:..}, {server:..})",
 
-// include/slice.class.php, row 1636
+// include/slice.class.php, row 1639
 "Slice with translations" => "Webík s překlady",
 
-// include/slice.class.php, row 1636
+// include/slice.class.php, row 1639
 "the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')" => "webík používaný pro překlady {tr:text...} (webík musí mít nastaveno 'Allow translation' pouze u políčka headline........)",
 
-// include/slice.class.php, row 1637
+// include/slice.class.php, row 1640
 "Additional aliases" => "Další aliasy",
 
-// include/slice.class.php, row 1637
+// include/slice.class.php, row 1640
 "Select sitemodule, where we have to look for additional {_:...} aliases" => "Vyberte sitemodul, ve kterém se mají hledat další aliasy {_:...}",
 
-// include/slice.class.php, row 1638
+// include/slice.class.php, row 1641
 "sitemap.xml alias" => "Alias pro sitemap.xml",
 
-// include/slice.class.php, row 1638
+// include/slice.class.php, row 1641
 "The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown." => "Soubor sitemap.xml se vygeneruje ze všech webíků (v pořadí výše), ve kterých existuje zadaný alias (např. _#SMAP_URL). Alias by měl generovat plné URL článku v každém webíku. Pro soukromé/skryté články by měl generovat prázdný řetězec, aby se jejich URL nezobrazilo.",
 
-// include/slice.class.php, row 1639
+// include/slice.class.php, row 1642
 "Permission alias" => "Alias pro práva",
 
-// include/slice.class.php, row 1639
+// include/slice.class.php, row 1642
 "You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word \"Valid\", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule." => "Můžete definovat alias, který se vyhodnotí pro všechna zobrazovaná {xid} (=stránky). Pokud bude hodnotou slovo \"Valid\", stránka se zobrazí. Jinak se zobrazí přihlašovací formulář (viz níže). Tuto funkci samozřejmě nemusíte používat a můžete vše řešit postaru - přímo ve stromu sitemodulu.",
 
-// include/slice.class.php, row 1640
+// include/slice.class.php, row 1643
 "HTML code for \"Login page\"" => "HTML kód pro \"Přihlašovací stránku\"",
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 434
 "User login databases" => "Databáze pro přihlašování uživatelů",
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 409
 "first Reader Management slice listed in Uses slices" => "první webík pro správu čtenářů uvedený v Používá webíky",
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 410
 "all Reader Management slices listed in Uses slices" => "všechny webíky pro správu čtenářů uvedené v Používá webíky",
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 411
 // src/Isds/SliceRules.php, row 99
 // src/Optimize/CheckIsdsAccounts.php, row 137
 "AA + all Reader Management slices in AA (old behavior)" => "AA + všechny webíky pro správu čtenářů v AA (staré chování)",
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 "First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used." => "Doporučená volba je \"první webík pro správu čtenářů\" - na veřejné stránky se pak mohou přihlásit pouze lidé z tohoto webíku. Pokud není vybráno, použije se volba \"AA + všechny webíky pro správu čtenářů\".",
 
-// include/slice.class.php, row 1642
+// include/slice.class.php, row 1645
 "Google analytics tracking id" => "Měřicí ID Google Analytics",
 
-// include/slice.class.php, row 1642
+// include/slice.class.php, row 1645
 "If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site." => "Pokud v kódu sitemodulu používáte {generate:HEAD} a {generate:FOOT}, vygeneruje se kód Google Analytics s tímto měřicím ID. Generovaný kód se může v budoucnu změnit, pokud Google změní svůj snippet.<br>Pro lištu souhlasu s cookies přidejte na stránky {eucookies} nebo {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top}",
 
-// include/slice.class.php, row 1643
+// include/slice.class.php, row 1646
 "Alternate URL" => "Alternativní URL",
 
-// include/slice.class.php, row 1643
+// include/slice.class.php, row 1646
 "Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "Další doména (domény), na kterých má být web dostupný. Zvažte však raději přesměrování na straně serveru a používání jediné domény, což je vhodnější pro SEO.",
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1647
 "Languages on website" => "Jazyky na webu",
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1647
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Vyjmenujte všechny jazyky, pro které chcete sitemodul používat - en, es, cz, ..<br>Prosíme, <b>vyplňte</b> i v případě, že používáte jen 1 jazyk. <br>Je to nutné, pokud chcete sitemodul volat novějším způsobem z Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>",
 
-// include/slice.class.php, row 1645
+// include/slice.class.php, row 1648
 "Allowed {xflag} values" => "Povolené hodnoty {xflag}", // ai 2026-10
 
-// include/slice.class.php, row 1645
+// include/slice.class.php, row 1648
 "Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "Regulární výraz, kterému musí část URL {xflag} odpovídat celá (^ ani \$ nejsou potřeba), jinak stránka odpoví 404. {xflag} jsou znaky hned za jazykem a nepovinným číslem stránky {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... Nikdy neobsahuje číslici ani „-“ – ty ji ukončují.<br>Projít musí i stránky bez {xflag} – zakončete vzor znakem ? nebo přidejte prázdnou alternativu.<br><b>Prázdné</b> – jakákoli hodnota bez „=“.<br><b>^\$</b> – {xflag} se nepoužívá, jen stránky bez něj.<br>Příklady:<br>[a-z]? – jedno písmeno, nebo nic<br>[tp]? – „t“ nebo „p“, nebo nic<br>(print|pdf)? – jedno z uvedených slov, nebo nic", // ai 2026-10
 
-// include/slice.class.php, row 1646
+// include/slice.class.php, row 1649
 "Allowed {xcat} values" => "Povolené hodnoty {xcat}", // ai 2026-10
 
-// include/slice.class.php, row 1646
+// include/slice.class.php, row 1649
 "Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "Regulární výraz, kterému musí část URL {xcat} odpovídat celá (^ ani \$ nejsou potřeba), jinak stránka odpoví 404. {xcat} je vše za prvním „-“ v prvním adresáři: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... Může obsahovat cokoli kromě „/“.<br>Projít musí i stránky bez {xcat} – zakončete vzor znakem ? nebo přidejte prázdnou alternativu.<br><b>Prázdné</b> – jakákoli hodnota bez „=“.<br><b>^\$</b> – {xcat} se nepoužívá, jen stránky bez něj.<br>Příklady:<br>[a-z0-9-]* – malá písmena, číslice a pomlčky, nebo nic<br>([0-9]+)? – číslo, nebo nic<br>(bioplyn|kompost)? – jedno z uvedených slov, nebo nic", // ai 2026-10
 
-// include/slice.class.php, row 1647
+// include/slice.class.php, row 1650
 "Check the page path" => "Kontrolovat cestu stránky", // ai 2026-10
 
-// include/slice.class.php, row 1647
+// include/slice.class.php, row 1650
 "Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "Odpovědět 404, když některá část cesty ({xseo1}, {xseo2}, ...) není zveřejněný článek, takže /cz/nesmysl/o-nas nezobrazí stránku o-nas. Odpoví 404, i když je „Stránka nenalezena“ nastaveno na „Neřešit“.", // ai 2026-10
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Page not Found (404)" => "Stránka nenalezena (404)",
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Do not care" => "Neřešit",
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Send standard 404 page, when {xid} is empty" => "Poslat standardní stránku 404, pokud je {xid} prázdné",
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Send code below" => "Poslat níže uvedený kód",
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "Pokud je vybrána první volba \"Neřešit\" (staré chování), musíte nevyplněné {xid} testovat ve svém sitemodulu sami",
 
-// include/slice.class.php, row 1649
+// include/slice.class.php, row 1652
 "HTML code for \"Page not Found\" (404)" => "HTML kód pro \"Stránka nenalezena\" (404)",
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1654
 "Publish in the app store" => "Zveřejnit v katalogu aplikací", // ai 2026-10
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1654
 "Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too." => "Jakékoli AA pak může tento web nainstalovat i s webíky a Zasíláním, které používá – jejich šablony, políčka a pohledy, nikdy články. Skupiny hodnot jiných webíků musí také patřit ke zveřejněnému webu.", // ai 2026-10
 
-// include/slice.class.php, row 1652
+// include/slice.class.php, row 1655
 "App description" => "Popis aplikace", // ai 2026-10
 
-// include/slice.class.php, row 1652
+// include/slice.class.php, row 1655
 "What the app does, for the list of the app store." => "Co aplikace dělá, pro seznam v katalogu aplikací.", // ai 2026-10
 
-// include/slice.class.php, row 1653
+// include/slice.class.php, row 1656
 "App version" => "Verze aplikace", // ai 2026-10
 
-// include/slice.class.php, row 1653
+// include/slice.class.php, row 1656
 "Like 1.2.0." => "Například 1.2.0.", // ai 2026-10
 
-// include/slice.class.php, row 1655
+// include/slice.class.php, row 1658
 "Published modules" => "Zveřejněné moduly", // ai 2026-10
 
-// include/slice.class.php, row 1664
+// include/slice.class.php, row 1667
 "Page address (URL)" => "Adresa stránky (URL)", // ai 2026-10
 
-// include/slice.class.php, row 1665
+// include/slice.class.php, row 1668
 "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} je číslo, {xflag} písmena za ním, {xcat} vše za prvním „-“ – všechny tři jsou nepovinné. {xlang} lze vynechat, jsou-li nastaveny „Jazyky na webu“.<br>Například /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka", // ai 2026-10
 
-// include/slice.class.php, row 1707
+// include/slice.class.php, row 1710
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "Verze aplikace má nejvýše 32 písmen, číslic a znaků . + - (např. 1.2.0), popis nejvýše %1 znaků.", // ai 2026-10
 
 // include/slice.php, row 69
@@ -7526,43 +7810,43 @@ return [
 // include/statestore.php, row 1449
 "Manage components" => "Správa komponent",
 
-// include/stringexpand.php, row 97
+// include/stringexpand.php, row 98
 "Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "Alias se volá jako {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}",
 
-// include/stringexpand.php, row 98
+// include/stringexpand.php, row 99
 "Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "Kód vypisovaný aliasem. Alias může mít parametry, ke kterým přistupujete přes proměnné _#P1, _#P2, ...",
 
-// include/stringexpand.php, row 100
+// include/stringexpand.php, row 101
 "Usage example" => "Příklad použití",
 
-// include/stringexpand.php, row 940
+// include/stringexpand.php, row 941
 "Jabber Online Status Indicator" => "Indikátor online stavu na Jabberu",
 
-// include/stringexpand.php, row 5515
+// include/stringexpand.php, row 5513
 "save changes" => "uložit změny",
 
-// include/stringexpand.php, row 5734
+// include/stringexpand.php, row 5732
 "No item ID" => "Chybí ID článku",
 
-// include/stringexpand.php, row 5741
+// include/stringexpand.php, row 5739
 "No transformations" => "Žádné transformace",
 
-// include/stringexpand.php, row 5755
+// include/stringexpand.php, row 5753
 "No slice for item" => "Nenalezen webík pro článek",
 
-// include/stringexpand.php, row 5756
+// include/stringexpand.php, row 5754
 "No current slice(s)" => "Žádný aktuální webík (webíky)",
 
-// include/stringexpand.php, row 5757
+// include/stringexpand.php, row 5755
 "Item slice is not in list of allowed slices" => "Webík článku není v seznamu povolených webíků",
 
-// include/stringexpand.php, row 5762
+// include/stringexpand.php, row 5760
 "No permit_anonymous_edit permission for the slice" => "Webík nemá právo permit_anonymous_edit",
 
-// include/stringexpand.php, row 6157
+// include/stringexpand.php, row 6155
 "No dictionaries specified for {dictionary}" => "Pro {dictionary} nejsou zadány žádné slovníky",
 
-// include/stringexpand.php, row 6287
+// include/stringexpand.php, row 6285
 "No module for dictionary slice" => "Chybí modul pro slovníkový webík",
 
 // include/stringexpand.php, row 8208
@@ -7577,72 +7861,72 @@ return [
 // include/stringexpand.php, row 8398
 "loading" => "načítám",
 
-// include/stringexpand.php, row 9531
+// include/stringexpand.php, row 9546
 "E-mail confirmed." => "E-mail potvrzen.",
 
-// include/stringexpand.php, row 9535
+// include/stringexpand.php, row 9550
 "E-mail unsubscribed" => "E-mail odhlášen",
 
-// include/stringexpand.php, row 10296
+// include/stringexpand.php, row 10311
 "Forgot your password? Fill in your email." => "Zapomněli jste heslo? Vyplňte svůj e-mail.",
 
-// include/stringexpand.php, row 10298
+// include/stringexpand.php, row 10313
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-mail", // ai 2026-10
 
-// include/stringexpand.php, row 10316, 10320
+// include/stringexpand.php, row 10331, 10335
 "Unable to find user - please check if it has been misspelled." => "Uživatele se nepodařilo najít - zkontrolujte prosím překlepy.",
 
-// include/stringexpand.php, row 10334
+// include/stringexpand.php, row 10349
 "Password link" => "Odkaz pro heslo",
 
-// include/stringexpand.php, row 10335
+// include/stringexpand.php, row 10350
 "Password change url parameter" => "URL parametr pro změnu hesla",
 
-// include/stringexpand.php, row 10347
+// include/stringexpand.php, row 10362
 "Password change" => "Změna hesla",
 
-// include/stringexpand.php, row 10348
+// include/stringexpand.php, row 10363
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Pro změnu hesla navštivte prosím následující adresu:<br>%1<br>Změna bude možná po dobu dvou hodin - poté platnost klíče vyprší a budete muset požádat o nový.",
 
-// include/stringexpand.php, row 10357
+// include/stringexpand.php, row 10372
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail s klíčem pro změnu hesla byl právě odeslán na e-mailovou adresu: %1",
 
-// include/stringexpand.php, row 10368, 10397
+// include/stringexpand.php, row 10383, 10412
 "Bad or expired key." => "Chybný nebo expirovaný klíč.",
 
-// include/stringexpand.php, row 10373
+// include/stringexpand.php, row 10388
 "Fill in the new password" => "Vyplňte nové heslo",
 
-// include/stringexpand.php, row 10375
+// include/stringexpand.php, row 10390
 "New password" => "Nové heslo",
 
-// include/stringexpand.php, row 10376
+// include/stringexpand.php, row 10391
 "Retype New Password" => "Zopakujte Nové Heslo",
 
-// include/stringexpand.php, row 10400
+// include/stringexpand.php, row 10415
 "Passwords do not match - please try again." => "Hesla se neshodují - zkuste to prosím znovu.",
 
-// include/stringexpand.php, row 10403
+// include/stringexpand.php, row 10418
 "The password must be at least 6 characters long." => "Heslo musí mít alespoň 6 znaků.",
 
-// include/stringexpand.php, row 10409
+// include/stringexpand.php, row 10424
 "Password changed." => "Heslo změněno.",
 
-// include/stringexpand.php, row 10411
+// include/stringexpand.php, row 10426
 "An error occurred during password change - please contact: %1." => "Při změně hesla došlo k chybě - kontaktujte prosím: %1.",
 
-// include/stringexpand.php, row 11519, 11542
+// include/stringexpand.php, row 11540, 11563
 "Are you sure you want to permanently DELETE this record?" => "Chcete opravdu trvale SMAZAT tento záznam?",
 
-// include/stringexpand.php, row 11525, 11528, 11548, 11551
+// include/stringexpand.php, row 11546, 11549, 11569, 11572
 // src/Widget/RimWidget.php, row 270
 "edit" => "upravit",
 
-// include/stringexpand.php, row 11531, 11554
+// include/stringexpand.php, row 11552, 11575
 "back" => "zpět",
 
-// include/stringexpand.php, row 11534, 11557
+// include/stringexpand.php, row 11555, 11578
 // src/Widget/RimWidget.php, row 297
 "drop files here or click to upload" => "přetáhněte soubory sem nebo klikněte pro nahrání",
 
@@ -7766,10 +8050,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Nelze změnit data uživatele",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Zpráva aplikace",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Znovu přihlásit",
 
 // include/validate.php, row 54
@@ -7778,25 +8062,25 @@ return [
 // include/validate.php, row 187
 "Bad validator type: %1" => "Chybný typ validátoru: %1",
 
-// include/validate.php, row 280, 585, 638
+// include/validate.php, row 280, 598, 651
 "Allowed minimum value" => "Povolená minimální hodnota",
 
-// include/validate.php, row 281, 586, 639
+// include/validate.php, row 281, 599, 652
 "Allowed maximum value" => "Povolená maximální hodnota",
 
 // include/validate.php, row 282
 "Step" => "Krok",
 
-// include/validate.php, row 283, 419, 911
+// include/validate.php, row 283, 419, 924
 "Maximum length" => "Maximální délka",
 
 // include/validate.php, row 296
 "No integer value" => "Není celé číslo",
 
-// include/validate.php, row 300, 603, 656
+// include/validate.php, row 300, 616, 669
 "Out of range - too big" => "Mimo rozsah - příliš velké",
 
-// include/validate.php, row 303, 606, 659
+// include/validate.php, row 303, 619, 672
 "Out of range - too small" => "Mimo rozsah - příliš malé",
 
 // include/validate.php, row 417
@@ -7805,79 +8089,79 @@ return [
 // include/validate.php, row 418
 "Empty expression" => "Prázdný výraz",
 
-// include/validate.php, row 432, 716, 746, 924
+// include/validate.php, row 432, 729, 759, 937
 "Too long" => "Příliš dlouhé",
 
 // include/validate.php, row 437
 "Do not match the pattern" => "Neodpovídá vzoru",
 
-// include/validate.php, row 530, 563
+// include/validate.php, row 543, 576
 "No ID value" => "Hodnota není ID",
 
-// include/validate.php, row 547
+// include/validate.php, row 560
 "No packed ID value" => "Hodnota není packed ID",
 
-// include/validate.php, row 599
+// include/validate.php, row 612
 "No float value" => "Hodnota není číslo s plovoucí čárkou (float)",
 
-// include/validate.php, row 652
+// include/validate.php, row 665
 "No decimal value" => "Hodnota není desetinné číslo (decimal)",
 
-// include/validate.php, row 684
+// include/validate.php, row 697
 "Possible values" => "Možné hodnoty",
 
-// include/validate.php, row 696
+// include/validate.php, row 709
 "Out of range - not in the list" => "Mimo rozsah - není v seznamu",
 
-// include/validate.php, row 713, 743
+// include/validate.php, row 726, 756
 "Too short" => "Příliš krátké",
 
-// include/validate.php, row 718
+// include/validate.php, row 731
 "Wrong characters - you should use a-z, A-Z and 0-9 characters" => "Nepovolené znaky - používejte pouze znaky a-z, A-Z a 0-9",
 
-// include/validate.php, row 784, 869
+// include/validate.php, row 797, 882
 "Field id" => "ID políčka",
 
-// include/validate.php, row 785, 870
+// include/validate.php, row 798, 883
 "Scope" => "Rozsah platnosti",
 
-// include/validate.php, row 785
+// include/validate.php, row 798
 "username | slice | allslices" => "",
 
-// include/validate.php, row 786, 871
+// include/validate.php, row 799, 884
 "Item id which we do not count" => "ID článku, který nepočítáme",
 
-// include/validate.php, row 812
+// include/validate.php, row 825
 "Username is not unique" => "Uživatelské jméno není unikátní",
 
-// include/validate.php, row 819, 827
+// include/validate.php, row 832, 840
 "Wrong parameter field_id for unique check" => "Chybný parametr field_id pro kontrolu unikátnosti",
 
-// include/validate.php, row 839
+// include/validate.php, row 852
 "Not unique - value already used" => "Není unikátní - hodnota se již používá",
 
-// include/validate.php, row 870
+// include/validate.php, row 883
 "username | slice | <b>allslices</b>" => "",
 
-// include/validate.php, row 957
+// include/validate.php, row 970
 "Not a valid regular expression" => "Neplatný regulární výraz", // ai 2026-10
 
-// include/validate.php, row 992
+// include/validate.php, row 1005
 "This field is required." => "Políčko je povinné.",
 
-// include/validate.php, row 992
+// include/validate.php, row 1005
 "This field is required (marked by *)." => "Políčko je povinné (označeno *).",
 
-// include/validate.php, row 999
+// include/validate.php, row 1012
 "Not a valid integer number." => "Není platné celé číslo.",
 
-// include/validate.php, row 1002
+// include/validate.php, row 1015
 "Not a valid file name." => "Není platný název souboru.",
 
-// include/validate.php, row 1006
+// include/validate.php, row 1019
 "Not a valid email address." => "Není platný email.",
 
-// include/validate.php, row 1009
+// include/validate.php, row 1022
 "The two password copies differ." => "Kopie hesla se liší.",
 
 // include/view.class.php, row 326
@@ -8063,12 +8347,8 @@ return [
 "page length (number of items)" => "délka stránky (počet článků)",
 
 // slice.php, row 621
-// src/Manager.php, row 881
+// src/Manager.php, row 890
 "No item found" => "Žádná zpráva",
-
-// src/AA_Plannedtask.php, row 71, 182
-// src/Optimize/CheckQueue.php, row 98, 178
-"Task" => "Úloha",
 
 // src/AA_Plannedtask.php, row 72
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "Pokud je zadáno, úloha se provede, jen pokud se Podmínka vyhodnotí na hodnotu různou od nuly nebo prázdné hodnoty",
@@ -8145,79 +8425,76 @@ return [
 // src/AA_Plannedtask.php, row 462
 "next run" => "příští spuštění",
 
-// src/Api/Controller/FilesController.php, row 56, 77
+// src/Api/Controller/FilesController.php, row 57, 78
 "The file is too big" => "Soubor je příliš velký", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 69
+// src/Api/Controller/FilesController.php, row 70
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "Sem nesmíte nahrávat soubory. Pokud jste editovali, mohlo vám vypršet přihlášení – načtěte stránku znovu.", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 72
+// src/Api/Controller/FilesController.php, row 73
 "Too many uploads - try again in an hour" => "Příliš mnoho nahrávání – zkuste to znovu za hodinu", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 80, 291
+// src/Api/Controller/FilesController.php, row 81, 294
 "No file received" => "Nebyl přijat žádný soubor", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 88
+// src/Api/Controller/FilesController.php, row 89
 "Files of this type cannot be uploaded here: %1" => "Soubory tohoto typu sem nelze nahrát: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 91
+// src/Api/Controller/FilesController.php, row 92
 "The content of the file does not match its extension %1" => "Obsah souboru neodpovídá jeho příponě %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 94
+// src/Api/Controller/FilesController.php, row 95
 "The image is bigger than %1 MB" => "Obrázek je větší než %1 MB", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 97
-"The image has more than %1 megapixels" => "Obrázek má více než %1 megapixelů", // ai 2026-10
-
-// src/Api/Controller/FilesController.php, row 102
+// src/Api/Controller/FilesController.php, row 100
 "The upload directory of the slice is not writable" => "Do adresáře pro nahrané soubory webíku nelze zapisovat", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 112
+// src/Api/Controller/FilesController.php, row 111
+"The image has more than %1 megapixels" => "Obrázek má více než %1 megapixelů", // ai 2026-10
+
+// src/Api/Controller/FilesController.php, row 115
 "The file could not be stored" => "Soubor nelze uložit", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 134
+// src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Procházet soubory webíku mohou jen jeho editoři", // ai 2026-10
 
-// src/Central/Actionapps.php, row 178
+// src/Central/Actionapps.php, row 185
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Toto PHP nemá AES-GCM (sodium) – přihlašovací token nelze uložit šifrovaně", // ai 2026-10
 
-// src/Central/Actionapps.php, row 206
+// src/Central/Actionapps.php, row 215
 "Not configured" => "Nenakonfigurováno",
 
-// src/Central/Actionapps.php, row 206
+// src/Central/Actionapps.php, row 215
 "Not authenticated - get a token" => "Neověřeno – získejte token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 209
+// src/Central/Actionapps.php, row 218
 "Authenticated until %1" => "Ověřeno do %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 209
+// src/Central/Actionapps.php, row 218
 "Expired - get a token" => "Vypršelo – získejte token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 234
+// src/Central/Actionapps.php, row 245
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "Vzdálené AA odmítlo přihlášení: chybné uživatelské jméno nebo heslo, účet s dvoufázovým přihlášením (Central zatím neumí poslat kód), nebo uživatel tam není superadmin", // ai 2026-10
 
-// src/Central/Actionapps.php, row 236
+// src/Central/Actionapps.php, row 247
 "The remote AA gave no login token - update it" => "Vzdálené AA nevydalo přihlašovací token – aktualizujte ho", // ai 2026-10
 
-// src/Central/Actionapps.php, row 237
+// src/Central/Actionapps.php, row 248
 "The remote AA gave a token for longer than a day - update the remote AA" => "Vzdálené AA vydalo token na déle než jeden den – aktualizujte vzdálené AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 273
+// src/Central/Actionapps.php, row 284
 "Can't get org_name - " => "Nelze získat org_name -",
 
-// src/Central/Actionapps.php, row 339
-"the update may still be running on the remote AA - wait, then run Test before retrying" => "aktualizace na vzdáleném AA možná ještě běží – počkejte a před dalším pokusem spusťte test", // ai 2026-10
-
-// src/Central/Actionapps.php, row 350
+// src/Central/Actionapps.php, row 338
 "Unexpected response from remote AA" => "Neočekávaná odpověď vzdáleného AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 341
 "This AA does not support this command (update it first)" => "Toto AA tento příkaz nepodporuje (nejprve ho aktualizujte)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 364
+// src/Central/Actionapps.php, row 353
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Uložený přihlašovací token nelze použít (změnil se AA_SECRET, heslo k databázi nebo adresa tohoto AA) – ověřte toto AA znovu na stránce ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 365
+// src/Central/Actionapps.php, row 354
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Pro toto AA není přihlašovací token – ověřte toto AA na stránce ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -8931,7 +9208,7 @@ return [
 "Correct the condition, or empty its field to transfer all the items of the slice, then check the changes again." => "Opravte podmínku, nebo její políčko vyprázdněte, aby se přenesly všechny články webíku, a pak znovu zkontrolujte změny.", // ai 2026-10
 
 // src/Central/FindingText.php, row 303
-// src/Optimize/CheckImports.php, row 176, 178
+// src/Optimize/CheckImports.php, row 177, 179
 // src/Optimize/ImgMeasuring.php, row 55
 "Why" => "Důvod", // ai 2026-10
 
@@ -9187,6 +9464,63 @@ return [
 // src/Central/FindingText.php, row 467
 "condition" => "podmínka", // ai 2026-06
 
+// src/Central/OptimizeRun.php, row 155
+"Fixes made for one website" => "Opravy pro jeden konkrétní web", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 156
+"Steps of the DB update one by one" => "Kroky aktualizace DB jednotlivě", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 157
+"Tests - %1" => "Testy - %1", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 158
+"Repairs reading whole big tables - minutes on a big database" => "Opravy čtoucí celé velké tabulky - na velké databázi minuty", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 159
+"Repairs" => "Opravy", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 164
+"Recommended" => "Doporučené", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 179
+"Update DB (sql_update) - all its steps" => "Aktualizovat DB (sql_update) - všechny kroky", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 308
+"The repair did not start or its answer is unusable: %1 - run Test to see the state of the AA." => "Oprava se nespustila nebo její odpověď nelze použít: %1 - stav AA zjistíte volbou „Jen otestovat“.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 309
+"The test after the repair failed: %1" => "Test po opravě selhal: %1", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 310
+"The repair was sent, but: %1 - run Test to see what it did." => "Oprava byla odeslána, ale: %1 - co provedla, zjistíte volbou „Jen otestovat“.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 317
+"The repair did not answer in time and the test still fails - it may still work; run Test later." => "Oprava neodpověděla včas a test stále selhává - možná ještě běží; později spusťte „Jen otestovat“.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 339
+"The test fails, but the AA ran another update the whole time - run this again later." => "Test selhává, ale AA celou dobu provádělo jinou aktualizaci - spusťte to později znovu.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 341
+"The test after the repair got no answer - run Test later." => "Test po opravě nedostal odpověď - později spusťte „Jen otestovat“.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 342
+"The repair was sent, but the AA has not answered since - it may still work; run Test later to see the result." => "Oprava byla odeslána, ale AA od té doby neodpovědělo - možná ještě běží; výsledek zjistíte později volbou „Jen otestovat“.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 344
+"The AA ran another update the whole time - run this again later." => "AA celou dobu provádělo jinou aktualizaci - spusťte to později znovu.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 345
+"The AA did not answer in time - it may still work; run Test later to see the result." => "AA neodpovědělo včas - možná ještě běží; výsledek zjistíte později volbou „Jen otestovat“.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 367
+"No such AA in the Central list any more" => "Toto AA už v seznamu Central není", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 387
+"The AA answered in an older way - update it first" => "AA odpovědělo starším způsobem - nejdřív ho aktualizujte", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 399
+"(the report is cut - see the Optimize page of that AA)" => "(zpráva je zkrácená - viz stránku „Optimalizovat“ daného AA)", // ai 2026-11
+
 // src/Central/RemoteHtml.php, row 22
 "(no output)" => "(žádný výstup)", // ai 2026-10
 
@@ -9285,6 +9619,24 @@ return [
 
 // src/Credential/Store.php, row 55
 "set (%1)" => "nastaveno (%1)", // ai 2026-10
+
+// src/Form/ShowConditions.php, row 317
+"Fill in the name of the condition." => "Vyplňte název podmínky.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 321
+"Another condition of this slice is called %1." => "Jiná podmínka tohoto webíku se jmenuje %1.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 333
+"The field %1 is not in this slice." => "Políčko %1 v tomto webíku není.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 335
+"Choose how to compare the field %1." => "Zvolte, jak porovnat políčko %1.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 337
+"Fill in the values of the field %1." => "Vyplňte hodnoty políčka %1.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 344
+"Add a rule or an expression." => "Přidejte pravidlo nebo výraz.", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
 "AA RSS" => "",
@@ -9493,6 +9845,7 @@ return [
 
 // src/Import/Definition.php, row 93
 // src/Import/DetailPage.php, row 604
+// src/Optimize/CheckImports.php, row 215
 "Enabled" => "Povoleno", // ai 2026-10
 
 // src/Import/Definition.php, row 113
@@ -9727,7 +10080,7 @@ return [
 "The source needs no key." => "Zdroj nepotřebuje žádný klíč.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 291
-// src/Widget/Widget.php, row 849
+// src/Widget/Widget.php, row 848
 "Hint" => "Nápověda",
 
 // src/Import/DetailConfig.php, row 297
@@ -10566,7 +10919,7 @@ return [
 "http or https only, on a public address, without a user name and password" => "jen http nebo https, na veřejné adrese, bez uživatelského jména a hesla", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 55
-// src/Widget/Widget.php, row 744, 813
+// src/Widget/Widget.php, row 743, 812
 "Columns" => "Sloupce",
 
 // src/Import/Source/CsvurlSource.php, row 55
@@ -10578,298 +10931,304 @@ return [
 // src/Import/Source/CsvurlSource.php, row 56
 "The column that identifies the item; it must be one of the columns" => "Sloupec, který identifikuje článek; musí být jedním ze sloupců", // ai 2026-10
 
-// src/Isds/Advice.php, row 47
+// src/Isds/Advice.php, row 48
 "The form has expired, or it does not belong to this page. Load the page again." => "Platnost formuláře vypršela, nebo nepatří k této stránce. Načtěte stránku znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 49
+// src/Isds/Advice.php, row 50
 "The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "Odeslaný formulář je větší, než server přijme (%1). Nic se neuložilo – zmenšete přílohy.", // ai 2026-10
 
-// src/Isds/Advice.php, row 50
+// src/Isds/Advice.php, row 51
 "The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "Odeslaný formulář je větší, než server přijme. Nic se neuložilo – zmenšete přílohy.", // ai 2026-10
 
-// src/Isds/Advice.php, row 51
+// src/Isds/Advice.php, row 52
 "The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "Akce selhala na vnitřní chybě AA a mohla část práce už udělat. Načtěte stránku znovu a než ji zkusíte ještě jednou, zkontrolujte stav.", // ai 2026-10
 
-// src/Isds/Advice.php, row 52
+// src/Isds/Advice.php, row 53
 "Someone else, or another window, is working with this now. Try it again in a while." => "S tímto teď pracuje někdo jiný nebo jiné okno. Zkuste to znovu za chvíli.", // ai 2026-10
 
-// src/Isds/Advice.php, row 53
+// src/Isds/Advice.php, row 54
 "You may not do this." => "Toto nesmíte.", // ai 2026-10
 
-// src/Isds/Advice.php, row 54
+// src/Isds/Advice.php, row 55
 "This sending is not on this page." => "Tato rozesílka na této stránce není.", // ai 2026-10
 
-// src/Isds/Advice.php, row 55
+// src/Isds/Advice.php, row 56
 "The sending does not wait for this now." => "Rozesílka na tuto akci teď nečeká.", // ai 2026-10
 
-// src/Isds/Advice.php, row 56
+// src/Isds/Advice.php, row 57
 "A step of the sending is still running. Try it again in a few minutes." => "Krok rozesílky ještě běží. Zkuste to znovu za pár minut.", // ai 2026-10
 
-// src/Isds/Advice.php, row 57
+// src/Isds/Advice.php, row 58
 "The sending goes on." => "Rozesílka pokračuje.", // ai 2026-10
 
-// src/Isds/Advice.php, row 58
+// src/Isds/Advice.php, row 59
 "The sending is stopping - no further message will go." => "Rozesílka se zastavuje – žádná další zpráva už neodejde.", // ai 2026-10
 
-// src/Isds/Advice.php, row 59
+// src/Isds/Advice.php, row 60
 "Every message has been sent or tried already - there is nothing left to stop." => "Všechny zprávy už byly odeslány, nebo se je AA pokusilo odeslat – není co zastavit.", // ai 2026-10
 
-// src/Isds/Advice.php, row 60
+// src/Isds/Advice.php, row 61
 "The sending has been ended for good. Any message of unknown fate stays for you to verify." => "Rozesílka byla definitivně ukončena. Zprávy s neznámým osudem zůstávají k ověření na vás.", // ai 2026-10
 
-// src/Isds/Advice.php, row 61
+// src/Isds/Advice.php, row 62
 "The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "Rozesílka se už zastavila na chybě, tlačítko „Zastavit odesílání“ tu tedy nic nezmění. Můžete zvolit „Pokračovat v odesílání“, nebo „Ukončit rozesílku“ – zprávy s neznámým osudem a dosud nepřečtená doručení se pak už dohledávat nebudou.", // ai 2026-10
 
-// src/Isds/Advice.php, row 63
+// src/Isds/Advice.php, row 64
 "The draft is saved." => "Koncept je uložen.", // ai 2026-10
 
-// src/Isds/Advice.php, row 64
+// src/Isds/Advice.php, row 65
 "The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "Dopis je uložen, ale výběr příjemců ne: mezitím se změnil – v jiném okně, nebo zvolený příjemce zmizel. Stránka ukazuje nyní uložené příjemce; podle potřeby je zvolte znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 65
+// src/Isds/Advice.php, row 66
 "The copy is ready as a new draft." => "Kopie je připravena jako nový koncept.", // ai 2026-10
 
-// src/Isds/Advice.php, row 66
+// src/Isds/Advice.php, row 67
 "The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "Koncept byl přesunut do koše. Editor webíku ho může obnovit ve „Správě zpráv“.", // ai 2026-10
 
-// src/Isds/Advice.php, row 67
+// src/Isds/Advice.php, row 68
 "The sending of this campaign has started, so it stays - its messages must remain traceable." => "Odesílání této rozesílky už začalo, proto zůstává – její zprávy musí zůstat dohledatelné.", // ai 2026-10
 
-// src/Isds/Advice.php, row 68
+// src/Isds/Advice.php, row 69
 "The sending left no recipient unsent - there is nothing to copy." => "Rozesílka nenechala žádného příjemce neobeslaného – není co kopírovat.", // ai 2026-10
 
-// src/Isds/Advice.php, row 69
+// src/Isds/Advice.php, row 70
 "The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "Dopis lze tomuto příjemci poslat znovu, jen pokud jeho zpráva selhala nebo se rozesílka zastavila dřív, než na něj došla. Tato zpráva odešla, ještě může odejít, nebo byla vynechána – případně se neví, zda odešla: ověřte ji, jakmile to stránka nabídne (ne dokud ji AA ještě dohledává), a pak ji lze poslat znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 70
+// src/Isds/Advice.php, row 71
 "Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "Zaznamenáno: zpráva neodešla. Dopis lze tomuto příjemci poslat znovu v nové rozesílce.", // ai 2026-10
 
-// src/Isds/Advice.php, row 71
+// src/Isds/Advice.php, row 72
 "The fate of this message is known - there is nothing to verify." => "Osud této zprávy je znám – není co ověřovat.", // ai 2026-10
 
-// src/Isds/Advice.php, row 72
+// src/Isds/Advice.php, row 73
 "This message does not belong to the sending." => "Tato zpráva do rozesílky nepatří.", // ai 2026-10
 
-// src/Isds/Advice.php, row 73
+// src/Isds/Advice.php, row 74
 "The data box of the recipient is taken from the register." => "Datová schránka příjemce byla převzata z registru.", // ai 2026-10
 
-// src/Isds/Advice.php, row 74
+// src/Isds/Advice.php, row 75
 "The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "Registr nenabízí tuto datovou schránku příjemce dost jistě, aby se tu dala převzít. Editor webíku příjemců ji porovná na jeho stránce „Datové schránky z registru“, nebo opraví článek.", // ai 2026-10
 
-// src/Isds/Advice.php, row 75
+// src/Isds/Advice.php, row 76
 "The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "Registr datových schránek nebyl stažen, nebo je starý. Editor webíku příjemců ho stáhne na jeho stránce „Datové schránky z registru“.", // ai 2026-10
 
-// src/Isds/Advice.php, row 76
+// src/Isds/Advice.php, row 77
 "This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "Tento příjemce není mezi spárovanými s registrem: byl smazán, přesunut do koše, nebo má jiný typ. Načtěte stránku znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 77
+// src/Isds/Advice.php, row 78
 "A page in the test environment changes no recipient." => "Stránka v testovacím prostředí žádného příjemce nemění.", // ai 2026-10
 
-// src/Isds/Advice.php, row 78
+// src/Isds/Advice.php, row 79
 "The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "Rozesílka je zařazena do fronty – příjemců: %1. Pokračuje sama, stránku můžete zavřít.", // ai 2026-10
 
-// src/Isds/Advice.php, row 79
+// src/Isds/Advice.php, row 80
 "The test message has gone (ID %1 in ISDS, reference number %2)." => "Testovací zpráva odešla (ID %1 v ISDS, číslo jednací %2).", // ai 2026-10
 
-// src/Isds/Advice.php, row 80
+// src/Isds/Advice.php, row 81
 "It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "Neví se, zda testovací zpráva odešla. Vyhledejte ji mezi odeslanými zprávami datové schránky podle čísla jednacího %1.", // ai 2026-10
 
-// src/Isds/Advice.php, row 81
+// src/Isds/Advice.php, row 82
 "ISDS refused the test message." => "ISDS testovací zprávu odmítl.", // ai 2026-10
 
-// src/Isds/Advice.php, row 82
+// src/Isds/Advice.php, row 83
 "Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "Jiná testovací zpráva této stránky je na cestě, nebo se před chvílí zastavila. Zkuste to znovu za pár minut.", // ai 2026-10
 
-// src/Isds/Advice.php, row 83
+// src/Isds/Advice.php, row 84
 "The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "Rozesílka už byla zařazena do fronty nebo odeslána, proto ji nelze měnit ani poslat znovu. Chcete-li dopis poslat ještě jednou, vytvořte jeho kopii.", // ai 2026-10
 
-// src/Isds/Advice.php, row 84
+// src/Isds/Advice.php, row 85
 "Choose the recipients and save the draft." => "Zvolte příjemce a uložte koncept.", // ai 2026-10
 
-// src/Isds/Advice.php, row 85
+// src/Isds/Advice.php, row 86
 "This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "Tato stránka už nenabízí příjemce uložené s konceptem, proto žádný jejich výběr neukazuje. Zvolte příjemce znovu a uložte koncept – nový výběr nahradí uložený.", // ai 2026-10
 
-// src/Isds/Advice.php, row 86
+// src/Isds/Advice.php, row 87
 "The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "Počet příjemců se změnil od chvíle, kdy jste potvrdili %1. Zkontrolujte výběr a odešlete znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 87
+// src/Isds/Advice.php, row 88
 "There are more recipients than this page may send to (%1). Narrow the choice." => "Příjemců je víc, než smí tato stránka obeslat (%1). Zužte výběr.", // ai 2026-10
 
-// src/Isds/Advice.php, row 88
+// src/Isds/Advice.php, row 89
 "The letter would reach no one: none of the recipients chosen has a data box it can go to." => "Dopis by nedošel nikomu: žádný ze zvolených příjemců nemá datovou schránku, do které by mohl jít.", // ai 2026-10
 
-// src/Isds/Advice.php, row 89
+// src/Isds/Advice.php, row 90
 "No data box account is set up for this page. Ask the administrator." => "Pro tuto stránku není nastaven žádný účet datové schránky. Obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 90
+// src/Isds/Advice.php, row 91
 "This page or its slices are not ready to send. Ask the administrator." => "Tato stránka nebo její webíky nejsou připraveny k odesílání. Obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 91
+// src/Isds/Advice.php, row 92
 "The letter cannot go as a data message:" => "Dopis nemůže odejít jako datová zpráva:", // ai 2026-10
 
-// src/Isds/Advice.php, row 92
+// src/Isds/Advice.php, row 93
 "The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "Server teď nedokázal dopis sestavit – v konceptu není co opravovat. Zkuste to znovu později, nebo se obraťte na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 93
+// src/Isds/Advice.php, row 94
 "The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "Server má na dopis a jeho přílohy málo paměti (potřeba %1 MB). Obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 93
+// src/Isds/Advice.php, row 94
 "The server has too little memory for the letter and its attachments. Ask the administrator." => "Server má na dopis a jeho přílohy málo paměti. Obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 94
+// src/Isds/Advice.php, row 95
 "The database cannot queue a sending safely. Ask the administrator." => "Databáze nedokáže rozesílku bezpečně zařadit do fronty. Obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 95
+// src/Isds/Advice.php, row 96
 "ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "ISDS odmítl přihlášení účtu, nic nebylo odesláno. Požádejte administrátora, aby přihlášení zkontroloval.", // ai 2026-10
 
-// src/Isds/Advice.php, row 96
+// src/Isds/Advice.php, row 97
 "ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "ISDS zablokoval přihlašování z tohoto serveru, nic nebylo odesláno. Nové heslo nepomůže: AA se zkusí znovu přihlásit den po zablokování – zkuste to znovu zítra, nebo se obraťte na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 97
+// src/Isds/Advice.php, row 98
 "The settings of the account are not complete, nothing was sent. Ask the administrator." => "Nastavení účtu není úplné, nic nebylo odesláno. Obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 98
+// src/Isds/Advice.php, row 99
 "ISDS does not answer, nothing was sent. Try it again in a while." => "ISDS neodpovídá, nic nebylo odesláno. Zkuste to znovu za chvíli.", // ai 2026-10
 
-// src/Isds/Advice.php, row 99
+// src/Isds/Advice.php, row 100
 "ISDS refused to tell whose the login of the account is, nothing was sent." => "ISDS odmítl sdělit, komu přihlášení účtu patří, nic nebylo odesláno.", // ai 2026-10
 
-// src/Isds/Advice.php, row 100
+// src/Isds/Advice.php, row 101
 "No test data box is set up for this page - in production the administrator of the server sets it." => "Pro tuto stránku není nastavena žádná testovací datová schránka – v produkčním prostředí ji nastavuje administrátor serveru.", // ai 2026-10
 
-// src/Isds/Advice.php, row 101
+// src/Isds/Advice.php, row 102
 "Choose one of the test data boxes of this page." => "Zvolte jednu z testovacích datových schránek této stránky.", // ai 2026-10
 
-// src/Isds/Advice.php, row 102
+// src/Isds/Advice.php, row 103
 "A test message cannot go to the data box it is sent from. Choose another test box." => "Testovací zpráva nemůže jít do datové schránky, ze které se posílá. Zvolte jinou testovací schránku.", // ai 2026-10
 
-// src/Isds/Advice.php, row 103
+// src/Isds/Advice.php, row 104
 "ISDS is being maintained until %1. Try it again then." => "ISDS je do %1 v údržbě. Zkuste to pak znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 103
+// src/Isds/Advice.php, row 104
 "ISDS is being maintained. Try it again later." => "ISDS je v údržbě. Zkuste to znovu později.", // ai 2026-10
 
-// src/Isds/Advice.php, row 105
+// src/Isds/Advice.php, row 106
 "This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "Tento dopis už do této testovací schránky odešel nebo mohl odejít %2 (číslo jednací %1). Chcete-li ho otestovat znovu, změňte koncept.", // ai 2026-10
 
-// src/Isds/Advice.php, row 106
+// src/Isds/Advice.php, row 107
 "This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "Tento dopis už do této testovací schránky odešel nebo mohl odejít (číslo jednací %1). Chcete-li ho otestovat znovu, změňte koncept.", // ai 2026-10
 
-// src/Isds/Advice.php, row 107
+// src/Isds/Advice.php, row 108
 "A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "Zpráva do této datové schránky by byla placená (poštovní datová zpráva) a v produkčním prostředí jde testovací zpráva jen zdarma. Testujte s datovou schránkou úřadu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 108
+// src/Isds/Advice.php, row 109
 "It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "Nepodařilo se ověřit, že zpráva bude zdarma, nic nebylo odesláno. Zkontrolujte testovací schránku a zkuste to znovu za chvíli.", // ai 2026-10
 
-// src/Isds/Advice.php, row 109
+// src/Isds/Advice.php, row 110
 "The test message went as a paid postal data message." => "Testovací zpráva odešla jako placená poštovní datová zpráva.", // ai 2026-10
 
-// src/Isds/Advice.php, row 110
+// src/Isds/Advice.php, row 111
 "The test message may have cost money: it may have gone as a paid postal data message." => "Testovací zpráva mohla něco stát: mohla odejít jako placená poštovní datová zpráva.", // ai 2026-10
 
-// src/Isds/Advice.php, row 141
+// src/Isds/Advice.php, row 142
 "ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "ISDS odmítl několik zpráv po sobě se stejným stavem, nebo odmítl dotaz rozesílky – komu patří přihlášení účtu, nebo které zprávy byly odeslány.", // ai 2026-10
 
-// src/Isds/Advice.php, row 142
+// src/Isds/Advice.php, row 143
 "After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "Po odmítnutých zprávách pošle tlačítko „Pokračovat v odesílání“ ještě jednu, a když ISDS odmítne i tu, rozesílka se znovu zastaví; po odmítnutém dotazu se tlačítkem „Pokračovat v odesílání“ dotaz zopakuje.", // ai 2026-10
 
-// src/Isds/Advice.php, row 144
+// src/Isds/Advice.php, row 145
 "Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "Čeká se, až ISDS vypíše zprávy, jejichž osud zatím není znám. Rozesílka je dohledá sama.", // ai 2026-10
 
-// src/Isds/Advice.php, row 145
+// src/Isds/Advice.php, row 146
 "The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "Rozesílka skončila – to neznamená, že odešly všechny zprávy; to ukazují čísla. Doručení se sleduje v kolech; další přijde samo.", // ai 2026-10
 
-// src/Isds/Advice.php, row 146
+// src/Isds/Advice.php, row 147
 "ISDS is being maintained. The sending waits till the end and goes on by itself." => "ISDS je v údržbě. Rozesílka počká do jejího konce a pokračuje sama.", // ai 2026-10
 
-// src/Isds/Advice.php, row 147
+// src/Isds/Advice.php, row 148
 "The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "Účet datové schránky této stránky už není ten, se kterým byla rozesílka zařazena do fronty. Obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 148
+// src/Isds/Advice.php, row 149
 "ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "ISDS neodpovídá. AA to zkusí znovu samo; pokud se na tom rozesílka zastavila, zvolte „Pokračovat v odesílání“, jakmile ISDS odpoví.", // ai 2026-10
 
-// src/Isds/Advice.php, row 149
+// src/Isds/Advice.php, row 150
 "ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "ISDS odmítá přihlášení účtu. Požádejte administrátora, aby přihlášení zkontroloval, a pak zvolte „Pokračovat v odesílání“.", // ai 2026-10
 
-// src/Isds/Advice.php, row 150
+// src/Isds/Advice.php, row 151
 "ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "ISDS zablokoval přihlašování z tohoto serveru. Nové heslo nepomůže: zvolte „Pokračovat v odesílání“ zítra, nebo se obraťte na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 151
+// src/Isds/Advice.php, row 152
 "The settings of the account are not complete. Ask the administrator." => "Nastavení účtu není úplné. Obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 152
+// src/Isds/Advice.php, row 153
 "What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "To, co bylo pro rozesílku zmrazeno – dopis, jeho přílohy nebo příjemci –, chybí nebo se změnilo, proto nemůže pokračovat. Obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 153
+// src/Isds/Advice.php, row 154
 "The database cannot record the sending safely. Ask the administrator." => "Databáze nedokáže rozesílku bezpečně zaznamenat. Obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 154
+// src/Isds/Advice.php, row 155
 "A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "Krok rozesílky opakovaně nepostoupil. Zvolte „Pokračovat v odesílání“; pokud se znovu zastaví, obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 155
+// src/Isds/Advice.php, row 156
 "A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Krok rozesílky se zastavil před koncem. AA to zkusí znovu samo; pokud se na tom rozesílka zastavila, obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 156
+// src/Isds/Advice.php, row 157
 "The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Konec rozesílky se nepodařilo zaznamenat. AA to zkusí znovu samo; pokud se na tom rozesílka zastavila, obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 157
+// src/Isds/Advice.php, row 158
 "A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "Krok rozesílky selhal na vnitřní chybě AA. Zvolte „Pokračovat v odesílání“; pokud selže znovu, obraťte se na administrátora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 173
+// src/Isds/Advice.php, row 174
 "The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "Datová schránka příjemce přijímá jen placené poštovní datové zprávy a odesílající datová schránka je posílat nesmí.", // ai 2026-10
 
-// src/Isds/Advice.php, row 173
+// src/Isds/Advice.php, row 174
 "Test with the data box of an authority." => "Testujte s datovou schránkou úřadu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 174
+// src/Isds/Advice.php, row 175
 "The sending data box has been made inaccessible - no message can go from it now." => "Odesílající datová schránka byla znepřístupněna – teď z ní nemůže odejít žádná zpráva.", // ai 2026-10
 
-// src/Isds/Advice.php, row 175
+// src/Isds/Advice.php, row 176
 "The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "Předmět, „K rukám“ nebo název přílohy obsahuje znak, který ISDS nepřijímá.", // ai 2026-10
 
-// src/Isds/Advice.php, row 183
+// src/Isds/Advice.php, row 184
 "ISDS answered with status %1." => "ISDS odpověděl stavem %1.", // ai 2026-10
 
-// src/Isds/Advice.php, row 193
+// src/Isds/Advice.php, row 194
 "The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "Předmět nelze uložit: smí mít nejvýše %1 znaků a žádný tabulátor ani jiný řídicí znak. Z konceptu se neuložilo nic.", // ai 2026-10
 
-// src/Isds/Advice.php, row 194
+// src/Isds/Advice.php, row 195
 "\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "„K rukám“ nelze uložit: smí mít nejvýše %1 znaků a žádný tabulátor ani jiný řídicí znak. Z konceptu se neuložilo nic.", // ai 2026-10
 
-// src/Isds/Advice.php, row 195
+// src/Isds/Advice.php, row 196
 "The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "Text dopisu nelze uložit: je větší než %1, nebo to není platný text. Z konceptu se neuložilo nic.", // ai 2026-10
 
-// src/Isds/Advice.php, row 196
-"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "Výběr příjemců nelze uložit: tato stránka ho nenabízí. Z konceptu se neuložilo nic – zvolte je ještě jednou a uložte ho.", // ai 2026-10
-
 // src/Isds/Advice.php, row 197
-"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "Výběr příjemců nelze uložit: zvolit lze nejvýše %1 jednotlivých příjemců a stejně tolik jich jednotlivě vynechat. Z konceptu se neuložilo nic.", // ai 2026-10
+"The header cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "Záhlaví nelze uložit: je větší než %1 nebo to není platný text. Z konceptu se neuložilo nic.", // ai 2026-11
 
 // src/Isds/Advice.php, row 198
-"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Datová zpráva nese kromě dopisu nejvýše %1 příloh. Z konceptu se neuložilo nic – nejdřív některé odeberte.", // ai 2026-10
+"The footer cannot be saved: it may have at most %1 lines of at most %2 characters each - fewer when they are wide -, and no control character. Nothing of the draft was saved." => "Zápatí nelze uložit: řádků smí mít nejvýše %1, znaků na řádku nejvýše %2 (při širokých znacích méně) a žádný řídicí znak. Z konceptu se neuložilo nic.", // ai 2026-11
 
 // src/Isds/Advice.php, row 199
-"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "Soubor %1 nelze přiložit: tato stránka přijímá jen soubory typů %2. Uložte ho jako PDF, nebo přiložte soubory z archivu jednotlivě. Z konceptu se neuložilo nic.", // ai 2026-10
+"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "Výběr příjemců nelze uložit: tato stránka ho nenabízí. Z konceptu se neuložilo nic – zvolte je ještě jednou a uložte ho.", // ai 2026-10
 
 // src/Isds/Advice.php, row 200
-"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "Soubor %1 nelze přiložit: jeho obsah neodpovídá typu, který udává přípona. Z konceptu se neuložilo nic.", // ai 2026-10
+"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "Výběr příjemců nelze uložit: zvolit lze nejvýše %1 jednotlivých příjemců a stejně tolik jich jednotlivě vynechat. Z konceptu se neuložilo nic.", // ai 2026-10
 
 // src/Isds/Advice.php, row 201
-"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "Soubor %1 je větší, než tu smí být jeden soubor (%2). Z konceptu se neuložilo nic. Všechny přílohy a dopis dohromady smějí mít nejvýše %3 – to ověří testovací zpráva.", // ai 2026-10
+"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Datová zpráva nese kromě dopisu nejvýše %1 příloh. Z konceptu se neuložilo nic – nejdřív některé odeberte.", // ai 2026-10
 
 // src/Isds/Advice.php, row 202
-"The file %1 is empty. Nothing of the draft was saved." => "Soubor %1 je prázdný. Z konceptu se neuložilo nic.", // ai 2026-10
+"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "Soubor %1 nelze přiložit: tato stránka přijímá jen soubory typů %2. Uložte ho jako PDF, nebo přiložte soubory z archivu jednotlivě. Z konceptu se neuložilo nic.", // ai 2026-10
 
 // src/Isds/Advice.php, row 203
-"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "Soubor %1 nedorazil celý. Zkuste to znovu. Z konceptu se neuložilo nic.", // ai 2026-10
+"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "Soubor %1 nelze přiložit: jeho obsah neodpovídá typu, který udává přípona. Z konceptu se neuložilo nic.", // ai 2026-10
 
 // src/Isds/Advice.php, row 204
+"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "Soubor %1 je větší, než tu smí být jeden soubor (%2). Z konceptu se neuložilo nic. Všechny přílohy a dopis dohromady smějí mít nejvýše %3 – to ověří testovací zpráva.", // ai 2026-10
+
+// src/Isds/Advice.php, row 205
+"The file %1 is empty. Nothing of the draft was saved." => "Soubor %1 je prázdný. Z konceptu se neuložilo nic.", // ai 2026-10
+
+// src/Isds/Advice.php, row 206
+"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "Soubor %1 nedorazil celý. Zkuste to znovu. Z konceptu se neuložilo nic.", // ai 2026-10
+
+// src/Isds/Advice.php, row 207
 "A value of the form cannot be taken. Load the page again and try it once more." => "Hodnotu z formuláře nelze převzít. Načtěte stránku znovu a zkuste to ještě jednou.", // ai 2026-10
 
-// src/Isds/Gate.php, row 1139
+// src/Isds/Gate.php, row 1143
 "The mass sending on this page is not ready - fix this first:" => "Hromadná rozesílka na této stránce není připravena – nejdřív opravte toto:", // ai 2026-10
 
-// src/Isds/Gate.php, row 1140
+// src/Isds/Gate.php, row 1144
 "Where to fix it:" => "Kde to opravit:", // ai 2026-10
 
 // src/Isds/Registry/Config.php, row 53
@@ -11131,37 +11490,34 @@ return [
 // src/Isds/Setup.php, row 115
 "Unknown settings of the mass sending: %1 - the settings are %2" => "Neznámá nastavení rozesílky: %1 – možná nastavení jsou %2", // ai 2026-10
 
-// src/Isds/Setup.php, row 130
+// src/Isds/Setup.php, row 129
 "default_types names types that are not among types: %1" => "default_types uvádí typy, které nejsou mezi types: %1", // ai 2026-10
 
-// src/Isds/Setup.php, row 133
+// src/Isds/Setup.php, row 132
 "environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "environment smí být jen „%1“ – kdy se použije produkce, rozhoduje misc/datovka/datovka_conf.php", // ai 2026-10
 
-// src/Isds/Setup.php, row 136
-"Set letterhead to a text" => "Nastavte letterhead na text", // ai 2026-10
-
-// src/Isds/Setup.php, row 146
+// src/Isds/Setup.php, row 142
 "The settings of data boxes cannot be read now - ask the administrator of the server" => "Nastavení datových schránek teď nelze přečíst – obraťte se na správce serveru", // ai 2026-10
 
-// src/Isds/Setup.php, row 240
+// src/Isds/Setup.php, row 238
 "Set %1 to the id of a slice - 32 hexadecimal digits" => "Nastavte %1 na ID webíku – 32 šestnáctkových číslic", // ai 2026-10
 
-// src/Isds/Setup.php, row 258
+// src/Isds/Setup.php, row 256
 "Set %1 to the id of a field - 16 characters like text...........1" => "Nastavte %1 na ID políčka – 16 znaků jako text...........1", // ai 2026-10
 
-// src/Isds/Setup.php, row 283
+// src/Isds/Setup.php, row 281
 "Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "Nastavte types na objekt nabízených typů článků, každý s popiskem: {jsonasoc:<type>:<label>:...}", // ai 2026-10
 
-// src/Isds/Setup.php, row 288
+// src/Isds/Setup.php, row 286
 "An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "Typ článku v types smí obsahovat jen písmena, číslice, mezery a znaky - _ . : %1", // ai 2026-10
 
-// src/Isds/Setup.php, row 303
+// src/Isds/Setup.php, row 301
 "Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "Nastavte %1 na text nebo na seznam textů: [\"...\",\"...\"]", // ai 2026-10
 
-// src/Isds/Setup.php, row 321
+// src/Isds/Setup.php, row 319
 "test_box: %1 is not the id of a data box - 7 letters or digits" => "test_box: %1 není ID datové schránky – 7 písmen nebo číslic", // ai 2026-10
 
-// src/Isds/Setup.php, row 351
+// src/Isds/Setup.php, row 349
 "Set max_recipients to a number from 1 to %1" => "Nastavte max_recipients na číslo od 1 do %1", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 67
@@ -11198,7 +11554,7 @@ return [
 "The field %1 of slice \"%2\" is protected - name the field that tells a member" => "Políčko %1 webíku „%2“ je chráněné – uveďte políčko, které označuje člena", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 179
-// src/Optimize/CheckSiteStateFiles.php, row 72
+// src/Optimize/CheckSiteStateFiles.php, row 81
 // src/Optimize/CheckUniversalAnalytics.php, row 71
 "Site settings" => "Nastavení webu", // ai 2026-10
 
@@ -11257,7 +11613,7 @@ return [
 "Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "Webík „%1“ přidává, co rozesílka ukládá do políček %2, do hodnot – v nastavení každého z nich vypněte „%3“", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 385
-// src/Widget/Widget.php, row 786
+// src/Widget/Widget.php, row 785
 "Add to Constant" => "Přidat do konstant",
 
 // src/Later/ComputedfieldsUpdater.php, row 84
@@ -11293,40 +11649,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "Tento řádek zde nelze uložit.", // ai 2026-10
 
-// src/Manager.php, row 812
+// src/Manager.php, row 821
 "Searchbar" => "Vyhledávací lišta",
 
-// src/Manager.php, row 813
+// src/Manager.php, row 822
 "Scroller" => "Stránkování",
 
-// src/Manager.php, row 814
+// src/Manager.php, row 823
 "Msg" => "Zpráva",
 
-// src/Manager.php, row 815
+// src/Manager.php, row 824
 "Bin" => "Složka",
 
-// src/Manager.php, row 817
+// src/Manager.php, row 826
 "Manager ID" => "ID manageru",
 
-// src/Manager.php, row 1191
+// src/Manager.php, row 1200
 "The action was not performed - use the button on the page." => "Akce nebyla provedena - použijte tlačítko na stránce.", // ai 2026-10
 
-// src/Manager.php, row 1272
+// src/Manager.php, row 1281
 "Edit id" => "Id pro editaci",
 
-// src/Manager.php, row 1286
+// src/Manager.php, row 1295
 "Hold Shift and click to select multiple rows" => "Více řádků vyberete kliknutím s podrženou klávesou Shift",
 
-// src/Manager.php, row 1324
+// src/Manager.php, row 1333
 "Are you sure you want to empty trash?" => "Opravdu chcete vymazat zprávy z koše?",
 
-// src/Manager.php, row 1426
+// src/Manager.php, row 1435
 "Go" => "Jeď",
 
-// src/Manager.php, row 1439
+// src/Manager.php, row 1448
 "No item selected. Perform action for all filtered items? " => "Není vybrán žádný článek. Provést akci pro všechny vyfiltrované články?",
 
-// src/Manager.php, row 1439
+// src/Manager.php, row 1448
 "Run for %1 items" => "Spustit pro %1 článků",
 
 // src/Manageraction/AbstractManageraction.php, row 47
@@ -11381,11 +11737,8 @@ return [
 // src/Manageraction/Central_MoveItem.php, row 44
 "Hold" => "Do zásobníku",
 
-// src/Manageraction/Central_OptimizeType.php, row 34
-"Update DB (sql_update)" => "Aktualizovat DB (sql_update)",
-
-// src/Manageraction/Central_OptimizeType.php, row 49
-"Error: %1" => "Chyba: %1", // ai 2026-10
+// src/Manageraction/Central_OptimizeRun.php, row 16
+"Optimize - run a test or repair..." => "Optimalizovat - spustit test nebo opravu...", // ai 2026-11
 
 // src/Manageraction/Import_Delete.php, row 19
 // src/Manageraction/Object_Delete.php, row 19
@@ -11877,7 +12230,7 @@ return [
 "Trim text fields" => "Oříznout textová políčka", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 29
-"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "Přepne textová políčka z vkládací funkce „Text = neměnit“ na „Oříznout“, takže se mezery a nové řádky kolem hodnoty neukládají. Políčka pro kód, jedinečné hodnoty, kopie hesel a políčka, jejichž hodnoty takové mezery mají, si nastavení ponechají. Dříve uložené hodnoty se nemění.", // ai 2026-10
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Text areas, HTML editors, fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "Přepne textová políčka z vkládací funkce „Text = neměnit“ na „Oříznout“, takže mezery a odřádkování kolem hodnoty se neukládají. Textové oblasti, HTML editory, políčka pro kód, jedinečné hodnoty, kopie hesel a políčka, jejichž hodnoty takové mezery obsahují, si nastavení ponechají. Dříve uložené hodnoty se nemění.", // ai 2026-11
 
 // src/Optimize/ChangeQte2Trm.php, row 77
 "%1 text fields switched to Trim" => "Textová políčka přepnutá na „Oříznout“: %1", // ai 2026-10
@@ -11925,7 +12278,7 @@ return [
 // src/Optimize/CheckServerRefusals.php, row 69
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckTrustedProxies.php, row 104
-// src/Optimize/CheckUploadRefusals.php, row 91
+// src/Optimize/CheckUploadRefusals.php, row 95
 // src/Optimize/CheckUserAliasFunctionLog.php, row 88
 // src/Optimize/CheckViewSliceRefusals.php, row 163, 195
 "Days seen" => "Dní výskytu", // ai 2026-10
@@ -11950,7 +12303,7 @@ return [
 // src/Optimize/CheckServerRefusals.php, row 70
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckTrustedProxies.php, row 105
-// src/Optimize/CheckUploadRefusals.php, row 92
+// src/Optimize/CheckUploadRefusals.php, row 96
 // src/Optimize/CheckUserAliasFunctionLog.php, row 89
 // src/Optimize/CheckViewSliceRefusals.php, row 164, 196
 // src/Optimize/StateCheckModel.php, row 270
@@ -12021,14 +12374,6 @@ return [
 
 // src/Optimize/CheckAlerts.php, row 144
 "Selection" => "Výběr", // ai 2026-10
-
-// src/Optimize/CheckAlerts.php, row 145
-// src/Optimize/CheckIsds.php, row 142, 154
-// src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
-// src/Optimize/CheckIsdsConf.php, row 104, 107, 156
-// src/Optimize/CheckIsdsRegistry.php, row 119, 172
-// src/Optimize/StateCheckModel.php, row 219
-"Problem" => "Problém", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 146
 "the selection was deleted" => "výběr byl smazán", // ai 2026-10
@@ -12370,7 +12715,7 @@ return [
 "Reads the stored stream versions and catalogs of the imports and lists those that cannot be read." => "Načte uložené verze proudů a katalogy importů a vypíše ty, které nelze přečíst.", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 48
-// src/Optimize/CheckImports.php, row 80
+// src/Optimize/CheckImports.php, row 81
 "No import is defined" => "Žádný import není definován", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 60
@@ -12391,144 +12736,145 @@ return [
 // src/Optimize/CheckImports.php, row 40
 "Lists imports stopped by an error or not moving on, imports that cannot run, damaged keys, failures in the log and records left by deleted imports." => "Vypíše importy zastavené chybou nebo nepostupující, importy, které nemohou běžet, poškozené klíče, chyby v logu a záznamy po smazaných importech.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 80
+// src/Optimize/CheckImports.php, row 81
 "%1 imports, none needs attention" => "Importů: %1, žádný nevyžaduje pozornost", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 93
+// src/Optimize/CheckImports.php, row 94
 "Removed %1 runs and %2 stream states and catalogs of deleted imports." => "Odstraněno ze smazaných importů - běhů: %1, stavů proudů a katalogů: %2.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 150
+// src/Optimize/CheckImports.php, row 151
 "An import stopped by an error" => "Import zastavený chybou", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 150, 287
+// src/Optimize/CheckImports.php, row 151, 290
 // src/Optimize/CheckInstallRuns.php, row 62
 // src/Optimize/CheckIsdsRegistry.php, row 142
 // src/Optimize/CheckIsdsRuns.php, row 163, 200
+// src/Optimize/CheckOptimizeRuns.php, row 60
 // src/Optimize/CheckQueue.php, row 88, 98
 "Error" => "Chyba", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 150
+// src/Optimize/CheckImports.php, row 151
 "Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported." => "Nic dalšího se neimportuje, dokud někdo nezasáhne nebo dokud import znovu nespustí naplánovaná úloha (tím se tento běh ukončí). Otevřete import, podívejte se na chybu, odstraňte její příčinu a zvolte Pokračovat - nebo Ukončit, což ponechá, co bylo naimportováno.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 154
+// src/Optimize/CheckImports.php, row 155
 "An import has not moved on for %1 hours" => "Import stojí už %1 h", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 154
+// src/Optimize/CheckImports.php, row 155
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Idle since" => "Nečinný od", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 154
+// src/Optimize/CheckImports.php, row 155
 "No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run." => "Nepracuje na něm žádný krok fronty. Ověřte, že cron spouští frontu úloh a že její kola jsou na krok dost dlouhá (TOEXECUTE_ALLOWED_TIME v config.php), a pak u importu zvolte Pokračovat. Plánované spuštění importu ho ukončí a zahájí nový běh.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 171
+// src/Optimize/CheckImports.php, row 172
 "Imports cannot run: a table does not support transactions" => "Importy nemohou běžet: tabulka nepodporuje transakce", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 171
+// src/Optimize/CheckImports.php, row 172
 "Table" => "Tabulka", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 171
+// src/Optimize/CheckImports.php, row 172
 "Every run is refused. Convert the table to InnoDB or ask the server administrator." => "Každý běh je odmítnut. Převeďte tabulku na InnoDB nebo se obraťte na správce serveru.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 176
+// src/Optimize/CheckImports.php, row 177
 "not found" => "nenalezeno", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 180
+// src/Optimize/CheckImports.php, row 181
 "%1 imports have a source that is not available" => "Importy se zdrojem, který není dostupný: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 180
+// src/Optimize/CheckImports.php, row 181
 "A run of such an import stops in error at once. Fix or put back the source file, or delete the import." => "Běh takového importu se okamžitě zastaví na chybě. Opravte nebo vraťte soubor zdroje, nebo import smažte.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 197
+// src/Optimize/CheckImports.php, row 198
 "Another record holds the place of the stream state or catalog of an import" => "Místo stavu proudů nebo katalogu importu zabírá jiný záznam", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 197
+// src/Optimize/CheckImports.php, row 198
 "The end of each step of its runs fails on it, and deleting the import leaves it. Delete the object at the id of its stream state or catalog." => "Konec každého kroku jeho běhů na něm selže a smazání importu ho ponechá. Smažte objekt s id jeho stavu proudů nebo katalogu.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 206
+// src/Optimize/CheckImports.php, row 207
 "The last run of an import skipped 1 stream: the source went round" => "Poslední běh importu přeskočil 1 proud: zdroj se zacyklil", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 206
+// src/Optimize/CheckImports.php, row 207
 "The last run of an import skipped %1 streams: the source went round" => "Poslední běh importu přeskočil proudy (%1): zdroj se zacyklil", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 206
+// src/Optimize/CheckImports.php, row 207
 "The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams." => "Zdroj vydal stejnou úlohu znovu nebo víc úloh, než sám povoluje, takže běh přeskočil zbytek těchto proudů a jejich data mohou chybět. Zdroj stránkuje chybně nebo změnil stránkování; zkontrolujte zdroj a pak import spusťte znovu. Proudy jmenuje detail importu.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 209
+// src/Optimize/CheckImports.php, row 210
 "The last run of an import had %1 item errors" => "Poslední běh importu měl chyby článků: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 209
+// src/Optimize/CheckImports.php, row 210
 "The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again." => "Ostatní články se uložily. Detail importu vypíše první chyby; opravte data nebo mapování a import spusťte znovu.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 213
+// src/Optimize/CheckImports.php, row 215
 "An enabled import has no planned task" => "Zapnutý import nemá naplánovanou úlohu", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 213
-"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "Žádná naplánovaná úloha webíku nevolá {import} s jeho jménem nebo id, takže běží jen ručně. Naplánujte úlohu, nebo vypněte volbu Zapnuto.", // ai 2026-10
+// src/Optimize/CheckImports.php, row 215
+"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch the import off: in \"%1\" of the slice click \"%2\" at the import and untick \"%3\"." => "Žádná naplánovaná úloha webíku nevolá {import} s názvem nebo id tohoto importu, takže se import spouští jen ručně. Naplánujte úlohu, nebo import vypněte: v „%1“ webíku klikněte u importu na „%2“ a zrušte zaškrtnutí „%3“.", // ai 2026-11
 
-// src/Optimize/CheckImports.php, row 218
+// src/Optimize/CheckImports.php, row 220
 "%1 imports of one slice have the same name" => "Importy jednoho webíku se stejným jménem: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 218
+// src/Optimize/CheckImports.php, row 220
 "{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one." => "{import} je nedokáže rozlišit a jméno odmítne, takže naplánovaná úloha s ním selže. Přejmenujte všechny kromě jednoho.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 233
+// src/Optimize/CheckImports.php, row 236
 "The last check of an import source cannot be read" => "Poslední kontrolu zdroje importu nelze přečíst", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 233
+// src/Optimize/CheckImports.php, row 236
 "Its stored result is damaged. The next check of the source stores it again." => "Uložený výsledek kontroly je poškozený. Příští kontrola zdroje ho uloží znovu.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 236
+// src/Optimize/CheckImports.php, row 239
 "The last check of an import source failed" => "Poslední kontrola zdroje importu selhala", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 236, 238
+// src/Optimize/CheckImports.php, row 239, 241
 "Checked" => "Zkontrolováno", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 236
+// src/Optimize/CheckImports.php, row 239
 "A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again." => "Ostrý běh se zastaví na chybě, když zdroj neprojde kontrolou. Detail importu ukazuje, co zdroj řekl; opravte klíč nebo nastavení a zdroj znovu zkontrolujte.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 238
+// src/Optimize/CheckImports.php, row 241
 "The last check of an import source passed with a remark" => "Poslední kontrola zdroje importu prošla s poznámkou", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 238
+// src/Optimize/CheckImports.php, row 241
 "The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said." => "Import běží, ale zdroj upozorňuje na něco k opravě - například definice, které vynechává. Detail importu ukazuje, co zdroj řekl.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 244
+// src/Optimize/CheckImports.php, row 247
 "The catalog of an import source is incomplete" => "Katalog zdroje importu je neúplný", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 244
+// src/Optimize/CheckImports.php, row 247
 "The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again." => "Poslední kontrola nedokončila výpis zdroje, takže detail importu nemůže určit, které proudy už zdroj nemá. Zkontrolujte zdroj znovu.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 260
+// src/Optimize/CheckImports.php, row 263
 "%1 records of deleted imports are left: runs, stream states, catalogs" => "Zbývají záznamy smazaných importů (%1): běhy, stavy proudů, katalogy", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 262
+// src/Optimize/CheckImports.php, row 265
 "A step of a deleted import is still working and may store items until its time runs out. Repair deletes the records; the step then writes nothing back." => "Krok smazaného importu ještě pracuje a může ukládat články, dokud mu nevyprší čas. Opravit záznamy smaže; krok pak už nic nezapíše zpět.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 262
+// src/Optimize/CheckImports.php, row 265
 "Nothing uses them and nothing else removes them. Repair deletes them with their queued steps." => "Nic je nepoužívá a nic jiného je neodstraní. Opravit je smaže i s jejich kroky ve frontě.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "A key in config.php is damaged" => "Klíč v config.php je poškozený", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "Klíč obsahuje zalomení řádku nebo NUL, takže ho žádný zdroj importu nesmí použít. Opravte konstantu v config.php.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "Klíč JSON (servisní účet Google) se vejde na jeden řádek: vložte řádek, který vypíše %1.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 291
+// src/Optimize/CheckImports.php, row 294
 "Imports logged %1 failures in the last 7 days" => "Importy za posledních 7 dní zalogovaly chyby: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 295
+// src/Optimize/CheckImports.php, row 298
 "A failed queue step stops its import in error; the other rows are failures outside a step, such as refreshing cached pages after an import was deleted. Only the error class and place, or the code of a refusal, are logged - the message may hold a key." => "Neúspěšný krok fronty zastaví svůj import chybou; ostatní řádky jsou chyby mimo krok, například obnova stránek v cache po smazání importu. Loguje se jen třída a místo chyby nebo kód odmítnutí - zpráva může obsahovat klíč.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 296
+// src/Optimize/CheckImports.php, row 299
 "Failed steps" => "Neúspěšné kroky", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 296
+// src/Optimize/CheckImports.php, row 299
 "Other failures" => "Ostatní chyby", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 373
+// src/Optimize/CheckImports.php, row 397
 "Import detail" => "Detail importu", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 16
@@ -12913,7 +13259,7 @@ return [
 "Test boxes of ISDS accounts AA cannot read: %1" => "Testovací schránky účtů ISDS, které AA nemůže přečíst: %1", // ai 2026-10
 
 // src/Optimize/CheckIsdsConf.php, row 218
-"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "Zapište test_boxes jako seznam ID datových schránek: ['<ID schránky>', ...], každé 7 písmen nebo číslic. Do té doby účet odesílá, ale žádná testovací zpráva konceptu z něj neodejde.", // ai 2026-10
+"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each; a box may say whose it is: '<data box id>' => '<name>', at most %1 characters. Until then the account sends, but no test message of a draft goes from it." => "Zapište test_boxes jako seznam ID datových schránek: ['<ID schránky>', ...], každé 7 písmen nebo číslic; u schránky lze uvést, čí je: '<ID schránky>' => '<název>', znaků nejvýše %1. Do té doby účet odesílá, ale žádná testovací zpráva konceptu z něj neodejde.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 235
 "Paid tests of ISDS accounts AA cannot read: %1" => "Placené testy účtů ISDS, které AA nemůže přečíst: %1", // ai 2026-10
@@ -12957,28 +13303,28 @@ return [
 // src/Optimize/CheckIsdsConf.php, row 398
 "Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "Dejte souboru vlastníka, skupinu a režim jako include/config.php, protože každý web může spouštět PHP pod vlastním uživatelem, a ověřte, že open_basedir každého webu pustí PHP k souboru (i k cíli odkazu). Do té doby AA běží, jako by soubor neexistoval.", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 37
+// src/Optimize/CheckIsdsPdf.php, row 38
 "Letters to data boxes as a PDF" => "Dopisy do datových schránek jako PDF", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 42
+// src/Optimize/CheckIsdsPdf.php, row 43
 "Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "Převede krátký dopis do PDF tak, jako se převádí dopis každé rozesílky do datových schránek – jen když účet ISDS z misc/datovka/datovka_conf.php odesílá pro web této databáze.", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 81
+// src/Optimize/CheckIsdsPdf.php, row 82
 "AA makes letters to data boxes into a PDF" => "AA převádí dopisy do datových schránek do PDF", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 86
+// src/Optimize/CheckIsdsPdf.php, row 87
 "A letter to a data box cannot be made into a PDF" => "Dopis do datové schránky nelze převést do PDF", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 87
+// src/Optimize/CheckIsdsPdf.php, row 88
 "Until then no campaign can be sent to data boxes." => "Do té doby nelze do datových schránek odeslat žádnou rozesílku.", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 88
+// src/Optimize/CheckIsdsPdf.php, row 89
 "dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "Chybí dompdf, které vytváří PDF: spusťte composer install v adresáři AA.", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 89
+// src/Optimize/CheckIsdsPdf.php, row 90
 "PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "PHP chybí rozšíření GD, které kreslí obrázky dopisu: nainstalujte ho a restartujte PHP.", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 90
+// src/Optimize/CheckIsdsPdf.php, row 91
 "Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "Spusťte composer install v adresáři AA – doplní dompdf a jeho písma – a ověřte, že PHP smí zapisovat do svého dočasného adresáře (sys_temp_dir).", // ai 2026-10
 
 // src/Optimize/CheckIsdsRegistry.php, row 30
@@ -13258,7 +13604,7 @@ return [
 // src/Optimize/CheckLoginAddresses.php, row 107
 "Logins come from %1 addresses; no address slowed down after failed logins is shared by several users" => "Počet adres, ze kterých se přihlašuje: %1; žádnou adresu zpomalenou po neúspěšných přihlášeních nesdílí více uživatelů", // ai 2026-10
 
-// src/Optimize/CheckLoginAddresses.php, row 112
+// src/Optimize/CheckLoginAddresses.php, row 124
 "If %1 is a proxy in front of AA, add it to AA_TRUSTED_PROXIES in include/config.php: %2 - AA then counts each visitor by their own address." => "Pokud je %1 proxy před AA, přidejte ji do AA_TRUSTED_PROXIES v include/config.php: %2 – AA pak počítá každého návštěvníka podle jeho vlastní adresy.", // ai 2026-10
 
 // src/Optimize/CheckNightly.php, row 30
@@ -13488,6 +13834,30 @@ return [
 
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "Za posledních 30 dní nebyl odmítnut žádný formulář objektu", // ai 2026-10
+
+// src/Optimize/CheckOptimizeRuns.php, row 16
+"Optimize runs of Central" => "Běhy optimalizace v Central", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 21
+"Warns about Optimize runs on several AAs that hang and lists those stopped by an error." => "Upozorní na běhy optimalizace na více AA, které uvázly, a vypíše ty, které se zastavily na chybě.", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 57
+"AAs done" => "Hotová AA", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 64
+"An Optimize run on several AAs stopped by an error" => "Běh optimalizace na více AA se zastavil na chybě", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 64
+"An Optimize run on several AAs has not moved on for %1 hours" => "Běh optimalizace na více AA se nepohnul už %1 h", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 67
+"Some AAs of the run were not asked. Check that the task queue of this AA runs; on the page of the run Continue goes on, End keeps the results so far." => "Některá AA běhu nebyla dotázána. Zkontrolujte, že běží fronta úloh tohoto AA; na stránce běhu „Pokračovat“ naváže, „Ukončit“ ponechá dosavadní výsledky.", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 68
+"The run" => "Běh", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 72
+"No Optimize run of Central is stuck" => "Žádný běh optimalizace v Central neuvázl", // ai 2026-11
 
 // src/Optimize/CheckPasskeys.php, row 35
 "Passkey logins" => "Přihlášení přístupovým klíčem", // ai 2026-11
@@ -13841,22 +14211,22 @@ return [
 // src/Optimize/CheckSiteStateFiles.php, row 23
 "Checks that every site module using a state file (the legacy control file) has that file present and readable in modules/site/sites/." => "Ověří, že každý modul Site používající stavový soubor (starý řídicí soubor) má tento soubor v modules/site/sites/ a že je čitelný.", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 66
+// src/Optimize/CheckSiteStateFiles.php, row 75
 "Site module \"%1\" has no state file" => "Modul Site „%1“ nemá stavový soubor", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 68
+// src/Optimize/CheckSiteStateFiles.php, row 77
 "Missing file" => "Chybějící soubor", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 69
+// src/Optimize/CheckSiteStateFiles.php, row 78
 "State file setting" => "Nastavení stavového souboru", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 71
+// src/Optimize/CheckSiteStateFiles.php, row 80
 "Every public page of that site answers HTTP 500 (logged as SITE_CONF). Add the file, or fix the \"State file\" setting of the site module." => "Každá veřejná stránka toho webu odpovídá HTTP 500 (logováno jako SITE_CONF). Přidejte soubor, nebo opravte nastavení „Stavový soubor“ modulu Site.", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 77
+// src/Optimize/CheckSiteStateFiles.php, row 86
 "All %1 site state files are in place" => "Všechny stavové soubory webů (%1) jsou na místě", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 77
+// src/Optimize/CheckSiteStateFiles.php, row 86
 "No site module uses a state file" => "Žádný modul Site nepoužívá stavový soubor", // ai 2026-10
 
 // src/Optimize/CheckTrustedProxies.php, row 31
@@ -13937,31 +14307,34 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 30
 "Lists the uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason, and the slices whose upload directory is not writable." => "Vypíše nahrávání z editoru formátovaného textu, která AA za posledních 30 dní odmítlo, podle webíku a důvodu, a webíky, jejichž adresář pro nahrávání není zapisovatelný.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 80
+// src/Optimize/CheckUploadRefusals.php, row 84
 "Slice %1 cannot store uploads - its directory is not writable" => "Webík %1 nemůže ukládat nahrané soubory - jeho adresář není zapisovatelný", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 81
+// src/Optimize/CheckUploadRefusals.php, row 85
 "Slice %1 could not store an upload" => "Webík %1 nemohl uložit nahraný soubor", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 82
+// src/Optimize/CheckUploadRefusals.php, row 86
 "Uploads to slice %1 refused: %2" => "Nahrávání do webíku %1 odmítnuto: %2", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 95
+// src/Optimize/CheckUploadRefusals.php, row 99
 "PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server." => "PHP nemůže zapisovat do adresáře pro nahrávání webíku (IMG_UPLOAD_PATH/<slice id>, nebo do adresáře jeho správce souborů). Opravte vlastníka nebo oprávnění na serveru.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 96
+// src/Optimize/CheckUploadRefusals.php, row 100
 "An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log." => "Jedna adresa nahrála za hodinu víc anonymních obrázků, než AA povoluje (%1 na adresu, %2 na webík). Nejspíš robot - adresa je v logu.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 97
+// src/Optimize/CheckUploadRefusals.php, row 101
 "Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address." => "Někdo se pokusil nahrávat bez oprávnění: editor, jehož přihlášení vypršelo (pomůže obnovit stránku), nebo sondování - mnoho dní z jedné adresy.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 98
+// src/Optimize/CheckUploadRefusals.php, row 102
 "Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP." => "Anonymní návštěvníci smí nahrávat obrázky do %1 MB; editory omezují upload_max_filesize a post_max_size PHP.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 99
+// src/Optimize/CheckUploadRefusals.php, row 103
+"An anonymous visitor sent an image AA could not read - damaged, cut short, or not the type it claims to be. It was not stored and the visitor was told why. Nothing to fix on the server." => "Anonymní návštěvník poslal obrázek, který AA nedokázalo přečíst - poškozený, useknutý nebo jiného typu, než udává. Nebyl uložen a návštěvník se dozvěděl proč. Na serveru není co opravovat.", // ai 2026-11
+
+// src/Optimize/CheckUploadRefusals.php, row 104
 "The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\\Upload\\UploadPolicy; nothing a browser or PHP would run ever passes." => "Editor odmítl typ souboru nebo soubor, jehož obsah neodpovídal příponě. Povolené typy jsou pevně dané v AA\\Upload\\UploadPolicy; nic, co by spustil prohlížeč nebo PHP, nikdy neprojde.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 106
+// src/Optimize/CheckUploadRefusals.php, row 111
 "No refused uploads in the last 30 days" => "Za posledních 30 dní žádná odmítnutá nahrávání", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 25
@@ -14018,25 +14391,28 @@ return [
 // src/Optimize/CheckUserAliasFunctions.php, row 139
 "f_u names \"%1\", which is not a function name - not called" => "f_u uvádí „%1“, což není jméno funkce - nevolá se", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 147
-"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "AA ji stále volá, aby staré weby fungovaly dál, ale f_u je určeno jen pro funkce usr_*. Přejmenujte funkci na usr_%1 (definovaná v %2) a změňte definice.", // ai 2026-10
-
-// src/Optimize/CheckUserAliasFunctions.php, row 148
-"The alias shows nothing (it never did). Remove it or name a usr_* function." => "Alias nic nezobrazí (nikdy nezobrazoval). Odstraňte ho, nebo uveďte funkci usr_*.", // ai 2026-10
-
 // src/Optimize/CheckUserAliasFunctions.php, row 149
-"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Funkce není na této stránce administrace definovaná. Web ji přesto může definovat (řídicí soubor webu, soubor, který načítají jen jeho stránky) - co stránky skutečně volaly, říká kontrola „Volání f_u na stránkách“; věřte té. Pokud ani tam není, definujte usr_%1 v include/usr_aliasfnc.php nebo alias odstraňte.", // ai 2026-10
-
-// src/Optimize/CheckUserAliasFunctions.php, row 150
-"The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Stránka takovou funkci neměla, alias nic nezobrazil. Definujte usr_%1 v include/usr_aliasfnc.php nebo alias odstraňte.", // ai 2026-10
+"Then change the alias to that name." => "Pak alias změňte na tento název.", // ai 2026-11
 
 // src/Optimize/CheckUserAliasFunctions.php, row 151
-"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "Volají se jen funkce instalace: usr_*, funkce definované v include/usr_aliasfnc.php (a v souborech, které vkládá), include/custom/ nebo modules/site/sites/. Definujte tam funkci jako usr_%1.", // ai 2026-10
+"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "AA ji stále volá, aby staré weby fungovaly dál, ale f_u je určeno jen pro funkce usr_*. Přejmenujte funkci na usr_%1 (definovaná v %2) a změňte definice.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 152
-"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "Volání selhalo: %1. Buď funkce nepřijímá to, co f_u předává (pole obsahu, řetězec id políčka, řetězec parametrů), nebo selhala uvnitř. Dokud se to neopraví, alias nic nezobrazí.", // ai 2026-10
+"The alias shows nothing (it never did). Remove it or name a usr_* function." => "Alias nic nezobrazí (nikdy nezobrazoval). Odstraňte ho, nebo uveďte funkci usr_*.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 153
+"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define %1 in include/usr_aliasfnc.php or remove the alias." => "Funkce není na této stránce administrace definovaná. Web ji přesto může definovat (řídicí soubor webu, soubor, který načítají jen jeho stránky) - co stránky skutečně volaly, říká kontrola „Volání f_u na stránkách“; věřte té. Pokud ani tam není, definujte %1 v include/usr_aliasfnc.php nebo alias odstraňte.", // ai 2026-11
+
+// src/Optimize/CheckUserAliasFunctions.php, row 154
+"The page had no such function, the alias showed nothing. Define %1 in include/usr_aliasfnc.php or remove the alias." => "Stránka takovou funkci neměla, alias nic nezobrazil. Definujte %1 v include/usr_aliasfnc.php nebo alias odstraňte.", // ai 2026-11
+
+// src/Optimize/CheckUserAliasFunctions.php, row 155
+"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "Volají se jen funkce instalace: usr_*, funkce definované v include/usr_aliasfnc.php (a v souborech, které vkládá), include/custom/ nebo modules/site/sites/. Definujte tam funkci jako usr_%1.", // ai 2026-10
+
+// src/Optimize/CheckUserAliasFunctions.php, row 156
+"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "Volání selhalo: %1. Buď funkce nepřijímá to, co f_u předává (pole obsahu, řetězec id políčka, řetězec parametrů), nebo selhala uvnitř. Dokud se to neopraví, alias nic nezobrazí.", // ai 2026-10
+
+// src/Optimize/CheckUserAliasFunctions.php, row 157
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "Alias nic nezobrazí: f_u volá jen funkce instalace (usr_* v include/usr_aliasfnc.php), nikdy funkce PHP nebo AA. Napište funkci usr_*, která udělá, co je potřeba, nebo místo toho použijte výraz AA.", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 35
@@ -14472,6 +14848,21 @@ return [
 // src/Optimize/GenerateMetabase.php, row 52
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Jen pro programátory - vypíše obsah include/metabase_schema.php (očekávané schéma DB jako čitelné PHP pole) vygenerovaný ze současné databáze; zkopírujte ho do souboru a commitněte.",
 
+// src/Optimize/HitArchiveDstStamps.php, row 28
+"Hit statistics around clock changes" => "Statistiky návštěv kolem změn času", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 33
+"Until November 2026, hits grouped by day around a switch to or from summer time were stamped an hour off midnight, so the statistics show one day twice and the next one empty. Repair moves them to their own day." => "Do listopadu 2026 byly návštěvy seskupené po dnech kolem přechodu na letní čas nebo zpět označené časem o hodinu posunutým od půlnoci, takže statistiky ukazují jeden den dvakrát a následující prázdný. „Opravit“ je přesune do jejich vlastního dne.", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 52
+"Hits stamped %1 belong to %2" => "Návštěvy označené %1 patří ke dni %2", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 55
+"No hits stamped off midnight around a clock change" => "Žádné návštěvy označené mimo půlnoc kolem změny času", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 67
+"%1 rows moved from %2 to %3" => "Přesunuto řádků: %1, z %2 na %3", // ai 2026-11
+
 // src/Optimize/ImgCacheWritable.php, row 17
 "Image cache can store" => "Cache obrázků může ukládat", // ai 2026-10
 
@@ -14498,9 +14889,6 @@ return [
 
 // src/Optimize/ImgMeasuring.php, row 27
 "Lists the {img} expressions in views, fields, site spots and other code which print the image size, but whose parameters do not tell it - so the resized image is loaded over HTTP on every expansion." => "Vypíše výrazy {img} v pohledech, políčkách, místech na webu a jiném kódu, které vypisují rozměry obrázku, ale jejich parametry je neurčují - takže se zmenšený obrázek při každé expanzi načítá přes HTTP.", // ai 2026-10
-
-// src/Optimize/ImgMeasuring.php, row 54
-"Expression" => "Výraz", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 60
 "No {img} in the templates measures its image" => "Žádný {img} v šablonách neměří svůj obrázek", // ai 2026-10
@@ -14638,7 +15026,7 @@ return [
 "AA_INSTAL_PATH %1 cannot go into a rewrite rule" => "AA_INSTAL_PATH %1 nelze použít v pravidle rewrite", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 78
-// src/Util/Imgfunc.php, row 265, 273
+// src/Util/Imgfunc.php, row 292
 "Cannot write %1" => "Nelze zapsat %1", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 87
@@ -14811,22 +15199,28 @@ return [
 "There is no root Link Module category - Links module should be recreated" => "Chybí kořenová kategorie modulu Links - modul Links by měl být znovu vytvořen",
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
-// src/Optimize/RedefineSiteTemplates.php, row 49
+// src/Optimize/RedefineSiteTemplates.php, row 91
 "Replacing module definition" => "Nahrazování definice modulu",
 
 // src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Znovuvytvoření šablony modulu Links - hotovo.",
 
-// src/Optimize/RedefineSiteTemplates.php, row 15
+// src/Optimize/RedefineSiteTemplates.php, row 18
 "Recreate Site module template" => "Znovu vytvořit šablonu modulu Site",
 
-// src/Optimize/RedefineSiteTemplates.php, row 21
+// src/Optimize/RedefineSiteTemplates.php, row 24
 "Deletes and recreates the default template for Site module" => "Smaže a znovu vytvoří výchozí šablonu modulu Site",
 
-// src/Optimize/RedefineSiteTemplates.php, row 38
+// src/Optimize/RedefineSiteTemplates.php, row 41
 "Site Module template should be recreated" => "Šablona modulu Site by měla být znovu vytvořena",
 
-// src/Optimize/RedefineSiteTemplates.php, row 55
+// src/Optimize/RedefineSiteTemplates.php, row 42
+"The Site Module template names a control file that does not exist, and the form of a new site offers it - it should use the router home %1" => "Šablona modulu Web uvádí řídicí soubor, který neexistuje, a formulář nového webu ho nabízí - měla by používat domovský řídicí soubor routeru %1", // ai 2026-11
+
+// src/Optimize/RedefineSiteTemplates.php, row 87
+"The Site Module template now uses the router home %1" => "Šablona modulu Web nyní používá domovský řídicí soubor routeru %1", // ai 2026-11
+
+// src/Optimize/RedefineSiteTemplates.php, row 97
 "Site Module template recreation - done." => "Znovuvytvoření šablony modulu Site - hotovo.",
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 17
@@ -15190,7 +15584,7 @@ return [
 "Trim stored values" => "Oříznout uložené hodnoty", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 44
-"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "Ořízne hodnoty uložené dřív, než políčko dostalo vkládací funkci „Oříznout“ (viz „%1“) – mezery a nové řádky kolem, nesložené znaky s diakritikou. „Opravit“ to naplánuje do fronty: články se tiše uloží znovu, takže poslední úprava, počítaná políčka, události a výměna zpráv zůstanou nedotčené; historie změnu zaznamená. Jedinečná políčka se jen vypíšou, políčka definovaná ve webíku políček se nekontrolují.", // ai 2026-10
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported; text areas, HTML editors and fields defined in a field slice are not checked." => "Ořízne hodnoty uložené dřív, než políčko dostalo vkládací funkci „Oříznout“ (viz „%1“) - mezery a odřádkování kolem, nesložené znaky s diakritikou. „Opravit“ to naplánuje ve frontě úloh: články se tiše uloží znovu, takže poslední úprava, počítaná políčka, události a výměna zpráv zůstanou nedotčené; historie změnu zaznamená. Jedinečná políčka se jen vypíšou; textové oblasti, HTML editory a políčka definovaná ve webíku políček se nekontrolují.", // ai 2026-11
 
 // src/Optimize/TrimFieldValues.php, row 63
 "Time is up - %1 of %2 slices checked. Repair plans all of them." => "Čas vypršel – zkontrolováno webíků: %1 z %2. „Opravit“ naplánuje všechny.", // ai 2026-10
@@ -15204,10 +15598,10 @@ return [
 // src/Optimize/TrimFieldValues.php, row 91
 "%1 items planned to be trimmed in the queue" => "Článků naplánovaných k oříznutí ve frontě: %1", // ai 2026-10
 
-// src/Optimize/TrimFieldValues.php, row 129
+// src/Optimize/TrimFieldValues.php, row 130
 "%1 items with a unique value to trim by hand, e.g. %2" => "Článků s jedinečnou hodnotou k ručnímu oříznutí: %1, např. %2", // ai 2026-10
 
-// src/Optimize/TrimFieldValues.php, row 139
+// src/Optimize/TrimFieldValues.php, row 140
 "%1 items to trim, e.g. %2" => "Článků k oříznutí: %1, např. %2", // ai 2026-10
 
 // src/Optimize/UpdateDbStructure.php, row 23
@@ -15402,19 +15796,22 @@ return [
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "Nelze zkopírovat %1 do %2",
 
-// src/Util/Imgfunc.php, row 119
+// src/Util/Imgfunc.php, row 123
 "Type not supported for resize" => "Typ není podporován pro změnu velikosti",
 
-// src/Util/Imgfunc.php, row 178
+// src/Util/Imgfunc.php, row 182
 "ResampleImage unable to %1" => "Nelze změnit velikost obrázku %1",
 
-// src/Util/Imgfunc.php, row 224
+// src/Util/Imgfunc.php, row 234
+"Cannot read %1" => "Nelze přečíst %1", // ai 2026-11
+
+// src/Util/Imgfunc.php, row 244
 "This type of image cannot be uploaded here" => "Tento typ obrázku sem nelze nahrát", // ai 2026-10
 
-// src/Util/Imgfunc.php, row 227
+// src/Util/Imgfunc.php, row 248
 "The image has too many pixels" => "Obrázek má příliš mnoho pixelů", // ai 2026-10
 
-// src/Util/Imgfunc.php, row 231
+// src/Util/Imgfunc.php, row 253
 "The image cannot be read" => "Obrázek nelze přečíst", // ai 2026-10
 
 // src/Util/Note.php, row 52
@@ -15496,6 +15893,36 @@ return [
 // src/Util/Notes.php, row 129
 "Resolve" => "Vyřešit", // ai 2026-10
 
+// src/Util/Paramwizard.php, row 155
+"Other parameters (the type does not describe them)" => "Další parametry (typ je nepopisuje)", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 156
+"e.g. %1" => "např. %1", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 157
+"(default)" => "(výchozí)", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 158
+"more" => "více", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 159
+"less" => "méně", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 160
+"As text" => "Jako text", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 162
+"Copied to clipboard" => "Zkopírováno do schránky", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 163
+"The whole setting: type and parameters. Paste a text copied from another field and the form follows it." => "Celé nastavení: typ a parametry. Vložte text zkopírovaný z jiného políčka a formulář se mu přizpůsobí.", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 164
+"The text does not start with a type offered here, taken as parameters of %1." => "Text nezačíná typem, který je zde nabízen; bere se jako parametry %1.", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 165
+"Constant group %1 is not known here, the current one stays." => "Skupina hodnot %1 tu není známa, zůstává současná.", // ai 2026-11
+
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- libovolné číselné políčko --",
 
@@ -15519,7 +15946,7 @@ return [
 "Upload" => "Nahrát",
 
 // src/Widget/FilWidget.php, row 250
-// src/Widget/Widget.php, row 604
+// src/Widget/Widget.php, row 603
 "EXIT WITHOUT CHANGE" => "ODEJÍT BEZ ZMĚNY",
 
 // src/Widget/FldWidget.php, row 34
@@ -15577,7 +16004,7 @@ return [
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 110
-// src/Widget/Widget.php, row 445
+// src/Widget/Widget.php, row 444
 "To save changes click here or outside the field." => "Změny uložíte kliknutím sem nebo mimo políčko.",
 
 // src/Widget/MngWidget.php, row 33
@@ -15649,435 +16076,435 @@ return [
 // src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "Dva seznamy",
 
-// src/Widget/Widget.php, row 603
+// src/Widget/Widget.php, row 602
 "SAVE CHANGE" => "ULOŽIT ZMĚNU",
 
-// src/Widget/Widget.php, row 741
+// src/Widget/Widget.php, row 740
 "Max characters" => "Max. počet znaků",
 
-// src/Widget/Widget.php, row 741
+// src/Widget/Widget.php, row 740
 "max count of characters entered (maxlength parameter)" => "maximální počet zadaných znaků (parametr maxlength)",
 
-// src/Widget/Widget.php, row 747
+// src/Widget/Widget.php, row 746
 "Constants or slice" => "Konstanty nebo webík",
 
-// src/Widget/Widget.php, row 747
+// src/Widget/Widget.php, row 746
 "Constants (or slice) which is used for value selection" => "Konstanty (nebo webík), z nichž se vybírají hodnoty",
 
-// src/Widget/Widget.php, row 750
+// src/Widget/Widget.php, row 749
 "Directly specified array of values like [\"1\",\"2\",\"3\"] or {\"1\":\"Yes\",\"0\":\"No\"}. (do not use Constants, if filled)" => "Přímo zadané pole hodnot jako [\"1\",\"2\",\"3\"] nebo {\"1\":\"Yes\",\"0\":\"No\"}. (pokud je vyplněno, nepoužívejte Konstanty)",
 
-// src/Widget/Widget.php, row 759
+// src/Widget/Widget.php, row 758
 "type: class (default) / iframe" => "typ: class (výchozí) / iframe",
 
-// src/Widget/Widget.php, row 762, 976
+// src/Widget/Widget.php, row 761, 975
 "Width" => "Šířka",
 
-// src/Widget/Widget.php, row 762
+// src/Widget/Widget.php, row 761
 "width of the field in characters (size parameter)" => "šířka políčka ve znacích (parametr size)",
 
-// src/Widget/Widget.php, row 765
+// src/Widget/Widget.php, row 764
 "type of input - email|tel|url|number. Can be used for other types (time), but in most cases it will be better to create new Widget type - like checkbox, password, color" => "typ vstupu - email|tel|url|number. Lze použít i pro jiné typy (time), ale ve většině případů je lepší vytvořit nový typ widgetu - jako checkbox, password, color",
 
-// src/Widget/Widget.php, row 768, 867
+// src/Widget/Widget.php, row 767, 866
 "Buttons to show" => "Zobrazená tlačítka",
 
-// src/Widget/Widget.php, row 768
+// src/Widget/Widget.php, row 767
 "Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important." => "Která akční tlačítka zobrazit:<br>M - Move (posun nahoru a dolů)<br>D - Delete (smazání hodnoty),<br>A - Add (přidání nové hodnoty)<br>C - Change (změna hodnoty)<br>Použijte 'MDAC' (výchozí), 'DAC', jen 'M' nebo libovolnou jinou kombinaci. Na pořadí písmen M,D,A,C nezáleží.",
 
-// src/Widget/Widget.php, row 771
+// src/Widget/Widget.php, row 770
 "Row count" => "Počet řádků",
 
-// src/Widget/Widget.php, row 774
+// src/Widget/Widget.php, row 773
 "Slice field" => "Políčko webíku",
 
-// src/Widget/Widget.php, row 774
+// src/Widget/Widget.php, row 773
 "field (or format string) that will be displayed in select box. if not specified, headlines or constant name for constants are displayed in select box. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))." => "políčko (nebo formátovací řetězec), které se zobrazí v selectboxu. Pokud není zadáno, zobrazí se v selectboxu titulky, u konstant jméno konstanty. Můžete použít i libovolný AA formátovací řetězec (např.: _#HEADLINE, _#PUB_DATE (pro webíky) nebo _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (pro konstanty)).",
 
-// src/Widget/Widget.php, row 777
+// src/Widget/Widget.php, row 776
 "Use name" => "Použít jméno",
 
-// src/Widget/Widget.php, row 777
+// src/Widget/Widget.php, row 776
 "if set (=1), then the name of selected constant is used, instead of the value. Default is 0" => "pokud je nastaveno (=1), použije se jméno vybrané konstanty místo hodnoty. Výchozí je 0",
 
-// src/Widget/Widget.php, row 780
+// src/Widget/Widget.php, row 779
 "Adding" => "Přidávání",
 
-// src/Widget/Widget.php, row 780
+// src/Widget/Widget.php, row 779
 "adding the selected items to input field comma separated" => "přidávání vybraných článků do vstupního políčka odděleně čárkami",
 
-// src/Widget/Widget.php, row 783
+// src/Widget/Widget.php, row 782
 "Second Field" => "Druhé políčko",
 
-// src/Widget/Widget.php, row 783
+// src/Widget/Widget.php, row 782
 "field_id of another text field, where value of this selectbox will be propagated too (in main text area will be text and there will be value)" => "field_id jiného textového políčka, kam se hodnota tohoto selectboxu také propíše (v hlavním textovém poli bude text a tam bude hodnota)",
 
-// src/Widget/Widget.php, row 786
+// src/Widget/Widget.php, row 785
 "if set to 1, user typed value in inputform is stored into constants (only if the value is not already there)" => "pokud je nastaveno na 1, hodnota zapsaná uživatelem ve formuláři se uloží do konstant (jen pokud tam ještě není)",
 
-// src/Widget/Widget.php, row 789
+// src/Widget/Widget.php, row 788
 "Show items from bins" => "Zobrazit články ze záložek",
 
-// src/Widget/Widget.php, row 789
+// src/Widget/Widget.php, row 788
 "(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want to show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13" => "(jen pro webíky) Pro zobrazení článků z vybraných záložek použijte následující hodnoty:<br>Aktuální - '%1'<br>Připravované - '%2'<br>Expirované - '%3'<br>Zásobník - '%4'<br>Koš - '%5'<br>Hodnota se vytvoří takto: chcete např. zobrazit titulky ze záložek Aktuální, Expirované a Zásobník. Hodnota pro tuto kombinaci se spočítá jako %1+%3+%4&nbsp;=&nbsp;13",
 
-// src/Widget/Widget.php, row 798
+// src/Widget/Widget.php, row 797
 "Filtering conditions" => "Podmínky filtrování",
 
-// src/Widget/Widget.php, row 798
+// src/Widget/Widget.php, row 797
 "(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array." => "(jen pro webíky) Podmínky pro filtrování článků ve výběru. Použijte podmínku d-.. nebo pole conds[].",
 
-// src/Widget/Widget.php, row 801
+// src/Widget/Widget.php, row 800
 "Sort by" => "Řadit podle",
 
-// src/Widget/Widget.php, row 801
+// src/Widget/Widget.php, row 800
 "(for slices only) Sort the items in specified order. Use <fld>[+-]<fld>[+-]... or even any alias _#SOME_ALS." => "(jen pro webíky) Seřadí články v zadaném pořadí. Použijte <fld>[+-]<fld>[+-]... nebo i libovolný alias _#SOME_ALS.",
 
-// src/Widget/Widget.php, row 804
+// src/Widget/Widget.php, row 803
 "Slice password" => "Heslo webíku",
 
-// src/Widget/Widget.php, row 804
+// src/Widget/Widget.php, row 803
 "(for slices only) If the related slice is protected by 'Slice Password', fill it here" => "(jen pro webíky) Pokud je související webík chráněn heslem ('Slice Password'), vyplňte je zde",
 
-// src/Widget/Widget.php, row 807
+// src/Widget/Widget.php, row 806
 "Filtering conditions - changeable" => "Podmínky filtrování - měnitelné",
 
-// src/Widget/Widget.php, row 807
+// src/Widget/Widget.php, row 806
 "Conditions for filtering items. This conds site admin change through widget_property parameter." => "Podmínky pro filtrování článků. Tyto podmínky může správce webu měnit parametrem widget_property.",
 
-// src/Widget/Widget.php, row 810
+// src/Widget/Widget.php, row 809
 "Items per page. Default is 20." => "Počet článků na stránku. Výchozí je 20.",
 
-// src/Widget/Widget.php, row 813
+// src/Widget/Widget.php, row 812
 "Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table." => "Počet sloupců. Pokud není vyplněno, jsou všechna zaškrtávací políčka na jednom řádku. Pokud je vyplněno, formátují se do tabulky.",
 
-// src/Widget/Widget.php, row 816
+// src/Widget/Widget.php, row 815
 "Move right" => "Posun doprava",
 
-// src/Widget/Widget.php, row 816
+// src/Widget/Widget.php, row 815
 "Should the function move right or down to the next value?" => "Má funkce postupovat na další hodnotu doprava, nebo dolů?",
 
-// src/Widget/Widget.php, row 819
+// src/Widget/Widget.php, row 818
 "Starting Year" => "Počáteční rok",
 
-// src/Widget/Widget.php, row 819
+// src/Widget/Widget.php, row 818
 "The (relative) start of the year interval" => "(Relativní) začátek intervalu let",
 
-// src/Widget/Widget.php, row 822
+// src/Widget/Widget.php, row 821
 "Ending Year" => "Koncový rok",
 
-// src/Widget/Widget.php, row 822
+// src/Widget/Widget.php, row 821
 "The (relative) end of the year interval" => "(Relativní) konec intervalu let",
 
-// src/Widget/Widget.php, row 825
+// src/Widget/Widget.php, row 824
 "Relative" => "Relativní",
 
-// src/Widget/Widget.php, row 825
+// src/Widget/Widget.php, row 824
 "If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute." => "Pokud je 1, počáteční a koncový rok se berou jako relativní - interval začne na (letošní rok - počáteční rok) a skončí na (letošní rok + koncový rok). Pokud je 0, počáteční a koncový rok se berou jako absolutní.",
 
-// src/Widget/Widget.php, row 828
+// src/Widget/Widget.php, row 827
 "Date-time input type" => "Typ zadávání data a času",
 
-// src/Widget/Widget.php, row 828
+// src/Widget/Widget.php, row 827
 "0 - three selects for <b>date</b><br>1 - three selects for date + the <b>time</b> input<br>2 - HTML5 <b>input type=date</b>" => "0 - tři selecty pro <b>datum</b><br>1 - tři selecty pro datum + zadání <b>času</b><br>2 - HTML5 <b>input type=date</b>",
 
-// src/Widget/Widget.php, row 831
+// src/Widget/Widget.php, row 830
 "Height" => "Výška",
 
-// src/Widget/Widget.php, row 831
+// src/Widget/Widget.php, row 830
 "Max height of the widget in pixels" => "Maximální výška widgetu v pixelech",
 
-// src/Widget/Widget.php, row 834
+// src/Widget/Widget.php, row 833
 "Title of \"Offer\" selectbox" => "Titulek selectboxu \"Nabídka\"",
 
-// src/Widget/Widget.php, row 834
+// src/Widget/Widget.php, row 833
 "Our offer" => "Naše nabídka",
 
-// src/Widget/Widget.php, row 837
+// src/Widget/Widget.php, row 836
 "Title of \"Selected\" selectbox" => "Titulek selectboxu \"Vybrané\"",
 
-// src/Widget/Widget.php, row 840
+// src/Widget/Widget.php, row 839
 "Add Form" => "Formulář pro přidání",
 
-// src/Widget/Widget.php, row 840
+// src/Widget/Widget.php, row 839
 "(for slices only) ID of the form for adding items into related slice" => "(jen pro webíky) ID formuláře pro přidávání článků do souvisejícího webíku",
 
-// src/Widget/Widget.php, row 843
+// src/Widget/Widget.php, row 842
 "Allowed file types" => "Povolené typy souborů",
 
-// src/Widget/Widget.php, row 843
+// src/Widget/Widget.php, row 842
 "Used for accept attribute - image/*,.doc,.docx,.pdf" => "Použije se pro atribut accept - image/*,.doc,.docx,.pdf",
 
-// src/Widget/Widget.php, row 846
+// src/Widget/Widget.php, row 845
 "Label" => "Popisek",
 
-// src/Widget/Widget.php, row 846
+// src/Widget/Widget.php, row 845
 "To be printed before the file upload field" => "Vypíše se před políčkem pro nahrání souboru",
 
-// src/Widget/Widget.php, row 846
+// src/Widget/Widget.php, row 845
 "File: " => "Soubor: ",
 
-// src/Widget/Widget.php, row 849
+// src/Widget/Widget.php, row 848
 "appears beneath the file upload field" => "zobrazí se pod políčkem pro nahrání souboru",
 
-// src/Widget/Widget.php, row 849
+// src/Widget/Widget.php, row 848
 "You can select a file ..." => "Můžete vybrat soubor ...",
 
-// src/Widget/Widget.php, row 852
+// src/Widget/Widget.php, row 851
 "Display URL" => "Zobrazit URL",
 
-// src/Widget/Widget.php, row 852
+// src/Widget/Widget.php, row 851
 "0 - show, 1 - show if not empty, 2 - do not show" => "0 - zobrazit, 1 - zobrazit, pokud není prázdné, 2 - nezobrazovat",
 
-// src/Widget/Widget.php, row 855
+// src/Widget/Widget.php, row 854
 "Multiple" => "Vícenásobný",
 
-// src/Widget/Widget.php, row 855
+// src/Widget/Widget.php, row 854
 "Allows to upload multiple files in the field" => "Umožní nahrát do políčka více souborů",
 
-// src/Widget/Widget.php, row 858
+// src/Widget/Widget.php, row 857
 "Actions to show" => "Zobrazené akce",
 
-// src/Widget/Widget.php, row 858
+// src/Widget/Widget.php, row 857
 "Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important." => "Určuje, která tlačítka se zobrazí při výběru článků:<br>A - Add - přidat<br>M - Mutual - přidat vzájemně<br>B - Backward - zpětně<br> Použijte 'AMB' (výchozí), 'MA', jen 'A' nebo libovolnou jinou kombinaci. Na pořadí písmen A,M,B záleží.",
 
-// src/Widget/Widget.php, row 861
+// src/Widget/Widget.php, row 860
 "Admin design" => "Design administrace",
 
-// src/Widget/Widget.php, row 861
+// src/Widget/Widget.php, row 860
 "If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)." => "Pokud je nastaveno (=1), články v okně pro výběr souvisejících se zobrazí ve stejném designu jako ve Správci článků - použije se nastavení 'Design - Správce článků'. Pouze zaškrtávací políčko bude nahrazeno tlačítky (viz výše). Je důležité, aby zaškrtávací políčko bylo definováno jako:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (což je výchozí).<br> Pokud nastaveno není (=0), zobrazí se jen titulek (výchozí).",
 
-// src/Widget/Widget.php, row 864
+// src/Widget/Widget.php, row 863
 "Tag Prefix" => "Prefix tagů",
 
-// src/Widget/Widget.php, row 864
+// src/Widget/Widget.php, row 863
 "Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details." => "Zastaralé: vybírá sadu tagů ('AMB' / 'GYR'). Podrobnosti vám sdělí Mitra.",
 
-// src/Widget/Widget.php, row 867
+// src/Widget/Widget.php, row 866
 "Which action to show:<br>M - Move (change order)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert New item in related slice and make it related<br>E - Edit related item<br>F - File upload to related slice (just for Related Item Manager Widget)<br><br>Use 'DR' (default), 'MDRNEF', just 'N' or any other combination. The order of letters M,D,R,N,E,F is not important." => "Které akce zobrazit:<br>M - Move - přesun (změna pořadí)<br>D - Delete - smazání vztahu,<br>R - Relation - přidání vztahu k existujícímu článku<br>N - New - vložení nového článku do souvisejícího webíku a jeho navázání<br>E - Edit - úprava souvisejícího článku<br>F - File - nahrání souboru do souvisejícího webíku (jen pro widget Related Item Manager)<br><br>Použijte 'DR' (výchozí), 'MDRNEF', jen 'N' nebo libovolnou jinou kombinaci. Na pořadí písmen M,D,R,N,E,F nezáleží.",
 
-// src/Widget/Widget.php, row 870
+// src/Widget/Widget.php, row 869
 "Count of level boxes" => "Počet boxů úrovní",
 
-// src/Widget/Widget.php, row 873
+// src/Widget/Widget.php, row 872
 "Box width" => "Šířka boxu",
 
-// src/Widget/Widget.php, row 873
+// src/Widget/Widget.php, row 872
 "Width in characters" => "Šířka ve znacích",
 
-// src/Widget/Widget.php, row 876
+// src/Widget/Widget.php, row 875
 "Size of target" => "Velikost cílového boxu",
 
-// src/Widget/Widget.php, row 876
+// src/Widget/Widget.php, row 875
 "Lines in the target select box" => "Počet řádků v cílovém výběrovém boxu",
 
-// src/Widget/Widget.php, row 879
+// src/Widget/Widget.php, row 878
 "Horizontal" => "Vodorovně",
 
-// src/Widget/Widget.php, row 879
+// src/Widget/Widget.php, row 878
 "Show levels horizontally" => "Zobrazit úrovně vedle sebe (vodorovně)",
 
-// src/Widget/Widget.php, row 882
+// src/Widget/Widget.php, row 881
 "First selectable" => "První volitelná",
 
-// src/Widget/Widget.php, row 882
+// src/Widget/Widget.php, row 881
 "First level which will have a Select button" => "První úroveň, u které bude tlačítko Vybrat",
 
-// src/Widget/Widget.php, row 885
+// src/Widget/Widget.php, row 884
 "Level names" => "Názvy úrovní",
 
-// src/Widget/Widget.php, row 885
+// src/Widget/Widget.php, row 884
 "Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..." => "Názvy boxů jednotlivých úrovní, oddělené vlnovkou (~). Nahrazují výchozí Level 0, Level 1, ...",
 
-// src/Widget/Widget.php, row 885
+// src/Widget/Widget.php, row 884
 "Top level~Second level~Keyword" => "Nejvyšší úroveň~Druhá úroveň~Klíčové slovo",
 
-// src/Widget/Widget.php, row 888
+// src/Widget/Widget.php, row 887
 "Label for Change Password" => "Popisek pro Změnu hesla",
 
-// src/Widget/Widget.php, row 888
+// src/Widget/Widget.php, row 887
 "Replaces the default 'Change Password'" => "Nahrazuje výchozí text 'Change Password'",
 
-// src/Widget/Widget.php, row 888
+// src/Widget/Widget.php, row 887
 "Change your password" => "Změňte své heslo",
 
-// src/Widget/Widget.php, row 891
+// src/Widget/Widget.php, row 890
 "Label for Retype New Password" => "Popisek pro Nové heslo znovu",
 
-// src/Widget/Widget.php, row 891
+// src/Widget/Widget.php, row 890
 "Replaces the default \"Retype New Password\"" => "Nahrazuje výchozí text \"Retype New Password\"",
 
-// src/Widget/Widget.php, row 891
+// src/Widget/Widget.php, row 890
 "Retype the new password" => "Zadejte nové heslo znovu",
 
-// src/Widget/Widget.php, row 894
+// src/Widget/Widget.php, row 893
 "Label for Delete Password" => "Popisek pro Smazání hesla",
 
-// src/Widget/Widget.php, row 894
+// src/Widget/Widget.php, row 893
 "Replaces the default \"Delete Password\"" => "Nahrazuje výchozí text \"Delete Password\"",
 
-// src/Widget/Widget.php, row 894
+// src/Widget/Widget.php, row 893
 "Delete password (set to empty)" => "Smazat heslo (nastavit na prázdné)",
 
-// src/Widget/Widget.php, row 897
+// src/Widget/Widget.php, row 896
 "Help for Change Password" => "Nápověda pro Změnu hesla",
 
-// src/Widget/Widget.php, row 897
+// src/Widget/Widget.php, row 896
 "Help text under the Change Password box (default: no text)" => "Text nápovědy pod políčkem Změna hesla (výchozí: žádný text)",
 
-// src/Widget/Widget.php, row 897
+// src/Widget/Widget.php, row 896
 "To change password, enter the new password here and below" => "Pro změnu hesla zadejte nové heslo sem a do políčka níže",
 
-// src/Widget/Widget.php, row 900
+// src/Widget/Widget.php, row 899
 "Help for Retype New Password" => "Nápověda pro Nové heslo znovu",
 
-// src/Widget/Widget.php, row 900
+// src/Widget/Widget.php, row 899
 "Help text under the Retype New Password box (default: no text)" => "Text nápovědy pod políčkem Nové heslo znovu (výchozí: žádný text)",
 
-// src/Widget/Widget.php, row 900
+// src/Widget/Widget.php, row 899
 "Retype the new password exactly the same as you entered into \"Change Password\"." => "Zadejte nové heslo znovu, přesně tak, jak jste je zadali do políčka \"Změna hesla\".",
 
-// src/Widget/Widget.php, row 903
+// src/Widget/Widget.php, row 902
 "The URL of your local web server from where you want to start browsing for a particular URL." => "URL vašeho webového serveru, od kterého chcete začít procházení pro výběr konkrétního URL.",
 
-// src/Widget/Widget.php, row 903
+// src/Widget/Widget.php, row 902
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanky/solarni.shtml", // ai 2026-10
 
-// src/Widget/Widget.php, row 906
+// src/Widget/Widget.php, row 905
 "Ajax inline" => "Ajax na místě", // ai 2026-10
 
-// src/Widget/Widget.php, row 906
+// src/Widget/Widget.php, row 905
 "If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "Při volání jako {ajax...} upravuje vzhled - inline: postaru (ne v okně, ale přímo v textu)",
 
-// src/Widget/Widget.php, row 909
+// src/Widget/Widget.php, row 908
 "Enable voice dictation" => "Povolit hlasové diktování",
 
-// src/Widget/Widget.php, row 909
+// src/Widget/Widget.php, row 908
 "Show a microphone button next to the textarea. Uses the browser's Web Speech API when available, otherwise falls back to server-side OpenAI transcription (requires AA_APIKEY_OPENAI define)." => "Zobrazí tlačítko mikrofonu vedle textového pole. Používá Web Speech API prohlížeče, je-li k dispozici, jinak se přepne na přepis přes OpenAI na serveru (vyžaduje define AA_APIKEY_OPENAI).",
 
-// src/Widget/Widget.php, row 912
+// src/Widget/Widget.php, row 911
 "Max dictation seconds" => "Max. délka diktování (s)",
 
-// src/Widget/Widget.php, row 912
+// src/Widget/Widget.php, row 911
 "Upper bound for a single dictation recording. Overrides the AA_SPEECH_MAX_SECONDS define. Enforced client-side (auto-stop) and server-side (reject oversized uploads)." => "Horní limit délky jednoho diktovaného záznamu. Přepisuje define AA_SPEECH_MAX_SECONDS. Vynucuje se na straně klienta (automatické zastavení) i serveru (odmítnutí příliš velkých nahrávek).",
 
-// src/Widget/Widget.php, row 915
+// src/Widget/Widget.php, row 914
 "Dictation language" => "Jazyk diktování",
 
-// src/Widget/Widget.php, row 915
+// src/Widget/Widget.php, row 914
 "BCP-47 locale code for voice recognition (e.g. cs-CZ, en-US, sk-SK, de-DE). Leave blank to auto-infer from the page's &lt;html lang&gt; attribute — which is usually the admin UI language, not the content language, so setting this explicitly is recommended." => "Kód jazyka ve formátu BCP-47 pro rozpoznávání řeči (např. cs-CZ, en-US, sk-SK, de-DE). Ponecháte-li prázdné, odvodí se automaticky z atributu &lt;html lang&gt; stránky — což je obvykle jazyk administrace, ne jazyk obsahu, proto doporučujeme nastavit explicitně.",
 
-// src/Widget/Widget.php, row 918
+// src/Widget/Widget.php, row 917
 "Dictation engine" => "Engine pro diktování",
 
-// src/Widget/Widget.php, row 921
+// src/Widget/Widget.php, row 920
 "Auto — browser Web Speech when available, server OpenAI as fallback" => "Automaticky — Web Speech v prohlížeči, je-li k dispozici, jinak OpenAI na serveru",
 
-// src/Widget/Widget.php, row 922
+// src/Widget/Widget.php, row 921
 "Browser Web Speech API only (free, no server key, Chromium-based browsers)" => "Pouze Web Speech API prohlížeče (zdarma, bez serverového klíče, prohlížeče založené na Chromiu)",
 
-// src/Widget/Widget.php, row 923
+// src/Widget/Widget.php, row 922
 "Server-side OpenAI gpt-4o-transcribe only (requires AA_APIKEY_OPENAI, better accuracy)" => "Pouze OpenAI gpt-4o-transcribe na serveru (vyžaduje AA_APIKEY_OPENAI, vyšší přesnost)",
 
-// src/Widget/Widget.php, row 925
+// src/Widget/Widget.php, row 924
 "Which speech-to-text engine to use." => "Který engine pro převod řeči na text použít.",
 
-// src/Widget/Widget.php, row 928
+// src/Widget/Widget.php, row 927
 "Store audio recording" => "Ukládat zvukový záznam",
 
-// src/Widget/Widget.php, row 928
+// src/Widget/Widget.php, row 927
 "Save the uploaded audio to the slice's upload directory (img_upload/&lt;slice_id&gt;/) as audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Server enforces this flag from the field config — clients cannot opt in by themselves." => "Uloží nahraný zvuk do upload adresáře webíku (img_upload/&lt;slice_id&gt;/) jako audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Server tento příznak vynucuje z nastavení políčka — klient si jej sám zapnout nemůže.",
 
-// src/Widget/Widget.php, row 931
+// src/Widget/Widget.php, row 930
 "New item template ID" => "ID šablony nového článku",
 
-// src/Widget/Widget.php, row 931
+// src/Widget/Widget.php, row 930
 "The ID of item in destination slice used as Template for new items (probably in Holding bin)" => "ID článku v cílovém webíku, který se použije jako šablona pro nové články (pravděpodobně v zásobníku)",
 
-// src/Widget/Widget.php, row 934
+// src/Widget/Widget.php, row 933
 "Code to show" => "Zobrazovaný kód",
 
-// src/Widget/Widget.php, row 934
+// src/Widget/Widget.php, row 933
 "HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed" => "HTML kód (případně s AA výrazy), který se zobrazí. Není-li vyplněno, zobrazí se {_#this}",
 
-// src/Widget/Widget.php, row 937
+// src/Widget/Widget.php, row 936
 "Disable new tags" => "Zakázat nové tagy",
 
-// src/Widget/Widget.php, row 937
+// src/Widget/Widget.php, row 936
 "Disallow creation of new tags - new items in related slice" => "Zakáže vytváření nových tagů - nových článků v souvisejícím webíku",
 
-// src/Widget/Widget.php, row 940
+// src/Widget/Widget.php, row 939
 "Max values" => "Max. počet hodnot",
 
-// src/Widget/Widget.php, row 940
+// src/Widget/Widget.php, row 939
 "Limit the number of values entered. If 0 or empty, the number is unlimited" => "Omezí počet zadaných hodnot. Při 0 nebo prázdné hodnotě je počet neomezený",
 
-// src/Widget/Widget.php, row 943
+// src/Widget/Widget.php, row 942
 "Related field" => "Políčko pro související",
 
-// src/Widget/Widget.php, row 943
+// src/Widget/Widget.php, row 942
 "Field to use for related items (relation........ is default)" => "Políčko použité pro související články (výchozí je relation........)",
 
-// src/Widget/Widget.php, row 946
+// src/Widget/Widget.php, row 945
 "Row Code" => "Kód řádku",
 
-// src/Widget/Widget.php, row 946
+// src/Widget/Widget.php, row 945
 "Alias in constant slice or HTML code to use for each related item (_#ROW_CODE is default)" => "Alias v konstantním webíku nebo HTML kód použitý pro každý související článek (výchozí je _#ROW_CODE)",
 
-// src/Widget/Widget.php, row 949
+// src/Widget/Widget.php, row 948
 "Row Edit Code" => "Kód editace řádku",
 
-// src/Widget/Widget.php, row 949
+// src/Widget/Widget.php, row 948
 "Alias in constant slice or HTML code to use for editing related item (_#ROW_EDIT is default)" => "Alias v konstantním webíku nebo HTML kód použitý pro editaci souvisejícího článku (výchozí je _#ROW_EDIT)",
 
-// src/Widget/Widget.php, row 952
+// src/Widget/Widget.php, row 951
 "Buttons to Show" => "Zobrazená tlačítka",
 
-// src/Widget/Widget.php, row 952
+// src/Widget/Widget.php, row 951
 "N - new<br>D - delete (with json you can specify also Dconfirm:&lt;question&gt;<br>S - setting (edit item in Toolbox)<br>E - edit - used with \"Row Edit Code\" parameter<br>B - back - used with \"Row Edit Code\" parameter<br>F - file upload to first file...........x or img_upload.....x or img_src........x field<br>- - no manage (just view)<br>Could be also defined as JSON asoc array - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}" => "N - nový<br>D - smazat (v json lze zadat také Dconfirm:&lt;otázka&gt;<br>S - nastavení (editace článku v Toolboxu)<br>E - editace - používá se s parametrem \"Kód editace řádku\"<br>B - zpět - používá se s parametrem \"Kód editace řádku\"<br>F - nahrání souboru do prvního políčka file...........x nebo img_upload.....x nebo img_src........x<br>- - bez správy (jen zobrazení)<br>Lze zadat i jako JSON asoc. pole - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}",
 
-// src/Widget/Widget.php, row 955
+// src/Widget/Widget.php, row 954
 "Class prefix" => "Prefix třídy",
 
-// src/Widget/Widget.php, row 955
+// src/Widget/Widget.php, row 954
 "Component identifier to select from" => "Identifikátor komponenty, ze které se vybírá",
 
-// src/Widget/Widget.php, row 958
+// src/Widget/Widget.php, row 957
 "Address field" => "Políčko s adresou",
 
-// src/Widget/Widget.php, row 958
+// src/Widget/Widget.php, row 957
 "field_id of another text field, from which user can grab address search" => "field_id jiného textového políčka, ze kterého může uživatel převzít adresu pro vyhledávání",
 
-// src/Widget/Widget.php, row 961
+// src/Widget/Widget.php, row 960
 "Allowed shapes" => "Povolené tvary",
 
-// src/Widget/Widget.php, row 961
+// src/Widget/Widget.php, row 960
 "M - Marker (point) - default<br>L - Line<br>P - Polygon<br>R - Rectangle" => "M - Marker - značka (bod) - výchozí<br>L - Line - čára<br>P - Polygon - mnohoúhelník<br>R - Rectangle - obdélník",
 
-// src/Widget/Widget.php, row 964
+// src/Widget/Widget.php, row 963
 "Multiple shapes" => "Více tvarů",
 
-// src/Widget/Widget.php, row 964
+// src/Widget/Widget.php, row 963
 "Allow multiple shapes at a time" => "Povolit více tvarů najednou",
 
-// src/Widget/Widget.php, row 967
+// src/Widget/Widget.php, row 966
 "Text option for Other" => "Textová volba pro Jiné",
 
-// src/Widget/Widget.php, row 967
+// src/Widget/Widget.php, row 966
 "Last option is considered as \"Other\" with the possibility to write text value" => "Poslední volba se považuje za \"Jiné\" s možností zapsat textovou hodnotu",
 
-// src/Widget/Widget.php, row 970
+// src/Widget/Widget.php, row 969
 "Searchable" => "S vyhledáváním",
 
-// src/Widget/Widget.php, row 970
+// src/Widget/Widget.php, row 969
 "Uses special selectbox widget, which is searchable as substring.<br>Do not rely on current implementation in your possible scripts." => "Používá speciální widget výběrového boxu, ve kterém lze vyhledávat podle podřetězce.<br>Ve svých případných skriptech se nespoléhejte na současnou implementaci.",
 
-// src/Widget/Widget.php, row 973
+// src/Widget/Widget.php, row 972
 "Placeholder" => "Zástupný text", // ai 2026-06
 
-// src/Widget/Widget.php, row 973
+// src/Widget/Widget.php, row 972
 "Placeholder for input" => "Placeholder (nápovědný text) pro vstupní pole",
 
-// src/Widget/Widget.php, row 976
+// src/Widget/Widget.php, row 975
 "Width of one displayed item in pixels (300) or in % (50%)<br>Minimum is 150px, default is 250px.<br>For one item per row use 100%." => "Šířka jedné zobrazené položky v pixelech (300) nebo v % (50%)<br>Minimum je 150px, výchozí je 250px.<br>Pro jednu položku na řádek použijte 100%.",
 ];

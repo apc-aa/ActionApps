@@ -13,6 +13,17 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "field&nbsp;id" => "id&nbsp;campo",
+// "boolean:&nbsp;0=false,1=true" => "booleano:&nbsp;0=falso,1=verdadero",
+// "Wizard" => " - Asistente",
+// "This is an undocumented %s. We don't recommend using it." => "Esta %s no está documentada. No se recomienda su uso.",
+// "Close the wizard" => "Cerrar asistente",
+// "Available parameters: " => "Parámetros disponibles: ",
+// "This %s has no parameters." => "Esta %s no tiene parámetros.",
+// "Have a look at these examples of parameters sets:" => "Puede tomar ideas de estos ejemplos:",
+// "OK - Save" => "OK - Guardar",
+// "Show example params" => "Mostrar ejemplo",
+// "Help: Parameter Wizard" => "Ayuda: Asistente de parámetros",
 // "Do you want to check for uniqueness this slice only \n"
 //    ."                  or all slices?"
 //  => "¿Quiere verificar unicidad en este canal solamente o en todos los canales?",
@@ -315,120 +326,75 @@ return [
 // "Conditions for filtering items in related items window. These conds the user can change." => "Condiciones para filtrado de ítems en la ventana de ítems relacionados. Estas condiniones no pueden ser cambiadas por el usuario",
 // End of unused messages
 
-// admin/param_wizard.php, row 110
-"field&nbsp;id" => "id&nbsp;campo",
-
-// admin/param_wizard.php, row 113
-"boolean:&nbsp;0=false,1=true" => "booleano:&nbsp;0=falso,1=verdadero",
-
-// admin/param_wizard.php, row 137
-"Wizard" => " - Asistente",
-
-// admin/param_wizard.php, row 220
-"This is an undocumented %s. We don't recommend using it." => "Esta %s no está documentada. No se recomienda su uso.",
-
-// admin/param_wizard.php, row 221
-"Close the wizard" => "Cerrar asistente",
-
-// admin/param_wizard.php, row 235
-"Available parameters: " => "Parámetros disponibles: ",
-
-// admin/param_wizard.php, row 255
-"This %s has no parameters." => "Esta %s no tiene parámetros.",
-
-// admin/param_wizard.php, row 265
-"Have a look at these examples of parameters sets:" => "Puede tomar ideas de estos ejemplos:",
-
-// admin/param_wizard.php, row 272
-"Show" => "Mostrar",
-
-// admin/param_wizard.php, row 283
-"OK - Save" => "OK - Guardar",
-
-// admin/param_wizard.php, row 284
-"Cancel" => "Cancelar",
-
-// admin/param_wizard.php, row 285
-"Show example params" => "Mostrar ejemplo",
-
-// admin/param_wizard.php, row 289
-"OK" => "Aceptar",
-
-// include/constants_param_wizard.php, row 68
-"Parameters" => "Parámetros",
-
-// include/constants_param_wizard.php, row 70
-"Help: Parameter Wizard" => "Ayuda: Asistente de parámetros",
-
-// include/constants_param_wizard.php, row 77
+// include/constants_param_wizard.php, row 61
 "Input Validate Type" => "Tipo de validación de entrada",
 
-// include/constants_param_wizard.php, row 79
+// include/constants_param_wizard.php, row 63
 "No validation" => "No validar",
 
-// include/constants_param_wizard.php, row 82
+// include/constants_param_wizard.php, row 66
 "URL" => "",
 
-// include/constants_param_wizard.php, row 85
+// include/constants_param_wizard.php, row 69
 "E-mail" => "Correo-e",
 
-// include/constants_param_wizard.php, row 88
+// include/constants_param_wizard.php, row 72
 "Number = positive integer number" => "Número = entero positivo",
 
-// include/constants_param_wizard.php, row 91, 113
+// include/constants_param_wizard.php, row 75, 97
 "Min" => "Mín",
 
-// include/constants_param_wizard.php, row 92, 114
+// include/constants_param_wizard.php, row 76, 98
 "Allowed minimum value" => "Valor mínimo permitido",
 
-// include/constants_param_wizard.php, row 97, 119
+// include/constants_param_wizard.php, row 81, 103
 "Max" => "Máx",
 
-// include/constants_param_wizard.php, row 98, 120
+// include/constants_param_wizard.php, row 82, 104
 "Allowed maximum value" => "Valor máximo permitido",
 
-// include/constants_param_wizard.php, row 103, 125
+// include/constants_param_wizard.php, row 87, 109
 "Step" => "Paso",
 
-// include/constants_param_wizard.php, row 110
+// include/constants_param_wizard.php, row 94
 "Number = (signed) integer number" => "Número = número entero (con signo)",
 
-// include/constants_param_wizard.php, row 132
+// include/constants_param_wizard.php, row 116
 "Float - including scientific notation 1.2E+9" => "Flotante - incluida la notación científica 1.2E+9",
 
-// include/constants_param_wizard.php, row 135
+// include/constants_param_wizard.php, row 119
 "Decimal" => "Decimal", // ai 2026-10
 
-// include/constants_param_wizard.php, row 138
+// include/constants_param_wizard.php, row 122
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 dígitos hexadecimales",
 
-// include/constants_param_wizard.php, row 141
+// include/constants_param_wizard.php, row 125
 "Date = store as date" => "Fecha = guardar como fecha",
 
-// include/constants_param_wizard.php, row 144
+// include/constants_param_wizard.php, row 128
 "Bool = store as bool" => "Bool = guardar como booleano",
 
-// include/constants_param_wizard.php, row 147
+// include/constants_param_wizard.php, row 131
 "User = does nothing ???" => "Usuario",
 
-// include/constants_param_wizard.php, row 150
+// include/constants_param_wizard.php, row 134
 "Unique = prove uniqueness" => "Unico = verificar unicidad",
 
-// include/constants_param_wizard.php, row 151
+// include/constants_param_wizard.php, row 135
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
  => "Validar si el valor no está en uso todavía. Util para nombres de usuario o e-mails",
 
-// include/constants_param_wizard.php, row 155, 197
+// include/constants_param_wizard.php, row 139, 181
 "Field ID" => "ID campo",
 
-// include/constants_param_wizard.php, row 156, 198
+// include/constants_param_wizard.php, row 140, 182
 "Field in which to look for matching values (default is current field)." => "Campo en el que buscar valores que coincidan.",
 
-// include/constants_param_wizard.php, row 161
+// include/constants_param_wizard.php, row 145
 "Scope" => "Ambito",
 
-// include/constants_param_wizard.php, row 163
+// include/constants_param_wizard.php, row 147
 "<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
@@ -438,45 +404,45 @@ return [
    ."                <b>0</b> = Nombre de usuario, especial: Verifica la unicidad en el administrador de lectura\n"
    ."                canales y en el sistema de permisos. Siempre utilice el Id del campo %1",
 
-// include/constants_param_wizard.php, row 175
+// include/constants_param_wizard.php, row 159
 "Regular Expression" => "Expresión regular",
 
-// include/constants_param_wizard.php, row 176
+// include/constants_param_wizard.php, row 160
 "Validation based on Regular Expressions" => "Validación basada en expresiones regulares",
 
-// include/constants_param_wizard.php, row 179
+// include/constants_param_wizard.php, row 163
 "Regular Expressions" => "Expresiones regulares",
 
-// include/constants_param_wizard.php, row 180
+// include/constants_param_wizard.php, row 164
 "use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "use algo como: /^[0-9]*\$/ - vea el manual de \"Expresiones regulares\".",
 
-// include/constants_param_wizard.php, row 185
+// include/constants_param_wizard.php, row 169
 "Error text" => "Texto de error",
 
-// include/constants_param_wizard.php, row 186
+// include/constants_param_wizard.php, row 170
 "error message" => "mensaje de error",
 
-// include/constants_param_wizard.php, row 188
+// include/constants_param_wizard.php, row 172
 "Wrong value" => "Valor incorrecto",
 
-// include/constants_param_wizard.php, row 193
+// include/constants_param_wizard.php, row 177
 "Unique e-mail" => "e-mail único",
 
-// include/constants_param_wizard.php, row 194
+// include/constants_param_wizard.php, row 178
 "Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "Combina las validaciones de email y unicidad. Admite sólo los valores que sean direcciones válidas y que no estén en uso.",
 
-// include/constants_param_wizard.php, row 203
+// include/constants_param_wizard.php, row 187
 "Slice only" => "Sólo en el canal",
 
-// include/constants_param_wizard.php, row 204
+// include/constants_param_wizard.php, row 188
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
  => "Desea verificar la unicidad de este canal solamente o en todos los canales?",
 
-// include/constants_param_wizard.php, row 212
+// include/constants_param_wizard.php, row 196
 "Password and Change Password" => "Clave y Cambiar Clave",
 
-// include/constants_param_wizard.php, row 213
+// include/constants_param_wizard.php, row 197
 "Validates the passwords do not differ when changing password.\n"
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
@@ -484,466 +450,466 @@ return [
  => "Verifica que las claves no sean distintas al cambiar la clave.\n"
    ."<i>La validación se hace por JavaScript y no en el servidor porque la función de inserción no valida antes de insertar la nueva clave</i>.",
 
-// include/constants_param_wizard.php, row 228
+// include/constants_param_wizard.php, row 212
 "Function" => "Función",
 
-// include/constants_param_wizard.php, row 229
+// include/constants_param_wizard.php, row 213
 "How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "Convenciones de presentación: <br><i>el campo</i> en cursiva significa el valor del campo.,<br><b>parámetro</b> en negrilla se refiera a uno de los parámetros de esta ventana",
 
-// include/constants_param_wizard.php, row 232
+// include/constants_param_wizard.php, row 216
 "just code" => "solo el código",
 
-// include/constants_param_wizard.php, row 233
+// include/constants_param_wizard.php, row 217
 "prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "muestra el código en el parámetro - se puede usar _#this - más fácil que f_t (sin parámetro adicional)",
 
-// include/constants_param_wizard.php, row 236
+// include/constants_param_wizard.php, row 220
 "null function" => "función nula",
 
-// include/constants_param_wizard.php, row 237
+// include/constants_param_wizard.php, row 221
 "prints nothing" => "no muestra nada",
 
-// include/constants_param_wizard.php, row 240
+// include/constants_param_wizard.php, row 224
 "first value" => "primer valor",
 
-// include/constants_param_wizard.php, row 241
+// include/constants_param_wizard.php, row 225
 "prints first value, even if the field is multivalue" => "muestra el primer valor, incluso si el campo es multivalor",
 
-// include/constants_param_wizard.php, row 244
+// include/constants_param_wizard.php, row 228
 "translated" => "traducido",
 
-// include/constants_param_wizard.php, row 245
+// include/constants_param_wizard.php, row 229
 "prints translated field based on currently selected language" => "muestra el campo traducido según el idioma seleccionado actualmente",
 
-// include/constants_param_wizard.php, row 248
+// include/constants_param_wizard.php, row 232
 "abstract" => "resumen",
 
-// include/constants_param_wizard.php, row 249
+// include/constants_param_wizard.php, row 233
 "prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "muestra el resúmen (si existe), o el principio del <b>texto completo</b>",
 
-// include/constants_param_wizard.php, row 252
+// include/constants_param_wizard.php, row 236
 "length" => "longitud",
 
-// include/constants_param_wizard.php, row 253
+// include/constants_param_wizard.php, row 237
 "max number of characters grabbed from the <b>fulltext</b> field" => "máximo número de caracteres tomados del campo de <b>texto completo</b>",
 
-// include/constants_param_wizard.php, row 258
+// include/constants_param_wizard.php, row 242
 "fulltext" => "texto completo",
 
-// include/constants_param_wizard.php, row 259
+// include/constants_param_wizard.php, row 243
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "id de campo o campo de texto completo (como full_text.......), desde donde el texto es tomado. Si se deja vacío, el texto se tomará del <i>mismo</i> campo.",
 
-// include/constants_param_wizard.php, row 261, 303, 600
+// include/constants_param_wizard.php, row 245, 287, 584
 "full_text......." => "texto_completo..",
 
-// include/constants_param_wizard.php, row 264
+// include/constants_param_wizard.php, row 248
 "paragraph" => "párrafo",
 
-// include/constants_param_wizard.php, row 265
+// include/constants_param_wizard.php, row 249
 "take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "tome el primer párrafo (texto hasta  \\<BR\\> o \\<P\\> o \\</P\\> o al menos '.' (punto)) si es más corto entonces <b>longitud</b>",
 
-// include/constants_param_wizard.php, row 272
+// include/constants_param_wizard.php, row 256
 "extended fulltext link" => "enlace a texto completo extendido",
 
-// include/constants_param_wizard.php, row 273
+// include/constants_param_wizard.php, row 257
 "Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "Esta es una versión más genérica de la función f_f que no usa <i>el campo</i>. Muestra el <i>texto</i> (o su contenido) como un enlace al texto completo.",
 
-// include/constants_param_wizard.php, row 276, 410
+// include/constants_param_wizard.php, row 260, 394
 "link only" => "externo",
 
-// include/constants_param_wizard.php, row 277
+// include/constants_param_wizard.php, row 261
 "field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "identificador del campo que decide si el enlace debe ser al texto completo o bien externo.",
 
-// include/constants_param_wizard.php, row 279, 413
+// include/constants_param_wizard.php, row 263, 397
 "link_only......." => "",
 
-// include/constants_param_wizard.php, row 282
+// include/constants_param_wizard.php, row 266
 "url_field" => "campo url",
 
-// include/constants_param_wizard.php, row 283
+// include/constants_param_wizard.php, row 267
 "field id if field, where external URL is stored (like hl_href.........)" => "identificador del campo que contiene el URL en caso de enlaces externos",
 
-// include/constants_param_wizard.php, row 285
+// include/constants_param_wizard.php, row 269
 "hl_href........." => "",
 
-// include/constants_param_wizard.php, row 288, 416
+// include/constants_param_wizard.php, row 272, 400
 "redirect" => "redirección",
 
-// include/constants_param_wizard.php, row 289, 417
+// include/constants_param_wizard.php, row 273, 401
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL de la página que sabe mostrar el texto completo (esta página es la que contiene el SSI include de slice.php). Si no se pone nada, se asume la página actual.",
 
-// include/constants_param_wizard.php, row 291, 419
+// include/constants_param_wizard.php, row 275, 403
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://mi.sitio.com/noticias.shtml",
 
-// include/constants_param_wizard.php, row 294
+// include/constants_param_wizard.php, row 278
 "text" => "texto",
 
-// include/constants_param_wizard.php, row 295
+// include/constants_param_wizard.php, row 279
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "El texto del enlace. Puede poner un identificador de campo aquí, en cuyo caso se muestra el contenido de dicho campo. De lo contrario, se muestra este texto literalmente.",
 
-// include/constants_param_wizard.php, row 300
+// include/constants_param_wizard.php, row 284
 "condition field" => "campo condición",
 
-// include/constants_param_wizard.php, row 301
+// include/constants_param_wizard.php, row 285
 "when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "cuando el campo especificado no tenga contenido no se va a generar un enlace, sólo se va a mostrar el <b>texto</b>",
 
-// include/constants_param_wizard.php, row 306, 533
+// include/constants_param_wizard.php, row 290, 517
 "tag addition" => "añadir al tag",
 
-// include/constants_param_wizard.php, row 307, 534
+// include/constants_param_wizard.php, row 291, 518
 "additional text to the \"\\<a\\>\" tag" => "atributos adicionales para el tag 'A'",
 
-// include/constants_param_wizard.php, row 309, 536
+// include/constants_param_wizard.php, row 293, 520
 "target=_blank" => "",
 
-// include/constants_param_wizard.php, row 312, 422
+// include/constants_param_wizard.php, row 296, 406
 "no session id" => "sin sesión",
 
-// include/constants_param_wizard.php, row 313, 423
+// include/constants_param_wizard.php, row 297, 407
 "If 1, the session id (AA_Session=...) is not added to url" => "Si es 1, el id de sesión (AA_Session=...) no se añade a la url",
 
-// include/constants_param_wizard.php, row 320, 324
+// include/constants_param_wizard.php, row 304, 308
 "condition" => "condición",
 
-// include/constants_param_wizard.php, row 321
+// include/constants_param_wizard.php, row 305
 "This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "Esta función es muy poderosa. Entre otras cosas, puede remplazar a otras funciones. Si <b>campo_condición</b> = <b>condición</b>, muestra <b>inicio</b> <i>el campo</i> <b>fin</b>, de lo contrario muestra <b>si_no</b>. Si no se especifica <b>campo_condición</b>, se usa <i>el campo</i>. La condición se puede invertir (negar) poniendo un signo de admiración (\"!\") al principio.",
 
-// include/constants_param_wizard.php, row 325
+// include/constants_param_wizard.php, row 309
 "you may use \"!\" to reverse (negate) the condition" => "puede usar \"!\" para invertir (negar) la condición",
 
-// include/constants_param_wizard.php, row 330, 509
+// include/constants_param_wizard.php, row 314, 493
 "begin" => "inicio",
 
-// include/constants_param_wizard.php, row 331
+// include/constants_param_wizard.php, row 315
 "text to print before <i>field</i>, if condition is true" => "texto a mostrar antes de <i>el campo</i> si la condición es cierta",
 
-// include/constants_param_wizard.php, row 333
+// include/constants_param_wizard.php, row 317
 "Yes" => "Si",
 
-// include/constants_param_wizard.php, row 336
+// include/constants_param_wizard.php, row 320
 "end" => "fin",
 
-// include/constants_param_wizard.php, row 337
+// include/constants_param_wizard.php, row 321
 "text to print after <i>field</i>, if condition is true" => "texto a mostrar después de <i>el campo</i> si la condición es cierta",
 
-// include/constants_param_wizard.php, row 342
+// include/constants_param_wizard.php, row 326
 "else" => "si_no",
 
-// include/constants_param_wizard.php, row 343
+// include/constants_param_wizard.php, row 327
 "text to print when condition is not satisfied" => "texto a mostrar cuando la condicion no se satisface",
 
-// include/constants_param_wizard.php, row 345
+// include/constants_param_wizard.php, row 329
 "No" => "No", // ai 2026-10
 
-// include/constants_param_wizard.php, row 348
+// include/constants_param_wizard.php, row 332
 "cond_field" => "campo_condicion",
 
-// include/constants_param_wizard.php, row 349
+// include/constants_param_wizard.php, row 333
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "campo sobre el que evaluar la <b>condición</b>. Si no se pone nada, se compara la condición con <i>el campo</i>",
 
-// include/constants_param_wizard.php, row 354
+// include/constants_param_wizard.php, row 338
 "skip_the_field" => "omitir_campo",
 
-// include/constants_param_wizard.php, row 355
+// include/constants_param_wizard.php, row 339
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "si se pone '1', no muestra <i>el campo</i> (muestra solo <b>inicio fin</b>)",
 
-// include/constants_param_wizard.php, row 362
+// include/constants_param_wizard.php, row 346
 "This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Ejemplo para mostrar el campo 'Resaltado': muestra 'Si' o 'No' dependiendo del contenido del campo",
 
-// include/constants_param_wizard.php, row 363
+// include/constants_param_wizard.php, row 347
 "1:Yes::No::1" => "1:Si::No::1",
 
-// include/constants_param_wizard.php, row 366
+// include/constants_param_wizard.php, row 350
 "When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "Si se rellena el campo 'Fuente', muestra algo así: \"Fuente: Reuters\"; de lo contrario, no muestra nada",
 
-// include/constants_param_wizard.php, row 367
+// include/constants_param_wizard.php, row 351
 "!:Email#:&nbsp;" => "!:Fuente#:&nbsp;",
 
-// include/constants_param_wizard.php, row 370
+// include/constants_param_wizard.php, row 354
 "Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "Igual que el anterior, pero si no se conoce la fuente, muestra el autor (suponiendo que el alias _#AUTOR___ lo muestra)",
 
-// include/constants_param_wizard.php, row 371
+// include/constants_param_wizard.php, row 355
 "!:height=" => "!:Fuente#:&nbsp;::_#AUTOR___",
 
-// include/constants_param_wizard.php, row 376
+// include/constants_param_wizard.php, row 360
 "date" => "fecha",
 
-// include/constants_param_wizard.php, row 377
+// include/constants_param_wizard.php, row 361
 "prints date in a user defined format" => "muestra la fecha en el formato definido",
 
-// include/constants_param_wizard.php, row 380
+// include/constants_param_wizard.php, row 364
 "format" => "formato",
 
-// include/constants_param_wizard.php, row 381
+// include/constants_param_wizard.php, row 365
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "Formato tipo PHP - vea el <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>manual de PHP</a>",
 
-// include/constants_param_wizard.php, row 383
+// include/constants_param_wizard.php, row 367
 "m-d-Y" => "d-m-Y",
 
-// include/constants_param_wizard.php, row 388
+// include/constants_param_wizard.php, row 372
 "edit item" => "editar ítem",
 
-// include/constants_param_wizard.php, row 389
+// include/constants_param_wizard.php, row 373
 "_#EDITITEM used on admin page index.php for itemedit url" => "alias _#EDITITEM usado en la página de administración index.php para el enlace para editar el ítem",
 
-// include/constants_param_wizard.php, row 392
+// include/constants_param_wizard.php, row 376
 "type" => "tipo",
 
-// include/constants_param_wizard.php, row 393
+// include/constants_param_wizard.php, row 377
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - para editar comentarios<br>itemcount - recuento de ítems<br>safe - HTML seguro<br>slice_info - seleccionar un campo del canal<br>edit - URL para editar el ítem<br>add - URL para añadir un ítem",
 
-// include/constants_param_wizard.php, row 395
+// include/constants_param_wizard.php, row 379
 "edit" => "editar",
 
-// include/constants_param_wizard.php, row 398
+// include/constants_param_wizard.php, row 382
 "return url" => "url retorno",
 
-// include/constants_param_wizard.php, row 399
+// include/constants_param_wizard.php, row 383
 "Return url being called from, usually leave blank and allow default" => "URL de la página a regresar. Si no se especifica, regresa a la actual.",
 
-// include/constants_param_wizard.php, row 401
+// include/constants_param_wizard.php, row 385
 "/mysite.shtml" => "/noticias.shtml",
 
-// include/constants_param_wizard.php, row 406
+// include/constants_param_wizard.php, row 390
 "fulltext link" => "enlace a texto completo",
 
-// include/constants_param_wizard.php, row 407
+// include/constants_param_wizard.php, row 391
 "Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "URL para el texto completo del ítem. Permite usar enlaces externos. Para usar dentro de \"\\<a href=\"",
 
-// include/constants_param_wizard.php, row 411
+// include/constants_param_wizard.php, row 395
 "field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "identificador del campo que determina si el enlace es externo o interno (normalmente este campo se muestra como un checkbox). Si el checkbox está seleccionado, se muestra <i>el campo</i>, y si no está seleccionado se genera un enlace al texto completo (que depende del parámetro <b>redirección</b>).",
 
-// include/constants_param_wizard.php, row 430
+// include/constants_param_wizard.php, row 414
 "image height" => "alto imágen",
 
-// include/constants_param_wizard.php, row 431
+// include/constants_param_wizard.php, row 415
 "An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "Función anticuada. Use mejor la función f_c",
 
-// include/constants_param_wizard.php, row 434
+// include/constants_param_wizard.php, row 418
 "print HTML multiple" => "múltiples - HTML",
 
-// include/constants_param_wizard.php, row 435
+// include/constants_param_wizard.php, row 419
 "prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "Muestra <i>el campo</i>, adminitiendo que éste tenga múltiples valores. Además, dependiendo del flag 'HTML / texto plano', puede preformatear la salida",
 
-// include/constants_param_wizard.php, row 438
+// include/constants_param_wizard.php, row 422
 "delimiter" => "separador",
 
-// include/constants_param_wizard.php, row 439
+// include/constants_param_wizard.php, row 423
 "if specified, a field with multiple values is displayed with the values delimited by it" => "Si se especifica, cuando hay múltiples valores se muestran separados por este delimitador",
 
-// include/constants_param_wizard.php, row 446
+// include/constants_param_wizard.php, row 430
 "image src" => "url imagen",
 
-// include/constants_param_wizard.php, row 447
+// include/constants_param_wizard.php, row 431
 "prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "Función anticuada. Use mejor la función f_c",
 
-// include/constants_param_wizard.php, row 450
+// include/constants_param_wizard.php, row 434
 "image size" => "tamaño imágen",
 
-// include/constants_param_wizard.php, row 451
+// include/constants_param_wizard.php, row 435
 "prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "imprima <i>el campo</i> como tamaño de imagen (height='xxx' width='yyy') (u otra información de la imagen).",
 
-// include/constants_param_wizard.php, row 454, 830
+// include/constants_param_wizard.php, row 438, 814
 "information" => "información",
 
-// include/constants_param_wizard.php, row 455
+// include/constants_param_wizard.php, row 439
 "specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "especifica la información regresada: <br> - <i>html</i> - (por defecto) - retorna el tamaño de la imagen como atributos de HTML (height='xxx' width='yyy')<br> - <i>width</i> - retorna el ancho de la imagen en pixels.<br> - <i>height</i> - retorna el alto de la imagen en pixels<br> - <i>imgtype</i> - retorna una bandera indicando el tipo de la imagen: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(orden byte intel), 8 = TIFF(orden byte motorola), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - retorna el mimetype de la imagen (como 'image/gif', 'application/x-shockwave-flash', ...)",
 
-// include/constants_param_wizard.php, row 462
+// include/constants_param_wizard.php, row 446
 "substring with case change" => "subcadena y corrige caja",
 
-// include/constants_param_wizard.php, row 463
+// include/constants_param_wizard.php, row 447
 "prints a part of <i>the field</i>" => "muestra una parte d<i>el campo</i>",
 
-// include/constants_param_wizard.php, row 466
+// include/constants_param_wizard.php, row 450
 "start" => "inicio",
 
-// include/constants_param_wizard.php, row 467
+// include/constants_param_wizard.php, row 451
 "position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "posición para empezar a escribir: 0=primer caracter. 1=segundo, -1=último, -2=penúltimo",
 
-// include/constants_param_wizard.php, row 472
+// include/constants_param_wizard.php, row 456
 "count" => "cuantos",
 
-// include/constants_param_wizard.php, row 473
+// include/constants_param_wizard.php, row 457
 "count of characters (0=until the end)" => "número de caracteres a mostrar (0=hasta el final)",
 
-// include/constants_param_wizard.php, row 478
+// include/constants_param_wizard.php, row 462
 "case" => "caja",
 
-// include/constants_param_wizard.php, row 479
+// include/constants_param_wizard.php, row 463
 "upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "upper - convertir a MAYUSCULAS<br>lower - convertir a minúsculas<br>first - convertir Primera Mayúscula<br>si no se pone nada, no cambia la caja",
 
-// include/constants_param_wizard.php, row 484
+// include/constants_param_wizard.php, row 468
 "add string" => "añadir cadena",
 
-// include/constants_param_wizard.php, row 485
+// include/constants_param_wizard.php, row 469
 "if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "si la cadena es recortada, <i>añadir cadena</i> será adicionada a la cadena (probablemente algo como [...])",
 
-// include/constants_param_wizard.php, row 491
+// include/constants_param_wizard.php, row 475
 "Auto Update Checkbox" => "auto-actualización",
 
-// include/constants_param_wizard.php, row 493
+// include/constants_param_wizard.php, row 477
 "linked field" => "campo relacionado",
 
-// include/constants_param_wizard.php, row 494
+// include/constants_param_wizard.php, row 478
 "prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "muestra <i>el campo</i> como un enlace si el <b>URL</b> no está vacío. De lo contrario, muestra solamente <i>el campo</i>",
 
-// include/constants_param_wizard.php, row 497
+// include/constants_param_wizard.php, row 481
 "link URL" => "URL",
 
-// include/constants_param_wizard.php, row 500
+// include/constants_param_wizard.php, row 484
 "source_href....." => "",
 
-// include/constants_param_wizard.php, row 505
+// include/constants_param_wizard.php, row 489
 "e-mail or link" => "e-mail o enlace",
 
-// include/constants_param_wizard.php, row 506
+// include/constants_param_wizard.php, row 490
 "mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "enlace a correo - muestra:<br>\"<b>inicio</b>\\<a href=\"(mailto:)<i>el campo</i>\" <b>añadir al tag</b>\\><b>campo/texto</b>\\</a\\>. Si <i>el campo</i> no tiene contenido, muestra <b>si_no/texto</b>.",
 
-// include/constants_param_wizard.php, row 510
+// include/constants_param_wizard.php, row 494
 "text before the link" => "texto antes del enlace",
 
-// include/constants_param_wizard.php, row 512
+// include/constants_param_wizard.php, row 496
 "e-mail" => "Correo-e:",
 
-// include/constants_param_wizard.php, row 515
+// include/constants_param_wizard.php, row 499
 "field/text" => "campo/texto",
 
-// include/constants_param_wizard.php, row 516
+// include/constants_param_wizard.php, row 500
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "si escribe un id de campo, se muestra el contenido de ese campo. De lo contrario, se muestra el texto literal",
 
-// include/constants_param_wizard.php, row 521
+// include/constants_param_wizard.php, row 505
 "else_field/text" => "si_no/texto",
 
-// include/constants_param_wizard.php, row 522
+// include/constants_param_wizard.php, row 506
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "si <i>el campo</i> está vacío, muestra solo este texto (si escribe un id de campo, se mostrará el contenido de ese campo)",
 
-// include/constants_param_wizard.php, row 527
+// include/constants_param_wizard.php, row 511
 "linktype" => "tipo",
 
-// include/constants_param_wizard.php, row 528
+// include/constants_param_wizard.php, row 512
 "mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (por defecto es mailto). Si quiere usar esta función para enlaces normales, escriba href en este parámetro",
 
-// include/constants_param_wizard.php, row 530
+// include/constants_param_wizard.php, row 514
 "href" => "",
 
-// include/constants_param_wizard.php, row 539
+// include/constants_param_wizard.php, row 523
 "hide email" => "esconder correo-e",
 
-// include/constants_param_wizard.php, row 540
+// include/constants_param_wizard.php, row 524
 "if 1 then hide email from spam robots. Default is 0." => "si el valor es 1 entonces oculte el correo-e de robots de spam. Por defecto es 0",
 
-// include/constants_param_wizard.php, row 547
+// include/constants_param_wizard.php, row 531
 "id" => "",
 
-// include/constants_param_wizard.php, row 548
+// include/constants_param_wizard.php, row 532
 "prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "mostrar el identificador interno dentro de las ActionApps, sean de items o de canales.",
 
-// include/constants_param_wizard.php, row 551
+// include/constants_param_wizard.php, row 535
 "'New' sign" => "signo 'Nuevo'",
 
-// include/constants_param_wizard.php, row 552
+// include/constants_param_wizard.php, row 536
 "prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "para mostrar 'Nuevo' o 'Viejo' o cualquier otro texto en <b>texto nuevo</b> o <b>texto viejo</b> en función del <b>tiempo</b>, relativo a la fecha y hora actuales.",
 
-// include/constants_param_wizard.php, row 555
+// include/constants_param_wizard.php, row 539
 "time" => "tiempo",
 
-// include/constants_param_wizard.php, row 556
+// include/constants_param_wizard.php, row 540
 "Time in minutes from current time." => "minutos desde la hora actual",
 
-// include/constants_param_wizard.php, row 558
+// include/constants_param_wizard.php, row 542
 "1440" => "",
 
-// include/constants_param_wizard.php, row 561
+// include/constants_param_wizard.php, row 545
 "newer text" => "texto nuevo",
 
-// include/constants_param_wizard.php, row 562
+// include/constants_param_wizard.php, row 546
 "Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "Texto que se muestra si la fecha en <i>el campo</i> es más reciente que la hora actual menos <b>tiempo</b>",
 
-// include/constants_param_wizard.php, row 564
+// include/constants_param_wizard.php, row 548
 "NEW" => "<b>¡NUEVO!</b>",
 
-// include/constants_param_wizard.php, row 567
+// include/constants_param_wizard.php, row 551
 "older text" => "texto viejo",
 
-// include/constants_param_wizard.php, row 568
+// include/constants_param_wizard.php, row 552
 "Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "Texto que se muestra si la fecha en <i>el campo</i> es posterior a la hora actual menos <b>tiempo</b>",
 
-// include/constants_param_wizard.php, row 575
+// include/constants_param_wizard.php, row 559
 "text (blurb) from another slice" => "texto de otro canal",
 
-// include/constants_param_wizard.php, row 576
+// include/constants_param_wizard.php, row 560
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "muestra un pedazo de texto de otro canal, basándose en una codición simple.<br>Si <i>el campo</i> (o el campo especificado en <b>cadenaAComparar</b>) del canal actual coincide con el contenido de <b>campoAComparar</b> en <b>canalPedazo</b>, muestra el contenido de <b>campoContenido</b> del <b>canalContenido</b>",
 
-// include/constants_param_wizard.php, row 579
+// include/constants_param_wizard.php, row 563
 "stringToMatch" => "cadenaAComparar",
 
-// include/constants_param_wizard.php, row 580
+// include/constants_param_wizard.php, row 564
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Por defecto es <i>el campo</i>. Puede ser formateado tanto como id de un campo (headline........) O como texto estático.",
 
-// include/constants_param_wizard.php, row 582
+// include/constants_param_wizard.php, row 566
 "category........" => "",
 
-// include/constants_param_wizard.php, row 585
+// include/constants_param_wizard.php, row 569
 "blurbSliceId" => "canalPedazo",
 
-// include/constants_param_wizard.php, row 586
+// include/constants_param_wizard.php, row 570
 "unpacked slice id of the slice where the blurb text is stored" => "id del canal desempaquetado donde el pedazo de texto es almacenado",
 
-// include/constants_param_wizard.php, row 588
+// include/constants_param_wizard.php, row 572
 "41415f436f72655f4669656c64732e2e" => "",
 
-// include/constants_param_wizard.php, row 591
+// include/constants_param_wizard.php, row 575
 "fieldToMatch" => "campoAComparar",
 
-// include/constants_param_wizard.php, row 592
+// include/constants_param_wizard.php, row 576
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id del campo del campo en <b>IdCanalPedazo</b> donde se busca por <b>cadenaABuscar</b>",
 
-// include/constants_param_wizard.php, row 594
+// include/constants_param_wizard.php, row 578
 "headline........" => "",
 
-// include/constants_param_wizard.php, row 597
+// include/constants_param_wizard.php, row 581
 "fieldToReturn" => "campoContenido",
 
-// include/constants_param_wizard.php, row 598
+// include/constants_param_wizard.php, row 582
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id de campo del campo en <b>IdCanalPropaganda</b> donde el pedazo de texto es almacenado (que imprimir)",
 
-// include/constants_param_wizard.php, row 605
+// include/constants_param_wizard.php, row 589
 "RSS tag" => "tag RSS",
 
-// include/constants_param_wizard.php, row 606
+// include/constants_param_wizard.php, row 590
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "función usada internamente para los alias de RSS predefinidos (ej. _#RSS_TITL). Añade los tags RSS 0.91",
 
-// include/constants_param_wizard.php, row 609, 613, 805
+// include/constants_param_wizard.php, row 593, 597, 789
 "default" => "por defecto",
 
-// include/constants_param_wizard.php, row 610
+// include/constants_param_wizard.php, row 594
 "prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "muestra <i>el campo</i> o un valor por defecto si <i>el campo</i> está vacío. Se puede hacer exactamente lo mismo con la función f_c con los parámetros :::<b>valor por defecto</b>.",
 
-// include/constants_param_wizard.php, row 614
+// include/constants_param_wizard.php, row 598
 "default value" => "valor por defecto",
 
-// include/constants_param_wizard.php, row 616
+// include/constants_param_wizard.php, row 600
 "javascript: window.alert('No source url specified')" => "javascript#:window.alert(\"No se especificó URL de la fuente\")",
 
-// include/constants_param_wizard.php, row 621
+// include/constants_param_wizard.php, row 605
 "print field" => "imprimir campo",
 
-// include/constants_param_wizard.php, row 622
+// include/constants_param_wizard.php, row 606
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "imprima el contenido <i>del campo</i> (o <i>cadena alias</i>) dependiendo de la bandera HTML (si la bandera HTML no está asignada, convierte el contenido a HTML. En diferencia a la función f_h, ésta convierte a HTML los saltos de página, también (en su variante básica)",
 
-// include/constants_param_wizard.php, row 625
+// include/constants_param_wizard.php, row 609
 "unalias string" => "cadena",
 
-// include/constants_param_wizard.php, row 626
+// include/constants_param_wizard.php, row 610
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "si está definida, la función ignora <i>el campo</i> y muestra esta cadena. Tenga en cuenta que puede escribir aquí otros alias.",
 
-// include/constants_param_wizard.php, row 628
+// include/constants_param_wizard.php, row 612
 "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>" => "",
 
-// include/constants_param_wizard.php, row 631
+// include/constants_param_wizard.php, row 615
 "output modify" => "modificar salida",
 
-// include/constants_param_wizard.php, row 632
+// include/constants_param_wizard.php, row 616
 "You can use some output modifications:<br>\n"
    ."                   &nbsp; - [<i>empty</i>] - no modification<br>\n"
    ."                   &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>\n"
@@ -962,175 +928,175 @@ return [
    ."                   &nbsp; - <i>striptags</i>  - elimina las etiquetas HTML y PHP de la cadena<br>\n"
    ."                   &nbsp; - <i>asis</i>  - muestra el contenido del campo 'tal cual' - no añade &lt;br&gt; al final de las líneas aunque el campo esté marcado como 'Texto plano'. El parámetro 'asis' es útil, por ejemplo, para la función 'Modificar contenido...' del Administrador de Ítems<br>",
 
-// include/constants_param_wizard.php, row 647
+// include/constants_param_wizard.php, row 631
 "user function" => "definida por el usuario",
 
-// include/constants_param_wizard.php, row 648
+// include/constants_param_wizard.php, row 632
 "calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "hace un llamado a una función definida por el administrador de este sistema (vea <em>How to create new aliases</em> en el <a href='https://actionapps.org/faq/#aliases' target=_blank>FAQ</a>)",
 
-// include/constants_param_wizard.php, row 651
+// include/constants_param_wizard.php, row 635
 "function" => "función",
 
-// include/constants_param_wizard.php, row 652
+// include/constants_param_wizard.php, row 636
 "name of the function in the include/usr_aliasfnc.php file" => "nombre de la función en el archivo include/usr_aliasfnc.php",
 
-// include/constants_param_wizard.php, row 654
+// include/constants_param_wizard.php, row 638
 "usr_start_end_date_cz" => "usr_encuentra_fecha",
 
-// include/constants_param_wizard.php, row 657
+// include/constants_param_wizard.php, row 641
 "parameter" => "parámetro",
 
-// include/constants_param_wizard.php, row 658
+// include/constants_param_wizard.php, row 642
 "a parameter passed to the function" => "un parámetro a pasar a la función",
 
-// include/constants_param_wizard.php, row 665
+// include/constants_param_wizard.php, row 649
 "view" => "vista",
 
-// include/constants_param_wizard.php, row 666
+// include/constants_param_wizard.php, row 650
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "permite mostrar vistas. Esta función es potente y complicada, y está descrita en el <a href=\"https://actionapps.org/faq/#viewparam\" target=_blank>FAQ</a>. Muestra una vista en el lugar del alias. Es útil, entre otras cosas, para hacer enlaces a items relacionados de otros canales.",
 
-// include/constants_param_wizard.php, row 669
+// include/constants_param_wizard.php, row 653
 "complex parameter" => "parámetro complejo",
 
-// include/constants_param_wizard.php, row 670
+// include/constants_param_wizard.php, row 654
 "this parameter is the same as we use in view.php url parameter - see the FAQ" => "este parámetro sigue la sintaxis de los parámetros de view.php",
 
-// include/constants_param_wizard.php, row 672
+// include/constants_param_wizard.php, row 656
 "vid=4&amp;cmd[23]=v-25" => "",
 
-// include/constants_param_wizard.php, row 677
+// include/constants_param_wizard.php, row 661
 "image width" => "ancho imágen",
 
-// include/constants_param_wizard.php, row 678
+// include/constants_param_wizard.php, row 662
 "An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "Función anterior. Muestra <i>el campo</i> como el valor del ancho de la imagen (\\<img width=...\\>) o borra la etiqueta de ancho de imagen. A ser utilizada inmediatamente después \"width=\". La función f_c provee a una mejor manera de realizar esta función con los parámetros \":width=\".",
 
-// include/constants_param_wizard.php, row 681
+// include/constants_param_wizard.php, row 665
 "transformation" => "transformación",
 
-// include/constants_param_wizard.php, row 682
+// include/constants_param_wizard.php, row 666
 "Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Permite transformar el valor del campo en otro valor.<br>Uso: <b>contenido_1</b>:<b>valor_retorno_1</b>:<b>contenido_1</b>:<b>valor_retorno_1</b>:<b>por_defecto</b><br>Si el contenido <i>del campo</i> es igual a <b>contenido_1</b> el <b>valor_retorno_1</b> es mostrado. Si el contenido <i>del campo</i> es igual a <b>contenido_2</b> el <b>valor_retorno_2</b> es mostrado. Si <i>el campo no es igual a ningún <b>contenido_x</b>, <b>por_defecto</b> es mostrado</i>.",
 
-// include/constants_param_wizard.php, row 685, 697, 709, 721, 733, 745, 757, 769, 781, 793
+// include/constants_param_wizard.php, row 669, 681, 693, 705, 717, 729, 741, 753, 765, 777
 "content" => "contenido",
 
-// include/constants_param_wizard.php, row 686, 698, 710, 722, 734, 746, 758, 770, 782, 794
+// include/constants_param_wizard.php, row 670, 682, 694, 706, 718, 730, 742, 754, 766, 778
 "string for comparison with <i>the field</i> for following return value" => "valor a comparar con <i>el campo</i> para que se muestre el valor siguiente",
 
-// include/constants_param_wizard.php, row 691, 703, 715, 727, 739, 751, 763, 775, 787, 799
+// include/constants_param_wizard.php, row 675, 687, 699, 711, 723, 735, 747, 759, 771, 783
 "return value" => "valor retornado",
 
-// include/constants_param_wizard.php, row 692, 704, 716, 728, 740, 752, 764, 776, 788, 800
+// include/constants_param_wizard.php, row 676, 688, 700, 712, 724, 736, 748, 760, 772, 784
 "string to return if previous content matches - You can use field_id too" => "texto a retornar si el contenido anterior coincide - También puede usar id_campo para mostrar el contenido de otro campo",
 
-// include/constants_param_wizard.php, row 694, 706, 718, 730, 742, 754, 766, 778, 790, 802, 808
+// include/constants_param_wizard.php, row 678, 690, 702, 714, 726, 738, 750, 762, 774, 786, 792
 "Environment" => "Educación",
 
-// include/constants_param_wizard.php, row 806
+// include/constants_param_wizard.php, row 790
 "if no content matches, use this string as return value" => "si ninguno coincide, mostrar este valor",
 
-// include/constants_param_wizard.php, row 813
+// include/constants_param_wizard.php, row 797
 "expanded string" => "expandir cadena",
 
-// include/constants_param_wizard.php, row 814
+// include/constants_param_wizard.php, row 798
 "expands the string in the parameter" => "expande la cadena del parámetro",
 
-// include/constants_param_wizard.php, row 817
+// include/constants_param_wizard.php, row 801
 "string to expand" => "cadena",
 
-// include/constants_param_wizard.php, row 818
+// include/constants_param_wizard.php, row 802
 "if specified then this string is expanded, if not specified then expands the contents of the field" => "si se especifica, expande esta cadena. Si no, se expande <i>el campo</i>",
 
-// include/constants_param_wizard.php, row 826
+// include/constants_param_wizard.php, row 810
 "file information" => "información del archivo",
 
-// include/constants_param_wizard.php, row 827
+// include/constants_param_wizard.php, row 811
 "prints <i>the field</i> as file information, its size or type" => "muestra <i>el campo</i> como información del archivo, su tamaño o tipo",
 
-// include/constants_param_wizard.php, row 831
+// include/constants_param_wizard.php, row 815
 "specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "especifica la información devuelta: <br> - <i>name</i> - nombre del archivo<br> - <i>type</i> - devuelve el tipo de archivo (como TXT)<br> - <i>size</i> - devuelve el tamaño del archivo en kB o MB (como 12.1 kB)<br> - <i>bytesize</i> - (como 12128)<br> - <i>link</i><br> - <i>typesize</i> - [tipo - tamaño] en un span<br> - <i>crc</i><br> - <i>time</i>",
 
-// include/constants_param_wizard.php, row 845
+// include/constants_param_wizard.php, row 829
 "Transformation action" => "Acción de transformación",
 
-// include/constants_param_wizard.php, row 847
+// include/constants_param_wizard.php, row 831
 "AA Expression" => "Expresión AA",
 
-// include/constants_param_wizard.php, row 848
+// include/constants_param_wizard.php, row 832
 "AA expression where we can use any AA {expressions}" => "expresión AA en la que se puede usar cualquier {expressions} de AA",
 
-// include/constants_param_wizard.php, row 851
+// include/constants_param_wizard.php, row 835
 "expression" => "expresión",
 
-// include/constants_param_wizard.php, row 860
+// include/constants_param_wizard.php, row 844
 "Store" => "Almacenar",
 
-// include/constants_param_wizard.php, row 861
+// include/constants_param_wizard.php, row 845
 "Simply store a value from the input field" => "Simplemente almacene el valor del campo de entrada",
 
-// include/constants_param_wizard.php, row 864
+// include/constants_param_wizard.php, row 848
 "lang (optional)" => "lang (opcional)",
 
-// include/constants_param_wizard.php, row 865
+// include/constants_param_wizard.php, row 849
 "two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "dos letras - cz | en | es | de. Si se indica, el valor se guardará en el idioma especificado (el campo debe usar traducciones)",
 
-// include/constants_param_wizard.php, row 873
+// include/constants_param_wizard.php, row 857
 "Remove string" => "Remueva la cadena",
 
-// include/constants_param_wizard.php, row 874
+// include/constants_param_wizard.php, row 858
 "Remove all occurrences of a string from the input field." => "Remueva todas las ocurrencias de una cadena desde el campo de entrada",
 
-// include/constants_param_wizard.php, row 877, 898
+// include/constants_param_wizard.php, row 861, 882
 "string parameter" => "parámetro de cadena",
 
-// include/constants_param_wizard.php, row 878
+// include/constants_param_wizard.php, row 862
 "Removed string" => "cadena removida",
 
-// include/constants_param_wizard.php, row 884
+// include/constants_param_wizard.php, row 868
 "Format date" => "Formato de fecha",
 
-// include/constants_param_wizard.php, row 885
+// include/constants_param_wizard.php, row 869
 "Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "Coloca la fecha en el campo de entrada que se espera sea en formato de fecha Inglés. En caso de error, la transformación falla",
 
-// include/constants_param_wizard.php, row 889
+// include/constants_param_wizard.php, row 873
 "Add http prefix" => "Añade el prefijo http",
 
-// include/constants_param_wizard.php, row 890
+// include/constants_param_wizard.php, row 874
 "Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "Añade el prefijo 'https://' al campo que no comienza con 'https://' y no es vacío.",
 
-// include/constants_param_wizard.php, row 894
+// include/constants_param_wizard.php, row 878
 "Store parameter" => "Almacene el parámetro",
 
-// include/constants_param_wizard.php, row 895
+// include/constants_param_wizard.php, row 879
 "Store parameter instead of the input field" => "Almacene el parámetro en lugar del campo de entrada",
 
-// include/constants_param_wizard.php, row 905
+// include/constants_param_wizard.php, row 889
 "Store as long id" => "Almacene tan largo como el id",
 
-// include/constants_param_wizard.php, row 906
+// include/constants_param_wizard.php, row 890
 "Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "Crea un id largo desde la cadena. La cadena es combinada con el parámetro!! o con el identificador de canal slice_id (si el parámatro no se incluye. Desde la misma cadena (y el mismo parámetro) se crea siempre el mismo id.",
 
-// include/constants_param_wizard.php, row 909
+// include/constants_param_wizard.php, row 893
 "string to add" => "cadena a añadir",
 
-// include/constants_param_wizard.php, row 910
+// include/constants_param_wizard.php, row 894
 "this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "Este parámetro será añadido a la cadena antes de la conversión (la razon es para abolir cadenas vacias y también para no generar siempre el mismo id para cadenas similares (desde diferentes importaciones). Si este parámetro no se especifica, el identificador del canal slice_id será utilizado.",
 
-// include/constants_param_wizard.php, row 918
+// include/constants_param_wizard.php, row 902
 "Split input field by string" => "Dividir el campo de entrada por la cadena",
 
-// include/constants_param_wizard.php, row 919
+// include/constants_param_wizard.php, row 903
 "Split input field by string parameter and store the result as multi-value." => "Dividir el campo de entrada por el parámetro de la cadena y almacena el resultado como un valor múltiple",
 
-// include/constants_param_wizard.php, row 922
+// include/constants_param_wizard.php, row 906
 "delimiter (+ possible languages)" => "delimitador (+ idiomas posibles)",
 
-// include/constants_param_wizard.php, row 923
+// include/constants_param_wizard.php, row 907
 "string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "cadena delimitadora que separa los valores del campo de entrada (como \"|\"). Otra opción es añadir también los idiomas separados por \"##\" en la forma <delimiter>##<lang1>##<lang2> (\"|##cz##en\" para \"Ahoj|Hi\") - esto rellenará los campos traducidos",
 
-// include/constants_param_wizard.php, row 930
+// include/constants_param_wizard.php, row 914
 "Store default value" => "Valor almacenado por defecto",
 
-// include/constants_param_wizard.php, row 931
+// include/constants_param_wizard.php, row 915
 "Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
    ."    <table>\n"
    ."        <tr><td><b>Output field</b></td><td><b>Value</b></td><td><b>Description</b></td></tr></b>\n"

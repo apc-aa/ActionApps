@@ -11,122 +11,90 @@ setlocale(LC_ALL, 'cs_CZ');      // sort, date, uppercase, ..
 setlocale(LC_NUMERIC, 'en_US');  // keep float format with dot (see AA_Stringexpand_If)
 
 return [
+// Unused messages - no longer found in the sources; kept commented for reference.
+// "field&nbsp;id" => "id&nbsp;pol\xED\xE8ka",
+// "boolean:&nbsp;0=false,1=true" => "logick\xE1 hodnota:&nbsp;0=false,1=true",
+// "This is an undocumented %s. We don't recommend using it." => "Toto je nezdokumentovan\xFD %s. Nedoporu\xE8ujeme jej pou\x9E\xEDvat.",
+// "Close the wizard" => "Zav\xF8\xEDt pr\xF9vodce",
+// "Available parameters: " => "Dostupn\xE9 parametry:",
+// "This %s has no parameters." => "Tento %s nem\xE1 \x9E\xE1dn\xE9 parametry.",
+// "Have a look at these examples of parameters sets:" => "Pod\xEDvejte se na tyto p\xF8\xEDklady sad parametr\xF9:",
+// "OK - Save" => "OK - Ulo\x9Eit",
+// "Cancel" => "Zru\x9Ait",
+// "Show example params" => "Zobrazit uk\xE1zkov\xE9 parametry",
+// "Help: Parameter Wizard" => "N\xE1pov\xECda: Pr\xF9vodce parametry",
+// End of unused messages
 
-// admin/param_wizard.php, row 110
-"field&nbsp;id" => "id&nbsp;pol\xED\xE8ka",
-
-// admin/param_wizard.php, row 113
-"boolean:&nbsp;0=false,1=true" => "logick\xE1 hodnota:&nbsp;0=false,1=true",
-
-// admin/param_wizard.php, row 137
-"Wizard" => "Pr\xF9vodce",
-
-// admin/param_wizard.php, row 220
-"This is an undocumented %s. We don't recommend using it." => "Toto je nezdokumentovan\xFD %s. Nedoporu\xE8ujeme jej pou\x9E\xEDvat.",
-
-// admin/param_wizard.php, row 221
-"Close the wizard" => "Zav\xF8\xEDt pr\xF9vodce",
-
-// admin/param_wizard.php, row 235
-"Available parameters: " => "Dostupn\xE9 parametry:",
-
-// admin/param_wizard.php, row 255
-"This %s has no parameters." => "Tento %s nem\xE1 \x9E\xE1dn\xE9 parametry.",
-
-// admin/param_wizard.php, row 265
-"Have a look at these examples of parameters sets:" => "Pod\xEDvejte se na tyto p\xF8\xEDklady sad parametr\xF9:",
-
-// admin/param_wizard.php, row 272
-"Show" => "Zobrazit",
-
-// admin/param_wizard.php, row 283
-"OK - Save" => "OK - Ulo\x9Eit",
-
-// admin/param_wizard.php, row 284
-"Cancel" => "Zru\x9Ait",
-
-// admin/param_wizard.php, row 285
-"Show example params" => "Zobrazit uk\xE1zkov\xE9 parametry",
-
-// admin/param_wizard.php, row 289
-"OK" => "OK", // ai 2026-10
-
-// include/constants_param_wizard.php, row 68
-"Parameters" => "Parametry",
-
-// include/constants_param_wizard.php, row 70
-"Help: Parameter Wizard" => "N\xE1pov\xECda: Pr\xF9vodce parametry",
-
-// include/constants_param_wizard.php, row 77
+// include/constants_param_wizard.php, row 61
 "Input Validate Type" => "Typ kontroly vstupu (validace)",
 
-// include/constants_param_wizard.php, row 79
+// include/constants_param_wizard.php, row 63
 "No validation" => "Bez validace",
 
-// include/constants_param_wizard.php, row 82
+// include/constants_param_wizard.php, row 66
 "URL" => "",
 
-// include/constants_param_wizard.php, row 85
+// include/constants_param_wizard.php, row 69
 "E-mail" => "E-mail", // ai 2026-10
 
-// include/constants_param_wizard.php, row 88
+// include/constants_param_wizard.php, row 72
 "Number = positive integer number" => "Number = kladn\xE9 cel\xE9 \xE8\xEDslo",
 
-// include/constants_param_wizard.php, row 91, 113
+// include/constants_param_wizard.php, row 75, 97
 "Min" => "Min", // ai 2026-10
 
-// include/constants_param_wizard.php, row 92, 114
+// include/constants_param_wizard.php, row 76, 98
 "Allowed minimum value" => "Nejmen\x9A\xED povolen\xE1 hodnota",
 
-// include/constants_param_wizard.php, row 97, 119
+// include/constants_param_wizard.php, row 81, 103
 "Max" => "Max", // ai 2026-10
 
-// include/constants_param_wizard.php, row 98, 120
+// include/constants_param_wizard.php, row 82, 104
 "Allowed maximum value" => "Nejv\xECt\x9A\xED povolen\xE1 hodnota",
 
-// include/constants_param_wizard.php, row 103, 125
+// include/constants_param_wizard.php, row 87, 109
 "Step" => "Krok",
 
-// include/constants_param_wizard.php, row 110
+// include/constants_param_wizard.php, row 94
 "Number = (signed) integer number" => "Number = cel\xE9 \xE8\xEDslo (se znam\xE9nkem)",
 
-// include/constants_param_wizard.php, row 132
+// include/constants_param_wizard.php, row 116
 "Float - including scientific notation 1.2E+9" => "Float - v\xE8etn\xEC v\xECdeck\xE9ho z\xE1pisu 1.2E+9",
 
-// include/constants_param_wizard.php, row 135
+// include/constants_param_wizard.php, row 119
 "Decimal" => "Desetinn\xE9 \xE8\xEDslo", // ai 2026-06
 
-// include/constants_param_wizard.php, row 138
+// include/constants_param_wizard.php, row 122
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 \x9Aestn\xE1ctkov\xFDch \xE8\xEDslic [0-9a-f]",
 
-// include/constants_param_wizard.php, row 141
+// include/constants_param_wizard.php, row 125
 "Date = store as date" => "Date = ulo\x9E\xED se jako datum",
 
-// include/constants_param_wizard.php, row 144
+// include/constants_param_wizard.php, row 128
 "Bool = store as bool" => "Bool = ulo\x9E\xED se jako logick\xE1 hodnota",
 
-// include/constants_param_wizard.php, row 147
+// include/constants_param_wizard.php, row 131
 "User = does nothing ???" => "User = ned\xECl\xE1 nic ???",
 
-// include/constants_param_wizard.php, row 150
+// include/constants_param_wizard.php, row 134
 "Unique = prove uniqueness" => "Unique = kontrola jedine\xE8nosti",
 
-// include/constants_param_wizard.php, row 151
+// include/constants_param_wizard.php, row 135
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
  => "Hodnota je platn\xE1, jen pokud je\x9At\xEC nen\xED pou\x9Eita. U\x9Eite\xE8n\xE9 nap\xF8.\n"
    ."        pro e-maily nebo u\x9Eivatelsk\xE1 jm\xE9na.",
 
-// include/constants_param_wizard.php, row 155, 197
+// include/constants_param_wizard.php, row 139, 181
 "Field ID" => "ID pol\xED\xE8ka",
 
-// include/constants_param_wizard.php, row 156, 198
+// include/constants_param_wizard.php, row 140, 182
 "Field in which to look for matching values (default is current field)." => "Pol\xED\xE8ko, ve kter\xE9m se maj\xED hledat shodn\xE9 hodnoty (v\xFDchoz\xED je aktu\xE1ln\xED pol\xED\xE8ko).",
 
-// include/constants_param_wizard.php, row 161
+// include/constants_param_wizard.php, row 145
 "Scope" => "Rozsah",
 
-// include/constants_param_wizard.php, row 163
+// include/constants_param_wizard.php, row 147
 "<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
@@ -136,46 +104,46 @@ return [
    ."                <b>0</b> = (v\xFDchoz\xED) U\x9Eivatelsk\xE9 jm\xE9no, speci\xE1ln\xED: kontroluje jedine\xE8nost ve web\xEDc\xEDch\n"
    ."                pro spr\xE1vu \xE8ten\xE1\xF8\xF9 a v syst\xE9mu opr\xE1vn\xECn\xED. V\x9Edy pou\x9E\xEDv\xE1 pol\xED\xE8ko s ID %1",
 
-// include/constants_param_wizard.php, row 175
+// include/constants_param_wizard.php, row 159
 "Regular Expression" => "Regul\xE1rn\xED v\xFDraz",
 
-// include/constants_param_wizard.php, row 176
+// include/constants_param_wizard.php, row 160
 "Validation based on Regular Expressions" => "Validace zalo\x9Een\xE1 na regul\xE1rn\xEDch v\xFDrazech",
 
-// include/constants_param_wizard.php, row 179
+// include/constants_param_wizard.php, row 163
 "Regular Expressions" => "Regul\xE1rn\xED v\xFDrazy",
 
-// include/constants_param_wizard.php, row 180
+// include/constants_param_wizard.php, row 164
 "use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "pou\x9Eijte n\xECco jako: /^[0-9]*\$/ - viz manu\xE1l \"Regular Expressions\".",
 
-// include/constants_param_wizard.php, row 185
+// include/constants_param_wizard.php, row 169
 "Error text" => "Text chyby",
 
-// include/constants_param_wizard.php, row 186
+// include/constants_param_wizard.php, row 170
 "error message" => "chybov\xE1 zpr\xE1va",
 
-// include/constants_param_wizard.php, row 188
+// include/constants_param_wizard.php, row 172
 "Wrong value" => "Chybn\xE1 hodnota", // ai 2026-06
 
-// include/constants_param_wizard.php, row 193
+// include/constants_param_wizard.php, row 177
 "Unique e-mail" => "Jedine\xE8n\xFD e-mail",
 
-// include/constants_param_wizard.php, row 194
+// include/constants_param_wizard.php, row 178
 "Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "Kombinuje validaci e-mailu a jedine\xE8nosti. Hodnota je platn\xE1, jen pokud je platnou e-mailovou adresou, kter\xE1 je\x9At\xEC nen\xED pou\x9Eita.",
 
-// include/constants_param_wizard.php, row 203
+// include/constants_param_wizard.php, row 187
 "Slice only" => "Pouze tento web\xEDk",
 
-// include/constants_param_wizard.php, row 204
+// include/constants_param_wizard.php, row 188
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
  => "Chcete jedine\xE8nost kontrolovat pouze v tomto web\xEDku,\n"
    ."                  nebo ve v\x9Aech web\xEDc\xEDch?",
 
-// include/constants_param_wizard.php, row 212
+// include/constants_param_wizard.php, row 196
 "Password and Change Password" => "Heslo a Zm\xECna hesla",
 
-// include/constants_param_wizard.php, row 213
+// include/constants_param_wizard.php, row 197
 "Validates the passwords do not differ when changing password.\n"
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
@@ -185,466 +153,466 @@ return [
    ."        proto\x9Ee vkl\xE1dac\xED\n"
    ."        funkce prov\xE1d\xED validaci znovu p\xF8ed ulo\x9Een\xEDm nov\xE9ho hesla.</i>",
 
-// include/constants_param_wizard.php, row 228
+// include/constants_param_wizard.php, row 212
 "Function" => "Funkce",
 
-// include/constants_param_wizard.php, row 229
+// include/constants_param_wizard.php, row 213
 "How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "Jak je na t\xE9to str\xE1nce pou\x9Eito form\xE1tov\xE1n\xED textu:<br><i>pol\xED\xE8ko</i> kurz\xEDvou ozna\xE8uje pol\xED\xE8ko upravovan\xE9 v okn\xEC \"Pol\xED\xE8ka\",<br><b>n\xE1zev parametru</b> tu\xE8n\xEC ozna\xE8uje parametr na t\xE9to obrazovce.",
 
-// include/constants_param_wizard.php, row 232
+// include/constants_param_wizard.php, row 216
 "just code" => "jen k\xF3d",
 
-// include/constants_param_wizard.php, row 233
+// include/constants_param_wizard.php, row 217
 "prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "vyp\xED\x9Ae k\xF3d uveden\xFD v parametru - lze pou\x9E\xEDt _#this - jednodu\x9A\x9A\xED ne\x9E f_t (bez dal\x9A\xEDho parametru)",
 
-// include/constants_param_wizard.php, row 236
+// include/constants_param_wizard.php, row 220
 "null function" => "pr\xE1zdn\xE1 funkce",
 
-// include/constants_param_wizard.php, row 237
+// include/constants_param_wizard.php, row 221
 "prints nothing" => "nic nevyp\xED\x9Ae",
 
-// include/constants_param_wizard.php, row 240
+// include/constants_param_wizard.php, row 224
 "first value" => "prvn\xED hodnota",
 
-// include/constants_param_wizard.php, row 241
+// include/constants_param_wizard.php, row 225
 "prints first value, even if the field is multivalue" => "vyp\xED\x9Ae prvn\xED hodnotu, i kdy\x9E je pol\xED\xE8ko v\xEDcehodnotov\xE9",
 
-// include/constants_param_wizard.php, row 244
+// include/constants_param_wizard.php, row 228
 "translated" => "p\xF8eklad",
 
-// include/constants_param_wizard.php, row 245
+// include/constants_param_wizard.php, row 229
 "prints translated field based on currently selected language" => "vyp\xED\x9Ae p\xF8eklad pol\xED\xE8ka podle pr\xE1v\xEC zvolen\xE9ho jazyka",
 
-// include/constants_param_wizard.php, row 248
+// include/constants_param_wizard.php, row 232
 "abstract" => "abstrakt",
 
-// include/constants_param_wizard.php, row 249
+// include/constants_param_wizard.php, row 233
 "prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "vyp\xED\x9Ae abstrakt (pokud existuje), nebo za\xE8\xE1tek pol\xED\xE8ka <b>fulltext</b>",
 
-// include/constants_param_wizard.php, row 252
+// include/constants_param_wizard.php, row 236
 "length" => "length",
 
-// include/constants_param_wizard.php, row 253
+// include/constants_param_wizard.php, row 237
 "max number of characters grabbed from the <b>fulltext</b> field" => "maxim\xE1ln\xED po\xE8et znak\xF9 p\xF8evzat\xFDch z pol\xED\xE8ka <b>fulltext</b>",
 
-// include/constants_param_wizard.php, row 258
+// include/constants_param_wizard.php, row 242
 "fulltext" => "fulltext", // ai 2026-10
 
-// include/constants_param_wizard.php, row 259
+// include/constants_param_wizard.php, row 243
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "id pol\xED\xE8ka s cel\xFDm textem (nap\xF8. full_text.......), ze kter\xE9ho se text p\xF8eb\xEDr\xE1. Pokud je pr\xE1zdn\xE9, text se p\xF8eb\xEDr\xE1 p\xF8\xEDmo z <i>pol\xED\xE8ka</i>.",
 
-// include/constants_param_wizard.php, row 261, 303, 600
+// include/constants_param_wizard.php, row 245, 287, 584
 "full_text......." => "",
 
-// include/constants_param_wizard.php, row 264
+// include/constants_param_wizard.php, row 248
 "paragraph" => "odstavec",
 
-// include/constants_param_wizard.php, row 265
+// include/constants_param_wizard.php, row 249
 "take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "vezme prvn\xED odstavec (text do \\<BR\\> nebo \\<P\\> nebo \\</P\\>, nebo alespo\xF2 do '.' (te\xE8ky)), pokud je krat\x9A\xED ne\x9E <b>length</b>",
 
-// include/constants_param_wizard.php, row 272
+// include/constants_param_wizard.php, row 256
 "extended fulltext link" => "roz\x9A\xED\xF8en\xFD odkaz na cel\xFD text",
 
-// include/constants_param_wizard.php, row 273
+// include/constants_param_wizard.php, row 257
 "Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "Vyp\xED\x9Ae <b>text</b> (nebo obsah pol\xED\xE8ka) s odkazem na cel\xFD text. Obecn\xECj\x9A\xED verze funkce f_f. Tato funkce nepou\x9E\xEDv\xE1 <i>pol\xED\xE8ko</i>.",
 
-// include/constants_param_wizard.php, row 276, 410
+// include/constants_param_wizard.php, row 260, 394
 "link only" => "pouze odkaz",
 
-// include/constants_param_wizard.php, row 277
+// include/constants_param_wizard.php, row 261
 "field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "id pol\xED\xE8ka (nap\xF8. 'link_only.......'), ve kter\xE9m je ulo\x9Een p\xF8ep\xEDna\xE8 mezi extern\xEDm a intern\xEDm \xE8l\xE1nkem.  (Str\xE1nka by m\xECla obsahovat SSI include ../slice.php.). Pokud nen\xED vypln\xECno, pou\x9Eije se pro cel\xFD text stejn\xE1 str\xE1nka jako pro p\xF8ehled \xE8l\xE1nk\xF9 (co\x9E je obvykl\xE9 chov\xE1n\xED).",
 
-// include/constants_param_wizard.php, row 279, 413
+// include/constants_param_wizard.php, row 263, 397
 "link_only......." => "",
 
-// include/constants_param_wizard.php, row 282
+// include/constants_param_wizard.php, row 266
 "url_field" => "pol\xED\xE8ko s URL", // ai 2026-10
 
-// include/constants_param_wizard.php, row 283
+// include/constants_param_wizard.php, row 267
 "field id if field, where external URL is stored (like hl_href.........)" => "id pol\xED\xE8ka, ve kter\xE9m je ulo\x9Eena extern\xED URL (nap\xF8. hl_href.........)",
 
-// include/constants_param_wizard.php, row 285
+// include/constants_param_wizard.php, row 269
 "hl_href........." => "",
 
-// include/constants_param_wizard.php, row 288, 416
+// include/constants_param_wizard.php, row 272, 400
 "redirect" => "redirect",
 
-// include/constants_param_wizard.php, row 289, 417
+// include/constants_param_wizard.php, row 273, 401
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL jin\xE9 str\xE1nky, kter\xE1 zobrazuje obsah \xE8l\xE1nku. (Str\xE1nka by m\xECla obsahovat SSI include ../slice.php.). Pokud nen\xED vypln\xECno, pou\x9Eije se pro cel\xFD text stejn\xE1 str\xE1nka jako pro p\xF8ehled \xE8l\xE1nk\xF9 (co\x9E je obvykl\xE9 chov\xE1n\xED).",
 
-// include/constants_param_wizard.php, row 291, 419
+// include/constants_param_wizard.php, row 275, 403
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanky/solarni.shtml", // ai 2026-10
 
-// include/constants_param_wizard.php, row 294
+// include/constants_param_wizard.php, row 278
 "text" => "text", // ai 2026-10
 
-// include/constants_param_wizard.php, row 295
+// include/constants_param_wizard.php, row 279
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Text, kter\xFD bude obklopen odkazem. Pokud je tento parametr id pol\xED\xE8ka, pou\x9Eije se obsah pol\xED\xE8ka, jinak se pou\x9Eije tak, jak je",
 
-// include/constants_param_wizard.php, row 300
+// include/constants_param_wizard.php, row 284
 "condition field" => "pol\xED\xE8ko podm\xEDnky",
 
-// include/constants_param_wizard.php, row 301
+// include/constants_param_wizard.php, row 285
 "when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "pokud zadan\xE9 pol\xED\xE8ko nem\xE1 \x9E\xE1dn\xFD obsah, odkaz se nevyp\xED\x9Ae, vyp\xED\x9Ae se jen <b>text</b>",
 
-// include/constants_param_wizard.php, row 306, 533
+// include/constants_param_wizard.php, row 290, 517
 "tag addition" => "tag addition",
 
-// include/constants_param_wizard.php, row 307, 534
+// include/constants_param_wizard.php, row 291, 518
 "additional text to the \"\\<a\\>\" tag" => "dal\x9A\xED text do tagu \"\\<a\\>\"",
 
-// include/constants_param_wizard.php, row 309, 536
+// include/constants_param_wizard.php, row 293, 520
 "target=_blank" => "",
 
-// include/constants_param_wizard.php, row 312, 422
+// include/constants_param_wizard.php, row 296, 406
 "no session id" => "bez session id",
 
-// include/constants_param_wizard.php, row 313, 423
+// include/constants_param_wizard.php, row 297, 407
 "If 1, the session id (AA_Session=...) is not added to url" => "Pokud je 1, session id (AA_Session=...) se do url nep\xF8id\xE1v\xE1",
 
-// include/constants_param_wizard.php, row 320, 324
+// include/constants_param_wizard.php, row 304, 308
 "condition" => "condition", // ai 2026-10
 
-// include/constants_param_wizard.php, row 321
+// include/constants_param_wizard.php, row 305
 "This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "Toto je velmi mocn\xE1 funkce. Lze ji pou\x9E\xEDt jako lep\x9A\xED n\xE1hradu n\xECkter\xFDch p\xF8edchoz\xEDch funkc\xED. Pokud <b>cond_field</b> = <b>condition</b>, vyp\xED\x9Ae <b>begin</b> <i>pol\xED\xE8ko</i> <b>end</b>, jinak vyp\xED\x9Ae <b>else</b>. Pokud <b>cond_field</b> nen\xED zad\xE1no, pou\x9Eije se <i>pol\xED\xE8ko</i>. Podm\xEDnku lze obr\xE1tit (negovat) znakem \"!\" na jej\xEDm za\xE8\xE1tku.",
 
-// include/constants_param_wizard.php, row 325
+// include/constants_param_wizard.php, row 309
 "you may use \"!\" to reverse (negate) the condition" => "znakem \"!\" m\xF9\x9Eete podm\xEDnku obr\xE1tit (negovat)",
 
-// include/constants_param_wizard.php, row 330, 509
+// include/constants_param_wizard.php, row 314, 493
 "begin" => "begin",
 
-// include/constants_param_wizard.php, row 331
+// include/constants_param_wizard.php, row 315
 "text to print before <i>field</i>, if condition is true" => "text vypsan\xFD p\xF8ed <i>pol\xED\xE8kem</i>, pokud je podm\xEDnka spln\xECna",
 
-// include/constants_param_wizard.php, row 333
+// include/constants_param_wizard.php, row 317
 "Yes" => "Ano",
 
-// include/constants_param_wizard.php, row 336
+// include/constants_param_wizard.php, row 320
 "end" => "end",
 
-// include/constants_param_wizard.php, row 337
+// include/constants_param_wizard.php, row 321
 "text to print after <i>field</i>, if condition is true" => "text vypsan\xFD za <i>pol\xED\xE8kem</i>, pokud je podm\xEDnka spln\xECna",
 
-// include/constants_param_wizard.php, row 342
+// include/constants_param_wizard.php, row 326
 "else" => "else",
 
-// include/constants_param_wizard.php, row 343
+// include/constants_param_wizard.php, row 327
 "text to print when condition is not satisfied" => "text vypsan\xFD, pokud podm\xEDnka nen\xED spln\xECna",
 
-// include/constants_param_wizard.php, row 345
+// include/constants_param_wizard.php, row 329
 "No" => "Ne",
 
-// include/constants_param_wizard.php, row 348
+// include/constants_param_wizard.php, row 332
 "cond_field" => "cond_field",
 
-// include/constants_param_wizard.php, row 349
+// include/constants_param_wizard.php, row 333
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "pol\xED\xE8ko porovn\xE1van\xE9 s <b>condition</b> - pokud nen\xED vypln\xECno, pou\x9Eije se <i>pol\xED\xE8ko</i>",
 
-// include/constants_param_wizard.php, row 354
+// include/constants_param_wizard.php, row 338
 "skip_the_field" => "vynechat_pol\xED\xE8ko", // ai 2026-10
 
-// include/constants_param_wizard.php, row 355
+// include/constants_param_wizard.php, row 339
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "pokud je nastaveno na 1, p\xF8esko\xE8\xED <i>pol\xED\xE8ko</i> (vyp\xED\x9Ae pouze <b>begin end</b> nebo <b>else</b>)",
 
-// include/constants_param_wizard.php, row 362
+// include/constants_param_wizard.php, row 346
 "This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Tento p\xF8\xEDklad lze pou\x9E\xEDt nap\xF8. pro pol\xED\xE8ko Highlight - vyp\xED\x9Ae Yes nebo No podle obsahu pol\xED\xE8ka",
 
-// include/constants_param_wizard.php, row 363
+// include/constants_param_wizard.php, row 347
 "1:Yes::No::1" => "1:Yes::No::1",
 
-// include/constants_param_wizard.php, row 366
+// include/constants_param_wizard.php, row 350
 "When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "Pokud je pol\xED\xE8ko s e-mailem vypln\xECno, vyp\xED\x9Ae n\xECco jako \"Email: email@apc.org\", pokud je pr\xE1zdn\xE9, nevyp\xED\x9Ae nic",
 
-// include/constants_param_wizard.php, row 367
+// include/constants_param_wizard.php, row 351
 "!:Email#:&nbsp;" => "",
 
-// include/constants_param_wizard.php, row 370
+// include/constants_param_wizard.php, row 354
 "Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "Vyp\xED\x9Ae atribut v\xFD\x9Aky obr\xE1zku, pokud je <i>pol\xED\xE8ko</i> vypln\xECno, jinak nevyp\xED\x9Ae nic.",
 
-// include/constants_param_wizard.php, row 371
+// include/constants_param_wizard.php, row 355
 "!:height=" => "",
 
-// include/constants_param_wizard.php, row 376
+// include/constants_param_wizard.php, row 360
 "date" => "datum",
 
-// include/constants_param_wizard.php, row 377
+// include/constants_param_wizard.php, row 361
 "prints date in a user defined format" => "vyp\xED\x9Ae datum ve form\xE1tu definovan\xE9m u\x9Eivatelem",
 
-// include/constants_param_wizard.php, row 380
+// include/constants_param_wizard.php, row 364
 "format" => "form\xE1t",
 
-// include/constants_param_wizard.php, row 381
+// include/constants_param_wizard.php, row 365
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "form\xE1t jako v PHP - viz <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>manu\xE1l PHP</a>",
 
-// include/constants_param_wizard.php, row 383
+// include/constants_param_wizard.php, row 367
 "m-d-Y" => "d-m-Y", // ai 2026-06
 
-// include/constants_param_wizard.php, row 388
+// include/constants_param_wizard.php, row 372
 "edit item" => "\xFAprava \xE8l\xE1nku",
 
-// include/constants_param_wizard.php, row 389
+// include/constants_param_wizard.php, row 373
 "_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM se pou\x9E\xEDv\xE1 na administra\xE8n\xED str\xE1nce index.php pro url itemedit",
 
-// include/constants_param_wizard.php, row 392
+// include/constants_param_wizard.php, row 376
 "type" => "typ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 393
+// include/constants_param_wizard.php, row 377
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - pro \xFApravu diskuse<br>itemcount - pro v\xFDpis po\xE8tu \xE8l\xE1nk\xF9<br>safe - pro bezpe\xE8n\xE9 html<br>slice_info - vybere pol\xED\xE8ko z informac\xED o web\xEDku<br>edit - URL pro \xFApravu \xE8l\xE1nku<br>add - URL pro p\xF8id\xE1n\xED nov\xE9ho \xE8l\xE1nku",
 
-// include/constants_param_wizard.php, row 395
+// include/constants_param_wizard.php, row 379
 "edit" => "upravit",
 
-// include/constants_param_wizard.php, row 398
+// include/constants_param_wizard.php, row 382
 "return url" => "n\xE1vratov\xE9 url",
 
-// include/constants_param_wizard.php, row 399
+// include/constants_param_wizard.php, row 383
 "Return url being called from, usually leave blank and allow default" => "N\xE1vratov\xE9 url, ze kter\xE9ho je vol\xE1no; obvykle ponechte pr\xE1zdn\xE9 a pou\x9Eije se v\xFDchoz\xED",
 
-// include/constants_param_wizard.php, row 401
+// include/constants_param_wizard.php, row 385
 "/mysite.shtml" => "/mujweb.shtml", // ai 2026-10
 
-// include/constants_param_wizard.php, row 406
+// include/constants_param_wizard.php, row 390
 "fulltext link" => "odkaz na cel\xFD text",
 
-// include/constants_param_wizard.php, row 407
+// include/constants_param_wizard.php, row 391
 "Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "Vyp\xED\x9Ae URL do odkazu na cel\xFD text - umo\x9E\xF2uje pou\x9E\xEDvat extern\xED \xE8l\xE1nky. Pou\x9Eijte bezprost\xF8edn\xEC za \"\\<a href=\"",
 
-// include/constants_param_wizard.php, row 411
+// include/constants_param_wizard.php, row 395
 "field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "id pol\xED\xE8ka (nap\xF8. 'link_only.......'), ve kter\xE9m je ulo\x9Een p\xF8ep\xEDna\xE8 mezi extern\xEDm a intern\xEDm \xE8l\xE1nkem. Toto pol\xED\xE8ko b\xFDv\xE1 obvykle zobrazeno jako za\x9Akrt\xE1vac\xED pol\xED\xE8ko. Pokud je za\x9Akrtnuto, vyp\xED\x9Ae se <i>pol\xED\xE8ko</i>, pokud za\x9Akrtnuto nen\xED, vyp\xED\x9Ae se odkaz na cel\xFD text (z\xE1le\x9E\xED tak\xE9 na parametru <b>redirect</b>).",
 
-// include/constants_param_wizard.php, row 430
+// include/constants_param_wizard.php, row 414
 "image height" => "v\xFD\x9Aka obr\xE1zku",
 
-// include/constants_param_wizard.php, row 431
+// include/constants_param_wizard.php, row 415
 "An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "Funkce star\xE9ho stylu. Vyp\xED\x9Ae <i>pol\xED\xE8ko</i> jako hodnotu v\xFD\x9Aky obr\xE1zku (\\<img height=...\\>), nebo tag v\xFD\x9Aky odstran\xED. Pou\x9Eijte bezprost\xF8edn\xEC za \"height=\".Lep\x9A\xED zp\xF9sob nab\xEDz\xED funkce f_c s parametry \":height=\".",
 
-// include/constants_param_wizard.php, row 434
+// include/constants_param_wizard.php, row 418
 "print HTML multiple" => "v\xFDpis HTML (v\xEDcehodnotov\xFD)",
 
-// include/constants_param_wizard.php, row 435
+// include/constants_param_wizard.php, row 419
 "prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "vyp\xED\x9Ae obsah <i>pol\xED\xE8ka</i> podle p\xF8\xEDznaku html (bu\xEF escapuje speci\xE1ln\xED znaky html, nebo prost\xEC vyp\xED\x9Ae)",
 
-// include/constants_param_wizard.php, row 438
+// include/constants_param_wizard.php, row 422
 "delimiter" => "odd\xEClova\xE8",
 
-// include/constants_param_wizard.php, row 439
+// include/constants_param_wizard.php, row 423
 "if specified, a field with multiple values is displayed with the values delimited by it" => "pokud je zad\xE1n, v\xEDcehodnotov\xE9 pol\xED\xE8ko se zobraz\xED s hodnotami odd\xEClen\xFDmi t\xEDmto odd\xEClova\xE8em",
 
-// include/constants_param_wizard.php, row 446
+// include/constants_param_wizard.php, row 430
 "image src" => "zdroj obr\xE1zku",
 
-// include/constants_param_wizard.php, row 447
+// include/constants_param_wizard.php, row 431
 "prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "vyp\xED\x9Ae <i>pol\xED\xE8ko</i> jako zdroj obr\xE1zku (\\<img src=...\\>) - NO_PICTURE, pokud \x9E\xE1dn\xFD nen\xED. Tot\xE9\x9E lze prov\xE9st funkc\xED f_c s parametry :::NO_PICTURE.",
 
-// include/constants_param_wizard.php, row 450
+// include/constants_param_wizard.php, row 434
 "image size" => "velikost obr\xE1zku",
 
-// include/constants_param_wizard.php, row 451
+// include/constants_param_wizard.php, row 435
 "prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "vyp\xED\x9Ae <i>pol\xED\xE8ko</i> jako velikost obr\xE1zku (height='xxx' width='yyy') (nebo jinou informaci o obr\xE1zku), nebo pr\xE1zdn\xFD \xF8et\xECzec, pokud ji nedok\xE1\x9Ee zjistit; nezach\xE1z\xED speci\xE1ln\xEC s URL z adres\xE1\xF8e uploads, mo\x9En\xE1 n\xECkdy pozd\xECji!",
 
-// include/constants_param_wizard.php, row 454, 830
+// include/constants_param_wizard.php, row 438, 814
 "information" => "informace",
 
-// include/constants_param_wizard.php, row 455
+// include/constants_param_wizard.php, row 439
 "specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "ur\xE8uje vr\xE1cenou informaci: <br> - <i>html</i> - (v\xFDchoz\xED) - vr\xE1t\xED velikost obr\xE1zku jako HTML atributy (height='xxx' width='yyy')<br> - <i>width</i> - vr\xE1t\xED \x9A\xED\xF8ku obr\xE1zku v pixelech<br> - <i>height</i> - vr\xE1t\xED v\xFD\x9Aku obr\xE1zku v pixelech<br> - <i>imgtype</i> - vr\xE1t\xED p\xF8\xEDznak typu obr\xE1zku: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - vr\xE1t\xED mimetype obr\xE1zku (nap\xF8. 'image/gif', 'application/x-shockwave-flash', ...)",
 
-// include/constants_param_wizard.php, row 462
+// include/constants_param_wizard.php, row 446
 "substring with case change" => "pod\xF8et\xECzec se zm\xECnou velikosti p\xEDsmen",
 
-// include/constants_param_wizard.php, row 463
+// include/constants_param_wizard.php, row 447
 "prints a part of <i>the field</i>" => "vyp\xED\x9Ae \xE8\xE1st <i>pol\xED\xE8ka</i>",
 
-// include/constants_param_wizard.php, row 466
+// include/constants_param_wizard.php, row 450
 "start" => "za\xE8\xE1tek",
 
-// include/constants_param_wizard.php, row 467
+// include/constants_param_wizard.php, row 451
 "position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "pozice za\xE8\xE1tku pod\xF8et\xECzce (0=prvn\xED, 1=druh\xFD, -1=posledn\xED,-2=druh\xFD od konce)",
 
-// include/constants_param_wizard.php, row 472
+// include/constants_param_wizard.php, row 456
 "count" => "po\xE8et",
 
-// include/constants_param_wizard.php, row 473
+// include/constants_param_wizard.php, row 457
 "count of characters (0=until the end)" => "po\xE8et znak\xF9 (0=a\x9E do konce)",
 
-// include/constants_param_wizard.php, row 478
+// include/constants_param_wizard.php, row 462
 "case" => "velikost p\xEDsmen",
 
-// include/constants_param_wizard.php, row 479
+// include/constants_param_wizard.php, row 463
 "upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "upper - p\xF8evede na VELK\xC1 P\xCDSMENA, lower - p\xF8evede na mal\xE1 p\xEDsmena, first - p\xF8evede na Prvn\xED Velk\xE9; v\xFDchoz\xED je beze zm\xECny",
 
-// include/constants_param_wizard.php, row 484
+// include/constants_param_wizard.php, row 468
 "add string" => "add string",
 
-// include/constants_param_wizard.php, row 485
+// include/constants_param_wizard.php, row 469
 "if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "pokud je \xF8et\xECzec zkr\xE1cen, p\xF8ipoj\xED se k n\xECmu <i>add string</i> (pravd\xECpodobn\xEC n\xECco jako [...])",
 
-// include/constants_param_wizard.php, row 491
+// include/constants_param_wizard.php, row 475
 "Auto Update Checkbox" => "Za\x9Akrt\xE1vac\xED pol\xED\xE8ko s automatickou aktualizac\xED",
 
-// include/constants_param_wizard.php, row 493
+// include/constants_param_wizard.php, row 477
 "linked field" => "pol\xED\xE8ko s odkazem",
 
-// include/constants_param_wizard.php, row 494
+// include/constants_param_wizard.php, row 478
 "prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "vyp\xED\x9Ae <i>pol\xED\xE8ko</i> jako odkaz, pokud <b>link URL</b> nen\xED NULL, jinak vyp\xED\x9Ae jen <i>pol\xED\xE8ko</i>",
 
-// include/constants_param_wizard.php, row 497
+// include/constants_param_wizard.php, row 481
 "link URL" => "link URL",
 
-// include/constants_param_wizard.php, row 500
+// include/constants_param_wizard.php, row 484
 "source_href....." => "",
 
-// include/constants_param_wizard.php, row 505
+// include/constants_param_wizard.php, row 489
 "e-mail or link" => "e-mail nebo odkaz",
 
-// include/constants_param_wizard.php, row 506
+// include/constants_param_wizard.php, row 490
 "mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "mailto odkaz - vyp\xED\x9Ae: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>pol\xED\xE8ko</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. Pokud <i>pol\xED\xE8ko</i> nen\xED vypln\xECno, vyp\xED\x9Ae <b>else_field/text</b>.",
 
-// include/constants_param_wizard.php, row 510
+// include/constants_param_wizard.php, row 494
 "text before the link" => "text p\xF8ed odkazem",
 
-// include/constants_param_wizard.php, row 512
+// include/constants_param_wizard.php, row 496
 "e-mail" => "e-mail", // ai 2026-10
 
-// include/constants_param_wizard.php, row 515
+// include/constants_param_wizard.php, row 499
 "field/text" => "field/text",
 
-// include/constants_param_wizard.php, row 516
+// include/constants_param_wizard.php, row 500
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "pokud je tento parametr id pol\xED\xE8ka, pou\x9Eije se obsah pol\xED\xE8ka, jinak se pou\x9Eije tak, jak je",
 
-// include/constants_param_wizard.php, row 521
+// include/constants_param_wizard.php, row 505
 "else_field/text" => "else_field/text",
 
-// include/constants_param_wizard.php, row 522
+// include/constants_param_wizard.php, row 506
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "pokud je <i>pol\xED\xE8ko</i> pr\xE1zdn\xE9, vyp\xED\x9Ae se pouze tento text (nebo obsah pol\xED\xE8ka)",
 
-// include/constants_param_wizard.php, row 527
+// include/constants_param_wizard.php, row 511
 "linktype" => "typ odkazu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 528
+// include/constants_param_wizard.php, row 512
 "mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (v\xFDchoz\xED je mailto) - funkci f_m lze pou\x9E\xEDt i pro odkazy - sta\xE8\xED jako tento parametr zadat 'href'",
 
-// include/constants_param_wizard.php, row 530
+// include/constants_param_wizard.php, row 514
 "href" => "",
 
-// include/constants_param_wizard.php, row 539
+// include/constants_param_wizard.php, row 523
 "hide email" => "skr\xFDt e-mail",
 
-// include/constants_param_wizard.php, row 540
+// include/constants_param_wizard.php, row 524
 "if 1 then hide email from spam robots. Default is 0." => "pokud je 1, skryje e-mail p\xF8ed spamovac\xEDmi roboty. V\xFDchoz\xED je 0.",
 
-// include/constants_param_wizard.php, row 547
+// include/constants_param_wizard.php, row 531
 "id" => "",
 
-// include/constants_param_wizard.php, row 548
+// include/constants_param_wizard.php, row 532
 "prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "vyp\xED\x9Ae dlouh\xE9 (unpacked) id (pou\x9Eijte, pokud chcete zobrazit 'item id' nebo 'slice id')",
 
-// include/constants_param_wizard.php, row 551
+// include/constants_param_wizard.php, row 535
 "'New' sign" => "zna\xE8ka 'New'",
 
-// include/constants_param_wizard.php, row 552
+// include/constants_param_wizard.php, row 536
 "prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "vyp\xED\x9Ae 'New' nebo 'Old' nebo jak\xFDkoli jin\xFD text z <b>newer text</b> nebo <b>older text</b> podle <b>time</b>. \xC8as se zad\xE1v\xE1 v minut\xE1ch od aktu\xE1ln\xEDho \xE8asu.",
 
-// include/constants_param_wizard.php, row 555
+// include/constants_param_wizard.php, row 539
 "time" => "time",
 
-// include/constants_param_wizard.php, row 556
+// include/constants_param_wizard.php, row 540
 "Time in minutes from current time." => "\xC8as v minut\xE1ch od aktu\xE1ln\xEDho \xE8asu.",
 
-// include/constants_param_wizard.php, row 558
+// include/constants_param_wizard.php, row 542
 "1440" => "",
 
-// include/constants_param_wizard.php, row 561
+// include/constants_param_wizard.php, row 545
 "newer text" => "newer text",
 
-// include/constants_param_wizard.php, row 562
+// include/constants_param_wizard.php, row 546
 "Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "Text, kter\xFD se vyp\xED\x9Ae, pokud je datum v <i>pol\xED\xE8ku</i> nov\xECj\x9A\xED ne\x9E <i>current_time</i> - <b>time</b>.",
 
-// include/constants_param_wizard.php, row 564
+// include/constants_param_wizard.php, row 548
 "NEW" => "NOV\xC9", // ai 2026-06
 
-// include/constants_param_wizard.php, row 567
+// include/constants_param_wizard.php, row 551
 "older text" => "older text",
 
-// include/constants_param_wizard.php, row 568
+// include/constants_param_wizard.php, row 552
 "Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "Text, kter\xFD se vyp\xED\x9Ae, pokud je datum v <i>pol\xED\xE8ku</i> star\x9A\xED ne\x9E <i>current_time</i> - <b>time</b>",
 
-// include/constants_param_wizard.php, row 575
+// include/constants_param_wizard.php, row 559
 "text (blurb) from another slice" => "text (blurb) z jin\xE9ho web\xEDku",
 
-// include/constants_param_wizard.php, row 576
+// include/constants_param_wizard.php, row 560
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "vyp\xED\x9Ae 'blurb' (kousek textu) z jin\xE9ho web\xEDku na z\xE1klad\xEC jednoduch\xE9 podm\xEDnky.<br>Pokud se <i>pol\xED\xE8ko</i> (nebo pol\xED\xE8ko zadan\xE9 v <b>stringToMatch</b>) v aktu\xE1ln\xEDm web\xEDku shoduje s obsahem <b>fieldToMatch</b> ve web\xEDku <b>blurbSliceId</b>, vr\xE1t\xED obsah <b>fieldToReturn</b> z web\xEDku <b>blurbSliceId</b>.",
 
-// include/constants_param_wizard.php, row 579
+// include/constants_param_wizard.php, row 563
 "stringToMatch" => "stringToMatch", // ai 2026-10
 
-// include/constants_param_wizard.php, row 580
+// include/constants_param_wizard.php, row 564
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "V\xFDchoz\xED je <i>pol\xED\xE8ko</i>.  Lze zadat bu\xEF jako id pol\xED\xE8ka (headline........), NEBO jako statick\xFD text.",
 
-// include/constants_param_wizard.php, row 582
+// include/constants_param_wizard.php, row 566
 "category........" => "",
 
-// include/constants_param_wizard.php, row 585
+// include/constants_param_wizard.php, row 569
 "blurbSliceId" => "blurbSliceId", // ai 2026-10
 
-// include/constants_param_wizard.php, row 586
+// include/constants_param_wizard.php, row 570
 "unpacked slice id of the slice where the blurb text is stored" => "dlouh\xE9 (unpacked) id web\xEDku, ve kter\xE9m je text blurbu ulo\x9Een",
 
-// include/constants_param_wizard.php, row 588
+// include/constants_param_wizard.php, row 572
 "41415f436f72655f4669656c64732e2e" => "",
 
-// include/constants_param_wizard.php, row 591
+// include/constants_param_wizard.php, row 575
 "fieldToMatch" => "fieldToMatch", // ai 2026-10
 
-// include/constants_param_wizard.php, row 592
+// include/constants_param_wizard.php, row 576
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id pol\xED\xE8ka ve web\xEDku <b>blurbSliceId</b>, ve kter\xE9m se hled\xE1 <b>stringToMatch</b>",
 
-// include/constants_param_wizard.php, row 594
+// include/constants_param_wizard.php, row 578
 "headline........" => "",
 
-// include/constants_param_wizard.php, row 597
+// include/constants_param_wizard.php, row 581
 "fieldToReturn" => "fieldToReturn", // ai 2026-10
 
-// include/constants_param_wizard.php, row 598
+// include/constants_param_wizard.php, row 582
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id pol\xED\xE8ka ve web\xEDku <b>blurbSliceId</b>, ve kter\xE9m je ulo\x9Een text blurbu (co se m\xE1 vypsat)",
 
-// include/constants_param_wizard.php, row 605
+// include/constants_param_wizard.php, row 589
 "RSS tag" => "RSS tag",
 
-// include/constants_param_wizard.php, row 606
+// include/constants_param_wizard.php, row 590
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "slou\x9E\xED pro intern\xED pot\xF8eby p\xF8eddefinovan\xFDch RSS alias\xF9 (nap\xF8. _#RSS_TITL). P\xF8id\xE1v\xE1 tagy odpov\xEDdaj\xEDc\xED RSS 0.91.",
 
-// include/constants_param_wizard.php, row 609, 613, 805
+// include/constants_param_wizard.php, row 593, 597, 789
 "default" => "default", // ai 2026-10
 
-// include/constants_param_wizard.php, row 610
+// include/constants_param_wizard.php, row 594
 "prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "vyp\xED\x9Ae <i>pol\xED\xE8ko</i>, nebo v\xFDchoz\xED hodnotu, pokud je <i>pol\xED\xE8ko</i> pr\xE1zdn\xE9. Tot\xE9\x9E lze prov\xE9st funkc\xED f_c s parametry :::<b>default</b>.",
 
-// include/constants_param_wizard.php, row 614
+// include/constants_param_wizard.php, row 598
 "default value" => "v\xFDchoz\xED hodnota",
 
-// include/constants_param_wizard.php, row 616
+// include/constants_param_wizard.php, row 600
 "javascript: window.alert('No source url specified')" => "javascript: window.alert('Nebyla zad\xE1na zdrojov\xE1 url')", // ai 2026-06
 
-// include/constants_param_wizard.php, row 621
+// include/constants_param_wizard.php, row 605
 "print field" => "v\xFDpis pol\xED\xE8ka",
 
-// include/constants_param_wizard.php, row 622
+// include/constants_param_wizard.php, row 606
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "vyp\xED\x9Ae obsah <i>pol\xED\xE8ka</i> (nebo <i>unalias string</i>) podle p\xF8\xEDznaku html (pokud p\xF8\xEDznak html nen\xED nastaven, p\xF8evede obsah na html. Na rozd\xEDl od funkce f_h p\xF8ev\xE1d\xED na html i konce \xF8\xE1dk\xF9 (v z\xE1kladn\xED variant\xEC)",
 
-// include/constants_param_wizard.php, row 625
+// include/constants_param_wizard.php, row 609
 "unalias string" => "unalias string",
 
-// include/constants_param_wizard.php, row 626
+// include/constants_param_wizard.php, row 610
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "pokud je <i>unalias string</i> definov\xE1n, funkce ignoruje <i>pol\xED\xE8ko</i> a vyp\xED\x9Ae rad\xECji <i>unalias string</i>. V tomto \xF8et\xECzci samoz\xF8ejm\xEC m\xF9\x9Eete pou\x9E\xEDt libovoln\xE9 aliasy (nebo pol\xED\xE8ka jako {headline.........})",
 
-// include/constants_param_wizard.php, row 628
+// include/constants_param_wizard.php, row 612
 "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>" => "",
 
-// include/constants_param_wizard.php, row 631
+// include/constants_param_wizard.php, row 615
 "output modify" => "\xFAprava v\xFDstupu",
 
-// include/constants_param_wizard.php, row 632
+// include/constants_param_wizard.php, row 616
 "You can use some output modifications:<br>\n"
    ."                   &nbsp; - [<i>empty</i>] - no modification<br>\n"
    ."                   &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>\n"
@@ -663,175 +631,175 @@ return [
    ."                   &nbsp; - <i>striptags</i>  - odstran\xED z \xF8et\xECzce HTML a PHP tagy<br>\n"
    ."                   &nbsp; - <i>asis</i>  - vyp\xED\x9Ae obsah pol\xED\xE8ka 'tak, jak je' - nep\xF8id\xE1v\xE1 &lt;br&gt; na konce \xF8\xE1dk\xF9, ani kdy\x9E je pol\xED\xE8ko ozna\xE8eno jako 'Plain text'. Parametr 'asis' se hod\xED nap\xF8\xEDklad pro funkci 'Modify content...' ve Spr\xE1vci \xE8l\xE1nk\xF9<br>",
 
-// include/constants_param_wizard.php, row 647
+// include/constants_param_wizard.php, row 631
 "user function" => "u\x9Eivatelsk\xE1 funkce",
 
-// include/constants_param_wizard.php, row 648
+// include/constants_param_wizard.php, row 632
 "calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "vol\xE1 u\x9Eivatelem definovanou funkci (viz How to create new aliases ve <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)",
 
-// include/constants_param_wizard.php, row 651
+// include/constants_param_wizard.php, row 635
 "function" => "funkce",
 
-// include/constants_param_wizard.php, row 652
+// include/constants_param_wizard.php, row 636
 "name of the function in the include/usr_aliasfnc.php file" => "n\xE1zev funkce v souboru include/usr_aliasfnc.php",
 
-// include/constants_param_wizard.php, row 654
+// include/constants_param_wizard.php, row 638
 "usr_start_end_date_cz" => "",
 
-// include/constants_param_wizard.php, row 657
+// include/constants_param_wizard.php, row 641
 "parameter" => "parametr",
 
-// include/constants_param_wizard.php, row 658
+// include/constants_param_wizard.php, row 642
 "a parameter passed to the function" => "parametr p\xF8edan\xFD funkci",
 
-// include/constants_param_wizard.php, row 665
+// include/constants_param_wizard.php, row 649
 "view" => "pohled",
 
-// include/constants_param_wizard.php, row 666
+// include/constants_param_wizard.php, row 650
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "umo\x9E\xF2uje manipulovat s pohledy (views). Jde o slo\x9Eitou a mocnou funkci, popsanou ve <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, kter\xE1 umo\x9E\xF2uje zobrazit na m\xEDst\xEC aliasu libovoln\xFD pohled. Lze ji pou\x9E\xEDt pro tabulku 'souvisej\xEDc\xEDch \xE8l\xE1nk\xF9' nebo pro zobrazen\xED obsahu souvisej\xEDc\xEDho web\xEDku.",
 
-// include/constants_param_wizard.php, row 669
+// include/constants_param_wizard.php, row 653
 "complex parameter" => "komplexn\xED parametr",
 
-// include/constants_param_wizard.php, row 670
+// include/constants_param_wizard.php, row 654
 "this parameter is the same as we use in view.php url parameter - see the FAQ" => "tento parametr je stejn\xFD jako ten, kter\xFD pou\x9E\xEDv\xE1me v url parametru view.php - viz FAQ",
 
-// include/constants_param_wizard.php, row 672
+// include/constants_param_wizard.php, row 656
 "vid=4&amp;cmd[23]=v-25" => "",
 
-// include/constants_param_wizard.php, row 677
+// include/constants_param_wizard.php, row 661
 "image width" => "\x9A\xED\xF8ka obr\xE1zku",
 
-// include/constants_param_wizard.php, row 678
+// include/constants_param_wizard.php, row 662
 "An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "Funkce star\xE9ho stylu. Vyp\xED\x9Ae <i>pol\xED\xE8ko</i> jako hodnotu \x9A\xED\xF8ky obr\xE1zku (\\<img width=...\\>), nebo tag \x9A\xED\xF8ky odstran\xED. Pou\x9Eijte bezprost\xF8edn\xEC za \"width=\".Lep\x9A\xED zp\xF9sob nab\xEDz\xED funkce f_c s parametry \":width=\".",
 
-// include/constants_param_wizard.php, row 681
+// include/constants_param_wizard.php, row 665
 "transformation" => "transformace",
 
-// include/constants_param_wizard.php, row 682
+// include/constants_param_wizard.php, row 666
 "Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Umo\x9E\xF2uje transformovat hodnotu pol\xED\xE8ka na jinou hodnotu.<br>Pou\x9Eit\xED: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>Pokud je obsah <i>pol\xED\xE8ka</i> roven <b>content_1</b>, vr\xE1t\xED se <b>return_value_1</b>. Pokud je obsah <i>pol\xED\xE8ka</i> roven <b>content_2</b>, vr\xE1t\xED se <b>return_value_2</b>. Pokud <i>pol\xED\xE8ko nen\xED rovno \x9E\xE1dn\xE9mu <b>content_x</b>, vr\xE1t\xED se <b>default</b></i>.",
 
-// include/constants_param_wizard.php, row 685, 697, 709, 721, 733, 745, 757, 769, 781, 793
+// include/constants_param_wizard.php, row 669, 681, 693, 705, 717, 729, 741, 753, 765, 777
 "content" => "content",
 
-// include/constants_param_wizard.php, row 686, 698, 710, 722, 734, 746, 758, 770, 782, 794
+// include/constants_param_wizard.php, row 670, 682, 694, 706, 718, 730, 742, 754, 766, 778
 "string for comparison with <i>the field</i> for following return value" => "\xF8et\xECzec pro porovn\xE1n\xED s <i>pol\xED\xE8kem</i> pro n\xE1sleduj\xEDc\xED n\xE1vratovou hodnotu",
 
-// include/constants_param_wizard.php, row 691, 703, 715, 727, 739, 751, 763, 775, 787, 799
+// include/constants_param_wizard.php, row 675, 687, 699, 711, 723, 735, 747, 759, 771, 783
 "return value" => "return value",
 
-// include/constants_param_wizard.php, row 692, 704, 716, 728, 740, 752, 764, 776, 788, 800
+// include/constants_param_wizard.php, row 676, 688, 700, 712, 724, 736, 748, 760, 772, 784
 "string to return if previous content matches - You can use field_id too" => "\xF8et\xECzec, kter\xFD se vr\xE1t\xED, pokud se p\xF8edchoz\xED content shoduje - m\xF9\x9Eete pou\x9E\xEDt i field_id",
 
-// include/constants_param_wizard.php, row 694, 706, 718, 730, 742, 754, 766, 778, 790, 802, 808
+// include/constants_param_wizard.php, row 678, 690, 702, 714, 726, 738, 750, 762, 774, 786, 792
 "Environment" => "Ekologie", // ai 2026-06
 
-// include/constants_param_wizard.php, row 806
+// include/constants_param_wizard.php, row 790
 "if no content matches, use this string as return value" => "pokud se neshoduje \x9E\xE1dn\xFD content, pou\x9Eije se tento \xF8et\xECzec jako n\xE1vratov\xE1 hodnota",
 
-// include/constants_param_wizard.php, row 813
+// include/constants_param_wizard.php, row 797
 "expanded string" => "expandovan\xFD \xF8et\xECzec",
 
-// include/constants_param_wizard.php, row 814
+// include/constants_param_wizard.php, row 798
 "expands the string in the parameter" => "expanduje \xF8et\xECzec v parametru",
 
-// include/constants_param_wizard.php, row 817
+// include/constants_param_wizard.php, row 801
 "string to expand" => "\xF8et\xECzec k expanzi",
 
-// include/constants_param_wizard.php, row 818
+// include/constants_param_wizard.php, row 802
 "if specified then this string is expanded, if not specified then expands the contents of the field" => "pokud je zad\xE1n, expanduje se tento \xF8et\xECzec, pokud zad\xE1n nen\xED, expanduje se obsah pol\xED\xE8ka",
 
-// include/constants_param_wizard.php, row 826
+// include/constants_param_wizard.php, row 810
 "file information" => "informace o souboru",
 
-// include/constants_param_wizard.php, row 827
+// include/constants_param_wizard.php, row 811
 "prints <i>the field</i> as file information, its size or type" => "vyp\xED\x9Ae <i>pol\xED\xE8ko</i> jako informaci o souboru, jeho velikost nebo typ",
 
-// include/constants_param_wizard.php, row 831
+// include/constants_param_wizard.php, row 815
 "specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "ur\xE8uje vr\xE1cenou informaci: <br> - <i>name</i> - n\xE1zev souboru<br> - <i>type</i> - vr\xE1t\xED typ souboru (nap\xF8. TXT)<br> - <i>size</i> - vr\xE1t\xED velikost souboru v kB nebo MB (nap\xF8. 12.1 kB)<br> - <i>bytesize</i> - (nap\xF8. 12128)<br> - <i>link</i><br> - <i>typesize</i> - [typ - velikost] ve span<br> - <i>crc</i><br> - <i>time</i>",
 
-// include/constants_param_wizard.php, row 845
+// include/constants_param_wizard.php, row 829
 "Transformation action" => "Transforma\xE8n\xED akce",
 
-// include/constants_param_wizard.php, row 847
+// include/constants_param_wizard.php, row 831
 "AA Expression" => "AA v\xFDraz",
 
-// include/constants_param_wizard.php, row 848
+// include/constants_param_wizard.php, row 832
 "AA expression where we can use any AA {expressions}" => "AA v\xFDraz, ve kter\xE9m lze pou\x9E\xEDt libovoln\xE9 AA {expressions}",
 
-// include/constants_param_wizard.php, row 851
+// include/constants_param_wizard.php, row 835
 "expression" => "v\xFDraz",
 
-// include/constants_param_wizard.php, row 860
+// include/constants_param_wizard.php, row 844
 "Store" => "Ulo\x9Eit",
 
-// include/constants_param_wizard.php, row 861
+// include/constants_param_wizard.php, row 845
 "Simply store a value from the input field" => "Jednodu\x9Ae ulo\x9E\xED hodnotu ze vstupn\xEDho pol\xED\xE8ka",
 
-// include/constants_param_wizard.php, row 864
+// include/constants_param_wizard.php, row 848
 "lang (optional)" => "lang (nepovinn\xE9)",
 
-// include/constants_param_wizard.php, row 865
+// include/constants_param_wizard.php, row 849
 "two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "dv\xEC p\xEDsmena - cz | en | es | de. Pokud je zad\xE1no, hodnota se ulo\x9E\xED do zadan\xE9ho jazyka (pol\xED\xE8ko mus\xED pou\x9E\xEDvat p\xF8eklady)",
 
-// include/constants_param_wizard.php, row 873
+// include/constants_param_wizard.php, row 857
 "Remove string" => "Odstranit \xF8et\xECzec",
 
-// include/constants_param_wizard.php, row 874
+// include/constants_param_wizard.php, row 858
 "Remove all occurrences of a string from the input field." => "Odstran\xED ze vstupn\xEDho pol\xED\xE8ka v\x9Aechny v\xFDskyty \xF8et\xECzce.",
 
-// include/constants_param_wizard.php, row 877, 898
+// include/constants_param_wizard.php, row 861, 882
 "string parameter" => "\xF8et\xECzcov\xFD parametr",
 
-// include/constants_param_wizard.php, row 878
+// include/constants_param_wizard.php, row 862
 "Removed string" => "Odstra\xF2ovan\xFD \xF8et\xECzec",
 
-// include/constants_param_wizard.php, row 884
+// include/constants_param_wizard.php, row 868
 "Format date" => "Form\xE1tovat datum",
 
-// include/constants_param_wizard.php, row 885
+// include/constants_param_wizard.php, row 869
 "Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "Zpracuje datum ve vstupn\xEDm pol\xED\xE8ku, kter\xE9 se o\xE8ek\xE1v\xE1 v anglick\xE9m form\xE1tu data. V p\xF8\xEDpad\xEC chyby transformace sel\x9Ee",
 
-// include/constants_param_wizard.php, row 889
+// include/constants_param_wizard.php, row 873
 "Add http prefix" => "P\xF8idat prefix http",
 
-// include/constants_param_wizard.php, row 890
+// include/constants_param_wizard.php, row 874
 "Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "P\xF8id\xE1 k pol\xED\xE8ku prefix 'https://', pokud pol\xED\xE8ko neza\xE8\xEDn\xE1 na 'https://' a nen\xED pr\xE1zdn\xE9.",
 
-// include/constants_param_wizard.php, row 894
+// include/constants_param_wizard.php, row 878
 "Store parameter" => "Ulo\x9Eit parametr",
 
-// include/constants_param_wizard.php, row 895
+// include/constants_param_wizard.php, row 879
 "Store parameter instead of the input field" => "Ulo\x9E\xED parametr m\xEDsto vstupn\xEDho pol\xED\xE8ka",
 
-// include/constants_param_wizard.php, row 905
+// include/constants_param_wizard.php, row 889
 "Store as long id" => "Ulo\x9Eit jako dlouh\xE9 id",
 
-// include/constants_param_wizard.php, row 906
+// include/constants_param_wizard.php, row 890
 "Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "Vytvo\xF8\xED z \xF8et\xECzce dlouh\xE9 id. \xD8et\xECzec se kombinuje s parametrem!! nebo se slice_id (pokud parametr nen\xED zad\xE1n). Ze stejn\xE9ho \xF8et\xECzce (a stejn\xE9ho parametru) v\x9Edy vytvo\xF8\xEDme stejn\xE9 id.",
 
-// include/constants_param_wizard.php, row 909
+// include/constants_param_wizard.php, row 893
 "string to add" => "p\xF8ipojovan\xFD \xF8et\xECzec",
 
-// include/constants_param_wizard.php, row 910
+// include/constants_param_wizard.php, row 894
 "this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "tento parametr se p\xF8id\xE1 k \xF8et\xECzci p\xF8ed p\xF8evodem (d\xF9vodem je vyhnout se pr\xE1zdn\xFDm \xF8et\xECzc\xF9m a tak\xE9 abychom negenerovali v\x9Edy stejn\xE9 id pro b\xEC\x9En\xE9 \xF8et\xECzce (v r\xF9zn\xFDch importech). Pokud tento parametr nen\xED zad\xE1n, pou\x9Eije se m\xEDsto n\xECj slice_id.",
 
-// include/constants_param_wizard.php, row 918
+// include/constants_param_wizard.php, row 902
 "Split input field by string" => "Rozd\xEClit vstupn\xED pol\xED\xE8ko podle \xF8et\xECzce",
 
-// include/constants_param_wizard.php, row 919
+// include/constants_param_wizard.php, row 903
 "Split input field by string parameter and store the result as multi-value." => "Rozd\xECl\xED vstupn\xED pol\xED\xE8ko podle \xF8et\xECzcov\xE9ho parametru a v\xFDsledek ulo\x9E\xED jako v\xEDcehodnotov\xFD.",
 
-// include/constants_param_wizard.php, row 922
+// include/constants_param_wizard.php, row 906
 "delimiter (+ possible languages)" => "odd\xEClova\xE8 (+ p\xF8\xEDpadn\xEC jazyky)",
 
-// include/constants_param_wizard.php, row 923
+// include/constants_param_wizard.php, row 907
 "string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "\xF8et\xECzcov\xFD odd\xEClova\xE8, kter\xFD odd\xECluje hodnoty vstupn\xEDho pol\xED\xE8ka (nap\xF8. \"|\"). Dal\x9A\xED mo\x9Enost\xED je p\xF8idat tak\xE9 jazyky odd\xEClen\xE9 \"##\" ve tvaru <delimiter>##<lang1>##<lang2> (\"|##cz##en\" pro \"Ahoj|Hi\") - t\xEDm se napln\xED p\xF8ekl\xE1dan\xE1 pol\xED\xE8ka",
 
-// include/constants_param_wizard.php, row 930
+// include/constants_param_wizard.php, row 914
 "Store default value" => "Ulo\x9Eit v\xFDchoz\xED hodnotu",
 
-// include/constants_param_wizard.php, row 931
+// include/constants_param_wizard.php, row 915
 "Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
    ."    <table>\n"
    ."        <tr><td><b>Output field</b></td><td><b>Value</b></td><td><b>Description</b></td></tr></b>\n"
