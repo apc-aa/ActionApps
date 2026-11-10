@@ -539,9 +539,8 @@ if ($upload) {
 $apage = new AA_Adminpageutil('sliceadmin','CSVimport');
 $apage->setTitle(_m("Admin - Import CSV (2/2) - Mapping and Actions"));
 $apage->setForm();
-$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false));
 $apage->addRequire('aa-params@1');
-$apage->addRequire('<script>' . Paramwizard::script(['TRANS_ACTIONS']) . '</script>', 'AA_Req_Headcode');
+$apage->addRequire(getFrmJavascriptCached(Paramwizard::script(['TRANS_ACTIONS']), 'aa-params', ''), 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
 if ($preview) {

@@ -376,7 +376,8 @@ $apage->setTitle(_m("Admin - configure Fields"));
 $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
 $apage->addRequire('aa-code@1');
 $apage->addRequire('aa-params@1');
-$apage->addRequire('<script>' . Paramwizard::script(['INPUT_TYPES', 'DEFAULT_VALUE_TYPES', 'VALIDATE_TYPES', 'INSERT_TYPES', 'FIELD_FUNCTIONS']) . '</script>', 'AA_Req_Headcode');
+// cached by the browser; not deferred - <aa-params> reads it when the module runs
+$apage->addRequire(getFrmJavascriptCached(Paramwizard::script(['INPUT_TYPES', 'DEFAULT_VALUE_TYPES', 'VALIDATE_TYPES', 'INSERT_TYPES', 'FIELD_FUNCTIONS']), 'aa-params', ''), 'AA_Req_Headcode');
 $apage->addRequire('aa-jslib');   // just for AA_Message() copy to clipboard
 $apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v' => AA_JS_VERSION], false));
 
