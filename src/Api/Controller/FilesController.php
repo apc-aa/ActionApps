@@ -310,9 +310,17 @@ class FilesController
     protected static function reencode(string $tmp, string $path): void
     {
         $error = Imgfunc::reencode($tmp, $path, UploadPolicy::ANON_MAX_PX, UploadPolicy::ANON_MAX_PIXELS, refusal: $refusal);
-        if ($error !== null) {
-            throw ($refusal !== null) ? new RefusedImage($refusal, $error) : new RuntimeException($error);
+        if ($error === null) {
+            return;
         }
+        if ($refusal !== null) {
+            throw new RefusedImage($refusal, $error);
+        }
+        // GD opens the file before it writes - what a failed write left must not stay public
+        if (is_file($path)) {
+            unlink($path);
+        }
+        throw new RuntimeException($error);
     }
 
     protected function urlOf(string $slice_id, string $name): string

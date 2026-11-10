@@ -70,6 +70,10 @@ final class FakeFilesController extends FilesController
         self::reencode($tmp, $path = "$dir/$name");
         return $path;
     }
+    public static function reencodeTo(string $tmp, string $path): void
+    {
+        self::reencode($tmp, $path);
+    }
     protected function urlOf(string $slice_id, string $name): string
     {
         return "/img/$name";
@@ -313,6 +317,31 @@ final class FilesControllerTest extends TestCase
         }
         $this->assertSame(500, $r['status']);
         $this->assertSame('store', $this->c->refused[0][1]);
+    }
+
+    /** the write fails after GD opened the file - here the file is there and cannot be written */
+    public function test_a_failed_write_leaves_no_file_in_the_upload_directory(): void
+    {
+        if (!extension_loaded('gd')) {
+            $this->markTestSkipped('GD is not loaded');
+        }
+        if (function_exists('posix_geteuid') && (posix_geteuid() === 0)) {
+            $this->markTestSkipped('root writes a read-only file');
+        }
+        $img = imagecreatetruecolor(30, 20);
+        imagepng($img, $src = "$this->dir/src.png");
+        touch($path = "$this->dir/out.png");
+        chmod($path, 0o444);
+        set_error_handler(static fn(): bool => true);    // GD warns that it cannot open the file
+        try {
+            FakeFilesController::reencodeTo($src, $path);
+            $this->fail('a failed write throws');
+        } catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(\AA\Upload\RefusedImage::class, $e, 'the server failed, not the image');
+        } finally {
+            restore_error_handler();
+        }
+        $this->assertFileDoesNotExist($path);
     }
 
     public function test_unknown_slice_is_refused_without_a_log_row(): void
