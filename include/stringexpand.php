@@ -9348,9 +9348,10 @@ class AA_Stringexpand_Qrcode extends AA_Stringexpand {
  *  {qrpay:<account>:<amount>[:<currency>:<reference-number>:<message>:<due-date>:<specific-symbol>:<recipient-name>]}
  *
  *  @usage <img src="{qrpay:12-3456789012/0100:1234.56:CZK:2023000123:Honza for Ecn Services 2023:2023-01-01:1234567890:Ecn Studio ltd.}" alt="QR payment" width=200 height=200>
- *  @param $account - IBAN or account number (automatically converted to IBAN)
+ *  @param $account - IBAN or account number (automatically converted to IBAN); an invalid one gives no image
  *  @param $amount - amount to pay
- *  @param $currency - currency (default EUR) - 3 letterers currency code like EUR, CZK, USD, GBP, COP ...
+ *  @param $currency - currency (default EUR) - 3 letterers currency code like EUR, CZK, USD, GBP, COP ... in any case;
+ *                     an unsupported one gives no image
  *  @param $reference_number - reference number (variable symbol) - 1-10 digits
  *  @param $message - message - 1-60 alphanumeric characters
  *  @param $due_date - due date - YYYY-MM-DD
@@ -9364,7 +9365,14 @@ class AA_Stringexpand_Qrpay extends AA_Stringexpand {
             return '';
         }
         $amount = (float)PhpFloat($amount);
-        $qr = new QRPlatba($account, $amount, $reference_number, $currency ?: 'EUR');
+        try {
+            // the library knows upper-case currency codes only
+            $qr = new QRPlatba($account, $amount, $reference_number, strtoupper(trim($currency)) ?: 'EUR');
+        } catch (Exception | ValueError) {
+            // an account or currency it refuses (bcmath, where installed, throws ValueError on a non-digit account):
+            // no code is better than a wrong one, and the page goes on
+            return '';
+        }
         try {
             if ($message)         { $qr->setMessage($message); }
             if ($due_date)        { $qr->setDueDate(new DateTime($due_date)); }
