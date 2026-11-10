@@ -7,6 +7,7 @@ namespace Tests\Unit\Util;
 use AA\Util\Imgfunc;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Fixtures\Images;
 
 /** An anonymous upload is written again from its pixels: nothing else of the file may survive. */
 final class ImgfuncReencodeTest extends TestCase
@@ -16,6 +17,7 @@ final class ImgfuncReencodeTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/util_shims.php';   // _m()
+        require_once __DIR__ . '/../fixtures/Images.php';
     }
 
     protected function setUp(): void
@@ -133,28 +135,38 @@ final class ImgfuncReencodeTest extends TestCase
     }
 
     /** an upload refused for the visitor's file is not reported as a server failure, and the other way round */
-    public function test_bad_image_tells_whose_error_it_is(): void
+    public function test_refusal_tells_whose_error_it_is(): void
     {
         file_put_contents($txt = "$this->dir/a.txt", 'not an image');
-        $this->assertNotNull(Imgfunc::reencode($txt, "$this->dir/out1", 2000, bad_image: $bad));
-        $this->assertTrue($bad, 'not an image');
+        $this->assertNotNull(Imgfunc::reencode($txt, "$this->dir/out1", 2000, refusal: $refusal));
+        $this->assertSame('image', $refusal, 'not an image');
 
-        $ihdr = 'IHDR' . pack('NNCCCCC', 30, 20, 8, 2, 0, 0, 0);
-        file_put_contents($png = "$this->dir/broken.png", "\x89PNG\r\n\x1a\n" . pack('N', 13) . $ihdr . pack('N', crc32($ihdr)) . pack('N', 10) . 'IDATgarbage!!!' . "\0\0\0\0");
-        $this->assertSame('The image cannot be read', Imgfunc::reencode($png, "$this->dir/out2", 2000, bad_image: $bad));
-        $this->assertTrue($bad, 'a good header, broken data');
+        file_put_contents($jpeg = "$this->dir/head.jpg", Images::damagedJpeg());
+        $this->assertNotNull(Imgfunc::reencode($jpeg, "$this->dir/out2", 2000, refusal: $refusal));
+        $this->assertSame('image', $refusal, 'no header to read');
+
+        file_put_contents($png = "$this->dir/broken.png", Images::damagedPng());
+        $this->assertSame('The image cannot be read', Imgfunc::reencode($png, "$this->dir/out3", 2000, refusal: $refusal));
+        $this->assertSame('image', $refusal, 'a good header, broken data');
+
+        file_put_contents($big = "$this->dir/big.png", Images::pngHeader(5000, 4000));
+        $this->assertNotNull(Imgfunc::reencode($big, "$this->dir/out4", 2000, 16_000_000, refusal: $refusal));
+        $this->assertSame('size', $refusal);
+
+        $this->assertNotNull(Imgfunc::reencode("$this->dir/missing.jpg", "$this->dir/out5", 2000, refusal: $refusal));
+        $this->assertNull($refusal, 'a file PHP cannot read is the server\'s');
 
         set_error_handler(static fn(): bool => true);    // GD warns that it cannot open the file
         try {
-            $error = Imgfunc::reencode($this->jpeg(20, 20), "$this->dir/missing/out.jpg", 2000, bad_image: $bad);
+            $error = Imgfunc::reencode($this->jpeg(20, 20), "$this->dir/missing/out.jpg", 2000, refusal: $refusal);
         } finally {
             restore_error_handler();
         }
         $this->assertNotNull($error);
-        $this->assertFalse($bad, 'the image was fine, writing failed');
+        $this->assertNull($refusal, 'the image was fine, writing failed');
 
-        $this->assertNull(Imgfunc::reencode($this->jpeg(20, 20), "$this->dir/out3.jpg", 2000, bad_image: $bad));
-        $this->assertFalse($bad);
+        $this->assertNull(Imgfunc::reencode($this->jpeg(20, 20), "$this->dir/out6.jpg", 2000, refusal: $refusal));
+        $this->assertNull($refusal);
     }
 
     public function test_avif_is_written_again_as_avif_where_gd_can(): void
@@ -264,8 +276,7 @@ final class ImgfuncReencodeTest extends TestCase
     /** a small file can declare a huge canvas; GD would allocate it all */
     public function test_a_decompression_bomb_is_refused_before_decoding(): void
     {
-        $ihdr = 'IHDR' . pack('NNCCCCC', 10000, 10000, 8, 2, 0, 0, 0);
-        file_put_contents($src = "$this->dir/bomb.png", "\x89PNG\r\n\x1a\n" . pack('N', 13) . $ihdr . pack('N', crc32($ihdr)));
+        file_put_contents($src = "$this->dir/bomb.png", Images::pngHeader(10000, 10000));
         $this->assertNotNull(Imgfunc::reencode($src, "$this->dir/out.png", 2000));
         $this->assertFileDoesNotExist("$this->dir/out.png");
     }

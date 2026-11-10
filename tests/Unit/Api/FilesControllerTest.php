@@ -11,8 +11,10 @@ use AA\Upload\UploadToken;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Api\Fixtures\JsonResponseReader;
+use Tests\Unit\Fixtures\Images;
 
 require_once __DIR__ . '/Fixtures/JsonResponseReader.php';
+require_once __DIR__ . '/../fixtures/Images.php';
 
 /** Stands in for the request context and the file system calls that need a real upload. */
 final class FakeFilesController extends FilesController
@@ -259,17 +261,22 @@ final class FilesControllerTest extends TestCase
     public function test_anonymous_image_with_too_many_pixels_is_refused_before_decoding(): void
     {
         $this->anonymous();
-        $ihdr = 'IHDR' . pack('NNCCCCC', 5000, 4000, 8, 2, 0, 0, 0);
-        $this->file('big.png', "\x89PNG\r\n\x1a\n" . pack('N', 13) . $ihdr . pack('N', crc32($ihdr)));
-        $this->assertSame(413, $this->read($this->c->upload())['status']);
+        $this->file('big.png', Images::pngHeader(5000, 4000));
+        $r = $this->read($this->c->upload());
+        $this->assertSame(413, $r['status']);
+        $this->assertSame('The image has more than 16 megapixels', $r['body']['error']);
+        $this->assertSame('size', $this->c->refused[0][1]);
         $this->assertSame([], glob("$this->dir/*"));
     }
 
-    /** a PNG with a good header and broken image data passes every check before GD decodes it */
-    private function damagedPng(): string
+    /** a header nothing reads is the visitor's unreadable image - not one of too many pixels */
+    public function test_anonymous_image_without_a_readable_header_is_the_visitors_file(): void
     {
-        $ihdr = 'IHDR' . pack('NNCCCCC', 30, 20, 8, 2, 0, 0, 0);
-        return "\x89PNG\r\n\x1a\n" . pack('N', 13) . $ihdr . pack('N', crc32($ihdr)) . pack('N', 10) . 'IDAT' . 'garbage!!!' . "\0\0\0\0";
+        $this->anonymous();
+        $this->file('photo.jpg', Images::damagedJpeg());
+        $r = $this->read($this->c->upload());
+        $this->assertSame(415, $r['status']);
+        $this->assertSame('image', $this->c->refused[0][1]);
     }
 
     /** the visitor's broken file is theirs: told why, logged as such - not a server failure for State Check */
@@ -279,7 +286,7 @@ final class FilesControllerTest extends TestCase
             $this->markTestSkipped('GD is not loaded');
         }
         $this->anonymous();
-        $this->file('broken.png', $this->damagedPng());
+        $this->file('broken.png', Images::damagedPng());
         $r = $this->read($this->c->upload());
         $this->assertSame(415, $r['status']);
         $this->assertSame('The image cannot be read', $r['body']['error']);

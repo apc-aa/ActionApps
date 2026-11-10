@@ -206,6 +206,12 @@ class Imgfunc
         return function_exists('imageavif') && !empty(gd_info()['AVIF Support']);
     }
 
+    /** and WebP only with libwebp */
+    public static function webpSupported(): bool
+    {
+        return function_exists('imagewebp') && !empty(gd_info()['WebP Support']);
+    }
+
     /**
      * Writes $src again as a new image, at most $max_px on the longer side.
      * Decoding and encoding drops EXIF (the GPS position of a phone photo) and anything
@@ -214,16 +220,23 @@ class Imgfunc
      * @param ?int $flatten_on 0xRRGGBB to draw transparency on - a PDF renderer reads alpha slowly - and write
      *                         what every viewer shows, taking GIF too: JPEG stays JPEG, the rest becomes JPEG or,
      *                         when small and sharp, PNG without alpha; null = the type of $src, transparency kept
-     * @param ?bool $bad_image set true when the error is $src's own (not an image of the taken types, too many
-     *                         pixels, GD cannot decode it), false when it is the server's ($dest not written)
+     * @param ?string $refusal set when the error is $src's own: 'image' - not an image of the taken types, or GD
+     *                         cannot decode it (a caller offers only types this GD reads, see UploadPolicy::anonTypes()),
+     *                         'size' - more than $max_pixels; null on success and when the server failed ($src not
+     *                         readable, $dest not written)
      * @return ?string null on success, otherwise the error
      */
-    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS, ?int $flatten_on = null, ?bool &$bad_image = null): ?string
+    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS, ?int $flatten_on = null, ?string &$refusal = null): ?string
     {
-        $bad_image = true;
-        $info  = @getimagesize($src);
-        $type  = is_array($info) ? (int) $info[2] : 0;
-        $types = self::avifSupported() ? [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_AVIF] : [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
+        $refusal = null;
+        $bytes   = is_file($src) ? @file_get_contents($src) : false;
+        if ($bytes === false) {
+            return _m('Cannot read %1', [$src]);
+        }
+        $refusal = 'image';
+        $info    = @getimagesizefromstring($bytes);
+        $type    = is_array($info) ? (int) $info[2] : 0;
+        $types   = self::avifSupported() ? [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_AVIF] : [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
         if ($flatten_on !== null) {
             $types[] = IMAGETYPE_GIF;
         }
@@ -231,13 +244,15 @@ class Imgfunc
             return _m('This type of image cannot be uploaded here');
         }
         if ($info[0] * $info[1] > $max_pixels) {
+            $refusal = 'size';
             return _m('The image has too many pixels');
         }
-        $img = @imagecreatefromstring((string) file_get_contents($src));
+        $img = @imagecreatefromstring($bytes);
+        unset($bytes);
         if (!$img) {
             return _m('The image cannot be read');
         }
-        $bad_image = false;
+        $refusal = null;
         $w     = imagesx($img);
         $h     = imagesy($img);
         $scale = min(1, $max_px / max($w, $h));

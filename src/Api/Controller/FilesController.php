@@ -16,6 +16,7 @@ namespace AA\Api\Controller;
 use AA\Api\JsonResponse;
 use AA\Api\SameHostGate;
 use AA\IO\DB\DB_AA;
+use AA\Upload\RefusedImage;
 use AA\Upload\UploadPolicy;
 use AA\Upload\UploadToken;
 use AA\Util\Imgfunc;
@@ -29,7 +30,6 @@ use AA_Slice;
 use AA_Stringexpand_Img;
 use Files;
 use finfo;
-use InvalidArgumentException;
 use RuntimeException;
 
 class FilesController
@@ -94,9 +94,6 @@ class FilesController
         if ($reason === 'size') {
             return $this->refuse($slice_id, 'size', 413, _m('The image is bigger than %1 MB', [UploadPolicy::ANON_MAX_BYTES >> 20]));
         }
-        if (($mode === UploadPolicy::ANON) && !UploadPolicy::pixelsAllowed((string) $file['tmp_name'])) {
-            return $this->refuse($slice_id, 'size', 413, _m('The image has more than %1 megapixels', [UploadPolicy::ANON_MAX_PIXELS / 1000000]));
-        }
 
         $dir = $this->destinationDir($slice_id);
         if ($dir === null) {
@@ -108,9 +105,11 @@ class FilesController
             $path = ($mode === UploadPolicy::ANON)
                 ? $this->storeReencoded((string) $file['tmp_name'], $dir, bin2hex(random_bytes(8)) . '.' . UploadPolicy::anonExtension($mime))
                 : $this->store($file, $dir, $name);
-        } catch (InvalidArgumentException $e) {
-            // a damaged image, or not the one its type says: the visitor's file, nothing to fix on the server
-            return $this->refuse($slice_id, 'image', 415, $e->getMessage(), $e->getMessage());
+        } catch (RefusedImage $e) {
+            // the visitor's file - too big a canvas, damaged, or not the image its type says
+            return ($e->reason === 'size')
+                ? $this->refuse($slice_id, 'size', 413, _m('The image has more than %1 megapixels', [UploadPolicy::ANON_MAX_PIXELS / 1000000]))
+                : $this->refuse($slice_id, 'image', 415, $e->getMessage(), $e->getMessage());
         } catch (RuntimeException $e) {
             // the message names server paths: for State Check, not for the browser
             return $this->refuse($slice_id, 'store', 500, _m('The file could not be stored'), $e->getMessage());
@@ -304,15 +303,15 @@ class FilesController
     }
 
     /**
-     * $tmp written again to $path, as an anonymous upload is
-     * @throws InvalidArgumentException the visitor's file is not an image AA can read - the message is for them
-     * @throws RuntimeException         $path could not be written
+     * $tmp written again to $path, as an anonymous upload is - the pixels are counted before GD decodes anything
+     * @throws RefusedImage     the visitor's file: too many pixels, or not an image AA can read - the message is for them
+     * @throws RuntimeException the server failed: $tmp not readable or $path not written
      */
     protected static function reencode(string $tmp, string $path): void
     {
-        $error = Imgfunc::reencode($tmp, $path, UploadPolicy::ANON_MAX_PX, UploadPolicy::ANON_MAX_PIXELS, bad_image: $bad_image);
+        $error = Imgfunc::reencode($tmp, $path, UploadPolicy::ANON_MAX_PX, UploadPolicy::ANON_MAX_PIXELS, refusal: $refusal);
         if ($error !== null) {
-            throw $bad_image ? new InvalidArgumentException($error) : new RuntimeException($error);
+            throw ($refusal !== null) ? new RefusedImage($refusal, $error) : new RuntimeException($error);
         }
     }
 

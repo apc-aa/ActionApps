@@ -92,6 +92,14 @@ final class UploadPolicyTest extends TestCase
         $this->assertSame('avif', UploadPolicy::anonExtension('image/avif'));
     }
 
+    /** a GD without WebP could not decode the image - that is the server's lack, not the visitor's bad file */
+    public function test_webp_for_anonymous_where_gd_can(): void
+    {
+        $this->assertNull(UploadPolicy::refusal(UploadPolicy::USER, 'a.webp', 'image/webp', 1000));
+        $this->assertSame(Imgfunc::webpSupported() ? null : 'type', UploadPolicy::refusal(UploadPolicy::ANON, 'a.webp', 'image/webp', 1000));
+        $this->assertSame(Imgfunc::webpSupported(), in_array('webp', UploadPolicy::imageTypes(UploadPolicy::ANON), true));
+    }
+
     /** @return array<string, array{0: string, 1: string}> */
     public static function names(): array
     {
