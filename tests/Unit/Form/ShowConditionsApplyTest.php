@@ -201,6 +201,30 @@ namespace AA\Tests\Unit\Form {
             $this->assertSame(['</script><b>', "a'b\"&"], json_decode($json, true)['fields'][self::START][0]['v']);
         }
 
+        /** a field the user may not edit (profile hide&fill, frozen by feeding) keeps its stored value */
+        public function test_apply_leaves_field_the_user_cannot_edit(): void
+        {
+            $profile             = AA_Profile::getProfile('', self::SLICE);
+            $profile->properties = ['hide&fill' => [self::START => ['0:txt:Praha', 0], self::PASSWORD => ['', 0]]];
+            try {
+                $content = self::content([self::CAT => 'Novinka']);   // setFieldsFromForm() skipped the field
+                self::conds()->apply($content, self::fields(), self::content([self::CAT => 'Novinka', self::START => '500']), false);
+                $this->assertFalse($content->isSet(self::START), 'update');
+
+                $content = self::content([self::CAT => 'Novinka', self::START => 'Praha']);   // the profile filled it
+                self::conds()->apply($content, self::fields(), null, true);
+                $this->assertSame(['Praha'], $content->getValuesArray(self::START), 'insert');
+            } finally {
+                $profile->properties = [];
+            }
+
+            $old = self::content([self::CAT => 'Novinka']);
+            $old->setAaValue(self::START, new AA_Value('500', FLAG_FREEZE));
+            $content = self::content([self::CAT => 'Novinka']);
+            self::conds()->apply($content, self::fields(), $old, false);
+            $this->assertFalse($content->isSet(self::START), 'frozen');
+        }
+
         public function test_apply_slice_without_conditions_changes_nothing(): void
         {
             $content = self::content([self::CAT => 'Novinka', self::START => '999']);

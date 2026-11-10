@@ -229,7 +229,8 @@ final class ShowConditions
      * Changes the content being saved from the admin form: a field hidden by a rule is stored empty (when its
      * condition clears), anything else hidden keeps its stored value - it is taken out of the content, as
      * a field with "Show" off is - and a new item gets the field's default. A protected field (password, 2FA)
-     * is never emptied: its inserter would store the empty value as the password.
+     * is never emptied: its inserter would store the empty value as the password. A field the user may not edit
+     * (frozen, filled or hidden by the profile) is left alone.
      * @return list<string> ids of the fields hidden by a condition
      */
     public function apply(\ItemContent $content, \AA_Fields $fields, ?\AA_Content $old, bool $insert): array
@@ -237,7 +238,12 @@ final class ShowConditions
         $hidden   = $this->hiddenFor($fields, $content, $old, $insert);
         $assigned = $hidden ? self::assigned($fields) : [];
         foreach ($hidden as $fid => $how) {
-            $field = $fields->getField($fid);
+            $field   = $fields->getField($fid);
+            $profile = \AA_Profile::getProfile(AuthGetUid(), $field->getSliceId());
+            // what the user may not edit stays as setFromForm() left it: the stored value, or the profile's
+            if ($insert ? $profile->getFormFieldValue($fid) : !IsEditable($old?->isSet($fid) ? $old->getFlag($fid) : 0, $field, $profile)) {
+                continue;
+            }
             unset($content[$fid]);
             if (($how === self::LIVE) && $this->conds[$assigned[$fid]]['clear'] && !$field->isProtected()) {
                 // when editing, only a stored value needs emptying
