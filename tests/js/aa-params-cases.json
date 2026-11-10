@@ -1,0 +1,30 @@
+{
+    "about": "How AA reads and writes a parameter string (AA_Serializable::parseProperties with join_last). types: parameter ids in the order of the real widgets, ParamwizardCasesTest checks it. skip: ids left out (constants have their own control). php: false = PHP cannot be asked the same way.",
+    "types": {
+        "fld": ["max_characters", "width", "input_type", "placeholder"],
+        "sel": ["const", "slice_field", "use_name", "bin_filter", "filter_conds", "sort_by", "additional_slice_pwd", "const_arr", "select_plus"],
+        "rio": ["const", "columns", "move_right", "slice_field", "bin_filter", "filter_conds", "sort_by", "additional_slice_pwd", "const_arr", "other_option"],
+        "dte": ["start_year", "end_year", "relative", "show_time"]
+    },
+    "read": [
+        {"type": "fld", "text": "254:60:email:x", "values": {"max_characters": "254", "width": "60", "input_type": "email", "placeholder": "x"}},
+        {"type": "fld", "text": "", "values": {"max_characters": "", "width": "", "input_type": "", "placeholder": ""}},
+        {"type": "fld", "text": "254", "values": {"max_characters": "254", "width": "", "input_type": "", "placeholder": ""}},
+        {"type": "fld", "text": "1:2:3:a:b", "values": {"max_characters": "1", "width": "2", "input_type": "3", "placeholder": "a:b"}, "about": "rest joins the last"},
+        {"type": "fld", "text": "1:2:a#:b:c", "values": {"max_characters": "1", "width": "2", "input_type": "a:b", "placeholder": "c"}, "about": "escaped colon"},
+        {"type": "fld", "text": " 254 :60", "values": {"max_characters": "254", "width": "60", "input_type": "", "placeholder": ""}, "about": "trimmed"},
+        {"type": "sel", "text": "c:::::::{\"1\"#:\"Yes\",\"0\"#:\"No\"}", "values": {"const": "c", "slice_field": "", "use_name": "", "bin_filter": "", "filter_conds": "", "sort_by": "", "additional_slice_pwd": "", "const_arr": "{\"1\":\"Yes\",\"0\":\"No\"}", "select_plus": ""}, "php": false, "about": "php gives const_arr as an array"},
+        {"type": "sel", "skip": ["const"], "text": "headline........:1", "values": {"slice_field": "headline........", "use_name": "1", "bin_filter": "", "filter_conds": "", "sort_by": "", "additional_slice_pwd": "", "const_arr": "", "select_plus": ""}, "php": false},
+        {"type": "dte", "quote": true, "text": "1'10'1", "values": {"start_year": "1", "end_year": "10", "relative": "1", "show_time": ""}, "php": false, "about": "old date delimiter, AA_Field::widgetParams()"}
+    ],
+    "write": [
+        {"type": "fld", "values": {"max_characters": "254", "width": "60"}, "text": "254:60"},
+        {"type": "fld", "values": {"placeholder": "a:b"}, "text": ":::a:b", "about": "the last one is written as it is"},
+        {"type": "fld", "values": {"input_type": "a:b"}, "text": "::a#:b"},
+        {"type": "fld", "values": {}, "text": ""},
+        {"type": "fld", "values": {"width": "60", "use_name": "1"}, "text": ":60", "about": "what the type does not have is not written"},
+        {"type": "sel", "values": {"const": "c", "const_arr": "{\"1\":\"Yes\"}"}, "text": "c:::::::{\"1\"#:\"Yes\"}"},
+        {"type": "sel", "skip": ["const"], "values": {"const": "c", "const_arr": "{\"1\":\"Yes\"}"}, "text": "::::::{\"1\"#:\"Yes\"}"},
+        {"type": "sel", "values": {"select_plus": "1"}, "text": "::::::::1"}
+    ]
+}
