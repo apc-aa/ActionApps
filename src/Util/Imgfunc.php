@@ -214,10 +214,13 @@ class Imgfunc
      * @param ?int $flatten_on 0xRRGGBB to draw transparency on - a PDF renderer reads alpha slowly - and write
      *                         what every viewer shows, taking GIF too: JPEG stays JPEG, the rest becomes JPEG or,
      *                         when small and sharp, PNG without alpha; null = the type of $src, transparency kept
+     * @param ?bool $bad_image set true when the error is $src's own (not an image of the taken types, too many
+     *                         pixels, GD cannot decode it), false when it is the server's ($dest not written)
      * @return ?string null on success, otherwise the error
      */
-    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS, ?int $flatten_on = null): ?string
+    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS, ?int $flatten_on = null, ?bool &$bad_image = null): ?string
     {
+        $bad_image = true;
         $info  = @getimagesize($src);
         $type  = is_array($info) ? (int) $info[2] : 0;
         $types = self::avifSupported() ? [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_AVIF] : [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
@@ -234,6 +237,7 @@ class Imgfunc
         if (!$img) {
             return _m('The image cannot be read');
         }
+        $bad_image = false;
         $w     = imagesx($img);
         $h     = imagesy($img);
         $scale = min(1, $max_px / max($w, $h));

@@ -132,6 +132,31 @@ final class ImgfuncReencodeTest extends TestCase
         $this->assertFileDoesNotExist("$this->dir/out2");
     }
 
+    /** an upload refused for the visitor's file is not reported as a server failure, and the other way round */
+    public function test_bad_image_tells_whose_error_it_is(): void
+    {
+        file_put_contents($txt = "$this->dir/a.txt", 'not an image');
+        $this->assertNotNull(Imgfunc::reencode($txt, "$this->dir/out1", 2000, bad_image: $bad));
+        $this->assertTrue($bad, 'not an image');
+
+        $ihdr = 'IHDR' . pack('NNCCCCC', 30, 20, 8, 2, 0, 0, 0);
+        file_put_contents($png = "$this->dir/broken.png", "\x89PNG\r\n\x1a\n" . pack('N', 13) . $ihdr . pack('N', crc32($ihdr)) . pack('N', 10) . 'IDATgarbage!!!' . "\0\0\0\0");
+        $this->assertSame('The image cannot be read', Imgfunc::reencode($png, "$this->dir/out2", 2000, bad_image: $bad));
+        $this->assertTrue($bad, 'a good header, broken data');
+
+        set_error_handler(static fn(): bool => true);    // GD warns that it cannot open the file
+        try {
+            $error = Imgfunc::reencode($this->jpeg(20, 20), "$this->dir/missing/out.jpg", 2000, bad_image: $bad);
+        } finally {
+            restore_error_handler();
+        }
+        $this->assertNotNull($error);
+        $this->assertFalse($bad, 'the image was fine, writing failed');
+
+        $this->assertNull(Imgfunc::reencode($this->jpeg(20, 20), "$this->dir/out3.jpg", 2000, bad_image: $bad));
+        $this->assertFalse($bad);
+    }
+
     public function test_avif_is_written_again_as_avif_where_gd_can(): void
     {
         if (!Imgfunc::avifSupported()) {

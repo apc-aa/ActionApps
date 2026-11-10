@@ -49,6 +49,15 @@ final class CheckUploadRefusalsTest extends TestCase
         $this->assertSame(Finding::ERROR, $finding->severity);
     }
 
+    /** a damaged image from a visitor is not the server's problem - no advice about permissions */
+    public function test_an_image_that_cannot_be_read_is_information(): void
+    {
+        [$finding] = CheckUploadRefusals::findingsFor([$this->row('image', 'The image cannot be read')], []);
+        $this->assertSame(Finding::INFO, $finding->severity);
+        $this->assertStringContainsString('visitor', $finding->advice);
+        $this->assertStringNotContainsString('permissions', $finding->advice);
+    }
+
     public function test_unwritable_directory_is_an_error(): void
     {
         [$finding] = CheckUploadRefusals::findingsFor([$this->row('dir')], []);

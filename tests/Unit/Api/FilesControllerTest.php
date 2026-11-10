@@ -65,10 +65,7 @@ final class FakeFilesController extends FilesController
     }
     protected function storeReencoded(string $tmp, string $dir, string $name): string
     {
-        $error = \AA\Util\Imgfunc::reencode($tmp, $path = "$dir/$name", UploadPolicy::ANON_MAX_PX, UploadPolicy::ANON_MAX_PIXELS);
-        if ($error !== null) {
-            throw new \RuntimeException($error);
-        }
+        self::reencode($tmp, $path = "$dir/$name");
         return $path;
     }
     protected function urlOf(string $slice_id, string $name): string
@@ -266,6 +263,49 @@ final class FilesControllerTest extends TestCase
         $this->file('big.png', "\x89PNG\r\n\x1a\n" . pack('N', 13) . $ihdr . pack('N', crc32($ihdr)));
         $this->assertSame(413, $this->read($this->c->upload())['status']);
         $this->assertSame([], glob("$this->dir/*"));
+    }
+
+    /** a PNG with a good header and broken image data passes every check before GD decodes it */
+    private function damagedPng(): string
+    {
+        $ihdr = 'IHDR' . pack('NNCCCCC', 30, 20, 8, 2, 0, 0, 0);
+        return "\x89PNG\r\n\x1a\n" . pack('N', 13) . $ihdr . pack('N', crc32($ihdr)) . pack('N', 10) . 'IDAT' . 'garbage!!!' . "\0\0\0\0";
+    }
+
+    /** the visitor's broken file is theirs: told why, logged as such - not a server failure for State Check */
+    public function test_anonymous_image_that_cannot_be_read_is_the_visitors_file(): void
+    {
+        if (!extension_loaded('gd')) {
+            $this->markTestSkipped('GD is not loaded');
+        }
+        $this->anonymous();
+        $this->file('broken.png', $this->damagedPng());
+        $r = $this->read($this->c->upload());
+        $this->assertSame(415, $r['status']);
+        $this->assertSame('The image cannot be read', $r['body']['error']);
+        $this->assertSame([[self::SLICE, 'image', 'The image cannot be read']], $this->c->refused);
+        $this->assertSame([], glob("$this->dir/*"));
+    }
+
+    public function test_anonymous_image_that_cannot_be_written_is_a_store_failure(): void
+    {
+        if (!extension_loaded('gd')) {
+            $this->markTestSkipped('GD is not loaded');
+        }
+        $this->anonymous();
+        $this->c->dir = "$this->dir/missing";
+        $img = imagecreatetruecolor(30, 20);
+        ob_start();
+        imagepng($img);
+        $this->file('a.png', (string) ob_get_clean());
+        set_error_handler(static fn(): bool => true);    // GD warns that it cannot open the file
+        try {
+            $r = $this->read($this->c->upload());
+        } finally {
+            restore_error_handler();
+        }
+        $this->assertSame(500, $r['status']);
+        $this->assertSame('store', $this->c->refused[0][1]);
     }
 
     public function test_unknown_slice_is_refused_without_a_log_row(): void

@@ -29,6 +29,7 @@ use AA_Slice;
 use AA_Stringexpand_Img;
 use Files;
 use finfo;
+use InvalidArgumentException;
 use RuntimeException;
 
 class FilesController
@@ -107,6 +108,9 @@ class FilesController
             $path = ($mode === UploadPolicy::ANON)
                 ? $this->storeReencoded((string) $file['tmp_name'], $dir, bin2hex(random_bytes(8)) . '.' . UploadPolicy::anonExtension($mime))
                 : $this->store($file, $dir, $name);
+        } catch (InvalidArgumentException $e) {
+            // a damaged image, or not the one its type says: the visitor's file, nothing to fix on the server
+            return $this->refuse($slice_id, 'image', 415, $e->getMessage(), $e->getMessage());
         } catch (RuntimeException $e) {
             // the message names server paths: for State Check, not for the browser
             return $this->refuse($slice_id, 'store', 500, _m('The file could not be stored'), $e->getMessage());
@@ -290,16 +294,26 @@ class FilesController
         if (!is_uploaded_file($tmp)) {
             throw new RuntimeException(_m('No file received'));
         }
-        $path  = Files::generateUnusedFilename(Files::makeFile($dir, $name));
-        $error = Imgfunc::reencode($tmp, $path, UploadPolicy::ANON_MAX_PX, UploadPolicy::ANON_MAX_PIXELS);
-        if ($error !== null) {
-            throw new RuntimeException($error);
-        }
+        $path = Files::generateUnusedFilename(Files::makeFile($dir, $name));
+        self::reencode($tmp, $path);
         $perms = defined('IMG_UPLOAD_FILE_MODE') ? (int) constant('IMG_UPLOAD_FILE_MODE') : 0;
         if ($perms) {
             chmod($path, $perms);
         }
         return $path;
+    }
+
+    /**
+     * $tmp written again to $path, as an anonymous upload is
+     * @throws InvalidArgumentException the visitor's file is not an image AA can read - the message is for them
+     * @throws RuntimeException         $path could not be written
+     */
+    protected static function reencode(string $tmp, string $path): void
+    {
+        $error = Imgfunc::reencode($tmp, $path, UploadPolicy::ANON_MAX_PX, UploadPolicy::ANON_MAX_PIXELS, bad_image: $bad_image);
+        if ($error !== null) {
+            throw $bad_image ? new InvalidArgumentException($error) : new RuntimeException($error);
+        }
     }
 
     protected function urlOf(string $slice_id, string $name): string

@@ -13,8 +13,8 @@ use AA_Logentry;
 use AA_Logentry_Unv;
 
 /** Uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason
- *  (logged once a day by FilesController): an expired login or a probe, a file type, or an
- *  upload directory PHP cannot write. Index-only. */
+ *  (logged once a day by FilesController): an expired login or a probe, a file type, a visitor's
+ *  image AA cannot read, or an upload directory PHP cannot write. Index-only. */
 class CheckUploadRefusals extends AbstractOptimize
 {
     private const WINDOW_SECONDS = 30 * 86400;
@@ -75,7 +75,11 @@ class CheckUploadRefusals extends AbstractOptimize
             [$address, $detail] = ($params instanceof AA_Logentry_Unv) ? [$params->ip, $params->detail] : ['', ''];
             $kind       = in_array($reason, ['dir', 'store'], true) ? 'dir' : $reason;
             $findings[] = new Finding(
-                ($kind === 'dir') ? Finding::ERROR : Finding::WARNING,
+                match ($kind) {
+                    'dir'   => Finding::ERROR,
+                    'image' => Finding::INFO,
+                    default => Finding::WARNING,
+                },
                 match ($reason) {
                     'dir'   => _m('Slice %1 cannot store uploads - its directory is not writable', [$slice_name]),
                     'store' => _m('Slice %1 could not store an upload', [$slice_name]),
@@ -96,6 +100,7 @@ class CheckUploadRefusals extends AbstractOptimize
                     'rate'   => _m('An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log.', [FilesController::ANON_PER_IP_HOUR, FilesController::ANON_PER_SLICE_HOUR]),
                     'rights' => _m('Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address.'),
                     'size'   => _m('Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP.', [UploadPolicy::ANON_MAX_BYTES >> 20]),
+                    'image'  => _m('An anonymous visitor sent an image AA could not read - damaged, cut short, or not the type it claims to be. It was not stored and the visitor was told why. Nothing to fix on the server.'),
                     default  => _m('The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\Upload\UploadPolicy; nothing a browser or PHP would run ever passes.'),
                 },
                 links: [_m('Log rows') => AA_Log::getAdminUrl(FilesController::EVENT_REFUSED, $selector)],
