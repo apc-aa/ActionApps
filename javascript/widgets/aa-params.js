@@ -1,0 +1,431 @@
+/**
+ * <aa-params> - the parameters of a type (widget, default value, validation, …) as a form in the page.
+ *
+ *   <aa-params list="INPUT_TYPES" type-name="input_show_func_f" store-key="<module id>/<field id>">
+ *       <div class="flex aa-input-const">… the constants select …</div>
+ *       <div class="aa-params-raw"><label …>…</label><textarea name="input_show_func_p">…</textarea></div>
+ *   </aa-params>
+ *   <aa-params list="FIELD_FUNCTIONS" type-name="alias1_func_f" view="help"></aa-params>
+ *
+ * The original controls stay and are what gets submitted; without JavaScript they are the form.
+ * Values are kept by parameter id, so switching the type keeps what the new type has under the
+ * same name and puts the rest aside (sessionStorage) until a type that has it comes back.
+ * view="help" only describes the type and its parameters and leaves the text field alone.
+ * Definitions come from window.AA_PARAMS (AA\Util\Paramwizard::script()).
+ */
+
+const sibling = (path) => {
+    const self = new URL(import.meta.url);
+    const url = new URL(path, self);
+    url.search = self.search;
+    return url.href;
+};
+
+const { paramsOf, readParams, writeParams, splitFirst, constToText } = await import(sibling('./aa-params-core.js'));
+
+let instances = 0;
+
+/** element with a class */
+const el = (tag, className = '') => {
+    const node = document.createElement(tag);
+    if (className) {
+        node.className = className;
+    }
+    return node;
+};
+
+class AaParamsElement extends HTMLElement {
+    #list;
+    #labels;
+    #typeSelect;
+    #raw;
+    #constBlock;
+    #constSelect;
+    #type = '';
+    #values = new Map();
+    #uid = '';
+    #desc;
+    #box;
+    #rows;
+    #text;
+    #msg;
+
+    connectedCallback() {
+        if (this.#uid) {
+            return;   // moved in the document, already running
+        }
+        this.#uid = 'aa-params-' + (++instances);
+        try {
+            this.#list = window.AA_PARAMS?.lists?.[this.getAttribute('list')];
+            this.#labels = window.AA_PARAMS?.labels;
+            const typeSelect = this.closest('form')?.elements[this.getAttribute('type-name')];
+            if (!this.#list || !this.#labels || !(typeSelect instanceof HTMLSelectElement)) {
+                return;
+            }
+            if (this.getAttribute('view') === 'help') {
+                this.#startHelp(typeSelect);
+            } else {
+                this.#startForm(typeSelect);
+            }
+        } catch (e) {
+            console.error('aa-params', e);
+        }
+    }
+
+    #startForm(typeSelect) {
+        const raw = this.querySelector('.aa-params-raw :is(input, textarea)');
+        if (!raw) {
+            return;
+        }
+        this.#typeSelect = typeSelect;
+        this.#raw = raw;
+        this.#constBlock = this.querySelector('.aa-input-const');
+        this.#constSelect = this.#constBlock?.querySelector('select') ?? null;
+        this.#type = typeSelect.value;
+        this.#values = readParams(this.#params(), raw.value, this.#quote());
+        for (const [id, value] of Object.entries(this.#loadAside())) {
+            if ((typeof value === 'string') && !this.#values.has(id)) {
+                this.#values.set(id, value);
+            }
+        }
+
+        // everything is built aside first - an error on the way leaves the original controls as they were
+        this.#desc = el('div', 'aa-params-desc');
+        this.#box = el('div', 'aa-params-box');
+        const title = el('h3');
+        title.textContent = this.#labels.params;
+        this.#rows = el('div', 'aa-params-rows');
+        this.#box.append(title, this.#rows);
+        const details = this.#buildText();
+
+        this.#rows.addEventListener('input', (e) => this.#onRowInput(e));
+        this.#rows.addEventListener('click', (e) => this.#onRowClick(e));
+        typeSelect.addEventListener('change', () => {
+            this.#type = typeSelect.value;
+            this.#render();
+            this.#write();
+            this.#saveAside();
+        });
+        this.#constSelect?.addEventListener('change', () => this.#refreshText());
+
+        this.prepend(this.#desc, this.#box);
+        this.append(details);
+        if (this.#constBlock) {
+            this.#box.insertBefore(this.#constBlock, this.#rows);
+        }
+        this.#render();
+        this.#refreshText();
+        this.querySelector('.aa-params-raw').hidden = true;
+    }
+
+    #startHelp(typeSelect) {
+        const list = this.#list;
+        const labels = this.#labels;
+        const details = el('details', 'aa-params-help');
+        const summary = el('summary');
+        summary.textContent = labels.help;
+        const body = el('div');
+        details.append(summary, body);
+        const html = (tag, className, text) => {
+            const node = el(tag, className);
+            node.innerHTML = text;   // texts of the definitions (_m() in PHP), they hold HTML
+            return node;
+        };
+        const render = () => {
+            const item = list.items[typeSelect.value];
+            const nodes = [];
+            if (item?.desc) {
+                nodes.push(html('div', 'aa-params-desc', item.desc));
+            }
+            if (item?.params?.length) {
+                const ol = el('ol', 'aa-params-list');
+                for (const param of item.params) {
+                    const li = el('li');
+                    const name = el('b');
+                    name.textContent = param.name;
+                    li.append(name, ' ', html('span', '', param.help ?? ''));
+                    if (param.example) {
+                        const [before, after = ''] = labels.eg.split('%1');
+                        const code = el('code');
+                        code.textContent = param.example;
+                        li.append(' (' + before, code, after + ')');
+                    }
+                    ol.append(li);
+                }
+                nodes.push(ol);
+            }
+            if (item?.examples?.length) {
+                const box = el('div', 'aa-params-examples');
+                const title = el('h4');
+                title.textContent = labels.examples;
+                box.append(title);
+                for (const example of item.examples) {
+                    const code = el('code');
+                    code.textContent = example.params ?? '';
+                    const row = el('div');
+                    row.append(code, html('div', 'aa-params-hlp', example.desc ?? ''));
+                    box.append(row);
+                }
+                nodes.push(box);
+            }
+            if (nodes.length && list.hint) {
+                nodes.push(html('div', 'aa-params-hint', list.hint));
+            }
+            body.replaceChildren(...nodes);
+            details.hidden = !nodes.length;
+        };
+        render();
+        typeSelect.addEventListener('change', render);
+        this.append(details);
+    }
+
+    /** parameters of the current type the form shows (constants have their own select) */
+    #params() {
+        const params = paramsOf(this.#list, this.#type).filter((p) => !this.#constSelect || (p.id !== 'const'));
+        return params.length ? params : paramsOf(null, this.#type);
+    }
+
+    #hasConst() {
+        return !!this.#constSelect && paramsOf(this.#list, this.#type).some((p) => p.id === 'const');
+    }
+
+    /** the type reads ' as : (old date fields) */
+    #quote() {
+        return this.#list.items[this.#type]?.quote === true;
+    }
+
+    #render() {
+        const item = this.#list.items[this.#type];
+        this.#desc.innerHTML = item?.desc ?? '';
+        this.#desc.hidden = !this.#desc.textContent.trim();
+        const rows = this.#params()
+            .filter((p) => !p.id.startsWith('*') || (this.#values.get(p.id) ?? '') !== '')
+            .map((p) => this.#row(p));
+        this.#rows.replaceChildren(...rows);
+        if (this.#constBlock) {
+            this.#constBlock.hidden = !this.#hasConst();
+        }
+        this.#box.hidden = !rows.length && (!this.#constBlock || this.#constBlock.hidden);
+    }
+
+    #row(param) {
+        const labels = this.#labels;
+        const id = `${this.#uid}-p-${param.id.replace(/[^\w-]/g, '_')}`;   // ids of the old lists are names with spaces
+        const value = this.#values.get(param.id) ?? '';
+        const row = el('div', 'aa-params-row');
+        const label = el('label');
+        label.htmlFor = id;
+        label.textContent = param.id.startsWith('*') ? labels.other : (param.name || param.id);
+        const ctl = el('div', 'aa-params-ctl');
+
+        let input;
+        switch (param.type) {
+            case 'bool':
+                input = el('input');
+                input.type = 'checkbox';
+                input.checked = (value !== '') && (value !== '0');
+                break;
+            case 'enum': {
+                input = el('select');
+                const options = [['', labels.default], ...Object.entries(param.options ?? {})];
+                if (!options.some(([v]) => v === value)) {
+                    options.push([value, value]);   // a stored value the type does not offer must not get lost
+                }
+                for (const [v, text] of options) {
+                    input.add(new Option(text, v));
+                }
+                input.value = value;
+                break;
+            }
+            case 'text':
+                input = el('textarea');
+                input.rows = 3;
+                input.value = value;
+                break;
+            case 'int':
+                input = el('input', 'aa-params-num');
+                input.type = 'text';
+                input.inputMode = 'numeric';   // not type=number: an alias or an expression is a value too
+                input.value = value;
+                break;
+            default:
+                input = el('input');
+                input.type = 'text';
+                input.value = value;
+        }
+        input.id = id;
+        input.dataset.param = param.id;
+        if (param.example && ((input.type === 'text') || (input.tagName === 'TEXTAREA'))) {
+            input.placeholder = labels.eg.replace('%1', param.example);
+        }
+        ctl.append(input);
+
+        if (param.help) {
+            const hlp = el('div', 'aa-params-hlp');
+            hlp.id = id + '-hlp';
+            hlp.innerHTML = param.help;
+            input.setAttribute('aria-describedby', hlp.id);
+            ctl.append(hlp);
+            if ((hlp.textContent.length > 95) || /<br/i.test(param.help)) {
+                hlp.classList.add('is-clamped');
+                const more = el('button', 'aa-params-more');
+                more.type = 'button';
+                more.textContent = labels.more;
+                more.setAttribute('aria-expanded', 'false');
+                more.setAttribute('aria-controls', hlp.id);
+                ctl.append(more);
+            }
+        }
+        row.append(label, ctl);
+        return row;
+    }
+
+    #onRowInput(e) {
+        const input = e.target;
+        const id = input.dataset?.param;
+        if (!id) {
+            return;
+        }
+        this.#values.set(id, (input.type === 'checkbox') ? (input.checked ? '1' : '0') : input.value);
+        this.#write();
+    }
+
+    #onRowClick(e) {
+        const more = e.target.closest('.aa-params-more');
+        if (!more) {
+            return;
+        }
+        const open = more.getAttribute('aria-expanded') !== 'true';
+        more.setAttribute('aria-expanded', String(open));
+        more.textContent = open ? this.#labels.less : this.#labels.more;
+        document.getElementById(more.getAttribute('aria-controls'))?.classList.toggle('is-clamped', !open);
+    }
+
+    /** only from what the user did - an untouched field is submitted exactly as it came */
+    #write() {
+        this.#raw.value = writeParams(this.#params(), this.#values);
+        this.#refreshText();
+    }
+
+    // --- values the current type does not have ---------------------------------------------------
+
+    #storeKey() {
+        const key = this.getAttribute('store-key');
+        return key ? `aa-params:${key}:${this.#raw.name}` : '';
+    }
+
+    #loadAside() {
+        const key = this.#storeKey();
+        try {
+            const saved = key ? JSON.parse(sessionStorage.getItem(key) ?? '{}') : {};
+            return (saved && (typeof saved === 'object') && !Array.isArray(saved)) ? saved : {};
+        } catch {
+            return {};
+        }
+    }
+
+    #saveAside() {
+        const key = this.#storeKey();
+        if (!key) {
+            return;
+        }
+        const ids = new Set(this.#params().map((p) => p.id));
+        const aside = Object.fromEntries([...this.#values].filter(([id, value]) => (value !== '') && !ids.has(id)));
+        try {
+            if (Object.keys(aside).length) {
+                sessionStorage.setItem(key, JSON.stringify(aside));
+            } else {
+                sessionStorage.removeItem(key);
+            }
+        } catch {
+            // no storage (private mode, full) - the values just are not remembered
+        }
+    }
+
+    // --- the whole setting as one text ------------------------------------------------------------
+
+    #buildText() {
+        const labels = this.#labels;
+        const details = el('details', 'aa-params-text');
+        const summary = el('summary');
+        summary.textContent = labels.as_text;
+        const line = el('div', 'aa-params-textline');
+        this.#text = el('input');
+        this.#text.type = 'text';
+        this.#text.id = this.#uid + '-text';
+        this.#text.setAttribute('aria-label', labels.as_text);
+        this.#text.spellcheck = false;
+        const copy = el('button');
+        copy.type = 'button';
+        copy.title = labels.copy;
+        copy.setAttribute('aria-label', labels.copy);
+        copy.textContent = '⧉';
+        copy.addEventListener('click', () => {
+            // no clipboard (plain http, refused): the text is selected for Ctrl+C
+            const copied = navigator.clipboard?.writeText(this.#text.value) ?? Promise.reject();
+            copied.then(() => window.AA_Message?.(labels.copied, 'info'), () => this.#text.select());
+        });
+        line.append(this.#text, copy);
+        this.#msg = el('div', 'aa-params-msg');
+        this.#msg.setAttribute('role', 'status');
+        this.#msg.textContent = labels.text_note;
+        details.append(summary, line, this.#msg);
+
+        // not on every keystroke - a type half typed would be read as parameters
+        this.#text.addEventListener('change', () => this.#applyText(this.#text.value));
+        this.#text.addEventListener('input', (e) => {
+            if ((e.inputType === 'insertFromPaste') || (e.inputType === 'insertFromDrop')) {
+                this.#applyText(this.#text.value);
+            }
+        });
+        return details;
+    }
+
+    #refreshText() {
+        const parts = [this.#type];
+        if (this.#hasConst()) {
+            parts.push(constToText(this.#constSelect.value).replaceAll(':', '#:'));
+        }
+        parts.push(this.#raw.value);
+        while (parts.at(-1) === '') {
+            parts.pop();   // the parameters keep their own trailing colons
+        }
+        this.#text.value = parts.join(':');
+    }
+
+    #applyText(input) {
+        const labels = this.#labels;
+        const text = input.trim();
+        let msg = labels.text_note;
+        let { first, rest } = splitFirst(text);
+        const typeSelect = this.#typeSelect;
+        if ([...typeSelect.options].some((o) => o.value === first)) {
+            typeSelect.value = first;
+            this.#type = first;
+            if (this.#hasConst()) {
+                const group = splitFirst(rest);
+                rest = group.rest;
+                const option = [...this.#constSelect.options].find((o) => constToText(o.value) === group.first);
+                if (option) {
+                    this.#constSelect.value = option.value;
+                } else {
+                    msg = labels.unknown_const.replace('%1', group.first);
+                }
+            }
+        } else {
+            msg = labels.no_type.replace('%1', typeSelect.selectedOptions[0]?.text ?? this.#type);
+            rest = text;
+        }
+        for (const [id, value] of readParams(this.#params(), rest, this.#quote())) {
+            this.#values.set(id, value);
+        }
+        this.#render();
+        this.#write();
+        this.#saveAside();
+        this.#msg.textContent = msg;
+    }
+}
+
+if (!customElements.get('aa-params')) {
+    customElements.define('aa-params', AaParamsElement);
+}

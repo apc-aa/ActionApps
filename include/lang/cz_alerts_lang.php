@@ -120,79 +120,79 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "\x8E\xE1dn\xE9 v\xFDb\xECry nejsou definovan\xE9.",
 
-// modules/alerts/alerts_sending.php, row 505
+// modules/alerts/alerts_sending.php, row 506
 "alerts alert" => "zas\xEDl\xE1n\xED - zpr\xE1vy",
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 507
 "alerts welcome" => "zas\xEDl\xE1n\xED - uv\xEDt\xE1n\xED",
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 508
 "slice wizard welcome" => "pr\xF9vodce web\xEDkem - uv\xEDt\xE1n\xED",
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 509
 "user template" => "\x9Aablona u\x9Eivatele",
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 510
 "password change" => "zm\xECna hesla",
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 511
 "other" => "jin\xE9",
 
-// modules/alerts/alerts_sending.php, row 521
+// modules/alerts/alerts_sending.php, row 522
 "Aliases for Alerts Alert" => "Aliasy pro e-mail zas\xEDl\xE1n\xED - zpr\xE1vy",
 
-// modules/alerts/alerts_sending.php, row 523
+// modules/alerts/alerts_sending.php, row 524
 "complete filter text" => "\xFApln\xFD text filtru",
 
-// modules/alerts/alerts_sending.php, row 524, 533
+// modules/alerts/alerts_sending.php, row 525, 534
 "howoften" => "jak \xE8asto",
 
-// modules/alerts/alerts_sending.php, row 525
+// modules/alerts/alerts_sending.php, row 526
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL anonymn\xEDho formul\xE1\xF8e (nastavuje se v Administraci zas\xEDl\xE1n\xED - Nastaven\xED)",
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 527
 "Unsubscribe Form URL" => "URL formul\xE1\xF8e pro odhl\xE1\x9Aen\xED",
 
-// modules/alerts/alerts_sending.php, row 531
+// modules/alerts/alerts_sending.php, row 532
 "Aliases for Alerts Welcome" => "Aliasy pro e-mail zas\xEDl\xE1n\xED - uv\xEDt\xE1n\xED",
 
-// modules/alerts/alerts_sending.php, row 534
+// modules/alerts/alerts_sending.php, row 535
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL formul\xE1\xF8e kolekce (nastavuje se v Administraci zas\xEDl\xE1n\xED - Nastaven\xED)",
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 536
 "email confirmed" => "e-mail potvrzen",
 
-// modules/alerts/alerts_sending.php, row 541
+// modules/alerts/alerts_sending.php, row 542
 "Aliases for Slice Wizard Welcome" => "Aliasy pro uv\xEDt\xE1n\xED pr\xF9vodce web\xEDkem",
 
-// modules/alerts/alerts_sending.php, row 543, 555
+// modules/alerts/alerts_sending.php, row 544, 556
 "Slice name" => "N\xE1zev web\xEDku",
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 545, 557
 "New user name" => "Jm\xE9no nov\xE9ho u\x9Eivatele",
 
-// modules/alerts/alerts_sending.php, row 545
+// modules/alerts/alerts_sending.php, row 546
 "New user login name" => "P\xF8ihla\x9Aovac\xED jm\xE9no nov\xE9ho u\x9Eivatele",
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 547
 "New user role (editor / admin)" => "Role nov\xE9ho u\x9Eivatele (editor / admin)",
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 548
 "My name" => "M\xE9 jm\xE9no",
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 549
 "My email" => "M\xF9j e-mail",
 
-// modules/alerts/alerts_sending.php, row 553
+// modules/alerts/alerts_sending.php, row 554
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasy pro \x9Aablony u\x9Eivatele (m\xF9\x9Eete pou\x9E\xEDt tak\xE9 v\x9Aechny aliasy u\x9Eivatele)",
 
-// modules/alerts/alerts_sending.php, row 561
+// modules/alerts/alerts_sending.php, row 562
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasy pro e-mail zm\xECny hesla (m\xF9\x9Eete pou\x9E\xEDt tak\xE9 v\x9Aechny aliasy u\x9Eivatele)",
 
-// modules/alerts/alerts_sending.php, row 563
+// modules/alerts/alerts_sending.php, row 564
 "HTML link to the password change page for current user" => "HTML odkaz na str\xE1nku zm\xECny hesla pro aktu\xE1ln\xEDho u\x9Eivatele",
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 565
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Parametr URL pou\x9E\xEDvan\xFD v odkazu na zm\xECnu hesla v _#PWD_LINK (m\xF9\x9Eete jej vyu\x9E\xEDt, pokud pro n\xECj chcete pou\x9E\xEDt vlastn\xED URL)",
 
 // modules/alerts/cf_common.php, row 42

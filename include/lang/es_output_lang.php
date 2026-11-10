@@ -246,16 +246,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Todas las categor\xEDas",
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Error: falta la contrase\xF1a de lectura",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Mensaje de noticias del Toolkit",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Atr\xE1s",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Volver a iniciar sesi\xF3n",
 
 // misc/proposefieldchange.php, row 110

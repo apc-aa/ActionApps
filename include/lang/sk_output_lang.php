@@ -229,16 +229,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "V\x9Aetky kateg\xF3rie", // ai 2026-06
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Chyba: ch\xFDba heslo pre \xE8\xEDtanie", // ai 2026-06
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Sp\xE4t",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Znovu prihl\xE1si\x9D", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110

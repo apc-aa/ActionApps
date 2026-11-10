@@ -212,16 +212,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "全ての分類", // ai 2026-06
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "エラー: 読み取りパスワードがありません", // ai 2026-06
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "アプリケーションのお知らせ", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "戻る", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "再ログイン", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110

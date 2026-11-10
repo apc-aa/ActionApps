@@ -30,9 +30,11 @@
  */
 
 use AA\Cache\CacheStr2find;
+use AA\Form\ShowConditions;
 use AA\Security\SignedExpression;
 use AA\Util\Langs;
 use AA\Util\JsTriggers;
+use AA\Util\ScriptTag;
 use AA\Util\Txt;
 use AA\Widget\Widget;
 use AA\Widget\RichtextMarkup;
@@ -103,6 +105,9 @@ class inputform {
     private int $template; // if you want to display alternate form design, template holds view_id of such template view type 'inputform'
     private string $formheading;     // add extra form heading here (default none, used by MLX)
     private array $hidden;          //
+    private bool $show_conditions;         // display conditions apply - only the admin item form, which also applies them on save
+    private ?AA_Content $stored_content;   // the stored item when a failed update is drawn again - values of fields the form did not send
+    private array $static_hidden = [];      // fields a display condition's expression hides - left out of the default form
 
     // computed values from form fields
     private ?array $show_func_used = null;    // used show functions in the input form
@@ -127,12 +132,14 @@ class inputform {
         $this->template             = (int)$settings['template'];  // most probably it is int
         $this->formheading          = (string)$settings['formheading']; //aded for MLX
         $this->hidden               = (array)$settings['hidden'];      // array of hidden fields to be added to the form
+        $this->show_conditions      = (bool) ($settings['show_conditions'] ?? false);
+        $this->stored_content       = $settings['stored_content'] ?? null;
     }
 
     /** static */
     static function _getButton($key, $type, $default_text, $profile_text, $url = null): array
     {
-        return ($profile_text === '') ? [] : [$key => ['type' => $type, 'value' => get_if($profile_text, $default_text), 'url' => $url]];
+        return ($profile_text === '') ? [] : [$key => ['type' => $type, 'value' => get_if($profile_text, $default_text), 'url' => $url, 'once' => $type === 'submit']];
     }
 
 
@@ -157,6 +164,13 @@ class inputform {
      */
     function printForm($content4id, $slice, $edit, $slice_fields=false): void
     {
+        $slice_id = $slice->getId();
+        $profile  = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
+
+        if ($this->show_conditions && !$slice_fields) {
+            $this->showConditions($content4id, $slice, (bool) $edit, $profile);
+        }
+
         // Get the default form and FILL CONTENTCACHE with fields
         // This function also fills the $this->show_func_used [and $this->js_proove_fields ...not used already]
         $form          = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
@@ -168,9 +182,6 @@ class inputform {
             $form          = ($edit && $view->f('even_odd_differ')) ? $view->f('even') : $view->f('odd');
             $remove_string = $view->f('remove_string');
         }
-
-        $slice_id = $slice->getId();
-        $profile  = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
 
         // Profile rules "UI - inputform - hide": menu_top / menu_left hide the admin top bar
         // and/or the left item rail independently (both hidden = the headerless pre-2026 form).
@@ -252,13 +263,15 @@ class inputform {
             // you can add some html code by user profiles, above the form
             $html_start .= get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_tophtml' : 'add_tophtml'), '');
 
-            $html_start .= GetPrintArray( $this->messages['err'] );     // prints err or OK messages
+            if (($messages = GetPrintArray($this->messages['err'])) !== '') {     // err or OK messages
+                $html_start .= "<div class=\"aa-page-msg\">$messages</div>";
+            }
 
             $html_end = "</div></div>{generate:FOOT}</body></html>";
         }
 
-        AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
-        AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
+        AA_Adminpageutil::addScrollKeeper();
+        AA_Adminpageutil::addSubmitGuard();   // here: the buttons come after the page requires are printed
 
         // Now that the top header / left rail let the editor navigate away mid-edit, warn before
         // leaving a full-page admin form with unsaved changes (submitting clears the flag).
@@ -349,6 +362,35 @@ class inputform {
         echo $html_end;
     }
 
+    /** Display conditions of the admin item form (AA\Form\ShowConditions). The values are the ones getForm()
+     *  shows: of the item, or of a new one from the form and the defaults. A field the expression hides is left
+     *  out of the default form; the ones the rules hide are hidden by CSS until AA_ShowIfInit() takes over.
+     */
+    private function showConditions(AA_Content $content4id, AA_Slice $slice, bool $edit, AA_Profile $profile): void
+    {
+        $conds = ShowConditions::forSlice($slice->getId());
+        if ($conds->isEmpty()) {
+            return;
+        }
+        $fields = $slice->getFields();
+        if ($edit) {
+            $hidden = $conds->hiddenFor($fields, $content4id, $this->stored_content);
+        } else {
+            $from_form = new ItemContent();
+            $from_form->setFieldsFromForm($content4id, true, $fields, $profile);
+            $hidden = $conds->hiddenFor($fields, $from_form, null, true);
+        }
+        if (!$this->template) {
+            $this->static_hidden = array_keys(array_filter($hidden, static fn(int $how) => $how === ShowConditions::STATIC));
+        }
+        if ($hidden) {
+            $rows = implode(',', array_map(static fn($fid) => '.cont-' . varname4form((string) $fid), array_keys($hidden)));
+            AA::Stringexpander()->addRequire("html:not(.aa-showif-on) :is($rows){display:none!important}", 'AA_Req_CSScode');
+        }
+        AA::Stringexpander()->addRequire('aa-fillform@1');
+        AA::Stringexpander()->addRequire('AA_ShowIfInit(' . json_encode($conds->formConfig($fields, $hidden), ScriptTag::JS_JSON) . ');', 'AA_Req_Run');
+    }
+
     /** getForm function
      *   Shows the Add / Edit item form fields
      * @param ItemContent $content4id - current item content in db
@@ -388,7 +430,8 @@ class inputform {
             if ( ($form4anonymous_wizard  && !$show[$fid]) ||
                 (!$form4anonymous_wizard && (!$field->getProperty('input_show') ||
                         $profile->getProperty('hide',$fid) ||
-                        $profile->getProperty('hide&fill',$fid)))) {
+                        $profile->getProperty('hide&fill',$fid) ||
+                        in_array($fid, $this->static_hidden, true)))) {
                 // do not show this field
                 continue;
             }
@@ -2932,19 +2975,20 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
             $properties = [];
         }
         $title = $properties['title'] ? ' title="'.safe($properties['title']).'"' : '';
+        // the saving buttons by default; 'once' => true for any other action that must not run twice
+        $once  = ($properties['once'] ?? in_array($name, ['update', 'insert', 'submit'], true)) ? ' aa-once' : '';
         switch($name) {
             case 'update':
                 if ($properties['type'] === 'hidden') {
                     $ret .= ' <input type="hidden" name="update" id="'.$prefix .'update"'.$title.' value="'. safe(get_if($properties['value'], "")) .'">';
                 } else {
                     $save_btn_id = $prefix .'update';
-                    $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$save_btn_id.'"'.$title.' accesskey="S" value=" '. safe(get_if($properties['value'], _m("Update"))) ." [^S] " .' ">';
-                    AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
+                    $ret .= ' <input type="submit" class="btn-l'.$once.'" name="update" id="'.$save_btn_id.'"'.$title.' accesskey="S" value=" '. safe(get_if($properties['value'], _m("Update"))) ." [^S] " .' ">';
                     $noaccess = true; // use for update of item, bug was, that both "update" and "insert" has accesskey S
                 }
                 break;
             case 'insert':
-                $ret .= ' <input type="submit" class="btn-l" name="insert"'.$title.' id="'.$prefix .'insert" ';
+                $ret .= ' <input type="submit" class="btn-l'.$once.'" name="insert"'.$title.' id="'.$prefix .'insert" ';
                 if (!$noaccess) { // was accesskey used ?
                     $save_btn_id = $prefix .'insert';
                     $ret .= 'accesskey="S" ';
@@ -2973,7 +3017,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                 $ret .= ' <input type="reset" id="'.$prefix .'reset"'.$title.' value=" '. _m("Reset form") .' " class="btn-l btn-secondary"> ';
                 break;
             case 'submit': // name is not submit because it breaks document.f.submit() function call
-                $ret .= ' <input type="submit" class="btn-l" name="submitbtn"'.$title.' id="'.$prefix .'submit" accesskey="S" value=" '. safe(get_if($properties['value'], _m("Submit"))) ."  [^S] ". ' "> ';
+                $ret .= ' <input type="submit" class="btn-l'.$once.'" name="submitbtn"'.$title.' id="'.$prefix .'submit" accesskey="S" value=" '. safe(get_if($properties['value'], _m("Submit"))) ."  [^S] ". ' "> ';
                 $save_btn_id = $prefix .'submit';
                 break;
             default:
@@ -2998,23 +3042,10 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                     ' name="'.  $name .
                     '" id="'.  $prefix . $name .
                     '" value="'. safe($properties['value']) . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
-                    '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . ' class="btn-l btn-secondary"'.$title.'>'.$nbsp;
+                    '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . ' class="btn-l btn-secondary'.$once.'"'.$title.'>'.$nbsp;
         }
         $ret .= "\n";
     }
-
-    if ($save_btn_id || $esc_btn_id) {
-        $shotcuts_js =  <<<JS
-                        document.addEventListener('keydown', e => {
-                            if (e.repeat || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
-                            const btn = document.getElementById(({ s:'{$save_btn_id}', Escape:'{$esc_btn_id}' })[e.key.length===1 ? e.key.toLowerCase() : e.key]);
-                            if (!btn || btn.disabled) return;
-                            e.preventDefault();
-                            btn.click();
-                        });
-                        JS;
-        AA::Stringexpander()->addRequire( $shotcuts_js, 'AA_Req_Load');
-     }
 
     if ($save_btn_id || $esc_btn_id) {
         $shotcuts_js =  <<<JS
@@ -3177,7 +3208,9 @@ function getFrmJavascriptCached( $jscode, $name, $loadtype = 'async defer' ): st
 
     if (!AA::Pagecache()->getById($key)) {     // not in cache, yet
         $str2find = new CacheStr2find([$name], 'js');
-        AA::Pagecache()->store($key, $jscode, $str2find, true);
+        if (!AA::Pagecache()->store($key, $jscode, $str2find, true)) {
+            return getFrmJavascript($jscode);  // a debug render stores nothing - cached.php would give an empty file
+        }
     }
     return getFrmJavascriptFile( 'cached.php', ['keystr'=>$key], $loadtype );
 }

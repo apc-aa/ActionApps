@@ -476,12 +476,18 @@ class AA_Validate_Url extends AA_Validate_Regexp
         $this->empty_expression = '~(^http(s?):\/\/$)|(^\s*$)~';
     }
 
+    /** the pattern is the class's own, the stored string sets only the length */
+    public static function getClassProperties(): array
+    {
+        return ['maxlength' => parent::getClassProperties()['maxlength']];
+    }
+
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
     public function getHtmlInputAttr(): array
     {
-        return ['type' => 'url', 'pattern' => "^http(s?):\/\/\S+\.\S+"];
+        return ['type' => 'url'] + parent::getHtmlInputAttr();   // the pattern without its delimiters, the length
     }
 }
 
@@ -496,12 +502,19 @@ class AA_Validate_Email extends AA_Validate_Regexp
         $this->empty_expression = '/^\s*$/';
     }
 
+    /** the pattern is the class's own, the stored string sets only the length */
+    public static function getClassProperties(): array
+    {
+        return ['maxlength' => parent::getClassProperties()['maxlength']];
+    }
+
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
     public function getHtmlInputAttr(): array
     {
-        return ['type' => 'email'];
+        // the browser checks an e-mail itself; the regexp as a pattern would be stricter than before
+        return array_diff_key(['type' => 'email'] + parent::getHtmlInputAttr(), ['pattern' => true]);
     }
 }
 

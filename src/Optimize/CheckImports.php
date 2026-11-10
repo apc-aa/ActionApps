@@ -66,8 +66,9 @@ class CheckImports extends AbstractOptimize
      */
     public static function findingsAt(int $now, ?array $constants = null): array
     {
-        $o        = self::objects();
-        $findings = [
+        $o         = self::objects();
+        $o['name'] = self::sliceNames($o['defs']);
+        $findings  = [
             ...self::runFindings($o, $now),
             ...self::definitionFindings($o, $now),
             ...self::orphanFindings($o, $now),
@@ -143,15 +144,15 @@ class CheckImports extends AbstractOptimize
             if (!isset($o['defs'][$def])) {
                 continue;
             }
-            $about   = self::about($o['defs'][$def], $def);
+            $about   = static fn(): array => self::about($o['defs'][$def], $def, $o['name']);
             $started = (int) ($r['started'] ?? 0);
             if (($r['state'] ?? '') === Run::ERROR) {
                 // only the code: the place names stream and job keys of the source - the import detail shows it
-                $findings[] = new Finding(Finding::ERROR, _m('An import stopped by an error'), since: $started, evidence: [$about + [_m('Error') => safe($r['error_code'] ?? ''), _m('Started') => self::date($started)]], advice: _m('Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported.'), links: self::detail($o['defs'][$def], $def), key: "error:$id");
+                $findings[] = new Finding(Finding::ERROR, _m('An import stopped by an error'), since: $started, evidence: [$about() + [_m('Error') => safe($r['error_code'] ?? ''), _m('Started') => self::date($started)]], advice: _m('Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported.'), links: self::detail($o['defs'][$def], $def), key: "error:$id");
             } elseif ((($r['state'] ?? '') === Run::RUNNING) && ($run = Run::get((string) $id)) && $run->isStuck($now)) {
                 // a running run is loaded whole for isStuck() - one per import at most
                 $idle       = $run->idleSince();
-                $findings[] = new Finding(Finding::WARNING, _m('An import has not moved on for %1 hours', [intdiv($now - $idle, 3600)]), since: $idle, evidence: [$about + [_m('Started') => self::date($started), _m('Idle since') => self::date($idle)]], advice: _m('No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run.'), links: self::detail($o['defs'][$def], $def), key: "stuck:$id");
+                $findings[] = new Finding(Finding::WARNING, _m('An import has not moved on for %1 hours', [intdiv($now - $idle, 3600)]), since: $idle, evidence: [$about() + [_m('Started') => self::date($started), _m('Idle since') => self::date($idle)]], advice: _m('No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run.'), links: self::detail($o['defs'][$def], $def), key: "stuck:$id");
             }
         }
         return $findings;
@@ -188,13 +189,13 @@ class CheckImports extends AbstractOptimize
         $named = [];
         foreach ($defs as $id => $r) {
             $id    = (string) $id;
-            $about = self::about($r, $id);
+            $about = static fn(): array => self::about($r, $id, $o['name']);
             $links = self::detail($r, $id);
             if (($r['aa_name'] ?? '') !== '') {
                 $named[($r['aa_owner'] ?? '') . ':' . Definition::nameKey($r['aa_name'])][] = $id;
             }
             if (StreamState::foreignAt(self::held($o, StreamState::idOf($id)), $id) || Catalog::foreignAt(self::held($o, Catalog::idOf($id)), $id)) {
-                $findings[] = new Finding(Finding::ERROR, _m('Another record holds the place of the stream state or catalog of an import'), evidence: [$about], advice: _m('The end of each step of its runs fails on it, and deleting the import leaves it. Delete the object at the id of its stream state or catalog.'), links: $links, key: "foreign:$id");
+                $findings[] = new Finding(Finding::ERROR, _m('Another record holds the place of the stream state or catalog of an import'), evidence: [$about()], advice: _m('The end of each step of its runs fails on it, and deleting the import leaves it. Delete the object at the id of its stream state or catalog.'), links: $links, key: "foreign:$id");
             }
             $findings = [...$findings, ...self::stateFindings($o, $id, $about, $links, $runsOf[$id] ?? [], $now)];
             if (($last = self::lastFinished($o, $runsOf[$id] ?? [])) !== null) {
@@ -203,45 +204,47 @@ class CheckImports extends AbstractOptimize
                 $finished = (int) ($o['runs'][$last]['finished'] ?? 0);
                 if (($cycles > 0) && ($finished >= $now - self::WINDOW)) {
                     // the stream names are the source's - the import detail lists them
-                    $findings[] = new Finding(Finding::WARNING, (($cycles === 1) ? _m('The last run of an import skipped 1 stream: the source went round') : _m('The last run of an import skipped %1 streams: the source went round', [$cycles])), count: $cycles, since: $finished, evidence: [$about + [_m('Finished') => self::date($finished)]], advice: _m('The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams.'), links: $links, key: "cycle:$id", last: $finished);
+                    $findings[] = new Finding(Finding::WARNING, (($cycles === 1) ? _m('The last run of an import skipped 1 stream: the source went round') : _m('The last run of an import skipped %1 streams: the source went round', [$cycles])), count: $cycles, since: $finished, evidence: [$about() + [_m('Finished') => self::date($finished)]], advice: _m('The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams.'), links: $links, key: "cycle:$id", last: $finished);
                 }
                 if ($errors > 0) {
-                    $findings[] = new Finding(Finding::INFO, _m('The last run of an import had %1 item errors', [$errors]), count: $errors, since: $finished, evidence: [$about + [_m('Finished') => self::date($finished)]], advice: _m('The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again.'), links: $links, key: "items:$id", last: $finished);
+                    $findings[] = new Finding(Finding::INFO, _m('The last run of an import had %1 item errors', [$errors]), count: $errors, since: $finished, evidence: [$about() + [_m('Finished') => self::date($finished)]], advice: _m('The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again.'), links: $links, key: "items:$id", last: $finished);
                 }
             }
             if ((($r['enabled'] ?? '') === '1') && !isset($planned[$id])) {
-                $findings[] = new Finding(Finding::INFO, _m('An enabled import has no planned task'), evidence: [$about], advice: _m('No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off.'), links: $links, key: "plan:$id");
+                // the switch is in the edit form of the Imports list, not in the detail the finding links to
+                $findings[] = new Finding(Finding::INFO, _m('An enabled import has no planned task'), evidence: [$about()], advice: _m('No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch the import off: in "%1" of the slice click "%2" at the import and untick "%3".', [_m('Imports'), _m('Edit'), _m('Enabled')]), links: $links + self::detail($r, $id, 'se_dataimports.php', _m('Edit')), key: "plan:$id");
             }
         }
         foreach ($named as $key => $ids) {
             if (count($ids) > 1) {
-                $findings[] = new Finding(Finding::WARNING, _m('%1 imports of one slice have the same name', [count($ids)]), count: count($ids), evidence: array_map(static fn(string $id): array => self::about($defs[$id], $id) + [_m('Id') => $id], $ids), advice: _m('{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one.'), links: self::detail($defs[$ids[0]], $ids[0]), key: 'names:' . md5($key));
+                $findings[] = new Finding(Finding::WARNING, _m('%1 imports of one slice have the same name', [count($ids)]), count: count($ids), evidence: array_map(static fn(string $id): array => self::about($defs[$id], $id, $o['name']) + [_m('Id') => $id], $ids), advice: _m('{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one.'), links: self::detail($defs[$ids[0]], $ids[0]), key: 'names:' . md5($key));
             }
         }
         return $findings;
     }
 
-    /** @param list<string> $runs of definition $id
+    /** @param \Closure(): array<string, string> $about the definition in the evidence, about()
+     *  @param list<string> $runs of definition $id
      *  @return Finding[] the last check() of the source and the catalog of definition $id */
-    private static function stateFindings(array $o, string $id, array $about, array $links, array $runs, int $now): array
+    private static function stateFindings(array $o, string $id, \Closure $about, array $links, array $runs, int $now): array
     {
         $findings = [];
         $state    = $o['at'][StreamState::idOf($id)] ?? [];
         if (StreamState::isOwn($state, $id)) {
             $check = StreamState::checkOf($state['check'] ?? '', $damaged);
             if ($damaged) {
-                $findings[] = new Finding(Finding::WARNING, _m('The last check of an import source cannot be read'), evidence: [$about], advice: _m('Its stored result is damaged. The next check of the source stores it again.'), links: $links, key: "checkdata:$id");
+                $findings[] = new Finding(Finding::WARNING, _m('The last check of an import source cannot be read'), evidence: [$about()], advice: _m('Its stored result is damaged. The next check of the source stores it again.'), links: $links, key: "checkdata:$id");
             } elseif ($check && !$check['ok'] && ($check['time'] >= $now - self::WINDOW)) {
                 // the code only: the message is the source's
-                $findings[] = new Finding(Finding::WARNING, _m('The last check of an import source failed'), since: $check['time'], evidence: [$about + [_m('Checked') => self::date($check['time']), _m('Code') => safe($check['code'])]], advice: _m('A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again.'), links: $links, key: "check:$id", last: $check['time']);
+                $findings[] = new Finding(Finding::WARNING, _m('The last check of an import source failed'), since: $check['time'], evidence: [$about() + [_m('Checked') => self::date($check['time']), _m('Code') => safe($check['code'])]], advice: _m('A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again.'), links: $links, key: "check:$id", last: $check['time']);
             } elseif ($check && $check['ok'] && ($check['code'] !== '') && ($check['time'] >= $now - self::WINDOW)) {
-                $findings[] = new Finding(Finding::INFO, _m('The last check of an import source passed with a remark'), since: $check['time'], evidence: [$about + [_m('Checked') => self::date($check['time']), _m('Code') => safe($check['code'])]], advice: _m('The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said.'), links: $links, key: "checknote:$id", last: $check['time']);
+                $findings[] = new Finding(Finding::INFO, _m('The last check of an import source passed with a remark'), since: $check['time'], evidence: [$about() + [_m('Checked') => self::date($check['time']), _m('Code') => safe($check['code'])]], advice: _m('The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said.'), links: $links, key: "checknote:$id", last: $check['time']);
             }
         }
         $catalog  = $o['at'][Catalog::idOf($id)] ?? [];
         $checking = array_filter($runs, static fn(string $run): bool => in_array($o['runs'][$run]['state'] ?? '', [Run::RUNNING, Run::ERROR], true) && (($o['runs'][$run]['mode'] ?? '') === 'check'));
         if (Catalog::isOwn($catalog, $id) && (($catalog['time'] ?? '') === '') && !$checking) {
-            $findings[] = new Finding(Finding::INFO, _m('The catalog of an import source is incomplete'), evidence: [$about], advice: _m('The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again.'), links: $links, key: "catalog:$id");
+            $findings[] = new Finding(Finding::INFO, _m('The catalog of an import source is incomplete'), evidence: [$about()], advice: _m('The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again.'), links: $links, key: "catalog:$id");
         }
         return $findings;
     }
@@ -361,16 +364,37 @@ class CheckImports extends AbstractOptimize
         return preg_match('/^[0-9a-f]{32}\z/', $id) === 1;
     }
 
-    /** @return array<string, string> the definition in the evidence, escaped */
-    private static function about(array $r, string $id): array
+    /**
+     * slice id => its name ('' for none), read in one go of `module` by its key the first time a finding
+     * names a slice - a State Check with nothing to say reads nothing
+     * @param array<string, array<string, string>> $defs
+     * @return \Closure(string): string
+     */
+    private static function sliceNames(array $defs): \Closure
     {
-        return [_m('Import') => safe(($r['aa_name'] ?? '') ?: $id), _m('Slice') => safe($r['aa_owner'] ?? '')];
+        $names = null;
+        return static function (string $slice) use (&$names, $defs): string {
+            if ($names === null) {
+                $slices = array_values(array_unique(array_filter(array_map(static fn(array $r): string => (string) ($r['aa_owner'] ?? ''), $defs), is_long_id(...))));
+                $names  = $slices ? DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', [['id', $slices, 'l']]) : [];
+            }
+            return (string) ($names[$slice] ?? '');
+        };
     }
 
-    /** @return array<string, string> the import detail - its page decides who may open it */
-    private static function detail(array $r, string $id): array
+    /** @param \Closure(string): string $name sliceNames()
+     *  @return array<string, string> the definition in the evidence, escaped */
+    private static function about(array $r, string $id, \Closure $name): array
     {
-        return [_m('Import detail') => AA_INSTAL_PATH . 'admin/se_dataimport.php?change_id=' . rawurlencode($r['aa_owner'] ?? '') . '&id=' . $id];
+        $slice = (string) ($r['aa_owner'] ?? '');
+        return [_m('Import') => safe(($r['aa_name'] ?? '') ?: $id), _m('Slice') => safe($name($slice) ?: $slice)];
+    }
+
+    /** @return array<string, string> a page of the import named $label: the import detail, or with se_dataimports.php
+     *  the edit form in the Imports list (name, source, Enabled) - the page decides who may open it */
+    private static function detail(array $r, string $id, string $page = 'se_dataimport.php', ?string $label = null): array
+    {
+        return [($label ?? _m('Import detail')) => AA_INSTAL_PATH . "admin/$page?change_id=" . rawurlencode($r['aa_owner'] ?? '') . '&id=' . $id];
     }
 
     private static function date(int $time): string

@@ -251,16 +251,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Všechny kategorie",
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Chyba: chybí heslo pro čtení",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Zpráva s novinkami Toolkitu",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Zpět",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Znovu přihlásit",
 
 // misc/proposefieldchange.php, row 110

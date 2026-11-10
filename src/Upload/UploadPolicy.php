@@ -90,13 +90,6 @@ final class UploadPolicy
         return ($anonymous_post > 0) || (($anonymous_edit >= 1) && ($anonymous_edit <= 3));
     }
 
-    /** width x height from the header - checked before GD decodes anything */
-    public static function pixelsAllowed(string $file): bool
-    {
-        $info = @getimagesize($file);
-        return is_array($info) && (($info[0] * $info[1]) <= self::ANON_MAX_PIXELS);
-    }
-
     /** @return ?string why not - 'type', 'mime' or 'size' - null when allowed */
     public static function refusal(string $mode, string $filename, string $mime, int $size): ?string
     {
@@ -115,13 +108,14 @@ final class UploadPolicy
     }
 
     /**
-     * What an anonymous visitor may upload - every such image is written again, so AVIF
-     * only where GD can.
+     * What an anonymous visitor may upload - every such image is written again, so WebP and
+     * AVIF only where GD can.
      * @return array<string, list<string>>
      */
     public static function anonTypes(): array
     {
-        return Imgfunc::avifSupported() ? self::ANON_TYPES + ['avif' => ['image/avif']] : self::ANON_TYPES;
+        $types = Imgfunc::webpSupported() ? self::ANON_TYPES : array_diff_key(self::ANON_TYPES, ['webp' => true]);
+        return Imgfunc::avifSupported() ? $types + ['avif' => ['image/avif']] : $types;
     }
 
     /**

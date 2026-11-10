@@ -110,17 +110,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Gérer les filtres", // ai 2026-06
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Erreur: mot de passe de lecture manquant",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "message de Kit d'outils de nouvelles",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 // modules/links/check_url.php, row 52
 "Back" => "Retour",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Se reconnecter", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114

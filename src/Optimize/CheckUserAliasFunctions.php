@@ -143,11 +143,15 @@ class CheckUserAliasFunctions extends AbstractOptimize
     /** @param bool $static  see severity() */
     public static function advice(string $level, string $reason, string $name, string $file, bool $static = false): string
     {
+        // f_u calls the name as written: a missing usr_* function is defined under that name, any other one
+        // as usr_<name> - and then the alias has to name the new function
+        $define = str_starts_with($name, 'usr_') ? $name : "usr_$name";
+        $rename = ($define === $name) ? '' : ' ' . _m('Then change the alias to that name.');
         return match (true) {
             $level === UserAliasFunction::INSTALLATION  => _m('AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions.', [$name, $file]),
             $reason === UserAliasFunction::EMPTY        => _m('The alias shows nothing (it never did). Remove it or name a usr_* function.'),
-            $static && $reason === UserAliasFunction::UNDEFINED => _m('The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check "f_u calls on pages" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias.', [$name]),
-            $reason === UserAliasFunction::UNDEFINED    => _m('The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias.', [$name]),
+            $static && $reason === UserAliasFunction::UNDEFINED => _m('The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check "f_u calls on pages" says what pages really called; trust that one. If it is not there either, define %1 in include/usr_aliasfnc.php or remove the alias.', [$define]) . $rename,
+            $reason === UserAliasFunction::UNDEFINED    => _m('The page had no such function, the alias showed nothing. Define %1 in include/usr_aliasfnc.php or remove the alias.', [$define]) . $rename,
             $reason === UserAliasFunction::FOREIGN      => _m('Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1.', [$name]),
             $reason === UserAliasFunction::CALL_FAILED  => _m('The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing.', [$file]),
             default                                      => _m('The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead.'),

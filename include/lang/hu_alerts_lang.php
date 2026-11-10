@@ -59,79 +59,79 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Nincsenek defini\xE1lt v\xE1logat\xE1sok. Defini\xE1lnia kell legal\xE1bb egyet.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 505
+// modules/alerts/alerts_sending.php, row 506
 "alerts alert" => "\xE9rtes\xEDt\xF5 e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 507
 "alerts welcome" => "\xFCdv\xF6zl\xF5 e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 508
 "slice wizard welcome" => "rovatvar\xE1zsl\xF3 \xFCdv\xF6zl\xF5je", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 509
 "user template" => "felhaszn\xE1l\xF3i sablon", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 510
 "password change" => "jelsz\xF3m\xF3dos\xEDt\xE1s", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 511
 "other" => "egy\xE9b", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 521
+// modules/alerts/alerts_sending.php, row 522
 "Aliases for Alerts Alert" => "Aliasok az \xE9rtes\xEDt\xF5 e-mailhez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 523
+// modules/alerts/alerts_sending.php, row 524
 "complete filter text" => "a sz\xFBr\xF5 teljes sz\xF6vege", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 524, 533
+// modules/alerts/alerts_sending.php, row 525, 534
 "howoften" => "milyen gyakran", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 525
+// modules/alerts/alerts_sending.php, row 526
 "Anonym Form URL (set in Alerts Admin - Settings)" => "Anonim \xFBrlap URL-je (az \xC9rtes\xEDt\xE9sek adminisztr\xE1ci\xF3ja - Be\xE1ll\xEDt\xE1sok alatt \xE1ll\xEDthat\xF3 be)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 527
 "Unsubscribe Form URL" => "Leiratkoz\xE1si \xFBrlap URL-je", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 531
+// modules/alerts/alerts_sending.php, row 532
 "Aliases for Alerts Welcome" => "Aliasok az \xFCdv\xF6zl\xF5 e-mailhez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 534
+// modules/alerts/alerts_sending.php, row 535
 "Collection Form URL (set in Alerts Admin - Settings)" => "Gy\xFBjtem\xE9ny\xFBrlap URL-je (az \xC9rtes\xEDt\xE9sek adminisztr\xE1ci\xF3ja - Be\xE1ll\xEDt\xE1sok alatt \xE1ll\xEDthat\xF3 be)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 536
 "email confirmed" => "e-mail meger\xF5s\xEDtve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 541
+// modules/alerts/alerts_sending.php, row 542
 "Aliases for Slice Wizard Welcome" => "Aliasok a rovatvar\xE1zsl\xF3 \xFCdv\xF6zl\xF5j\xE9hez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 543, 555
+// modules/alerts/alerts_sending.php, row 544, 556
 "Slice name" => "Rovat neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 545, 557
 "New user name" => "\xDAj felhaszn\xE1l\xF3 neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 545
+// modules/alerts/alerts_sending.php, row 546
 "New user login name" => "\xDAj felhaszn\xE1l\xF3 bejelentkez\xE9si neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 547
 "New user role (editor / admin)" => "\xDAj felhaszn\xE1l\xF3 szerepk\xF6re (editor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 548
 "My name" => "Nevem", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 549
 "My email" => "E-mail-c\xEDmem", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 553
+// modules/alerts/alerts_sending.php, row 554
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasok a felhaszn\xE1l\xF3i sablonokhoz (a felhaszn\xE1l\xF3 \xF6sszes aliasa is haszn\xE1lhat\xF3)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 561
+// modules/alerts/alerts_sending.php, row 562
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasok a jelsz\xF3m\xF3dos\xEDt\xE1si e-mailhez (a felhaszn\xE1l\xF3 \xF6sszes aliasa is haszn\xE1lhat\xF3)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 563
+// modules/alerts/alerts_sending.php, row 564
 "HTML link to the password change page for current user" => "HTML-hivatkoz\xE1s az aktu\xE1lis felhaszn\xE1l\xF3 jelsz\xF3m\xF3dos\xEDt\xE1si oldal\xE1ra", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 565
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "A _#PWD_LINK jelsz\xF3m\xF3dos\xEDt\xE1si hivatkoz\xE1s\xE1ban haszn\xE1lt URL-param\xE9ter (haszn\xE1lhatja, ha saj\xE1t URL-t szeretne haszn\xE1lni hozz\xE1)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42

@@ -62,79 +62,79 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "選択が定義されていません。定義してください。", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 505
+// modules/alerts/alerts_sending.php, row 506
 "alerts alert" => "アラートメール", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 507
 "alerts welcome" => "アラート歓迎メール", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 508
 "slice wizard welcome" => "スライスウィザード歓迎メール", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 509
 "user template" => "利用者テンプレート", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 510
 "password change" => "パスワード変更", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 511
 "other" => "その他", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 521
+// modules/alerts/alerts_sending.php, row 522
 "Aliases for Alerts Alert" => "アラートメール用の別名", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 523
+// modules/alerts/alerts_sending.php, row 524
 "complete filter text" => "フィルタの完全なテキスト", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 524, 533
+// modules/alerts/alerts_sending.php, row 525, 534
 "howoften" => "頻度", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 525
+// modules/alerts/alerts_sending.php, row 526
 "Anonym Form URL (set in Alerts Admin - Settings)" => "匿名フォームのURL（アラート管理 - 設定で設定）", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 527
 "Unsubscribe Form URL" => "配信解除フォームのURL", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 531
+// modules/alerts/alerts_sending.php, row 532
 "Aliases for Alerts Welcome" => "アラート歓迎メール用の別名", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 534
+// modules/alerts/alerts_sending.php, row 535
 "Collection Form URL (set in Alerts Admin - Settings)" => "コレクションフォームのURL（アラート管理 - 設定で設定）", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 536
 "email confirmed" => "メール確認済み", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 541
+// modules/alerts/alerts_sending.php, row 542
 "Aliases for Slice Wizard Welcome" => "スライスウィザード歓迎メール用の別名", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 543, 555
+// modules/alerts/alerts_sending.php, row 544, 556
 "Slice name" => "スライス名", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 545, 557
 "New user name" => "新規利用者の名前", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 545
+// modules/alerts/alerts_sending.php, row 546
 "New user login name" => "新規利用者のログイン名", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 547
 "New user role (editor / admin)" => "新規利用者の役割（editor / admin）", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 548
 "My name" => "自分の名前", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 549
 "My email" => "自分のE-メール", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 553
+// modules/alerts/alerts_sending.php, row 554
 "Aliases for User Templates (you can use also all aliases of the user)" => "利用者テンプレート用の別名（利用者のすべての別名も使用できます）", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 561
+// modules/alerts/alerts_sending.php, row 562
 "Aliases for Password Change email (you can use also all aliases of the user)" => "パスワード変更メール用の別名（利用者のすべての別名も使用できます）", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 563
+// modules/alerts/alerts_sending.php, row 564
 "HTML link to the password change page for current user" => "現在の利用者のパスワード変更ページへのHTMLリンク", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 565
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "_#PWD_LINK のパスワード変更リンクに使われるURLパラメータ（独自のURLを使いたい場合に利用できます）", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42

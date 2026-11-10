@@ -1078,6 +1078,7 @@ class ItemContent extends AA_Content
 
     /**
      * @param string $type  present|visible|all   validate just PRESENT fields in ItemContent (for update), The fields VISIBLE (displayed on inputform), ALL fields in the slice
+     * @param string[] $ignore  fields not to check - e.g. hidden in the form by a display condition
      * @return array of non valid fields like: ['text............'=>[410,'Not filled']]
      */
     public function validateReport($type = 'present', array $ignore = []): array
@@ -1086,7 +1087,7 @@ class ItemContent extends AA_Content
         $ret        = [];
 
         foreach ($fields as $field_id => $field) {
-            if (($type === 'visible' && !$field->getProperty('input_show'))) {
+            if (($type === 'visible' && !$field->getProperty('input_show')) || in_array($field_id, $ignore, true)) {
                 continue;
             }
             if (($type === 'present' && !$this->isSet($field_id))) {

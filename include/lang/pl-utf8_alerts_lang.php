@@ -62,79 +62,79 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Nie zdefiniowano żadnych wyborów. Musisz jakieś zdefiniować.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 505
+// modules/alerts/alerts_sending.php, row 506
 "alerts alert" => "powiadomienia - wiadomość", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 507
 "alerts welcome" => "powiadomienia - powitanie", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 508
 "slice wizard welcome" => "kreator rubryki - powitanie", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 509
 "user template" => "szablon użytkownika", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 510
 "password change" => "zmiana hasła", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 511
 "other" => "inne", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 521
+// modules/alerts/alerts_sending.php, row 522
 "Aliases for Alerts Alert" => "Aliasy dla wiadomości powiadomienia", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 523
+// modules/alerts/alerts_sending.php, row 524
 "complete filter text" => "pełny tekst filtra", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 524, 533
+// modules/alerts/alerts_sending.php, row 525, 534
 "howoften" => "jak często", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 525
+// modules/alerts/alerts_sending.php, row 526
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL formularza anonimowego (ustawiany w Administracji powiadomień - Ustawienia)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 527
 "Unsubscribe Form URL" => "URL formularza wypisania", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 531
+// modules/alerts/alerts_sending.php, row 532
 "Aliases for Alerts Welcome" => "Aliasy dla powitania powiadomień", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 534
+// modules/alerts/alerts_sending.php, row 535
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL formularza zbierania (ustawiany w Administracji powiadomień - Ustawienia)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 536
 "email confirmed" => "e-mail potwierdzony", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 541
+// modules/alerts/alerts_sending.php, row 542
 "Aliases for Slice Wizard Welcome" => "Aliasy dla powitania kreatora rubryki", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 543, 555
+// modules/alerts/alerts_sending.php, row 544, 556
 "Slice name" => "Nazwa rubryki", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 545, 557
 "New user name" => "Imię nowego użytkownika", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 545
+// modules/alerts/alerts_sending.php, row 546
 "New user login name" => "Login nowego użytkownika", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 547
 "New user role (editor / admin)" => "Rola nowego użytkownika (redaktor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 548
 "My name" => "Moje imię", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 549
 "My email" => "Mój e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 553
+// modules/alerts/alerts_sending.php, row 554
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasy dla szablonów użytkownika (można też używać wszystkich aliasów użytkownika)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 561
+// modules/alerts/alerts_sending.php, row 562
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasy dla e-maila o zmianie hasła (można też używać wszystkich aliasów użytkownika)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 563
+// modules/alerts/alerts_sending.php, row 564
 "HTML link to the password change page for current user" => "Odnośnik HTML do strony zmiany hasła dla bieżącego użytkownika", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 565
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Parametr URL używany w odnośniku zmiany hasła w _#PWD_LINK (można go użyć, jeśli chce się zastosować własny adres URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42

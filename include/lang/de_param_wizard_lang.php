@@ -10,124 +10,89 @@ $mgettext_lang = "de";
 
 return [
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "field&nbsp;id" => "Feld-ID", // ai 2026-06
+// "boolean:&nbsp;0=false,1=true" => "boolesch:&nbsp;0=falsch,1=wahr", // ai 2026-06
+// "This is an undocumented %s. We don't recommend using it." => "%s ist nicht dokumentiert. Von der Verwendung wird abgeraten.", // ai 2026-06
+// "Close the wizard" => "Assistenten schlie\xDFen", // ai 2026-06
+// "Available parameters: " => "Verf\xFCgbare Parameter: ", // ai 2026-06
+// "This %s has no parameters." => "%s hat keine Parameter.", // ai 2026-06
+// "Have a look at these examples of parameters sets:" => "Sehen Sie sich diese Beispiele f\xFCr Parameters\xE4tze an:", // ai 2026-06
+// "OK - Save" => "OK - Speichern", // ai 2026-06
+// "Show example params" => "Beispielparameter zeigen", // ai 2026-06
+// "Help: Parameter Wizard" => "Hilfe: Parameter-Assistent", // ai 2026-06
 // "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fulltexts.)" => "prints <i>the field</i> content depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fulltexts.)",
 // End of unused messages
 
-// admin/param_wizard.php, row 110
-"field&nbsp;id" => "Feld-ID", // ai 2026-06
-
-// admin/param_wizard.php, row 113
-"boolean:&nbsp;0=false,1=true" => "boolesch:&nbsp;0=falsch,1=wahr", // ai 2026-06
-
-// admin/param_wizard.php, row 137
-"Wizard" => "Assistent",
-
-// admin/param_wizard.php, row 220
-"This is an undocumented %s. We don't recommend using it." => "%s ist nicht dokumentiert. Von der Verwendung wird abgeraten.", // ai 2026-06
-
-// admin/param_wizard.php, row 221
-"Close the wizard" => "Assistenten schlie\xDFen", // ai 2026-06
-
-// admin/param_wizard.php, row 235
-"Available parameters: " => "Verf\xFCgbare Parameter: ", // ai 2026-06
-
-// admin/param_wizard.php, row 255
-"This %s has no parameters." => "%s hat keine Parameter.", // ai 2026-06
-
-// admin/param_wizard.php, row 265
-"Have a look at these examples of parameters sets:" => "Sehen Sie sich diese Beispiele f\xFCr Parameters\xE4tze an:", // ai 2026-06
-
-// admin/param_wizard.php, row 272
-"Show" => "Zeigen",
-
-// admin/param_wizard.php, row 283
-"OK - Save" => "OK - Speichern", // ai 2026-06
-
-// admin/param_wizard.php, row 284
-"Cancel" => "Abbruch",
-
-// admin/param_wizard.php, row 285
-"Show example params" => "Beispielparameter zeigen", // ai 2026-06
-
-// admin/param_wizard.php, row 289
-"OK" => "OK", // ai 2026-10
-
-// include/constants_param_wizard.php, row 68
-"Parameters" => "Parameter",
-
-// include/constants_param_wizard.php, row 70
-"Help: Parameter Wizard" => "Hilfe: Parameter-Assistent", // ai 2026-06
-
-// include/constants_param_wizard.php, row 77
+// include/constants_param_wizard.php, row 61
 "Input Validate Type" => "Eingabe-Validierungstyp", // ai 2026-06
 
-// include/constants_param_wizard.php, row 79
+// include/constants_param_wizard.php, row 63
 "No validation" => "Keine Validierung", // ai 2026-06
 
-// include/constants_param_wizard.php, row 82
+// include/constants_param_wizard.php, row 66
 "URL" => "",
 
-// include/constants_param_wizard.php, row 85
+// include/constants_param_wizard.php, row 69
 "E-mail" => "E-Mail-Adresse",
 
-// include/constants_param_wizard.php, row 88
+// include/constants_param_wizard.php, row 72
 "Number = positive integer number" => "Number = positive ganze Zahl", // ai 2026-06
 
-// include/constants_param_wizard.php, row 91, 113
+// include/constants_param_wizard.php, row 75, 97
 "Min" => "Min", // ai 2026-10
 
-// include/constants_param_wizard.php, row 92, 114
+// include/constants_param_wizard.php, row 76, 98
 "Allowed minimum value" => "Zul\xE4ssiger Mindestwert", // ai 2026-06
 
-// include/constants_param_wizard.php, row 97, 119
+// include/constants_param_wizard.php, row 81, 103
 "Max" => "Max", // ai 2026-10
 
-// include/constants_param_wizard.php, row 98, 120
+// include/constants_param_wizard.php, row 82, 104
 "Allowed maximum value" => "Maximal erlaubter Wert", // ai 2026-06
 
-// include/constants_param_wizard.php, row 103, 125
+// include/constants_param_wizard.php, row 87, 109
 "Step" => "Schritt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 110
+// include/constants_param_wizard.php, row 94
 "Number = (signed) integer number" => "Number = ganze Zahl (mit Vorzeichen)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 132
+// include/constants_param_wizard.php, row 116
 "Float - including scientific notation 1.2E+9" => "Float - einschlie\xDFlich wissenschaftlicher Notation 1.2E+9", // ai 2026-06
 
-// include/constants_param_wizard.php, row 135
+// include/constants_param_wizard.php, row 119
 "Decimal" => "Dezimal", // ai 2026-06
 
-// include/constants_param_wizard.php, row 138
+// include/constants_param_wizard.php, row 122
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 Hexadezimalziffern [0-9a-f]", // ai 2026-06
 
-// include/constants_param_wizard.php, row 141
+// include/constants_param_wizard.php, row 125
 "Date = store as date" => "Date = als Datum speichern", // ai 2026-06
 
-// include/constants_param_wizard.php, row 144
+// include/constants_param_wizard.php, row 128
 "Bool = store as bool" => "Bool = als Bool speichern", // ai 2026-06
 
-// include/constants_param_wizard.php, row 147
+// include/constants_param_wizard.php, row 131
 "User = does nothing ???" => "User = tut nichts ???", // ai 2026-06
 
-// include/constants_param_wizard.php, row 150
+// include/constants_param_wizard.php, row 134
 "Unique = prove uniqueness" => "Unique = pr\xFCft Eindeutigkeit", // ai 2026-06
 
-// include/constants_param_wizard.php, row 151
+// include/constants_param_wizard.php, row 135
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
  => "Validiert nur, wenn der Wert noch nicht verwendet wird. N\xFCtzlich z.B.\n"
    ."        f\xFCr E-Mail-Adressen oder Benutzernamen.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 155, 197
+// include/constants_param_wizard.php, row 139, 181
 "Field ID" => "Feld-ID", // ai 2026-06
 
-// include/constants_param_wizard.php, row 156, 198
+// include/constants_param_wizard.php, row 140, 182
 "Field in which to look for matching values (default is current field)." => "Feld, in dem nach \xFCbereinstimmenden Werten gesucht wird (Standard ist das aktuelle Feld).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 161
+// include/constants_param_wizard.php, row 145
 "Scope" => "Geltungsbereich", // ai 2026-06
 
-// include/constants_param_wizard.php, row 163
+// include/constants_param_wizard.php, row 147
 "<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
@@ -137,46 +102,46 @@ return [
    ."                <b>0</b> = (Standard) Benutzername, speziell: pr\xFCft die Eindeutigkeit in Leserverwaltungs-Rubriken\n"
    ."                und im Berechtigungssystem. Verwendet immer die Feld-ID %1", // ai 2026-06
 
-// include/constants_param_wizard.php, row 175
+// include/constants_param_wizard.php, row 159
 "Regular Expression" => "Regul\xE4rer Ausdruck", // ai 2026-06
 
-// include/constants_param_wizard.php, row 176
+// include/constants_param_wizard.php, row 160
 "Validation based on Regular Expressions" => "Validierung mit regul\xE4ren Ausdr\xFCcken", // ai 2026-06
 
-// include/constants_param_wizard.php, row 179
+// include/constants_param_wizard.php, row 163
 "Regular Expressions" => "Regul\xE4re Ausdr\xFCcke", // ai 2026-06
 
-// include/constants_param_wizard.php, row 180
+// include/constants_param_wizard.php, row 164
 "use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "verwenden Sie z.B.: /^[0-9]*\$/ - siehe Handbuch \"Regular Expressions\".", // ai 2026-06
 
-// include/constants_param_wizard.php, row 185
+// include/constants_param_wizard.php, row 169
 "Error text" => "Fehlertext", // ai 2026-06
 
-// include/constants_param_wizard.php, row 186
+// include/constants_param_wizard.php, row 170
 "error message" => "Fehlermeldung", // ai 2026-06
 
-// include/constants_param_wizard.php, row 188
+// include/constants_param_wizard.php, row 172
 "Wrong value" => "Falscher Wert", // ai 2026-06
 
-// include/constants_param_wizard.php, row 193
+// include/constants_param_wizard.php, row 177
 "Unique e-mail" => "Eindeutige E-Mail", // ai 2026-06
 
-// include/constants_param_wizard.php, row 194
+// include/constants_param_wizard.php, row 178
 "Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "Kombiniert die E-Mail- und die Eindeutigkeitsvalidierung. Validiert nur, wenn der Wert eine g\xFCltige E-Mail-Adresse ist und noch nicht verwendet wird.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 203
+// include/constants_param_wizard.php, row 187
 "Slice only" => "Nur diese Rubrik", // ai 2026-06
 
-// include/constants_param_wizard.php, row 204
+// include/constants_param_wizard.php, row 188
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
  => "Soll die Eindeutigkeit nur in dieser Rubrik\n"
    ."                  oder in allen Rubriken gepr\xFCft werden?", // ai 2026-06
 
-// include/constants_param_wizard.php, row 212
+// include/constants_param_wizard.php, row 196
 "Password and Change Password" => "Passwort und Passwort \xE4ndern", // ai 2026-06
 
-// include/constants_param_wizard.php, row 213
+// include/constants_param_wizard.php, row 197
 "Validates the passwords do not differ when changing password.\n"
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
@@ -186,466 +151,466 @@ return [
    ."        weil die Insert-Funktion\n"
    ."        die Pr\xFCfung vor dem Speichern des neuen Passworts erneut durchf\xFChrt.</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 228
+// include/constants_param_wizard.php, row 212
 "Function" => "Funktion",
 
-// include/constants_param_wizard.php, row 229
+// include/constants_param_wizard.php, row 213
 "How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "So wird die Formatierung im Text dieser Seite verwendet:<br><i>das Feld</i> kursiv steht f\xFCr das Feld, das im Fenster \"Felder konfigurieren\" bearbeitet wird,<br><b>Parametername</b> fett steht f\xFCr einen Parameter auf dieser Seite.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 232
+// include/constants_param_wizard.php, row 216
 "just code" => "nur Code", // ai 2026-06
 
-// include/constants_param_wizard.php, row 233
+// include/constants_param_wizard.php, row 217
 "prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "gibt den im Parameter angegebenen Code aus - _#this kann verwendet werden - einfacher als f_t (ohne zus\xE4tzlichen Parameter)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 236
+// include/constants_param_wizard.php, row 220
 "null function" => "Nullfunktion", // ai 2026-06
 
-// include/constants_param_wizard.php, row 237
+// include/constants_param_wizard.php, row 221
 "prints nothing" => "gibt nichts aus", // ai 2026-06
 
-// include/constants_param_wizard.php, row 240
+// include/constants_param_wizard.php, row 224
 "first value" => "erster Wert", // ai 2026-06
 
-// include/constants_param_wizard.php, row 241
+// include/constants_param_wizard.php, row 225
 "prints first value, even if the field is multivalue" => "gibt den ersten Wert aus, auch wenn das Feld mehrwertig ist", // ai 2026-06
 
-// include/constants_param_wizard.php, row 244
+// include/constants_param_wizard.php, row 228
 "translated" => "\xFCbersetzt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 245
+// include/constants_param_wizard.php, row 229
 "prints translated field based on currently selected language" => "gibt das \xFCbersetzte Feld entsprechend der aktuell gew\xE4hlten Sprache aus", // ai 2026-06
 
-// include/constants_param_wizard.php, row 248
+// include/constants_param_wizard.php, row 232
 "abstract" => "Abstract", // ai 2026-06
 
-// include/constants_param_wizard.php, row 249
+// include/constants_param_wizard.php, row 233
 "prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "gibt den Abstract aus (falls vorhanden) oder den Anfang des <b>Volltexts</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 252
+// include/constants_param_wizard.php, row 236
 "length" => "L\xE4nge", // ai 2026-06
 
-// include/constants_param_wizard.php, row 253
+// include/constants_param_wizard.php, row 237
 "max number of characters grabbed from the <b>fulltext</b> field" => "maximale Zeichenzahl, die aus dem <b>Volltext</b>-Feld \xFCbernommen wird", // ai 2026-06
 
-// include/constants_param_wizard.php, row 258
+// include/constants_param_wizard.php, row 242
 "fulltext" => "Volltext", // ai 2026-06
 
-// include/constants_param_wizard.php, row 259
+// include/constants_param_wizard.php, row 243
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "Feld-ID des Volltext-Felds (z.B. full_text.......), aus dem der Text \xFCbernommen wird. Wenn leer, wird der Text aus <i>dem Feld</i> selbst \xFCbernommen.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 261, 303, 600
+// include/constants_param_wizard.php, row 245, 287, 584
 "full_text......." => "",
 
-// include/constants_param_wizard.php, row 264
+// include/constants_param_wizard.php, row 248
 "paragraph" => "Absatz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 265
+// include/constants_param_wizard.php, row 249
 "take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "\xFCbernimmt den ersten Absatz (Text bis \\<BR\\>, \\<P\\>, \\</P\\> oder zumindest '.' (Punkt)), falls k\xFCrzer als <b>L\xE4nge</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 272
+// include/constants_param_wizard.php, row 256
 "extended fulltext link" => "erweiterter Volltext-Link", // ai 2026-06
 
-// include/constants_param_wizard.php, row 273
+// include/constants_param_wizard.php, row 257
 "Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "Gibt einen <b>Text</b> (oder Feldinhalt) mit einem Link zum Volltext aus. Eine allgemeinere Version der Funktion f_f. Diese Funktion verwendet <i>das Feld</i> nicht.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 276, 410
+// include/constants_param_wizard.php, row 260, 394
 "link only" => "nur Link", // ai 2026-06
 
-// include/constants_param_wizard.php, row 277
+// include/constants_param_wizard.php, row 261
 "field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "Feld-ID (z.B. 'link_only.......'), in der der Umschalter zwischen externem und internem Artikel gespeichert ist. (Diese Seite sollte das SSI-Include ../slice.php enthalten.) Wenn leer, wird f\xFCr den Volltext dieselbe Seite wie f\xFCr den Artikelindex verwendet (das \xFCbliche Verhalten).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 279, 413
+// include/constants_param_wizard.php, row 263, 397
 "link_only......." => "",
 
-// include/constants_param_wizard.php, row 282
+// include/constants_param_wizard.php, row 266
 "url_field" => "URL-Feld", // ai 2026-06
 
-// include/constants_param_wizard.php, row 283
+// include/constants_param_wizard.php, row 267
 "field id if field, where external URL is stored (like hl_href.........)" => "Feld-ID des Felds, in dem die externe URL gespeichert ist (z.B. hl_href.........)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 285
+// include/constants_param_wizard.php, row 269
 "hl_href........." => "",
 
-// include/constants_param_wizard.php, row 288, 416
+// include/constants_param_wizard.php, row 272, 400
 "redirect" => "Weiterleitung", // ai 2026-06
 
-// include/constants_param_wizard.php, row 289, 417
+// include/constants_param_wizard.php, row 273, 401
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "Die URL einer anderen Seite, die den Inhalt des Artikels anzeigt. (Diese Seite sollte das SSI-Include ../slice.php enthalten.) Wenn leer, wird f\xFCr den Volltext dieselbe Seite wie f\xFCr den Artikelindex verwendet (das \xFCbliche Verhalten).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 291, 419
+// include/constants_param_wizard.php, row 275, 403
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.meine-seite.de/artikel/solar.shtml", // ai 2026-06
 
-// include/constants_param_wizard.php, row 294
+// include/constants_param_wizard.php, row 278
 "text" => "Text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 295
+// include/constants_param_wizard.php, row 279
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Der Text, der vom Link umschlossen wird. Ist dieser Parameter eine Feld-ID, wird der Feldinhalt verwendet, andernfalls der Text w\xF6rtlich", // ai 2026-06
 
-// include/constants_param_wizard.php, row 300
+// include/constants_param_wizard.php, row 284
 "condition field" => "Bedingungsfeld", // ai 2026-06
 
-// include/constants_param_wizard.php, row 301
+// include/constants_param_wizard.php, row 285
 "when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "wenn das angegebene Feld keinen Inhalt hat, wird kein Link ausgegeben, sondern nur der <b>Text</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 306, 533
+// include/constants_param_wizard.php, row 290, 517
 "tag addition" => "Tag-Zusatz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 307, 534
+// include/constants_param_wizard.php, row 291, 518
 "additional text to the \"\\<a\\>\" tag" => "zus\xE4tzlicher Text f\xFCr das \"\\<a\\>\"-Tag", // ai 2026-06
 
-// include/constants_param_wizard.php, row 309, 536
+// include/constants_param_wizard.php, row 293, 520
 "target=_blank" => "",
 
-// include/constants_param_wizard.php, row 312, 422
+// include/constants_param_wizard.php, row 296, 406
 "no session id" => "keine Session-ID", // ai 2026-06
 
-// include/constants_param_wizard.php, row 313, 423
+// include/constants_param_wizard.php, row 297, 407
 "If 1, the session id (AA_Session=...) is not added to url" => "Wenn 1, wird die Session-ID (AA_Session=...) nicht an die URL angeh\xE4ngt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 320, 324
+// include/constants_param_wizard.php, row 304, 308
 "condition" => "Bedingung", // ai 2026-06
 
-// include/constants_param_wizard.php, row 321
+// include/constants_param_wizard.php, row 305
 "This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "Dies ist eine sehr m\xE4chtige Funktion. Sie kann als besserer Ersatz f\xFCr einige der vorherigen Funktionen dienen. Wenn <b>cond_field</b> = <b>Bedingung</b>, wird <b>Anfang</b> <i>Feld</i> <b>Ende</b> ausgegeben, sonst <b>sonst</b>. Ist <b>cond_field</b> nicht angegeben, wird <i>das Feld</i> verwendet. Die Bedingung kann mit dem Zeichen \"!\" am Anfang umgekehrt (negiert) werden.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 325
+// include/constants_param_wizard.php, row 309
 "you may use \"!\" to reverse (negate) the condition" => "mit \"!\" k\xF6nnen Sie die Bedingung umkehren (negieren)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 330, 509
+// include/constants_param_wizard.php, row 314, 493
 "begin" => "Anfang", // ai 2026-06
 
-// include/constants_param_wizard.php, row 331
+// include/constants_param_wizard.php, row 315
 "text to print before <i>field</i>, if condition is true" => "Text, der vor dem <i>Feld</i> ausgegeben wird, wenn die Bedingung erf\xFCllt ist", // ai 2026-06
 
-// include/constants_param_wizard.php, row 333
+// include/constants_param_wizard.php, row 317
 "Yes" => "Yes<!--",
 
-// include/constants_param_wizard.php, row 336
+// include/constants_param_wizard.php, row 320
 "end" => "Ende", // ai 2026-06
 
-// include/constants_param_wizard.php, row 337
+// include/constants_param_wizard.php, row 321
 "text to print after <i>field</i>, if condition is true" => "Text, der nach dem <i>Feld</i> ausgegeben wird, wenn die Bedingung erf\xFCllt ist", // ai 2026-06
 
-// include/constants_param_wizard.php, row 342
+// include/constants_param_wizard.php, row 326
 "else" => "sonst", // ai 2026-06
 
-// include/constants_param_wizard.php, row 343
+// include/constants_param_wizard.php, row 327
 "text to print when condition is not satisfied" => "Text, der ausgegeben wird, wenn die Bedingung nicht erf\xFCllt ist", // ai 2026-06
 
-// include/constants_param_wizard.php, row 345
+// include/constants_param_wizard.php, row 329
 "No" => "Nein", // ai 2026-06
 
-// include/constants_param_wizard.php, row 348
+// include/constants_param_wizard.php, row 332
 "cond_field" => "Bedingungsfeld", // ai 2026-06
 
-// include/constants_param_wizard.php, row 349
+// include/constants_param_wizard.php, row 333
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "Feld, das mit der <b>Bedingung</b> verglichen wird - falls nicht ausgef\xFCllt, wird das <i>Feld</i> verwendet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 354
+// include/constants_param_wizard.php, row 338
 "skip_the_field" => "Feld \xFCberspringen", // ai 2026-06
 
-// include/constants_param_wizard.php, row 355
+// include/constants_param_wizard.php, row 339
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "wenn auf 1 gesetzt, wird <i>das Feld</i> \xFCbersprungen (es wird nur <b>Anfang Ende</b> oder <b>sonst</b> ausgegeben)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 362
+// include/constants_param_wizard.php, row 346
 "This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Dieses Beispiel eignet sich z.B. f\xFCr ein Highlight-Feld - es zeigt Ja oder Nein, je nach Feldinhalt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 363
+// include/constants_param_wizard.php, row 347
 "1:Yes::No::1" => "1:Yes<!--:-->:No",
 
-// include/constants_param_wizard.php, row 366
+// include/constants_param_wizard.php, row 350
 "When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "Wenn das E-Mail-Feld ausgef\xFCllt ist, wird etwa \"Email: email@apc.org\" ausgegeben; ist es leer, wird nichts ausgegeben", // ai 2026-06
 
-// include/constants_param_wizard.php, row 367
+// include/constants_param_wizard.php, row 351
 "!:Email#:&nbsp;" => "!:Email#",
 
-// include/constants_param_wizard.php, row 370
+// include/constants_param_wizard.php, row 354
 "Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "Gibt das height-Attribut eines Bildes aus, wenn <i>das Feld</i> ausgef\xFCllt ist, andernfalls nichts.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 371
+// include/constants_param_wizard.php, row 355
 "!:height=" => ":height=",
 
-// include/constants_param_wizard.php, row 376
+// include/constants_param_wizard.php, row 360
 "date" => "Datum", // ai 2026-06
 
-// include/constants_param_wizard.php, row 377
+// include/constants_param_wizard.php, row 361
 "prints date in a user defined format" => "gibt das Datum in einem benutzerdefinierten Format aus", // ai 2026-06
 
-// include/constants_param_wizard.php, row 380
+// include/constants_param_wizard.php, row 364
 "format" => "Format", // ai 2026-06
 
-// include/constants_param_wizard.php, row 381
+// include/constants_param_wizard.php, row 365
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "Format wie in PHP - siehe <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP-Handbuch</a>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 383
+// include/constants_param_wizard.php, row 367
 "m-d-Y" => "d.m.Y", // ai 2026-06
 
-// include/constants_param_wizard.php, row 388
+// include/constants_param_wizard.php, row 372
 "edit item" => "Artikel bearbeiten", // ai 2026-06
 
-// include/constants_param_wizard.php, row 389
+// include/constants_param_wizard.php, row 373
 "_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM wird auf der Verwaltungsseite index.php f\xFCr die itemedit-URL verwendet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 392
+// include/constants_param_wizard.php, row 376
 "type" => "Typ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 393
+// include/constants_param_wizard.php, row 377
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - zum Bearbeiten einer Diskussion<br>itemcount - gibt die Anzahl der Artikel aus<br>safe - f\xFCr sicheres HTML<br>slice_info - w\xE4hlt ein Feld aus der Rubrik-Info<br>edit - URL zum Bearbeiten des Artikels<br>add - URL zum Hinzuf\xFCgen eines neuen Artikels", // ai 2026-06
 
-// include/constants_param_wizard.php, row 395
+// include/constants_param_wizard.php, row 379
 "edit" => "bearbeiten", // ai 2026-06
 
-// include/constants_param_wizard.php, row 398
+// include/constants_param_wizard.php, row 382
 "return url" => "R\xFCckkehr-URL", // ai 2026-06
 
-// include/constants_param_wizard.php, row 399
+// include/constants_param_wizard.php, row 383
 "Return url being called from, usually leave blank and allow default" => "URL, von der aus aufgerufen wird; normalerweise leer lassen, um den Standard zu verwenden", // ai 2026-06
 
-// include/constants_param_wizard.php, row 401
+// include/constants_param_wizard.php, row 385
 "/mysite.shtml" => "/meineseite.shtml", // ai 2026-06
 
-// include/constants_param_wizard.php, row 406
+// include/constants_param_wizard.php, row 390
 "fulltext link" => "Volltext-Link", // ai 2026-06
 
-// include/constants_param_wizard.php, row 407
+// include/constants_param_wizard.php, row 391
 "Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "Gibt die URL innerhalb eines Links zum Volltext aus - erm\xF6glicht die Verwendung externer Artikel. Direkt nach \"\\<a href=\" zu verwenden", // ai 2026-06
 
-// include/constants_param_wizard.php, row 411
+// include/constants_param_wizard.php, row 395
 "field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "Feld-ID (z.B. 'link_only.......'), in der der Schalter zwischen externem und internem Artikel gespeichert ist. \xDCblicherweise wird dieses Feld als Checkbox dargestellt. Ist die Checkbox angehakt, wird <i>das Feld</i> ausgegeben; ist sie nicht angehakt, wird der Link zum Volltext ausgegeben (das h\xE4ngt auch vom Parameter <b>redirect</b> ab).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 430
+// include/constants_param_wizard.php, row 414
 "image height" => "Bildh\xF6he", // ai 2026-06
 
-// include/constants_param_wizard.php, row 431
+// include/constants_param_wizard.php, row 415
 "An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "Eine veraltete Funktion. Gibt <i>das Feld</i> als Bildh\xF6he aus (\\<img height=...\\>) oder entfernt die H\xF6henangabe. Direkt nach \"height=\" zu verwenden. Die Funktion f_c bietet mit dem Parameter \":height=\" eine bessere M\xF6glichkeit daf\xFCr.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 434
+// include/constants_param_wizard.php, row 418
 "print HTML multiple" => "HTML-Ausgabe (mehrwertig)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 435
+// include/constants_param_wizard.php, row 419
 "prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "gibt den Inhalt <i>des Feldes</i> abh\xE4ngig vom HTML-Flag aus (HTML-Sonderzeichen maskieren oder unver\xE4ndert ausgeben)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 438
+// include/constants_param_wizard.php, row 422
 "delimiter" => "Begrenzer", // ai 2026-06
 
-// include/constants_param_wizard.php, row 439
+// include/constants_param_wizard.php, row 423
 "if specified, a field with multiple values is displayed with the values delimited by it" => "falls angegeben, werden die Werte eines mehrwertigen Feldes durch ihn getrennt angezeigt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 446
+// include/constants_param_wizard.php, row 430
 "image src" => "Bildquelle", // ai 2026-06
 
-// include/constants_param_wizard.php, row 447
+// include/constants_param_wizard.php, row 431
 "prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "gibt <i>das Feld</i> als Bildquelle aus (\\<img src=...\\>) - NO_PICTURE f\xFCr keine Anzeige. Dasselbe ist mit der Funktion f_c und den Parametern :::NO_PICTURE m\xF6glich.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 450
+// include/constants_param_wizard.php, row 434
 "image size" => "Bildgr\xF6\xDFe", // ai 2026-06
 
-// include/constants_param_wizard.php, row 451
+// include/constants_param_wizard.php, row 435
 "prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "gibt <i>das Feld</i> als Bildgr\xF6\xDFe aus (height='xxx' width='yyy') (oder andere Bildinformationen) oder eine leere Zeichenkette, falls nicht ermittelbar; URLs aus dem Upload-Verzeichnis werden nicht gesondert behandelt, vielleicht sp\xE4ter!", // ai 2026-06
 
-// include/constants_param_wizard.php, row 454, 830
+// include/constants_param_wizard.php, row 438, 814
 "information" => "Information", // ai 2026-06
 
-// include/constants_param_wizard.php, row 455
+// include/constants_param_wizard.php, row 439
 "specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "gibt die zur\xFCckgelieferte Information an: <br> - <i>html</i> - (Standard) - liefert die Bildgr\xF6\xDFe als HTML-Attribute (height='xxx' width='yyy')<br> - <i>width</i> - liefert die Breite des Bildes in Pixeln<br> - <i>height</i> - liefert die H\xF6he des Bildes in Pixeln<br> - <i>imgtype</i> - liefert eine Kennzahl f\xFCr den Bildtyp: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(Intel-Bytereihenfolge), 8 = TIFF(Motorola-Bytereihenfolge), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - liefert den MIME-Typ des Bildes (z.B. 'image/gif', 'application/x-shockwave-flash', ...)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 462
+// include/constants_param_wizard.php, row 446
 "substring with case change" => "Teilstring mit \xC4nderung der Gro\xDF-/Kleinschreibung", // ai 2026-06
 
-// include/constants_param_wizard.php, row 463
+// include/constants_param_wizard.php, row 447
 "prints a part of <i>the field</i>" => "gibt einen Teil <i>des Feldes</i> aus", // ai 2026-06
 
-// include/constants_param_wizard.php, row 466
+// include/constants_param_wizard.php, row 450
 "start" => "Anfang", // ai 2026-06
 
-// include/constants_param_wizard.php, row 467
+// include/constants_param_wizard.php, row 451
 "position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "Position des Teilstring-Anfangs (0=erste, 1=zweite, -1=letzte, -2=zwei vor dem Ende)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 472
+// include/constants_param_wizard.php, row 456
 "count" => "Anzahl", // ai 2026-06
 
-// include/constants_param_wizard.php, row 473
+// include/constants_param_wizard.php, row 457
 "count of characters (0=until the end)" => "Anzahl der Zeichen (0=bis zum Ende)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 478
+// include/constants_param_wizard.php, row 462
 "case" => "Gro\xDF-/Kleinschreibung", // ai 2026-06
 
-// include/constants_param_wizard.php, row 479
+// include/constants_param_wizard.php, row 463
 "upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "upper - in GROSSBUCHSTABEN umwandeln, lower - in kleinbuchstaben umwandeln, first - Ersten Buchstaben Gro\xDF; Standard ist keine \xC4nderung", // ai 2026-06
 
-// include/constants_param_wizard.php, row 484
+// include/constants_param_wizard.php, row 468
 "add string" => "Zusatztext", // ai 2026-06
 
-// include/constants_param_wizard.php, row 485
+// include/constants_param_wizard.php, row 469
 "if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "wenn der Text gek\xFCrzt wird, wird <i>Zusatztext</i> angeh\xE4ngt (typischerweise etwas wie [...])", // ai 2026-06
 
-// include/constants_param_wizard.php, row 491
+// include/constants_param_wizard.php, row 475
 "Auto Update Checkbox" => "Checkbox mit automatischer Aktualisierung", // ai 2026-06
 
-// include/constants_param_wizard.php, row 493
+// include/constants_param_wizard.php, row 477
 "linked field" => "verlinktes Feld", // ai 2026-06
 
-// include/constants_param_wizard.php, row 494
+// include/constants_param_wizard.php, row 478
 "prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "gibt <i>das Feld</i> als Link aus, wenn die <b>Link-URL</b> nicht NULL ist, andernfalls nur <i>das Feld</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 497
+// include/constants_param_wizard.php, row 481
 "link URL" => "Link-URL", // ai 2026-06
 
-// include/constants_param_wizard.php, row 500
+// include/constants_param_wizard.php, row 484
 "source_href....." => "",
 
-// include/constants_param_wizard.php, row 505
+// include/constants_param_wizard.php, row 489
 "e-mail or link" => "E-Mail oder Link", // ai 2026-06
 
-// include/constants_param_wizard.php, row 506
+// include/constants_param_wizard.php, row 490
 "mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "mailto link - prints: \"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\"\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>.",
 
-// include/constants_param_wizard.php, row 510
+// include/constants_param_wizard.php, row 494
 "text before the link" => "Text vor dem Link", // ai 2026-06
 
-// include/constants_param_wizard.php, row 512
+// include/constants_param_wizard.php, row 496
 "e-mail" => "E-Mail", // ai 2026-06
 
-// include/constants_param_wizard.php, row 515
+// include/constants_param_wizard.php, row 499
 "field/text" => "Feld/Text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 516
+// include/constants_param_wizard.php, row 500
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "wenn dieser Parameter eine Feld-ID ist, wird der Feldinhalt verwendet, andernfalls wird er unver\xE4ndert verwendet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 521
+// include/constants_param_wizard.php, row 505
 "else_field/text" => "sonst_Feld/Text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 522
+// include/constants_param_wizard.php, row 506
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "wenn <i>das Feld</i> leer ist, wird nur dieser Text (oder Feldinhalt) ausgegeben", // ai 2026-06
 
-// include/constants_param_wizard.php, row 527
+// include/constants_param_wizard.php, row 511
 "linktype" => "Linktyp", // ai 2026-06
 
-// include/constants_param_wizard.php, row 528
+// include/constants_param_wizard.php, row 512
 "mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (Standard ist mailto) - die Funktion f_m kann auch f\xFCr Links verwendet werden - geben Sie dazu einfach 'href' als diesen Parameter an", // ai 2026-06
 
-// include/constants_param_wizard.php, row 530
+// include/constants_param_wizard.php, row 514
 "href" => "",
 
-// include/constants_param_wizard.php, row 539
+// include/constants_param_wizard.php, row 523
 "hide email" => "E-Mail verbergen", // ai 2026-06
 
-// include/constants_param_wizard.php, row 540
+// include/constants_param_wizard.php, row 524
 "if 1 then hide email from spam robots. Default is 0." => "Bei 1 wird die E-Mail-Adresse vor Spam-Robots verborgen. Standard ist 0.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 547
+// include/constants_param_wizard.php, row 531
 "id" => "",
 
-// include/constants_param_wizard.php, row 548
+// include/constants_param_wizard.php, row 532
 "prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "gibt die entpackte ID aus (verwenden Sie sie, um 'Artikel-ID' oder 'Rubrik-ID' anzuzeigen)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 551
+// include/constants_param_wizard.php, row 535
 "'New' sign" => "'Neu'-Zeichen", // ai 2026-06
 
-// include/constants_param_wizard.php, row 552
+// include/constants_param_wizard.php, row 536
 "prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "gibt 'Neu' oder 'Alt' oder beliebigen anderen Text aus <b>neuerer Text</b> bzw. <b>\xE4lterer Text</b> aus, abh\xE4ngig von <b>Zeit</b>. Die Zeit wird in Minuten ab der aktuellen Zeit angegeben.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 555
+// include/constants_param_wizard.php, row 539
 "time" => "Zeit", // ai 2026-06
 
-// include/constants_param_wizard.php, row 556
+// include/constants_param_wizard.php, row 540
 "Time in minutes from current time." => "Zeit in Minuten ab der aktuellen Zeit.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 558
+// include/constants_param_wizard.php, row 542
 "1440" => "",
 
-// include/constants_param_wizard.php, row 561
+// include/constants_param_wizard.php, row 545
 "newer text" => "neuerer Text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 562
+// include/constants_param_wizard.php, row 546
 "Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "Text, der ausgegeben wird, wenn das Datum im <i>Feld</i> neuer ist als <i>current_time</i> - <b>Zeit</b>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 564
+// include/constants_param_wizard.php, row 548
 "NEW" => "NEU", // ai 2026-06
 
-// include/constants_param_wizard.php, row 567
+// include/constants_param_wizard.php, row 551
 "older text" => "\xE4lterer Text", // ai 2026-06
 
-// include/constants_param_wizard.php, row 568
+// include/constants_param_wizard.php, row 552
 "Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "Text, der ausgegeben wird, wenn das Datum im <i>Feld</i> \xE4lter ist als <i>current_time</i> - <b>Zeit</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 575
+// include/constants_param_wizard.php, row 559
 "text (blurb) from another slice" => "Text (Blurb) aus einer anderen Rubrik", // ai 2026-06
 
-// include/constants_param_wizard.php, row 576
+// include/constants_param_wizard.php, row 560
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "gibt einen 'Blurb' (Textst\xFCck) aus einer anderen Rubrik aus, basierend auf einer einfachen Bedingung.<br>Wenn <i>das Feld</i> (oder das durch <b>stringToMatch</b> angegebene Feld) in der aktuellen Rubrik mit dem Inhalt von <b>fieldToMatch</b> in <b>blurbSliceId</b> \xFCbereinstimmt, wird der Inhalt von <b>fieldToReturn</b> in <b>blurbSliceId</b> zur\xFCckgegeben.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 579
+// include/constants_param_wizard.php, row 563
 "stringToMatch" => "stringToMatch", // ai 2026-10
 
-// include/constants_param_wizard.php, row 580
+// include/constants_param_wizard.php, row 564
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Standardm\xE4\xDFig ist es <i>das Feld</i>. Es kann entweder als Feld-ID (headline........) ODER als statischer Text angegeben werden.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 582
+// include/constants_param_wizard.php, row 566
 "category........" => "",
 
-// include/constants_param_wizard.php, row 585
+// include/constants_param_wizard.php, row 569
 "blurbSliceId" => "blurbSliceId", // ai 2026-10
 
-// include/constants_param_wizard.php, row 586
+// include/constants_param_wizard.php, row 570
 "unpacked slice id of the slice where the blurb text is stored" => "entpackte Rubrik-ID der Rubrik, in der der Blurb-Text gespeichert ist", // ai 2026-06
 
-// include/constants_param_wizard.php, row 588
+// include/constants_param_wizard.php, row 572
 "41415f436f72655f4669656c64732e2e" => "",
 
-// include/constants_param_wizard.php, row 591
+// include/constants_param_wizard.php, row 575
 "fieldToMatch" => "fieldToMatch", // ai 2026-10
 
-// include/constants_param_wizard.php, row 592
+// include/constants_param_wizard.php, row 576
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "Feld-ID des Feldes in <b>blurbSliceId</b>, in dem nach <b>stringToMatch</b> gesucht wird", // ai 2026-06
 
-// include/constants_param_wizard.php, row 594
+// include/constants_param_wizard.php, row 578
 "headline........" => "",
 
-// include/constants_param_wizard.php, row 597
+// include/constants_param_wizard.php, row 581
 "fieldToReturn" => "fieldToReturn", // ai 2026-10
 
-// include/constants_param_wizard.php, row 598
+// include/constants_param_wizard.php, row 582
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "Feld-ID des Feldes in <b>blurbSliceId</b>, in dem der Blurb-Text gespeichert ist (was ausgegeben wird)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 605
+// include/constants_param_wizard.php, row 589
 "RSS tag" => "RSS-Tag", // ai 2026-06
 
-// include/constants_param_wizard.php, row 606
+// include/constants_param_wizard.php, row 590
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "dient internen Zwecken der vordefinierten RSS-Aliase (z. B. _#RSS_TITL). F\xFCgt die RSS-0.91-konformen Tags hinzu.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 609, 613, 805
+// include/constants_param_wizard.php, row 593, 597, 789
 "default" => "Standardwert", // ai 2026-06
 
-// include/constants_param_wizard.php, row 610
+// include/constants_param_wizard.php, row 594
 "prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "gibt <i>das Feld</i> aus oder einen Standardwert, wenn <i>das Feld</i> leer ist. Dasselbe l\xE4sst sich mit der Funktion f_c mit den Parametern :::<b>default</b> erreichen.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 614
+// include/constants_param_wizard.php, row 598
 "default value" => "Standardwert", // ai 2026-06
 
-// include/constants_param_wizard.php, row 616
+// include/constants_param_wizard.php, row 600
 "javascript: window.alert('No source url specified')" => "javascript: window.alert('Keine Quell-URL angegeben')", // ai 2026-06
 
-// include/constants_param_wizard.php, row 621
+// include/constants_param_wizard.php, row 605
 "print field" => "Feld ausgeben", // ai 2026-06
 
-// include/constants_param_wizard.php, row 622
+// include/constants_param_wizard.php, row 606
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "gibt den Inhalt <i>des Feldes</i> (oder den <i>Unalias-String</i>) abh\xE4ngig vom HTML-Flag aus (ist das HTML-Flag nicht gesetzt, wird der Inhalt nach HTML konvertiert. Im Unterschied zur Funktion f_h werden dabei (in der Grundvariante) auch Zeilenumbr\xFCche nach HTML konvertiert)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 625
+// include/constants_param_wizard.php, row 609
 "unalias string" => "Unalias-String", // ai 2026-06
 
-// include/constants_param_wizard.php, row 626
+// include/constants_param_wizard.php, row 610
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "wenn der <i>Unalias-String</i> definiert ist, ignoriert die Funktion <i>das Feld</i> und gibt stattdessen den <i>Unalias-String</i> aus. Sie k\xF6nnen in diesem String nat\xFCrlich beliebige Aliase (oder Felder wie {headline.........}) verwenden", // ai 2026-06
 
-// include/constants_param_wizard.php, row 628
+// include/constants_param_wizard.php, row 612
 "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>" => "",
 
-// include/constants_param_wizard.php, row 631
+// include/constants_param_wizard.php, row 615
 "output modify" => "Ausgabeanpassung", // ai 2026-06
 
-// include/constants_param_wizard.php, row 632
+// include/constants_param_wizard.php, row 616
 "You can use some output modifications:<br>\n"
    ."                   &nbsp; - [<i>empty</i>] - no modification<br>\n"
    ."                   &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>\n"
@@ -664,175 +629,175 @@ return [
    ."                   &nbsp; - <i>striptags</i>  - entfernt HTML- und PHP-Tags aus dem String<br>\n"
    ."                   &nbsp; - <i>asis</i>  - gibt den Feldinhalt unver\xE4ndert ('as is') aus - es wird kein &lt;br&gt; an Zeilenenden angef\xFCgt, auch wenn das Feld als 'Plain text' markiert ist. Der Parameter 'asis' eignet sich z. B. f\xFCr die Funktion 'Inhalt \xE4ndern...' der Artikel-Verwaltung<br>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 647
+// include/constants_param_wizard.php, row 631
 "user function" => "Benutzerfunktion", // ai 2026-06
 
-// include/constants_param_wizard.php, row 648
+// include/constants_param_wizard.php, row 632
 "calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "calls a user defined function (see How to create new aliases in /doc/faq.html)",
 
-// include/constants_param_wizard.php, row 651
+// include/constants_param_wizard.php, row 635
 "function" => "Funktion", // ai 2026-06
 
-// include/constants_param_wizard.php, row 652
+// include/constants_param_wizard.php, row 636
 "name of the function in the include/usr_aliasfnc.php file" => "Name der Funktion in der Datei include/usr_aliasfnc.php", // ai 2026-06
 
-// include/constants_param_wizard.php, row 654
+// include/constants_param_wizard.php, row 638
 "usr_start_end_date_cz" => "",
 
-// include/constants_param_wizard.php, row 657
+// include/constants_param_wizard.php, row 641
 "parameter" => "Parameter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 658
+// include/constants_param_wizard.php, row 642
 "a parameter passed to the function" => "ein Parameter, der an die Funktion \xFCbergeben wird", // ai 2026-06
 
-// include/constants_param_wizard.php, row 665
+// include/constants_param_wizard.php, row 649
 "view" => "Ansicht", // ai 2026-10
 
-// include/constants_param_wizard.php, row 666
+// include/constants_param_wizard.php, row 650
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "erm\xF6glicht das Arbeiten mit Ansichten. Dies ist eine komplexe und m\xE4chtige Funktion, beschrieben in den <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, mit der Sie anstelle des Alias eine beliebige Ansicht anzeigen k\xF6nnen. Sie kann z. B. f\xFCr eine Tabelle verwandter Artikel ('related stories') oder zur Anzeige des Inhalts einer verwandten Rubrik verwendet werden.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 669
+// include/constants_param_wizard.php, row 653
 "complex parameter" => "komplexer Parameter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 670
+// include/constants_param_wizard.php, row 654
 "this parameter is the same as we use in view.php url parameter - see the FAQ" => "dieser Parameter ist derselbe, den wir als URL-Parameter von view.php verwenden - siehe FAQ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 672
+// include/constants_param_wizard.php, row 656
 "vid=4&amp;cmd[23]=v-25" => "",
 
-// include/constants_param_wizard.php, row 677
+// include/constants_param_wizard.php, row 661
 "image width" => "Bildbreite", // ai 2026-06
 
-// include/constants_param_wizard.php, row 678
+// include/constants_param_wizard.php, row 662
 "An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "Eine Funktion alten Stils. Gibt <i>das Feld</i> als Bildbreiten-Wert aus (\\<img width=...\\>) oder entfernt das width-Attribut. Direkt nach \"width=\" zu verwenden. Die Funktion f_c bietet mit den Parametern \":width=\" eine bessere M\xF6glichkeit daf\xFCr.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 681
+// include/constants_param_wizard.php, row 665
 "transformation" => "Transformation", // ai 2026-06
 
-// include/constants_param_wizard.php, row 682
+// include/constants_param_wizard.php, row 666
 "Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Erm\xF6glicht die Umwandlung des Feldwerts in einen anderen Wert.<br>Verwendung: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>Ist der Inhalt <i>des Feldes</i> gleich <b>content_1</b>, wird <b>return_value_1</b> zur\xFCckgegeben. Ist der Inhalt <i>des Feldes</i> gleich <b>content_2</b>, wird <b>return_value_2</b> zur\xFCckgegeben. <i>Stimmt das Feld mit keinem <b>content_x</b> \xFCberein, wird <b>default</b> zur\xFCckgegeben</i>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 685, 697, 709, 721, 733, 745, 757, 769, 781, 793
+// include/constants_param_wizard.php, row 669, 681, 693, 705, 717, 729, 741, 753, 765, 777
 "content" => "Inhalt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 686, 698, 710, 722, 734, 746, 758, 770, 782, 794
+// include/constants_param_wizard.php, row 670, 682, 694, 706, 718, 730, 742, 754, 766, 778
 "string for comparison with <i>the field</i> for following return value" => "String zum Vergleich mit <i>dem Feld</i> f\xFCr den folgenden R\xFCckgabewert", // ai 2026-06
 
-// include/constants_param_wizard.php, row 691, 703, 715, 727, 739, 751, 763, 775, 787, 799
+// include/constants_param_wizard.php, row 675, 687, 699, 711, 723, 735, 747, 759, 771, 783
 "return value" => "R\xFCckgabewert", // ai 2026-06
 
-// include/constants_param_wizard.php, row 692, 704, 716, 728, 740, 752, 764, 776, 788, 800
+// include/constants_param_wizard.php, row 676, 688, 700, 712, 724, 736, 748, 760, 772, 784
 "string to return if previous content matches - You can use field_id too" => "String, der zur\xFCckgegeben wird, wenn der vorherige Inhalt \xFCbereinstimmt - Sie k\xF6nnen auch eine field_id verwenden", // ai 2026-06
 
-// include/constants_param_wizard.php, row 694, 706, 718, 730, 742, 754, 766, 778, 790, 802, 808
+// include/constants_param_wizard.php, row 678, 690, 702, 714, 726, 738, 750, 762, 774, 786, 792
 "Environment" => "Umwelt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 806
+// include/constants_param_wizard.php, row 790
 "if no content matches, use this string as return value" => "wenn kein Inhalt passt, wird diese Zeichenkette als R\xFCckgabewert verwendet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 813
+// include/constants_param_wizard.php, row 797
 "expanded string" => "expandierte Zeichenkette", // ai 2026-06
 
-// include/constants_param_wizard.php, row 814
+// include/constants_param_wizard.php, row 798
 "expands the string in the parameter" => "expandiert die Zeichenkette im Parameter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 817
+// include/constants_param_wizard.php, row 801
 "string to expand" => "zu expandierende Zeichenkette", // ai 2026-06
 
-// include/constants_param_wizard.php, row 818
+// include/constants_param_wizard.php, row 802
 "if specified then this string is expanded, if not specified then expands the contents of the field" => "wenn angegeben, wird diese Zeichenkette expandiert; wenn nicht angegeben, wird der Inhalt des Feldes expandiert", // ai 2026-06
 
-// include/constants_param_wizard.php, row 826
+// include/constants_param_wizard.php, row 810
 "file information" => "Dateiinformation", // ai 2026-06
 
-// include/constants_param_wizard.php, row 827
+// include/constants_param_wizard.php, row 811
 "prints <i>the field</i> as file information, its size or type" => "gibt <i>das Feld</i> als Dateiinformation aus, seine Gr\xF6\xDFe oder seinen Typ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 831
+// include/constants_param_wizard.php, row 815
 "specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "legt die zur\xFCckgegebene Information fest: <br> - <i>name</i> - Dateiname<br> - <i>type</i> - liefert den Dateityp (z.B. TXT)<br> - <i>size</i> - liefert die Dateigr\xF6\xDFe in kB oder MB (z.B. 12.1 kB)<br> - <i>bytesize</i> - (z.B. 12128)<br> - <i>link</i><br> - <i>typesize</i> - [Typ - Gr\xF6\xDFe] in einem span<br> - <i>crc</i><br> - <i>time</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 845
+// include/constants_param_wizard.php, row 829
 "Transformation action" => "Transformationsaktion", // ai 2026-06
 
-// include/constants_param_wizard.php, row 847
+// include/constants_param_wizard.php, row 831
 "AA Expression" => "AA-Ausdruck", // ai 2026-06
 
-// include/constants_param_wizard.php, row 848
+// include/constants_param_wizard.php, row 832
 "AA expression where we can use any AA {expressions}" => "AA-Ausdruck, in dem beliebige AA-{expressions} verwendet werden k\xF6nnen", // ai 2026-06
 
-// include/constants_param_wizard.php, row 851
+// include/constants_param_wizard.php, row 835
 "expression" => "Ausdruck", // ai 2026-06
 
-// include/constants_param_wizard.php, row 860
+// include/constants_param_wizard.php, row 844
 "Store" => "Speichern", // ai 2026-06
 
-// include/constants_param_wizard.php, row 861
+// include/constants_param_wizard.php, row 845
 "Simply store a value from the input field" => "Speichert einfach einen Wert aus dem Eingabefeld", // ai 2026-06
 
-// include/constants_param_wizard.php, row 864
+// include/constants_param_wizard.php, row 848
 "lang (optional)" => "Sprache (optional)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 865
+// include/constants_param_wizard.php, row 849
 "two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "zwei Buchstaben - cz | en | es | de. Wenn angegeben, wird der Wert in der angegebenen Sprache gespeichert (das Feld muss \xDCbersetzungen verwenden)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 873
+// include/constants_param_wizard.php, row 857
 "Remove string" => "Zeichenkette entfernen", // ai 2026-06
 
-// include/constants_param_wizard.php, row 874
+// include/constants_param_wizard.php, row 858
 "Remove all occurrences of a string from the input field." => "Entfernt alle Vorkommen einer Zeichenkette aus dem Eingabefeld.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 877, 898
+// include/constants_param_wizard.php, row 861, 882
 "string parameter" => "Zeichenketten-Parameter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 878
+// include/constants_param_wizard.php, row 862
 "Removed string" => "Zu entfernende Zeichenkette", // ai 2026-06
 
-// include/constants_param_wizard.php, row 884
+// include/constants_param_wizard.php, row 868
 "Format date" => "Datum formatieren", // ai 2026-06
 
-// include/constants_param_wizard.php, row 885
+// include/constants_param_wizard.php, row 869
 "Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "Analysiert das Datum im Eingabefeld, das im englischen Datumsformat erwartet wird. Im Fehlerfall schl\xE4gt die Transformation fehl", // ai 2026-06
 
-// include/constants_param_wizard.php, row 889
+// include/constants_param_wizard.php, row 873
 "Add http prefix" => "http-Pr\xE4fix hinzuf\xFCgen", // ai 2026-06
 
-// include/constants_param_wizard.php, row 890
+// include/constants_param_wizard.php, row 874
 "Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "F\xFCgt dem Feld das Pr\xE4fix 'https://' hinzu, wenn es nicht mit 'https://' beginnt und nicht leer ist.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 894
+// include/constants_param_wizard.php, row 878
 "Store parameter" => "Parameter speichern", // ai 2026-06
 
-// include/constants_param_wizard.php, row 895
+// include/constants_param_wizard.php, row 879
 "Store parameter instead of the input field" => "Speichert den Parameter anstelle des Eingabefelds", // ai 2026-06
 
-// include/constants_param_wizard.php, row 905
+// include/constants_param_wizard.php, row 889
 "Store as long id" => "Als lange ID speichern", // ai 2026-06
 
-// include/constants_param_wizard.php, row 906
+// include/constants_param_wizard.php, row 890
 "Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "Erzeugt aus der Zeichenkette eine lange ID. Die Zeichenkette wird mit dem Parameter!! oder mit der slice_id kombiniert (wenn der Parameter nicht angegeben ist). Aus derselben Zeichenkette (und demselben Parameter) entsteht immer dieselbe ID.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 909
+// include/constants_param_wizard.php, row 893
 "string to add" => "hinzuzuf\xFCgende Zeichenkette", // ai 2026-06
 
-// include/constants_param_wizard.php, row 910
+// include/constants_param_wizard.php, row 894
 "this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "dieser Parameter wird der Zeichenkette vor der Umwandlung hinzugef\xFCgt (um leere Zeichenketten zu vermeiden und damit f\xFCr h\xE4ufige Zeichenketten nicht immer dieselbe ID erzeugt wird (in verschiedenen Importen). Ist dieser Parameter nicht angegeben, wird stattdessen die slice_id verwendet.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 918
+// include/constants_param_wizard.php, row 902
 "Split input field by string" => "Eingabefeld an Zeichenkette aufteilen", // ai 2026-06
 
-// include/constants_param_wizard.php, row 919
+// include/constants_param_wizard.php, row 903
 "Split input field by string parameter and store the result as multi-value." => "Teilt das Eingabefeld am Zeichenketten-Parameter auf und speichert das Ergebnis als Mehrfachwert.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 922
+// include/constants_param_wizard.php, row 906
 "delimiter (+ possible languages)" => "Begrenzer (+ optionale Sprachen)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 923
+// include/constants_param_wizard.php, row 907
 "string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "Zeichenketten-Begrenzer, der die Werte des Eingabefelds trennt (z.B. \"|\"). Zus\xE4tzlich k\xF6nnen mit \"##\" getrennte Sprachen angegeben werden, in der Form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" f\xFCr \"Ahoj|Hi\") - dies f\xFCllt \xFCbersetzte Felder", // ai 2026-06
 
-// include/constants_param_wizard.php, row 930
+// include/constants_param_wizard.php, row 914
 "Store default value" => "Standardwert speichern", // ai 2026-06
 
-// include/constants_param_wizard.php, row 931
+// include/constants_param_wizard.php, row 915
 "Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
    ."    <table>\n"
    ."        <tr><td><b>Output field</b></td><td><b>Value</b></td><td><b>Description</b></td></tr></b>\n"

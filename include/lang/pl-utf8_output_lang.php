@@ -212,16 +212,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Wszystkie kategorie", // ai 2026-06
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Błąd: Brak hasła do odczytu", // ai 2026-06
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Komunikat aplikacji", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Wstecz", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Zaloguj ponownie", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110

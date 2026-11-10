@@ -133,17 +133,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Upravljanje filtrima", // ai 2026-06
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Gre\x9Aka: nedostaje lozinka za \xE8itanje",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Alata za nove poruke",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 // modules/links/check_url.php, row 52
 "Back" => "Povratak",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Ponovna prijava", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114

@@ -232,16 +232,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Všetky kategórie", // ai 2026-06
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Chyba: chýba heslo pre čítanie", // ai 2026-06
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Spät",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Znovu prihlásiť", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110

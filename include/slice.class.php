@@ -1121,6 +1121,9 @@ class AA_Module_Site extends AA_Module
     // (= flag means "don't stringexpand text)"
     public const FLAG_COLLAPSE = 4;   // (visualy) Collapsed spot
 
+    /** the packed id of the module new sites are copied from (modules/site/modedit.php, AA\Optimize\RedefineSiteTemplates) */
+    public const TEMPLATE_ID = 'SiteTemplate....';
+
     /** the app store settings of the site (AA_Modulesettings_Site::app()) */
     public static function getAppSettings(string $module_id): array
     {

@@ -44,6 +44,7 @@
 //   reset       - reset  - "Reset form"
 //   cancel      - button - "Cancel"
 
+use AA\Form\ShowConditions;
 use AA\IO\OnPageChanger;
 use AA\Util\InputVars;
 use AA\Util\Langs;
@@ -280,6 +281,7 @@ if ($lang_control = MLXSlice($slice)) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
+$stored_content = null;   // not from the request
 
 //  update database
 if (($insert || $update) && count($fields)) {
@@ -301,6 +303,9 @@ if (($insert || $update) && count($fields)) {
 
     $content4id->setFromForm($slice, $id, $oldcontent4id, $insert, $slice_fields); // sets also [slice_id] as well as [id]
 
+    // display conditions belong to this form only - a field they hide is neither taken from the form nor required
+    $hidden = (!$encap && !$slice_fields) ? ShowConditions::forSlice($slice_id)->apply($content4id, $fields, $oldcontent4id, (bool) $insert) : [];
+
     if ($slice->getProperty('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_EDITED_IN_AA) {
         // unset ITEM_FLAG_ANONYMOUS_EDITABLE bit in flag
         $content4id->setValue('flags...........', $content4id->getValue('flags...........') & ~ITEM_FLAG_ANONYMOUS_EDITABLE);
@@ -313,7 +318,7 @@ if (($insert || $update) && count($fields)) {
         $content4id->setItemID($id);
     }
 
-    if ($validate_report = $content4id->validateReport('visible')) {
+    if ($validate_report = $content4id->validateReport('visible', $hidden)) {
         foreach ($validate_report as $vr_fid => $vr_err) {
             $err[$vr_fid] =  MsgErr(_m("Error in") . ' <b>' . $fields->getProperty($vr_fid, 'name') . "</b> - " . $vr_err[1]);
         }
@@ -355,6 +360,14 @@ if (($insert || $update) && count($fields)) {
         } else {
             go_return_or_url(self_base() . "index.php", true, true);
         }
+    }
+
+    // the form is drawn again: a hidden field shows its stored value, not what saving would have stored
+    if ($update && $oldcontent4id) {
+        foreach ($hidden as $fid) {
+            $content4id->setAaValue($fid, $oldcontent4id->getAaValue($fid));
+        }
+        $stored_content = $oldcontent4id;
     }
 }
 
@@ -422,6 +435,8 @@ $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $
 $inputform_settings['form4update']         = $edit || $update || ($insert && $added_to_db);
 $inputform_settings['form4asnew']          = $edit_new;
 $inputform_settings['show_preview_button'] = ($post_preview != 0 || !isset($post_preview));
+$inputform_settings['show_conditions']     = !$encap && !$slice_fields;   // as when saving above
+$inputform_settings['stored_content']      = $stored_content;   // values of the fields the redrawn form does not carry
 
 $inputform_settings['cancel_url']          =  ($anonymous ? $r_slice_view_url
                                               : ($return_url === 'close_dialog' ? get_admin_url("itemedit.php", ['cancel' => 1, 'return_url' => 'close_dialog'])

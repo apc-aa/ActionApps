@@ -212,16 +212,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Toute les categories",
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Erreur: mot de passe de lecture manquant",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "message de Kit d'outils de nouvelles",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Retour",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Se reconnecter", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110

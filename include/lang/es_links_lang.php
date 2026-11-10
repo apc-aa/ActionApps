@@ -151,17 +151,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Administrar filtros",
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Error: Clave de lectura no se encuentra",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Mensaje de noticias de la caja de herramientas",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 // modules/links/check_url.php, row 52
 "Back" => "Regresar",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Volver a iniciar sesi\xF3n",
 
 // modules/links/actions.php, row 48, 90, 114

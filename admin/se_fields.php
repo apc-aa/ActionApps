@@ -29,11 +29,13 @@
 // expected $slice_id for edit slice, nothing for adding slice
 // optional slice_fields = 1 (for slice fields)
 
+use AA\Form\ShowConditions;
 use AA\IO\DB\DB_AA;
 use AA\Optimize\ChangeF_h2F_1;
 use AA\Optimize\ChangeF_t2F_1;
 use AA\Optimize\ChangeF_t2F__;
 use AA\Util\InputVars;
+use AA\Util\ScriptTag;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
@@ -65,6 +67,7 @@ try {
     $req = InputVars::arrayPOST('req'); // alpha
     // array ( )
     $shw = InputVars::arrayPOST('shw'); // alpha
+    $shwif = InputVars::arrayPOST('shwif');   // field id => key of its display condition
     // array ( 1 => 9, )-array ( 0 => 30, 1 => 6, )
     $slice_fields = InputVars::boolGETPOST('slice_fields'); // -
     // array ( 'Přihlásit' => 3, )
@@ -178,7 +181,7 @@ if ($move_als && $move_als_to) {
 $template_slices = AA_Fields::templateSlices(AA::$module_id);
 
 if ($update && $name) {
-    $err = array_merge($err, AA_Fields::storeAdminRows(AA::$module_id, $name, $pri, $req, $shw, (string) $ftype, (bool) $slice_fields, array_keys($template_slices)));
+    $err = array_merge($err, AA_Fields::storeAdminRows(AA::$module_id, $name, $pri, $req, $shw, (string) $ftype, (bool) $slice_fields, array_keys($template_slices), $shwif));
     AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
     if (!count($err)) {
         $Msg = MsgOk(_m("Fields update successful"));
@@ -244,6 +247,58 @@ $css = <<<CSS
     .orderableghost  { opacity: 0.5; }
     CSS;
 
+// display conditions: the editor (se_showif.php) in a dialog; what it saved lands in the choices of all rows,
+// without reloading the page, so unsaved edits of the list stay
+$showif_url = json_encode(get_admin_url('se_showif.php', ['module_id' => AA::$module_id]), ScriptTag::JS_JSON);
+$showifjs   = <<<JS
+    (() => {
+        let dlg = null;
+        let from = null;   // the choice of the row the editor was opened from
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.aa-showif-edit');
+            if (!btn) {
+                return;
+            }
+            from = btn.parentElement.querySelector('select.aa-showif-sel');
+            if (!dlg) {
+                dlg = document.createElement('dialog');
+                dlg.className = 'aa-dialog aa-showif-dialog';
+                dlg.append(document.createElement('iframe'));
+                dlg.addEventListener('close', () => dlg.firstChild.src = 'about:blank');
+                document.body.append(dlg);
+            }
+            const url = new URL($showif_url, location.href);
+            url.searchParams.set('key', from.value || 'new');
+            dlg.firstChild.src = url.href;
+            dlg.showModal();
+        });
+        window.AA_ShowIfSaved = r => {
+            dlg?.close();
+            if (!r) {
+                return;
+            }
+            document.querySelectorAll('select.aa-showif-sel').forEach(sel => {
+                let opt = Array.from(sel.options).find(o => o.value === r.key);
+                if (r.deleted) {
+                    if (opt?.selected) {
+                        sel.value = '';
+                    }
+                    opt?.remove();
+                    return;
+                }
+                opt ??= new Option('', r.key);
+                opt.text = r.name;
+                // by name, after "always"
+                const before = Array.from(sel.options).slice(1).find(o => o !== opt && o.text.localeCompare(r.name, undefined, {numeric: true, sensitivity: 'base'}) > 0);
+                sel.add(opt, before ?? null);
+                if (sel === from) {
+                    sel.value = r.key;
+                }
+            });
+        };
+    })();
+    JS;
+
 
 $apage = new AA_Adminpageutil('sliceadmin',$slice_fields ? 'slice_fields' : 'fields');
 $apage->setTitle(_m("Admin - configure Fields"));
@@ -252,6 +307,9 @@ $apage->addRequire('aa-jslib');
 $apage->addRequire('orderable');
 $apage->addRequire($css, 'AA_Req_CSScode');
 $apage->addRequire($aliasmovejs, 'AA_Req_Load');
+if (!$slice_fields) {
+    $apage->addRequire($showifjs, 'AA_Req_Load');
+}
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 
 
@@ -306,8 +364,10 @@ $code .= "<thead>
     </tr>
     </thead>
     <tbody>";
+// slice (setting) fields are plain AA_Fields too - their form has no display conditions
+$conds = $slice_fields ? null : ShowConditions::forSlice(AA::$module_id);
 foreach ( $s_fields as $fld) {
-    $code .= $fld->showFieldAdminRow($analyze || $fix);
+    $code .= $fld->showFieldAdminRow($analyze || $fix, $conds);
 }
 $form_buttons['slice_fields'] = ['value' => ($slice_fields ? 1 : 0)];
 

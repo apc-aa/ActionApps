@@ -164,17 +164,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Spr\xE1va filtr\xF9",
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Chyba: chyb\xED heslo pro \xE8ten\xED",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Vzkaz z Toolkitu",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 // modules/links/check_url.php, row 52
 "Back" => "Zp\xECt",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Znovu p\xF8ihl\xE1sit",
 
 // modules/links/actions.php, row 48, 90, 114

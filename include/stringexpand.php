@@ -8164,6 +8164,8 @@ class AA_Requires {
             'aa-fillform@1'               => new AA_Req_Lib(get_aa_url('javascript/fillform.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-constedit@1'              => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-code@1'                   => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-code.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
+            'aa-params@1'                 => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-params.js', ['v'=>AA_JS_VERSION],false).' module', '', ['_css-aa-params@1']),
+            '_css-aa-params@1'            => new AA_Req_Css(get_aa_url('css/aa-params.css', ['v'=>AA_JS_VERSION],false)),
             'aa-isds@1'                   => new AA_Req_Lib(get_aa_url('javascript/aa-isds.js', ['v'=>AA_JS_VERSION],false).' module', '', ['_css-aa-isds@1', 'aa-richtext@1']),
             '_css-aa-isds@1'              => new AA_Req_Css(get_aa_url('css/aa-isds.css', ['v'=>AA_JS_VERSION],false)),
             'aa-passkey@1'                => new AA_Req_Lib(get_aa_url('javascript/aa-passkey.js', ['v'=>AA_JS_VERSION],false).' module'),
@@ -9348,14 +9350,16 @@ class AA_Stringexpand_Qrcode extends AA_Stringexpand {
  *  {qrpay:<account>:<amount>[:<currency>:<reference-number>:<message>:<due-date>:<specific-symbol>:<recipient-name>]}
  *
  *  @usage <img src="{qrpay:12-3456789012/0100:1234.56:CZK:2023000123:Honza for Ecn Services 2023:2023-01-01:1234567890:Ecn Studio ltd.}" alt="QR payment" width=200 height=200>
- *  @param $account - IBAN or account number (automatically converted to IBAN)
+ *  @param $account - IBAN or Czech account number [prefix-]number/bankcode (automatically converted to IBAN)
  *  @param $amount - amount to pay
- *  @param $currency - currency (default EUR) - 3 letterers currency code like EUR, CZK, USD, GBP, COP ...
+ *  @param $currency - currency (default EUR) - 3 letterers currency code like EUR, CZK, USD, GBP, COP ... in any case
  *  @param $reference_number - reference number (variable symbol) - 1-10 digits
  *  @param $message - message - 1-60 alphanumeric characters
  *  @param $due_date - due date - YYYY-MM-DD
  *  @param $specific_symbol - specific symbol - 1-10 digits
  *  @param $recipient_name - recipient name - 1-35 alphanumeric characters
+ *  @returns string data URI of the image; the empty picture for an account, currency or data the code cannot carry,
+ *           '' without account or amount
  */
 class AA_Stringexpand_Qrpay extends AA_Stringexpand {
     function expand($account='', $amount='', $currency='', $reference_number='', $message='', $due_date='', $specific_symbol='', $recipient_name=''): string
@@ -9363,15 +9367,29 @@ class AA_Stringexpand_Qrpay extends AA_Stringexpand {
         if (!$account || !$amount) {
             return '';
         }
+        // the library checks an IBAN, but turns any "x/y" into one unchecked - a typo in the bank code would pay to another bank
+        $account = trim($account);
+        if (str_contains($account, '/') && !preg_match('~^(\d{1,6}-)?\d{1,10}/\d{4}$~', $account)) {
+            return NO_PICTURE_DATA;
+        }
         $amount = (float)PhpFloat($amount);
-        $qr = new QRPlatba($account, $amount, $reference_number, $currency ?: 'EUR');
+        try {
+            // the library knows upper-case currency codes only
+            $qr = new QRPlatba($account, $amount, $reference_number, strtoupper(trim($currency)) ?: 'EUR');
+        } catch (Exception) {
+            return NO_PICTURE_DATA;   // an account or currency it refuses - no code is better than a wrong one
+        }
         try {
             if ($message)         { $qr->setMessage($message); }
             if ($due_date)        { $qr->setDueDate(new DateTime($due_date)); }
             if ($specific_symbol) { $qr->setSpecificSymbol($specific_symbol); }
             if ($recipient_name)  { $qr->setRecipientName($recipient_name); }
         } catch (Exception) {}
-        return $qr->getQRCodeImage(false, 800, 2);
+        try {
+            return $qr->getQRCodeImage(false, 800, 2);
+        } catch (Exception) {
+            return NO_PICTURE_DATA;   // more data than a QR code holds (a long reference number)
+        }
     }
 }
 

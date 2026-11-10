@@ -25,6 +25,17 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Parameter wizard" => "Pr\xF9vodce Parametry",
+// "the update may still be running on the remote AA - wait, then run Test before retrying" => "aktualizace na vzd\xE1len\xE9m AA mo\x9En\xE1 je\x9At\xEC b\xEC\x9E\xED \x96 po\xE8kejte a p\xF8ed dal\x9A\xEDm pokusem spus\x9Dte test", // ai 2026-10
+// "Set letterhead to a text" => "Nastavte letterhead na text", // ai 2026-10
+// "Update DB (sql_update)" => "Aktualizovat DB (sql_update)",
+// "Error: %1" => "Chyba: %1", // ai 2026-10
+// "Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "P\xF8epne textov\xE1 pol\xED\xE8ka z vkl\xE1dac\xED funkce \x84Text = nem\xECnit\x93 na \x84O\xF8\xEDznout\x93, tak\x9Ee se mezery a nov\xE9 \xF8\xE1dky kolem hodnoty neukl\xE1daj\xED. Pol\xED\xE8ka pro k\xF3d, jedine\xE8n\xE9 hodnoty, kopie hesel a pol\xED\xE8ka, jejich\x9E hodnoty takov\xE9 mezery maj\xED, si nastaven\xED ponechaj\xED. D\xF8\xEDve ulo\x9Een\xE9 hodnoty se nem\xECn\xED.", // ai 2026-10
+// "No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "\x8E\xE1dn\xE1 napl\xE1novan\xE1 \xFAloha web\xEDku nevol\xE1 {import} s jeho jm\xE9nem nebo id, tak\x9Ee b\xEC\x9E\xED jen ru\xE8n\xEC. Napl\xE1nujte \xFAlohu, nebo vypn\xECte volbu Zapnuto.", // ai 2026-10
+// "Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "Zapi\x9Ate test_boxes jako seznam ID datov\xFDch schr\xE1nek: ['<ID schr\xE1nky>', ...], ka\x9Ed\xE9 7 p\xEDsmen nebo \xE8\xEDslic. Do t\xE9 doby \xFA\xE8et odes\xEDl\xE1, ale \x9E\xE1dn\xE1 testovac\xED zpr\xE1va konceptu z n\xECj neodejde.", // ai 2026-10
+// "The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Funkce nen\xED na t\xE9to str\xE1nce administrace definovan\xE1. Web ji p\xF8esto m\xF9\x9Ee definovat (\xF8\xEDdic\xED soubor webu, soubor, kter\xFD na\xE8\xEDtaj\xED jen jeho str\xE1nky) - co str\xE1nky skute\xE8n\xEC volaly, \xF8\xEDk\xE1 kontrola \x84Vol\xE1n\xED f_u na str\xE1nk\xE1ch\x93; v\xEC\xF8te t\xE9. Pokud ani tam nen\xED, definujte usr_%1 v include/usr_aliasfnc.php nebo alias odstra\xF2te.", // ai 2026-10
+// "The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Str\xE1nka takovou funkci nem\xECla, alias nic nezobrazil. Definujte usr_%1 v include/usr_aliasfnc.php nebo alias odstra\xF2te.", // ai 2026-10
+// "Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "O\xF8\xEDzne hodnoty ulo\x9Een\xE9 d\xF8\xEDv, ne\x9E pol\xED\xE8ko dostalo vkl\xE1dac\xED funkci \x84O\xF8\xEDznout\x93 (viz \x84%1\x93) \x96 mezery a nov\xE9 \xF8\xE1dky kolem, neslo\x9Een\xE9 znaky s diakritikou. \x84Opravit\x93 to napl\xE1nuje do fronty: \xE8l\xE1nky se ti\x9Ae ulo\x9E\xED znovu, tak\x9Ee posledn\xED \xFAprava, po\xE8\xEDtan\xE1 pol\xED\xE8ka, ud\xE1losti a v\xFDm\xECna zpr\xE1v z\xF9stanou nedot\xE8en\xE9; historie zm\xECnu zaznamen\xE1. Jedine\xE8n\xE1 pol\xED\xE8ka se jen vyp\xED\x9Aou, pol\xED\xE8ka definovan\xE1 ve web\xEDku pol\xED\xE8ek se nekontroluj\xED.", // ai 2026-10
 // "Can't delete invalid permission." => "Nemohu smazat chybn\xE9 nastaven\xED.",
 // "Invalid permission deleted (no such user/group): " => "Chybn\xE9 nastaven\xED smaz\xE1no (neexistuje tento u\x9Eivatel/skupina): ",
 // "Each visit renders such a page again. A redirect, a click counter or a form may stay as it is. Elsewhere, above all in a template of every page (header, footer): delete a value printed only for debugging and check the spelling of the name ({server:HTTP_REFERER}); to tell visitors coming from a campaign use {qs:utm_source}, the device {detect}. The host, scheme and URI ({server:HTTP_HOST}, {server:REQUEST_URI}) keep the page cached." => "Ka\x9Ed\xE1 n\xE1v\x9At\xECva takovou str\xE1nku vykresl\xED znovu. P\xF8esm\xECrov\xE1n\xED, po\xE8\xEDtadlo kliknut\xED nebo formul\xE1\xF8 mohou z\xF9stat, jak jsou. Jinde, p\xF8edev\x9A\xEDm v \x9Aablon\xEC ka\x9Ed\xE9 str\xE1nky (hlavi\xE8ka, pati\xE8ka): sma\x9Ete hodnotu vypisovanou jen pro lad\xECn\xED a zkontrolujte pravopis n\xE1zvu ({server:HTTP_REFERER}); k rozpozn\xE1n\xED n\xE1v\x9At\xECvn\xEDk\xF9 p\xF8ich\xE1zej\xEDc\xEDch z kampan\xEC pou\x9Eijte {qs:utm_source}, za\xF8\xEDzen\xED {detect}. Hostitel, sch\xE9ma a URI ({server:HTTP_HOST}, {server:REQUEST_URI}) str\xE1nku v cache ponechaj\xED.", // ai 2026-10
@@ -427,7 +438,7 @@ return [
 "never" => "nikdy",
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 762
+// include/field.class.php, row 767
 // src/Util/Adminlink.php, row 31
 "disabled" => "vypnuto",
 
@@ -503,6 +514,7 @@ return [
 // admin/um_passwd.php, row 80
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
+// central/optimize.php, row 65
 // src/Import/DetailPage.php, row 510
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Platnost formul\xE1\xF8e vypr\x9Aela; obnovte str\xE1nku a zkuste to znovu.", // ai 2026-10
@@ -560,13 +572,13 @@ return [
 
 // admin/aa_security.php, row 87
 // admin/aa_statecheck.php, row 177
-// admin/aa_statistics.php, row 101
+// admin/aa_statistics.php, row 103
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
-// admin/se_fields.php, row 303
-// admin/se_statistics.php, row 80
+// admin/se_fields.php, row 361
+// admin/se_statistics.php, row 82
 // admin/se_views.php, row 148
-// include/formutil.php, row 1432, 1435, 2021
+// include/formutil.php, row 1475, 1478, 2064
 // src/Widget/FilWidget.php, row 154, 233
 // src/Widget/FldWidget.php, row 156
 "Show" => "Zobrazit",
@@ -579,7 +591,7 @@ return [
 // src/Optimize/CheckLoginAddresses.php, row 88, 101
 // src/Optimize/CheckSessionidUse.php, row 99
 // src/Optimize/CheckTrustedProxies.php, row 103
-// src/Optimize/CheckUploadRefusals.php, row 89
+// src/Optimize/CheckUploadRefusals.php, row 93
 // src/Security/Protection.php, row 93
 "Address" => "Adresa", // ai 2026-10
 
@@ -640,7 +652,7 @@ return [
 // src/Optimize/CheckServerRefusals.php, row 73
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckTrustedProxies.php, row 109
-// src/Optimize/CheckUploadRefusals.php, row 101
+// src/Optimize/CheckUploadRefusals.php, row 106
 // src/Optimize/CheckUserAliasFunctionLog.php, row 75
 // src/Optimize/CheckViewSliceRefusals.php, row 167, 199
 "Log rows" => "Z\xE1znamy logu", // ai 2026-10
@@ -676,12 +688,13 @@ return [
 "State Check reminds you until it is on again." => "Kontrola stavu v\xE1m to bude p\xF8ipom\xEDnat, dokud ji znovu nezapnete.", // ai 2026-10
 
 // admin/aa_security.php, row 206
-// admin/se_csv_import2.php, row 392
+// admin/se_csv_import2.php, row 395
+// admin/se_showif.php, row 176
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 110
-// src/Widget/Widget.php, row 445
+// src/Widget/Widget.php, row 444
 "Save" => "Ulo\x9Eit",
 
 // admin/aa_statecheck.php, row 72
@@ -775,182 +788,182 @@ return [
 // admin/se_statistics.php, row 58
 "You do not have permissions to see statistics" => "Nem\xE1te opr\xE1vn\xECn\xED zobrazit statistiky",
 
-// admin/aa_statistics.php, row 96
-// admin/se_statistics.php, row 75
+// admin/aa_statistics.php, row 98
+// admin/se_statistics.php, row 77
 "Admin - Statistics" => "Admin - Statistiky",
-
-// admin/aa_statistics.php, row 104
-// admin/se_statistics.php, row 83
-"years" => "roky",
-
-// admin/aa_statistics.php, row 105
-// admin/se_statistics.php, row 84
-"months" => "m\xECs\xEDce",
 
 // admin/aa_statistics.php, row 106
 // admin/se_statistics.php, row 85
-"weeks" => "t\xFDdny",
+"years" => "roky",
 
 // admin/aa_statistics.php, row 107
 // admin/se_statistics.php, row 86
-"days" => "dny",
+"months" => "m\xECs\xEDce",
 
 // admin/aa_statistics.php, row 108
 // admin/se_statistics.php, row 87
-"hours" => "hodiny",
+"weeks" => "t\xFDdny",
 
 // admin/aa_statistics.php, row 109
 // admin/se_statistics.php, row 88
-"minutes" => "minuty",
+"days" => "dny",
 
 // admin/aa_statistics.php, row 110
 // admin/se_statistics.php, row 89
-"day-hours" => "hodiny dne",
+"hours" => "hodiny",
 
 // admin/aa_statistics.php, row 111
 // admin/se_statistics.php, row 90
+"minutes" => "minuty",
+
+// admin/aa_statistics.php, row 112
+// admin/se_statistics.php, row 91
+"day-hours" => "hodiny dne",
+
+// admin/aa_statistics.php, row 113
+// admin/se_statistics.php, row 92
 "week-days" => "dny t\xFDdne",
 
-// admin/aa_statistics.php, row 115
+// admin/aa_statistics.php, row 117
 "Most hits" => "Nejv\xEDce p\xF8\xEDstup\xF9",
 
-// admin/aa_statistics.php, row 116
+// admin/aa_statistics.php, row 118
 "Most server time" => "Nejv\xEDce \xE8asu serveru",
 
-// admin/aa_statistics.php, row 117
+// admin/aa_statistics.php, row 119
 "Slowest (avg ms)" => "Nejpomalej\x9A\xED (pr\xF9m. ms)",
 
-// admin/aa_statistics.php, row 118
+// admin/aa_statistics.php, row 120
 "Fastest (avg ms)" => "Nejrychlej\x9A\xED (pr\xF9m. ms)",
 
-// admin/aa_statistics.php, row 119
+// admin/aa_statistics.php, row 121
 "Worst cached" => "Nejh\xF9\xF8e ke\x9Aovan\xE9",
 
-// admin/aa_statistics.php, row 120
+// admin/aa_statistics.php, row 122
 "Best cached" => "Nejl\xE9pe ke\x9Aovan\xE9",
 
-// admin/aa_statistics.php, row 121
+// admin/aa_statistics.php, row 123
 "Most wasted (NC+NM)" => "Nejv\xEDce promarn\xECno (NC+NM)",
 
-// admin/aa_statistics.php, row 122
+// admin/aa_statistics.php, row 124
 "Slowed down vs prior period" => "Zpomalen\xED oproti p\xF8edchoz\xEDmu obdob\xED",
 
-// admin/aa_statistics.php, row 123
+// admin/aa_statistics.php, row 125
 "Sped up vs prior period" => "Zrychlen\xED oproti p\xF8edchoz\xEDmu obdob\xED",
 
-// admin/aa_statistics.php, row 124
-// admin/se_statistics.php, row 94
+// admin/aa_statistics.php, row 126
+// admin/se_statistics.php, row 96
 "Specified below" => "Ur\xE8eno n\xED\x9Ee",
 
-// admin/aa_statistics.php, row 128
+// admin/aa_statistics.php, row 130
 "Last day" => "Posledn\xED den",
 
-// admin/aa_statistics.php, row 129
+// admin/aa_statistics.php, row 131
 "Last week" => "Posledn\xED t\xFDden",
 
-// admin/aa_statistics.php, row 130
+// admin/aa_statistics.php, row 132
 "Last month" => "Posledn\xED m\xECs\xEDc",
 
-// admin/aa_statistics.php, row 131
+// admin/aa_statistics.php, row 133
 "Last year" => "Posledn\xED rok",
 
-// admin/aa_statistics.php, row 132
+// admin/aa_statistics.php, row 134
 "This day" => "Tento den",
 
-// admin/aa_statistics.php, row 133
+// admin/aa_statistics.php, row 135
 "This week" => "Tento t\xFDden",
 
-// admin/aa_statistics.php, row 134
+// admin/aa_statistics.php, row 136
 "This month" => "Tento m\xECs\xEDc",
 
-// admin/aa_statistics.php, row 135
+// admin/aa_statistics.php, row 137
 "This year" => "Tento rok",
 
-// admin/aa_statistics.php, row 136
+// admin/aa_statistics.php, row 138
 "All time" => "Za celou dobu",
 
-// admin/aa_statistics.php, row 140
+// admin/aa_statistics.php, row 142
 "All AA" => "Cel\xE9 AA",
 
-// admin/aa_statistics.php, row 141
+// admin/aa_statistics.php, row 143
 "Sites" => "Weby",
 
-// admin/aa_statistics.php, row 145
+// admin/aa_statistics.php, row 147
 // admin/aafinder.php, row 484, 497
-// admin/se_inputform.php, row 294
+// admin/se_inputform.php, row 295
 // central/appstore.php, row 164
 // include/searchlib.php, row 1016
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Web\xEDky",
 
-// admin/aa_statistics.php, row 172
+// admin/aa_statistics.php, row 174
 "Version progress" => "V\xFDvoj mezi verzemi", // ai 2026-10
 
-// admin/aa_statistics.php, row 183
+// admin/aa_statistics.php, row 185
 "Queue progress" => "V\xFDvoj fronty", // ai 2026-10
 
-// admin/aa_statistics.php, row 194
+// admin/aa_statistics.php, row 196
 "Quick diagnostics" => "Rychl\xE1 diagnostika",
 
-// admin/aa_statistics.php, row 218
+// admin/aa_statistics.php, row 220
 "Slice comparison" => "Porovn\xE1n\xED web\xEDk\xF9",
 
-// admin/aa_statistics.php, row 241
-// admin/se_statistics.php, row 149
+// admin/aa_statistics.php, row 243
+// admin/se_statistics.php, row 151
 "Stats to show" => "Zobrazen\xE9 statistiky",
 
-// admin/aa_statistics.php, row 242
+// admin/aa_statistics.php, row 244
 "Granularity" => "Granularita",
 
-// admin/aa_statistics.php, row 246
+// admin/aa_statistics.php, row 248
 "Items to show" => "Zobrazen\xE9 \xE8l\xE1nky",
 
-// admin/aa_statistics.php, row 247
+// admin/aa_statistics.php, row 249
 "Display for module" => "Zobrazit pro modul",
 
-// admin/aa_statistics.php, row 248
+// admin/aa_statistics.php, row 250
 "Sort items by" => "\xD8adit \xE8l\xE1nky podle",
 
-// admin/aa_statistics.php, row 249
+// admin/aa_statistics.php, row 251
 "Period (item ranking)" => "Obdob\xED (po\xF8ad\xED \xE8l\xE1nk\xF9)",
 
-// admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 109
+// admin/aa_statistics.php, row 252
+// admin/se_statistics.php, row 111
 "Exact items to show" => "Konkr\xE9tn\xED \xE8l\xE1nky k zobrazen\xED",
 
-// admin/aa_statistics.php, row 250
-// admin/se_statistics.php, row 109
+// admin/aa_statistics.php, row 252
+// admin/se_statistics.php, row 111
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "seznam id/short_id \xE8l\xE1nk\xF9 odd\xEClen\xFD poml\xE8kami nebo AA v\xFDraz jako {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}",
 
-// admin/aa_statistics.php, row 251
-// admin/se_statistics.php, row 110
+// admin/aa_statistics.php, row 253
+// admin/se_statistics.php, row 112
 "Number of items to show" => "Po\xE8et zobrazen\xFDch \xE8l\xE1nk\xF9",
 
-// admin/aa_statistics.php, row 255
+// admin/aa_statistics.php, row 257
 "Show for period" => "Zobrazit za obdob\xED",
 
-// admin/aa_statistics.php, row 256
-// admin/se_statistics.php, row 111
+// admin/aa_statistics.php, row 258
+// admin/se_statistics.php, row 113
 "From date" => "Od data",
 
-// admin/aa_statistics.php, row 261
-// admin/se_statistics.php, row 155
+// admin/aa_statistics.php, row 263
+// admin/se_statistics.php, row 157
 "Check the expression in \"Exact items to show\" and press Show to evaluate it." => "Zkontrolujte v\xFDraz v poli \x84Konkr\xE9tn\xED \xE8l\xE1nky k zobrazen\xED\x93 a vyhodno\x9Dte ho tla\xE8\xEDtkem \x84Zobrazit\x93.", // ai 2026-11
 
-// admin/aa_statistics.php, row 268
-// admin/se_statistics.php, row 158
+// admin/aa_statistics.php, row 270
+// admin/se_statistics.php, row 160
 "Display Statistics for Item" => "Zobrazit statistiky \xE8l\xE1nku",
 
-// admin/aa_statistics.php, row 354
-// admin/se_statistics.php, row 185
+// admin/aa_statistics.php, row 356
+// admin/se_statistics.php, row 187
 "Items found" => "Nalezen\xE9 \xE8l\xE1nky",
 
-// admin/aa_statistics.php, row 356
-// admin/se_statistics.php, row 194
+// admin/aa_statistics.php, row 358
+// admin/se_statistics.php, row 196
 "No items found" => "\x8E\xE1dn\xE9 \xE8l\xE1nky nenalezeny",
 
-// admin/aa_statistics.php, row 368
-// admin/se_statistics.php, row 191
+// admin/aa_statistics.php, row 370
+// admin/se_statistics.php, row 193
 "Server configuration changes" => "Zm\xECny konfigurace serveru",
 
 // admin/aa_tasks.php, row 35
@@ -1003,11 +1016,11 @@ return [
 
 // admin/aafinder.php, row 135
 // admin/feed_to.php, row 65
-// admin/se_fields.php, row 110
+// admin/se_fields.php, row 113
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1220
+// include/logs.php, row 1224
 // include/menu.php, row 134
 // include/slice.class.php, row 590
 // include/sliceadd.php, row 54, 79
@@ -1018,12 +1031,12 @@ return [
 // src/Optimize/CheckDiscussionRefusals.php, row 74
 // src/Optimize/CheckFileReadRefusals.php, row 79
 // src/Optimize/CheckFormRobotRefusals.php, row 74
-// src/Optimize/CheckImports.php, row 367
+// src/Optimize/CheckImports.php, row 390
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 87
 // src/Optimize/CheckRelatedSlices.php, row 76
-// src/Optimize/CheckUploadRefusals.php, row 87
+// src/Optimize/CheckUploadRefusals.php, row 91
 // src/Optimize/CheckUserAliasFunctionLog.php, row 85
 // src/Optimize/CheckUserAliasFunctions.php, row 87
 // src/Optimize/CheckViewSliceRefusals.php, row 161
@@ -1101,7 +1114,7 @@ return [
 // include/exporter.class.php, row 550
 // include/itemfunc.php, row 383
 // include/menu.php, row 135
-// include/searchlib.php, row 172
+// include/searchlib.php, row 173
 // src/Isds/SliceRules.php, row 176
 "Fields" => "Pol\xED\xE8ka",
 
@@ -1143,12 +1156,13 @@ return [
 
 // admin/aafinder.php, row 526
 // include/searchbar.class.php, row 576
-// include/searchlib.php, row 49, 50, 128, 137
+// include/searchlib.php, row 50, 51, 129, 138
 "contains" => "obsahuje",
 
 // admin/aafinder.php, row 527
+// admin/se_showif.php, row 118
 // include/searchbar.class.php, row 584
-// include/searchlib.php, row 128, 137
+// include/searchlib.php, row 129, 138
 "is" => "je",
 
 // admin/aafinder.php, row 528
@@ -1181,9 +1195,9 @@ return [
 "ActionApps Anonymous form" => "ActionApps Anonymn\xED formul\xE1\xF8",
 
 // admin/anonym_wizard.php, row 129
-// admin/write_mail.php, row 268
-// include/menu_util.php, row 629
-// include/stringexpand.php, row 10301, 10380
+// admin/write_mail.php, row 290
+// include/menu_util.php, row 630
+// include/stringexpand.php, row 10316, 10395
 "Send" => "Po\x9Ali",
 
 // admin/anonym_wizard.php, row 151
@@ -1191,9 +1205,10 @@ return [
 // admin/se_constant.php, row 87
 // admin/se_constant_import.php, row 63
 // admin/se_fieldid.php, row 89
-// admin/se_fields.php, row 86
-// admin/se_inputform.php, row 130
+// admin/se_fields.php, row 89
+// admin/se_inputform.php, row 131
 // admin/se_javascript.php, row 50
+// admin/se_showif.php, row 55
 "You do not have permissions to change fields settings" => "Nem\xE1te pr\xE1vo m\xECnit nastaven\xED polo\x9Eek",
 
 // admin/anonym_wizard.php, row 166
@@ -1212,6 +1227,8 @@ return [
 "Show Form" => "Zobraz formul\xE1\xF8",
 
 // admin/anonym_wizard.php, row 211
+// admin/se_csv_import2.php, row 418
+// src/Util/Paramwizard.php, row 166
 "Help" => "N\xE1pov\xECda",
 
 // admin/anonym_wizard.php, row 211
@@ -1231,14 +1248,15 @@ return [
 
 // admin/anonym_wizard.php, row 221
 // admin/se_fieldid.php, row 296
-// admin/se_fields.php, row 299
+// admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
+// admin/se_showif.php, row 123
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1380, 1384
+// include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 368
+// include/searchlib.php, row 369
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1252,14 +1270,14 @@ return [
 
 // admin/anonym_wizard.php, row 222
 // admin/se_fieldid.php, row 296
-// admin/se_fields.php, row 300
+// admin/se_fields.php, row 358
 // admin/se_history.php, row 140
 // admin/se_javascript.php, row 86
 // admin/slicedit.php, row 282
 // central/installapp.php, row 1271
 // include/constants.php, row 458
 // src/Central/FindingText.php, row 186, 192
-// src/Optimize/CheckImports.php, row 218
+// src/Optimize/CheckImports.php, row 220
 "Id" => "ID",
 
 // admin/anonym_wizard.php, row 224
@@ -1284,15 +1302,16 @@ return [
 
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
-// include/stringexpand.php, row 98
+// include/stringexpand.php, row 99
 // src/Import/DetailPage.php, row 1025, 1091
-// src/Optimize/CheckImports.php, row 236, 238
+// src/Optimize/CheckImports.php, row 239, 241
 "Code" => "K\xF3d",
 
 // admin/console.php, row 71
 "HTML output" => "HTML v\xFDstup",
 
 // admin/console.php, row 73, 75
+// central/optimize.php, row 210
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "V\xFDsledek",
 
@@ -1307,6 +1326,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
+// central/optimize.php, row 248
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "OK", // ai 2026-10
@@ -1343,7 +1363,7 @@ return [
 "Author" => "Autor",
 
 // admin/discedit.php, row 133
-// include/logs.php, row 905, 1316
+// include/logs.php, row 905, 1320
 "IP Address" => "IP adresa",
 
 // admin/discedit.php, row 134
@@ -1367,14 +1387,15 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 266
-// include/field.class.php, row 744
+// include/field.class.php, row 749
 // include/filedit.php, row 113
-// include/formutil.php, row 1778, 3395
+// include/formutil.php, row 1821, 3428
 // include/metabase.class.php, row 1642
 // include/mlx.php, row 373
 // include/statestore.php, row 1143
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 141
+// src/Optimize/CheckImports.php, row 215
 "Edit" => "Editace",
 
 // admin/discedit.php, row 165
@@ -1383,14 +1404,15 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
+// admin/se_showif.php, row 179
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
 // admin/um_passkeys.php, row 158
 // admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 748
-// include/formutil.php, row 1789, 1926
+// include/field.class.php, row 753
+// include/formutil.php, row 1832, 1969
 // include/menu_util.php, row 61
 // include/profile.php, row 69
 // include/searchbar.class.php, row 1126
@@ -1402,9 +1424,9 @@ return [
 "Delete" => "Smazat",
 
 // admin/discedit.php, row 172
-// include/adminpage.class.php, row 345
+// include/adminpage.class.php, row 395
 // include/se_users.php, row 128
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Zp\xECt",
 
 // admin/discedit.php, row 173
@@ -1417,9 +1439,9 @@ return [
 "You do not have permission to edit items in this slice" => "Nem\xE1te pr\xE1vo upravovat zpr\xE1vy v tomto web\xEDku",
 
 // admin/discedit2.php, row 92, 146
-// admin/write_mail.php, row 119, 248
-// include/logs.php, row 1067
-// include/mail.php, row 663
+// admin/write_mail.php, row 123, 267
+// include/logs.php, row 1071
+// include/mail.php, row 699
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "P\xF8edm\xECt",
 
@@ -1507,7 +1529,7 @@ return [
 "File Manager" => "Spr\xE1vce Soubor\xF9",
 
 // admin/fileman.php, row 131
-// include/fileman.php, row 159, 177
+// include/fileman.php, row 165, 183
 // src/Optimize/ImgCacheWritable.php, row 47
 "Directory" => "Adres\xE1\xF8",
 
@@ -1540,27 +1562,27 @@ return [
 // admin/index.php, row 182
 "ActionApps - Item Manager" => "ActionApps - Spr\xE1vce zpr\xE1v",
 
-// admin/itemedit.php, row 236, 326
+// admin/itemedit.php, row 237, 331
 "Error: You have no rights to edit item." => "Nem\xE1te pr\xE1va m\xECnit \xE8l\xE1nek",
 
-// admin/itemedit.php, row 318
+// admin/itemedit.php, row 323
 // include/date.php, row 189
-// include/field.class.php, row 1380
+// include/field.class.php, row 1405
 // include/validate.php, row 54, 58
 "Error in" => "Chyba v",
 
-// admin/itemedit.php, row 369
+// admin/itemedit.php, row 382
 // admin/slicefieldsedit.php, row 131
 "Error: no fields." => "Chyba: \x9E\xE1dn\xE9 pol\xED\xE8ko.",
 
-// admin/itemedit.php, row 377
+// admin/itemedit.php, row 390
 // admin/slicefieldsedit.php, row 139
 "Bad item ID id=%1" => "\x8Apatn\xE9 \xE8\xEDslo \xE8l\xE1nku id=%1",
 
-// admin/itemedit.php, row 414, 415
+// admin/itemedit.php, row 427, 428
 "Edit Item" => "Upravit zpr\xE1vu",
 
-// admin/itemedit.php, row 414, 415
+// admin/itemedit.php, row 427, 428
 // include/menu.php, row 84
 "Add Item" => "P\xF8idat zpr\xE1vu",
 
@@ -1693,7 +1715,7 @@ return [
 // admin/se_admin.php, row 163
 // admin/se_compact.php, row 212
 // admin/se_fulltext.php, row 163
-// admin/se_inputform.php, row 189, 426
+// admin/se_inputform.php, row 190, 431
 // src/Util/UiPrefs.php, row 56
 "Default" => "Implicitn\xED",
 
@@ -1796,7 +1818,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 369
+// include/searchlib.php, row 370
 "Descending" => "Sestupn\xEC",
 
 // admin/se_compact.php, row 244
@@ -1821,6 +1843,7 @@ return [
 "Can't delete constant group" => "Skupinu hodnot nelze smazat", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
+// admin/se_showif.php, row 157
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1829,7 +1852,7 @@ return [
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1207
+// include/logs.php, row 1211
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
@@ -1845,33 +1868,33 @@ return [
 // admin/se_profile.php, row 209
 // include/constants.php, row 453
 // include/constedit.php, row 76
-// include/searchlib.php, row 176
+// include/searchlib.php, row 177
 // src/Central/FindingText.php, row 94, 98
 "Value" => "Hodnota",
 
 // admin/se_constant.php, row 177, 379
-// admin/se_inputform.php, row 515
+// admin/se_inputform.php, row 523
 // admin/se_view.php, row 153
 // admin/um_gedit.php, row 299, 302
 // include/constants.php, row 459
 // include/constedit.php, row 84
-// include/stringexpand.php, row 99
+// include/stringexpand.php, row 100
 // include/um_gedit.php, row 33
 // src/Manageraction/Central_Linkcheck.php, row 31
 // src/Optimize/AbstractOptimize.php, row 174
 "Description" => "Popis",
 
 // admin/se_constant.php, row 178, 380
-// admin/se_fields.php, row 301
+// admin/se_fields.php, row 359
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1384
+// include/field.class.php, row 1409
 // src/Optimize/AbstractOptimize.php, row 177
 "Priority" => "\xD8azen\xED",
 
 // admin/se_constant.php, row 184, 327
 // admin/se_constant_import.php, row 74, 126
-// admin/se_inputform.php, row 284
+// admin/se_inputform.php, row 285
 // include/constants.php, row 784
 "Constant Group" => "Skupina hodnot",
 
@@ -1903,7 +1926,7 @@ return [
 
 // admin/se_constant.php, row 319
 // admin/se_constant_import.php, row 75, 125, 136
-// admin/se_inputform.php, row 405
+// admin/se_inputform.php, row 410
 "Constants" => "Hodnoty",
 
 // admin/se_constant.php, row 333
@@ -1971,7 +1994,7 @@ return [
 "Missing slice" => "Web\xEDk nenalezen",
 
 // admin/se_csv_import.php, row 133
-// admin/se_csv_import2.php, row 214
+// admin/se_csv_import2.php, row 217
 "The data to import are no longer on the server - load them again" => "Data k importu u\x9E na serveru nejsou \x96 na\xE8t\xECte je znovu", // ai 2026-10
 
 // admin/se_csv_import.php, row 142
@@ -1991,7 +2014,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1237
+// include/logs.php, row 1241
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckFileReadRefusals.php, row 77, 100, 133
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
@@ -2001,11 +2024,11 @@ return [
 
 // admin/se_csv_import.php, row 239, 244
 // src/Manageraction/Central_Linkcheck.php, row 29
-// src/Widget/Widget.php, row 903
+// src/Widget/Widget.php, row 902
 "URL" => "",
 
 // admin/se_csv_import.php, row 240, 245
-// admin/se_inputform.php, row 458, 459
+// admin/se_inputform.php, row 465, 466
 // include/itemfunc.php, row 668, 777, 806
 // src/Util/Note.php, row 63
 "Text" => "Text", // ai 2026-10
@@ -2014,7 +2037,7 @@ return [
 "Source of CSV data" => "Zdroj CSV dat",
 
 // admin/se_csv_import.php, row 277
-// admin/se_csv_import2.php, row 382
+// admin/se_csv_import2.php, row 385
 // central/installapp.php, row 434, 558, 1368
 // src/Manageraction/Item_Preview.php, row 13
 "Preview" => "N\xE1hled",
@@ -2024,50 +2047,50 @@ return [
 // src/Import/DetailPage.php, row 422
 "Next" => "Dal\x9A\xED",
 
-// admin/se_csv_import2.php, row 196
+// admin/se_csv_import2.php, row 199
 "You have not permissions to setting " => "Nem\xE1te pr\xE1vo pro nastaven\xED",
 
-// admin/se_csv_import2.php, row 202
+// admin/se_csv_import2.php, row 205
 "Invalid additional parameters for import" => "Chybn\xE9 dodate\xE8n\xE9 parametry pro import",
 
-// admin/se_csv_import2.php, row 280
+// admin/se_csv_import2.php, row 283
 "Item:" => "Zpr\xE1va:",
 
-// admin/se_csv_import2.php, row 288
+// admin/se_csv_import2.php, row 291
 "Cannot store item to DB" => "Zpr\xE1vu nelze ulo\x9Eit do datab\xE1ze",
 
-// admin/se_csv_import2.php, row 293
+// admin/se_csv_import2.php, row 296
 "Transformation error:" => "Chyba p\xF8i transformaci:",
 
-// admin/se_csv_import2.php, row 295
+// admin/se_csv_import2.php, row 298
 "Ok: Item %1 stored" => "OK: \xC8l\xE1nek %1 je ulo\x9Een",
 
-// admin/se_csv_import2.php, row 313
+// admin/se_csv_import2.php, row 316
 "Added to slice" => "P\xF8id\xE1no do web\xEDku",
 
-// admin/se_csv_import2.php, row 336
+// admin/se_csv_import2.php, row 339
 "Mapping preview" => "N\xE1hled mapov\xE1n\xED",
 
-// admin/se_csv_import2.php, row 387
+// admin/se_csv_import2.php, row 390
 "Finish" => "Dokon\xE8it",
 
-// admin/se_csv_import2.php, row 397
+// admin/se_csv_import2.php, row 400
 "Load" => "Na\xE8\xEDst",
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 410
 "Mapping settings" => "Nastaven\xED mapov\xE1n\xED",
 
-// admin/se_csv_import2.php, row 410
+// admin/se_csv_import2.php, row 413
 // admin/se_filters.php, row 182
 // admin/se_mapping.php, row 177
 "To" => "Do",
 
-// admin/se_csv_import2.php, row 411
+// admin/se_csv_import2.php, row 414
 // admin/se_filters.php, row 181
 // admin/se_mapping.php, row 178
 "From" => "Z",
 
-// admin/se_csv_import2.php, row 412
+// admin/se_csv_import2.php, row 415
 // admin/search_replace.php, row 185
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
@@ -2077,74 +2100,71 @@ return [
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Akce",
 
-// admin/se_csv_import2.php, row 413
+// admin/se_csv_import2.php, row 416
 "Html" => "",
 
-// admin/se_csv_import2.php, row 414
+// admin/se_csv_import2.php, row 417
 "Action parameters" => "Parametry akce",
 
-// admin/se_csv_import2.php, row 415
-"Parameter wizard" => "Pr\xF9vodce Parametry",
-
-// admin/se_csv_import2.php, row 440
+// admin/se_csv_import2.php, row 443
 "Import options" => "Nastaven\xED importu",
 
-// admin/se_csv_import2.php, row 455
+// admin/se_csv_import2.php, row 458
 "Map item id from" => "ID zpr\xE1vy namapuj z",
 
-// admin/se_csv_import2.php, row 459
+// admin/se_csv_import2.php, row 462
 "unpacked long id (32 characters)" => "nezabalen\xE9 dlouh\xE9 id (32 znak\xF9)",
 
-// admin/se_csv_import2.php, row 460
+// admin/se_csv_import2.php, row 463
 "packed long id (16 characters)" => "zabalen\xE9 dlouh\xE9 id (16 znak\xF9)",
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 464
 "string to be converted (string2id) - with param:" => "\xF8et\xECzec ke konverzi (string2id) - s parametrem:",
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 472
 "Select, how to store the items" => "Zvolte, jak ulo\x9Eit \xE8l\xE1nky",
 
-// admin/se_csv_import2.php, row 471
+// admin/se_csv_import2.php, row 474
 "Do not store the item" => "P\xF8esko\xE8 danou zpr\xE1vu (neukl\xE1dat)",
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 475
 "Store the item with new id" => "Ulo\x9E zpr\xE1vu pod nov\xFDm ID",
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 476
 "Update the item (overwrite)" => "Aktualizovat \xE8l\xE1nek (p\xF8epsat)",
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 477
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "P\xF8idat hodnoty soub\xEC\x9En\xEC k sou\xE8asn\xFDm hodnot\xE1m (kde je to mo\x9En\xE9, ukl\xE1daj\xED se v\xEDcen\xE1sobn\xE9 hodnoty)",
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 478
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "P\xF8epsat jen pol\xED\xE8ka, pro kter\xE1 je akce definov\xE1na, a p\xF8epo\xE8\xEDtat v\x9Aechna po\xE8\xEDtan\xE1 pol\xED\xE8ka, ...",
 
-// admin/se_csv_import2.php, row 476
+// admin/se_csv_import2.php, row 479
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "P\xF8epsat jen pol\xED\xE8ka, pro kter\xE1 je akce definov\xE1na (neaktualizovat lastedit, po\xE8\xEDtan\xE1, ... pol\xED\xE8ka = Silent)",
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 480
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "P\xF8epsat jen pol\xED\xE8ka, pro kter\xE1 je akce definov\xE1na a jejich\x9E hodnota nen\xED pr\xE1zdn\xE1 (po\xE8\xEDtan\xE1 pol\xED\xE8ka budou p\xF8epo\xE8\xEDt\xE1na)",
 
-// admin/se_csv_import2.php, row 480
+// admin/se_csv_import2.php, row 483
 "If the item id is already in the slice" => "Pokud je id \xE8l\xE1nku u\x9E ve web\xEDku",
 
-// admin/se_csv_import2.php, row 481
+// admin/se_csv_import2.php, row 484
 // admin/search_replace.php, row 183
 "Silent" => "Tich\xFD re\x9Eim", // ai 2026-06
 
-// admin/se_csv_import2.php, row 481
+// admin/se_csv_import2.php, row 484
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Neprov\xE1d\xECt \x9E\xE1dn\xE9 dal\x9A\xED operace jako p\xF8epo\xE8et po\xE8\xEDtan\xFDch pol\xED\xE8ek, v\xFDm\xECnu zpr\xE1v, pos\xEDl\xE1n\xED e-mail\xF9 \xE8ten\xE1\xF8\xF9m zas\xEDl\xE1n\xED...",
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 486
 "Store settings..." => "Ulo\x9Eit nastaven\xED...",
 
-// admin/se_csv_import2.php, row 490
+// admin/se_csv_import2.php, row 493
 "Load setting" => "Na\xE8\xEDst nastaven\xED",
 
-// admin/se_csv_import2.php, row 492
+// admin/se_csv_import2.php, row 495
 "Save setting as" => "Ulo\x9Eit nastaven\xED jako",
 
-// admin/se_csv_import2.php, row 537
+// admin/se_csv_import2.php, row 540
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Spr\xE1va web\xEDku - Na\xE8ten\xED .csv (2/2) - Mapov\xE1n\xED",
 
 // admin/se_dataimport.php, row 59
@@ -2160,7 +2180,7 @@ return [
 // admin/se_dataimports.php, row 40
 // include/menu.php, row 157
 // include/menu_util.php, row 92
-// src/Optimize/CheckImports.php, row 35
+// src/Optimize/CheckImports.php, row 35, 215
 "Imports" => "Importy", // ai 2026-10
 
 // admin/se_dataimports.php, row 41
@@ -2239,7 +2259,7 @@ return [
 // include/logs.php, row 560
 // include/se_users.php, row 180
 // src/Isds/Registry/Page.php, row 512
-// src/Widget/Widget.php, row 753
+// src/Widget/Widget.php, row 752
 "Type" => "Typ",
 
 // admin/se_export.php, row 165
@@ -2323,49 +2343,49 @@ return [
 // admin/sliceexp.php, row 132
 "to" => "do",
 
-// admin/se_fields.php, row 108
+// admin/se_fields.php, row 111
 "Add new field from template" => "P\xF8idat nov\xE9 pol\xED\xE8ko ze \x9Aablony",
 
-// admin/se_fields.php, row 139
+// admin/se_fields.php, row 142
 "Field delete OK" => "Pole odstran\xECno",
 
-// admin/se_fields.php, row 147
+// admin/se_fields.php, row 150
 "Invalid move alias parameters" => "Neplatn\xE9 parametry p\xF8esunu aliasu",
 
-// admin/se_fields.php, row 159
+// admin/se_fields.php, row 162
 "No free space for alias in this field" => "V tomto pol\xED\xE8ku nen\xED pro alias voln\xE9 m\xEDsto",
 
-// admin/se_fields.php, row 170
+// admin/se_fields.php, row 173
 "Alias moved OK" => "Alias \xFAsp\xEC\x9An\xEC p\xF8esunut",
 
-// admin/se_fields.php, row 184
-// admin/se_inputform.php, row 278
+// admin/se_fields.php, row 187
+// admin/se_inputform.php, row 279
 "Fields update successful" => "Nastaven\xED polo\x9Eek \xFAsp\xEC\x9An\xEC zm\xECn\xECno",
 
-// admin/se_fields.php, row 204
+// admin/se_fields.php, row 207
 "Alias <b>%1</b> is duplicated" => "Alias <b>%1</b> je duplicitn\xED",
 
-// admin/se_fields.php, row 211
+// admin/se_fields.php, row 214
 "Do you really want to move alias to another field?" => "Opravdu chcete p\xF8esunout alias do jin\xE9ho pol\xED\xE8ka?",
 
-// admin/se_fields.php, row 234
+// admin/se_fields.php, row 237
 "Do you really want to delete this field from this slice?" => "Opravdu chcete vymazat toto pol\xED\xE8ko z web\xEDku?",
 
-// admin/se_fields.php, row 249
-// admin/se_inputform.php, row 374
+// admin/se_fields.php, row 304
+// admin/se_inputform.php, row 375
 "Admin - configure Fields" => "Spr\xE1va web\xEDku - Nastaven\xED pol\xED\xE8ek",
 
-// admin/se_fields.php, row 281
+// admin/se_fields.php, row 339
 "change all" => "zm\xECnit v\x9Ae",
 
-// admin/se_fields.php, row 294
+// admin/se_fields.php, row 352
 "Analyze" => "Analyzovat",
 
-// admin/se_fields.php, row 302
+// admin/se_fields.php, row 360
 "Required" => "Povinn\xE1",
 
-// admin/se_fields.php, row 305
-// include/stringexpand.php, row 112
+// admin/se_fields.php, row 363
+// include/stringexpand.php, row 113
 "Aliases" => "Aliasy",
 
 // admin/se_filters.php, row 83
@@ -2384,7 +2404,7 @@ return [
 // admin/um_gedit.php, row 280
 // admin/um_uedit.php, row 399
 // central/include/actionapps.class.php, row 279
-// include/formutil.php, row 191, 2941
+// include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
 // src/Import/DetailCatalog.php, row 151
 "Update" => "Zm\xECnit",
@@ -2405,7 +2425,7 @@ return [
 "No category defined" => "Kategorie nebyly definov\xE1ny",
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1415
+// src/Manager.php, row 1424
 "Select all" => "Vybrat v\x9Ae",
 
 // admin/se_filters.php, row 320
@@ -2474,11 +2494,12 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
+// src/Optimize/CheckOptimizeRuns.php, row 56
 "User" => "U\x9Eivatel",
 
 // admin/se_history.php, row 144
 // src/AA_Plannedtask.php, row 182
-// src/Optimize/CheckImports.php, row 287
+// src/Optimize/CheckImports.php, row 290
 // src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "\xC8as",
 
@@ -2526,154 +2547,156 @@ return [
 // admin/se_import.php, row 197
 "Import from" => "P\xF8ij\xEDmat", // ai 2026-11
 
-// admin/se_inputform.php, row 186, 481
+// admin/se_inputform.php, row 187, 489
 "Before HTML code" => "HTML k\xF3d p\xF8ed t\xEDmto polem",
 
-// admin/se_inputform.php, row 187, 479
+// admin/se_inputform.php, row 188, 487
 "Help for this field" => "N\xE1pov\xECda",
 
-// admin/se_inputform.php, row 188, 480
+// admin/se_inputform.php, row 189, 488
 "More help" => "V\xEDce informac\xED",
 
-// admin/se_inputform.php, row 190
+// admin/se_inputform.php, row 191
 "Input show function" => "Zobrazovac\xED funkce",
 
-// admin/se_inputform.php, row 192
+// admin/se_inputform.php, row 193
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "Alias mus\xED b\xFDt v\x9Edy _# + 8 VELK\xDDCH p\xEDsmen, nap\xF8. _#<b>SOMTHING</b>.",
 
-// admin/se_inputform.php, row 197, 512
-// include/stringexpand.php, row 97
+// admin/se_inputform.php, row 198, 520
+// include/stringexpand.php, row 98
 // src/Optimize/CheckUserAliasFunctions.php, row 89
 "Alias" => "Alias", // ai 2026-10
 
-// admin/se_inputform.php, row 201, 513
+// admin/se_inputform.php, row 202, 521
 // admin/se_profile.php, row 208
 "Function" => "Funkce",
 
-// admin/se_inputform.php, row 257
+// admin/se_inputform.php, row 258
 "You can relate only to a slice where you may edit all items" => "Vazbu lze nastavit jen na web\xEDk, v n\xECm\x9E sm\xEDte upravovat v\x9Aechny \xE8l\xE1nky", // ai 2026-10
 
-// admin/se_inputform.php, row 305
+// admin/se_inputform.php, row 306
 "No field found" => "\x8E\xE1dn\xE9 pol\xED\xE8ko nenalezeno",
 
-// admin/se_inputform.php, row 352
+// admin/se_inputform.php, row 353
 "You selected slice and not constant group. It is impossible to create slice from here." => "Vybral jste web\xEDk a ne konstanty. Odtud nelze nov\xFD web\xEDk vytvo\xF8it.",
 
-// admin/se_inputform.php, row 375
+// admin/se_inputform.php, row 376
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "POZOR: Nem\xEC\xF2te toto nastaven\xED, pokud si nejste jisti, co d\xECl\xE1te!",
 
-// admin/se_inputform.php, row 388
-// include/formutil.php, row 192
+// admin/se_inputform.php, row 392
+// include/formutil.php, row 203
 "Update & Edit" => "Zm\xECnit a editovat d\xE1le",
 
-// admin/se_inputform.php, row 389
+// admin/se_inputform.php, row 393
 // admin/se_view.php, row 485
-// include/slice.class.php, row 1324
+// include/slice.class.php, row 1327
 "Show History" => "Zobrazit historii",
 
-// admin/se_inputform.php, row 393
+// admin/se_inputform.php, row 397
 "Field properties" => "Vlastnosti pol\xED\xE8ka",
 
-// admin/se_inputform.php, row 401
-// src/Widget/Widget.php, row 765
+// admin/se_inputform.php, row 405
+// src/Widget/Widget.php, row 764
 "Input type" => "Typ Vstupu",
 
-// admin/se_inputform.php, row 404
+// admin/se_inputform.php, row 408
 "Input field type in Add / Edit item." => "Typ pol\xED\xE8ka v P\xF8idat / Upravit zpr\xE1vu.",
 
-// admin/se_inputform.php, row 408
+// admin/se_inputform.php, row 413
 "Edit|Use as new|New" => "Upravit|Upravit kopii|Nov\xE1 skupina",
 
-// admin/se_inputform.php, row 410
+// admin/se_inputform.php, row 415
 "Choose a Constant Group or a Slice." => "Vyberte Skupinu Konstant nebo Web\xEDk.",
 
-// admin/se_inputform.php, row 424
+// admin/se_inputform.php, row 424, 440, 451, 479, 522
+// include/logs.php, row 640
+// src/Import/DetailConfig.php, row 369
+// src/Util/Paramwizard.php, row 154
+"Parameters" => "Parametry",
+
+// admin/se_inputform.php, row 429
 "Allow translation" => "Povolit p\xF8eklad",
 
-// admin/se_inputform.php, row 424
+// admin/se_inputform.php, row 429
 "Only Text Area and Text Field widgets allow translation. Languages should be set on Slice Setting page." => "P\xF8eklad umo\x9E\xF2uj\xED pouze widgety Text Area a Text Field. Jazyky se nastavuj\xED na str\xE1nce Nastaven\xED web\xEDku.",
 
-// admin/se_inputform.php, row 433
+// admin/se_inputform.php, row 438
 "How to generate the default value" => "Jak vytvo\xF8it implicitn\xED hodnotu",
 
-// admin/se_inputform.php, row 440
+// admin/se_inputform.php, row 446
 // include/feeding.php, row 453
 "Validate" => "Zkontrolovat",
 
-// admin/se_inputform.php, row 451
+// admin/se_inputform.php, row 458
 "Stored as" => "Ulo\x9Eeno jako",
 
-// admin/se_inputform.php, row 454
+// admin/se_inputform.php, row 461
 "Stored in <em>item</em> table - it is not possible to change store method" => "Ulo\x9Eeno v tabulce <em>item</em> - zp\xF9sob ulo\x9Een\xED nelze zm\xECnit",
 
-// admin/se_inputform.php, row 458, 459
+// admin/se_inputform.php, row 465, 466
 // src/Central/FindingText.php, row 176, 186
 "Number" => "\xC8\xEDslo",
 
-// admin/se_inputform.php, row 467
+// admin/se_inputform.php, row 474
 // admin/sliceimp.php, row 425
 // include/form.class.php, row 474, 476
-// include/formutil.php, row 210, 2952
+// include/formutil.php, row 221, 2996
 "Insert" => "Vlo\x9Eit",
 
-// admin/se_inputform.php, row 470
+// admin/se_inputform.php, row 477
 "Defines how value is stored in database." => "Ur\xE8uje zp\xF9sob ulo\x9Een\xED hodnoty v datab\xE1zi",
 
-// admin/se_inputform.php, row 477
+// admin/se_inputform.php, row 485
 "Show 'HTML' / 'plain text' option" => "Zobrazit volbu 'HTML' / 'prost\xFD text'",
 
-// admin/se_inputform.php, row 478
+// admin/se_inputform.php, row 486
 "'HTML' as default" => "'HTML' implicitn\xEC",
 
-// admin/se_inputform.php, row 478
+// admin/se_inputform.php, row 486
 "HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least." => "Volba HTML znamen\xE1, \x9Ee pol\xED\xE8ko se vyp\xED\x9Ae p\xF8esn\xEC tak, jak je vypln\xECno, pomoc\xED aliasu {field...........}. Prost\xFD text znamen\xE1, \x9Ee nov\xE9 \xF8\xE1dky se p\xF8evedou na &lt;br&gt; atd. HTML je vhodn\xE1 volba p\xF8inejmen\x9A\xEDm pro jak\xE1koli netextov\xE1 data.",
 
-// admin/se_inputform.php, row 479
+// admin/se_inputform.php, row 487
 "Shown help for this field" => "N\xE1pov\xECda zobrazen\xE1 pro toto pole ve vstupn\xEDm formul\xE1\xF8i",
 
-// admin/se_inputform.php, row 480
+// admin/se_inputform.php, row 488
 "Text shown after user click on '?' in input form" => "N\xE1pov\xECda, kter\xE1 se zobraz\xED po stisku '?' ve vstupn\xEDm formul\xE1\xF8i",
 
-// admin/se_inputform.php, row 481
+// admin/se_inputform.php, row 489
 "Code shown in input form before this field" => "HTML k\xF3d, kter\xFD se zobraz\xED ve vstupn\xEDm formul\xE1\xF8i p\xF8ed t\xEDmto polem",
 
-// admin/se_inputform.php, row 483
+// admin/se_inputform.php, row 491
 "Searchable in AA Item Manager" => "Prohled\xE1vateln\xE9 ve Spr\xE1vci \xE8l\xE1nk\xF9 AA",
 
-// admin/se_inputform.php, row 483
+// admin/se_inputform.php, row 491
 "The field is shown in Search box in Item Manager." => "Pol\xED\xE8ko se zobraz\xED ve vyhled\xE1vac\xEDm poli Spr\xE1vce \xE8l\xE1nk\xF9.",
 
-// admin/se_inputform.php, row 484
+// admin/se_inputform.php, row 492
 "Feeding mode" => "Sd\xEDlen\xED tohoto pole",
 
-// admin/se_inputform.php, row 484
+// admin/se_inputform.php, row 492
 "Should the content of this field be copied to another slice if it is fed?" => "M\xE1 se kop\xEDrovat obsah tohoto pol\xED\xE8ka do dal\x9A\xEDch web\xEDk\xF9 p\xF8i v\xFDm\xECn\xEC zpr\xE1v mezi web\xEDky?",
 
-// admin/se_inputform.php, row 486
+// admin/se_inputform.php, row 494
 "ALIASES used in views to print field content (%1)" => "ALIASY pou\x9E\xEDvan\xE9 v pohledech pro v\xFDpis obsahu pol\xED\xE8ka (%1)",
 
-// admin/se_inputform.php, row 506
+// admin/se_inputform.php, row 514
 "8 CHARS" => "8 ZNAK\xD9",
 
-// admin/se_inputform.php, row 506
+// admin/se_inputform.php, row 514
 "8 UPPERCASE letters or _" => "8 VELK\xDDCH p\xEDsmen nebo _",
 
-// admin/se_inputform.php, row 507
+// admin/se_inputform.php, row 515
 // src/Import/DetailPage.php, row 604
 // src/Import/RunView.php, row 188
 "Disabled" => "Zak\xE1z\xE1no",
 
-// admin/se_inputform.php, row 508
+// admin/se_inputform.php, row 516
 // src/Util/ChangesMonitor.php, row 509
+// src/Util/Paramwizard.php, row 161
 "Copy to clipboard" => "Kop\xEDrovat do schr\xE1nky",
 
-// admin/se_inputform.php, row 509
+// admin/se_inputform.php, row 517
 "Reset" => "Resetovat", // ai 2026-06
-
-// admin/se_inputform.php, row 514
-// include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
-"Parameters" => "Parametry",
 
 // admin/se_inter_export.php, row 97
 "No selected export" => "Nen\xED vybr\xE1n \x9E\xE1dn\xFD export",
@@ -2718,6 +2741,7 @@ return [
 "Node" => "Uzel",
 
 // admin/se_inter_import.php, row 96
+// central/optimize.php, row 171
 // misc/datovka/datovka.php, row 158
 // src/Import/DetailConfig.php, row 291
 // src/Import/DetailPage.php, row 377
@@ -3108,7 +3132,7 @@ return [
 "Rule" => "Pravidlo",
 
 // admin/se_profile.php, row 210
-// include/formutil.php, row 1227
+// include/formutil.php, row 1270
 // include/transformation.class.php, row 192, 381, 454, 548, 738
 // include/widget.class.php, row 664
 "HTML" => "",
@@ -3236,37 +3260,140 @@ return [
 // admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Pou\x9Eijte podm\xEDnky \"headline........,publish_date....-\" nebo \"sort[]\"",
 
-// admin/se_statistics.php, row 95
-"Top all time" => "Top za celou dobu",
+// admin/se_showif.php, row 77
+"The form has expired. Close it and open it again." => "Formul\xE1\xF8 vypr\x9Ael. Zav\xF8ete ho a otev\xF8ete znovu.", // ai 2026-11
 
-// admin/se_statistics.php, row 96
-"Top this year" => "Top tento rok",
+// admin/se_showif.php, row 117
+"is checked" => "je za\x9Akrtnuto", // ai 2026-11
+
+// admin/se_showif.php, row 117
+"is not checked" => "nen\xED za\x9Akrtnuto", // ai 2026-11
+
+// admin/se_showif.php, row 118
+// include/searchlib.php, row 129, 138
+"is not" => "nen\xED",
+
+// admin/se_showif.php, row 118
+"is filled" => "je vypln\xECno", // ai 2026-11
+
+// admin/se_showif.php, row 118
+"is empty" => "je pr\xE1zdn\xE9", // ai 2026-11
+
+// admin/se_showif.php, row 120
+"\xE2\x80\x94 add a rule \xE2\x80\x94" => "\x97 p\xF8idat pravidlo \x97", // ai 2026-11
+
+// admin/se_showif.php, row 128
+"Comparison" => "Porovn\xE1n\xED", // ai 2026-11
+
+// admin/se_showif.php, row 144
+"Values, one per line" => "Hodnoty, jedna na \xF8\xE1dek", // ai 2026-11
+
+// admin/se_showif.php, row 151
+// include/field.class.php, row 797
+"Display condition" => "Podm\xEDnka zobrazen\xED", // ai 2026-11
+
+// admin/se_showif.php, row 163
+"Show the field when all of these hold" => "Pol\xED\xE8ko zobrazit, kdy\x9E plat\xED v\x9Aechna tato pravidla", // ai 2026-11
+
+// admin/se_showif.php, row 165
+"AA expression (optional)" => "AA v\xFDraz (nepovinn\xE9)", // ai 2026-11
+
+// admin/se_showif.php, row 166
+// src/Optimize/ImgMeasuring.php, row 54
+"Expression" => "V\xFDraz", // ai 2026-10
+
+// admin/se_showif.php, row 166
+"Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "Ponechte pr\xE1zdn\xE9, chcete-li pou\x9E\xEDt jen pravidla. Je-li vypln\xECno, pol\xED\xE8ko se zobraz\xED jen tehdy, kdy\x9E v\xFDsledek nen\xED pr\xE1zdn\xFD ani 0. Vyhodnocuje se p\xF8i otev\xF8en\xED formul\xE1\xF8e a p\xF8i ulo\x9Een\xED \xE8l\xE1nku.", // ai 2026-11
+
+// admin/se_showif.php, row 169
+"Clear the field when a rule hides it" => "Vy\xE8istit pol\xED\xE8ko, kdy\x9E ho pravidlo skryje", // ai 2026-11
+
+// admin/se_showif.php, row 169
+"Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "Neza\x9Akrtnuto: upravovan\xFD \xE8l\xE1nek si hodnotu ponech\xE1, nov\xFD \xE8l\xE1nek dostane v\xFDchoz\xED hodnotu pol\xED\xE8ka. Pol\xED\xE8ko skryt\xE9 v\xFDrazem se nikdy nem\xECn\xED.", // ai 2026-11
+
+// admin/se_showif.php, row 173
+"Used by" => "Pol\xED\xE8ka s touto podm\xEDnkou", // ai 2026-11
+
+// admin/se_showif.php, row 173
+"no field" => "\x9E\xE1dn\xE9 pol\xED\xE8ko", // ai 2026-11
+
+// admin/se_showif.php, row 176
+"Save the changes to this condition. They apply to every field that uses it." => "Ulo\x9Eit zm\xECny t\xE9to podm\xEDnky. Plat\xED pro v\x9Aechna pol\xED\xE8ka, kter\xE1 ji pou\x9E\xEDvaj\xED.", // ai 2026-11
+
+// admin/se_showif.php, row 178
+// admin/se_view.php, row 486
+"Save as new" => "Ulo\x9Eit jako nov\xFD",
+
+// admin/se_showif.php, row 178
+"Keep the original condition as it is and save this form as another condition under a new name." => "Ponechat p\xF9vodn\xED podm\xEDnku beze zm\xECny a ulo\x9Eit tento formul\xE1\xF8 jako dal\x9A\xED podm\xEDnku pod nov\xFDm n\xE1zvem.", // ai 2026-11
+
+// admin/se_showif.php, row 179
+"Delete the condition. The fields that use it will be shown always." => "Smazat podm\xEDnku. Pol\xED\xE8ka, kter\xE1 ji pou\x9E\xEDvaj\xED, se budou zobrazovat v\x9Edy.", // ai 2026-11
+
+// admin/se_showif.php, row 180
+"Delete the condition? The fields that use it will be shown always." => "Smazat podm\xEDnku? Pol\xED\xE8ka, kter\xE1 ji pou\x9E\xEDvaj\xED, se budou zobrazovat v\x9Edy.", // ai 2026-11
+
+// admin/se_showif.php, row 183
+// include/formutil.php, row 219, 224, 3009, 3013
+// include/searchbar.class.php, row 771
+// src/Widget/LupWidget.php, row 118
+"Cancel" => "Storno",
+
+// admin/se_showif.php, row 183
+"Close without saving." => "Zav\xF8\xEDt bez ulo\x9Een\xED.", // ai 2026-11
+
+// admin/se_showif.php, row 187
+"How it works" => "Jak to funguje", // ai 2026-11
+
+// admin/se_showif.php, row 188
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "\x84je\x93 plat\xED, kdy\x9E je n\xECkter\xE1 z hodnot pol\xED\xE8ka mezi za\x9Akrtnut\xFDmi hodnotami, \x84nen\xED\x93, kdy\x9E nen\xED \x9E\xE1dn\xE1. \x84je vypln\xECno\x93 plat\xED pro jakoukoli hodnotu krom\xEC pr\xE1zdn\xE9 a 0, tedy i pro za\x9Akrtnut\xFD checkbox.", // ai 2026-11
+
+// admin/se_showif.php, row 189
+"The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "Pravidla sleduj\xED formul\xE1\xF8 pr\xF9b\xEC\x9En\xEC, jak ho u\x9Eivatel vypl\xF2uje. V\xFDraz se vyhodnocuje jen p\xF8i otev\xF8en\xED formul\xE1\xF8e a p\xF8i ulo\x9Een\xED \xE8l\xE1nku, v\x9Edy nad ulo\x9Een\xFDm \xE8l\xE1nkem (u nov\xE9ho \xE8l\xE1nku nad v\xFDchoz\xEDmi hodnotami).", // ai 2026-11
+
+// admin/se_showif.php, row 190
+"A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "Pol\xED\xE8ko skryt\xE9 pravidlem se ulo\x9E\xED pr\xE1zdn\xE9, leda\x9Ee je \x84Vy\xE8istit pol\xED\xE8ko\x93 neza\x9Akrtnut\xE9. Pol\xED\xE8ko pro heslo, pol\xED\xE8ka s datem, stav a pol\xED\xE8ko skryt\xE9 v\xFDrazem si hodnotu ponechaj\xED.", // ai 2026-11
+
+// admin/se_showif.php, row 191
+"A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "Pol\xED\xE8ko s podm\xEDnkou zobrazuje a skr\xFDv\xE1 podm\xEDnka, ne skript z \x84Javascript pro pol\xED\xE8ka\x93.", // ai 2026-11
+
+// admin/se_showif.php, row 192
+"With an input form template from a view, a field hidden by the expression stays in the source of the page." => "Se \x9Aablonou vstupn\xEDho formul\xE1\xF8e z pohledu z\xF9st\xE1v\xE1 pol\xED\xE8ko skryt\xE9 v\xFDrazem ve zdrojov\xE9m k\xF3du str\xE1nky.", // ai 2026-11
+
+// admin/se_showif.php, row 193
+"Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "Podm\xEDnky plat\xED jen pro formul\xE1\xF8 \xE8l\xE1nku v administraci. V anonymn\xEDch formul\xE1\xF8\xEDch a importech je povinn\xE9 pol\xED\xE8ko povinn\xE9 v\x9Edy.", // ai 2026-11
 
 // admin/se_statistics.php, row 97
-"Top this month" => "Top tento m\xECs\xEDc",
+"Top all time" => "Top za celou dobu",
 
 // admin/se_statistics.php, row 98
-"Top this week" => "Top tento t\xFDden",
+"Top this year" => "Top tento rok",
 
 // admin/se_statistics.php, row 99
-"Top this day" => "Top dnes",
+"Top this month" => "Top tento m\xECs\xEDc",
 
 // admin/se_statistics.php, row 100
-"Top last year" => "Top minul\xFD rok",
+"Top this week" => "Top tento t\xFDden",
 
 // admin/se_statistics.php, row 101
-"Top last month" => "Top minul\xFD m\xECs\xEDc",
+"Top this day" => "Top dnes",
 
 // admin/se_statistics.php, row 102
-"Top last week" => "Top minul\xFD t\xFDden",
+"Top last year" => "Top minul\xFD rok",
 
 // admin/se_statistics.php, row 103
+"Top last month" => "Top minul\xFD m\xECs\xEDc",
+
+// admin/se_statistics.php, row 104
+"Top last week" => "Top minul\xFD t\xFDden",
+
+// admin/se_statistics.php, row 105
 "Top last day" => "Top v\xE8era",
 
-// admin/se_statistics.php, row 107
+// admin/se_statistics.php, row 109
 "Item Statistics" => "Statistika \xE8l\xE1nk\xF9",
 
-// admin/se_statistics.php, row 108
+// admin/se_statistics.php, row 110
 "Show items" => "Zobrazit \xE8l\xE1nky",
 
 // admin/se_taskmanager.php, row 39
@@ -3299,7 +3426,7 @@ return [
 "Change current permissions" => "Zm\xECna sou\xE8asn\xFDch pr\xE1v",
 
 // admin/se_users.php, row 185
-// central/index.php, row 139
+// central/index.php, row 133
 // include/se_users.php, row 180
 // src/Widget/TfaWidget.php, row 73
 "Username" => "U\x9Eivatelsk\xE9 jm\xE9no",
@@ -3351,9 +3478,6 @@ return [
 // admin/se_views.php, row 103
 "Admin - design View" => "Spr\xE1va web\xEDku - definice Pohledu",
 
-// admin/se_view.php, row 486
-"Save as new" => "Ulo\x9Eit jako nov\xFD",
-
 // admin/se_view.php, row 494
 "Defined Views" => "Definovan\xE9 pohledy",
 
@@ -3363,8 +3487,8 @@ return [
 
 // admin/se_view.php, row 545
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1890
+// include/slice.class.php, row 1650, 1654
+// include/stringexpand.php, row 1891
 "No" => "Ne",
 
 // admin/se_view.php, row 545
@@ -3392,7 +3516,7 @@ return [
 "Create new view from this one" => "Vytvo\xF8it z tohoto pohledu nov\xFD",
 
 // admin/se_views.php, row 149, 203, 223
-// include/formutil.php, row 1775, 1782
+// include/formutil.php, row 1818, 1825
 // src/Import/DetailPage.php, row 329, 666
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
@@ -3429,14 +3553,14 @@ return [
 "Items" => "\xC8l\xE1nky",
 
 // admin/search_replace.php, row 167
-// admin/write_mail.php, row 236
+// admin/write_mail.php, row 255
 "Stored searches for " => "Ulo\x9Een\xE9 filtry pro ",
 
 // admin/search_replace.php, row 169
 "View items" => "Zobrazit \xE8l\xE1nky",
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1420
+// src/Manager.php, row 1429
 "Selected items" => "Zm\xECnit vybran\xE9",
 
 // admin/search_replace.php, row 180
@@ -3456,7 +3580,7 @@ return [
 
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
-// admin/write_mail.php, row 269
+// admin/write_mail.php, row 291
 // src/Widget/RichtextMarkup.php, row 87
 "Close" => "Zav\xF8\xEDt",
 
@@ -3474,7 +3598,7 @@ return [
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 136
 // admin/um_uedit.php, row 332
-// central/index.php, row 140
+// central/index.php, row 134
 // central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
@@ -3482,7 +3606,7 @@ return [
 "Password" => "Heslo",
 
 // admin/setup.php, row 104, 242
-// include/formutil.php, row 2201
+// include/formutil.php, row 2244
 "Retype Password" => "Zopakujte heslo",
 
 // admin/setup.php, row 105, 244
@@ -3553,12 +3677,12 @@ return [
 // admin/sliceadd.php, row 95
 // admin/um_gedit.php, row 273
 // admin/um_uedit.php, row 389
-// include/formutil.php, row 1772
+// include/formutil.php, row 1815
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
 // src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1272
+// src/Manager.php, row 239, 1281
 "Add" => "P\xF8idat",
 
 // admin/slicedel.php, row 51
@@ -3614,7 +3738,7 @@ return [
 "Hold bin" => "Z\xE1sobn\xEDk",
 
 // admin/slicedit.php, row 154
-// include/formutil.php, row 3309
+// include/formutil.php, row 3342
 // src/Central/FindingText.php, row 417
 "All items" => "V\x9Aechny \xE8l\xE1nky",
 
@@ -3642,7 +3766,7 @@ return [
 "Admin - Slice settings" => "Spr\xE1va web\xEDku - \xDAprava web\xEDku",
 
 // admin/slicedit.php, row 258
-// include/menu_util.php, row 635
+// include/menu_util.php, row 636
 "Language" => "Jazyk",
 
 // admin/slicedit.php, row 260
@@ -3704,7 +3828,7 @@ return [
 // include/constants.php, row 688, 803, 829, 860, 893, 957, 991, 1025
 // include/slicedit.php, row 198
 // src/Isds/SliceRules.php, row 398
-// src/Widget/Widget.php, row 810
+// src/Widget/Widget.php, row 809
 "Listing length" => "Po\xE8et vypisovan\xFDch zpr\xE1v",
 
 // admin/slicedit.php, row 294
@@ -4007,7 +4131,7 @@ return [
 
 // admin/um_gedit.php, row 312
 // admin/um_uedit.php, row 231, 242
-// include/logs.php, row 918
+// include/logs.php, row 922
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
 // src/Optimize/CheckLoginAddresses.php, row 101
@@ -4085,7 +4209,7 @@ return [
 "Added" => "P\xF8id\xE1no", // ai 2026-11
 
 // admin/um_passkeys.php, row 149
-// include/formutil.php, row 3301
+// include/formutil.php, row 3334
 "Last used" => "Naposledy pou\x9Eito",
 
 // admin/um_passkeys.php, row 149
@@ -4237,92 +4361,107 @@ return [
 // admin/usershow.php, row 122
 "Show selected users" => "Zobraz vybran\xE9 u\x9Eivatele",
 
-// admin/write_mail.php, row 120, 255
-// include/mail.php, row 666
+// admin/write_mail.php, row 124, 274
+// include/mail.php, row 700
 "Body" => "Text",
 
-// admin/write_mail.php, row 121, 256
+// admin/write_mail.php, row 125, 275
 "From (email)" => "Od (e-mail)",
 
-// admin/write_mail.php, row 122, 257
-// include/mail.php, row 668
+// admin/write_mail.php, row 126, 276
+// include/mail.php, row 702
 "Reply to (email)" => "Odpov\xEC\xEF na (e-mail)",
 
-// admin/write_mail.php, row 123, 258
-// include/mail.php, row 669
+// admin/write_mail.php, row 127, 277
+// include/mail.php, row 703
 "Errors to (email)" => "Chyby na (e-mail)",
 
-// admin/write_mail.php, row 124, 259
+// admin/write_mail.php, row 128, 278
 "Sender (email)" => "Odes\xEDlatel (email)",
 
-// admin/write_mail.php, row 125, 260
-// include/mail.php, row 658
+// admin/write_mail.php, row 129, 279
+// include/mail.php, row 694
 "Language (charset)" => "Jazyk (charset)",
 
-// admin/write_mail.php, row 126, 261
-// include/mail.php, row 656
+// admin/write_mail.php, row 130, 280
+// include/mail.php, row 692
 "Use HTML" => "Pou\x9E\xEDt HTML",
 
-// admin/write_mail.php, row 127, 252
+// admin/write_mail.php, row 131, 271
 "Email template" => "\x8Aablona emailu",
 
-// admin/write_mail.php, row 175
-"No template set (which is strange - template was just written to the database)" => "Nen\xED nastavena \x9Aablona (co\x9E je divn\xE9 - \x9Aablona pr\xE1v\xEC byla zaps\xE1na do datab\xE1ze)",
-
-// admin/write_mail.php, row 192
-"Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "E-mail \xFAsp\xEC\x9An\xEC odesl\xE1n (U\x9Eivatel\xE9: %1, Odeslan\xE9 e-maily (platn\xE9 adresy...): %2, ID \x9Aablony: %3)",
-
-// admin/write_mail.php, row 196
+// admin/write_mail.php, row 158
 "Manually selected" => "Vybr\xE1no ru\xE8n\xEC",
 
-// admin/write_mail.php, row 202
+// admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
 // src/Import/Definition.php, row 92
 // src/Import/DetailConfig.php, row 394
 "Filter" => "Filtr",
 
-// admin/write_mail.php, row 207
-"Can't update email template" => "Nelze aktualizovat \x9Aablonu e-mailu",
+// admin/write_mail.php, row 188
+"This email (the same subject and text) already went to the same group on %1, to %2 recipients. If it should go out once more, tick \"%3\" and send it." => "Tento e-mail (stejn\xFD p\xF8edm\xECt i text) u\x9E ode\x9Ael stejn\xE9 skupin\xEC %1, p\xF8\xEDjemc\xF9: %2. M\xE1-li odej\xEDt je\x9At\xEC jednou, za\x9Akrtn\xECte \x84%3\x93 a ode\x9Alete ho.", // ai 2026-11
+
+// admin/write_mail.php, row 188, 285
+"Send again" => "Odeslat znovu", // ai 2026-11
+
+// admin/write_mail.php, row 195
+"No template set (which is strange - template was just written to the database)" => "Nen\xED nastavena \x9Aablona (co\x9E je divn\xE9 - \x9Aablona pr\xE1v\xEC byla zaps\xE1na do datab\xE1ze)",
+
+// admin/write_mail.php, row 204
+"Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "E-mail \xFAsp\xEC\x9An\xEC odesl\xE1n (U\x9Eivatel\xE9: %1, Odeslan\xE9 e-maily (platn\xE9 adresy...): %2, ID \x9Aablony: %3)",
 
 // admin/write_mail.php, row 214
-"Bulk Email Wizard" => "Zasl\xE1n\xED hromadn\xE9ho e-mailu",
+"The email is queued for %1 recipients. AA sends it in the background, so the first copies may take several minutes to arrive." => "E-mail je za\xF8azen do fronty, p\xF8\xEDjemc\xF9: %1. AA ho rozes\xEDl\xE1 na pozad\xED, tak\x9Ee prvn\xED kopie mohou dorazit a\x9E za n\xECkolik minut.", // ai 2026-11
 
 // admin/write_mail.php, row 215
+"The selected group has no recipients - nothing was sent." => "Vybran\xE1 skupina nem\xE1 \x9E\xE1dn\xE9 p\xF8\xEDjemce - nic nebylo odesl\xE1no.", // ai 2026-11
+
+// admin/write_mail.php, row 222
+"Can't update email template" => "Nelze aktualizovat \x9Aablonu e-mailu",
+
+// admin/write_mail.php, row 229
+"Bulk Email Wizard" => "Zasl\xE1n\xED hromadn\xE9ho e-mailu",
+
+// admin/write_mail.php, row 230
 "Write email to users" => "Hromadn\xFD e-mail u\x9Eivatel\xF9m",
 
-// admin/write_mail.php, row 236
-// include/logs.php, row 1066
+// admin/write_mail.php, row 249
+"Send this email to other recipients" => "Odeslat tento e-mail dal\x9A\xEDm p\xF8\xEDjemc\xF9m", // ai 2026-11
+
+// admin/write_mail.php, row 255
+// include/logs.php, row 1070
 "Recipients" => "P\xF8\xEDjemci",
 
-// admin/write_mail.php, row 238
+// admin/write_mail.php, row 257
 "View Recipients" => "Zobraz p\xF8\xEDjemce",
 
-// admin/write_mail.php, row 239
+// admin/write_mail.php, row 258
 "Selected users" => "Vybran\xED u\x9Eivatel\xE9",
 
-// admin/write_mail.php, row 240
+// admin/write_mail.php, row 259
 "Test email address(es)" => "Testovac\xED e-mailov\xE1 adresa (adresy)",
 
-// admin/write_mail.php, row 246
+// admin/write_mail.php, row 265
 "Write the email" => "Napi\x9Ate e-mail",
 
-// admin/write_mail.php, row 261
+// admin/write_mail.php, row 280
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "no" => "ne",
 
-// admin/write_mail.php, row 261
+// admin/write_mail.php, row 280
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "yes" => "ano",
 
-// admin/write_mail.php, row 262
+// admin/write_mail.php, row 281
 "Attachment 1" => "P\xF8\xEDloha 1",
 
-// admin/write_mail.php, row 263
+// admin/write_mail.php, row 282
 "Attachment 2" => "P\xF8\xEDloha 2",
 
-// admin/write_mail.php, row 264
+// admin/write_mail.php, row 283
 "Attachment 3" => "P\xF8\xEDloha 3",
 
 // central/appstore.php, row 64
@@ -4352,6 +4491,7 @@ return [
 
 // central/appstore.php, row 130
 // central/installapp.php, row 387
+// central/optimize.php, row 77
 "A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "Tabulka tohoto AA nepodporuje transakce (nen\xED InnoDB) \x96 p\xF8eve\xEFte ji v AA > Optimalizovat: %1", // ai 2026-10
 
 // central/appstore.php, row 142
@@ -4365,14 +4505,14 @@ return [
 "App" => "Aplikace", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1208
+// include/logs.php, row 1212
 "Version" => "Verze", // ai 2026-10
 
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 235
-// include/menu_util.php, row 448, 758
-// include/slice.class.php, row 1412
+// include/menu_util.php, row 449, 759
+// include/slice.class.php, row 1415
 // src/Central/FindingText.php, row 496
 "Alerts" => "Zas\xEDl\xE1n\xED",
 
@@ -4435,39 +4575,41 @@ return [
 // include/menu_util.php, row 59
 "Create new" => "Nov\xFD",
 
-// central/index.php, row 71
+// central/index.php, row 70
+// central/optimize.php, row 62
 "You do not have permission to manage ActionApps installations" => "Nem\xE1te pr\xE1vo spravovat instalace ActionApps",
 
-// central/index.php, row 78
+// central/index.php, row 77
 "The authentication was not performed - start it from the ActionApps Central page" => "Ov\xEC\xF8en\xED neprob\xEChlo \x96 spus\x9Dte ho ze str\xE1nky ActionApps Central", // ai 2026-10
 
-// central/index.php, row 89
+// central/index.php, row 88
 "Successfully authenticated to %1" => "\xDAsp\xEC\x9An\xEC p\xF8ihl\xE1\x9Aeno k %1",
 
-// central/index.php, row 91, 95
+// central/index.php, row 90, 94
 "Authentication failed for %1: %2" => "P\xF8ihl\xE1\x9Aen\xED k %1 selhalo: %2",
 
-// central/index.php, row 126
+// central/index.php, row 120
 // src/Optimize/CheckCentralCredentials.php, row 63
 "ActionApps Central" => "",
 
-// central/index.php, row 129
+// central/index.php, row 123
 "Admin Link" => "Odkaz do administrace",
 
-// central/index.php, row 137
+// central/index.php, row 131
 "Authenticate" => "P\xF8ihl\xE1sit",
 
-// central/index.php, row 141
+// central/index.php, row 135
 "Get Token" => "Z\xEDskat token",
 
-// central/index.php, row 145
+// central/index.php, row 139
+// central/optimize.php, row 153
 // src/Manageraction/Central_Linkcheck.php, row 32
 "Auth" => "Autentizace",
 
-// central/index.php, row 148
+// central/index.php, row 142
 "Apps" => "Aplikace", // ai 2026-10
 
-// central/index.php, row 148
+// central/index.php, row 142
 "Install an app from this AA..." => "Instalovat aplikaci z tohoto AA...", // ai 2026-10
 
 // central/installapp.php, row 135, 136
@@ -4508,10 +4650,10 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1209
+// include/logs.php, row 1213
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
-// src/Optimize/CheckImports.php, row 176, 178
+// src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "Zdroj",
 
@@ -4537,7 +4679,7 @@ return [
 "slices and Alerts" => "web\xEDky a Zas\xEDl\xE1n\xED", // ai 2026-10
 
 // central/installapp.php, row 484, 1357
-// include/slice.class.php, row 1147
+// include/slice.class.php, row 1150
 // src/Central/FindingText.php, row 496
 // src/Optimize/CheckIsdsRegistry.php, row 88
 // src/Optimize/SeoDuplicates.php, row 66
@@ -4553,7 +4695,7 @@ return [
 "Hold Ctrl to choose more of them." => "Pro v\xFDb\xECr v\xEDce polo\x9Eek dr\x9Ete Ctrl.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 797, 1251
+// include/logs.php, row 797, 1255
 "Mode" => "Re\x9Eim", // ai 2026-06
 
 // central/installapp.php, row 506
@@ -4790,6 +4932,7 @@ return [
 // central/installapp.php, row 1087
 // src/Optimize/CheckIsdsRunItems.php, row 93
 // src/Optimize/CheckIsdsRuns.php, row 185, 206
+// src/Util/Paramwizard.php, row 167
 "Examples" => "P\xF8\xEDklady", // ai 2026-10
 
 // central/installapp.php, row 1088
@@ -4799,7 +4942,7 @@ return [
 "Operators" => "Oper\xE1tory", // ai 2026-10
 
 // central/installapp.php, row 1089
-// include/searchlib.php, row 174
+// include/searchlib.php, row 175
 "Operator" => "Oper\xE1tor",
 
 // central/installapp.php, row 1089
@@ -4853,8 +4996,8 @@ return [
 "keep the value of the app" => "ponechat hodnotu aplikace", // ai 2026-10
 
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1647, 1651
-// include/stringexpand.php, row 1890
+// include/slice.class.php, row 1650, 1654
+// include/stringexpand.php, row 1891
 "Yes" => "Ano",
 
 // central/installapp.php, row 1178
@@ -4939,16 +5082,19 @@ return [
 "Transferring the items" => "P\xF8en\xE1\x9Aen\xED \xE8l\xE1nk\xF9", // ai 2026-10
 
 // central/installapp.php, row 1368
+// central/optimize.php, row 261
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Zastaveno chybou", // ai 2026-10
 
 // central/installapp.php, row 1369
+// central/optimize.php, row 259
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
-// src/Optimize/CheckImports.php, row 206, 209
+// src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Dokon\xE8eno", // ai 2026-10
 
 // central/installapp.php, row 1369
+// central/optimize.php, row 260
 "Ended" => "Ukon\xE8eno", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -5012,10 +5158,12 @@ return [
 "Show the final check" => "Zobrazit z\xE1v\xECre\xE8nou kontrolu", // ai 2026-10
 
 // central/installapp.php, row 1436
+// central/optimize.php, row 206
 // src/Import/DetailPage.php, row 938, 947
 "Continue" => "Pokra\xE8ovat",
 
 // central/installapp.php, row 1436
+// central/optimize.php, row 207
 // src/Import/DetailPage.php, row 958
 "End" => "Ukon\xE8it", // ai 2026-10
 
@@ -5034,6 +5182,148 @@ return [
 // central/installapp.php, row 1479
 "Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it." => "Nahran\xE9 soubory se nep\xF8en\xE1\x9Aej\xED \x96 zkop\xEDrujte je ru\xE8n\xEC. Dom\xE9nu p\xF8epn\xECte na nov\xFD web a\x9E po jeho kontrole.", // ai 2026-10
 
+// central/optimize.php, row 75
+"Choose a task, a method the task has and at least one AA of the list." => "Zvolte \xFAlohu, zp\xF9sob, kter\xFD \xFAloha nab\xEDz\xED, a aspo\xF2 jedno AA ze seznamu.", // ai 2026-11
+
+// central/optimize.php, row 85
+"An AA may still be asked - press Continue again in a few minutes." => "Dotaz na n\xECkter\xE9 AA mo\x9En\xE1 je\x9At\xEC b\xEC\x9E\xED - za n\xECkolik minut stiskn\xECte znovu \x84Pokra\xE8ovat\x93.", // ai 2026-11
+
+// central/optimize.php, row 86, 187
+"No such run." => "Takov\xFD b\xECh neexistuje.", // ai 2026-11
+
+// central/optimize.php, row 87
+"The run has moved on meanwhile - see its state below." => "B\xECh mezit\xEDm pokro\xE8il - jeho stav vid\xEDte n\xED\x9Ee.", // ai 2026-11
+
+// central/optimize.php, row 93
+"Optimize on several AAs" => "Optimalizace na v\xEDce AA", // ai 2026-11
+
+// central/optimize.php, row 123
+"Test only" => "Jen otestovat", // ai 2026-11
+
+// central/optimize.php, row 123
+"Repair where the test fails" => "Opravit, kde test sel\x9Ee", // ai 2026-11
+
+// central/optimize.php, row 136
+"The Central list holds no active AA." => "Seznam Central neobsahuje \x9E\xE1dn\xE9 aktivn\xED AA.", // ai 2026-11
+
+// central/optimize.php, row 140
+"Run an Optimize task on several AAs" => "Spu\x9At\xECn\xED \xFAlohy optimalizace na v\xEDce AA", // ai 2026-11
+
+// central/optimize.php, row 148, 171
+// src/AA_Plannedtask.php, row 71, 182
+// src/Optimize/CheckOptimizeRuns.php, row 55
+// src/Optimize/CheckQueue.php, row 98, 178
+"Task" => "\xDAloha",
+
+// central/optimize.php, row 148
+"Each AA runs the task of its own version; an AA without it says so." => "Ka\x9Ed\xE9 AA spust\xED \xFAlohu ze sv\xE9 vlastn\xED verze; AA, kter\xE9 ji nem\xE1, to ohl\xE1s\xED.", // ai 2026-11
+
+// central/optimize.php, row 151
+"Do" => "Prov\xE9st", // ai 2026-11
+
+// central/optimize.php, row 151
+"Repair tests first, repairs only where the test fails, then tests again." => "Oprava nejd\xF8\xEDv otestuje, oprav\xED jen tam, kde test sel\x9Ee, a pak otestuje znovu.", // ai 2026-11
+
+// central/optimize.php, row 153, 210
+// include/logs.php, row 723
+// include/menu_util.php, row 45
+// src/Optimize/CheckCentralCredentials.php, row 51
+// src/Optimize/CheckEnvironment.php, row 50
+"AA" => "",
+
+// central/optimize.php, row 159
+"An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "AA bez platn\xE9ho tokenu neodpov\xED - nejd\xF8\xEDv pro n\xECj z\xEDskejte token v seznamu Central (plat\xED jeden den).", // ai 2026-11
+
+// central/optimize.php, row 160
+"Start" => "Spustit", // ai 2026-11
+
+// central/optimize.php, row 171
+"Last runs" => "Posledn\xED b\xEChy", // ai 2026-11
+
+// central/optimize.php, row 171
+// include/logs.php, row 798
+// src/Import/DetailPage.php, row 329
+// src/Optimize/CheckImports.php, row 151, 155
+// src/Optimize/CheckInstallRuns.php, row 54
+// src/Optimize/CheckIsdsRuns.php, row 310
+// src/Optimize/CheckOptimizeRuns.php, row 54
+"Started" => "Za\xE8\xE1tek", // ai 2026-10
+
+// central/optimize.php, row 171
+"Results" => "V\xFDsledky", // ai 2026-11
+
+// central/optimize.php, row 197
+"Started %1 by %2" => "Spu\x9At\xECno %1 u\x9Eivatelem %2", // ai 2026-11
+
+// central/optimize.php, row 198
+"%1 of %2 AAs done" => "Hotovo AA: %1 z %2", // ai 2026-11
+
+// central/optimize.php, row 208
+"The run goes on in the task queue of this AA - you may close this page." => "B\xECh pokra\xE8uje ve front\xEC \xFAloh tohoto AA - str\xE1nku m\xF9\x9Eete zav\xF8\xEDt.", // ai 2026-11
+
+// central/optimize.php, row 210, 229
+"Report" => "Zpr\xE1va", // ai 2026-11
+
+// central/optimize.php, row 216
+"Waiting" => "\xC8ek\xE1", // ai 2026-11
+
+// central/optimize.php, row 216
+"Not asked" => "Nedot\xE1z\xE1no", // ai 2026-11
+
+// central/optimize.php, row 225
+"The test after the repair comes next." => "Na \xF8ad\xEC je test po oprav\xEC.", // ai 2026-11
+
+// central/optimize.php, row 232
+"The test after the repair" => "Test po oprav\xEC", // ai 2026-11
+
+// central/optimize.php, row 242
+"Another run" => "Dal\x9A\xED b\xECh", // ai 2026-11
+
+// central/optimize.php, row 248
+"OK - nothing to repair" => "OK - nen\xED co opravit", // ai 2026-11
+
+// central/optimize.php, row 249
+// src/Optimize/CheckAlerts.php, row 145
+// src/Optimize/CheckIsds.php, row 142, 154
+// src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
+// src/Optimize/CheckIsdsConf.php, row 104, 107, 156
+// src/Optimize/CheckIsdsRegistry.php, row 119, 172
+// src/Optimize/StateCheckModel.php, row 219
+"Problem" => "Probl\xE9m", // ai 2026-10
+
+// central/optimize.php, row 250
+"Repaired" => "Opraveno", // ai 2026-11
+
+// central/optimize.php, row 251
+"Repair failed" => "Oprava selhala", // ai 2026-11
+
+// central/optimize.php, row 252
+"Not done" => "Neprovedeno", // ai 2026-11
+
+// central/optimize.php, row 262
+"No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "Dlouho nep\xF8i\x9Ael \x9E\xE1dn\xFD krok - b\xEC\x9E\xED fronta \xFAloh tohoto AA? \x84Pokra\xE8ovat\x93 to zkus\xED hned.", // ai 2026-11
+
+// central/optimize.php, row 263
+"Waiting to ask an AA again" => "\xC8ek\xE1 na nov\xFD dotaz na AA", // ai 2026-11
+
+// central/optimize.php, row 264
+"Running in the task queue" => "B\xEC\x9E\xED ve front\xEC \xFAloh", // ai 2026-11
+
+// central/optimize.php, row 274
+"%1 runs another update now." => "%1 pr\xE1v\xEC prov\xE1d\xED jinou aktualizaci.", // ai 2026-11
+
+// central/optimize.php, row 275
+"%1 did not answer in time." => "Od %1 nep\xF8i\x9Ala v\xE8as odpov\xEC\xEF.", // ai 2026-11
+
+// central/optimize.php, row 276
+"The user who started the run is no superadmin any more." => "U\x9Eivatel, kter\xFD b\xECh spustil, u\x9E nen\xED superadmin.", // ai 2026-11
+
+// central/optimize.php, row 277
+"Error %1" => "Chyba %1", // ai 2026-11
+
+// central/optimize.php, row 279
+"Asked again at %1 - Continue asks now." => "Dal\x9A\xED dotaz v %1 - \x84Pokra\xE8ovat\x93 se zept\xE1 hned.", // ai 2026-11
+
 // central/responder.php, row 112
 "Get_Jwt needs ttl as seconds and scope admin or apps" => "Get_Jwt vy\x9Eaduje ttl v sekund\xE1ch a scope admin nebo apps", // ai 2026-10
 
@@ -5049,34 +5339,34 @@ return [
 // central/responder.php, row 230
 "Wrong command - %1" => "Chybn\xFD p\xF8\xEDkaz \x96 %1", // ai 2026-10
 
-// central/responder.php, row 785
+// central/responder.php, row 788
 "Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central" => "P\xF8ihla\x9Aovac\xED token odm\xEDtnut (plat\xED jeden den a zm\xECna hesla ho ukon\xE8\xED) \x96 ov\xEC\xF8te toto AA znovu v Central", // ai 2026-10
 
-// central/responder.php, row 816
+// central/responder.php, row 819
 "No request sent for responder.php" => "Pro responder.php nebyl odesl\xE1n \x9E\xE1dn\xFD po\x9Eadavek",
 
-// central/responder.php, row 822
+// central/responder.php, row 825
 "Bad request sent for responder.php - %1" => "Pro responder.php byl odesl\xE1n chybn\xFD po\x9Eadavek - %1",
 
-// central/responder.php, row 829
+// central/responder.php, row 832
 "This command is not accepted in the URL" => "Tento p\xF8\xEDkaz nelze poslat v URL", // ai 2026-10
 
-// central/responder.php, row 833
+// central/responder.php, row 836
 "This command must be sent by POST" => "Tento p\xF8\xEDkaz mus\xED b\xFDt posl\xE1n metodou POST", // ai 2026-10
 
-// central/responder.php, row 839
+// central/responder.php, row 842
 "Request from another site refused" => "Po\x9Eadavek z jin\xE9ho webu odm\xEDtnut", // ai 2026-10
 
-// central/responder.php, row 856
+// central/responder.php, row 859
 "The login token does not allow %1" => "P\xF8ihla\x9Aovac\xED token nepovoluje %1", // ai 2026-10
 
-// central/responder.php, row 857
+// central/responder.php, row 860
 "The app store account may not run %1" => "\xDA\xE8et katalogu aplikac\xED nesm\xED spou\x9At\xECt %1", // ai 2026-10
 
-// central/responder.php, row 858
+// central/responder.php, row 861
 "The app store is busy - try again later" => "Katalog aplikac\xED je zanepr\xE1zdn\xECn \x96 zkuste to pozd\xECji", // ai 2026-10
 
-// central/responder.php, row 859
+// central/responder.php, row 862
 "You (%2) don't have permissions to run %1" => "Nem\xE1te (%2) pr\xE1va spustit %1",
 
 // central/synchronize.php, row 31
@@ -5186,14 +5476,14 @@ return [
 // filler.php, row 503
 "Some error in store item." => "N\xECjak\xE1 chyba p\xF8i ukl\xE1d\xE1n\xED zpr\xE1vy.",
 
-// include/adminpage.class.php, row 68
+// include/adminpage.class.php, row 67
 "Error in page parameter: %1" => "Chyba v parametru str\xE1nky: %1",
 
 // include/constants.php, row 451
 "Short Id" => "ID (kr\xE1tk\xE9)",
 
 // include/constants.php, row 456
-// include/logs.php, row 957, 989
+// include/logs.php, row 961, 993
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "T\xF8\xEDda",
 
@@ -5202,7 +5492,7 @@ return [
 "Level" => "\xDArove\xF2",
 
 // include/constants.php, row 509
-// include/logs.php, row 1168
+// include/logs.php, row 1172
 "Feed" => "Kop\xEDrovat obsah",
 
 // include/constants.php, row 510
@@ -5510,7 +5800,7 @@ return [
 "Levels horizontal" => "\xDArovn\xEC horizont\xE1ln\xEC",
 
 // include/constedit.php, row 102
-// src/Widget/Widget.php, row 870
+// src/Widget/Widget.php, row 869
 "Level count" => "Po\xE8et \xFArovn\xED",
 
 // include/constedit_util.php, row 137, 140
@@ -5625,75 +5915,87 @@ return [
 // include/field.class.php, row 209
 "code - its indentation and the last new line are kept on purpose" => "k\xF3d \x96 jeho odsazen\xED a posledn\xED nov\xFD \xF8\xE1dek se zachov\xE1vaj\xED z\xE1m\xECrn\xEC", // ai 2026-10
 
-// include/field.class.php, row 216
+// include/field.class.php, row 213
+"multi-line text - its new lines at the start or end may be relied on" => "v\xEDce\xF8\xE1dkov\xFD text - na od\xF8\xE1dkov\xE1n\xED na jeho za\xE8\xE1tku \xE8i konci se m\xF9\x9Ee spol\xE9hat", // ai 2026-11
+
+// include/field.class.php, row 220
 "stores the text of the selected items" => "ukl\xE1d\xE1 text vybran\xFDch polo\x9Eek", // ai 2026-10
 
-// include/field.class.php, row 222
+// include/field.class.php, row 226
 "constants of a group" => "hodnoty skupiny", // ai 2026-10
 
-// include/field.class.php, row 229
+// include/field.class.php, row 233
 "the constant \"%1\" has spaces or new lines around - trim the constants first" => "hodnota \x84%1\x93 m\xE1 kolem sebe mezery nebo nov\xE9 \xF8\xE1dky \x96 nejd\xF8\xEDv hodnoty o\xF8\xEDzn\xECte", // ai 2026-10
 
-// include/field.class.php, row 757
+// include/field.class.php, row 762
 "Move to another field" => "P\xF8esunout do jin\xE9ho pol\xED\xE8ka",
 
-// include/field.class.php, row 1132
+// include/field.class.php, row 789
+"always" => "v\x9Edy", // ai 2026-11
+
+// include/field.class.php, row 794
+"(missing condition)" => "(chyb\xECj\xEDc\xED podm\xEDnka)", // ai 2026-11
+
+// include/field.class.php, row 798
+"Edit the condition" => "Upravit podm\xEDnku", // ai 2026-11
+
+// include/field.class.php, row 1156
 // include/itemview.php, row 130
 "number of found items" => "po\xE8et nalezen\xFDch \xE8l\xE1nk\xF9",
 
-// include/field.class.php, row 1133
+// include/field.class.php, row 1157
 "index of item within whole listing (begins with 0)" => "po\xF8ad\xED \xE8l\xE1nku v cel\xE9m v\xFDpisu (\xE8\xEDslov\xE1no od 0)",
 
-// include/field.class.php, row 1134
+// include/field.class.php, row 1158
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "po\xF8ad\xED \xE8l\xE1nku v na str\xE1nce (\xE8\xEDslov\xE1no od 0 pro ka\x9Edou str\xE1nku)",
 
-// include/field.class.php, row 1135
+// include/field.class.php, row 1159
 "index of a group on page (it begins from 0 on each page)" => "index skupiny na str\xE1nce (na ka\x9Ed\xE9 str\xE1nce za\xE8\xEDn\xE1 od 0)",
 
-// include/field.class.php, row 1136
+// include/field.class.php, row 1160
 "index of item within a group on page (it begins from 0 on each group)" => "index \xE8l\xE1nku ve skupin\xEC na str\xE1nce (v ka\x9Ed\xE9 skupin\xEC za\xE8\xEDn\xE1 od 0)",
 
-// include/field.class.php, row 1137
+// include/field.class.php, row 1161
 "alias for Item ID" => "alias pro \xE8\xEDslo \xE8l\xE1nku",
 
-// include/field.class.php, row 1138
+// include/field.class.php, row 1162
 "alias for Short Item ID" => "alias pro zkr\xE1cen\xE9 \xE8\xEDslo \xE8l\xE1nku",
 
-// include/field.class.php, row 1146, 1147
+// include/field.class.php, row 1170, 1171
 "alias used on admin page index.php for itemedit url" => "alias pou\x9E\xEDvan\xFD v administrativn\xEDch str\xE1nk\xE1ch index.php pro URL itemedit.php",
 
-// include/field.class.php, row 1148
+// include/field.class.php, row 1172
 "Alias used on admin page index.php for edit discussion url" => "Alias pou\x9E\xEDvan\xFD v administrativn\xEDch str\xE1nk\xE1ch index.php pro URL discedit.php",
 
-// include/field.class.php, row 1149
+// include/field.class.php, row 1173
 "Title of Slice for RSS" => "Jm\xE9no web\xEDku pro RSS",
 
-// include/field.class.php, row 1150
+// include/field.class.php, row 1174
 "Link to the Slice for RSS" => "Odkaz na web\xEDk pro RSS",
 
-// include/field.class.php, row 1151
+// include/field.class.php, row 1175
 "Short description (owner and name) of slice for RSS" => "Kr\xE1tk\xFD popisek (vlastn\xEDk a jm\xE9no) web\xEDku pro RSS",
 
-// include/field.class.php, row 1152
+// include/field.class.php, row 1176
 "Date RSS information is generated, in RSS date format" => "Datum v RSS p\xF8ehledu je generov\xE1no v datov\xE9m form\xE1tu RSS",
 
-// include/field.class.php, row 1153
+// include/field.class.php, row 1177
 "Slice name" => "N\xE1zev web\xEDku",
 
-// include/field.class.php, row 1155
+// include/field.class.php, row 1179
 "Current MLX language" => "Sou\xE8asn\xFD jazyk MLX",
 
-// include/field.class.php, row 1156
+// include/field.class.php, row 1180
 "HTML markup direction tag (e.g. DIR=RTL)" => "HTML zna\xE8ka sm\xECru textu (nap\xF8. DIR=RTL)",
 
-// include/field.class.php, row 1239, 1520
+// include/field.class.php, row 1263, 1554
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- libovoln\xE9 textov\xE9 pol\xED\xE8ko --",
 
-// include/field.class.php, row 1348
+// include/field.class.php, row 1372
 " (this)" => " (toto)",
 
-// include/field.class.php, row 1402, 1415, 1428
+// include/field.class.php, row 1435, 1448, 1462
 "Can't copy field" => "Pol\xED\xE8ko nelze zkop\xEDrovat", // ai 2026-10
 
 // include/filedit.php, row 82
@@ -5706,15 +6008,15 @@ return [
 "Rename to" => "P\xF8ejmenovat na",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 158, 535
+// include/fileman.php, row 164, 541
 "Text file" => "Text",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 156
+// include/fileman.php, row 162
 "Web file" => "Web",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 155, 535
+// include/fileman.php, row 161, 541
 "HTML file" => "HTML",
 
 // include/filedit.php, row 121
@@ -5727,7 +6029,7 @@ return [
 "File content" => "Obsah souboru",
 
 // include/filedit.php, row 135
-// include/fileman.php, row 157
+// include/fileman.php, row 163
 "Image file" => "Obr\xE1zek",
 
 // include/filedit.php, row 138
@@ -5742,62 +6044,62 @@ return [
 // include/fileman.php, row 37
 "Last modified" => "Naposled upraveno",
 
-// include/fileman.php, row 75
-"Scripts and server settings (such as .php or .htaccess) cannot be kept in the File Manager." => "Skripty a nastaven\xED serveru (nap\xF8. .php nebo .htaccess) nelze ve Spr\xE1vci Soubor\xF9 ukl\xE1dat.", // ai 2026-10
-
-// include/fileman.php, row 160, 173
-"Parent" => "Nadkategorie",
-
-// include/fileman.php, row 161, 189
-"Other" => "Jin\xE9",
-
-// include/fileman.php, row 365
+// include/fileman.php, row 76, 371
 "Wrong file name." => "Chybn\xFD n\xE1zev souboru.",
 
-// include/fileman.php, row 376
+// include/fileman.php, row 80
+"Scripts and server settings (such as .php or .htaccess) cannot be kept in the File Manager." => "Skripty a nastaven\xED serveru (nap\xF8. .php nebo .htaccess) nelze ve Spr\xE1vci Soubor\xF9 ukl\xE1dat.", // ai 2026-10
+
+// include/fileman.php, row 166, 179
+"Parent" => "Nadkategorie",
+
+// include/fileman.php, row 167, 195
+"Other" => "Jin\xE9",
+
+// include/fileman.php, row 382
 "File already exists" => "Soubor ji\x9E existuje.",
 
-// include/fileman.php, row 380, 538
+// include/fileman.php, row 386, 544
 "Unable to create file" => "Nepoda\xF8ilo se vytvo\xF8it soubor",
 
-// include/fileman.php, row 391
+// include/fileman.php, row 397
 // include/slicedit.php, row 205
 "Wrong directory name." => "Chybn\xFD n\xE1zev adres\xE1\xF8e.",
 
-// include/fileman.php, row 397
+// include/fileman.php, row 403
 "Unable to create directory" => "Nepoda\xF8ilo se vytvo\xF8it adres\xE1\xF8",
 
-// include/fileman.php, row 408
+// include/fileman.php, row 414
 "First delete all files from directory" => "Nejd\xF8\xEDve odstra\xF2te v\x9Aechny soubory z adres\xE1\xF8e",
 
-// include/fileman.php, row 410
+// include/fileman.php, row 416
 "Unable to delete directory" => "Nepoda\xF8ilo se smazat adres\xE1\xF8",
 
-// include/fileman.php, row 413
+// include/fileman.php, row 419
 "Unable to delete file" => "Nepoda\xF8ilo se smazat soubor",
 
-// include/fileman.php, row 432
+// include/fileman.php, row 438
 "Error: " => "Chyba: ",
 
-// include/fileman.php, row 448
+// include/fileman.php, row 454
 "Unable to open file for writing" => "Nepoda\xF8ilo se otev\xF8\xEDt soubor pro psan\xED",
 
-// include/fileman.php, row 452
+// include/fileman.php, row 458
 "Error writing to file" => "Chyba p\xF8i z\xE1pisu do souboru",
 
-// include/fileman.php, row 464
+// include/fileman.php, row 470
 "File with this name already exists" => "Soubor s t\xEDmto jm\xE9nem ji\x9E existuje",
 
-// include/fileman.php, row 466
+// include/fileman.php, row 472
 "Unable to rename" => "Nepoda\xF8ilo se p\xF8ejmenovat",
 
-// include/fileman.php, row 522
+// include/fileman.php, row 528
 "Wrong directory name" => "Chybn\xFD n\xE1zev adres\xE1\xF8e",
 
-// include/fileman.php, row 531
+// include/fileman.php, row 537
 "Files with the same names as some in the template already exist. Please change the file names first." => "Soubory se stejn\xFDmi n\xE1zvy jako n\xECkter\xE9 v \x9Aablon\xEC ji\x9E existuj\xED. Nejprve pros\xEDm zm\xEC\xF2te n\xE1zvy soubor\xF9.",
 
-// include/fileman.php, row 582
+// include/fileman.php, row 588
 "Are you sure you want to delete the selected files and folders?" => "Jste si jisti, \x9Ee chcete smazat zvolen\xE9 soubory a adres\xE1\xF8e?",
 
 // include/files.class.php, row 117
@@ -5843,7 +6145,7 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1301
+// include/logs.php, row 1305
 // src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID web\xEDku",
 
@@ -5851,145 +6153,140 @@ return [
 "Form Row - special widget for form setting" => "\xD8\xE1dek formul\xE1\xF8e - speci\xE1ln\xED widget pro nastaven\xED formul\xE1\xF8e",
 
 // include/form.class.php, row 248
-// src/Widget/Widget.php, row 750
+// src/Widget/Widget.php, row 749
 "Values array" => "Pole hodnot",
 
 // include/form.class.php, row 248
 "Directly specified array of values (do not use Constants, if filled)" => "P\xF8\xEDmo zadan\xE9 pole hodnot (je-li vypln\xECno, nepou\x9E\xEDvejte Konstanty)",
 
 // include/form.class.php, row 332
-// src/Widget/Widget.php, row 738
+// src/Widget/Widget.php, row 737
 "Rows" => "\xD8\xE1dky",
 
 // include/form.class.php, row 343
 // include/menu.php, row 148
 "Forms" => "Formul\xE1\xF8e",
 
-// include/formutil.php, row 194
+// include/formutil.php, row 205
 "Update & View" => "Zm\xECnit a prohl\xE9dnout",
 
-// include/formutil.php, row 201
+// include/formutil.php, row 212
 "Insert as new" => "Vlo\x9Eit jako nov\xFD",
 
-// include/formutil.php, row 205, 2973
+// include/formutil.php, row 216, 3017
 "Reset form" => "Vymazat formul\xE1\xF8",
 
-// include/formutil.php, row 208, 213, 2965, 2969
-// include/searchbar.class.php, row 771
-// src/Widget/LupWidget.php, row 118
-"Cancel" => "Storno",
-
-// include/formutil.php, row 211
+// include/formutil.php, row 222
 "Insert & Edit" => "Vlo\x9Eit a editovat d\xE1le",
 
-// include/formutil.php, row 212
+// include/formutil.php, row 223
 "Insert & View" => "Vlo\x9Eit a prohl\xE9dnout",
 
-// include/formutil.php, row 304
+// include/formutil.php, row 317
 "Part" => "Strana",
 
-// include/formutil.php, row 368
+// include/formutil.php, row 410
 "No fields defined for this slice" => "V tomto web\xEDku nejsou definov\xE1na \x9E\xE1dn\xE1 pole (co\x9E je divn\xE9)",
 
-// include/formutil.php, row 920
+// include/formutil.php, row 963
 "set" => "zapnuto",
 
-// include/formutil.php, row 920
+// include/formutil.php, row 963
 "unset" => "vypnuto",
 
-// include/formutil.php, row 1050
+// include/formutil.php, row 1093
 "Unable to find tagprefix table %1" => "Nelze naj\xEDt tabulku tagprefix %1",
 
-// include/formutil.php, row 1202
+// include/formutil.php, row 1245
 "import" => "na\xE8\xEDst",
 
-// include/formutil.php, row 1217
+// include/formutil.php, row 1260
 // src/Widget/RichtextMarkup.php, row 83
 // src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "Zobraz Editor",
 
-// include/formutil.php, row 1230
+// include/formutil.php, row 1273
 // include/transformation.class.php, row 193, 382, 455, 549, 739
 // include/widget.class.php, row 665
 "Plain text" => "Prost\xFD text",
 
-// include/formutil.php, row 1272
+// include/formutil.php, row 1315
 // include/transformation.class.php, row 661
 "Translate" => "P\xF8elo\x9Eit",
 
-// include/formutil.php, row 1782, 1786
+// include/formutil.php, row 1825, 1829
 "Enter the value" => "Vlo\x9Ete hodnotu",
 
-// include/formutil.php, row 1786
+// include/formutil.php, row 1829
 // include/menu.php, row 141
 // src/Import/DetailCatalog.php, row 124
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Zm\xECnit",
 
-// include/formutil.php, row 1929, 2116
+// include/formutil.php, row 1972, 2159
 // src/Widget/MchWidget.php, row 135
-// src/Widget/Widget.php, row 837
+// src/Widget/Widget.php, row 836
 "Selected" => "Vybran\xE9",
 
-// include/formutil.php, row 2115
+// include/formutil.php, row 2158
 "Offer" => "Nab\xEDdnout",
 
-// include/formutil.php, row 2180
-// include/stringexpand.php, row 11522, 11545
+// include/formutil.php, row 2223
+// include/stringexpand.php, row 11543, 11566
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "nov\xFD",
 
-// include/formutil.php, row 2200
+// include/formutil.php, row 2243
 "Change Password" => "Zm\xECna Hesla",
 
-// include/formutil.php, row 2202
+// include/formutil.php, row 2245
 "Delete Password" => "Smazat Heslo",
 
-// include/formutil.php, row 2211
-// include/searchlib.php, row 60, 128, 131, 134, 137, 140
+// include/formutil.php, row 2254
+// include/searchlib.php, row 61, 129, 132, 135, 138, 141
 // src/Central/FindingText.php, row 412
 // src/Credential/Store.php, row 53
 "not set" => "nenastaveno",
 
-// include/formutil.php, row 2976
+// include/formutil.php, row 3020
 "Submit" => "Poslat",
 
-// include/formutil.php, row 3295
+// include/formutil.php, row 3328
 "Group Name" => "Jm\xE9no skupiny",
 
-// include/formutil.php, row 3296
-// include/logs.php, row 754, 854, 1118
+// include/formutil.php, row 3329
+// include/logs.php, row 754, 854, 1122
 // src/Optimize/CheckNightly.php, row 146, 153
 // src/Optimize/StateCheckModel.php, row 270
 "Count" => "Po\xE8et",
 
-// include/formutil.php, row 3297
+// include/formutil.php, row 3330
 "Created on" => "Vytvo\xF8eno",
 
-// include/formutil.php, row 3298
+// include/formutil.php, row 3331
 "Created by" => "Vytvo\xF8il",
 
-// include/formutil.php, row 3299
+// include/formutil.php, row 3332
 "Last updated" => "Naposledy aktualizov\xE1no",
 
-// include/formutil.php, row 3300
+// include/formutil.php, row 3333
 "Updated by" => "Aktualizoval",
 
-// include/formutil.php, row 3308
+// include/formutil.php, row 3341
 "All active items" => "V\x9Aechy aktu\xE1ln\xED \xE8l\xE1nky",
 
-// include/formutil.php, row 3310
+// include/formutil.php, row 3343
 "All pending items" => "V\x9Aechny p\xF8ipravovan\xE9 \xE8l\xE1nky",
 
-// include/formutil.php, row 3311
+// include/formutil.php, row 3344
 "All expired items" => "V\x9Aechny expirovan\xE9 \xE8l\xE1nky",
 
-// include/formutil.php, row 3312
+// include/formutil.php, row 3345
 "All items in holding bin" => "V\x9Aechny \xE8l\xE1nky v z\xE1sobn\xEDku",
 
-// include/formutil.php, row 3313
+// include/formutil.php, row 3346
 "All items in trash bin" => "V\x9Aechny \xE8l\xE1nky v ko\x9Ai",
 
 // include/init_page.php, row 84
@@ -6128,25 +6425,25 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: \x9Apatn\xE1 funkce aliasu %1 pro %2",
 
-// include/item_content.php, row 1133, 1191
+// include/item_content.php, row 1134, 1192
 "No Slice Id specified" => "Nen\xED zad\xE1no ID web\xEDku",
 
-// include/item_content.php, row 1179
+// include/item_content.php, row 1180
 "No Permission to insert Item for user %1" => "U\x9Eivatel %1 nem\xE1 pr\xE1vo vkl\xE1dat \xE8l\xE1nky",
 
-// include/item_content.php, row 1195
+// include/item_content.php, row 1196
 "Bad Item Id" => "\x8Apatn\xE9 ID \xE8l\xE1nku",
 
-// include/item_content.php, row 1336
+// include/item_content.php, row 1337
 "No Id specified (%1 - %2)" => "ID nezad\xE1no (%1 - %2)",
 
-// include/item_content.php, row 1341
+// include/item_content.php, row 1342
 "Duplicated ID - skipped (%1 - %2)" => "Duplicitn\xED ID - p\xF8esko\xE8eno (%1 - %2)",
 
-// include/item_content.php, row 1366
+// include/item_content.php, row 1367
 "StoreItem for slice %1 - failed parameter check for id = '%2'" => "StoreItem pro web\xEDk %1 - selhala kontrola parametru pro id = '%2'",
 
-// include/item_content.php, row 1376
+// include/item_content.php, row 1377
 "No Status code" => "Chyb\xED stavov\xFD k\xF3d",
 
 // include/itemfunc.php, row 67
@@ -6550,15 +6847,9 @@ return [
 // include/logs.php, row 681
 "Time + Cached + 304" => "\xC8as + cache + 304",
 
-// include/logs.php, row 683, 696, 906, 1092
+// include/logs.php, row 683, 696, 906, 1096
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL",
-
-// include/logs.php, row 723
-// include/menu_util.php, row 45
-// src/Optimize/CheckCentralCredentials.php, row 51
-// src/Optimize/CheckEnvironment.php, row 50
-"AA" => "",
 
 // include/logs.php, row 724
 "SVN AA (util.php)" => "",
@@ -6606,13 +6897,6 @@ return [
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Spustit", // ai 2026-10
 
-// include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
-// src/Optimize/CheckImports.php, row 150, 154
-// src/Optimize/CheckInstallRuns.php, row 54
-// src/Optimize/CheckIsdsRuns.php, row 310
-"Started" => "Za\xE8\xE1tek", // ai 2026-10
-
 // include/logs.php, row 800
 "Last full run" => "Posledn\xED \xFApln\xFD b\xECh", // ai 2026-10
 
@@ -6643,137 +6927,137 @@ return [
 // include/logs.php, row 903
 "Identifier" => "Identifik\xE1tor",
 
-// include/logs.php, row 904, 1268, 1283
+// include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 816
+// src/Manager.php, row 825
 "Module ID" => "ID modulu",
 
-// include/logs.php, row 917
+// include/logs.php, row 921
 "Template id" => "ID \x9Aablony", // ai 2026-06
 
-// include/logs.php, row 919
+// include/logs.php, row 923
 "Emails sent" => "Odeslan\xE9 e-maily", // ai 2026-06
 
-// include/logs.php, row 958
+// include/logs.php, row 962
 "Object id" => "Id objektu", // ai 2026-10
 
-// include/logs.php, row 990
+// include/logs.php, row 994
 "Mail template" => "\x8Aablona e-mailu", // ai 2026-10
 
-// include/logs.php, row 991
+// include/logs.php, row 995
 "Reader item" => "\xC8l\xE1nek \xE8ten\xE1\xF8e", // ai 2026-10
 
-// include/logs.php, row 992
+// include/logs.php, row 996
 "Origin" => "P\xF9vod", // ai 2026-10
 
-// include/logs.php, row 1063
+// include/logs.php, row 1067
 "Transport" => "Zp\xF9sob odesl\xE1n\xED", // ai 2026-10
 
-// include/logs.php, row 1064
+// include/logs.php, row 1068
 "Recipients sent" => "Odesl\xE1no p\xF8\xEDjemc\xF9m", // ai 2026-10
 
-// include/logs.php, row 1065
+// include/logs.php, row 1069
 "Server response" => "Odpov\xEC\xEF serveru", // ai 2026-10
 
-// include/logs.php, row 1078
+// include/logs.php, row 1082
 "Items selected" => "Vybran\xE9 \xE8l\xE1nky", // ai 2026-10
 
-// include/logs.php, row 1079
+// include/logs.php, row 1083
 "Items updated" => "Aktualizovan\xE9 \xE8l\xE1nky", // ai 2026-10
 
-// include/logs.php, row 1080
+// include/logs.php, row 1084
 "Items planned" => "Napl\xE1novan\xE9 \xE8l\xE1nky", // ai 2026-10
 
-// include/logs.php, row 1091
+// include/logs.php, row 1095
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Zpr\xE1va", // ai 2026-06
 
-// include/logs.php, row 1093
+// include/logs.php, row 1097
 "Referer" => "Odkazuj\xEDc\xED str\xE1nka", // ai 2026-06
 
-// include/logs.php, row 1104
+// include/logs.php, row 1108
 "New name" => "Nov\xFD n\xE1zev", // ai 2026-06
 
-// include/logs.php, row 1105
+// include/logs.php, row 1109
 "Old name" => "Star\xFD n\xE1zev", // ai 2026-06
 
-// include/logs.php, row 1116, 1181
+// include/logs.php, row 1120, 1185
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "F\xE1ze", // ai 2026-06
 
-// include/logs.php, row 1117
+// include/logs.php, row 1121
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Kolekce", // ai 2026-06
 
-// include/logs.php, row 1119, 1170, 1182, 1317
+// include/logs.php, row 1123, 1174, 1186, 1321
 // src/Import/Definition.php, row 154
 // src/Optimize/CheckPasskeys.php, row 84
-// src/Optimize/CheckUploadRefusals.php, row 90
+// src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Detail", // ai 2026-10
 
-// include/logs.php, row 1169
+// include/logs.php, row 1173
 // src/Import/Definition.php, row 135, 162
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Stav", // ai 2026-06
 
-// include/logs.php, row 1221
+// include/logs.php, row 1225
 "Processed" => "Zpracov\xE1no", // ai 2026-06
 
-// include/logs.php, row 1222
+// include/logs.php, row 1226
 "Stored" => "Ulo\x9Eeno", // ai 2026-06
 
-// include/logs.php, row 1223
+// include/logs.php, row 1227
 "Errors" => "Chyby", // ai 2026-06
 
-// include/logs.php, row 1236
+// include/logs.php, row 1240
 // src/Import/DetailPage.php, row 329
 "Outcome" => "V\xFDsledek", // ai 2026-06
 
-// include/logs.php, row 1252
+// include/logs.php, row 1256
 "Flags" => "P\xF8\xEDznaky", // ai 2026-06
 
-// include/logs.php, row 1253
+// include/logs.php, row 1257
 "Context" => "Kontext", // ai 2026-06
 
-// include/logs.php, row 1269
+// include/logs.php, row 1273
 "Feed counterpart" => "Prot\xECj\x9Aek ve v\xFDm\xECn\xEC zpr\xE1v", // ai 2026-10
 
-// include/logs.php, row 1284
+// include/logs.php, row 1288
 "Field ID" => "ID Pol\xED\xE8ka",
 
-// include/logs.php, row 1302
+// include/logs.php, row 1306
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckFileReadRefusals.php, row 78
 // src/Optimize/CheckHttp.php, row 62
 // src/Optimize/CheckPasskeys.php, row 83
-// src/Optimize/CheckUploadRefusals.php, row 88
+// src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "D\xF9vod", // ai 2026-10
 
-// include/mail.php, row 657
+// include/mail.php, row 693
 "Email type" => "Typ e-mailu",
 
-// include/mail.php, row 661
+// include/mail.php, row 697
 "\xE2\x80\x94 all modules (global) \xE2\x80\x94" => "\x97 v\x9Aechny moduly (glob\xE1ln\xED) \x97", // ai 2026-10
 
-// include/mail.php, row 661
+// include/mail.php, row 697
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Vlastn\xEDk",
 
-// include/mail.php, row 662
+// include/mail.php, row 698
 "Description/Result" => "Popis/V\xFDsledek",
 
-// include/mail.php, row 667
+// include/mail.php, row 701
 "From (email) " => "Od (e-mail)",
 
-// include/mail.php, row 670
+// include/mail.php, row 704
 "Envelop sender (email)" => "Odes\xEDlatel ob\xE1lky (e-mail)",
 
-// include/mail.php, row 671
+// include/mail.php, row 705
 // misc/datovka/datovka.php, row 156
 "Attachments" => "P\xF8\xEDlohy",
 
@@ -6892,7 +7176,7 @@ return [
 "Bookmarks" => "Z\xE1lo\x9Eky",
 
 // include/menu.php, row 223
-// include/menu_util.php, row 130
+// include/menu_util.php, row 131
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Vysypat ko\x9A",
 
@@ -6954,7 +7238,7 @@ return [
 // include/menu_util.php, row 96
 // src/Import/Definition.php, row 135, 161
 // src/Optimize/CheckImportStores.php, row 53
-// src/Optimize/CheckImports.php, row 176, 178, 287, 367
+// src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "Import", // ai 2026-11
 
 // include/menu_util.php, row 98
@@ -6987,75 +7271,78 @@ return [
 // include/menu_util.php, row 129
 "Synchronize..." => "Synchronizovat...",
 
-// include/menu_util.php, row 131
+// include/menu_util.php, row 130
+"Optimize on several AAs..." => "Optimalizace na v\xEDce AA...", // ai 2026-11
+
+// include/menu_util.php, row 132
 "Import conf from CSV..." => "Import konfigurace z CSV...",
 
-// include/menu_util.php, row 426
+// include/menu_util.php, row 427
 "Part of %s" => "Sou\xE8\xE1st %s",
 
-// include/menu_util.php, row 443
+// include/menu_util.php, row 444
 "Other slices" => "Ostatn\xED web\xEDky",
 
-// include/menu_util.php, row 447
+// include/menu_util.php, row 448
 "Reader Management Slice" => "Web\xEDk Spr\xE1va \xC8ten\xE1\xF8\xF9",
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 450
 "Jump inside control panel" => "Skok uvnit\xF8 administrace",
 
-// include/menu_util.php, row 450
-// include/slice.class.php, row 1447
+// include/menu_util.php, row 451
+// include/slice.class.php, row 1450
 // src/Central/FindingText.php, row 311
 "Links" => "Spr\xE1va odkaz\xF9",
 
-// include/menu_util.php, row 451
+// include/menu_util.php, row 452
 "MySQL Auth (old version)" => "MySQL autentizace (star\xE1 verze)",
 
-// include/menu_util.php, row 452
+// include/menu_util.php, row 453
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Ankety",
 
-// include/menu_util.php, row 473
+// include/menu_util.php, row 474
 "New slice" => "Nov\xFD web\xEDk",
 
-// include/menu_util.php, row 477
+// include/menu_util.php, row 478
 "Switch module" => "P\xF8epnout modul",
 
-// include/menu_util.php, row 611, 622
+// include/menu_util.php, row 612, 623
 "Apply" => "Pou\x9E\xEDt", // ai 2026-06
 
-// include/menu_util.php, row 615
+// include/menu_util.php, row 616
 "-- Default for module --" => "-- V\xFDchoz\xED pro modul --", // ai 2026-06
 
-// include/menu_util.php, row 623
+// include/menu_util.php, row 624
 "Switches the admin interface language; the page reloads." => "P\xF8epne jazyk administra\xE8n\xEDho rozhran\xED; str\xE1nka se znovu na\xE8te.", // ai 2026-06
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 629
 "What's working, what isn't \xE2\x80\x94 tell the AA team." => "Co funguje a co ne \x97 dejte v\xECd\xECt t\xFDmu AA.", // ai 2026-06
 
-// include/menu_util.php, row 631
+// include/menu_util.php, row 632
 // src/Import/Definition.php, row 86
 "Settings" => "Nastaven\xED",
 
-// include/menu_util.php, row 634
+// include/menu_util.php, row 635
 "Theme" => "Vzhled", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 637
 "Feedback" => "Zp\xECtn\xE1 vazba", // ai 2026-06
 
-// include/menu_util.php, row 762
+// include/menu_util.php, row 763
 // include/slice.class.php, row 678
 "Reader management" => "Spr\xE1va \xE8ten\xE1\xF8\xF9",
 
-// include/menu_util.php, row 774
+// include/menu_util.php, row 775
 "logout" => "odhl\xE1sit",
 
-// include/menu_util.php, row 782
+// include/menu_util.php, row 783
 "Search.." => "Hledat..",
 
-// include/menu_util.php, row 861
+// include/menu_util.php, row 862
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>",
 
-// include/menu_util.php, row 871
+// include/menu_util.php, row 872
 "Collapse / expand menu" => "Sbalit / rozbalit menu",
 
 // include/metabase.class.php, row 1662
@@ -7159,7 +7446,7 @@ return [
 "And" => "a z\xE1rove\xF2",
 
 // include/searchbar.class.php, row 580
-// include/searchlib.php, row 52, 55, 128, 137
+// include/searchlib.php, row 53, 56, 129, 138
 "begins with" => "za\xE8\xEDn\xE1",
 
 // include/searchbar.class.php, row 608
@@ -7207,41 +7494,38 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Spr\xE1va filtr\xF9",
 
-// include/searchlib.php, row 56
+// include/searchlib.php, row 57
 "LLIKE" => "",
 
-// include/searchlib.php, row 57
+// include/searchlib.php, row 58
 "XLIKE" => "",
 
-// include/searchlib.php, row 58
+// include/searchlib.php, row 59
 "BETWEEN" => "",
 
-// include/searchlib.php, row 59
+// include/searchlib.php, row 60
 "bit is set" => "bit je nastaven",
 
-// include/searchlib.php, row 61, 128, 131, 134, 137, 140
+// include/searchlib.php, row 62, 129, 132, 135, 138, 141
 "is set" => "vypln\xECno",
 
-// include/searchlib.php, row 62, 128
+// include/searchlib.php, row 63, 129
 "is e-mail" => "je e-mail",
 
-// include/searchlib.php, row 63, 128
+// include/searchlib.php, row 64, 129
 "not e-mail" => "nen\xED e-mail",
 
-// include/searchlib.php, row 64, 128, 137
+// include/searchlib.php, row 65, 129, 138
 "match (RegExp)" => "odpov\xEDd\xE1 (RegExp)",
 
-// include/searchlib.php, row 65, 128, 137
+// include/searchlib.php, row 66, 129, 138
 "not match (RegExp)" => "neodpov\xEDd\xE1 (RegExp)",
 
-// include/searchlib.php, row 128, 137
-"is not" => "nen\xED",
-
-// include/searchlib.php, row 137, 140
+// include/searchlib.php, row 138, 141
 // include/statestore.php, row 1367
 "select ..." => "vyber ...",
 
-// include/searchlib.php, row 370
+// include/searchlib.php, row 371
 "Limit" => "Limit", // ai 2026-10
 
 // include/slice.class.php, row 428
@@ -7254,7 +7538,7 @@ return [
 "Code - Views / Snippets" => "K\xF3d - Pohledy / Snippety",
 
 // include/slice.class.php, row 681
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "Constant" => "Konstanta",
 
 // include/slice.class.php, row 682
@@ -7265,190 +7549,190 @@ return [
 "Field definitions" => "Definice pol\xED\xE8ek",
 
 // include/slice.class.php, row 914
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Chyba: Sch\xE1z\xED Heslo pro \xC8ten\xED",
 
-// include/slice.class.php, row 1314
+// include/slice.class.php, row 1317
 "Spot ID" => "ID spotu",
 
-// include/slice.class.php, row 1314
+// include/slice.class.php, row 1317
 "You can include this spot code in another spot by using {sitespot:%1}" => "K\xF3d tohoto spotu m\xF9\x9Eete vlo\x9Eit do jin\xE9ho spotu pomoc\xED {sitespot:%1}",
 
-// include/slice.class.php, row 1332
+// include/slice.class.php, row 1335
 "Spot name" => "N\xE1zev spotu",
 
-// include/slice.class.php, row 1475
+// include/slice.class.php, row 1478
 "Jump inside AA control panel" => "Skok uvnit\xF8 administrace",
 
-// include/slice.class.php, row 1500
+// include/slice.class.php, row 1503
 "Polls for AA" => "Anketa v AA",
 
-// include/slice.class.php, row 1569
+// include/slice.class.php, row 1572
 "Languages for translation" => "Jazyky pro p\xF8eklad",
 
-// include/slice.class.php, row 1569
+// include/slice.class.php, row 1572
 "specify language codes in which you want to translate content - small caps, two letters - like: en, es, de, ..." => "zadejte k\xF3dy jazyk\xF9, do kter\xFDch chcete obsah p\xF8ekl\xE1dat - mal\xFDmi p\xEDsmeny, dv\xEC p\xEDsmena - nap\xF8.: en, es, de, ...",
 
-// include/slice.class.php, row 1570
+// include/slice.class.php, row 1573
 "Automatic field creation" => "Automatick\xE9 vytv\xE1\xF8en\xED pol\xED\xE8ek",
 
-// include/slice.class.php, row 1570
+// include/slice.class.php, row 1573
 "If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template." => "Je-li za\x9Akrtnuto, web\xEDk umo\x9En\xED ukl\xE1dat hodnoty do pol\xED\xE8ka text....*, i kdy\x9E p\xF8\xEDslu\x9An\xE9 text....* nen\xED ve web\xEDku definov\xE1no. Pol\xED\xE8ko bude vytvo\xF8eno s pou\x9Eit\xEDm pol\xED\xE8ka text............ jako \x9Aablony.",
 
-// include/slice.class.php, row 1571
+// include/slice.class.php, row 1574
 "Fields defined by another slice" => "Pol\xED\xE8ka definovan\xE1 jin\xFDm web\xEDkem",
 
-// include/slice.class.php, row 1571
+// include/slice.class.php, row 1574
 "You can use special slice for additional fields definition. There you can write slice ID, which defines the fields.<br>Could be used for data slice, which stores values for user created forms." => "Pro definici dal\x9A\xEDch pol\xED\xE8ek m\xF9\x9Eete pou\x9E\xEDt speci\xE1ln\xED web\xEDk. Sem napi\x9Ate ID web\xEDku, kter\xFD pol\xED\xE8ka definuje.<br>Lze vyu\x9E\xEDt pro datov\xFD web\xEDk, kter\xFD ukl\xE1d\xE1 hodnoty u\x9Eivatelsky vytvo\xF8en\xFDch formul\xE1\xF8\xF9.",
 
-// include/slice.class.php, row 1572
+// include/slice.class.php, row 1575
 "Store item history for N days" => "Ukl\xE1dat historii \xE8l\xE1nk\xF9 po N dn\xED",
 
-// include/slice.class.php, row 1572
+// include/slice.class.php, row 1575
 "ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted" => "ALL - nemazat log historie (v\xFDchoz\xED)<br>0 - neukl\xE1dat historii \xE8l\xE1nk\xF9 (ani ud\xE1losti ITEM_UPD/ITEM_NEW v Logu)<br><em>\xE8\xEDslo</em> - po\xE8et dn\xED, po kter\xFDch bude historie \xE8l\xE1nk\xF9 smaz\xE1na",
 
-// include/slice.class.php, row 1573
+// include/slice.class.php, row 1576
 "No pending items" => "Bez p\xF8ipravovan\xFDch \xE8l\xE1nk\xF9",
 
-// include/slice.class.php, row 1573
+// include/slice.class.php, row 1576
 "1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - zcela vypne p\xF8ipravovan\xE9 v tomto web\xEDku (pol\xED\xE8ko publish_date funguje jako b\xEC\x9En\xE9)<br>{aa-expression} - vyhodnot\xED-li se jako 1, vypne kontrolu p\xF8ipravovan\xFDch (pro pohled, web\xEDk, {ids...}) (pou\x9Eijte zde v\xFDrazy {if:{qss:..}, {var:..}, {server:..})",
 
-// include/slice.class.php, row 1574
+// include/slice.class.php, row 1577
 "No expired items" => "Bez expirovan\xFDch \xE8l\xE1nk\xF9",
 
-// include/slice.class.php, row 1574
+// include/slice.class.php, row 1577
 "1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - zcela vypne expirovan\xE9 v tomto web\xEDku (pol\xED\xE8ko expiry_date funguje jako b\xEC\x9En\xE9)<br>{aa-expression} - vyhodnot\xED-li se jako 1, vypne kontrolu data expirace (pro pohled, web\xEDk, {ids...}) (pou\x9Eijte zde v\xFDrazy {if:{qss:..}, {var:..}, {server:..})",
 
-// include/slice.class.php, row 1636
+// include/slice.class.php, row 1639
 "Slice with translations" => "Web\xEDk s p\xF8eklady",
 
-// include/slice.class.php, row 1636
+// include/slice.class.php, row 1639
 "the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')" => "web\xEDk pou\x9E\xEDvan\xFD pro p\xF8eklady {tr:text...} (web\xEDk mus\xED m\xEDt nastaveno 'Allow translation' pouze u pol\xED\xE8ka headline........)",
 
-// include/slice.class.php, row 1637
+// include/slice.class.php, row 1640
 "Additional aliases" => "Dal\x9A\xED aliasy",
 
-// include/slice.class.php, row 1637
+// include/slice.class.php, row 1640
 "Select sitemodule, where we have to look for additional {_:...} aliases" => "Vyberte sitemodul, ve kter\xE9m se maj\xED hledat dal\x9A\xED aliasy {_:...}",
 
-// include/slice.class.php, row 1638
+// include/slice.class.php, row 1641
 "sitemap.xml alias" => "Alias pro sitemap.xml",
 
-// include/slice.class.php, row 1638
+// include/slice.class.php, row 1641
 "The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown." => "Soubor sitemap.xml se vygeneruje ze v\x9Aech web\xEDk\xF9 (v po\xF8ad\xED v\xFD\x9Ae), ve kter\xFDch existuje zadan\xFD alias (nap\xF8. _#SMAP_URL). Alias by m\xECl generovat pln\xE9 URL \xE8l\xE1nku v ka\x9Ed\xE9m web\xEDku. Pro soukrom\xE9/skryt\xE9 \xE8l\xE1nky by m\xECl generovat pr\xE1zdn\xFD \xF8et\xECzec, aby se jejich URL nezobrazilo.",
 
-// include/slice.class.php, row 1639
+// include/slice.class.php, row 1642
 "Permission alias" => "Alias pro pr\xE1va",
 
-// include/slice.class.php, row 1639
+// include/slice.class.php, row 1642
 "You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word \"Valid\", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule." => "M\xF9\x9Eete definovat alias, kter\xFD se vyhodnot\xED pro v\x9Aechna zobrazovan\xE1 {xid} (=str\xE1nky). Pokud bude hodnotou slovo \"Valid\", str\xE1nka se zobraz\xED. Jinak se zobraz\xED p\xF8ihla\x9Aovac\xED formul\xE1\xF8 (viz n\xED\x9Ee). Tuto funkci samoz\xF8ejm\xEC nemus\xEDte pou\x9E\xEDvat a m\xF9\x9Eete v\x9Ae \xF8e\x9Ait postaru - p\xF8\xEDmo ve stromu sitemodulu.",
 
-// include/slice.class.php, row 1640
+// include/slice.class.php, row 1643
 "HTML code for \"Login page\"" => "HTML k\xF3d pro \"P\xF8ihla\x9Aovac\xED str\xE1nku\"",
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 434
 "User login databases" => "Datab\xE1ze pro p\xF8ihla\x9Aov\xE1n\xED u\x9Eivatel\xF9",
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 409
 "first Reader Management slice listed in Uses slices" => "prvn\xED web\xEDk pro spr\xE1vu \xE8ten\xE1\xF8\xF9 uveden\xFD v Pou\x9E\xEDv\xE1 web\xEDky",
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 410
 "all Reader Management slices listed in Uses slices" => "v\x9Aechny web\xEDky pro spr\xE1vu \xE8ten\xE1\xF8\xF9 uveden\xE9 v Pou\x9E\xEDv\xE1 web\xEDky",
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 // src/Central/FindingText.php, row 411
 // src/Isds/SliceRules.php, row 99
 // src/Optimize/CheckIsdsAccounts.php, row 137
 "AA + all Reader Management slices in AA (old behavior)" => "AA + v\x9Aechny web\xEDky pro spr\xE1vu \xE8ten\xE1\xF8\xF9 v AA (star\xE9 chov\xE1n\xED)",
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1644
 "First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used." => "Doporu\xE8en\xE1 volba je \"prvn\xED web\xEDk pro spr\xE1vu \xE8ten\xE1\xF8\xF9\" - na ve\xF8ejn\xE9 str\xE1nky se pak mohou p\xF8ihl\xE1sit pouze lid\xE9 z tohoto web\xEDku. Pokud nen\xED vybr\xE1no, pou\x9Eije se volba \"AA + v\x9Aechny web\xEDky pro spr\xE1vu \xE8ten\xE1\xF8\xF9\".",
 
-// include/slice.class.php, row 1642
+// include/slice.class.php, row 1645
 "Google analytics tracking id" => "M\xEC\xF8ic\xED ID Google Analytics",
 
-// include/slice.class.php, row 1642
+// include/slice.class.php, row 1645
 "If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site." => "Pokud v k\xF3du sitemodulu pou\x9E\xEDv\xE1te {generate:HEAD} a {generate:FOOT}, vygeneruje se k\xF3d Google Analytics s t\xEDmto m\xEC\xF8ic\xEDm ID. Generovan\xFD k\xF3d se m\xF9\x9Ee v budoucnu zm\xECnit, pokud Google zm\xECn\xED sv\xF9j snippet.<br>Pro li\x9Atu souhlasu s cookies p\xF8idejte na str\xE1nky {eucookies} nebo {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top}",
 
-// include/slice.class.php, row 1643
+// include/slice.class.php, row 1646
 "Alternate URL" => "Alternativn\xED URL",
 
-// include/slice.class.php, row 1643
+// include/slice.class.php, row 1646
 "Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "Dal\x9A\xED dom\xE9na (dom\xE9ny), na kter\xFDch m\xE1 b\xFDt web dostupn\xFD. Zva\x9Ete v\x9Aak rad\xECji p\xF8esm\xECrov\xE1n\xED na stran\xEC serveru a pou\x9E\xEDv\xE1n\xED jedin\xE9 dom\xE9ny, co\x9E je vhodn\xECj\x9A\xED pro SEO.",
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1647
 "Languages on website" => "Jazyky na webu",
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1647
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Vyjmenujte v\x9Aechny jazyky, pro kter\xE9 chcete sitemodul pou\x9E\xEDvat - en, es, cz, ..<br>Pros\xEDme, <b>vypl\xF2te</b> i v p\xF8\xEDpad\xEC, \x9Ee pou\x9E\xEDv\xE1te jen 1 jazyk. <br>Je to nutn\xE9, pokud chcete sitemodul volat nov\xECj\x9A\xEDm zp\xF9sobem z Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>",
 
-// include/slice.class.php, row 1645
+// include/slice.class.php, row 1648
 "Allowed {xflag} values" => "Povolen\xE9 hodnoty {xflag}", // ai 2026-10
 
-// include/slice.class.php, row 1645
+// include/slice.class.php, row 1648
 "Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "Regul\xE1rn\xED v\xFDraz, kter\xE9mu mus\xED \xE8\xE1st URL {xflag} odpov\xEDdat cel\xE1 (^ ani \$ nejsou pot\xF8eba), jinak str\xE1nka odpov\xED 404. {xflag} jsou znaky hned za jazykem a nepovinn\xFDm \xE8\xEDslem str\xE1nky {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... Nikdy neobsahuje \xE8\xEDslici ani \x84-\x93 \x96 ty ji ukon\xE8uj\xED.<br>Proj\xEDt mus\xED i str\xE1nky bez {xflag} \x96 zakon\xE8ete vzor znakem ? nebo p\xF8idejte pr\xE1zdnou alternativu.<br><b>Pr\xE1zdn\xE9</b> \x96 jak\xE1koli hodnota bez \x84=\x93.<br><b>^\$</b> \x96 {xflag} se nepou\x9E\xEDv\xE1, jen str\xE1nky bez n\xECj.<br>P\xF8\xEDklady:<br>[a-z]? \x96 jedno p\xEDsmeno, nebo nic<br>[tp]? \x96 \x84t\x93 nebo \x84p\x93, nebo nic<br>(print|pdf)? \x96 jedno z uveden\xFDch slov, nebo nic", // ai 2026-10
 
-// include/slice.class.php, row 1646
+// include/slice.class.php, row 1649
 "Allowed {xcat} values" => "Povolen\xE9 hodnoty {xcat}", // ai 2026-10
 
-// include/slice.class.php, row 1646
+// include/slice.class.php, row 1649
 "Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "Regul\xE1rn\xED v\xFDraz, kter\xE9mu mus\xED \xE8\xE1st URL {xcat} odpov\xEDdat cel\xE1 (^ ani \$ nejsou pot\xF8eba), jinak str\xE1nka odpov\xED 404. {xcat} je v\x9Ae za prvn\xEDm \x84-\x93 v prvn\xEDm adres\xE1\xF8i: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... M\xF9\x9Ee obsahovat cokoli krom\xEC \x84/\x93.<br>Proj\xEDt mus\xED i str\xE1nky bez {xcat} \x96 zakon\xE8ete vzor znakem ? nebo p\xF8idejte pr\xE1zdnou alternativu.<br><b>Pr\xE1zdn\xE9</b> \x96 jak\xE1koli hodnota bez \x84=\x93.<br><b>^\$</b> \x96 {xcat} se nepou\x9E\xEDv\xE1, jen str\xE1nky bez n\xECj.<br>P\xF8\xEDklady:<br>[a-z0-9-]* \x96 mal\xE1 p\xEDsmena, \xE8\xEDslice a poml\xE8ky, nebo nic<br>([0-9]+)? \x96 \xE8\xEDslo, nebo nic<br>(bioplyn|kompost)? \x96 jedno z uveden\xFDch slov, nebo nic", // ai 2026-10
 
-// include/slice.class.php, row 1647
+// include/slice.class.php, row 1650
 "Check the page path" => "Kontrolovat cestu str\xE1nky", // ai 2026-10
 
-// include/slice.class.php, row 1647
+// include/slice.class.php, row 1650
 "Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "Odpov\xECd\xECt 404, kdy\x9E n\xECkter\xE1 \xE8\xE1st cesty ({xseo1}, {xseo2}, ...) nen\xED zve\xF8ejn\xECn\xFD \xE8l\xE1nek, tak\x9Ee /cz/nesmysl/o-nas nezobraz\xED str\xE1nku o-nas. Odpov\xED 404, i kdy\x9E je \x84Str\xE1nka nenalezena\x93 nastaveno na \x84Ne\xF8e\x9Ait\x93.", // ai 2026-10
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Page not Found (404)" => "Str\xE1nka nenalezena (404)",
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Do not care" => "Ne\xF8e\x9Ait",
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Send standard 404 page, when {xid} is empty" => "Poslat standardn\xED str\xE1nku 404, pokud je {xid} pr\xE1zdn\xE9",
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "Send code below" => "Poslat n\xED\x9Ee uveden\xFD k\xF3d",
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1651
 "When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "Pokud je vybr\xE1na prvn\xED volba \"Ne\xF8e\x9Ait\" (star\xE9 chov\xE1n\xED), mus\xEDte nevypln\xECn\xE9 {xid} testovat ve sv\xE9m sitemodulu sami",
 
-// include/slice.class.php, row 1649
+// include/slice.class.php, row 1652
 "HTML code for \"Page not Found\" (404)" => "HTML k\xF3d pro \"Str\xE1nka nenalezena\" (404)",
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1654
 "Publish in the app store" => "Zve\xF8ejnit v katalogu aplikac\xED", // ai 2026-10
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1654
 "Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too." => "Jak\xE9koli AA pak m\xF9\x9Ee tento web nainstalovat i s web\xEDky a Zas\xEDl\xE1n\xEDm, kter\xE9 pou\x9E\xEDv\xE1 \x96 jejich \x9Aablony, pol\xED\xE8ka a pohledy, nikdy \xE8l\xE1nky. Skupiny hodnot jin\xFDch web\xEDk\xF9 mus\xED tak\xE9 pat\xF8it ke zve\xF8ejn\xECn\xE9mu webu.", // ai 2026-10
 
-// include/slice.class.php, row 1652
+// include/slice.class.php, row 1655
 "App description" => "Popis aplikace", // ai 2026-10
 
-// include/slice.class.php, row 1652
+// include/slice.class.php, row 1655
 "What the app does, for the list of the app store." => "Co aplikace d\xECl\xE1, pro seznam v katalogu aplikac\xED.", // ai 2026-10
 
-// include/slice.class.php, row 1653
+// include/slice.class.php, row 1656
 "App version" => "Verze aplikace", // ai 2026-10
 
-// include/slice.class.php, row 1653
+// include/slice.class.php, row 1656
 "Like 1.2.0." => "Nap\xF8\xEDklad 1.2.0.", // ai 2026-10
 
-// include/slice.class.php, row 1655
+// include/slice.class.php, row 1658
 "Published modules" => "Zve\xF8ejn\xECn\xE9 moduly", // ai 2026-10
 
-// include/slice.class.php, row 1664
+// include/slice.class.php, row 1667
 "Page address (URL)" => "Adresa str\xE1nky (URL)", // ai 2026-10
 
-// include/slice.class.php, row 1665
+// include/slice.class.php, row 1668
 "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} je \xE8\xEDslo, {xflag} p\xEDsmena za n\xEDm, {xcat} v\x9Ae za prvn\xEDm \x84-\x93 \x96 v\x9Aechny t\xF8i jsou nepovinn\xE9. {xlang} lze vynechat, jsou-li nastaveny \x84Jazyky na webu\x93.<br>Nap\xF8\xEDklad /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka", // ai 2026-10
 
-// include/slice.class.php, row 1707
+// include/slice.class.php, row 1710
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "Verze aplikace m\xE1 nejv\xFD\x9Ae 32 p\xEDsmen, \xE8\xEDslic a znak\xF9 . + - (nap\xF8. 1.2.0), popis nejv\xFD\x9Ae %1 znak\xF9.", // ai 2026-10
 
 // include/slice.php, row 69
@@ -7525,43 +7809,43 @@ return [
 // include/statestore.php, row 1449
 "Manage components" => "Spr\xE1va komponent",
 
-// include/stringexpand.php, row 97
+// include/stringexpand.php, row 98
 "Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "Alias se vol\xE1 jako {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}",
 
-// include/stringexpand.php, row 98
+// include/stringexpand.php, row 99
 "Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "K\xF3d vypisovan\xFD aliasem. Alias m\xF9\x9Ee m\xEDt parametry, ke kter\xFDm p\xF8istupujete p\xF8es prom\xECnn\xE9 _#P1, _#P2, ...",
 
-// include/stringexpand.php, row 100
+// include/stringexpand.php, row 101
 "Usage example" => "P\xF8\xEDklad pou\x9Eit\xED",
 
-// include/stringexpand.php, row 940
+// include/stringexpand.php, row 941
 "Jabber Online Status Indicator" => "Indik\xE1tor online stavu na Jabberu",
 
-// include/stringexpand.php, row 5515
+// include/stringexpand.php, row 5513
 "save changes" => "ulo\x9Eit zm\xECny",
 
-// include/stringexpand.php, row 5734
+// include/stringexpand.php, row 5732
 "No item ID" => "Chyb\xED ID \xE8l\xE1nku",
 
-// include/stringexpand.php, row 5741
+// include/stringexpand.php, row 5739
 "No transformations" => "\x8E\xE1dn\xE9 transformace",
 
-// include/stringexpand.php, row 5755
+// include/stringexpand.php, row 5753
 "No slice for item" => "Nenalezen web\xEDk pro \xE8l\xE1nek",
 
-// include/stringexpand.php, row 5756
+// include/stringexpand.php, row 5754
 "No current slice(s)" => "\x8E\xE1dn\xFD aktu\xE1ln\xED web\xEDk (web\xEDky)",
 
-// include/stringexpand.php, row 5757
+// include/stringexpand.php, row 5755
 "Item slice is not in list of allowed slices" => "Web\xEDk \xE8l\xE1nku nen\xED v seznamu povolen\xFDch web\xEDk\xF9",
 
-// include/stringexpand.php, row 5762
+// include/stringexpand.php, row 5760
 "No permit_anonymous_edit permission for the slice" => "Web\xEDk nem\xE1 pr\xE1vo permit_anonymous_edit",
 
-// include/stringexpand.php, row 6157
+// include/stringexpand.php, row 6155
 "No dictionaries specified for {dictionary}" => "Pro {dictionary} nejsou zad\xE1ny \x9E\xE1dn\xE9 slovn\xEDky",
 
-// include/stringexpand.php, row 6287
+// include/stringexpand.php, row 6285
 "No module for dictionary slice" => "Chyb\xED modul pro slovn\xEDkov\xFD web\xEDk",
 
 // include/stringexpand.php, row 8208
@@ -7576,72 +7860,72 @@ return [
 // include/stringexpand.php, row 8398
 "loading" => "na\xE8\xEDt\xE1m",
 
-// include/stringexpand.php, row 9531
+// include/stringexpand.php, row 9546
 "E-mail confirmed." => "E-mail potvrzen.",
 
-// include/stringexpand.php, row 9535
+// include/stringexpand.php, row 9550
 "E-mail unsubscribed" => "E-mail odhl\xE1\x9Aen",
 
-// include/stringexpand.php, row 10296
+// include/stringexpand.php, row 10311
 "Forgot your password? Fill in your email." => "Zapomn\xECli jste heslo? Vypl\xF2te sv\xF9j e-mail.",
 
-// include/stringexpand.php, row 10298
+// include/stringexpand.php, row 10313
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-mail", // ai 2026-10
 
-// include/stringexpand.php, row 10316, 10320
+// include/stringexpand.php, row 10331, 10335
 "Unable to find user - please check if it has been misspelled." => "U\x9Eivatele se nepoda\xF8ilo naj\xEDt - zkontrolujte pros\xEDm p\xF8eklepy.",
 
-// include/stringexpand.php, row 10334
+// include/stringexpand.php, row 10349
 "Password link" => "Odkaz pro heslo",
 
-// include/stringexpand.php, row 10335
+// include/stringexpand.php, row 10350
 "Password change url parameter" => "URL parametr pro zm\xECnu hesla",
 
-// include/stringexpand.php, row 10347
+// include/stringexpand.php, row 10362
 "Password change" => "Zm\xECna hesla",
 
-// include/stringexpand.php, row 10348
+// include/stringexpand.php, row 10363
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Pro zm\xECnu hesla nav\x9Ativte pros\xEDm n\xE1sleduj\xEDc\xED adresu:<br>%1<br>Zm\xECna bude mo\x9En\xE1 po dobu dvou hodin - pot\xE9 platnost kl\xED\xE8e vypr\x9A\xED a budete muset po\x9E\xE1dat o nov\xFD.",
 
-// include/stringexpand.php, row 10357
+// include/stringexpand.php, row 10372
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail s kl\xED\xE8em pro zm\xECnu hesla byl pr\xE1v\xEC odesl\xE1n na e-mailovou adresu: %1",
 
-// include/stringexpand.php, row 10368, 10397
+// include/stringexpand.php, row 10383, 10412
 "Bad or expired key." => "Chybn\xFD nebo expirovan\xFD kl\xED\xE8.",
 
-// include/stringexpand.php, row 10373
+// include/stringexpand.php, row 10388
 "Fill in the new password" => "Vypl\xF2te nov\xE9 heslo",
 
-// include/stringexpand.php, row 10375
+// include/stringexpand.php, row 10390
 "New password" => "Nov\xE9 heslo",
 
-// include/stringexpand.php, row 10376
+// include/stringexpand.php, row 10391
 "Retype New Password" => "Zopakujte Nov\xE9 Heslo",
 
-// include/stringexpand.php, row 10400
+// include/stringexpand.php, row 10415
 "Passwords do not match - please try again." => "Hesla se neshoduj\xED - zkuste to pros\xEDm znovu.",
 
-// include/stringexpand.php, row 10403
+// include/stringexpand.php, row 10418
 "The password must be at least 6 characters long." => "Heslo mus\xED m\xEDt alespo\xF2 6 znak\xF9.",
 
-// include/stringexpand.php, row 10409
+// include/stringexpand.php, row 10424
 "Password changed." => "Heslo zm\xECn\xECno.",
 
-// include/stringexpand.php, row 10411
+// include/stringexpand.php, row 10426
 "An error occurred during password change - please contact: %1." => "P\xF8i zm\xECn\xEC hesla do\x9Alo k chyb\xEC - kontaktujte pros\xEDm: %1.",
 
-// include/stringexpand.php, row 11519, 11542
+// include/stringexpand.php, row 11540, 11563
 "Are you sure you want to permanently DELETE this record?" => "Chcete opravdu trvale SMAZAT tento z\xE1znam?",
 
-// include/stringexpand.php, row 11525, 11528, 11548, 11551
+// include/stringexpand.php, row 11546, 11549, 11569, 11572
 // src/Widget/RimWidget.php, row 270
 "edit" => "upravit",
 
-// include/stringexpand.php, row 11531, 11554
+// include/stringexpand.php, row 11552, 11575
 "back" => "zp\xECt",
 
-// include/stringexpand.php, row 11534, 11557
+// include/stringexpand.php, row 11555, 11578
 // src/Widget/RimWidget.php, row 297
 "drop files here or click to upload" => "p\xF8et\xE1hn\xECte soubory sem nebo klikn\xECte pro nahr\xE1n\xED",
 
@@ -7765,10 +8049,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Nelze zm\xECnit data u\x9Eivatele",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Zpr\xE1va aplikace",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Znovu p\xF8ihl\xE1sit",
 
 // include/validate.php, row 54
@@ -7777,25 +8061,25 @@ return [
 // include/validate.php, row 187
 "Bad validator type: %1" => "Chybn\xFD typ valid\xE1toru: %1",
 
-// include/validate.php, row 280, 585, 638
+// include/validate.php, row 280, 598, 651
 "Allowed minimum value" => "Povolen\xE1 minim\xE1ln\xED hodnota",
 
-// include/validate.php, row 281, 586, 639
+// include/validate.php, row 281, 599, 652
 "Allowed maximum value" => "Povolen\xE1 maxim\xE1ln\xED hodnota",
 
 // include/validate.php, row 282
 "Step" => "Krok",
 
-// include/validate.php, row 283, 419, 911
+// include/validate.php, row 283, 419, 924
 "Maximum length" => "Maxim\xE1ln\xED d\xE9lka",
 
 // include/validate.php, row 296
 "No integer value" => "Nen\xED cel\xE9 \xE8\xEDslo",
 
-// include/validate.php, row 300, 603, 656
+// include/validate.php, row 300, 616, 669
 "Out of range - too big" => "Mimo rozsah - p\xF8\xEDli\x9A velk\xE9",
 
-// include/validate.php, row 303, 606, 659
+// include/validate.php, row 303, 619, 672
 "Out of range - too small" => "Mimo rozsah - p\xF8\xEDli\x9A mal\xE9",
 
 // include/validate.php, row 417
@@ -7804,79 +8088,79 @@ return [
 // include/validate.php, row 418
 "Empty expression" => "Pr\xE1zdn\xFD v\xFDraz",
 
-// include/validate.php, row 432, 716, 746, 924
+// include/validate.php, row 432, 729, 759, 937
 "Too long" => "P\xF8\xEDli\x9A dlouh\xE9",
 
 // include/validate.php, row 437
 "Do not match the pattern" => "Neodpov\xEDd\xE1 vzoru",
 
-// include/validate.php, row 530, 563
+// include/validate.php, row 543, 576
 "No ID value" => "Hodnota nen\xED ID",
 
-// include/validate.php, row 547
+// include/validate.php, row 560
 "No packed ID value" => "Hodnota nen\xED packed ID",
 
-// include/validate.php, row 599
+// include/validate.php, row 612
 "No float value" => "Hodnota nen\xED \xE8\xEDslo s plovouc\xED \xE8\xE1rkou (float)",
 
-// include/validate.php, row 652
+// include/validate.php, row 665
 "No decimal value" => "Hodnota nen\xED desetinn\xE9 \xE8\xEDslo (decimal)",
 
-// include/validate.php, row 684
+// include/validate.php, row 697
 "Possible values" => "Mo\x9En\xE9 hodnoty",
 
-// include/validate.php, row 696
+// include/validate.php, row 709
 "Out of range - not in the list" => "Mimo rozsah - nen\xED v seznamu",
 
-// include/validate.php, row 713, 743
+// include/validate.php, row 726, 756
 "Too short" => "P\xF8\xEDli\x9A kr\xE1tk\xE9",
 
-// include/validate.php, row 718
+// include/validate.php, row 731
 "Wrong characters - you should use a-z, A-Z and 0-9 characters" => "Nepovolen\xE9 znaky - pou\x9E\xEDvejte pouze znaky a-z, A-Z a 0-9",
 
-// include/validate.php, row 784, 869
+// include/validate.php, row 797, 882
 "Field id" => "ID pol\xED\xE8ka",
 
-// include/validate.php, row 785, 870
+// include/validate.php, row 798, 883
 "Scope" => "Rozsah platnosti",
 
-// include/validate.php, row 785
+// include/validate.php, row 798
 "username | slice | allslices" => "",
 
-// include/validate.php, row 786, 871
+// include/validate.php, row 799, 884
 "Item id which we do not count" => "ID \xE8l\xE1nku, kter\xFD nepo\xE8\xEDt\xE1me",
 
-// include/validate.php, row 812
+// include/validate.php, row 825
 "Username is not unique" => "U\x9Eivatelsk\xE9 jm\xE9no nen\xED unik\xE1tn\xED",
 
-// include/validate.php, row 819, 827
+// include/validate.php, row 832, 840
 "Wrong parameter field_id for unique check" => "Chybn\xFD parametr field_id pro kontrolu unik\xE1tnosti",
 
-// include/validate.php, row 839
+// include/validate.php, row 852
 "Not unique - value already used" => "Nen\xED unik\xE1tn\xED - hodnota se ji\x9E pou\x9E\xEDv\xE1",
 
-// include/validate.php, row 870
+// include/validate.php, row 883
 "username | slice | <b>allslices</b>" => "",
 
-// include/validate.php, row 957
+// include/validate.php, row 970
 "Not a valid regular expression" => "Neplatn\xFD regul\xE1rn\xED v\xFDraz", // ai 2026-10
 
-// include/validate.php, row 992
+// include/validate.php, row 1005
 "This field is required." => "Pol\xED\xE8ko je povinn\xE9.",
 
-// include/validate.php, row 992
+// include/validate.php, row 1005
 "This field is required (marked by *)." => "Pol\xED\xE8ko je povinn\xE9 (ozna\xE8eno *).",
 
-// include/validate.php, row 999
+// include/validate.php, row 1012
 "Not a valid integer number." => "Nen\xED platn\xE9 cel\xE9 \xE8\xEDslo.",
 
-// include/validate.php, row 1002
+// include/validate.php, row 1015
 "Not a valid file name." => "Nen\xED platn\xFD n\xE1zev souboru.",
 
-// include/validate.php, row 1006
+// include/validate.php, row 1019
 "Not a valid email address." => "Nen\xED platn\xFD email.",
 
-// include/validate.php, row 1009
+// include/validate.php, row 1022
 "The two password copies differ." => "Kopie hesla se li\x9A\xED.",
 
 // include/view.class.php, row 326
@@ -8062,12 +8346,8 @@ return [
 "page length (number of items)" => "d\xE9lka str\xE1nky (po\xE8et \xE8l\xE1nk\xF9)",
 
 // slice.php, row 621
-// src/Manager.php, row 881
+// src/Manager.php, row 890
 "No item found" => "\x8E\xE1dn\xE1 zpr\xE1va",
-
-// src/AA_Plannedtask.php, row 71, 182
-// src/Optimize/CheckQueue.php, row 98, 178
-"Task" => "\xDAloha",
 
 // src/AA_Plannedtask.php, row 72
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "Pokud je zad\xE1no, \xFAloha se provede, jen pokud se Podm\xEDnka vyhodnot\xED na hodnotu r\xF9znou od nuly nebo pr\xE1zdn\xE9 hodnoty",
@@ -8144,79 +8424,76 @@ return [
 // src/AA_Plannedtask.php, row 462
 "next run" => "p\xF8\xED\x9At\xED spu\x9At\xECn\xED",
 
-// src/Api/Controller/FilesController.php, row 56, 77
+// src/Api/Controller/FilesController.php, row 57, 78
 "The file is too big" => "Soubor je p\xF8\xEDli\x9A velk\xFD", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 69
+// src/Api/Controller/FilesController.php, row 70
 "You may not upload files here. If you were editing, your login may have expired - reload the page." => "Sem nesm\xEDte nahr\xE1vat soubory. Pokud jste editovali, mohlo v\xE1m vypr\x9Aet p\xF8ihl\xE1\x9Aen\xED \x96 na\xE8t\xECte str\xE1nku znovu.", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 72
+// src/Api/Controller/FilesController.php, row 73
 "Too many uploads - try again in an hour" => "P\xF8\xEDli\x9A mnoho nahr\xE1v\xE1n\xED \x96 zkuste to znovu za hodinu", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 80, 291
+// src/Api/Controller/FilesController.php, row 81, 294
 "No file received" => "Nebyl p\xF8ijat \x9E\xE1dn\xFD soubor", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 88
+// src/Api/Controller/FilesController.php, row 89
 "Files of this type cannot be uploaded here: %1" => "Soubory tohoto typu sem nelze nahr\xE1t: %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 91
+// src/Api/Controller/FilesController.php, row 92
 "The content of the file does not match its extension %1" => "Obsah souboru neodpov\xEDd\xE1 jeho p\xF8\xEDpon\xEC %1", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 94
+// src/Api/Controller/FilesController.php, row 95
 "The image is bigger than %1 MB" => "Obr\xE1zek je v\xECt\x9A\xED ne\x9E %1 MB", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 97
-"The image has more than %1 megapixels" => "Obr\xE1zek m\xE1 v\xEDce ne\x9E %1 megapixel\xF9", // ai 2026-10
-
-// src/Api/Controller/FilesController.php, row 102
+// src/Api/Controller/FilesController.php, row 100
 "The upload directory of the slice is not writable" => "Do adres\xE1\xF8e pro nahran\xE9 soubory web\xEDku nelze zapisovat", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 112
+// src/Api/Controller/FilesController.php, row 111
+"The image has more than %1 megapixels" => "Obr\xE1zek m\xE1 v\xEDce ne\x9E %1 megapixel\xF9", // ai 2026-10
+
+// src/Api/Controller/FilesController.php, row 115
 "The file could not be stored" => "Soubor nelze ulo\x9Eit", // ai 2026-10
 
-// src/Api/Controller/FilesController.php, row 134
+// src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Proch\xE1zet soubory web\xEDku mohou jen jeho edito\xF8i", // ai 2026-10
 
-// src/Central/Actionapps.php, row 178
+// src/Central/Actionapps.php, row 185
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Toto PHP nem\xE1 AES-GCM (sodium) \x96 p\xF8ihla\x9Aovac\xED token nelze ulo\x9Eit \x9Aifrovan\xEC", // ai 2026-10
 
-// src/Central/Actionapps.php, row 206
+// src/Central/Actionapps.php, row 215
 "Not configured" => "Nenakonfigurov\xE1no",
 
-// src/Central/Actionapps.php, row 206
+// src/Central/Actionapps.php, row 215
 "Not authenticated - get a token" => "Neov\xEC\xF8eno \x96 z\xEDskejte token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 209
+// src/Central/Actionapps.php, row 218
 "Authenticated until %1" => "Ov\xEC\xF8eno do %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 209
+// src/Central/Actionapps.php, row 218
 "Expired - get a token" => "Vypr\x9Aelo \x96 z\xEDskejte token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 234
+// src/Central/Actionapps.php, row 245
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "Vzd\xE1len\xE9 AA odm\xEDtlo p\xF8ihl\xE1\x9Aen\xED: chybn\xE9 u\x9Eivatelsk\xE9 jm\xE9no nebo heslo, \xFA\xE8et s dvouf\xE1zov\xFDm p\xF8ihl\xE1\x9Aen\xEDm (Central zat\xEDm neum\xED poslat k\xF3d), nebo u\x9Eivatel tam nen\xED superadmin", // ai 2026-10
 
-// src/Central/Actionapps.php, row 236
+// src/Central/Actionapps.php, row 247
 "The remote AA gave no login token - update it" => "Vzd\xE1len\xE9 AA nevydalo p\xF8ihla\x9Aovac\xED token \x96 aktualizujte ho", // ai 2026-10
 
-// src/Central/Actionapps.php, row 237
+// src/Central/Actionapps.php, row 248
 "The remote AA gave a token for longer than a day - update the remote AA" => "Vzd\xE1len\xE9 AA vydalo token na d\xE9le ne\x9E jeden den \x96 aktualizujte vzd\xE1len\xE9 AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 273
+// src/Central/Actionapps.php, row 284
 "Can't get org_name - " => "Nelze z\xEDskat org_name -",
 
-// src/Central/Actionapps.php, row 339
-"the update may still be running on the remote AA - wait, then run Test before retrying" => "aktualizace na vzd\xE1len\xE9m AA mo\x9En\xE1 je\x9At\xEC b\xEC\x9E\xED \x96 po\xE8kejte a p\xF8ed dal\x9A\xEDm pokusem spus\x9Dte test", // ai 2026-10
-
-// src/Central/Actionapps.php, row 350
+// src/Central/Actionapps.php, row 338
 "Unexpected response from remote AA" => "Neo\xE8ek\xE1van\xE1 odpov\xEC\xEF vzd\xE1len\xE9ho AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 341
 "This AA does not support this command (update it first)" => "Toto AA tento p\xF8\xEDkaz nepodporuje (nejprve ho aktualizujte)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 364
+// src/Central/Actionapps.php, row 353
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Ulo\x9Een\xFD p\xF8ihla\x9Aovac\xED token nelze pou\x9E\xEDt (zm\xECnil se AA_SECRET, heslo k datab\xE1zi nebo adresa tohoto AA) \x96 ov\xEC\xF8te toto AA znovu na str\xE1nce ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 365
+// src/Central/Actionapps.php, row 354
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Pro toto AA nen\xED p\xF8ihla\x9Aovac\xED token \x96 ov\xEC\xF8te toto AA na str\xE1nce ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -8930,7 +9207,7 @@ return [
 "Correct the condition, or empty its field to transfer all the items of the slice, then check the changes again." => "Opravte podm\xEDnku, nebo jej\xED pol\xED\xE8ko vypr\xE1zdn\xECte, aby se p\xF8enesly v\x9Aechny \xE8l\xE1nky web\xEDku, a pak znovu zkontrolujte zm\xECny.", // ai 2026-10
 
 // src/Central/FindingText.php, row 303
-// src/Optimize/CheckImports.php, row 176, 178
+// src/Optimize/CheckImports.php, row 177, 179
 // src/Optimize/ImgMeasuring.php, row 55
 "Why" => "D\xF9vod", // ai 2026-10
 
@@ -9186,6 +9463,63 @@ return [
 // src/Central/FindingText.php, row 467
 "condition" => "podm\xEDnka", // ai 2026-06
 
+// src/Central/OptimizeRun.php, row 155
+"Fixes made for one website" => "Opravy pro jeden konkr\xE9tn\xED web", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 156
+"Steps of the DB update one by one" => "Kroky aktualizace DB jednotliv\xEC", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 157
+"Tests - %1" => "Testy - %1", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 158
+"Repairs reading whole big tables - minutes on a big database" => "Opravy \xE8touc\xED cel\xE9 velk\xE9 tabulky - na velk\xE9 datab\xE1zi minuty", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 159
+"Repairs" => "Opravy", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 164
+"Recommended" => "Doporu\xE8en\xE9", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 179
+"Update DB (sql_update) - all its steps" => "Aktualizovat DB (sql_update) - v\x9Aechny kroky", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 308
+"The repair did not start or its answer is unusable: %1 - run Test to see the state of the AA." => "Oprava se nespustila nebo jej\xED odpov\xEC\xEF nelze pou\x9E\xEDt: %1 - stav AA zjist\xEDte volbou \x84Jen otestovat\x93.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 309
+"The test after the repair failed: %1" => "Test po oprav\xEC selhal: %1", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 310
+"The repair was sent, but: %1 - run Test to see what it did." => "Oprava byla odesl\xE1na, ale: %1 - co provedla, zjist\xEDte volbou \x84Jen otestovat\x93.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 317
+"The repair did not answer in time and the test still fails - it may still work; run Test later." => "Oprava neodpov\xECd\xECla v\xE8as a test st\xE1le selh\xE1v\xE1 - mo\x9En\xE1 je\x9At\xEC b\xEC\x9E\xED; pozd\xECji spus\x9Dte \x84Jen otestovat\x93.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 339
+"The test fails, but the AA ran another update the whole time - run this again later." => "Test selh\xE1v\xE1, ale AA celou dobu prov\xE1d\xEClo jinou aktualizaci - spus\x9Dte to pozd\xECji znovu.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 341
+"The test after the repair got no answer - run Test later." => "Test po oprav\xEC nedostal odpov\xEC\xEF - pozd\xECji spus\x9Dte \x84Jen otestovat\x93.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 342
+"The repair was sent, but the AA has not answered since - it may still work; run Test later to see the result." => "Oprava byla odesl\xE1na, ale AA od t\xE9 doby neodpov\xECd\xEClo - mo\x9En\xE1 je\x9At\xEC b\xEC\x9E\xED; v\xFDsledek zjist\xEDte pozd\xECji volbou \x84Jen otestovat\x93.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 344
+"The AA ran another update the whole time - run this again later." => "AA celou dobu prov\xE1d\xEClo jinou aktualizaci - spus\x9Dte to pozd\xECji znovu.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 345
+"The AA did not answer in time - it may still work; run Test later to see the result." => "AA neodpov\xECd\xEClo v\xE8as - mo\x9En\xE1 je\x9At\xEC b\xEC\x9E\xED; v\xFDsledek zjist\xEDte pozd\xECji volbou \x84Jen otestovat\x93.", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 367
+"No such AA in the Central list any more" => "Toto AA u\x9E v seznamu Central nen\xED", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 387
+"The AA answered in an older way - update it first" => "AA odpov\xECd\xEClo star\x9A\xEDm zp\xF9sobem - nejd\xF8\xEDv ho aktualizujte", // ai 2026-11
+
+// src/Central/OptimizeRun.php, row 399
+"(the report is cut - see the Optimize page of that AA)" => "(zpr\xE1va je zkr\xE1cen\xE1 - viz str\xE1nku \x84Optimalizovat\x93 dan\xE9ho AA)", // ai 2026-11
+
 // src/Central/RemoteHtml.php, row 22
 "(no output)" => "(\x9E\xE1dn\xFD v\xFDstup)", // ai 2026-10
 
@@ -9284,6 +9618,24 @@ return [
 
 // src/Credential/Store.php, row 55
 "set (%1)" => "nastaveno (%1)", // ai 2026-10
+
+// src/Form/ShowConditions.php, row 317
+"Fill in the name of the condition." => "Vypl\xF2te n\xE1zev podm\xEDnky.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 321
+"Another condition of this slice is called %1." => "Jin\xE1 podm\xEDnka tohoto web\xEDku se jmenuje %1.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 333
+"The field %1 is not in this slice." => "Pol\xED\xE8ko %1 v tomto web\xEDku nen\xED.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 335
+"Choose how to compare the field %1." => "Zvolte, jak porovnat pol\xED\xE8ko %1.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 337
+"Fill in the values of the field %1." => "Vypl\xF2te hodnoty pol\xED\xE8ka %1.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 344
+"Add a rule or an expression." => "P\xF8idejte pravidlo nebo v\xFDraz.", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
 "AA RSS" => "",
@@ -9492,6 +9844,7 @@ return [
 
 // src/Import/Definition.php, row 93
 // src/Import/DetailPage.php, row 604
+// src/Optimize/CheckImports.php, row 215
 "Enabled" => "Povoleno", // ai 2026-10
 
 // src/Import/Definition.php, row 113
@@ -9726,7 +10079,7 @@ return [
 "The source needs no key." => "Zdroj nepot\xF8ebuje \x9E\xE1dn\xFD kl\xED\xE8.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 291
-// src/Widget/Widget.php, row 849
+// src/Widget/Widget.php, row 848
 "Hint" => "N\xE1pov\xECda",
 
 // src/Import/DetailConfig.php, row 297
@@ -10565,7 +10918,7 @@ return [
 "http or https only, on a public address, without a user name and password" => "jen http nebo https, na ve\xF8ejn\xE9 adrese, bez u\x9Eivatelsk\xE9ho jm\xE9na a hesla", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 55
-// src/Widget/Widget.php, row 744, 813
+// src/Widget/Widget.php, row 743, 812
 "Columns" => "Sloupce",
 
 // src/Import/Source/CsvurlSource.php, row 55
@@ -10577,298 +10930,304 @@ return [
 // src/Import/Source/CsvurlSource.php, row 56
 "The column that identifies the item; it must be one of the columns" => "Sloupec, kter\xFD identifikuje \xE8l\xE1nek; mus\xED b\xFDt jedn\xEDm ze sloupc\xF9", // ai 2026-10
 
-// src/Isds/Advice.php, row 47
+// src/Isds/Advice.php, row 48
 "The form has expired, or it does not belong to this page. Load the page again." => "Platnost formul\xE1\xF8e vypr\x9Aela, nebo nepat\xF8\xED k t\xE9to str\xE1nce. Na\xE8t\xECte str\xE1nku znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 49
+// src/Isds/Advice.php, row 50
 "The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller." => "Odeslan\xFD formul\xE1\xF8 je v\xECt\x9A\xED, ne\x9E server p\xF8ijme (%1). Nic se neulo\x9Eilo \x96 zmen\x9Aete p\xF8\xEDlohy.", // ai 2026-10
 
-// src/Isds/Advice.php, row 50
+// src/Isds/Advice.php, row 51
 "The form sent is larger than the server takes. Nothing was saved - make the attachments smaller." => "Odeslan\xFD formul\xE1\xF8 je v\xECt\x9A\xED, ne\x9E server p\xF8ijme. Nic se neulo\x9Eilo \x96 zmen\x9Aete p\xF8\xEDlohy.", // ai 2026-10
 
-// src/Isds/Advice.php, row 51
+// src/Isds/Advice.php, row 52
 "The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more." => "Akce selhala na vnit\xF8n\xED chyb\xEC AA a mohla \xE8\xE1st pr\xE1ce u\x9E ud\xEClat. Na\xE8t\xECte str\xE1nku znovu a ne\x9E ji zkus\xEDte je\x9At\xEC jednou, zkontrolujte stav.", // ai 2026-10
 
-// src/Isds/Advice.php, row 52
+// src/Isds/Advice.php, row 53
 "Someone else, or another window, is working with this now. Try it again in a while." => "S t\xEDmto te\xEF pracuje n\xECkdo jin\xFD nebo jin\xE9 okno. Zkuste to znovu za chv\xEDli.", // ai 2026-10
 
-// src/Isds/Advice.php, row 53
+// src/Isds/Advice.php, row 54
 "You may not do this." => "Toto nesm\xEDte.", // ai 2026-10
 
-// src/Isds/Advice.php, row 54
+// src/Isds/Advice.php, row 55
 "This sending is not on this page." => "Tato rozes\xEDlka na t\xE9to str\xE1nce nen\xED.", // ai 2026-10
 
-// src/Isds/Advice.php, row 55
+// src/Isds/Advice.php, row 56
 "The sending does not wait for this now." => "Rozes\xEDlka na tuto akci te\xEF ne\xE8ek\xE1.", // ai 2026-10
 
-// src/Isds/Advice.php, row 56
+// src/Isds/Advice.php, row 57
 "A step of the sending is still running. Try it again in a few minutes." => "Krok rozes\xEDlky je\x9At\xEC b\xEC\x9E\xED. Zkuste to znovu za p\xE1r minut.", // ai 2026-10
 
-// src/Isds/Advice.php, row 57
+// src/Isds/Advice.php, row 58
 "The sending goes on." => "Rozes\xEDlka pokra\xE8uje.", // ai 2026-10
 
-// src/Isds/Advice.php, row 58
+// src/Isds/Advice.php, row 59
 "The sending is stopping - no further message will go." => "Rozes\xEDlka se zastavuje \x96 \x9E\xE1dn\xE1 dal\x9A\xED zpr\xE1va u\x9E neodejde.", // ai 2026-10
 
-// src/Isds/Advice.php, row 59
+// src/Isds/Advice.php, row 60
 "Every message has been sent or tried already - there is nothing left to stop." => "V\x9Aechny zpr\xE1vy u\x9E byly odesl\xE1ny, nebo se je AA pokusilo odeslat \x96 nen\xED co zastavit.", // ai 2026-10
 
-// src/Isds/Advice.php, row 60
+// src/Isds/Advice.php, row 61
 "The sending has been ended for good. Any message of unknown fate stays for you to verify." => "Rozes\xEDlka byla definitivn\xEC ukon\xE8ena. Zpr\xE1vy s nezn\xE1m\xFDm osudem z\xF9st\xE1vaj\xED k ov\xEC\xF8en\xED na v\xE1s.", // ai 2026-10
 
-// src/Isds/Advice.php, row 61
+// src/Isds/Advice.php, row 62
 "The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up." => "Rozes\xEDlka se u\x9E zastavila na chyb\xEC, tla\xE8\xEDtko \x84Zastavit odes\xEDl\xE1n\xED\x93 tu tedy nic nezm\xECn\xED. M\xF9\x9Eete zvolit \x84Pokra\xE8ovat v odes\xEDl\xE1n\xED\x93, nebo \x84Ukon\xE8it rozes\xEDlku\x93 \x96 zpr\xE1vy s nezn\xE1m\xFDm osudem a dosud nep\xF8e\xE8ten\xE1 doru\xE8en\xED se pak u\x9E dohled\xE1vat nebudou.", // ai 2026-10
 
-// src/Isds/Advice.php, row 63
+// src/Isds/Advice.php, row 64
 "The draft is saved." => "Koncept je ulo\x9Een.", // ai 2026-10
 
-// src/Isds/Advice.php, row 64
+// src/Isds/Advice.php, row 65
 "The letter is saved, but not the choice of the recipients: it changed in the meantime - in another window, or a recipient you picked is gone. The page shows the recipients saved now; choose them again if needed." => "Dopis je ulo\x9Een, ale v\xFDb\xECr p\xF8\xEDjemc\xF9 ne: mezit\xEDm se zm\xECnil \x96 v jin\xE9m okn\xEC, nebo zvolen\xFD p\xF8\xEDjemce zmizel. Str\xE1nka ukazuje nyn\xED ulo\x9Een\xE9 p\xF8\xEDjemce; podle pot\xF8eby je zvolte znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 65
+// src/Isds/Advice.php, row 66
 "The copy is ready as a new draft." => "Kopie je p\xF8ipravena jako nov\xFD koncept.", // ai 2026-10
 
-// src/Isds/Advice.php, row 66
+// src/Isds/Advice.php, row 67
 "The draft has been moved to the trash. An editor of the slice can restore it in the Item Manager." => "Koncept byl p\xF8esunut do ko\x9Ae. Editor web\xEDku ho m\xF9\x9Ee obnovit ve \x84Spr\xE1v\xEC zpr\xE1v\x93.", // ai 2026-10
 
-// src/Isds/Advice.php, row 67
+// src/Isds/Advice.php, row 68
 "The sending of this campaign has started, so it stays - its messages must remain traceable." => "Odes\xEDl\xE1n\xED t\xE9to rozes\xEDlky u\x9E za\xE8alo, proto z\xF9st\xE1v\xE1 \x96 jej\xED zpr\xE1vy mus\xED z\xF9stat dohledateln\xE9.", // ai 2026-10
 
-// src/Isds/Advice.php, row 68
+// src/Isds/Advice.php, row 69
 "The sending left no recipient unsent - there is nothing to copy." => "Rozes\xEDlka nenechala \x9E\xE1dn\xE9ho p\xF8\xEDjemce neobeslan\xE9ho \x96 nen\xED co kop\xEDrovat.", // ai 2026-10
 
-// src/Isds/Advice.php, row 69
+// src/Isds/Advice.php, row 70
 "The letter can be sent to this recipient again only if its message failed, or the sending stopped before it. This message has gone, may still go, or was left out - or it is not known whether it went: verify it once the page offers it (not while AA still looks it up), and then it can be sent again." => "Dopis lze tomuto p\xF8\xEDjemci poslat znovu, jen pokud jeho zpr\xE1va selhala nebo se rozes\xEDlka zastavila d\xF8\xEDv, ne\x9E na n\xECj do\x9Ala. Tato zpr\xE1va ode\x9Ala, je\x9At\xEC m\xF9\x9Ee odej\xEDt, nebo byla vynech\xE1na \x96 p\xF8\xEDpadn\xEC se nev\xED, zda ode\x9Ala: ov\xEC\xF8te ji, jakmile to str\xE1nka nab\xEDdne (ne dokud ji AA je\x9At\xEC dohled\xE1v\xE1), a pak ji lze poslat znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 70
+// src/Isds/Advice.php, row 71
 "Recorded: the message did not go. The letter can be sent to that recipient again in a new campaign." => "Zaznamen\xE1no: zpr\xE1va neode\x9Ala. Dopis lze tomuto p\xF8\xEDjemci poslat znovu v nov\xE9 rozes\xEDlce.", // ai 2026-10
 
-// src/Isds/Advice.php, row 71
+// src/Isds/Advice.php, row 72
 "The fate of this message is known - there is nothing to verify." => "Osud t\xE9to zpr\xE1vy je zn\xE1m \x96 nen\xED co ov\xEC\xF8ovat.", // ai 2026-10
 
-// src/Isds/Advice.php, row 72
+// src/Isds/Advice.php, row 73
 "This message does not belong to the sending." => "Tato zpr\xE1va do rozes\xEDlky nepat\xF8\xED.", // ai 2026-10
 
-// src/Isds/Advice.php, row 73
+// src/Isds/Advice.php, row 74
 "The data box of the recipient is taken from the register." => "Datov\xE1 schr\xE1nka p\xF8\xEDjemce byla p\xF8evzata z registru.", // ai 2026-10
 
-// src/Isds/Advice.php, row 74
+// src/Isds/Advice.php, row 75
 "The register does not offer this data box for the recipient surely enough to take it here. An editor of the slice of recipients compares it on its page Data boxes from the register, or fixes the item." => "Registr nenab\xEDz\xED tuto datovou schr\xE1nku p\xF8\xEDjemce dost jist\xEC, aby se tu dala p\xF8evz\xEDt. Editor web\xEDku p\xF8\xEDjemc\xF9 ji porovn\xE1 na jeho str\xE1nce \x84Datov\xE9 schr\xE1nky z registru\x93, nebo oprav\xED \xE8l\xE1nek.", // ai 2026-10
 
-// src/Isds/Advice.php, row 75
+// src/Isds/Advice.php, row 76
 "The register of data boxes has not been downloaded, or it is old. An editor of the slice of recipients downloads it on its page Data boxes from the register." => "Registr datov\xFDch schr\xE1nek nebyl sta\x9Een, nebo je star\xFD. Editor web\xEDku p\xF8\xEDjemc\xF9 ho st\xE1hne na jeho str\xE1nce \x84Datov\xE9 schr\xE1nky z registru\x93.", // ai 2026-10
 
-// src/Isds/Advice.php, row 76
+// src/Isds/Advice.php, row 77
 "This recipient is not among those paired with the register: it was deleted, put in the trash or given another type. Load the page again." => "Tento p\xF8\xEDjemce nen\xED mezi sp\xE1rovan\xFDmi s registrem: byl smaz\xE1n, p\xF8esunut do ko\x9Ae, nebo m\xE1 jin\xFD typ. Na\xE8t\xECte str\xE1nku znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 77
+// src/Isds/Advice.php, row 78
 "A page in the test environment changes no recipient." => "Str\xE1nka v testovac\xEDm prost\xF8ed\xED \x9E\xE1dn\xE9ho p\xF8\xEDjemce nem\xECn\xED.", // ai 2026-10
 
-// src/Isds/Advice.php, row 78
+// src/Isds/Advice.php, row 79
 "The sending is queued - recipients: %1. It goes on by itself, you may close the page." => "Rozes\xEDlka je za\xF8azena do fronty \x96 p\xF8\xEDjemc\xF9: %1. Pokra\xE8uje sama, str\xE1nku m\xF9\x9Eete zav\xF8\xEDt.", // ai 2026-10
 
-// src/Isds/Advice.php, row 79
+// src/Isds/Advice.php, row 80
 "The test message has gone (ID %1 in ISDS, reference number %2)." => "Testovac\xED zpr\xE1va ode\x9Ala (ID %1 v ISDS, \xE8\xEDslo jednac\xED %2).", // ai 2026-10
 
-// src/Isds/Advice.php, row 80
+// src/Isds/Advice.php, row 81
 "It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1." => "Nev\xED se, zda testovac\xED zpr\xE1va ode\x9Ala. Vyhledejte ji mezi odeslan\xFDmi zpr\xE1vami datov\xE9 schr\xE1nky podle \xE8\xEDsla jednac\xEDho %1.", // ai 2026-10
 
-// src/Isds/Advice.php, row 81
+// src/Isds/Advice.php, row 82
 "ISDS refused the test message." => "ISDS testovac\xED zpr\xE1vu odm\xEDtl.", // ai 2026-10
 
-// src/Isds/Advice.php, row 82
+// src/Isds/Advice.php, row 83
 "Another test message of this page is on its way, or one stopped a moment ago. Try it again in a few minutes." => "Jin\xE1 testovac\xED zpr\xE1va t\xE9to str\xE1nky je na cest\xEC, nebo se p\xF8ed chv\xEDl\xED zastavila. Zkuste to znovu za p\xE1r minut.", // ai 2026-10
 
-// src/Isds/Advice.php, row 83
+// src/Isds/Advice.php, row 84
 "The sending has been queued or sent already, so it cannot be changed or sent again. To send the letter once more, make a copy of it." => "Rozes\xEDlka u\x9E byla za\xF8azena do fronty nebo odesl\xE1na, proto ji nelze m\xECnit ani poslat znovu. Chcete-li dopis poslat je\x9At\xEC jednou, vytvo\xF8te jeho kopii.", // ai 2026-10
 
-// src/Isds/Advice.php, row 84
+// src/Isds/Advice.php, row 85
 "Choose the recipients and save the draft." => "Zvolte p\xF8\xEDjemce a ulo\x9Ete koncept.", // ai 2026-10
 
-// src/Isds/Advice.php, row 85
+// src/Isds/Advice.php, row 86
 "This page no longer offers the recipients saved with the draft, so it shows no choice of them. Choose the recipients anew and save the draft - the new choice replaces the one saved." => "Tato str\xE1nka u\x9E nenab\xEDz\xED p\xF8\xEDjemce ulo\x9Een\xE9 s konceptem, proto \x9E\xE1dn\xFD jejich v\xFDb\xECr neukazuje. Zvolte p\xF8\xEDjemce znovu a ulo\x9Ete koncept \x96 nov\xFD v\xFDb\xECr nahrad\xED ulo\x9Een\xFD.", // ai 2026-10
 
-// src/Isds/Advice.php, row 86
+// src/Isds/Advice.php, row 87
 "The number of recipients has changed since you confirmed %1. Check the choice and send it again." => "Po\xE8et p\xF8\xEDjemc\xF9 se zm\xECnil od chv\xEDle, kdy jste potvrdili %1. Zkontrolujte v\xFDb\xECr a ode\x9Alete znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 87
+// src/Isds/Advice.php, row 88
 "There are more recipients than this page may send to (%1). Narrow the choice." => "P\xF8\xEDjemc\xF9 je v\xEDc, ne\x9E sm\xED tato str\xE1nka obeslat (%1). Zu\x9Ete v\xFDb\xECr.", // ai 2026-10
 
-// src/Isds/Advice.php, row 88
+// src/Isds/Advice.php, row 89
 "The letter would reach no one: none of the recipients chosen has a data box it can go to." => "Dopis by nedo\x9Ael nikomu: \x9E\xE1dn\xFD ze zvolen\xFDch p\xF8\xEDjemc\xF9 nem\xE1 datovou schr\xE1nku, do kter\xE9 by mohl j\xEDt.", // ai 2026-10
 
-// src/Isds/Advice.php, row 89
+// src/Isds/Advice.php, row 90
 "No data box account is set up for this page. Ask the administrator." => "Pro tuto str\xE1nku nen\xED nastaven \x9E\xE1dn\xFD \xFA\xE8et datov\xE9 schr\xE1nky. Obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 90
+// src/Isds/Advice.php, row 91
 "This page or its slices are not ready to send. Ask the administrator." => "Tato str\xE1nka nebo jej\xED web\xEDky nejsou p\xF8ipraveny k odes\xEDl\xE1n\xED. Obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 91
+// src/Isds/Advice.php, row 92
 "The letter cannot go as a data message:" => "Dopis nem\xF9\x9Ee odej\xEDt jako datov\xE1 zpr\xE1va:", // ai 2026-10
 
-// src/Isds/Advice.php, row 92
+// src/Isds/Advice.php, row 93
 "The server could not make the letter now - there is nothing to fix in the draft. Try it again later, or ask the administrator." => "Server te\xEF nedok\xE1zal dopis sestavit \x96 v konceptu nen\xED co opravovat. Zkuste to znovu pozd\xECji, nebo se obra\x9Dte na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 93
+// src/Isds/Advice.php, row 94
 "The server has too little memory for the letter and its attachments (%1 MB needed). Ask the administrator." => "Server m\xE1 na dopis a jeho p\xF8\xEDlohy m\xE1lo pam\xECti (pot\xF8eba %1 MB). Obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 93
+// src/Isds/Advice.php, row 94
 "The server has too little memory for the letter and its attachments. Ask the administrator." => "Server m\xE1 na dopis a jeho p\xF8\xEDlohy m\xE1lo pam\xECti. Obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 94
+// src/Isds/Advice.php, row 95
 "The database cannot queue a sending safely. Ask the administrator." => "Datab\xE1ze nedok\xE1\x9Ee rozes\xEDlku bezpe\xE8n\xEC za\xF8adit do fronty. Obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 95
+// src/Isds/Advice.php, row 96
 "ISDS refused the login of the account, nothing was sent. Ask the administrator to check the login." => "ISDS odm\xEDtl p\xF8ihl\xE1\x9Aen\xED \xFA\xE8tu, nic nebylo odesl\xE1no. Po\x9E\xE1dejte administr\xE1tora, aby p\xF8ihl\xE1\x9Aen\xED zkontroloval.", // ai 2026-10
 
-// src/Isds/Advice.php, row 96
+// src/Isds/Advice.php, row 97
 "ISDS has blocked the logins from this server, nothing was sent. A new password does not help: AA tries to log in again a day after the block - try it again tomorrow, or ask the administrator." => "ISDS zablokoval p\xF8ihla\x9Aov\xE1n\xED z tohoto serveru, nic nebylo odesl\xE1no. Nov\xE9 heslo nepom\xF9\x9Ee: AA se zkus\xED znovu p\xF8ihl\xE1sit den po zablokov\xE1n\xED \x96 zkuste to znovu z\xEDtra, nebo se obra\x9Dte na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 97
+// src/Isds/Advice.php, row 98
 "The settings of the account are not complete, nothing was sent. Ask the administrator." => "Nastaven\xED \xFA\xE8tu nen\xED \xFApln\xE9, nic nebylo odesl\xE1no. Obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 98
+// src/Isds/Advice.php, row 99
 "ISDS does not answer, nothing was sent. Try it again in a while." => "ISDS neodpov\xEDd\xE1, nic nebylo odesl\xE1no. Zkuste to znovu za chv\xEDli.", // ai 2026-10
 
-// src/Isds/Advice.php, row 99
+// src/Isds/Advice.php, row 100
 "ISDS refused to tell whose the login of the account is, nothing was sent." => "ISDS odm\xEDtl sd\xEClit, komu p\xF8ihl\xE1\x9Aen\xED \xFA\xE8tu pat\xF8\xED, nic nebylo odesl\xE1no.", // ai 2026-10
 
-// src/Isds/Advice.php, row 100
+// src/Isds/Advice.php, row 101
 "No test data box is set up for this page - in production the administrator of the server sets it." => "Pro tuto str\xE1nku nen\xED nastavena \x9E\xE1dn\xE1 testovac\xED datov\xE1 schr\xE1nka \x96 v produk\xE8n\xEDm prost\xF8ed\xED ji nastavuje administr\xE1tor serveru.", // ai 2026-10
 
-// src/Isds/Advice.php, row 101
+// src/Isds/Advice.php, row 102
 "Choose one of the test data boxes of this page." => "Zvolte jednu z testovac\xEDch datov\xFDch schr\xE1nek t\xE9to str\xE1nky.", // ai 2026-10
 
-// src/Isds/Advice.php, row 102
+// src/Isds/Advice.php, row 103
 "A test message cannot go to the data box it is sent from. Choose another test box." => "Testovac\xED zpr\xE1va nem\xF9\x9Ee j\xEDt do datov\xE9 schr\xE1nky, ze kter\xE9 se pos\xEDl\xE1. Zvolte jinou testovac\xED schr\xE1nku.", // ai 2026-10
 
-// src/Isds/Advice.php, row 103
+// src/Isds/Advice.php, row 104
 "ISDS is being maintained until %1. Try it again then." => "ISDS je do %1 v \xFAdr\x9Eb\xEC. Zkuste to pak znovu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 103
+// src/Isds/Advice.php, row 104
 "ISDS is being maintained. Try it again later." => "ISDS je v \xFAdr\x9Eb\xEC. Zkuste to znovu pozd\xECji.", // ai 2026-10
 
-// src/Isds/Advice.php, row 105
+// src/Isds/Advice.php, row 106
 "This letter has already gone, or may have gone, to this test box on %2 (reference number %1). Change the draft to test it again." => "Tento dopis u\x9E do t\xE9to testovac\xED schr\xE1nky ode\x9Ael nebo mohl odej\xEDt %2 (\xE8\xEDslo jednac\xED %1). Chcete-li ho otestovat znovu, zm\xEC\xF2te koncept.", // ai 2026-10
 
-// src/Isds/Advice.php, row 106
+// src/Isds/Advice.php, row 107
 "This letter has already gone, or may have gone, to this test box (reference number %1). Change the draft to test it again." => "Tento dopis u\x9E do t\xE9to testovac\xED schr\xE1nky ode\x9Ael nebo mohl odej\xEDt (\xE8\xEDslo jednac\xED %1). Chcete-li ho otestovat znovu, zm\xEC\xF2te koncept.", // ai 2026-10
 
-// src/Isds/Advice.php, row 107
+// src/Isds/Advice.php, row 108
 "A message to this data box would be paid (a postal data message), and in production a test message goes only free of charge. Test with the data box of an authority." => "Zpr\xE1va do t\xE9to datov\xE9 schr\xE1nky by byla placen\xE1 (po\x9Atovn\xED datov\xE1 zpr\xE1va) a v produk\xE8n\xEDm prost\xF8ed\xED jde testovac\xED zpr\xE1va jen zdarma. Testujte s datovou schr\xE1nkou \xFA\xF8adu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 108
+// src/Isds/Advice.php, row 109
 "It could not be checked that the message would be free of charge, nothing was sent. Check the test box and try it again in a while." => "Nepoda\xF8ilo se ov\xEC\xF8it, \x9Ee zpr\xE1va bude zdarma, nic nebylo odesl\xE1no. Zkontrolujte testovac\xED schr\xE1nku a zkuste to znovu za chv\xEDli.", // ai 2026-10
 
-// src/Isds/Advice.php, row 109
+// src/Isds/Advice.php, row 110
 "The test message went as a paid postal data message." => "Testovac\xED zpr\xE1va ode\x9Ala jako placen\xE1 po\x9Atovn\xED datov\xE1 zpr\xE1va.", // ai 2026-10
 
-// src/Isds/Advice.php, row 110
+// src/Isds/Advice.php, row 111
 "The test message may have cost money: it may have gone as a paid postal data message." => "Testovac\xED zpr\xE1va mohla n\xECco st\xE1t: mohla odej\xEDt jako placen\xE1 po\x9Atovn\xED datov\xE1 zpr\xE1va.", // ai 2026-10
 
-// src/Isds/Advice.php, row 141
+// src/Isds/Advice.php, row 142
 "ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent." => "ISDS odm\xEDtl n\xECkolik zpr\xE1v po sob\xEC se stejn\xFDm stavem, nebo odm\xEDtl dotaz rozes\xEDlky \x96 komu pat\xF8\xED p\xF8ihl\xE1\x9Aen\xED \xFA\xE8tu, nebo kter\xE9 zpr\xE1vy byly odesl\xE1ny.", // ai 2026-10
 
-// src/Isds/Advice.php, row 142
+// src/Isds/Advice.php, row 143
 "After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again." => "Po odm\xEDtnut\xFDch zpr\xE1v\xE1ch po\x9Ale tla\xE8\xEDtko \x84Pokra\xE8ovat v odes\xEDl\xE1n\xED\x93 je\x9At\xEC jednu, a kdy\x9E ISDS odm\xEDtne i tu, rozes\xEDlka se znovu zastav\xED; po odm\xEDtnut\xE9m dotazu se tla\xE8\xEDtkem \x84Pokra\xE8ovat v odes\xEDl\xE1n\xED\x93 dotaz zopakuje.", // ai 2026-10
 
-// src/Isds/Advice.php, row 144
+// src/Isds/Advice.php, row 145
 "Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself." => "\xC8ek\xE1 se, a\x9E ISDS vyp\xED\x9Ae zpr\xE1vy, jejich\x9E osud zat\xEDm nen\xED zn\xE1m. Rozes\xEDlka je dohled\xE1 sama.", // ai 2026-10
 
-// src/Isds/Advice.php, row 145
+// src/Isds/Advice.php, row 146
 "The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself." => "Rozes\xEDlka skon\xE8ila \x96 to neznamen\xE1, \x9Ee ode\x9Aly v\x9Aechny zpr\xE1vy; to ukazuj\xED \xE8\xEDsla. Doru\xE8en\xED se sleduje v kolech; dal\x9A\xED p\xF8ijde samo.", // ai 2026-10
 
-// src/Isds/Advice.php, row 146
+// src/Isds/Advice.php, row 147
 "ISDS is being maintained. The sending waits till the end and goes on by itself." => "ISDS je v \xFAdr\x9Eb\xEC. Rozes\xEDlka po\xE8k\xE1 do jej\xEDho konce a pokra\xE8uje sama.", // ai 2026-10
 
-// src/Isds/Advice.php, row 147
+// src/Isds/Advice.php, row 148
 "The data box account of this page is no longer the one the sending was queued with. Ask the administrator." => "\xDA\xE8et datov\xE9 schr\xE1nky t\xE9to str\xE1nky u\x9E nen\xED ten, se kter\xFDm byla rozes\xEDlka za\xF8azena do fronty. Obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 148
+// src/Isds/Advice.php, row 149
 "ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers." => "ISDS neodpov\xEDd\xE1. AA to zkus\xED znovu samo; pokud se na tom rozes\xEDlka zastavila, zvolte \x84Pokra\xE8ovat v odes\xEDl\xE1n\xED\x93, jakmile ISDS odpov\xED.", // ai 2026-10
 
-// src/Isds/Advice.php, row 149
+// src/Isds/Advice.php, row 150
 "ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue." => "ISDS odm\xEDt\xE1 p\xF8ihl\xE1\x9Aen\xED \xFA\xE8tu. Po\x9E\xE1dejte administr\xE1tora, aby p\xF8ihl\xE1\x9Aen\xED zkontroloval, a pak zvolte \x84Pokra\xE8ovat v odes\xEDl\xE1n\xED\x93.", // ai 2026-10
 
-// src/Isds/Advice.php, row 150
+// src/Isds/Advice.php, row 151
 "ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator." => "ISDS zablokoval p\xF8ihla\x9Aov\xE1n\xED z tohoto serveru. Nov\xE9 heslo nepom\xF9\x9Ee: zvolte \x84Pokra\xE8ovat v odes\xEDl\xE1n\xED\x93 z\xEDtra, nebo se obra\x9Dte na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 151
+// src/Isds/Advice.php, row 152
 "The settings of the account are not complete. Ask the administrator." => "Nastaven\xED \xFA\xE8tu nen\xED \xFApln\xE9. Obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 152
+// src/Isds/Advice.php, row 153
 "What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "To, co bylo pro rozes\xEDlku zmrazeno \x96 dopis, jeho p\xF8\xEDlohy nebo p\xF8\xEDjemci \x96, chyb\xED nebo se zm\xECnilo, proto nem\xF9\x9Ee pokra\xE8ovat. Obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 153
+// src/Isds/Advice.php, row 154
 "The database cannot record the sending safely. Ask the administrator." => "Datab\xE1ze nedok\xE1\x9Ee rozes\xEDlku bezpe\xE8n\xEC zaznamenat. Obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 154
+// src/Isds/Advice.php, row 155
 "A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator." => "Krok rozes\xEDlky opakovan\xEC nepostoupil. Zvolte \x84Pokra\xE8ovat v odes\xEDl\xE1n\xED\x93; pokud se znovu zastav\xED, obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 155
+// src/Isds/Advice.php, row 156
 "A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Krok rozes\xEDlky se zastavil p\xF8ed koncem. AA to zkus\xED znovu samo; pokud se na tom rozes\xEDlka zastavila, obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 156
+// src/Isds/Advice.php, row 157
 "The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator." => "Konec rozes\xEDlky se nepoda\xF8ilo zaznamenat. AA to zkus\xED znovu samo; pokud se na tom rozes\xEDlka zastavila, obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 157
+// src/Isds/Advice.php, row 158
 "A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator." => "Krok rozes\xEDlky selhal na vnit\xF8n\xED chyb\xEC AA. Zvolte \x84Pokra\xE8ovat v odes\xEDl\xE1n\xED\x93; pokud sel\x9Ee znovu, obra\x9Dte se na administr\xE1tora.", // ai 2026-10
 
-// src/Isds/Advice.php, row 173
+// src/Isds/Advice.php, row 174
 "The data box of the recipient takes only paid postal data messages, and the sending data box may not send them." => "Datov\xE1 schr\xE1nka p\xF8\xEDjemce p\xF8ij\xEDm\xE1 jen placen\xE9 po\x9Atovn\xED datov\xE9 zpr\xE1vy a odes\xEDlaj\xEDc\xED datov\xE1 schr\xE1nka je pos\xEDlat nesm\xED.", // ai 2026-10
 
-// src/Isds/Advice.php, row 173
+// src/Isds/Advice.php, row 174
 "Test with the data box of an authority." => "Testujte s datovou schr\xE1nkou \xFA\xF8adu.", // ai 2026-10
 
-// src/Isds/Advice.php, row 174
+// src/Isds/Advice.php, row 175
 "The sending data box has been made inaccessible - no message can go from it now." => "Odes\xEDlaj\xEDc\xED datov\xE1 schr\xE1nka byla znep\xF8\xEDstupn\xECna \x96 te\xEF z n\xED nem\xF9\x9Ee odej\xEDt \x9E\xE1dn\xE1 zpr\xE1va.", // ai 2026-10
 
-// src/Isds/Advice.php, row 175
+// src/Isds/Advice.php, row 176
 "The subject, \"to hands\" or the name of an attachment holds a character ISDS does not take." => "P\xF8edm\xECt, \x84K ruk\xE1m\x93 nebo n\xE1zev p\xF8\xEDlohy obsahuje znak, kter\xFD ISDS nep\xF8ij\xEDm\xE1.", // ai 2026-10
 
-// src/Isds/Advice.php, row 183
+// src/Isds/Advice.php, row 184
 "ISDS answered with status %1." => "ISDS odpov\xECd\xECl stavem %1.", // ai 2026-10
 
-// src/Isds/Advice.php, row 193
+// src/Isds/Advice.php, row 194
 "The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "P\xF8edm\xECt nelze ulo\x9Eit: sm\xED m\xEDt nejv\xFD\x9Ae %1 znak\xF9 a \x9E\xE1dn\xFD tabul\xE1tor ani jin\xFD \xF8\xEDdic\xED znak. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
 
-// src/Isds/Advice.php, row 194
+// src/Isds/Advice.php, row 195
 "\"To hands\" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved." => "\x84K ruk\xE1m\x93 nelze ulo\x9Eit: sm\xED m\xEDt nejv\xFD\x9Ae %1 znak\xF9 a \x9E\xE1dn\xFD tabul\xE1tor ani jin\xFD \xF8\xEDdic\xED znak. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
 
-// src/Isds/Advice.php, row 195
+// src/Isds/Advice.php, row 196
 "The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "Text dopisu nelze ulo\x9Eit: je v\xECt\x9A\xED ne\x9E %1, nebo to nen\xED platn\xFD text. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
 
-// src/Isds/Advice.php, row 196
-"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "V\xFDb\xECr p\xF8\xEDjemc\xF9 nelze ulo\x9Eit: tato str\xE1nka ho nenab\xEDz\xED. Z konceptu se neulo\x9Eilo nic \x96 zvolte je je\x9At\xEC jednou a ulo\x9Ete ho.", // ai 2026-10
-
 // src/Isds/Advice.php, row 197
-"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "V\xFDb\xECr p\xF8\xEDjemc\xF9 nelze ulo\x9Eit: zvolit lze nejv\xFD\x9Ae %1 jednotliv\xFDch p\xF8\xEDjemc\xF9 a stejn\xEC tolik jich jednotliv\xEC vynechat. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
+"The header cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved." => "Z\xE1hlav\xED nelze ulo\x9Eit: je v\xECt\x9A\xED ne\x9E %1 nebo to nen\xED platn\xFD text. Z konceptu se neulo\x9Eilo nic.", // ai 2026-11
 
 // src/Isds/Advice.php, row 198
-"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Datov\xE1 zpr\xE1va nese krom\xEC dopisu nejv\xFD\x9Ae %1 p\xF8\xEDloh. Z konceptu se neulo\x9Eilo nic \x96 nejd\xF8\xEDv n\xECkter\xE9 odeberte.", // ai 2026-10
+"The footer cannot be saved: it may have at most %1 lines of at most %2 characters each - fewer when they are wide -, and no control character. Nothing of the draft was saved." => "Z\xE1pat\xED nelze ulo\x9Eit: \xF8\xE1dk\xF9 sm\xED m\xEDt nejv\xFD\x9Ae %1, znak\xF9 na \xF8\xE1dku nejv\xFD\x9Ae %2 (p\xF8i \x9Airok\xFDch znac\xEDch m\xE9n\xEC) a \x9E\xE1dn\xFD \xF8\xEDdic\xED znak. Z konceptu se neulo\x9Eilo nic.", // ai 2026-11
 
 // src/Isds/Advice.php, row 199
-"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "Soubor %1 nelze p\xF8ilo\x9Eit: tato str\xE1nka p\xF8ij\xEDm\xE1 jen soubory typ\xF9 %2. Ulo\x9Ete ho jako PDF, nebo p\xF8ilo\x9Ete soubory z archivu jednotliv\xEC. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
+"The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it." => "V\xFDb\xECr p\xF8\xEDjemc\xF9 nelze ulo\x9Eit: tato str\xE1nka ho nenab\xEDz\xED. Z konceptu se neulo\x9Eilo nic \x96 zvolte je je\x9At\xEC jednou a ulo\x9Ete ho.", // ai 2026-10
 
 // src/Isds/Advice.php, row 200
-"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "Soubor %1 nelze p\xF8ilo\x9Eit: jeho obsah neodpov\xEDd\xE1 typu, kter\xFD ud\xE1v\xE1 p\xF8\xEDpona. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
+"The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved." => "V\xFDb\xECr p\xF8\xEDjemc\xF9 nelze ulo\x9Eit: zvolit lze nejv\xFD\x9Ae %1 jednotliv\xFDch p\xF8\xEDjemc\xF9 a stejn\xEC tolik jich jednotliv\xEC vynechat. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
 
 // src/Isds/Advice.php, row 201
-"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "Soubor %1 je v\xECt\x9A\xED, ne\x9E tu sm\xED b\xFDt jeden soubor (%2). Z konceptu se neulo\x9Eilo nic. V\x9Aechny p\xF8\xEDlohy a dopis dohromady sm\xECj\xED m\xEDt nejv\xFD\x9Ae %3 \x96 to ov\xEC\xF8\xED testovac\xED zpr\xE1va.", // ai 2026-10
+"A data message carries at most %1 attachments beside the letter. Nothing of the draft was saved - remove some of them first." => "Datov\xE1 zpr\xE1va nese krom\xEC dopisu nejv\xFD\x9Ae %1 p\xF8\xEDloh. Z konceptu se neulo\x9Eilo nic \x96 nejd\xF8\xEDv n\xECkter\xE9 odeberte.", // ai 2026-10
 
 // src/Isds/Advice.php, row 202
-"The file %1 is empty. Nothing of the draft was saved." => "Soubor %1 je pr\xE1zdn\xFD. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
+"The file %1 cannot be attached: this page takes only files of the types %2. Save it as a PDF, or attach the files of an archive one by one. Nothing of the draft was saved." => "Soubor %1 nelze p\xF8ilo\x9Eit: tato str\xE1nka p\xF8ij\xEDm\xE1 jen soubory typ\xF9 %2. Ulo\x9Ete ho jako PDF, nebo p\xF8ilo\x9Ete soubory z archivu jednotliv\xEC. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
 
 // src/Isds/Advice.php, row 203
-"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "Soubor %1 nedorazil cel\xFD. Zkuste to znovu. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
+"The file %1 cannot be attached: its content is not of the type its extension names. Nothing of the draft was saved." => "Soubor %1 nelze p\xF8ilo\x9Eit: jeho obsah neodpov\xEDd\xE1 typu, kter\xFD ud\xE1v\xE1 p\xF8\xEDpona. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
 
 // src/Isds/Advice.php, row 204
+"The file %1 is larger than one file may be here (%2). Nothing of the draft was saved. All the attachments and the letter together may have at most %3 - a test message checks that." => "Soubor %1 je v\xECt\x9A\xED, ne\x9E tu sm\xED b\xFDt jeden soubor (%2). Z konceptu se neulo\x9Eilo nic. V\x9Aechny p\xF8\xEDlohy a dopis dohromady sm\xECj\xED m\xEDt nejv\xFD\x9Ae %3 \x96 to ov\xEC\xF8\xED testovac\xED zpr\xE1va.", // ai 2026-10
+
+// src/Isds/Advice.php, row 205
+"The file %1 is empty. Nothing of the draft was saved." => "Soubor %1 je pr\xE1zdn\xFD. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
+
+// src/Isds/Advice.php, row 206
+"The file %1 did not arrive whole. Try it again. Nothing of the draft was saved." => "Soubor %1 nedorazil cel\xFD. Zkuste to znovu. Z konceptu se neulo\x9Eilo nic.", // ai 2026-10
+
+// src/Isds/Advice.php, row 207
 "A value of the form cannot be taken. Load the page again and try it once more." => "Hodnotu z formul\xE1\xF8e nelze p\xF8evz\xEDt. Na\xE8t\xECte str\xE1nku znovu a zkuste to je\x9At\xEC jednou.", // ai 2026-10
 
-// src/Isds/Gate.php, row 1139
+// src/Isds/Gate.php, row 1143
 "The mass sending on this page is not ready - fix this first:" => "Hromadn\xE1 rozes\xEDlka na t\xE9to str\xE1nce nen\xED p\xF8ipravena \x96 nejd\xF8\xEDv opravte toto:", // ai 2026-10
 
-// src/Isds/Gate.php, row 1140
+// src/Isds/Gate.php, row 1144
 "Where to fix it:" => "Kde to opravit:", // ai 2026-10
 
 // src/Isds/Registry/Config.php, row 53
@@ -11130,37 +11489,34 @@ return [
 // src/Isds/Setup.php, row 115
 "Unknown settings of the mass sending: %1 - the settings are %2" => "Nezn\xE1m\xE1 nastaven\xED rozes\xEDlky: %1 \x96 mo\x9En\xE1 nastaven\xED jsou %2", // ai 2026-10
 
-// src/Isds/Setup.php, row 130
+// src/Isds/Setup.php, row 129
 "default_types names types that are not among types: %1" => "default_types uv\xE1d\xED typy, kter\xE9 nejsou mezi types: %1", // ai 2026-10
 
-// src/Isds/Setup.php, row 133
+// src/Isds/Setup.php, row 132
 "environment may only be \"%1\" - misc/datovka/datovka_conf.php decides when production is used" => "environment sm\xED b\xFDt jen \x84%1\x93 \x96 kdy se pou\x9Eije produkce, rozhoduje misc/datovka/datovka_conf.php", // ai 2026-10
 
-// src/Isds/Setup.php, row 136
-"Set letterhead to a text" => "Nastavte letterhead na text", // ai 2026-10
-
-// src/Isds/Setup.php, row 146
+// src/Isds/Setup.php, row 142
 "The settings of data boxes cannot be read now - ask the administrator of the server" => "Nastaven\xED datov\xFDch schr\xE1nek te\xEF nelze p\xF8e\xE8\xEDst \x96 obra\x9Dte se na spr\xE1vce serveru", // ai 2026-10
 
-// src/Isds/Setup.php, row 240
+// src/Isds/Setup.php, row 238
 "Set %1 to the id of a slice - 32 hexadecimal digits" => "Nastavte %1 na ID web\xEDku \x96 32 \x9Aestn\xE1ctkov\xFDch \xE8\xEDslic", // ai 2026-10
 
-// src/Isds/Setup.php, row 258
+// src/Isds/Setup.php, row 256
 "Set %1 to the id of a field - 16 characters like text...........1" => "Nastavte %1 na ID pol\xED\xE8ka \x96 16 znak\xF9 jako text...........1", // ai 2026-10
 
-// src/Isds/Setup.php, row 283
+// src/Isds/Setup.php, row 281
 "Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}" => "Nastavte types na objekt nab\xEDzen\xFDch typ\xF9 \xE8l\xE1nk\xF9, ka\x9Ed\xFD s popiskem: {jsonasoc:<type>:<label>:...}", // ai 2026-10
 
-// src/Isds/Setup.php, row 288
+// src/Isds/Setup.php, row 286
 "An item type in types may hold only letters, digits, spaces and the characters - _ . : %1" => "Typ \xE8l\xE1nku v types sm\xED obsahovat jen p\xEDsmena, \xE8\xEDslice, mezery a znaky - _ . : %1", // ai 2026-10
 
-// src/Isds/Setup.php, row 303
+// src/Isds/Setup.php, row 301
 "Set %1 to a text, or to a list of texts: [\"...\",\"...\"]" => "Nastavte %1 na text nebo na seznam text\xF9: [\"...\",\"...\"]", // ai 2026-10
 
-// src/Isds/Setup.php, row 321
+// src/Isds/Setup.php, row 319
 "test_box: %1 is not the id of a data box - 7 letters or digits" => "test_box: %1 nen\xED ID datov\xE9 schr\xE1nky \x96 7 p\xEDsmen nebo \xE8\xEDslic", // ai 2026-10
 
-// src/Isds/Setup.php, row 351
+// src/Isds/Setup.php, row 349
 "Set max_recipients to a number from 1 to %1" => "Nastavte max_recipients na \xE8\xEDslo od 1 do %1", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 67
@@ -11197,7 +11553,7 @@ return [
 "The field %1 of slice \"%2\" is protected - name the field that tells a member" => "Pol\xED\xE8ko %1 web\xEDku \x84%2\x93 je chr\xE1n\xECn\xE9 \x96 uve\xEFte pol\xED\xE8ko, kter\xE9 ozna\xE8uje \xE8lena", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 179
-// src/Optimize/CheckSiteStateFiles.php, row 72
+// src/Optimize/CheckSiteStateFiles.php, row 81
 // src/Optimize/CheckUniversalAnalytics.php, row 71
 "Site settings" => "Nastaven\xED webu", // ai 2026-10
 
@@ -11256,7 +11612,7 @@ return [
 "Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "Web\xEDk \x84%1\x93 p\xF8id\xE1v\xE1, co rozes\xEDlka ukl\xE1d\xE1 do pol\xED\xE8ek %2, do hodnot \x96 v nastaven\xED ka\x9Ed\xE9ho z nich vypn\xECte \x84%3\x93", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 385
-// src/Widget/Widget.php, row 786
+// src/Widget/Widget.php, row 785
 "Add to Constant" => "P\xF8idat do konstant",
 
 // src/Later/ComputedfieldsUpdater.php, row 84
@@ -11292,40 +11648,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "Tento \xF8\xE1dek zde nelze ulo\x9Eit.", // ai 2026-10
 
-// src/Manager.php, row 812
+// src/Manager.php, row 821
 "Searchbar" => "Vyhled\xE1vac\xED li\x9Ata",
 
-// src/Manager.php, row 813
+// src/Manager.php, row 822
 "Scroller" => "Str\xE1nkov\xE1n\xED",
 
-// src/Manager.php, row 814
+// src/Manager.php, row 823
 "Msg" => "Zpr\xE1va",
 
-// src/Manager.php, row 815
+// src/Manager.php, row 824
 "Bin" => "Slo\x9Eka",
 
-// src/Manager.php, row 817
+// src/Manager.php, row 826
 "Manager ID" => "ID manageru",
 
-// src/Manager.php, row 1191
+// src/Manager.php, row 1200
 "The action was not performed - use the button on the page." => "Akce nebyla provedena - pou\x9Eijte tla\xE8\xEDtko na str\xE1nce.", // ai 2026-10
 
-// src/Manager.php, row 1272
+// src/Manager.php, row 1281
 "Edit id" => "Id pro editaci",
 
-// src/Manager.php, row 1286
+// src/Manager.php, row 1295
 "Hold Shift and click to select multiple rows" => "V\xEDce \xF8\xE1dk\xF9 vyberete kliknut\xEDm s podr\x9Eenou kl\xE1vesou Shift",
 
-// src/Manager.php, row 1324
+// src/Manager.php, row 1333
 "Are you sure you want to empty trash?" => "Opravdu chcete vymazat zpr\xE1vy z ko\x9Ae?",
 
-// src/Manager.php, row 1426
+// src/Manager.php, row 1435
 "Go" => "Je\xEF",
 
-// src/Manager.php, row 1439
+// src/Manager.php, row 1448
 "No item selected. Perform action for all filtered items? " => "Nen\xED vybr\xE1n \x9E\xE1dn\xFD \xE8l\xE1nek. Prov\xE9st akci pro v\x9Aechny vyfiltrovan\xE9 \xE8l\xE1nky?",
 
-// src/Manager.php, row 1439
+// src/Manager.php, row 1448
 "Run for %1 items" => "Spustit pro %1 \xE8l\xE1nk\xF9",
 
 // src/Manageraction/AbstractManageraction.php, row 47
@@ -11380,11 +11736,8 @@ return [
 // src/Manageraction/Central_MoveItem.php, row 44
 "Hold" => "Do z\xE1sobn\xEDku",
 
-// src/Manageraction/Central_OptimizeType.php, row 34
-"Update DB (sql_update)" => "Aktualizovat DB (sql_update)",
-
-// src/Manageraction/Central_OptimizeType.php, row 49
-"Error: %1" => "Chyba: %1", // ai 2026-10
+// src/Manageraction/Central_OptimizeRun.php, row 16
+"Optimize - run a test or repair..." => "Optimalizovat - spustit test nebo opravu...", // ai 2026-11
 
 // src/Manageraction/Import_Delete.php, row 19
 // src/Manageraction/Object_Delete.php, row 19
@@ -11876,7 +12229,7 @@ return [
 "Trim text fields" => "O\xF8\xEDznout textov\xE1 pol\xED\xE8ka", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 29
-"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "P\xF8epne textov\xE1 pol\xED\xE8ka z vkl\xE1dac\xED funkce \x84Text = nem\xECnit\x93 na \x84O\xF8\xEDznout\x93, tak\x9Ee se mezery a nov\xE9 \xF8\xE1dky kolem hodnoty neukl\xE1daj\xED. Pol\xED\xE8ka pro k\xF3d, jedine\xE8n\xE9 hodnoty, kopie hesel a pol\xED\xE8ka, jejich\x9E hodnoty takov\xE9 mezery maj\xED, si nastaven\xED ponechaj\xED. D\xF8\xEDve ulo\x9Een\xE9 hodnoty se nem\xECn\xED.", // ai 2026-10
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Text areas, HTML editors, fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "P\xF8epne textov\xE1 pol\xED\xE8ka z vkl\xE1dac\xED funkce \x84Text = nem\xECnit\x93 na \x84O\xF8\xEDznout\x93, tak\x9Ee mezery a od\xF8\xE1dkov\xE1n\xED kolem hodnoty se neukl\xE1daj\xED. Textov\xE9 oblasti, HTML editory, pol\xED\xE8ka pro k\xF3d, jedine\xE8n\xE9 hodnoty, kopie hesel a pol\xED\xE8ka, jejich\x9E hodnoty takov\xE9 mezery obsahuj\xED, si nastaven\xED ponechaj\xED. D\xF8\xEDve ulo\x9Een\xE9 hodnoty se nem\xECn\xED.", // ai 2026-11
 
 // src/Optimize/ChangeQte2Trm.php, row 77
 "%1 text fields switched to Trim" => "Textov\xE1 pol\xED\xE8ka p\xF8epnut\xE1 na \x84O\xF8\xEDznout\x93: %1", // ai 2026-10
@@ -11924,7 +12277,7 @@ return [
 // src/Optimize/CheckServerRefusals.php, row 69
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckTrustedProxies.php, row 104
-// src/Optimize/CheckUploadRefusals.php, row 91
+// src/Optimize/CheckUploadRefusals.php, row 95
 // src/Optimize/CheckUserAliasFunctionLog.php, row 88
 // src/Optimize/CheckViewSliceRefusals.php, row 163, 195
 "Days seen" => "Dn\xED v\xFDskytu", // ai 2026-10
@@ -11949,7 +12302,7 @@ return [
 // src/Optimize/CheckServerRefusals.php, row 70
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckTrustedProxies.php, row 105
-// src/Optimize/CheckUploadRefusals.php, row 92
+// src/Optimize/CheckUploadRefusals.php, row 96
 // src/Optimize/CheckUserAliasFunctionLog.php, row 89
 // src/Optimize/CheckViewSliceRefusals.php, row 164, 196
 // src/Optimize/StateCheckModel.php, row 270
@@ -12020,14 +12373,6 @@ return [
 
 // src/Optimize/CheckAlerts.php, row 144
 "Selection" => "V\xFDb\xECr", // ai 2026-10
-
-// src/Optimize/CheckAlerts.php, row 145
-// src/Optimize/CheckIsds.php, row 142, 154
-// src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
-// src/Optimize/CheckIsdsConf.php, row 104, 107, 156
-// src/Optimize/CheckIsdsRegistry.php, row 119, 172
-// src/Optimize/StateCheckModel.php, row 219
-"Problem" => "Probl\xE9m", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 146
 "the selection was deleted" => "v\xFDb\xECr byl smaz\xE1n", // ai 2026-10
@@ -12369,7 +12714,7 @@ return [
 "Reads the stored stream versions and catalogs of the imports and lists those that cannot be read." => "Na\xE8te ulo\x9Een\xE9 verze proud\xF9 a katalogy import\xF9 a vyp\xED\x9Ae ty, kter\xE9 nelze p\xF8e\xE8\xEDst.", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 48
-// src/Optimize/CheckImports.php, row 80
+// src/Optimize/CheckImports.php, row 81
 "No import is defined" => "\x8E\xE1dn\xFD import nen\xED definov\xE1n", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 60
@@ -12390,144 +12735,145 @@ return [
 // src/Optimize/CheckImports.php, row 40
 "Lists imports stopped by an error or not moving on, imports that cannot run, damaged keys, failures in the log and records left by deleted imports." => "Vyp\xED\x9Ae importy zastaven\xE9 chybou nebo nepostupuj\xEDc\xED, importy, kter\xE9 nemohou b\xEC\x9Eet, po\x9Akozen\xE9 kl\xED\xE8e, chyby v logu a z\xE1znamy po smazan\xFDch importech.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 80
+// src/Optimize/CheckImports.php, row 81
 "%1 imports, none needs attention" => "Import\xF9: %1, \x9E\xE1dn\xFD nevy\x9Eaduje pozornost", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 93
+// src/Optimize/CheckImports.php, row 94
 "Removed %1 runs and %2 stream states and catalogs of deleted imports." => "Odstran\xECno ze smazan\xFDch import\xF9 - b\xECh\xF9: %1, stav\xF9 proud\xF9 a katalog\xF9: %2.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 150
+// src/Optimize/CheckImports.php, row 151
 "An import stopped by an error" => "Import zastaven\xFD chybou", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 150, 287
+// src/Optimize/CheckImports.php, row 151, 290
 // src/Optimize/CheckInstallRuns.php, row 62
 // src/Optimize/CheckIsdsRegistry.php, row 142
 // src/Optimize/CheckIsdsRuns.php, row 163, 200
+// src/Optimize/CheckOptimizeRuns.php, row 60
 // src/Optimize/CheckQueue.php, row 88, 98
 "Error" => "Chyba", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 150
+// src/Optimize/CheckImports.php, row 151
 "Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported." => "Nic dal\x9A\xEDho se neimportuje, dokud n\xECkdo nezas\xE1hne nebo dokud import znovu nespust\xED napl\xE1novan\xE1 \xFAloha (t\xEDm se tento b\xECh ukon\xE8\xED). Otev\xF8ete import, pod\xEDvejte se na chybu, odstra\xF2te jej\xED p\xF8\xED\xE8inu a zvolte Pokra\xE8ovat - nebo Ukon\xE8it, co\x9E ponech\xE1, co bylo naimportov\xE1no.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 154
+// src/Optimize/CheckImports.php, row 155
 "An import has not moved on for %1 hours" => "Import stoj\xED u\x9E %1 h", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 154
+// src/Optimize/CheckImports.php, row 155
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Idle since" => "Ne\xE8inn\xFD od", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 154
+// src/Optimize/CheckImports.php, row 155
 "No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run." => "Nepracuje na n\xECm \x9E\xE1dn\xFD krok fronty. Ov\xEC\xF8te, \x9Ee cron spou\x9At\xED frontu \xFAloh a \x9Ee jej\xED kola jsou na krok dost dlouh\xE1 (TOEXECUTE_ALLOWED_TIME v config.php), a pak u importu zvolte Pokra\xE8ovat. Pl\xE1novan\xE9 spu\x9At\xECn\xED importu ho ukon\xE8\xED a zah\xE1j\xED nov\xFD b\xECh.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 171
+// src/Optimize/CheckImports.php, row 172
 "Imports cannot run: a table does not support transactions" => "Importy nemohou b\xEC\x9Eet: tabulka nepodporuje transakce", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 171
+// src/Optimize/CheckImports.php, row 172
 "Table" => "Tabulka", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 171
+// src/Optimize/CheckImports.php, row 172
 "Every run is refused. Convert the table to InnoDB or ask the server administrator." => "Ka\x9Ed\xFD b\xECh je odm\xEDtnut. P\xF8eve\xEFte tabulku na InnoDB nebo se obra\x9Dte na spr\xE1vce serveru.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 176
+// src/Optimize/CheckImports.php, row 177
 "not found" => "nenalezeno", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 180
+// src/Optimize/CheckImports.php, row 181
 "%1 imports have a source that is not available" => "Importy se zdrojem, kter\xFD nen\xED dostupn\xFD: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 180
+// src/Optimize/CheckImports.php, row 181
 "A run of such an import stops in error at once. Fix or put back the source file, or delete the import." => "B\xECh takov\xE9ho importu se okam\x9Eit\xEC zastav\xED na chyb\xEC. Opravte nebo vra\x9Dte soubor zdroje, nebo import sma\x9Ete.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 197
+// src/Optimize/CheckImports.php, row 198
 "Another record holds the place of the stream state or catalog of an import" => "M\xEDsto stavu proud\xF9 nebo katalogu importu zab\xEDr\xE1 jin\xFD z\xE1znam", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 197
+// src/Optimize/CheckImports.php, row 198
 "The end of each step of its runs fails on it, and deleting the import leaves it. Delete the object at the id of its stream state or catalog." => "Konec ka\x9Ed\xE9ho kroku jeho b\xECh\xF9 na n\xECm sel\x9Ee a smaz\xE1n\xED importu ho ponech\xE1. Sma\x9Ete objekt s id jeho stavu proud\xF9 nebo katalogu.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 206
+// src/Optimize/CheckImports.php, row 207
 "The last run of an import skipped 1 stream: the source went round" => "Posledn\xED b\xECh importu p\xF8esko\xE8il 1 proud: zdroj se zacyklil", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 206
+// src/Optimize/CheckImports.php, row 207
 "The last run of an import skipped %1 streams: the source went round" => "Posledn\xED b\xECh importu p\xF8esko\xE8il proudy (%1): zdroj se zacyklil", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 206
+// src/Optimize/CheckImports.php, row 207
 "The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams." => "Zdroj vydal stejnou \xFAlohu znovu nebo v\xEDc \xFAloh, ne\x9E s\xE1m povoluje, tak\x9Ee b\xECh p\xF8esko\xE8il zbytek t\xECchto proud\xF9 a jejich data mohou chyb\xECt. Zdroj str\xE1nkuje chybn\xEC nebo zm\xECnil str\xE1nkov\xE1n\xED; zkontrolujte zdroj a pak import spus\x9Dte znovu. Proudy jmenuje detail importu.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 209
+// src/Optimize/CheckImports.php, row 210
 "The last run of an import had %1 item errors" => "Posledn\xED b\xECh importu m\xECl chyby \xE8l\xE1nk\xF9: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 209
+// src/Optimize/CheckImports.php, row 210
 "The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again." => "Ostatn\xED \xE8l\xE1nky se ulo\x9Eily. Detail importu vyp\xED\x9Ae prvn\xED chyby; opravte data nebo mapov\xE1n\xED a import spus\x9Dte znovu.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 213
+// src/Optimize/CheckImports.php, row 215
 "An enabled import has no planned task" => "Zapnut\xFD import nem\xE1 napl\xE1novanou \xFAlohu", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 213
-"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "\x8E\xE1dn\xE1 napl\xE1novan\xE1 \xFAloha web\xEDku nevol\xE1 {import} s jeho jm\xE9nem nebo id, tak\x9Ee b\xEC\x9E\xED jen ru\xE8n\xEC. Napl\xE1nujte \xFAlohu, nebo vypn\xECte volbu Zapnuto.", // ai 2026-10
+// src/Optimize/CheckImports.php, row 215
+"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch the import off: in \"%1\" of the slice click \"%2\" at the import and untick \"%3\"." => "\x8E\xE1dn\xE1 napl\xE1novan\xE1 \xFAloha web\xEDku nevol\xE1 {import} s n\xE1zvem nebo id tohoto importu, tak\x9Ee se import spou\x9At\xED jen ru\xE8n\xEC. Napl\xE1nujte \xFAlohu, nebo import vypn\xECte: v \x84%1\x93 web\xEDku klikn\xECte u importu na \x84%2\x93 a zru\x9Ate za\x9Akrtnut\xED \x84%3\x93.", // ai 2026-11
 
-// src/Optimize/CheckImports.php, row 218
+// src/Optimize/CheckImports.php, row 220
 "%1 imports of one slice have the same name" => "Importy jednoho web\xEDku se stejn\xFDm jm\xE9nem: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 218
+// src/Optimize/CheckImports.php, row 220
 "{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one." => "{import} je nedok\xE1\x9Ee rozli\x9Ait a jm\xE9no odm\xEDtne, tak\x9Ee napl\xE1novan\xE1 \xFAloha s n\xEDm sel\x9Ee. P\xF8ejmenujte v\x9Aechny krom\xEC jednoho.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 233
+// src/Optimize/CheckImports.php, row 236
 "The last check of an import source cannot be read" => "Posledn\xED kontrolu zdroje importu nelze p\xF8e\xE8\xEDst", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 233
+// src/Optimize/CheckImports.php, row 236
 "Its stored result is damaged. The next check of the source stores it again." => "Ulo\x9Een\xFD v\xFDsledek kontroly je po\x9Akozen\xFD. P\xF8\xED\x9At\xED kontrola zdroje ho ulo\x9E\xED znovu.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 236
+// src/Optimize/CheckImports.php, row 239
 "The last check of an import source failed" => "Posledn\xED kontrola zdroje importu selhala", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 236, 238
+// src/Optimize/CheckImports.php, row 239, 241
 "Checked" => "Zkontrolov\xE1no", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 236
+// src/Optimize/CheckImports.php, row 239
 "A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again." => "Ostr\xFD b\xECh se zastav\xED na chyb\xEC, kdy\x9E zdroj neprojde kontrolou. Detail importu ukazuje, co zdroj \xF8ekl; opravte kl\xED\xE8 nebo nastaven\xED a zdroj znovu zkontrolujte.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 238
+// src/Optimize/CheckImports.php, row 241
 "The last check of an import source passed with a remark" => "Posledn\xED kontrola zdroje importu pro\x9Ala s pozn\xE1mkou", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 238
+// src/Optimize/CheckImports.php, row 241
 "The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said." => "Import b\xEC\x9E\xED, ale zdroj upozor\xF2uje na n\xECco k oprav\xEC - nap\xF8\xEDklad definice, kter\xE9 vynech\xE1v\xE1. Detail importu ukazuje, co zdroj \xF8ekl.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 244
+// src/Optimize/CheckImports.php, row 247
 "The catalog of an import source is incomplete" => "Katalog zdroje importu je ne\xFApln\xFD", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 244
+// src/Optimize/CheckImports.php, row 247
 "The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again." => "Posledn\xED kontrola nedokon\xE8ila v\xFDpis zdroje, tak\x9Ee detail importu nem\xF9\x9Ee ur\xE8it, kter\xE9 proudy u\x9E zdroj nem\xE1. Zkontrolujte zdroj znovu.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 260
+// src/Optimize/CheckImports.php, row 263
 "%1 records of deleted imports are left: runs, stream states, catalogs" => "Zb\xFDvaj\xED z\xE1znamy smazan\xFDch import\xF9 (%1): b\xEChy, stavy proud\xF9, katalogy", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 262
+// src/Optimize/CheckImports.php, row 265
 "A step of a deleted import is still working and may store items until its time runs out. Repair deletes the records; the step then writes nothing back." => "Krok smazan\xE9ho importu je\x9At\xEC pracuje a m\xF9\x9Ee ukl\xE1dat \xE8l\xE1nky, dokud mu nevypr\x9A\xED \xE8as. Opravit z\xE1znamy sma\x9Ee; krok pak u\x9E nic nezap\xED\x9Ae zp\xECt.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 262
+// src/Optimize/CheckImports.php, row 265
 "Nothing uses them and nothing else removes them. Repair deletes them with their queued steps." => "Nic je nepou\x9E\xEDv\xE1 a nic jin\xE9ho je neodstran\xED. Opravit je sma\x9Ee i s jejich kroky ve front\xEC.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "A key in config.php is damaged" => "Kl\xED\xE8 v config.php je po\x9Akozen\xFD", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "Kl\xED\xE8 obsahuje zalomen\xED \xF8\xE1dku nebo NUL, tak\x9Ee ho \x9E\xE1dn\xFD zdroj importu nesm\xED pou\x9E\xEDt. Opravte konstantu v config.php.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 272
+// src/Optimize/CheckImports.php, row 275
 "A JSON key (a Google service account) fits on one line: paste the line that %1 prints." => "Kl\xED\xE8 JSON (servisn\xED \xFA\xE8et Google) se vejde na jeden \xF8\xE1dek: vlo\x9Ete \xF8\xE1dek, kter\xFD vyp\xED\x9Ae %1.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 291
+// src/Optimize/CheckImports.php, row 294
 "Imports logged %1 failures in the last 7 days" => "Importy za posledn\xEDch 7 dn\xED zalogovaly chyby: %1", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 295
+// src/Optimize/CheckImports.php, row 298
 "A failed queue step stops its import in error; the other rows are failures outside a step, such as refreshing cached pages after an import was deleted. Only the error class and place, or the code of a refusal, are logged - the message may hold a key." => "Ne\xFAsp\xEC\x9An\xFD krok fronty zastav\xED sv\xF9j import chybou; ostatn\xED \xF8\xE1dky jsou chyby mimo krok, nap\xF8\xEDklad obnova str\xE1nek v cache po smaz\xE1n\xED importu. Loguje se jen t\xF8\xEDda a m\xEDsto chyby nebo k\xF3d odm\xEDtnut\xED - zpr\xE1va m\xF9\x9Ee obsahovat kl\xED\xE8.", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 296
+// src/Optimize/CheckImports.php, row 299
 "Failed steps" => "Ne\xFAsp\xEC\x9An\xE9 kroky", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 296
+// src/Optimize/CheckImports.php, row 299
 "Other failures" => "Ostatn\xED chyby", // ai 2026-10
 
-// src/Optimize/CheckImports.php, row 373
+// src/Optimize/CheckImports.php, row 397
 "Import detail" => "Detail importu", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 16
@@ -12912,7 +13258,7 @@ return [
 "Test boxes of ISDS accounts AA cannot read: %1" => "Testovac\xED schr\xE1nky \xFA\xE8t\xF9 ISDS, kter\xE9 AA nem\xF9\x9Ee p\xF8e\xE8\xEDst: %1", // ai 2026-10
 
 // src/Optimize/CheckIsdsConf.php, row 218
-"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each. Until then the account sends, but no test message of a draft goes from it." => "Zapi\x9Ate test_boxes jako seznam ID datov\xFDch schr\xE1nek: ['<ID schr\xE1nky>', ...], ka\x9Ed\xE9 7 p\xEDsmen nebo \xE8\xEDslic. Do t\xE9 doby \xFA\xE8et odes\xEDl\xE1, ale \x9E\xE1dn\xE1 testovac\xED zpr\xE1va konceptu z n\xECj neodejde.", // ai 2026-10
+"Write test_boxes as a list of data box ids: ['<data box id>', ...], 7 letters or digits each; a box may say whose it is: '<data box id>' => '<name>', at most %1 characters. Until then the account sends, but no test message of a draft goes from it." => "Zapi\x9Ate test_boxes jako seznam ID datov\xFDch schr\xE1nek: ['<ID schr\xE1nky>', ...], ka\x9Ed\xE9 7 p\xEDsmen nebo \xE8\xEDslic; u schr\xE1nky lze uv\xE9st, \xE8\xED je: '<ID schr\xE1nky>' => '<n\xE1zev>', znak\xF9 nejv\xFD\x9Ae %1. Do t\xE9 doby \xFA\xE8et odes\xEDl\xE1, ale \x9E\xE1dn\xE1 testovac\xED zpr\xE1va konceptu z n\xECj neodejde.", // ai 2026-11
 
 // src/Optimize/CheckIsdsConf.php, row 235
 "Paid tests of ISDS accounts AA cannot read: %1" => "Placen\xE9 testy \xFA\xE8t\xF9 ISDS, kter\xE9 AA nem\xF9\x9Ee p\xF8e\xE8\xEDst: %1", // ai 2026-10
@@ -12956,28 +13302,28 @@ return [
 // src/Optimize/CheckIsdsConf.php, row 398
 "Give the file the owner, group and mode of include/config.php, as each site may run PHP as a user of its own, and check that open_basedir of each site lets PHP reach the file (and the target of a link). Until then AA runs as if there were no file." => "Dejte souboru vlastn\xEDka, skupinu a re\x9Eim jako include/config.php, proto\x9Ee ka\x9Ed\xFD web m\xF9\x9Ee spou\x9At\xECt PHP pod vlastn\xEDm u\x9Eivatelem, a ov\xEC\xF8te, \x9Ee open_basedir ka\x9Ed\xE9ho webu pust\xED PHP k souboru (i k c\xEDli odkazu). Do t\xE9 doby AA b\xEC\x9E\xED, jako by soubor neexistoval.", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 37
+// src/Optimize/CheckIsdsPdf.php, row 38
 "Letters to data boxes as a PDF" => "Dopisy do datov\xFDch schr\xE1nek jako PDF", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 42
+// src/Optimize/CheckIsdsPdf.php, row 43
 "Makes a short letter into a PDF, as a mass sending to data boxes does with the letter of each campaign - only when an ISDS account of misc/datovka/datovka_conf.php sends for a site of this database." => "P\xF8evede kr\xE1tk\xFD dopis do PDF tak, jako se p\xF8ev\xE1d\xED dopis ka\x9Ed\xE9 rozes\xEDlky do datov\xFDch schr\xE1nek \x96 jen kdy\x9E \xFA\xE8et ISDS z misc/datovka/datovka_conf.php odes\xEDl\xE1 pro web t\xE9to datab\xE1ze.", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 81
+// src/Optimize/CheckIsdsPdf.php, row 82
 "AA makes letters to data boxes into a PDF" => "AA p\xF8ev\xE1d\xED dopisy do datov\xFDch schr\xE1nek do PDF", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 86
+// src/Optimize/CheckIsdsPdf.php, row 87
 "A letter to a data box cannot be made into a PDF" => "Dopis do datov\xE9 schr\xE1nky nelze p\xF8ev\xE9st do PDF", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 87
+// src/Optimize/CheckIsdsPdf.php, row 88
 "Until then no campaign can be sent to data boxes." => "Do t\xE9 doby nelze do datov\xFDch schr\xE1nek odeslat \x9E\xE1dnou rozes\xEDlku.", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 88
+// src/Optimize/CheckIsdsPdf.php, row 89
 "dompdf, which makes the PDF, is missing: run composer install in the directory of AA." => "Chyb\xED dompdf, kter\xE9 vytv\xE1\xF8\xED PDF: spus\x9Dte composer install v adres\xE1\xF8i AA.", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 89
+// src/Optimize/CheckIsdsPdf.php, row 90
 "PHP lacks the GD extension, which draws the images of a letter: install it and restart PHP." => "PHP chyb\xED roz\x9A\xED\xF8en\xED GD, kter\xE9 kresl\xED obr\xE1zky dopisu: nainstalujte ho a restartujte PHP.", // ai 2026-10
 
-// src/Optimize/CheckIsdsPdf.php, row 90
+// src/Optimize/CheckIsdsPdf.php, row 91
 "Run composer install in the directory of AA - it brings dompdf and its fonts - and check that PHP may write to its temporary directory (sys_temp_dir)." => "Spus\x9Dte composer install v adres\xE1\xF8i AA \x96 dopln\xED dompdf a jeho p\xEDsma \x96 a ov\xEC\xF8te, \x9Ee PHP sm\xED zapisovat do sv\xE9ho do\xE8asn\xE9ho adres\xE1\xF8e (sys_temp_dir).", // ai 2026-10
 
 // src/Optimize/CheckIsdsRegistry.php, row 30
@@ -13257,7 +13603,7 @@ return [
 // src/Optimize/CheckLoginAddresses.php, row 107
 "Logins come from %1 addresses; no address slowed down after failed logins is shared by several users" => "Po\xE8et adres, ze kter\xFDch se p\xF8ihla\x9Auje: %1; \x9E\xE1dnou adresu zpomalenou po ne\xFAsp\xEC\x9An\xFDch p\xF8ihl\xE1\x9Aen\xEDch nesd\xEDl\xED v\xEDce u\x9Eivatel\xF9", // ai 2026-10
 
-// src/Optimize/CheckLoginAddresses.php, row 112
+// src/Optimize/CheckLoginAddresses.php, row 124
 "If %1 is a proxy in front of AA, add it to AA_TRUSTED_PROXIES in include/config.php: %2 - AA then counts each visitor by their own address." => "Pokud je %1 proxy p\xF8ed AA, p\xF8idejte ji do AA_TRUSTED_PROXIES v include/config.php: %2 \x96 AA pak po\xE8\xEDt\xE1 ka\x9Ed\xE9ho n\xE1v\x9At\xECvn\xEDka podle jeho vlastn\xED adresy.", // ai 2026-10
 
 // src/Optimize/CheckNightly.php, row 30
@@ -13487,6 +13833,30 @@ return [
 
 // src/Optimize/CheckObjectFormRefusals.php, row 113
 "No object form was refused in the last 30 days" => "Za posledn\xEDch 30 dn\xED nebyl odm\xEDtnut \x9E\xE1dn\xFD formul\xE1\xF8 objektu", // ai 2026-10
+
+// src/Optimize/CheckOptimizeRuns.php, row 16
+"Optimize runs of Central" => "B\xEChy optimalizace v Central", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 21
+"Warns about Optimize runs on several AAs that hang and lists those stopped by an error." => "Upozorn\xED na b\xEChy optimalizace na v\xEDce AA, kter\xE9 uv\xE1zly, a vyp\xED\x9Ae ty, kter\xE9 se zastavily na chyb\xEC.", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 57
+"AAs done" => "Hotov\xE1 AA", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 64
+"An Optimize run on several AAs stopped by an error" => "B\xECh optimalizace na v\xEDce AA se zastavil na chyb\xEC", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 64
+"An Optimize run on several AAs has not moved on for %1 hours" => "B\xECh optimalizace na v\xEDce AA se nepohnul u\x9E %1 h", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 67
+"Some AAs of the run were not asked. Check that the task queue of this AA runs; on the page of the run Continue goes on, End keeps the results so far." => "N\xECkter\xE1 AA b\xEChu nebyla dot\xE1z\xE1na. Zkontrolujte, \x9Ee b\xEC\x9E\xED fronta \xFAloh tohoto AA; na str\xE1nce b\xEChu \x84Pokra\xE8ovat\x93 nav\xE1\x9Ee, \x84Ukon\xE8it\x93 ponech\xE1 dosavadn\xED v\xFDsledky.", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 68
+"The run" => "B\xECh", // ai 2026-11
+
+// src/Optimize/CheckOptimizeRuns.php, row 72
+"No Optimize run of Central is stuck" => "\x8E\xE1dn\xFD b\xECh optimalizace v Central neuv\xE1zl", // ai 2026-11
 
 // src/Optimize/CheckPasskeys.php, row 35
 "Passkey logins" => "P\xF8ihl\xE1\x9Aen\xED p\xF8\xEDstupov\xFDm kl\xED\xE8em", // ai 2026-11
@@ -13840,22 +14210,22 @@ return [
 // src/Optimize/CheckSiteStateFiles.php, row 23
 "Checks that every site module using a state file (the legacy control file) has that file present and readable in modules/site/sites/." => "Ov\xEC\xF8\xED, \x9Ee ka\x9Ed\xFD modul Site pou\x9E\xEDvaj\xEDc\xED stavov\xFD soubor (star\xFD \xF8\xEDdic\xED soubor) m\xE1 tento soubor v modules/site/sites/ a \x9Ee je \xE8iteln\xFD.", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 66
+// src/Optimize/CheckSiteStateFiles.php, row 75
 "Site module \"%1\" has no state file" => "Modul Site \x84%1\x93 nem\xE1 stavov\xFD soubor", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 68
+// src/Optimize/CheckSiteStateFiles.php, row 77
 "Missing file" => "Chyb\xECj\xEDc\xED soubor", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 69
+// src/Optimize/CheckSiteStateFiles.php, row 78
 "State file setting" => "Nastaven\xED stavov\xE9ho souboru", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 71
+// src/Optimize/CheckSiteStateFiles.php, row 80
 "Every public page of that site answers HTTP 500 (logged as SITE_CONF). Add the file, or fix the \"State file\" setting of the site module." => "Ka\x9Ed\xE1 ve\xF8ejn\xE1 str\xE1nka toho webu odpov\xEDd\xE1 HTTP 500 (logov\xE1no jako SITE_CONF). P\xF8idejte soubor, nebo opravte nastaven\xED \x84Stavov\xFD soubor\x93 modulu Site.", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 77
+// src/Optimize/CheckSiteStateFiles.php, row 86
 "All %1 site state files are in place" => "V\x9Aechny stavov\xE9 soubory web\xF9 (%1) jsou na m\xEDst\xEC", // ai 2026-10
 
-// src/Optimize/CheckSiteStateFiles.php, row 77
+// src/Optimize/CheckSiteStateFiles.php, row 86
 "No site module uses a state file" => "\x8E\xE1dn\xFD modul Site nepou\x9E\xEDv\xE1 stavov\xFD soubor", // ai 2026-10
 
 // src/Optimize/CheckTrustedProxies.php, row 31
@@ -13936,31 +14306,34 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 30
 "Lists the uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason, and the slices whose upload directory is not writable." => "Vyp\xED\x9Ae nahr\xE1v\xE1n\xED z editoru form\xE1tovan\xE9ho textu, kter\xE1 AA za posledn\xEDch 30 dn\xED odm\xEDtlo, podle web\xEDku a d\xF9vodu, a web\xEDky, jejich\x9E adres\xE1\xF8 pro nahr\xE1v\xE1n\xED nen\xED zapisovateln\xFD.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 80
+// src/Optimize/CheckUploadRefusals.php, row 84
 "Slice %1 cannot store uploads - its directory is not writable" => "Web\xEDk %1 nem\xF9\x9Ee ukl\xE1dat nahran\xE9 soubory - jeho adres\xE1\xF8 nen\xED zapisovateln\xFD", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 81
+// src/Optimize/CheckUploadRefusals.php, row 85
 "Slice %1 could not store an upload" => "Web\xEDk %1 nemohl ulo\x9Eit nahran\xFD soubor", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 82
+// src/Optimize/CheckUploadRefusals.php, row 86
 "Uploads to slice %1 refused: %2" => "Nahr\xE1v\xE1n\xED do web\xEDku %1 odm\xEDtnuto: %2", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 95
+// src/Optimize/CheckUploadRefusals.php, row 99
 "PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server." => "PHP nem\xF9\x9Ee zapisovat do adres\xE1\xF8e pro nahr\xE1v\xE1n\xED web\xEDku (IMG_UPLOAD_PATH/<slice id>, nebo do adres\xE1\xF8e jeho spr\xE1vce soubor\xF9). Opravte vlastn\xEDka nebo opr\xE1vn\xECn\xED na serveru.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 96
+// src/Optimize/CheckUploadRefusals.php, row 100
 "An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log." => "Jedna adresa nahr\xE1la za hodinu v\xEDc anonymn\xEDch obr\xE1zk\xF9, ne\x9E AA povoluje (%1 na adresu, %2 na web\xEDk). Nejsp\xED\x9A robot - adresa je v logu.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 97
+// src/Optimize/CheckUploadRefusals.php, row 101
 "Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address." => "N\xECkdo se pokusil nahr\xE1vat bez opr\xE1vn\xECn\xED: editor, jeho\x9E p\xF8ihl\xE1\x9Aen\xED vypr\x9Aelo (pom\xF9\x9Ee obnovit str\xE1nku), nebo sondov\xE1n\xED - mnoho dn\xED z jedn\xE9 adresy.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 98
+// src/Optimize/CheckUploadRefusals.php, row 102
 "Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP." => "Anonymn\xED n\xE1v\x9At\xECvn\xEDci sm\xED nahr\xE1vat obr\xE1zky do %1 MB; editory omezuj\xED upload_max_filesize a post_max_size PHP.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 99
+// src/Optimize/CheckUploadRefusals.php, row 103
+"An anonymous visitor sent an image AA could not read - damaged, cut short, or not the type it claims to be. It was not stored and the visitor was told why. Nothing to fix on the server." => "Anonymn\xED n\xE1v\x9At\xECvn\xEDk poslal obr\xE1zek, kter\xFD AA nedok\xE1zalo p\xF8e\xE8\xEDst - po\x9Akozen\xFD, useknut\xFD nebo jin\xE9ho typu, ne\x9E ud\xE1v\xE1. Nebyl ulo\x9Een a n\xE1v\x9At\xECvn\xEDk se dozv\xECd\xECl pro\xE8. Na serveru nen\xED co opravovat.", // ai 2026-11
+
+// src/Optimize/CheckUploadRefusals.php, row 104
 "The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\\Upload\\UploadPolicy; nothing a browser or PHP would run ever passes." => "Editor odm\xEDtl typ souboru nebo soubor, jeho\x9E obsah neodpov\xEDdal p\xF8\xEDpon\xEC. Povolen\xE9 typy jsou pevn\xEC dan\xE9 v AA\\Upload\\UploadPolicy; nic, co by spustil prohl\xED\x9Ee\xE8 nebo PHP, nikdy neprojde.", // ai 2026-10
 
-// src/Optimize/CheckUploadRefusals.php, row 106
+// src/Optimize/CheckUploadRefusals.php, row 111
 "No refused uploads in the last 30 days" => "Za posledn\xEDch 30 dn\xED \x9E\xE1dn\xE1 odm\xEDtnut\xE1 nahr\xE1v\xE1n\xED", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 25
@@ -14017,25 +14390,28 @@ return [
 // src/Optimize/CheckUserAliasFunctions.php, row 139
 "f_u names \"%1\", which is not a function name - not called" => "f_u uv\xE1d\xED \x84%1\x93, co\x9E nen\xED jm\xE9no funkce - nevol\xE1 se", // ai 2026-10
 
-// src/Optimize/CheckUserAliasFunctions.php, row 147
-"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "AA ji st\xE1le vol\xE1, aby star\xE9 weby fungovaly d\xE1l, ale f_u je ur\xE8eno jen pro funkce usr_*. P\xF8ejmenujte funkci na usr_%1 (definovan\xE1 v %2) a zm\xEC\xF2te definice.", // ai 2026-10
-
-// src/Optimize/CheckUserAliasFunctions.php, row 148
-"The alias shows nothing (it never did). Remove it or name a usr_* function." => "Alias nic nezobraz\xED (nikdy nezobrazoval). Odstra\xF2te ho, nebo uve\xEFte funkci usr_*.", // ai 2026-10
-
 // src/Optimize/CheckUserAliasFunctions.php, row 149
-"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Funkce nen\xED na t\xE9to str\xE1nce administrace definovan\xE1. Web ji p\xF8esto m\xF9\x9Ee definovat (\xF8\xEDdic\xED soubor webu, soubor, kter\xFD na\xE8\xEDtaj\xED jen jeho str\xE1nky) - co str\xE1nky skute\xE8n\xEC volaly, \xF8\xEDk\xE1 kontrola \x84Vol\xE1n\xED f_u na str\xE1nk\xE1ch\x93; v\xEC\xF8te t\xE9. Pokud ani tam nen\xED, definujte usr_%1 v include/usr_aliasfnc.php nebo alias odstra\xF2te.", // ai 2026-10
-
-// src/Optimize/CheckUserAliasFunctions.php, row 150
-"The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Str\xE1nka takovou funkci nem\xECla, alias nic nezobrazil. Definujte usr_%1 v include/usr_aliasfnc.php nebo alias odstra\xF2te.", // ai 2026-10
+"Then change the alias to that name." => "Pak alias zm\xEC\xF2te na tento n\xE1zev.", // ai 2026-11
 
 // src/Optimize/CheckUserAliasFunctions.php, row 151
-"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "Volaj\xED se jen funkce instalace: usr_*, funkce definovan\xE9 v include/usr_aliasfnc.php (a v souborech, kter\xE9 vkl\xE1d\xE1), include/custom/ nebo modules/site/sites/. Definujte tam funkci jako usr_%1.", // ai 2026-10
+"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "AA ji st\xE1le vol\xE1, aby star\xE9 weby fungovaly d\xE1l, ale f_u je ur\xE8eno jen pro funkce usr_*. P\xF8ejmenujte funkci na usr_%1 (definovan\xE1 v %2) a zm\xEC\xF2te definice.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 152
-"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "Vol\xE1n\xED selhalo: %1. Bu\xEF funkce nep\xF8ij\xEDm\xE1 to, co f_u p\xF8ed\xE1v\xE1 (pole obsahu, \xF8et\xECzec id pol\xED\xE8ka, \xF8et\xECzec parametr\xF9), nebo selhala uvnit\xF8. Dokud se to neoprav\xED, alias nic nezobraz\xED.", // ai 2026-10
+"The alias shows nothing (it never did). Remove it or name a usr_* function." => "Alias nic nezobraz\xED (nikdy nezobrazoval). Odstra\xF2te ho, nebo uve\xEFte funkci usr_*.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 153
+"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define %1 in include/usr_aliasfnc.php or remove the alias." => "Funkce nen\xED na t\xE9to str\xE1nce administrace definovan\xE1. Web ji p\xF8esto m\xF9\x9Ee definovat (\xF8\xEDdic\xED soubor webu, soubor, kter\xFD na\xE8\xEDtaj\xED jen jeho str\xE1nky) - co str\xE1nky skute\xE8n\xEC volaly, \xF8\xEDk\xE1 kontrola \x84Vol\xE1n\xED f_u na str\xE1nk\xE1ch\x93; v\xEC\xF8te t\xE9. Pokud ani tam nen\xED, definujte %1 v include/usr_aliasfnc.php nebo alias odstra\xF2te.", // ai 2026-11
+
+// src/Optimize/CheckUserAliasFunctions.php, row 154
+"The page had no such function, the alias showed nothing. Define %1 in include/usr_aliasfnc.php or remove the alias." => "Str\xE1nka takovou funkci nem\xECla, alias nic nezobrazil. Definujte %1 v include/usr_aliasfnc.php nebo alias odstra\xF2te.", // ai 2026-11
+
+// src/Optimize/CheckUserAliasFunctions.php, row 155
+"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "Volaj\xED se jen funkce instalace: usr_*, funkce definovan\xE9 v include/usr_aliasfnc.php (a v souborech, kter\xE9 vkl\xE1d\xE1), include/custom/ nebo modules/site/sites/. Definujte tam funkci jako usr_%1.", // ai 2026-10
+
+// src/Optimize/CheckUserAliasFunctions.php, row 156
+"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "Vol\xE1n\xED selhalo: %1. Bu\xEF funkce nep\xF8ij\xEDm\xE1 to, co f_u p\xF8ed\xE1v\xE1 (pole obsahu, \xF8et\xECzec id pol\xED\xE8ka, \xF8et\xECzec parametr\xF9), nebo selhala uvnit\xF8. Dokud se to neoprav\xED, alias nic nezobraz\xED.", // ai 2026-10
+
+// src/Optimize/CheckUserAliasFunctions.php, row 157
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "Alias nic nezobraz\xED: f_u vol\xE1 jen funkce instalace (usr_* v include/usr_aliasfnc.php), nikdy funkce PHP nebo AA. Napi\x9Ate funkci usr_*, kter\xE1 ud\xECl\xE1, co je pot\xF8eba, nebo m\xEDsto toho pou\x9Eijte v\xFDraz AA.", // ai 2026-10
 
 // src/Optimize/CheckViewSliceRefusals.php, row 35
@@ -14471,6 +14847,21 @@ return [
 // src/Optimize/GenerateMetabase.php, row 52
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Jen pro program\xE1tory - vyp\xED\x9Ae obsah include/metabase_schema.php (o\xE8ek\xE1van\xE9 sch\xE9ma DB jako \xE8iteln\xE9 PHP pole) vygenerovan\xFD ze sou\xE8asn\xE9 datab\xE1ze; zkop\xEDrujte ho do souboru a commitn\xECte.",
 
+// src/Optimize/HitArchiveDstStamps.php, row 28
+"Hit statistics around clock changes" => "Statistiky n\xE1v\x9At\xECv kolem zm\xECn \xE8asu", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 33
+"Until November 2026, hits grouped by day around a switch to or from summer time were stamped an hour off midnight, so the statistics show one day twice and the next one empty. Repair moves them to their own day." => "Do listopadu 2026 byly n\xE1v\x9At\xECvy seskupen\xE9 po dnech kolem p\xF8echodu na letn\xED \xE8as nebo zp\xECt ozna\xE8en\xE9 \xE8asem o hodinu posunut\xFDm od p\xF9lnoci, tak\x9Ee statistiky ukazuj\xED jeden den dvakr\xE1t a n\xE1sleduj\xEDc\xED pr\xE1zdn\xFD. \x84Opravit\x93 je p\xF8esune do jejich vlastn\xEDho dne.", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 52
+"Hits stamped %1 belong to %2" => "N\xE1v\x9At\xECvy ozna\xE8en\xE9 %1 pat\xF8\xED ke dni %2", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 55
+"No hits stamped off midnight around a clock change" => "\x8E\xE1dn\xE9 n\xE1v\x9At\xECvy ozna\xE8en\xE9 mimo p\xF9lnoc kolem zm\xECny \xE8asu", // ai 2026-11
+
+// src/Optimize/HitArchiveDstStamps.php, row 67
+"%1 rows moved from %2 to %3" => "P\xF8esunuto \xF8\xE1dk\xF9: %1, z %2 na %3", // ai 2026-11
+
 // src/Optimize/ImgCacheWritable.php, row 17
 "Image cache can store" => "Cache obr\xE1zk\xF9 m\xF9\x9Ee ukl\xE1dat", // ai 2026-10
 
@@ -14497,9 +14888,6 @@ return [
 
 // src/Optimize/ImgMeasuring.php, row 27
 "Lists the {img} expressions in views, fields, site spots and other code which print the image size, but whose parameters do not tell it - so the resized image is loaded over HTTP on every expansion." => "Vyp\xED\x9Ae v\xFDrazy {img} v pohledech, pol\xED\xE8k\xE1ch, m\xEDstech na webu a jin\xE9m k\xF3du, kter\xE9 vypisuj\xED rozm\xECry obr\xE1zku, ale jejich parametry je neur\xE8uj\xED - tak\x9Ee se zmen\x9Aen\xFD obr\xE1zek p\xF8i ka\x9Ed\xE9 expanzi na\xE8\xEDt\xE1 p\xF8es HTTP.", // ai 2026-10
-
-// src/Optimize/ImgMeasuring.php, row 54
-"Expression" => "V\xFDraz", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 60
 "No {img} in the templates measures its image" => "\x8E\xE1dn\xFD {img} v \x9Aablon\xE1ch nem\xEC\xF8\xED sv\xF9j obr\xE1zek", // ai 2026-10
@@ -14637,7 +15025,7 @@ return [
 "AA_INSTAL_PATH %1 cannot go into a rewrite rule" => "AA_INSTAL_PATH %1 nelze pou\x9E\xEDt v pravidle rewrite", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 78
-// src/Util/Imgfunc.php, row 265, 273
+// src/Util/Imgfunc.php, row 292
 "Cannot write %1" => "Nelze zapsat %1", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 87
@@ -14810,22 +15198,28 @@ return [
 "There is no root Link Module category - Links module should be recreated" => "Chyb\xED ko\xF8enov\xE1 kategorie modulu Links - modul Links by m\xECl b\xFDt znovu vytvo\xF8en",
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
-// src/Optimize/RedefineSiteTemplates.php, row 49
+// src/Optimize/RedefineSiteTemplates.php, row 91
 "Replacing module definition" => "Nahrazov\xE1n\xED definice modulu",
 
 // src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Znovuvytvo\xF8en\xED \x9Aablony modulu Links - hotovo.",
 
-// src/Optimize/RedefineSiteTemplates.php, row 15
+// src/Optimize/RedefineSiteTemplates.php, row 18
 "Recreate Site module template" => "Znovu vytvo\xF8it \x9Aablonu modulu Site",
 
-// src/Optimize/RedefineSiteTemplates.php, row 21
+// src/Optimize/RedefineSiteTemplates.php, row 24
 "Deletes and recreates the default template for Site module" => "Sma\x9Ee a znovu vytvo\xF8\xED v\xFDchoz\xED \x9Aablonu modulu Site",
 
-// src/Optimize/RedefineSiteTemplates.php, row 38
+// src/Optimize/RedefineSiteTemplates.php, row 41
 "Site Module template should be recreated" => "\x8Aablona modulu Site by m\xECla b\xFDt znovu vytvo\xF8ena",
 
-// src/Optimize/RedefineSiteTemplates.php, row 55
+// src/Optimize/RedefineSiteTemplates.php, row 42
+"The Site Module template names a control file that does not exist, and the form of a new site offers it - it should use the router home %1" => "\x8Aablona modulu Web uv\xE1d\xED \xF8\xEDdic\xED soubor, kter\xFD neexistuje, a formul\xE1\xF8 nov\xE9ho webu ho nab\xEDz\xED - m\xECla by pou\x9E\xEDvat domovsk\xFD \xF8\xEDdic\xED soubor routeru %1", // ai 2026-11
+
+// src/Optimize/RedefineSiteTemplates.php, row 87
+"The Site Module template now uses the router home %1" => "\x8Aablona modulu Web nyn\xED pou\x9E\xEDv\xE1 domovsk\xFD \xF8\xEDdic\xED soubor routeru %1", // ai 2026-11
+
+// src/Optimize/RedefineSiteTemplates.php, row 97
 "Site Module template recreation - done." => "Znovuvytvo\xF8en\xED \x9Aablony modulu Site - hotovo.",
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 17
@@ -15189,7 +15583,7 @@ return [
 "Trim stored values" => "O\xF8\xEDznout ulo\x9Een\xE9 hodnoty", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 44
-"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "O\xF8\xEDzne hodnoty ulo\x9Een\xE9 d\xF8\xEDv, ne\x9E pol\xED\xE8ko dostalo vkl\xE1dac\xED funkci \x84O\xF8\xEDznout\x93 (viz \x84%1\x93) \x96 mezery a nov\xE9 \xF8\xE1dky kolem, neslo\x9Een\xE9 znaky s diakritikou. \x84Opravit\x93 to napl\xE1nuje do fronty: \xE8l\xE1nky se ti\x9Ae ulo\x9E\xED znovu, tak\x9Ee posledn\xED \xFAprava, po\xE8\xEDtan\xE1 pol\xED\xE8ka, ud\xE1losti a v\xFDm\xECna zpr\xE1v z\xF9stanou nedot\xE8en\xE9; historie zm\xECnu zaznamen\xE1. Jedine\xE8n\xE1 pol\xED\xE8ka se jen vyp\xED\x9Aou, pol\xED\xE8ka definovan\xE1 ve web\xEDku pol\xED\xE8ek se nekontroluj\xED.", // ai 2026-10
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported; text areas, HTML editors and fields defined in a field slice are not checked." => "O\xF8\xEDzne hodnoty ulo\x9Een\xE9 d\xF8\xEDv, ne\x9E pol\xED\xE8ko dostalo vkl\xE1dac\xED funkci \x84O\xF8\xEDznout\x93 (viz \x84%1\x93) - mezery a od\xF8\xE1dkov\xE1n\xED kolem, neslo\x9Een\xE9 znaky s diakritikou. \x84Opravit\x93 to napl\xE1nuje ve front\xEC \xFAloh: \xE8l\xE1nky se ti\x9Ae ulo\x9E\xED znovu, tak\x9Ee posledn\xED \xFAprava, po\xE8\xEDtan\xE1 pol\xED\xE8ka, ud\xE1losti a v\xFDm\xECna zpr\xE1v z\xF9stanou nedot\xE8en\xE9; historie zm\xECnu zaznamen\xE1. Jedine\xE8n\xE1 pol\xED\xE8ka se jen vyp\xED\x9Aou; textov\xE9 oblasti, HTML editory a pol\xED\xE8ka definovan\xE1 ve web\xEDku pol\xED\xE8ek se nekontroluj\xED.", // ai 2026-11
 
 // src/Optimize/TrimFieldValues.php, row 63
 "Time is up - %1 of %2 slices checked. Repair plans all of them." => "\xC8as vypr\x9Ael \x96 zkontrolov\xE1no web\xEDk\xF9: %1 z %2. \x84Opravit\x93 napl\xE1nuje v\x9Aechny.", // ai 2026-10
@@ -15203,10 +15597,10 @@ return [
 // src/Optimize/TrimFieldValues.php, row 91
 "%1 items planned to be trimmed in the queue" => "\xC8l\xE1nk\xF9 napl\xE1novan\xFDch k o\xF8\xEDznut\xED ve front\xEC: %1", // ai 2026-10
 
-// src/Optimize/TrimFieldValues.php, row 129
+// src/Optimize/TrimFieldValues.php, row 130
 "%1 items with a unique value to trim by hand, e.g. %2" => "\xC8l\xE1nk\xF9 s jedine\xE8nou hodnotou k ru\xE8n\xEDmu o\xF8\xEDznut\xED: %1, nap\xF8. %2", // ai 2026-10
 
-// src/Optimize/TrimFieldValues.php, row 139
+// src/Optimize/TrimFieldValues.php, row 140
 "%1 items to trim, e.g. %2" => "\xC8l\xE1nk\xF9 k o\xF8\xEDznut\xED: %1, nap\xF8. %2", // ai 2026-10
 
 // src/Optimize/UpdateDbStructure.php, row 23
@@ -15401,19 +15795,22 @@ return [
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "Nelze zkop\xEDrovat %1 do %2",
 
-// src/Util/Imgfunc.php, row 119
+// src/Util/Imgfunc.php, row 123
 "Type not supported for resize" => "Typ nen\xED podporov\xE1n pro zm\xECnu velikosti",
 
-// src/Util/Imgfunc.php, row 178
+// src/Util/Imgfunc.php, row 182
 "ResampleImage unable to %1" => "Nelze zm\xECnit velikost obr\xE1zku %1",
 
-// src/Util/Imgfunc.php, row 224
+// src/Util/Imgfunc.php, row 234
+"Cannot read %1" => "Nelze p\xF8e\xE8\xEDst %1", // ai 2026-11
+
+// src/Util/Imgfunc.php, row 244
 "This type of image cannot be uploaded here" => "Tento typ obr\xE1zku sem nelze nahr\xE1t", // ai 2026-10
 
-// src/Util/Imgfunc.php, row 227
+// src/Util/Imgfunc.php, row 248
 "The image has too many pixels" => "Obr\xE1zek m\xE1 p\xF8\xEDli\x9A mnoho pixel\xF9", // ai 2026-10
 
-// src/Util/Imgfunc.php, row 231
+// src/Util/Imgfunc.php, row 253
 "The image cannot be read" => "Obr\xE1zek nelze p\xF8e\xE8\xEDst", // ai 2026-10
 
 // src/Util/Note.php, row 52
@@ -15495,6 +15892,36 @@ return [
 // src/Util/Notes.php, row 129
 "Resolve" => "Vy\xF8e\x9Ait", // ai 2026-10
 
+// src/Util/Paramwizard.php, row 155
+"Other parameters (the type does not describe them)" => "Dal\x9A\xED parametry (typ je nepopisuje)", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 156
+"e.g. %1" => "nap\xF8. %1", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 157
+"(default)" => "(v\xFDchoz\xED)", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 158
+"more" => "v\xEDce", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 159
+"less" => "m\xE9n\xEC", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 160
+"As text" => "Jako text", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 162
+"Copied to clipboard" => "Zkop\xEDrov\xE1no do schr\xE1nky", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 163
+"The whole setting: type and parameters. Paste a text copied from another field and the form follows it." => "Cel\xE9 nastaven\xED: typ a parametry. Vlo\x9Ete text zkop\xEDrovan\xFD z jin\xE9ho pol\xED\xE8ka a formul\xE1\xF8 se mu p\xF8izp\xF9sob\xED.", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 164
+"The text does not start with a type offered here, taken as parameters of %1." => "Text neza\xE8\xEDn\xE1 typem, kter\xFD je zde nab\xEDzen; bere se jako parametry %1.", // ai 2026-11
+
+// src/Util/Paramwizard.php, row 165
+"Constant group %1 is not known here, the current one stays." => "Skupina hodnot %1 tu nen\xED zn\xE1ma, z\xF9st\xE1v\xE1 sou\xE8asn\xE1.", // ai 2026-11
+
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- libovoln\xE9 \xE8\xEDseln\xE9 pol\xED\xE8ko --",
 
@@ -15518,7 +15945,7 @@ return [
 "Upload" => "Nahr\xE1t",
 
 // src/Widget/FilWidget.php, row 250
-// src/Widget/Widget.php, row 604
+// src/Widget/Widget.php, row 603
 "EXIT WITHOUT CHANGE" => "ODEJ\xCDT BEZ ZM\xCCNY",
 
 // src/Widget/FldWidget.php, row 34
@@ -15576,7 +16003,7 @@ return [
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 110
-// src/Widget/Widget.php, row 445
+// src/Widget/Widget.php, row 444
 "To save changes click here or outside the field." => "Zm\xECny ulo\x9E\xEDte kliknut\xEDm sem nebo mimo pol\xED\xE8ko.",
 
 // src/Widget/MngWidget.php, row 33
@@ -15648,435 +16075,435 @@ return [
 // src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "Dva seznamy",
 
-// src/Widget/Widget.php, row 603
+// src/Widget/Widget.php, row 602
 "SAVE CHANGE" => "ULO\x8EIT ZM\xCCNU",
 
-// src/Widget/Widget.php, row 741
+// src/Widget/Widget.php, row 740
 "Max characters" => "Max. po\xE8et znak\xF9",
 
-// src/Widget/Widget.php, row 741
+// src/Widget/Widget.php, row 740
 "max count of characters entered (maxlength parameter)" => "maxim\xE1ln\xED po\xE8et zadan\xFDch znak\xF9 (parametr maxlength)",
 
-// src/Widget/Widget.php, row 747
+// src/Widget/Widget.php, row 746
 "Constants or slice" => "Konstanty nebo web\xEDk",
 
-// src/Widget/Widget.php, row 747
+// src/Widget/Widget.php, row 746
 "Constants (or slice) which is used for value selection" => "Konstanty (nebo web\xEDk), z nich\x9E se vyb\xEDraj\xED hodnoty",
 
-// src/Widget/Widget.php, row 750
+// src/Widget/Widget.php, row 749
 "Directly specified array of values like [\"1\",\"2\",\"3\"] or {\"1\":\"Yes\",\"0\":\"No\"}. (do not use Constants, if filled)" => "P\xF8\xEDmo zadan\xE9 pole hodnot jako [\"1\",\"2\",\"3\"] nebo {\"1\":\"Yes\",\"0\":\"No\"}. (pokud je vypln\xECno, nepou\x9E\xEDvejte Konstanty)",
 
-// src/Widget/Widget.php, row 759
+// src/Widget/Widget.php, row 758
 "type: class (default) / iframe" => "typ: class (v\xFDchoz\xED) / iframe",
 
-// src/Widget/Widget.php, row 762, 976
+// src/Widget/Widget.php, row 761, 975
 "Width" => "\x8A\xED\xF8ka",
 
-// src/Widget/Widget.php, row 762
+// src/Widget/Widget.php, row 761
 "width of the field in characters (size parameter)" => "\x9A\xED\xF8ka pol\xED\xE8ka ve znac\xEDch (parametr size)",
 
-// src/Widget/Widget.php, row 765
+// src/Widget/Widget.php, row 764
 "type of input - email|tel|url|number. Can be used for other types (time), but in most cases it will be better to create new Widget type - like checkbox, password, color" => "typ vstupu - email|tel|url|number. Lze pou\x9E\xEDt i pro jin\xE9 typy (time), ale ve v\xECt\x9Ain\xEC p\xF8\xEDpad\xF9 je lep\x9A\xED vytvo\xF8it nov\xFD typ widgetu - jako checkbox, password, color",
 
-// src/Widget/Widget.php, row 768, 867
+// src/Widget/Widget.php, row 767, 866
 "Buttons to show" => "Zobrazen\xE1 tla\xE8\xEDtka",
 
-// src/Widget/Widget.php, row 768
+// src/Widget/Widget.php, row 767
 "Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important." => "Kter\xE1 ak\xE8n\xED tla\xE8\xEDtka zobrazit:<br>M - Move (posun nahoru a dol\xF9)<br>D - Delete (smaz\xE1n\xED hodnoty),<br>A - Add (p\xF8id\xE1n\xED nov\xE9 hodnoty)<br>C - Change (zm\xECna hodnoty)<br>Pou\x9Eijte 'MDAC' (v\xFDchoz\xED), 'DAC', jen 'M' nebo libovolnou jinou kombinaci. Na po\xF8ad\xED p\xEDsmen M,D,A,C nez\xE1le\x9E\xED.",
 
-// src/Widget/Widget.php, row 771
+// src/Widget/Widget.php, row 770
 "Row count" => "Po\xE8et \xF8\xE1dk\xF9",
 
-// src/Widget/Widget.php, row 774
+// src/Widget/Widget.php, row 773
 "Slice field" => "Pol\xED\xE8ko web\xEDku",
 
-// src/Widget/Widget.php, row 774
+// src/Widget/Widget.php, row 773
 "field (or format string) that will be displayed in select box. if not specified, headlines or constant name for constants are displayed in select box. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))." => "pol\xED\xE8ko (nebo form\xE1tovac\xED \xF8et\xECzec), kter\xE9 se zobraz\xED v selectboxu. Pokud nen\xED zad\xE1no, zobraz\xED se v selectboxu titulky, u konstant jm\xE9no konstanty. M\xF9\x9Eete pou\x9E\xEDt i libovoln\xFD AA form\xE1tovac\xED \xF8et\xECzec (nap\xF8.: _#HEADLINE, _#PUB_DATE (pro web\xEDky) nebo _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (pro konstanty)).",
 
-// src/Widget/Widget.php, row 777
+// src/Widget/Widget.php, row 776
 "Use name" => "Pou\x9E\xEDt jm\xE9no",
 
-// src/Widget/Widget.php, row 777
+// src/Widget/Widget.php, row 776
 "if set (=1), then the name of selected constant is used, instead of the value. Default is 0" => "pokud je nastaveno (=1), pou\x9Eije se jm\xE9no vybran\xE9 konstanty m\xEDsto hodnoty. V\xFDchoz\xED je 0",
 
-// src/Widget/Widget.php, row 780
+// src/Widget/Widget.php, row 779
 "Adding" => "P\xF8id\xE1v\xE1n\xED",
 
-// src/Widget/Widget.php, row 780
+// src/Widget/Widget.php, row 779
 "adding the selected items to input field comma separated" => "p\xF8id\xE1v\xE1n\xED vybran\xFDch \xE8l\xE1nk\xF9 do vstupn\xEDho pol\xED\xE8ka odd\xEClen\xEC \xE8\xE1rkami",
 
-// src/Widget/Widget.php, row 783
+// src/Widget/Widget.php, row 782
 "Second Field" => "Druh\xE9 pol\xED\xE8ko",
 
-// src/Widget/Widget.php, row 783
+// src/Widget/Widget.php, row 782
 "field_id of another text field, where value of this selectbox will be propagated too (in main text area will be text and there will be value)" => "field_id jin\xE9ho textov\xE9ho pol\xED\xE8ka, kam se hodnota tohoto selectboxu tak\xE9 prop\xED\x9Ae (v hlavn\xEDm textov\xE9m poli bude text a tam bude hodnota)",
 
-// src/Widget/Widget.php, row 786
+// src/Widget/Widget.php, row 785
 "if set to 1, user typed value in inputform is stored into constants (only if the value is not already there)" => "pokud je nastaveno na 1, hodnota zapsan\xE1 u\x9Eivatelem ve formul\xE1\xF8i se ulo\x9E\xED do konstant (jen pokud tam je\x9At\xEC nen\xED)",
 
-// src/Widget/Widget.php, row 789
+// src/Widget/Widget.php, row 788
 "Show items from bins" => "Zobrazit \xE8l\xE1nky ze z\xE1lo\x9Eek",
 
-// src/Widget/Widget.php, row 789
+// src/Widget/Widget.php, row 788
 "(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want to show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13" => "(jen pro web\xEDky) Pro zobrazen\xED \xE8l\xE1nk\xF9 z vybran\xFDch z\xE1lo\x9Eek pou\x9Eijte n\xE1sleduj\xEDc\xED hodnoty:<br>Aktu\xE1ln\xED - '%1'<br>P\xF8ipravovan\xE9 - '%2'<br>Expirovan\xE9 - '%3'<br>Z\xE1sobn\xEDk - '%4'<br>Ko\x9A - '%5'<br>Hodnota se vytvo\xF8\xED takto: chcete nap\xF8. zobrazit titulky ze z\xE1lo\x9Eek Aktu\xE1ln\xED, Expirovan\xE9 a Z\xE1sobn\xEDk. Hodnota pro tuto kombinaci se spo\xE8\xEDt\xE1 jako %1+%3+%4&nbsp;=&nbsp;13",
 
-// src/Widget/Widget.php, row 798
+// src/Widget/Widget.php, row 797
 "Filtering conditions" => "Podm\xEDnky filtrov\xE1n\xED",
 
-// src/Widget/Widget.php, row 798
+// src/Widget/Widget.php, row 797
 "(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array." => "(jen pro web\xEDky) Podm\xEDnky pro filtrov\xE1n\xED \xE8l\xE1nk\xF9 ve v\xFDb\xECru. Pou\x9Eijte podm\xEDnku d-.. nebo pole conds[].",
 
-// src/Widget/Widget.php, row 801
+// src/Widget/Widget.php, row 800
 "Sort by" => "\xD8adit podle",
 
-// src/Widget/Widget.php, row 801
+// src/Widget/Widget.php, row 800
 "(for slices only) Sort the items in specified order. Use <fld>[+-]<fld>[+-]... or even any alias _#SOME_ALS." => "(jen pro web\xEDky) Se\xF8ad\xED \xE8l\xE1nky v zadan\xE9m po\xF8ad\xED. Pou\x9Eijte <fld>[+-]<fld>[+-]... nebo i libovoln\xFD alias _#SOME_ALS.",
 
-// src/Widget/Widget.php, row 804
+// src/Widget/Widget.php, row 803
 "Slice password" => "Heslo web\xEDku",
 
-// src/Widget/Widget.php, row 804
+// src/Widget/Widget.php, row 803
 "(for slices only) If the related slice is protected by 'Slice Password', fill it here" => "(jen pro web\xEDky) Pokud je souvisej\xEDc\xED web\xEDk chr\xE1n\xECn heslem ('Slice Password'), vypl\xF2te je zde",
 
-// src/Widget/Widget.php, row 807
+// src/Widget/Widget.php, row 806
 "Filtering conditions - changeable" => "Podm\xEDnky filtrov\xE1n\xED - m\xECniteln\xE9",
 
-// src/Widget/Widget.php, row 807
+// src/Widget/Widget.php, row 806
 "Conditions for filtering items. This conds site admin change through widget_property parameter." => "Podm\xEDnky pro filtrov\xE1n\xED \xE8l\xE1nk\xF9. Tyto podm\xEDnky m\xF9\x9Ee spr\xE1vce webu m\xECnit parametrem widget_property.",
 
-// src/Widget/Widget.php, row 810
+// src/Widget/Widget.php, row 809
 "Items per page. Default is 20." => "Po\xE8et \xE8l\xE1nk\xF9 na str\xE1nku. V\xFDchoz\xED je 20.",
 
-// src/Widget/Widget.php, row 813
+// src/Widget/Widget.php, row 812
 "Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table." => "Po\xE8et sloupc\xF9. Pokud nen\xED vypln\xECno, jsou v\x9Aechna za\x9Akrt\xE1vac\xED pol\xED\xE8ka na jednom \xF8\xE1dku. Pokud je vypln\xECno, form\xE1tuj\xED se do tabulky.",
 
-// src/Widget/Widget.php, row 816
+// src/Widget/Widget.php, row 815
 "Move right" => "Posun doprava",
 
-// src/Widget/Widget.php, row 816
+// src/Widget/Widget.php, row 815
 "Should the function move right or down to the next value?" => "M\xE1 funkce postupovat na dal\x9A\xED hodnotu doprava, nebo dol\xF9?",
 
-// src/Widget/Widget.php, row 819
+// src/Widget/Widget.php, row 818
 "Starting Year" => "Po\xE8\xE1te\xE8n\xED rok",
 
-// src/Widget/Widget.php, row 819
+// src/Widget/Widget.php, row 818
 "The (relative) start of the year interval" => "(Relativn\xED) za\xE8\xE1tek intervalu let",
 
-// src/Widget/Widget.php, row 822
+// src/Widget/Widget.php, row 821
 "Ending Year" => "Koncov\xFD rok",
 
-// src/Widget/Widget.php, row 822
+// src/Widget/Widget.php, row 821
 "The (relative) end of the year interval" => "(Relativn\xED) konec intervalu let",
 
-// src/Widget/Widget.php, row 825
+// src/Widget/Widget.php, row 824
 "Relative" => "Relativn\xED",
 
-// src/Widget/Widget.php, row 825
+// src/Widget/Widget.php, row 824
 "If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute." => "Pokud je 1, po\xE8\xE1te\xE8n\xED a koncov\xFD rok se berou jako relativn\xED - interval za\xE8ne na (leto\x9An\xED rok - po\xE8\xE1te\xE8n\xED rok) a skon\xE8\xED na (leto\x9An\xED rok + koncov\xFD rok). Pokud je 0, po\xE8\xE1te\xE8n\xED a koncov\xFD rok se berou jako absolutn\xED.",
 
-// src/Widget/Widget.php, row 828
+// src/Widget/Widget.php, row 827
 "Date-time input type" => "Typ zad\xE1v\xE1n\xED data a \xE8asu",
 
-// src/Widget/Widget.php, row 828
+// src/Widget/Widget.php, row 827
 "0 - three selects for <b>date</b><br>1 - three selects for date + the <b>time</b> input<br>2 - HTML5 <b>input type=date</b>" => "0 - t\xF8i selecty pro <b>datum</b><br>1 - t\xF8i selecty pro datum + zad\xE1n\xED <b>\xE8asu</b><br>2 - HTML5 <b>input type=date</b>",
 
-// src/Widget/Widget.php, row 831
+// src/Widget/Widget.php, row 830
 "Height" => "V\xFD\x9Aka",
 
-// src/Widget/Widget.php, row 831
+// src/Widget/Widget.php, row 830
 "Max height of the widget in pixels" => "Maxim\xE1ln\xED v\xFD\x9Aka widgetu v pixelech",
 
-// src/Widget/Widget.php, row 834
+// src/Widget/Widget.php, row 833
 "Title of \"Offer\" selectbox" => "Titulek selectboxu \"Nab\xEDdka\"",
 
-// src/Widget/Widget.php, row 834
+// src/Widget/Widget.php, row 833
 "Our offer" => "Na\x9Ae nab\xEDdka",
 
-// src/Widget/Widget.php, row 837
+// src/Widget/Widget.php, row 836
 "Title of \"Selected\" selectbox" => "Titulek selectboxu \"Vybran\xE9\"",
 
-// src/Widget/Widget.php, row 840
+// src/Widget/Widget.php, row 839
 "Add Form" => "Formul\xE1\xF8 pro p\xF8id\xE1n\xED",
 
-// src/Widget/Widget.php, row 840
+// src/Widget/Widget.php, row 839
 "(for slices only) ID of the form for adding items into related slice" => "(jen pro web\xEDky) ID formul\xE1\xF8e pro p\xF8id\xE1v\xE1n\xED \xE8l\xE1nk\xF9 do souvisej\xEDc\xEDho web\xEDku",
 
-// src/Widget/Widget.php, row 843
+// src/Widget/Widget.php, row 842
 "Allowed file types" => "Povolen\xE9 typy soubor\xF9",
 
-// src/Widget/Widget.php, row 843
+// src/Widget/Widget.php, row 842
 "Used for accept attribute - image/*,.doc,.docx,.pdf" => "Pou\x9Eije se pro atribut accept - image/*,.doc,.docx,.pdf",
 
-// src/Widget/Widget.php, row 846
+// src/Widget/Widget.php, row 845
 "Label" => "Popisek",
 
-// src/Widget/Widget.php, row 846
+// src/Widget/Widget.php, row 845
 "To be printed before the file upload field" => "Vyp\xED\x9Ae se p\xF8ed pol\xED\xE8kem pro nahr\xE1n\xED souboru",
 
-// src/Widget/Widget.php, row 846
+// src/Widget/Widget.php, row 845
 "File: " => "Soubor: ",
 
-// src/Widget/Widget.php, row 849
+// src/Widget/Widget.php, row 848
 "appears beneath the file upload field" => "zobraz\xED se pod pol\xED\xE8kem pro nahr\xE1n\xED souboru",
 
-// src/Widget/Widget.php, row 849
+// src/Widget/Widget.php, row 848
 "You can select a file ..." => "M\xF9\x9Eete vybrat soubor ...",
 
-// src/Widget/Widget.php, row 852
+// src/Widget/Widget.php, row 851
 "Display URL" => "Zobrazit URL",
 
-// src/Widget/Widget.php, row 852
+// src/Widget/Widget.php, row 851
 "0 - show, 1 - show if not empty, 2 - do not show" => "0 - zobrazit, 1 - zobrazit, pokud nen\xED pr\xE1zdn\xE9, 2 - nezobrazovat",
 
-// src/Widget/Widget.php, row 855
+// src/Widget/Widget.php, row 854
 "Multiple" => "V\xEDcen\xE1sobn\xFD",
 
-// src/Widget/Widget.php, row 855
+// src/Widget/Widget.php, row 854
 "Allows to upload multiple files in the field" => "Umo\x9En\xED nahr\xE1t do pol\xED\xE8ka v\xEDce soubor\xF9",
 
-// src/Widget/Widget.php, row 858
+// src/Widget/Widget.php, row 857
 "Actions to show" => "Zobrazen\xE9 akce",
 
-// src/Widget/Widget.php, row 858
+// src/Widget/Widget.php, row 857
 "Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important." => "Ur\xE8uje, kter\xE1 tla\xE8\xEDtka se zobraz\xED p\xF8i v\xFDb\xECru \xE8l\xE1nk\xF9:<br>A - Add - p\xF8idat<br>M - Mutual - p\xF8idat vz\xE1jemn\xEC<br>B - Backward - zp\xECtn\xEC<br> Pou\x9Eijte 'AMB' (v\xFDchoz\xED), 'MA', jen 'A' nebo libovolnou jinou kombinaci. Na po\xF8ad\xED p\xEDsmen A,M,B z\xE1le\x9E\xED.",
 
-// src/Widget/Widget.php, row 861
+// src/Widget/Widget.php, row 860
 "Admin design" => "Design administrace",
 
-// src/Widget/Widget.php, row 861
+// src/Widget/Widget.php, row 860
 "If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)." => "Pokud je nastaveno (=1), \xE8l\xE1nky v okn\xEC pro v\xFDb\xECr souvisej\xEDc\xEDch se zobraz\xED ve stejn\xE9m designu jako ve Spr\xE1vci \xE8l\xE1nk\xF9 - pou\x9Eije se nastaven\xED 'Design - Spr\xE1vce \xE8l\xE1nk\xF9'. Pouze za\x9Akrt\xE1vac\xED pol\xED\xE8ko bude nahrazeno tla\xE8\xEDtky (viz v\xFD\x9Ae). Je d\xF9le\x9Eit\xE9, aby za\x9Akrt\xE1vac\xED pol\xED\xE8ko bylo definov\xE1no jako:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (co\x9E je v\xFDchoz\xED).<br> Pokud nastaveno nen\xED (=0), zobraz\xED se jen titulek (v\xFDchoz\xED).",
 
-// src/Widget/Widget.php, row 864
+// src/Widget/Widget.php, row 863
 "Tag Prefix" => "Prefix tag\xF9",
 
-// src/Widget/Widget.php, row 864
+// src/Widget/Widget.php, row 863
 "Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details." => "Zastaral\xE9: vyb\xEDr\xE1 sadu tag\xF9 ('AMB' / 'GYR'). Podrobnosti v\xE1m sd\xECl\xED Mitra.",
 
-// src/Widget/Widget.php, row 867
+// src/Widget/Widget.php, row 866
 "Which action to show:<br>M - Move (change order)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert New item in related slice and make it related<br>E - Edit related item<br>F - File upload to related slice (just for Related Item Manager Widget)<br><br>Use 'DR' (default), 'MDRNEF', just 'N' or any other combination. The order of letters M,D,R,N,E,F is not important." => "Kter\xE9 akce zobrazit:<br>M - Move - p\xF8esun (zm\xECna po\xF8ad\xED)<br>D - Delete - smaz\xE1n\xED vztahu,<br>R - Relation - p\xF8id\xE1n\xED vztahu k existuj\xEDc\xEDmu \xE8l\xE1nku<br>N - New - vlo\x9Een\xED nov\xE9ho \xE8l\xE1nku do souvisej\xEDc\xEDho web\xEDku a jeho nav\xE1z\xE1n\xED<br>E - Edit - \xFAprava souvisej\xEDc\xEDho \xE8l\xE1nku<br>F - File - nahr\xE1n\xED souboru do souvisej\xEDc\xEDho web\xEDku (jen pro widget Related Item Manager)<br><br>Pou\x9Eijte 'DR' (v\xFDchoz\xED), 'MDRNEF', jen 'N' nebo libovolnou jinou kombinaci. Na po\xF8ad\xED p\xEDsmen M,D,R,N,E,F nez\xE1le\x9E\xED.",
 
-// src/Widget/Widget.php, row 870
+// src/Widget/Widget.php, row 869
 "Count of level boxes" => "Po\xE8et box\xF9 \xFArovn\xED",
 
-// src/Widget/Widget.php, row 873
+// src/Widget/Widget.php, row 872
 "Box width" => "\x8A\xED\xF8ka boxu",
 
-// src/Widget/Widget.php, row 873
+// src/Widget/Widget.php, row 872
 "Width in characters" => "\x8A\xED\xF8ka ve znac\xEDch",
 
-// src/Widget/Widget.php, row 876
+// src/Widget/Widget.php, row 875
 "Size of target" => "Velikost c\xEDlov\xE9ho boxu",
 
-// src/Widget/Widget.php, row 876
+// src/Widget/Widget.php, row 875
 "Lines in the target select box" => "Po\xE8et \xF8\xE1dk\xF9 v c\xEDlov\xE9m v\xFDb\xECrov\xE9m boxu",
 
-// src/Widget/Widget.php, row 879
+// src/Widget/Widget.php, row 878
 "Horizontal" => "Vodorovn\xEC",
 
-// src/Widget/Widget.php, row 879
+// src/Widget/Widget.php, row 878
 "Show levels horizontally" => "Zobrazit \xFArovn\xEC vedle sebe (vodorovn\xEC)",
 
-// src/Widget/Widget.php, row 882
+// src/Widget/Widget.php, row 881
 "First selectable" => "Prvn\xED voliteln\xE1",
 
-// src/Widget/Widget.php, row 882
+// src/Widget/Widget.php, row 881
 "First level which will have a Select button" => "Prvn\xED \xFArove\xF2, u kter\xE9 bude tla\xE8\xEDtko Vybrat",
 
-// src/Widget/Widget.php, row 885
+// src/Widget/Widget.php, row 884
 "Level names" => "N\xE1zvy \xFArovn\xED",
 
-// src/Widget/Widget.php, row 885
+// src/Widget/Widget.php, row 884
 "Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..." => "N\xE1zvy box\xF9 jednotliv\xFDch \xFArovn\xED, odd\xEClen\xE9 vlnovkou (~). Nahrazuj\xED v\xFDchoz\xED Level 0, Level 1, ...",
 
-// src/Widget/Widget.php, row 885
+// src/Widget/Widget.php, row 884
 "Top level~Second level~Keyword" => "Nejvy\x9A\x9A\xED \xFArove\xF2~Druh\xE1 \xFArove\xF2~Kl\xED\xE8ov\xE9 slovo",
 
-// src/Widget/Widget.php, row 888
+// src/Widget/Widget.php, row 887
 "Label for Change Password" => "Popisek pro Zm\xECnu hesla",
 
-// src/Widget/Widget.php, row 888
+// src/Widget/Widget.php, row 887
 "Replaces the default 'Change Password'" => "Nahrazuje v\xFDchoz\xED text 'Change Password'",
 
-// src/Widget/Widget.php, row 888
+// src/Widget/Widget.php, row 887
 "Change your password" => "Zm\xEC\xF2te sv\xE9 heslo",
 
-// src/Widget/Widget.php, row 891
+// src/Widget/Widget.php, row 890
 "Label for Retype New Password" => "Popisek pro Nov\xE9 heslo znovu",
 
-// src/Widget/Widget.php, row 891
+// src/Widget/Widget.php, row 890
 "Replaces the default \"Retype New Password\"" => "Nahrazuje v\xFDchoz\xED text \"Retype New Password\"",
 
-// src/Widget/Widget.php, row 891
+// src/Widget/Widget.php, row 890
 "Retype the new password" => "Zadejte nov\xE9 heslo znovu",
 
-// src/Widget/Widget.php, row 894
+// src/Widget/Widget.php, row 893
 "Label for Delete Password" => "Popisek pro Smaz\xE1n\xED hesla",
 
-// src/Widget/Widget.php, row 894
+// src/Widget/Widget.php, row 893
 "Replaces the default \"Delete Password\"" => "Nahrazuje v\xFDchoz\xED text \"Delete Password\"",
 
-// src/Widget/Widget.php, row 894
+// src/Widget/Widget.php, row 893
 "Delete password (set to empty)" => "Smazat heslo (nastavit na pr\xE1zdn\xE9)",
 
-// src/Widget/Widget.php, row 897
+// src/Widget/Widget.php, row 896
 "Help for Change Password" => "N\xE1pov\xECda pro Zm\xECnu hesla",
 
-// src/Widget/Widget.php, row 897
+// src/Widget/Widget.php, row 896
 "Help text under the Change Password box (default: no text)" => "Text n\xE1pov\xECdy pod pol\xED\xE8kem Zm\xECna hesla (v\xFDchoz\xED: \x9E\xE1dn\xFD text)",
 
-// src/Widget/Widget.php, row 897
+// src/Widget/Widget.php, row 896
 "To change password, enter the new password here and below" => "Pro zm\xECnu hesla zadejte nov\xE9 heslo sem a do pol\xED\xE8ka n\xED\x9Ee",
 
-// src/Widget/Widget.php, row 900
+// src/Widget/Widget.php, row 899
 "Help for Retype New Password" => "N\xE1pov\xECda pro Nov\xE9 heslo znovu",
 
-// src/Widget/Widget.php, row 900
+// src/Widget/Widget.php, row 899
 "Help text under the Retype New Password box (default: no text)" => "Text n\xE1pov\xECdy pod pol\xED\xE8kem Nov\xE9 heslo znovu (v\xFDchoz\xED: \x9E\xE1dn\xFD text)",
 
-// src/Widget/Widget.php, row 900
+// src/Widget/Widget.php, row 899
 "Retype the new password exactly the same as you entered into \"Change Password\"." => "Zadejte nov\xE9 heslo znovu, p\xF8esn\xEC tak, jak jste je zadali do pol\xED\xE8ka \"Zm\xECna hesla\".",
 
-// src/Widget/Widget.php, row 903
+// src/Widget/Widget.php, row 902
 "The URL of your local web server from where you want to start browsing for a particular URL." => "URL va\x9Aeho webov\xE9ho serveru, od kter\xE9ho chcete za\xE8\xEDt proch\xE1zen\xED pro v\xFDb\xECr konkr\xE9tn\xEDho URL.",
 
-// src/Widget/Widget.php, row 903
+// src/Widget/Widget.php, row 902
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanky/solarni.shtml", // ai 2026-10
 
-// src/Widget/Widget.php, row 906
+// src/Widget/Widget.php, row 905
 "Ajax inline" => "Ajax na m\xEDst\xEC", // ai 2026-10
 
-// src/Widget/Widget.php, row 906
+// src/Widget/Widget.php, row 905
 "If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "P\xF8i vol\xE1n\xED jako {ajax...} upravuje vzhled - inline: postaru (ne v okn\xEC, ale p\xF8\xEDmo v textu)",
 
-// src/Widget/Widget.php, row 909
+// src/Widget/Widget.php, row 908
 "Enable voice dictation" => "Povolit hlasov\xE9 diktov\xE1n\xED",
 
-// src/Widget/Widget.php, row 909
+// src/Widget/Widget.php, row 908
 "Show a microphone button next to the textarea. Uses the browser's Web Speech API when available, otherwise falls back to server-side OpenAI transcription (requires AA_APIKEY_OPENAI define)." => "Zobraz\xED tla\xE8\xEDtko mikrofonu vedle textov\xE9ho pole. Pou\x9E\xEDv\xE1 Web Speech API prohl\xED\x9Ee\xE8e, je-li k dispozici, jinak se p\xF8epne na p\xF8epis p\xF8es OpenAI na serveru (vy\x9Eaduje define AA_APIKEY_OPENAI).",
 
-// src/Widget/Widget.php, row 912
+// src/Widget/Widget.php, row 911
 "Max dictation seconds" => "Max. d\xE9lka diktov\xE1n\xED (s)",
 
-// src/Widget/Widget.php, row 912
+// src/Widget/Widget.php, row 911
 "Upper bound for a single dictation recording. Overrides the AA_SPEECH_MAX_SECONDS define. Enforced client-side (auto-stop) and server-side (reject oversized uploads)." => "Horn\xED limit d\xE9lky jednoho diktovan\xE9ho z\xE1znamu. P\xF8episuje define AA_SPEECH_MAX_SECONDS. Vynucuje se na stran\xEC klienta (automatick\xE9 zastaven\xED) i serveru (odm\xEDtnut\xED p\xF8\xEDli\x9A velk\xFDch nahr\xE1vek).",
 
-// src/Widget/Widget.php, row 915
+// src/Widget/Widget.php, row 914
 "Dictation language" => "Jazyk diktov\xE1n\xED",
 
-// src/Widget/Widget.php, row 915
+// src/Widget/Widget.php, row 914
 "BCP-47 locale code for voice recognition (e.g. cs-CZ, en-US, sk-SK, de-DE). Leave blank to auto-infer from the page's &lt;html lang&gt; attribute \xE2\x80\x94 which is usually the admin UI language, not the content language, so setting this explicitly is recommended." => "K\xF3d jazyka ve form\xE1tu BCP-47 pro rozpozn\xE1v\xE1n\xED \xF8e\xE8i (nap\xF8. cs-CZ, en-US, sk-SK, de-DE). Ponech\xE1te-li pr\xE1zdn\xE9, odvod\xED se automaticky z atributu &lt;html lang&gt; str\xE1nky \x97 co\x9E je obvykle jazyk administrace, ne jazyk obsahu, proto doporu\xE8ujeme nastavit explicitn\xEC.",
 
-// src/Widget/Widget.php, row 918
+// src/Widget/Widget.php, row 917
 "Dictation engine" => "Engine pro diktov\xE1n\xED",
 
-// src/Widget/Widget.php, row 921
+// src/Widget/Widget.php, row 920
 "Auto \xE2\x80\x94 browser Web Speech when available, server OpenAI as fallback" => "Automaticky \x97 Web Speech v prohl\xED\x9Ee\xE8i, je-li k dispozici, jinak OpenAI na serveru",
 
-// src/Widget/Widget.php, row 922
+// src/Widget/Widget.php, row 921
 "Browser Web Speech API only (free, no server key, Chromium-based browsers)" => "Pouze Web Speech API prohl\xED\x9Ee\xE8e (zdarma, bez serverov\xE9ho kl\xED\xE8e, prohl\xED\x9Ee\xE8e zalo\x9Een\xE9 na Chromiu)",
 
-// src/Widget/Widget.php, row 923
+// src/Widget/Widget.php, row 922
 "Server-side OpenAI gpt-4o-transcribe only (requires AA_APIKEY_OPENAI, better accuracy)" => "Pouze OpenAI gpt-4o-transcribe na serveru (vy\x9Eaduje AA_APIKEY_OPENAI, vy\x9A\x9A\xED p\xF8esnost)",
 
-// src/Widget/Widget.php, row 925
+// src/Widget/Widget.php, row 924
 "Which speech-to-text engine to use." => "Kter\xFD engine pro p\xF8evod \xF8e\xE8i na text pou\x9E\xEDt.",
 
-// src/Widget/Widget.php, row 928
+// src/Widget/Widget.php, row 927
 "Store audio recording" => "Ukl\xE1dat zvukov\xFD z\xE1znam",
 
-// src/Widget/Widget.php, row 928
+// src/Widget/Widget.php, row 927
 "Save the uploaded audio to the slice's upload directory (img_upload/&lt;slice_id&gt;/) as audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Server enforces this flag from the field config \xE2\x80\x94 clients cannot opt in by themselves." => "Ulo\x9E\xED nahran\xFD zvuk do upload adres\xE1\xF8e web\xEDku (img_upload/&lt;slice_id&gt;/) jako audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Server tento p\xF8\xEDznak vynucuje z nastaven\xED pol\xED\xE8ka \x97 klient si jej s\xE1m zapnout nem\xF9\x9Ee.",
 
-// src/Widget/Widget.php, row 931
+// src/Widget/Widget.php, row 930
 "New item template ID" => "ID \x9Aablony nov\xE9ho \xE8l\xE1nku",
 
-// src/Widget/Widget.php, row 931
+// src/Widget/Widget.php, row 930
 "The ID of item in destination slice used as Template for new items (probably in Holding bin)" => "ID \xE8l\xE1nku v c\xEDlov\xE9m web\xEDku, kter\xFD se pou\x9Eije jako \x9Aablona pro nov\xE9 \xE8l\xE1nky (pravd\xECpodobn\xEC v z\xE1sobn\xEDku)",
 
-// src/Widget/Widget.php, row 934
+// src/Widget/Widget.php, row 933
 "Code to show" => "Zobrazovan\xFD k\xF3d",
 
-// src/Widget/Widget.php, row 934
+// src/Widget/Widget.php, row 933
 "HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed" => "HTML k\xF3d (p\xF8\xEDpadn\xEC s AA v\xFDrazy), kter\xFD se zobraz\xED. Nen\xED-li vypln\xECno, zobraz\xED se {_#this}",
 
-// src/Widget/Widget.php, row 937
+// src/Widget/Widget.php, row 936
 "Disable new tags" => "Zak\xE1zat nov\xE9 tagy",
 
-// src/Widget/Widget.php, row 937
+// src/Widget/Widget.php, row 936
 "Disallow creation of new tags - new items in related slice" => "Zak\xE1\x9Ee vytv\xE1\xF8en\xED nov\xFDch tag\xF9 - nov\xFDch \xE8l\xE1nk\xF9 v souvisej\xEDc\xEDm web\xEDku",
 
-// src/Widget/Widget.php, row 940
+// src/Widget/Widget.php, row 939
 "Max values" => "Max. po\xE8et hodnot",
 
-// src/Widget/Widget.php, row 940
+// src/Widget/Widget.php, row 939
 "Limit the number of values entered. If 0 or empty, the number is unlimited" => "Omez\xED po\xE8et zadan\xFDch hodnot. P\xF8i 0 nebo pr\xE1zdn\xE9 hodnot\xEC je po\xE8et neomezen\xFD",
 
-// src/Widget/Widget.php, row 943
+// src/Widget/Widget.php, row 942
 "Related field" => "Pol\xED\xE8ko pro souvisej\xEDc\xED",
 
-// src/Widget/Widget.php, row 943
+// src/Widget/Widget.php, row 942
 "Field to use for related items (relation........ is default)" => "Pol\xED\xE8ko pou\x9Eit\xE9 pro souvisej\xEDc\xED \xE8l\xE1nky (v\xFDchoz\xED je relation........)",
 
-// src/Widget/Widget.php, row 946
+// src/Widget/Widget.php, row 945
 "Row Code" => "K\xF3d \xF8\xE1dku",
 
-// src/Widget/Widget.php, row 946
+// src/Widget/Widget.php, row 945
 "Alias in constant slice or HTML code to use for each related item (_#ROW_CODE is default)" => "Alias v konstantn\xEDm web\xEDku nebo HTML k\xF3d pou\x9Eit\xFD pro ka\x9Ed\xFD souvisej\xEDc\xED \xE8l\xE1nek (v\xFDchoz\xED je _#ROW_CODE)",
 
-// src/Widget/Widget.php, row 949
+// src/Widget/Widget.php, row 948
 "Row Edit Code" => "K\xF3d editace \xF8\xE1dku",
 
-// src/Widget/Widget.php, row 949
+// src/Widget/Widget.php, row 948
 "Alias in constant slice or HTML code to use for editing related item (_#ROW_EDIT is default)" => "Alias v konstantn\xEDm web\xEDku nebo HTML k\xF3d pou\x9Eit\xFD pro editaci souvisej\xEDc\xEDho \xE8l\xE1nku (v\xFDchoz\xED je _#ROW_EDIT)",
 
-// src/Widget/Widget.php, row 952
+// src/Widget/Widget.php, row 951
 "Buttons to Show" => "Zobrazen\xE1 tla\xE8\xEDtka",
 
-// src/Widget/Widget.php, row 952
+// src/Widget/Widget.php, row 951
 "N - new<br>D - delete (with json you can specify also Dconfirm:&lt;question&gt;<br>S - setting (edit item in Toolbox)<br>E - edit - used with \"Row Edit Code\" parameter<br>B - back - used with \"Row Edit Code\" parameter<br>F - file upload to first file...........x or img_upload.....x or img_src........x field<br>- - no manage (just view)<br>Could be also defined as JSON asoc array - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}" => "N - nov\xFD<br>D - smazat (v json lze zadat tak\xE9 Dconfirm:&lt;ot\xE1zka&gt;<br>S - nastaven\xED (editace \xE8l\xE1nku v Toolboxu)<br>E - editace - pou\x9E\xEDv\xE1 se s parametrem \"K\xF3d editace \xF8\xE1dku\"<br>B - zp\xECt - pou\x9E\xEDv\xE1 se s parametrem \"K\xF3d editace \xF8\xE1dku\"<br>F - nahr\xE1n\xED souboru do prvn\xEDho pol\xED\xE8ka file...........x nebo img_upload.....x nebo img_src........x<br>- - bez spr\xE1vy (jen zobrazen\xED)<br>Lze zadat i jako JSON asoc. pole - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}",
 
-// src/Widget/Widget.php, row 955
+// src/Widget/Widget.php, row 954
 "Class prefix" => "Prefix t\xF8\xEDdy",
 
-// src/Widget/Widget.php, row 955
+// src/Widget/Widget.php, row 954
 "Component identifier to select from" => "Identifik\xE1tor komponenty, ze kter\xE9 se vyb\xEDr\xE1",
 
-// src/Widget/Widget.php, row 958
+// src/Widget/Widget.php, row 957
 "Address field" => "Pol\xED\xE8ko s adresou",
 
-// src/Widget/Widget.php, row 958
+// src/Widget/Widget.php, row 957
 "field_id of another text field, from which user can grab address search" => "field_id jin\xE9ho textov\xE9ho pol\xED\xE8ka, ze kter\xE9ho m\xF9\x9Ee u\x9Eivatel p\xF8evz\xEDt adresu pro vyhled\xE1v\xE1n\xED",
 
-// src/Widget/Widget.php, row 961
+// src/Widget/Widget.php, row 960
 "Allowed shapes" => "Povolen\xE9 tvary",
 
-// src/Widget/Widget.php, row 961
+// src/Widget/Widget.php, row 960
 "M - Marker (point) - default<br>L - Line<br>P - Polygon<br>R - Rectangle" => "M - Marker - zna\xE8ka (bod) - v\xFDchoz\xED<br>L - Line - \xE8\xE1ra<br>P - Polygon - mnoho\xFAheln\xEDk<br>R - Rectangle - obd\xE9ln\xEDk",
 
-// src/Widget/Widget.php, row 964
+// src/Widget/Widget.php, row 963
 "Multiple shapes" => "V\xEDce tvar\xF9",
 
-// src/Widget/Widget.php, row 964
+// src/Widget/Widget.php, row 963
 "Allow multiple shapes at a time" => "Povolit v\xEDce tvar\xF9 najednou",
 
-// src/Widget/Widget.php, row 967
+// src/Widget/Widget.php, row 966
 "Text option for Other" => "Textov\xE1 volba pro Jin\xE9",
 
-// src/Widget/Widget.php, row 967
+// src/Widget/Widget.php, row 966
 "Last option is considered as \"Other\" with the possibility to write text value" => "Posledn\xED volba se pova\x9Euje za \"Jin\xE9\" s mo\x9Enost\xED zapsat textovou hodnotu",
 
-// src/Widget/Widget.php, row 970
+// src/Widget/Widget.php, row 969
 "Searchable" => "S vyhled\xE1v\xE1n\xEDm",
 
-// src/Widget/Widget.php, row 970
+// src/Widget/Widget.php, row 969
 "Uses special selectbox widget, which is searchable as substring.<br>Do not rely on current implementation in your possible scripts." => "Pou\x9E\xEDv\xE1 speci\xE1ln\xED widget v\xFDb\xECrov\xE9ho boxu, ve kter\xE9m lze vyhled\xE1vat podle pod\xF8et\xECzce.<br>Ve sv\xFDch p\xF8\xEDpadn\xFDch skriptech se nespol\xE9hejte na sou\xE8asnou implementaci.",
 
-// src/Widget/Widget.php, row 973
+// src/Widget/Widget.php, row 972
 "Placeholder" => "Z\xE1stupn\xFD text", // ai 2026-06
 
-// src/Widget/Widget.php, row 973
+// src/Widget/Widget.php, row 972
 "Placeholder for input" => "Placeholder (n\xE1pov\xECdn\xFD text) pro vstupn\xED pole",
 
-// src/Widget/Widget.php, row 976
+// src/Widget/Widget.php, row 975
 "Width of one displayed item in pixels (300) or in % (50%)<br>Minimum is 150px, default is 250px.<br>For one item per row use 100%." => "\x8A\xED\xF8ka jedn\xE9 zobrazen\xE9 polo\x9Eky v pixelech (300) nebo v % (50%)<br>Minimum je 150px, v\xFDchoz\xED je 250px.<br>Pro jednu polo\x9Eku na \xF8\xE1dek pou\x9Eijte 100%.",
 ];

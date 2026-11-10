@@ -42,14 +42,23 @@ class CheckSiteStateFiles extends AbstractOptimize
     {
         // one row per site module - the whole table is smaller than any index dance over it.
         // LEFT JOIN: a site row whose module row is gone is exactly the broken state worth reporting.
-        $rows     = DB_AA::select([], 'SELECT LOWER(HEX(s.id)) AS id, s.flag, s.state_file, m.name, m.deleted FROM `site` s LEFT JOIN `module` m ON m.id = s.id');
+        return self::findingsFor(DB_AA::select([], 'SELECT LOWER(HEX(s.id)) AS id, s.flag, s.state_file, m.name, m.deleted FROM `site` s LEFT JOIN `module` m ON m.id = s.id'));
+    }
+
+    /**
+     * @param list<array<string, mixed>> $rows the site rows with the name and deleted of their module
+     * @return Finding[]
+     */
+    public static function findingsFor(array $rows): array
+    {
         $findings = [];
         $checked  = 0;
 
         foreach ($rows as $row) {
             // flag 1 = the router reads state_file as a path, not as a file. AA counts a module as live
-            // when deleted = 0 (getModules(), getIdFromUrl()) - anything else is not served.
-            if ((int) $row['flag'] === 1 || (int) ($row['deleted'] ?? 0) !== 0) {
+            // when deleted = 0 (getModules(), getIdFromUrl()) - anything else is not served. Nor is the template
+            // new sites are copied from; its stale state file of old installs is for RedefineSiteTemplates.
+            if ((int) $row['flag'] === 1 || (int) ($row['deleted'] ?? 0) !== 0 || (string) $row['id'] === unpack_id(AA_Module_Site::TEMPLATE_ID)) {
                 continue;
             }
             if (!($name = AA_Module_Site::stateFileName((string) $row['state_file']))) {

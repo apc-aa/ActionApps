@@ -96,7 +96,7 @@ try {
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
-$template_id = $template['W'] ? substr($template['W'],1) : unpack_id('SiteTemplate....');
+$template_id = $template['W'] ? substr($template['W'],1) : unpack_id(AA_Module_Site::TEMPLATE_ID);
 
 if ($cancel) {
     go_url( StateUrl(self_base() . "index.php"));

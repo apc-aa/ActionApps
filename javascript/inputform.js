@@ -214,7 +214,125 @@ function TabWidgetToggle(class2togle) {
     for (i = 0; i < els.length; i++) { els[i].classList.add('tabsactiv'); els[i].classList.remove('tabsnonactiv'); }
 }
 
+/** Display conditions of the item form (cfg from AA\Form\ShowConditions::formConfig()): shows and hides
+ *  the fields while the user edits. The controls of a hidden field are disabled, so the browser neither
+ *  sends nor requires them; the server decides again what is stored. Values are read, never changed. */
+function AA_ShowIfInit(cfg) {
+    const form = document.forms['inputform'];
+    if (!form) {
+        return;
+    }
+    const rules  = cfg.fields || {};
+    const off    = new Set(cfg.off || []);
+    const hidden = new Set(cfg.hidden || []);   // the last known state - the server's until the browser knows better
 
+    const holds = (rule, values) => {
+        const filled = values.some(v => v !== '' && v !== '0');
+        switch (rule.op) {
+            case 'in':     return values.some(v => rule.v.includes(v));
+            case 'notin':  return !values.some(v => rule.v.includes(v));
+            case 'filled': return filled;
+            case 'empty':  return !filled;
+        }
+        return true;
+    };
+
+    const disable = (fid, hide) => {
+        document.querySelectorAll('.cont-v' + unpackID(fid) + ' :is(input,select,textarea,button)').forEach(el => {
+            if (hide && !el.disabled) {
+                el.disabled = true;
+                el.setAttribute('data-aa-showif-off', '');
+            } else if (!hide && el.hasAttribute('data-aa-showif-off')) {
+                el.disabled = false;
+                el.removeAttribute('data-aa-showif-off');
+            }
+        });
+    };
+
+    const applied = new Map();   // fid => the state last put on the page
+    const pass = (force = false) => {
+        const state  = {};          // fid => true hidden | false shown | null unknown | 'busy' (a cycle shows the field, as on the server)
+        const values = new Map();   // fid => getFieldValues() - a field may control several rules
+        const valuesOf = fid => {
+            if (!values.has(fid)) {
+                values.set(fid, getFieldValues(fid));
+            }
+            return values.get(fid);
+        };
+        const isHidden = fid => {
+            if (off.has(fid)) {
+                return true;
+            }
+            if (!(fid in rules)) {
+                return false;
+            }
+            if (fid in state) {
+                return (state[fid] === 'busy') ? false : state[fid];
+            }
+            state[fid] = 'busy';
+            let ret = false;
+            for (const rule of rules[fid]) {
+                const ctl  = isHidden(rule.fid);
+                const vals = valuesOf(rule.fid);
+                if (ctl === true || (vals !== null && !holds(rule, vals))) {
+                    ret = true;
+                    break;
+                }
+                if (ctl === null || vals === null) {
+                    ret = null;   // a field missing in the form - the server knew its value, the browser does not
+                }
+            }
+            return state[fid] = ret;
+        };
+        // the row on every pass (a Field Triggers script may have shown it), the controls only on a change
+        const put = (fid, hide) => {
+            hide ? hideField(fid) : showField(fid);
+            if (force || applied.get(fid) !== hide) {
+                applied.set(fid, hide);
+                disable(fid, hide);
+            }
+        };
+        for (const fid of Object.keys(rules)) {
+            const s = isHidden(fid);
+            if (s !== null) {
+                s ? hidden.add(fid) : hidden.delete(fid);
+            }
+            put(fid, off.has(fid) || hidden.has(fid));
+        }
+        off.forEach(fid => (fid in rules) || put(fid, true));
+    };
+
+    let queued = false;
+    let forced = false;
+    const later = (force = false) => {
+        forced ||= force;
+        if (!queued) {
+            queued = true;
+            requestAnimationFrame(() => {
+                queued = false;
+                pass(forced);
+                forced = false;
+            });
+        }
+    };
+    pass(true);
+    document.documentElement.classList.add('aa-showif-on');
+    // a value set by a script fires no event - decide again right before the form is sent
+    form.addEventListener('submit', () => pass(), true);
+    form.addEventListener('change', () => later());
+    form.addEventListener('input', () => later());
+    // Select2 and other jQuery widgets report a change by jQuery.trigger(), which native listeners do not hear
+    if (window.jQuery) {
+        jQuery(form).on('change', () => later());
+    }
+    // parts of the form replaced by AJAX must not bring enabled controls into a hidden row
+    const control = ':is(input,select,textarea,button)';
+    new MutationObserver(mutations => {
+        if (mutations.some(m => Array.from(m.addedNodes).some(n => n.nodeType === 1 && (n.matches(control) || n.querySelector(control))))) {
+            later(true);
+        }
+    }).observe(form, {childList: true, subtree: true});
+}
 
 
 // aa-richtext.js next to this file - for text areas of hand-written forms, which come without <aa-richtext>;

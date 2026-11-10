@@ -35,7 +35,7 @@ class TprWidget extends TxtWidget
      */
     public static function getClassProperties(): array
     {
-        return Widget::propertiesShop(['rows', 'cols', 'const', 'const_arr']);
+        return Widget::propertiesShop(['const', 'rows', 'cols', 'const_arr']);
     }
 
     /** @inheritDoc */

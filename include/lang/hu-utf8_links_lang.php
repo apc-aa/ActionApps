@@ -111,17 +111,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Szűrők kezelése", // ai 2026-06
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "Hiba: hiányzik az olvasási jelszó", // ai 2026-06
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Üzenet a Toolkitből", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 // modules/links/check_url.php, row 52
 "Back" => "Vissza", // ai 2026-06
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Újrabejelentkezés", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114

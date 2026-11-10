@@ -13,6 +13,18 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "field&nbsp;id" => "oznaka datoteke",
+// "boolean:&nbsp;0=false,1=true" => "Booleova algebra:&nbsp; 0=neistinito,1=istinito",
+// "Wizard" => "čarobnjak",
+// "This is an undocumented %s. We don't recommend using it." => "Ovo je nedokumentiran %s. Ne preporučamo korištenje!",
+// "Close the wizard" => "Zatvorite čarobnjaka",
+// "Available parameters: " => "Dostupni parametri",
+// "This %s has no parameters." => "Ovaj %s nema parametara.",
+// "Have a look at these examples of parameters sets:" => "Pogledajte primjere postavki parametara:",
+// "OK - Save" => "U redu - spremi",
+// "Show example params" => "Pokažite parametre primjera",
+// "OK" => "U redu ",
+// "Help: Parameter Wizard" => "Pomoć: čarobnjak za postavke",
 // "field will be displayed in select box. if not specified, in select box are displayed headlines. (only for constants input type: slice)" => "Polje će biti prikazano u kućici izbora",
 // "show all" => "Prikaži sve",
 // "used only for slices - if set (=1), then all items are shown (including expired and pending ones)" => "Koristi se samo za stranice - ako je postavljeno (=1), prikazane su sve stavke",
@@ -143,120 +155,75 @@ return [
 // "boolean: 0=false,1=true" => "booleova algebra: 0=neistinito,1=istinito",
 // End of unused messages
 
-// admin/param_wizard.php, row 110
-"field&nbsp;id" => "oznaka datoteke",
-
-// admin/param_wizard.php, row 113
-"boolean:&nbsp;0=false,1=true" => "Booleova algebra:&nbsp; 0=neistinito,1=istinito",
-
-// admin/param_wizard.php, row 137
-"Wizard" => "čarobnjak",
-
-// admin/param_wizard.php, row 220
-"This is an undocumented %s. We don't recommend using it." => "Ovo je nedokumentiran %s. Ne preporučamo korištenje!",
-
-// admin/param_wizard.php, row 221
-"Close the wizard" => "Zatvorite čarobnjaka",
-
-// admin/param_wizard.php, row 235
-"Available parameters: " => "Dostupni parametri",
-
-// admin/param_wizard.php, row 255
-"This %s has no parameters." => "Ovaj %s nema parametara.",
-
-// admin/param_wizard.php, row 265
-"Have a look at these examples of parameters sets:" => "Pogledajte primjere postavki parametara:",
-
-// admin/param_wizard.php, row 272
-"Show" => "Prikaži",
-
-// admin/param_wizard.php, row 283
-"OK - Save" => "U redu - spremi",
-
-// admin/param_wizard.php, row 284
-"Cancel" => "Poništi",
-
-// admin/param_wizard.php, row 285
-"Show example params" => "Pokažite parametre primjera",
-
-// admin/param_wizard.php, row 289
-"OK" => "U redu ",
-
-// include/constants_param_wizard.php, row 68
-"Parameters" => "Postavke",
-
-// include/constants_param_wizard.php, row 70
-"Help: Parameter Wizard" => "Pomoć: čarobnjak za postavke",
-
-// include/constants_param_wizard.php, row 77
+// include/constants_param_wizard.php, row 61
 "Input Validate Type" => "Unesite tip provjere",
 
-// include/constants_param_wizard.php, row 79
+// include/constants_param_wizard.php, row 63
 "No validation" => "Nema provjere",
 
-// include/constants_param_wizard.php, row 82
+// include/constants_param_wizard.php, row 66
 "URL" => "Web adresa",
 
-// include/constants_param_wizard.php, row 85
+// include/constants_param_wizard.php, row 69
 "E-mail" => "e-mail",
 
-// include/constants_param_wizard.php, row 88
+// include/constants_param_wizard.php, row 72
 "Number = positive integer number" => "Broj - pozitivni cjeli broj",
 
-// include/constants_param_wizard.php, row 91, 113
+// include/constants_param_wizard.php, row 75, 97
 "Min" => "Min", // ai 2026-10
 
-// include/constants_param_wizard.php, row 92, 114
+// include/constants_param_wizard.php, row 76, 98
 "Allowed minimum value" => "Najmanja dopuštena vrijednost", // ai 2026-06
 
-// include/constants_param_wizard.php, row 97, 119
+// include/constants_param_wizard.php, row 81, 103
 "Max" => "Max", // ai 2026-10
 
-// include/constants_param_wizard.php, row 98, 120
+// include/constants_param_wizard.php, row 82, 104
 "Allowed maximum value" => "Najveća dopuštena vrijednost", // ai 2026-06
 
-// include/constants_param_wizard.php, row 103, 125
+// include/constants_param_wizard.php, row 87, 109
 "Step" => "Korak",
 
-// include/constants_param_wizard.php, row 110
+// include/constants_param_wizard.php, row 94
 "Number = (signed) integer number" => "Broj = cijeli broj (s predznakom)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 132
+// include/constants_param_wizard.php, row 116
 "Float - including scientific notation 1.2E+9" => "Float - uključujući znanstveni zapis 1.2E+9", // ai 2026-06
 
-// include/constants_param_wizard.php, row 135
+// include/constants_param_wizard.php, row 119
 "Decimal" => "Decimalni broj", // ai 2026-06
 
-// include/constants_param_wizard.php, row 138
+// include/constants_param_wizard.php, row 122
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 hexadecimalni brojevi  [0-9a-f]",
 
-// include/constants_param_wizard.php, row 141
+// include/constants_param_wizard.php, row 125
 "Date = store as date" => "Datum - sprema kao datum",
 
-// include/constants_param_wizard.php, row 144
+// include/constants_param_wizard.php, row 128
 "Bool = store as bool" => "Bool = sprema kao Booleov upit",
 
-// include/constants_param_wizard.php, row 147
+// include/constants_param_wizard.php, row 131
 "User = does nothing ???" => "Korisnik/ica = nema promjena ???",
 
-// include/constants_param_wizard.php, row 150
+// include/constants_param_wizard.php, row 134
 "Unique = prove uniqueness" => "Jedinstveno = provjera jedinstvenosti", // ai 2026-06
 
-// include/constants_param_wizard.php, row 151
+// include/constants_param_wizard.php, row 135
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
  => "Provjerava samo da li je ve vrijednost već korištena",
 
-// include/constants_param_wizard.php, row 155, 197
+// include/constants_param_wizard.php, row 139, 181
 "Field ID" => "ID polja",
 
-// include/constants_param_wizard.php, row 156, 198
+// include/constants_param_wizard.php, row 140, 182
 "Field in which to look for matching values (default is current field)." => "Polje u kojem se traže odgovarajuće vrijednosti (zadano je trenutno polje).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 161
+// include/constants_param_wizard.php, row 145
 "Scope" => "Opseg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 163
+// include/constants_param_wizard.php, row 147
 "<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
@@ -266,511 +233,511 @@ return [
    ."                <b>0</b> = (zadano) Korisničko ime, posebno: provjerava jedinstvenost u stranicama\n"
    ."                za upravljanje čitateljima i u sustavu dozvola. Uvijek koristi polje s ID-om %1", // ai 2026-06
 
-// include/constants_param_wizard.php, row 175
+// include/constants_param_wizard.php, row 159
 "Regular Expression" => "Regularni izraz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 176
+// include/constants_param_wizard.php, row 160
 "Validation based on Regular Expressions" => "Provjera valjanosti pomoću regularnih izraza", // ai 2026-06
 
-// include/constants_param_wizard.php, row 179
+// include/constants_param_wizard.php, row 163
 "Regular Expressions" => "Regularni izrazi", // ai 2026-06
 
-// include/constants_param_wizard.php, row 180
+// include/constants_param_wizard.php, row 164
 "use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "koristite nešto poput: /^[0-9]*\$/ - pogledajte priručnik \"Regularni izrazi\".", // ai 2026-06
 
-// include/constants_param_wizard.php, row 185
+// include/constants_param_wizard.php, row 169
 "Error text" => "Tekst greške", // ai 2026-06
 
-// include/constants_param_wizard.php, row 186
+// include/constants_param_wizard.php, row 170
 "error message" => "poruka o grešci", // ai 2026-06
 
-// include/constants_param_wizard.php, row 188
+// include/constants_param_wizard.php, row 172
 "Wrong value" => "Pogrešna vrijednost", // ai 2026-06
 
-// include/constants_param_wizard.php, row 193
+// include/constants_param_wizard.php, row 177
 "Unique e-mail" => "Jedinstveni e-mail",
 
-// include/constants_param_wizard.php, row 194
+// include/constants_param_wizard.php, row 178
 "Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "Kombinira provjeru e-mail adrese i provjeru jedinstvenosti",
 
-// include/constants_param_wizard.php, row 203
+// include/constants_param_wizard.php, row 187
 "Slice only" => "Samo stranica",
 
-// include/constants_param_wizard.php, row 204
+// include/constants_param_wizard.php, row 188
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
  => "Da li želite provjeriti jedinstvenost samo za ovu ili za sve stranice",
 
-// include/constants_param_wizard.php, row 212
+// include/constants_param_wizard.php, row 196
 "Password and Change Password" => "Lozinka i promjena lozinke",
 
-// include/constants_param_wizard.php, row 213
+// include/constants_param_wizard.php, row 197
 "Validates the passwords do not differ when changing password.\n"
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
    ."        function does the validation again before inserting the new password.</i>"
  => "Provjerava da li su obje lozinke iste pri promjeni",
 
-// include/constants_param_wizard.php, row 228
+// include/constants_param_wizard.php, row 212
 "Function" => "Funkcija",
 
-// include/constants_param_wizard.php, row 229
+// include/constants_param_wizard.php, row 213
 "How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "Kako se koristi oblikovanje teksta na ovoj stranici:",
 
-// include/constants_param_wizard.php, row 232
+// include/constants_param_wizard.php, row 216
 "just code" => "samo kod", // ai 2026-06
 
-// include/constants_param_wizard.php, row 233
+// include/constants_param_wizard.php, row 217
 "prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "ispisuje kod iz parametra - može se koristiti _#this - jednostavnije od f_t (bez dodatnog parametra)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 236
+// include/constants_param_wizard.php, row 220
 "null function" => "Funkcija nul",
 
-// include/constants_param_wizard.php, row 237
+// include/constants_param_wizard.php, row 221
 "prints nothing" => "Ne ispisuje ništa",
 
-// include/constants_param_wizard.php, row 240
+// include/constants_param_wizard.php, row 224
 "first value" => "prva vrijednost", // ai 2026-06
 
-// include/constants_param_wizard.php, row 241
+// include/constants_param_wizard.php, row 225
 "prints first value, even if the field is multivalue" => "ispisuje prvu vrijednost, čak i ako polje ima više vrijednosti", // ai 2026-06
 
-// include/constants_param_wizard.php, row 244
+// include/constants_param_wizard.php, row 228
 "translated" => "prevedeno", // ai 2026-06
 
-// include/constants_param_wizard.php, row 245
+// include/constants_param_wizard.php, row 229
 "prints translated field based on currently selected language" => "ispisuje prijevod polja prema trenutno odabranom jeziku", // ai 2026-06
 
-// include/constants_param_wizard.php, row 248
+// include/constants_param_wizard.php, row 232
 "abstract" => "Skraćeni tekst",
 
-// include/constants_param_wizard.php, row 249
+// include/constants_param_wizard.php, row 233
 "prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "Printa skraćeni tekst (ako postoji) na početku Punog teksta",
 
-// include/constants_param_wizard.php, row 252
+// include/constants_param_wizard.php, row 236
 "length" => "Dužina",
 
-// include/constants_param_wizard.php, row 253
+// include/constants_param_wizard.php, row 237
 "max number of characters grabbed from the <b>fulltext</b> field" => "najveći broj znakova uzetih iz polja <b>fulltext</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 258
+// include/constants_param_wizard.php, row 242
 "fulltext" => "Puni tekst",
 
-// include/constants_param_wizard.php, row 259
+// include/constants_param_wizard.php, row 243
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "ID polja s punim tekstom (npr. full_text.......) iz kojeg se uzima tekst. Ako je prazno, tekst se uzima iz <i>samog polja</i>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 261, 303, 600
+// include/constants_param_wizard.php, row 245, 287, 584
 "full_text......." => "Puni tekst",
 
-// include/constants_param_wizard.php, row 264
+// include/constants_param_wizard.php, row 248
 "paragraph" => "Paragraf",
 
-// include/constants_param_wizard.php, row 265
+// include/constants_param_wizard.php, row 249
 "take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "uzima prvi odlomak (tekst do \\<BR\\> ili \\<P\\> ili \\</P\\> ili barem do '.' (točke)) ako je kraći od <b>length</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 272
+// include/constants_param_wizard.php, row 256
 "extended fulltext link" => "Veza na prošireni puni tekst",
 
-// include/constants_param_wizard.php, row 273
+// include/constants_param_wizard.php, row 257
 "Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "Prikazuje tekst ili sadržaj polja sa vezom na puni tekst.",
 
-// include/constants_param_wizard.php, row 276, 410
+// include/constants_param_wizard.php, row 260, 394
 "link only" => "Samo veza",
 
-// include/constants_param_wizard.php, row 277
+// include/constants_param_wizard.php, row 261
 "field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "ID polja (npr. 'link_only.......') u kojem je pohranjen prekidač između vanjske i unutarnje stavke. (Ta stranica treba sadržavati SSI include ../slice.php.). Ako nije popunjeno, za puni tekst koristi se ista stranica kao za popis stavki (što je očekivano ponašanje).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 279, 413
+// include/constants_param_wizard.php, row 263, 397
 "link_only......." => "Samo veza",
 
-// include/constants_param_wizard.php, row 282
+// include/constants_param_wizard.php, row 266
 "url_field" => "POlje za web adresu",
 
-// include/constants_param_wizard.php, row 283
+// include/constants_param_wizard.php, row 267
 "field id if field, where external URL is stored (like hl_href.........)" => "ID polja ako je polje gdje je spremljena vanjska veza (kao href... ",
 
-// include/constants_param_wizard.php, row 285
+// include/constants_param_wizard.php, row 269
 "hl_href........." => "veza",
 
-// include/constants_param_wizard.php, row 288, 416
+// include/constants_param_wizard.php, row 272, 400
 "redirect" => "preusmjeravanje",
 
-// include/constants_param_wizard.php, row 289, 417
+// include/constants_param_wizard.php, row 273, 401
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL druge stranice koja prikazuje sadržaj stavke. (Ta stranica treba sadržavati SSI include ../slice.php.). Ako nije popunjeno, za puni tekst koristi se ista stranica kao za popis stavki (što je očekivano ponašanje).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 291, 419
+// include/constants_param_wizard.php, row 275, 403
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanci/solarno.shtml", // ai 2026-10
 
-// include/constants_param_wizard.php, row 294
+// include/constants_param_wizard.php, row 278
 "text" => "Tekst",
 
-// include/constants_param_wizard.php, row 295
+// include/constants_param_wizard.php, row 279
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Tekst popraćen vezom.",
 
-// include/constants_param_wizard.php, row 300
+// include/constants_param_wizard.php, row 284
 "condition field" => "Polje uvjeta",
 
-// include/constants_param_wizard.php, row 301
+// include/constants_param_wizard.php, row 285
 "when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "Kada je odabrano polje prazno, nije prikazana veza, nego samo tekst",
 
-// include/constants_param_wizard.php, row 306, 533
+// include/constants_param_wizard.php, row 290, 517
 "tag addition" => "Dodavanje HTML koda",
 
-// include/constants_param_wizard.php, row 307, 534
+// include/constants_param_wizard.php, row 291, 518
 "additional text to the \"\\<a\\>\" tag" => "Dodatni tekst za kod veze",
 
-// include/constants_param_wizard.php, row 309, 536
+// include/constants_param_wizard.php, row 293, 520
 "target=_blank" => "Otvara se u praznom prozoru",
 
-// include/constants_param_wizard.php, row 312, 422
+// include/constants_param_wizard.php, row 296, 406
 "no session id" => "Nema ID-a sesije",
 
-// include/constants_param_wizard.php, row 313, 423
+// include/constants_param_wizard.php, row 297, 407
 "If 1, the session id (AA_Session=...) is not added to url" => "Ako je 1, ID sesije (AA_Session=...) ne dodaje se u URL", // ai 2026-06
 
-// include/constants_param_wizard.php, row 320, 324
+// include/constants_param_wizard.php, row 304, 308
 "condition" => "Uvjet",
 
-// include/constants_param_wizard.php, row 321
+// include/constants_param_wizard.php, row 305
 "This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "Vrlo snažna funkcija za razne promjene",
 
-// include/constants_param_wizard.php, row 325
+// include/constants_param_wizard.php, row 309
 "you may use \"!\" to reverse (negate) the condition" => "Možete koristiti \"!\" za poništavanje uvjeta",
 
-// include/constants_param_wizard.php, row 330, 509
+// include/constants_param_wizard.php, row 314, 493
 "begin" => "početak",
 
-// include/constants_param_wizard.php, row 331
+// include/constants_param_wizard.php, row 315
 "text to print before <i>field</i>, if condition is true" => "tekst koi se prikazuje prije <i>field</i>, ako je ispunjen uvjet",
 
-// include/constants_param_wizard.php, row 333
+// include/constants_param_wizard.php, row 317
 "Yes" => "Da",
 
-// include/constants_param_wizard.php, row 336
+// include/constants_param_wizard.php, row 320
 "end" => "kraj",
 
-// include/constants_param_wizard.php, row 337
+// include/constants_param_wizard.php, row 321
 "text to print after <i>field</i>, if condition is true" => "tekst koji se ispisuje nakon <i>field</i>, ako je uvjet ispunjen",
 
-// include/constants_param_wizard.php, row 342
+// include/constants_param_wizard.php, row 326
 "else" => "inače",
 
-// include/constants_param_wizard.php, row 343
+// include/constants_param_wizard.php, row 327
 "text to print when condition is not satisfied" => "tekst koji se ispisuje ako uvjet nije ispunjen",
 
-// include/constants_param_wizard.php, row 345
+// include/constants_param_wizard.php, row 329
 "No" => "Ne",
 
-// include/constants_param_wizard.php, row 348
+// include/constants_param_wizard.php, row 332
 "cond_field" => "Polje uvjeta",
 
-// include/constants_param_wizard.php, row 349
+// include/constants_param_wizard.php, row 333
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "polje za usporedbu sa <b>condition</b> - ako nije ispunjeno, <i>field</i> se koristi",
 
-// include/constants_param_wizard.php, row 354
+// include/constants_param_wizard.php, row 338
 "skip_the_field" => "Preskočite polje",
 
-// include/constants_param_wizard.php, row 355
+// include/constants_param_wizard.php, row 339
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "Ako je postavljeno na 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)",
 
-// include/constants_param_wizard.php, row 362
+// include/constants_param_wizard.php, row 346
 "This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Primjer je upotrebljiv na primjer za isticanje polja - pokazuje Da ili Ne ovisno o sadržaju polja",
 
-// include/constants_param_wizard.php, row 363
+// include/constants_param_wizard.php, row 347
 "1:Yes::No::1" => "1:Da::Ne::1",
 
-// include/constants_param_wizard.php, row 366
+// include/constants_param_wizard.php, row 350
 "When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "Kada je e-mail polje ispunjeno, ispisuje nešto kao \"Email: email@apc.org\", kada je prazno, ne ispisuje ništa",
 
-// include/constants_param_wizard.php, row 367
+// include/constants_param_wizard.php, row 351
 "!:Email#:&nbsp;" => "!:E-mail#:&nbsp;",
 
-// include/constants_param_wizard.php, row 370
+// include/constants_param_wizard.php, row 354
 "Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "Ispisuje visinu tekstualne datoteke, ako je <i>polje </i> popunjeno, inače ništa",
 
-// include/constants_param_wizard.php, row 371
+// include/constants_param_wizard.php, row 355
 "!:height=" => "!:visina=",
 
-// include/constants_param_wizard.php, row 376
+// include/constants_param_wizard.php, row 360
 "date" => "datum",
 
-// include/constants_param_wizard.php, row 377
+// include/constants_param_wizard.php, row 361
 "prints date in a user defined format" => "Prikazuje datum u korisnički definiranom formatu",
 
-// include/constants_param_wizard.php, row 380
+// include/constants_param_wizard.php, row 364
 "format" => "format", // ai 2026-10
 
-// include/constants_param_wizard.php, row 381
+// include/constants_param_wizard.php, row 365
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "Format kao u PHP-u - pogledajte <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP priručnik</a>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 383
+// include/constants_param_wizard.php, row 367
 "m-d-Y" => "mjesec-dan-godina",
 
-// include/constants_param_wizard.php, row 388
+// include/constants_param_wizard.php, row 372
 "edit item" => "Uredite stavku",
 
-// include/constants_param_wizard.php, row 389
+// include/constants_param_wizard.php, row 373
 "_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM se koristi na administracijskoj stranici index.php za itemedit url", // ai 2026-06
 
-// include/constants_param_wizard.php, row 392
+// include/constants_param_wizard.php, row 376
 "type" => "Tip",
 
-// include/constants_param_wizard.php, row 393
+// include/constants_param_wizard.php, row 377
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "Uređivanje diskusija",
 
-// include/constants_param_wizard.php, row 395
+// include/constants_param_wizard.php, row 379
 "edit" => "Uredite",
 
-// include/constants_param_wizard.php, row 398
+// include/constants_param_wizard.php, row 382
 "return url" => "Povratna web adresa",
 
-// include/constants_param_wizard.php, row 399
+// include/constants_param_wizard.php, row 383
 "Return url being called from, usually leave blank and allow default" => "Povratna web adresa je pozvana sa, obično ostavlja prazno i dozvoljava pretpostavljeno",
 
-// include/constants_param_wizard.php, row 401
+// include/constants_param_wizard.php, row 385
 "/mysite.shtml" => "Vaša stranica",
 
-// include/constants_param_wizard.php, row 406
+// include/constants_param_wizard.php, row 390
 "fulltext link" => "Veza na puni tekst",
 
-// include/constants_param_wizard.php, row 407
+// include/constants_param_wizard.php, row 391
 "Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "Ispisuje Ime web adres unutar veze na puni tekst - dozvoljava korištenje vanjskih stavki. Koristi se odmah nakon\"\\<a href=\"",
 
-// include/constants_param_wizard.php, row 411
+// include/constants_param_wizard.php, row 395
 "field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "ID polja (kao 'samo veza') gdje je spremljen preklopnik između vanjskih i unutarnjih funkcija. Obično je to polje prikazano sa kućicom za označavanje. Ako je označeno, <i>polje</i> se prikazuje, ako nije, prikazuje se veza na puni tekst(ovisi i o <b>preusmjeravanju</b>).",
 
-// include/constants_param_wizard.php, row 430
+// include/constants_param_wizard.php, row 414
 "image height" => "Visina slikovne datoteke",
 
-// include/constants_param_wizard.php, row 431
+// include/constants_param_wizard.php, row 415
 "An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "Stari tip funkcije. Ispisuje<i>polje</i> kao vrijednost visine tekstualne datoteke(\\<img height=...\\>) ili briše html kod visine. Koristi se odmah nakon  \"height=\".f_c funkcija omogučuje bolji način za to sa parametrima \":height=\". ",
 
-// include/constants_param_wizard.php, row 434
+// include/constants_param_wizard.php, row 418
 "print HTML multiple" => "Višestruki prikaz HTML-a",
 
-// include/constants_param_wizard.php, row 435
+// include/constants_param_wizard.php, row 419
 "prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "Prikazuje <i>sadržaj</i>  polja ovisno o oznaci html (izbjegava posebne znakove ili samo prikaz)",
 
-// include/constants_param_wizard.php, row 438
+// include/constants_param_wizard.php, row 422
 "delimiter" => "razdjelnik",
 
-// include/constants_param_wizard.php, row 439
+// include/constants_param_wizard.php, row 423
 "if specified, a field with multiple values is displayed with the values delimited by it" => "Ako je označeno, polje sa višestrukim vrijednostima se prikazuje sa razdvojenim vrijednostima",
 
-// include/constants_param_wizard.php, row 446
+// include/constants_param_wizard.php, row 430
 "image src" => "Izvorišna slikovna datoteka",
 
-// include/constants_param_wizard.php, row 447
+// include/constants_param_wizard.php, row 431
 "prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "prikazuje <i>polje</i> kao izvorišnu slikovnu datoteku (\\<img src=...\\>) - NEMA SLIKOVNE DATOTEKE za prazno. Isto možete napraviti sa f_c funkcijom sa parametrima  :::NO_PICTURE. ",
 
-// include/constants_param_wizard.php, row 450
+// include/constants_param_wizard.php, row 434
 "image size" => "Veličina slikovne datoteke",
 
-// include/constants_param_wizard.php, row 451
+// include/constants_param_wizard.php, row 435
 "prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "ispisuje <i>polje</i> kao veličinu slike (height='xxx' width='yyy') (ili drugu informaciju o slici) ili prazan niz ako je ne može utvrditi; ne obrađuje posebno URL-ove iz direktorija uploads, možda kasnije!", // ai 2026-06
 
-// include/constants_param_wizard.php, row 454, 830
+// include/constants_param_wizard.php, row 438, 814
 "information" => "informacija", // ai 2026-06
 
-// include/constants_param_wizard.php, row 455
+// include/constants_param_wizard.php, row 439
 "specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "određuje vraćenu informaciju: <br> - <i>html</i> - (zadano) - vraća veličinu slike kao HTML atribute (height='xxx' width='yyy')<br> - <i>width</i> - vraća širinu slike u pikselima<br> - <i>height</i> - vraća visinu slike u pikselima<br> - <i>imgtype</i> - vraća oznaku tipa slike: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel redoslijed bajtova), 8 = TIFF(motorola redoslijed bajtova), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - vraća mimetype slike (npr. 'image/gif', 'application/x-shockwave-flash', ...)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 462
+// include/constants_param_wizard.php, row 446
 "substring with case change" => "subkod sa promjenom malih u velika slova i obrnuto",
 
-// include/constants_param_wizard.php, row 463
+// include/constants_param_wizard.php, row 447
 "prints a part of <i>the field</i>" => "ispisuje dio polja",
 
-// include/constants_param_wizard.php, row 466
+// include/constants_param_wizard.php, row 450
 "start" => "početak",
 
-// include/constants_param_wizard.php, row 467
+// include/constants_param_wizard.php, row 451
 "position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "mjesto početka subkoda (0=prvi, 1=drugi, -1=zadnji,-2=dva od kraja)",
 
-// include/constants_param_wizard.php, row 472
+// include/constants_param_wizard.php, row 456
 "count" => "izbroji",
 
-// include/constants_param_wizard.php, row 473
+// include/constants_param_wizard.php, row 457
 "count of characters (0=until the end)" => "broj znakova(0=do kraja)",
 
-// include/constants_param_wizard.php, row 478
+// include/constants_param_wizard.php, row 462
 "case" => "velika -  mala slova",
 
-// include/constants_param_wizard.php, row 479
+// include/constants_param_wizard.php, row 463
 "upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "gore - pretvara u velika slova, dolje - pretvara u mala slova, pretpostavljeno je nema promjene",
 
-// include/constants_param_wizard.php, row 484
+// include/constants_param_wizard.php, row 468
 "add string" => "dodajte kod",
 
-// include/constants_param_wizard.php, row 485
+// include/constants_param_wizard.php, row 469
 "if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "ako je kod skraćen, <i>dodajte kod</i> se dodaje kodu (vjerojatno nešto kao [...])",
 
-// include/constants_param_wizard.php, row 491
+// include/constants_param_wizard.php, row 475
 "Auto Update Checkbox" => "kućica za odabir automatskog obnavljanja",
 
-// include/constants_param_wizard.php, row 493
+// include/constants_param_wizard.php, row 477
 "linked field" => "vezano polje",
 
-// include/constants_param_wizard.php, row 494
+// include/constants_param_wizard.php, row 478
 "prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "ispisuje <i>polje</i> kao vezu ako<b>web adresa veze</b> nije NULA, inače ispisuje samo <i>polje</i>",
 
-// include/constants_param_wizard.php, row 497
+// include/constants_param_wizard.php, row 481
 "link URL" => "web adresa veze",
 
-// include/constants_param_wizard.php, row 500
+// include/constants_param_wizard.php, row 484
 "source_href....." => "Izvorni tekst",
 
-// include/constants_param_wizard.php, row 505
+// include/constants_param_wizard.php, row 489
 "e-mail or link" => "e-mail ili veza",
 
-// include/constants_param_wizard.php, row 506
+// include/constants_param_wizard.php, row 490
 "mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "mailto ispisuje:  <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag adition</b>\\><b>field/text</b>\\</a\\>. Ako  <i>polje</i> nije ispunjeno, ispisuje <b>else_field/tekst</b>.",
 
-// include/constants_param_wizard.php, row 510
+// include/constants_param_wizard.php, row 494
 "text before the link" => "tekst prije veze",
 
-// include/constants_param_wizard.php, row 512
+// include/constants_param_wizard.php, row 496
 "e-mail" => "e-pošta", // ai 2026-06
 
-// include/constants_param_wizard.php, row 515
+// include/constants_param_wizard.php, row 499
 "field/text" => "polje/tekst",
 
-// include/constants_param_wizard.php, row 516
+// include/constants_param_wizard.php, row 500
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "ako je parametar ID polja, koristi se sadržaj polja, inaće se koristi verbatim",
 
-// include/constants_param_wizard.php, row 521
+// include/constants_param_wizard.php, row 505
 "else_field/text" => "polje drugačije vrijednosti/tekst",
 
-// include/constants_param_wizard.php, row 522
+// include/constants_param_wizard.php, row 506
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "ako je <i>polje</i>prazno, samo ovaj tekst (ili sadržaj polja) se prikazuje",
 
-// include/constants_param_wizard.php, row 527
+// include/constants_param_wizard.php, row 511
 "linktype" => "tip veze",
 
-// include/constants_param_wizard.php, row 528
+// include/constants_param_wizard.php, row 512
 "mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (pretpostavljeno je mailto) - moguće je koristiti f_m funkciju za linkove također - samo upišite 'href' kao parametar",
 
-// include/constants_param_wizard.php, row 530
+// include/constants_param_wizard.php, row 514
 "href" => "",
 
-// include/constants_param_wizard.php, row 539
+// include/constants_param_wizard.php, row 523
 "hide email" => "skriva e-mail",
 
-// include/constants_param_wizard.php, row 540
+// include/constants_param_wizard.php, row 524
 "if 1 then hide email from spam robots. Default is 0." => "Ako je 1 onda skriva e-mail od spam robota. Pretpostavljeno je 0",
 
-// include/constants_param_wizard.php, row 547
+// include/constants_param_wizard.php, row 531
 "id" => "ID",
 
-// include/constants_param_wizard.php, row 548
+// include/constants_param_wizard.php, row 532
 "prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "prikazuje raspakirani ID (koristite ga, ako želite prikazati'ID stavke' ili 'ID stranice')",
 
-// include/constants_param_wizard.php, row 551
+// include/constants_param_wizard.php, row 535
 "'New' sign" => "'Novo' znak",
 
-// include/constants_param_wizard.php, row 552
+// include/constants_param_wizard.php, row 536
 "prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "ispisuje 'Novo' ili 'Staro' ili bilo koji tekst u <b>noviji tekst</b> ili <b>stariji tekst</b> ovisno o <b>vremenu</b>. Vrijeme je izraženo u minutama od trenutnog vremena",
 
-// include/constants_param_wizard.php, row 555
+// include/constants_param_wizard.php, row 539
 "time" => "vrijeme",
 
-// include/constants_param_wizard.php, row 556
+// include/constants_param_wizard.php, row 540
 "Time in minutes from current time." => "Vrijeme u minutama od trenutnog vremena",
 
-// include/constants_param_wizard.php, row 558
+// include/constants_param_wizard.php, row 542
 "1440" => "1440",
 
-// include/constants_param_wizard.php, row 561
+// include/constants_param_wizard.php, row 545
 "newer text" => "noviji tekst",
 
-// include/constants_param_wizard.php, row 562
+// include/constants_param_wizard.php, row 546
 "Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "Tekst za ispis, ako je datum u <i>polju</i> noviji od <i>trenutno vrijeme</i> - <b>vrijeme</b>.",
 
-// include/constants_param_wizard.php, row 564
+// include/constants_param_wizard.php, row 548
 "NEW" => "Novo",
 
-// include/constants_param_wizard.php, row 567
+// include/constants_param_wizard.php, row 551
 "older text" => "Stariji tekst",
 
-// include/constants_param_wizard.php, row 568
+// include/constants_param_wizard.php, row 552
 "Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "Tekst za ispis, ako je datum u <i>polju</i> stariji od <i>trenutno vrijeme</i> - <b>vrijeme</b>.",
 
-// include/constants_param_wizard.php, row 575
+// include/constants_param_wizard.php, row 559
 "text (blurb) from another slice" => "tekst (blurb) sa druge stranice",
 
-// include/constants_param_wizard.php, row 576
+// include/constants_param_wizard.php, row 560
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "ispisuje 'blurb' (dio teksta) sa druge stranice, baziran najednostavnom uvjetu.<br>Ako je <i>polje</i> (ili polje označeno kao <b>traženi tekst</b>) u trenutnoj stranici se poklapa sa sadržajem <b>traženog polja</b> u <b>blurbSliceId</b>, vraća sadržaj <b>fieldToReturn</b> u<b>blurbSliceID</b>.",
 
-// include/constants_param_wizard.php, row 579
+// include/constants_param_wizard.php, row 563
 "stringToMatch" => "Traženi tekst",
 
-// include/constants_param_wizard.php, row 580
+// include/constants_param_wizard.php, row 564
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Pretpostavljeno je <i>polje</i>. Može biti oblikovano ili kao ID polja(zaglavlje..........) ILI kao statički tekst ",
 
-// include/constants_param_wizard.php, row 582
+// include/constants_param_wizard.php, row 566
 "category........" => "Kategorija",
 
-// include/constants_param_wizard.php, row 585
+// include/constants_param_wizard.php, row 569
 "blurbSliceId" => "raspakirani ID stranice gdje je spremljen blurb tekst",
 
-// include/constants_param_wizard.php, row 586
+// include/constants_param_wizard.php, row 570
 "unpacked slice id of the slice where the blurb text is stored" => "raspakirani ID stranice gdje je spremljen blurb tekst",
 
-// include/constants_param_wizard.php, row 588
+// include/constants_param_wizard.php, row 572
 "41415f436f72655f4669656c64732e2e" => "",
 
-// include/constants_param_wizard.php, row 591
+// include/constants_param_wizard.php, row 575
 "fieldToMatch" => "traženo polje",
 
-// include/constants_param_wizard.php, row 592
+// include/constants_param_wizard.php, row 576
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "ID polja od polja u <b>ID blurb stranice</b> gdje ćete tražiti <b>odgovarajući podatak</b>",
 
-// include/constants_param_wizard.php, row 594
+// include/constants_param_wizard.php, row 578
 "headline........" => "zaglavlje............",
 
-// include/constants_param_wizard.php, row 597
+// include/constants_param_wizard.php, row 581
 "fieldToReturn" => "polje za povratak",
 
-// include/constants_param_wizard.php, row 598
+// include/constants_param_wizard.php, row 582
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "ID polja u polju <b>blurbSliceId</b> gdje je spremljen blurb tekst (što se ispisuje)",
 
-// include/constants_param_wizard.php, row 605
+// include/constants_param_wizard.php, row 589
 "RSS tag" => "RSS kod",
 
-// include/constants_param_wizard.php, row 606
+// include/constants_param_wizard.php, row 590
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "služi za internu uporabu predefiniranih RSS sinonima (npr. _#RSS_TITL). Dodaje RSS 0.91 kompatibilan kod",
 
-// include/constants_param_wizard.php, row 609, 613, 805
+// include/constants_param_wizard.php, row 593, 597, 789
 "default" => "pretpostavljeno",
 
-// include/constants_param_wizard.php, row 610
+// include/constants_param_wizard.php, row 594
 "prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "ispisuje<i>polje</i> ili pretpostavljenui vrijednost ako je <i>polje</i> prazno. Isto možete napraviti sa  f_c funkcijom  sa parametrima :::<b>pretpostavljeno</b>.",
 
-// include/constants_param_wizard.php, row 614
+// include/constants_param_wizard.php, row 598
 "default value" => "pretpostavljena vrijednost",
 
-// include/constants_param_wizard.php, row 616
+// include/constants_param_wizard.php, row 600
 "javascript: window.alert('No source url specified')" => "javascript: window.alert('Nije određen izvor datoteke')",
 
-// include/constants_param_wizard.php, row 621
+// include/constants_param_wizard.php, row 605
 "print field" => "ispiši polje", // ai 2026-06
 
-// include/constants_param_wizard.php, row 622
+// include/constants_param_wizard.php, row 606
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "ispisuje sadržaj <i>polja</i> (ili <i>unalias string</i>) ovisno o html oznaci (ako html oznaka nije postavljena, pretvara sadržaj u html. Za razliku od funkcije f_h, u html pretvara i prijelome redaka (u osnovnoj varijanti)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 625
+// include/constants_param_wizard.php, row 609
 "unalias string" => "unalias niz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 626
+// include/constants_param_wizard.php, row 610
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "ako je <i>unalias string</i> definiran, funkcija ignorira <i>polje</i> i ispisuje <i>unalias string</i>. U tom nizu naravno možete koristiti bilo koje aliase (ili polja poput {headline.........})", // ai 2026-06
 
-// include/constants_param_wizard.php, row 628
+// include/constants_param_wizard.php, row 612
 "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>" => "",
 
-// include/constants_param_wizard.php, row 631
+// include/constants_param_wizard.php, row 615
 "output modify" => "prilagodba izlaza", // ai 2026-06
 
-// include/constants_param_wizard.php, row 632
+// include/constants_param_wizard.php, row 616
 "You can use some output modifications:<br>\n"
    ."                   &nbsp; - [<i>empty</i>] - no modification<br>\n"
    ."                   &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>\n"
@@ -789,175 +756,175 @@ return [
    ."                   &nbsp; - <i>striptags</i>  - uklanja HTML i PHP oznake iz niza<br>\n"
    ."                   &nbsp; - <i>asis</i>  - ispisuje sadržaj polja 'kakav jest' - ne dodaje &lt;br&gt; na krajeve redaka čak i ako je polje označeno kao 'Običan tekst'. Parametar 'asis' je dobar npr. za funkciju 'Promijeni sadržaj...' u upravitelju stavki<br>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 647
+// include/constants_param_wizard.php, row 631
 "user function" => "korisnička funkcija",
 
-// include/constants_param_wizard.php, row 648
+// include/constants_param_wizard.php, row 632
 "calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "poziva korisnički definiranu funkciju (vidi kako stvoriti nove aliase u <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 651
+// include/constants_param_wizard.php, row 635
 "function" => "funkcija",
 
-// include/constants_param_wizard.php, row 652
+// include/constants_param_wizard.php, row 636
 "name of the function in the include/usr_aliasfnc.php file" => "naziv funkcije u datoteci include/usr_aliasfnc.php", // ai 2026-06
 
-// include/constants_param_wizard.php, row 654
+// include/constants_param_wizard.php, row 638
 "usr_start_end_date_cz" => "",
 
-// include/constants_param_wizard.php, row 657
+// include/constants_param_wizard.php, row 641
 "parameter" => "parametar poslan funkciji",
 
-// include/constants_param_wizard.php, row 658
+// include/constants_param_wizard.php, row 642
 "a parameter passed to the function" => "parametar poslan funkciji",
 
-// include/constants_param_wizard.php, row 665
+// include/constants_param_wizard.php, row 649
 "view" => "pogled",
 
-// include/constants_param_wizard.php, row 666
+// include/constants_param_wizard.php, row 650
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "omogućuje upravljanje pogledima. Ovo je složena i moćna funkcija, opisana u <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, koja omogućuje prikaz bilo kojeg pogleda na mjestu aliasa. Može se koristiti za tablicu 'povezanih priča' ili za prikaz sadržaja povezane stranice.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 669
+// include/constants_param_wizard.php, row 653
 "complex parameter" => "Složeni parametar",
 
-// include/constants_param_wizard.php, row 670
+// include/constants_param_wizard.php, row 654
 "this parameter is the same as we use in view.php url parameter - see the FAQ" => "ovaj parametar je isti kao onaj koji koristimo u URL parametru za view.php - vidi FAQ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 672
+// include/constants_param_wizard.php, row 656
 "vid=4&amp;cmd[23]=v-25" => "",
 
-// include/constants_param_wizard.php, row 677
+// include/constants_param_wizard.php, row 661
 "image width" => "Širina slikovne datoteke",
 
-// include/constants_param_wizard.php, row 678
+// include/constants_param_wizard.php, row 662
 "An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "Stari tip funkcije. Ispisuje<i>polje</i> kao vrijednost visine tekstualne datoteke(\\<img height=...\\>) ili briše html kod visine. Koristi se odmah nakon  \"height=\".f_c funkcija omogučuje bolji način za to sa parametrima \":height=\". ",
 
-// include/constants_param_wizard.php, row 681
+// include/constants_param_wizard.php, row 665
 "transformation" => "pretvorba",
 
-// include/constants_param_wizard.php, row 682
+// include/constants_param_wizard.php, row 666
 "Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Dozvoljava pretvorbu vrijednosti polja u drugu vrijednost.",
 
-// include/constants_param_wizard.php, row 685, 697, 709, 721, 733, 745, 757, 769, 781, 793
+// include/constants_param_wizard.php, row 669, 681, 693, 705, 717, 729, 741, 753, 765, 777
 "content" => "sadržaj",
 
-// include/constants_param_wizard.php, row 686, 698, 710, 722, 734, 746, 758, 770, 782, 794
+// include/constants_param_wizard.php, row 670, 682, 694, 706, 718, 730, 742, 754, 766, 778
 "string for comparison with <i>the field</i> for following return value" => "tekst za usporedbu sa <i>poljem</i> za ovu povratnu vrijednost",
 
-// include/constants_param_wizard.php, row 691, 703, 715, 727, 739, 751, 763, 775, 787, 799
+// include/constants_param_wizard.php, row 675, 687, 699, 711, 723, 735, 747, 759, 771, 783
 "return value" => "povratna vrijednost",
 
-// include/constants_param_wizard.php, row 692, 704, 716, 728, 740, 752, 764, 776, 788, 800
+// include/constants_param_wizard.php, row 676, 688, 700, 712, 724, 736, 748, 760, 772, 784
 "string to return if previous content matches - You can use field_id too" => "tekst koji se ispisuje ako se prethodni sadržaj poklapa s upitom - možete koristiti i ID polja također",
 
-// include/constants_param_wizard.php, row 694, 706, 718, 730, 742, 754, 766, 778, 790, 802, 808
+// include/constants_param_wizard.php, row 678, 690, 702, 714, 726, 738, 750, 762, 774, 786, 792
 "Environment" => "Okružje",
 
-// include/constants_param_wizard.php, row 806
+// include/constants_param_wizard.php, row 790
 "if no content matches, use this string as return value" => "Ako nema sadržaja koji odgovara upitu, koristi ovaj redak kao povratnu vrijednost",
 
-// include/constants_param_wizard.php, row 813
+// include/constants_param_wizard.php, row 797
 "expanded string" => "prošireni kod",
 
-// include/constants_param_wizard.php, row 814
+// include/constants_param_wizard.php, row 798
 "expands the string in the parameter" => "proširuje kod u parametar",
 
-// include/constants_param_wizard.php, row 817
+// include/constants_param_wizard.php, row 801
 "string to expand" => "kod za proširiti",
 
-// include/constants_param_wizard.php, row 818
+// include/constants_param_wizard.php, row 802
 "if specified then this string is expanded, if not specified then expands the contents of the field" => "ako je označeno, proširuje se tekst, ako nije, onda se proširuje sadržaj polja",
 
-// include/constants_param_wizard.php, row 826
+// include/constants_param_wizard.php, row 810
 "file information" => "informacije o datoteci", // ai 2026-06
 
-// include/constants_param_wizard.php, row 827
+// include/constants_param_wizard.php, row 811
 "prints <i>the field</i> as file information, its size or type" => "ispisuje <i>polje</i> kao informaciju o datoteci, njezinu veličinu ili tip", // ai 2026-06
 
-// include/constants_param_wizard.php, row 831
+// include/constants_param_wizard.php, row 815
 "specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "određuje vraćenu informaciju: <br> - <i>name</i> - naziv datoteke<br> - <i>type</i> - vraća tip datoteke (npr. TXT)<br> - <i>size</i> - vraća veličinu datoteke u kB ili MB (npr. 12.1 kB)<br> - <i>bytesize</i> - (npr. 12128)<br> - <i>link</i><br> - <i>typesize</i> - [tip - veličina] u spanu<br> - <i>crc</i><br> - <i>time</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 845
+// include/constants_param_wizard.php, row 829
 "Transformation action" => "Akcija pretvorbe",
 
-// include/constants_param_wizard.php, row 847
+// include/constants_param_wizard.php, row 831
 "AA Expression" => "AA izraz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 848
+// include/constants_param_wizard.php, row 832
 "AA expression where we can use any AA {expressions}" => "AA izraz u kojem možemo koristiti bilo koje AA {expressions}", // ai 2026-06
 
-// include/constants_param_wizard.php, row 851
+// include/constants_param_wizard.php, row 835
 "expression" => "izraz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 860
+// include/constants_param_wizard.php, row 844
 "Store" => "Sprema",
 
-// include/constants_param_wizard.php, row 861
+// include/constants_param_wizard.php, row 845
 "Simply store a value from the input field" => "Sprema vrijednost iz polja za unos",
 
-// include/constants_param_wizard.php, row 864
+// include/constants_param_wizard.php, row 848
 "lang (optional)" => "lang (neobavezno)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 865
+// include/constants_param_wizard.php, row 849
 "two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "dva slova - cz | en | es | de. Ako je navedeno, vrijednost će biti spremljena u navedeni jezik (polje mora koristiti prijevode)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 873
+// include/constants_param_wizard.php, row 857
 "Remove string" => "Briše kod",
 
-// include/constants_param_wizard.php, row 874
+// include/constants_param_wizard.php, row 858
 "Remove all occurrences of a string from the input field." => "Briše sva pojavljivanja tog koda iz polja za unos",
 
-// include/constants_param_wizard.php, row 877, 898
+// include/constants_param_wizard.php, row 861, 882
 "string parameter" => "Prametra koda",
 
-// include/constants_param_wizard.php, row 878
+// include/constants_param_wizard.php, row 862
 "Removed string" => "Obrisani kod",
 
-// include/constants_param_wizard.php, row 884
+// include/constants_param_wizard.php, row 868
 "Format date" => "Format datuma",
 
-// include/constants_param_wizard.php, row 885
+// include/constants_param_wizard.php, row 869
 "Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "Parsira datum u ulaznom polju za koji se očekuje da je u engleskom formatu datuma. U slučaju greške transformacija ne uspijeva", // ai 2026-06
 
-// include/constants_param_wizard.php, row 889
+// include/constants_param_wizard.php, row 873
 "Add http prefix" => "Dodaje http prefiks",
 
-// include/constants_param_wizard.php, row 890
+// include/constants_param_wizard.php, row 874
 "Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "Dodaje prefiks 'https://' polju ako ne počinje s 'https://' i nije prazno.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 894
+// include/constants_param_wizard.php, row 878
 "Store parameter" => "Sprema parametar",
 
-// include/constants_param_wizard.php, row 895
+// include/constants_param_wizard.php, row 879
 "Store parameter instead of the input field" => "Sprema parametar umjesto polja za unos",
 
-// include/constants_param_wizard.php, row 905
+// include/constants_param_wizard.php, row 889
 "Store as long id" => "Spremi kao dugi id", // ai 2026-06
 
-// include/constants_param_wizard.php, row 906
+// include/constants_param_wizard.php, row 890
 "Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "Stvara dugi id iz niza. Niz se kombinira s parametrom!! ili sa slice_id (ako parametar nije naveden). Iz istog niza (i istog parametra) uvijek se stvara isti id.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 909
+// include/constants_param_wizard.php, row 893
 "string to add" => "niz za dodavanje", // ai 2026-06
 
-// include/constants_param_wizard.php, row 910
+// include/constants_param_wizard.php, row 894
 "this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "ovaj parametar bit će dodan nizu prije pretvorbe (razlog je izbjegavanje praznih nizova te da ne generiramo uvijek isti id za uobičajene nizove (u različitim uvozima). Ako ovaj parametar nije naveden, koristi se slice_id.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 918
+// include/constants_param_wizard.php, row 902
 "Split input field by string" => "Razdvaja polje unosa po kodu",
 
-// include/constants_param_wizard.php, row 919
+// include/constants_param_wizard.php, row 903
 "Split input field by string parameter and store the result as multi-value." => "Razdvaja polje unosa po parametrima koda i sprema rezultat kao višestruku vrijednost",
 
-// include/constants_param_wizard.php, row 922
+// include/constants_param_wizard.php, row 906
 "delimiter (+ possible languages)" => "razdjelnik (+ mogući jezici)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 923
+// include/constants_param_wizard.php, row 907
 "string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "razdjelnik koji odvaja vrijednosti ulaznog polja (npr. \"|\"). Druga je mogućnost dodati i jezike odvojene s \"##\" u obliku <delimiter>##<lang1>##<lang2> (\"|##cz##en\" za \"Ahoj|Hi\") - tako će se ispuniti prevedena polja", // ai 2026-06
 
-// include/constants_param_wizard.php, row 930
+// include/constants_param_wizard.php, row 914
 "Store default value" => "Sprema pretpostavljenu vrijednost",
 
-// include/constants_param_wizard.php, row 931
+// include/constants_param_wizard.php, row 915
 "Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
    ."    <table>\n"
    ."        <tr><td><b>Output field</b></td><td><b>Value</b></td><td><b>Description</b></td></tr></b>\n"

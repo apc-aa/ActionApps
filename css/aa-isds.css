@@ -617,6 +617,7 @@ aa-isds-campaign { display: block; }
 .aa-isds .his-col-state { width: 190px; }
 .aa-isds .his-col-n { width: 130px; }
 .aa-isds .his-col-date { width: 140px; }
+.aa-isds .his-col-act { width: 132px; }
 .aa-isds .his-table thead th { padding: 10px 12px; background: var(--ai-surface-2); }
 .aa-isds .his-table td { padding: 10px 12px; }
 .aa-isds .his-table .his-n { text-align: right; }
@@ -640,6 +641,9 @@ aa-isds-campaign { display: block; }
 .aa-isds .his-skipped { display: block; font-size: 12px; color: var(--ai-skip); }
 .aa-isds .his-state .ai-badge { white-space: normal; }
 .aa-isds .his-date { font-size: 14px; color: var(--ai-ink-2); }
+/* above the subject link that covers the row */
+.aa-isds .his-act { position: relative; z-index: 1; text-align: right; }
+.aa-isds .his-act form { margin: 0; }
 .aa-isds .his-empty { padding: 36px; text-align: center; }
 
 @media (width <= 900px) {
@@ -654,6 +658,7 @@ aa-isds-campaign { display: block; }
   .aa-isds .his-table .his-date { grid-column: 2; grid-row: 2; font-size: 13px; text-align: right; }
   .aa-isds .his-table .his-n { grid-column: 1 / -1; font-size: 13px; text-align: left; }
   .aa-isds .his-n::before { content: attr(data-aa-isds-label) ": "; color: var(--ai-muted); }
+  .aa-isds .his-table .his-act { grid-column: 1 / -1; text-align: left; }
   .aa-isds .his-skipped { display: inline; margin-left: 6px; }
 }
 @media (width <= 600px) {

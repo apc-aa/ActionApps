@@ -221,16 +221,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Sve kategorije",
 
-// include/util.php, row 995
+// include/util.php, row 996
 "Error: Missing Reading Password" => "GREŠKA: Nema lozinke za čitanje",
 
-// include/util.php, row 1353
+// include/util.php, row 1354
 "Toolkit news message" => "Alat za nove poruke",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Back" => "Ntrag",
 
-// include/util.php, row 1367
+// include/util.php, row 1368
 "Relogin" => "Ponovna prijava", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110

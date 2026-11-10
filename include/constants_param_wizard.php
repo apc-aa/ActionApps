@@ -26,16 +26,17 @@
  *
 */
 
-/* These arrays serve to the parameter wizard. You can describe each item and its parameters.
+/* These arrays describe the types and their parameters for the help and the parameter form of the
+    field page and the CSV import (<aa-params>, AA\Util\Paramwizard). You can describe each item and its parameters.
     You can write some more described examples as well.
 
 You can use HTML tags in the description text. If you want < or > to be printed verbatim,
-use the escape character \ - the wizard will translate the characters. Remember you have to write
+use the escape character \ - the help will translate the characters. Remember you have to write
 \\ in the PHP strings (e.g. "... writes some text like \\<a href=...\\>").
 
     Each array has this structure:
         "name"=>describes the items contained in the array (used on various places in the wizard)
-        "hint"=>a common text displayed at the bottom of the wizard
+        "hint"=>a common text displayed at the bottom of the help
         "items"=>array of items
     Each item has this structure:
         "name"=>a brief name
@@ -45,7 +46,7 @@ use the escape character \ - the wizard will translate the characters. Remember 
     Each param has this structure:
         "name"=>a brief name
         "desc"=>a thoroughfull description
-        "type"=>see the param wizard constants for a description of available types
+        "type"=>INT, BOOL, anything else is a text
         "example"=>an example value
     Each example has this structure:
         "desc"=>a thoroughfull description
@@ -53,23 +54,6 @@ use the escape character \ - the wizard will translate the characters. Remember 
 */
 
 // require_once __DIR__."/../modules/alerts/reader_field_ids.php";
-
-/** Standard code to link to Parameter wizard
- * @param string $list
- * @param string $combo_list
- * @param string $text_param
- * @param bool $title
- * @return string
- */
-function getParamWizardLink(string $list, string $combo_list, string $text_param, bool $title = false): string
-{
-    $ret  = "<div class=\"flex aa-paramwiz-link\">";
-    if ($title) {
-        $ret .= "<label for=\"$text_param\"><strong>" . _m("Parameters") . "</strong></label>";
-    }
-    $ret .= "<div class=tabhlp><a class='btn btn-s' href='javascript:CallParamWizard(\"" . get_admin_url('param_wizard.php') . "\",\"$list\",\"$combo_list\",\"$text_param\")'>" . _m("Help: Parameter Wizard") . "</a></div></div>\n";
-    return $ret;
-}
 
 // $INSERT_TYPES[...] - now uses class approach with AA\Util\Paramwizard
 // $DEFAULT_VALUE_TYPES[...] - now uses class approach with AA\Util\Paramwizard

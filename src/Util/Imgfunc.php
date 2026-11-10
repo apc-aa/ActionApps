@@ -206,6 +206,12 @@ class Imgfunc
         return function_exists('imageavif') && !empty(gd_info()['AVIF Support']);
     }
 
+    /** and WebP only with libwebp */
+    public static function webpSupported(): bool
+    {
+        return function_exists('imagewebp') && !empty(gd_info()['WebP Support']);
+    }
+
     /**
      * Writes $src again as a new image, at most $max_px on the longer side.
      * Decoding and encoding drops EXIF (the GPS position of a phone photo) and anything
@@ -214,13 +220,23 @@ class Imgfunc
      * @param ?int $flatten_on 0xRRGGBB to draw transparency on - a PDF renderer reads alpha slowly - and write
      *                         what every viewer shows, taking GIF too: JPEG stays JPEG, the rest becomes JPEG or,
      *                         when small and sharp, PNG without alpha; null = the type of $src, transparency kept
+     * @param ?string $refusal set when the error is $src's own: 'image' - not an image of the taken types, or GD
+     *                         cannot decode it (a caller offers only types this GD reads, see UploadPolicy::anonTypes()),
+     *                         'size' - more than $max_pixels; null on success and when the server failed ($src not
+     *                         readable, $dest not written)
      * @return ?string null on success, otherwise the error
      */
-    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS, ?int $flatten_on = null): ?string
+    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS, ?int $flatten_on = null, ?string &$refusal = null): ?string
     {
-        $info  = @getimagesize($src);
-        $type  = is_array($info) ? (int) $info[2] : 0;
-        $types = self::avifSupported() ? [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_AVIF] : [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
+        $refusal = null;
+        $bytes   = is_file($src) ? @file_get_contents($src) : false;
+        if ($bytes === false) {
+            return _m('Cannot read %1', [$src]);
+        }
+        $refusal = 'image';
+        $info    = @getimagesizefromstring($bytes);
+        $type    = is_array($info) ? (int) $info[2] : 0;
+        $types   = self::avifSupported() ? [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_AVIF] : [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
         if ($flatten_on !== null) {
             $types[] = IMAGETYPE_GIF;
         }
@@ -228,12 +244,15 @@ class Imgfunc
             return _m('This type of image cannot be uploaded here');
         }
         if ($info[0] * $info[1] > $max_pixels) {
+            $refusal = 'size';
             return _m('The image has too many pixels');
         }
-        $img = @imagecreatefromstring((string) file_get_contents($src));
+        $img = @imagecreatefromstring($bytes);
+        unset($bytes);
         if (!$img) {
             return _m('The image cannot be read');
         }
+        $refusal = null;
         $w     = imagesx($img);
         $h     = imagesy($img);
         $scale = min(1, $max_px / max($w, $h));
@@ -266,22 +285,23 @@ class Imgfunc
                 $png  = self::encoded($out, IMAGETYPE_PNG);
                 $data = (($png !== '') && (strlen($png) <= 2 * strlen($data))) ? $png : $data;
             }
-            return (($data !== '') && (file_put_contents($dest, $data) === strlen($data))) ? null : _m('Cannot write %1', [$dest]);
+        } else {
+            $data = self::encoded($out, $type);
         }
-        $ok = match ($type) {
-            IMAGETYPE_JPEG => imagejpeg($out, $dest, 85),
-            IMAGETYPE_PNG  => imagepng($out, $dest),
-            IMAGETYPE_AVIF => imageavif($out, $dest),
-            default        => imagewebp($out, $dest, 85),
-        };
-        return $ok ? null : _m('Cannot write %1', [$dest]);
+        // written whole or reported: GD writing to a file says true even when the disk is full
+        return (($data !== '') && (file_put_contents($dest, $data) === strlen($data))) ? null : _m('Cannot write %1', [$dest]);
     }
 
-    /** the bytes of $img as JPEG or PNG, '' when GD cannot write it */
+    /** the bytes of $img as an image of $as (IMAGETYPE_*), '' when GD cannot write it */
     private static function encoded(\GdImage $img, int $as): string
     {
         ob_start();
-        $ok   = ($as === IMAGETYPE_PNG) ? imagepng($img) : imagejpeg($img, null, 85);
+        $ok   = match ($as) {
+            IMAGETYPE_PNG  => imagepng($img),
+            IMAGETYPE_WEBP => imagewebp($img, null, 85),
+            IMAGETYPE_AVIF => imageavif($img),
+            default        => imagejpeg($img, null, 85),
+        };
         $data = (string) ob_get_clean();
         return $ok ? $data : '';
     }
