@@ -14,6 +14,11 @@ final class ShowConditionsTest extends TestCase
     private const START = 'start_date......';
     private const PLACE = 'place...........';
 
+    public static function setUpBeforeClass(): void
+    {
+        require_once __DIR__ . '/../../../include/mgettext.php';   // _m() of the error texts
+    }
+
     /** @return array<string, array{array, array, bool}> */
     public static function rules(): array
     {
@@ -266,5 +271,75 @@ final class ShowConditionsTest extends TestCase
         $this->assertSame([], $conds->hidden($assigned, self::valuesOf([self::START => ['x'], self::PLACE => ['y']]), self::noExpand()));
         $hidden = $conds->hidden($assigned, self::valuesOf([self::START => ['x']]), self::noExpand());
         $this->assertSame(ShowConditions::LIVE, $hidden[self::START] ?? null);
+    }
+
+    private const NAMES = [self::CAT => 'Typ', self::START => 'Začátek', self::PLACE => 'Místo'];
+
+    /** a slice with the condition "Kurz" under key bbbbbbbb */
+    private static function withKurz(): ShowConditions
+    {
+        return self::conds(['bbbbbbbb' => ['name' => 'Kurz', 'expr' => '1']]);
+    }
+
+    public function test_fromPost_valid(): void
+    {
+        [$cond, $errors] = self::withKurz()->fromPost([
+            'name'  => ' Akce ',
+            'rule'  => [
+                ['field' => self::CAT, 'op' => 'in', 'values' => ['Akce', 'Kurz'], 'text' => "Kurz\n  Seminář \n\n"],
+                ['field' => '', 'op' => 'in', 'text' => 'ignored'],
+                ['field' => self::PLACE, 'op' => 'filled', 'values' => ['dropped'], 'text' => 'dropped'],
+            ],
+            'expr'  => '{xuser:_#IS_ADMIN}',
+            'clear' => '1',
+        ], self::NAMES, '');
+
+        $this->assertSame([], $errors);
+        $this->assertSame([
+            'name'  => 'Akce',
+            'all'   => [
+                ['field' => self::CAT, 'op' => 'in', 'values' => ['Akce', 'Kurz', 'Seminář']],
+                ['field' => self::PLACE, 'op' => 'filled', 'values' => []],
+            ],
+            'expr'  => '{xuser:_#IS_ADMIN}',
+            'clear' => true,
+        ], $cond);
+    }
+
+    public function test_fromPost_unchecked_clear_is_false(): void
+    {
+        [$cond] = self::withKurz()->fromPost(['name' => 'Akce', 'expr' => '1'], self::NAMES, '');
+        $this->assertFalse($cond['clear']);
+    }
+
+    public function test_fromPost_own_name_on_update_is_fine(): void
+    {
+        [$cond, $errors] = self::withKurz()->fromPost(['name' => 'Kurz', 'expr' => '1'], self::NAMES, 'bbbbbbbb');
+        $this->assertSame([], $errors);
+        $this->assertSame('Kurz', $cond['name']);
+    }
+
+    /** @return array<string, array{array}> */
+    public static function badPosts(): array
+    {
+        return [
+            'empty name'              => [['name' => ' ', 'expr' => '1']],
+            'name of other condition' => [['name' => 'kurz', 'expr' => '1']],
+            'no rule, no expression'  => [['name' => 'Akce', 'expr' => '  ', 'rule' => [['field' => '']]]],
+            'field not in slice'      => [['name' => 'Akce', 'rule' => [['field' => 'other...........', 'op' => 'filled']]]],
+            'unknown op'              => [['name' => 'Akce', 'rule' => [['field' => self::CAT, 'op' => 'like', 'text' => 'x']]]],
+            'in without values'       => [['name' => 'Akce', 'rule' => [['field' => self::CAT, 'op' => 'in', 'text' => " \n"]]]],
+            'notin without values'    => [['name' => 'Akce', 'rule' => [['field' => self::CAT, 'op' => 'notin']]]],
+            'name not a string'       => [['name' => ['Akce'], 'expr' => '1']],
+            'rules not an array'      => [['name' => 'Akce', 'rule' => 'x']],
+        ];
+    }
+
+    #[DataProvider('badPosts')]
+    public function test_fromPost_errors(array $post): void
+    {
+        [$cond, $errors] = self::withKurz()->fromPost($post, self::NAMES, '');
+        $this->assertNotEmpty($errors);
+        $this->assertNull($cond);
     }
 }

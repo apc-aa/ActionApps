@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Form;
 
+use AA\IO\DB\DB_AA;
+
 /**
  * Named display conditions of a slice: a field of the admin item form is shown only while its condition holds.
  * A condition is an array {name: string, all: list<{field: string, op: string, values: list<string>}>, expr: string, clear: bool}
@@ -254,6 +256,90 @@ final class ShowConditions
             $ret[($how === self::STATIC) ? 'off' : 'hidden'][] = (string) $fid;
         }
         return $ret;
+    }
+
+    /**
+     * The condition the editor (admin/se_showif.php) posted. A rule row without a field is skipped; the values
+     * come from the checkboxes and from the text area, one per line.
+     * @param array $post name, rule[i][field|op|values[]|text], expr, clear
+     * @param array<string, string> $names id of a field of the slice => its name
+     * @param string $key key of the edited condition, '' for a new one - its own name is no clash
+     * @return array{0: ?array, 1: list<string>} the condition (null on error) and the errors, plain text
+     */
+    public function fromPost(array $post, array $names, string $key): array
+    {
+        $errors = [];
+        $name   = is_string($post['name'] ?? null) ? trim($post['name']) : '';
+        if ($name === '') {
+            $errors[] = _m('Fill in the name of the condition.');
+        }
+        foreach ($this->conds as $k => $cond) {
+            if (((string) $k !== $key) && (mb_strtolower($cond['name']) === mb_strtolower($name))) {
+                $errors[] = _m('Another condition of this slice is called %1.', [$name]);
+            }
+        }
+        $all = [];
+        foreach ((is_array($post['rule'] ?? null) ? $post['rule'] : []) as $row) {
+            $field = is_array($row) && is_string($row['field'] ?? null) ? $row['field'] : '';
+            if ($field === '') {
+                continue;
+            }
+            $label = $names[$field] ?? $field;
+            $op    = $row['op'] ?? null;
+            if (!isset($names[$field])) {
+                $errors[] = _m('The field %1 is not in this slice.', [$label]);
+                continue;
+            }
+            if (!in_array($op, self::OPS, true)) {
+                $errors[] = _m('Choose how to compare the field %1.', [$label]);
+                continue;
+            }
+            $values = [];
+            if (in_array($op, ['in', 'notin'], true)) {
+                if (!($values = self::postedValues($row))) {
+                    $errors[] = _m('Fill in the values of the field %1.', [$label]);
+                    continue;
+                }
+            }
+            $all[] = ['field' => $field, 'op' => $op, 'values' => $values];
+        }
+        $expr = is_string($post['expr'] ?? null) ? trim($post['expr']) : '';
+        if (!$all && ($expr === '')) {
+            $errors[] = _m('Add a rule or an expression.');
+        }
+        return $errors ? [null, $errors] : [['name' => $name, 'all' => $all, 'expr' => $expr, 'clear' => isset($post['clear'])], []];
+    }
+
+    /**
+     * Values of a posted rule row: the checked boxes (values[]) and the lines of the text area (text), trimmed, once.
+     * @return list<string>
+     */
+    public static function postedValues(array $row): array
+    {
+        $lines  = is_string($row['text'] ?? null) ? preg_split('/\R/', $row['text']) : [];
+        $values = array_merge(array_filter((array) ($row['values'] ?? []), 'is_string'), $lines);
+        return array_values(array_unique(array_filter(array_map('trim', $values), static fn(string $v): bool => $v !== '')));
+    }
+
+    /** Stores the conditions into slice.aditional, keeping its other keys. */
+    public function save(string $slice_id): void
+    {
+        $current = (string) DB_AA::select1('aditional', 'SELECT `aditional` FROM `slice`', [['id', $slice_id, 'l']]);
+        \AA::Metabase()->doUpdate('slice', ['id' => $slice_id, 'aditional' => $this->toJson($current)]);
+    }
+
+    /** Removes the condition and takes it off every field of the slice that uses it, in one transaction. */
+    public function delete(string $slice_id, string $key, \AA_Fields $fields): void
+    {
+        $this->remove($key);
+        DB_AA::transaction(function () use ($slice_id, $key, $fields): void {
+            $this->save($slice_id);
+            foreach ($fields as $fid => $field) {
+                if (self::keyOfField($field['aditional']) === $key) {
+                    \AA::Metabase()->doUpdate('field', ['id' => (string) $fid, 'slice_id' => $slice_id, 'aditional' => self::fieldJson((string) $field['aditional'], '')]);
+                }
+            }
+        });
     }
 
     /** @return array<string, string> id of every field => key of its condition or '' */

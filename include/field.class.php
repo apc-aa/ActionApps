@@ -794,7 +794,8 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
             $opts[$key] = _m('(missing condition)');
         }
         // raw names - getFrmSelectEasy() safe()s the labels
-        return ' ' . getFrmSelectEasy('shwif[' . $this->getId() . ']', $opts, $key, ['class' => 'aa-showif-sel', 'aria-label' => _m('Display condition'), 'title' => _m('Display condition')]);
+        return ' ' . getFrmSelectEasy('shwif[' . $this->getId() . ']', $opts, $key, ['class' => 'aa-showif-sel', 'aria-label' => _m('Display condition'), 'title' => _m('Display condition')])
+            . '<button type="button" class="aa-showif-edit" title="' . safe(_m('Edit the condition')) . '" aria-label="' . safe(_m('Edit the condition')) . '">✎</button>';
     }
 
     // Array Access implementation is in the DataArrayAccessTrait  --------------------------
