@@ -118,6 +118,8 @@ namespace Tests\Unit\Optimize {
 
             $writes = self::writes();
             $this->assertCount(2, array_filter($writes, static fn(string $sql): bool => str_starts_with($sql, 'REPLACE INTO ')), implode("\n", $writes));
+            $site = array_values(array_filter($writes, static fn(string $sql): bool => str_starts_with($sql, 'REPLACE INTO site ')));
+            $this->assertMatchesRegularExpression("~VALUES \\('SiteTemplate\\.{4}', '/en/home', '.*', 1\\)$~s", $site[0] ?? '', 'the router reads the home');
         }
     }
 }
