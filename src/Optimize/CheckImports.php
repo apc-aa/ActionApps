@@ -212,7 +212,7 @@ class CheckImports extends AbstractOptimize
             }
             if ((($r['enabled'] ?? '') === '1') && !isset($planned[$id])) {
                 // the switch is in the edit form of the Imports list, not in the detail the finding links to
-                $findings[] = new Finding(Finding::INFO, _m('An enabled import has no planned task'), evidence: [$about()], advice: _m('No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch the import off: in "%1" of the slice click "%2" at the import and untick "%3".', [_m('Imports'), _m('Edit'), _m('Enabled')]), links: $links + self::edit($r, $id), key: "plan:$id");
+                $findings[] = new Finding(Finding::INFO, _m('An enabled import has no planned task'), evidence: [$about()], advice: _m('No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch the import off: in "%1" of the slice click "%2" at the import and untick "%3".', [_m('Imports'), _m('Edit'), _m('Enabled')]), links: $links + self::detail($r, $id, 'se_dataimports.php', _m('Edit')), key: "plan:$id");
             }
         }
         foreach ($named as $key => $ids) {
@@ -390,16 +390,11 @@ class CheckImports extends AbstractOptimize
         return [_m('Import') => safe(($r['aa_name'] ?? '') ?: $id), _m('Slice') => safe($name($slice) ?: $slice)];
     }
 
-    /** @return array<string, string> the import detail - its page decides who may open it */
-    private static function detail(array $r, string $id): array
+    /** @return array<string, string> a page of the import named $label: the import detail, or with se_dataimports.php
+     *  the edit form in the Imports list (name, source, Enabled) - the page decides who may open it */
+    private static function detail(array $r, string $id, string $page = 'se_dataimport.php', ?string $label = null): array
     {
-        return [_m('Import detail') => AA_INSTAL_PATH . 'admin/se_dataimport.php?change_id=' . rawurlencode($r['aa_owner'] ?? '') . '&id=' . $id];
-    }
-
-    /** @return array<string, string> the edit form of the import in the Imports list - name, source, Enabled */
-    private static function edit(array $r, string $id): array
-    {
-        return [_m('Edit') => AA_INSTAL_PATH . 'admin/se_dataimports.php?change_id=' . rawurlencode($r['aa_owner'] ?? '') . '&id=' . $id];
+        return [($label ?? _m('Import detail')) => AA_INSTAL_PATH . "admin/$page?change_id=" . rawurlencode($r['aa_owner'] ?? '') . '&id=' . $id];
     }
 
     private static function date(int $time): string
