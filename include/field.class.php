@@ -712,8 +712,9 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
 
     /** prints admin row for the field in AA UI
      * @param bool $analyze
+     * @param AA\Form\ShowConditions|null $conds  display conditions of the slice for the Show column; null = no choice
      */
-    public function showFieldAdminRow(bool $analyze): string
+    public function showFieldAdminRow(bool $analyze, ?AA\Form\ShowConditions $conds = null): string
     {
         $ret = '';
         $id          = $this->getId();
@@ -744,7 +745,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         $ret .= "
         <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"" . ($required ? " checked" : "") . "></td>
-        <td><input type=\"checkbox\" name=\"shw[$id]\"" . ($show ? " checked" : "") . "></td>";
+        <td><input type=\"checkbox\" name=\"shw[$id]\"" . ($show ? " checked" : "") . ">" . $this->showConditionSelect($conds) . "</td>";
         $ret .= "<td>" . $this->linkToField(_m("Edit"), '', ['class' => 'aa-button-edit']) . "</td>";
         if ($type === "in_item_tbl") {
             $ret .= "<td></td>";
@@ -776,6 +777,24 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
             $ret .= $this->getAnalysis();
         }
         return $ret;
+    }
+
+    /** the display condition of the field to pick in the Show column */
+    private function showConditionSelect(?AA\Form\ShowConditions $conds): string
+    {
+        if (!$conds) {
+            return '';
+        }
+        $key  = AA\Form\ShowConditions::keyOfField($this->data['aditional'] ?? '');
+        $opts = ['' => _m('always')];
+        foreach ($conds->all() as $k => $cond) {
+            $opts[(string) $k] = $cond['name'];
+        }
+        if (($key !== '') && !isset($opts[$key])) {
+            $opts[$key] = _m('(missing condition)');
+        }
+        // raw names - getFrmSelectEasy() safe()s the labels
+        return ' ' . getFrmSelectEasy('shwif[' . $this->getId() . ']', $opts, $key, ['class' => 'aa-showif-sel', 'aria-label' => _m('Display condition'), 'title' => _m('Display condition')]);
     }
 
     // Array Access implementation is in the DataArrayAccessTrait  --------------------------
@@ -950,7 +969,7 @@ class AA_Field_Slicedef extends AA_Field
     /** prints admin row for the field in AA UI
      * @param bool $analyze
      */
-    public function showFieldAdminRow(bool $analyze): string
+    public function showFieldAdminRow(bool $analyze, ?AA\Form\ShowConditions $conds = null): string
     {  // do nothing - this field is not editable this way (at least now)
         return '';
     }
@@ -1352,8 +1371,8 @@ class AA_Fields implements IteratorAggregate, Countable
         return [$core => '* Action Aplication Core', $slice_id => '* ' . $name . _m(' (this)')] + $slices;
     }
 
-    /** Stores the rows of the Fields page (admin/se_fields.php) - name, priority, required and show,
-     *  keyed by field id. The New_Field row adds a copy of the template field $ftype ("<slice_id>-<field_id>")
+    /** Stores the rows of the Fields page (admin/se_fields.php) - name, priority, required, show and
+     *  the display condition, keyed by field id. The New_Field row adds a copy of the template field $ftype ("<slice_id>-<field_id>")
      *  taken from one of $template_slices.
      *  The keys come from the request, so only existing fields of $slice_id are changed, other keys are ignored.
      *
@@ -1365,16 +1384,17 @@ class AA_Fields implements IteratorAggregate, Countable
      * @param string   $ftype           template of the new field
      * @param bool     $slice_fields    the new field is a slice (setting) field
      * @param string[] $template_slices slices the template may come from - @see templateSlices()
+     * @param array    $shwif           field id => key of its display condition or '' - not for slice fields
      * @return string[] errors - nothing is stored, if the rows do not validate
      */
-    public static function storeAdminRows(string $slice_id, array $names, array $pri, array $req, array $shw, string $ftype, bool $slice_fields, array $template_slices): array
+    public static function storeAdminRows(string $slice_id, array $names, array $pri, array $req, array $shw, string $ftype, bool $slice_fields, array $template_slices, array $shwif = []): array
     {
-        $own  = DB_AA::select('id', 'SELECT `id` FROM `field`', [['slice_id', $slice_id, 'l']]);
+        $own  = DB_AA::select(['id' => 'aditional'], 'SELECT `id`, `aditional` FROM `field`', [['slice_id', $slice_id, 'l']]);   // id => aditional
         $rows = [];
         $err  = [];
         foreach ($names as $fid => $name) {
             $fid = (string) $fid;
-            if (($fid !== 'New_Field') && !in_array($fid, $own, true)) {
+            if (($fid !== 'New_Field') && !array_key_exists($fid, $own)) {
                 continue;
             }
             if (($fid === 'New_Field') && ($name === '')) {
@@ -1389,6 +1409,14 @@ class AA_Fields implements IteratorAggregate, Countable
                 break;
             }
             $rows[$fid] = ['name' => $name, 'input_pri' => (int) $prior, 'required' => empty($req[$fid]) ? 0 : 1, 'input_show' => empty($shw[$fid]) ? 0 : 1];
+            // an unknown key is stored as it is - the field is then shown always
+            $key = $shwif[$fid] ?? null;
+            if (!$slice_fields && ($fid !== 'New_Field') && is_string($key) && preg_match('/^([0-9a-f]{8})?$/D', $key)) {
+                $aditional = AA\Form\ShowConditions::fieldJson((string) $own[$fid], $key);
+                if ($aditional !== (string) $own[$fid]) {
+                    $rows[$fid]['aditional'] = $aditional;
+                }
+            }
         }
         if ($err) {
             return $err;
@@ -1409,8 +1437,8 @@ class AA_Fields implements IteratorAggregate, Countable
             // AA_Core_Fields.. identifies its templates by bare type ('text'), user added templates by full id
             $ftype_base = ($slice_fields ? '_' : '') . self::getFieldType($tpl_id);
             $max = -1;
-            foreach ($own as $own_fid) {
-                if (str_starts_with($own_fid, $ftype_base)) {
+            foreach (array_keys($own) as $own_fid) {
+                if (str_starts_with((string) $own_fid, $ftype_base)) {
                     $max = max($max, (int) self::getFieldNo($own_fid));
                 }
             }
@@ -1427,7 +1455,8 @@ class AA_Fields implements IteratorAggregate, Countable
             foreach (self::FIELDS_NUM as $col) {
                 $data[$col] = (int) ($template[$col] ?? 0);
             }
-            $data = array_merge($data, $row, ['id' => $new_fid, 'slice_id' => $slice_id]);
+            // the template's display condition belongs to the template's slice
+            $data = array_merge($data, $row, ['id' => $new_fid, 'slice_id' => $slice_id, 'aditional' => '']);
             if (!AA::Metabase()->doInsert('field', $data)) {
                 $err['DB'] = MsgErr(_m("Can't copy field"));
             }

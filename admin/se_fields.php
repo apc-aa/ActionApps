@@ -29,6 +29,7 @@
 // expected $slice_id for edit slice, nothing for adding slice
 // optional slice_fields = 1 (for slice fields)
 
+use AA\Form\ShowConditions;
 use AA\IO\DB\DB_AA;
 use AA\Optimize\ChangeF_h2F_1;
 use AA\Optimize\ChangeF_t2F_1;
@@ -65,6 +66,7 @@ try {
     $req = InputVars::arrayPOST('req'); // alpha
     // array ( )
     $shw = InputVars::arrayPOST('shw'); // alpha
+    $shwif = InputVars::arrayPOST('shwif');   // field id => key of its display condition
     // array ( 1 => 9, )-array ( 0 => 30, 1 => 6, )
     $slice_fields = InputVars::boolGETPOST('slice_fields'); // -
     // array ( 'Přihlásit' => 3, )
@@ -178,7 +180,7 @@ if ($move_als && $move_als_to) {
 $template_slices = AA_Fields::templateSlices(AA::$module_id);
 
 if ($update && $name) {
-    $err = array_merge($err, AA_Fields::storeAdminRows(AA::$module_id, $name, $pri, $req, $shw, (string) $ftype, (bool) $slice_fields, array_keys($template_slices)));
+    $err = array_merge($err, AA_Fields::storeAdminRows(AA::$module_id, $name, $pri, $req, $shw, (string) $ftype, (bool) $slice_fields, array_keys($template_slices), $shwif));
     AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
     if (!count($err)) {
         $Msg = MsgOk(_m("Fields update successful"));
@@ -306,8 +308,10 @@ $code .= "<thead>
     </tr>
     </thead>
     <tbody>";
+// slice (setting) fields are plain AA_Fields too - their form has no display conditions
+$conds = $slice_fields ? null : ShowConditions::forSlice(AA::$module_id);
 foreach ( $s_fields as $fld) {
-    $code .= $fld->showFieldAdminRow($analyze || $fix);
+    $code .= $fld->showFieldAdminRow($analyze || $fix, $conds);
 }
 $form_buttons['slice_fields'] = ['value' => ($slice_fields ? 1 : 0)];
 

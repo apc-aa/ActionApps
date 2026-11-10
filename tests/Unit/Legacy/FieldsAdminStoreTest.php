@@ -42,9 +42,12 @@ namespace Tests\Unit\Legacy {
         private const THIRD = 'aaaabbbbccccddddaaaabbbbccccdddd';
         private const CORE  = '41415f436f72655f4669656c64732e2e';   // AA_Core_Fields..
 
-        private const OWN_IDS_SQL = 'SELECT `id` FROM `field` WHERE slice_id = 0x0123456789abcdef0123456789abcdef';
+        private const OWN_IDS_SQL = 'SELECT `id`, `aditional` FROM `field` WHERE slice_id = 0x0123456789abcdef0123456789abcdef';
 
         private const OWN_FIELDS = ['headline........', 'text............', 'text...........1', '_upload_url.....'];
+
+        /** field.aditional of the own fields, by field id */
+        private static array $aditional = [];
 
         /** the text template field as AA_Core_Fields.. has it */
         private const TEMPLATE = [
@@ -68,6 +71,8 @@ namespace Tests\Unit\Legacy {
             self::CORE . '-number'             => ['id' => 'number', 'name' => 'Number', 'input_pri' => '100', 'in_item_tbl' => '0'],
             self::CORE . '-slice_id'           => ['id' => 'slice_id', 'name' => 'Slice', 'in_item_tbl' => 'slice_id', 'text_stored' => '1'],
             self::OTHER . '-headline........' => ['id' => 'headline........', 'name' => 'Title', 'input_help' => 'from other', 'in_item_tbl' => '', 'text_stored' => '1'],
+            // a template field that uses a display condition of its own slice
+            self::OTHER . '-headline.......x' => ['id' => 'headline.......x', 'name' => 'Title', 'in_item_tbl' => '', 'text_stored' => '1', 'aditional' => '{"showif":"aaaaaaaa"}'],
         ];
 
         public static function setUpBeforeClass(): void
@@ -78,9 +83,10 @@ namespace Tests\Unit\Legacy {
         protected function setUp(): void
         {
             RecordingDb::reset();
+            self::$aditional = [];
             RecordingDb::$answer = static function (string $sql): array {
                 if ($sql === self::OWN_IDS_SQL) {
-                    return array_map(static fn($id) => ['id' => $id], self::OWN_FIELDS);
+                    return array_map(static fn($id) => ['id' => $id, 'aditional' => self::$aditional[$id] ?? ''], self::OWN_FIELDS);
                 }
                 if (str_contains($sql, 'FROM `module`')) {
                     return [
@@ -121,9 +127,66 @@ namespace Tests\Unit\Legacy {
             return array_values(array_filter(RecordingDb::$log, static fn(string $sql) => !str_starts_with($sql, 'SELECT')));
         }
 
-        private static function store(array $name, array $pri = [], array $req = [], array $shw = [], string $ftype = '', bool $slice_fields = false): array
+        private static function store(array $name, array $pri = [], array $req = [], array $shw = [], string $ftype = '', bool $slice_fields = false, array $shwif = []): array
         {
-            return AA_Fields::storeAdminRows(self::SLICE, $name, $pri, $req, $shw, $ftype, $slice_fields, [self::CORE, self::SLICE]);
+            return AA_Fields::storeAdminRows(self::SLICE, $name, $pri, $req, $shw, $ftype, $slice_fields, [self::CORE, self::SLICE], $shwif);
+        }
+
+        /** the display condition picked in the Show column goes to field.aditional */
+        public function test_assignsCondition(): void
+        {
+            $this->assertSame([], self::store(['headline........' => 'Headline'], ['headline........' => '5'], [], [], '', false, ['headline........' => '3fa94c1e']));
+            $this->assertSame(
+                ["UPDATE `field` SET `name`='Headline', `input_pri`='5', `required`='0', `aditional`='{\\\"showif\\\":\\\"3fa94c1e\\\"}', `input_show`='0' WHERE id='headline........' AND slice_id=0x0123456789abcdef0123456789abcdef"],
+                self::writes(),
+            );
+        }
+
+        /** @return array<string, array{mixed}> */
+        public static function malformedKeys(): array
+        {
+            return [
+                'not hex'    => ['zzzzzzzz'],
+                'too long'   => ['3fa94c1e0'],
+                'json'       => ['{"a":1}'],
+                'array'      => [['3fa94c1e']],
+            ];
+        }
+
+        #[\PHPUnit\Framework\Attributes\DataProvider('malformedKeys')]
+        public function test_malformedConditionKeyIsIgnored(mixed $key): void
+        {
+            self::$aditional['headline........'] = '{"showif":"aaaaaaaa"}';
+            $this->assertSame([], self::store(['headline........' => 'Headline'], ['headline........' => '5'], [], [], '', false, ['headline........' => $key]));
+            $this->assertStringNotContainsString('aditional', self::writes()[0]);
+        }
+
+        public function test_assignmentKeepsOtherJsonKeys(): void
+        {
+            self::$aditional['headline........'] = '{"other":1}';
+            self::store(['headline........' => 'Headline'], ['headline........' => '5'], [], [], '', false, ['headline........' => '3fa94c1e']);
+            $this->assertStringContainsString("`aditional`='{\\\"other\\\":1,\\\"showif\\\":\\\"3fa94c1e\\\"}'", self::writes()[0]);
+        }
+
+        public function test_removingConditionEmptiesAditional(): void
+        {
+            self::$aditional['headline........'] = '{"showif":"3fa94c1e"}';
+            self::store(['headline........' => 'Headline', 'text...........1' => 'Popis'], ['headline........' => '5', 'text...........1' => '6'], [], [], '', false, ['headline........' => '', 'text...........1' => '']);
+            $this->assertStringContainsString("`aditional`=''", self::writes()[0]);
+            $this->assertStringNotContainsString('aditional', self::writes()[1]);   // had none - nothing to write
+        }
+
+        public function test_sliceFieldsModeIgnoresConditions(): void
+        {
+            self::store(['_upload_url.....' => 'Upload'], ['_upload_url.....' => '5'], [], [], '', true, ['_upload_url.....' => '3fa94c1e']);
+            $this->assertStringNotContainsString('aditional', self::writes()[0]);
+        }
+
+        public function test_newFieldFromTemplateHasNoCondition(): void
+        {
+            $err = AA_Fields::storeAdminRows(self::SLICE, ['New_Field' => 'Titulek 2'], ['New_Field' => '7'], [], [], self::OTHER . '-headline.......x', false, [self::CORE, self::SLICE, self::OTHER], ['New_Field' => '3fa94c1e']);
+            $this->assertSame([], $err);
+            $this->assertSame('', RecordingDb::inserts('field')[0]['aditional']);
         }
 
         public function test_updatesOwnFields(): void

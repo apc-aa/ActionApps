@@ -2226,6 +2226,12 @@ summary.aa-ad-filter {
     margin-top: 4px;
 }
 
+/* Fields: display condition next to Show */
+.aa-showif-sel {
+    max-width: 14em;
+    text-overflow: ellipsis;
+}
+
 /* === Module selector (top-right dropdown, emitted by include/menu_util.php) ===
    Pure structure + spacing. All colors come from :root tokens, so skins
    re-theme without touching this block. Two layers:
