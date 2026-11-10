@@ -8,8 +8,10 @@ use AA\Central\Package\IdMap;
 use AA\Central\Package\ImportRewrite;
 use AA\Central\Package\ReferenceRewriter;
 use AA\Central\Package\RewriteFailed;
+use AA\Widget\Widget;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 final class ReferenceRewriterTest extends TestCase
 {
@@ -235,31 +237,47 @@ final class ReferenceRewriterTest extends TestCase
         $this->assertSame($text, (new ReferenceRewriter($plan))->rewriteNumeric($text));
     }
 
-    /** [input_show_func, position of the const parameter, expected]
-     *  @return array<string, array{string, int, string}> */
+    /** [input_show_func, expected]
+     *  @return array<string, array{string, string}> */
     public static function inputShowFuncs(): array
     {
         return [
-            'select'                      => ['sel:biom__categories:1', 0, 'sel:biom__categori_1:1'],
-            'multiple checkboxes'         => ['mch:ekolist-category:3:1', 0, 'mch:ekolist-catego_1:3:1'],
-            'const is the 3rd param'      => ['tpr:5:40:ekolist-category', 2, 'tpr:5:40:ekolist-catego_1'],
-            'same name elsewhere kept'    => ['sel:cat_a:cat_a', 0, 'sel:cat_b:cat_a'],
-            'spaces kept'                 => ['sel: biom__categories :x', 0, 'sel: biom__categori_1 :x'],
-            'escaped colon before'        => ['tpr:a#:b:40:cat_a:', 2, 'tpr:a#:b:40:cat_b:'],
-            'escaped colon after'         => ['sel:cat_a:{ifeq#:a#:b}:x', 0, 'sel:cat_b:{ifeq#:a#:b}:x'],
-            'relation to a slice'         => ['sel:#sLiCe-' . self::SLICE_OLD . ':', 0, 'sel:#sLiCe-' . self::SLICE_OLD . ':'],
-            'group not in the map'        => ['sel:lt_languages', 0, 'sel:lt_languages'],
-            'empty const'                 => ['sel::1', 0, 'sel::1'],
-            'no such parameter'           => ['tpr:5', 2, 'tpr:5'],
-            'no parameters'               => ['fld', 0, 'fld'],
-            'chain a->b->c'               => ['sel:cat_a', 0, 'sel:cat_b'],
+            'select'                      => ['sel:biom__categories:1', 'sel:biom__categori_1:1'],
+            'multiple checkboxes'         => ['mch:ekolist-category:3:1', 'mch:ekolist-catego_1:3:1'],
+            'textarea with presets'       => ['tpr:ekolist-category:5:40', 'tpr:ekolist-catego_1:5:40'],
+            'same name elsewhere kept'    => ['sel:cat_a:cat_a', 'sel:cat_b:cat_a'],
+            'spaces kept'                 => ['sel: biom__categories :x', 'sel: biom__categori_1 :x'],
+            'escaped colon after'         => ['sel:cat_a:{ifeq#:a#:b}:x', 'sel:cat_b:{ifeq#:a#:b}:x'],
+            'relation to a slice'         => ['sel:#sLiCe-' . self::SLICE_OLD . ':', 'sel:#sLiCe-' . self::SLICE_OLD . ':'],
+            'group not in the map'        => ['sel:lt_languages', 'sel:lt_languages'],
+            'empty const'                 => ['sel::1', 'sel::1'],
+            'no parameters'               => ['fld', 'fld'],
+            'chain a->b->c'               => ['sel:cat_a', 'sel:cat_b'],
         ];
     }
 
     #[DataProvider('inputShowFuncs')]
-    public function test_rewriteInputShowFunc_replaces_the_const_parameter_in_place(string $isf, int $position, string $expected): void
+    public function test_rewriteInputShowFunc_replaces_the_const_parameter_in_place(string $isf, string $expected): void
     {
-        $this->assertSame($expected, $this->rewriter()->rewriteInputShowFunc($isf, $position));
+        $this->assertSame($expected, $this->rewriter()->rewriteInputShowFunc($isf));
+    }
+
+    /** the widgets whose first parameter is a constant group - every widget with the `const` property */
+    public function test_GROUP_WIDGETS_are_the_widgets_with_constants(): void
+    {
+        require_once __DIR__ . '/../../fixtures/util_shims.php';
+        $codes = [];
+        foreach (glob(__DIR__ . '/../../../../src/Widget/*Widget.php') as $file) {
+            $class = 'AA\\Widget\\' . basename($file, '.php');
+            if (($class !== Widget::class) && !(new ReflectionClass($class))->isAbstract() && isset($class::getClassProperties()['const'])) {
+                $codes[] = strtolower(substr(basename($file), 0, 3));
+            }
+        }
+        sort($codes);
+        $groups = ReferenceRewriter::GROUP_WIDGETS;
+        sort($groups);
+
+        $this->assertSame($codes, $groups);
     }
 
     /** @return array<string, array{string, ?string}> */

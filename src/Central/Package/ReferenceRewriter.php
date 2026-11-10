@@ -133,11 +133,8 @@ final class ReferenceRewriter
         }
     }
 
-    /** widget code (any case) => index of its `const` parameter among getClassProperties() */
-    public const CONST_POSITION = [
-        'sel' => 0, 'mch' => 0, 'rio' => 0, 'mse' => 0, 'wi2' => 0, 'hco' => 0,
-        'pre' => 0, 'tag' => 0, 'rim' => 0, 'mng' => 0, 'iso' => 0, 'tpr' => 0,
-    ];
+    /** widget codes whose first parameter is a constant group (`sel:<group>:…`) */
+    public const GROUP_WIDGETS = ['sel', 'mch', 'rio', 'mse', 'wi2', 'hco', 'pre', 'tag', 'rim', 'mng', 'iso', 'tpr'];
 
     /** The column of a row AA reads as a constant group - no template, so no {constant:} reference finds
      *  it: field.input_show_func (the widget's `const` parameter), view.parameter of a const view (the
@@ -166,8 +163,7 @@ final class ReferenceRewriter
     public function rewriteGroupColumn(string $column, string $value): string
     {
         if ($column === 'input_show_func') {
-            $position = self::CONST_POSITION[strtolower(trim(explode(':', $value, 2)[0]))] ?? null;
-            return ($position === null) ? $value : $this->rewriteInputShowFunc($value, $position);
+            return $this->rewriteInputShowFunc($value);
         }
         $name = trim($value);
         $new  = ($name === '') ? null : $this->map->group($name);
@@ -188,22 +184,20 @@ final class ReferenceRewriter
      *  a slice) comes back as it is. */
     public static function inputShowFuncGroup(string $input_show_func): ?string
     {
-        $parts    = RewriteFailed::check(preg_split('/(?<!#):/', $input_show_func));
-        $position = self::CONST_POSITION[strtolower(trim($parts[0]))] ?? null;
-        $name     = ($position === null) ? '' : trim($parts[$position + 1] ?? '');
+        $parts = RewriteFailed::check(preg_split('/(?<!#):/', $input_show_func));
+        $name  = in_array(strtolower(trim($parts[0])), self::GROUP_WIDGETS, true) ? trim($parts[1] ?? '') : '';
         return ($name === '') ? null : $name;
     }
 
     /** The constant group parameter of field.input_show_func replaced in place - the rest stays byte for
-     *  byte. Split like AA_Statestore::parseProperties(): on `:` not preceded by `#`, values trimmed.
-     *  @param int $position index of `const` among the widget's parameters - CONST_POSITION */
-    public function rewriteInputShowFunc(string $input_show_func, int $position = 0): string
+     *  byte. Split like AA_Statestore::parseProperties(): on `:` not preceded by `#`, values trimmed. */
+    public function rewriteInputShowFunc(string $input_show_func): string
     {
-        $parts = RewriteFailed::check(preg_split('/(?<!#):/', $input_show_func, -1, PREG_SPLIT_OFFSET_CAPTURE));
-        if (!isset($parts[$position + 1])) {
+        $parts = RewriteFailed::check(preg_split('/(?<!#):/', $input_show_func, 3, PREG_SPLIT_OFFSET_CAPTURE));
+        if (!isset($parts[1]) || !in_array(strtolower(trim($parts[0][0])), self::GROUP_WIDGETS, true)) {
             return $input_show_func;
         }
-        [$value, $offset] = $parts[$position + 1];
+        [$value, $offset] = $parts[1];
         $name = trim($value);
         $new  = ($name === '') ? null : $this->map->group($name);
         if ($new === null) {
