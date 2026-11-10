@@ -30,6 +30,7 @@
  */
 
 use AA\Cache\CacheStr2find;
+use AA\Form\ShowConditions;
 use AA\Security\SignedExpression;
 use AA\Util\Langs;
 use AA\Util\JsTriggers;
@@ -103,6 +104,8 @@ class inputform {
     private int $template; // if you want to display alternate form design, template holds view_id of such template view type 'inputform'
     private string $formheading;     // add extra form heading here (default none, used by MLX)
     private array $hidden;          //
+    private ?AA_Content $stored_content;   // the stored item when a failed update is drawn again - values of fields the form did not send
+    private array $static_hidden = [];      // fields a display condition's expression hides - left out of the default form
 
     // computed values from form fields
     private ?array $show_func_used = null;    // used show functions in the input form
@@ -127,6 +130,7 @@ class inputform {
         $this->template             = (int)$settings['template'];  // most probably it is int
         $this->formheading          = (string)$settings['formheading']; //aded for MLX
         $this->hidden               = (array)$settings['hidden'];      // array of hidden fields to be added to the form
+        $this->stored_content       = (($settings['stored_content'] ?? null) instanceof AA_Content) ? $settings['stored_content'] : null;
     }
 
     /** static */
@@ -157,6 +161,13 @@ class inputform {
      */
     function printForm($content4id, $slice, $edit, $slice_fields=false): void
     {
+        $slice_id = $slice->getId();
+        $profile  = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
+
+        if (!$slice_fields && $this->display_aa_begin_end) {
+            $this->showConditions($content4id, $slice, (bool) $edit, $profile);
+        }
+
         // Get the default form and FILL CONTENTCACHE with fields
         // This function also fills the $this->show_func_used [and $this->js_proove_fields ...not used already]
         $form          = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
@@ -168,9 +179,6 @@ class inputform {
             $form          = ($edit && $view->f('even_odd_differ')) ? $view->f('even') : $view->f('odd');
             $remove_string = $view->f('remove_string');
         }
-
-        $slice_id = $slice->getId();
-        $profile  = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
 
         // Profile rules "UI - inputform - hide": menu_top / menu_left hide the admin top bar
         // and/or the left item rail independently (both hidden = the headerless pre-2026 form).
@@ -351,6 +359,35 @@ class inputform {
         echo $html_end;
     }
 
+    /** Display conditions of the admin item form (AA\Form\ShowConditions). The values are the ones getForm()
+     *  shows: of the item, or of a new one from the form and the defaults. A field the expression hides is left
+     *  out of the default form; the ones the rules hide are hidden by CSS until AA_ShowIfInit() takes over.
+     */
+    private function showConditions(AA_Content $content4id, AA_Slice $slice, bool $edit, AA_Profile $profile): void
+    {
+        $conds = ShowConditions::forSlice($slice->getId());
+        if (!$conds->all()) {
+            return;
+        }
+        $fields = $slice->getFields();
+        if ($edit) {
+            $hidden = $conds->hiddenFor($fields, $content4id, $this->stored_content);
+        } else {
+            $from_form = new ItemContent();
+            $from_form->setFieldsFromForm($content4id, true, $fields, $profile);
+            $hidden = $conds->hiddenFor($fields, $from_form, null, true);
+        }
+        if (!$this->template) {
+            $this->static_hidden = array_keys(array_filter($hidden, static fn(int $how) => $how === ShowConditions::STATIC));
+        }
+        if ($hidden) {
+            $rows = implode(',', array_map(static fn($fid) => '.cont-' . varname4form((string) $fid), array_keys($hidden)));
+            AA::Stringexpander()->addRequire("html:not(.aa-showif-on) :is($rows){display:none!important}", 'AA_Req_CSScode');
+        }
+        AA::Stringexpander()->addRequire('aa-fillform@1');
+        AA::Stringexpander()->addRequire('AA_ShowIfInit(' . json_encode($conds->formConfig($fields, $hidden), ShowConditions::JSON_SCRIPT) . ');', 'AA_Req_Run');
+    }
+
     /** getForm function
      *   Shows the Add / Edit item form fields
      * @param ItemContent $content4id - current item content in db
@@ -390,7 +427,8 @@ class inputform {
             if ( ($form4anonymous_wizard  && !$show[$fid]) ||
                 (!$form4anonymous_wizard && (!$field->getProperty('input_show') ||
                         $profile->getProperty('hide',$fid) ||
-                        $profile->getProperty('hide&fill',$fid)))) {
+                        $profile->getProperty('hide&fill',$fid) ||
+                        in_array($fid, $this->static_hidden, true)))) {
                 // do not show this field
                 continue;
             }

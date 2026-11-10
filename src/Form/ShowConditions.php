@@ -17,6 +17,8 @@ final class ShowConditions
     public const LIVE   = 1;
     /** hidden by the expression - until the form is opened again */
     public const STATIC = 2;
+    /** json_encode() flags for JSON printed into a <script> */
+    public const JSON_SCRIPT = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
 
     private const KEY_RE   = '/^[0-9a-f]{8}$/';
     private const FIELD_RE = '/^[A-Za-z0-9_.]{16}$/';
@@ -228,6 +230,30 @@ final class ShowConditions
             }
         }
         return array_keys($hidden);
+    }
+
+    /**
+     * What AA_ShowIfInit() (javascript/inputform.js) needs. A rule on a field the slice does not have is left
+     * out - it holds, as in hidden().
+     * @param array<string, int> $hidden the result of hiddenFor()
+     * @return array{fields: array<string, list<array{fid: string, op: string, v: list<string>}>>, hidden: list<string>, off: list<string>}
+     *  fields = every field with a known condition => its rules; hidden = fields LIVE; off = fields STATIC
+     */
+    public function formConfig(\AA_Fields $fields, array $hidden): array
+    {
+        $assigned = self::assigned($fields);
+        $ret      = ['fields' => [], 'hidden' => [], 'off' => []];
+        foreach ($assigned as $fid => $key) {
+            if (($key === '') || !($cond = $this->conds[$key] ?? null)) {
+                continue;
+            }
+            $rules = array_filter($cond['all'], static fn(array $rule): bool => array_key_exists($rule['field'], $assigned));
+            $ret['fields'][$fid] = array_values(array_map(static fn(array $rule): array => ['fid' => $rule['field'], 'op' => $rule['op'], 'v' => $rule['values']], $rules));
+        }
+        foreach ($hidden as $fid => $how) {
+            $ret[($how === self::STATIC) ? 'off' : 'hidden'][] = (string) $fid;
+        }
+        return $ret;
     }
 
     /** @return array<string, string> id of every field => key of its condition or '' */

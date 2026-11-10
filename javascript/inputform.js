@@ -214,7 +214,100 @@ function TabWidgetToggle(class2togle) {
     for (i = 0; i < els.length; i++) { els[i].classList.add('tabsactiv'); els[i].classList.remove('tabsnonactiv'); }
 }
 
+/** Display conditions of the item form (cfg from AA\Form\ShowConditions::formConfig()): shows and hides
+ *  the fields while the user edits. The controls of a hidden field are disabled, so the browser neither
+ *  sends nor requires them; the server decides again what is stored. Values are read, never changed. */
+function AA_ShowIfInit(cfg) {
+    const form = document.forms['inputform'];
+    if (!form) {
+        return;
+    }
+    const rules  = cfg.fields || {};
+    const off    = new Set(cfg.off || []);
+    const hidden = new Set(cfg.hidden || []);   // the last known state - the server's until the browser knows better
 
+    const holds = (rule, values) => {
+        const filled = values.some(v => v !== '' && v !== '0');
+        switch (rule.op) {
+            case 'in':     return values.some(v => rule.v.includes(v));
+            case 'notin':  return !values.some(v => rule.v.includes(v));
+            case 'filled': return filled;
+            case 'empty':  return !filled;
+        }
+        return true;
+    };
+
+    const toggle = (fid, hide) => {
+        hide ? hideField(fid) : showField(fid);
+        document.querySelectorAll('.cont-v' + unpackID(fid) + ' :is(input,select,textarea,button)').forEach(el => {
+            if (hide && !el.disabled) {
+                el.disabled = true;
+                el.setAttribute('data-aa-showif-off', '');
+            } else if (!hide && el.hasAttribute('data-aa-showif-off')) {
+                el.disabled = false;
+                el.removeAttribute('data-aa-showif-off');
+            }
+        });
+    };
+
+    const pass = () => {
+        const state = {};   // fid => true hidden | false shown | null unknown | 'busy' (a cycle shows the field, as on the server)
+        const isHidden = fid => {
+            if (off.has(fid)) {
+                return true;
+            }
+            if (!(fid in rules)) {
+                return false;
+            }
+            if (fid in state) {
+                return (state[fid] === 'busy') ? false : state[fid];
+            }
+            state[fid] = 'busy';
+            let ret = false;
+            for (const rule of rules[fid]) {
+                const ctl    = isHidden(rule.fid);
+                const values = getFieldValues(rule.fid);
+                if (ctl === true || (values !== null && !holds(rule, values))) {
+                    ret = true;
+                    break;
+                }
+                if (ctl === null || values === null) {
+                    ret = null;   // a field missing in the form - the server knew its value, the browser does not
+                }
+            }
+            return state[fid] = ret;
+        };
+        for (const fid of Object.keys(rules)) {
+            const s = isHidden(fid);
+            if (s !== null) {
+                s ? hidden.add(fid) : hidden.delete(fid);
+            }
+            toggle(fid, off.has(fid) || hidden.has(fid));
+        }
+        off.forEach(fid => toggle(fid, true));
+    };
+
+    let queued = false;
+    const later = () => {
+        if (!queued) {
+            queued = true;
+            requestAnimationFrame(() => {
+                queued = false;
+                pass();
+            });
+        }
+    };
+    pass();
+    document.documentElement.classList.add('aa-showif-on');
+    form.addEventListener('change', later);
+    form.addEventListener('input', later);
+    // Select2 and other jQuery widgets report a change by jQuery.trigger(), which native listeners do not hear
+    if (window.jQuery) {
+        jQuery(form).on('change', later);
+    }
+    // parts of the form replaced by AJAX must not bring enabled controls into a hidden row
+    new MutationObserver(later).observe(form, {childList: true, subtree: true});
+}
 
 
 // aa-richtext.js next to this file - for text areas of hand-written forms, which come without <aa-richtext>;

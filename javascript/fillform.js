@@ -353,9 +353,45 @@ function getWidgetValue(widget) {
 
 /* ITEMEDIT.php field JavaScript functions - AA API */
 
-/* the control of the field in new AA forms; not the HTML / Plain text switch ([flag]), which may come first */
+/* the controls of the field in new AA forms; not the HTML / Plain text switch ([flag]), which may come first */
+function fieldControlSelector(fieldID) {
+    return 'form[name="inputform"] :is(input,select,textarea)[name*="[' + fieldID.replaceAll('.', '_') + ']"]:not([name$="[flag]"])';
+}
+
 function getFieldControl(fieldID) {
-    return document.querySelector('form[name="inputform"] :is(input,select,textarea)[name*="[' + fieldID.replaceAll('.', '_') + ']"]:not([name$="[flag]"])');
+    return document.querySelector(fieldControlSelector(fieldID));
+}
+
+/* All values of the field as strings: values of checked boxes and radios (a lone checkbox gives '1'),
+   selected options, the value of other controls; empty strings left out.
+   [] = nothing set, null = the form has no control of the field.
+   Reads the controls themselves - FormData would skip the disabled ones. */
+function getFieldValues(fieldID) {
+    const form = document.forms['inputform'];
+    if (!form) {
+        return null;
+    }
+    const old = 'v' + unpackID(fieldID);   // old AA forms
+    let controls = Array.from(form.querySelectorAll('[name="' + old + '"], [name="' + old + '[]"]'));
+    if (!controls.length) {
+        controls = Array.from(document.querySelectorAll(fieldControlSelector(fieldID)));   // MchWidget numbers its names, so all of them
+    }
+    if (!controls.length) {
+        return (getControlByName('inputform', 'tdctr_' + old + '_day') != null) ? [String(getField(fieldID))] : null;   // old date of three selects
+    }
+    const values = [];
+    for (const el of controls) {
+        if (el.type === 'checkbox' || el.type === 'radio') {
+            if (el.checked) {
+                values.push(el.value === 'on' ? '1' : el.value);
+            }
+        } else if (el.tagName === 'SELECT') {
+            values.push(...Array.from(el.selectedOptions, o => o.value));
+        } else {
+            values.push(el.value);
+        }
+    }
+    return values.filter(v => v !== '');
 }
 
 function getField(fieldID) {

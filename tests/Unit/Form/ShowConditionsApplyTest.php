@@ -173,6 +173,33 @@ namespace AA\Tests\Unit\Form {
             $this->assertSame(['999'], $content->getValuesArray(self::START));
         }
 
+        public function test_formConfig_shape(): void
+        {
+            $conds = ShowConditions::fromJson(json_encode(['showif' => [self::KEY => [
+                'name' => 'Akce',
+                'all'  => [
+                    ['field' => self::CAT, 'op' => 'in', 'values' => ['Akce', 'Kurz']],
+                    ['field' => 'nofield.........', 'op' => 'filled'],   // the slice has no such field - the rule holds
+                ],
+                'expr' => '',
+            ]]]));
+            $cfg = $conds->formConfig(self::fields([], 'ffffffff'), [self::START => ShowConditions::LIVE, self::PASSWORD => ShowConditions::STATIC]);
+
+            $rules = [['fid' => self::CAT, 'op' => 'in', 'v' => ['Akce', 'Kurz']]];
+            $this->assertSame([self::START => $rules, self::PASSWORD => $rules], $cfg['fields']);
+            $this->assertSame([self::START], $cfg['hidden']);
+            $this->assertSame([self::PASSWORD], $cfg['off']);
+        }
+
+        public function test_formConfig_json_is_script_safe(): void
+        {
+            $conds = self::conds(true, '', ['field' => self::CAT, 'op' => 'in', 'values' => ['</script><b>', "a'b\"&"]]);
+            $json  = json_encode($conds->formConfig(self::fields(), []), ShowConditions::JSON_SCRIPT);
+            $this->assertStringNotContainsString('<', $json);
+            $this->assertStringNotContainsString("'", $json);
+            $this->assertSame(['</script><b>', "a'b\"&"], json_decode($json, true)['fields'][self::START][0]['v']);
+        }
+
         public function test_apply_slice_without_conditions_changes_nothing(): void
         {
             $content = self::content([self::CAT => 'Novinka', self::START => '999']);
