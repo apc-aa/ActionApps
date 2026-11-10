@@ -60,7 +60,7 @@ class CheckLoginAddresses extends AbstractOptimize
             }
         }
         if ($slowed) {
-            $needles = array_map(static fn(string $address): string => ':' . str_replace(':', '_', $address) . ':', array_keys($slowed));
+            $needles = array_map(self::selectorPart(...), array_keys($slowed));
             $logins  = DB_AA::select([], 'SELECT `selector`, `params` FROM `log`', array_merge($login, [['selector', ':', 'NOT BEGIN'], ['selector', $needles, 'CONTAIN']]), null, null, 10000);
             foreach ($logins as $row) {
                 if (isset($slowed[$address = LoginThrottle::address((string) $row['selector'])])) {
@@ -87,7 +87,7 @@ class CheckLoginAddresses extends AbstractOptimize
                 _m('Every login of the last 30 days came from one address, %1', [$one]),
                 evidence: [[_m('Address') => safe($one), _m('Names') => (string) $names]],
                 advice: self::proxyAdvice($one) . ' ' . _m('Until then AA sees all visitors as one, and 20 failed logins of anyone, a scanner included, slow down the login of everybody. If it is the address of the only office that uses this AA, nothing needs to change.'),
-                links: [_m('Log rows') => AA_Log::getAdminUrl('LOGIN')],
+                links: [_m('Log rows') => self::logUrl($one)],
                 key: 'one:' . $one,
             );
         }
@@ -100,11 +100,23 @@ class CheckLoginAddresses extends AbstractOptimize
                 _m('Logins from %1 were slowed down after failed attempts, and %2 users log in from that address', [$address, $users]),
                 evidence: [[_m('Address') => safe($address), _m('Users') => (string) $users]],
                 advice: _m('Their failed logins add up, so all of them wait.') . ' ' . self::proxyAdvice($address) . ' ' . _m('If it is the shared address of an office, find the failing logins in the Log (event LOGIN) - often a script or a browser keeps an old password.'),
-                links: [_m('Log rows') => AA_Log::getAdminUrl('LOGIN')],
+                links: [_m('Log rows') => self::logUrl($address)],
                 key: 'shared:' . $address,
             );
         }
         return $findings ?: [new Finding(Finding::OK, _m('Logins come from %1 addresses; no address slowed down after failed logins is shared by several users', [$addresses]))];
+    }
+
+    /** the part of a LOGIN selector that holds $address - AA_Log::context() writes "_" for ":" */
+    private static function selectorPart(string $address): string
+    {
+        return ':' . str_replace(':', '_', $address) . ':';
+    }
+
+    /** the Log page with the LOGIN rows of $address only - all of them are tens of thousands */
+    private static function logUrl(string $address): string
+    {
+        return AA_Log::getAdminUrl('LOGIN', self::selectorPart($address), 'LIKE');
     }
 
     private static function proxyAdvice(string $address): string

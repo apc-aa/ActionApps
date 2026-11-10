@@ -31,6 +31,26 @@ final class CheckLoginAddressesTest extends TestCase
         $this->assertStringContainsString('AA_TRUSTED_PROXIES', $finding->advice);
     }
 
+    /** @return array<string, mixed> the query of the "Log rows" link */
+    private static function logQuery(Finding $finding): array
+    {
+        parse_str((string) parse_url($finding->links['Log rows'], PHP_URL_QUERY), $query);
+        return $query;
+    }
+
+    /** the Log page holds tens of thousands of LOGIN rows - the link shows those of the address */
+    public function test_log_link_shows_the_rows_of_the_address(): void
+    {
+        [$one] = CheckLoginAddresses::assess(1, 5, '203.0.113.9', []);
+        [$shared] = CheckLoginAddresses::assess(30, 20, '192.0.2.1', ['2001:db8::7' => 3]);
+
+        $query = self::logQuery($one);
+        $this->assertSame(['selector', 'type'], $query['srchbr_field']);
+        $this->assertSame(['LIKE', '='], $query['srchbr_oper']);
+        $this->assertSame([':203.0.113.9:', 'LOGIN'], $query['srchbr_value']);
+        $this->assertSame(':2001_db8__7:', self::logQuery($shared)['srchbr_value'][0], 'the selector holds "_" for ":"');
+    }
+
     public function test_one_user_from_one_address_is_no_sign(): void
     {
         [$finding] = CheckLoginAddresses::assess(1, 2, '203.0.113.9', []);
