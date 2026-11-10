@@ -19,11 +19,11 @@ final class ShowConditions
     public const LIVE   = 1;
     /** hidden by the expression - until the form is opened again */
     public const STATIC = 2;
-    /** json_encode() flags for JSON printed into a <script> */
-    public const JSON_SCRIPT = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
 
-    private const KEY_RE   = '/^[0-9a-f]{8}$/';
-    private const FIELD_RE = '/^[A-Za-z0-9_.]{16}$/';
+    private const KEY_RE    = '/^[0-9a-f]{8}$/';
+    private const FIELD_RE  = '/^[A-Za-z0-9_.]{16}$/';
+    /** operators that compare with values */
+    private const VALUE_OPS = ['in', 'notin'];
 
     /** @var array<string, array> */
     private array $conds = [];
@@ -36,7 +36,7 @@ final class ShowConditions
         if (is_array($list)) {
             foreach ($list as $key => $cond) {
                 $key = (string) $key;
-                if (preg_match(self::KEY_RE, $key) && is_array($cond) && ($cond = self::normalize($cond))) {
+                if (self::isKey($key) && is_array($cond) && ($cond = self::normalize($cond))) {
                     $ret->conds[$key] = $cond;
                 }
             }
@@ -70,6 +70,11 @@ final class ShowConditions
         return $ret;
     }
 
+    public function isEmpty(): bool
+    {
+        return !$this->conds;
+    }
+
     public function get(string $key): ?array
     {
         return $this->conds[$key] ?? null;
@@ -83,6 +88,11 @@ final class ShowConditions
     public function remove(string $key): void
     {
         unset($this->conds[$key]);
+    }
+
+    public static function isKey(string $key): bool
+    {
+        return (bool) preg_match(self::KEY_RE, $key);
     }
 
     /** With a letter in it, so PHP never turns the array key into an int. */
@@ -116,7 +126,7 @@ final class ShowConditions
     public static function keyOfField(?string $field_aditional): string
     {
         $key = self::decode($field_aditional)['showif'] ?? '';
-        return (is_string($key) && preg_match(self::KEY_RE, $key)) ? $key : '';
+        return (is_string($key) && self::isKey($key)) ? $key : '';
     }
 
     /** field.aditional with the condition set ('' removes it); other keys stay */
@@ -152,19 +162,18 @@ final class ShowConditions
             if ($cond === null) {
                 return $state[$fid] = 0;
             }
+            if (($cond['expr'] !== '') && !self::filled([trim($expand($cond['expr']))])) {
+                return $state[$fid] = self::STATIC;
+            }
             $state[$fid] = -1;
             $ret = 0;
-            if (($cond['expr'] !== '') && !self::filled([trim($expand($cond['expr']))])) {
-                $ret = self::STATIC;
-            }
             foreach ($cond['all'] as $rule) {
-                if ($ret === self::STATIC) {
-                    break;
-                }
                 if (!array_key_exists($rule['field'], $assigned)) {
                     continue;
                 }
-                $ret = max($ret, $eval($rule['field']));
+                if (($ret = max($ret, $eval($rule['field']))) === self::STATIC) {
+                    break;
+                }
                 if (($ret === 0) && !self::ruleMatches($rule, $valuesOf($rule['field']))) {
                     $ret = self::LIVE;
                 }
@@ -186,6 +195,7 @@ final class ShowConditions
      * hidden() over an item. A field's values come from $content; a field missing there (not in the form)
      * from $fallback (the stored item), else with $defaults from the field's default including the profile -
      * the same values whether the form is being drawn or saved.
+     * Values and results of expressions are computed once - several rules and fields share them.
      * @return array<string, int> id of a hidden field => LIVE|STATIC
      */
     public function hiddenFor(\AA_Fields $fields, \AA_Content $content, ?\AA_Content $fallback = null, bool $defaults = false): array
@@ -193,18 +203,24 @@ final class ShowConditions
         if (!$this->conds) {
             return [];
         }
-        $valuesOf = function (string $fid) use ($fields, $content, $fallback, $defaults): array {
+        $values   = [];
+        $valuesOf = function (string $fid) use (&$values, $fields, $content, $fallback, $defaults): array {
+            if (isset($values[$fid])) {
+                return $values[$fid];
+            }
             if ($content->isSet($fid)) {
-                return $content->getValuesArray($fid);
+                return $values[$fid] = $content->getValuesArray($fid);
             }
             if ($fallback?->isSet($fid)) {
-                return $fallback->getValuesArray($fid);
+                return $values[$fid] = $fallback->getValuesArray($fid);
             }
-            return ($defaults && ($field = $fields->getField($fid))) ? $field->getDefault(true)->getValues() : [];
+            return $values[$fid] = ($defaults && ($field = $fields->getField($fid))) ? $field->getDefault(true)->getValues() : [];
         };
-        $expand = function (string $expr) use ($content, $fallback): string {
-            $item = new \ItemContent(array_replace($fallback?->getContent() ?? [], $content->getContent()));
-            return \AA::Un($expr, '', GetItemFromContent($item));
+        $item    = null;
+        $results = [];
+        $expand  = function (string $expr) use (&$item, &$results, $content, $fallback): string {
+            $item ??= GetItemFromContent(new \ItemContent(array_replace($fallback?->getContent() ?? [], $content->getContent())));
+            return $results[$expr] ??= \AA::Un($expr, '', $item);
         };
         return $this->hidden(self::assigned($fields), $valuesOf, $expand);
     }
@@ -222,13 +238,17 @@ final class ShowConditions
         $assigned = $hidden ? self::assigned($fields) : [];
         foreach ($hidden as $fid => $how) {
             $field = $fields->getField($fid);
-            $clear = ($how === self::LIVE) && $this->conds[$assigned[$fid]]['clear'] && !$field->isProtected();
-            if ($clear && ($insert || ($old && (implode('', $old->getValuesArray($fid)) !== '')))) {
-                $content[$fid] = new \AA_Value('');
-            } elseif (!$clear && $insert && !($default = $field->getDefault(true))->isEmpty()) {
-                $content[$fid] = $default;
-            } else {
-                unset($content[$fid]);
+            unset($content[$fid]);
+            if (($how === self::LIVE) && $this->conds[$assigned[$fid]]['clear'] && !$field->isProtected()) {
+                // when editing, only a stored value needs emptying
+                if ($insert || ($old && (implode('', $old->getValuesArray($fid)) !== ''))) {
+                    $content[$fid] = new \AA_Value('');
+                }
+            } elseif ($insert) {
+                $default = $field->getDefault(true);
+                if (!$default->isEmpty()) {
+                    $content[$fid] = $default;
+                }
             }
         }
         return array_keys($hidden);
@@ -288,20 +308,13 @@ final class ShowConditions
             $op    = $row['op'] ?? null;
             if (!isset($names[$field])) {
                 $errors[] = _m('The field %1 is not in this slice.', [$label]);
-                continue;
-            }
-            if (!in_array($op, self::OPS, true)) {
+            } elseif (!in_array($op, self::OPS, true)) {
                 $errors[] = _m('Choose how to compare the field %1.', [$label]);
-                continue;
+            } elseif (!($rule = self::rule($field, $op, self::postedValues($row)))) {
+                $errors[] = _m('Fill in the values of the field %1.', [$label]);
+            } else {
+                $all[] = $rule;
             }
-            $values = [];
-            if (in_array($op, ['in', 'notin'], true)) {
-                if (!($values = self::postedValues($row))) {
-                    $errors[] = _m('Fill in the values of the field %1.', [$label]);
-                    continue;
-                }
-            }
-            $all[] = ['field' => $field, 'op' => $op, 'values' => $values];
         }
         $expr = is_string($post['expr'] ?? null) ? trim($post['expr']) : '';
         if (!$all && ($expr === '')) {
@@ -334,16 +347,14 @@ final class ShowConditions
         $this->remove($key);
         DB_AA::transaction(function () use ($slice_id, $key, $fields): void {
             $this->save($slice_id);
-            foreach ($fields as $fid => $field) {
-                if (self::keyOfField($field['aditional']) === $key) {
-                    \AA::Metabase()->doUpdate('field', ['id' => (string) $fid, 'slice_id' => $slice_id, 'aditional' => self::fieldJson((string) $field['aditional'], '')]);
-                }
+            foreach (array_keys(self::assigned($fields), $key, true) as $fid) {
+                \AA::Metabase()->doUpdate('field', ['id' => $fid, 'slice_id' => $slice_id, 'aditional' => self::fieldJson((string) $fields->getField($fid)['aditional'], '')]);
             }
         });
     }
 
     /** @return array<string, string> id of every field => key of its condition or '' */
-    private static function assigned(\AA_Fields $fields): array
+    public static function assigned(\AA_Fields $fields): array
     {
         $ret = [];
         foreach ($fields as $fid => $field) {
@@ -373,17 +384,10 @@ final class ShowConditions
         }
         $all = [];
         foreach ((array) ($cond['all'] ?? []) as $rule) {
-            if (!is_array($rule) || !is_string($rule['field'] ?? null) || !preg_match(self::FIELD_RE, $rule['field']) || !in_array($rule['op'] ?? null, self::OPS, true)) {
-                continue;
+            if (is_array($rule) && is_string($rule['field'] ?? null) && preg_match(self::FIELD_RE, $rule['field']) && is_string($rule['op'] ?? null)
+                && ($rule = self::rule($rule['field'], $rule['op'], array_values(array_map('strval', array_filter((array) ($rule['values'] ?? []), 'is_scalar')))))) {
+                $all[] = $rule;
             }
-            $values = [];
-            if (in_array($rule['op'], ['in', 'notin'], true)) {
-                $values = array_values(array_map('strval', array_filter((array) ($rule['values'] ?? []), 'is_scalar')));
-                if (!$values) {
-                    continue;
-                }
-            }
-            $all[] = ['field' => $rule['field'], 'op' => $rule['op'], 'values' => $values];
         }
         return [
             'name'  => $name,
@@ -391,6 +395,19 @@ final class ShowConditions
             'expr'  => is_string($cond['expr'] ?? null) ? $cond['expr'] : '',
             'clear' => (bool) ($cond['clear'] ?? true),
         ];
+    }
+
+    /**
+     * @param list<string> $values
+     * @return ?array the rule, null for an unknown operator or a comparison with no values
+     */
+    private static function rule(string $field, string $op, array $values): ?array
+    {
+        if (!in_array($op, self::OPS, true)) {
+            return null;
+        }
+        $compares = in_array($op, self::VALUE_OPS, true);
+        return ($compares && !$values) ? null : ['field' => $field, 'op' => $op, 'values' => $compares ? $values : []];
     }
 
     /** @return array<string, mixed> the JSON object, [] for anything else */

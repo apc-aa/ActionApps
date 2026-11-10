@@ -237,8 +237,7 @@ function AA_ShowIfInit(cfg) {
         return true;
     };
 
-    const toggle = (fid, hide) => {
-        hide ? hideField(fid) : showField(fid);
+    const disable = (fid, hide) => {
         document.querySelectorAll('.cont-v' + unpackID(fid) + ' :is(input,select,textarea,button)').forEach(el => {
             if (hide && !el.disabled) {
                 el.disabled = true;
@@ -250,8 +249,16 @@ function AA_ShowIfInit(cfg) {
         });
     };
 
-    const pass = () => {
-        const state = {};   // fid => true hidden | false shown | null unknown | 'busy' (a cycle shows the field, as on the server)
+    const applied = new Map();   // fid => the state last put on the page
+    const pass = (force = false) => {
+        const state  = {};          // fid => true hidden | false shown | null unknown | 'busy' (a cycle shows the field, as on the server)
+        const values = new Map();   // fid => getFieldValues() - a field may control several rules
+        const valuesOf = fid => {
+            if (!values.has(fid)) {
+                values.set(fid, getFieldValues(fid));
+            }
+            return values.get(fid);
+        };
         const isHidden = fid => {
             if (off.has(fid)) {
                 return true;
@@ -265,48 +272,64 @@ function AA_ShowIfInit(cfg) {
             state[fid] = 'busy';
             let ret = false;
             for (const rule of rules[fid]) {
-                const ctl    = isHidden(rule.fid);
-                const values = getFieldValues(rule.fid);
-                if (ctl === true || (values !== null && !holds(rule, values))) {
+                const ctl  = isHidden(rule.fid);
+                const vals = valuesOf(rule.fid);
+                if (ctl === true || (vals !== null && !holds(rule, vals))) {
                     ret = true;
                     break;
                 }
-                if (ctl === null || values === null) {
+                if (ctl === null || vals === null) {
                     ret = null;   // a field missing in the form - the server knew its value, the browser does not
                 }
             }
             return state[fid] = ret;
+        };
+        // the row on every pass (a Field Triggers script may have shown it), the controls only on a change
+        const put = (fid, hide) => {
+            hide ? hideField(fid) : showField(fid);
+            if (force || applied.get(fid) !== hide) {
+                applied.set(fid, hide);
+                disable(fid, hide);
+            }
         };
         for (const fid of Object.keys(rules)) {
             const s = isHidden(fid);
             if (s !== null) {
                 s ? hidden.add(fid) : hidden.delete(fid);
             }
-            toggle(fid, off.has(fid) || hidden.has(fid));
+            put(fid, off.has(fid) || hidden.has(fid));
         }
-        off.forEach(fid => toggle(fid, true));
+        off.forEach(fid => (fid in rules) || put(fid, true));
     };
 
     let queued = false;
-    const later = () => {
+    let forced = false;
+    const later = (force = false) => {
+        forced ||= force;
         if (!queued) {
             queued = true;
             requestAnimationFrame(() => {
                 queued = false;
-                pass();
+                pass(forced);
+                forced = false;
             });
         }
     };
-    pass();
+    pass(true);
     document.documentElement.classList.add('aa-showif-on');
-    form.addEventListener('change', later);
-    form.addEventListener('input', later);
+    form.addEventListener('change', () => later());
+    form.addEventListener('input', () => later());
     // Select2 and other jQuery widgets report a change by jQuery.trigger(), which native listeners do not hear
     if (window.jQuery) {
-        jQuery(form).on('change', later);
+        jQuery(form).on('change', () => later());
     }
     // parts of the form replaced by AJAX must not bring enabled controls into a hidden row
-    new MutationObserver(later).observe(form, {childList: true, subtree: true});
+    const control = ':is(input,select,textarea,button)';
+    new MutationObserver(mutations => {
+        if (mutations.some(m => Array.from(m.addedNodes).some(n => n.nodeType === 1 && (n.matches(control) || n.querySelector(control))))) {
+            later(true);
+        }
+    }).observe(form, {childList: true, subtree: true});
 }
 
 

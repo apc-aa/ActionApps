@@ -1412,7 +1412,7 @@ class AA_Fields implements IteratorAggregate, Countable
             $rows[$fid] = ['name' => $name, 'input_pri' => (int) $prior, 'required' => empty($req[$fid]) ? 0 : 1, 'input_show' => empty($shw[$fid]) ? 0 : 1];
             // an unknown key is stored as it is - the field is then shown always
             $key = $shwif[$fid] ?? null;
-            if (!$slice_fields && ($fid !== 'New_Field') && is_string($key) && preg_match('/^([0-9a-f]{8})?$/D', $key)) {
+            if (!$slice_fields && ($fid !== 'New_Field') && is_string($key) && (($key === '') || AA\Form\ShowConditions::isKey($key))) {
                 $aditional = AA\Form\ShowConditions::fieldJson((string) $own[$fid], $key);
                 if ($aditional !== (string) $own[$fid]) {
                     $rows[$fid]['aditional'] = $aditional;

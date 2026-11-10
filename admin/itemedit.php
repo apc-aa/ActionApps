@@ -435,6 +435,7 @@ $inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $
 $inputform_settings['form4update']         = $edit || $update || ($insert && $added_to_db);
 $inputform_settings['form4asnew']          = $edit_new;
 $inputform_settings['show_preview_button'] = ($post_preview != 0 || !isset($post_preview));
+$inputform_settings['show_conditions']     = !$encap;           // as when saving above
 $inputform_settings['stored_content']      = $stored_content;   // values of the fields the redrawn form does not carry
 
 $inputform_settings['cancel_url']          =  ($anonymous ? $r_slice_view_url

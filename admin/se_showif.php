@@ -29,6 +29,7 @@
 use AA\Form\ShowConditions;
 use AA\Util\FormToken;
 use AA\Util\InputVars;
+use AA\Util\ScriptTag;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
@@ -65,7 +66,7 @@ $errors = [];
 /** tells the Fields page and ends; null = closed without a change */
 function ShowIfDone(?array $result): never
 {
-    echo '<!DOCTYPE html><script>parent.AA_ShowIfSaved(' . ($result ? json_encode($result, ShowConditions::JSON_SCRIPT) : '') . ');</script>';
+    echo '<!DOCTYPE html><script>parent.AA_ShowIfSaved(' . ($result ? json_encode($result, ScriptTag::JS_JSON) : '') . ');</script>';
     Session::page_close();
     exit;
 }
@@ -106,7 +107,7 @@ $form['all'][] = ['field' => '', 'op' => '', 'values' => []];   // the row for a
 function ShowIfRuleRow(int $i, array $rule, array $names, AA_Fields $fields): string
 {
     $field   = $rule['field'] ? $fields->getField($rule['field']) : null;
-    $is_chb  = $field && str_starts_with((string) $field->getProperty('input_show_func'), 'chb');
+    $is_chb  = $field?->getWidget() instanceof AA\Widget\ChbWidget;
     $ops     = $is_chb ? ['filled' => _m('is checked'), 'empty' => _m('is not checked')]
                        : ['in' => _m('is'), 'notin' => _m('is not'), 'filled' => _m('is filled'), 'empty' => _m('is empty')];
     $op      = isset($ops[$rule['op']]) ? $rule['op'] : array_key_first($ops);
@@ -161,12 +162,7 @@ echo '</table></details></td></tr>';
 FrmInputChBox('clear', _m('Clear the field when a rule hides it'), (bool) $form['clear'], false, '', 1, false, _m('Unchecked: an edited item keeps its value, a new item gets the field\'s default. A field hidden by the expression is never changed.'));
 
 if ($key !== '') {
-    $used = [];
-    foreach ($fields as $fid => $field) {
-        if (ShowConditions::keyOfField($field['aditional']) === $key) {
-            $used[] = $field->getName();
-        }
-    }
+    $used = array_map(static fn($fid) => $fields->getField($fid)->getName(), array_keys(ShowConditions::assigned($fields), $key, true));
     FrmStaticText(_m('Used by'), $used ? implode(', ', $used) : _m('no field'));
 }
 
@@ -175,7 +171,8 @@ if ($key !== '') {
     $buttons['saveasnew'] = ['type' => 'submit', 'value' => _m('Save as new'), 'title' => _m('Keep the original condition as it is and save this form as another condition under a new name.'), 'once' => true];
     $buttons['delete']    = ['type' => 'submit', 'value' => _m('Delete'), 'title' => _m('Delete the condition. The fields that use it will be shown always.'), 'once' => true];
 }
-$buttons['cancel'] = ['type' => 'button', 'value' => _m('Cancel'), 'title' => _m('Close without saving.'), 'add' => 'onclick="parent.AA_ShowIfSaved()"'];
+// not 'cancel' - that one leaves for a URL, this one closes the dialog
+$buttons['close_dialog'] = ['type' => 'button', 'value' => _m('Cancel'), 'title' => _m('Close without saving.'), 'js' => 'parent.AA_ShowIfSaved()'];
 FrmTabEnd($buttons);
 echo '</form>';
 

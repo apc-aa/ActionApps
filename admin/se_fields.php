@@ -35,6 +35,7 @@ use AA\Optimize\ChangeF_h2F_1;
 use AA\Optimize\ChangeF_t2F_1;
 use AA\Optimize\ChangeF_t2F__;
 use AA\Util\InputVars;
+use AA\Util\ScriptTag;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
@@ -248,7 +249,7 @@ $css = <<<CSS
 
 // display conditions: the editor (se_showif.php) in a dialog; what it saved lands in the choices of all rows,
 // without reloading the page, so unsaved edits of the list stay
-$showif_url = json_encode(get_admin_url('se_showif.php', ['module_id' => AA::$module_id]), ShowConditions::JSON_SCRIPT);
+$showif_url = json_encode(get_admin_url('se_showif.php', ['module_id' => AA::$module_id]), ScriptTag::JS_JSON);
 $showifjs   = <<<JS
     (() => {
         let dlg = null;
@@ -288,7 +289,8 @@ $showifjs   = <<<JS
                 opt ??= new Option('', r.key);
                 opt.text = r.name;
                 // by name, after "always"
-                sel.add(opt, Array.from(sel.options).slice(1).find(o => o !== opt && o.text.localeCompare(r.name) > 0) ?? null);
+                const before = Array.from(sel.options).slice(1).find(o => o !== opt && o.text.localeCompare(r.name) > 0);
+                sel.add(opt, before ?? null);
                 if (sel === from) {
                     sel.value = r.key;
                 }

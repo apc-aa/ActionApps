@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace AA\Tests\Unit\Form {
 
     use AA\Form\ShowConditions;
+    use AA\Util\ScriptTag;
     use AA_Field;
     use AA_Profile;
     use AA_Value;
@@ -194,7 +195,7 @@ namespace AA\Tests\Unit\Form {
         public function test_formConfig_json_is_script_safe(): void
         {
             $conds = self::conds(true, '', ['field' => self::CAT, 'op' => 'in', 'values' => ['</script><b>', "a'b\"&"]]);
-            $json  = json_encode($conds->formConfig(self::fields(), []), ShowConditions::JSON_SCRIPT);
+            $json  = json_encode($conds->formConfig(self::fields(), []), ScriptTag::JS_JSON);
             $this->assertStringNotContainsString('<', $json);
             $this->assertStringNotContainsString("'", $json);
             $this->assertSame(['</script><b>', "a'b\"&"], json_decode($json, true)['fields'][self::START][0]['v']);

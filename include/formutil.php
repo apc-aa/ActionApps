@@ -34,6 +34,7 @@ use AA\Form\ShowConditions;
 use AA\Security\SignedExpression;
 use AA\Util\Langs;
 use AA\Util\JsTriggers;
+use AA\Util\ScriptTag;
 use AA\Util\Txt;
 use AA\Widget\Widget;
 use AA\Widget\RichtextMarkup;
@@ -104,6 +105,7 @@ class inputform {
     private int $template; // if you want to display alternate form design, template holds view_id of such template view type 'inputform'
     private string $formheading;     // add extra form heading here (default none, used by MLX)
     private array $hidden;          //
+    private bool $show_conditions;         // display conditions apply - only the admin item form, which also applies them on save
     private ?AA_Content $stored_content;   // the stored item when a failed update is drawn again - values of fields the form did not send
     private array $static_hidden = [];      // fields a display condition's expression hides - left out of the default form
 
@@ -130,7 +132,8 @@ class inputform {
         $this->template             = (int)$settings['template'];  // most probably it is int
         $this->formheading          = (string)$settings['formheading']; //aded for MLX
         $this->hidden               = (array)$settings['hidden'];      // array of hidden fields to be added to the form
-        $this->stored_content       = (($settings['stored_content'] ?? null) instanceof AA_Content) ? $settings['stored_content'] : null;
+        $this->show_conditions      = (bool) ($settings['show_conditions'] ?? false);
+        $this->stored_content       = $settings['stored_content'] ?? null;
     }
 
     /** static */
@@ -164,7 +167,7 @@ class inputform {
         $slice_id = $slice->getId();
         $profile  = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
 
-        if (!$slice_fields && $this->display_aa_begin_end) {
+        if ($this->show_conditions && !$slice_fields) {
             $this->showConditions($content4id, $slice, (bool) $edit, $profile);
         }
 
@@ -366,7 +369,7 @@ class inputform {
     private function showConditions(AA_Content $content4id, AA_Slice $slice, bool $edit, AA_Profile $profile): void
     {
         $conds = ShowConditions::forSlice($slice->getId());
-        if (!$conds->all()) {
+        if ($conds->isEmpty()) {
             return;
         }
         $fields = $slice->getFields();
@@ -385,7 +388,7 @@ class inputform {
             AA::Stringexpander()->addRequire("html:not(.aa-showif-on) :is($rows){display:none!important}", 'AA_Req_CSScode');
         }
         AA::Stringexpander()->addRequire('aa-fillform@1');
-        AA::Stringexpander()->addRequire('AA_ShowIfInit(' . json_encode($conds->formConfig($fields, $hidden), ShowConditions::JSON_SCRIPT) . ');', 'AA_Req_Run');
+        AA::Stringexpander()->addRequire('AA_ShowIfInit(' . json_encode($conds->formConfig($fields, $hidden), ScriptTag::JS_JSON) . ');', 'AA_Req_Run');
     }
 
     /** getForm function
