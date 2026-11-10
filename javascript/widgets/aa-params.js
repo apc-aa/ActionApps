@@ -5,10 +5,12 @@
  *       <div class="flex aa-input-const">… the constants select …</div>
  *       <div class="aa-params-raw"><label …>…</label><textarea name="input_show_func_p">…</textarea></div>
  *   </aa-params>
+ *   <aa-params list="FIELD_FUNCTIONS" type-name="alias1_func_f" view="help"></aa-params>
  *
  * The original controls stay and are what gets submitted; without JavaScript they are the form.
  * Values are kept by parameter id, so switching the type keeps what the new type has under the
  * same name and puts the rest aside (sessionStorage) until a type that has it comes back.
+ * view="help" only describes the type and its parameters and leaves the text field alone.
  * Definitions come from window.AA_PARAMS (AA\Util\Paramwizard::script()).
  */
 
@@ -54,7 +56,11 @@ class AaParamsElement extends HTMLElement {
         }
         this.#uid = 'aa-params-' + (++instances);
         try {
-            this.#startForm();
+            if (this.getAttribute('view') === 'help') {
+                this.#startHelp();
+            } else {
+                this.#startForm();
+            }
         } catch (e) {
             console.error('aa-params', e);
         }
@@ -107,6 +113,71 @@ class AaParamsElement extends HTMLElement {
         this.#render();
         this.#refreshText();
         this.querySelector('.aa-params-raw').hidden = true;
+    }
+
+    #startHelp() {
+        const list = window.AA_PARAMS?.lists?.[this.getAttribute('list')];
+        const typeSelect = this.closest('form')?.elements[this.getAttribute('type-name')];
+        if (!list || !(typeSelect instanceof HTMLSelectElement)) {
+            return;
+        }
+        const labels = window.AA_PARAMS.labels ?? {};
+        const details = el('details', 'aa-params-help');
+        const summary = el('summary');
+        summary.textContent = labels.help ?? '';
+        const body = el('div');
+        details.append(summary, body);
+        const html = (tag, className, text) => {
+            const node = el(tag, className);
+            node.innerHTML = text;   // texts of the definitions (_m() in PHP), they hold HTML
+            return node;
+        };
+        const render = () => {
+            const item = list.items[typeSelect.value];
+            const nodes = [];
+            if (item?.desc) {
+                nodes.push(html('div', 'aa-params-desc', item.desc));
+            }
+            if (item?.params?.length) {
+                const ol = el('ol', 'aa-params-list');
+                for (const param of item.params) {
+                    const li = el('li');
+                    const name = el('b');
+                    name.textContent = param.name;
+                    li.append(name, ' ', html('span', '', param.help ?? ''));
+                    if (param.example) {
+                        const [before, after = ''] = (labels.eg ?? '%1').split('%1');
+                        const code = el('code');
+                        code.textContent = param.example;
+                        li.append(' (' + before, code, after + ')');
+                    }
+                    ol.append(li);
+                }
+                nodes.push(ol);
+            }
+            if (item?.examples?.length) {
+                const box = el('div', 'aa-params-examples');
+                const title = el('h4');
+                title.textContent = labels.examples ?? '';
+                box.append(title);
+                for (const example of item.examples) {
+                    const code = el('code');
+                    code.textContent = example.params ?? '';
+                    const row = el('div');
+                    row.append(code, html('div', 'aa-params-hlp', example.desc ?? ''));
+                    box.append(row);
+                }
+                nodes.push(box);
+            }
+            if (nodes.length && list.hint) {
+                nodes.push(html('div', 'aa-params-hint', list.hint));
+            }
+            body.replaceChildren(...nodes);
+            details.hidden = !nodes.length;
+        };
+        render();
+        typeSelect.addEventListener('change', render);
+        this.append(details);
     }
 
     /** parameters of the current type the form shows (constants have their own select) */

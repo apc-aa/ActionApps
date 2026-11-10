@@ -376,7 +376,7 @@ $apage->setTitle(_m("Admin - configure Fields"));
 $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
 $apage->addRequire('aa-code@1');
 $apage->addRequire('aa-params@1');
-$apage->addRequire('<script>' . Paramwizard::script(['INPUT_TYPES', 'DEFAULT_VALUE_TYPES', 'VALIDATE_TYPES', 'INSERT_TYPES']) . '</script>', 'AA_Req_Headcode');
+$apage->addRequire('<script>' . Paramwizard::script(['INPUT_TYPES', 'DEFAULT_VALUE_TYPES', 'VALIDATE_TYPES', 'INSERT_TYPES', 'FIELD_FUNCTIONS']) . '</script>', 'AA_Req_Headcode');
 $apage->addRequire('aa-jslib');   // just for AA_Message() copy to clipboard
 $apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v' => AA_JS_VERSION], false));
 
@@ -507,7 +507,7 @@ for ($iAlias = 1; $iAlias <= 3; ++$iAlias) {
     $alias_disable = $alias_name . "_disable";
     $alias_value   = $$alias_name;
     $alias_id_att  = strlen($alias_value) ? "id=\"alias$alias_value\"" : '';
-    $alias_hlp     = getParamWizardLink("FIELD_FUNCTIONS", $alias_func_f, $alias_func);
+    $alias_hlp     = '<aa-params' . htmlattr(['list' => 'FIELD_FUNCTIONS', 'type-name' => $alias_func_f, 'view' => 'help']) . '></aa-params>';
     $disbled_chb   = getFrmChBoxEasy($alias_disable, $$alias_disable, '', 1);
     $aname_row     = "<div class=\"flex f-baseline\">";
     $aname_row    .=  "<div>_#<input name=\"$alias_name\" $alias_id_att type=text size=16 maxlength=8 value=\"$alias_value\" pattern=\"[A-Z0-9_#]{8}\" placeholder=\"" . _m("8 CHARS") . "\" title=\"" . _m("8 UPPERCASE letters or _") . "\"></div>";

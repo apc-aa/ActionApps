@@ -32,6 +32,16 @@ aa-params [hidden] { display: none !important; }   /* .flex of the constants blo
 .aa-params-textline input { flex: 1 1 18rem; min-width: 0; font-family: ui-monospace, 'DejaVu Sans Mono', Menlo, Consolas, monospace; font-size: 12px; }
 .aa-params-msg { font-size: var(--sz-s, .955rem); color: #5d574a; min-height: 1.4em; }
 
+.aa-params-help { max-width: 48rem; }
+.aa-params-help > summary { cursor: pointer; color: var(--clr-text-accent, #6a5e22); width: fit-content; }
+.aa-params-help > div { margin-top: 4px; padding: 6px 10px; border: 1px solid var(--clr-border, #dcd5c2); background: #fff; }
+.aa-params-list { margin: 4px 0; padding-left: 1.4rem; }
+.aa-params-list li { margin: 2px 0; }
+.aa-params-help code { font-family: ui-monospace, 'DejaVu Sans Mono', Menlo, Consolas, monospace; font-size: 12px; background: var(--clr-basic-light, #eeebe3); padding: 0 3px; overflow-wrap: anywhere; }
+.aa-params-examples h4 { margin: 8px 0 2px; font-size: var(--sz-s, .955rem); }
+.aa-params-examples > div { margin: 4px 0; }
+.aa-params-hint { margin-top: 8px; font-size: var(--sz-s, .955rem); color: #5d574a; }
+
 @media (max-width: 620px) {
     .aa-params-row { grid-template-columns: minmax(0, 1fr); }
     .aa-params-row > label { font-weight: 600; padding-top: 0; }

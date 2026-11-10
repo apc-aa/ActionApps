@@ -36,11 +36,14 @@
 use AA\IO\DB\DB_AA;
 use AA\IO\ImportFile;
 use AA\Util\InputVars;
+use AA\Util\Langs;
+use AA\Util\Paramwizard;
 use AA\Util\Txt;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/import_util.php";
+mgettext_bind(Langs::currentLang(), 'param_wizard');   // texts of the import actions
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/feeding.php";
@@ -412,7 +415,7 @@ class AA_Csv_Importer {
               <th><?php echo _m("Action") ?></th>
               <th><?php echo _m("Html") ?></th>
               <th><?php echo _m("Action parameters") ?></th>
-              <th><?php echo _m("Parameter wizard") ?></th>
+              <th><?php echo _m("Help") ?></th>
              </tr>
 
                <?php
@@ -434,7 +437,7 @@ class AA_Csv_Importer {
                        echo safe(stripslashes($this->params[$f_id]));
                    }
                    echo "\"></td>";
-                   echo "<td class=\"tabhlp\">". getParamWizardLink("TRANS_ACTIONS","actions[$f_id]","params[$f_id]"). "</td>";
+                   echo "<td class=\"tabhlp\"><aa-params" . htmlattr(['list' => 'TRANS_ACTIONS', 'type-name' => "actions[$f_id]", 'view' => 'help']) . "></aa-params></td>";
                    echo "</tr>\n";
                }
                FrmTabSeparator(_m("Import options"));
@@ -537,6 +540,8 @@ $apage = new AA_Adminpageutil('sliceadmin','CSVimport');
 $apage->setTitle(_m("Admin - Import CSV (2/2) - Mapping and Actions"));
 $apage->setForm();
 $apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false));
+$apage->addRequire('aa-params@1');
+$apage->addRequire('<script>' . Paramwizard::script(['TRANS_ACTIONS']) . '</script>', 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
 if ($preview) {
