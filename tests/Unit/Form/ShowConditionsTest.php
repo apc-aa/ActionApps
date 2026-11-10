@@ -158,6 +158,7 @@ final class ShowConditionsTest extends TestCase
         $this->assertSame('', ShowConditions::keyOfField('{"showif":"xyz"}'));
         $this->assertSame('', ShowConditions::keyOfField('{"showif":["3fa94c1e"]}'));
         $this->assertSame('', ShowConditions::keyOfField(null));
+        $this->assertSame('', ShowConditions::keyOfField("{\"showif\":\"3fa94c1e\\n\"}"), 'a trailing newline is no key');
     }
 
     private static function conds(array $list): ShowConditions

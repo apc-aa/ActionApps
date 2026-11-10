@@ -25,6 +25,7 @@ namespace AA\Tests\Unit\Form {
         private const SWITCH   = 'switch..........';
         private const PASSWORD = 'password.......1';
         private const KEY      = '3fa94c1e';
+        private const EXPIRY   = 'expiry_date.....';
 
         private static FakeSlice $slice;
 
@@ -37,14 +38,15 @@ namespace AA\Tests\Unit\Form {
         }
 
         /** @param array<string, string> $defaults field id => input_default */
-        private static function fields(array $defaults = [], string $switch_key = ''): FakeFields
+        /** @param array<string, array{string, string}> $extra field id => [widget, condition key] */
+        private static function fields(array $defaults = [], string $switch_key = '', array $extra = []): FakeFields
         {
             $def = [
                 self::CAT      => ['sel', ''],
                 self::START    => ['fld', self::KEY],
                 self::SWITCH   => ['chb', $switch_key],
                 self::PASSWORD => ['pwd', self::KEY],
-            ];
+            ] + $extra;
             $list = [];
             foreach ($def as $id => [$widget, $key]) {
                 $list[] = new AA_Field([
@@ -58,6 +60,7 @@ namespace AA\Tests\Unit\Form {
                     'input_validate'    => 'text',
                     'input_default'     => $defaults[$id] ?? '',
                     'text_stored'       => 1,
+                    'in_item_tbl'       => ($id === self::EXPIRY) ? 'expiry_date' : '',
                     'content_edit'      => 0,
                     'aditional'         => ShowConditions::fieldJson('', $key),
                 ] + array_fill_keys(['multiple', 'html_default', 'html_show', 'input_pri', 'search_pri', 'feed'], 0) + array_fill_keys(AA_Field::USED_FIELDS, ''));
@@ -223,6 +226,45 @@ namespace AA\Tests\Unit\Form {
             $content = self::content([self::CAT => 'Novinka']);
             self::conds()->apply($content, self::fields(), $old, false);
             $this->assertFalse($content->isSet(self::START), 'frozen');
+        }
+
+        /** a column of the item table (expiry date, status) would turn an empty value into 0 - expired, trashed */
+        public function test_apply_never_clears_item_table_field(): void
+        {
+            $fields  = self::fields([], '', [self::EXPIRY => ['dte', self::KEY]]);
+            $content = self::content([self::CAT => 'Novinka', self::EXPIRY => '1900000000']);
+            $hidden  = self::conds()->apply($content, $fields, self::content([self::CAT => 'Novinka', self::EXPIRY => '1800000000']), false);
+            $this->assertContains(self::EXPIRY, $hidden);
+            $this->assertFalse($content->isSet(self::EXPIRY));
+        }
+
+        /** the expression sees what the form was drawn from - the stored item - so drawing and saving agree */
+        public function test_hiddenFor_expression_uses_stored_item_on_update(): void
+        {
+            $conds = self::conds(true, '{start_date......}', ['field' => self::SWITCH, 'op' => 'empty', 'values' => []]);
+            $form  = self::content([self::START => '0']);
+            $this->assertArrayNotHasKey(self::START, $conds->hiddenFor(self::fields(), $form, self::content([self::START => '1'])));
+            $this->assertSame(ShowConditions::STATIC, $conds->hiddenFor(self::fields(), $form, self::content([self::START => '0']))[self::START] ?? null);
+        }
+
+        /** a new item: the expression sees the defaults, as when the empty form was drawn */
+        public function test_hiddenFor_expression_uses_defaults_on_insert(): void
+        {
+            $conds  = self::conds(true, '{switch..........}', ['field' => self::CAT, 'op' => 'filled', 'values' => []]);
+            $fields = self::fields([self::SWITCH => 'txt:1']);
+            $this->assertArrayNotHasKey(self::START, $conds->hiddenFor($fields, self::content([self::SWITCH => '0', self::CAT => 'x']), null, true));
+        }
+
+        /** a new item: a field the profile fills has that value, not the field's default - as setFromForm() stores it */
+        public function test_hiddenFor_profile_fill_wins_over_default_on_insert(): void
+        {
+            $profile             = AA_Profile::getProfile('', self::SLICE);
+            $profile->properties = ['hide&fill' => [self::CAT => ['0:txt:Akce', 0], self::START => ['', 0], self::PASSWORD => ['', 0], self::SWITCH => ['', 0]]];
+            try {
+                $this->assertArrayNotHasKey(self::START, self::conds()->hiddenFor(self::fields([self::CAT => 'txt:Novinka']), self::content([]), null, true));
+            } finally {
+                $profile->properties = [];
+            }
         }
 
         public function test_apply_slice_without_conditions_changes_nothing(): void

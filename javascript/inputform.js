@@ -317,6 +317,8 @@ function AA_ShowIfInit(cfg) {
     };
     pass(true);
     document.documentElement.classList.add('aa-showif-on');
+    // a value set by a script fires no event - decide again right before the form is sent
+    form.addEventListener('submit', () => pass(), true);
     form.addEventListener('change', () => later());
     form.addEventListener('input', () => later());
     // Select2 and other jQuery widgets report a change by jQuery.trigger(), which native listeners do not hear

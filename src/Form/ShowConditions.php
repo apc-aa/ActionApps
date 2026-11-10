@@ -20,8 +20,8 @@ final class ShowConditions
     /** hidden by the expression - until the form is opened again */
     public const STATIC = 2;
 
-    private const KEY_RE    = '/^[0-9a-f]{8}$/';
-    private const FIELD_RE  = '/^[A-Za-z0-9_.]{16}$/';
+    private const KEY_RE    = '/^[0-9a-f]{8}$/D';
+    private const FIELD_RE  = '/^[A-Za-z0-9_.]{16}$/D';
     /** operators that compare with values */
     private const VALUE_OPS = ['in', 'notin'];
 
@@ -193,8 +193,10 @@ final class ShowConditions
 
     /**
      * hidden() over an item. A field's values come from $content; a field missing there (not in the form)
-     * from $fallback (the stored item), else with $defaults from the field's default including the profile -
-     * the same values whether the form is being drawn or saved.
+     * from $fallback (the stored item), else with $defaults from what a new item gets - the profile's fill,
+     * else the field's default - the same values whether the form is being drawn or saved.
+     * The expression sees what the form is drawn from: the stored item, for a new one the defaults. The user's
+     * unsaved values would make it differ between drawing (a field left out) and saving (that field missing).
      * Values and results of expressions are computed once - several rules and fields share them.
      * @return array<string, int> id of a hidden field => LIVE|STATIC
      */
@@ -203,8 +205,12 @@ final class ShowConditions
         if (!$this->conds) {
             return [];
         }
+        $default  = static function (\AA_Field $field): \AA_Value {
+            $profile = \AA_Profile::getProfile(AuthGetUid(), $field->getSliceId());
+            return $profile->getFormFieldValue($field->getId()) ?? $field->getDefault(true);
+        };
         $values   = [];
-        $valuesOf = function (string $fid) use (&$values, $fields, $content, $fallback, $defaults): array {
+        $valuesOf = function (string $fid) use (&$values, $fields, $content, $fallback, $defaults, $default): array {
             if (isset($values[$fid])) {
                 return $values[$fid];
             }
@@ -214,12 +220,22 @@ final class ShowConditions
             if ($fallback?->isSet($fid)) {
                 return $values[$fid] = $fallback->getValuesArray($fid);
             }
-            return $values[$fid] = ($defaults && ($field = $fields->getField($fid))) ? $field->getDefault(true)->getValues() : [];
+            return $values[$fid] = ($defaults && ($field = $fields->getField($fid))) ? $default($field)->getValues() : [];
         };
         $item    = null;
         $results = [];
-        $expand  = function (string $expr) use (&$item, &$results, $content, $fallback): string {
-            $item ??= GetItemFromContent(new \ItemContent(array_replace($fallback?->getContent() ?? [], $content->getContent())));
+        $expand  = function (string $expr) use (&$item, &$results, $fields, $content, $fallback, $defaults, $default): string {
+            if (!$item) {
+                $source = $fallback ?? $content;
+                if ($defaults) {
+                    $source = new \ItemContent();
+                    foreach ($fields as $fid => $field) {
+                        $source->setAaValue($fid, $default($field));
+                        $source->setSliceID($field->getSliceId());
+                    }
+                }
+                $item = GetItemFromContent($source);
+            }
             return $results[$expr] ??= \AA::Un($expr, '', $item);
         };
         return $this->hidden(self::assigned($fields), $valuesOf, $expand);
@@ -229,7 +245,7 @@ final class ShowConditions
      * Changes the content being saved from the admin form: a field hidden by a rule is stored empty (when its
      * condition clears), anything else hidden keeps its stored value - it is taken out of the content, as
      * a field with "Show" off is - and a new item gets the field's default. A protected field (password, 2FA)
-     * is never emptied: its inserter would store the empty value as the password. A field the user may not edit
+     * or a column of the item table is never emptied. A field the user may not edit
      * (frozen, filled or hidden by the profile) is left alone.
      * @return list<string> ids of the fields hidden by a condition
      */
@@ -245,7 +261,8 @@ final class ShowConditions
                 continue;
             }
             unset($content[$fid]);
-            if (($how === self::LIVE) && $this->conds[$assigned[$fid]]['clear'] && !$field->isProtected()) {
+            // never emptied: a password (its inserter would store '' as the password), a column of the item table ('' = 0: expired, trashed)
+            if (($how === self::LIVE) && $this->conds[$assigned[$fid]]['clear'] && !$field->isProtected() && ($field->storageTable() !== 'item')) {
                 // when editing, only a stored value needs emptying
                 if ($insert || ($old && (implode('', $old->getValuesArray($fid)) !== ''))) {
                     $content[$fid] = new \AA_Value('');

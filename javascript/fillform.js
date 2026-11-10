@@ -386,7 +386,9 @@ function getFieldValues(fieldID) {
                 values.push(el.value === 'on' ? '1' : el.value);
             }
         } else if (el.tagName === 'SELECT') {
-            values.push(...Array.from(el.selectedOptions, o => o.value));
+            // the two-box and related-item lists select all their rows only on submit (BeforeSubmit())
+            const all = (typeof listboxes !== 'undefined') && listboxes.includes(el.name);
+            values.push(...Array.from(all ? el.options : el.selectedOptions, o => o.value).filter(v => v !== 'wIdThTor'));
         } else {
             values.push(el.value);
         }

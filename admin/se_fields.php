@@ -289,7 +289,7 @@ $showifjs   = <<<JS
                 opt ??= new Option('', r.key);
                 opt.text = r.name;
                 // by name, after "always"
-                const before = Array.from(sel.options).slice(1).find(o => o !== opt && o.text.localeCompare(r.name) > 0);
+                const before = Array.from(sel.options).slice(1).find(o => o !== opt && o.text.localeCompare(r.name, undefined, {numeric: true, sensitivity: 'base'}) > 0);
                 sel.add(opt, before ?? null);
                 if (sel === from) {
                     sel.value = r.key;

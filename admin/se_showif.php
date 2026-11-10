@@ -51,12 +51,13 @@ try {
 }
 
 $slice = AA_Slice::getModule(AA::$module_id);
-if (!IfSlPerm(PS_FIELDS) || !$slice) {
+if (!IfSlPerm(PS_FIELDS) || !($slice instanceof AA_Slice)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change fields settings"), "admin");
 }
 
 $conds  = ShowConditions::forSlice(AA::$module_id);
 $cond   = $conds->get($key);
+$asked  = $key;
 $key    = $cond ? $key : '';   // "new", or a condition the slice does not have
 $fields = $slice->getFields();
 $names  = $fields->getNameArray();
@@ -74,9 +75,12 @@ function ShowIfDone(?array $result): never
 if ($update || $saveasnew || $delete) {
     if (!FormToken::checkPost(SHOWIF_TOKEN, $token, $_SERVER)) {
         $errors[] = _m('The form has expired. Close it and open it again.');
-    } elseif ($delete && ($key !== '')) {
-        $conds->delete(AA::$module_id, $key, $fields);
-        ShowIfDone(['key' => $key, 'name' => '', 'deleted' => true]);
+    } elseif ($delete) {
+        // deleted meanwhile (another tab) - only tell the Fields page
+        if ($key !== '') {
+            $conds->delete(AA::$module_id, $key, $fields);
+        }
+        ShowIfDone(ShowConditions::isKey($asked) ? ['key' => $asked, 'name' => '', 'deleted' => true] : null);
     } else {
         $as_new  = $saveasnew || ($key === '');
         $post    = ['name' => $name, 'rule' => $rules, 'expr' => $expr] + ($clear ? ['clear' => 1] : []);
@@ -95,7 +99,9 @@ if ($posted) {
     $form = ['name' => $name, 'all' => [], 'expr' => $expr, 'clear' => $clear];
     foreach ($rules as $row) {
         if (is_array($row) && is_string($row['field'] ?? null) && isset($names[$row['field']])) {
-            $form['all'][] = ['field' => $row['field'], 'op' => (string) ($row['op'] ?? ''), 'values' => ShowConditions::postedValues($row)];
+            // a field picked anew in the row starts without the values of the previous one
+            $same          = ($row['was'] ?? null) === $row['field'];
+            $form['all'][] = ['field' => $row['field'], 'op' => $same ? (string) ($row['op'] ?? '') : '', 'values' => $same ? ShowConditions::postedValues($row) : []];
         }
     }
 } else {
@@ -118,6 +124,7 @@ function ShowIfRuleRow(int $i, array $rule, array $names, AA_Fields $fields): st
     if (!$field) {
         return $ret . '</div>';
     }
+    $ret .= '<input type="hidden" name="rule[' . $i . '][was]" value="' . safe($rule['field']) . '">';
     $ret .= getFrmSelectEasy("rule[$i][op]", $ops, $op, ['aria-label' => _m('Comparison')]);
     if (!$is_chb) {
         try {
@@ -169,7 +176,8 @@ if ($key !== '') {
 $buttons = ['update' => ['type' => 'submit', 'value' => _m('Save'), 'title' => _m('Save the changes to this condition. They apply to every field that uses it.'), 'once' => true]];
 if ($key !== '') {
     $buttons['saveasnew'] = ['type' => 'submit', 'value' => _m('Save as new'), 'title' => _m('Keep the original condition as it is and save this form as another condition under a new name.'), 'once' => true];
-    $buttons['delete']    = ['type' => 'submit', 'value' => _m('Delete'), 'title' => _m('Delete the condition. The fields that use it will be shown always.'), 'once' => true];
+    $buttons['delete']    = ['type' => 'submit', 'value' => _m('Delete'), 'title' => _m('Delete the condition. The fields that use it will be shown always.'), 'once' => true,
+                             'add' => 'onclick="return confirm(this.dataset.confirm)" data-confirm="' . safe(_m('Delete the condition? The fields that use it will be shown always.')) . '"'];
 }
 // not 'cancel' - that one leaves for a URL, this one closes the dialog
 $buttons['close_dialog'] = ['type' => 'button', 'value' => _m('Cancel'), 'title' => _m('Close without saving.'), 'js' => 'parent.AA_ShowIfSaved()'];
@@ -178,8 +186,8 @@ echo '</form>';
 
 $apage->addHelpbox(_m('How it works'), '<ul>'
     . '<li>' . _m('"is" holds when one of the field\'s values is among the checked values, "is not" when none is. "is filled" holds for any value other than empty and 0, so also for a checked checkbox.') . '</li>'
-    . '<li>' . _m('The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved.') . '</li>'
-    . '<li>' . _m('A field hidden by a rule is saved empty, unless "Clear the field" is unchecked. A password field and a field hidden by the expression keep their value.') . '</li>'
+    . '<li>' . _m('The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values).') . '</li>'
+    . '<li>' . _m('A field hidden by a rule is saved empty, unless "Clear the field" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value.') . '</li>'
     . '<li>' . _m('A field with a condition is shown and hidden by the condition, not by a Field Triggers script.') . '</li>'
     . '<li>' . _m('With an input form template from a view, a field hidden by the expression stays in the source of the page.') . '</li>'
     . '<li>' . _m('Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always.') . '</li>'
