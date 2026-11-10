@@ -476,6 +476,12 @@ class AA_Validate_Url extends AA_Validate_Regexp
         $this->empty_expression = '~(^http(s?):\/\/$)|(^\s*$)~';
     }
 
+    /** the pattern is the class's own, the stored string sets only the length */
+    public static function getClassProperties(): array
+    {
+        return ['maxlength' => parent::getClassProperties()['maxlength']];
+    }
+
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
@@ -494,6 +500,12 @@ class AA_Validate_Email extends AA_Validate_Regexp
         parent::__construct($param);
         $this->pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,6}$/';
         $this->empty_expression = '/^\s*$/';
+    }
+
+    /** the pattern is the class's own, the stored string sets only the length */
+    public static function getClassProperties(): array
+    {
+        return ['maxlength' => parent::getClassProperties()['maxlength']];
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some

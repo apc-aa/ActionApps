@@ -87,7 +87,7 @@ final class ParamwizardTest extends TestCase
 
         $this->assertSame(['pattern', 'empty_expression', 'maxlength'], array_column($items['regexp']['params'], 'id'));
         $this->assertSame('D', $items['regexp']['desc']);
-        $this->assertSame(array_keys(\AA_Validate_Email::getClassProperties()), array_column($items['e-mail']['params'], 'id'));
+        $this->assertSame(['maxlength'], array_column($items['e-mail']['params'], 'id'));
         $this->assertSame(['p'], array_column($items['xyz']['params'], 'id'));
     }
 
