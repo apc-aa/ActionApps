@@ -487,7 +487,7 @@ class AA_Validate_Url extends AA_Validate_Regexp
      */
     public function getHtmlInputAttr(): array
     {
-        return ['type' => 'url', 'pattern' => "^http(s?):\/\/\S+\.\S+"];
+        return ['type' => 'url'] + parent::getHtmlInputAttr();   // the pattern without its delimiters, the length
     }
 }
 
@@ -513,7 +513,8 @@ class AA_Validate_Email extends AA_Validate_Regexp
      */
     public function getHtmlInputAttr(): array
     {
-        return ['type' => 'email'];
+        // the browser checks an e-mail itself; the regexp as a pattern would be stricter than before
+        return array_diff_key(['type' => 'email'] + parent::getHtmlInputAttr(), ['pattern' => true]);
     }
 }
 
