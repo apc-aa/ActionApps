@@ -364,6 +364,7 @@ final class CheckImportsTest extends TestCase
         TableDb::$tables['module'] = [['id' => self::SLICE, 'name' => 'Price <b>list</b>']];
         self::definition(self::DEF, 'prices', ['enabled' => '1']);
         self::definition(self::DEF2, 'rates', ['enabled' => '1'], self::SLICE2);
+        TableDb::$log = [];
 
         $findings = self::findings(time());
 
@@ -374,6 +375,7 @@ final class CheckImportsTest extends TestCase
         $this->assertStringContainsString('"Edit"', $plan->advice);
         $this->assertStringContainsString('"Enabled"', $plan->advice);
         $this->assertStringEndsWith('admin/se_dataimports.php?change_id=' . self::SLICE . '&id=' . self::DEF, $plan->links['Edit']);
+        $this->assertCount(1, array_filter(TableDb::$log, static fn(string $sql): bool => str_contains($sql, 'FROM `module`')), 'both slices in one read');
     }
 
     /** a task counts as the import detail lists it: {import(x)} does not reach the import x when it
@@ -578,8 +580,10 @@ final class CheckImportsTest extends TestCase
         $catalog = Catalog::create(self::DEF);
         $catalog->addPage(new CatalogPage([new CatalogEntry('a', 'Alpha')]), time());
         $catalog->store();
+        TableDb::$log = [];
 
         $this->assertSame([Finding::OK], self::severities(self::findings(time())));
+        $this->assertSame([], array_values(array_filter(TableDb::$log, static fn(string $sql): bool => str_contains($sql, 'FROM `module`'))), 'no slice is named, none is read');
     }
 
     public function test_noImports_ok(): void
@@ -625,7 +629,7 @@ final class CheckImportsTest extends TestCase
         }
         $this->assertSame(count($selects[0]), count($selects[2]));
         foreach ($selects[2] as $sql) {
-            $this->assertMatchesRegularExpression('/ FROM (`object_text` WHERE (property = \'\w+\' AND value |object_id IN \(.*\) AND property IN \()|`log` WHERE type IN |`module` WHERE id = 0x|information_schema\.tables WHERE )/', $sql);
+            $this->assertMatchesRegularExpression('/ FROM (`object_text` WHERE (property = \'\w+\' AND value |object_id IN \(.*\) AND property IN \()|`log` WHERE type IN |`module` WHERE id (= 0x|IN \(0x)|information_schema\.tables WHERE )/', $sql);
         }
         $this->assertSame([], TableDb::writes(), 'a check writes nothing');
     }
