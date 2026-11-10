@@ -40,6 +40,12 @@ final class ShowConditions
         return $ret;
     }
 
+    public static function forSlice(string $slice_id): self
+    {
+        // false for a missing row, null for an unknown module
+        return self::fromJson((string) \AA_Slice::getModuleProperty($slice_id, 'aditional'));
+    }
+
     /** slice.aditional with these conditions under "showif"; other keys stay */
     public function toJson(string $slice_aditional): string
     {
@@ -168,6 +174,69 @@ final class ShowConditions
             if (($key !== '') && ($s = $eval($fid))) {
                 $ret[$fid] = $s;
             }
+        }
+        return $ret;
+    }
+
+    /**
+     * hidden() over an item. A field's values come from $content; a field missing there (not in the form)
+     * from $fallback (the stored item), else with $defaults from the field's default including the profile -
+     * the same values whether the form is being drawn or saved.
+     * @return array<string, int> id of a hidden field => LIVE|STATIC
+     */
+    public function hiddenFor(\AA_Fields $fields, \AA_Content $content, ?\AA_Content $fallback = null, bool $defaults = false): array
+    {
+        if (!$this->conds) {
+            return [];
+        }
+        $valuesOf = function (string $fid) use ($fields, $content, $fallback, $defaults): array {
+            if ($content->isSet($fid)) {
+                return $content->getValuesArray($fid);
+            }
+            if ($fallback?->isSet($fid)) {
+                return $fallback->getValuesArray($fid);
+            }
+            return ($defaults && ($field = $fields->getField($fid))) ? $field->getDefault(true)->getValues() : [];
+        };
+        $expand = function (string $expr) use ($content, $fallback): string {
+            $item = new \ItemContent(array_replace($fallback?->getContent() ?? [], $content->getContent()));
+            return \AA::Un($expr, '', GetItemFromContent($item));
+        };
+        return $this->hidden(self::assigned($fields), $valuesOf, $expand);
+    }
+
+    /**
+     * Changes the content being saved from the admin form: a field hidden by a rule is stored empty (when its
+     * condition clears), anything else hidden keeps its stored value - it is taken out of the content, as
+     * a field with "Show" off is - and a new item gets the field's default. A protected field (password, 2FA)
+     * is never emptied: its inserter would store the empty value as the password.
+     * @return list<string> ids of the fields hidden by a condition
+     */
+    public function apply(\ItemContent $content, \AA_Fields $fields, ?\AA_Content $old, bool $insert): array
+    {
+        $hidden   = $this->hiddenFor($fields, $content, $old, $insert);
+        $assigned = $hidden ? self::assigned($fields) : [];
+        foreach ($hidden as $fid => $how) {
+            $field = $fields->getField($fid);
+            $clear = ($how === self::LIVE) && $this->conds[$assigned[$fid]]['clear'] && !$field->isProtected();
+            if ($clear && ($insert || ($old && (implode('', $old->getValuesArray($fid)) !== '')))) {
+                $content[$fid] = new \AA_Value('');
+            } elseif (!$clear && $insert && !($default = $field->getDefault(true))->isEmpty()) {
+                $content[$fid] = $default;
+            } else {
+                unset($content[$fid]);
+            }
+        }
+        return array_keys($hidden);
+    }
+
+    /** @return array<string, string> id of every field => key of its condition or '' */
+    private static function assigned(\AA_Fields $fields): array
+    {
+        $ret = [];
+        foreach ($fields as $fid => $field) {
+            // ArrayAccess, not getProperty(): fields defined in a slice have no such column
+            $ret[(string) $fid] = self::keyOfField($field['aditional']);
         }
         return $ret;
     }
