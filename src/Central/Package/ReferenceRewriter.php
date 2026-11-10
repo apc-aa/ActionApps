@@ -184,20 +184,28 @@ final class ReferenceRewriter
      *  a slice) comes back as it is. */
     public static function inputShowFuncGroup(string $input_show_func): ?string
     {
-        $parts = RewriteFailed::check(preg_split('/(?<!#):/', $input_show_func));
-        $name  = in_array(strtolower(trim($parts[0])), self::GROUP_WIDGETS, true) ? trim($parts[1] ?? '') : '';
+        $name = trim(self::groupPart($input_show_func)[0] ?? '');
         return ($name === '') ? null : $name;
     }
 
-    /** The constant group parameter of field.input_show_func replaced in place - the rest stays byte for
-     *  byte. Split like AA_Statestore::parseProperties(): on `:` not preceded by `#`, values trimmed. */
-    public function rewriteInputShowFunc(string $input_show_func): string
+    /** the constant group parameter of field.input_show_func as [value as written, byte offset]; null when
+     *  the widget has none. Split like AA_Statestore::parseProperties(): on `:` not preceded by `#`.
+     *  @return array{string, int}|null */
+    private static function groupPart(string $input_show_func): ?array
     {
         $parts = RewriteFailed::check(preg_split('/(?<!#):/', $input_show_func, 3, PREG_SPLIT_OFFSET_CAPTURE));
-        if (!isset($parts[1]) || !in_array(strtolower(trim($parts[0][0])), self::GROUP_WIDGETS, true)) {
+        return (isset($parts[1]) && in_array(strtolower(trim($parts[0][0])), self::GROUP_WIDGETS, true)) ? $parts[1] : null;
+    }
+
+    /** The constant group parameter of field.input_show_func replaced in place - the rest stays byte for
+     *  byte. */
+    public function rewriteInputShowFunc(string $input_show_func): string
+    {
+        $part = self::groupPart($input_show_func);
+        if ($part === null) {
             return $input_show_func;
         }
-        [$value, $offset] = $parts[1];
+        [$value, $offset] = $part;
         $name = trim($value);
         $new  = ($name === '') ? null : $this->map->group($name);
         if ($new === null) {

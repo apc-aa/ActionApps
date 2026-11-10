@@ -262,7 +262,7 @@ final class ReferenceRewriterTest extends TestCase
         $this->assertSame($expected, $this->rewriter()->rewriteInputShowFunc($isf));
     }
 
-    /** the widgets whose first parameter is a constant group - every widget with the `const` property */
+    /** the widgets whose first parameter is a constant group - every widget with the `const` property, first */
     public function test_GROUP_WIDGETS_are_the_widgets_with_constants(): void
     {
         require_once __DIR__ . '/../../fixtures/util_shims.php';
@@ -270,6 +270,7 @@ final class ReferenceRewriterTest extends TestCase
         foreach (glob(__DIR__ . '/../../../../src/Widget/*Widget.php') as $file) {
             $class = 'AA\\Widget\\' . basename($file, '.php');
             if (($class !== Widget::class) && !(new ReflectionClass($class))->isAbstract() && isset($class::getClassProperties()['const'])) {
+                $this->assertSame('const', array_key_first($class::getClassProperties()), $class);
                 $codes[] = strtolower(substr(basename($file), 0, 3));
             }
         }
