@@ -11,8 +11,7 @@ use PHPUnit\Framework\TestCase;
 /** A legacy site module whose control file is missing answers every public page with 500. */
 final class CheckSiteStateFilesTest extends TestCase
 {
-    private const SITE     = '0123456789abcdef0123456789abcdef';
-    private const TEMPLATE = '5369746554656d706c6174652e2e2e2e';   // SiteTemplate....
+    private const SITE = '0123456789abcdef0123456789abcdef';
 
     public static function setUpBeforeClass(): void
     {
@@ -37,7 +36,7 @@ final class CheckSiteStateFilesTest extends TestCase
     /** new sites are copied from it, nobody visits it - old installs keep "template.php3", a file AA never had */
     public function test_the_site_template_is_no_site(): void
     {
-        [$finding] = CheckSiteStateFiles::findingsFor([self::row(self::TEMPLATE, 'template.php3', name: 'Site Template')]);
+        [$finding] = CheckSiteStateFiles::findingsFor([self::row(bin2hex(\AA_Module_Site::TEMPLATE_ID), 'template.php3', name: 'Site Template')]);
 
         $this->assertSame(Finding::OK, $finding->severity);
         $this->assertSame('No site module uses a state file', $finding->title);
@@ -45,7 +44,7 @@ final class CheckSiteStateFilesTest extends TestCase
 
     public function test_a_present_control_file_is_counted(): void
     {
-        $findings = CheckSiteStateFiles::findingsFor([self::row(self::SITE, 'ecn_as_example.php'), self::row(self::TEMPLATE, 'template.php3')]);
+        $findings = CheckSiteStateFiles::findingsFor([self::row(self::SITE, 'ecn_as_example.php'), self::row(bin2hex(\AA_Module_Site::TEMPLATE_ID), 'template.php3')]);
 
         $this->assertSame([[Finding::OK, 'All 1 site state files are in place']], array_map(static fn(Finding $f): array => [$f->severity, $f->title], $findings));
     }

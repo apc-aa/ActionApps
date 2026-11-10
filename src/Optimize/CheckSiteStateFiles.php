@@ -13,10 +13,6 @@ use AA_Module_Site;
  */
 class CheckSiteStateFiles extends AbstractOptimize
 {
-    /** SiteTemplate.... - the module new sites are copied from (modules/site/modedit.php), no site anybody
-     *  visits; old installs keep its state file "template.php3", for which AA never had a file */
-    private const TEMPLATE = '5369746554656d706c6174652e2e2e2e';
-
     public static function name(): string
     {
         return _m('Site state files');
@@ -60,8 +56,9 @@ class CheckSiteStateFiles extends AbstractOptimize
 
         foreach ($rows as $row) {
             // flag 1 = the router reads state_file as a path, not as a file. AA counts a module as live
-            // when deleted = 0 (getModules(), getIdFromUrl()) - anything else is not served, nor is the template.
-            if ((int) $row['flag'] === 1 || (int) ($row['deleted'] ?? 0) !== 0 || (string) $row['id'] === self::TEMPLATE) {
+            // when deleted = 0 (getModules(), getIdFromUrl()) - anything else is not served. Nor is the template
+            // new sites are copied from; its stale state file of old installs is for RedefineSiteTemplates.
+            if ((int) $row['flag'] === 1 || (int) ($row['deleted'] ?? 0) !== 0 || (string) $row['id'] === unpack_id(AA_Module_Site::TEMPLATE_ID)) {
                 continue;
             }
             if (!($name = AA_Module_Site::stateFileName((string) $row['state_file']))) {
