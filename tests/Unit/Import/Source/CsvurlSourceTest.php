@@ -7,6 +7,7 @@ namespace Tests\Unit\Import\Source;
 use AA\Import\Context;
 use AA\Import\Probe;
 use AA\Import\Registry;
+use AA\Import\EditedAsText;
 use AA\Import\Source\CsvColumnsSetting;
 use AA\Import\Source\CsvurlSource;
 use AA\Import\Stream;
@@ -217,10 +218,11 @@ final class CsvurlSourceTest extends TestCase
         self::assertSame(['number.........1'], $mapping->keyFields);
     }
 
-    // a new definition asks for the mapping before it has any settings
-    public function test_defaultMapping_withoutSettingsEmpty(): void
+    // a new import without them is not set up: the page shows its settings first
+    public function test_fromSettings_requiredMissingRefused(): void
     {
-        self::assertSame([], CsvurlSource::fromSettings([])->defaultMapping()->rows);
+        self::assertRefused(fn() => CsvurlSource::fromSettings([]), 'SETTINGS');
+        self::assertRefused(fn() => self::source(['url' => '']), 'SETTINGS');
     }
 
     #[DataProvider('badColumns')]
@@ -230,15 +232,28 @@ final class CsvurlSourceTest extends TestCase
         self::assertRefused(fn() => self::source(['columns' => $columns, 'key_column' => '']));
     }
 
-    /** the source refuses the columns as a whole, naming the line at fault - the form could only say the setting is wrong */
+    /** typed as lines, stored as a JSON object, shown as lines again - a name with = or digits only too */
+    public function test_columns_storedAsJson_shownAsLines(): void
+    {
+        $validator = CsvurlSource::getClassProperties()['columns']->getValidator();
+        $value     = "a=b = headline........\n\n2024 = number.........1";
+
+        self::assertTrue($validator->validate($value));
+        self::assertSame('{"a=b":"headline........","2024":"number.........1"}', $value);
+        self::assertInstanceOf(EditedAsText::class, $validator);
+        self::assertSame("a=b = headline........\n2024 = number.........1", $validator->formText($value));
+        self::assertSame('not JSON', $validator->formText('not JSON'));
+    }
+
+    /** a bad line is refused naming its number, on save and from stored settings */
     public function test_columns_badLine_isRefusedWithItsNumber(): void
     {
         $bad = [
-            "Name = headline........\nCode text...........1"      => 'line 2',
-            "Name = headline........\n\nCode = headline"          => 'line 3',
-            "Name = status_code.....\n"                           => 'line 1',
-            " = headline........"                                 => 'line 1',
-            "Name = headline........\nName = text...........1"    => 'line 2',
+            "Name = headline........\nCode text...........1"      => 'Line 2',
+            "Name = headline........\n\nCode = headline"          => 'Line 3',
+            "Name = status_code.....\n"                           => 'Line 1',
+            " = headline........"                                 => 'Line 1',
+            "Name = headline........\nName = text...........1"    => 'Line 2',
         ];
         foreach ($bad as $columns => $line) {
             try {
@@ -246,11 +261,12 @@ final class CsvurlSourceTest extends TestCase
                 self::fail("not refused: $columns");
             } catch (SourceRefused $e) {
                 self::assertSame('SETTINGS', $e->reason);
-                self::assertStringContainsString("Columns, $line:", $e->getMessage(), $columns);
+                self::assertStringContainsString("columns is not valid: $line:", $e->getMessage(), $columns);
             }
         }
-        $value = "Code text";
-        self::assertTrue(CsvurlSource::getClassProperties()['columns']->getValidator()->validate($value), 'the source says which line, so the form lets it through');
+        $value = "Name = headline........\nCode text";
+        self::assertFalse(CsvurlSource::getClassProperties()['columns']->getValidator()->validate($value), 'refused on save already');
+        self::assertSame('Line 2: expected "column = field id"', \AA_Validate::lastErrMsg());
         self::assertSame(['a=b' => 'headline........', 'Code' => 'text...........1'], CsvColumnsSetting::parse("a=b = headline........\r\n  Code=text...........1  "), 'the last = splits; spaces around go');
     }
 

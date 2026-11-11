@@ -17,6 +17,7 @@ use AA\IO\Grabber\CSV;
 use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
 use AA_Property;
+use AA_Validate;
 
 /**
  * A CSV file at a public http(s) address, its first row naming the columns. It has no mapping editor
@@ -66,18 +67,26 @@ final class CsvurlSource extends AbstractSource implements Checkable, Probeable
         return $property->setDefault(',');
     }
 
-    /** Validated here again - stored settings reach a run without the form */
+    /** Validated here again - stored settings reach a run without the form. A required setting left
+     *  blank refuses them too: the page then shows a new import as not set up. */
     public static function fromSettings(array $settings): static
     {
         foreach (self::getClassProperties() as $name => $property) {
             $value     = $settings[$name] ?? '';
             $validator = $property->getValidator();
-            if (!$validator->varempty($value) && !$validator->validate($value)) {
-                throw new SourceRefused('SETTINGS', "The setting $name is not valid");
+            // a validator that fails without a word must not pass on the one before
+            AA_Validate::lastErr(0, '');
+            if ($validator->varempty($value)) {
+                if ($property->isRequired() && ($property->getDefault() === null)) {
+                    throw new SourceRefused('SETTINGS', "The setting $name is missing");
+                }
+            } elseif (!$validator->validate($value)) {
+                $why = AA_Validate::lastErrMsg();
+                throw new SourceRefused('SETTINGS', "The setting $name is not valid" . (($why === '') ? '' : ": $why"));
             }
         }
-        $text    = $settings['columns'] ?? '';
-        $columns = (trim($text) === '') ? [] : (CsvColumnsSetting::parse($text, $why) ?? throw new SourceRefused('SETTINGS', "Columns, $why"));
+        // valid by the loop above
+        $columns = CsvColumnsSetting::parse($settings['columns'] ?? '') ?? [];
         $key     = $settings['key_column'] ?? '';
         if (($key !== '') && !isset($columns[$key])) {
             throw new SourceRefused('SETTINGS', 'The key column must be one of the columns');

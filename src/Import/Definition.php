@@ -333,13 +333,9 @@ final class Definition extends AA_Object implements InternalExpandInterface
         $type               = (string) $content->getValue('source');
         $hasSource          = isset(Registry::sources()[$type]);
         [$newest, $import] = self::latestRuns((string) $content->getId());
-        try {
-            $unset = self::unsetSettings($type, self::settingsOf(['settings' => (string) $content->getValue('settings')]));
-        } catch (SourceRefused) {
-            // the detail says the stored settings cannot be read
-            $unset = [];
-        }
-        return RunView::health($hasSource, $unset, true, $newest, $import, $now);
+        // once it ran, its runs tell - the source is not asked
+        $lacks = ($hasSource && ($newest === null)) ? self::setUpLacks($type, (string) $content->getValue('settings')) : null;
+        return RunView::health($hasSource, $lacks, true, $newest, $import, $now);
     }
 
     /** Run::newestOf() of definition $id, read once for the cells of its row
@@ -481,7 +477,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
     public static function refusal(string $code, string $detail = '', string $message = ''): string
     {
         if (($code === 'SETTINGS') && ($message !== '')) {
-            return _m('The import source refused these settings: %1', [$message]);
+            return ($detail === '') ? _m('The import source refused these settings: %1', [$message]) : _m('The setting "%1" of the import source is not valid: %2', [$detail, $message]);
         }
         return match ($code) {
             'FORBIDDEN'    => _m('Only a user who manages the feeding of the slice may change its imports.'),
@@ -824,23 +820,42 @@ final class Definition extends AA_Object implements InternalExpandInterface
     }
 
     /**
-     * The labels of the settings source $type needs (required, without a default) that $settings
-     * lack - what a new import must be given before it can run. [] for a source that is not
-     * available or whose code fails here: the page says that otherwise.
+     * What an import still needs before it can run: null when source $type takes the stored settings
+     * $json - or fails for another reason, which the page says apart - else, as the source refuses
+     * them (SETTINGS), the labels of the settings of the form it requires and lacks; [] when no blank
+     * one explains the refusal. Asks the source's code, never the network.
+     * @return ?list<string>
+     */
+    public static function setUpLacks(string $type, string $json): ?array
+    {
+        try {
+            $settings = self::settingsOf(['settings' => $json]);
+        } catch (SourceRefused) {
+            // the settings section says the stored settings cannot be read
+            return null;
+        }
+        try {
+            Registry::create($type, $settings);
+            return null;
+        } catch (SourceRefused $e) {
+            return ($e->reason === 'SETTINGS') ? self::unsetSettings($type, $settings) : null;
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * The labels of the settings of the form that source $type requires without a default and
+     * $settings lack. [] for a source that is not available or whose code fails here.
      * @param array<string, string> $settings as settingsOf() gives them
      * @return list<string>
      */
-    public static function unsetSettings(string $type, array $settings): array
+    private static function unsetSettings(string $type, array $settings): array
     {
-        $class = Registry::sources()[$type] ?? null;
-        try {
-            $declared = ($class === null) ? [] : $class::getClassProperties();
-        } catch (Throwable) {
-            return [];
-        }
         $unset = [];
-        foreach ($declared as $name => $property) {
-            if ($property->isRequired() && (trim($settings[$name] ?? '') === '') && (Service::settingDefault($property) === null)) {
+        foreach (Registry::declaredSettings($type) ?? [] as $name => $property) {
+            if (($property instanceof \AA_Property) && Registry::isEditable($property) && $property->isRequired()
+                && (trim($settings[$name] ?? '') === '') && (Service::settingDefault($property) === null)) {
                 $unset[] = (string) $property->getName();
             }
         }
@@ -850,12 +865,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
     /** whether source $type declares settings; a source whose code fails here has none to set */
     private static function hasSettings(string $type): bool
     {
-        $class = Registry::sources()[$type] ?? null;
-        try {
-            return ($class !== null) && ($class::getClassProperties() !== []);
-        } catch (Throwable) {
-            return false;
-        }
+        return (bool) Registry::declaredSettings($type);
     }
 
     /** A new definition has no settings yet, so the source is asked without them. An unknown source
@@ -867,6 +877,13 @@ final class Definition extends AA_Object implements InternalExpandInterface
         }
         try {
             $this->applyMapping(Registry::create((string) $this->source, [])->defaultMapping());
+        } catch (SourceRefused $e) {
+            // a source that needs its settings gives the mapping with them
+            if ($e->reason === 'SETTINGS') {
+                $this->applyMapping(new Mapping([]));
+            } else {
+                $this->noDefaultMapping = true;
+            }
         } catch (Throwable) {
             $this->noDefaultMapping = true;
         }

@@ -287,23 +287,63 @@ final class DetailConfigTest extends TestCase
     }
 
     /** the columns are typed as lines "column = field"; a JSON object, as stored before, reads the same */
-    public function test_columns_linesAndJson_giveTheSameMapping(): void
+    /** typed as lines, stored as JSON - one form in the database, which an older version reads too */
+    public function test_columns_linesAndJson_storeTheSame(): void
     {
         self::perms(PS_FEEDING, PS_FEEDING);
-        $mappings = [];
-        foreach (['lines' => "Název = headline........\nKód = text...........1\n", 'json' => '{"Název": "headline........", "Kód": "text...........1"}'] as $case => $columns) {
-            self::definition(['source' => 'core:csvurl']);
-            $def = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
-            $r   = Service::changeSettings($def, 'core:csvurl', ['url' => 'https://example.org/data.csv', 'columns' => $columns, 'key_column' => 'Kód'], AuthGetUid());
-            $this->assertSame('CHANGED', $r->code, $case);
-            $mappings[$case] = (Definition::fresh(self::DEF) ?? throw new \LogicException('No definition'))->mapping();
-        }
-        $this->assertEquals($mappings['json'], $mappings['lines']);
-        $this->assertSame(['text...........1'], $mappings['lines']->keyFields);
+        self::definition(['source' => 'core:csvurl']);
+        $settings = ['url' => 'https://example.org/data.csv', 'key_column' => 'Kód'];
+        $def      = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
+
+        $this->assertSame('CHANGED', Service::changeSettings($def, 'core:csvurl', $settings + ['columns' => "Název = headline........\n{id} = text...........1\nKód = text...........2\n"], AuthGetUid())->code);
+        $def = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
+        $this->assertSame('{"Název":"headline........","{id}":"text...........1","Kód":"text...........2"}', Definition::settingsOf($def->snapshot())['columns'], 'a line may start with {');
+        $this->assertSame('SAME', Service::changeSettings($def, 'core:csvurl', $settings + ['columns' => '{"Název": "headline........", "{id}": "text...........1", "Kód": "text...........2"}'], AuthGetUid())->code);
+        $this->assertSame(['text...........2'], $def->mapping()->keyFields);
+
+        $doc       = self::dom(self::config()->settingsHtml());
+        $textareas = iterator_to_array($doc->getElementsByTagName('textarea'));
+        $this->assertSame(0, $doc->getElementsByTagName('aa-code')->length, 'a plain text area: lines of data, not code');
+        $this->assertContains("Název = headline........\n{id} = text...........1\nKód = text...........2", array_map(static fn(\DOMElement $t): string => $t->textContent, $textareas), 'shown as the lines typed');
+    }
+
+    // the columns of a new import are empty: still a plain text area
+    public function test_columns_emptyIsPlainText(): void
+    {
+        self::definition(['source' => 'core:csvurl', 'mapping' => '', 'key_fields' => '']);
 
         $doc = self::dom(self::config()->settingsHtml());
-        $this->assertSame(0, $doc->getElementsByTagName('aa-code')->length, 'a plain text area: lines of data, not code');
+
+        $this->assertSame(0, $doc->getElementsByTagName('aa-code')->length);
         $this->assertGreaterThan(0, $doc->getElementsByTagName('textarea')->length);
+    }
+
+    // only a single text setting without a list of values loses the code editor - not a list nor a choice
+    public function test_settings_plainTextAreaOnlyForSingleText(): void
+    {
+        $choice = new \AA_Property('choice', 'Choice', 'text', false, true, 'text');
+        $choice->setConstants(['a' => 'Alpha', 'b' => 'Beta']);
+        \ServiceSource::$moreProperties = ['note' => new \AA_Property('note', 'Note', 'text', false, true, 'text'), 'lines' => new \AA_Property('lines', 'Lines', 'text', true, true, 'text'), 'choice' => $choice];
+        self::definition();
+
+        $html = self::config()->settingsHtml();
+
+        $this->assertStringContainsString('aa-widget-txt aa-stdwidget" id="widget-aa-u' . self::DEF . '-note"', $html);
+        $this->assertStringContainsString('aa-widget-mfl aa-stdwidget" id="widget-aa-u' . self::DEF . '-lines"', $html);
+        $this->assertStringContainsString('aa-widget-sel aa-stdwidget" id="widget-aa-u' . self::DEF . '-choice"', $html);
+    }
+
+    /** a bad line is refused on save, by its number and in words of the page */
+    public function test_columns_badLine_refusedOnSave(): void
+    {
+        self::perms(PS_FEEDING, PS_FEEDING);
+        self::definition(['source' => 'core:csvurl']);
+        $def = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
+
+        $r = Service::changeSettings($def, 'core:csvurl', ['url' => 'https://example.org/data.csv', 'columns' => "Name = headline........\nCode = status_code.....", 'key_column' => 'Name'], AuthGetUid());
+
+        $this->assertSame(['SETTINGS', 'Columns'], [$r->code, $r->detail]);
+        $this->assertSame('The setting "Columns" of the import source is not valid: Line 2: not a field the import may fill', $r->refusal());
     }
 
     // ------------------------------------------------------------ refused starts point to the settings
@@ -784,7 +824,7 @@ final class DetailConfigTest extends TestCase
         foreach (['editor' => [], 'superadmin' => [AA_ID => true]] as $case => $superuser) {
             $GLOBALS['r_superuser'] = $superuser;
             $page = self::page();
-            $html = $page->config()->html() . $page->html(time());
+            $html = $page->config()->settingsHtml() . $page->config()->mappingHtml() . $page->html(time());
 
             foreach (['Secret-Value', '1234567890', 'Broken-Value', 'second-line'] as $part) {
                 $this->assertStringNotContainsString($part, $html, "$case: $part");

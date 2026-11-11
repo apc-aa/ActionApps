@@ -27,6 +27,8 @@ final class ServiceSource extends AbstractSource implements Probeable
     public static array $created = [];
     /** thrown by getClassProperties() */
     public static ?\Throwable $failProperties = null;
+    /** @var array<string, mixed> declared after the others */
+    public static array $moreProperties = [];
     /** the bool setting active declares on as its default */
     public static bool $activeOn = false;
     /** thrown by defaultMapping() */
@@ -71,7 +73,7 @@ final class ServiceSource extends AbstractSource implements Probeable
             'fixed'     => new AA_Property('fixed', 'Fixed', 'readonly', false, true, 'text'),
             'object'    => new AA_Property('object', 'Object', 'AA_Validate_Text', false, true, 'text'),
             'tags'      => new AA_Property('tags', 'Tags', 'string', true, true, 'text'),
-        ];
+        ] + self::$moreProperties;
     }
 
     public static function fromSettings(array $settings): static

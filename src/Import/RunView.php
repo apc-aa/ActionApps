@@ -149,19 +149,19 @@ final class RunView
      * that cannot run weighs more than the last import. An import that never ran and lacks settings is
      * new, not failing: its mapping may come from them. Whether a planned task starts it is another
      * fact (byHandHtml()). $mappingOk is true where the caller cannot afford to check it.
-     * @param list<string> $unset the labels of the settings the source needs and has not got (Definition::unsetSettings())
+     * @param ?list<string> $lacks Definition::setUpLacks() of the stored settings; null = the source takes them
      * @param ?Run $newest the newest run - the open one, if any, as only one is ever open
      * @param ?Run $import the newest import (Run::storesItems())
      * @return array{kind: string, word: string, reason: string}
      */
-    public static function health(bool $hasSource, array $unset, bool $mappingOk, ?Run $newest, ?Run $import, int $now): array
+    public static function health(bool $hasSource, ?array $lacks, bool $mappingOk, ?Run $newest, ?Run $import, int $now): array
     {
         $say = static fn(string $kind, string $word, string $reason): array => ['kind' => $kind, 'word' => $word, 'reason' => $reason];
         if (!$hasSource) {
             return $say('bad', _m('Failing'), _m('The source of this import is not available, so it cannot run.'));
         }
-        if ($unset && ($newest === null)) {
-            return $say('idle', _m('Not set up'), _m('Fill in these settings of the source: %1.', [implode(', ', $unset)]));
+        if (self::notSetUp($lacks, $newest)) {
+            return $say('idle', _m('Not set up'), $lacks ? _m('Fill in these settings of the source: %1.', [implode(', ', $lacks)]) : _m('Fill in the settings of the source.'));
         }
         if (!$mappingOk) {
             return $say('bad', _m('Failing'), _m('The mapping does not fit the slice, so no run can start until it is fixed.'));
@@ -189,6 +189,14 @@ final class RunView
             $import->counts()['read'] === 0 => $say('ok', _m('Healthy'), _m('The last import finished without errors; nothing had changed.')),
             default                         => $say('ok', _m('Healthy'), _m('The last import finished without errors (%1 read).', [$import->counts()['read']])),
         };
+    }
+
+    /** A new import whose source refuses its settings: it never ran, so nothing failed yet - the page
+     *  shows its settings first and its starts say why they are off
+     *  @param ?list<string> $lacks Definition::setUpLacks() */
+    public static function notSetUp(?array $lacks, ?Run $newest): bool
+    {
+        return ($lacks !== null) && ($newest === null);
     }
 
     /** why a run stopped by an error blocks the import, named by what the run was */

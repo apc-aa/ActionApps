@@ -255,9 +255,10 @@ final class Service
             return $refused;
         }
         $bad      = '';
-        $settings = self::checkSettings($id, $source, $settings, $user, $bad);
+        $why      = '';
+        $settings = self::checkSettings($id, $source, $settings, $user, $bad, $why);
         if (is_string($settings)) {
-            return new ChangeResult($settings, $bad);
+            return new ChangeResult($settings, $bad, $why);
         }
         try {
             $new = Registry::create($source, $settings);
@@ -541,10 +542,11 @@ final class Service
      * has, and the stored settings must not change only by the empty ones.
      * @param array<mixed> $settings
      * @param string $bad set to the label of the setting refused with SETTINGS or SLICE
+     * @param string $why set to what its validator said of a refused setting, as it said it; '' = nothing
      * @return array<string, string>|string the settings to store, or why not: NO_SOURCE, SETTINGS, SLICE,
      *                                      SOURCE (the source's code failed)
      */
-    private static function checkSettings(string $id, string $source, array $settings, string $user, string &$bad = ''): array|string
+    private static function checkSettings(string $id, string $source, array $settings, string $user, string &$bad = '', string &$why = ''): array|string
     {
         $class = Registry::sources()[$source] ?? null;
         if ($class === null) {
@@ -566,7 +568,11 @@ final class Service
             if ($validator->varempty($value)) {
                 continue;
             }
+            // a validator that fails without a word must not pass on the one before
+            \AA_Validate::lastErr(0, '');
             if (!$validator->validate($value)) {
+                // such a validator names the line at fault in words of the page
+                $why = ($validator instanceof EditedAsText) ? \AA_Validate::lastErrMsg() : '';
                 return 'SETTINGS';
             }
             // int, bool and date validators hand back an int

@@ -665,7 +665,8 @@ final class DetailCatalogTest extends TestCase
         }
     }
 
-    /** showing the page reads what the last check stored: no code of the source runs */
+    /** showing the page reads what the last check stored: the source is only built, to know whether
+     *  an import that never ran takes its settings - nothing of it runs */
     public function test_view_doesNotCallSource(): void
     {
         self::definition();
@@ -678,7 +679,7 @@ final class DetailCatalogTest extends TestCase
         $html = self::page()->html(self::NOW) . self::page()->streamsHtml() . self::page()->streamsHtml('2') . self::catalogHtml() . self::catalogHtml('2');
 
         $this->assertStringContainsString('aa-import-catalog', $html);
-        $this->assertSame([], \AdoptSource::$calls);
+        $this->assertSame([], array_values(array_diff(\AdoptSource::$calls, ['fromSettings'])));
         $this->assertSame([], TableDb::writes());
     }
 

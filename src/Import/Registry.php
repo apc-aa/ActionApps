@@ -86,6 +86,36 @@ final class Registry
         return false;
     }
 
+    /**
+     * The settings source $type declares, read once per request - a list of imports asks for each row.
+     * null when the source is not available or its code fails here: whoever must say why asks the
+     * source itself (Service logs it).
+     * @return ?array<array-key, mixed> getClassProperties() of the source
+     */
+    public static function declaredSettings(string $type): ?array
+    {
+        return \AA::Contentcache()->get_result([self::class, 'declaredSettingsFromSource'], [$type]);
+    }
+
+    /** declaredSettings() without the cache
+     *  @return ?array<array-key, mixed> */
+    public static function declaredSettingsFromSource(string $type): ?array
+    {
+        $class = self::sources()[$type] ?? null;
+        try {
+            return ($class === null) ? null : $class::getClassProperties();
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /** Text, int, bool and float settings are edited in the form; read-only, hidden and object ones
+     *  are shown as text - their widgets would print the value unescaped or post it back as typed. */
+    public static function isEditable(\AA_Property $property): bool
+    {
+        return !$property->isObject() && !in_array($property->getType(), ['readonly', 'hidden'], true);
+    }
+
     /** @param array<string, string> $settings */
     public static function create(string $type, array $settings, ?string $customDir = null): SourceInterface
     {

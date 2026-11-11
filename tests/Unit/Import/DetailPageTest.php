@@ -193,6 +193,33 @@ final class DetailPageTest extends TestCase
         $this->assertStringNotContainsString('Not set up', $set);
     }
 
+    /** "Not set up" is what the source says: it refuses the stored settings; a declaration that is
+     *  no setting is passed over */
+    public function test_newImport_sourceRefusingItsSettings_isNotSetUp(): void
+    {
+        \ServiceSource::$moreProperties = ['junk' => 'no property', 'needed' => new \AA_Property('needed', 'Needed', 'string', false, true, 'text', true)];
+        \ServiceSource::$refuse         = new \AA\IO\SourceRefused('SETTINGS', 'Needed is missing');
+        self::definition();
+
+        $html = self::page()->overviewHtml(time()) . self::page()->actionsHtml(time());
+
+        $this->assertStringContainsString('Not set up', $html);
+        $this->assertStringContainsString('Fill in these settings of the source: Needed.', $html);
+        $this->assertStringContainsString('The source is not set up yet.', $html);
+    }
+
+    // a required setting the source takes blank blocks nothing - Service would not refuse the start
+    public function test_newImport_requiredSettingTheSourceTakesBlank_blocksNothing(): void
+    {
+        \ServiceSource::$moreProperties = ['needed' => new \AA_Property('needed', 'Needed', 'string', false, true, 'text', true)];
+        self::definition();
+
+        $html = self::page()->overviewHtml(time()) . self::page()->actionsHtml(time());
+
+        $this->assertStringNotContainsString('Not set up', $html);
+        $this->assertStringNotContainsString('The source is not set up yet.', $html);
+    }
+
     public function test_noDisabledLabelAnywhere(): void
     {
         self::definition(['enabled' => '0']);
@@ -682,7 +709,7 @@ final class DetailPageTest extends TestCase
         }
         $this->assertFalse(self::buttons($html)['stream']['disabled']);
         $this->assertSame([], TableDb::writes(), 'read only');
-        $this->assertSame([], \ServiceSource::$created, 'the source is not asked');
+        $this->assertSame([[]], \ServiceSource::$created, 'only built once, to know an import that never ran is set up - not asked for its streams');
     }
 
     /** the stream table names a stream by its name from the stored catalog, the key small under it */

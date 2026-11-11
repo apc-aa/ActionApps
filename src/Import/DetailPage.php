@@ -72,8 +72,8 @@ final class DetailPage
     /** @var list<string>|null|false the mapping problems; null = the mapping cannot be read, false = not read yet */
     private array|false|null $problems = false;
 
-    /** @var ?list<string> Definition::unsetSettings() of the stored settings, read once per page */
-    private ?array $unset = null;
+    /** @var list<string>|null|false Definition::setUpLacks() of the stored settings, read once per page; false = not read yet */
+    private array|false|null $lacks = false;
 
     /** @var array<string, int> run id => Run::queuedUntil(), read once per page */
     private array $queuedUntil = [];
@@ -297,7 +297,7 @@ final class DetailPage
     {
         $runs   = $this->runs();
         $open   = $this->openRun();
-        $health = RunView::health($this->hasSource(), $this->unsetSettings(), $this->problems() === [], $runs[0] ?? null, $this->lastImport(), $now);
+        $health = RunView::health($this->hasSource(), $this->lacks(), $this->problems() === [], $runs[0] ?? null, $this->lastImport(), $now);
         $html   = $this->healthHtml($health) . $this->problemsHtml() . $this->ribbonHtml($runs, $now)
             . '<div class="aa-import-glance">'
             . '<div class="aa-import-last"><h3>' . _m('Last import') . '</h3>' . $this->lastImportHtml($runs, $now) . '</div>'
@@ -1454,23 +1454,19 @@ final class DetailPage
         return isset(Registry::sources()[$this->def->sourceType()]);
     }
 
-    /** @return list<string> Definition::unsetSettings(); [] when the stored settings cannot be read - the settings section says so */
-    private function unsetSettings(): array
+    /** @return ?list<string> Definition::setUpLacks() of the stored settings; asked only of an import that never ran */
+    private function lacks(): ?array
     {
-        if ($this->unset === null) {
-            try {
-                $this->unset = Definition::unsetSettings($this->def->sourceType(), Definition::settingsOf($this->def->snapshot()));
-            } catch (SourceRefused) {
-                $this->unset = [];
-            }
+        if ($this->lacks === false) {
+            $this->lacks = ($this->hasSource() && ($this->runs() === [])) ? Definition::setUpLacks($this->def->sourceType(), $this->def->snapshot()['settings'] ?? '') : null;
         }
-        return $this->unset;
+        return $this->lacks;
     }
 
-    /** never ran and lacks settings its source needs - RunView::health() says "Not set up" */
+    /** RunView::health() says "Not set up": its starts would be refused, its settings come first */
     private function notSetUp(): bool
     {
-        return ($this->unsetSettings() !== []) && ($this->runs() === []);
+        return RunView::notSetUp($this->lacks(), $this->runs()[0] ?? null);
     }
 
     /** @return ?array{role: string, state: string, label: string, done: int, total: int, moved: int, started: int,
