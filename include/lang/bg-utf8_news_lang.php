@@ -18,6 +18,15 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "„е“ е изпълнено, когато някоя от стойностите на полето е сред отметнатите стойности, „не е“ – когато никоя не е. „е попълнено“ е изпълнено за всяка стойност освен празна и 0, следователно и за отметнато квадратче.", // ai 2026-11
+// "None - the import is disabled" => "Няма – импортът е изключен", // ai 2026-10
+// "The import is switched off." => "Импортът е изключен.", // ai 2026-10
+// "The import is disabled, so no planned task starts it." => "Импортът е изключен, затова никоя планирана задача не го стартира.", // ai 2026-10
+// "(import off)" => "(импортът е изключен)", // ai 2026-10
+// "one stream (%1)" => "един поток (%1)", // ai 2026-10
+// "Disabled - it does not start" => "Изключен – не се стартира", // ai 2026-10
+// "Expected a JSON object {\"column\": \"field id\"}" => "Очаква се JSON обект {\"column\": \"field id\"}", // ai 2026-10
+// "JSON object: the column name in the first row => the field it fills" => "JSON обект: името на колоната в първия ред => полето, което тя попълва", // ai 2026-10
 // "Parameter wizard" => "Съветник за параметри", // ai 2026-06
 // "the update may still be running on the remote AA - wait, then run Test before retrying" => "обновяването може все още да се изпълнява на отдалеченото AA – изчакайте и преди нов опит стартирайте „Тест“", // ai 2026-10
 // "Set letterhead to a text" => "Задайте на letterhead текст", // ai 2026-11
@@ -181,7 +190,7 @@ return [
 
 // admin/aa_cron.php, row 47
 // src/AA_Plannedtask.php, row 82, 182
-// src/Import/Definition.php, row 135, 163
+// src/Import/Definition.php, row 136, 164
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Последно изпълнение", // ai 2026-06
 
@@ -266,7 +275,7 @@ return [
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // central/optimize.php, row 65
-// src/Import/DetailPage.php, row 510
+// src/Import/DetailPage.php, row 548
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Формулярът е изтекъл; презаредете страницата и опитайте отново.", // ai 2026-10
 
@@ -415,7 +424,6 @@ return [
 "Off since %1, %2" => "Изключено от %1, %2", // ai 2026-10
 
 // admin/aa_security.php, row 143
-// src/Import/DetailPage.php, row 726
 "Off" => "Изключено", // ai 2026-10
 
 // admin/aa_security.php, row 148
@@ -440,7 +448,7 @@ return [
 
 // admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 395
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
@@ -643,7 +651,7 @@ return [
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 295
 // central/appstore.php, row 164
-// include/searchlib.php, row 1016
+// include/searchlib.php, row 1103
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Рубрики", // ai 2026-06
 
@@ -906,12 +914,13 @@ return [
 "Shortcut to edit ITEM" => "Пряк път за редактиране на СТАТИЯ", // ai 2026-06
 
 // admin/aafinder.php, row 526
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 576
 // include/searchlib.php, row 50, 51, 129, 138
 "contains" => "съдържа", // ai 2026-06
 
 // admin/aafinder.php, row 527
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 584
 // include/searchlib.php, row 129, 138
 "is" => "е", // ai 2026-06
@@ -1002,12 +1011,12 @@ return [
 // admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
-// admin/se_showif.php, row 123
+// admin/se_showif.php, row 124
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
 // include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 369
+// include/searchlib.php, row 446
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1053,7 +1062,7 @@ return [
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
 // include/stringexpand.php, row 99
-// src/Import/DetailPage.php, row 1025, 1091
+// src/Import/DetailPage.php, row 1076, 1142
 // src/Optimize/CheckImports.php, row 239, 241
 "Code" => "Код", // ai 2026-06
 
@@ -1061,7 +1070,7 @@ return [
 "HTML output" => "HTML изход", // ai 2026-06
 
 // admin/console.php, row 73, 75
-// central/optimize.php, row 210
+// central/optimize.php, row 209
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "Резултат", // ai 2026-06
 
@@ -1076,7 +1085,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "OK", // ai 2026-10
@@ -1124,7 +1133,7 @@ return [
 // admin/discedit.php, row 135
 // admin/related_sel.php, row 168
 // admin/se_views.php, row 136
-// src/Import/DetailPage.php, row 313
+// src/Import/DetailPage.php, row 337
 // src/Manager.php, row 230
 // src/Optimize/AbstractOptimize.php, row 175
 "Actions" => "Действия", // ai 2026-06
@@ -1154,7 +1163,7 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
@@ -1191,7 +1200,7 @@ return [
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 123, 267
 // include/logs.php, row 1071
-// include/mail.php, row 699
+// include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Тема", // ai 2026-06
 
@@ -1568,7 +1577,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 370
+// include/searchlib.php, row 447
 "Descending" => "Низходящо", // ai 2026-06
 
 // admin/se_compact.php, row 244
@@ -1593,7 +1602,7 @@ return [
 "Can't delete constant group" => "Групата константи не може да бъде изтрита", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
-// admin/se_showif.php, row 157
+// admin/se_showif.php, row 162
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1607,7 +1616,7 @@ return [
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckServerRefusals.php, row 67
@@ -1616,6 +1625,7 @@ return [
 // admin/se_constant.php, row 176, 378
 // admin/se_mapping.php, row 179
 // admin/se_profile.php, row 209
+// admin/se_showif.php, row 133
 // include/constants.php, row 453
 // include/constedit.php, row 76
 // include/searchlib.php, row 177
@@ -1794,7 +1804,7 @@ return [
 
 // admin/se_csv_import.php, row 278
 // include/scroller.php, row 86
-// src/Import/DetailPage.php, row 422
+// src/Import/DetailPage.php, row 453
 "Next" => "Напред", // ai 2026-06
 
 // admin/se_csv_import2.php, row 199
@@ -1845,8 +1855,8 @@ return [
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
-// src/Import/Definition.php, row 135, 165
-// src/Import/DetailCatalog.php, row 145
+// src/Import/Definition.php, row 136, 166
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Действие", // ai 2026-06
 
@@ -2026,7 +2036,7 @@ return [
 
 // admin/se_export.php, row 167
 // include/exporter.class.php, row 553
-// include/searchlib.php, row 1012
+// include/searchlib.php, row 1099
 "Conditions" => "Условия", // ai 2026-06
 
 // admin/se_export.php, row 167
@@ -2035,7 +2045,7 @@ return [
 
 // admin/se_export.php, row 168
 // include/exporter.class.php, row 554
-// include/searchlib.php, row 1014
+// include/searchlib.php, row 1101
 "Sort" => "Сортиране", // ai 2026-06
 
 // admin/se_export.php, row 168
@@ -2153,7 +2163,7 @@ return [
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
-// src/Import/DetailCatalog.php, row 151
+// src/Import/DetailCatalog.php, row 179
 "Update" => "Обнови", // ai 2026-06
 
 // admin/se_filters.php, row 169
@@ -2172,7 +2182,7 @@ return [
 "No category defined" => "Няма дефинирани категории", // ai 2026-06
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1424
+// src/Manager.php, row 1415
 "Select all" => "Избери всички", // ai 2026-06
 
 // admin/se_filters.php, row 320
@@ -2357,7 +2367,7 @@ return [
 
 // admin/se_inputform.php, row 424, 440, 451, 479, 522
 // include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 // src/Util/Paramwizard.php, row 154
 "Parameters" => "Параметри", // ai 2026-06
 
@@ -2433,8 +2443,6 @@ return [
 "8 UPPERCASE letters or _" => "8 ГЛАВНИ букви или _", // ai 2026-06
 
 // admin/se_inputform.php, row 515
-// src/Import/DetailPage.php, row 604
-// src/Import/RunView.php, row 188
 "Disabled" => "Забранено", // ai 2026-06
 
 // admin/se_inputform.php, row 516
@@ -2488,10 +2496,10 @@ return [
 "Node" => "Възел", // ai 2026-06
 
 // admin/se_inter_import.php, row 96
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // misc/datovka/datovka.php, row 158
-// src/Import/DetailConfig.php, row 291
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailConfig.php, row 282
+// src/Import/DetailPage.php, row 401
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Util/Note.php, row 64
 "State" => "Състояние", // ai 2026-06
@@ -3010,104 +3018,115 @@ return [
 // admin/se_showif.php, row 77
 "The form has expired. Close it and open it again." => "Формулярът е изтекъл. Затворете го и го отворете отново.", // ai 2026-11
 
-// admin/se_showif.php, row 117
-"is checked" => "е отметнато", // ai 2026-11
-
-// admin/se_showif.php, row 117
-"is not checked" => "не е отметнато", // ai 2026-11
-
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchlib.php, row 129, 138
 "is not" => "не е", // ai 2026-06
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
+// include/searchbar.class.php, row 580
+// include/searchlib.php, row 53, 56, 129, 138
+"begins with" => "започва с", // ai 2026-06
+
+// admin/se_showif.php, row 116
 "is filled" => "е попълнено", // ai 2026-11
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 "is empty" => "е празно", // ai 2026-11
 
-// admin/se_showif.php, row 120
+// admin/se_showif.php, row 119
+"is checked" => "е отметнато", // ai 2026-11
+
+// admin/se_showif.php, row 119
+"is not checked" => "не е отметнато", // ai 2026-11
+
+// admin/se_showif.php, row 121
 "— add a rule —" => "— добавете правило —", // ai 2026-11
 
-// admin/se_showif.php, row 128
+// admin/se_showif.php, row 129
 "Comparison" => "Сравнение", // ai 2026-11
 
-// admin/se_showif.php, row 144
+// admin/se_showif.php, row 149
 "Values, one per line" => "Стойности, по една на ред", // ai 2026-11
 
-// admin/se_showif.php, row 151
+// admin/se_showif.php, row 156
 // include/field.class.php, row 797
 "Display condition" => "Условие за показване", // ai 2026-11
 
-// admin/se_showif.php, row 163
+// admin/se_showif.php, row 168
 "Show the field when all of these hold" => "Показвай полето, когато са изпълнени всички тези условия", // ai 2026-11
 
-// admin/se_showif.php, row 165
+// admin/se_showif.php, row 170
 "AA expression (optional)" => "AA израз (незадължително)", // ai 2026-11
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 // src/Optimize/ImgMeasuring.php, row 54
 "Expression" => "Израз", // ai 2026-10
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 "Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "Оставете празно, за да важат само правилата. Ако е попълнено, полето се показва само когато резултатът не е празен и не е 0. Изчислява се при отваряне на формуляра и при запис на статията.", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Clear the field when a rule hides it" => "Изчисти полето, когато правило го скрие", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "Без отметка: редактираната статия запазва стойността си, новата статия получава стойността по подразбиране на полето. Поле, скрито от израза, никога не се променя.", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 177
+"As a condition of a view" => "Като условие на изглед", // ai 2026-11
+
+// admin/se_showif.php, row 181
 "Used by" => "Използва се от", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 181
 "no field" => "никое поле", // ai 2026-11
 
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 "Save the changes to this condition. They apply to every field that uses it." => "Запишете промените в това условие. Те важат за всяко поле, което го използва.", // ai 2026-11
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 // admin/se_view.php, row 486
 "Save as new" => "Запази като нов", // ai 2026-06
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 "Keep the original condition as it is and save this form as another condition under a new name." => "Оставете първоначалното условие непроменено и запишете този формуляр като друго условие с ново име.", // ai 2026-11
 
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 "Delete the condition. The fields that use it will be shown always." => "Изтрийте условието. Полетата, които го използват, ще се показват винаги.", // ai 2026-11
 
-// admin/se_showif.php, row 180
+// admin/se_showif.php, row 188
 "Delete the condition? The fields that use it will be shown always." => "Да се изтрие ли условието? Полетата, които го използват, ще се показват винаги.", // ai 2026-11
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 // include/formutil.php, row 219, 224, 3009, 3013
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Отказ", // ai 2026-06
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 "Close without saving." => "Затваряне без запис.", // ai 2026-11
 
-// admin/se_showif.php, row 187
+// admin/se_showif.php, row 195
 "How it works" => "Как работи", // ai 2026-11
 
-// admin/se_showif.php, row 188
-"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "„е“ е изпълнено, когато някоя от стойностите на полето е сред отметнатите стойности, „не е“ – когато никоя не е. „е попълнено“ е изпълнено за всяка стойност освен празна и 0, следователно и за отметнато квадратче.", // ai 2026-11
+// admin/se_showif.php, row 196
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. Upper and lower case do not count, accents do. \"is empty\" holds also for a field without a value; in a field stored as a number 0 counts as empty." => "„е“ е изпълнено, когато една от стойностите на полето е сред отметнатите стойности, „не е“ – когато нито една не е. Главните и малките букви нямат значение, диакритиката – има. „е празно“ е изпълнено и за поле без стойност; в поле, съхранявано като число, 0 се смята за празно.", // ai 2026-11
 
-// admin/se_showif.php, row 189
+// admin/se_showif.php, row 197
+"The rules are AA conditions, written as in views. The condition shown below selects nearly the same items in a view; accents and empty values may be compared a little differently. In an AA expression write : as #:." => "Правилата са условия на AA, записани както в изгледите. Показаното по-долу условие избира в изглед почти същите статии; диакритиката и празните стойности може да се сравняват малко по-различно. В израз на AA пишете : като #:.", // ai 2026-11
+
+// admin/se_showif.php, row 198
 "The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "Правилата следват формуляра, докато потребителят го редактира. Изразът се изчислява само при отваряне на формуляра и при запис на статията, винаги върху записаната статия (при нова статия – върху стойностите по подразбиране).", // ai 2026-11
 
-// admin/se_showif.php, row 190
+// admin/se_showif.php, row 199
 "A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "Поле, скрито от правило, се записва празно, освен ако отметката „Изчисти полето“ не е премахната. Полето за парола, датите, статусът и поле, скрито от израза, запазват стойността си.", // ai 2026-11
 
-// admin/se_showif.php, row 191
+// admin/se_showif.php, row 200
 "A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "Поле с условие се показва и скрива от условието, а не от скрипт в „Тригери на полета“.", // ai 2026-11
 
-// admin/se_showif.php, row 192
+// admin/se_showif.php, row 201
 "With an input form template from a view, a field hidden by the expression stays in the source of the page." => "При шаблон на формуляр за въвеждане от изглед поле, скрито от израза, остава в изходния код на страницата.", // ai 2026-11
 
-// admin/se_showif.php, row 193
+// admin/se_showif.php, row 202
 "Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "Условията важат само за формуляра на статията в администрацията. В анонимните формуляри и при импорт задължителното поле е задължително винаги.", // ai 2026-11
 
 // admin/se_statistics.php, row 97
@@ -3264,7 +3283,7 @@ return [
 
 // admin/se_views.php, row 149, 203, 223
 // include/formutil.php, row 1818, 1825
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
 "New" => "Нов", // ai 2026-06
@@ -3307,7 +3326,7 @@ return [
 "View items" => "Преглед на статии", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1429
+// src/Manager.php, row 1420
 "Selected items" => "Избрани статии", // ai 2026-06
 
 // admin/search_replace.php, row 180
@@ -3428,8 +3447,8 @@ return [
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
-// src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1281
+// src/Import/DetailCatalog.php, row 179
+// src/Manager.php, row 239, 1272
 "Add" => "Добави", // ai 2026-06
 
 // admin/slicedel.php, row 51
@@ -3753,7 +3772,7 @@ return [
 "Import into this slice - whatever file says" => "Импорт в тази рубрика - независимо какво казва файлът", // ai 2026-06
 
 // admin/sliceimp.php, row 467
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Dry run" => "Пробно изпълнение", // ai 2026-06
 
 // admin/sliceimp.php, row 469
@@ -4109,29 +4128,29 @@ return [
 "Show selected users" => "Показване на избраните потребители", // ai 2026-06
 
 // admin/write_mail.php, row 124, 274
-// include/mail.php, row 700
+// include/mail.php, row 666
 "Body" => "Текст", // ai 2026-06
 
 // admin/write_mail.php, row 125, 275
 "From (email)" => "От (имейл)", // ai 2026-06
 
 // admin/write_mail.php, row 126, 276
-// include/mail.php, row 702
+// include/mail.php, row 668
 "Reply to (email)" => "Отговор до (имейл)", // ai 2026-06
 
 // admin/write_mail.php, row 127, 277
-// include/mail.php, row 703
+// include/mail.php, row 669
 "Errors to (email)" => "Грешки до (имейл)", // ai 2026-06
 
 // admin/write_mail.php, row 128, 278
 "Sender (email)" => "Подател (имейл)", // ai 2026-06
 
 // admin/write_mail.php, row 129, 279
-// include/mail.php, row 694
+// include/mail.php, row 658
 "Language (charset)" => "Език (кодировка)", // ai 2026-06
 
 // admin/write_mail.php, row 130, 280
-// include/mail.php, row 692
+// include/mail.php, row 656
 "Use HTML" => "Използване на HTML", // ai 2026-06
 
 // admin/write_mail.php, row 131, 271
@@ -4142,8 +4161,8 @@ return [
 
 // admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
-// src/Import/Definition.php, row 92
-// src/Import/DetailConfig.php, row 394
+// src/Import/Definition.php, row 93
+// src/Import/DetailConfig.php, row 385
 "Filter" => "Филтър", // ai 2026-06
 
 // admin/write_mail.php, row 188
@@ -4398,8 +4417,8 @@ return [
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
 // include/logs.php, row 1213
-// src/Import/Definition.php, row 85, 113
-// src/Import/DetailConfig.php, row 188, 202
+// src/Import/Definition.php, row 86, 114
+// src/Import/DetailConfig.php, row 171, 185
 // src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "Източник", // ai 2026-06
@@ -4829,19 +4848,19 @@ return [
 "Transferring the items" => "Прехвърляне на статиите", // ai 2026-10
 
 // central/installapp.php, row 1368
-// central/optimize.php, row 261
+// central/optimize.php, row 260
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Спряно поради грешка", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 259
+// central/optimize.php, row 258
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Завършено", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 260
+// central/optimize.php, row 259
 "Ended" => "Прекратено", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -4905,13 +4924,13 @@ return [
 "Show the final check" => "Покажи окончателната проверка", // ai 2026-10
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 206
-// src/Import/DetailPage.php, row 938, 947
+// central/optimize.php, row 205
+// src/Import/DetailPage.php, row 989, 998
 "Continue" => "Продължи", // ai 2026-06
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 207
-// src/Import/DetailPage.php, row 958
+// central/optimize.php, row 206
+// src/Import/DetailPage.php, row 1009
 "End" => "Прекрати", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
@@ -4935,7 +4954,7 @@ return [
 // central/optimize.php, row 85
 "An AA may still be asked - press Continue again in a few minutes." => "Някое AA може все още да бъде запитвано – натиснете отново „Продължи“ след няколко минути.", // ai 2026-11
 
-// central/optimize.php, row 86, 187
+// central/optimize.php, row 86, 186
 "No such run." => "Няма такова изпълнение.", // ai 2026-11
 
 // central/optimize.php, row 87
@@ -4956,7 +4975,7 @@ return [
 // central/optimize.php, row 140
 "Run an Optimize task on several AAs" => "Изпълнение на задача от „Оптимизиране“ на няколко AA", // ai 2026-11
 
-// central/optimize.php, row 148, 171
+// central/optimize.php, row 148, 170
 // src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckOptimizeRuns.php, row 55
 // src/Optimize/CheckQueue.php, row 98, 178
@@ -4971,65 +4990,65 @@ return [
 // central/optimize.php, row 151
 "Repair tests first, repairs only where the test fails, then tests again." => "Поправката първо тества, поправя само там, където тестът се провали, и после тества отново.", // ai 2026-11
 
-// central/optimize.php, row 153, 210
+// central/optimize.php, row 153, 209
 // include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// central/optimize.php, row 159
+// central/optimize.php, row 158
 "An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "AA без валиден токен не отговаря – първо вземете токена му в списъка в Central (валиден е един ден).", // ai 2026-11
 
-// central/optimize.php, row 160
+// central/optimize.php, row 159
 "Start" => "Старт", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Last runs" => "Последни изпълнения", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 // src/Optimize/CheckImports.php, row 151, 155
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Optimize/CheckOptimizeRuns.php, row 54
 "Started" => "Начало", // ai 2026-10
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Results" => "Резултати", // ai 2026-11
 
-// central/optimize.php, row 197
+// central/optimize.php, row 196
 "Started %1 by %2" => "Стартирано на %1 от %2", // ai 2026-11
 
-// central/optimize.php, row 198
+// central/optimize.php, row 197
 "%1 of %2 AAs done" => "Готови AA: %1 от %2", // ai 2026-11
 
-// central/optimize.php, row 208
+// central/optimize.php, row 207
 "The run goes on in the task queue of this AA - you may close this page." => "Изпълнението продължава в опашката със задачи на това AA – можете да затворите тази страница.", // ai 2026-11
 
-// central/optimize.php, row 210, 229
+// central/optimize.php, row 209, 228
 "Report" => "Отчет", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Waiting" => "Изчаква", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Not asked" => "Не е запитано", // ai 2026-11
 
-// central/optimize.php, row 225
+// central/optimize.php, row 224
 "The test after the repair comes next." => "Следва тестът след поправката.", // ai 2026-11
 
-// central/optimize.php, row 232
+// central/optimize.php, row 231
 "The test after the repair" => "Тестът след поправката", // ai 2026-11
 
-// central/optimize.php, row 242
+// central/optimize.php, row 241
 "Another run" => "Ново изпълнение", // ai 2026-11
 
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 "OK - nothing to repair" => "OK – няма нищо за поправяне", // ai 2026-11
 
-// central/optimize.php, row 249
+// central/optimize.php, row 248
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
 // src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
@@ -5038,37 +5057,37 @@ return [
 // src/Optimize/StateCheckModel.php, row 219
 "Problem" => "Проблем", // ai 2026-10
 
-// central/optimize.php, row 250
+// central/optimize.php, row 249
 "Repaired" => "Поправено", // ai 2026-11
 
-// central/optimize.php, row 251
+// central/optimize.php, row 250
 "Repair failed" => "Неуспешна поправка", // ai 2026-11
 
-// central/optimize.php, row 252
+// central/optimize.php, row 251
 "Not done" => "Не е изпълнено", // ai 2026-11
 
-// central/optimize.php, row 262
+// central/optimize.php, row 261
 "No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "Отдавна не е дошла нова стъпка – работи ли опашката със задачи на това AA? „Продължи“ опитва веднага.", // ai 2026-11
 
-// central/optimize.php, row 263
+// central/optimize.php, row 262
 "Waiting to ask an AA again" => "Изчаква повторно запитване към AA", // ai 2026-11
 
-// central/optimize.php, row 264
+// central/optimize.php, row 263
 "Running in the task queue" => "Изпълнява се в опашката със задачи", // ai 2026-11
 
-// central/optimize.php, row 274
+// central/optimize.php, row 273
 "%1 runs another update now." => "%1 изпълнява друга актуализация в момента.", // ai 2026-11
 
-// central/optimize.php, row 275
+// central/optimize.php, row 274
 "%1 did not answer in time." => "%1 не отговори навреме.", // ai 2026-11
 
-// central/optimize.php, row 276
+// central/optimize.php, row 275
 "The user who started the run is no superadmin any more." => "Потребителят, стартирал изпълнението, вече не е суперадминистратор.", // ai 2026-11
 
-// central/optimize.php, row 277
+// central/optimize.php, row 276
 "Error %1" => "Грешка %1", // ai 2026-11
 
-// central/optimize.php, row 279
+// central/optimize.php, row 278
 "Asked again at %1 - Continue asks now." => "Повторно запитване в %1 – „Продължи“ пита веднага.", // ai 2026-11
 
 // central/responder.php, row 112
@@ -5552,7 +5571,7 @@ return [
 "Level count" => "Брой нива", // ai 2026-06
 
 // include/constedit_util.php, row 137, 140
-// src/Import/Definition.php, row 140
+// src/Import/Definition.php, row 141
 "Select" => "Избери", // ai 2026-06
 
 // include/constedit_util.php, row 599
@@ -5967,7 +5986,7 @@ return [
 
 // include/formutil.php, row 1829
 // include/menu.php, row 141
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Промени", // ai 2026-06
 
@@ -5981,7 +6000,7 @@ return [
 
 // include/formutil.php, row 2223
 // include/stringexpand.php, row 11543, 11566
-// src/Import/DetailCatalog.php, row 150
+// src/Import/DetailCatalog.php, row 178
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "нов", // ai 2026-06
@@ -6237,7 +6256,7 @@ return [
 "Short ID" => "Кратко ID", // ai 2026-06
 
 // include/itemfunc.php, row 204
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 "Details" => "Подробности", // ai 2026-06
 
 // include/itemfunc.php, row 245
@@ -6640,7 +6659,7 @@ return [
 "Checks" => "Проверки", // ai 2026-10
 
 // include/logs.php, row 796, 827
-// src/Import/DetailPage.php, row 300, 367, 800
+// src/Import/DetailPage.php, row 324, 391, 840
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Стартирай", // ai 2026-10
@@ -6677,7 +6696,7 @@ return [
 
 // include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 825
+// src/Manager.php, row 816
 "Module ID" => "ID на модула", // ai 2026-06
 
 // include/logs.php, row 921
@@ -6717,7 +6736,7 @@ return [
 "Items planned" => "Планирани елементи", // ai 2026-06
 
 // include/logs.php, row 1095
-// src/Import/DetailPage.php, row 1025
+// src/Import/DetailPage.php, row 1076
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Съобщение", // ai 2026-06
 
@@ -6740,13 +6759,13 @@ return [
 "Collection" => "Колекция", // ai 2026-06
 
 // include/logs.php, row 1123, 1174, 1186, 1321
-// src/Import/Definition.php, row 154
+// src/Import/Definition.php, row 155
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Детайл", // ai 2026-06
 
 // include/logs.php, row 1173
-// src/Import/Definition.php, row 135, 162
+// src/Import/Definition.php, row 136, 163
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Статус", // ai 2026-06
 
@@ -6760,7 +6779,7 @@ return [
 "Errors" => "Грешки", // ai 2026-06
 
 // include/logs.php, row 1240
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Outcome" => "Резултат", // ai 2026-06
 
 // include/logs.php, row 1256
@@ -6783,29 +6802,29 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "Причина", // ai 2026-10
 
-// include/mail.php, row 693
+// include/mail.php, row 657
 "Email type" => "Тип имейл", // ai 2026-06
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 "— all modules (global) —" => "— всички модули (глобално) —", // ai 2026-10
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Собственик", // ai 2026-06
 
-// include/mail.php, row 698
+// include/mail.php, row 662
 "Description/Result" => "Описание/Резултат", // ai 2026-06
 
-// include/mail.php, row 701
+// include/mail.php, row 667
 "From (email) " => "От (имейл)", // ai 2026-06
 
-// include/mail.php, row 704
+// include/mail.php, row 670
 "Envelop sender (email)" => "Подател на плика (имейл)", // ai 2026-06
 
-// include/mail.php, row 705
+// include/mail.php, row 671
 // misc/datovka/datovka.php, row 156
 "Attachments" => "Прикачени файлове", // ai 2026-06
 
@@ -6874,8 +6893,8 @@ return [
 "Filters" => "Филтри", // ai 2026-06
 
 // include/menu.php, row 159
-// src/Import/Definition.php, row 87
-// src/Import/DetailConfig.php, row 359
+// src/Import/Definition.php, row 88
+// src/Import/DetailConfig.php, row 350
 "Mapping" => "Съпоставяне", // ai 2026-06
 
 // include/menu.php, row 160, 224
@@ -6984,7 +7003,7 @@ return [
 "Slice structure" => "Структура на рубриката", // ai 2026-06
 
 // include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
+// src/Import/Definition.php, row 136, 162
 // src/Optimize/CheckImportStores.php, row 53
 // src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "Импорт", // ai 2026-06
@@ -7068,7 +7087,7 @@ return [
 "What's working, what isn't — tell the AA team." => "Какво работи и какво не — кажете на екипа на AA.", // ai 2026-06
 
 // include/menu_util.php, row 632
-// src/Import/Definition.php, row 86
+// src/Import/Definition.php, row 87
 "Settings" => "Настройки", // ai 2026-06
 
 // include/menu_util.php, row 635
@@ -7143,7 +7162,7 @@ return [
 "Array returned" => "Върнат е масив", // ai 2026-06
 
 // include/scroller.php, row 87
-// src/Import/DetailPage.php, row 420
+// src/Import/DetailPage.php, row 451
 "Previous" => "Предишни", // ai 2026-06
 
 // include/scroller.php, row 296
@@ -7192,10 +7211,6 @@ return [
 
 // include/searchbar.class.php, row 566
 "And" => "И", // ai 2026-06
-
-// include/searchbar.class.php, row 580
-// include/searchlib.php, row 53, 56, 129, 138
-"begins with" => "започва с", // ai 2026-06
 
 // include/searchbar.class.php, row 608
 "Clear" => "Изчисти", // ai 2026-06
@@ -7273,7 +7288,7 @@ return [
 // include/statestore.php, row 1367
 "select ..." => "изберете ...", // ai 2026-06
 
-// include/searchlib.php, row 371
+// include/searchlib.php, row 448
 "Limit" => "Лимит", // ai 2026-06
 
 // include/slice.class.php, row 428
@@ -8097,7 +8112,7 @@ return [
 "page length (number of items)" => "дължина на страницата (брой статии)", // ai 2026-06
 
 // slice.php, row 621
-// src/Manager.php, row 890
+// src/Manager.php, row 881
 "No item found" => "Не е намерена статия", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 72
@@ -8208,43 +8223,43 @@ return [
 // src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Само редакторите на рубриката могат да разглеждат файловете ѝ", // ai 2026-10
 
-// src/Central/Actionapps.php, row 185
+// src/Central/Actionapps.php, row 180
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Това PHP няма AES-GCM (sodium) – токенът за вход не може да бъде съхранен криптиран", // ai 2026-10
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not configured" => "Не е конфигурирано", // ai 2026-06
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not authenticated - get a token" => "Не е удостоверено – получете токен", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Authenticated until %1" => "Удостоверено до %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Expired - get a token" => "Изтекло – получете токен", // ai 2026-10
 
-// src/Central/Actionapps.php, row 245
+// src/Central/Actionapps.php, row 236
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "Отдалеченото AA отказа входа: грешно потребителско име или парола, акаунт с двуфакторен вход (Central все още не може да изпрати кода) или потребителят там не е суперадминистратор", // ai 2026-11
 
-// src/Central/Actionapps.php, row 247
+// src/Central/Actionapps.php, row 238
 "The remote AA gave no login token - update it" => "Отдалеченото AA не даде токен за вход – обновете го", // ai 2026-10
 
-// src/Central/Actionapps.php, row 248
+// src/Central/Actionapps.php, row 239
 "The remote AA gave a token for longer than a day - update the remote AA" => "Отдалеченото AA даде токен за повече от един ден – обновете отдалеченото AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 284
+// src/Central/Actionapps.php, row 275
 "Can't get org_name - " => "Не може да се получи org_name -", // ai 2026-06
 
-// src/Central/Actionapps.php, row 338
+// src/Central/Actionapps.php, row 329
 "Unexpected response from remote AA" => "Неочакван отговор от отдалеченото AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 341
+// src/Central/Actionapps.php, row 332
 "This AA does not support this command (update it first)" => "Това AA не поддържа тази команда (първо го обновете)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 344
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Съхраненият токен за вход не може да се използва (променени са AA_SECRET, паролата за базата данни или адресът на това AA) – удостоверете това AA отново на страницата ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 354
+// src/Central/Actionapps.php, row 345
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Няма токен за вход за това AA – използвайте „Удостоверяване“ на страницата ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -9370,22 +9385,28 @@ return [
 // src/Credential/Store.php, row 55
 "set (%1)" => "зададено (%1)", // ai 2026-10
 
-// src/Form/ShowConditions.php, row 317
+// src/Form/ShowConditions.php, row 354
 "Fill in the name of the condition." => "Попълнете името на условието.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 321
+// src/Form/ShowConditions.php, row 358
 "Another condition of this slice is called %1." => "Друго условие в тази рубрика се казва %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 333
+// src/Form/ShowConditions.php, row 371
 "The field %1 is not in this slice." => "Полето %1 не е в тази рубрика.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 335
+// src/Form/ShowConditions.php, row 373
 "Choose how to compare the field %1." => "Изберете как да се сравнява полето %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 337
+// src/Form/ShowConditions.php, row 375
 "Fill in the values of the field %1." => "Попълнете стойностите на полето %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 344
+// src/Form/ShowConditions.php, row 377
+"A value of the field %1 contains both kinds of quotes." => "Стойност на полето %1 съдържа и двата вида кавички.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 380
+"The value of the field %1 must not contain a backslash." => "Стойността на полето %1 не трябва да съдържа обратна наклонена черта.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 393
 "Add a rule or an expression." => "Добавете правило или израз.", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
@@ -9403,7 +9424,7 @@ return [
 // src/IO/Grabber/CSV.php, row 94
 // src/IO/Grabber/JsonLD.php, row 104
 // src/IO/Grabber/XML.php, row 108
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "URL of the file" => "URL на файла", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 95
@@ -9577,835 +9598,874 @@ return [
 // src/IO/OnPageChanger.php, row 55
 "No permission - no user is authenticated. Try to relogin, please." => "Няма права - не е удостоверен потребител. Моля, опитайте да влезете отново.", // ai 2026-06
 
-// src/Import/Definition.php, row 88
-// src/Import/DetailConfig.php, row 390
+// src/Import/Definition.php, row 89
+// src/Import/DetailConfig.php, row 381
 "Key fields" => "Ключови полета", // ai 2026-10
 
-// src/Import/Definition.php, row 89
-// src/Import/DetailConfig.php, row 391
+// src/Import/Definition.php, row 90
+// src/Import/DetailConfig.php, row 382
 "Store mode" => "Начин на запис", // ai 2026-10
 
-// src/Import/Definition.php, row 90
-// src/Import/DetailConfig.php, row 392
+// src/Import/Definition.php, row 91
+// src/Import/DetailConfig.php, row 383
 "Validation" => "Валидиране", // ai 2026-10
 
-// src/Import/Definition.php, row 91
-// src/Import/DetailConfig.php, row 393
+// src/Import/Definition.php, row 92
+// src/Import/DetailConfig.php, row 384
 "After a stream" => "След потока", // ai 2026-10
 
-// src/Import/Definition.php, row 93
-// src/Import/DetailPage.php, row 604
+// src/Import/Definition.php, row 94
 // src/Optimize/CheckImports.php, row 215
 "Enabled" => "Включен", // ai 2026-10
 
-// src/Import/Definition.php, row 113
+// src/Import/Definition.php, row 114
 "The source is changed in the import detail." => "Източникът се променя в детайлите на импорта.", // ai 2026-10
 
-// src/Import/Definition.php, row 129
+// src/Import/Definition.php, row 130
 "The slice has no import yet." => "Рубриката все още няма импорт.", // ai 2026-10
 
-// src/Import/Definition.php, row 135, 164
+// src/Import/Definition.php, row 136, 165
 "Next plan" => "Следващо изпълнение", // ai 2026-10
 
-// src/Import/Definition.php, row 367
-"None - the import is disabled" => "Няма – импортът е изключен", // ai 2026-10
+// src/Import/Definition.php, row 372
+// src/Import/DetailPage.php, row 766, 772
+"Not planned" => "Не е планиран", // ai 2026-10
 
-// src/Import/Definition.php, row 370
+// src/Import/Definition.php, row 375
 "Not planned - no task starts it" => "Не е планиран – никоя задача не го стартира", // ai 2026-10
 
-// src/Import/Definition.php, row 423
+// src/Import/Definition.php, row 428
 "The import needs a name." => "Импортът трябва да има име.", // ai 2026-10
 
-// src/Import/Definition.php, row 427
+// src/Import/Definition.php, row 432
 "The name of an import may not contain a colon (:) or look like an id." => "Името на импорта не може да съдържа двоеточие (:) или да изглежда като идентификатор.", // ai 2026-10
 
-// src/Import/Definition.php, row 430
+// src/Import/Definition.php, row 435
 "Another import of the slice has this name." => "Друг импорт на рубриката има това име.", // ai 2026-10
 
-// src/Import/Definition.php, row 438
+// src/Import/Definition.php, row 443
 "Change the source in the import detail." => "Променете източника в детайлите на импорта.", // ai 2026-10
 
-// src/Import/Definition.php, row 446
-// src/Import/DetailPage.php, row 545
+// src/Import/Definition.php, row 451
+// src/Import/DetailPage.php, row 584
 "Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "Импортите не могат да се изпълняват тук: техните таблици в базата данни (object_text, toexecute) не поддържат транзакции (InnoDB).", // ai 2026-10
 
-// src/Import/Definition.php, row 455
+// src/Import/Definition.php, row 460
 "The mapping of the import is not valid." => "Съпоставянето на импорта не е валидно.", // ai 2026-10
 
-// src/Import/Definition.php, row 477
+// src/Import/Definition.php, row 482
 "The import source refused these settings: %1" => "Източникът на импорта отхвърли тези настройки: %1", // ai 2026-10
 
-// src/Import/Definition.php, row 480
-"Only a user who manages the feeding of the slice may change its imports." => "Само потребител, който управлява обмена на статии на рубриката, може да променя нейните импорти.", // ai 2026-10
-
-// src/Import/Definition.php, row 481
-"This import uses API keys, so only a superadmin may change or delete it." => "Този импорт използва API ключове, затова само суперадминистратор може да го променя или изтрива.", // ai 2026-10
-
 // src/Import/Definition.php, row 482
-"The import was not saved - it is not an import of this slice." => "Импортът не беше записан – това не е импорт на тази рубрика.", // ai 2026-10
-
-// src/Import/Definition.php, row 483
-// src/Import/DetailPage.php, row 546
-"The import source is not available." => "Източникът на импорта не е достъпен.", // ai 2026-10
-
-// src/Import/Definition.php, row 484
-"The import source did not give its mapping." => "Източникът на импорта не предостави своето съпоставяне.", // ai 2026-10
+"The setting \"%1\" of the import source is not valid: %2" => "Настройката „%1“ на източника за импорт не е валидна: %2", // ai 2026-11
 
 // src/Import/Definition.php, row 485
-"The mapping of the import does not fit the slice." => "Съпоставянето на импорта не отговаря на рубриката.", // ai 2026-10
+"Only a user who manages the feeding of the slice may change its imports." => "Само потребител, който управлява обмена на статии на рубриката, може да променя нейните импорти.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
-// src/Import/DetailPage.php, row 548
-"A setting of the import source is not valid." => "Настройка на източника на импорта не е валидна.", // ai 2026-10
-
-// src/Import/Definition.php, row 486
-"The setting \"%1\" of the import source is not valid." => "Настройката „%1“ на източника на импорта не е валидна.", // ai 2026-10
+"This import uses API keys, so only a superadmin may change or delete it." => "Този импорт използва API ключове, затова само суперадминистратор може да го променя или изтрива.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
-// src/Import/DetailPage.php, row 549
-"The settings name a slice whose feeding you do not manage." => "Настройките посочват рубрика, чийто обмен на статии не управлявате.", // ai 2026-10
-
-// src/Import/Definition.php, row 487
-"The setting \"%1\" names a slice whose feeding you do not manage." => "Настройката „%1“ посочва рубрика, чийто обмен на статии не управлявате.", // ai 2026-10
+"The import was not saved - it is not an import of this slice." => "Импортът не беше записан – това не е импорт на тази рубрика.", // ai 2026-10
 
 // src/Import/Definition.php, row 488
-"The settings of the import changed meanwhile. Reload the page and set them again." => "Настройките на импорта междувременно са променени. Презаредете страницата и ги задайте отново.", // ai 2026-10
+// src/Import/DetailPage.php, row 585
+"The import source is not available." => "Източникът на импорта не е достъпен.", // ai 2026-10
 
 // src/Import/Definition.php, row 489
+"The import source did not give its mapping." => "Източникът на импорта не предостави своето съпоставяне.", // ai 2026-10
+
+// src/Import/Definition.php, row 490
+"The mapping of the import does not fit the slice." => "Съпоставянето на импорта не отговаря на рубриката.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+// src/Import/DetailPage.php, row 587
+"A setting of the import source is not valid." => "Настройка на източника на импорта не е валидна.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+"The setting \"%1\" of the import source is not valid." => "Настройката „%1“ на източника на импорта не е валидна.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+// src/Import/DetailPage.php, row 588
+"The settings name a slice whose feeding you do not manage." => "Настройките посочват рубрика, чийто обмен на статии не управлявате.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+"The setting \"%1\" names a slice whose feeding you do not manage." => "Настройката „%1“ посочва рубрика, чийто обмен на статии не управлявате.", // ai 2026-10
+
+// src/Import/Definition.php, row 493
+"The settings of the import changed meanwhile. Reload the page and set them again." => "Настройките на импорта междувременно са променени. Презаредете страницата и ги задайте отново.", // ai 2026-10
+
+// src/Import/Definition.php, row 494
 "The import source refused these settings." => "Източникът на импорта отхвърли тези настройки.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 31
+// src/Import/DetailCatalog.php, row 33
 "No catalog yet. Check source lists what the source offers." => "Все още няма каталог. Какво предлага източникът, ще изброи бутонът „Проверка на източника“.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 37
+// src/Import/DetailCatalog.php, row 39
 "The stored catalog cannot be read. The next check of the source lists it again." => "Съхраненият каталог не може да бъде прочетен. Следващата проверка на източника ще го изброи отново.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 41
+// src/Import/DetailCatalog.php, row 48
 "The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "Каталогът е непълен: последната проверка не го изброи целия (записи досега: %1). Докато проверка не го изброи изцяло, нищо не се отчита като липсващо в източника.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 42
+// src/Import/DetailCatalog.php, row 49
 "Listed by the check of %1: %2 entries." => "Проверката от %1 изброи записи: %2.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 47
+// src/Import/DetailCatalog.php, row 54
 "Pages of the catalog" => "Страници на каталога", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 74
+// src/Import/DetailCatalog.php, row 55
+"%1 entries, %2 can be added" => "записи: %1, могат да се добавят: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 55
+"%1 entries" => "записи: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 58
+"%1 missing at the source" => "липсват в източника: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 61
+"%1 renamed at the source" => "преименувани в източника: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 90
 "The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "Потокът беше добавен или обновен от каталога. Потоците на импорта ще го покажат след следващата проверка на източника.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 75
+// src/Import/DetailCatalog.php, row 91
 "The catalog has no such entry. Check the source to list its catalog again." => "Каталогът няма такъв запис. Проверете източника, за да се изброи каталогът му отново.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 76, 77
+// src/Import/DetailCatalog.php, row 92, 93
 "Nothing was added from the catalog:" => "От каталога не беше добавено нищо:", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 85
+// src/Import/DetailCatalog.php, row 101
 "This import uses API keys, so only a superadmin may add streams from its catalog." => "Този импорт използва API ключове, затова само суперадминистратор може да добавя потоци от неговия каталог.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 86
+// src/Import/DetailCatalog.php, row 102
 "Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "Добавянето от каталога изисква право за редактиране на всички статии на рубриката, в която източникът добавя своите потоци.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 87
+// src/Import/DetailCatalog.php, row 103
 "The import source cannot add streams from its catalog." => "Източникът на импорта не може да добавя потоци от своя каталог.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 88
+// src/Import/DetailCatalog.php, row 104
 "The import source could not be reached or did not answer. Try again later." => "Източникът на импорта е недостъпен или не отговори. Опитайте отново по-късно.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 102
+// src/Import/DetailCatalog.php, row 118
 "1 entry is new at the source - no stream comes from it." => "1 запис е нов в източника – от него не идва никакъв поток.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 103
+// src/Import/DetailCatalog.php, row 119
 "%1 entries are new at the source - no stream comes from them." => "Нови записи в източника: %1 – от тях не идва никакъв поток.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Missing at the source" => "Липсва в източника", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Renamed at the source" => "Преименуван в източника", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124, 143
-// src/Import/DetailPage.php, row 377, 1025, 1046
+// src/Import/DetailCatalog.php, row 140, 169
+// src/Import/DetailPage.php, row 401, 1076, 1097
 "Stream" => "Поток", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Catalog key" => "Ключ в каталога", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name of the stream" => "Име на потока", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name in the catalog" => "Име в каталога", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailCatalog.php, row 166
+"%1 entries on this page cannot be added or updated: %2" => "Записи на тази страница, които не могат да се добавят или обновят: %1. Причина: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailConfig.php, row 282
 "Key" => "Ключ", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailPage.php, row 353, 706
 "Updated" => "Обновени", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 171
+// src/Import/DetailCatalog.php, row 198
+"%1 of %2 entries on this page" => "Записи на тази страница: %1 от %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 199
+"Filter this page" => "Филтър за страницата", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 200
+"Only entries that can be added" => "Само записи, които могат да се добавят", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 207
 "Catalog of the source" => "Каталог на източника", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 136
+// src/Import/DetailConfig.php, row 119
 "The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "Съпоставянето беше зададено отново от източника. Това, което импортът знаеше за потоците – версии, времена на импорт и последната проверка на източника, – беше изтрито, така че следващото изпълнение ще ги прочете всички отново.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 137
+// src/Import/DetailConfig.php, row 120
 "The mapping is the same as the source gives - nothing changed." => "Съпоставянето е същото като зададеното от източника – нищо не е променено.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 138, 139
+// src/Import/DetailConfig.php, row 121, 122
 "The mapping was not reset:" => "Съпоставянето не беше възстановено:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 140
+// src/Import/DetailConfig.php, row 123
 "The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "Настройките бяха запазени и съпоставянето беше зададено отново от източника. Ако имаше отворено изпълнение, то беше прекратено, а това, което импортът знаеше за потоците, беше изтрито.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 141
+// src/Import/DetailConfig.php, row 124
 "The settings are the same as stored - nothing changed." => "Настройките са същите като запазените – нищо не е променено.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 142
+// src/Import/DetailConfig.php, row 125
 // src/Isds/Registry/Page.php, row 326
 "The settings were not saved:" => "Настройките не бяха запазени:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 144
+// src/Import/DetailConfig.php, row 127
 "Choose a source." => "Изберете източник.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 155, 179
+// src/Import/DetailConfig.php, row 138, 162
 "Settings of the source" => "Настройки на източника", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 159
+// src/Import/DetailConfig.php, row 142
 "Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "Планираните стартирания все още използват запазените настройки; за да стартирате импорта ръчно, променете ги в %1 по-долу.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 161
+// src/Import/DetailConfig.php, row 144
 "Change the settings or the source in %1 below." => "Променете настройките или източника в %1 по-долу.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 188
+// src/Import/DetailConfig.php, row 171
 "No other source is available." => "Няма друг наличен източник.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 192
+// src/Import/DetailConfig.php, row 175
 "(current)" => "(текущ)", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 203
+// src/Import/DetailConfig.php, row 186
 "Show its settings" => "Покажи настройките му", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 204
+// src/Import/DetailConfig.php, row 187
 "Keep the current source" => "Запази текущия източник", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 214
+// src/Import/DetailConfig.php, row 196
 "This source is not available, so its settings cannot be shown. Choose another source above." => "Този източник не е наличен, затова настройките му не могат да бъдат показани. Изберете друг източник по-горе.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 222
+// src/Import/DetailConfig.php, row 204
 "The stored settings cannot be read; saving the form stores them again." => "Запазените настройки не могат да бъдат прочетени; запазването на формуляра ще ги запише отново.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 228
+// src/Import/DetailConfig.php, row 209
 "The source did not describe its settings, so they cannot be changed now." => "Източникът не е описал настройките си, затова те не могат да бъдат променени сега.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 232
+// src/Import/DetailConfig.php, row 214
 "You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "Променяте източника от %1 на %2. Запазването ще прекрати отвореното изпълнение, ще изтрие това, което импортът знае за потоците и каталога, и ще вземе съпоставянето от новия източник.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 233
+// src/Import/DetailConfig.php, row 215
 "Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "Да се смени ли източникът? Отвореното изпълнение ще бъде прекратено, това, което импортът знае за потоците, ще бъде изтрито, а съпоставянето ще бъде взето от новия източник.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 234
+// src/Import/DetailConfig.php, row 216
 "Change the source and save" => "Смени източника и запази", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 236
+// src/Import/DetailConfig.php, row 218
 "Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "Запазването на променени настройки прекратява отвореното изпълнение, изтрива това, което импортът знае за потоците и каталога, и задава отново съпоставянето от източника. Непроменените настройки не променят нищо.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 237
+// src/Import/DetailConfig.php, row 219
 "Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "Да се запазят ли настройките? Ако са променени, отвореното изпълнение ще бъде прекратено, това, което импортът знае за потоците, ще бъде изтрито, а съпоставянето ще бъде зададено отново от източника.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 238
+// src/Import/DetailConfig.php, row 220
 // src/Isds/Registry/Page.php, row 617
 "Save the settings" => "Запази настройките", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 272
+// src/Import/DetailConfig.php, row 263
 "The source has no settings." => "Източникът няма настройки.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 283
+// src/Import/DetailConfig.php, row 274
 "Keys" => "Ключове", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 285
+// src/Import/DetailConfig.php, row 276
 "The source did not say which keys it needs." => "Източникът не е посочил кои ключове са му нужни.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 288
+// src/Import/DetailConfig.php, row 279
 "The source needs no key." => "Източникът не се нуждае от ключ.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailConfig.php, row 282
 // src/Widget/Widget.php, row 848
 "Hint" => "Подсказка", // ai 2026-06
 
-// src/Import/DetailConfig.php, row 297
+// src/Import/DetailConfig.php, row 288
 "Key is set" => "Ключът е зададен", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 298
+// src/Import/DetailConfig.php, row 289
 "Key is damaged" => "Ключът е повреден", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 299
+// src/Import/DetailConfig.php, row 290
 "Key is missing" => "Ключът липсва", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 305
+// src/Import/DetailConfig.php, row 296
 "The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "Ключовете се задават от администратора на сървъра в config.php, никога тук. Без ключа си източникът се проваля, когато има нужда от него; повреденият ключ съдържа нов ред и никога не се изпраща.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 327
+// src/Import/DetailConfig.php, row 318
 "define one of %1 in config.php" => "задайте една от %1 в config.php", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 350
+// src/Import/DetailConfig.php, row 341
 "The mapping of the import cannot be read. Reset it from the source." => "Съпоставянето на импорта не може да бъде прочетено. Възстановете го от източника.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 356
+// src/Import/DetailConfig.php, row 347
 "Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "Да се възстанови ли съпоставянето от източника? Съпоставянето, ключовите полета, режимът на запис, валидирането, изразът след поток и филтърът ще бъдат заменени с това, което дава източникът.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 357
+// src/Import/DetailConfig.php, row 348
 "Reset mapping from the source" => "Възстанови съпоставянето от източника", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 358
+// src/Import/DetailConfig.php, row 349
 "Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Задава отново съпоставянето, ключовите полета, режима на запис, валидирането, израза след поток и филтъра така, както ги дава източникът за запазените настройки. Новото съпоставяне изтрива това, което импортът знаеше за потоците, така че следващото изпълнение ще ги прочете всички отново. Не е възможно, докато има отворено изпълнение, спряно от грешка или все още завършващо.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 366
+// src/Import/DetailConfig.php, row 357
 "The mapping has no rows." => "Съпоставянето няма редове.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Target" => "Цел", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Transformation" => "Преобразуване", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 379
+// src/Import/DetailConfig.php, row 370
 "the field the job parameter names" => "полето, посочено от параметъра на задачата", // ai 2026-10
 
-// src/Import/DetailPage.php, row 269
+// src/Import/DetailPage.php, row 293
 "This page is out of date – reload it." => "Тази страница е остаряла – заредете я отново.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 282
+// src/Import/DetailPage.php, row 306
 "Last import" => "Последен импорт", // ai 2026-10
 
-// src/Import/DetailPage.php, row 283
+// src/Import/DetailPage.php, row 307
 "Next start" => "Следващо стартиране", // ai 2026-10
 
-// src/Import/DetailPage.php, row 284
+// src/Import/DetailPage.php, row 308
 "Last check of the source" => "Последна проверка на източника", // ai 2026-10
 
-// src/Import/DetailPage.php, row 290
+// src/Import/DetailPage.php, row 314
 "Overview" => "Преглед", // ai 2026-10
 
-// src/Import/DetailPage.php, row 300
+// src/Import/DetailPage.php, row 324
 "Imports every stream." => "Импортира всички потоци.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301, 801
+// src/Import/DetailPage.php, row 325, 841
 "Run changed only" => "Стартирай само променените", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301
+// src/Import/DetailPage.php, row 325
 "Skips the streams the source says did not change." => "Пропуска потоците, които според източника не са променени.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302, 367, 802
+// src/Import/DetailPage.php, row 326, 391, 842
 "Check source" => "Провери източника", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302
+// src/Import/DetailPage.php, row 326
 "Asks the source whether it works. Stores nothing." => "Пита източника дали работи. Не записва нищо.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Reads up to 500 items and shows what it would store. Stores nothing." => "Прочита до 500 статии и показва какво би записал. Не записва нищо.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 309
+// src/Import/DetailPage.php, row 333
 "More actions" => "Още действия", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327, 352
+// src/Import/DetailPage.php, row 351, 376
 "Runs" => "Изпълнения", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327
+// src/Import/DetailPage.php, row 351
 "No run yet." => "Все още няма изпълнение.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Took" => "Времетраене", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Read" => "Прочетени", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Skipped" => "Пропуснати", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Filtered out" => "Филтрирани", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Item errors" => "Грешки в статии", // ai 2026-10
 
-// src/Import/DetailPage.php, row 342
+// src/Import/DetailPage.php, row 366
 "working %1" => "в т.ч. работа %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 366
+// src/Import/DetailPage.php, row 390
 "The stored state of the streams cannot be read." => "Запазеното състояние на потоците не може да бъде прочетено.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 367
+// src/Import/DetailPage.php, row 391
 "No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Все още не е импортиран или проверен нито един поток. Списъкът ще се попълни чрез %1 или %2 (Действия, по-горе).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 368, 396
+// src/Import/DetailPage.php, row 392, 421
 "Streams" => "Потоци", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Records" => "Записи", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Last recorded" => "Последен запис", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Source checked" => "Проверка на източника", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Data version" => "Версия на данните", // ai 2026-10
 
-// src/Import/DetailPage.php, row 390
+// src/Import/DetailPage.php, row 415
 "by the run started %1" => "от изпълнението, стартирано на %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 395
+// src/Import/DetailPage.php, row 420
 "Pages of the streams" => "Страници на потоците", // ai 2026-10
 
-// src/Import/DetailPage.php, row 421
+// src/Import/DetailPage.php, row 452
 "Page %1 of %2" => "Страница %1 от %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 507
+// src/Import/DetailPage.php, row 545
 "The run is queued. It goes on in the background; reload the page to see how far it got." => "Изпълнението е поставено в опашката. То продължава във фонов режим; презаредете страницата, за да видите докъде е стигнало.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 508
+// src/Import/DetailPage.php, row 546
 "The run goes on - its next step is queued." => "Изпълнението продължава – следващата му стъпка е в опашката.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 509
+// src/Import/DetailPage.php, row 547
 "The run is ended. What it imported stays." => "Изпълнението беше прекратено. Импортираното от него остава.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 511
+// src/Import/DetailPage.php, row 549
 "No such action." => "Няма такова действие.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 512
+// src/Import/DetailPage.php, row 550
 "Choose a stream of the source." => "Изберете поток на източника.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 513
-"Not started." => "Не е стартирано.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 515
-"Its last step may still be working. Try again in a few minutes." => "Последната му стъпка може все още да работи. Опитайте отново след няколко минути.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 516
-"This import no longer exists in this slice." => "Този импорт вече не съществува в тази рубрика.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 517
-"No such run of this import." => "Няма такова изпълнение на този импорт.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 518
-"The run is finished already." => "Изпълнението вече е приключило.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 520
-"The action failed. The log of import failures has its cause." => "Действието не успя. Причината е в дневника с грешки на импорта.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Последното изпълнение спря поради грешка. Първо изберете „Продължи“ или „Прекрати“. Планираното стартиране го прекратява само; ръчното стартиране – не.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first." => "Последното изпълнение спря поради грешка. Първо изберете „Продължи“ или „Прекрати“.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Отдавна никоя стъпка не е работила по последното изпълнение. Първо изберете „Продължи“ или „Прекрати“. Планираното стартиране го прекратява само; ръчното стартиране – не.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first." => "Отдавна никоя стъпка не е работила по последното изпълнение. Първо изберете „Продължи“ или „Прекрати“.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 533
-"The last step of the previous run is still finishing. Try again in a few minutes." => "Последната стъпка на предишното изпълнение все още завършва. Опитайте отново след няколко минути.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 534
-"Its next step is already on its way." => "Следващата му стъпка вече е на път.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 535
-"The last run is still running." => "Последното изпълнение все още работи.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 544
-"Only a user who manages the feeding of the slice may run its imports." => "Само потребител, който управлява обмена на статии на рубриката, може да стартира нейните импорти.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 547
-"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Дефиницията на импорта не може да бъде използвана – съпоставянето ѝ не отговаря на рубриката или не може да бъде прочетено (DEFINITION).", // ai 2026-10
-
-// src/Import/DetailPage.php, row 550
-"The source has no such stream now." => "Източникът в момента няма такъв поток.", // ai 2026-10
-
 // src/Import/DetailPage.php, row 551
-"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Кодът на източника на импорта се провали (SOURCE). Класът и редът са в дневника с грешки на импорта.", // ai 2026-10
+"At most (items) takes a whole number greater than 0, or nothing for all items (500 in a dry run)." => "„Най-много (статии)“ приема цяло число, по-голямо от 0, или празно за всички статии (500 при пробно изпълнение).", // ai 2026-11
 
 // src/Import/DetailPage.php, row 552
-"The first row of the file lacks columns the mapping needs." => "В първия ред на файла липсват колони, нужни за съпоставянето.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 553
-"The source did not accept the key." => "Източникът не прие ключа.", // ai 2026-10
+"Not started." => "Не е стартирано.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 554
-"The key of the source is damaged in the configuration." => "Ключът на източника е повреден в конфигурацията.", // ai 2026-10
+"Its last step may still be working. Try again in a few minutes." => "Последната му стъпка може все още да работи. Опитайте отново след няколко минути.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 555
-"The source could not be reached." => "Няма връзка с източника.", // ai 2026-10
+"This import no longer exists in this slice." => "Този импорт вече не съществува в тази рубрика.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 556
-"The run is finished; it cannot go on." => "Изпълнението е приключило; не може да продължи.", // ai 2026-10
+"No such run of this import." => "Няма такова изпълнение на този импорт.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 557
-"The import is switched off." => "Импортът е изключен.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 558
-"This import uses API keys, so only a superadmin may do this." => "Този импорт използва API ключове, затова само суперадминистратор може да направи това.", // ai 2026-10
+"The run is finished already." => "Изпълнението вече е приключило.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 559
-"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Източникът на импорта не може да посочи версиите на потоците си, затова няма състояние, което да бъде записано.", // ai 2026-10
+"The action failed. The log of import failures has its cause." => "Действието не успя. Причината е в дневника с грешки на импорта.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 560
-"The import source refused: %1" => "Източникът на импорта отказа: %1", // ai 2026-10
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Последното изпълнение спря поради грешка. Първо изберете „Продължи“ или „Прекрати“. Планираното стартиране го прекратява само; ръчното стартиране – не.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first." => "Последното изпълнение спря поради грешка. Първо изберете „Продължи“ или „Прекрати“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 571
-"The request to the source failed." => "Заявката към източника не успя.", // ai 2026-10
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Отдавна никоя стъпка не е работила по последното изпълнение. Първо изберете „Продължи“ или „Прекрати“. Планираното стартиране го прекратява само; ръчното стартиране – не.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 571
+"No step has worked on the last run for a long time. Continue it or End it first." => "Отдавна никоя стъпка не е работила по последното изпълнение. Първо изберете „Продължи“ или „Прекрати“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 572
-"The source is not available now." => "Източникът в момента не е достъпен.", // ai 2026-10
+"The last step of the previous run is still finishing. Try again in a few minutes." => "Последната стъпка на предишното изпълнение все още завършва. Опитайте отново след няколко минути.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 588
-// src/Import/RunView.php, row 177
-"No import yet" => "Все още няма импорт", // ai 2026-10
+// src/Import/DetailPage.php, row 573
+"Its next step is already on its way." => "Следващата му стъпка вече е на път.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 574
+"The last run is still running." => "Последното изпълнение все още работи.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 583
+"Only a user who manages the feeding of the slice may run its imports." => "Само потребител, който управлява обмена на статии на рубриката, може да стартира нейните импорти.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 586
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Дефиницията на импорта не може да бъде използвана – съпоставянето ѝ не отговаря на рубриката или не може да бъде прочетено (DEFINITION).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 589
-"Latest run: %1" => "Последно изпълнение: %1", // ai 2026-10
+"The source has no such stream now." => "Източникът в момента няма такъв поток.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 590
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Кодът на източника на импорта се провали (SOURCE). Класът и редът са в дневника с грешки на импорта.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 591
+"The first row of the file lacks columns the mapping needs." => "В първия ред на файла липсват колони, нужни за съпоставянето.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 592
+"The source did not accept the key." => "Източникът не прие ключа.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 593
+"The key of the source is damaged in the configuration." => "Ключът на източника е повреден в конфигурацията.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 594
+"The source could not be reached." => "Няма връзка с източника.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 595
+"The database did not store the imported items; the source is not at fault." => "Базата данни не съхрани импортираните статии; вината не е в източника.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 596
+"The run is finished; it cannot go on." => "Изпълнението е приключило; не може да продължи.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 597
+"The import runs only by hand, so a planned task does not start it." => "Импортът се стартира само ръчно, затова планирана задача не го стартира.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 598
+"This import uses API keys, so only a superadmin may do this." => "Този импорт използва API ключове, затова само суперадминистратор може да направи това.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 599
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Източникът на импорта не може да посочи версиите на потоците си, затова няма състояние, което да бъде записано.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 600
+"The import source refused: %1" => "Източникът на импорта отказа: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 611
+"The request to the source failed." => "Заявката към източника не успя.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 612
+"The source is not available now." => "Източникът в момента не е достъпен.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 628
+// src/Import/RunView.php, row 183
+"No import yet" => "Все още няма импорт", // ai 2026-10
+
+// src/Import/DetailPage.php, row 629
+"Latest run: %1" => "Последно изпълнение: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 635
 "Since then: %1" => "Оттогава: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "Source: %1" => "Източник: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "this source is not available" => "този източник не е наличен", // ai 2026-10
 
-// src/Import/DetailPage.php, row 626
+// src/Import/DetailPage.php, row 666
 "First item error:" => "Първа грешка в статия:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Latest runs" => "Последни изпълнения", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Outcomes of the latest runs, newest first" => "Резултати от последните изпълнения, най-новите първи", // ai 2026-10
 
-// src/Import/DetailPage.php, row 654
+// src/Import/DetailPage.php, row 694
 "Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Най-новите първи. Пунктираният кръг е изпълнение, което не е записало нищо: проверка на източника, пробно изпълнение или записване на състоянието. Плътният квадрат %1 е изпълнение, прекратено преди да завърши.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 679
+// src/Import/DetailPage.php, row 719
 "The open run" => "Отвореното изпълнение", // ai 2026-10
 
-// src/Import/DetailPage.php, row 681
+// src/Import/DetailPage.php, row 721
 "Streams done: %1 of %2." => "Завършени потоци: %1 от %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 684
+// src/Import/DetailPage.php, row 724
 "Now at: %1." => "В момента обработва: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 686
+// src/Import/DetailPage.php, row 726
 "Last progress: %1." => "Последен напредък: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 689
+// src/Import/DetailPage.php, row 729
 "Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "Нищо повече няма да се импортира, докато не предприемете действие или планирана задача не стартира импорта отново (с това изпълнението се прекратява).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 690
+// src/Import/DetailPage.php, row 730
 "Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "„Продължи“ продължава оттам, където е спряло, след като причината бъде отстранена; „Прекрати“ го спира окончателно и запазва импортираното.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 691
+// src/Import/DetailPage.php, row 731
 "No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "Отдавна никоя стъпка не е работила по него – проверете дали cron стартира опашката със задачи и дали циклите ѝ са достатъчно дълги за една стъпка (TOEXECUTE_ALLOWED_TIME в config.php). „Продължи“ опитва отново сега; „Прекрати“ го спира окончателно и запазва импортираното. Планираното стартиране на импорта го прекратява и стартира ново изпълнение.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 692
+// src/Import/DetailPage.php, row 732
 "A step is working now." => "В момента работи стъпка.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 694
+// src/Import/DetailPage.php, row 734
 "Waiting to try again at %1 after 1 failed try." => "Очаква нов опит в %1 след 1 неуспешен опит.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 695
+// src/Import/DetailPage.php, row 735
 "Waiting to try again at %1 after %2 failed tries." => "Очаква нов опит в %1 след неуспешни опити: %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 696
+// src/Import/DetailPage.php, row 736
 "Waiting to try again at %1." => "Очаква нов опит в %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 698, 944
+// src/Import/DetailPage.php, row 738, 995
 "Its last step may still be working." => "Последната му стъпка може все още да работи.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 699
+// src/Import/DetailPage.php, row 739
 "Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "Последната му стъпка спря, без да завърши. Опашката със задачи ще я опита отново до %1 минути; „Опитай сега“ го прави веднага.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue until %1." => "Следващата му стъпка чака в опашката със задачи до %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue." => "Следващата му стъпка чака в опашката със задачи.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 726
-"The import is disabled, so no planned task starts it." => "Импортът е изключен, затова никоя планирана задача не го стартира.", // ai 2026-10
+// src/Import/DetailPage.php, row 766
+"Planned tasks start it only once Enabled is ticked (Edit in the list of imports)." => "„Планирани задачи“ го стартират едва когато е отметнато „Включен“ („Редактиране“ в списъка с импорти).", // ai 2026-11
 
-// src/Import/DetailPage.php, row 732
-"Not planned" => "Не е планиран", // ai 2026-10
-
-// src/Import/DetailPage.php, row 733
+// src/Import/DetailPage.php, row 773
 "A planned task calls it, but none has a time to start it." => "Планирана задача го извиква, но никоя няма зададено време за стартиране.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 734
+// src/Import/DetailPage.php, row 774
 "It runs only when you start it. To run it on a schedule, add a planned task." => "Изпълнява се само когато го стартирате. За изпълнение по график добавете планирана задача.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 745
+// src/Import/DetailPage.php, row 785
 "Written by hand, a planned task starts it with %1." => "Ръчно написана планирана задача го стартира с %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 756
+// src/Import/DetailPage.php, row 796
 "Planned tasks need the Forms permission" => "Планираните задачи изискват право „Формуляри“", // ai 2026-10
 
-// src/Import/DetailPage.php, row 760
+// src/Import/DetailPage.php, row 800
 "Planned tasks: %1" => "Планирани задачи: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 761
+// src/Import/DetailPage.php, row 801
 "Planned tasks: %1, next %2" => "Планирани задачи: %1, следваща %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 763, 778
+// src/Import/DetailPage.php, row 803, 818
 "Schedule" => "Планирай", // ai 2026-10
 
-// src/Import/DetailPage.php, row 766
-"(import off)" => "(импортът е изключен)", // ai 2026-10
+// src/Import/DetailPage.php, row 806
+"(does not start it now)" => "(засега не го стартира)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "next %1" => "следващо %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "no time set" => "без зададено време", // ai 2026-10
 
-// src/Import/DetailPage.php, row 774
+// src/Import/DetailPage.php, row 814
 "save the task again to let it start the import" => "запазете задачата отново, за да може да стартира импорта", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "queued" => "в опашката", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "not queued" => "не е в опашката", // ai 2026-10
 
-// src/Import/DetailPage.php, row 793
+// src/Import/DetailPage.php, row 833
 "Import %1" => "Импорт %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "mode set by an expression" => "режим, зададен чрез израз", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "unknown mode %1" => "неизвестен режим %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Passed" => "Успешно", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Failed" => "Неуспешно", // ai 2026-10
 
-// src/Import/DetailPage.php, row 828
+// src/Import/DetailPage.php, row 868
 "Taken from the run list: the stream state holds no newer check result." => "Взето от списъка с изпълнения: състоянието на потоците не съдържа по-нов резултат от проверка.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "The stored result cannot be read." => "Запазеният резултат не може да бъде прочетен.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "Never checked" => "Никога не е проверяван", // ai 2026-10
 
-// src/Import/DetailPage.php, row 849
+// src/Import/DetailPage.php, row 893
 "The mapping of the import cannot be read; no run starts until it is set again." => "Съпоставянето на импорта не може да бъде прочетено; няма да стартира изпълнение, докато не бъде зададено отново.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 856
+// src/Import/DetailPage.php, row 900
 "The mapping does not fit the slice; no run starts until it is fixed:" => "Съпоставянето не отговаря на рубриката; няма да стартира изпълнение, докато не бъде поправено:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 899
+// src/Import/DetailPage.php, row 912
+"The source is not set up yet." => "Източникът още не е настроен.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 948
 "No stream is known yet - run the import or check the source first." => "Все още няма известен поток – първо стартирайте импорта или проверете източника.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 903
+// src/Import/DetailPage.php, row 952
 "One stream" => "Един поток", // ai 2026-10
 
-// src/Import/DetailPage.php, row 904
-"Run the stream" => "Стартирай потока", // ai 2026-10
+// src/Import/DetailPage.php, row 953
+"At most (items)" => "Най-много (статии)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 905
+// src/Import/DetailPage.php, row 955
 "Dry run of the stream" => "Пробно изпълнение на потока", // ai 2026-10
 
-// src/Import/DetailPage.php, row 918
+// src/Import/DetailPage.php, row 956
+"Run the stream" => "Стартирай потока", // ai 2026-10
+
+// src/Import/DetailPage.php, row 969
 "Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "Да се запишат ли версиите, които източникът има сега, все едно са импортирани? Потоците, които не се променят след това, няма да бъдат импортирани.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 919
+// src/Import/DetailPage.php, row 970
 "Record the current state of the source" => "Запиши текущото състояние на източника", // ai 2026-10
 
-// src/Import/DetailPage.php, row 921
+// src/Import/DetailPage.php, row 972
 "Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Запазва версията, която всеки поток има сега, без да импортира, така че „Стартирай само променените“ след това взема само това, което се промени по-късно. Използвайте го само когато данните от източника вече са в рубриката.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 937
+// src/Import/DetailPage.php, row 988
 "No run is open." => "Няма отворено изпълнение.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 943
+// src/Import/DetailPage.php, row 994
 "Its step is working now." => "Стъпката му работи в момента.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 947
+// src/Import/DetailPage.php, row 998
 "Try now" => "Опитай сега", // ai 2026-10
 
-// src/Import/DetailPage.php, row 957
+// src/Import/DetailPage.php, row 1008
 "End the run for good? What it imported stays; the next run starts from the beginning." => "Да се прекрати ли изпълнението окончателно? Импортираното от него остава; следващото изпълнение започва отначало.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1024
+// src/Import/DetailPage.php, row 1075
 "The first item errors (%1)" => "Първите грешки в статии (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1025, 1046
+// src/Import/DetailPage.php, row 1076, 1097
 "Job" => "Задача", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1036
+// src/Import/DetailPage.php, row 1087
 "Skipped - the key came out empty (%1)" => "Пропуснати – ключът е празен (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1046
+// src/Import/DetailPage.php, row 1097
 "Source value" => "Стойност от източника", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of 1 job." => "Филтърът не запази нито една статия от 1 задача.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of %1 jobs." => "Филтърът не запази нито една статия от задачите (%1).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1057
+// src/Import/DetailPage.php, row 1108
 "If those items should be imported, check the filter in Mapping." => "Ако тези статии трябва да бъдат импортирани, проверете филтъра в „Съпоставяне“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in 1 stream; the rest of it was skipped." => "Източникът се зацикли в 1 поток; останалата част от него беше пропусната.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in %1 streams; the rest of each was skipped." => "Източникът се зацикли в потоци (%1); останалата част от всеки беше пропусната.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1067
+// src/Import/DetailPage.php, row 1118
 "The source pages wrongly or changed its paging; check the source, then run the import again." => "Източникът странира грешно или е променил странирането си; проверете източника и след това стартирайте импорта отново.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1082
+// src/Import/DetailPage.php, row 1133
 "Remarks of the source (%1)" => "Бележки на източника (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1091
+// src/Import/DetailPage.php, row 1142
 "Remark" => "Бележка", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1099
+// src/Import/DetailPage.php, row 1150
 "The dry run found no item to store." => "Пробното изпълнение не намери статия за записване.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1101
+// src/Import/DetailPage.php, row 1152
 "What the dry run would store - the first %1 items" => "Какво би записало пробното изпълнение – първите статии (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Last try failed:" => "Последният опит не успя:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Error:" => "Грешка:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1124
+// src/Import/DetailPage.php, row 1175
 "At: %1" => "Място: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1126
+// src/Import/DetailPage.php, row 1177
 "What to do:" => "Какво да направите:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1136
+// src/Import/DetailPage.php, row 1187
 "Check the address of the source in its settings, then Continue or End the run." => "Проверете адреса на източника в настройките му, след което изберете „Продължи“ или „Прекрати“ за изпълнението.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1140
+// src/Import/DetailPage.php, row 1191
 "Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "Поправете съпоставянето на колоните или файла, така че липсващите колони да съществуват, след което стартирайте отново „Провери източника“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1141
+// src/Import/DetailPage.php, row 1192
 "Check the key of the source in its settings, then run Check source." => "Проверете ключа на източника в настройките му, след което стартирайте „Провери източника“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1142
+// src/Import/DetailPage.php, row 1193
 "Enter the key of the source again in its settings, then run Check source." => "Въведете отново ключа на източника в настройките му, след което стартирайте „Провери източника“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1143
+// src/Import/DetailPage.php, row 1194
 "The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "Няма връзка с източника. Проверете адреса му в настройките; ако е правилен, изберете „Продължи“ за изпълнението по-късно.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1144
+// src/Import/DetailPage.php, row 1195
 "Correct the settings of the source, then run Check source." => "Поправете настройките на източника, след което стартирайте „Провери източника“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1145
+// src/Import/DetailPage.php, row 1196
 "Choose a stream the source still has, then start the import again." => "Изберете поток, който източникът все още има, след което стартирайте импорта отново.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1146
+// src/Import/DetailPage.php, row 1197
 "Check that every mapped field exists in the slice, then start the import again." => "Проверете дали всяко съпоставено поле съществува в рубриката, след което стартирайте импорта отново.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1147
+// src/Import/DetailPage.php, row 1198
 "Look the failure up in the log of import failures, then Continue or End the run." => "Потърсете грешката в дневника с грешки на импорта, след което изберете „Продължи“ или „Прекрати“ за изпълнението.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1161
+// src/Import/DetailPage.php, row 1199
+"Continue the run later; if the database keeps refusing, tell its administrator." => "Продължете изпълнението по-късно; ако базата данни продължава да отказва, уведомете нейния администратор.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 1213
 "full run" => "пълно изпълнение", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1162
-"one stream (%1)" => "един поток (%1)", // ai 2026-10
+// src/Import/DetailPage.php, row 1214
+"one stream: %1" => "един поток: %1", // ai 2026-11
 
-// src/Import/DetailPage.php, row 1163
+// src/Import/DetailPage.php, row 1215
 "%1 streams" => "потоци: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Baseline only" => "Само записано състояние", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Nothing imported yet. Run changed only takes what changes after this." => "Все още нищо не е импортирано. „Стартирай само променените“ взема това, което се промени след това.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207, 1208
+// src/Import/DetailPage.php, row 1259, 1260
 "Imported with item errors" => "Импортирано с грешки в статии", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207
+// src/Import/DetailPage.php, row 1259
 "1 item error in the run that imported it - see Runs." => "1 грешка в статия при изпълнението, което го импортира – вижте „Изпълнения“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1208
+// src/Import/DetailPage.php, row 1260
 "%1 item errors in the run that imported it - see Runs." => "Грешки в статии (%1) при изпълнението, което го импортира – вижте „Изпълнения“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "Imported" => "Импортиран", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source was asked again after the import." => "Източникът беше попитан отново след импорта.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source has not been asked since." => "Източникът не е питан оттогава.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Checked, not imported yet" => "Проверен, още не е импортиран", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Run imports it; Run changed only too, as it has no version to compare." => "„Стартирай“ го импортира; „Стартирай само променените“ – също, тъй като няма версия за сравнение.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "Not seen yet" => "Още не е открит", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "No run has imported or checked it." => "Нито едно изпълнение не го е импортирало или проверило.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1228
+// src/Import/DetailPage.php, row 1280
 "%1 read" => "прочетени: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1229
+// src/Import/DetailPage.php, row 1281
 "%1 new, %2 updated, %3 skipped" => "нови: %1, обновени: %2, пропуснати: %3", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1230
+// src/Import/DetailPage.php, row 1282
 "%1 filtered out" => "филтрирани: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "dry run - nothing stored" => "пробно изпълнение – нищо не е записано", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "all streams of the run together" => "всички потоци на изпълнението заедно", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1250
+// src/Import/DetailPage.php, row 1302
 "None yet - an import records it" => "Все още няма – импортът ще я запише", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1251
+// src/Import/DetailPage.php, row 1303
 "None - the source gives no version" => "Няма – източникът не дава версия", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1" => "отне %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1, working %2" => "отне %1, в т.ч. работа %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1310
+// src/Import/DetailPage.php, row 1362
 "%1 s" => "%1 сек", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313
+// src/Import/DetailPage.php, row 1365
 "%1 min %2 s" => "%1 мин %2 сек", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313, 1315
+// src/Import/DetailPage.php, row 1365, 1367
 // src/Optimize/StateCheckModel.php, row 257
 "%1 min" => "%1 мин", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1315
+// src/Import/DetailPage.php, row 1367
 // src/Optimize/StateCheckModel.php, row 258
 "%1 h" => "%1 ч", // ai 2026-10
 
@@ -10463,7 +10523,7 @@ return [
 // src/Import/RunView.php, row 74
 "Stuck — see State Check" => "Блокирано – вижте „Проверка на състоянието“", // ai 2026-10
 
-// src/Import/RunView.php, row 75, 171
+// src/Import/RunView.php, row 75, 177
 "Running" => "Изпълнява се", // ai 2026-10
 
 // src/Import/RunView.php, row 76
@@ -10518,167 +10578,197 @@ return [
 // src/Import/RunView.php, row 131
 "%1 days ago" => "преди %1 дни", // ai 2026-10
 
-// src/Import/RunView.php, row 159, 162, 165, 169
+// src/Import/RunView.php, row 162, 168, 171, 175
 "Failing" => "Неуспешен", // ai 2026-10
 
-// src/Import/RunView.php, row 159
+// src/Import/RunView.php, row 162
 "The source of this import is not available, so it cannot run." => "Източникът на този импорт не е наличен, затова импортът не може да се изпълни.", // ai 2026-10
 
-// src/Import/RunView.php, row 162
+// src/Import/RunView.php, row 165
+"Not set up" => "Не е настроен", // ai 2026-11
+
+// src/Import/RunView.php, row 165
+"Fill in these settings of the source: %1." => "Попълнете тези настройки на източника: %1.", // ai 2026-11
+
+// src/Import/RunView.php, row 168
 "The mapping does not fit the slice, so no run can start until it is fixed." => "Съпоставянето не отговаря на рубриката, затова никое изпълнение не може да стартира, докато не бъде поправено.", // ai 2026-10
 
-// src/Import/RunView.php, row 169
+// src/Import/RunView.php, row 175
 "A run has made no progress for a long time - cron may not be running its steps." => "Едно изпълнение отдавна не напредва – възможно е cron да не изпълнява стъпките му.", // ai 2026-10
 
-// src/Import/RunView.php, row 170, 178, 181, 182, 183
+// src/Import/RunView.php, row 176, 184, 187, 188, 189
 "Needs attention" => "Изисква внимание", // ai 2026-10
 
-// src/Import/RunView.php, row 170
+// src/Import/RunView.php, row 176
 "A run failed a step and waits to try again." => "Едно изпълнение се провали на стъпка и изчаква нов опит.", // ai 2026-10
 
-// src/Import/RunView.php, row 171
+// src/Import/RunView.php, row 177
 "A run is in progress: %1." => "Тече изпълнение: %1.", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "Never ran" => "Никога не е стартиран", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "No run yet. Run starts the first import." => "Все още няма изпълнение. „Стартирай“ започва първия импорт.", // ai 2026-10
 
-// src/Import/RunView.php, row 177
+// src/Import/RunView.php, row 183
 "Only source checks or dry runs so far - nothing was imported." => "Досега само проверки на източника или пробни изпълнения – нищо не е импортирано.", // ai 2026-10
 
-// src/Import/RunView.php, row 179
+// src/Import/RunView.php, row 185
 "The last import stopped by an error and was then ended, so the data may be incomplete." => "Последният импорт спря поради грешка и след това беше прекратен, затова данните може да са непълни.", // ai 2026-10
 
-// src/Import/RunView.php, row 180
+// src/Import/RunView.php, row 186
 "The last import was ended before it finished, so the data may be incomplete." => "Последният импорт беше прекратен преди да завърши, затова данните може да са непълни.", // ai 2026-10
 
-// src/Import/RunView.php, row 181
+// src/Import/RunView.php, row 187
 "The last import finished, but 1 item could not be stored." => "Последният импорт завърши, но 1 статия не можа да бъде запазена.", // ai 2026-10
 
-// src/Import/RunView.php, row 182
+// src/Import/RunView.php, row 188
 "The last import finished, but %1 items could not be stored." => "Последният импорт завърши, но някои статии не можаха да бъдат запазени: %1.", // ai 2026-10
 
-// src/Import/RunView.php, row 183
+// src/Import/RunView.php, row 189
 "The last full import read nothing - the source may be empty." => "Последният пълен импорт не прочете нищо – възможно е източникът да е празен.", // ai 2026-10
 
-// src/Import/RunView.php, row 184, 185
+// src/Import/RunView.php, row 190, 191
 "Healthy" => "В изправност", // ai 2026-10
 
-// src/Import/RunView.php, row 184
+// src/Import/RunView.php, row 190
 "The last import finished without errors; nothing had changed." => "Последният импорт завърши без грешки; нищо не беше променено.", // ai 2026-10
 
-// src/Import/RunView.php, row 185
+// src/Import/RunView.php, row 191
 "The last import finished without errors (%1 read)." => "Последният импорт завърши без грешки (прочетени: %1).", // ai 2026-10
 
-// src/Import/RunView.php, row 188
-"Runs only by hand." => "Стартира се само ръчно.", // ai 2026-10
-
-// src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "Последното пробно изпълнение спря поради грешка. Нищо повече не се импортира, докато не предприемете действие.", // ai 2026-10
+// src/Import/RunView.php, row 198
+"The source refuses its settings." => "Източникът отхвърля настройките си.", // ai 2026-11
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "Последната проверка на източника спря поради грешка. Нищо повече не се импортира, докато не предприемете действие.", // ai 2026-10
-
-// src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Записването на състоянието на източника спря поради грешка. Нищо повече не се импортира, докато не предприемете действие.", // ai 2026-10
-
-// src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "Последният импорт спря поради грешка. Нищо повече не се импортира, докато не предприемете действие.", // ai 2026-10
-
-// src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "Проверката на източника се провали – нищо не е импортирано", // ai 2026-10
+"The source refuses its settings: %1" => "Източникът отхвърля настройките си: %1", // ai 2026-11
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "Тече проверка на източника", // ai 2026-10
+"The last dry run stopped by an error. Nothing more is imported until you act." => "Последното пробно изпълнение спря поради грешка. Нищо повече не се импортира, докато не предприемете действие.", // ai 2026-10
+
+// src/Import/RunView.php, row 214
+"The last source check stopped by an error. Nothing more is imported until you act." => "Последната проверка на източника спря поради грешка. Нищо повече не се импортира, докато не предприемете действие.", // ai 2026-10
 
 // src/Import/RunView.php, row 215
-"Source reachable - nothing imported" => "Източникът е достъпен – нищо не е импортирано", // ai 2026-10
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Записването на състоянието на източника спря поради грешка. Нищо повече не се импортира, докато не предприемете действие.", // ai 2026-10
 
-// src/Import/RunView.php, row 217
-"Nothing had changed" => "Нищо не беше променено", // ai 2026-10
-
-// src/Import/RunView.php, row 218
-"Nothing read" => "Нищо не е прочетено", // ai 2026-10
-
-// src/Import/RunView.php, row 219
-"%1 read, %2 new, %3 changed" => "Прочетени: %1, нови: %2, променени: %3", // ai 2026-10
-
-// src/Import/RunView.php, row 221
-"%1 (nothing stored)" => "%1 (нищо не е запазено)", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of 1 stream - nothing imported" => "Записано е състоянието на 1 поток – нищо не е импортирано", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of %1 streams - nothing imported" => "Записано е състоянието на потоци: %1 – нищо не е импортирано", // ai 2026-10
+// src/Import/RunView.php, row 216
+"The last import stopped by an error. Nothing more is imported until you act." => "Последният импорт спря поради грешка. Нищо повече не се импортира, докато не предприемете действие.", // ai 2026-10
 
 // src/Import/RunView.php, row 228
-"%1 without a version" => "Без версия: %1", // ai 2026-10
+"Source check failed - nothing imported" => "Проверката на източника се провали – нищо не е импортирано", // ai 2026-10
+
+// src/Import/RunView.php, row 229
+"Source check under way" => "Тече проверка на източника", // ai 2026-10
+
+// src/Import/RunView.php, row 231
+"Source reachable - nothing imported" => "Източникът е достъпен – нищо не е импортирано", // ai 2026-10
+
+// src/Import/RunView.php, row 233
+"Nothing had changed" => "Нищо не беше променено", // ai 2026-10
+
+// src/Import/RunView.php, row 234
+"Nothing read" => "Нищо не е прочетено", // ai 2026-10
+
+// src/Import/RunView.php, row 235
+"%1 read, %2 new, %3 changed" => "Прочетени: %1, нови: %2, променени: %3", // ai 2026-10
 
 // src/Import/RunView.php, row 237
-"changed only" => "само променените", // ai 2026-10
+"%1 (nothing stored)" => "%1 (нищо не е запазено)", // ai 2026-10
 
-// src/Import/RunView.php, row 238
-"check" => "проверка", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of 1 stream - nothing imported" => "Записано е състоянието на 1 поток – нищо не е импортирано", // ai 2026-10
 
-// src/Import/RunView.php, row 239
-"recording the state of the source" => "записване на състоянието на източника", // ai 2026-10
-
-// src/Import/RunView.php, row 242
-"dry run" => "пробно изпълнение", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of %1 streams - nothing imported" => "Записано е състоянието на потоци: %1 – нищо не е импортирано", // ai 2026-10
 
 // src/Import/RunView.php, row 244
-"by hand" => "ръчно", // ai 2026-10
+"%1 without a version" => "Без версия: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 245
-"planned" => "планово", // ai 2026-10
+// src/Import/RunView.php, row 254
+"changed only" => "само променените", // ai 2026-10
 
-// src/Import/RunView.php, row 246
-"on an event" => "при събитие", // ai 2026-10
+// src/Import/RunView.php, row 255
+"check" => "проверка", // ai 2026-10
+
+// src/Import/RunView.php, row 256
+"recording the state of the source" => "записване на състоянието на източника", // ai 2026-10
 
 // src/Import/RunView.php, row 259
-"Disabled - it does not start" => "Изключен – не се стартира", // ai 2026-10
+"dry run" => "пробно изпълнение", // ai 2026-10
 
-// src/Import/RunView.php, row 268
+// src/Import/RunView.php, row 261
+"first %1 items" => "първите %1 статии", // ai 2026-11
+
+// src/Import/RunView.php, row 263
+"by hand" => "ръчно", // ai 2026-10
+
+// src/Import/RunView.php, row 264
+"planned" => "планово", // ai 2026-10
+
+// src/Import/RunView.php, row 265
+"on an event" => "при събитие", // ai 2026-10
+
+// src/Import/RunView.php, row 285
+"Runs only by hand." => "Стартира се само ръчно.", // ai 2026-10
+
+// src/Import/RunView.php, row 294
 "No run yet" => "Все още няма изпълнение", // ai 2026-10
 
-// src/Import/RunView.php, row 280
+// src/Import/RunView.php, row 306
 "1 item error" => "1 грешка в статия", // ai 2026-10
 
-// src/Import/RunView.php, row 281
+// src/Import/RunView.php, row 307
 "%1 item errors" => "Грешки в статии: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 284
+// src/Import/RunView.php, row 310
 "Last import: %1" => "Последен импорт: %1", // ai 2026-10
 
 // src/Import/SliceIdSetting.php, row 22
 "No slice ID" => "Липсва ID на рубрика", // ai 2026-10
 
-// src/Import/Source/CsvColumnsSetting.php, row 31
-"Expected a JSON object {\"column\": \"field id\"}" => "Очаква се JSON обект {\"column\": \"field id\"}", // ai 2026-10
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"no column" => "няма колона", // ai 2026-11
 
-// src/Import/Source/CsvurlSource.php, row 42
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"more than %1 columns" => "повече от %1 колони", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 73
+"not a field the import may fill" => "не е поле, което импортът може да попълва", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 74
+"the column name is empty, too long or holds invisible characters" => "името на колоната е празно, твърде дълго или съдържа невидими знаци", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 75
+"the column is named twice" => "колоната е посочена два пъти", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 89
+"Line %1: %2" => "Ред %1: %2", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 119
+"expected \"column = field id\"" => "очаква се „колона = id на полето“", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 43
 "CSV file at a URL" => "CSV файл на URL адрес", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 47
+// src/Import/Source/CsvurlSource.php, row 48
 "Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "Импортира редовете на CSV файл от публичен http(s) адрес; настройките определят коя колона кое поле попълва.", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "http or https only, on a public address, without a user name and password" => "само http или https, на публичен адрес, без потребителско име и парола", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 55
+// src/Import/Source/CsvurlSource.php, row 56
 // src/Widget/Widget.php, row 743, 812
 "Columns" => "Колони", // ai 2026-06
 
-// src/Import/Source/CsvurlSource.php, row 55
-"JSON object: the column name in the first row => the field it fills" => "JSON обект: името на колоната в първия ред => полето, което тя попълва", // ai 2026-10
-
 // src/Import/Source/CsvurlSource.php, row 56
+"One line per column: its name in the first row = the id of the field it fills" => "По един ред за всяка колона: името ѝ в първия ред = id на полето, което попълва", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 57
 "Key column" => "Ключова колона", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 56
+// src/Import/Source/CsvurlSource.php, row 57
 "The column that identifies the item; it must be one of the columns" => "Колоната, която идентифицира статията; трябва да е една от колоните", // ai 2026-10
 
 // src/Isds/Advice.php, row 48
@@ -11399,40 +11489,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "Не можете да запазите този ред тук.", // ai 2026-10
 
-// src/Manager.php, row 821
+// src/Manager.php, row 812
 "Searchbar" => "Лента за търсене", // ai 2026-06
 
-// src/Manager.php, row 822
+// src/Manager.php, row 813
 "Scroller" => "Страниране", // ai 2026-06
 
-// src/Manager.php, row 823
+// src/Manager.php, row 814
 "Msg" => "Съобщение", // ai 2026-06
 
-// src/Manager.php, row 824
+// src/Manager.php, row 815
 "Bin" => "Папка", // ai 2026-06
 
-// src/Manager.php, row 826
+// src/Manager.php, row 817
 "Manager ID" => "ID на мениджъра", // ai 2026-06
 
-// src/Manager.php, row 1200
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "Действието не беше изпълнено – използвайте бутона на страницата.", // ai 2026-10
 
-// src/Manager.php, row 1281
+// src/Manager.php, row 1272
 "Edit id" => "Id за редактиране", // ai 2026-06
 
-// src/Manager.php, row 1295
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Задръжте Shift и кликнете, за да изберете няколко реда", // ai 2026-06
 
-// src/Manager.php, row 1333
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "Наистина ли искате да изпразните кошчето?", // ai 2026-06
 
-// src/Manager.php, row 1435
+// src/Manager.php, row 1426
 "Go" => "Изпълни", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "Няма избрана статия. Да се изпълни ли действието за всички филтрирани статии?", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "Run for %1 items" => "Изпълни за %1 статии", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47

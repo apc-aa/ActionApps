@@ -18,6 +18,15 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "「一致」はフィールドの値のいずれかがチェックした値に含まれるとき、「等しくない」はどれも含まれないときに成り立ちます。「入力あり」は空と 0 以外のどの値でも成り立つため、チェックされたチェックボックスでも成り立ちます。", // ai 2026-11
+// "None - the import is disabled" => "なし - インポートは無効です", // ai 2026-10
+// "The import is switched off." => "インポートは無効になっています。", // ai 2026-10
+// "The import is disabled, so no planned task starts it." => "インポートが無効なため、予定タスクからは開始されません。", // ai 2026-10
+// "(import off)" => "（インポート無効）", // ai 2026-10
+// "one stream (%1)" => "単一ストリーム (%1)", // ai 2026-10
+// "Disabled - it does not start" => "無効 - 開始されません", // ai 2026-10
+// "Expected a JSON object {\"column\": \"field id\"}" => "JSON オブジェクト {\"column\": \"field id\"} が必要です", // ai 2026-10
+// "JSON object: the column name in the first row => the field it fills" => "JSON オブジェクト: 先頭行の列名 => その列が入るフィールド", // ai 2026-10
 // "Parameter wizard" => "パラメータウィザード", // ai 2026-06
 // "the update may still be running on the remote AA - wait, then run Test before retrying" => "リモート AA ではまだ更新が実行中の可能性があります - しばらく待ち、再試行の前に「テスト」を実行してください", // ai 2026-10
 // "Set letterhead to a text" => "letterhead にテキストを設定してください", // ai 2026-11
@@ -194,7 +203,7 @@ return [
 
 // admin/aa_cron.php, row 47
 // src/AA_Plannedtask.php, row 82, 182
-// src/Import/Definition.php, row 135, 163
+// src/Import/Definition.php, row 136, 164
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "最終実行", // ai 2026-06
 
@@ -279,7 +288,7 @@ return [
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // central/optimize.php, row 65
-// src/Import/DetailPage.php, row 510
+// src/Import/DetailPage.php, row 548
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "フォームの有効期限が切れました。ページを再読み込みして、もう一度お試しください。", // ai 2026-10
 
@@ -428,7 +437,6 @@ return [
 "Off since %1, %2" => "%1 からオフ（%2）", // ai 2026-10
 
 // admin/aa_security.php, row 143
-// src/Import/DetailPage.php, row 726
 "Off" => "オフ", // ai 2026-10
 
 // admin/aa_security.php, row 148
@@ -453,7 +461,7 @@ return [
 
 // admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 395
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
@@ -656,7 +664,7 @@ return [
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 295
 // central/appstore.php, row 164
-// include/searchlib.php, row 1016
+// include/searchlib.php, row 1103
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "スライス", // ai 2026-06
 
@@ -919,12 +927,13 @@ return [
 "Shortcut to edit ITEM" => "項目編集へのショートカット", // ai 2026-06
 
 // admin/aafinder.php, row 526
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 576
 // include/searchlib.php, row 50, 51, 129, 138
 "contains" => "含む", // ai 2026-06
 
 // admin/aafinder.php, row 527
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 584
 // include/searchlib.php, row 129, 138
 "is" => "一致", // ai 2026-06
@@ -1015,12 +1024,12 @@ return [
 // admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
-// admin/se_showif.php, row 123
+// admin/se_showif.php, row 124
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
 // include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 369
+// include/searchlib.php, row 446
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1066,7 +1075,7 @@ return [
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
 // include/stringexpand.php, row 99
-// src/Import/DetailPage.php, row 1025, 1091
+// src/Import/DetailPage.php, row 1076, 1142
 // src/Optimize/CheckImports.php, row 239, 241
 "Code" => "コード", // ai 2026-06
 
@@ -1074,7 +1083,7 @@ return [
 "HTML output" => "HTML出力", // ai 2026-06
 
 // admin/console.php, row 73, 75
-// central/optimize.php, row 210
+// central/optimize.php, row 209
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "結果", // ai 2026-06
 
@@ -1089,7 +1098,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "OK", // ai 2026-10
@@ -1137,7 +1146,7 @@ return [
 // admin/discedit.php, row 135
 // admin/related_sel.php, row 168
 // admin/se_views.php, row 136
-// src/Import/DetailPage.php, row 313
+// src/Import/DetailPage.php, row 337
 // src/Manager.php, row 230
 // src/Optimize/AbstractOptimize.php, row 175
 "Actions" => "操作", // ai 2026-06
@@ -1167,7 +1176,7 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
@@ -1204,7 +1213,7 @@ return [
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 123, 267
 // include/logs.php, row 1071
-// include/mail.php, row 699
+// include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "件名", // ai 2026-06
 
@@ -1581,7 +1590,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 370
+// include/searchlib.php, row 447
 "Descending" => "降順", // ai 2026-06
 
 // admin/se_compact.php, row 244
@@ -1606,7 +1615,7 @@ return [
 "Can't delete constant group" => "定数グループを削除できません", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
-// admin/se_showif.php, row 157
+// admin/se_showif.php, row 162
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1620,7 +1629,7 @@ return [
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckServerRefusals.php, row 67
@@ -1629,6 +1638,7 @@ return [
 // admin/se_constant.php, row 176, 378
 // admin/se_mapping.php, row 179
 // admin/se_profile.php, row 209
+// admin/se_showif.php, row 133
 // include/constants.php, row 453
 // include/constedit.php, row 76
 // include/searchlib.php, row 177
@@ -1807,7 +1817,7 @@ return [
 
 // admin/se_csv_import.php, row 278
 // include/scroller.php, row 86
-// src/Import/DetailPage.php, row 422
+// src/Import/DetailPage.php, row 453
 "Next" => "次へ", // ai 2026-06
 
 // admin/se_csv_import2.php, row 199
@@ -1858,8 +1868,8 @@ return [
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
-// src/Import/Definition.php, row 135, 165
-// src/Import/DetailCatalog.php, row 145
+// src/Import/Definition.php, row 136, 166
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "操作", // ai 2026-06
 
@@ -2039,7 +2049,7 @@ return [
 
 // admin/se_export.php, row 167
 // include/exporter.class.php, row 553
-// include/searchlib.php, row 1012
+// include/searchlib.php, row 1099
 "Conditions" => "条件", // ai 2026-06
 
 // admin/se_export.php, row 167
@@ -2048,7 +2058,7 @@ return [
 
 // admin/se_export.php, row 168
 // include/exporter.class.php, row 554
-// include/searchlib.php, row 1014
+// include/searchlib.php, row 1101
 "Sort" => "並べ替え", // ai 2026-06
 
 // admin/se_export.php, row 168
@@ -2166,7 +2176,7 @@ return [
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
-// src/Import/DetailCatalog.php, row 151
+// src/Import/DetailCatalog.php, row 179
 "Update" => "更新", // ai 2026-06
 
 // admin/se_filters.php, row 169
@@ -2185,7 +2195,7 @@ return [
 "No category defined" => "分類が定義されていません",
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1424
+// src/Manager.php, row 1415
 "Select all" => "すべて選択", // ai 2026-06
 
 // admin/se_filters.php, row 320
@@ -2370,7 +2380,7 @@ return [
 
 // admin/se_inputform.php, row 424, 440, 451, 479, 522
 // include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 // src/Util/Paramwizard.php, row 154
 "Parameters" => "パラメータ", // ai 2026-06
 
@@ -2446,8 +2456,6 @@ return [
 "8 UPPERCASE letters or _" => "大文字または _ の8文字", // ai 2026-06
 
 // admin/se_inputform.php, row 515
-// src/Import/DetailPage.php, row 604
-// src/Import/RunView.php, row 188
 "Disabled" => "無効", // ai 2026-06
 
 // admin/se_inputform.php, row 516
@@ -2501,10 +2509,10 @@ return [
 "Node" => "ノード", // ai 2026-06
 
 // admin/se_inter_import.php, row 96
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // misc/datovka/datovka.php, row 158
-// src/Import/DetailConfig.php, row 291
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailConfig.php, row 282
+// src/Import/DetailPage.php, row 401
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Util/Note.php, row 64
 "State" => "状態", // ai 2026-06
@@ -3023,104 +3031,115 @@ return [
 // admin/se_showif.php, row 77
 "The form has expired. Close it and open it again." => "フォームの有効期限が切れました。閉じてから開き直してください。", // ai 2026-11
 
-// admin/se_showif.php, row 117
-"is checked" => "チェックあり", // ai 2026-11
-
-// admin/se_showif.php, row 117
-"is not checked" => "チェックなし", // ai 2026-11
-
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchlib.php, row 129, 138
 "is not" => "等しくない", // ai 2026-06
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
+// include/searchbar.class.php, row 580
+// include/searchlib.php, row 53, 56, 129, 138
+"begins with" => "で始まる", // ai 2026-06
+
+// admin/se_showif.php, row 116
 "is filled" => "入力あり", // ai 2026-11
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 "is empty" => "空", // ai 2026-11
 
-// admin/se_showif.php, row 120
+// admin/se_showif.php, row 119
+"is checked" => "チェックあり", // ai 2026-11
+
+// admin/se_showif.php, row 119
+"is not checked" => "チェックなし", // ai 2026-11
+
+// admin/se_showif.php, row 121
 "— add a rule —" => "— ルールを追加 —", // ai 2026-11
 
-// admin/se_showif.php, row 128
+// admin/se_showif.php, row 129
 "Comparison" => "比較", // ai 2026-11
 
-// admin/se_showif.php, row 144
+// admin/se_showif.php, row 149
 "Values, one per line" => "値（1行に1つ）", // ai 2026-11
 
-// admin/se_showif.php, row 151
+// admin/se_showif.php, row 156
 // include/field.class.php, row 797
 "Display condition" => "表示条件", // ai 2026-11
 
-// admin/se_showif.php, row 163
+// admin/se_showif.php, row 168
 "Show the field when all of these hold" => "次のすべてが成り立つときにフィールドを表示", // ai 2026-11
 
-// admin/se_showif.php, row 165
+// admin/se_showif.php, row 170
 "AA expression (optional)" => "AA 式（任意）", // ai 2026-11
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 // src/Optimize/ImgMeasuring.php, row 54
 "Expression" => "式", // ai 2026-10
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 "Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "ルールだけを使う場合は空のままにします。入力すると、結果が空でも 0 でもないときにだけフィールドが表示されます。フォームを開いたときと項目を保存したときに評価されます。", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Clear the field when a rule hides it" => "フィールドをクリア（ルールで非表示のとき）", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "チェックなし: 編集中の項目は値を保持し、新しい項目にはフィールドの省略値が入ります。式で非表示になったフィールドは変更されません。", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 177
+"As a condition of a view" => "ビューの条件として", // ai 2026-11
+
+// admin/se_showif.php, row 181
 "Used by" => "使用しているフィールド", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 181
 "no field" => "なし", // ai 2026-11
 
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 "Save the changes to this condition. They apply to every field that uses it." => "この条件への変更を保存します。この条件を使うすべてのフィールドに適用されます。", // ai 2026-11
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 // admin/se_view.php, row 486
 "Save as new" => "新規として保存", // ai 2026-06
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 "Keep the original condition as it is and save this form as another condition under a new name." => "元の条件はそのまま残し、このフォームを新しい名前の別の条件として保存します。", // ai 2026-11
 
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 "Delete the condition. The fields that use it will be shown always." => "条件を削除します。この条件を使うフィールドは常に表示されるようになります。", // ai 2026-11
 
-// admin/se_showif.php, row 180
+// admin/se_showif.php, row 188
 "Delete the condition? The fields that use it will be shown always." => "条件を削除しますか？この条件を使うフィールドは常に表示されるようになります。", // ai 2026-11
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 // include/formutil.php, row 219, 224, 3009, 3013
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "中断",
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 "Close without saving." => "保存せずに閉じます。", // ai 2026-11
 
-// admin/se_showif.php, row 187
+// admin/se_showif.php, row 195
 "How it works" => "しくみ", // ai 2026-11
 
-// admin/se_showif.php, row 188
-"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "「一致」はフィールドの値のいずれかがチェックした値に含まれるとき、「等しくない」はどれも含まれないときに成り立ちます。「入力あり」は空と 0 以外のどの値でも成り立つため、チェックされたチェックボックスでも成り立ちます。", // ai 2026-11
+// admin/se_showif.php, row 196
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. Upper and lower case do not count, accents do. \"is empty\" holds also for a field without a value; in a field stored as a number 0 counts as empty." => "「一致」は、フィールドの値のいずれかがチェックした値に含まれるときに成立し、「等しくない」はどれも含まれないときに成立します。大文字と小文字は区別しませんが、アクセント記号は区別します。「空」は値のないフィールドでも成立します。数値として保存されるフィールドでは 0 も空とみなします。", // ai 2026-11
 
-// admin/se_showif.php, row 189
+// admin/se_showif.php, row 197
+"The rules are AA conditions, written as in views. The condition shown below selects nearly the same items in a view; accents and empty values may be compared a little differently. In an AA expression write : as #:." => "ルールは AA の条件で、ビューと同じ書き方をします。下に表示されている条件は、ビューでもほぼ同じ項目を選択します。ただし、アクセント記号や空の値の比較が少し異なる場合があります。AA 式の中では : を #: と書いてください。", // ai 2026-11
+
+// admin/se_showif.php, row 198
 "The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "ルールは利用者がフォームを編集している間、その内容に合わせて変わります。式はフォームを開いたときと項目を保存したときにだけ評価され、常に保存済みの項目に対して評価されます（新しい項目では省略値に対して）。", // ai 2026-11
 
-// admin/se_showif.php, row 190
+// admin/se_showif.php, row 199
 "A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "ルールで非表示になったフィールドは、「フィールドをクリア」のチェックを外さない限り空で保存されます。パスワードフィールド、日付、状態、および式で非表示になったフィールドは値を保持します。", // ai 2026-11
 
-// admin/se_showif.php, row 191
+// admin/se_showif.php, row 200
 "A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "条件を持つフィールドの表示・非表示は、「フィールドトリガー」のスクリプトではなく条件によって決まります。", // ai 2026-11
 
-// admin/se_showif.php, row 192
+// admin/se_showif.php, row 201
 "With an input form template from a view, a field hidden by the expression stays in the source of the page." => "ビューの入力フォームテンプレートを使う場合、式で非表示になったフィールドもページのソースには残ります。", // ai 2026-11
 
-// admin/se_showif.php, row 193
+// admin/se_showif.php, row 202
 "Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "条件は管理画面の項目フォームにだけ適用されます。匿名フォームやインポートでは、必須フィールドは常に必須です。", // ai 2026-11
 
 // admin/se_statistics.php, row 97
@@ -3277,7 +3296,7 @@ return [
 
 // admin/se_views.php, row 149, 203, 223
 // include/formutil.php, row 1818, 1825
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
 "New" => "新規",
@@ -3320,7 +3339,7 @@ return [
 "View items" => "項目を見る", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1429
+// src/Manager.php, row 1420
 "Selected items" => "選択された項目群",
 
 // admin/search_replace.php, row 180
@@ -3441,8 +3460,8 @@ return [
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
-// src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1281
+// src/Import/DetailCatalog.php, row 179
+// src/Manager.php, row 239, 1272
 "Add" => "追加",
 
 // admin/slicedel.php, row 51
@@ -3766,7 +3785,7 @@ return [
 "Import into this slice - whatever file says" => "このスライスにインポート - ファイルの指定に関わらず", // ai 2026-06
 
 // admin/sliceimp.php, row 467
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Dry run" => "試験実行", // ai 2026-06
 
 // admin/sliceimp.php, row 469
@@ -4122,29 +4141,29 @@ return [
 "Show selected users" => "選択した利用者を表示", // ai 2026-06
 
 // admin/write_mail.php, row 124, 274
-// include/mail.php, row 700
+// include/mail.php, row 666
 "Body" => "本文", // ai 2026-06
 
 // admin/write_mail.php, row 125, 275
 "From (email)" => "差出人 (E-メール)", // ai 2026-06
 
 // admin/write_mail.php, row 126, 276
-// include/mail.php, row 702
+// include/mail.php, row 668
 "Reply to (email)" => "返信先 (E-メール)", // ai 2026-06
 
 // admin/write_mail.php, row 127, 277
-// include/mail.php, row 703
+// include/mail.php, row 669
 "Errors to (email)" => "エラー送付先 (E-メール)", // ai 2026-06
 
 // admin/write_mail.php, row 128, 278
 "Sender (email)" => "送信者 (E-メール)", // ai 2026-06
 
 // admin/write_mail.php, row 129, 279
-// include/mail.php, row 694
+// include/mail.php, row 658
 "Language (charset)" => "言語 (文字セット)", // ai 2026-06
 
 // admin/write_mail.php, row 130, 280
-// include/mail.php, row 692
+// include/mail.php, row 656
 "Use HTML" => "HTMLを使用", // ai 2026-06
 
 // admin/write_mail.php, row 131, 271
@@ -4155,8 +4174,8 @@ return [
 
 // admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
-// src/Import/Definition.php, row 92
-// src/Import/DetailConfig.php, row 394
+// src/Import/Definition.php, row 93
+// src/Import/DetailConfig.php, row 385
 "Filter" => "フィルター", // ai 2026-06
 
 // admin/write_mail.php, row 188
@@ -4411,8 +4430,8 @@ return [
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
 // include/logs.php, row 1213
-// src/Import/Definition.php, row 85, 113
-// src/Import/DetailConfig.php, row 188, 202
+// src/Import/Definition.php, row 86, 114
+// src/Import/DetailConfig.php, row 171, 185
 // src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "ソース", // ai 2026-06
@@ -4842,19 +4861,19 @@ return [
 "Transferring the items" => "項目を転送中", // ai 2026-10
 
 // central/installapp.php, row 1368
-// central/optimize.php, row 261
+// central/optimize.php, row 260
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "エラーで停止", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 259
+// central/optimize.php, row 258
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "完了", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 260
+// central/optimize.php, row 259
 "Ended" => "終了", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -4918,13 +4937,13 @@ return [
 "Show the final check" => "最終チェックを表示", // ai 2026-10
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 206
-// src/Import/DetailPage.php, row 938, 947
+// central/optimize.php, row 205
+// src/Import/DetailPage.php, row 989, 998
 "Continue" => "続行", // ai 2026-06
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 207
-// src/Import/DetailPage.php, row 958
+// central/optimize.php, row 206
+// src/Import/DetailPage.php, row 1009
 "End" => "終了", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
@@ -4948,7 +4967,7 @@ return [
 // central/optimize.php, row 85
 "An AA may still be asked - press Continue again in a few minutes." => "まだ問い合わせ中の AA があるかもしれません。数分後にもう一度「続行」を押してください。", // ai 2026-11
 
-// central/optimize.php, row 86, 187
+// central/optimize.php, row 86, 186
 "No such run." => "該当する実行はありません。", // ai 2026-11
 
 // central/optimize.php, row 87
@@ -4969,7 +4988,7 @@ return [
 // central/optimize.php, row 140
 "Run an Optimize task on several AAs" => "複数の AA で最適化タスクを実行", // ai 2026-11
 
-// central/optimize.php, row 148, 171
+// central/optimize.php, row 148, 170
 // src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckOptimizeRuns.php, row 55
 // src/Optimize/CheckQueue.php, row 98, 178
@@ -4984,65 +5003,65 @@ return [
 // central/optimize.php, row 151
 "Repair tests first, repairs only where the test fails, then tests again." => "修復では、まずテストし、テストが失敗した箇所だけを修復してから、もう一度テストします。", // ai 2026-11
 
-// central/optimize.php, row 153, 210
+// central/optimize.php, row 153, 209
 // include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// central/optimize.php, row 159
+// central/optimize.php, row 158
 "An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "有効なトークンがない AA は何も応答しません。先に Central の一覧でトークンを取得してください（有効期間は 1 日です）。", // ai 2026-11
 
-// central/optimize.php, row 160
+// central/optimize.php, row 159
 "Start" => "開始", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Last runs" => "最近の実行", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 // src/Optimize/CheckImports.php, row 151, 155
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Optimize/CheckOptimizeRuns.php, row 54
 "Started" => "開始", // ai 2026-10
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Results" => "結果", // ai 2026-11
 
-// central/optimize.php, row 197
+// central/optimize.php, row 196
 "Started %1 by %2" => "%1 に %2 が開始", // ai 2026-11
 
-// central/optimize.php, row 198
+// central/optimize.php, row 197
 "%1 of %2 AAs done" => "%2 中 %1 の AA が完了", // ai 2026-11
 
-// central/optimize.php, row 208
+// central/optimize.php, row 207
 "The run goes on in the task queue of this AA - you may close this page." => "実行はこの AA のタスクキューで続きます。このページは閉じてもかまいません。", // ai 2026-11
 
-// central/optimize.php, row 210, 229
+// central/optimize.php, row 209, 228
 "Report" => "レポート", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Waiting" => "待機中", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Not asked" => "未問い合わせ", // ai 2026-11
 
-// central/optimize.php, row 225
+// central/optimize.php, row 224
 "The test after the repair comes next." => "次は修復後のテストです。", // ai 2026-11
 
-// central/optimize.php, row 232
+// central/optimize.php, row 231
 "The test after the repair" => "修復後のテスト", // ai 2026-11
 
-// central/optimize.php, row 242
+// central/optimize.php, row 241
 "Another run" => "新しい実行", // ai 2026-11
 
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 "OK - nothing to repair" => "OK - 修復の必要なし", // ai 2026-11
 
-// central/optimize.php, row 249
+// central/optimize.php, row 248
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
 // src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
@@ -5051,37 +5070,37 @@ return [
 // src/Optimize/StateCheckModel.php, row 219
 "Problem" => "問題", // ai 2026-10
 
-// central/optimize.php, row 250
+// central/optimize.php, row 249
 "Repaired" => "修復済み", // ai 2026-11
 
-// central/optimize.php, row 251
+// central/optimize.php, row 250
 "Repair failed" => "修復失敗", // ai 2026-11
 
-// central/optimize.php, row 252
+// central/optimize.php, row 251
 "Not done" => "未実行", // ai 2026-11
 
-// central/optimize.php, row 262
+// central/optimize.php, row 261
 "No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "長い間ステップが進んでいません。この AA のタスクキューは動いていますか？「続行」ですぐに再試行します。", // ai 2026-11
 
-// central/optimize.php, row 263
+// central/optimize.php, row 262
 "Waiting to ask an AA again" => "AA への再問い合わせを待機中", // ai 2026-11
 
-// central/optimize.php, row 264
+// central/optimize.php, row 263
 "Running in the task queue" => "タスクキューで実行中", // ai 2026-11
 
-// central/optimize.php, row 274
+// central/optimize.php, row 273
 "%1 runs another update now." => "%1 は現在別の更新を実行中です。", // ai 2026-11
 
-// central/optimize.php, row 275
+// central/optimize.php, row 274
 "%1 did not answer in time." => "%1 が時間内に応答しませんでした。", // ai 2026-11
 
-// central/optimize.php, row 276
+// central/optimize.php, row 275
 "The user who started the run is no superadmin any more." => "実行を開始した利用者はもうスーパー管理者ではありません。", // ai 2026-11
 
-// central/optimize.php, row 277
+// central/optimize.php, row 276
 "Error %1" => "エラー %1", // ai 2026-11
 
-// central/optimize.php, row 279
+// central/optimize.php, row 278
 "Asked again at %1 - Continue asks now." => "%1 に再度問い合わせます。「続行」で今すぐ問い合わせます。", // ai 2026-11
 
 // central/responder.php, row 112
@@ -5565,7 +5584,7 @@ return [
 "Level count" => "階層数", // ai 2026-06
 
 // include/constedit_util.php, row 137, 140
-// src/Import/Definition.php, row 140
+// src/Import/Definition.php, row 141
 "Select" => "選択", // ai 2026-06
 
 // include/constedit_util.php, row 599
@@ -5980,7 +5999,7 @@ return [
 
 // include/formutil.php, row 1829
 // include/menu.php, row 141
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "変更",
 
@@ -5994,7 +6013,7 @@ return [
 
 // include/formutil.php, row 2223
 // include/stringexpand.php, row 11543, 11566
-// src/Import/DetailCatalog.php, row 150
+// src/Import/DetailCatalog.php, row 178
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "新規", // ai 2026-06
@@ -6250,7 +6269,7 @@ return [
 "Short ID" => "短縮ID", // ai 2026-06
 
 // include/itemfunc.php, row 204
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 "Details" => "詳細", // ai 2026-06
 
 // include/itemfunc.php, row 245
@@ -6653,7 +6672,7 @@ return [
 "Checks" => "チェック", // ai 2026-10
 
 // include/logs.php, row 796, 827
-// src/Import/DetailPage.php, row 300, 367, 800
+// src/Import/DetailPage.php, row 324, 391, 840
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "実行", // ai 2026-10
@@ -6690,7 +6709,7 @@ return [
 
 // include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 825
+// src/Manager.php, row 816
 "Module ID" => "モジュールID", // ai 2026-06
 
 // include/logs.php, row 921
@@ -6730,7 +6749,7 @@ return [
 "Items planned" => "予定された項目", // ai 2026-06
 
 // include/logs.php, row 1095
-// src/Import/DetailPage.php, row 1025
+// src/Import/DetailPage.php, row 1076
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "メッセージ", // ai 2026-06
 
@@ -6753,13 +6772,13 @@ return [
 "Collection" => "コレクション", // ai 2026-06
 
 // include/logs.php, row 1123, 1174, 1186, 1321
-// src/Import/Definition.php, row 154
+// src/Import/Definition.php, row 155
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "詳細", // ai 2026-06
 
 // include/logs.php, row 1173
-// src/Import/Definition.php, row 135, 162
+// src/Import/Definition.php, row 136, 163
 // src/Isds/Registry/Page.php, row 514
 "Status" => "状態", // ai 2026-06
 
@@ -6773,7 +6792,7 @@ return [
 "Errors" => "エラー", // ai 2026-06
 
 // include/logs.php, row 1240
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Outcome" => "結果", // ai 2026-06
 
 // include/logs.php, row 1256
@@ -6796,29 +6815,29 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "理由", // ai 2026-10
 
-// include/mail.php, row 693
+// include/mail.php, row 657
 "Email type" => "メールの種類", // ai 2026-06
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 "— all modules (global) —" => "— すべてのモジュール（全体） —", // ai 2026-10
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "所有者", // ai 2026-06
 
-// include/mail.php, row 698
+// include/mail.php, row 662
 "Description/Result" => "記述/結果", // ai 2026-06
 
-// include/mail.php, row 701
+// include/mail.php, row 667
 "From (email) " => "差出人（E-メール）", // ai 2026-06
 
-// include/mail.php, row 704
+// include/mail.php, row 670
 "Envelop sender (email)" => "エンベロープ送信者（E-メール）", // ai 2026-06
 
-// include/mail.php, row 705
+// include/mail.php, row 671
 // misc/datovka/datovka.php, row 156
 "Attachments" => "添付ファイル", // ai 2026-06
 
@@ -6887,8 +6906,8 @@ return [
 "Filters" => "フィルター", // ai 2026-06
 
 // include/menu.php, row 159
-// src/Import/Definition.php, row 87
-// src/Import/DetailConfig.php, row 359
+// src/Import/Definition.php, row 88
+// src/Import/DetailConfig.php, row 350
 "Mapping" => "マッピング", // ai 2026-06
 
 // include/menu.php, row 160, 224
@@ -6997,7 +7016,7 @@ return [
 "Slice structure" => "スライス構造", // ai 2026-06
 
 // include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
+// src/Import/Definition.php, row 136, 162
 // src/Optimize/CheckImportStores.php, row 53
 // src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "インポート", // ai 2026-06
@@ -7081,7 +7100,7 @@ return [
 "What's working, what isn't — tell the AA team." => "うまくいっていること、いないこと — AAチームにお知らせください。", // ai 2026-06
 
 // include/menu_util.php, row 632
-// src/Import/Definition.php, row 86
+// src/Import/Definition.php, row 87
 "Settings" => "設定", // ai 2026-06
 
 // include/menu_util.php, row 635
@@ -7156,7 +7175,7 @@ return [
 "Array returned" => "配列が返されました", // ai 2026-06
 
 // include/scroller.php, row 87
-// src/Import/DetailPage.php, row 420
+// src/Import/DetailPage.php, row 451
 "Previous" => "前へ", // ai 2026-06
 
 // include/scroller.php, row 296
@@ -7205,10 +7224,6 @@ return [
 
 // include/searchbar.class.php, row 566
 "And" => "かつ", // ai 2026-06
-
-// include/searchbar.class.php, row 580
-// include/searchlib.php, row 53, 56, 129, 138
-"begins with" => "で始まる", // ai 2026-06
 
 // include/searchbar.class.php, row 608
 "Clear" => "クリア", // ai 2026-06
@@ -7286,7 +7301,7 @@ return [
 // include/statestore.php, row 1367
 "select ..." => "選択 ...", // ai 2026-06
 
-// include/searchlib.php, row 371
+// include/searchlib.php, row 448
 "Limit" => "件数制限", // ai 2026-06
 
 // include/slice.class.php, row 428
@@ -8110,7 +8125,7 @@ return [
 "page length (number of items)" => "ページの長さ（項目数）", // ai 2026-06
 
 // slice.php, row 621
-// src/Manager.php, row 890
+// src/Manager.php, row 881
 "No item found" => "項目が見付かりません",
 
 // src/AA_Plannedtask.php, row 72
@@ -8221,43 +8236,43 @@ return [
 // src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "スライスのファイルを閲覧できるのは、そのスライスの編集者だけです", // ai 2026-10
 
-// src/Central/Actionapps.php, row 185
+// src/Central/Actionapps.php, row 180
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "この PHP には AES-GCM (sodium) がありません - ログイントークンを暗号化して保存できません", // ai 2026-10
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not configured" => "未設定", // ai 2026-06
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not authenticated - get a token" => "未認証 - トークンを取得してください", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Authenticated until %1" => "%1 まで認証済み", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Expired - get a token" => "期限切れ - トークンを取得してください", // ai 2026-10
 
-// src/Central/Actionapps.php, row 245
+// src/Central/Actionapps.php, row 236
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "リモートの AA がログインを拒否しました: ユーザー名かパスワードが違う、二段階ログインのアカウントである（Central はまだコードを送れません）、またはそのユーザーがそこでスーパー管理者ではありません", // ai 2026-11
 
-// src/Central/Actionapps.php, row 247
+// src/Central/Actionapps.php, row 238
 "The remote AA gave no login token - update it" => "リモート AA がログイントークンを発行しませんでした - リモート AA を更新してください", // ai 2026-10
 
-// src/Central/Actionapps.php, row 248
+// src/Central/Actionapps.php, row 239
 "The remote AA gave a token for longer than a day - update the remote AA" => "リモート AA が 1 日より長い有効期間のトークンを発行しました - リモート AA を更新してください", // ai 2026-10
 
-// src/Central/Actionapps.php, row 284
+// src/Central/Actionapps.php, row 275
 "Can't get org_name - " => "org_name を取得できません -", // ai 2026-06
 
-// src/Central/Actionapps.php, row 338
+// src/Central/Actionapps.php, row 329
 "Unexpected response from remote AA" => "リモート AA から予期しない応答がありました", // ai 2026-10
 
-// src/Central/Actionapps.php, row 341
+// src/Central/Actionapps.php, row 332
 "This AA does not support this command (update it first)" => "この AA はこのコマンドに対応していません（先に更新してください）", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 344
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "保存されたログイントークンは使用できません（AA_SECRET、データベースのパスワード、またはこの AA のアドレスが変更されました） - ActionApps Central のページでこの AA を再認証してください", // ai 2026-10
 
-// src/Central/Actionapps.php, row 354
+// src/Central/Actionapps.php, row 345
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "この AA のログイントークンがありません - ActionApps Central のページで「認証」を使ってこの AA を認証してください", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -9383,22 +9398,28 @@ return [
 // src/Credential/Store.php, row 55
 "set (%1)" => "設定済み（%1）", // ai 2026-10
 
-// src/Form/ShowConditions.php, row 317
+// src/Form/ShowConditions.php, row 354
 "Fill in the name of the condition." => "条件の名前を入力してください。", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 321
+// src/Form/ShowConditions.php, row 358
 "Another condition of this slice is called %1." => "このスライスには %1 という名前の別の条件があります。", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 333
+// src/Form/ShowConditions.php, row 371
 "The field %1 is not in this slice." => "フィールド %1 はこのスライスにありません。", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 335
+// src/Form/ShowConditions.php, row 373
 "Choose how to compare the field %1." => "フィールド %1 の比較方法を選んでください。", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 337
+// src/Form/ShowConditions.php, row 375
 "Fill in the values of the field %1." => "フィールド %1 の値を入力してください。", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 344
+// src/Form/ShowConditions.php, row 377
+"A value of the field %1 contains both kinds of quotes." => "フィールド %1 の値に、両方の種類の引用符が含まれています。", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 380
+"The value of the field %1 must not contain a backslash." => "フィールド %1 の値にバックスラッシュを含めることはできません。", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 393
 "Add a rule or an expression." => "ルールか式を追加してください。", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
@@ -9416,7 +9437,7 @@ return [
 // src/IO/Grabber/CSV.php, row 94
 // src/IO/Grabber/JsonLD.php, row 104
 // src/IO/Grabber/XML.php, row 108
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "URL of the file" => "ファイルのURL", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 95
@@ -9590,835 +9611,874 @@ return [
 // src/IO/OnPageChanger.php, row 55
 "No permission - no user is authenticated. Try to relogin, please." => "許可がありません - 認証された利用者がいません。再ログインしてください。", // ai 2026-06
 
-// src/Import/Definition.php, row 88
-// src/Import/DetailConfig.php, row 390
+// src/Import/Definition.php, row 89
+// src/Import/DetailConfig.php, row 381
 "Key fields" => "キーフィールド", // ai 2026-10
 
-// src/Import/Definition.php, row 89
-// src/Import/DetailConfig.php, row 391
+// src/Import/Definition.php, row 90
+// src/Import/DetailConfig.php, row 382
 "Store mode" => "保存方法", // ai 2026-10
 
-// src/Import/Definition.php, row 90
-// src/Import/DetailConfig.php, row 392
+// src/Import/Definition.php, row 91
+// src/Import/DetailConfig.php, row 383
 "Validation" => "検証", // ai 2026-10
 
-// src/Import/Definition.php, row 91
-// src/Import/DetailConfig.php, row 393
+// src/Import/Definition.php, row 92
+// src/Import/DetailConfig.php, row 384
 "After a stream" => "ストリーム終了後", // ai 2026-10
 
-// src/Import/Definition.php, row 93
-// src/Import/DetailPage.php, row 604
+// src/Import/Definition.php, row 94
 // src/Optimize/CheckImports.php, row 215
 "Enabled" => "有効", // ai 2026-10
 
-// src/Import/Definition.php, row 113
+// src/Import/Definition.php, row 114
 "The source is changed in the import detail." => "ソースはインポートの詳細で変更します。", // ai 2026-10
 
-// src/Import/Definition.php, row 129
+// src/Import/Definition.php, row 130
 "The slice has no import yet." => "このスライスにはまだインポートがありません。", // ai 2026-10
 
-// src/Import/Definition.php, row 135, 164
+// src/Import/Definition.php, row 136, 165
 "Next plan" => "次回予定", // ai 2026-10
 
-// src/Import/Definition.php, row 367
-"None - the import is disabled" => "なし - インポートは無効です", // ai 2026-10
+// src/Import/Definition.php, row 372
+// src/Import/DetailPage.php, row 766, 772
+"Not planned" => "予定なし", // ai 2026-10
 
-// src/Import/Definition.php, row 370
+// src/Import/Definition.php, row 375
 "Not planned - no task starts it" => "予定なし - 起動するタスクがありません", // ai 2026-10
 
-// src/Import/Definition.php, row 423
+// src/Import/Definition.php, row 428
 "The import needs a name." => "インポートには名前が必要です。", // ai 2026-10
 
-// src/Import/Definition.php, row 427
+// src/Import/Definition.php, row 432
 "The name of an import may not contain a colon (:) or look like an id." => "インポート名にはコロン(:)を含めたり、IDのような形式にしたりできません。", // ai 2026-10
 
-// src/Import/Definition.php, row 430
+// src/Import/Definition.php, row 435
 "Another import of the slice has this name." => "このスライスの別のインポートがこの名前を使用しています。", // ai 2026-10
 
-// src/Import/Definition.php, row 438
+// src/Import/Definition.php, row 443
 "Change the source in the import detail." => "ソースはインポートの詳細で変更してください。", // ai 2026-10
 
-// src/Import/Definition.php, row 446
-// src/Import/DetailPage.php, row 545
+// src/Import/Definition.php, row 451
+// src/Import/DetailPage.php, row 584
 "Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "ここではインポートを実行できません：データベーステーブル（object_text、toexecute）がトランザクション（InnoDB）に対応していません。", // ai 2026-10
 
-// src/Import/Definition.php, row 455
+// src/Import/Definition.php, row 460
 "The mapping of the import is not valid." => "インポートのマッピングが無効です。", // ai 2026-10
 
-// src/Import/Definition.php, row 477
+// src/Import/Definition.php, row 482
 "The import source refused these settings: %1" => "インポートのソースがこれらの設定を拒否しました: %1", // ai 2026-10
 
-// src/Import/Definition.php, row 480
-"Only a user who manages the feeding of the slice may change its imports." => "スライスのインポートを変更できるのは、そのスライスのフィードを管理する利用者のみです。", // ai 2026-10
-
-// src/Import/Definition.php, row 481
-"This import uses API keys, so only a superadmin may change or delete it." => "このインポートはAPIキーを使用するため、変更・削除できるのはスーパー管理者のみです。", // ai 2026-10
-
 // src/Import/Definition.php, row 482
-"The import was not saved - it is not an import of this slice." => "インポートは保存されませんでした - このスライスのインポートではありません。", // ai 2026-10
-
-// src/Import/Definition.php, row 483
-// src/Import/DetailPage.php, row 546
-"The import source is not available." => "インポートのソースを利用できません。", // ai 2026-10
-
-// src/Import/Definition.php, row 484
-"The import source did not give its mapping." => "インポートのソースがマッピングを返しませんでした。", // ai 2026-10
+"The setting \"%1\" of the import source is not valid: %2" => "インポートソースの設定「%1」が無効です: %2", // ai 2026-11
 
 // src/Import/Definition.php, row 485
-"The mapping of the import does not fit the slice." => "インポートのマッピングがスライスに適合しません。", // ai 2026-10
+"Only a user who manages the feeding of the slice may change its imports." => "スライスのインポートを変更できるのは、そのスライスのフィードを管理する利用者のみです。", // ai 2026-10
 
 // src/Import/Definition.php, row 486
-// src/Import/DetailPage.php, row 548
-"A setting of the import source is not valid." => "インポートのソースの設定が無効です。", // ai 2026-10
-
-// src/Import/Definition.php, row 486
-"The setting \"%1\" of the import source is not valid." => "インポートのソースの設定「%1」が無効です。", // ai 2026-10
+"This import uses API keys, so only a superadmin may change or delete it." => "このインポートはAPIキーを使用するため、変更・削除できるのはスーパー管理者のみです。", // ai 2026-10
 
 // src/Import/Definition.php, row 487
-// src/Import/DetailPage.php, row 549
-"The settings name a slice whose feeding you do not manage." => "設定に、フィードを管理していないスライスが指定されています。", // ai 2026-10
-
-// src/Import/Definition.php, row 487
-"The setting \"%1\" names a slice whose feeding you do not manage." => "設定「%1」に、フィードを管理していないスライスが指定されています。", // ai 2026-10
+"The import was not saved - it is not an import of this slice." => "インポートは保存されませんでした - このスライスのインポートではありません。", // ai 2026-10
 
 // src/Import/Definition.php, row 488
-"The settings of the import changed meanwhile. Reload the page and set them again." => "インポートの設定がその間に変更されました。ページを再読み込みして、もう一度設定してください。", // ai 2026-10
+// src/Import/DetailPage.php, row 585
+"The import source is not available." => "インポートのソースを利用できません。", // ai 2026-10
 
 // src/Import/Definition.php, row 489
+"The import source did not give its mapping." => "インポートのソースがマッピングを返しませんでした。", // ai 2026-10
+
+// src/Import/Definition.php, row 490
+"The mapping of the import does not fit the slice." => "インポートのマッピングがスライスに適合しません。", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+// src/Import/DetailPage.php, row 587
+"A setting of the import source is not valid." => "インポートのソースの設定が無効です。", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+"The setting \"%1\" of the import source is not valid." => "インポートのソースの設定「%1」が無効です。", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+// src/Import/DetailPage.php, row 588
+"The settings name a slice whose feeding you do not manage." => "設定に、フィードを管理していないスライスが指定されています。", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+"The setting \"%1\" names a slice whose feeding you do not manage." => "設定「%1」に、フィードを管理していないスライスが指定されています。", // ai 2026-10
+
+// src/Import/Definition.php, row 493
+"The settings of the import changed meanwhile. Reload the page and set them again." => "インポートの設定がその間に変更されました。ページを再読み込みして、もう一度設定してください。", // ai 2026-10
+
+// src/Import/Definition.php, row 494
 "The import source refused these settings." => "インポートのソースがこれらの設定を拒否しました。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 31
+// src/Import/DetailCatalog.php, row 33
 "No catalog yet. Check source lists what the source offers." => "カタログはまだありません。「ソース確認」で、ソースが提供する内容が一覧表示されます。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 37
+// src/Import/DetailCatalog.php, row 39
 "The stored catalog cannot be read. The next check of the source lists it again." => "保存されたカタログを読み取れません。次回のソース確認で再度一覧表示されます。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 41
+// src/Import/DetailCatalog.php, row 48
 "The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "カタログが不完全です：前回の確認ですべてが一覧表示されませんでした（現在 %1 件）。確認で全体が一覧表示されるまで、ソース側の欠落は報告されません。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 42
+// src/Import/DetailCatalog.php, row 49
 "Listed by the check of %1: %2 entries." => "%1 の確認で一覧表示: %2 件。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 47
+// src/Import/DetailCatalog.php, row 54
 "Pages of the catalog" => "カタログのページ", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 74
+// src/Import/DetailCatalog.php, row 55
+"%1 entries, %2 can be added" => "%1 件、うち %2 件を追加可能", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 55
+"%1 entries" => "エントリ %1 件", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 58
+"%1 missing at the source" => "ソースにない: %1 件", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 61
+"%1 renamed at the source" => "ソースで名前変更: %1 件", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 90
 "The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "ストリームをカタログから追加または更新しました。インポートのストリームには、次回のソース確認後に表示されます。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 75
+// src/Import/DetailCatalog.php, row 91
 "The catalog has no such entry. Check the source to list its catalog again." => "カタログにそのエントリーはありません。「ソース確認」でカタログを再度一覧表示してください。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 76, 77
+// src/Import/DetailCatalog.php, row 92, 93
 "Nothing was added from the catalog:" => "カタログから何も追加されませんでした:", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 85
+// src/Import/DetailCatalog.php, row 101
 "This import uses API keys, so only a superadmin may add streams from its catalog." => "このインポートはAPIキーを使用するため、カタログからストリームを追加できるのはスーパー管理者のみです。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 86
+// src/Import/DetailCatalog.php, row 102
 "Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "カタログから追加するには、ソースがストリームを追加するスライスのすべての項目を編集する許可が必要です。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 87
+// src/Import/DetailCatalog.php, row 103
 "The import source cannot add streams from its catalog." => "インポートのソースはカタログからストリームを追加できません。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 88
+// src/Import/DetailCatalog.php, row 104
 "The import source could not be reached or did not answer. Try again later." => "インポート元のソースに接続できないか、応答がありませんでした。後でもう一度お試しください。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 102
+// src/Import/DetailCatalog.php, row 118
 "1 entry is new at the source - no stream comes from it." => "ソースに新しいエントリが1件あります。このエントリから来るストリームはありません。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 103
+// src/Import/DetailCatalog.php, row 119
 "%1 entries are new at the source - no stream comes from them." => "ソースの新しいエントリ: %1 件。これらから来るストリームはありません。", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Missing at the source" => "ソースにありません", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Renamed at the source" => "ソースで名前変更", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124, 143
-// src/Import/DetailPage.php, row 377, 1025, 1046
+// src/Import/DetailCatalog.php, row 140, 169
+// src/Import/DetailPage.php, row 401, 1076, 1097
 "Stream" => "ストリーム", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Catalog key" => "カタログキー", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name of the stream" => "ストリーム名", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name in the catalog" => "カタログ上の名前", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailCatalog.php, row 166
+"%1 entries on this page cannot be added or updated: %2" => "このページの %1 件は追加も更新もできません: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailConfig.php, row 282
 "Key" => "キー", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailPage.php, row 353, 706
 "Updated" => "更新", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 171
+// src/Import/DetailCatalog.php, row 198
+"%1 of %2 entries on this page" => "このページの %2 件中 %1 件", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 199
+"Filter this page" => "このページを絞り込み", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 200
+"Only entries that can be added" => "追加可能なエントリのみ", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 207
 "Catalog of the source" => "ソースのカタログ", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 136
+// src/Import/DetailConfig.php, row 119
 "The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "マッピングをソースから再設定しました。インポートが把握していたストリームの情報（バージョン、インポート時刻、ソースの最終確認）は破棄されたため、次回の実行ですべて読み直します。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 137
+// src/Import/DetailConfig.php, row 120
 "The mapping is the same as the source gives - nothing changed." => "マッピングはソースが提供するものと同じです。変更はありません。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 138, 139
+// src/Import/DetailConfig.php, row 121, 122
 "The mapping was not reset:" => "マッピングはリセットされませんでした:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 140
+// src/Import/DetailConfig.php, row 123
 "The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "設定を保存し、マッピングをソースから再設定しました。実行中の処理があった場合は終了し、インポートが把握していたストリームの情報は破棄されました。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 141
+// src/Import/DetailConfig.php, row 124
 "The settings are the same as stored - nothing changed." => "設定は保存済みのものと同じです。変更はありません。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 142
+// src/Import/DetailConfig.php, row 125
 // src/Isds/Registry/Page.php, row 326
 "The settings were not saved:" => "設定は保存されませんでした:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 144
+// src/Import/DetailConfig.php, row 127
 "Choose a source." => "ソースを選択してください。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 155, 179
+// src/Import/DetailConfig.php, row 138, 162
 "Settings of the source" => "ソースの設定", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 159
+// src/Import/DetailConfig.php, row 142
 "Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "予定された実行は引き続き保存済みの設定で動作します。手動でインポートを実行するには、下の %1 で設定を変更してください。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 161
+// src/Import/DetailConfig.php, row 144
 "Change the settings or the source in %1 below." => "下の %1 で設定またはソースを変更してください。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 188
+// src/Import/DetailConfig.php, row 171
 "No other source is available." => "他に利用できるソースはありません。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 192
+// src/Import/DetailConfig.php, row 175
 "(current)" => "（現在）", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 203
+// src/Import/DetailConfig.php, row 186
 "Show its settings" => "設定を表示", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 204
+// src/Import/DetailConfig.php, row 187
 "Keep the current source" => "現在のソースを維持", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 214
+// src/Import/DetailConfig.php, row 196
 "This source is not available, so its settings cannot be shown. Choose another source above." => "このソースは利用できないため、設定を表示できません。上で別のソースを選択してください。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 222
+// src/Import/DetailConfig.php, row 204
 "The stored settings cannot be read; saving the form stores them again." => "保存済みの設定を読み取れません。フォームを保存すると設定が保存し直されます。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 228
+// src/Import/DetailConfig.php, row 209
 "The source did not describe its settings, so they cannot be changed now." => "ソースが設定を提示しなかったため、現在は変更できません。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 232
+// src/Import/DetailConfig.php, row 214
 "You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "ソースを %1 から %2 に変更しようとしています。保存すると実行中の処理は終了し、インポートが把握しているストリームとカタログの情報は破棄され、マッピングは新しいソースから取得されます。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 233
+// src/Import/DetailConfig.php, row 215
 "Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "ソースを変更しますか？実行中の処理は終了し、インポートが把握しているストリームの情報は破棄され、マッピングは新しいソースから取得されます。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 234
+// src/Import/DetailConfig.php, row 216
 "Change the source and save" => "ソースを変更して保存", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 236
+// src/Import/DetailConfig.php, row 218
 "Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "変更した設定を保存すると、実行中の処理は終了し、インポートが把握しているストリームとカタログの情報は破棄され、マッピングがソースから再設定されます。設定が変わっていなければ何も変わりません。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 237
+// src/Import/DetailConfig.php, row 219
 "Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "設定を保存しますか？変更がある場合、実行中の処理は終了し、インポートが把握しているストリームの情報は破棄され、マッピングがソースから再設定されます。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 238
+// src/Import/DetailConfig.php, row 220
 // src/Isds/Registry/Page.php, row 617
 "Save the settings" => "設定を保存", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 272
+// src/Import/DetailConfig.php, row 263
 "The source has no settings." => "このソースには設定がありません。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 283
+// src/Import/DetailConfig.php, row 274
 "Keys" => "キー", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 285
+// src/Import/DetailConfig.php, row 276
 "The source did not say which keys it needs." => "ソースは必要なキーを示しませんでした。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 288
+// src/Import/DetailConfig.php, row 279
 "The source needs no key." => "このソースにキーは不要です。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailConfig.php, row 282
 // src/Widget/Widget.php, row 848
 "Hint" => "ヒント", // ai 2026-06
 
-// src/Import/DetailConfig.php, row 297
+// src/Import/DetailConfig.php, row 288
 "Key is set" => "キー設定済み", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 298
+// src/Import/DetailConfig.php, row 289
 "Key is damaged" => "キーが破損", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 299
+// src/Import/DetailConfig.php, row 290
 "Key is missing" => "キーがありません", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 305
+// src/Import/DetailConfig.php, row 296
 "The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "キーはサーバー管理者が config.php で設定します。ここでは設定しません。キーがないと、ソースはキーが必要な時点で失敗します。破損したキーは改行を含んでおり、送信されることはありません。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 327
+// src/Import/DetailConfig.php, row 318
 "define one of %1 in config.php" => "config.php で %1 のいずれかを定義してください", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 350
+// src/Import/DetailConfig.php, row 341
 "The mapping of the import cannot be read. Reset it from the source." => "インポートのマッピングを読み取れません。ソースからリセットしてください。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 356
+// src/Import/DetailConfig.php, row 347
 "Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "マッピングをソースからリセットしますか？マッピング、キーフィールド、保存方法、検証、ストリーム終了後の式、フィルターが、ソースの提供するものに置き換えられます。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 357
+// src/Import/DetailConfig.php, row 348
 "Reset mapping from the source" => "マッピングをソースからリセット", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 358
+// src/Import/DetailConfig.php, row 349
 "Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "保存済みの設定に対してソースが提供するとおりに、マッピング、キーフィールド、保存方法、検証、ストリーム終了後の式、フィルターを再設定します。新しいマッピングではインポートが把握していたストリームの情報が破棄されるため、次回の実行ですべて読み直します。実行中、エラーで停止中、または終了処理中は実行できません。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 366
+// src/Import/DetailConfig.php, row 357
 "The mapping has no rows." => "マッピングに行がありません。", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Target" => "対象", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Transformation" => "変換", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 379
+// src/Import/DetailConfig.php, row 370
 "the field the job parameter names" => "ジョブのパラメーターが指定するフィールド", // ai 2026-10
 
-// src/Import/DetailPage.php, row 269
+// src/Import/DetailPage.php, row 293
 "This page is out of date – reload it." => "このページは古くなっています。再読み込みしてください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 282
+// src/Import/DetailPage.php, row 306
 "Last import" => "前回のインポート", // ai 2026-10
 
-// src/Import/DetailPage.php, row 283
+// src/Import/DetailPage.php, row 307
 "Next start" => "次回の開始", // ai 2026-10
 
-// src/Import/DetailPage.php, row 284
+// src/Import/DetailPage.php, row 308
 "Last check of the source" => "ソースの最終確認", // ai 2026-10
 
-// src/Import/DetailPage.php, row 290
+// src/Import/DetailPage.php, row 314
 "Overview" => "概要", // ai 2026-10
 
-// src/Import/DetailPage.php, row 300
+// src/Import/DetailPage.php, row 324
 "Imports every stream." => "すべてのストリームをインポートします。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301, 801
+// src/Import/DetailPage.php, row 325, 841
 "Run changed only" => "変更分のみ実行", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301
+// src/Import/DetailPage.php, row 325
 "Skips the streams the source says did not change." => "ソースが変更なしとするストリームを飛ばします。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302, 367, 802
+// src/Import/DetailPage.php, row 326, 391, 842
 "Check source" => "ソース確認", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302
+// src/Import/DetailPage.php, row 326
 "Asks the source whether it works. Stores nothing." => "ソースが動作するかを問い合わせます。何も保存しません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Reads up to 500 items and shows what it would store. Stores nothing." => "最大500件の項目を読み込み、保存される内容を表示します。何も保存しません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 309
+// src/Import/DetailPage.php, row 333
 "More actions" => "その他の操作", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327, 352
+// src/Import/DetailPage.php, row 351, 376
 "Runs" => "実行履歴", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327
+// src/Import/DetailPage.php, row 351
 "No run yet." => "まだ実行はありません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Took" => "所要時間", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Read" => "読込", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Skipped" => "スキップ", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Filtered out" => "除外", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Item errors" => "項目エラー", // ai 2026-10
 
-// src/Import/DetailPage.php, row 342
+// src/Import/DetailPage.php, row 366
 "working %1" => "うち処理時間 %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 366
+// src/Import/DetailPage.php, row 390
 "The stored state of the streams cannot be read." => "ストリームの保存済み状態を読み取れません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 367
+// src/Import/DetailPage.php, row 391
 "No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "まだインポートまたは確認されたストリームはありません。上の「操作」にある「%1」または「%2」を実行すると、この一覧が埋まります。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 368, 396
+// src/Import/DetailPage.php, row 392, 421
 "Streams" => "ストリーム", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Records" => "レコード", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Last recorded" => "最終記録", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Source checked" => "ソース確認日時", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Data version" => "データバージョン", // ai 2026-10
 
-// src/Import/DetailPage.php, row 390
+// src/Import/DetailPage.php, row 415
 "by the run started %1" => "%1 開始の実行による", // ai 2026-10
 
-// src/Import/DetailPage.php, row 395
+// src/Import/DetailPage.php, row 420
 "Pages of the streams" => "ストリームのページ", // ai 2026-10
 
-// src/Import/DetailPage.php, row 421
+// src/Import/DetailPage.php, row 452
 "Page %1 of %2" => "%1 / %2 ページ", // ai 2026-10
 
-// src/Import/DetailPage.php, row 507
+// src/Import/DetailPage.php, row 545
 "The run is queued. It goes on in the background; reload the page to see how far it got." => "実行をキューに入れました。処理はバックグラウンドで続きます。進み具合はページを再読み込みすると確認できます。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 508
+// src/Import/DetailPage.php, row 546
 "The run goes on - its next step is queued." => "実行は継続中です。次のステップはキューに入っています。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 509
+// src/Import/DetailPage.php, row 547
 "The run is ended. What it imported stays." => "実行を終了しました。インポート済みのデータはそのまま残ります。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 511
+// src/Import/DetailPage.php, row 549
 "No such action." => "そのような操作はありません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 512
+// src/Import/DetailPage.php, row 550
 "Choose a stream of the source." => "ソースのストリームを選択してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 513
-"Not started." => "開始されませんでした。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 515
-"Its last step may still be working. Try again in a few minutes." => "最後のステップがまだ処理中の可能性があります。数分後にもう一度お試しください。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 516
-"This import no longer exists in this slice." => "このインポートはこのスライスにもう存在しません。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 517
-"No such run of this import." => "このインポートにそのような実行はありません。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 518
-"The run is finished already." => "実行はすでに完了しています。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 520
-"The action failed. The log of import failures has its cause." => "操作に失敗しました。原因はインポート失敗ログで確認できます。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "前回の実行はエラーで停止しました。先に「続行」または「終了」を選んでください。予定された開始では自動的に終了されますが、手動の開始では終了されません。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first." => "前回の実行はエラーで停止しました。先に「続行」または「終了」を選んでください。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "前回の実行では長い間ステップが進んでいません。先に「続行」または「終了」を選んでください。予定された開始では自動的に終了されますが、手動の開始では終了されません。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first." => "前回の実行では長い間ステップが進んでいません。先に「続行」または「終了」を選んでください。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 533
-"The last step of the previous run is still finishing. Try again in a few minutes." => "前回の実行の最後のステップがまだ終了処理中です。数分後にもう一度お試しください。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 534
-"Its next step is already on its way." => "次のステップはすでに進行中です。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 535
-"The last run is still running." => "前回の実行はまだ実行中です。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 544
-"Only a user who manages the feeding of the slice may run its imports." => "スライスのインポートを実行できるのは、そのスライスのフィードを管理する利用者だけです。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 547
-"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "インポートの定義を使用できません。マッピングがスライスに合わないか、読み取れません (DEFINITION)。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 550
-"The source has no such stream now." => "ソースには現在そのストリームがありません。", // ai 2026-10
-
 // src/Import/DetailPage.php, row 551
-"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "インポートソースのコードが失敗しました (SOURCE)。クラスと行はインポート失敗ログで確認できます。", // ai 2026-10
+"At most (items) takes a whole number greater than 0, or nothing for all items (500 in a dry run)." => "「最大（項目数）」には 1 以上の整数を入力するか、すべての項目を対象にする場合は空欄にしてください（試験実行では 500）。", // ai 2026-11
 
 // src/Import/DetailPage.php, row 552
-"The first row of the file lacks columns the mapping needs." => "ファイルの1行目に、マッピングに必要な列がありません。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 553
-"The source did not accept the key." => "ソースがキーを受け付けませんでした。", // ai 2026-10
+"Not started." => "開始されませんでした。", // ai 2026-10
 
 // src/Import/DetailPage.php, row 554
-"The key of the source is damaged in the configuration." => "設定内のソースのキーが破損しています。", // ai 2026-10
+"Its last step may still be working. Try again in a few minutes." => "最後のステップがまだ処理中の可能性があります。数分後にもう一度お試しください。", // ai 2026-10
 
 // src/Import/DetailPage.php, row 555
-"The source could not be reached." => "ソースに接続できませんでした。", // ai 2026-10
+"This import no longer exists in this slice." => "このインポートはこのスライスにもう存在しません。", // ai 2026-10
 
 // src/Import/DetailPage.php, row 556
-"The run is finished; it cannot go on." => "実行は完了しているため、続行できません。", // ai 2026-10
+"No such run of this import." => "このインポートにそのような実行はありません。", // ai 2026-10
 
 // src/Import/DetailPage.php, row 557
-"The import is switched off." => "インポートは無効になっています。", // ai 2026-10
-
-// src/Import/DetailPage.php, row 558
-"This import uses API keys, so only a superadmin may do this." => "このインポートは API キーを使用するため、この操作はスーパー管理者のみ行えます。", // ai 2026-10
+"The run is finished already." => "実行はすでに完了しています。", // ai 2026-10
 
 // src/Import/DetailPage.php, row 559
-"The import source cannot tell the versions of its streams, so there is no state of it to record." => "インポートソースはストリームのバージョンを判別できないため、記録する状態がありません。", // ai 2026-10
+"The action failed. The log of import failures has its cause." => "操作に失敗しました。原因はインポート失敗ログで確認できます。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 560
-"The import source refused: %1" => "インポートソースが拒否しました: %1", // ai 2026-10
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "前回の実行はエラーで停止しました。先に「続行」または「終了」を選んでください。予定された開始では自動的に終了されますが、手動の開始では終了されません。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first." => "前回の実行はエラーで停止しました。先に「続行」または「終了」を選んでください。", // ai 2026-10
 
 // src/Import/DetailPage.php, row 571
-"The request to the source failed." => "ソースへのリクエストが失敗しました。", // ai 2026-10
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "前回の実行では長い間ステップが進んでいません。先に「続行」または「終了」を選んでください。予定された開始では自動的に終了されますが、手動の開始では終了されません。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 571
+"No step has worked on the last run for a long time. Continue it or End it first." => "前回の実行では長い間ステップが進んでいません。先に「続行」または「終了」を選んでください。", // ai 2026-10
 
 // src/Import/DetailPage.php, row 572
-"The source is not available now." => "ソースは現在利用できません。", // ai 2026-10
+"The last step of the previous run is still finishing. Try again in a few minutes." => "前回の実行の最後のステップがまだ終了処理中です。数分後にもう一度お試しください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 588
-// src/Import/RunView.php, row 177
-"No import yet" => "まだインポートはありません", // ai 2026-10
+// src/Import/DetailPage.php, row 573
+"Its next step is already on its way." => "次のステップはすでに進行中です。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 574
+"The last run is still running." => "前回の実行はまだ実行中です。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 583
+"Only a user who manages the feeding of the slice may run its imports." => "スライスのインポートを実行できるのは、そのスライスのフィードを管理する利用者だけです。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 586
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "インポートの定義を使用できません。マッピングがスライスに合わないか、読み取れません (DEFINITION)。", // ai 2026-10
 
 // src/Import/DetailPage.php, row 589
-"Latest run: %1" => "最新の実行: %1", // ai 2026-10
+"The source has no such stream now." => "ソースには現在そのストリームがありません。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 590
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "インポートソースのコードが失敗しました (SOURCE)。クラスと行はインポート失敗ログで確認できます。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 591
+"The first row of the file lacks columns the mapping needs." => "ファイルの1行目に、マッピングに必要な列がありません。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 592
+"The source did not accept the key." => "ソースがキーを受け付けませんでした。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 593
+"The key of the source is damaged in the configuration." => "設定内のソースのキーが破損しています。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 594
+"The source could not be reached." => "ソースに接続できませんでした。", // ai 2026-10
 
 // src/Import/DetailPage.php, row 595
+"The database did not store the imported items; the source is not at fault." => "データベースがインポートした項目を保存しませんでした。ソースの問題ではありません。", // ai 2026-11
+
+// src/Import/DetailPage.php, row 596
+"The run is finished; it cannot go on." => "実行は完了しているため、続行できません。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 597
+"The import runs only by hand, so a planned task does not start it." => "このインポートは手動でのみ実行されるため、予定タスクでは開始されません。", // ai 2026-11
+
+// src/Import/DetailPage.php, row 598
+"This import uses API keys, so only a superadmin may do this." => "このインポートは API キーを使用するため、この操作はスーパー管理者のみ行えます。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 599
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "インポートソースはストリームのバージョンを判別できないため、記録する状態がありません。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 600
+"The import source refused: %1" => "インポートソースが拒否しました: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 611
+"The request to the source failed." => "ソースへのリクエストが失敗しました。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 612
+"The source is not available now." => "ソースは現在利用できません。", // ai 2026-10
+
+// src/Import/DetailPage.php, row 628
+// src/Import/RunView.php, row 183
+"No import yet" => "まだインポートはありません", // ai 2026-10
+
+// src/Import/DetailPage.php, row 629
+"Latest run: %1" => "最新の実行: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 635
 "Since then: %1" => "それ以降: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "Source: %1" => "ソース: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "this source is not available" => "このソースは利用できません", // ai 2026-10
 
-// src/Import/DetailPage.php, row 626
+// src/Import/DetailPage.php, row 666
 "First item error:" => "最初の項目エラー:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Latest runs" => "最近の実行", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Outcomes of the latest runs, newest first" => "最近の実行結果（新しい順）", // ai 2026-10
 
-// src/Import/DetailPage.php, row 654
+// src/Import/DetailPage.php, row 694
 "Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "新しい順です。破線の円は何も保存しなかった実行（ソース確認、試験実行、基準記録）です。塗りつぶした四角 %1 は完了前に終了された実行です。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 679
+// src/Import/DetailPage.php, row 719
 "The open run" => "実行中の処理", // ai 2026-10
 
-// src/Import/DetailPage.php, row 681
+// src/Import/DetailPage.php, row 721
 "Streams done: %1 of %2." => "完了したストリーム: %1 / %2。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 684
+// src/Import/DetailPage.php, row 724
 "Now at: %1." => "処理中: %1。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 686
+// src/Import/DetailPage.php, row 726
 "Last progress: %1." => "最終進捗: %1。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 689
+// src/Import/DetailPage.php, row 729
 "Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "操作を行うか、予定タスクが再びインポートを開始するまで（その場合この実行は終了します）、これ以上インポートされません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 690
+// src/Import/DetailPage.php, row 730
 "Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "「続行」は原因を解消したあと停止した箇所から再開します。「終了」は実行を完全に停止し、インポート済みのデータを残します。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 691
+// src/Import/DetailPage.php, row 731
 "No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "長い間ステップが進んでいません。cron がタスクキューを実行していること、そしてその1回分の時間がステップに十分であること（config.php の TOEXECUTE_ALLOWED_TIME）を確認してください。「続行」は今すぐ再試行します。「終了」は実行を完全に停止し、インポート済みのデータを残します。インポートの予定された開始ではこの実行が終了され、新しい実行が始まります。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 692
+// src/Import/DetailPage.php, row 732
 "A step is working now." => "現在ステップを処理中です。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 694
+// src/Import/DetailPage.php, row 734
 "Waiting to try again at %1 after 1 failed try." => "1回失敗したため、%1 に再試行を待っています。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 695
+// src/Import/DetailPage.php, row 735
 "Waiting to try again at %1 after %2 failed tries." => "%2 回失敗したため、%1 に再試行を待っています。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 696
+// src/Import/DetailPage.php, row 736
 "Waiting to try again at %1." => "%1 に再試行を待っています。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 698, 944
+// src/Import/DetailPage.php, row 738, 995
 "Its last step may still be working." => "最後のステップがまだ処理中の可能性があります。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 699
+// src/Import/DetailPage.php, row 739
 "Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "最後のステップが完了せずに停止しました。タスクキューが %1 分以内に再試行します。「今すぐ再試行」を押すとすぐに実行します。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue until %1." => "次のステップは %1 までタスクキューで待機します。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue." => "次のステップはタスクキューで待機しています。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 726
-"The import is disabled, so no planned task starts it." => "インポートが無効なため、予定タスクからは開始されません。", // ai 2026-10
+// src/Import/DetailPage.php, row 766
+"Planned tasks start it only once Enabled is ticked (Edit in the list of imports)." => "予定タスクは「有効」にチェックが入っている場合にのみ開始します（インポート一覧の「編集」）。", // ai 2026-11
 
-// src/Import/DetailPage.php, row 732
-"Not planned" => "予定なし", // ai 2026-10
-
-// src/Import/DetailPage.php, row 733
+// src/Import/DetailPage.php, row 773
 "A planned task calls it, but none has a time to start it." => "予定タスクから呼び出されますが、開始時刻が設定されたタスクがありません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 734
+// src/Import/DetailPage.php, row 774
 "It runs only when you start it. To run it on a schedule, add a planned task." => "手動で開始した場合のみ実行されます。スケジュールに従って実行するには、予定タスクを追加してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 745
+// src/Import/DetailPage.php, row 785
 "Written by hand, a planned task starts it with %1." => "手動で記述する場合、予定タスクは %1 で開始します。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 756
+// src/Import/DetailPage.php, row 796
 "Planned tasks need the Forms permission" => "予定タスクには「フォーム」の許可が必要です", // ai 2026-10
 
-// src/Import/DetailPage.php, row 760
+// src/Import/DetailPage.php, row 800
 "Planned tasks: %1" => "予定タスク: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 761
+// src/Import/DetailPage.php, row 801
 "Planned tasks: %1, next %2" => "予定タスク: %1、次回 %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 763, 778
+// src/Import/DetailPage.php, row 803, 818
 "Schedule" => "スケジュール", // ai 2026-10
 
-// src/Import/DetailPage.php, row 766
-"(import off)" => "（インポート無効）", // ai 2026-10
+// src/Import/DetailPage.php, row 806
+"(does not start it now)" => "（現在は開始されません）", // ai 2026-11
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "next %1" => "次回 %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "no time set" => "時刻未設定", // ai 2026-10
 
-// src/Import/DetailPage.php, row 774
+// src/Import/DetailPage.php, row 814
 "save the task again to let it start the import" => "インポートを開始できるよう、タスクを保存し直してください", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "queued" => "キュー登録済み", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "not queued" => "キュー未登録", // ai 2026-10
 
-// src/Import/DetailPage.php, row 793
+// src/Import/DetailPage.php, row 833
 "Import %1" => "インポート %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "mode set by an expression" => "式で設定されたモード", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "unknown mode %1" => "不明なモード %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Passed" => "成功", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Failed" => "失敗", // ai 2026-10
 
-// src/Import/DetailPage.php, row 828
+// src/Import/DetailPage.php, row 868
 "Taken from the run list: the stream state holds no newer check result." => "実行一覧から取得: ストリームの状態には、これより新しい確認結果がありません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "The stored result cannot be read." => "保存済みの結果を読み取れません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "Never checked" => "未確認", // ai 2026-10
 
-// src/Import/DetailPage.php, row 849
+// src/Import/DetailPage.php, row 893
 "The mapping of the import cannot be read; no run starts until it is set again." => "インポートのマッピングを読み取れません。再設定されるまで実行は開始されません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 856
+// src/Import/DetailPage.php, row 900
 "The mapping does not fit the slice; no run starts until it is fixed:" => "マッピングがスライスに合いません。修正されるまで実行は開始されません:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 899
+// src/Import/DetailPage.php, row 912
+"The source is not set up yet." => "ソースはまだ設定されていません。", // ai 2026-11
+
+// src/Import/DetailPage.php, row 948
 "No stream is known yet - run the import or check the source first." => "まだ既知のストリームはありません。先にインポートを実行するか、ソースを確認してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 903
+// src/Import/DetailPage.php, row 952
 "One stream" => "単一ストリーム", // ai 2026-10
 
-// src/Import/DetailPage.php, row 904
-"Run the stream" => "ストリームを実行", // ai 2026-10
+// src/Import/DetailPage.php, row 953
+"At most (items)" => "最大（項目数）", // ai 2026-11
 
-// src/Import/DetailPage.php, row 905
+// src/Import/DetailPage.php, row 955
 "Dry run of the stream" => "ストリームの試験実行", // ai 2026-10
 
-// src/Import/DetailPage.php, row 918
+// src/Import/DetailPage.php, row 956
+"Run the stream" => "ストリームを実行", // ai 2026-10
+
+// src/Import/DetailPage.php, row 969
 "Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "ソースの現在のバージョンを、インポート済みとして記録しますか？その後変更されないストリームはインポートされません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 919
+// src/Import/DetailPage.php, row 970
 "Record the current state of the source" => "ソースの現在の状態を記録", // ai 2026-10
 
-// src/Import/DetailPage.php, row 921
+// src/Import/DetailPage.php, row 972
 "Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "インポートせずに各ストリームの現在のバージョンを保存します。以後「変更分のみ実行」は、それ以降に変更された分だけを取り込みます。ソースのデータがすでにスライスにある場合にのみ使用してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 937
+// src/Import/DetailPage.php, row 988
 "No run is open." => "実行中の処理はありません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 943
+// src/Import/DetailPage.php, row 994
 "Its step is working now." => "ステップを現在処理中です。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 947
+// src/Import/DetailPage.php, row 998
 "Try now" => "今すぐ再試行", // ai 2026-10
 
-// src/Import/DetailPage.php, row 957
+// src/Import/DetailPage.php, row 1008
 "End the run for good? What it imported stays; the next run starts from the beginning." => "実行を完全に終了しますか？インポート済みのデータは残り、次回の実行は最初から始まります。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1024
+// src/Import/DetailPage.php, row 1075
 "The first item errors (%1)" => "最初の項目エラー (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1025, 1046
+// src/Import/DetailPage.php, row 1076, 1097
 "Job" => "ジョブ", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1036
+// src/Import/DetailPage.php, row 1087
 "Skipped - the key came out empty (%1)" => "スキップ - キーが空でした (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1046
+// src/Import/DetailPage.php, row 1097
 "Source value" => "ソースの値", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of 1 job." => "フィルターにより、1件のジョブの項目はすべて除外されました。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of %1 jobs." => "フィルターにより、%1 件のジョブの項目はすべて除外されました。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1057
+// src/Import/DetailPage.php, row 1108
 "If those items should be imported, check the filter in Mapping." => "これらの項目をインポートすべき場合は、「マッピング」のフィルターを確認してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in 1 stream; the rest of it was skipped." => "ソースが1件のストリームでループしたため、その残りはスキップされました。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in %1 streams; the rest of each was skipped." => "ソースが %1 件のストリームでループしたため、それぞれの残りはスキップされました。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1067
+// src/Import/DetailPage.php, row 1118
 "The source pages wrongly or changed its paging; check the source, then run the import again." => "ソースのページ送りが誤っているか、ページ送りの方式が変わりました。ソースを確認してから、インポートを再実行してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1082
+// src/Import/DetailPage.php, row 1133
 "Remarks of the source (%1)" => "ソースからの注記 (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1091
+// src/Import/DetailPage.php, row 1142
 "Remark" => "注記", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1099
+// src/Import/DetailPage.php, row 1150
 "The dry run found no item to store." => "試験実行では保存する項目が見つかりませんでした。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1101
+// src/Import/DetailPage.php, row 1152
 "What the dry run would store - the first %1 items" => "試験実行で保存される内容 - 最初の %1 件の項目", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Last try failed:" => "前回の試行は失敗しました:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Error:" => "エラー:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1124
+// src/Import/DetailPage.php, row 1175
 "At: %1" => "場所: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1126
+// src/Import/DetailPage.php, row 1177
 "What to do:" => "対処方法:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1136
+// src/Import/DetailPage.php, row 1187
 "Check the address of the source in its settings, then Continue or End the run." => "ソースの設定でアドレスを確認してから、実行を「続行」または「終了」してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1140
+// src/Import/DetailPage.php, row 1191
 "Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "不足している列が存在するよう列のマッピングまたはファイルを修正してから、「ソース確認」を再度実行してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1141
+// src/Import/DetailPage.php, row 1192
 "Check the key of the source in its settings, then run Check source." => "ソースの設定でキーを確認してから、「ソース確認」を実行してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1142
+// src/Import/DetailPage.php, row 1193
 "Enter the key of the source again in its settings, then run Check source." => "ソースの設定でキーを再入力してから、「ソース確認」を実行してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1143
+// src/Import/DetailPage.php, row 1194
 "The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "ソースに接続できませんでした。設定でアドレスを確認し、正しければ後で実行を「続行」してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1144
+// src/Import/DetailPage.php, row 1195
 "Correct the settings of the source, then run Check source." => "ソースの設定を修正してから、「ソース確認」を実行してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1145
+// src/Import/DetailPage.php, row 1196
 "Choose a stream the source still has, then start the import again." => "ソースにまだ存在するストリームを選択してから、インポートを再度開始してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1146
+// src/Import/DetailPage.php, row 1197
 "Check that every mapped field exists in the slice, then start the import again." => "マッピングされたフィールドがすべてスライスに存在することを確認してから、インポートを再度開始してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1147
+// src/Import/DetailPage.php, row 1198
 "Look the failure up in the log of import failures, then Continue or End the run." => "インポート失敗ログで失敗内容を確認してから、実行を「続行」または「終了」してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1161
+// src/Import/DetailPage.php, row 1199
+"Continue the run later; if the database keeps refusing, tell its administrator." => "実行は後で続行してください。データベースが引き続き拒否する場合は、その管理者に連絡してください。", // ai 2026-11
+
+// src/Import/DetailPage.php, row 1213
 "full run" => "全体実行", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1162
-"one stream (%1)" => "単一ストリーム (%1)", // ai 2026-10
+// src/Import/DetailPage.php, row 1214
+"one stream: %1" => "ストリーム 1 件: %1", // ai 2026-11
 
-// src/Import/DetailPage.php, row 1163
+// src/Import/DetailPage.php, row 1215
 "%1 streams" => "ストリーム: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Baseline only" => "基準記録のみ", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Nothing imported yet. Run changed only takes what changes after this." => "まだ何もインポートされていません。「変更分のみ実行」は、これ以降に変更された分を取り込みます。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207, 1208
+// src/Import/DetailPage.php, row 1259, 1260
 "Imported with item errors" => "項目エラーありでインポート済み", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207
+// src/Import/DetailPage.php, row 1259
 "1 item error in the run that imported it - see Runs." => "インポートした実行で項目エラーが1件あります。「実行履歴」を参照してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1208
+// src/Import/DetailPage.php, row 1260
 "%1 item errors in the run that imported it - see Runs." => "インポートした実行で項目エラーが %1 件あります。「実行履歴」を参照してください。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "Imported" => "インポート済み", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source was asked again after the import." => "インポート後にソースへ再度問い合わせました。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source has not been asked since." => "それ以降ソースへの問い合わせはありません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Checked, not imported yet" => "確認済み、未インポート", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Run imports it; Run changed only too, as it has no version to compare." => "「実行」でインポートされます。比較するバージョンがないため、「変更分のみ実行」でもインポートされます。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "Not seen yet" => "未検出", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "No run has imported or checked it." => "まだどの実行でもインポートも確認もされていません。", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1228
+// src/Import/DetailPage.php, row 1280
 "%1 read" => "読込 %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1229
+// src/Import/DetailPage.php, row 1281
 "%1 new, %2 updated, %3 skipped" => "新規 %1、更新 %2、スキップ %3", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1230
+// src/Import/DetailPage.php, row 1282
 "%1 filtered out" => "除外 %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "dry run - nothing stored" => "試験実行 - 保存なし", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "all streams of the run together" => "実行内の全ストリームの合計", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1250
+// src/Import/DetailPage.php, row 1302
 "None yet - an import records it" => "まだありません - インポート時に記録されます", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1251
+// src/Import/DetailPage.php, row 1303
 "None - the source gives no version" => "なし - ソースがバージョンを提供しません", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1" => "所要 %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1, working %2" => "所要 %1、うち処理 %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1310
+// src/Import/DetailPage.php, row 1362
 "%1 s" => "%1 秒", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313
+// src/Import/DetailPage.php, row 1365
 "%1 min %2 s" => "%1 分 %2 秒", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313, 1315
+// src/Import/DetailPage.php, row 1365, 1367
 // src/Optimize/StateCheckModel.php, row 257
 "%1 min" => "%1 分", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1315
+// src/Import/DetailPage.php, row 1367
 // src/Optimize/StateCheckModel.php, row 258
 "%1 h" => "%1 時間", // ai 2026-10
 
@@ -10476,7 +10536,7 @@ return [
 // src/Import/RunView.php, row 74
 "Stuck — see State Check" => "停止状態 — 状態チェックを参照", // ai 2026-10
 
-// src/Import/RunView.php, row 75, 171
+// src/Import/RunView.php, row 75, 177
 "Running" => "実行中", // ai 2026-10
 
 // src/Import/RunView.php, row 76
@@ -10531,167 +10591,197 @@ return [
 // src/Import/RunView.php, row 131
 "%1 days ago" => "%1 日前", // ai 2026-10
 
-// src/Import/RunView.php, row 159, 162, 165, 169
+// src/Import/RunView.php, row 162, 168, 171, 175
 "Failing" => "失敗中", // ai 2026-10
 
-// src/Import/RunView.php, row 159
+// src/Import/RunView.php, row 162
 "The source of this import is not available, so it cannot run." => "このインポートのソースが利用できないため、実行できません。", // ai 2026-10
 
-// src/Import/RunView.php, row 162
+// src/Import/RunView.php, row 165
+"Not set up" => "未設定", // ai 2026-11
+
+// src/Import/RunView.php, row 165
+"Fill in these settings of the source: %1." => "ソースの次の設定を入力してください: %1。", // ai 2026-11
+
+// src/Import/RunView.php, row 168
 "The mapping does not fit the slice, so no run can start until it is fixed." => "マッピングがスライスに合っていないため、修正するまで実行を開始できません。", // ai 2026-10
 
-// src/Import/RunView.php, row 169
+// src/Import/RunView.php, row 175
 "A run has made no progress for a long time - cron may not be running its steps." => "実行が長時間進んでいません - cron がそのステップを実行していない可能性があります。", // ai 2026-10
 
-// src/Import/RunView.php, row 170, 178, 181, 182, 183
+// src/Import/RunView.php, row 176, 184, 187, 188, 189
 "Needs attention" => "要確認", // ai 2026-10
 
-// src/Import/RunView.php, row 170
+// src/Import/RunView.php, row 176
 "A run failed a step and waits to try again." => "実行がステップで失敗し、再試行を待っています。", // ai 2026-10
 
-// src/Import/RunView.php, row 171
+// src/Import/RunView.php, row 177
 "A run is in progress: %1." => "実行中です: %1。", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "Never ran" => "未実行", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "No run yet. Run starts the first import." => "まだ実行がありません。「実行」で最初のインポートを開始します。", // ai 2026-10
 
-// src/Import/RunView.php, row 177
+// src/Import/RunView.php, row 183
 "Only source checks or dry runs so far - nothing was imported." => "これまではソース確認か試験実行のみで、何もインポートされていません。", // ai 2026-10
 
-// src/Import/RunView.php, row 179
+// src/Import/RunView.php, row 185
 "The last import stopped by an error and was then ended, so the data may be incomplete." => "前回のインポートはエラーで停止した後に終了したため、データが不完全な可能性があります。", // ai 2026-10
 
-// src/Import/RunView.php, row 180
+// src/Import/RunView.php, row 186
 "The last import was ended before it finished, so the data may be incomplete." => "前回のインポートは完了前に終了したため、データが不完全な可能性があります。", // ai 2026-10
 
-// src/Import/RunView.php, row 181
+// src/Import/RunView.php, row 187
 "The last import finished, but 1 item could not be stored." => "前回のインポートは完了しましたが、1 件の項目を保存できませんでした。", // ai 2026-10
 
-// src/Import/RunView.php, row 182
+// src/Import/RunView.php, row 188
 "The last import finished, but %1 items could not be stored." => "前回のインポートは完了しましたが、保存できなかった項目: %1 件。", // ai 2026-10
 
-// src/Import/RunView.php, row 183
+// src/Import/RunView.php, row 189
 "The last full import read nothing - the source may be empty." => "前回の完全インポートでは何も読み込まれませんでした - ソースが空の可能性があります。", // ai 2026-10
 
-// src/Import/RunView.php, row 184, 185
+// src/Import/RunView.php, row 190, 191
 "Healthy" => "正常", // ai 2026-10
 
-// src/Import/RunView.php, row 184
+// src/Import/RunView.php, row 190
 "The last import finished without errors; nothing had changed." => "前回のインポートはエラーなく完了しました。変更はありませんでした。", // ai 2026-10
 
-// src/Import/RunView.php, row 185
+// src/Import/RunView.php, row 191
 "The last import finished without errors (%1 read)." => "前回のインポートはエラーなく完了しました（読込 %1 件）。", // ai 2026-10
 
-// src/Import/RunView.php, row 188
-"Runs only by hand." => "手動でのみ実行します。", // ai 2026-10
-
-// src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "前回の試験実行はエラーで停止しました。対処するまで、これ以上インポートされません。", // ai 2026-10
+// src/Import/RunView.php, row 198
+"The source refuses its settings." => "ソースが設定を拒否しています。", // ai 2026-11
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "前回のソース確認はエラーで停止しました。対処するまで、これ以上インポートされません。", // ai 2026-10
-
-// src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "ソースの状態の記録がエラーで停止しました。対処するまで、これ以上インポートされません。", // ai 2026-10
-
-// src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "前回のインポートはエラーで停止しました。対処するまで、これ以上インポートされません。", // ai 2026-10
-
-// src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "ソース確認失敗 - インポートなし", // ai 2026-10
+"The source refuses its settings: %1" => "ソースが設定を拒否しています: %1", // ai 2026-11
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "ソース確認中", // ai 2026-10
+"The last dry run stopped by an error. Nothing more is imported until you act." => "前回の試験実行はエラーで停止しました。対処するまで、これ以上インポートされません。", // ai 2026-10
+
+// src/Import/RunView.php, row 214
+"The last source check stopped by an error. Nothing more is imported until you act." => "前回のソース確認はエラーで停止しました。対処するまで、これ以上インポートされません。", // ai 2026-10
 
 // src/Import/RunView.php, row 215
-"Source reachable - nothing imported" => "ソースに接続可能 - インポートなし", // ai 2026-10
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "ソースの状態の記録がエラーで停止しました。対処するまで、これ以上インポートされません。", // ai 2026-10
 
-// src/Import/RunView.php, row 217
-"Nothing had changed" => "変更なし", // ai 2026-10
-
-// src/Import/RunView.php, row 218
-"Nothing read" => "読込なし", // ai 2026-10
-
-// src/Import/RunView.php, row 219
-"%1 read, %2 new, %3 changed" => "読込 %1、新規 %2、変更 %3", // ai 2026-10
-
-// src/Import/RunView.php, row 221
-"%1 (nothing stored)" => "%1（何も保存されていません）", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of 1 stream - nothing imported" => "1 ストリームの状態を記録 - インポートなし", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of %1 streams - nothing imported" => "%1 ストリームの状態を記録 - インポートなし", // ai 2026-10
+// src/Import/RunView.php, row 216
+"The last import stopped by an error. Nothing more is imported until you act." => "前回のインポートはエラーで停止しました。対処するまで、これ以上インポートされません。", // ai 2026-10
 
 // src/Import/RunView.php, row 228
-"%1 without a version" => "バージョンなし: %1", // ai 2026-10
+"Source check failed - nothing imported" => "ソース確認失敗 - インポートなし", // ai 2026-10
+
+// src/Import/RunView.php, row 229
+"Source check under way" => "ソース確認中", // ai 2026-10
+
+// src/Import/RunView.php, row 231
+"Source reachable - nothing imported" => "ソースに接続可能 - インポートなし", // ai 2026-10
+
+// src/Import/RunView.php, row 233
+"Nothing had changed" => "変更なし", // ai 2026-10
+
+// src/Import/RunView.php, row 234
+"Nothing read" => "読込なし", // ai 2026-10
+
+// src/Import/RunView.php, row 235
+"%1 read, %2 new, %3 changed" => "読込 %1、新規 %2、変更 %3", // ai 2026-10
 
 // src/Import/RunView.php, row 237
-"changed only" => "変更分のみ", // ai 2026-10
+"%1 (nothing stored)" => "%1（何も保存されていません）", // ai 2026-10
 
-// src/Import/RunView.php, row 238
-"check" => "ソース確認", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of 1 stream - nothing imported" => "1 ストリームの状態を記録 - インポートなし", // ai 2026-10
 
-// src/Import/RunView.php, row 239
-"recording the state of the source" => "ソースの状態の記録", // ai 2026-10
-
-// src/Import/RunView.php, row 242
-"dry run" => "試験実行", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of %1 streams - nothing imported" => "%1 ストリームの状態を記録 - インポートなし", // ai 2026-10
 
 // src/Import/RunView.php, row 244
-"by hand" => "手動", // ai 2026-10
+"%1 without a version" => "バージョンなし: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 245
-"planned" => "予定", // ai 2026-10
+// src/Import/RunView.php, row 254
+"changed only" => "変更分のみ", // ai 2026-10
 
-// src/Import/RunView.php, row 246
-"on an event" => "イベント時", // ai 2026-10
+// src/Import/RunView.php, row 255
+"check" => "ソース確認", // ai 2026-10
+
+// src/Import/RunView.php, row 256
+"recording the state of the source" => "ソースの状態の記録", // ai 2026-10
 
 // src/Import/RunView.php, row 259
-"Disabled - it does not start" => "無効 - 開始されません", // ai 2026-10
+"dry run" => "試験実行", // ai 2026-10
 
-// src/Import/RunView.php, row 268
+// src/Import/RunView.php, row 261
+"first %1 items" => "最初の %1 項目", // ai 2026-11
+
+// src/Import/RunView.php, row 263
+"by hand" => "手動", // ai 2026-10
+
+// src/Import/RunView.php, row 264
+"planned" => "予定", // ai 2026-10
+
+// src/Import/RunView.php, row 265
+"on an event" => "イベント時", // ai 2026-10
+
+// src/Import/RunView.php, row 285
+"Runs only by hand." => "手動でのみ実行します。", // ai 2026-10
+
+// src/Import/RunView.php, row 294
 "No run yet" => "まだ実行がありません", // ai 2026-10
 
-// src/Import/RunView.php, row 280
+// src/Import/RunView.php, row 306
 "1 item error" => "項目エラー 1 件", // ai 2026-10
 
-// src/Import/RunView.php, row 281
+// src/Import/RunView.php, row 307
 "%1 item errors" => "項目エラー %1 件", // ai 2026-10
 
-// src/Import/RunView.php, row 284
+// src/Import/RunView.php, row 310
 "Last import: %1" => "前回のインポート: %1", // ai 2026-10
 
 // src/Import/SliceIdSetting.php, row 22
 "No slice ID" => "スライス ID がありません", // ai 2026-10
 
-// src/Import/Source/CsvColumnsSetting.php, row 31
-"Expected a JSON object {\"column\": \"field id\"}" => "JSON オブジェクト {\"column\": \"field id\"} が必要です", // ai 2026-10
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"no column" => "列がありません", // ai 2026-11
 
-// src/Import/Source/CsvurlSource.php, row 42
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"more than %1 columns" => "%1 列を超えています", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 73
+"not a field the import may fill" => "インポートで入力できないフィールドです", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 74
+"the column name is empty, too long or holds invisible characters" => "列名が空、長すぎる、または不可視文字を含んでいます", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 75
+"the column is named twice" => "列が二重に指定されています", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 89
+"Line %1: %2" => "%1 行目: %2", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 119
+"expected \"column = field id\"" => "「列 = フィールド ID」の形式が必要です", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 43
 "CSV file at a URL" => "URL 上の CSV ファイル", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 47
+// src/Import/Source/CsvurlSource.php, row 48
 "Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "公開された http(s) アドレスにある CSV ファイルの行をインポートします。どの列がどのフィールドに入るかは設定で指定します。", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "http or https only, on a public address, without a user name and password" => "http または https のみ、公開アドレスで、ユーザー名とパスワードなし", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 55
+// src/Import/Source/CsvurlSource.php, row 56
 // src/Widget/Widget.php, row 743, 812
 "Columns" => "列", // ai 2026-06
 
-// src/Import/Source/CsvurlSource.php, row 55
-"JSON object: the column name in the first row => the field it fills" => "JSON オブジェクト: 先頭行の列名 => その列が入るフィールド", // ai 2026-10
-
 // src/Import/Source/CsvurlSource.php, row 56
+"One line per column: its name in the first row = the id of the field it fills" => "1 行に 1 列: 先頭行の列名 = その列で入力するフィールドの ID", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 57
 "Key column" => "キー列", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 56
+// src/Import/Source/CsvurlSource.php, row 57
 "The column that identifies the item; it must be one of the columns" => "項目を識別する列。列のいずれかである必要があります", // ai 2026-10
 
 // src/Isds/Advice.php, row 48
@@ -11412,40 +11502,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "この行はここでは保存できません。", // ai 2026-10
 
-// src/Manager.php, row 821
+// src/Manager.php, row 812
 "Searchbar" => "検索バー", // ai 2026-06
 
-// src/Manager.php, row 822
+// src/Manager.php, row 813
 "Scroller" => "ページ送り", // ai 2026-06
 
-// src/Manager.php, row 823
+// src/Manager.php, row 814
 "Msg" => "メッセージ", // ai 2026-06
 
-// src/Manager.php, row 824
+// src/Manager.php, row 815
 "Bin" => "箱", // ai 2026-06
 
-// src/Manager.php, row 826
+// src/Manager.php, row 817
 "Manager ID" => "マネージャーID", // ai 2026-06
 
-// src/Manager.php, row 1200
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "操作は実行されませんでした - ページ上のボタンを使ってください。", // ai 2026-10
 
-// src/Manager.php, row 1281
+// src/Manager.php, row 1272
 "Edit id" => "編集用ID", // ai 2026-06
 
-// src/Manager.php, row 1295
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Shiftキーを押しながらクリックすると複数行を選択できます", // ai 2026-06
 
-// src/Manager.php, row 1333
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "本当にゴミ箱を空にしますか？", // ai 2026-06
 
-// src/Manager.php, row 1435
+// src/Manager.php, row 1426
 "Go" => "実行", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "項目が選択されていません。絞り込まれた全ての項目に対して操作を実行しますか?", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "Run for %1 items" => "%1 件の項目に対して実行", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47

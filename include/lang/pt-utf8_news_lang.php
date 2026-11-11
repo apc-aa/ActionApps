@@ -18,6 +18,15 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "«é» verifica-se quando um dos valores do campo está entre os valores assinalados, «não é» quando nenhum está. «está preenchido» verifica-se para qualquer valor diferente de vazio e de 0, portanto também para uma caixa de verificação assinalada.", // ai 2026-11
+// "None - the import is disabled" => "Nenhuma - a importação está desativada", // ai 2026-10
+// "The import is switched off." => "A importação está desligada.", // ai 2026-10
+// "The import is disabled, so no planned task starts it." => "A importação está desativada, por isso nenhuma tarefa planeada a inicia.", // ai 2026-10
+// "(import off)" => "(importação desligada)", // ai 2026-10
+// "one stream (%1)" => "um fluxo (%1)", // ai 2026-10
+// "Disabled - it does not start" => "Desativada - não é iniciada", // ai 2026-10
+// "Expected a JSON object {\"column\": \"field id\"}" => "Esperado um objeto JSON {\"column\": \"field id\"}", // ai 2026-10
+// "JSON object: the column name in the first row => the field it fills" => "Objeto JSON: nome da coluna na primeira linha => campo que preenche", // ai 2026-10
 // "Parameter wizard" => "Assistente de parâmetros", // ai 2026-06
 // "the update may still be running on the remote AA - wait, then run Test before retrying" => "a atualização pode ainda estar a decorrer no AA remoto - aguarde e execute «Teste» antes de tentar novamente", // ai 2026-10
 // "Set letterhead to a text" => "Defina letterhead como um texto", // ai 2026-11
@@ -181,7 +190,7 @@ return [
 
 // admin/aa_cron.php, row 47
 // src/AA_Plannedtask.php, row 82, 182
-// src/Import/Definition.php, row 135, 163
+// src/Import/Definition.php, row 136, 164
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Última execução", // ai 2026-06
 
@@ -266,7 +275,7 @@ return [
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // central/optimize.php, row 65
-// src/Import/DetailPage.php, row 510
+// src/Import/DetailPage.php, row 548
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "O formulário expirou; recarregue a página e tente novamente.", // ai 2026-10
 
@@ -415,7 +424,6 @@ return [
 "Off since %1, %2" => "Desligado desde %1, %2", // ai 2026-10
 
 // admin/aa_security.php, row 143
-// src/Import/DetailPage.php, row 726
 "Off" => "Desligado", // ai 2026-10
 
 // admin/aa_security.php, row 148
@@ -440,7 +448,7 @@ return [
 
 // admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 395
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
@@ -643,7 +651,7 @@ return [
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 295
 // central/appstore.php, row 164
-// include/searchlib.php, row 1016
+// include/searchlib.php, row 1103
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Secções", // ai 2026-06
 
@@ -906,12 +914,13 @@ return [
 "Shortcut to edit ITEM" => "Atalho para editar o ARTIGO", // ai 2026-06
 
 // admin/aafinder.php, row 526
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 576
 // include/searchlib.php, row 50, 51, 129, 138
 "contains" => "contém", // ai 2026-06
 
 // admin/aafinder.php, row 527
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 584
 // include/searchlib.php, row 129, 138
 "is" => "é", // ai 2026-06
@@ -1002,12 +1011,12 @@ return [
 // admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
-// admin/se_showif.php, row 123
+// admin/se_showif.php, row 124
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
 // include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 369
+// include/searchlib.php, row 446
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1053,7 +1062,7 @@ return [
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
 // include/stringexpand.php, row 99
-// src/Import/DetailPage.php, row 1025, 1091
+// src/Import/DetailPage.php, row 1076, 1142
 // src/Optimize/CheckImports.php, row 239, 241
 "Code" => "Código", // ai 2026-06
 
@@ -1061,7 +1070,7 @@ return [
 "HTML output" => "Saída HTML", // ai 2026-06
 
 // admin/console.php, row 73, 75
-// central/optimize.php, row 210
+// central/optimize.php, row 209
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "Resultado", // ai 2026-06
 
@@ -1076,7 +1085,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "Aceitar", // ai 2026-06
@@ -1124,7 +1133,7 @@ return [
 // admin/discedit.php, row 135
 // admin/related_sel.php, row 168
 // admin/se_views.php, row 136
-// src/Import/DetailPage.php, row 313
+// src/Import/DetailPage.php, row 337
 // src/Manager.php, row 230
 // src/Optimize/AbstractOptimize.php, row 175
 "Actions" => "Ações", // ai 2026-06
@@ -1154,7 +1163,7 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
@@ -1191,7 +1200,7 @@ return [
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 123, 267
 // include/logs.php, row 1071
-// include/mail.php, row 699
+// include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Assunto", // ai 2026-06
 
@@ -1568,7 +1577,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 370
+// include/searchlib.php, row 447
 "Descending" => "Descendente", // ai 2026-06
 
 // admin/se_compact.php, row 244
@@ -1593,7 +1602,7 @@ return [
 "Can't delete constant group" => "Não é possível eliminar o grupo de constantes", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
-// admin/se_showif.php, row 157
+// admin/se_showif.php, row 162
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1607,7 +1616,7 @@ return [
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckServerRefusals.php, row 67
@@ -1616,6 +1625,7 @@ return [
 // admin/se_constant.php, row 176, 378
 // admin/se_mapping.php, row 179
 // admin/se_profile.php, row 209
+// admin/se_showif.php, row 133
 // include/constants.php, row 453
 // include/constedit.php, row 76
 // include/searchlib.php, row 177
@@ -1794,7 +1804,7 @@ return [
 
 // admin/se_csv_import.php, row 278
 // include/scroller.php, row 86
-// src/Import/DetailPage.php, row 422
+// src/Import/DetailPage.php, row 453
 "Next" => "Seguinte", // ai 2026-06
 
 // admin/se_csv_import2.php, row 199
@@ -1845,8 +1855,8 @@ return [
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
-// src/Import/Definition.php, row 135, 165
-// src/Import/DetailCatalog.php, row 145
+// src/Import/Definition.php, row 136, 166
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Acção", // ai 2026-06
 
@@ -2026,7 +2036,7 @@ return [
 
 // admin/se_export.php, row 167
 // include/exporter.class.php, row 553
-// include/searchlib.php, row 1012
+// include/searchlib.php, row 1099
 "Conditions" => "Condições", // ai 2026-06
 
 // admin/se_export.php, row 167
@@ -2035,7 +2045,7 @@ return [
 
 // admin/se_export.php, row 168
 // include/exporter.class.php, row 554
-// include/searchlib.php, row 1014
+// include/searchlib.php, row 1101
 "Sort" => "Ordenar", // ai 2026-06
 
 // admin/se_export.php, row 168
@@ -2153,7 +2163,7 @@ return [
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
-// src/Import/DetailCatalog.php, row 151
+// src/Import/DetailCatalog.php, row 179
 "Update" => "Actualizar", // ai 2026-06
 
 // admin/se_filters.php, row 169
@@ -2172,7 +2182,7 @@ return [
 "No category defined" => "Nenhuma categoria definida", // ai 2026-06
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1424
+// src/Manager.php, row 1415
 "Select all" => "Seleccionar tudo", // ai 2026-06
 
 // admin/se_filters.php, row 320
@@ -2357,7 +2367,7 @@ return [
 
 // admin/se_inputform.php, row 424, 440, 451, 479, 522
 // include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 // src/Util/Paramwizard.php, row 154
 "Parameters" => "Parâmetros", // ai 2026-06
 
@@ -2433,8 +2443,6 @@ return [
 "8 UPPERCASE letters or _" => "8 letras MAIÚSCULAS ou _", // ai 2026-06
 
 // admin/se_inputform.php, row 515
-// src/Import/DetailPage.php, row 604
-// src/Import/RunView.php, row 188
 "Disabled" => "Desativado", // ai 2026-06
 
 // admin/se_inputform.php, row 516
@@ -2488,10 +2496,10 @@ return [
 "Node" => "Nó", // ai 2026-06
 
 // admin/se_inter_import.php, row 96
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // misc/datovka/datovka.php, row 158
-// src/Import/DetailConfig.php, row 291
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailConfig.php, row 282
+// src/Import/DetailPage.php, row 401
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Util/Note.php, row 64
 "State" => "Estado", // ai 2026-06
@@ -3010,104 +3018,115 @@ return [
 // admin/se_showif.php, row 77
 "The form has expired. Close it and open it again." => "O formulário expirou. Feche-o e abra-o novamente.", // ai 2026-11
 
-// admin/se_showif.php, row 117
-"is checked" => "está assinalado", // ai 2026-11
-
-// admin/se_showif.php, row 117
-"is not checked" => "não está assinalado", // ai 2026-11
-
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchlib.php, row 129, 138
 "is not" => "não é", // ai 2026-06
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
+// include/searchbar.class.php, row 580
+// include/searchlib.php, row 53, 56, 129, 138
+"begins with" => "começa por", // ai 2026-06
+
+// admin/se_showif.php, row 116
 "is filled" => "está preenchido", // ai 2026-11
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 "is empty" => "está vazio", // ai 2026-11
 
-// admin/se_showif.php, row 120
+// admin/se_showif.php, row 119
+"is checked" => "está assinalado", // ai 2026-11
+
+// admin/se_showif.php, row 119
+"is not checked" => "não está assinalado", // ai 2026-11
+
+// admin/se_showif.php, row 121
 "— add a rule —" => "— adicionar uma regra —", // ai 2026-11
 
-// admin/se_showif.php, row 128
+// admin/se_showif.php, row 129
 "Comparison" => "Comparação", // ai 2026-11
 
-// admin/se_showif.php, row 144
+// admin/se_showif.php, row 149
 "Values, one per line" => "Valores, um por linha", // ai 2026-11
 
-// admin/se_showif.php, row 151
+// admin/se_showif.php, row 156
 // include/field.class.php, row 797
 "Display condition" => "Condição de apresentação", // ai 2026-11
 
-// admin/se_showif.php, row 163
+// admin/se_showif.php, row 168
 "Show the field when all of these hold" => "Mostrar o campo quando se verificarem todas estas regras", // ai 2026-11
 
-// admin/se_showif.php, row 165
+// admin/se_showif.php, row 170
 "AA expression (optional)" => "Expressão AA (opcional)", // ai 2026-11
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 // src/Optimize/ImgMeasuring.php, row 54
 "Expression" => "Expressão", // ai 2026-10
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 "Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "Deixe vazio para usar apenas as regras. Quando preenchida, o campo só é mostrado se o resultado não for vazio nem 0. É avaliada quando o formulário é aberto e quando o artigo é guardado.", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Clear the field when a rule hides it" => "Limpar o campo quando uma regra o oculta", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "Desmarcado: um artigo editado mantém o seu valor, um artigo novo recebe o valor predefinido do campo. Um campo oculto pela expressão nunca é alterado.", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 177
+"As a condition of a view" => "Como condição de uma vista", // ai 2026-11
+
+// admin/se_showif.php, row 181
 "Used by" => "Usada por", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 181
 "no field" => "nenhum campo", // ai 2026-11
 
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 "Save the changes to this condition. They apply to every field that uses it." => "Guardar as alterações desta condição. Aplicam-se a todos os campos que a usam.", // ai 2026-11
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 // admin/se_view.php, row 486
 "Save as new" => "Guardar como nova", // ai 2026-06
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 "Keep the original condition as it is and save this form as another condition under a new name." => "Manter a condição original tal como está e guardar este formulário como outra condição com um novo nome.", // ai 2026-11
 
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 "Delete the condition. The fields that use it will be shown always." => "Eliminar a condição. Os campos que a usam passarão a ser sempre mostrados.", // ai 2026-11
 
-// admin/se_showif.php, row 180
+// admin/se_showif.php, row 188
 "Delete the condition? The fields that use it will be shown always." => "Eliminar a condição? Os campos que a usam passarão a ser sempre mostrados.", // ai 2026-11
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 // include/formutil.php, row 219, 224, 3009, 3013
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Cancelar", // ai 2026-06
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 "Close without saving." => "Fechar sem guardar.", // ai 2026-11
 
-// admin/se_showif.php, row 187
+// admin/se_showif.php, row 195
 "How it works" => "Como funciona", // ai 2026-11
 
-// admin/se_showif.php, row 188
-"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "«é» verifica-se quando um dos valores do campo está entre os valores assinalados, «não é» quando nenhum está. «está preenchido» verifica-se para qualquer valor diferente de vazio e de 0, portanto também para uma caixa de verificação assinalada.", // ai 2026-11
+// admin/se_showif.php, row 196
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. Upper and lower case do not count, accents do. \"is empty\" holds also for a field without a value; in a field stored as a number 0 counts as empty." => "«é» verifica-se quando um dos valores do campo está entre os valores assinalados; «não é», quando nenhum está. Maiúsculas e minúsculas não contam, os acentos sim. «está vazio» verifica-se também num campo sem valor; num campo guardado como número, 0 conta como vazio.", // ai 2026-11
 
-// admin/se_showif.php, row 189
+// admin/se_showif.php, row 197
+"The rules are AA conditions, written as in views. The condition shown below selects nearly the same items in a view; accents and empty values may be compared a little differently. In an AA expression write : as #:." => "As regras são condições do AA, escritas como nas vistas. A condição apresentada abaixo seleciona quase os mesmos artigos numa vista; os acentos e os valores vazios podem ser comparados de forma ligeiramente diferente. Numa expressão do AA, escreva : como #:.", // ai 2026-11
+
+// admin/se_showif.php, row 198
 "The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "As regras acompanham o formulário enquanto o utilizador o edita. A expressão só é avaliada quando o formulário é aberto e quando o artigo é guardado, sempre sobre o artigo guardado (num artigo novo: sobre os valores predefinidos).", // ai 2026-11
 
-// admin/se_showif.php, row 190
+// admin/se_showif.php, row 199
 "A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "Um campo oculto por uma regra é guardado vazio, a menos que «Limpar o campo» esteja desmarcado. Um campo de palavra-passe, as datas, o estado e um campo oculto pela expressão mantêm o seu valor.", // ai 2026-11
 
-// admin/se_showif.php, row 191
+// admin/se_showif.php, row 200
 "A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "Um campo com condição é mostrado e ocultado pela condição, não por um script de «Triggers de campo».", // ai 2026-11
 
-// admin/se_showif.php, row 192
+// admin/se_showif.php, row 201
 "With an input form template from a view, a field hidden by the expression stays in the source of the page." => "Com um modelo de formulário de entrada de uma vista, um campo oculto pela expressão permanece no código-fonte da página.", // ai 2026-11
 
-// admin/se_showif.php, row 193
+// admin/se_showif.php, row 202
 "Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "As condições aplicam-se apenas ao formulário de artigos da administração. Em formulários anónimos e em importações, um campo obrigatório é sempre obrigatório.", // ai 2026-11
 
 // admin/se_statistics.php, row 97
@@ -3264,7 +3283,7 @@ return [
 
 // admin/se_views.php, row 149, 203, 223
 // include/formutil.php, row 1818, 1825
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
 "New" => "Nova", // ai 2026-06
@@ -3307,7 +3326,7 @@ return [
 "View items" => "Ver artigos", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1429
+// src/Manager.php, row 1420
 "Selected items" => "Artigos selecionados", // ai 2026-06
 
 // admin/search_replace.php, row 180
@@ -3428,8 +3447,8 @@ return [
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
-// src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1281
+// src/Import/DetailCatalog.php, row 179
+// src/Manager.php, row 239, 1272
 "Add" => "Adicionar", // ai 2026-06
 
 // admin/slicedel.php, row 51
@@ -3753,7 +3772,7 @@ return [
 "Import into this slice - whatever file says" => "Importar para esta secção - independentemente do que diz o ficheiro", // ai 2026-06
 
 // admin/sliceimp.php, row 467
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Dry run" => "Execução de teste", // ai 2026-06
 
 // admin/sliceimp.php, row 469
@@ -4109,29 +4128,29 @@ return [
 "Show selected users" => "Mostrar utilizadores selecionados", // ai 2026-06
 
 // admin/write_mail.php, row 124, 274
-// include/mail.php, row 700
+// include/mail.php, row 666
 "Body" => "Texto", // ai 2026-06
 
 // admin/write_mail.php, row 125, 275
 "From (email)" => "De (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 126, 276
-// include/mail.php, row 702
+// include/mail.php, row 668
 "Reply to (email)" => "Responder a (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 127, 277
-// include/mail.php, row 703
+// include/mail.php, row 669
 "Errors to (email)" => "Erros para (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 128, 278
 "Sender (email)" => "Remetente (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 129, 279
-// include/mail.php, row 694
+// include/mail.php, row 658
 "Language (charset)" => "Idioma (conjunto de carateres)", // ai 2026-06
 
 // admin/write_mail.php, row 130, 280
-// include/mail.php, row 692
+// include/mail.php, row 656
 "Use HTML" => "Utilizar HTML", // ai 2026-06
 
 // admin/write_mail.php, row 131, 271
@@ -4142,8 +4161,8 @@ return [
 
 // admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
-// src/Import/Definition.php, row 92
-// src/Import/DetailConfig.php, row 394
+// src/Import/Definition.php, row 93
+// src/Import/DetailConfig.php, row 385
 "Filter" => "Filtro", // ai 2026-06
 
 // admin/write_mail.php, row 188
@@ -4398,8 +4417,8 @@ return [
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
 // include/logs.php, row 1213
-// src/Import/Definition.php, row 85, 113
-// src/Import/DetailConfig.php, row 188, 202
+// src/Import/Definition.php, row 86, 114
+// src/Import/DetailConfig.php, row 171, 185
 // src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "Fonte", // ai 2026-06
@@ -4829,19 +4848,19 @@ return [
 "Transferring the items" => "A transferir os artigos", // ai 2026-10
 
 // central/installapp.php, row 1368
-// central/optimize.php, row 261
+// central/optimize.php, row 260
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Parado por um erro", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 259
+// central/optimize.php, row 258
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Concluído", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 260
+// central/optimize.php, row 259
 "Ended" => "Terminado", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -4905,13 +4924,13 @@ return [
 "Show the final check" => "Mostrar a verificação final", // ai 2026-10
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 206
-// src/Import/DetailPage.php, row 938, 947
+// central/optimize.php, row 205
+// src/Import/DetailPage.php, row 989, 998
 "Continue" => "Continuar", // ai 2026-06
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 207
-// src/Import/DetailPage.php, row 958
+// central/optimize.php, row 206
+// src/Import/DetailPage.php, row 1009
 "End" => "Terminar", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
@@ -4935,7 +4954,7 @@ return [
 // central/optimize.php, row 85
 "An AA may still be asked - press Continue again in a few minutes." => "Um AA ainda pode estar a ser consultado - prima «Continuar» de novo dentro de alguns minutos.", // ai 2026-11
 
-// central/optimize.php, row 86, 187
+// central/optimize.php, row 86, 186
 "No such run." => "Execução inexistente.", // ai 2026-11
 
 // central/optimize.php, row 87
@@ -4956,7 +4975,7 @@ return [
 // central/optimize.php, row 140
 "Run an Optimize task on several AAs" => "Executar uma tarefa de «Otimizar» em vários AA", // ai 2026-11
 
-// central/optimize.php, row 148, 171
+// central/optimize.php, row 148, 170
 // src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckOptimizeRuns.php, row 55
 // src/Optimize/CheckQueue.php, row 98, 178
@@ -4971,65 +4990,65 @@ return [
 // central/optimize.php, row 151
 "Repair tests first, repairs only where the test fails, then tests again." => "A reparação testa primeiro, repara só onde o teste falha e depois volta a testar.", // ai 2026-11
 
-// central/optimize.php, row 153, 210
+// central/optimize.php, row 153, 209
 // include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// central/optimize.php, row 159
+// central/optimize.php, row 158
 "An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "Um AA sem token válido não responde - obtenha primeiro o seu token na lista do Central (é válido durante um dia).", // ai 2026-11
 
-// central/optimize.php, row 160
+// central/optimize.php, row 159
 "Start" => "Iniciar", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Last runs" => "Últimas execuções", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 // src/Optimize/CheckImports.php, row 151, 155
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Optimize/CheckOptimizeRuns.php, row 54
 "Started" => "Início", // ai 2026-10
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Results" => "Resultados", // ai 2026-11
 
-// central/optimize.php, row 197
+// central/optimize.php, row 196
 "Started %1 by %2" => "Iniciada em %1 por %2", // ai 2026-11
 
-// central/optimize.php, row 198
+// central/optimize.php, row 197
 "%1 of %2 AAs done" => "%1 de %2 AA concluídos", // ai 2026-11
 
-// central/optimize.php, row 208
+// central/optimize.php, row 207
 "The run goes on in the task queue of this AA - you may close this page." => "A execução prossegue na fila de tarefas deste AA - pode fechar esta página.", // ai 2026-11
 
-// central/optimize.php, row 210, 229
+// central/optimize.php, row 209, 228
 "Report" => "Relatório", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Waiting" => "Em espera", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Not asked" => "Não consultado", // ai 2026-11
 
-// central/optimize.php, row 225
+// central/optimize.php, row 224
 "The test after the repair comes next." => "Segue-se o teste após a reparação.", // ai 2026-11
 
-// central/optimize.php, row 232
+// central/optimize.php, row 231
 "The test after the repair" => "O teste após a reparação", // ai 2026-11
 
-// central/optimize.php, row 242
+// central/optimize.php, row 241
 "Another run" => "Outra execução", // ai 2026-11
 
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 "OK - nothing to repair" => "OK - nada a reparar", // ai 2026-11
 
-// central/optimize.php, row 249
+// central/optimize.php, row 248
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
 // src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
@@ -5038,37 +5057,37 @@ return [
 // src/Optimize/StateCheckModel.php, row 219
 "Problem" => "Problema", // ai 2026-10
 
-// central/optimize.php, row 250
+// central/optimize.php, row 249
 "Repaired" => "Reparado", // ai 2026-11
 
-// central/optimize.php, row 251
+// central/optimize.php, row 250
 "Repair failed" => "Reparação falhada", // ai 2026-11
 
-// central/optimize.php, row 252
+// central/optimize.php, row 251
 "Not done" => "Não realizado", // ai 2026-11
 
-// central/optimize.php, row 262
+// central/optimize.php, row 261
 "No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "Há muito tempo que não chega nenhum passo - a fila de tarefas deste AA está a funcionar? «Continuar» tenta de imediato.", // ai 2026-11
 
-// central/optimize.php, row 263
+// central/optimize.php, row 262
 "Waiting to ask an AA again" => "À espera para voltar a consultar um AA", // ai 2026-11
 
-// central/optimize.php, row 264
+// central/optimize.php, row 263
 "Running in the task queue" => "Em execução na fila de tarefas", // ai 2026-11
 
-// central/optimize.php, row 274
+// central/optimize.php, row 273
 "%1 runs another update now." => "%1 está a executar outra atualização neste momento.", // ai 2026-11
 
-// central/optimize.php, row 275
+// central/optimize.php, row 274
 "%1 did not answer in time." => "%1 não respondeu a tempo.", // ai 2026-11
 
-// central/optimize.php, row 276
+// central/optimize.php, row 275
 "The user who started the run is no superadmin any more." => "O utilizador que iniciou a execução já não é superadministrador.", // ai 2026-11
 
-// central/optimize.php, row 277
+// central/optimize.php, row 276
 "Error %1" => "Erro %1", // ai 2026-11
 
-// central/optimize.php, row 279
+// central/optimize.php, row 278
 "Asked again at %1 - Continue asks now." => "Nova consulta às %1 - «Continuar» consulta já.", // ai 2026-11
 
 // central/responder.php, row 112
@@ -5552,7 +5571,7 @@ return [
 "Level count" => "Número de níveis", // ai 2026-06
 
 // include/constedit_util.php, row 137, 140
-// src/Import/Definition.php, row 140
+// src/Import/Definition.php, row 141
 "Select" => "Selecionar", // ai 2026-06
 
 // include/constedit_util.php, row 599
@@ -5967,7 +5986,7 @@ return [
 
 // include/formutil.php, row 1829
 // include/menu.php, row 141
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Alterar", // ai 2026-06
 
@@ -5981,7 +6000,7 @@ return [
 
 // include/formutil.php, row 2223
 // include/stringexpand.php, row 11543, 11566
-// src/Import/DetailCatalog.php, row 150
+// src/Import/DetailCatalog.php, row 178
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "novo", // ai 2026-06
@@ -6237,7 +6256,7 @@ return [
 "Short ID" => "ID curto", // ai 2026-06
 
 // include/itemfunc.php, row 204
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 "Details" => "Detalhes", // ai 2026-06
 
 // include/itemfunc.php, row 245
@@ -6640,7 +6659,7 @@ return [
 "Checks" => "Verificações", // ai 2026-10
 
 // include/logs.php, row 796, 827
-// src/Import/DetailPage.php, row 300, 367, 800
+// src/Import/DetailPage.php, row 324, 391, 840
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Executar", // ai 2026-10
@@ -6677,7 +6696,7 @@ return [
 
 // include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 825
+// src/Manager.php, row 816
 "Module ID" => "ID do módulo", // ai 2026-06
 
 // include/logs.php, row 921
@@ -6717,7 +6736,7 @@ return [
 "Items planned" => "Artigos planeados", // ai 2026-06
 
 // include/logs.php, row 1095
-// src/Import/DetailPage.php, row 1025
+// src/Import/DetailPage.php, row 1076
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Mensagem", // ai 2026-06
 
@@ -6740,13 +6759,13 @@ return [
 "Collection" => "Coleção", // ai 2026-06
 
 // include/logs.php, row 1123, 1174, 1186, 1321
-// src/Import/Definition.php, row 154
+// src/Import/Definition.php, row 155
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Detalhe", // ai 2026-06
 
 // include/logs.php, row 1173
-// src/Import/Definition.php, row 135, 162
+// src/Import/Definition.php, row 136, 163
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Estado", // ai 2026-06
 
@@ -6760,7 +6779,7 @@ return [
 "Errors" => "Erros", // ai 2026-06
 
 // include/logs.php, row 1240
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Outcome" => "Resultado", // ai 2026-06
 
 // include/logs.php, row 1256
@@ -6783,29 +6802,29 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "Motivo", // ai 2026-10
 
-// include/mail.php, row 693
+// include/mail.php, row 657
 "Email type" => "Tipo de e-mail", // ai 2026-06
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 "— all modules (global) —" => "— todos os módulos (global) —", // ai 2026-10
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Proprietário", // ai 2026-06
 
-// include/mail.php, row 698
+// include/mail.php, row 662
 "Description/Result" => "Descrição/Resultado", // ai 2026-06
 
-// include/mail.php, row 701
+// include/mail.php, row 667
 "From (email) " => "De (e-mail)", // ai 2026-06
 
-// include/mail.php, row 704
+// include/mail.php, row 670
 "Envelop sender (email)" => "Remetente do envelope (e-mail)", // ai 2026-06
 
-// include/mail.php, row 705
+// include/mail.php, row 671
 // misc/datovka/datovka.php, row 156
 "Attachments" => "Anexos", // ai 2026-06
 
@@ -6874,8 +6893,8 @@ return [
 "Filters" => "Filtros", // ai 2026-06
 
 // include/menu.php, row 159
-// src/Import/Definition.php, row 87
-// src/Import/DetailConfig.php, row 359
+// src/Import/Definition.php, row 88
+// src/Import/DetailConfig.php, row 350
 "Mapping" => "Correspondência", // ai 2026-06
 
 // include/menu.php, row 160, 224
@@ -6984,7 +7003,7 @@ return [
 "Slice structure" => "Estrutura da secção", // ai 2026-06
 
 // include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
+// src/Import/Definition.php, row 136, 162
 // src/Optimize/CheckImportStores.php, row 53
 // src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "Importação", // ai 2026-11
@@ -7068,7 +7087,7 @@ return [
 "What's working, what isn't — tell the AA team." => "O que funciona, o que não funciona — diga à equipa do AA.", // ai 2026-06
 
 // include/menu_util.php, row 632
-// src/Import/Definition.php, row 86
+// src/Import/Definition.php, row 87
 "Settings" => "Definições", // ai 2026-06
 
 // include/menu_util.php, row 635
@@ -7143,7 +7162,7 @@ return [
 "Array returned" => "Devolvida uma matriz", // ai 2026-06
 
 // include/scroller.php, row 87
-// src/Import/DetailPage.php, row 420
+// src/Import/DetailPage.php, row 451
 "Previous" => "Anterior", // ai 2026-06
 
 // include/scroller.php, row 296
@@ -7192,10 +7211,6 @@ return [
 
 // include/searchbar.class.php, row 566
 "And" => "E", // ai 2026-06
-
-// include/searchbar.class.php, row 580
-// include/searchlib.php, row 53, 56, 129, 138
-"begins with" => "começa por", // ai 2026-06
 
 // include/searchbar.class.php, row 608
 "Clear" => "Limpar", // ai 2026-06
@@ -7273,7 +7288,7 @@ return [
 // include/statestore.php, row 1367
 "select ..." => "selecionar...", // ai 2026-06
 
-// include/searchlib.php, row 371
+// include/searchlib.php, row 448
 "Limit" => "Limite", // ai 2026-06
 
 // include/slice.class.php, row 428
@@ -8097,7 +8112,7 @@ return [
 "page length (number of items)" => "comprimento da página (número de artigos)", // ai 2026-06
 
 // slice.php, row 621
-// src/Manager.php, row 890
+// src/Manager.php, row 881
 "No item found" => "Nenhum artigo encontrado", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 72
@@ -8208,43 +8223,43 @@ return [
 // src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Só os editores da secção podem navegar pelos seus ficheiros", // ai 2026-10
 
-// src/Central/Actionapps.php, row 185
+// src/Central/Actionapps.php, row 180
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Este PHP não tem AES-GCM (sodium) - o token de início de sessão não pode ser guardado cifrado", // ai 2026-10
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not configured" => "Não configurado", // ai 2026-06
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not authenticated - get a token" => "Não autenticado - obtenha um token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Authenticated until %1" => "Autenticado até %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Expired - get a token" => "Expirado - obtenha um token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 245
+// src/Central/Actionapps.php, row 236
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "O AA remoto recusou o início de sessão: nome de utilizador ou palavra-passe errados, conta com início de sessão em dois passos (o Central ainda não consegue enviar o código), ou o utilizador não é superadministrador lá", // ai 2026-11
 
-// src/Central/Actionapps.php, row 247
+// src/Central/Actionapps.php, row 238
 "The remote AA gave no login token - update it" => "O AA remoto não forneceu um token de início de sessão - atualize-o", // ai 2026-10
 
-// src/Central/Actionapps.php, row 248
+// src/Central/Actionapps.php, row 239
 "The remote AA gave a token for longer than a day - update the remote AA" => "O AA remoto forneceu um token válido por mais de um dia - atualize o AA remoto", // ai 2026-10
 
-// src/Central/Actionapps.php, row 284
+// src/Central/Actionapps.php, row 275
 "Can't get org_name - " => "Não é possível obter org_name -", // ai 2026-06
 
-// src/Central/Actionapps.php, row 338
+// src/Central/Actionapps.php, row 329
 "Unexpected response from remote AA" => "Resposta inesperada do AA remoto", // ai 2026-10
 
-// src/Central/Actionapps.php, row 341
+// src/Central/Actionapps.php, row 332
 "This AA does not support this command (update it first)" => "Este AA não suporta este comando (atualize-o primeiro)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 344
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "O token de início de sessão guardado não pode ser usado (mudou o AA_SECRET, a palavra-passe da base de dados ou o endereço deste AA) - autentique novamente este AA na página ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 354
+// src/Central/Actionapps.php, row 345
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Não há token de início de sessão para este AA - use «Autenticar» na página ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -9370,22 +9385,28 @@ return [
 // src/Credential/Store.php, row 55
 "set (%1)" => "definido (%1)", // ai 2026-10
 
-// src/Form/ShowConditions.php, row 317
+// src/Form/ShowConditions.php, row 354
 "Fill in the name of the condition." => "Preencha o nome da condição.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 321
+// src/Form/ShowConditions.php, row 358
 "Another condition of this slice is called %1." => "Outra condição desta secção chama-se %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 333
+// src/Form/ShowConditions.php, row 371
 "The field %1 is not in this slice." => "O campo %1 não está nesta secção.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 335
+// src/Form/ShowConditions.php, row 373
 "Choose how to compare the field %1." => "Escolha como comparar o campo %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 337
+// src/Form/ShowConditions.php, row 375
 "Fill in the values of the field %1." => "Preencha os valores do campo %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 344
+// src/Form/ShowConditions.php, row 377
+"A value of the field %1 contains both kinds of quotes." => "Um valor do campo %1 contém os dois tipos de aspas.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 380
+"The value of the field %1 must not contain a backslash." => "O valor do campo %1 não pode conter uma barra invertida.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 393
 "Add a rule or an expression." => "Adicione uma regra ou uma expressão.", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
@@ -9403,7 +9424,7 @@ return [
 // src/IO/Grabber/CSV.php, row 94
 // src/IO/Grabber/JsonLD.php, row 104
 // src/IO/Grabber/XML.php, row 108
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "URL of the file" => "URL do ficheiro", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 95
@@ -9577,835 +9598,874 @@ return [
 // src/IO/OnPageChanger.php, row 55
 "No permission - no user is authenticated. Try to relogin, please." => "Sem permissões - nenhum utilizador está autenticado. Tente iniciar sessão novamente, por favor.", // ai 2026-06
 
-// src/Import/Definition.php, row 88
-// src/Import/DetailConfig.php, row 390
+// src/Import/Definition.php, row 89
+// src/Import/DetailConfig.php, row 381
 "Key fields" => "Campos-chave", // ai 2026-10
 
-// src/Import/Definition.php, row 89
-// src/Import/DetailConfig.php, row 391
+// src/Import/Definition.php, row 90
+// src/Import/DetailConfig.php, row 382
 "Store mode" => "Modo de gravação", // ai 2026-10
 
-// src/Import/Definition.php, row 90
-// src/Import/DetailConfig.php, row 392
+// src/Import/Definition.php, row 91
+// src/Import/DetailConfig.php, row 383
 "Validation" => "Validação", // ai 2026-10
 
-// src/Import/Definition.php, row 91
-// src/Import/DetailConfig.php, row 393
+// src/Import/Definition.php, row 92
+// src/Import/DetailConfig.php, row 384
 "After a stream" => "Após um fluxo", // ai 2026-10
 
-// src/Import/Definition.php, row 93
-// src/Import/DetailPage.php, row 604
+// src/Import/Definition.php, row 94
 // src/Optimize/CheckImports.php, row 215
 "Enabled" => "Ativo", // ai 2026-10
 
-// src/Import/Definition.php, row 113
+// src/Import/Definition.php, row 114
 "The source is changed in the import detail." => "A origem é alterada no detalhe da importação.", // ai 2026-10
 
-// src/Import/Definition.php, row 129
+// src/Import/Definition.php, row 130
 "The slice has no import yet." => "A secção ainda não tem nenhuma importação.", // ai 2026-10
 
-// src/Import/Definition.php, row 135, 164
+// src/Import/Definition.php, row 136, 165
 "Next plan" => "Próxima execução", // ai 2026-10
 
-// src/Import/Definition.php, row 367
-"None - the import is disabled" => "Nenhuma - a importação está desativada", // ai 2026-10
+// src/Import/Definition.php, row 372
+// src/Import/DetailPage.php, row 766, 772
+"Not planned" => "Não planeado", // ai 2026-10
 
-// src/Import/Definition.php, row 370
+// src/Import/Definition.php, row 375
 "Not planned - no task starts it" => "Não planeada - nenhuma tarefa a inicia", // ai 2026-10
 
-// src/Import/Definition.php, row 423
+// src/Import/Definition.php, row 428
 "The import needs a name." => "A importação precisa de um nome.", // ai 2026-10
 
-// src/Import/Definition.php, row 427
+// src/Import/Definition.php, row 432
 "The name of an import may not contain a colon (:) or look like an id." => "O nome de uma importação não pode conter dois pontos (:) nem parecer um id.", // ai 2026-10
 
-// src/Import/Definition.php, row 430
+// src/Import/Definition.php, row 435
 "Another import of the slice has this name." => "Outra importação da secção tem este nome.", // ai 2026-10
 
-// src/Import/Definition.php, row 438
+// src/Import/Definition.php, row 443
 "Change the source in the import detail." => "Altere a origem no detalhe da importação.", // ai 2026-10
 
-// src/Import/Definition.php, row 446
-// src/Import/DetailPage.php, row 545
+// src/Import/Definition.php, row 451
+// src/Import/DetailPage.php, row 584
 "Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "As importações não podem ser executadas aqui: as suas tabelas da base de dados (object_text, toexecute) não suportam transações (InnoDB).", // ai 2026-10
 
-// src/Import/Definition.php, row 455
+// src/Import/Definition.php, row 460
 "The mapping of the import is not valid." => "A correspondência da importação não é válida.", // ai 2026-10
 
-// src/Import/Definition.php, row 477
+// src/Import/Definition.php, row 482
 "The import source refused these settings: %1" => "A origem da importação recusou estas definições: %1", // ai 2026-10
 
-// src/Import/Definition.php, row 480
-"Only a user who manages the feeding of the slice may change its imports." => "Só um utilizador que gere a partilha de conteúdos da secção pode alterar as suas importações.", // ai 2026-10
-
-// src/Import/Definition.php, row 481
-"This import uses API keys, so only a superadmin may change or delete it." => "Esta importação usa chaves de API, por isso só um superadministrador a pode alterar ou eliminar.", // ai 2026-10
-
 // src/Import/Definition.php, row 482
-"The import was not saved - it is not an import of this slice." => "A importação não foi guardada - não é uma importação desta secção.", // ai 2026-10
-
-// src/Import/Definition.php, row 483
-// src/Import/DetailPage.php, row 546
-"The import source is not available." => "A origem da importação não está disponível.", // ai 2026-10
-
-// src/Import/Definition.php, row 484
-"The import source did not give its mapping." => "A origem da importação não forneceu a sua correspondência.", // ai 2026-10
+"The setting \"%1\" of the import source is not valid: %2" => "A definição «%1» da origem não é válida: %2", // ai 2026-11
 
 // src/Import/Definition.php, row 485
-"The mapping of the import does not fit the slice." => "A correspondência da importação não se ajusta à secção.", // ai 2026-10
+"Only a user who manages the feeding of the slice may change its imports." => "Só um utilizador que gere a partilha de conteúdos da secção pode alterar as suas importações.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
-// src/Import/DetailPage.php, row 548
-"A setting of the import source is not valid." => "Uma definição da origem da importação não é válida.", // ai 2026-10
-
-// src/Import/Definition.php, row 486
-"The setting \"%1\" of the import source is not valid." => "A definição \"%1\" da origem da importação não é válida.", // ai 2026-10
+"This import uses API keys, so only a superadmin may change or delete it." => "Esta importação usa chaves de API, por isso só um superadministrador a pode alterar ou eliminar.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
-// src/Import/DetailPage.php, row 549
-"The settings name a slice whose feeding you do not manage." => "As definições indicam uma secção cuja partilha de conteúdos não gere.", // ai 2026-10
-
-// src/Import/Definition.php, row 487
-"The setting \"%1\" names a slice whose feeding you do not manage." => "A definição \"%1\" indica uma secção cuja partilha de conteúdos não gere.", // ai 2026-10
+"The import was not saved - it is not an import of this slice." => "A importação não foi guardada - não é uma importação desta secção.", // ai 2026-10
 
 // src/Import/Definition.php, row 488
-"The settings of the import changed meanwhile. Reload the page and set them again." => "As definições da importação foram entretanto alteradas. Recarregue a página e defina-as novamente.", // ai 2026-10
+// src/Import/DetailPage.php, row 585
+"The import source is not available." => "A origem da importação não está disponível.", // ai 2026-10
 
 // src/Import/Definition.php, row 489
+"The import source did not give its mapping." => "A origem da importação não forneceu a sua correspondência.", // ai 2026-10
+
+// src/Import/Definition.php, row 490
+"The mapping of the import does not fit the slice." => "A correspondência da importação não se ajusta à secção.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+// src/Import/DetailPage.php, row 587
+"A setting of the import source is not valid." => "Uma definição da origem da importação não é válida.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+"The setting \"%1\" of the import source is not valid." => "A definição \"%1\" da origem da importação não é válida.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+// src/Import/DetailPage.php, row 588
+"The settings name a slice whose feeding you do not manage." => "As definições indicam uma secção cuja partilha de conteúdos não gere.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+"The setting \"%1\" names a slice whose feeding you do not manage." => "A definição \"%1\" indica uma secção cuja partilha de conteúdos não gere.", // ai 2026-10
+
+// src/Import/Definition.php, row 493
+"The settings of the import changed meanwhile. Reload the page and set them again." => "As definições da importação foram entretanto alteradas. Recarregue a página e defina-as novamente.", // ai 2026-10
+
+// src/Import/Definition.php, row 494
 "The import source refused these settings." => "A origem da importação recusou estas definições.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 31
+// src/Import/DetailCatalog.php, row 33
 "No catalog yet. Check source lists what the source offers." => "Ainda não há catálogo. O botão «Verificar origem» lista o que a origem oferece.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 37
+// src/Import/DetailCatalog.php, row 39
 "The stored catalog cannot be read. The next check of the source lists it again." => "O catálogo guardado não pode ser lido. A próxima verificação da origem volta a listá-lo.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 41
+// src/Import/DetailCatalog.php, row 48
 "The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "O catálogo está incompleto: a última verificação não o listou todo (entradas até agora: %1). Nada é dado como em falta na origem até uma verificação o listar por completo.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 42
+// src/Import/DetailCatalog.php, row 49
 "Listed by the check of %1: %2 entries." => "Listadas pela verificação de %1: %2 entradas.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 47
+// src/Import/DetailCatalog.php, row 54
 "Pages of the catalog" => "Páginas do catálogo", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 74
+// src/Import/DetailCatalog.php, row 55
+"%1 entries, %2 can be added" => "Entradas: %1, podem ser adicionadas: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 55
+"%1 entries" => "Entradas: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 58
+"%1 missing at the source" => "em falta na origem: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 61
+"%1 renamed at the source" => "renomeadas na origem: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 90
 "The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "O fluxo foi adicionado ou atualizado a partir do catálogo. Aparece nos fluxos da importação após a próxima verificação da fonte.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 75
+// src/Import/DetailCatalog.php, row 91
 "The catalog has no such entry. Check the source to list its catalog again." => "O catálogo não tem essa entrada. Verifique a fonte para voltar a listar o catálogo.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 76, 77
+// src/Import/DetailCatalog.php, row 92, 93
 "Nothing was added from the catalog:" => "Nada foi adicionado a partir do catálogo:", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 85
+// src/Import/DetailCatalog.php, row 101
 "This import uses API keys, so only a superadmin may add streams from its catalog." => "Esta importação usa chaves de API, por isso só um superadministrador pode adicionar fluxos a partir do seu catálogo.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 86
+// src/Import/DetailCatalog.php, row 102
 "Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "Adicionar a partir do catálogo exige permissão para editar todos os artigos da secção onde a fonte adiciona os seus fluxos.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 87
+// src/Import/DetailCatalog.php, row 103
 "The import source cannot add streams from its catalog." => "A fonte da importação não pode adicionar fluxos a partir do seu catálogo.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 88
+// src/Import/DetailCatalog.php, row 104
 "The import source could not be reached or did not answer. Try again later." => "Não foi possível contactar a fonte da importação ou esta não respondeu. Tente novamente mais tarde.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 102
+// src/Import/DetailCatalog.php, row 118
 "1 entry is new at the source - no stream comes from it." => "1 entrada é nova na fonte - nenhum fluxo provém dela.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 103
+// src/Import/DetailCatalog.php, row 119
 "%1 entries are new at the source - no stream comes from them." => "Entradas novas na fonte: %1 - nenhum fluxo provém delas.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Missing at the source" => "Em falta na fonte", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Renamed at the source" => "Renomeado na fonte", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124, 143
-// src/Import/DetailPage.php, row 377, 1025, 1046
+// src/Import/DetailCatalog.php, row 140, 169
+// src/Import/DetailPage.php, row 401, 1076, 1097
 "Stream" => "Fluxo", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Catalog key" => "Chave no catálogo", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name of the stream" => "Nome do fluxo", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name in the catalog" => "Nome no catálogo", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailCatalog.php, row 166
+"%1 entries on this page cannot be added or updated: %2" => "Entradas desta página que não podem ser adicionadas nem atualizadas (%1): %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailConfig.php, row 282
 "Key" => "Chave", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailPage.php, row 353, 706
 "Updated" => "Atualizado", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 171
+// src/Import/DetailCatalog.php, row 198
+"%1 of %2 entries on this page" => "Entradas desta página: %1 de %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 199
+"Filter this page" => "Filtrar esta página", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 200
+"Only entries that can be added" => "Só entradas que podem ser adicionadas", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 207
 "Catalog of the source" => "Catálogo da fonte", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 136
+// src/Import/DetailConfig.php, row 119
 "The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "A correspondência foi novamente definida a partir da fonte. O que a importação sabia dos fluxos - versões, horas de importação e a última verificação da fonte - foi descartado, pelo que a próxima execução volta a lê-los todos.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 137
+// src/Import/DetailConfig.php, row 120
 "The mapping is the same as the source gives - nothing changed." => "A correspondência é igual à fornecida pela fonte - nada mudou.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 138, 139
+// src/Import/DetailConfig.php, row 121, 122
 "The mapping was not reset:" => "A correspondência não foi reposta:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 140
+// src/Import/DetailConfig.php, row 123
 "The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "As definições foram guardadas e a correspondência foi novamente definida a partir da fonte. Se havia uma execução aberta, foi terminada, e o que a importação sabia dos fluxos foi descartado.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 141
+// src/Import/DetailConfig.php, row 124
 "The settings are the same as stored - nothing changed." => "As definições são iguais às guardadas - nada mudou.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 142
+// src/Import/DetailConfig.php, row 125
 // src/Isds/Registry/Page.php, row 326
 "The settings were not saved:" => "As definições não foram guardadas:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 144
+// src/Import/DetailConfig.php, row 127
 "Choose a source." => "Escolha uma origem.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 155, 179
+// src/Import/DetailConfig.php, row 138, 162
 "Settings of the source" => "Definições da fonte", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 159
+// src/Import/DetailConfig.php, row 142
 "Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "As execuções planeadas continuam a usar as definições guardadas; para executar a importação manualmente, altere-as em %1 abaixo.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 161
+// src/Import/DetailConfig.php, row 144
 "Change the settings or the source in %1 below." => "Altere as definições ou a fonte em %1 abaixo.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 188
+// src/Import/DetailConfig.php, row 171
 "No other source is available." => "Não há outra fonte disponível.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 192
+// src/Import/DetailConfig.php, row 175
 "(current)" => "(atual)", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 203
+// src/Import/DetailConfig.php, row 186
 "Show its settings" => "Mostrar as definições", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 204
+// src/Import/DetailConfig.php, row 187
 "Keep the current source" => "Manter a fonte atual", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 214
+// src/Import/DetailConfig.php, row 196
 "This source is not available, so its settings cannot be shown. Choose another source above." => "Esta fonte não está disponível, pelo que as suas definições não podem ser mostradas. Escolha outra fonte acima.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 222
+// src/Import/DetailConfig.php, row 204
 "The stored settings cannot be read; saving the form stores them again." => "Não é possível ler as definições guardadas; ao guardar o formulário, são guardadas de novo.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 228
+// src/Import/DetailConfig.php, row 209
 "The source did not describe its settings, so they cannot be changed now." => "A fonte não descreveu as suas definições, pelo que não podem ser alteradas agora.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 232
+// src/Import/DetailConfig.php, row 214
 "You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "Está a mudar a fonte de %1 para %2. Guardar termina a execução aberta, descarta o que a importação sabe dos fluxos e do catálogo e adota a correspondência da nova fonte.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 233
+// src/Import/DetailConfig.php, row 215
 "Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "Mudar a fonte? A execução aberta termina, o que a importação sabe dos fluxos é descartado e a correspondência passa a vir da nova fonte.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 234
+// src/Import/DetailConfig.php, row 216
 "Change the source and save" => "Mudar a fonte e guardar", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 236
+// src/Import/DetailConfig.php, row 218
 "Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "Guardar definições alteradas termina a execução aberta, descarta o que a importação sabe dos fluxos e do catálogo e define novamente a correspondência a partir da fonte. Definições inalteradas não mudam nada.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 237
+// src/Import/DetailConfig.php, row 219
 "Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "Guardar as definições? Se foram alteradas, a execução aberta termina, o que a importação sabe dos fluxos é descartado e a correspondência é novamente definida a partir da fonte.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 238
+// src/Import/DetailConfig.php, row 220
 // src/Isds/Registry/Page.php, row 617
 "Save the settings" => "Guardar as definições", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 272
+// src/Import/DetailConfig.php, row 263
 "The source has no settings." => "A fonte não tem definições.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 283
+// src/Import/DetailConfig.php, row 274
 "Keys" => "Chaves", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 285
+// src/Import/DetailConfig.php, row 276
 "The source did not say which keys it needs." => "A fonte não indicou de que chaves precisa.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 288
+// src/Import/DetailConfig.php, row 279
 "The source needs no key." => "A fonte não precisa de chave.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailConfig.php, row 282
 // src/Widget/Widget.php, row 848
 "Hint" => "Sugestão", // ai 2026-06
 
-// src/Import/DetailConfig.php, row 297
+// src/Import/DetailConfig.php, row 288
 "Key is set" => "Chave definida", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 298
+// src/Import/DetailConfig.php, row 289
 "Key is damaged" => "Chave danificada", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 299
+// src/Import/DetailConfig.php, row 290
 "Key is missing" => "Chave em falta", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 305
+// src/Import/DetailConfig.php, row 296
 "The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "O administrador do servidor define as chaves em config.php, nunca aqui. Sem a sua chave, a fonte falha quando precisa dela; uma chave danificada contém uma quebra de linha e nunca é enviada.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 327
+// src/Import/DetailConfig.php, row 318
 "define one of %1 in config.php" => "defina uma de %1 em config.php", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 350
+// src/Import/DetailConfig.php, row 341
 "The mapping of the import cannot be read. Reset it from the source." => "Não é possível ler a correspondência da importação. Reponha-a a partir da fonte.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 356
+// src/Import/DetailConfig.php, row 347
 "Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "Repor a correspondência a partir da fonte? A correspondência, os campos-chave, o modo de gravação, a validação, a expressão após um fluxo e o filtro são substituídos pelo que a fonte fornece.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 357
+// src/Import/DetailConfig.php, row 348
 "Reset mapping from the source" => "Repor correspondência da fonte", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 358
+// src/Import/DetailConfig.php, row 349
 "Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Define novamente a correspondência, os campos-chave, o modo de gravação, a validação, a expressão após um fluxo e o filtro tal como a fonte os fornece para as definições guardadas. Uma nova correspondência descarta o que a importação sabia dos fluxos, pelo que a próxima execução volta a lê-los todos. É recusado enquanto houver uma execução aberta, parada por um erro ou ainda a terminar.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 366
+// src/Import/DetailConfig.php, row 357
 "The mapping has no rows." => "A correspondência não tem linhas.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Target" => "Destino", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Transformation" => "Transformação", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 379
+// src/Import/DetailConfig.php, row 370
 "the field the job parameter names" => "o campo indicado pelo parâmetro da tarefa", // ai 2026-10
 
-// src/Import/DetailPage.php, row 269
+// src/Import/DetailPage.php, row 293
 "This page is out of date – reload it." => "Esta página está desatualizada – recarregue-a.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 282
+// src/Import/DetailPage.php, row 306
 "Last import" => "Última importação", // ai 2026-10
 
-// src/Import/DetailPage.php, row 283
+// src/Import/DetailPage.php, row 307
 "Next start" => "Próximo início", // ai 2026-10
 
-// src/Import/DetailPage.php, row 284
+// src/Import/DetailPage.php, row 308
 "Last check of the source" => "Última verificação da fonte", // ai 2026-10
 
-// src/Import/DetailPage.php, row 290
+// src/Import/DetailPage.php, row 314
 "Overview" => "Visão geral", // ai 2026-10
 
-// src/Import/DetailPage.php, row 300
+// src/Import/DetailPage.php, row 324
 "Imports every stream." => "Importa todos os fluxos.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301, 801
+// src/Import/DetailPage.php, row 325, 841
 "Run changed only" => "Executar só alterados", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301
+// src/Import/DetailPage.php, row 325
 "Skips the streams the source says did not change." => "Ignora os fluxos que, segundo a fonte, não mudaram.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302, 367, 802
+// src/Import/DetailPage.php, row 326, 391, 842
 "Check source" => "Verificar origem", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302
+// src/Import/DetailPage.php, row 326
 "Asks the source whether it works. Stores nothing." => "Pergunta à fonte se funciona. Não guarda nada.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Reads up to 500 items and shows what it would store. Stores nothing." => "Lê até 500 artigos e mostra o que guardaria. Não guarda nada.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 309
+// src/Import/DetailPage.php, row 333
 "More actions" => "Mais ações", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327, 352
+// src/Import/DetailPage.php, row 351, 376
 "Runs" => "Execuções", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327
+// src/Import/DetailPage.php, row 351
 "No run yet." => "Ainda sem execuções.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Took" => "Duração", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Read" => "Lidos", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Skipped" => "Ignorados", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Filtered out" => "Filtrados", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Item errors" => "Erros de artigos", // ai 2026-10
 
-// src/Import/DetailPage.php, row 342
+// src/Import/DetailPage.php, row 366
 "working %1" => "dos quais %1 de trabalho efetivo", // ai 2026-10
 
-// src/Import/DetailPage.php, row 366
+// src/Import/DetailPage.php, row 390
 "The stored state of the streams cannot be read." => "Não é possível ler o estado guardado dos fluxos.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 367
+// src/Import/DetailPage.php, row 391
 "No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Ainda nenhum fluxo foi importado ou verificado. %1 ou %2 (Ações, acima) preenche esta lista.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 368, 396
+// src/Import/DetailPage.php, row 392, 421
 "Streams" => "Fluxos", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Records" => "Registos", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Last recorded" => "Último registo", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Source checked" => "Origem verificada", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Data version" => "Versão dos dados", // ai 2026-10
 
-// src/Import/DetailPage.php, row 390
+// src/Import/DetailPage.php, row 415
 "by the run started %1" => "pela execução iniciada em %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 395
+// src/Import/DetailPage.php, row 420
 "Pages of the streams" => "Páginas dos fluxos", // ai 2026-10
 
-// src/Import/DetailPage.php, row 421
+// src/Import/DetailPage.php, row 452
 "Page %1 of %2" => "Página %1 de %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 507
+// src/Import/DetailPage.php, row 545
 "The run is queued. It goes on in the background; reload the page to see how far it got." => "A execução foi colocada na fila. Continua em segundo plano; recarregue a página para ver até onde chegou.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 508
+// src/Import/DetailPage.php, row 546
 "The run goes on - its next step is queued." => "A execução continua - o seu próximo passo está na fila.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 509
+// src/Import/DetailPage.php, row 547
 "The run is ended. What it imported stays." => "A execução foi terminada. O que importou mantém-se.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 511
+// src/Import/DetailPage.php, row 549
 "No such action." => "Ação inexistente.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 512
+// src/Import/DetailPage.php, row 550
 "Choose a stream of the source." => "Escolha um fluxo da fonte.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 513
-"Not started." => "Não iniciado.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 515
-"Its last step may still be working. Try again in a few minutes." => "O seu último passo pode ainda estar a decorrer. Tente novamente dentro de alguns minutos.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 516
-"This import no longer exists in this slice." => "Esta importação já não existe nesta secção.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 517
-"No such run of this import." => "Esta importação não tem essa execução.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 518
-"The run is finished already." => "A execução já está concluída.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 520
-"The action failed. The log of import failures has its cause." => "A ação falhou. A causa está no registo de falhas de importação.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "A última execução parou devido a um erro. Primeiro escolha «Continuar» ou «Terminar». Um início planeado termina-a automaticamente; um início manual não.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first." => "A última execução parou devido a um erro. Primeiro escolha «Continuar» ou «Terminar».", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Há muito tempo que nenhum passo trabalha na última execução. Primeiro escolha «Continuar» ou «Terminar». Um início planeado termina-a automaticamente; um início manual não.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first." => "Há muito tempo que nenhum passo trabalha na última execução. Primeiro escolha «Continuar» ou «Terminar».", // ai 2026-10
-
-// src/Import/DetailPage.php, row 533
-"The last step of the previous run is still finishing. Try again in a few minutes." => "O último passo da execução anterior ainda está a terminar. Tente novamente dentro de alguns minutos.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 534
-"Its next step is already on its way." => "O seu próximo passo já está a caminho.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 535
-"The last run is still running." => "A última execução ainda está a decorrer.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 544
-"Only a user who manages the feeding of the slice may run its imports." => "Só um utilizador que gere a partilha de conteúdos da secção pode executar as suas importações.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 547
-"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "A definição da importação não pode ser usada - a sua correspondência não se ajusta à secção ou não pode ser lida (DEFINITION).", // ai 2026-10
-
-// src/Import/DetailPage.php, row 550
-"The source has no such stream now." => "A fonte já não tem esse fluxo.", // ai 2026-10
-
 // src/Import/DetailPage.php, row 551
-"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "O código da fonte da importação falhou (SOURCE). A classe e a linha estão no registo de falhas de importação.", // ai 2026-10
+"At most (items) takes a whole number greater than 0, or nothing for all items (500 in a dry run)." => "«No máximo (artigos)» aceita um número inteiro maior que 0, ou vazio para todos os artigos (500 numa execução de teste).", // ai 2026-11
 
 // src/Import/DetailPage.php, row 552
-"The first row of the file lacks columns the mapping needs." => "A primeira linha do ficheiro não tem colunas de que a correspondência precisa.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 553
-"The source did not accept the key." => "A fonte não aceitou a chave.", // ai 2026-10
+"Not started." => "Não iniciado.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 554
-"The key of the source is damaged in the configuration." => "A chave da fonte está danificada na configuração.", // ai 2026-10
+"Its last step may still be working. Try again in a few minutes." => "O seu último passo pode ainda estar a decorrer. Tente novamente dentro de alguns minutos.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 555
-"The source could not be reached." => "Não foi possível contactar a fonte.", // ai 2026-10
+"This import no longer exists in this slice." => "Esta importação já não existe nesta secção.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 556
-"The run is finished; it cannot go on." => "A execução está concluída; não pode continuar.", // ai 2026-10
+"No such run of this import." => "Esta importação não tem essa execução.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 557
-"The import is switched off." => "A importação está desligada.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 558
-"This import uses API keys, so only a superadmin may do this." => "Esta importação usa chaves de API, por isso só um superadministrador o pode fazer.", // ai 2026-10
+"The run is finished already." => "A execução já está concluída.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 559
-"The import source cannot tell the versions of its streams, so there is no state of it to record." => "A fonte da importação não consegue indicar as versões dos seus fluxos, pelo que não há estado a registar.", // ai 2026-10
+"The action failed. The log of import failures has its cause." => "A ação falhou. A causa está no registo de falhas de importação.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 560
-"The import source refused: %1" => "A fonte da importação recusou: %1", // ai 2026-10
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "A última execução parou devido a um erro. Primeiro escolha «Continuar» ou «Terminar». Um início planeado termina-a automaticamente; um início manual não.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first." => "A última execução parou devido a um erro. Primeiro escolha «Continuar» ou «Terminar».", // ai 2026-10
 
 // src/Import/DetailPage.php, row 571
-"The request to the source failed." => "O pedido à fonte falhou.", // ai 2026-10
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Há muito tempo que nenhum passo trabalha na última execução. Primeiro escolha «Continuar» ou «Terminar». Um início planeado termina-a automaticamente; um início manual não.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 571
+"No step has worked on the last run for a long time. Continue it or End it first." => "Há muito tempo que nenhum passo trabalha na última execução. Primeiro escolha «Continuar» ou «Terminar».", // ai 2026-10
 
 // src/Import/DetailPage.php, row 572
-"The source is not available now." => "A fonte não está disponível agora.", // ai 2026-10
+"The last step of the previous run is still finishing. Try again in a few minutes." => "O último passo da execução anterior ainda está a terminar. Tente novamente dentro de alguns minutos.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 588
-// src/Import/RunView.php, row 177
-"No import yet" => "Ainda sem importações", // ai 2026-10
+// src/Import/DetailPage.php, row 573
+"Its next step is already on its way." => "O seu próximo passo já está a caminho.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 574
+"The last run is still running." => "A última execução ainda está a decorrer.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 583
+"Only a user who manages the feeding of the slice may run its imports." => "Só um utilizador que gere a partilha de conteúdos da secção pode executar as suas importações.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 586
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "A definição da importação não pode ser usada - a sua correspondência não se ajusta à secção ou não pode ser lida (DEFINITION).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 589
-"Latest run: %1" => "Última execução: %1", // ai 2026-10
+"The source has no such stream now." => "A fonte já não tem esse fluxo.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 590
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "O código da fonte da importação falhou (SOURCE). A classe e a linha estão no registo de falhas de importação.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 591
+"The first row of the file lacks columns the mapping needs." => "A primeira linha do ficheiro não tem colunas de que a correspondência precisa.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 592
+"The source did not accept the key." => "A fonte não aceitou a chave.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 593
+"The key of the source is damaged in the configuration." => "A chave da fonte está danificada na configuração.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 594
+"The source could not be reached." => "Não foi possível contactar a fonte.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 595
+"The database did not store the imported items; the source is not at fault." => "A base de dados não guardou os artigos importados; a origem não tem culpa.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 596
+"The run is finished; it cannot go on." => "A execução está concluída; não pode continuar.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 597
+"The import runs only by hand, so a planned task does not start it." => "A importação só é executada manualmente, pelo que uma tarefa planeada não a inicia.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 598
+"This import uses API keys, so only a superadmin may do this." => "Esta importação usa chaves de API, por isso só um superadministrador o pode fazer.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 599
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "A fonte da importação não consegue indicar as versões dos seus fluxos, pelo que não há estado a registar.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 600
+"The import source refused: %1" => "A fonte da importação recusou: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 611
+"The request to the source failed." => "O pedido à fonte falhou.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 612
+"The source is not available now." => "A fonte não está disponível agora.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 628
+// src/Import/RunView.php, row 183
+"No import yet" => "Ainda sem importações", // ai 2026-10
+
+// src/Import/DetailPage.php, row 629
+"Latest run: %1" => "Última execução: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 635
 "Since then: %1" => "Desde então: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "Source: %1" => "Origem: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "this source is not available" => "esta fonte não está disponível", // ai 2026-10
 
-// src/Import/DetailPage.php, row 626
+// src/Import/DetailPage.php, row 666
 "First item error:" => "Primeiro erro de artigo:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Latest runs" => "Últimas execuções", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Outcomes of the latest runs, newest first" => "Resultados das últimas execuções, mais recentes primeiro", // ai 2026-10
 
-// src/Import/DetailPage.php, row 654
+// src/Import/DetailPage.php, row 694
 "Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Mais recentes primeiro. Um círculo tracejado é uma execução que não guardou nada: uma verificação, uma execução de teste ou um registo do estado. Um quadrado cheio %1 é uma execução terminada antes de concluir.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 679
+// src/Import/DetailPage.php, row 719
 "The open run" => "A execução aberta", // ai 2026-10
 
-// src/Import/DetailPage.php, row 681
+// src/Import/DetailPage.php, row 721
 "Streams done: %1 of %2." => "Fluxos concluídos: %1 de %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 684
+// src/Import/DetailPage.php, row 724
 "Now at: %1." => "A processar: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 686
+// src/Import/DetailPage.php, row 726
 "Last progress: %1." => "Último progresso: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 689
+// src/Import/DetailPage.php, row 729
 "Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "Nada mais é importado até intervir ou até uma tarefa planeada iniciar de novo a importação (o que termina esta execução).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 690
+// src/Import/DetailPage.php, row 730
 "Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "«Continuar» retoma onde parou, depois de corrigida a causa; «Terminar» para-a definitivamente e mantém o que foi importado.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 691
+// src/Import/DetailPage.php, row 731
 "No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "Há muito tempo que nenhum passo trabalha nela - verifique se o cron executa a fila de tarefas e se as suas rondas são suficientemente longas para um passo (TOEXECUTE_ALLOWED_TIME em config.php). «Continuar» tenta de novo agora; «Terminar» para-a definitivamente e mantém o que foi importado. Um início planeado da importação termina-a e inicia uma nova execução.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 692
+// src/Import/DetailPage.php, row 732
 "A step is working now." => "Um passo está a decorrer agora.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 694
+// src/Import/DetailPage.php, row 734
 "Waiting to try again at %1 after 1 failed try." => "À espera de nova tentativa às %1 após 1 tentativa falhada.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 695
+// src/Import/DetailPage.php, row 735
 "Waiting to try again at %1 after %2 failed tries." => "À espera de nova tentativa às %1 após tentativas falhadas: %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 696
+// src/Import/DetailPage.php, row 736
 "Waiting to try again at %1." => "À espera de nova tentativa às %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 698, 944
+// src/Import/DetailPage.php, row 738, 995
 "Its last step may still be working." => "O seu último passo pode ainda estar a decorrer.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 699
+// src/Import/DetailPage.php, row 739
 "Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "O seu último passo parou sem terminar. A fila de tarefas tenta de novo dentro de %1 minutos; «Tentar agora» fá-lo de imediato.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue until %1." => "O seu próximo passo aguarda na fila de tarefas até às %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue." => "O seu próximo passo aguarda na fila de tarefas.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 726
-"The import is disabled, so no planned task starts it." => "A importação está desativada, por isso nenhuma tarefa planeada a inicia.", // ai 2026-10
+// src/Import/DetailPage.php, row 766
+"Planned tasks start it only once Enabled is ticked (Edit in the list of imports)." => "As «Tarefas planeadas» só a iniciam depois de assinalar «Ativo» («Editar» na lista de importações).", // ai 2026-11
 
-// src/Import/DetailPage.php, row 732
-"Not planned" => "Não planeado", // ai 2026-10
-
-// src/Import/DetailPage.php, row 733
+// src/Import/DetailPage.php, row 773
 "A planned task calls it, but none has a time to start it." => "Uma tarefa planeada chama-a, mas nenhuma tem hora de início definida.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 734
+// src/Import/DetailPage.php, row 774
 "It runs only when you start it. To run it on a schedule, add a planned task." => "Só é executada quando a inicia. Para a executar segundo um horário, adicione uma tarefa planeada.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 745
+// src/Import/DetailPage.php, row 785
 "Written by hand, a planned task starts it with %1." => "Escrita manualmente, uma tarefa planeada inicia-a com %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 756
+// src/Import/DetailPage.php, row 796
 "Planned tasks need the Forms permission" => "As Tarefas planeadas exigem a permissão Formulários", // ai 2026-10
 
-// src/Import/DetailPage.php, row 760
+// src/Import/DetailPage.php, row 800
 "Planned tasks: %1" => "Tarefas planeadas: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 761
+// src/Import/DetailPage.php, row 801
 "Planned tasks: %1, next %2" => "Tarefas planeadas: %1, próxima %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 763, 778
+// src/Import/DetailPage.php, row 803, 818
 "Schedule" => "Agendar", // ai 2026-10
 
-// src/Import/DetailPage.php, row 766
-"(import off)" => "(importação desligada)", // ai 2026-10
+// src/Import/DetailPage.php, row 806
+"(does not start it now)" => "(de momento não a inicia)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "next %1" => "próxima %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "no time set" => "sem hora definida", // ai 2026-10
 
-// src/Import/DetailPage.php, row 774
+// src/Import/DetailPage.php, row 814
 "save the task again to let it start the import" => "guarde novamente a tarefa para que possa iniciar a importação", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "queued" => "na fila", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "not queued" => "fora da fila", // ai 2026-10
 
-// src/Import/DetailPage.php, row 793
+// src/Import/DetailPage.php, row 833
 "Import %1" => "Importação %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "mode set by an expression" => "modo definido por uma expressão", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "unknown mode %1" => "modo desconhecido %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Passed" => "Aprovado", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Failed" => "Falhou", // ai 2026-10
 
-// src/Import/DetailPage.php, row 828
+// src/Import/DetailPage.php, row 868
 "Taken from the run list: the stream state holds no newer check result." => "Obtido da lista de execuções: o estado dos fluxos não contém resultado de verificação mais recente.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "The stored result cannot be read." => "Não é possível ler o resultado guardado.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "Never checked" => "Nunca verificado", // ai 2026-10
 
-// src/Import/DetailPage.php, row 849
+// src/Import/DetailPage.php, row 893
 "The mapping of the import cannot be read; no run starts until it is set again." => "Não é possível ler a correspondência da importação; nenhuma execução se inicia até ser definida de novo.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 856
+// src/Import/DetailPage.php, row 900
 "The mapping does not fit the slice; no run starts until it is fixed:" => "A correspondência não se ajusta à secção; nenhuma execução se inicia até ser corrigida:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 899
+// src/Import/DetailPage.php, row 912
+"The source is not set up yet." => "A origem ainda não está configurada.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 948
 "No stream is known yet - run the import or check the source first." => "Ainda não se conhece nenhum fluxo - execute primeiro a importação ou verifique a fonte.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 903
+// src/Import/DetailPage.php, row 952
 "One stream" => "Um fluxo", // ai 2026-10
 
-// src/Import/DetailPage.php, row 904
-"Run the stream" => "Executar o fluxo", // ai 2026-10
+// src/Import/DetailPage.php, row 953
+"At most (items)" => "No máximo (artigos)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 905
+// src/Import/DetailPage.php, row 955
 "Dry run of the stream" => "Execução de teste do fluxo", // ai 2026-10
 
-// src/Import/DetailPage.php, row 918
+// src/Import/DetailPage.php, row 956
+"Run the stream" => "Executar o fluxo", // ai 2026-10
+
+// src/Import/DetailPage.php, row 969
 "Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "Registar as versões que a fonte tem agora, como se tivessem sido importadas? Os fluxos que não mudarem depois não serão importados.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 919
+// src/Import/DetailPage.php, row 970
 "Record the current state of the source" => "Registar o estado atual da origem", // ai 2026-10
 
-// src/Import/DetailPage.php, row 921
+// src/Import/DetailPage.php, row 972
 "Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Guarda a versão que cada fluxo tem agora sem importar nada, para que «Executar só alterados» traga depois apenas o que mudar. Use-o só quando os dados da fonte já estiverem na secção.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 937
+// src/Import/DetailPage.php, row 988
 "No run is open." => "Nenhuma execução está aberta.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 943
+// src/Import/DetailPage.php, row 994
 "Its step is working now." => "O seu passo está a decorrer agora.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 947
+// src/Import/DetailPage.php, row 998
 "Try now" => "Tentar agora", // ai 2026-10
 
-// src/Import/DetailPage.php, row 957
+// src/Import/DetailPage.php, row 1008
 "End the run for good? What it imported stays; the next run starts from the beginning." => "Terminar a execução definitivamente? O que importou mantém-se; a próxima execução começa do início.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1024
+// src/Import/DetailPage.php, row 1075
 "The first item errors (%1)" => "Primeiros erros de artigos (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1025, 1046
+// src/Import/DetailPage.php, row 1076, 1097
 "Job" => "Tarefa", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1036
+// src/Import/DetailPage.php, row 1087
 "Skipped - the key came out empty (%1)" => "Ignorados - a chave ficou vazia (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1046
+// src/Import/DetailPage.php, row 1097
 "Source value" => "Valor na origem", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of 1 job." => "O filtro não manteve nenhum artigo de 1 tarefa.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of %1 jobs." => "O filtro não manteve nenhum artigo de %1 tarefas.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1057
+// src/Import/DetailPage.php, row 1108
 "If those items should be imported, check the filter in Mapping." => "Se esses artigos devem ser importados, verifique o filtro em «Correspondência».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in 1 stream; the rest of it was skipped." => "A fonte entrou em ciclo em 1 fluxo; o resto dele foi ignorado.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in %1 streams; the rest of each was skipped." => "A fonte entrou em ciclo em %1 fluxos; o resto de cada um foi ignorado.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1067
+// src/Import/DetailPage.php, row 1118
 "The source pages wrongly or changed its paging; check the source, then run the import again." => "A fonte pagina incorretamente ou mudou a paginação; verifique a fonte e depois execute de novo a importação.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1082
+// src/Import/DetailPage.php, row 1133
 "Remarks of the source (%1)" => "Observações da origem (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1091
+// src/Import/DetailPage.php, row 1142
 "Remark" => "Observação", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1099
+// src/Import/DetailPage.php, row 1150
 "The dry run found no item to store." => "A execução de teste não encontrou nenhum artigo a guardar.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1101
+// src/Import/DetailPage.php, row 1152
 "What the dry run would store - the first %1 items" => "O que a execução de teste guardaria - os primeiros %1 artigos", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Last try failed:" => "A última tentativa falhou:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Error:" => "Erro:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1124
+// src/Import/DetailPage.php, row 1175
 "At: %1" => "Em: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1126
+// src/Import/DetailPage.php, row 1177
 "What to do:" => "O que fazer:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1136
+// src/Import/DetailPage.php, row 1187
 "Check the address of the source in its settings, then Continue or End the run." => "Verifique o endereço da fonte nas suas definições e depois escolha «Continuar» ou «Terminar» na execução.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1140
+// src/Import/DetailPage.php, row 1191
 "Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "Corrija a correspondência de colunas ou o ficheiro para que as colunas em falta existam e depois execute novamente «Verificar origem».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1141
+// src/Import/DetailPage.php, row 1192
 "Check the key of the source in its settings, then run Check source." => "Verifique a chave da fonte nas suas definições e depois execute «Verificar origem».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1142
+// src/Import/DetailPage.php, row 1193
 "Enter the key of the source again in its settings, then run Check source." => "Introduza novamente a chave da fonte nas suas definições e depois execute «Verificar origem».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1143
+// src/Import/DetailPage.php, row 1194
 "The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "Não foi possível contactar a fonte. Verifique o seu endereço nas definições; se estiver correto, escolha mais tarde «Continuar» na execução.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1144
+// src/Import/DetailPage.php, row 1195
 "Correct the settings of the source, then run Check source." => "Corrija as definições da fonte e depois execute «Verificar origem».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1145
+// src/Import/DetailPage.php, row 1196
 "Choose a stream the source still has, then start the import again." => "Escolha um fluxo que a fonte ainda tenha e depois inicie de novo a importação.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1146
+// src/Import/DetailPage.php, row 1197
 "Check that every mapped field exists in the slice, then start the import again." => "Verifique se cada campo da correspondência existe na secção e depois inicie de novo a importação.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1147
+// src/Import/DetailPage.php, row 1198
 "Look the failure up in the log of import failures, then Continue or End the run." => "Procure a falha no registo de falhas de importação e depois escolha «Continuar» ou «Terminar» na execução.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1161
+// src/Import/DetailPage.php, row 1199
+"Continue the run later; if the database keeps refusing, tell its administrator." => "Continue a execução mais tarde; se a base de dados continuar a recusar, informe o respetivo administrador.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 1213
 "full run" => "execução completa", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1162
-"one stream (%1)" => "um fluxo (%1)", // ai 2026-10
+// src/Import/DetailPage.php, row 1214
+"one stream: %1" => "um fluxo: %1", // ai 2026-11
 
-// src/Import/DetailPage.php, row 1163
+// src/Import/DetailPage.php, row 1215
 "%1 streams" => "fluxos: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Baseline only" => "Só estado registado", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Nothing imported yet. Run changed only takes what changes after this." => "Ainda nada importado. «Executar só alterados» traz o que mudar a partir daqui.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207, 1208
+// src/Import/DetailPage.php, row 1259, 1260
 "Imported with item errors" => "Importado com erros de artigos", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207
+// src/Import/DetailPage.php, row 1259
 "1 item error in the run that imported it - see Runs." => "1 erro de artigo na execução que o importou - ver «Execuções».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1208
+// src/Import/DetailPage.php, row 1260
 "%1 item errors in the run that imported it - see Runs." => "Erros de artigos (%1) na execução que o importou - ver «Execuções».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "Imported" => "Importado", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source was asked again after the import." => "A fonte foi consultada de novo após a importação.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source has not been asked since." => "A fonte não foi consultada desde então.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Checked, not imported yet" => "Verificado, ainda não importado", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Run imports it; Run changed only too, as it has no version to compare." => "«Executar» importa-o; «Executar só alterados» também, pois não tem versão para comparar.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "Not seen yet" => "Ainda não visto", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "No run has imported or checked it." => "Nenhuma execução o importou nem verificou.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1228
+// src/Import/DetailPage.php, row 1280
 "%1 read" => "lidos: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1229
+// src/Import/DetailPage.php, row 1281
 "%1 new, %2 updated, %3 skipped" => "novos: %1, atualizados: %2, ignorados: %3", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1230
+// src/Import/DetailPage.php, row 1282
 "%1 filtered out" => "filtrados: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "dry run - nothing stored" => "execução de teste - nada guardado", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "all streams of the run together" => "todos os fluxos da execução em conjunto", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1250
+// src/Import/DetailPage.php, row 1302
 "None yet - an import records it" => "Ainda nenhuma - uma importação regista-a", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1251
+// src/Import/DetailPage.php, row 1303
 "None - the source gives no version" => "Nenhuma - a fonte não indica versão", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1" => "demorou %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1, working %2" => "demorou %1, dos quais %2 de trabalho efetivo", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1310
+// src/Import/DetailPage.php, row 1362
 "%1 s" => "%1 s", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313
+// src/Import/DetailPage.php, row 1365
 "%1 min %2 s" => "%1 min %2 s", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313, 1315
+// src/Import/DetailPage.php, row 1365, 1367
 // src/Optimize/StateCheckModel.php, row 257
 "%1 min" => "%1 min", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1315
+// src/Import/DetailPage.php, row 1367
 // src/Optimize/StateCheckModel.php, row 258
 "%1 h" => "%1 h", // ai 2026-10
 
@@ -10463,7 +10523,7 @@ return [
 // src/Import/RunView.php, row 74
 "Stuck — see State Check" => "Bloqueada — ver Verificação de estado", // ai 2026-10
 
-// src/Import/RunView.php, row 75, 171
+// src/Import/RunView.php, row 75, 177
 "Running" => "Em curso", // ai 2026-10
 
 // src/Import/RunView.php, row 76
@@ -10518,167 +10578,197 @@ return [
 // src/Import/RunView.php, row 131
 "%1 days ago" => "há %1 dias", // ai 2026-10
 
-// src/Import/RunView.php, row 159, 162, 165, 169
+// src/Import/RunView.php, row 162, 168, 171, 175
 "Failing" => "Com falhas", // ai 2026-10
 
-// src/Import/RunView.php, row 159
+// src/Import/RunView.php, row 162
 "The source of this import is not available, so it cannot run." => "A origem desta importação não está disponível, pelo que não pode ser executada.", // ai 2026-10
 
-// src/Import/RunView.php, row 162
+// src/Import/RunView.php, row 165
+"Not set up" => "Não configurada", // ai 2026-11
+
+// src/Import/RunView.php, row 165
+"Fill in these settings of the source: %1." => "Preencha estas definições da origem: %1.", // ai 2026-11
+
+// src/Import/RunView.php, row 168
 "The mapping does not fit the slice, so no run can start until it is fixed." => "A correspondência não se adequa à secção, pelo que nenhuma execução pode começar até ser corrigida.", // ai 2026-10
 
-// src/Import/RunView.php, row 169
+// src/Import/RunView.php, row 175
 "A run has made no progress for a long time - cron may not be running its steps." => "Uma execução não avança há muito tempo - o cron pode não estar a executar os seus passos.", // ai 2026-10
 
-// src/Import/RunView.php, row 170, 178, 181, 182, 183
+// src/Import/RunView.php, row 176, 184, 187, 188, 189
 "Needs attention" => "Requer atenção", // ai 2026-10
 
-// src/Import/RunView.php, row 170
+// src/Import/RunView.php, row 176
 "A run failed a step and waits to try again." => "Uma execução falhou num passo e aguarda nova tentativa.", // ai 2026-10
 
-// src/Import/RunView.php, row 171
+// src/Import/RunView.php, row 177
 "A run is in progress: %1." => "Execução em curso: %1.", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "Never ran" => "Nunca executada", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "No run yet. Run starts the first import." => "Ainda sem execuções. «Executar» inicia a primeira importação.", // ai 2026-10
 
-// src/Import/RunView.php, row 177
+// src/Import/RunView.php, row 183
 "Only source checks or dry runs so far - nothing was imported." => "Até agora apenas verificações da origem ou execuções de teste - nada foi importado.", // ai 2026-10
 
-// src/Import/RunView.php, row 179
+// src/Import/RunView.php, row 185
 "The last import stopped by an error and was then ended, so the data may be incomplete." => "A última importação parou devido a um erro e foi depois terminada, pelo que os dados podem estar incompletos.", // ai 2026-10
 
-// src/Import/RunView.php, row 180
+// src/Import/RunView.php, row 186
 "The last import was ended before it finished, so the data may be incomplete." => "A última importação foi terminada antes de concluir, pelo que os dados podem estar incompletos.", // ai 2026-10
 
-// src/Import/RunView.php, row 181
+// src/Import/RunView.php, row 187
 "The last import finished, but 1 item could not be stored." => "A última importação foi concluída, mas não foi possível guardar 1 artigo.", // ai 2026-10
 
-// src/Import/RunView.php, row 182
+// src/Import/RunView.php, row 188
 "The last import finished, but %1 items could not be stored." => "A última importação foi concluída, mas não foi possível guardar %1 artigos.", // ai 2026-10
 
-// src/Import/RunView.php, row 183
+// src/Import/RunView.php, row 189
 "The last full import read nothing - the source may be empty." => "A última importação completa não leu nada - a origem pode estar vazia.", // ai 2026-10
 
-// src/Import/RunView.php, row 184, 185
+// src/Import/RunView.php, row 190, 191
 "Healthy" => "Em ordem", // ai 2026-10
 
-// src/Import/RunView.php, row 184
+// src/Import/RunView.php, row 190
 "The last import finished without errors; nothing had changed." => "A última importação foi concluída sem erros; nada tinha mudado.", // ai 2026-10
 
-// src/Import/RunView.php, row 185
+// src/Import/RunView.php, row 191
 "The last import finished without errors (%1 read)." => "A última importação foi concluída sem erros (%1 lidos).", // ai 2026-10
 
-// src/Import/RunView.php, row 188
-"Runs only by hand." => "Executa-se apenas manualmente.", // ai 2026-10
-
-// src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "A última execução de teste parou devido a um erro. Nada mais é importado até intervir.", // ai 2026-10
+// src/Import/RunView.php, row 198
+"The source refuses its settings." => "A origem recusa as suas definições.", // ai 2026-11
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "A última verificação da origem parou devido a um erro. Nada mais é importado até intervir.", // ai 2026-10
-
-// src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "O registo do estado da origem parou devido a um erro. Nada mais é importado até intervir.", // ai 2026-10
-
-// src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "A última importação parou devido a um erro. Nada mais é importado até intervir.", // ai 2026-10
-
-// src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "A verificação da origem falhou - nada importado", // ai 2026-10
+"The source refuses its settings: %1" => "A origem recusa as suas definições: %1", // ai 2026-11
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "Verificação da origem em curso", // ai 2026-10
+"The last dry run stopped by an error. Nothing more is imported until you act." => "A última execução de teste parou devido a um erro. Nada mais é importado até intervir.", // ai 2026-10
+
+// src/Import/RunView.php, row 214
+"The last source check stopped by an error. Nothing more is imported until you act." => "A última verificação da origem parou devido a um erro. Nada mais é importado até intervir.", // ai 2026-10
 
 // src/Import/RunView.php, row 215
-"Source reachable - nothing imported" => "Origem acessível - nada importado", // ai 2026-10
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "O registo do estado da origem parou devido a um erro. Nada mais é importado até intervir.", // ai 2026-10
 
-// src/Import/RunView.php, row 217
-"Nothing had changed" => "Nada tinha mudado", // ai 2026-10
-
-// src/Import/RunView.php, row 218
-"Nothing read" => "Nada lido", // ai 2026-10
-
-// src/Import/RunView.php, row 219
-"%1 read, %2 new, %3 changed" => "Lidos: %1, novos: %2, alterados: %3", // ai 2026-10
-
-// src/Import/RunView.php, row 221
-"%1 (nothing stored)" => "%1 (nada guardado)", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of 1 stream - nothing imported" => "Registado o estado de 1 fluxo - nada importado", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of %1 streams - nothing imported" => "Registado o estado de %1 fluxos - nada importado", // ai 2026-10
+// src/Import/RunView.php, row 216
+"The last import stopped by an error. Nothing more is imported until you act." => "A última importação parou devido a um erro. Nada mais é importado até intervir.", // ai 2026-10
 
 // src/Import/RunView.php, row 228
-"%1 without a version" => "%1 sem versão", // ai 2026-10
+"Source check failed - nothing imported" => "A verificação da origem falhou - nada importado", // ai 2026-10
+
+// src/Import/RunView.php, row 229
+"Source check under way" => "Verificação da origem em curso", // ai 2026-10
+
+// src/Import/RunView.php, row 231
+"Source reachable - nothing imported" => "Origem acessível - nada importado", // ai 2026-10
+
+// src/Import/RunView.php, row 233
+"Nothing had changed" => "Nada tinha mudado", // ai 2026-10
+
+// src/Import/RunView.php, row 234
+"Nothing read" => "Nada lido", // ai 2026-10
+
+// src/Import/RunView.php, row 235
+"%1 read, %2 new, %3 changed" => "Lidos: %1, novos: %2, alterados: %3", // ai 2026-10
 
 // src/Import/RunView.php, row 237
-"changed only" => "apenas alterados", // ai 2026-10
+"%1 (nothing stored)" => "%1 (nada guardado)", // ai 2026-10
 
-// src/Import/RunView.php, row 238
-"check" => "verificação", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of 1 stream - nothing imported" => "Registado o estado de 1 fluxo - nada importado", // ai 2026-10
 
-// src/Import/RunView.php, row 239
-"recording the state of the source" => "registo do estado da origem", // ai 2026-10
-
-// src/Import/RunView.php, row 242
-"dry run" => "execução de teste", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of %1 streams - nothing imported" => "Registado o estado de %1 fluxos - nada importado", // ai 2026-10
 
 // src/Import/RunView.php, row 244
-"by hand" => "manualmente", // ai 2026-10
+"%1 without a version" => "%1 sem versão", // ai 2026-10
 
-// src/Import/RunView.php, row 245
-"planned" => "planeada", // ai 2026-10
+// src/Import/RunView.php, row 254
+"changed only" => "apenas alterados", // ai 2026-10
 
-// src/Import/RunView.php, row 246
-"on an event" => "por um evento", // ai 2026-10
+// src/Import/RunView.php, row 255
+"check" => "verificação", // ai 2026-10
+
+// src/Import/RunView.php, row 256
+"recording the state of the source" => "registo do estado da origem", // ai 2026-10
 
 // src/Import/RunView.php, row 259
-"Disabled - it does not start" => "Desativada - não é iniciada", // ai 2026-10
+"dry run" => "execução de teste", // ai 2026-10
 
-// src/Import/RunView.php, row 268
+// src/Import/RunView.php, row 261
+"first %1 items" => "primeiros artigos: %1", // ai 2026-11
+
+// src/Import/RunView.php, row 263
+"by hand" => "manualmente", // ai 2026-10
+
+// src/Import/RunView.php, row 264
+"planned" => "planeada", // ai 2026-10
+
+// src/Import/RunView.php, row 265
+"on an event" => "por um evento", // ai 2026-10
+
+// src/Import/RunView.php, row 285
+"Runs only by hand." => "Executa-se apenas manualmente.", // ai 2026-10
+
+// src/Import/RunView.php, row 294
 "No run yet" => "Ainda sem execuções", // ai 2026-10
 
-// src/Import/RunView.php, row 280
+// src/Import/RunView.php, row 306
 "1 item error" => "1 erro de artigo", // ai 2026-10
 
-// src/Import/RunView.php, row 281
+// src/Import/RunView.php, row 307
 "%1 item errors" => "%1 erros de artigos", // ai 2026-10
 
-// src/Import/RunView.php, row 284
+// src/Import/RunView.php, row 310
 "Last import: %1" => "Última importação: %1", // ai 2026-10
 
 // src/Import/SliceIdSetting.php, row 22
 "No slice ID" => "Falta o ID da secção", // ai 2026-10
 
-// src/Import/Source/CsvColumnsSetting.php, row 31
-"Expected a JSON object {\"column\": \"field id\"}" => "Esperado um objeto JSON {\"column\": \"field id\"}", // ai 2026-10
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"no column" => "nenhuma coluna", // ai 2026-11
 
-// src/Import/Source/CsvurlSource.php, row 42
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"more than %1 columns" => "mais de %1 colunas", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 73
+"not a field the import may fill" => "não é um campo que a importação possa preencher", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 74
+"the column name is empty, too long or holds invisible characters" => "o nome da coluna está vazio, é demasiado longo ou contém carateres invisíveis", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 75
+"the column is named twice" => "a coluna está indicada duas vezes", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 89
+"Line %1: %2" => "Linha %1: %2", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 119
+"expected \"column = field id\"" => "esperava-se «coluna = id do campo»", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 43
 "CSV file at a URL" => "Ficheiro CSV num URL", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 47
+// src/Import/Source/CsvurlSource.php, row 48
 "Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "Importa as linhas de um ficheiro CSV num endereço http(s) público; as definições indicam que coluna preenche que campo.", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "http or https only, on a public address, without a user name and password" => "apenas http ou https, num endereço público, sem nome de utilizador e palavra-passe", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 55
+// src/Import/Source/CsvurlSource.php, row 56
 // src/Widget/Widget.php, row 743, 812
 "Columns" => "Colunas", // ai 2026-06
 
-// src/Import/Source/CsvurlSource.php, row 55
-"JSON object: the column name in the first row => the field it fills" => "Objeto JSON: nome da coluna na primeira linha => campo que preenche", // ai 2026-10
-
 // src/Import/Source/CsvurlSource.php, row 56
+"One line per column: its name in the first row = the id of the field it fills" => "Uma linha por coluna: o nome dela na primeira linha do CSV = o id do campo que preenche", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 57
 "Key column" => "Coluna-chave", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 56
+// src/Import/Source/CsvurlSource.php, row 57
 "The column that identifies the item; it must be one of the columns" => "A coluna que identifica o artigo; tem de ser uma das colunas", // ai 2026-10
 
 // src/Isds/Advice.php, row 48
@@ -11399,40 +11489,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "Não pode guardar esta linha aqui.", // ai 2026-10
 
-// src/Manager.php, row 821
+// src/Manager.php, row 812
 "Searchbar" => "Barra de pesquisa", // ai 2026-06
 
-// src/Manager.php, row 822
+// src/Manager.php, row 813
 "Scroller" => "Paginação", // ai 2026-06
 
-// src/Manager.php, row 823
+// src/Manager.php, row 814
 "Msg" => "Mensagem", // ai 2026-06
 
-// src/Manager.php, row 824
+// src/Manager.php, row 815
 "Bin" => "Pasta", // ai 2026-06
 
-// src/Manager.php, row 826
+// src/Manager.php, row 817
 "Manager ID" => "ID do gestor", // ai 2026-06
 
-// src/Manager.php, row 1200
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "A ação não foi executada - utilize o botão na página.", // ai 2026-10
 
-// src/Manager.php, row 1281
+// src/Manager.php, row 1272
 "Edit id" => "Id para edição", // ai 2026-06
 
-// src/Manager.php, row 1295
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Mantenha Shift premido e clique para selecionar várias linhas", // ai 2026-06
 
-// src/Manager.php, row 1333
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "Tem a certeza de que pretende esvaziar a reciclagem?", // ai 2026-06
 
-// src/Manager.php, row 1435
+// src/Manager.php, row 1426
 "Go" => "Ir", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "Nenhum artigo selecionado. Realizar a ação para todos os artigos filtrados?", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "Run for %1 items" => "Executar para %1 artigos", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47

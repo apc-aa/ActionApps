@@ -18,6 +18,15 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "“là” đúng khi một trong các giá trị của trường nằm trong các giá trị cần so sánh, “không phải là” khi không giá trị nào nằm trong đó. “đã điền” đúng với mọi giá trị khác rỗng và khác 0, nên cũng đúng với hộp kiểm đã được đánh dấu.", // ai 2026-11
+// "None - the import is disabled" => "Không có - tác vụ nhập đã bị tắt", // ai 2026-10
+// "The import is switched off." => "Lần nhập đang bị tắt.", // ai 2026-10
+// "The import is disabled, so no planned task starts it." => "Lần nhập đang bị tắt nên không tác vụ theo lịch nào khởi động nó.", // ai 2026-10
+// "(import off)" => "(đã tắt nhập)", // ai 2026-10
+// "one stream (%1)" => "một luồng (%1)", // ai 2026-10
+// "Disabled - it does not start" => "Đã tắt - không khởi chạy", // ai 2026-10
+// "Expected a JSON object {\"column\": \"field id\"}" => "Cần một đối tượng JSON {\"column\": \"field id\"}", // ai 2026-10
+// "JSON object: the column name in the first row => the field it fills" => "Đối tượng JSON: tên cột ở dòng đầu tiên => trường mà cột đó điền vào", // ai 2026-10
 // "Parameter wizard" => "Trình hướng dẫn tham số", // ai 2026-06
 // "the update may still be running on the remote AA - wait, then run Test before retrying" => "có thể việc cập nhật vẫn đang chạy trên AA từ xa - vui lòng chờ, sau đó chạy “Kiểm tra” trước khi thử lại", // ai 2026-10
 // "Set letterhead to a text" => "Hãy đặt letterhead thành một văn bản", // ai 2026-11
@@ -181,7 +190,7 @@ return [
 
 // admin/aa_cron.php, row 47
 // src/AA_Plannedtask.php, row 82, 182
-// src/Import/Definition.php, row 135, 163
+// src/Import/Definition.php, row 136, 164
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Lần chạy cuối", // ai 2026-06
 
@@ -266,7 +275,7 @@ return [
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // central/optimize.php, row 65
-// src/Import/DetailPage.php, row 510
+// src/Import/DetailPage.php, row 548
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Biểu mẫu đã hết hạn; hãy tải lại trang và thử lại.", // ai 2026-10
 
@@ -415,7 +424,6 @@ return [
 "Off since %1, %2" => "Tắt từ %1, %2", // ai 2026-10
 
 // admin/aa_security.php, row 143
-// src/Import/DetailPage.php, row 726
 "Off" => "Tắt", // ai 2026-10
 
 // admin/aa_security.php, row 148
@@ -440,7 +448,7 @@ return [
 
 // admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 395
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
@@ -643,7 +651,7 @@ return [
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 295
 // central/appstore.php, row 164
-// include/searchlib.php, row 1016
+// include/searchlib.php, row 1103
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Chuyên mục", // ai 2026-06
 
@@ -906,12 +914,13 @@ return [
 "Shortcut to edit ITEM" => "Lối tắt để sửa BÀI VIẾT", // ai 2026-06
 
 // admin/aafinder.php, row 526
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 576
 // include/searchlib.php, row 50, 51, 129, 138
 "contains" => "chứa", // ai 2026-06
 
 // admin/aafinder.php, row 527
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 584
 // include/searchlib.php, row 129, 138
 "is" => "là", // ai 2026-06
@@ -1002,12 +1011,12 @@ return [
 // admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
-// admin/se_showif.php, row 123
+// admin/se_showif.php, row 124
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
 // include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 369
+// include/searchlib.php, row 446
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1053,7 +1062,7 @@ return [
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
 // include/stringexpand.php, row 99
-// src/Import/DetailPage.php, row 1025, 1091
+// src/Import/DetailPage.php, row 1076, 1142
 // src/Optimize/CheckImports.php, row 239, 241
 "Code" => "Mã", // ai 2026-06
 
@@ -1061,7 +1070,7 @@ return [
 "HTML output" => "Đầu ra HTML", // ai 2026-06
 
 // admin/console.php, row 73, 75
-// central/optimize.php, row 210
+// central/optimize.php, row 209
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "Kết quả", // ai 2026-06
 
@@ -1076,7 +1085,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "OK", // ai 2026-10
@@ -1124,7 +1133,7 @@ return [
 // admin/discedit.php, row 135
 // admin/related_sel.php, row 168
 // admin/se_views.php, row 136
-// src/Import/DetailPage.php, row 313
+// src/Import/DetailPage.php, row 337
 // src/Manager.php, row 230
 // src/Optimize/AbstractOptimize.php, row 175
 "Actions" => "Hành động", // ai 2026-06
@@ -1154,7 +1163,7 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
@@ -1191,7 +1200,7 @@ return [
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 123, 267
 // include/logs.php, row 1071
-// include/mail.php, row 699
+// include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Chủ đề", // ai 2026-06
 
@@ -1568,7 +1577,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 370
+// include/searchlib.php, row 447
 "Descending" => "Giảm dần", // ai 2026-06
 
 // admin/se_compact.php, row 244
@@ -1593,7 +1602,7 @@ return [
 "Can't delete constant group" => "Không thể xóa nhóm hằng số", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
-// admin/se_showif.php, row 157
+// admin/se_showif.php, row 162
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1607,7 +1616,7 @@ return [
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckServerRefusals.php, row 67
@@ -1616,6 +1625,7 @@ return [
 // admin/se_constant.php, row 176, 378
 // admin/se_mapping.php, row 179
 // admin/se_profile.php, row 209
+// admin/se_showif.php, row 133
 // include/constants.php, row 453
 // include/constedit.php, row 76
 // include/searchlib.php, row 177
@@ -1794,7 +1804,7 @@ return [
 
 // admin/se_csv_import.php, row 278
 // include/scroller.php, row 86
-// src/Import/DetailPage.php, row 422
+// src/Import/DetailPage.php, row 453
 "Next" => "Tiếp", // ai 2026-06
 
 // admin/se_csv_import2.php, row 199
@@ -1845,8 +1855,8 @@ return [
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
-// src/Import/Definition.php, row 135, 165
-// src/Import/DetailCatalog.php, row 145
+// src/Import/Definition.php, row 136, 166
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Hành động", // ai 2026-06
 
@@ -2026,7 +2036,7 @@ return [
 
 // admin/se_export.php, row 167
 // include/exporter.class.php, row 553
-// include/searchlib.php, row 1012
+// include/searchlib.php, row 1099
 "Conditions" => "Điều kiện", // ai 2026-06
 
 // admin/se_export.php, row 167
@@ -2035,7 +2045,7 @@ return [
 
 // admin/se_export.php, row 168
 // include/exporter.class.php, row 554
-// include/searchlib.php, row 1014
+// include/searchlib.php, row 1101
 "Sort" => "Sắp xếp", // ai 2026-06
 
 // admin/se_export.php, row 168
@@ -2153,7 +2163,7 @@ return [
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
-// src/Import/DetailCatalog.php, row 151
+// src/Import/DetailCatalog.php, row 179
 "Update" => "Cập nhật", // ai 2026-06
 
 // admin/se_filters.php, row 169
@@ -2172,7 +2182,7 @@ return [
 "No category defined" => "Chưa định nghĩa danh mục", // ai 2026-06
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1424
+// src/Manager.php, row 1415
 "Select all" => "Chọn tất cả", // ai 2026-06
 
 // admin/se_filters.php, row 320
@@ -2357,7 +2367,7 @@ return [
 
 // admin/se_inputform.php, row 424, 440, 451, 479, 522
 // include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 // src/Util/Paramwizard.php, row 154
 "Parameters" => "Tham số", // ai 2026-06
 
@@ -2433,8 +2443,6 @@ return [
 "8 UPPERCASE letters or _" => "8 chữ cái VIẾT HOA hoặc _", // ai 2026-06
 
 // admin/se_inputform.php, row 515
-// src/Import/DetailPage.php, row 604
-// src/Import/RunView.php, row 188
 "Disabled" => "Đã tắt", // ai 2026-06
 
 // admin/se_inputform.php, row 516
@@ -2488,10 +2496,10 @@ return [
 "Node" => "Nút", // ai 2026-06
 
 // admin/se_inter_import.php, row 96
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // misc/datovka/datovka.php, row 158
-// src/Import/DetailConfig.php, row 291
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailConfig.php, row 282
+// src/Import/DetailPage.php, row 401
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Util/Note.php, row 64
 "State" => "Trạng thái", // ai 2026-06
@@ -3010,104 +3018,115 @@ return [
 // admin/se_showif.php, row 77
 "The form has expired. Close it and open it again." => "Biểu mẫu đã hết hạn. Hãy đóng và mở lại biểu mẫu.", // ai 2026-11
 
-// admin/se_showif.php, row 117
-"is checked" => "được đánh dấu", // ai 2026-11
-
-// admin/se_showif.php, row 117
-"is not checked" => "không được đánh dấu", // ai 2026-11
-
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchlib.php, row 129, 138
 "is not" => "không phải là", // ai 2026-06
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
+// include/searchbar.class.php, row 580
+// include/searchlib.php, row 53, 56, 129, 138
+"begins with" => "bắt đầu bằng", // ai 2026-06
+
+// admin/se_showif.php, row 116
 "is filled" => "đã điền", // ai 2026-11
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 "is empty" => "trống", // ai 2026-11
 
-// admin/se_showif.php, row 120
+// admin/se_showif.php, row 119
+"is checked" => "được đánh dấu", // ai 2026-11
+
+// admin/se_showif.php, row 119
+"is not checked" => "không được đánh dấu", // ai 2026-11
+
+// admin/se_showif.php, row 121
 "— add a rule —" => "— thêm quy tắc —", // ai 2026-11
 
-// admin/se_showif.php, row 128
+// admin/se_showif.php, row 129
 "Comparison" => "Phép so sánh", // ai 2026-11
 
-// admin/se_showif.php, row 144
+// admin/se_showif.php, row 149
 "Values, one per line" => "Các giá trị, mỗi giá trị một dòng", // ai 2026-11
 
-// admin/se_showif.php, row 151
+// admin/se_showif.php, row 156
 // include/field.class.php, row 797
 "Display condition" => "Điều kiện hiển thị", // ai 2026-11
 
-// admin/se_showif.php, row 163
+// admin/se_showif.php, row 168
 "Show the field when all of these hold" => "Hiển thị trường khi tất cả các điều kiện sau đều đúng", // ai 2026-11
 
-// admin/se_showif.php, row 165
+// admin/se_showif.php, row 170
 "AA expression (optional)" => "Biểu thức AA (không bắt buộc)", // ai 2026-11
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 // src/Optimize/ImgMeasuring.php, row 54
 "Expression" => "Biểu thức", // ai 2026-10
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 "Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "Để trống để chỉ dùng các quy tắc. Khi được điền, trường chỉ hiển thị nếu kết quả không rỗng và khác 0. Biểu thức được tính khi mở biểu mẫu và khi lưu bài viết.", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Clear the field when a rule hides it" => "Xóa trắng trường khi một quy tắc ẩn nó", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "Không đánh dấu: bài viết đang sửa giữ nguyên giá trị, bài viết mới nhận giá trị mặc định của trường. Trường bị biểu thức ẩn không bao giờ bị thay đổi.", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 177
+"As a condition of a view" => "Dưới dạng điều kiện của khung hiển thị", // ai 2026-11
+
+// admin/se_showif.php, row 181
 "Used by" => "Được dùng bởi", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 181
 "no field" => "không trường nào", // ai 2026-11
 
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 "Save the changes to this condition. They apply to every field that uses it." => "Lưu các thay đổi của điều kiện này. Thay đổi áp dụng cho mọi trường dùng điều kiện này.", // ai 2026-11
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 // admin/se_view.php, row 486
 "Save as new" => "Lưu thành mới", // ai 2026-06
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 "Keep the original condition as it is and save this form as another condition under a new name." => "Giữ nguyên điều kiện gốc và lưu biểu mẫu này thành một điều kiện khác với tên mới.", // ai 2026-11
 
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 "Delete the condition. The fields that use it will be shown always." => "Xóa điều kiện. Các trường dùng điều kiện này sẽ luôn được hiển thị.", // ai 2026-11
 
-// admin/se_showif.php, row 180
+// admin/se_showif.php, row 188
 "Delete the condition? The fields that use it will be shown always." => "Xóa điều kiện? Các trường dùng điều kiện này sẽ luôn được hiển thị.", // ai 2026-11
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 // include/formutil.php, row 219, 224, 3009, 3013
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Hủy", // ai 2026-06
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 "Close without saving." => "Đóng mà không lưu.", // ai 2026-11
 
-// admin/se_showif.php, row 187
+// admin/se_showif.php, row 195
 "How it works" => "Cách hoạt động", // ai 2026-11
 
-// admin/se_showif.php, row 188
-"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "“là” đúng khi một trong các giá trị của trường nằm trong các giá trị cần so sánh, “không phải là” khi không giá trị nào nằm trong đó. “đã điền” đúng với mọi giá trị khác rỗng và khác 0, nên cũng đúng với hộp kiểm đã được đánh dấu.", // ai 2026-11
+// admin/se_showif.php, row 196
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. Upper and lower case do not count, accents do. \"is empty\" holds also for a field without a value; in a field stored as a number 0 counts as empty." => "“là” đúng khi một trong các giá trị của trường nằm trong số các giá trị được đánh dấu, “không phải là” đúng khi không có giá trị nào như vậy. Chữ hoa và chữ thường không được phân biệt, dấu thì có. “trống” cũng đúng với trường không có giá trị; ở trường được lưu dưới dạng số, 0 được coi là trống.", // ai 2026-11
 
-// admin/se_showif.php, row 189
+// admin/se_showif.php, row 197
+"The rules are AA conditions, written as in views. The condition shown below selects nearly the same items in a view; accents and empty values may be compared a little differently. In an AA expression write : as #:." => "Các quy tắc là điều kiện AA, được viết như trong khung hiển thị. Điều kiện hiển thị bên dưới chọn gần như cùng các bài viết trong một khung hiển thị; dấu và giá trị trống có thể được so sánh hơi khác. Trong biểu thức AA, hãy viết : thành #:.", // ai 2026-11
+
+// admin/se_showif.php, row 198
 "The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "Các quy tắc phản hồi theo biểu mẫu ngay khi người dùng chỉnh sửa. Biểu thức chỉ được tính khi mở biểu mẫu và khi lưu bài viết, luôn dựa trên bài viết đã lưu (với bài viết mới: dựa trên các giá trị mặc định).", // ai 2026-11
 
-// admin/se_showif.php, row 190
+// admin/se_showif.php, row 199
 "A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "Trường bị một quy tắc ẩn sẽ được lưu rỗng, trừ khi “Xóa trắng trường” không được đánh dấu. Trường mật khẩu, các ngày, trạng thái và trường bị biểu thức ẩn vẫn giữ giá trị.", // ai 2026-11
 
-// admin/se_showif.php, row 191
+// admin/se_showif.php, row 200
 "A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "Trường có điều kiện được hiện và ẩn theo điều kiện, không theo script của “Trigger trường”.", // ai 2026-11
 
-// admin/se_showif.php, row 192
+// admin/se_showif.php, row 201
 "With an input form template from a view, a field hidden by the expression stays in the source of the page." => "Khi dùng mẫu biểu mẫu nhập từ một khung hiển thị, trường bị biểu thức ẩn vẫn nằm trong mã nguồn của trang.", // ai 2026-11
 
-// admin/se_showif.php, row 193
+// admin/se_showif.php, row 202
 "Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "Điều kiện chỉ áp dụng cho biểu mẫu bài viết trong phần quản trị. Trong biểu mẫu ẩn danh và khi nhập dữ liệu, trường bắt buộc luôn là bắt buộc.", // ai 2026-11
 
 // admin/se_statistics.php, row 97
@@ -3264,7 +3283,7 @@ return [
 
 // admin/se_views.php, row 149, 203, 223
 // include/formutil.php, row 1818, 1825
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
 "New" => "Mới", // ai 2026-06
@@ -3307,7 +3326,7 @@ return [
 "View items" => "Xem bài viết", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1429
+// src/Manager.php, row 1420
 "Selected items" => "Bài viết đã chọn", // ai 2026-06
 
 // admin/search_replace.php, row 180
@@ -3428,8 +3447,8 @@ return [
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
-// src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1281
+// src/Import/DetailCatalog.php, row 179
+// src/Manager.php, row 239, 1272
 "Add" => "Thêm", // ai 2026-06
 
 // admin/slicedel.php, row 51
@@ -3753,7 +3772,7 @@ return [
 "Import into this slice - whatever file says" => "Nhập vào chuyên mục này - bất kể tập tin nói gì", // ai 2026-06
 
 // admin/sliceimp.php, row 467
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Dry run" => "Chạy thử", // ai 2026-06
 
 // admin/sliceimp.php, row 469
@@ -4109,29 +4128,29 @@ return [
 "Show selected users" => "Hiển thị người dùng đã chọn", // ai 2026-06
 
 // admin/write_mail.php, row 124, 274
-// include/mail.php, row 700
+// include/mail.php, row 666
 "Body" => "Nội dung", // ai 2026-06
 
 // admin/write_mail.php, row 125, 275
 "From (email)" => "Từ (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 126, 276
-// include/mail.php, row 702
+// include/mail.php, row 668
 "Reply to (email)" => "Trả lời tới (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 127, 277
-// include/mail.php, row 703
+// include/mail.php, row 669
 "Errors to (email)" => "Báo lỗi tới (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 128, 278
 "Sender (email)" => "Người gửi (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 129, 279
-// include/mail.php, row 694
+// include/mail.php, row 658
 "Language (charset)" => "Ngôn ngữ (bộ ký tự)", // ai 2026-06
 
 // admin/write_mail.php, row 130, 280
-// include/mail.php, row 692
+// include/mail.php, row 656
 "Use HTML" => "Dùng HTML", // ai 2026-06
 
 // admin/write_mail.php, row 131, 271
@@ -4142,8 +4161,8 @@ return [
 
 // admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
-// src/Import/Definition.php, row 92
-// src/Import/DetailConfig.php, row 394
+// src/Import/Definition.php, row 93
+// src/Import/DetailConfig.php, row 385
 "Filter" => "Bộ lọc", // ai 2026-06
 
 // admin/write_mail.php, row 188
@@ -4398,8 +4417,8 @@ return [
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
 // include/logs.php, row 1213
-// src/Import/Definition.php, row 85, 113
-// src/Import/DetailConfig.php, row 188, 202
+// src/Import/Definition.php, row 86, 114
+// src/Import/DetailConfig.php, row 171, 185
 // src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "Nguồn", // ai 2026-06
@@ -4829,19 +4848,19 @@ return [
 "Transferring the items" => "Đang chuyển bài viết", // ai 2026-10
 
 // central/installapp.php, row 1368
-// central/optimize.php, row 261
+// central/optimize.php, row 260
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Đã dừng do lỗi", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 259
+// central/optimize.php, row 258
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Đã hoàn tất", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 260
+// central/optimize.php, row 259
 "Ended" => "Đã kết thúc", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -4905,13 +4924,13 @@ return [
 "Show the final check" => "Hiện lần kiểm tra cuối", // ai 2026-10
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 206
-// src/Import/DetailPage.php, row 938, 947
+// central/optimize.php, row 205
+// src/Import/DetailPage.php, row 989, 998
 "Continue" => "Tiếp tục", // ai 2026-06
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 207
-// src/Import/DetailPage.php, row 958
+// central/optimize.php, row 206
+// src/Import/DetailPage.php, row 1009
 "End" => "Kết thúc", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
@@ -4935,7 +4954,7 @@ return [
 // central/optimize.php, row 85
 "An AA may still be asked - press Continue again in a few minutes." => "Có thể vẫn còn một AA đang được hỏi - hãy nhấn “Tiếp tục” lại sau vài phút.", // ai 2026-11
 
-// central/optimize.php, row 86, 187
+// central/optimize.php, row 86, 186
 "No such run." => "Không có lần chạy này.", // ai 2026-11
 
 // central/optimize.php, row 87
@@ -4956,7 +4975,7 @@ return [
 // central/optimize.php, row 140
 "Run an Optimize task on several AAs" => "Chạy một tác vụ Tối ưu hóa trên nhiều AA", // ai 2026-11
 
-// central/optimize.php, row 148, 171
+// central/optimize.php, row 148, 170
 // src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckOptimizeRuns.php, row 55
 // src/Optimize/CheckQueue.php, row 98, 178
@@ -4971,65 +4990,65 @@ return [
 // central/optimize.php, row 151
 "Repair tests first, repairs only where the test fails, then tests again." => "Sửa chữa: kiểm tra trước, chỉ sửa ở nơi kiểm tra thất bại, rồi kiểm tra lại.", // ai 2026-11
 
-// central/optimize.php, row 153, 210
+// central/optimize.php, row 153, 209
 // include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// central/optimize.php, row 159
+// central/optimize.php, row 158
 "An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "AA không có token hợp lệ sẽ không trả lời - hãy lấy token của nó trong danh sách Central trước (token có hiệu lực một ngày).", // ai 2026-11
 
-// central/optimize.php, row 160
+// central/optimize.php, row 159
 "Start" => "Bắt đầu", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Last runs" => "Các lần chạy gần đây", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 // src/Optimize/CheckImports.php, row 151, 155
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Optimize/CheckOptimizeRuns.php, row 54
 "Started" => "Bắt đầu", // ai 2026-10
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Results" => "Kết quả", // ai 2026-11
 
-// central/optimize.php, row 197
+// central/optimize.php, row 196
 "Started %1 by %2" => "Được %2 bắt đầu lúc %1", // ai 2026-11
 
-// central/optimize.php, row 198
+// central/optimize.php, row 197
 "%1 of %2 AAs done" => "Đã xong %1/%2 AA", // ai 2026-11
 
-// central/optimize.php, row 208
+// central/optimize.php, row 207
 "The run goes on in the task queue of this AA - you may close this page." => "Lần chạy tiếp tục trong hàng đợi tác vụ của AA này - bạn có thể đóng trang này.", // ai 2026-11
 
-// central/optimize.php, row 210, 229
+// central/optimize.php, row 209, 228
 "Report" => "Báo cáo", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Waiting" => "Đang chờ", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Not asked" => "Chưa được hỏi", // ai 2026-11
 
-// central/optimize.php, row 225
+// central/optimize.php, row 224
 "The test after the repair comes next." => "Tiếp theo là bước kiểm tra sau khi sửa chữa.", // ai 2026-11
 
-// central/optimize.php, row 232
+// central/optimize.php, row 231
 "The test after the repair" => "Kiểm tra sau khi sửa chữa", // ai 2026-11
 
-// central/optimize.php, row 242
+// central/optimize.php, row 241
 "Another run" => "Lần chạy khác", // ai 2026-11
 
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 "OK - nothing to repair" => "OK - không có gì cần sửa", // ai 2026-11
 
-// central/optimize.php, row 249
+// central/optimize.php, row 248
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
 // src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
@@ -5038,37 +5057,37 @@ return [
 // src/Optimize/StateCheckModel.php, row 219
 "Problem" => "Vấn đề", // ai 2026-10
 
-// central/optimize.php, row 250
+// central/optimize.php, row 249
 "Repaired" => "Đã sửa chữa", // ai 2026-11
 
-// central/optimize.php, row 251
+// central/optimize.php, row 250
 "Repair failed" => "Sửa chữa thất bại", // ai 2026-11
 
-// central/optimize.php, row 252
+// central/optimize.php, row 251
 "Not done" => "Chưa thực hiện", // ai 2026-11
 
-// central/optimize.php, row 262
+// central/optimize.php, row 261
 "No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "Đã lâu không có bước nào - hàng đợi tác vụ của AA này có đang chạy không? “Tiếp tục” sẽ thử ngay.", // ai 2026-11
 
-// central/optimize.php, row 263
+// central/optimize.php, row 262
 "Waiting to ask an AA again" => "Đang chờ để hỏi lại một AA", // ai 2026-11
 
-// central/optimize.php, row 264
+// central/optimize.php, row 263
 "Running in the task queue" => "Đang chạy trong hàng đợi tác vụ", // ai 2026-11
 
-// central/optimize.php, row 274
+// central/optimize.php, row 273
 "%1 runs another update now." => "%1 đang chạy một cập nhật khác.", // ai 2026-11
 
-// central/optimize.php, row 275
+// central/optimize.php, row 274
 "%1 did not answer in time." => "%1 không trả lời kịp thời.", // ai 2026-11
 
-// central/optimize.php, row 276
+// central/optimize.php, row 275
 "The user who started the run is no superadmin any more." => "Người dùng đã khởi chạy lần chạy này không còn là quản trị viên cấp cao.", // ai 2026-11
 
-// central/optimize.php, row 277
+// central/optimize.php, row 276
 "Error %1" => "Lỗi %1", // ai 2026-11
 
-// central/optimize.php, row 279
+// central/optimize.php, row 278
 "Asked again at %1 - Continue asks now." => "Sẽ hỏi lại lúc %1 - “Tiếp tục” sẽ hỏi ngay.", // ai 2026-11
 
 // central/responder.php, row 112
@@ -5551,7 +5570,7 @@ return [
 "Level count" => "Số cấp", // ai 2026-06
 
 // include/constedit_util.php, row 137, 140
-// src/Import/Definition.php, row 140
+// src/Import/Definition.php, row 141
 "Select" => "Chọn", // ai 2026-06
 
 // include/constedit_util.php, row 599
@@ -5966,7 +5985,7 @@ return [
 
 // include/formutil.php, row 1829
 // include/menu.php, row 141
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Thay đổi", // ai 2026-06
 
@@ -5980,7 +5999,7 @@ return [
 
 // include/formutil.php, row 2223
 // include/stringexpand.php, row 11543, 11566
-// src/Import/DetailCatalog.php, row 150
+// src/Import/DetailCatalog.php, row 178
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "mới", // ai 2026-06
@@ -6236,7 +6255,7 @@ return [
 "Short ID" => "ID ngắn", // ai 2026-06
 
 // include/itemfunc.php, row 204
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 "Details" => "Chi tiết", // ai 2026-06
 
 // include/itemfunc.php, row 245
@@ -6639,7 +6658,7 @@ return [
 "Checks" => "Lượt kiểm tra", // ai 2026-10
 
 // include/logs.php, row 796, 827
-// src/Import/DetailPage.php, row 300, 367, 800
+// src/Import/DetailPage.php, row 324, 391, 840
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Chạy", // ai 2026-10
@@ -6676,7 +6695,7 @@ return [
 
 // include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 825
+// src/Manager.php, row 816
 "Module ID" => "ID mô-đun", // ai 2026-06
 
 // include/logs.php, row 921
@@ -6716,7 +6735,7 @@ return [
 "Items planned" => "Mục đã lên kế hoạch", // ai 2026-06
 
 // include/logs.php, row 1095
-// src/Import/DetailPage.php, row 1025
+// src/Import/DetailPage.php, row 1076
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Thông báo", // ai 2026-06
 
@@ -6739,13 +6758,13 @@ return [
 "Collection" => "Bộ sưu tập", // ai 2026-06
 
 // include/logs.php, row 1123, 1174, 1186, 1321
-// src/Import/Definition.php, row 154
+// src/Import/Definition.php, row 155
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Chi tiết", // ai 2026-06
 
 // include/logs.php, row 1173
-// src/Import/Definition.php, row 135, 162
+// src/Import/Definition.php, row 136, 163
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Trạng thái", // ai 2026-06
 
@@ -6759,7 +6778,7 @@ return [
 "Errors" => "Lỗi", // ai 2026-06
 
 // include/logs.php, row 1240
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Outcome" => "Kết quả", // ai 2026-06
 
 // include/logs.php, row 1256
@@ -6782,29 +6801,29 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "Lý do", // ai 2026-10
 
-// include/mail.php, row 693
+// include/mail.php, row 657
 "Email type" => "Loại e-mail", // ai 2026-06
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 "— all modules (global) —" => "— tất cả mô-đun (toàn cục) —", // ai 2026-10
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Chủ sở hữu", // ai 2026-06
 
-// include/mail.php, row 698
+// include/mail.php, row 662
 "Description/Result" => "Mô tả/Kết quả", // ai 2026-06
 
-// include/mail.php, row 701
+// include/mail.php, row 667
 "From (email) " => "Từ (e-mail)", // ai 2026-06
 
-// include/mail.php, row 704
+// include/mail.php, row 670
 "Envelop sender (email)" => "Người gửi bao thư (e-mail)", // ai 2026-06
 
-// include/mail.php, row 705
+// include/mail.php, row 671
 // misc/datovka/datovka.php, row 156
 "Attachments" => "Tệp đính kèm", // ai 2026-06
 
@@ -6873,8 +6892,8 @@ return [
 "Filters" => "Bộ lọc", // ai 2026-06
 
 // include/menu.php, row 159
-// src/Import/Definition.php, row 87
-// src/Import/DetailConfig.php, row 359
+// src/Import/Definition.php, row 88
+// src/Import/DetailConfig.php, row 350
 "Mapping" => "Đối chiếu", // ai 2026-06
 
 // include/menu.php, row 160, 224
@@ -6983,7 +7002,7 @@ return [
 "Slice structure" => "Cấu trúc chuyên mục", // ai 2026-06
 
 // include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
+// src/Import/Definition.php, row 136, 162
 // src/Optimize/CheckImportStores.php, row 53
 // src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "Nhập", // ai 2026-06
@@ -7067,7 +7086,7 @@ return [
 "What's working, what isn't — tell the AA team." => "Điều gì hoạt động, điều gì không — hãy cho nhóm AA biết.", // ai 2026-06
 
 // include/menu_util.php, row 632
-// src/Import/Definition.php, row 86
+// src/Import/Definition.php, row 87
 "Settings" => "Cài đặt", // ai 2026-06
 
 // include/menu_util.php, row 635
@@ -7142,7 +7161,7 @@ return [
 "Array returned" => "Đã trả về mảng", // ai 2026-06
 
 // include/scroller.php, row 87
-// src/Import/DetailPage.php, row 420
+// src/Import/DetailPage.php, row 451
 "Previous" => "Trước", // ai 2026-06
 
 // include/scroller.php, row 296
@@ -7191,10 +7210,6 @@ return [
 
 // include/searchbar.class.php, row 566
 "And" => "và đồng thời", // ai 2026-06
-
-// include/searchbar.class.php, row 580
-// include/searchlib.php, row 53, 56, 129, 138
-"begins with" => "bắt đầu bằng", // ai 2026-06
 
 // include/searchbar.class.php, row 608
 "Clear" => "Xóa", // ai 2026-06
@@ -7272,7 +7287,7 @@ return [
 // include/statestore.php, row 1367
 "select ..." => "chọn ...", // ai 2026-06
 
-// include/searchlib.php, row 371
+// include/searchlib.php, row 448
 "Limit" => "Giới hạn", // ai 2026-06
 
 // include/slice.class.php, row 428
@@ -8096,7 +8111,7 @@ return [
 "page length (number of items)" => "độ dài trang (số bài viết)", // ai 2026-06
 
 // slice.php, row 621
-// src/Manager.php, row 890
+// src/Manager.php, row 881
 "No item found" => "Không tìm thấy bài viết nào", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 72
@@ -8207,43 +8222,43 @@ return [
 // src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Chỉ biên tập viên của chuyên mục mới được duyệt các tệp của nó", // ai 2026-10
 
-// src/Central/Actionapps.php, row 185
+// src/Central/Actionapps.php, row 180
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "PHP này không có AES-GCM (sodium) - không thể lưu token đăng nhập ở dạng mã hóa", // ai 2026-10
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not configured" => "Chưa cấu hình", // ai 2026-06
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not authenticated - get a token" => "Chưa xác thực - hãy lấy token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Authenticated until %1" => "Đã xác thực đến %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Expired - get a token" => "Đã hết hạn - hãy lấy token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 245
+// src/Central/Actionapps.php, row 236
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "AA từ xa đã từ chối đăng nhập: sai tên người dùng hoặc mật khẩu, tài khoản dùng đăng nhập hai bước (Central chưa gửi được mã), hoặc người dùng không phải là quản trị viên cấp cao ở đó", // ai 2026-11
 
-// src/Central/Actionapps.php, row 247
+// src/Central/Actionapps.php, row 238
 "The remote AA gave no login token - update it" => "AA từ xa không cấp token đăng nhập - vui lòng cập nhật AA đó", // ai 2026-10
 
-// src/Central/Actionapps.php, row 248
+// src/Central/Actionapps.php, row 239
 "The remote AA gave a token for longer than a day - update the remote AA" => "AA từ xa đã cấp token có hiệu lực dài hơn một ngày - vui lòng cập nhật AA từ xa", // ai 2026-10
 
-// src/Central/Actionapps.php, row 284
+// src/Central/Actionapps.php, row 275
 "Can't get org_name - " => "Không thể lấy org_name -", // ai 2026-06
 
-// src/Central/Actionapps.php, row 338
+// src/Central/Actionapps.php, row 329
 "Unexpected response from remote AA" => "Phản hồi không mong đợi từ AA từ xa", // ai 2026-10
 
-// src/Central/Actionapps.php, row 341
+// src/Central/Actionapps.php, row 332
 "This AA does not support this command (update it first)" => "AA này không hỗ trợ lệnh này (vui lòng cập nhật nó trước)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 344
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Không thể dùng token đăng nhập đã lưu (AA_SECRET, mật khẩu cơ sở dữ liệu hoặc địa chỉ của AA này đã thay đổi) - vui lòng xác thực lại AA này trên trang ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 354
+// src/Central/Actionapps.php, row 345
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Không có token đăng nhập cho AA này - vui lòng dùng “Xác thực” cho AA này trên trang ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -9369,22 +9384,28 @@ return [
 // src/Credential/Store.php, row 55
 "set (%1)" => "đã đặt (%1)", // ai 2026-10
 
-// src/Form/ShowConditions.php, row 317
+// src/Form/ShowConditions.php, row 354
 "Fill in the name of the condition." => "Hãy điền tên của điều kiện.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 321
+// src/Form/ShowConditions.php, row 358
 "Another condition of this slice is called %1." => "Một điều kiện khác của chuyên mục này đã có tên %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 333
+// src/Form/ShowConditions.php, row 371
 "The field %1 is not in this slice." => "Trường %1 không có trong chuyên mục này.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 335
+// src/Form/ShowConditions.php, row 373
 "Choose how to compare the field %1." => "Hãy chọn cách so sánh trường %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 337
+// src/Form/ShowConditions.php, row 375
 "Fill in the values of the field %1." => "Hãy điền các giá trị của trường %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 344
+// src/Form/ShowConditions.php, row 377
+"A value of the field %1 contains both kinds of quotes." => "Một giá trị của trường %1 chứa cả dấu nháy đơn lẫn dấu nháy kép.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 380
+"The value of the field %1 must not contain a backslash." => "Giá trị của trường %1 không được chứa dấu gạch chéo ngược.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 393
 "Add a rule or an expression." => "Hãy thêm một quy tắc hoặc một biểu thức.", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
@@ -9402,7 +9423,7 @@ return [
 // src/IO/Grabber/CSV.php, row 94
 // src/IO/Grabber/JsonLD.php, row 104
 // src/IO/Grabber/XML.php, row 108
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "URL of the file" => "URL của tệp", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 95
@@ -9576,835 +9597,874 @@ return [
 // src/IO/OnPageChanger.php, row 55
 "No permission - no user is authenticated. Try to relogin, please." => "Không có quyền - chưa có người dùng nào được xác thực. Vui lòng thử đăng nhập lại.", // ai 2026-06
 
-// src/Import/Definition.php, row 88
-// src/Import/DetailConfig.php, row 390
+// src/Import/Definition.php, row 89
+// src/Import/DetailConfig.php, row 381
 "Key fields" => "Trường khóa", // ai 2026-10
 
-// src/Import/Definition.php, row 89
-// src/Import/DetailConfig.php, row 391
+// src/Import/Definition.php, row 90
+// src/Import/DetailConfig.php, row 382
 "Store mode" => "Chế độ lưu", // ai 2026-10
 
-// src/Import/Definition.php, row 90
-// src/Import/DetailConfig.php, row 392
+// src/Import/Definition.php, row 91
+// src/Import/DetailConfig.php, row 383
 "Validation" => "Kiểm tra hợp lệ", // ai 2026-10
 
-// src/Import/Definition.php, row 91
-// src/Import/DetailConfig.php, row 393
+// src/Import/Definition.php, row 92
+// src/Import/DetailConfig.php, row 384
 "After a stream" => "Sau luồng", // ai 2026-10
 
-// src/Import/Definition.php, row 93
-// src/Import/DetailPage.php, row 604
+// src/Import/Definition.php, row 94
 // src/Optimize/CheckImports.php, row 215
 "Enabled" => "Đã bật", // ai 2026-10
 
-// src/Import/Definition.php, row 113
+// src/Import/Definition.php, row 114
 "The source is changed in the import detail." => "Nguồn được thay đổi trong chi tiết tác vụ nhập.", // ai 2026-10
 
-// src/Import/Definition.php, row 129
+// src/Import/Definition.php, row 130
 "The slice has no import yet." => "Chuyên mục chưa có tác vụ nhập nào.", // ai 2026-10
 
-// src/Import/Definition.php, row 135, 164
+// src/Import/Definition.php, row 136, 165
 "Next plan" => "Lần chạy kế tiếp", // ai 2026-10
 
-// src/Import/Definition.php, row 367
-"None - the import is disabled" => "Không có - tác vụ nhập đã bị tắt", // ai 2026-10
+// src/Import/Definition.php, row 372
+// src/Import/DetailPage.php, row 766, 772
+"Not planned" => "Chưa lên lịch", // ai 2026-10
 
-// src/Import/Definition.php, row 370
+// src/Import/Definition.php, row 375
 "Not planned - no task starts it" => "Chưa lên lịch - không có tác vụ nào khởi chạy nó", // ai 2026-10
 
-// src/Import/Definition.php, row 423
+// src/Import/Definition.php, row 428
 "The import needs a name." => "Tác vụ nhập cần có tên.", // ai 2026-10
 
-// src/Import/Definition.php, row 427
+// src/Import/Definition.php, row 432
 "The name of an import may not contain a colon (:) or look like an id." => "Tên tác vụ nhập không được chứa dấu hai chấm (:) hoặc trông giống một id.", // ai 2026-10
 
-// src/Import/Definition.php, row 430
+// src/Import/Definition.php, row 435
 "Another import of the slice has this name." => "Một tác vụ nhập khác của chuyên mục đã có tên này.", // ai 2026-10
 
-// src/Import/Definition.php, row 438
+// src/Import/Definition.php, row 443
 "Change the source in the import detail." => "Hãy thay đổi nguồn trong chi tiết tác vụ nhập.", // ai 2026-10
 
-// src/Import/Definition.php, row 446
-// src/Import/DetailPage.php, row 545
+// src/Import/Definition.php, row 451
+// src/Import/DetailPage.php, row 584
 "Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "Tác vụ nhập không thể chạy ở đây: các bảng cơ sở dữ liệu của chúng (object_text, toexecute) không hỗ trợ giao dịch (InnoDB).", // ai 2026-10
 
-// src/Import/Definition.php, row 455
+// src/Import/Definition.php, row 460
 "The mapping of the import is not valid." => "Đối chiếu của tác vụ nhập không hợp lệ.", // ai 2026-10
 
-// src/Import/Definition.php, row 477
+// src/Import/Definition.php, row 482
 "The import source refused these settings: %1" => "Nguồn nhập đã từ chối các thiết lập này: %1", // ai 2026-10
 
-// src/Import/Definition.php, row 480
-"Only a user who manages the feeding of the slice may change its imports." => "Chỉ người dùng quản lý việc nạp của chuyên mục mới được thay đổi các tác vụ nhập của nó.", // ai 2026-10
-
-// src/Import/Definition.php, row 481
-"This import uses API keys, so only a superadmin may change or delete it." => "Tác vụ nhập này dùng khóa API, nên chỉ quản trị viên cấp cao mới được thay đổi hoặc xóa nó.", // ai 2026-10
-
 // src/Import/Definition.php, row 482
-"The import was not saved - it is not an import of this slice." => "Tác vụ nhập chưa được lưu - đó không phải là tác vụ nhập của chuyên mục này.", // ai 2026-10
-
-// src/Import/Definition.php, row 483
-// src/Import/DetailPage.php, row 546
-"The import source is not available." => "Nguồn nhập không khả dụng.", // ai 2026-10
-
-// src/Import/Definition.php, row 484
-"The import source did not give its mapping." => "Nguồn nhập không cung cấp đối chiếu của nó.", // ai 2026-10
+"The setting \"%1\" of the import source is not valid: %2" => "Thiết lập “%1” của nguồn nhập không hợp lệ: %2", // ai 2026-11
 
 // src/Import/Definition.php, row 485
-"The mapping of the import does not fit the slice." => "Đối chiếu của tác vụ nhập không phù hợp với chuyên mục.", // ai 2026-10
+"Only a user who manages the feeding of the slice may change its imports." => "Chỉ người dùng quản lý việc nạp của chuyên mục mới được thay đổi các tác vụ nhập của nó.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
-// src/Import/DetailPage.php, row 548
-"A setting of the import source is not valid." => "Một thiết lập của nguồn nhập không hợp lệ.", // ai 2026-10
-
-// src/Import/Definition.php, row 486
-"The setting \"%1\" of the import source is not valid." => "Thiết lập “%1” của nguồn nhập không hợp lệ.", // ai 2026-10
+"This import uses API keys, so only a superadmin may change or delete it." => "Tác vụ nhập này dùng khóa API, nên chỉ quản trị viên cấp cao mới được thay đổi hoặc xóa nó.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
-// src/Import/DetailPage.php, row 549
-"The settings name a slice whose feeding you do not manage." => "Thiết lập chỉ định một chuyên mục mà Bạn không quản lý việc nạp nội dung.", // ai 2026-10
-
-// src/Import/Definition.php, row 487
-"The setting \"%1\" names a slice whose feeding you do not manage." => "Thiết lập “%1” nêu một chuyên mục mà Bạn không quản lý việc nạp.", // ai 2026-10
+"The import was not saved - it is not an import of this slice." => "Tác vụ nhập chưa được lưu - đó không phải là tác vụ nhập của chuyên mục này.", // ai 2026-10
 
 // src/Import/Definition.php, row 488
-"The settings of the import changed meanwhile. Reload the page and set them again." => "Thiết lập của tác vụ nhập đã thay đổi trong lúc đó. Hãy tải lại trang và đặt lại chúng.", // ai 2026-10
+// src/Import/DetailPage.php, row 585
+"The import source is not available." => "Nguồn nhập không khả dụng.", // ai 2026-10
 
 // src/Import/Definition.php, row 489
+"The import source did not give its mapping." => "Nguồn nhập không cung cấp đối chiếu của nó.", // ai 2026-10
+
+// src/Import/Definition.php, row 490
+"The mapping of the import does not fit the slice." => "Đối chiếu của tác vụ nhập không phù hợp với chuyên mục.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+// src/Import/DetailPage.php, row 587
+"A setting of the import source is not valid." => "Một thiết lập của nguồn nhập không hợp lệ.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+"The setting \"%1\" of the import source is not valid." => "Thiết lập “%1” của nguồn nhập không hợp lệ.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+// src/Import/DetailPage.php, row 588
+"The settings name a slice whose feeding you do not manage." => "Thiết lập chỉ định một chuyên mục mà Bạn không quản lý việc nạp nội dung.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+"The setting \"%1\" names a slice whose feeding you do not manage." => "Thiết lập “%1” nêu một chuyên mục mà Bạn không quản lý việc nạp.", // ai 2026-10
+
+// src/Import/Definition.php, row 493
+"The settings of the import changed meanwhile. Reload the page and set them again." => "Thiết lập của tác vụ nhập đã thay đổi trong lúc đó. Hãy tải lại trang và đặt lại chúng.", // ai 2026-10
+
+// src/Import/Definition.php, row 494
 "The import source refused these settings." => "Nguồn nhập đã từ chối các thiết lập này.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 31
+// src/Import/DetailCatalog.php, row 33
 "No catalog yet. Check source lists what the source offers." => "Chưa có danh mục. “Kiểm tra nguồn” liệt kê những gì nguồn cung cấp.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 37
+// src/Import/DetailCatalog.php, row 39
 "The stored catalog cannot be read. The next check of the source lists it again." => "Không đọc được danh mục đã lưu. Lần kiểm tra nguồn tiếp theo sẽ liệt kê lại nó.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 41
+// src/Import/DetailCatalog.php, row 48
 "The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "Danh mục chưa đầy đủ: lần kiểm tra gần nhất chưa liệt kê hết (đến nay có %1 mục). Không mục nào được báo là thiếu ở nguồn cho đến khi một lần kiểm tra liệt kê đầy đủ danh mục.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 42
+// src/Import/DetailCatalog.php, row 49
 "Listed by the check of %1: %2 entries." => "Lần kiểm tra lúc %1 đã liệt kê %2 mục.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 47
+// src/Import/DetailCatalog.php, row 54
 "Pages of the catalog" => "Các trang của danh mục", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 74
+// src/Import/DetailCatalog.php, row 55
+"%1 entries, %2 can be added" => "%1 mục, có thể thêm %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 55
+"%1 entries" => "%1 mục", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 58
+"%1 missing at the source" => "%1 mục không còn ở nguồn", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 61
+"%1 renamed at the source" => "%1 mục bị đổi tên ở nguồn", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 90
 "The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "Luồng đã được thêm hoặc cập nhật từ danh mục. Luồng sẽ xuất hiện trong danh sách luồng của lần nhập sau lần kiểm tra nguồn tiếp theo.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 75
+// src/Import/DetailCatalog.php, row 91
 "The catalog has no such entry. Check the source to list its catalog again." => "Danh mục không có mục như vậy. Hãy dùng “Kiểm tra nguồn” để liệt kê lại danh mục.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 76, 77
+// src/Import/DetailCatalog.php, row 92, 93
 "Nothing was added from the catalog:" => "Không có gì được thêm từ danh mục:", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 85
+// src/Import/DetailCatalog.php, row 101
 "This import uses API keys, so only a superadmin may add streams from its catalog." => "Lần nhập này dùng khóa API, vì vậy chỉ quản trị viên cấp cao mới được thêm luồng từ danh mục của nó.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 86
+// src/Import/DetailCatalog.php, row 102
 "Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "Để thêm từ danh mục, bạn cần quyền chỉnh sửa mọi bài viết của chuyên mục mà nguồn thêm luồng vào.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 87
+// src/Import/DetailCatalog.php, row 103
 "The import source cannot add streams from its catalog." => "Nguồn nhập không thể thêm luồng từ danh mục của nó.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 88
+// src/Import/DetailCatalog.php, row 104
 "The import source could not be reached or did not answer. Try again later." => "Không thể kết nối tới nguồn nhập hoặc nguồn không phản hồi. Vui lòng thử lại sau.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 102
+// src/Import/DetailCatalog.php, row 118
 "1 entry is new at the source - no stream comes from it." => "1 mục mới xuất hiện ở nguồn - chưa có luồng nào lấy từ mục đó.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 103
+// src/Import/DetailCatalog.php, row 119
 "%1 entries are new at the source - no stream comes from them." => "%1 mục mới xuất hiện ở nguồn - chưa có luồng nào lấy từ các mục đó.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Missing at the source" => "Thiếu ở nguồn", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Renamed at the source" => "Đã đổi tên ở nguồn", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124, 143
-// src/Import/DetailPage.php, row 377, 1025, 1046
+// src/Import/DetailCatalog.php, row 140, 169
+// src/Import/DetailPage.php, row 401, 1076, 1097
 "Stream" => "Luồng", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Catalog key" => "Khóa danh mục", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name of the stream" => "Tên luồng", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name in the catalog" => "Tên trong danh mục", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailCatalog.php, row 166
+"%1 entries on this page cannot be added or updated: %2" => "%1 mục trên trang này không thể thêm hoặc cập nhật: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailConfig.php, row 282
 "Key" => "Khóa", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailPage.php, row 353, 706
 "Updated" => "Cập nhật", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 171
+// src/Import/DetailCatalog.php, row 198
+"%1 of %2 entries on this page" => "%1 trên %2 mục của trang này", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 199
+"Filter this page" => "Lọc trang này", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 200
+"Only entries that can be added" => "Chỉ các mục có thể thêm", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 207
 "Catalog of the source" => "Danh mục của nguồn", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 136
+// src/Import/DetailConfig.php, row 119
 "The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "Đối chiếu đã được đặt lại từ nguồn. Những gì lần nhập biết về các luồng - phiên bản, thời điểm nhập và lần kiểm tra nguồn gần nhất - đã bị xóa, nên lần chạy tiếp theo sẽ đọc lại tất cả.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 137
+// src/Import/DetailConfig.php, row 120
 "The mapping is the same as the source gives - nothing changed." => "Đối chiếu giống với đối chiếu nguồn cung cấp - không có gì thay đổi.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 138, 139
+// src/Import/DetailConfig.php, row 121, 122
 "The mapping was not reset:" => "Đối chiếu chưa được đặt lại:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 140
+// src/Import/DetailConfig.php, row 123
 "The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "Thiết lập đã được lưu và đối chiếu đã được đặt lại từ nguồn. Lần chạy đang mở (nếu có) đã kết thúc, và những gì lần nhập biết về các luồng đã bị xóa.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 141
+// src/Import/DetailConfig.php, row 124
 "The settings are the same as stored - nothing changed." => "Thiết lập giống với bản đã lưu - không có gì thay đổi.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 142
+// src/Import/DetailConfig.php, row 125
 // src/Isds/Registry/Page.php, row 326
 "The settings were not saved:" => "Thiết lập chưa được lưu:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 144
+// src/Import/DetailConfig.php, row 127
 "Choose a source." => "Vui lòng chọn một nguồn.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 155, 179
+// src/Import/DetailConfig.php, row 138, 162
 "Settings of the source" => "Thiết lập của nguồn", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 159
+// src/Import/DetailConfig.php, row 142
 "Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "Các lần khởi động theo lịch vẫn chạy với thiết lập đã lưu; để chạy lần nhập thủ công, hãy thay đổi chúng trong %1 bên dưới.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 161
+// src/Import/DetailConfig.php, row 144
 "Change the settings or the source in %1 below." => "Hãy thay đổi thiết lập hoặc nguồn trong %1 bên dưới.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 188
+// src/Import/DetailConfig.php, row 171
 "No other source is available." => "Không có nguồn nào khác.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 192
+// src/Import/DetailConfig.php, row 175
 "(current)" => "(hiện tại)", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 203
+// src/Import/DetailConfig.php, row 186
 "Show its settings" => "Hiển thị thiết lập", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 204
+// src/Import/DetailConfig.php, row 187
 "Keep the current source" => "Giữ nguồn hiện tại", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 214
+// src/Import/DetailConfig.php, row 196
 "This source is not available, so its settings cannot be shown. Choose another source above." => "Nguồn này không khả dụng nên không thể hiển thị thiết lập của nó. Vui lòng chọn nguồn khác ở trên.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 222
+// src/Import/DetailConfig.php, row 204
 "The stored settings cannot be read; saving the form stores them again." => "Không thể đọc thiết lập đã lưu; lưu biểu mẫu sẽ lưu lại chúng.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 228
+// src/Import/DetailConfig.php, row 209
 "The source did not describe its settings, so they cannot be changed now." => "Nguồn không mô tả thiết lập của nó nên hiện không thể thay đổi.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 232
+// src/Import/DetailConfig.php, row 214
 "You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "Bạn đang đổi nguồn từ %1 sang %2. Khi lưu, lần chạy đang mở sẽ kết thúc, những gì lần nhập biết về các luồng và danh mục sẽ bị xóa, và đối chiếu được lấy từ nguồn mới.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 233
+// src/Import/DetailConfig.php, row 215
 "Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "Đổi nguồn? Lần chạy đang mở sẽ kết thúc, những gì lần nhập biết về các luồng sẽ bị xóa và đối chiếu được lấy từ nguồn mới.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 234
+// src/Import/DetailConfig.php, row 216
 "Change the source and save" => "Đổi nguồn và lưu", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 236
+// src/Import/DetailConfig.php, row 218
 "Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "Lưu thiết lập đã thay đổi sẽ kết thúc lần chạy đang mở, xóa những gì lần nhập biết về các luồng và danh mục, và đặt lại đối chiếu từ nguồn. Lưu thiết lập không đổi thì không thay đổi gì.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 237
+// src/Import/DetailConfig.php, row 219
 "Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "Lưu thiết lập? Nếu chúng đã thay đổi, lần chạy đang mở sẽ kết thúc, những gì lần nhập biết về các luồng sẽ bị xóa và đối chiếu được đặt lại từ nguồn.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 238
+// src/Import/DetailConfig.php, row 220
 // src/Isds/Registry/Page.php, row 617
 "Save the settings" => "Lưu thiết lập", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 272
+// src/Import/DetailConfig.php, row 263
 "The source has no settings." => "Nguồn không có thiết lập nào.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 283
+// src/Import/DetailConfig.php, row 274
 "Keys" => "Khóa", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 285
+// src/Import/DetailConfig.php, row 276
 "The source did not say which keys it needs." => "Nguồn không cho biết nó cần những khóa nào.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 288
+// src/Import/DetailConfig.php, row 279
 "The source needs no key." => "Nguồn không cần khóa.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailConfig.php, row 282
 // src/Widget/Widget.php, row 848
 "Hint" => "Gợi ý", // ai 2026-06
 
-// src/Import/DetailConfig.php, row 297
+// src/Import/DetailConfig.php, row 288
 "Key is set" => "Đã đặt khóa", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 298
+// src/Import/DetailConfig.php, row 289
 "Key is damaged" => "Khóa bị hỏng", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 299
+// src/Import/DetailConfig.php, row 290
 "Key is missing" => "Thiếu khóa", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 305
+// src/Import/DetailConfig.php, row 296
 "The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "Quản trị viên máy chủ đặt các khóa trong config.php, không bao giờ ở đây. Thiếu khóa, nguồn sẽ thất bại khi cần đến nó; khóa bị hỏng chứa ký tự xuống dòng và không bao giờ được gửi đi.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 327
+// src/Import/DetailConfig.php, row 318
 "define one of %1 in config.php" => "hãy định nghĩa một trong %1 trong config.php", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 350
+// src/Import/DetailConfig.php, row 341
 "The mapping of the import cannot be read. Reset it from the source." => "Không thể đọc đối chiếu của lần nhập. Hãy đặt lại nó từ nguồn.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 356
+// src/Import/DetailConfig.php, row 347
 "Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "Đặt lại đối chiếu từ nguồn? Đối chiếu, các trường khóa, chế độ lưu, phần kiểm tra hợp lệ, biểu thức sau mỗi luồng và bộ lọc sẽ được thay bằng những gì nguồn cung cấp.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 357
+// src/Import/DetailConfig.php, row 348
 "Reset mapping from the source" => "Đặt lại đối chiếu từ nguồn", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 358
+// src/Import/DetailConfig.php, row 349
 "Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Đặt lại đối chiếu, các trường khóa, chế độ lưu, phần kiểm tra hợp lệ, biểu thức sau mỗi luồng và bộ lọc theo những gì nguồn cung cấp cho thiết lập đã lưu. Đối chiếu mới sẽ xóa những gì lần nhập biết về các luồng, nên lần chạy tiếp theo sẽ đọc lại tất cả. Thao tác bị từ chối khi một lần chạy đang mở, bị dừng do lỗi hoặc vẫn đang hoàn tất.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 366
+// src/Import/DetailConfig.php, row 357
 "The mapping has no rows." => "Đối chiếu không có dòng nào.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Target" => "Đích", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Transformation" => "Chuyển đổi", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 379
+// src/Import/DetailConfig.php, row 370
 "the field the job parameter names" => "trường do tham số công việc chỉ định", // ai 2026-10
 
-// src/Import/DetailPage.php, row 269
+// src/Import/DetailPage.php, row 293
 "This page is out of date – reload it." => "Trang này đã cũ – vui lòng tải lại.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 282
+// src/Import/DetailPage.php, row 306
 "Last import" => "Lần nhập gần nhất", // ai 2026-10
 
-// src/Import/DetailPage.php, row 283
+// src/Import/DetailPage.php, row 307
 "Next start" => "Lần khởi động tiếp theo", // ai 2026-10
 
-// src/Import/DetailPage.php, row 284
+// src/Import/DetailPage.php, row 308
 "Last check of the source" => "Lần kiểm tra nguồn gần nhất", // ai 2026-10
 
-// src/Import/DetailPage.php, row 290
+// src/Import/DetailPage.php, row 314
 "Overview" => "Tổng quan", // ai 2026-10
 
-// src/Import/DetailPage.php, row 300
+// src/Import/DetailPage.php, row 324
 "Imports every stream." => "Nhập mọi luồng.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301, 801
+// src/Import/DetailPage.php, row 325, 841
 "Run changed only" => "Chỉ chạy phần đã đổi", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301
+// src/Import/DetailPage.php, row 325
 "Skips the streams the source says did not change." => "Bỏ qua các luồng mà nguồn cho biết không thay đổi.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302, 367, 802
+// src/Import/DetailPage.php, row 326, 391, 842
 "Check source" => "Kiểm tra nguồn", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302
+// src/Import/DetailPage.php, row 326
 "Asks the source whether it works. Stores nothing." => "Hỏi nguồn xem có hoạt động không. Không lưu gì.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Reads up to 500 items and shows what it would store. Stores nothing." => "Đọc tối đa 500 bài viết và hiển thị những gì sẽ được lưu. Không lưu gì.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 309
+// src/Import/DetailPage.php, row 333
 "More actions" => "Thao tác khác", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327, 352
+// src/Import/DetailPage.php, row 351, 376
 "Runs" => "Các lần chạy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327
+// src/Import/DetailPage.php, row 351
 "No run yet." => "Chưa có lần chạy nào.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Took" => "Thời lượng", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Read" => "Đã đọc", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Skipped" => "Bỏ qua", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Filtered out" => "Bị lọc ra", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Item errors" => "Lỗi bài viết", // ai 2026-10
 
-// src/Import/DetailPage.php, row 342
+// src/Import/DetailPage.php, row 366
 "working %1" => "thời gian xử lý %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 366
+// src/Import/DetailPage.php, row 390
 "The stored state of the streams cannot be read." => "Không thể đọc trạng thái đã lưu của các luồng.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 367
+// src/Import/DetailPage.php, row 391
 "No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Chưa có luồng nào được nhập hoặc kiểm tra. Nút %1 hoặc %2 (mục Thao tác, ở trên) sẽ điền danh sách này.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 368, 396
+// src/Import/DetailPage.php, row 392, 421
 "Streams" => "Luồng", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Records" => "Bản ghi", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Last recorded" => "Ghi lần cuối", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Source checked" => "Lần kiểm tra nguồn", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Data version" => "Phiên bản dữ liệu", // ai 2026-10
 
-// src/Import/DetailPage.php, row 390
+// src/Import/DetailPage.php, row 415
 "by the run started %1" => "bởi lần chạy bắt đầu lúc %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 395
+// src/Import/DetailPage.php, row 420
 "Pages of the streams" => "Các trang của luồng", // ai 2026-10
 
-// src/Import/DetailPage.php, row 421
+// src/Import/DetailPage.php, row 452
 "Page %1 of %2" => "Trang %1 / %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 507
+// src/Import/DetailPage.php, row 545
 "The run is queued. It goes on in the background; reload the page to see how far it got." => "Lần chạy đã được đưa vào hàng đợi. Nó tiếp tục chạy nền; hãy tải lại trang để xem tiến độ.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 508
+// src/Import/DetailPage.php, row 546
 "The run goes on - its next step is queued." => "Lần chạy tiếp tục - bước tiếp theo của nó đã vào hàng đợi.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 509
+// src/Import/DetailPage.php, row 547
 "The run is ended. What it imported stays." => "Lần chạy đã kết thúc. Những gì đã nhập vẫn được giữ lại.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 511
+// src/Import/DetailPage.php, row 549
 "No such action." => "Không có thao tác như vậy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 512
+// src/Import/DetailPage.php, row 550
 "Choose a stream of the source." => "Vui lòng chọn một luồng của nguồn.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 513
-"Not started." => "Chưa khởi động.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 515
-"Its last step may still be working. Try again in a few minutes." => "Bước cuối của nó có thể vẫn đang chạy. Vui lòng thử lại sau vài phút.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 516
-"This import no longer exists in this slice." => "Lần nhập này không còn tồn tại trong chuyên mục này.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 517
-"No such run of this import." => "Lần nhập này không có lần chạy như vậy.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 518
-"The run is finished already." => "Lần chạy đã hoàn tất.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 520
-"The action failed. The log of import failures has its cause." => "Thao tác thất bại. Nguyên nhân có trong nhật ký lỗi nhập.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Lần chạy gần nhất đã dừng do lỗi. Trước tiên hãy chọn “Tiếp tục” hoặc “Kết thúc” cho nó. Lần khởi động theo lịch sẽ tự kết thúc nó; khởi động thủ công thì không.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first." => "Lần chạy gần nhất đã dừng do lỗi. Trước tiên hãy chọn “Tiếp tục” hoặc “Kết thúc” cho nó.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Đã lâu không có bước nào xử lý lần chạy gần nhất. Trước tiên hãy chọn “Tiếp tục” hoặc “Kết thúc” cho nó. Lần khởi động theo lịch sẽ tự kết thúc nó; khởi động thủ công thì không.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first." => "Đã lâu không có bước nào xử lý lần chạy gần nhất. Trước tiên hãy chọn “Tiếp tục” hoặc “Kết thúc” cho nó.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 533
-"The last step of the previous run is still finishing. Try again in a few minutes." => "Bước cuối của lần chạy trước vẫn đang hoàn tất. Vui lòng thử lại sau vài phút.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 534
-"Its next step is already on its way." => "Bước tiếp theo của nó đã đang được thực hiện.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 535
-"The last run is still running." => "Lần chạy gần nhất vẫn đang chạy.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 544
-"Only a user who manages the feeding of the slice may run its imports." => "Chỉ người dùng quản lý việc nạp của chuyên mục mới được chạy các lần nhập của nó.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 547
-"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Không thể dùng định nghĩa của lần nhập - đối chiếu của nó không khớp với chuyên mục hoặc không đọc được (DEFINITION).", // ai 2026-10
-
-// src/Import/DetailPage.php, row 550
-"The source has no such stream now." => "Nguồn hiện không có luồng như vậy.", // ai 2026-10
-
 // src/Import/DetailPage.php, row 551
-"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Mã của nguồn nhập bị lỗi (SOURCE). Lớp và dòng gây lỗi có trong nhật ký lỗi nhập.", // ai 2026-10
+"At most (items) takes a whole number greater than 0, or nothing for all items (500 in a dry run)." => "“Tối đa (bài viết)” nhận một số nguyên lớn hơn 0, hoặc để trống để lấy tất cả bài viết (500 khi chạy thử).", // ai 2026-11
 
 // src/Import/DetailPage.php, row 552
-"The first row of the file lacks columns the mapping needs." => "Dòng đầu tiên của tệp thiếu các cột mà đối chiếu cần.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 553
-"The source did not accept the key." => "Nguồn không chấp nhận khóa.", // ai 2026-10
+"Not started." => "Chưa khởi động.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 554
-"The key of the source is damaged in the configuration." => "Khóa của nguồn trong cấu hình bị hỏng.", // ai 2026-10
+"Its last step may still be working. Try again in a few minutes." => "Bước cuối của nó có thể vẫn đang chạy. Vui lòng thử lại sau vài phút.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 555
-"The source could not be reached." => "Không thể kết nối tới nguồn.", // ai 2026-10
+"This import no longer exists in this slice." => "Lần nhập này không còn tồn tại trong chuyên mục này.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 556
-"The run is finished; it cannot go on." => "Lần chạy đã hoàn tất; không thể tiếp tục.", // ai 2026-10
+"No such run of this import." => "Lần nhập này không có lần chạy như vậy.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 557
-"The import is switched off." => "Lần nhập đang bị tắt.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 558
-"This import uses API keys, so only a superadmin may do this." => "Lần nhập này dùng khóa API, vì vậy chỉ quản trị viên cấp cao mới được làm việc này.", // ai 2026-10
+"The run is finished already." => "Lần chạy đã hoàn tất.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 559
-"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Nguồn nhập không cho biết phiên bản của các luồng, nên không có trạng thái nào để ghi nhận.", // ai 2026-10
+"The action failed. The log of import failures has its cause." => "Thao tác thất bại. Nguyên nhân có trong nhật ký lỗi nhập.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 560
-"The import source refused: %1" => "Nguồn nhập từ chối: %1", // ai 2026-10
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Lần chạy gần nhất đã dừng do lỗi. Trước tiên hãy chọn “Tiếp tục” hoặc “Kết thúc” cho nó. Lần khởi động theo lịch sẽ tự kết thúc nó; khởi động thủ công thì không.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first." => "Lần chạy gần nhất đã dừng do lỗi. Trước tiên hãy chọn “Tiếp tục” hoặc “Kết thúc” cho nó.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 571
-"The request to the source failed." => "Yêu cầu tới nguồn thất bại.", // ai 2026-10
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Đã lâu không có bước nào xử lý lần chạy gần nhất. Trước tiên hãy chọn “Tiếp tục” hoặc “Kết thúc” cho nó. Lần khởi động theo lịch sẽ tự kết thúc nó; khởi động thủ công thì không.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 571
+"No step has worked on the last run for a long time. Continue it or End it first." => "Đã lâu không có bước nào xử lý lần chạy gần nhất. Trước tiên hãy chọn “Tiếp tục” hoặc “Kết thúc” cho nó.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 572
-"The source is not available now." => "Nguồn hiện không khả dụng.", // ai 2026-10
+"The last step of the previous run is still finishing. Try again in a few minutes." => "Bước cuối của lần chạy trước vẫn đang hoàn tất. Vui lòng thử lại sau vài phút.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 588
-// src/Import/RunView.php, row 177
-"No import yet" => "Chưa có lần nhập nào", // ai 2026-10
+// src/Import/DetailPage.php, row 573
+"Its next step is already on its way." => "Bước tiếp theo của nó đã đang được thực hiện.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 574
+"The last run is still running." => "Lần chạy gần nhất vẫn đang chạy.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 583
+"Only a user who manages the feeding of the slice may run its imports." => "Chỉ người dùng quản lý việc nạp của chuyên mục mới được chạy các lần nhập của nó.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 586
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Không thể dùng định nghĩa của lần nhập - đối chiếu của nó không khớp với chuyên mục hoặc không đọc được (DEFINITION).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 589
-"Latest run: %1" => "Lần chạy gần nhất: %1", // ai 2026-10
+"The source has no such stream now." => "Nguồn hiện không có luồng như vậy.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 590
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Mã của nguồn nhập bị lỗi (SOURCE). Lớp và dòng gây lỗi có trong nhật ký lỗi nhập.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 591
+"The first row of the file lacks columns the mapping needs." => "Dòng đầu tiên của tệp thiếu các cột mà đối chiếu cần.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 592
+"The source did not accept the key." => "Nguồn không chấp nhận khóa.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 593
+"The key of the source is damaged in the configuration." => "Khóa của nguồn trong cấu hình bị hỏng.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 594
+"The source could not be reached." => "Không thể kết nối tới nguồn.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 595
+"The database did not store the imported items; the source is not at fault." => "Cơ sở dữ liệu đã không lưu các bài viết được nhập; lỗi không nằm ở nguồn.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 596
+"The run is finished; it cannot go on." => "Lần chạy đã hoàn tất; không thể tiếp tục.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 597
+"The import runs only by hand, so a planned task does not start it." => "Tác vụ nhập chỉ chạy thủ công, nên tác vụ đã lên lịch không khởi động nó.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 598
+"This import uses API keys, so only a superadmin may do this." => "Lần nhập này dùng khóa API, vì vậy chỉ quản trị viên cấp cao mới được làm việc này.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 599
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Nguồn nhập không cho biết phiên bản của các luồng, nên không có trạng thái nào để ghi nhận.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 600
+"The import source refused: %1" => "Nguồn nhập từ chối: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 611
+"The request to the source failed." => "Yêu cầu tới nguồn thất bại.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 612
+"The source is not available now." => "Nguồn hiện không khả dụng.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 628
+// src/Import/RunView.php, row 183
+"No import yet" => "Chưa có lần nhập nào", // ai 2026-10
+
+// src/Import/DetailPage.php, row 629
+"Latest run: %1" => "Lần chạy gần nhất: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 635
 "Since then: %1" => "Kể từ đó: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "Source: %1" => "Nguồn: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "this source is not available" => "nguồn này không khả dụng", // ai 2026-10
 
-// src/Import/DetailPage.php, row 626
+// src/Import/DetailPage.php, row 666
 "First item error:" => "Lỗi bài viết đầu tiên:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Latest runs" => "Các lần chạy gần nhất", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Outcomes of the latest runs, newest first" => "Kết quả các lần chạy gần nhất, mới nhất trước", // ai 2026-10
 
-// src/Import/DetailPage.php, row 654
+// src/Import/DetailPage.php, row 694
 "Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Mới nhất trước. Vòng tròn nét đứt là lần chạy không lưu gì: kiểm tra nguồn, chạy thử hoặc ghi nhận trạng thái. Hình vuông tô đặc %1 là lần chạy bị kết thúc trước khi hoàn tất.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 679
+// src/Import/DetailPage.php, row 719
 "The open run" => "Lần chạy đang mở", // ai 2026-10
 
-// src/Import/DetailPage.php, row 681
+// src/Import/DetailPage.php, row 721
 "Streams done: %1 of %2." => "Luồng đã xong: %1 / %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 684
+// src/Import/DetailPage.php, row 724
 "Now at: %1." => "Đang xử lý: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 686
+// src/Import/DetailPage.php, row 726
 "Last progress: %1." => "Tiến triển gần nhất: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 689
+// src/Import/DetailPage.php, row 729
 "Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "Không nhập thêm gì cho đến khi bạn can thiệp hoặc một tác vụ theo lịch khởi động lại lần nhập (việc đó sẽ kết thúc lần chạy này).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 690
+// src/Import/DetailPage.php, row 730
 "Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "“Tiếp tục” chạy tiếp từ chỗ đã dừng sau khi nguyên nhân được khắc phục; “Kết thúc” dừng hẳn lần chạy và giữ lại những gì đã nhập.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 691
+// src/Import/DetailPage.php, row 731
 "No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "Đã lâu không có bước nào xử lý lần chạy này - hãy kiểm tra rằng cron chạy hàng đợi tác vụ và mỗi vòng đủ dài cho một bước (TOEXECUTE_ALLOWED_TIME trong config.php). “Tiếp tục” sẽ thử lại ngay; “Kết thúc” dừng hẳn lần chạy và giữ lại những gì đã nhập. Lần khởi động theo lịch của lần nhập sẽ kết thúc nó và bắt đầu lần chạy mới.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 692
+// src/Import/DetailPage.php, row 732
 "A step is working now." => "Một bước đang chạy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 694
+// src/Import/DetailPage.php, row 734
 "Waiting to try again at %1 after 1 failed try." => "Đang chờ thử lại lúc %1 sau 1 lần thử thất bại.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 695
+// src/Import/DetailPage.php, row 735
 "Waiting to try again at %1 after %2 failed tries." => "Đang chờ thử lại lúc %1 sau %2 lần thử thất bại.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 696
+// src/Import/DetailPage.php, row 736
 "Waiting to try again at %1." => "Đang chờ thử lại lúc %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 698, 944
+// src/Import/DetailPage.php, row 738, 995
 "Its last step may still be working." => "Bước cuối của nó có thể vẫn đang chạy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 699
+// src/Import/DetailPage.php, row 739
 "Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "Bước cuối của nó đã dừng khi chưa hoàn tất. Hàng đợi tác vụ sẽ thử lại trong vòng %1 phút; “Thử ngay” thực hiện ngay lập tức.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue until %1." => "Bước tiếp theo của nó chờ trong hàng đợi tác vụ đến %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue." => "Bước tiếp theo của nó chờ trong hàng đợi tác vụ.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 726
-"The import is disabled, so no planned task starts it." => "Lần nhập đang bị tắt nên không tác vụ theo lịch nào khởi động nó.", // ai 2026-10
+// src/Import/DetailPage.php, row 766
+"Planned tasks start it only once Enabled is ticked (Edit in the list of imports)." => "“Tác vụ đã lên lịch” chỉ khởi động nó khi “Đã bật” được đánh dấu (“Sửa” trong danh sách tác vụ nhập).", // ai 2026-11
 
-// src/Import/DetailPage.php, row 732
-"Not planned" => "Chưa lên lịch", // ai 2026-10
-
-// src/Import/DetailPage.php, row 733
+// src/Import/DetailPage.php, row 773
 "A planned task calls it, but none has a time to start it." => "Một tác vụ theo lịch gọi nó, nhưng không tác vụ nào có thời điểm khởi động.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 734
+// src/Import/DetailPage.php, row 774
 "It runs only when you start it. To run it on a schedule, add a planned task." => "Lần nhập chỉ chạy khi bạn khởi động. Để chạy theo lịch, hãy thêm một tác vụ theo lịch.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 745
+// src/Import/DetailPage.php, row 785
 "Written by hand, a planned task starts it with %1." => "Nếu viết thủ công, tác vụ theo lịch khởi động nó bằng %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 756
+// src/Import/DetailPage.php, row 796
 "Planned tasks need the Forms permission" => "“Tác vụ đã lên lịch” cần quyền “Biểu mẫu”", // ai 2026-10
 
-// src/Import/DetailPage.php, row 760
+// src/Import/DetailPage.php, row 800
 "Planned tasks: %1" => "Tác vụ theo lịch: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 761
+// src/Import/DetailPage.php, row 801
 "Planned tasks: %1, next %2" => "Tác vụ theo lịch: %1, lần tới %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 763, 778
+// src/Import/DetailPage.php, row 803, 818
 "Schedule" => "Lên lịch", // ai 2026-10
 
-// src/Import/DetailPage.php, row 766
-"(import off)" => "(đã tắt nhập)", // ai 2026-10
+// src/Import/DetailPage.php, row 806
+"(does not start it now)" => "(hiện không khởi động nó)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "next %1" => "lần tới %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "no time set" => "chưa đặt thời gian", // ai 2026-10
 
-// src/Import/DetailPage.php, row 774
+// src/Import/DetailPage.php, row 814
 "save the task again to let it start the import" => "hãy lưu lại tác vụ để nó có thể khởi động lần nhập", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "queued" => "trong hàng đợi", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "not queued" => "không trong hàng đợi", // ai 2026-10
 
-// src/Import/DetailPage.php, row 793
+// src/Import/DetailPage.php, row 833
 "Import %1" => "Tác vụ nhập %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "mode set by an expression" => "chế độ do biểu thức xác định", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "unknown mode %1" => "chế độ không xác định %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Passed" => "Đạt", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Failed" => "Thất bại", // ai 2026-10
 
-// src/Import/DetailPage.php, row 828
+// src/Import/DetailPage.php, row 868
 "Taken from the run list: the stream state holds no newer check result." => "Lấy từ danh sách lần chạy: trạng thái luồng không có kết quả kiểm tra mới hơn.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "The stored result cannot be read." => "Không thể đọc kết quả đã lưu.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "Never checked" => "Chưa từng kiểm tra", // ai 2026-10
 
-// src/Import/DetailPage.php, row 849
+// src/Import/DetailPage.php, row 893
 "The mapping of the import cannot be read; no run starts until it is set again." => "Không thể đọc đối chiếu của lần nhập; không lần chạy nào bắt đầu cho đến khi nó được đặt lại.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 856
+// src/Import/DetailPage.php, row 900
 "The mapping does not fit the slice; no run starts until it is fixed:" => "Đối chiếu không khớp với chuyên mục; không lần chạy nào bắt đầu cho đến khi nó được sửa:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 899
+// src/Import/DetailPage.php, row 912
+"The source is not set up yet." => "Nguồn chưa được thiết lập.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 948
 "No stream is known yet - run the import or check the source first." => "Chưa biết luồng nào - trước tiên hãy chạy lần nhập hoặc kiểm tra nguồn.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 903
+// src/Import/DetailPage.php, row 952
 "One stream" => "Một luồng", // ai 2026-10
 
-// src/Import/DetailPage.php, row 904
-"Run the stream" => "Chạy luồng", // ai 2026-10
+// src/Import/DetailPage.php, row 953
+"At most (items)" => "Tối đa (bài viết)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 905
+// src/Import/DetailPage.php, row 955
 "Dry run of the stream" => "Chạy thử luồng", // ai 2026-10
 
-// src/Import/DetailPage.php, row 918
+// src/Import/DetailPage.php, row 956
+"Run the stream" => "Chạy luồng", // ai 2026-10
+
+// src/Import/DetailPage.php, row 969
 "Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "Ghi nhận các phiên bản hiện có ở nguồn như thể chúng đã được nhập? Các luồng không thay đổi sau đó sẽ không được nhập.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 919
+// src/Import/DetailPage.php, row 970
 "Record the current state of the source" => "Ghi nhận trạng thái hiện tại của nguồn", // ai 2026-10
 
-// src/Import/DetailPage.php, row 921
+// src/Import/DetailPage.php, row 972
 "Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Lưu phiên bản hiện tại của từng luồng mà không nhập, để “Chỉ chạy phần đã đổi” sau đó chỉ lấy những gì thay đổi về sau. Chỉ dùng khi dữ liệu nguồn đã có sẵn trong chuyên mục.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 937
+// src/Import/DetailPage.php, row 988
 "No run is open." => "Không có lần chạy nào đang mở.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 943
+// src/Import/DetailPage.php, row 994
 "Its step is working now." => "Bước của nó đang chạy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 947
+// src/Import/DetailPage.php, row 998
 "Try now" => "Thử ngay", // ai 2026-10
 
-// src/Import/DetailPage.php, row 957
+// src/Import/DetailPage.php, row 1008
 "End the run for good? What it imported stays; the next run starts from the beginning." => "Kết thúc hẳn lần chạy? Những gì đã nhập vẫn được giữ; lần chạy tiếp theo sẽ bắt đầu từ đầu.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1024
+// src/Import/DetailPage.php, row 1075
 "The first item errors (%1)" => "Các lỗi bài viết đầu tiên (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1025, 1046
+// src/Import/DetailPage.php, row 1076, 1097
 "Job" => "Công việc", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1036
+// src/Import/DetailPage.php, row 1087
 "Skipped - the key came out empty (%1)" => "Bỏ qua - khóa bị rỗng (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1046
+// src/Import/DetailPage.php, row 1097
 "Source value" => "Giá trị nguồn", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of 1 job." => "Bộ lọc không giữ lại bài viết nào của 1 công việc.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of %1 jobs." => "Bộ lọc không giữ lại bài viết nào của %1 công việc.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1057
+// src/Import/DetailPage.php, row 1108
 "If those items should be imported, check the filter in Mapping." => "Nếu các bài viết đó cần được nhập, hãy kiểm tra bộ lọc trong mục “Đối chiếu”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in 1 stream; the rest of it was skipped." => "Nguồn bị lặp vòng trong 1 luồng; phần còn lại của luồng đó đã bị bỏ qua.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in %1 streams; the rest of each was skipped." => "Nguồn bị lặp vòng trong %1 luồng; phần còn lại của từng luồng đã bị bỏ qua.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1067
+// src/Import/DetailPage.php, row 1118
 "The source pages wrongly or changed its paging; check the source, then run the import again." => "Nguồn phân trang sai hoặc đã thay đổi cách phân trang; hãy kiểm tra nguồn rồi chạy lại lần nhập.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1082
+// src/Import/DetailPage.php, row 1133
 "Remarks of the source (%1)" => "Ghi chú của nguồn (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1091
+// src/Import/DetailPage.php, row 1142
 "Remark" => "Ghi chú", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1099
+// src/Import/DetailPage.php, row 1150
 "The dry run found no item to store." => "Lần chạy thử không tìm thấy bài viết nào để lưu.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1101
+// src/Import/DetailPage.php, row 1152
 "What the dry run would store - the first %1 items" => "Những gì lần chạy thử sẽ lưu - %1 bài viết đầu tiên", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Last try failed:" => "Lần thử gần nhất thất bại:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Error:" => "Lỗi:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1124
+// src/Import/DetailPage.php, row 1175
 "At: %1" => "Tại: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1126
+// src/Import/DetailPage.php, row 1177
 "What to do:" => "Cần làm gì:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1136
+// src/Import/DetailPage.php, row 1187
 "Check the address of the source in its settings, then Continue or End the run." => "Hãy kiểm tra địa chỉ của nguồn trong thiết lập của nó, rồi chọn “Tiếp tục” hoặc “Kết thúc” cho lần chạy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1140
+// src/Import/DetailPage.php, row 1191
 "Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "Hãy sửa đối chiếu cột hoặc tệp để các cột còn thiếu có mặt, rồi chạy lại “Kiểm tra nguồn”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1141
+// src/Import/DetailPage.php, row 1192
 "Check the key of the source in its settings, then run Check source." => "Hãy kiểm tra khóa của nguồn trong thiết lập của nó, rồi chạy “Kiểm tra nguồn”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1142
+// src/Import/DetailPage.php, row 1193
 "Enter the key of the source again in its settings, then run Check source." => "Hãy nhập lại khóa của nguồn trong thiết lập của nó, rồi chạy “Kiểm tra nguồn”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1143
+// src/Import/DetailPage.php, row 1194
 "The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "Không thể kết nối tới nguồn. Hãy kiểm tra địa chỉ của nó trong thiết lập; nếu địa chỉ đúng, hãy chọn “Tiếp tục” cho lần chạy sau.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1144
+// src/Import/DetailPage.php, row 1195
 "Correct the settings of the source, then run Check source." => "Hãy sửa thiết lập của nguồn, rồi chạy “Kiểm tra nguồn”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1145
+// src/Import/DetailPage.php, row 1196
 "Choose a stream the source still has, then start the import again." => "Hãy chọn một luồng mà nguồn vẫn còn, rồi khởi động lại lần nhập.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1146
+// src/Import/DetailPage.php, row 1197
 "Check that every mapped field exists in the slice, then start the import again." => "Hãy kiểm tra rằng mọi trường được đối chiếu đều tồn tại trong chuyên mục, rồi khởi động lại lần nhập.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1147
+// src/Import/DetailPage.php, row 1198
 "Look the failure up in the log of import failures, then Continue or End the run." => "Hãy tra lỗi trong nhật ký lỗi nhập, rồi chọn “Tiếp tục” hoặc “Kết thúc” cho lần chạy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1161
+// src/Import/DetailPage.php, row 1199
+"Continue the run later; if the database keeps refusing, tell its administrator." => "Hãy tiếp tục lần chạy sau; nếu cơ sở dữ liệu vẫn từ chối, hãy báo cho quản trị viên của nó.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 1213
 "full run" => "chạy toàn bộ", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1162
-"one stream (%1)" => "một luồng (%1)", // ai 2026-10
+// src/Import/DetailPage.php, row 1214
+"one stream: %1" => "một luồng: %1", // ai 2026-11
 
-// src/Import/DetailPage.php, row 1163
+// src/Import/DetailPage.php, row 1215
 "%1 streams" => "%1 luồng", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Baseline only" => "Chỉ ghi nhận trạng thái", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Nothing imported yet. Run changed only takes what changes after this." => "Chưa nhập gì. “Chỉ chạy phần đã đổi” sẽ lấy những gì thay đổi sau thời điểm này.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207, 1208
+// src/Import/DetailPage.php, row 1259, 1260
 "Imported with item errors" => "Đã nhập, có lỗi bài viết", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207
+// src/Import/DetailPage.php, row 1259
 "1 item error in the run that imported it - see Runs." => "1 lỗi bài viết trong lần chạy đã nhập luồng này - xem “Các lần chạy”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1208
+// src/Import/DetailPage.php, row 1260
 "%1 item errors in the run that imported it - see Runs." => "%1 lỗi bài viết trong lần chạy đã nhập luồng này - xem “Các lần chạy”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "Imported" => "Đã nhập", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source was asked again after the import." => "Nguồn đã được hỏi lại sau lần nhập.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source has not been asked since." => "Từ đó đến nay nguồn chưa được hỏi lại.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Checked, not imported yet" => "Đã kiểm tra, chưa nhập", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Run imports it; Run changed only too, as it has no version to compare." => "“Chạy” sẽ nhập luồng này; “Chỉ chạy phần đã đổi” cũng vậy, vì chưa có phiên bản để so sánh.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "Not seen yet" => "Chưa thấy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "No run has imported or checked it." => "Chưa có lần chạy nào nhập hoặc kiểm tra luồng này.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1228
+// src/Import/DetailPage.php, row 1280
 "%1 read" => "đã đọc %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1229
+// src/Import/DetailPage.php, row 1281
 "%1 new, %2 updated, %3 skipped" => "%1 mới, %2 cập nhật, %3 bỏ qua", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1230
+// src/Import/DetailPage.php, row 1282
 "%1 filtered out" => "%1 bị lọc ra", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "dry run - nothing stored" => "chạy thử - không lưu gì", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "all streams of the run together" => "mọi luồng của lần chạy cộng lại", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1250
+// src/Import/DetailPage.php, row 1302
 "None yet - an import records it" => "Chưa có - lần nhập sẽ ghi nhận", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1251
+// src/Import/DetailPage.php, row 1303
 "None - the source gives no version" => "Không có - nguồn không cung cấp phiên bản", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1" => "mất %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1, working %2" => "mất %1, trong đó xử lý %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1310
+// src/Import/DetailPage.php, row 1362
 "%1 s" => "%1 giây", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313
+// src/Import/DetailPage.php, row 1365
 "%1 min %2 s" => "%1 phút %2 giây", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313, 1315
+// src/Import/DetailPage.php, row 1365, 1367
 // src/Optimize/StateCheckModel.php, row 257
 "%1 min" => "%1 phút", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1315
+// src/Import/DetailPage.php, row 1367
 // src/Optimize/StateCheckModel.php, row 258
 "%1 h" => "%1 giờ", // ai 2026-10
 
@@ -10462,7 +10522,7 @@ return [
 // src/Import/RunView.php, row 74
 "Stuck — see State Check" => "Bị treo — xem Kiểm tra trạng thái", // ai 2026-10
 
-// src/Import/RunView.php, row 75, 171
+// src/Import/RunView.php, row 75, 177
 "Running" => "Đang chạy", // ai 2026-10
 
 // src/Import/RunView.php, row 76
@@ -10517,167 +10577,197 @@ return [
 // src/Import/RunView.php, row 131
 "%1 days ago" => "%1 ngày trước", // ai 2026-10
 
-// src/Import/RunView.php, row 159, 162, 165, 169
+// src/Import/RunView.php, row 162, 168, 171, 175
 "Failing" => "Đang lỗi", // ai 2026-10
 
-// src/Import/RunView.php, row 159
+// src/Import/RunView.php, row 162
 "The source of this import is not available, so it cannot run." => "Nguồn của lần nhập này không khả dụng, nên không thể chạy.", // ai 2026-10
 
-// src/Import/RunView.php, row 162
+// src/Import/RunView.php, row 165
+"Not set up" => "Chưa thiết lập", // ai 2026-11
+
+// src/Import/RunView.php, row 165
+"Fill in these settings of the source: %1." => "Hãy điền các thiết lập sau của nguồn: %1.", // ai 2026-11
+
+// src/Import/RunView.php, row 168
 "The mapping does not fit the slice, so no run can start until it is fixed." => "Đối chiếu không khớp với chuyên mục, nên không lần chạy nào có thể bắt đầu cho đến khi được sửa.", // ai 2026-10
 
-// src/Import/RunView.php, row 169
+// src/Import/RunView.php, row 175
 "A run has made no progress for a long time - cron may not be running its steps." => "Một lần chạy đã lâu không tiến triển - có thể cron không chạy các bước của nó.", // ai 2026-10
 
-// src/Import/RunView.php, row 170, 178, 181, 182, 183
+// src/Import/RunView.php, row 176, 184, 187, 188, 189
 "Needs attention" => "Cần chú ý", // ai 2026-10
 
-// src/Import/RunView.php, row 170
+// src/Import/RunView.php, row 176
 "A run failed a step and waits to try again." => "Một lần chạy bị lỗi ở một bước và đang chờ thử lại.", // ai 2026-10
 
-// src/Import/RunView.php, row 171
+// src/Import/RunView.php, row 177
 "A run is in progress: %1." => "Một lần chạy đang diễn ra: %1.", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "Never ran" => "Chưa từng chạy", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "No run yet. Run starts the first import." => "Chưa có lần chạy nào. “Chạy” sẽ bắt đầu lần nhập đầu tiên.", // ai 2026-10
 
-// src/Import/RunView.php, row 177
+// src/Import/RunView.php, row 183
 "Only source checks or dry runs so far - nothing was imported." => "Mới chỉ có kiểm tra nguồn hoặc chạy thử - chưa nhập gì.", // ai 2026-10
 
-// src/Import/RunView.php, row 179
+// src/Import/RunView.php, row 185
 "The last import stopped by an error and was then ended, so the data may be incomplete." => "Lần nhập gần nhất đã dừng do lỗi rồi bị kết thúc, nên dữ liệu có thể không đầy đủ.", // ai 2026-10
 
-// src/Import/RunView.php, row 180
+// src/Import/RunView.php, row 186
 "The last import was ended before it finished, so the data may be incomplete." => "Lần nhập gần nhất đã bị kết thúc trước khi hoàn tất, nên dữ liệu có thể không đầy đủ.", // ai 2026-10
 
-// src/Import/RunView.php, row 181
+// src/Import/RunView.php, row 187
 "The last import finished, but 1 item could not be stored." => "Lần nhập gần nhất đã hoàn tất, nhưng không lưu được 1 bài viết.", // ai 2026-10
 
-// src/Import/RunView.php, row 182
+// src/Import/RunView.php, row 188
 "The last import finished, but %1 items could not be stored." => "Lần nhập gần nhất đã hoàn tất, nhưng không lưu được %1 bài viết.", // ai 2026-10
 
-// src/Import/RunView.php, row 183
+// src/Import/RunView.php, row 189
 "The last full import read nothing - the source may be empty." => "Lần nhập đầy đủ gần nhất không đọc được gì - có thể nguồn đang trống.", // ai 2026-10
 
-// src/Import/RunView.php, row 184, 185
+// src/Import/RunView.php, row 190, 191
 "Healthy" => "Bình thường", // ai 2026-10
 
-// src/Import/RunView.php, row 184
+// src/Import/RunView.php, row 190
 "The last import finished without errors; nothing had changed." => "Lần nhập gần nhất đã hoàn tất không lỗi; không có gì thay đổi.", // ai 2026-10
 
-// src/Import/RunView.php, row 185
+// src/Import/RunView.php, row 191
 "The last import finished without errors (%1 read)." => "Lần nhập gần nhất đã hoàn tất không lỗi (đã đọc %1).", // ai 2026-10
 
-// src/Import/RunView.php, row 188
-"Runs only by hand." => "Chỉ chạy thủ công.", // ai 2026-10
-
-// src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "Lần chạy thử gần nhất đã dừng do lỗi. Sẽ không nhập thêm gì cho đến khi Bạn xử lý.", // ai 2026-10
+// src/Import/RunView.php, row 198
+"The source refuses its settings." => "Nguồn từ chối các thiết lập của nó.", // ai 2026-11
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "Lần kiểm tra nguồn gần nhất đã dừng do lỗi. Sẽ không nhập thêm gì cho đến khi Bạn xử lý.", // ai 2026-10
-
-// src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Việc ghi lại trạng thái của nguồn đã dừng do lỗi. Sẽ không nhập thêm gì cho đến khi Bạn xử lý.", // ai 2026-10
-
-// src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "Lần nhập gần nhất đã dừng do lỗi. Sẽ không nhập thêm gì cho đến khi Bạn xử lý.", // ai 2026-10
-
-// src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "Kiểm tra nguồn thất bại - chưa nhập gì", // ai 2026-10
+"The source refuses its settings: %1" => "Nguồn từ chối các thiết lập của nó: %1", // ai 2026-11
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "Đang kiểm tra nguồn", // ai 2026-10
+"The last dry run stopped by an error. Nothing more is imported until you act." => "Lần chạy thử gần nhất đã dừng do lỗi. Sẽ không nhập thêm gì cho đến khi Bạn xử lý.", // ai 2026-10
+
+// src/Import/RunView.php, row 214
+"The last source check stopped by an error. Nothing more is imported until you act." => "Lần kiểm tra nguồn gần nhất đã dừng do lỗi. Sẽ không nhập thêm gì cho đến khi Bạn xử lý.", // ai 2026-10
 
 // src/Import/RunView.php, row 215
-"Source reachable - nothing imported" => "Nguồn truy cập được - chưa nhập gì", // ai 2026-10
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Việc ghi lại trạng thái của nguồn đã dừng do lỗi. Sẽ không nhập thêm gì cho đến khi Bạn xử lý.", // ai 2026-10
 
-// src/Import/RunView.php, row 217
-"Nothing had changed" => "Không có gì thay đổi", // ai 2026-10
-
-// src/Import/RunView.php, row 218
-"Nothing read" => "Không đọc được gì", // ai 2026-10
-
-// src/Import/RunView.php, row 219
-"%1 read, %2 new, %3 changed" => "Đã đọc %1, mới %2, thay đổi %3", // ai 2026-10
-
-// src/Import/RunView.php, row 221
-"%1 (nothing stored)" => "%1 (không lưu gì)", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of 1 stream - nothing imported" => "Đã ghi lại trạng thái của 1 luồng - chưa nhập gì", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of %1 streams - nothing imported" => "Đã ghi lại trạng thái của %1 luồng - chưa nhập gì", // ai 2026-10
+// src/Import/RunView.php, row 216
+"The last import stopped by an error. Nothing more is imported until you act." => "Lần nhập gần nhất đã dừng do lỗi. Sẽ không nhập thêm gì cho đến khi Bạn xử lý.", // ai 2026-10
 
 // src/Import/RunView.php, row 228
-"%1 without a version" => "%1 không có phiên bản", // ai 2026-10
+"Source check failed - nothing imported" => "Kiểm tra nguồn thất bại - chưa nhập gì", // ai 2026-10
+
+// src/Import/RunView.php, row 229
+"Source check under way" => "Đang kiểm tra nguồn", // ai 2026-10
+
+// src/Import/RunView.php, row 231
+"Source reachable - nothing imported" => "Nguồn truy cập được - chưa nhập gì", // ai 2026-10
+
+// src/Import/RunView.php, row 233
+"Nothing had changed" => "Không có gì thay đổi", // ai 2026-10
+
+// src/Import/RunView.php, row 234
+"Nothing read" => "Không đọc được gì", // ai 2026-10
+
+// src/Import/RunView.php, row 235
+"%1 read, %2 new, %3 changed" => "Đã đọc %1, mới %2, thay đổi %3", // ai 2026-10
 
 // src/Import/RunView.php, row 237
-"changed only" => "chỉ phần thay đổi", // ai 2026-10
+"%1 (nothing stored)" => "%1 (không lưu gì)", // ai 2026-10
 
-// src/Import/RunView.php, row 238
-"check" => "kiểm tra", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of 1 stream - nothing imported" => "Đã ghi lại trạng thái của 1 luồng - chưa nhập gì", // ai 2026-10
 
-// src/Import/RunView.php, row 239
-"recording the state of the source" => "ghi lại trạng thái của nguồn", // ai 2026-10
-
-// src/Import/RunView.php, row 242
-"dry run" => "chạy thử", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of %1 streams - nothing imported" => "Đã ghi lại trạng thái của %1 luồng - chưa nhập gì", // ai 2026-10
 
 // src/Import/RunView.php, row 244
-"by hand" => "thủ công", // ai 2026-10
+"%1 without a version" => "%1 không có phiên bản", // ai 2026-10
 
-// src/Import/RunView.php, row 245
-"planned" => "theo lịch", // ai 2026-10
+// src/Import/RunView.php, row 254
+"changed only" => "chỉ phần thay đổi", // ai 2026-10
 
-// src/Import/RunView.php, row 246
-"on an event" => "theo sự kiện", // ai 2026-10
+// src/Import/RunView.php, row 255
+"check" => "kiểm tra", // ai 2026-10
+
+// src/Import/RunView.php, row 256
+"recording the state of the source" => "ghi lại trạng thái của nguồn", // ai 2026-10
 
 // src/Import/RunView.php, row 259
-"Disabled - it does not start" => "Đã tắt - không khởi chạy", // ai 2026-10
+"dry run" => "chạy thử", // ai 2026-10
 
-// src/Import/RunView.php, row 268
+// src/Import/RunView.php, row 261
+"first %1 items" => "%1 bài viết đầu tiên", // ai 2026-11
+
+// src/Import/RunView.php, row 263
+"by hand" => "thủ công", // ai 2026-10
+
+// src/Import/RunView.php, row 264
+"planned" => "theo lịch", // ai 2026-10
+
+// src/Import/RunView.php, row 265
+"on an event" => "theo sự kiện", // ai 2026-10
+
+// src/Import/RunView.php, row 285
+"Runs only by hand." => "Chỉ chạy thủ công.", // ai 2026-10
+
+// src/Import/RunView.php, row 294
 "No run yet" => "Chưa có lần chạy nào", // ai 2026-10
 
-// src/Import/RunView.php, row 280
+// src/Import/RunView.php, row 306
 "1 item error" => "1 lỗi bài viết", // ai 2026-10
 
-// src/Import/RunView.php, row 281
+// src/Import/RunView.php, row 307
 "%1 item errors" => "%1 lỗi bài viết", // ai 2026-10
 
-// src/Import/RunView.php, row 284
+// src/Import/RunView.php, row 310
 "Last import: %1" => "Lần nhập gần nhất: %1", // ai 2026-10
 
 // src/Import/SliceIdSetting.php, row 22
 "No slice ID" => "Thiếu ID chuyên mục", // ai 2026-10
 
-// src/Import/Source/CsvColumnsSetting.php, row 31
-"Expected a JSON object {\"column\": \"field id\"}" => "Cần một đối tượng JSON {\"column\": \"field id\"}", // ai 2026-10
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"no column" => "không có cột nào", // ai 2026-11
 
-// src/Import/Source/CsvurlSource.php, row 42
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"more than %1 columns" => "hơn %1 cột", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 73
+"not a field the import may fill" => "không phải trường mà tác vụ nhập được phép điền", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 74
+"the column name is empty, too long or holds invisible characters" => "tên cột trống, quá dài hoặc chứa ký tự vô hình", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 75
+"the column is named twice" => "cột được khai báo hai lần", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 89
+"Line %1: %2" => "Dòng %1: %2", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 119
+"expected \"column = field id\"" => "cần dạng “cột = id trường”", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 43
 "CSV file at a URL" => "Tệp CSV tại một URL", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 47
+// src/Import/Source/CsvurlSource.php, row 48
 "Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "Nhập các dòng của một tệp CSV tại địa chỉ http(s) công khai; cài đặt cho biết cột nào điền vào trường nào.", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "http or https only, on a public address, without a user name and password" => "chỉ http hoặc https, trên địa chỉ công khai, không có tên người dùng và mật khẩu", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 55
+// src/Import/Source/CsvurlSource.php, row 56
 // src/Widget/Widget.php, row 743, 812
 "Columns" => "Cột", // ai 2026-06
 
-// src/Import/Source/CsvurlSource.php, row 55
-"JSON object: the column name in the first row => the field it fills" => "Đối tượng JSON: tên cột ở dòng đầu tiên => trường mà cột đó điền vào", // ai 2026-10
-
 // src/Import/Source/CsvurlSource.php, row 56
+"One line per column: its name in the first row = the id of the field it fills" => "Mỗi cột một dòng: tên của cột ở hàng đầu tiên = id của trường mà nó điền vào", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 57
 "Key column" => "Cột khóa", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 56
+// src/Import/Source/CsvurlSource.php, row 57
 "The column that identifies the item; it must be one of the columns" => "Cột dùng để nhận diện bài viết; phải là một trong các cột", // ai 2026-10
 
 // src/Isds/Advice.php, row 48
@@ -11398,40 +11488,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "Bạn không thể lưu dòng này ở đây.", // ai 2026-10
 
-// src/Manager.php, row 821
+// src/Manager.php, row 812
 "Searchbar" => "Thanh tìm kiếm", // ai 2026-06
 
-// src/Manager.php, row 822
+// src/Manager.php, row 813
 "Scroller" => "Phân trang", // ai 2026-06
 
-// src/Manager.php, row 823
+// src/Manager.php, row 814
 "Msg" => "Thông báo", // ai 2026-06
 
-// src/Manager.php, row 824
+// src/Manager.php, row 815
 "Bin" => "Khu", // ai 2026-06
 
-// src/Manager.php, row 826
+// src/Manager.php, row 817
 "Manager ID" => "ID trình quản lý", // ai 2026-06
 
-// src/Manager.php, row 1200
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "Thao tác chưa được thực hiện - hãy dùng nút trên trang.", // ai 2026-10
 
-// src/Manager.php, row 1281
+// src/Manager.php, row 1272
 "Edit id" => "Id để sửa", // ai 2026-06
 
-// src/Manager.php, row 1295
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Giữ Shift và nhấn để chọn nhiều hàng", // ai 2026-06
 
-// src/Manager.php, row 1333
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "Bạn có chắc muốn dọn thùng rác không?", // ai 2026-06
 
-// src/Manager.php, row 1435
+// src/Manager.php, row 1426
 "Go" => "Chạy", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "Chưa chọn bài viết nào. Thực hiện hành động cho tất cả bài viết đã lọc?", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "Run for %1 items" => "Chạy cho %1 bài viết", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47
