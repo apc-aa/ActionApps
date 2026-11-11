@@ -582,7 +582,7 @@ final class DetailPage
             'AUTH'           => _m('The source did not accept the key.'),
             'NO_CREDENTIAL'  => _m('The key of the source is damaged in the configuration.'),
             'TRANSPORT'      => _m('The source could not be reached.'),
-            'STORE'          => _m('The database did not store the imported items; the source is not at fault.'),
+            Run::COMMIT      => _m('The database did not store the imported items; the source is not at fault.'),
             'WRONG_STATE'    => _m('The run is finished; it cannot go on.'),
             'OFF'            => _m('The import runs only by hand, so a planned task does not start it.'),
             'KEYS'           => _m('This import uses API keys, so only a superadmin may do this.'),
@@ -1185,6 +1185,7 @@ final class DetailPage
             'STREAMS'       => _m('Choose a stream the source still has, then start the import again.'),
             'DEFINITION'    => _m('Check that every mapped field exists in the slice, then start the import again.'),
             'SOURCE'        => _m('Look the failure up in the log of import failures, then Continue or End the run.'),
+            Run::COMMIT     => _m('Continue the run later; if the database keeps refusing, tell its administrator.'),
             default         => '',
         };
     }

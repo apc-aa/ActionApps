@@ -16,10 +16,6 @@ abstract class CentralRun extends BatchRun
     /** the user who started the run is no superadmin any more - Continue once the rights are back */
     public const DENIED = 'DENIED';
 
-    /** seconds before a failed AA is asked again: after a step that still moved on, after the first and
-     *  the second failure in a row (the third goes to onRetriesExhausted()) - each run sets its own */
-    protected const RETRY = [60, 300, 900];
-
     /** the user who started the run */
     public function user(): string
     {

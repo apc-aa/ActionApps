@@ -53,8 +53,9 @@ abstract class BatchRun extends AA_Object
     public const DEAD_GRACE = 300;
 
     /** seconds before the next try after a failed step, by retryDelay(): after a step that still moved on,
-     *  after the first and the second failure in a row; the last one serves any further */
-    protected const RETRY = [1800];
+     *  after the first and the second failure in a row; the last one serves any further. An outage of a
+     *  few minutes costs no half an hour. */
+    protected const RETRY = [60, 300, 900];
 
     /** a run without progress this long past its retries hangs (isStuck()) */
     private const STUCK_GRACE = 3600;

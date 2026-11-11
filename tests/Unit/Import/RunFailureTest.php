@@ -13,9 +13,11 @@ use AA\IO\DB\TransactionFailed;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
 use AA\Later\BatchStepResult;
+use AA\Later\Toexecute;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Import\Fixtures\CheckedSource;
 use Tests\Unit\Import\Fixtures\RunSteps;
 use Tests\Unit\Import\Fixtures\ScriptedSource;
@@ -699,13 +701,17 @@ final class RunFailureTest extends TestCase
         self::runOne();
 
         $stored = self::stored($run->getId());
-        self::assertSame([Run::RUNNING, '1', 'STORE'], [$stored['state'], $stored['failures'], $stored['retry_code']]);
+        self::assertSame([Run::RUNNING, '1', 'COMMIT'], [$stored['state'], $stored['failures'], $stored['retry_code']]);
         self::assertSame(TestRun::$now + 300, (int) $stored['next_at']);
+        $log = array_values(array_filter(TableDb::rows('log'), static fn(array $r): bool => $r['type'] === Toexecute::FAILED_EVENT));
+        self::assertCount(1, $log, 'each refused commit is logged');
+        self::assertMatchesRegularExpression('/^#' . $run->getId() . ' ' . preg_quote(TransactionFailed::class, '/') . ' \S+:\d+$/D', (string) $log[0]['params']);
 
         self::runOne();
         self::runOne();
 
-        self::assertSame([Run::ERROR, 'STORE'], self::errorOf($run->getId()));
+        self::assertSame([Run::ERROR, 'COMMIT'], self::errorOf($run->getId()));
+        self::assertSame('s1:a', self::stored($run->getId())['error_path'], 'where it stopped');
         self::assertSame([], self::warnings($run->getId()), 'no job skipped');
         self::assertCount(0, $source->checkCalls, 'the source is not asked whether it is up');
     }

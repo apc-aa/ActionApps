@@ -1399,6 +1399,22 @@ final class DetailPageTest extends TestCase
         $this->assertStringContainsString('Stopped before reading anything', $html, 'no row of zeros');
     }
 
+    // a commit the database refused: no fault of the source, and an item error STORE of the Saver is another thing
+    public function test_runs_refusedCommitTellsWhatToDo(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::ERROR);
+        self::storedSet($id, 'error_code', Run::COMMIT);
+        self::storedSet($id, 'error_path', 's1:a');
+
+        $html = self::page()->runsHtml(self::NOW);
+
+        $this->assertStringContainsString('The database did not store the imported items; the source is not at fault.', $html);
+        $this->assertStringContainsString('<strong>What to do:</strong> Continue the run later; if the database keeps refusing, tell its administrator.', $html);
+        $this->assertStringContainsString('<code>s1:a</code>', $html);
+    }
+
     // ------------------------------------------------------------ why the source failed
 
     public function test_runs_errorShowsItsDetailInWords(): void

@@ -526,7 +526,7 @@ final class BatchRunControlTest extends TestCase
         $id                       = self::start()->getId();
         ScriptedBatchRun::$script = [new BatchStepResult(['n' => 0], false, retry: 'TRANSPORT', retryDetail: 'dns')];
         self::runQueued();
-        $this->assertSame((string) (self::NOW + 1800), self::stored($id)['next_at'], 'waits for the retry');
+        $this->assertSame((string) (self::NOW + 300), self::stored($id)['next_at'], 'waits for the retry');
 
         self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
 
@@ -1215,8 +1215,8 @@ final class BatchRunControlTest extends TestCase
         self::storedSet($id, 'next_at', '');
 
         $run = self::fresh($id);
-        $this->assertFalse($run->isStuck(self::NOW + 9000), 'three retries and an hour');
-        $this->assertTrue($run->isStuck(self::NOW + 9001));
+        $this->assertFalse($run->isStuck(self::NOW + 4860), 'three retries and an hour');
+        $this->assertTrue($run->isStuck(self::NOW + 4861));
     }
 
     /** State Check says how long by the very time isStuck() counts from */
@@ -1229,8 +1229,8 @@ final class BatchRunControlTest extends TestCase
         self::storedSet($id, 'next_at', (string) (self::NOW + 2000));
         $run = self::fresh($id);
         self::assertSame(self::NOW + 2000, $run->idleSince(), 'a retry due later');
-        $this->assertFalse($run->isStuck($run->idleSince() + 9000));
-        $this->assertTrue($run->isStuck($run->idleSince() + 9001));
+        $this->assertFalse($run->isStuck($run->idleSince() + 4860));
+        $this->assertTrue($run->isStuck($run->idleSince() + 4861));
     }
 
     public function test_no_progress_right_after_resume_is_no_hang(): void
@@ -1258,15 +1258,15 @@ final class BatchRunControlTest extends TestCase
 
         $this->assertSame(self::NOW + 90, self::fresh($id)->idleSince());
         $this->assertFalse(self::fresh($id)->isStuck(self::NOW + 100), 'its step died a moment ago');
-        $this->assertFalse(self::fresh($id)->isStuck(self::NOW + 90 + 9000));
-        $this->assertTrue(self::fresh($id)->isStuck(self::NOW + 90 + 9001));
+        $this->assertFalse(self::fresh($id)->isStuck(self::NOW + 90 + 4860));
+        $this->assertTrue(self::fresh($id)->isStuck(self::NOW + 90 + 4861));
     }
 
     public function test_is_stuck_counts_from_the_start_without_progress(): void
     {
         $id = self::start()->getId();
-        $this->assertFalse(self::fresh($id)->isStuck(self::NOW + 9000));
-        $this->assertTrue(self::fresh($id)->isStuck(self::NOW + 9001));
+        $this->assertFalse(self::fresh($id)->isStuck(self::NOW + 4860));
+        $this->assertTrue(self::fresh($id)->isStuck(self::NOW + 4861));
     }
 
     public function test_is_stuck_not_while_waiting_for_retry(): void

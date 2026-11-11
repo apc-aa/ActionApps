@@ -292,9 +292,9 @@ final class BatchRunRetryTest extends TestCase
         for ($round = 0; $round < 3; ++$round) {
             $this->assertSame('round too short', self::inRound(15.0, 0.0, static fn(): string => self::runNewest()));
         }
-        $this->assertSame([], ScriptedBatchRun::stuck(self::NOW + 9000), 'not before the retries and an hour');
+        $this->assertSame([], ScriptedBatchRun::stuck(self::NOW + 4860), 'not before the retries and an hour');
 
-        $this->assertSame([$id], array_map(static fn(ScriptedBatchRun $r): string => $r->getId(), ScriptedBatchRun::stuck(self::NOW + 9001)));
+        $this->assertSame([$id], array_map(static fn(ScriptedBatchRun $r): string => $r->getId(), ScriptedBatchRun::stuck(self::NOW + 4861)));
         $this->assertSame('running', self::stored($id)['state']);
 
         ScriptedBatchRun::$script = [new BatchStepResult(['n' => 1], false)];
