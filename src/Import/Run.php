@@ -91,6 +91,9 @@ class Run extends BatchRun
     /** seconds onRetriesExhausted() gives check() and jobs(), ending 30 s before the lease at the latest */
     private const DECIDE_SECONDS = 15;
 
+    /** seconds before a failed source is asked again: an outage of a few minutes costs no half an hour */
+    protected const RETRY = [60, 300, 900];
+
     /** run (every stream) | changed (streams probe() does not call unchanged) | check (check(), probe(), catalog())
      *  | baseline (check(), then each stream recorded at the version probe() gives, without importing it) */
     protected $mode = '';

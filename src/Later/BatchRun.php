@@ -52,6 +52,10 @@ abstract class BatchRun extends AA_Object
      *  several times and are still far below the queue's own retry (Toexecute::CLAIM_LEASE). */
     public const DEAD_GRACE = 300;
 
+    /** seconds before the next try after a failed step, by retryDelay(): after a step that still moved on,
+     *  after the first and the second failure in a row; the last one serves any further */
+    protected const RETRY = [1800];
+
     /** a run without progress this long past its retries hangs (isStuck()) */
     private const STUCK_GRACE = 3600;
 
@@ -219,7 +223,7 @@ abstract class BatchRun extends AA_Object
      *  moved on even so, 1-2 = it did not. A final phase without its report waits the same way. */
     protected function retryDelay(int $failures): int
     {
-        return 1800;
+        return static::RETRY[$failures] ?? static::RETRY[count(static::RETRY) - 1];
     }
 
     /** How much longer than its budget a step may take - a shorter lease would take a live step for a dead

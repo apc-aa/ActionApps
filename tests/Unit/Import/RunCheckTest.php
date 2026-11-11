@@ -526,7 +526,7 @@ final class RunCheckTest extends TestCase
 
         self::runOne();
         $after = TestRun::get($run->getId());
-        self::assertSame(['running', self::NOW + 1800], [$after?->state(), (int) self::stored($run->getId())['next_at']], 'retried as a transport failure');
+        self::assertSame(['running', self::NOW + 300], [$after?->state(), (int) self::stored($run->getId())['next_at']], 'retried as a transport failure');
         self::runAll($run->getId());
 
         self::assertSame(['error', 'TRANSPORT'], self::errorOf($run->getId()));

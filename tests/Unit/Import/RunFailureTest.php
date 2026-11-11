@@ -280,6 +280,22 @@ final class RunFailureTest extends TestCase
 
     // ------------------------------------------------------------ three steps without progress
 
+    // a source down for a moment is asked again within minutes, not after half an hour
+    public function test_failedStep_waits60_300_900(): void
+    {
+        $source                         = self::checked(streams: 1, jobs: 3, items: 1);
+        $source->jobs['s1'][1]['error'] = new SourceUnavailable('TRANSPORT', 'No answer');
+        $run                            = self::startRun($source);
+
+        $waits = [];
+        for ($i = 0; $i < 3; ++$i) {
+            self::runOne();
+            $waits[] = (int) self::stored($run->getId())['next_at'] - TestRun::$now;
+        }
+
+        self::assertSame([60, 300, 900], $waits, 'after a step that moved on, after the first and the second failure in a row');
+    }
+
     public function test_retriesExhausted_skipsJobWithFailedFlag(): void
     {
         $source                         = self::checked(streams: 1, jobs: 3, items: 1);

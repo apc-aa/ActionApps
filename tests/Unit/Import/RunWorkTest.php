@@ -382,7 +382,7 @@ final class RunWorkTest extends TestCase
         self::assertSame('running', $stored['state']);
         self::assertSame('0', $stored['failures'], 'the first job got stored - progress');
         self::assertSame('s1:b', TestRun::get($run->getId())?->position()['job']);
-        self::assertSame((string) (self::NOW + 1800), $stored['next_at'], 'the source gets time to recover');
+        self::assertSame((string) (self::NOW + 60), $stored['next_at'], 'the source gets time to recover');
         self::assertSame(['k-s1:a-1'], TestRun::storedValues('relation........'));
     }
 
@@ -610,7 +610,7 @@ final class RunWorkTest extends TestCase
         self::assertNotSame('', $after->position()['fp']);
         self::assertSame([22, 22], [$after->counts()['read'], $after->counts()['new']]);
         $stored = self::stored($run->getId());
-        self::assertSame(['running', '0', (string) (self::NOW + 1800)], [$stored['state'], $stored['failures'], $stored['next_at']]);
+        self::assertSame(['running', '0', (string) (self::NOW + 60)], [$stored['state'], $stored['failures'], $stored['next_at']]);
     }
 
     public function test_work_limitHoldsAcrossAFailedStep(): void

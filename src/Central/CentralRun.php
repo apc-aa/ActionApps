@@ -26,11 +26,6 @@ abstract class CentralRun extends BatchRun
         return (string) $this->user;
     }
 
-    protected function retryDelay(int $failures): int
-    {
-        return static::RETRY[$failures] ?? static::RETRY[count(static::RETRY) - 1];
-    }
-
     /** the runs of this AA */
     protected static function subject(): string
     {
