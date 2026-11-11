@@ -82,11 +82,12 @@ final class ShowConditions
         return $this->conds[$key] ?? null;
     }
 
-    /** A condition without a name is left out, a rule the browser could not evaluate is dropped. */
+    /** A condition without a name removes the key, a rule the browser could not evaluate is dropped. */
     public function set(string $key, array $cond): void
     {
         $name = is_string($cond['name'] ?? null) ? trim($cond['name']) : '';
         if ($name === '') {
+            $this->remove($key);
             return;
         }
         $rules              = self::parse(is_string($cond['conds'] ?? null) ? $cond['conds'] : '');
@@ -371,11 +372,14 @@ final class ShowConditions
                 $errors[] = _m('Fill in the values of the field %1.', [$label]);
             } elseif (($op === '=') && (($expression = \AA_Condition::orExpression($values)) === null)) {
                 $errors[] = _m('A value of the field %1 contains both kinds of quotes.', [$label]);
+            } elseif (in_array($op, ['BEGIN', 'CONTAIN'], true) && str_contains($values[0], '\\')) {
+                // the d- form strips slashes of an unquoted value
+                $errors[] = _m('The value of the field %1 must not contain a backslash.', [$label]);
             } else {
                 $rules = array_merge($rules, match ($op) {
                     '='                 => [new \AA_Condition([$field], '=', $expression)],
-                    // quoted, so that a value starting with - or a quote survives the d- form
-                    '<>'                => array_map(static fn(string $v): \AA_Condition => new \AA_Condition([$field], '<>', '"' . $v . '"'), $values),
+                    // quoted, so that a value starting with a quote survives; the SQL strips slashes
+                    '<>'                => array_map(static fn(string $v): \AA_Condition => new \AA_Condition([$field], '<>', '"' . str_replace('\\', '\\\\', $v) . '"'), $values),
                     'BEGIN', 'CONTAIN'  => [new \AA_Condition([$field], $op, $values[0])],
                     default             => [new \AA_Condition([$field], $op, '1')],
                 });

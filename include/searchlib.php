@@ -286,7 +286,8 @@ class AA_Condition extends AA_Object
      * an item without the value, as ISNULL does (both join LEFT). Strings compare as the _ci collations of
      * the database: case and trailing spaces do not count. Accents do count - the collations of the AA databases
      * differ in them. A number field stores no '', its empty value is 0.
-     * Checked for =, ==, <>, BEGIN, CONTAIN, ISNULL and NOTNULL; other operators compare each value alone.
+     * Checked for =, ==, <>, BEGIN, CONTAIN, ISNULL and NOTNULL; other operators compare each value alone (LIKE and
+     * RLIKE without the OR / wildcards of SQL). matches() knows no field types - a number field compares as text there.
      * @param callable(string): array $valuesOf field id => its values
      * @param list<string> $numeric ids of the fields stored as numbers
      */
@@ -316,8 +317,8 @@ class AA_Condition extends AA_Object
                 return !array_filter($values, static fn(string $v): bool => self::sameValue($v, $value, $numeric));
             case '=':
                 // a syntax error makes SQL take every item, with the value or without
-                $expression = stripslashes($this->value);
-                $matches    = static fn(string $v): ?bool => self::expressionMatches($expression, static fn(string $alt): bool => self::sameValue($v, $alt, $numeric));
+                $tokens  = SQL_Lex::lex(trim(stripslashes($this->value)));
+                $matches = static fn(string $v): ?bool => self::expressionMatches($tokens, static fn(string $alt): bool => self::sameValue($v, $alt, $numeric));
                 return $values ? (bool) array_filter($values, static fn(string $v): bool => $matches($v) ?? true) : ($matches('') === null);
         }
         foreach ($values as $v) {
@@ -364,7 +365,7 @@ class AA_Condition extends AA_Object
             case '==':                                           // exact match - no SQL parsing
                 return self::sameValue($field_value, $this->value, $numeric);
             case '=':
-                return self::expressionMatches(stripslashes($this->value), static fn(string $alt): bool => self::sameValue($field_value, $alt, $numeric)) ?? true;
+                return self::expressionMatches(SQL_Lex::lex(trim(stripslashes($this->value))), static fn(string $alt): bool => self::sameValue($field_value, $alt, $numeric)) ?? true;
             case '!=':
             case '<>':
                 return !self::sameValue($field_value, $this->comparedValues()[0], $numeric);
@@ -376,10 +377,12 @@ class AA_Condition extends AA_Object
                 return $field_value >= $this->value;
             case '>':
                 return $field_value > $this->value;
+            case 'BITSET':
+                return ((int) $field_value & (int) $this->value) === (int) $this->value;
             case '&':
-                return $field_value & $this->value;
+                return (bool) ((int) $field_value & (int) $this->value);
             case '|':
-                return $field_value | $this->value;
+                return (bool) ((int) $field_value | (int) $this->value);
                 //          case '<=>':  //MySQL know this operator, but we do not use it in AA
         }
         return false;
@@ -427,7 +430,8 @@ class AA_Condition extends AA_Object
     }
 
     /**
-     * "=" expression matching any of the values - each a phrase, so spaces, OR and parentheses inside it are text.
+     * "=" expression matching any of the values - each a phrase, so spaces, OR and parentheses inside it are text;
+     * a backslash doubled, as the SQL and comparedValues() strip slashes.
      * @param list<string> $values
      * @return ?string null for no value, or a value with both kinds of quotes, which a phrase cannot hold
      */
@@ -439,7 +443,7 @@ class AA_Condition extends AA_Object
             if (str_contains($value, $quote)) {
                 return null;
             }
-            $phrases[] = $quote . $value . $quote;
+            $phrases[] = $quote . str_replace('\\', '\\\\', $value) . $quote;
         }
         return $phrases ? implode(' OR ', $phrases) : null;
     }
@@ -458,13 +462,13 @@ class AA_Condition extends AA_Object
     /**
      * Evaluates the "=" expression for one value, by the grammar of Syntax, which builds its SQL:
      * OR of AND of [NOT] (a word, a "phrase", or a parenthesized expression).
+     * @param array $tokens the expression by SQL_Lex::lex()
      * @param callable(string): bool $equals whether the value equals the word
      * @return ?bool null on a syntax error
      */
-    private static function expressionMatches(string $expression, callable $equals): ?bool
+    private static function expressionMatches(array $tokens, callable $equals): ?bool
     {
-        $tokens = SQL_Lex::lex(trim($expression));
-        $i      = 0;
+        $i = 0;
         try {
             $ret = self::orTerm($tokens, $i, $equals);
             return ($tokens[$i]['type'] === SQL_Parser_Constants::TOKEN_TYPE_EOF) ? $ret : null;
@@ -1045,6 +1049,10 @@ class AA_Set extends AA_Object
                 // so if the first and last characetr is encoded quotes, let's decode it
                 if (str_starts_with($val, '%22') && str_ends_with($val, '%22')) {
                     $val = rawurldecode($val);
+                }
+                // the space getAsString() puts before a value starting with "-" (no "---" in the string)
+                if (str_starts_with($val, ' -')) {
+                    $val = substr($val, 1);
                 }
 
                 // well stripsplashes is bad - we never want the slashed text

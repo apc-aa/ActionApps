@@ -77,6 +77,9 @@ final class ConditionMatchesTest extends TestCase
             'NOTNULL text 0'               => ['NOTNULL', '1', ['0'], false, true],
             'NOTNULL number 0'             => ['NOTNULL', '1', ['0'], true, false],
             'NOTNULL number 5'             => ['NOTNULL', '1', ['5'], true, true],
+            'BITSET set'                   => ['BITSET', '4', ['12'], true, true],
+            'BITSET not set'               => ['BITSET', '2', ['12'], true, false],
+            '& numbers'                    => ['&', '4', ['12'], true, true],
         ];
     }
 
@@ -129,9 +132,9 @@ final class ConditionMatchesTest extends TestCase
 
     public function test_orExpression_reads_back(): void
     {
-        $values = ['News', 'Say "hi"', "it's", 'A-B', 'x OR y', '(z)'];
+        $values = ['News', 'Say "hi"', "it's", 'A-B', 'x OR y', '(z)', 'C:\\dir'];
         $expr   = AA_Condition::orExpression($values);
-        $this->assertSame($values, AA_Condition::alternatives($expr));
+        $this->assertSame($values, (new AA_Condition([self::F], '=', $expr))->comparedValues());
         $this->assertNull(AA_Condition::orExpression(['both " and \'']));
         $this->assertNull(AA_Condition::orExpression([]));
     }
@@ -142,13 +145,17 @@ final class ConditionMatchesTest extends TestCase
         $set->addCondition(new AA_Condition([self::F], '=', AA_Condition::orExpression(['A-B', 'C--D', 'E-'])));
         $set->addCondition(new AA_Condition([self::F], '<>', '"-x"'));
         $set->addCondition(new AA_Condition([self::F], 'ISNULL', '1'));
+        $set->addCondition(new AA_Condition([self::F], 'BEGIN', '-5'));
+        $set->addCondition(new AA_Condition([self::F], '=', AA_Condition::orExpression(['C:\\dir'])));
         $string = $set->getCondsAsString();
 
         $back = (new AA_Set(null, $string))->getConditions();
-        $this->assertCount(3, $back);
-        $this->assertSame(['A-B', 'C--D', 'E-'], AA_Condition::alternatives($back[0]->getValue()));
-        $this->assertSame('"-x"', $back[1]->getValue());
+        $this->assertCount(5, $back);
+        $this->assertSame(['A-B', 'C--D', 'E-'], $back[0]->comparedValues());
+        $this->assertSame(['-x'], $back[1]->comparedValues());
         $this->assertSame('ISNULL', $back[2]->getOperator());
+        $this->assertSame('-5', $back[3]->getValue(), 'no space before a leading -');
+        $this->assertSame(['C:\\dir'], $back[4]->comparedValues());
     }
 
     public function test_getAsString_empty_value(): void

@@ -113,10 +113,10 @@ $form['rows'][] = ['field' => '', 'op' => '', 'values' => []];   // the row for 
 function ShowIfRuleRow(int $i, array $rule, array $names, AA_Fields $fields): string
 {
     $field   = $rule['field'] ? $fields->getField($rule['field']) : null;
-    $is_chb  = $field?->getWidget() instanceof AA\Widget\ChbWidget;
-    // a checked checkbox stores 1
-    $ops     = $is_chb ? ['=' => _m('is checked'), '<>' => _m('is not checked')]
-                       : ['=' => _m('is'), '<>' => _m('is not'), 'BEGIN' => _m('begins with'), 'CONTAIN' => _m('contains'), 'NOTNULL' => _m('is filled'), 'ISNULL' => _m('is empty')];
+    $all_ops = ['=' => _m('is'), '<>' => _m('is not'), 'BEGIN' => _m('begins with'), 'CONTAIN' => _m('contains'), 'NOTNULL' => _m('is filled'), 'ISNULL' => _m('is empty')];
+    // a checked checkbox stores 1; a rule made before the field became a checkbox stays as it is
+    $is_chb  = ($field?->getWidget() instanceof AA\Widget\ChbWidget) && in_array($rule['op'], ['', '=', '<>'], true) && in_array($rule['values'], [[], ['1']], true);
+    $ops     = $is_chb ? ['=' => _m('is checked'), '<>' => _m('is not checked')] : $all_ops;
     $op      = isset($ops[$rule['op']]) ? $rule['op'] : array_key_first($ops);
     $choices = ['' => $field ? '—' : _m('— add a rule —')] + $names;
 
@@ -194,7 +194,7 @@ echo '</form>';
 
 $apage->addHelpbox(_m('How it works'), '<ul>'
     . '<li>' . _m('"is" holds when one of the field\'s values is among the checked values, "is not" when none is. Upper and lower case do not count, accents do. "is empty" holds also for a field without a value; in a field stored as a number 0 counts as empty.') . '</li>'
-    . '<li>' . _m('The rules are AA conditions, written as in views. A view or {ids} given the condition shown below finds the items whose values satisfy the rules.') . '</li>'
+    . '<li>' . _m('The rules are AA conditions, written as in views. The condition shown below selects nearly the same items in a view; accents and empty values may be compared a little differently. In an AA expression write : as #:.') . '</li>'
     . '<li>' . _m('The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values).') . '</li>'
     . '<li>' . _m('A field hidden by a rule is saved empty, unless "Clear the field" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value.') . '</li>'
     . '<li>' . _m('A field with a condition is shown and hidden by the condition, not by a Field Triggers script.') . '</li>'

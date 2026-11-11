@@ -126,6 +126,14 @@ final class ShowConditionsTest extends TestCase
         $this->assertSame(['bbbbbbbb', 'aaaaaaaa'], array_keys($conds->all()));
     }
 
+    public function test_set_without_name_removes(): void
+    {
+        $conds = self::conds(['aaaaaaaa' => ['expr' => '1']]);
+        $conds->set('aaaaaaaa', ['name' => ' ', 'expr' => '1']);
+        $this->assertNull($conds->get('aaaaaaaa'));
+        $this->assertSame([], $conds->rows('aaaaaaaa'));
+    }
+
     public function test_numeric_key_stays_string(): void
     {
         $conds = ShowConditions::fromJson('{"showif":{"12345678":{"name":"N","expr":"1"}}}');
@@ -314,7 +322,7 @@ final class ShowConditionsTest extends TestCase
                 ['field' => self::CAT, 'op' => '=', 'values' => ['Akce', 'Kurz'], 'text' => "Kurz\n  Seminář \n\n"],
                 ['field' => '', 'op' => '=', 'text' => 'ignored'],
                 ['field' => self::PLACE, 'op' => 'NOTNULL', 'values' => ['dropped'], 'text' => 'dropped'],
-                ['field' => self::START, 'op' => '<>', 'values' => ['A-B', '"x"']],
+                ['field' => self::START, 'op' => '<>', 'values' => ['A-B', '"x"', 'C:\\d']],
                 ['field' => self::PLACE, 'op' => 'BEGIN', 'text' => "Pra\nBrno"],
             ],
             'expr'  => '{xuser:_#IS_ADMIN}',
@@ -324,7 +332,7 @@ final class ShowConditionsTest extends TestCase
         $this->assertSame([], $errors);
         $this->assertSame([
             'name'  => 'Akce',
-            'conds' => 'd-' . self::CAT . '-=-"Akce" OR "Kurz" OR "Seminář"-' . self::PLACE . '-NOTNULL-1-' . self::START . '-<>-"A--B"-' . self::START . '-<>-""x""-' . self::PLACE . '-BEGIN-Pra',
+            'conds' => 'd-' . self::CAT . '-=-"Akce" OR "Kurz" OR "Seminář"-' . self::PLACE . '-NOTNULL-1-' . self::START . '-<>-"A--B"-' . self::START . '-<>-""x""-' . self::START . '-<>-"C:\\\\d"-' . self::PLACE . '-BEGIN-Pra',
             'expr'  => '{xuser:_#IS_ADMIN}',
             'clear' => true,
         ], $cond);
@@ -335,7 +343,7 @@ final class ShowConditionsTest extends TestCase
         $this->assertSame([
             ['field' => self::CAT, 'op' => '=', 'values' => ['Akce', 'Kurz', 'Seminář']],
             ['field' => self::PLACE, 'op' => 'NOTNULL', 'values' => []],
-            ['field' => self::START, 'op' => '<>', 'values' => ['A-B', '"x"']],
+            ['field' => self::START, 'op' => '<>', 'values' => ['A-B', '"x"', 'C:\\d']],
             ['field' => self::PLACE, 'op' => 'BEGIN', 'values' => ['Pra']],
         ], $conds->rows('cccccccc'));
     }
@@ -365,6 +373,7 @@ final class ShowConditionsTest extends TestCase
             'is without values'       => [['name' => 'Akce', 'rule' => [['field' => self::CAT, 'op' => '=', 'text' => " \n"]]]],
             'is not without values'   => [['name' => 'Akce', 'rule' => [['field' => self::CAT, 'op' => '<>']]]],
             'contains without value'  => [['name' => 'Akce', 'rule' => [['field' => self::CAT, 'op' => 'CONTAIN', 'text' => '']]]],
+            'backslash in contains'   => [['name' => 'Akce', 'rule' => [['field' => self::CAT, 'op' => 'CONTAIN', 'text' => 'a\\b']]]],
             'both kinds of quotes'    => [['name' => 'Akce', 'rule' => [['field' => self::CAT, 'op' => '=', 'values' => ['a"b\'c']]]]],
             'name not a string'       => [['name' => ['Akce'], 'expr' => '1']],
             'rules not an array'      => [['name' => 'Akce', 'rule' => 'x']],
