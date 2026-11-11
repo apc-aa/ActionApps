@@ -6,6 +6,7 @@ namespace Tests\Unit\IO\DB;
 
 use AA\IO\DB\DB_AA;
 use AA\IO\DB\DB_PDO;
+use AA\IO\DB\TransactionFailed;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -201,7 +202,8 @@ final class DbAaTransactionTest extends TestCase
                 return 'looks fine';
             });
             $this->fail('a failed commit was reported as success');
-        } catch (RuntimeException $e) {
+        } catch (TransactionFailed $e) {
+            // a class of its own: a caller tells a refused commit from a bug in its block
             $this->assertStringContainsString('commit failed', $e->getMessage());
         }
 

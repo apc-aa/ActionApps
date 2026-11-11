@@ -9,6 +9,7 @@ use AA\Import\Run;
 use AA\Import\RunCursor;
 use AA\Import\Stream;
 use AA\Import\StreamState;
+use AA\IO\DB\TransactionFailed;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
 use AA\Later\BatchStepResult;
@@ -683,6 +684,30 @@ final class RunFailureTest extends TestCase
         self::assertSame(['error', 'TRANSPORT'], self::errorOf($run->getId()));
         self::assertCount(22, TestRun::stored());
         self::assertSame([[[self::SLICE], 'M']], self::$invalidated, 'the step that stored them - the error adds nothing');
+    }
+
+    // ------------------------------------------------------------ a store the database did not commit
+
+    // a database that refused a commit says nothing about the source - its job is not skipped either;
+    // the grabber throws it as storeItem() would, up through Saver::run()
+    public function test_storeTransactionFailure_isRetried(): void
+    {
+        $source                          = self::checked(streams: 1, jobs: 2, items: 3);
+        $source->jobs['s1'][0]['failAt'] = [2, new TransactionFailed('DB_AA::transaction(): commit failed, the block was not stored')];
+        $run                             = self::startRun($source, ['position' => self::onJob('s1:a')]);
+
+        self::runOne();
+
+        $stored = self::stored($run->getId());
+        self::assertSame([Run::RUNNING, '1', 'STORE'], [$stored['state'], $stored['failures'], $stored['retry_code']]);
+        self::assertSame(TestRun::$now + 300, (int) $stored['next_at']);
+
+        self::runOne();
+        self::runOne();
+
+        self::assertSame([Run::ERROR, 'STORE'], self::errorOf($run->getId()));
+        self::assertSame([], self::warnings($run->getId()), 'no job skipped');
+        self::assertCount(0, $source->checkCalls, 'the source is not asked whether it is up');
     }
 
     // ------------------------------------------------------------ the step's own end, item errors

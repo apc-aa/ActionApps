@@ -553,6 +553,7 @@ final class DetailPage
             'AUTH'           => _m('The source did not accept the key.'),
             'NO_CREDENTIAL'  => _m('The key of the source is damaged in the configuration.'),
             'TRANSPORT'      => _m('The source could not be reached.'),
+            'STORE'          => _m('The database did not store the imported items; the source is not at fault.'),
             'WRONG_STATE'    => _m('The run is finished; it cannot go on.'),
             'OFF'            => _m('The import is switched off.'),
             'KEYS'           => _m('This import uses API keys, so only a superadmin may do this.'),

@@ -6,6 +6,7 @@ namespace AA\Import;
 
 use AA;
 use AA\Http\TransportException;
+use AA\IO\DB\TransactionFailed;
 use AA\IO\Grabber\AbstractGrabber;
 use AA\IO\Saver;
 use AA\IO\SourceFailure;
@@ -571,8 +572,9 @@ class Run extends BatchRun
         $pos  = RunCursor::fromPosition($last->position);
         $keys = $this->streamKeys();
         $ctx  = null;
-        // a check or a baseline has nothing to skip: its cycle, its failed check() end it
-        if (($last->retry === 'NO_PROGRESS') || $this->sourceOnly()) {
+        // a check or a baseline has nothing to skip: its cycle, its failed check() end it; a job the
+        // database would not store is no fault of the job - skipped, its items would be lost
+        if (in_array($last->retry, ['NO_PROGRESS', 'STORE'], true) || $this->sourceOnly()) {
             return null;
         }
         try {
@@ -750,6 +752,10 @@ class Run extends BatchRun
                 default => ($e instanceof SourceUnavailable) ? $e->reason : 'TRANSPORT',
             };
             return $this->stopped($pos, $from, $keys, $retry, ($retry === '') ? '' : SourceFailure::detailOf($e));
+        } catch (TransactionFailed) {
+            // the database refused a commit, not the source: the job goes again from the cursor (what
+            // it stored before is stored once more) and three refusals in a row end the run
+            return $this->stopped($pos, $from, $keys, 'STORE');
         } catch (\Throwable $e) {
             throw $this->failure($e, $keys, $pos, $ctx);
         }
