@@ -94,7 +94,7 @@ return [
         ],
         'c' => [
             'username' => ['username', 'varbinary(50)', false, 'PRI', null, '', ''],
-            'passwd' => ['passwd', 'varbinary(50)', false, '', null, '', ''],
+            'passwd' => ['passwd', 'varbinary(255)', false, '', null, '', ''],
             'last_changed' => ['last_changed', 'int(11)', false, '', '0', '', ''],
         ],
         'f' => null,
