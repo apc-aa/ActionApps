@@ -140,6 +140,9 @@ final readonly class ItemFilter
             $value = rawurldecode($value);
             self::checkCharacters($value);
         }
+        if (str_starts_with($value, ' -')) {     // the space getAsString() puts before a leading minus, as addFromCommand() drops it
+            $value = substr($value, 1);
+        }
         // `|` is true for every item with the field; BITSET of no bit tests `field & 0 = 0`
         if (($value === 'AAnoCONDITION') || (($value === '') && !in_array($normal, self::NO_VALUE, true)) || ($normal === '|') || (($normal === 'BITSET') && ((int) $value === 0))) {
             throw new FilterInvalid('value');
