@@ -9,9 +9,6 @@ use AA\Util\Adminlink;
  */
 class DbInconsistencyConstants extends AbstractOptimize
 {
-    /** @var array<string, string[]>|null slice id => its fields holding code */
-    private ?array $code_fields = null;
-
     private ?string $custom_code = null;
 
     /** shown on State Check - see AbstractOptimize::CHECK_*; LIKE scans over all code, so not basic */
@@ -43,38 +40,37 @@ class DbInconsistencyConstants extends AbstractOptimize
     }
 
     /** Groups no code names - Repair deletes them, so any mention of the name anywhere counts as a use:
-     *  fields and views first (they settle most groups in a few probes - 1 s on aadev, 20 s without),
-     *  then all template code, the Alerts e-mails, the items of fields expanded as code (f_y, cod)
-     *  and the custom PHP of this install.
+     *  all template code (CodePoints - views, fields, settings, spots, objects, e-mails, code items) and the
+     *  custom PHP of this install. The code is read once and all the groups looked for in it.
      *  @return string[] */
     protected function getNotUsedGroups(): array
     {
-        $not_used = [];
-        $all_groups = DB_AA::select('group_id', "SELECT DISTINCT group_id FROM `constant`");
-        foreach ($all_groups as $grp) {
+        $candidates = [];
+        foreach (DB_AA::select('group_id', 'SELECT DISTINCT group_id FROM `constant`') as $grp) {
             $grp = (string) $grp;
             // a name with spaces around is another group than the trimmed one - getUntrimmedGroups() reports it
-            if (($grp !== '') && ($grp === trim($grp))
-                and !in_array($grp, RedefineCoreConstants::CORE_GROUPS, true)
-                and !DB_AA::test('field', [['input_show_func',":$grp",'CONTAIN']])
-                and !DB_AA::test('field', [['alias1_func',":$grp",'CONTAIN']])
-                and !DB_AA::test('field', [['alias2_func',":$grp",'CONTAIN']])
-                and !DB_AA::test('field', [['alias3_func',":$grp",'CONTAIN']])
-                and !DB_AA::test('view', [['parameter',$grp]])
-                and !DB_AA::test('view', [['odd',":$grp",'CONTAIN']])
-                and !DB_AA::test('view', [['even',":$grp",'CONTAIN']])
-                and !DB_AA::test('view', [['`before`',":$grp",'CONTAIN']])
-                and !DB_AA::test('view', [['after',":$grp",'CONTAIN']])
-                and !DB_AA::test('view', [['group_title',":$grp",'CONTAIN']])
-                and !CodePoints::contains($grp)
-                and !$this->inEmails($grp)
-                and !$this->inCodeFields($grp)
-                and !str_contains($this->customCode(), $grp)
-            ) {
-                $not_used[] = $grp;
+            if (($grp !== '') && ($grp === trim($grp)) && !in_array($grp, RedefineCoreConstants::CORE_GROUPS, true)) {
+                $candidates[$grp] = true;
             }
         }
-        return $not_used;
+        foreach ($this->codeTexts() as $txt) {
+            foreach (array_keys($candidates) as $grp) {
+                if (str_contains($txt, (string) $grp)) {
+                    unset($candidates[$grp]);
+                }
+            }
+            if (!$candidates) {
+                break;
+            }
+        }
+        return array_map('strval', array_keys($candidates));
+    }
+
+    /** @return iterable<string> */
+    protected function codeTexts(): iterable
+    {
+        yield from CodePoints::texts();
+        yield $this->customCode();
     }
 
     /** groups stored with spaces around the name - no code can name them reliably, so Repair leaves them
@@ -84,47 +80,13 @@ class DbInconsistencyConstants extends AbstractOptimize
         return array_values(array_filter(array_map('strval', DB_AA::select('group_id', 'SELECT DISTINCT group_id FROM `constant`')), static fn(string $grp): bool => ($grp !== trim($grp))));
     }
 
-    /** the Alerts e-mail templates are expanded like any template */
-    private function inEmails(string $grp): bool
-    {
-        foreach (['subject', 'body', 'header_from', 'reply_to', 'errors_to', 'sender'] as $column) {
-            if (DB_AA::test('email', [[$column, $grp, 'CONTAIN']])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** an item field shown by the alias function f_y or edited by the code widget holds template code
-     *  in any slice, not only in Code slices (CodePoints). The fields of all such slices are searched in all of
-     *  them - a group is rather kept than deleted. */
-    private function inCodeFields(string $grp): bool
-    {
-        $this->code_fields ??= $this->codeFields();
-        if (!$this->code_fields) {
-            return false;
-        }
-        return DB_AA::test(['content', 'item'], [['content.text', $grp, 'CONTAIN'], ['content.item_id', 'item.id', 'j'], ['item.slice_id', array_keys($this->code_fields), 'l'], ['content.field_id', array_unique(array_merge(...array_values($this->code_fields)))]]);
-    }
-
-    /** @return array<string, string[]> slice id => its fields holding code */
-    protected function codeFields(): array
-    {
-        $fields = [];
-        foreach ([['alias1_func', 'f_y'], ['alias2_func', 'f_y'], ['alias3_func', 'f_y'], ['input_show_func', 'cod']] as [$column, $prefix]) {
-            foreach (DB_AA::select([], 'SELECT LOWER(HEX(`slice_id`)) AS sid, `id` FROM `field`', [[$column, $prefix, 'BEGIN']]) as $row) {
-                $fields[(string) $row['sid']][] = (string) $row['id'];
-            }
-        }
-        return $fields;
-    }
-
-    /** the PHP of this install AA does not ship: include/usr_aliasfnc.php and include/custom/<AA_CUSTOM_DIR>/ */
+    /** the PHP of this install AA does not ship: include/usr_aliasfnc.php, include/custom/<AA_CUSTOM_DIR>/ and
+     *  the control files of the sites modules/site/sites/site_*.php */
     protected function customCode(): string
     {
         if ($this->custom_code === null) {
             $include = dirname(__DIR__, 2) . '/include/';
-            $files   = glob($include . 'usr_aliasfnc.php*') ?: [];
+            $files   = array_merge(glob($include . 'usr_aliasfnc.php*') ?: [], glob(dirname(__DIR__, 2) . '/modules/site/sites/site_*.php') ?: []);
             if (defined('AA_CUSTOM_DIR') && is_dir($dir = $include . 'custom/' . constant('AA_CUSTOM_DIR'))) {
                 foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS)) as $file) {
                     if (preg_match('/\.(php\d?|inc)$/', $file->getFilename())) {

@@ -45,27 +45,18 @@ namespace Tests\Unit\Optimize {
         {
             RecordingDb::reset();
             $GLOBALS['spareDBs'] = [new RecordingDb(), new RecordingDb()];
-            // LIKE patterns escape the underscore
+            // the code as CodePoints reads it: a view, an e-mail and a field shown by f_y in an ordinary slice
             RecordingDb::$answer = static fn(string $sql): array => match (true) {
-                str_starts_with($sql, 'SELECT DISTINCT group_id')                      => array_map(static fn($g) => ['group_id' => $g], self::GROUPS),
-                str_contains($sql, 'AS sid')                                           => str_contains($sql, 'input_show_func') ? [['sid' => 'aa11', 'id' => 'text...........1']] : [],
-                self::from('view', $sql) && self::has('in_view', $sql)                 => [['x' => 1]],
-                self::from('email', $sql) && self::has('in_email', $sql)               => [['x' => 1]],
-                self::from('content', $sql) && self::has('in_item', $sql)              => [['x' => 1]],
-                default                                                                 => [],
+                str_starts_with($sql, 'SELECT DISTINCT group_id')                => array_map(static fn($g) => ['group_id' => $g], self::GROUPS),
+                str_contains($sql, 'AS sid') && str_contains($sql, 'alias1_func') => [['sid' => self::SLICE, 'id' => 'text...........1']],
+                str_starts_with($sql, 'SELECT `odd` AS txt FROM `view`')          => [['txt' => '{constant:in_view:x}']],
+                str_starts_with($sql, 'SELECT `body` AS txt FROM `email`')        => [['txt' => '{options:in_email}']],
+                str_contains($sql, 'AS txt FROM `content`, `item`')              => str_contains($sql, "'text...........1'") ? [['txt' => '{constant:in_item:y}']] : [],
+                default                                                           => [],
             };
         }
 
-        /** DB_AA quotes table names either way */
-        private static function from(string $table, string $sql): bool
-        {
-            return (bool) preg_match('/FROM [`"]' . $table . '[`"]/', $sql);
-        }
-
-        private static function has(string $group, string $sql): bool
-        {
-            return str_contains(str_replace('\\_', '_', $sql), $group);
-        }
+        private const SLICE = 'aa11aa11aa11aa11aa11aa11aa11aa11';
 
         protected function tearDown(): void
         {
@@ -93,13 +84,13 @@ namespace Tests\Unit\Optimize {
             self::assertSame(['unused'], self::optimize()->notUsed());
         }
 
-        public function test_getNotUsedGroups_codeFieldItems_searchedInTheirSlices(): void
+        public function test_getNotUsedGroups_readsTheCodeOnce(): void
         {
+            // one read of all the code, not a LIKE scan per group (aadb: 100 slices with code fields, daily)
             self::optimize()->notUsed();
 
-            $probe = array_values(array_filter(RecordingDb::$log, static fn($s) => self::from('content', $s) && self::has('in_item', $s)));
-            self::assertCount(1, $probe);
-            self::assertStringContainsString('text...........1', $probe[0]);
+            self::assertSame(1, count(array_filter(RecordingDb::$log, static fn($s) => str_contains($s, 'FROM `content`, `item`'))));
+            self::assertSame([], array_values(array_filter(RecordingDb::$log, static fn($s) => str_contains($s, "LIKE '%"))));
         }
 
         public function test_repair_untrimmedName_neitherDeletedNorTrimmedToACoreGroup(): void

@@ -12,7 +12,9 @@ use AA_Object;
 
 /** Where template code lives - the code points admin/aafinder.php searches: views, slice,
  *  module and site settings, fields (alias functions), site spots, object_text and the items
- *  of Code slices. For the checks which look for an expression in all of them.
+ *  of Code slices - and besides them the Alerts e-mails and the item fields shown by the alias
+ *  function f_y or edited by the code widget in any slice. For the checks which look for an
+ *  expression in all of them.
  */
 final class CodePoints
 {
@@ -26,6 +28,7 @@ final class CodePoints
         'field'       => ['iid' => '`id`', 'sid' => 'LOWER(HEX(`slice_id`))'],
         'site_spot'   => ['iid' => '`spot_id`', 'sid' => 'LOWER(HEX(`site_id`))'],
         'object_text' => ['iid' => '`object_id`'],
+        'email'       => ['iid' => '`id`', 'sid' => 'LOWER(HEX(`owner_module_id`))'],
     ];
 
     /** Every code value containing $needle - a LIKE scan over every code column; cheap on any
@@ -45,14 +48,62 @@ final class CodePoints
             }
         }
 
-        // items of Code slices (slice type "___Code..."), the way aafinder's "Code Items" checkbox scopes them
-        $code_slices = DB_AA::select('lid', 'SELECT LOWER(HEX(`id`)) AS lid FROM `slice`', [['type', '___Code', 'BEGIN']]);
-        if ($code_slices) {
-            $query = 'SELECT LOWER(HEX(`content`.`item_id`)) AS iid, LOWER(HEX(`item`.`slice_id`)) AS sid, `content`.`text` AS txt FROM `content`, `item`';
-            foreach (DB_AA::select([], $query, [['content.item_id', 'item.id', 'j'], ['item.slice_id', $code_slices, 'l'], ['content.text', $needle, 'CONTAIN']]) as $row) {
+        $query = 'SELECT LOWER(HEX(`content`.`item_id`)) AS iid, LOWER(HEX(`item`.`slice_id`)) AS sid, `content`.`text` AS txt FROM `content`, `item`';
+        foreach (self::itemScopes() as $scope) {
+            foreach (DB_AA::select([], $query, array_merge([['content.item_id', 'item.id', 'j']], $scope, [['content.text', $needle, 'CONTAIN']])) as $row) {
                 yield self::row('content', 'text', $row);
             }
         }
+    }
+
+    /** Every code text, for a check looking for many needles: one read of all the code instead of a scan
+     *  per needle. One column (or one group of item fields) is in memory at a time.
+     *  @return \Generator<int, string> */
+    public static function texts(): \Generator
+    {
+        foreach (self::TABLES as $table => $ids) {
+            foreach (self::columns($table) as $column) {
+                foreach (DB_AA::select('txt', "SELECT `$column` AS txt FROM `$table`", [["`$column`", '', 'FILLED']]) as $txt) {
+                    yield (string) $txt;
+                }
+            }
+        }
+        foreach (self::itemScopes() as $scope) {
+            foreach (DB_AA::select('txt', 'SELECT `content`.`text` AS txt FROM `content`, `item`', array_merge([['content.item_id', 'item.id', 'j']], $scope, [['content.text', '', 'FILLED']])) as $txt) {
+                yield (string) $txt;
+            }
+        }
+    }
+
+    /** Conditions selecting the item fields holding code: all the fields of the Code slices (slice type
+     *  "___Code...", the way aafinder's "Code Items" checkbox scopes them), and the fields with the alias
+     *  function f_y or the code widget cod - one condition for the slices sharing the same such fields,
+     *  so no other field of a slice is read.
+     *  @return list<list<array>> DB_AA $where arrays */
+    private static function itemScopes(): array
+    {
+        $scopes      = [];
+        $code_slices = DB_AA::select('lid', 'SELECT LOWER(HEX(`id`)) AS lid FROM `slice`', [['type', '___Code', 'BEGIN']]);
+        if ($code_slices) {
+            $scopes[] = [['item.slice_id', $code_slices, 'l']];
+        }
+        $fields = [];
+        foreach ([['alias1_func', 'f_y'], ['alias2_func', 'f_y'], ['alias3_func', 'f_y'], ['input_show_func', 'cod']] as [$column, $prefix]) {
+            foreach (DB_AA::select([], 'SELECT LOWER(HEX(`slice_id`)) AS sid, `id` FROM `field`', [[$column, $prefix, 'BEGIN']]) as $row) {
+                if (!in_array($row['sid'], $code_slices, true)) {
+                    $fields[(string) $row['sid']][(string) $row['id']] = true;
+                }
+            }
+        }
+        $by_fields = [];
+        foreach ($fields as $sid => $ids) {
+            ksort($ids);
+            $by_fields[json_encode(array_keys($ids))][] = $sid;
+        }
+        foreach ($by_fields as $ids => $slices) {
+            $scopes[] = [['item.slice_id', $slices, 'l'], ['content.field_id', json_decode((string) $ids, true)]];
+        }
+        return $scopes;
     }
 
     /** Is $needle anywhere in the code - containing() with one LIMIT 1 probe per column, for a yes/no */
@@ -65,8 +116,12 @@ final class CodePoints
                 }
             }
         }
-        $code_slices = DB_AA::select('lid', 'SELECT LOWER(HEX(`id`)) AS lid FROM `slice`', [['type', '___Code', 'BEGIN']]);
-        return $code_slices && DB_AA::test(['content', 'item'], [['content.text', $needle, 'CONTAIN'], ['content.item_id', 'item.id', 'j'], ['item.slice_id', $code_slices, 'l']]);
+        foreach (self::itemScopes() as $scope) {
+            if (DB_AA::test(['content', 'item'], array_merge([['content.text', $needle, 'CONTAIN'], ['content.item_id', 'item.id', 'j']], $scope))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** the code values containing $needle which $keep accepts
