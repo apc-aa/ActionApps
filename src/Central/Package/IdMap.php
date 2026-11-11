@@ -17,8 +17,8 @@ use InvalidArgumentException;
  *  the caller looked up, for one write, and never stores them (toJson()). */
 final class IdMap
 {
-    /** AA_CONSTANT_GROUPS_CORE, include/constedit_util.php:674 - exist on every AA, never renamed */
-    public const CORE_GROUPS = ['lt_groupNames', ...RedefineCoreConstants::GROUPS];
+    /** exist on every AA, never renamed */
+    public const CORE_GROUPS = RedefineCoreConstants::CORE_GROUPS;
 
     /** source group names: constant_group_id_valid(), include/constedit_util.php:706 (that file needs the AA boot) */
     public const GROUP_RE = '/^[^\x00-\x1F\x7F:\'"`\\\\%]{1,16}\z/';

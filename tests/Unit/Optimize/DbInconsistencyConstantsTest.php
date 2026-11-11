@@ -34,7 +34,7 @@ namespace Tests\Unit\Optimize {
 
     final class DbInconsistencyConstantsTest extends TestCase
     {
-        private const GROUPS = ['in_view', 'lt_languages', 'AA_Core_Bins....', 'in_email', 'in_item', 'in_custom', 'unused'];
+        private const GROUPS = ['in_view', 'lt_languages', 'AA_Core_Bins....', 'in_email', 'in_item', 'in_custom', ' lt_languages', 'unused'];
 
         public static function setUpBeforeClass(): void
         {
@@ -100,6 +100,19 @@ namespace Tests\Unit\Optimize {
             $probe = array_values(array_filter(RecordingDb::$log, static fn($s) => self::from('content', $s) && self::has('in_item', $s)));
             self::assertCount(1, $probe);
             self::assertStringContainsString('text...........1', $probe[0]);
+        }
+
+        public function test_repair_untrimmedName_neitherDeletedNorTrimmedToACoreGroup(): void
+        {
+            // " lt_languages" (se_constant.php does not trim a new group id) trimmed would delete the MLX languages
+            self::optimize()->repair();
+
+            $deletes = implode("\n", array_filter(RecordingDb::$log, static fn($s) => str_starts_with($s, 'DELETE')));
+            self::assertStringNotContainsString('lt_languages', $deletes);
+            self::assertStringContainsString("Spaces around the group name", (function () {
+                $this->test();
+                return $this->report();
+            })->call(self::optimize()));
         }
 
         public function test_repair_deletesOnlyTheUnused(): void

@@ -9,9 +9,6 @@ use AA\Util\Adminlink;
  */
 class DbInconsistencyConstants extends AbstractOptimize
 {
-    /** groups AA itself needs: the list of the groups and the core lists (languages for MLX, code pages, bins) */
-    private const KEPT = ['lt_groupNames', ...RedefineCoreConstants::GROUPS];
-
     /** @var array<string, string[]>|null slice id => its fields holding code */
     private ?array $code_fields = null;
 
@@ -56,8 +53,9 @@ class DbInconsistencyConstants extends AbstractOptimize
         $all_groups = DB_AA::select('group_id', "SELECT DISTINCT group_id FROM `constant`");
         foreach ($all_groups as $grp) {
             $grp = (string) $grp;
-            if ($grp
-                and !in_array($grp, self::KEPT, true)
+            // a name with spaces around is another group than the trimmed one - getUntrimmedGroups() reports it
+            if (($grp !== '') && ($grp === trim($grp))
+                and !in_array($grp, RedefineCoreConstants::CORE_GROUPS, true)
                 and !DB_AA::test('field', [['input_show_func',":$grp",'CONTAIN']])
                 and !DB_AA::test('field', [['alias1_func',":$grp",'CONTAIN']])
                 and !DB_AA::test('field', [['alias2_func',":$grp",'CONTAIN']])
@@ -76,7 +74,14 @@ class DbInconsistencyConstants extends AbstractOptimize
                 $not_used[] = $grp;
             }
         }
-        return array_filter(array_map('trim', $not_used), 'strlen');
+        return $not_used;
+    }
+
+    /** groups stored with spaces around the name - no code can name them reliably, so Repair leaves them
+     *  @return string[] */
+    protected function getUntrimmedGroups(): array
+    {
+        return array_values(array_filter(array_map('strval', DB_AA::select('group_id', 'SELECT DISTINCT group_id FROM `constant`')), static fn(string $grp): bool => ($grp !== trim($grp))));
     }
 
     /** the Alerts e-mail templates are expanded like any template */
@@ -168,6 +173,13 @@ class DbInconsistencyConstants extends AbstractOptimize
         }
         $this->message(_m('Found %1 Non ASCII', [count($non_ascii)]));
 
+        foreach ($this->getUntrimmedGroups() as $grp) {
+            $this->message(['problem' => _m('Spaces around the group name - rename the group'),
+                'group'   => Adminlink::searchLink($grp, safe("'$grp'")),
+                'values'  => safe(implode(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id', $grp]])))]);
+            $ret = false;
+        }
+
         $not_used = $this->getNotUsedGroups();
 
         foreach ($not_used as $grp) {
@@ -185,7 +197,12 @@ class DbInconsistencyConstants extends AbstractOptimize
      */
     public function repair(): bool
     {
+        // exactly the stored names: a trimmed one could be another group, even a core one
         $not_used = $this->getNotUsedGroups();
+        if (!$not_used) {
+            $this->message(_m('Deleted %1 constants in %2 (%3) unused constant groups', [0, 0, 0]));
+            return true;
+        }
         $deleted  = DB_AA::delete("constant", [['group_id',$not_used]]);
         $deleted2 = DB_AA::delete("constant", [['group_id','lt_groupNames'],['value',$not_used]]);
 
