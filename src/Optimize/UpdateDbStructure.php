@@ -28,6 +28,9 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
     /** @var array<string, array{action: string, alter: string[], extra: string[], kept: string[], live: string, template: string}>|null */
     private ?array $plan = null;
 
+    /** @var array<string, array{ENGINE: ?string, ROW_FORMAT: ?string, size: int|string|null}>|null */
+    private ?array $tables = null;
+
     /** Name function
      * @return string - a name
      */
@@ -96,7 +99,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
                 $ok = $this->alter($tablename, $plan['alter']) && $ok;
             }
         }
-        $this->plan = null;
+        $this->plan = $this->tables = null;
         return $ok;
     }
 
@@ -117,16 +120,30 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
     /** A big table is changed only without locking it (LOCK=NONE), as InnoDB can do it for indexes, NOT NULL,
      *  a new column or a longer varchar - another type of a column or a MyISAM table would stop the writes for
      *  minutes, so the server refuses and the ALTER is listed for a manual run when the traffic is low. A small
-     *  table is changed in any way - its lock lasts seconds. A failed ALTER leaves the table as it was. */
+     *  table is changed in any way - its lock lasts seconds. A failed ALTER leaves the table as it was.
+     *  A change the data do not fit (a too long text, a NULL for NOT NULL, a duplicate for a unique key) is
+     *  left out and the rest of the table is changed. */
     private function alter(string $tablename, array $clauses): bool
     {
-        $sql  = "ALTER TABLE `$tablename` " . implode(', ', $clauses);
-        $size = (int) DB_AA::select1('size', 'SELECT DATA_LENGTH + INDEX_LENGTH AS size FROM information_schema.TABLES', [['TABLE_SCHEMA', constant('DB_NAME')], ['TABLE_NAME', $tablename]]);
-        if ($size <= self::LOCKED_SIZE) {
-            return $this->run($tablename, $sql);
+        $table = $this->liveTables()[$tablename] ?? [];
+        $size  = (int) ($table['size'] ?? 0);
+        if ((($table['ENGINE'] ?? '') === 'InnoDB') && in_array($table['ROW_FORMAT'] ?? '', ['Compact', 'Redundant'], true)) {
+            $clauses[] = 'ROW_FORMAT=DYNAMIC';   // strict InnoDB refuses to rebuild an old table whose row could exceed 8 kB
         }
-        $error = $this->strictly("$sql, LOCK=NONE");
-        if (($error === '') || self::busy($error)) {
+        while (true) {
+            $sql   = "ALTER TABLE `$tablename` " . implode(', ', $clauses);
+            $error = $this->strictly(($size > self::LOCKED_SIZE) ? "$sql, LOCK=NONE" : $sql);
+            $rest  = ($error === '') ? $clauses : self::withoutRefused($clauses, $error);
+            if ($rest === $clauses) {
+                break;
+            }
+            $this->message(_m('Table %1 keeps %2 as it is - the data do not fit the template: %3', [safe($tablename), safe(implode(', ', array_diff($clauses, $rest))), safe($error)]));
+            if (!array_diff($rest, ['ROW_FORMAT=DYNAMIC'])) {
+                return true;
+            }
+            $clauses = $rest;
+        }
+        if (($size <= self::LOCKED_SIZE) || ($error === '') || self::busy($error)) {
             return $this->result($tablename, $error);
         }
         $this->message(_m('Table %1 (%2 MB) not changed: %3. Run it when the traffic is low: %4', [safe($tablename), round($size / 1048576), safe($error), safe("SET SESSION sql_mode = 'STRICT_ALL_TABLES'; $sql;")]));
@@ -136,6 +153,23 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
     private function run(string $tablename, string $sql): bool
     {
         return $this->result($tablename, $this->strictly($sql));
+    }
+
+    /** the clauses without the one the database refused for the data: the change of the column the error names,
+     *  or both the drop and the add of the unique key it names
+     * @param string[] $clauses
+     * @return string[]
+     */
+    private static function withoutRefused(array $clauses, string $error): array
+    {
+        if (preg_match("/ for column (?:`[^`]*`\\.`[^`]*`\\.)?[`']([^`']+)[`']/", $error, $m)) {
+            $refused = '/^MODIFY COLUMN `' . preg_quote($m[1], '/') . '` /';
+        } elseif (preg_match("/Duplicate entry .* for key '([^']+)'/s", $error, $m)) {
+            $refused = ($m[1] === 'PRIMARY') ? '/^(DROP|ADD) PRIMARY KEY/' : '/^(DROP INDEX `' . preg_quote($m[1], '/') . '`$|ADD (UNIQUE )?KEY ' . preg_quote($m[1], '/') . ' \\()/';
+        } else {
+            return $clauses;
+        }
+        return array_values(array_filter($clauses, static fn($clause) => !preg_match($refused, $clause)));
     }
 
     private function result(string $tablename, string $error): bool
@@ -188,10 +222,12 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         $template   = $this->templateMetabase();
         $live       = $this->liveMetabase();
         $collations = $this->liveCollations();
+        $tables     = $this->liveTables();
         $this->plan = [];
         foreach ($template->tables as $tablename => $table) {
             $current = $live->tables[$tablename] ?? null;
-            $changes = $current ? self::changes($table, $current, $collations[$tablename] ?? []) : ['alter' => [], 'extra' => [], 'kept' => []];
+            $myisam  = ($tables[$tablename]['ENGINE'] ?? '') === 'MyISAM';
+            $changes = $current ? self::changes($table, $current, $collations[$tablename] ?? [], $myisam) : ['alter' => [], 'extra' => [], 'kept' => []];
             $this->plan[$tablename] = [
                 'action'   => $current ? ($changes['alter'] ? 'alter' : 'none') : 'create',
                 'alter'    => $changes['alter'],
@@ -220,6 +256,13 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         return $live;
     }
 
+    /** engine, row format and size (data and indexes) of each table of this database
+     * @return array<string, array{ENGINE: ?string, ROW_FORMAT: ?string, size: int|string|null}> */
+    protected function liveTables(): array
+    {
+        return $this->tables ??= DB_AA::select(['TABLE_NAME' => []], 'SELECT TABLE_NAME, ENGINE, ROW_FORMAT, DATA_LENGTH + INDEX_LENGTH AS size FROM information_schema.TABLES', [['TABLE_SCHEMA', constant('DB_NAME')]]);
+    }
+
     /** the collation of each text column of this database - the template names none
      * @return array<string, array<string, string>> table => column => collation */
     protected function liveCollations(): array
@@ -238,9 +281,10 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
      *  and comment; an index the template has under another name is renamed - never kept twice. The order of the columns
      *  stays: AA names the columns it writes, and moving one would rebuild the table for nothing.
      * @param array<string, string> $collations live column => collation
+     * @param bool $myisam the live table is MyISAM - its index on a long text is a prefix
      * @return array{alter: string[], extra: string[], kept: string[]}
      */
-    public static function changes(AA_MbT $template, AA_MbT $live, array $collations = []): array
+    public static function changes(AA_MbT $template, AA_MbT $live, array $collations = [], bool $myisam = false): array
     {
         $modify = $add = $kept = $kept_columns = [];
         foreach ($template->c as $name => $column) {
@@ -260,14 +304,15 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         $unknown = array_diff_key($live->i, $template->i);
         foreach ($template->i as $name => $index) {
             $current = $live->i[$name] ?? null;
-            if ($current?->getCreateSql() === $index->getCreateSql()) {
+            $wanted  = $myisam ? self::myisamIndex($index, $template, $collations) : $index;
+            if ($current?->getCreateSql() === $wanted->getCreateSql()) {
                 continue;
             }
             if (array_intersect(self::indexColumns($index), $kept_columns)) {
                 $kept[] = "index $name";
                 continue;
             }
-            if (!$current && ($same = self::sameIndex($index, $unknown))) {
+            if (!$current && ($same = self::sameIndex($wanted, $unknown))) {
                 unset($unknown[$same]);
                 $renamed[] = "RENAME INDEX `$same` TO `$name`";
                 continue;
@@ -344,6 +389,30 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
             return ['string', ['tiny' => 255, '' => 65535, 'medium' => 16777215, 'long' => 4294967295][$m[1] ?? ''], false];
         }
         return ['other', 0, false];
+    }
+
+    /** The index as MariaDB makes it in a MyISAM table: a key holds at most 1000 bytes there, so a longer text
+     *  column gets a prefix (varchar(255) in utf8mb4 => 250 characters) - without it the index would differ forever
+     * @param array<string, string> $collations live column => collation
+     */
+    private static function myisamIndex(AA_MbI $index, AA_MbT $template, array $collations): AA_MbI
+    {
+        $wanted = clone $index;
+        foreach ($wanted->c as $position => $column) {
+            if (is_array($column) || !isset($template->c[$column])) {
+                continue;
+            }
+            [$kind, $length] = self::kind($template->c[$column]->c[1]);
+            $bytes = match (strtok($collations[$column] ?? '', '_')) {
+                'utf8mb4'         => 4,
+                'utf8mb3', 'utf8' => 3,
+                default           => 1,
+            };
+            if (($kind === 'string') && ($length * $bytes > 1000)) {
+                $wanted->c[$position] = [$column, (string) intdiv(1000, $bytes)];
+            }
+        }
+        return $wanted;
     }
 
     /** @return string[] the column names of the index */
