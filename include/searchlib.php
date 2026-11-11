@@ -240,7 +240,7 @@ class AA_Condition extends AA_Object
     public function getAsString($condition_number = 0): string
     {
         $val = str_replace('-', '--', $this->value);
-        if ($val[0] === '-') {  // we do not want triple --- like in: expiry_date.....-m:<- --432000
+        if (str_starts_with($val, '-')) {  // we do not want triple --- like in: expiry_date.....-m:<- --432000
             $val = " $val";
         }
         return implode(',', $this->fields) . '-' . $this->operator . '-' . $val; // StrExp('conds', [$this->value, '1']);  - does not work for B OR C, ...
@@ -277,12 +277,52 @@ class AA_Condition extends AA_Object
      */
     public function matches($itemcontent): bool
     {
+        return $this->matchesValues(static fn(string $field): array => array_column($itemcontent->getValues($field), 'value'));
+    }
+
+    /**
+     * Postfilter deciding as the SQL of the condition (AA_Dbcondition) decides in the database: the condition
+     * holds for one of its fields, a field when one of its values matches; "<>" when none equals, and also
+     * an item without the value, as ISNULL does (both join LEFT). Strings compare as the _ci collations of
+     * the database: case and trailing spaces do not count. Accents do count - the collations of the AA databases
+     * differ in them. A number field stores no '', its empty value is 0.
+     * Checked for =, ==, <>, BEGIN, CONTAIN, ISNULL and NOTNULL; other operators compare each value alone.
+     * @param callable(string): array $valuesOf field id => its values
+     * @param list<string> $numeric ids of the fields stored as numbers
+     */
+    public function matchesValues(callable $valuesOf, array $numeric = []): bool
+    {
         foreach ($this->fields as $field) {
-            foreach ($itemcontent->getValues($field) as $val) {
-                if ($this->_compare($val['value'])) {
-                    // any match is sufficient
-                    return true;
-                }
+            $is_num = in_array($field, $numeric, true);
+            $values = array_map(static fn($v): string => (($v = (string) $v) === '' && $is_num) ? '0' : $v, $valuesOf($field));
+            if ($this->fieldMatches($values, $is_num)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** @param list<string> $values */
+    private function fieldMatches(array $values, bool $numeric): bool
+    {
+        switch ($this->operator) {
+            case 'ISNULL':
+                return !$values || array_filter($values, static fn(string $v): bool => self::isEmptyValue($v, $numeric)) !== [];
+            case 'NOTNULL':
+                return (bool) array_filter($values, static fn(string $v): bool => !self::isEmptyValue($v, $numeric));
+            case '!=':
+            case '<>':
+                $value = $this->comparedValues()[0];
+                return !array_filter($values, static fn(string $v): bool => self::sameValue($v, $value, $numeric));
+            case '=':
+                // a syntax error makes SQL take every item, with the value or without
+                $expression = stripslashes($this->value);
+                $matches    = static fn(string $v): ?bool => self::expressionMatches($expression, static fn(string $alt): bool => self::sameValue($v, $alt, $numeric));
+                return $values ? (bool) array_filter($values, static fn(string $v): bool => $matches($v) ?? true) : ($matches('') === null);
+        }
+        foreach ($values as $v) {
+            if ($this->_compare($v, $numeric)) {
+                return true;
             }
         }
         return false;
@@ -293,18 +333,19 @@ class AA_Condition extends AA_Object
      * @param $field_value
      * @return bool
      */
-    public function _compare($field_value): bool
+    public function _compare($field_value, bool $numeric = false): bool
     {
+        $field_value = (string) $field_value;
         switch ($this->operator) {
             case 'CONTAIN':
             case 'LIKE':
             case 'XLIKE':
-                return str_contains($field_value, $this->value);
+                return str_contains(mb_strtolower($field_value), mb_strtolower($this->value));
             case 'BEGIN':
             case 'RLIKE':
-                return str_starts_with($field_value, $this->value);
+                return str_starts_with(mb_strtolower($field_value), mb_strtolower($this->value));
             case 'LLIKE':
-                return strpos($field_value, $this->value) == (strlen($field_value) - strlen($this->value));
+                return str_ends_with(mb_strtolower($field_value), mb_strtolower($this->value));
             case 'REGEXP':
                 return preg_match('/' . str_replace('/', '\/', $this->value) . '/', $field_value);
             case 'NOTREGEXP':
@@ -317,15 +358,16 @@ class AA_Condition extends AA_Object
                 $arr = explode(",", $this->value);
                 return ((int) $field_value >= (int) $arr[0] && (int) $field_value <= (int) $arr[1]);
             case 'ISNULL':
-                return ($field_value == '');
+                return self::isEmptyValue($field_value, $numeric);
             case 'NOTNULL':
-                return ($field_value != '');
+                return !self::isEmptyValue($field_value, $numeric);
             case '==':                                           // exact match - no SQL parsing
+                return self::sameValue($field_value, $this->value, $numeric);
             case '=':
-                return $field_value == $this->value;
+                return self::expressionMatches(stripslashes($this->value), static fn(string $alt): bool => self::sameValue($field_value, $alt, $numeric)) ?? true;
             case '!=':
             case '<>':
-                return $field_value != $this->value;
+                return !self::sameValue($field_value, $this->comparedValues()[0], $numeric);
             case '<=':
                 return $field_value <= $this->value;
             case '<':
@@ -341,6 +383,132 @@ class AA_Condition extends AA_Object
                 //          case '<=>':  //MySQL know this operator, but we do not use it in AA
         }
         return false;
+    }
+
+    /**
+     * The values the condition compares with, as its SQL reads them: the alternatives of "=", the value of "<>"
+     * without its quotes, the value of BEGIN, CONTAIN and "=="; null when "=" is more than alternatives joined by OR.
+     * @return ?list<string>
+     */
+    public function comparedValues(): ?array
+    {
+        switch ($this->operator) {
+            case '=':
+                return self::alternatives(stripslashes($this->value));
+            case '!=':
+            case '<>':
+                $value = stripslashes($this->value);
+                return [(str_starts_with($value, '"') || str_starts_with($value, "'")) ? substr($value, 1, -1) : $value];
+        }
+        return [$this->value];
+    }
+
+    /**
+     * The values of an "=" expression that only joins them by OR - "News" OR "Events" - else null.
+     * @return ?list<string>
+     */
+    public static function alternatives(string $expression): ?array
+    {
+        $ret    = [];
+        $tokens = SQL_Lex::lex(trim($expression));
+        foreach ($tokens as $i => $token) {
+            $expect = ($i % 2) ? SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_OR : SQL_Parser_Constants::TOKEN_TYPE_STRING;
+            if ($token['type'] === SQL_Parser_Constants::TOKEN_TYPE_EOF) {
+                return ($ret && ($i % 2)) ? $ret : null;
+            }
+            if ($token['type'] !== $expect) {
+                return null;
+            }
+            if ($expect === SQL_Parser_Constants::TOKEN_TYPE_STRING) {
+                $ret[] = (string) $token['value'];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * "=" expression matching any of the values - each a phrase, so spaces, OR and parentheses inside it are text.
+     * @param list<string> $values
+     * @return ?string null for no value, or a value with both kinds of quotes, which a phrase cannot hold
+     */
+    public static function orExpression(array $values): ?string
+    {
+        $phrases = [];
+        foreach ($values as $value) {
+            $quote = str_contains($value, '"') ? "'" : '"';
+            if (str_contains($value, $quote)) {
+                return null;
+            }
+            $phrases[] = $quote . $value . $quote;
+        }
+        return $phrases ? implode(' OR ', $phrases) : null;
+    }
+
+    /** as the _ci collations compare: case and trailing spaces do not count; a number field compares numbers */
+    private static function sameValue(string $a, string $b, bool $numeric): bool
+    {
+        return $numeric ? ((float) $a == (float) $b) : (mb_strtolower(rtrim($a, ' ')) === mb_strtolower(rtrim($b, ' ')));
+    }
+
+    private static function isEmptyValue(string $value, bool $numeric): bool
+    {
+        return $numeric ? ((float) $value == 0) : (rtrim($value, ' ') === '');
+    }
+
+    /**
+     * Evaluates the "=" expression for one value, by the grammar of Syntax, which builds its SQL:
+     * OR of AND of [NOT] (a word, a "phrase", or a parenthesized expression).
+     * @param callable(string): bool $equals whether the value equals the word
+     * @return ?bool null on a syntax error
+     */
+    private static function expressionMatches(string $expression, callable $equals): ?bool
+    {
+        $tokens = SQL_Lex::lex(trim($expression));
+        $i      = 0;
+        try {
+            $ret = self::orTerm($tokens, $i, $equals);
+            return ($tokens[$i]['type'] === SQL_Parser_Constants::TOKEN_TYPE_EOF) ? $ret : null;
+        } catch (UnexpectedValueException) {
+            return null;
+        }
+    }
+
+    private static function orTerm(array $tokens, int &$i, callable $equals): bool
+    {
+        $ret = self::andTerm($tokens, $i, $equals);
+        while ($tokens[$i]['type'] === SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_OR) {
+            ++$i;
+            $ret = self::andTerm($tokens, $i, $equals) || $ret;   // the right side is read even when the left holds
+        }
+        return $ret;
+    }
+
+    private static function andTerm(array $tokens, int &$i, callable $equals): bool
+    {
+        $ret = self::factor($tokens, $i, $equals);
+        while ($tokens[$i]['type'] === SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_AND) {
+            ++$i;
+            $ret = self::factor($tokens, $i, $equals) && $ret;
+        }
+        return $ret;
+    }
+
+    private static function factor(array $tokens, int &$i, callable $equals): bool
+    {
+        $not = ($tokens[$i]['type'] === SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT);
+        $i  += (int) $not;
+        switch ($tokens[$i]['type']) {
+            case SQL_Parser_Constants::TOKEN_TYPE_STRING:
+                return $not xor $equals((string) $tokens[$i++]['value']);
+            case SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS:
+                ++$i;
+                $ret = self::orTerm($tokens, $i, $equals);
+                if ($tokens[$i++]['type'] !== SQL_Parser_Constants::TOKEN_TYPE_RIGHT_PARENTHESIS) {
+                    throw new UnexpectedValueException('missing )');
+                }
+                return $not xor $ret;
+        }
+        throw new UnexpectedValueException('unexpected token');
     }
 }
 
@@ -615,7 +783,7 @@ class AA_Set extends AA_Object
         // we also need PHP to think a['key'] is the same as a[key], that's why we
         // call NormalizeArrayIndex()
         $aa_query_arr = NormalizeArrayIndex($aa_query_arr);
-        $this->addCondsFromArray($aa_query_arr['conds'], $defaultCondsOperator);
+        $this->addCondsFromArray($aa_query_arr['conds'] ?? null, $defaultCondsOperator);
     }
 
     /** addCondsFromArray function
@@ -865,10 +1033,10 @@ class AA_Set extends AA_Object
         }
         $i              = 0;
         $command_params = $command->getParameterArray();
-        while ($command_params[$i]) {
+        while ($command_params[$i] ?? false) {
             $fld = inner_trim($command_params[$i]);
-            $op  = trim($command_params[$i + 1]);
-            $val = $command_params[$i + 2];
+            $op  = trim($command_params[$i + 1] ?? '');
+            $val = $command_params[$i + 2] ?? '';
 
             if (self::check($fld, $val)) {
                 $field_arr = explode(',', $fld);
@@ -896,6 +1064,12 @@ class AA_Set extends AA_Object
             $i += 3;
         }
         return true;
+    }
+
+    /** @return AA_Condition[] */
+    public function getConditions(): array
+    {
+        return $this->conds;
     }
 
     /** getConds function
