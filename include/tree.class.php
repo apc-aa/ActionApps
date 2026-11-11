@@ -339,7 +339,7 @@ class AA_Supertree_Reverse extends AA_Supertree
     {
         $cond = [
             $this->_relation_field => 1,
-            // '=' parses the value with Syntax/SQL_Lex, so an array becomes
+            // '=' parses the value (AA\Search\QueryExpression), so an array becomes
             // (field="id1" OR field="id2" OR ...). '==' cannot be used here - it
             // compares against the raw string and never parses an OR expression.
             'operator'             => '=',
