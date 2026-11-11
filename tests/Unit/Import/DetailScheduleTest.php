@@ -245,7 +245,7 @@ final class DetailScheduleTest extends TestCase
         self::storedSet(self::DEF, 'enabled', '');
         self::task(self::TASK_A, self::SLICE, 'Nightly prices', '{import:prices}', '03:00');
 
-        $this->assertMatchesRegularExpression('~>Nightly prices</a>: Run, next [^<]*, not queued \(import off\)</li>~', self::overview());
+        $this->assertMatchesRegularExpression('~>Nightly prices</a>: Run, next [^<]*, not queued \(does not start it now\)</li>~', self::overview());
     }
 
     /** the id goes into the link to the task - an object that is not a task is no task */

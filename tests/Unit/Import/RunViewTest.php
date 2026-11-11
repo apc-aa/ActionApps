@@ -60,47 +60,59 @@ final class RunViewTest extends TestCase
         self::assertSame('', RunView::nothingReadText(new Run(['state' => Run::DONE])), 'a finished run that read nothing says so by its counts');
     }
 
-    /** @return iterable<string, array{bool, bool, bool, list<array<string, string>>, string, string}> enabled, source, mapping, runs newest first, kind, a part of the reason */
+    /** @return iterable<string, array{bool, bool, list<array<string, string>>, string, string}> source, mapping, runs newest first, kind, a part of the reason */
     public static function healths(): iterable
     {
         $now  = 1_900_000_000;
         $done = static fn(string $counts, array $more = []): array => $more + ['state' => Run::DONE, 'counts' => $counts, 'mode' => 'run'];
-        yield 'no run'                    => [true, true, true, [], 'idle', 'Run starts the first import'];
-        yield 'no run, disabled'          => [false, true, true, [], 'off', 'Runs only by hand'];
-        yield 'source gone'               => [true, false, true, [$done('{"read":3}')], 'bad', 'not available'];
-        yield 'mapping refused'           => [true, true, false, [$done('{"read":3}')], 'bad', 'mapping does not fit'];
-        yield 'import done'               => [true, true, true, [$done('{"read":3,"new":3}')], 'ok', '3 read'];
-        yield 'changed run, nothing new'  => [true, true, true, [$done('{"read":0}', ['mode' => 'changed'])], 'ok', 'nothing had changed'];
-        yield 'full run read nothing'     => [true, true, true, [$done('{"read":0}')], 'warn', 'read nothing'];
-        yield 'item errors'               => [true, true, true, [$done('{"read":3,"new":1,"errors":2}')], 'warn', '2 items could not be stored'];
-        yield 'one item error'            => [true, true, true, [$done('{"read":3,"new":2,"errors":1}')], 'warn', 'but 1 item could not be stored'];
-        yield 'import ended by hand'      => [true, true, true, [['state' => Run::ENDED, 'mode' => 'run']], 'warn', 'ended before it finished'];
-        yield 'import ended after error'  => [true, true, true, [['state' => Run::ENDED, 'mode' => 'run', 'error_code' => 'AUTH']], 'warn', 'stopped by an error and was then ended'];
-        yield 'import stopped'            => [true, true, true, [['state' => Run::ERROR, 'mode' => 'run']], 'bad', 'last import stopped by an error'];
-        yield 'check stopped'             => [true, true, true, [['state' => Run::ERROR, 'mode' => 'check'], $done('{"read":3}')], 'bad', 'source check stopped'];
-        yield 'dry run stopped'           => [true, true, true, [['state' => Run::ERROR, 'mode' => 'run', 'dry' => '1'], $done('{"read":3}')], 'bad', 'last dry run stopped'];
-        yield 'baseline stopped'          => [true, true, true, [['state' => Run::ERROR, 'mode' => 'baseline']], 'bad', 'Recording the state of the source stopped'];
-        yield 'only checks'               => [true, true, true, [$done('{}', ['mode' => 'check'])], 'idle', 'nothing was imported'];
-        yield 'import behind a check'     => [true, true, true, [$done('{}', ['mode' => 'check']), $done('{"read":4}')], 'ok', '4 read'];
-        yield 'import behind a dry run'   => [true, true, true, [$done('{"read":9}', ['dry' => '1']), $done('{"read":4,"errors":3}')], 'warn', '3 items'];
-        yield 'disabled but fine'         => [false, true, true, [$done('{"read":3}')], 'off', 'Runs only by hand. The last import finished'];
-        yield 'disabled and failing'      => [false, true, true, [['state' => Run::ERROR, 'mode' => 'run']], 'bad', 'stopped by an error'];
-        yield 'running'                   => [true, true, true, [['state' => Run::RUNNING, 'started' => (string) ($now - 5), 'lease' => (string) ($now + 20), 'lease_tok' => 't']], 'run', 'Running'];
-        yield 'waiting to retry'          => [true, true, true, [['state' => Run::RUNNING, 'started' => (string) ($now - 900), 'next_at' => (string) ($now + 60), 'failures' => '1']], 'warn', 'waits to try again'];
-        yield 'stuck'                     => [true, true, true, [['state' => Run::RUNNING, 'started' => (string) ($now - 86400), 'next_at' => (string) ($now - 86000)]], 'bad', 'no progress'];
+        yield 'no run'                    => [true, true, [], 'idle', 'Run starts the first import'];
+        yield 'source gone'               => [false, true, [$done('{"read":3}')], 'bad', 'not available'];
+        yield 'mapping refused'           => [true, false, [$done('{"read":3}')], 'bad', 'mapping does not fit'];
+        yield 'import done'               => [true, true, [$done('{"read":3,"new":3}')], 'ok', '3 read'];
+        yield 'changed run, nothing new'  => [true, true, [$done('{"read":0}', ['mode' => 'changed'])], 'ok', 'nothing had changed'];
+        yield 'full run read nothing'     => [true, true, [$done('{"read":0}')], 'warn', 'read nothing'];
+        yield 'item errors'               => [true, true, [$done('{"read":3,"new":1,"errors":2}')], 'warn', '2 items could not be stored'];
+        yield 'one item error'            => [true, true, [$done('{"read":3,"new":2,"errors":1}')], 'warn', 'but 1 item could not be stored'];
+        yield 'import ended by hand'      => [true, true, [['state' => Run::ENDED, 'mode' => 'run']], 'warn', 'ended before it finished'];
+        yield 'import ended after error'  => [true, true, [['state' => Run::ENDED, 'mode' => 'run', 'error_code' => 'AUTH']], 'warn', 'stopped by an error and was then ended'];
+        yield 'import stopped'            => [true, true, [['state' => Run::ERROR, 'mode' => 'run']], 'bad', 'last import stopped by an error'];
+        yield 'check stopped'             => [true, true, [['state' => Run::ERROR, 'mode' => 'check'], $done('{"read":3}')], 'bad', 'source check stopped'];
+        yield 'dry run stopped'           => [true, true, [['state' => Run::ERROR, 'mode' => 'run', 'dry' => '1'], $done('{"read":3}')], 'bad', 'last dry run stopped'];
+        yield 'baseline stopped'          => [true, true, [['state' => Run::ERROR, 'mode' => 'baseline']], 'bad', 'Recording the state of the source stopped'];
+        yield 'only checks'               => [true, true, [$done('{}', ['mode' => 'check'])], 'idle', 'nothing was imported'];
+        yield 'import behind a check'     => [true, true, [$done('{}', ['mode' => 'check']), $done('{"read":4}')], 'ok', '4 read'];
+        yield 'import behind a dry run'   => [true, true, [$done('{"read":9}', ['dry' => '1']), $done('{"read":4,"errors":3}')], 'warn', '3 items'];
+        yield 'running'                   => [true, true, [['state' => Run::RUNNING, 'started' => (string) ($now - 5), 'lease' => (string) ($now + 20), 'lease_tok' => 't']], 'run', 'Running'];
+        yield 'waiting to retry'          => [true, true, [['state' => Run::RUNNING, 'started' => (string) ($now - 900), 'next_at' => (string) ($now + 60), 'failures' => '1']], 'warn', 'waits to try again'];
+        yield 'stuck'                     => [true, true, [['state' => Run::RUNNING, 'started' => (string) ($now - 86400), 'next_at' => (string) ($now - 86000)]], 'bad', 'no progress'];
     }
 
     /** @param list<array<string, string>> $props */
     #[DataProvider('healths')]
-    public function test_health_verdictAndItsReason(bool $enabled, bool $source, bool $mapping, array $props, string $kind, string $reason): void
+    public function test_health_verdictAndItsReason(bool $source, bool $mapping, array $props, string $kind, string $reason): void
     {
         $runs    = array_map(static fn(array $p): Run => new Run($p), $props);
         $import  = array_values(array_filter($runs, static fn(Run $r): bool => $r->storesItems()))[0] ?? null;
-        $verdict = RunView::health($enabled, $source, $mapping, $runs[0] ?? null, $import, 1_900_000_000);
+        $verdict = RunView::health($source, $mapping, $runs[0] ?? null, $import, 1_900_000_000);
 
         self::assertSame($kind, $verdict['kind']);
         self::assertStringContainsString($reason, $verdict['reason']);
         self::assertNotSame('', $verdict['word']);
+    }
+
+    /** whether a planned task starts the import is another fact than whether it is in order */
+    public function test_health_disabledAndHealthy_staysHealthy(): void
+    {
+        $import  = new Run(['state' => Run::DONE, 'mode' => 'run', 'counts' => '{"read":3}']);
+        $verdict = RunView::health(true, true, $import, $import, 1_900_000_000);
+
+        self::assertSame(['ok', 'Healthy'], [$verdict['kind'], $verdict['word']]);
+        self::assertStringNotContainsString('by hand', $verdict['reason']);
+        $off = RunView::statusHtml($verdict, false);
+        self::assertStringContainsString('data-kind="ok"', $off);
+        self::assertStringContainsString('Runs only by hand.', $off);
+        self::assertStringNotContainsString('Disabled', $off);
+        self::assertStringNotContainsString('Runs only by hand.', RunView::statusHtml($verdict, true));
     }
 
     public function test_age_roughlyAndNothingWhenTooOld(): void

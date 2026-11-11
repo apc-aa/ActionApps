@@ -248,17 +248,34 @@ final class DefinitionManagerTest extends TestCase
         self::assertNull(Definition::fresh($id)?->nextPlanned(self::NOW));
     }
 
-    public function test_nextPlan_disabledShowsOff(): void
+    /** a disabled import that is in order reads as in order, and that it runs only by hand beside it */
+    public function test_list_disabledImport_showsHealthAndByHand(): void
     {
         $id = self::definition('prices');
         self::storedSet($id, 'enabled', '');
         self::task('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', self::SLICE, '{import:prices}', '03:00');
+        $run = self::startRun($id);
+        self::storedSet($run, 'state', Run::DONE);
+        self::storedSet($run, 'counts', '{"read":3,"new":3}');
 
         $html = self::rendered($id);
 
-        self::assertStringContainsString('Disabled', $html);
-        self::assertStringContainsString('None - the import is disabled', $html);
-        self::assertStringNotContainsString('Not planned', $html);
+        self::assertMatchesRegularExpression('~data-kind="ok">.*?Healthy</span>~', $html);
+        self::assertSame(1, substr_count($html, 'Runs only by hand.'), 'said once in the row');
+        self::assertStringContainsString('Not planned', $html, 'a planned task does not start it');
+    }
+
+    public function test_noDisabledLabelAnywhere(): void
+    {
+        $id = self::definition('prices');
+        self::storedSet($id, 'enabled', '');
+
+        $html = self::rendered($id);
+
+        foreach (['Disabled', 'is disabled', 'import off', '>Off<', 'switched off'] as $label) {
+            self::assertStringNotContainsString($label, $html);
+        }
+        self::assertStringContainsString('Runs only by hand.', $html);
     }
 
     /** the last import is found however many runs that stored nothing came after it */

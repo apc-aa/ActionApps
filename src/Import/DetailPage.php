@@ -276,7 +276,7 @@ final class DetailPage
     {
         $runs   = $this->runs();
         $open   = $this->openRun();
-        $health = RunView::health($this->def->isEnabled(), $this->hasSource(), $this->problems() === [], $runs[0] ?? null, $this->lastImport(), $now);
+        $health = RunView::health($this->hasSource(), $this->problems() === [], $runs[0] ?? null, $this->lastImport(), $now);
         $html   = $this->healthHtml($health) . $this->problemsHtml() . self::ribbonHtml($runs, $now)
             . '<div class="aa-import-glance">'
             . '<div class="aa-import-last"><h3>' . _m('Last import') . '</h3>' . $this->lastImportHtml($runs, $now) . '</div>'
@@ -555,7 +555,7 @@ final class DetailPage
             'TRANSPORT'      => _m('The source could not be reached.'),
             'STORE'          => _m('The database did not store the imported items; the source is not at fault.'),
             'WRONG_STATE'    => _m('The run is finished; it cannot go on.'),
-            'OFF'            => _m('The import is switched off.'),
+            'OFF'            => _m('The import runs only by hand, so a planned task does not start it.'),
             'KEYS'           => _m('This import uses API keys, so only a superadmin may do this.'),
             'NO_VERSIONS'    => _m('The import source cannot tell the versions of its streams, so there is no state of it to record.'),
             default          => _m('The import source refused: %1', [$code]),
@@ -596,15 +596,15 @@ final class DetailPage
             . ((($newest === null) || ((string) $newest->getId() === (string) $import->getId())) ? '' : '<p class="aa-import-sub aa-import-newer">' . _m('Since then: %1', [$about]) . '</p>');
     }
 
-    /** the verdict in words with a mark, why, and what went wrong - colour is never the only signal
+    /** the verdict in words with a mark, whether only a start by hand runs it, why, and what went
+     *  wrong - colour is never the only signal
      *  @param array{kind: string, word: string, reason: string} $health */
     private function healthHtml(array $health): string
     {
-        $enabled = $this->def->isEnabled();
-        $source  = safe(Definition::sourceName($this->def->sourceType()));
-        $line    = _m('Source: %1', [$source]) . ($this->hasSource() ? '' : ' - ' . _m('this source is not available')) . ' &middot; ' . ($enabled ? _m('Enabled') : _m('Disabled'));
+        $source = safe(Definition::sourceName($this->def->sourceType()));
+        $line   = _m('Source: %1', [$source]) . ($this->hasSource() ? '' : ' - ' . _m('this source is not available'));
         return '<div class="aa-import-health" data-kind="' . $health['kind'] . '">'
-            . RunView::chipHtml($health['kind'], $health['word'])
+            . RunView::chipHtml($health['kind'], $health['word']) . RunView::byHandHtml($this->def->isEnabled())
             . '<p class="aa-import-reason">' . safe($health['reason']) . '</p></div>'
             . $this->firstErrorHtml()
             . '<p class="aa-import-sub">' . $line . '</p>';
@@ -722,9 +722,9 @@ final class DetailPage
 
     private function nextPlanHtml(int $now): string
     {
-        // a planned start of a disabled import does nothing
+        // a planned start of a disabled import does nothing; the verdict above says it runs only by hand
         if (!$this->def->isEnabled()) {
-            return '<p class="aa-import-value">' . _m('Off') . '</p><p class="aa-import-sub">' . _m('The import is disabled, so no planned task starts it.') . '</p>';
+            return '<p class="aa-import-value">' . _m('Not planned') . '</p><p class="aa-import-sub">' . _m('Planned tasks start it only once Enabled is ticked (Edit in the list of imports).') . '</p>';
         }
         $next = $this->def->nextPlanned($now);
         if ($next !== null) {
@@ -763,8 +763,8 @@ final class DetailPage
             };
             return $html . htmltag('button', _m('Schedule'), ['type' => 'button', 'disabled' => 'disabled', 'title' => $why]) . self::whyHtml($why);
         }
-        // the Next plan row says Off - a task must not look as if it started the import
-        $off   = $this->def->isEnabled() ? '' : ' ' . _m('(import off)');
+        // a task must not look as if it started an import that runs only by hand
+        $off   = $this->def->isEnabled() ? '' : ' ' . _m('(does not start it now)');
         $items = '';
         foreach ($tasks as $task) {
             $edit = new AA_Plannedtask();

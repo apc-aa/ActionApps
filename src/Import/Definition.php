@@ -332,7 +332,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
     {
         $hasSource          = isset(Registry::sources()[(string) $content->getValue('source')]);
         [$newest, $import] = self::latestRuns((string) $content->getId());
-        return RunView::health((string) $content->getValue('enabled') === '1', $hasSource, true, $newest, $import, $now);
+        return RunView::health($hasSource, true, $newest, $import, $now);
     }
 
     /** Run::newestOf() of definition $id, read once for the cells of its row
@@ -362,9 +362,9 @@ final class Definition extends AA_Object implements InternalExpandInterface
 
     private static function nextPlanHtml(AA_Content $content, int $now): string
     {
-        // a planned start of a disabled import does nothing
+        // a planned start of a disabled import does nothing; the status says it runs only by hand
         if ((string) $content->getValue('enabled') !== '1') {
-            return '<span class="aa-import-none">' . safe(_m('None - the import is disabled')) . '</span>';
+            return '<span class="aa-import-none">' . safe(_m('Not planned')) . '</span>';
         }
         $next = self::nextPlannedOf((string) $content->getOwnerId(), (string) $content->getId(), (string) $content->getName(), $now);
         return ($next === null) ? '<span class="aa-import-none">' . safe(_m('Not planned - no task starts it')) . '</span>' : date('Y-m-d H:i', $next);

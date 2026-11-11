@@ -151,19 +151,31 @@ final class DetailPageTest extends TestCase
         $this->assertMatchesRegularExpression('~Continue.*End~s', $html, 'what to do about it');
     }
 
-    public function test_overview_healthSaysEnabledAndNextStart(): void
+    public function test_overview_healthAndNextStart(): void
     {
         self::definition();
         $html = self::page()->overviewHtml(time());
-        $this->assertStringContainsString('Enabled', $html);
+        $this->assertStringNotContainsString('Runs only by hand.', $html);
         $this->assertStringContainsString('Not planned', $html);
         $this->assertSame(1, substr_count($html, 'add a planned task'), 'the reason is said once');
 
         self::definition(['enabled' => '0']);
         $off = self::page()->overviewHtml(time());
-        $this->assertStringContainsString('Disabled', $off);
-        $this->assertStringContainsString('data-kind="off"', $off);
-        $this->assertStringContainsString('so no planned task starts it', $off);
+        $this->assertStringContainsString('data-kind="idle"', $off, 'never ran - whether a task starts it is another fact');
+        $this->assertSame(1, substr_count($off, 'Runs only by hand.'));
+        $this->assertStringContainsString('Planned tasks start it only once', $off);
+    }
+
+    public function test_noDisabledLabelAnywhere(): void
+    {
+        self::definition(['enabled' => '0']);
+        $page = self::page();
+
+        $html = $page->overviewHtml(time()) . $page->actionsHtml(time()) . $page->runsHtml(time());
+
+        foreach (['Disabled', 'is disabled', 'import off', '>Off<', 'switched off'] as $label) {
+            $this->assertStringNotContainsString($label, $html);
+        }
     }
 
     /** the call a planned task makes is for whoever may write one by hand, and never live template code */

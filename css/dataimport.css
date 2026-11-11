@@ -17,7 +17,8 @@
 .aa-import-chip[data-kind="warn"] { --c: var(--import-warn); }
 .aa-import-chip[data-kind="bad"] { --c: var(--import-bad); }
 .aa-import-chip[data-kind="run"] { --c: var(--import-run); }
-.aa-import-chip[data-kind="off"], .aa-import-chip[data-kind="idle"] { --c: var(--import-muted); border-style: dashed; }
+.aa-import-chip[data-kind="idle"] { --c: var(--import-muted); border-style: dashed; }
+.aa-import-byhand { color: var(--import-muted); font-weight: 600; }
 
 /* list */
 .aa-import-list { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
@@ -25,7 +26,7 @@
 .aa-import-list td { vertical-align: top; }
 .aa-import-list .aa-import-sel { width: 2em; }
 .aa-import-name { font-weight: 600; overflow-wrap: anywhere; }
-.aa-import-none, .aa-import-off { color: var(--import-muted); }
+.aa-import-none { color: var(--import-muted); }
 .aa-import-list td:has(.aa-import-chip[data-kind="warn"]) { background: var(--import-warn-bg); }
 .aa-import-list td:has(.aa-import-chip[data-kind="bad"]) { background: var(--import-bad-bg); }
 .aa-import-errors { color: var(--import-warn); font-weight: 600; }
