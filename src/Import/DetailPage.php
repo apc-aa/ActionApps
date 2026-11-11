@@ -453,7 +453,16 @@ final class DetailPage
             if (!is_string($key) || (preg_match(Stream::KEY, $key) !== 1)) {
                 return ['no_stream', ''];
             }
-            $opt = ['streams' => [$key]] + ((($post['dry'] ?? '') === '1') ? ['dry' => true] : []);
+            $limit = $post['limit'] ?? '';
+            $limit = is_string($limit) ? trim($limit) : null;
+            // a live run cut by the limit stores at most that many items and leaves the stream unread
+            if ($limit !== '') {
+                $limit = filter_var($limit, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+                if ($limit === false) {
+                    return ['bad_limit', ''];
+                }
+            }
+            $opt = ['streams' => [$key]] + ((($post['dry'] ?? '') === '1') ? ['dry' => true] : []) + (($limit === '') ? [] : ['limit' => $limit]);
         }
         $r = Service::start($this->def, $mode, $opt, 'manual', $this->uid);
         return match ($r->code) {
@@ -529,6 +538,7 @@ final class DetailPage
             'expired'     => MsgErr(_m('The form has expired; reload the page and try again.')),
             'no_action'   => MsgErr(_m('No such action.')),
             'no_stream'   => MsgErr(_m('Choose a stream of the source.')),
+            'bad_limit'   => MsgErr(_m('At most (items) takes a whole number greater than 0, or nothing for all items.')),
             'busy'        => MsgErr(_m('Not started.') . ' ' . safe(self::busyText($reason))),
             'busy_resume' => MsgErr(safe(self::busyText($reason))),
             'still_working' => MsgErr(_m('Its last step may still be working. Try again in a few minutes.')),
@@ -930,6 +940,7 @@ final class DetailPage
         $options = implode('', array_map(static fn(string $k, string $label): string => '<option value="' . safe($k) . '">' . safe($label) . '</option>', array_map('strval', array_keys($labels)), $labels));
         return '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions aa-import-rare">' . $this->hidden('stream')
             . '<label>' . _m('One stream') . ' <select name="stream_key"' . ($labels ? '' : ' disabled') . '>' . $options . '</select></label> '
+            . '<label>' . _m('At most (items)') . ' <input type="number" name="limit" min="1"' . ($labels ? '' : ' disabled') . '></label> '
             . self::button(_m('Run the stream'), $off, ['name' => 'dry', 'value' => '0', 'class' => 'aa-import-quiet'])
             . ' ' . self::button(_m('Dry run of the stream'), $off, ['name' => 'dry', 'value' => '1', 'class' => 'aa-import-quiet'])
             // a run in the way is said above the form already

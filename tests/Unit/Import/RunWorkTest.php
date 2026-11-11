@@ -18,6 +18,7 @@ use AA\IO\SourceUnavailable;
 use AA\IO\DB\DB_AA;
 use AA\Later\BatchBudgetSpent;
 use AA\Later\Toexecute;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
@@ -721,6 +722,50 @@ final class RunWorkTest extends TestCase
         self::assertCount(1, TestRun::$savers, 'the second job does not start');
         self::assertSame(2, TestRun::get($run->getId())?->counts()['read']);
         self::assertSame(0, TestRun::get($run->getId())?->position()['wrote'], 'a dry run writes nothing');
+    }
+
+    /** @return array<string, array{string}> */
+    public static function liveModes(): array
+    {
+        return ['run' => ['run'], 'changed' => ['changed']];
+    }
+
+    /** a small live batch: the rest of the stream stays unread, so the next changed run reads it all again */
+    #[DataProvider('liveModes')]
+    public function test_limitedLiveRun_storesNItems_andKeepsTheStreamUnfinished(string $mode): void
+    {
+        self::streamVersions(['s1' => '2010']);
+        $source             = self::source(streams: 1, jobs: 1, items: 0);
+        $source->streams[0] = new Stream('s1', 'Stream 1', ['fld' => 'text...........1'], '', 'year');
+        $source->jobs['s1'][0]['items'] = array_map(static fn(int $n): array => ['key' => "k$n", 'val' => "v$n", 'year' => (string) (2020 + $n)], range(1, 5));
+        TestRun::$evaluate = static function (): void {};
+        $run               = self::startRun($source, ['mode' => $mode, 'limit' => '2'], ['after_stream' => '{x}']);
+
+        self::runAll($run->getId());
+
+        self::assertSame('done', TestRun::get($run->getId())?->state());
+        self::assertSame(['k1', 'k2'], TestRun::storedValues('relation........'));
+        self::assertSame('2010', StreamState::forDefinition(self::DEF)?->versionOf('s1'), 'the stream keeps its old version');
+        self::assertSame([], TestRun::$evaluated, 'no expression after a stream not read to its end');
+    }
+
+    /** the limit is the run's, not a job's or a step's */
+    #[DataProvider('liveModes')]
+    public function test_limitedLiveRun_holdsAcrossStepsAndJobs(string $mode): void
+    {
+        $source            = self::source(streams: 2, jobs: 2, items: 3, seconds: 10.0);
+        $source->minJob    = 1;
+        TestRun::$evaluate = static function (): void {};
+        $run               = self::startRun($source, ['mode' => $mode, 'limit' => '4'], ['after_stream' => '{x}']);
+
+        $steps = self::runAll($run->getId());
+
+        self::assertSame('done', TestRun::get($run->getId())?->state());
+        self::assertGreaterThan(1, count($steps), 'more than one step');
+        self::assertSame(['k-s1:a-1', 'k-s1:a-2', 'k-s1:a-3', 'k-s1:b-1'], TestRun::storedValues('relation........'));
+        self::assertSame(4, TestRun::get($run->getId())?->counts()['read']);
+        self::assertNull(StreamState::forDefinition(self::DEF)?->versionOf('s1'), 'no version for a stream cut short');
+        self::assertSame([], TestRun::$evaluated);
     }
 
     public function test_work_versionMaxCarriedInTheCursor(): void

@@ -728,6 +728,64 @@ final class DetailPageTest extends TestCase
         $this->assertStringContainsString('<small>one stream: Počet obyvatel (s2), by hand</small></th>', self::page()->runsHtml(time()));
     }
 
+    /** a small live batch of one stream: the form of one stream says at most how many items */
+    public function test_oneStreamForm_hasLimit(): void
+    {
+        self::definition();
+        $state = StreamState::create(self::DEF);
+        $state->record('s1', ['v' => '1']);
+        $state->store();
+
+        $doc = new \DOMDocument();
+        @$doc->loadHTML('<?xml encoding="UTF-8"><body>' . self::page()->actionsHtml(time()) . '</body>');
+        $limits = [];
+        foreach ($doc->getElementsByTagName('form') as $form) {
+            foreach ($form->getElementsByTagName('input') as $input) {
+                if ($input->getAttribute('name') === 'limit') {
+                    $limits[] = [$form->getElementsByTagName('select')->item(0)?->getAttribute('name'), $input->getAttribute('type'), $input->getAttribute('min'), $input->getAttribute('value'), trim((string) $input->parentNode?->textContent)];
+                }
+            }
+        }
+
+        $this->assertSame([['stream_key', 'number', '1', '', 'At most (items)']], $limits, 'only in the form of one stream, empty = all items');
+    }
+
+    /** @return iterable<string, array{array<string, string>, string, string}> post, dry, limit of the run */
+    public static function streamLimits(): iterable
+    {
+        yield 'run, limit'      => [['dry' => '0', 'limit' => '3'], '', '3'];
+        yield 'run, no limit'   => [['dry' => '0', 'limit' => ''], '', ''];
+        yield 'run, spaces'     => [['dry' => '0', 'limit' => ' 12 '], '', '12'];
+        yield 'dry, limit'      => [['dry' => '1', 'limit' => '7'], '1', '7'];
+        yield 'dry, no limit'   => [['dry' => '1', 'limit' => ''], '1', '500'];
+        yield 'dry, no field'   => [['dry' => '1'], '1', '500'];
+    }
+
+    /** @param array<string, string> $post */
+    #[DataProvider('streamLimits')]
+    public function test_oneStreamPost_passesLimit(array $post, string $dry, string $limit): void
+    {
+        self::definition();
+
+        self::act(['action' => 'stream', 'stream_key' => 's2'] + $post);
+
+        $run = self::stored((string) Run::unfinished(self::DEF)[0]->getId());
+        $this->assertSame([$dry, $limit, ['s2']], [$run['dry'], $run['limit'], json_decode($run['stream_keys'], true)]);
+    }
+
+    public function test_oneStreamPost_badLimit_isRefused(): void
+    {
+        self::definition();
+
+        foreach (['zero' => '0', 'negative' => '-2', 'text' => 'abc', 'fraction' => '2.5', 'too big' => '99999999999999999999', 'array' => ['3']] as $case => $limit) {
+            $msg = self::act(['action' => 'stream', 'stream_key' => 's2', 'dry' => '0', 'limit' => $limit]);
+
+            $this->assertStringContainsString('aa-err', $msg, $case);
+            $this->assertStringContainsString('At most (items)', $msg, $case);
+            $this->assertSame([], Run::unfinished(self::DEF), $case);
+        }
+    }
+
     public function test_buttons_formsCarryTheTokenOfTheImport(): void
     {
         self::definition();
