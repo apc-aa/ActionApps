@@ -11,6 +11,7 @@ use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
 use AA\Later\Toexecute;
 use AA\Util\FormToken;
+use AA\Util\Langs;
 use AA_Plannedtask;
 use Throwable;
 
@@ -61,6 +62,9 @@ final class DetailPage
 
     /** read once per page; false = not read yet */
     private StreamState|false|null $state = false;
+
+    /** @var ?array<string, string> stream key => its name, read once per page */
+    private ?array $names = null;
 
     /** @var list<string>|null|false the mapping problems; null = the mapping cannot be read, false = not read yet */
     private array|false|null $problems = false;
@@ -291,7 +295,7 @@ final class DetailPage
         $runs   = $this->runs();
         $open   = $this->openRun();
         $health = RunView::health($this->hasSource(), $this->unsetSettings(), $this->problems() === [], $runs[0] ?? null, $this->lastImport(), $now);
-        $html   = $this->healthHtml($health) . $this->problemsHtml() . self::ribbonHtml($runs, $now)
+        $html   = $this->healthHtml($health) . $this->problemsHtml() . self::ribbonHtml($runs, $now, $this->streamNames())
             . '<div class="aa-import-glance">'
             . '<div class="aa-import-last"><h3>' . _m('Last import') . '</h3>' . $this->lastImportHtml($runs, $now) . '</div>'
             . '<div class="aa-import-next"><h3>' . _m('Next start') . '</h3>' . $this->nextPlanHtml($now) . $this->plannedTasksHtml($now) . '</div>'
@@ -351,7 +355,7 @@ final class DetailPage
             $html   .= '<tr class="aa-import-run" data-outcome="' . $outcome['kind'] . '">'
                 . '<th scope="row">' . RunView::markHtml($outcome['kind']) . ' <strong>' . safe($outcome['word']) . '</strong>'
                 . (($outcome['then'] === '') ? '' : '<small class="aa-import-then">' . safe($outcome['then']) . '</small>')
-                . '<small>' . safe(self::kindOfRun($run)) . '</small></th>'
+                . '<small>' . safe(self::kindOfRun($run, $this->streamNames())) . '</small></th>'
                 . '<td data-label="' . safe($heads[1]) . '">' . ($started ? date('Y-m-d H:i:s', $started) . self::ageHtml($started, $now) : '--') . '</td>'
                 . '<td data-label="' . safe($heads[2]) . '">' . self::took($run, $now) . (($worked === '') ? '' : '<small>' . _m('working %1', [$worked]) . '</small>') . '</td>'
                 . self::countCellsHtml($run, $now, array_slice($heads, 3), $errors ? (string) $run->getId() : '')
@@ -396,7 +400,8 @@ final class DetailPage
             $run  = is_string($stream['run'] ?? null) ? ($runs[$stream['run']] ?? null) : null;
             $since = self::timeOf($run ? (int) $run->getProperty('started') : null);
             [$kind, $mark, $word, $reason, $time] = self::streamKind($stream, $key, $run);
-            $html .= '<tr><th scope="row" data-label="' . safe($heads[0]) . '">' . safe($key) . '</th>'
+            $name  = $this->streamNames()[$key] ?? null;
+            $html .= '<tr><th scope="row" data-label="' . safe($heads[0]) . '">' . (($name === null) ? safe($key) : safe($name) . '<small class="aa-import-key">' . safe($key) . '</small>') . '</th>'
                 . '<td data-label="' . safe($heads[1]) . '"><span class="aa-import-state aa-import-state-' . $kind . '">' . RunView::markHtml($mark) . $word . '</span>'
                 . '<small class="aa-import-reason">' . $reason . '</small></td>'
                 . '<td data-label="' . safe($heads[2]) . '">' . (($kind === 'imported' || $kind === 'warn') ? self::recordsHtml($run, $key) : '--') . '</td>'
@@ -649,8 +654,8 @@ final class DetailPage
 
     /** One tick per latest run, newest first: the shape and the hidden word say how it went; a dashed
      *  tick is a run that stored nothing (a check, a dry run, a baseline), so it never looks like an import.
-     *  @param list<Run> $runs newest first */
-    private static function ribbonHtml(array $runs, int $now): string
+     *  @param list<Run> $runs newest first  @param array<string, string> $names of streamNames() */
+    private static function ribbonHtml(array $runs, int $now, array $names): string
     {
         $runs = array_slice($runs, 0, 10);
         if (count($runs) < 2) {
@@ -659,7 +664,7 @@ final class DetailPage
         $ticks = '';
         foreach ($runs as $run) {
             $kind    = RunView::outcome($run, $now)['kind'];
-            $what    = trim(self::kindOfRun($run) . ' - ' . RunView::outcomeText($run, $now), ' -');
+            $what    = trim(self::kindOfRun($run, $names) . ' - ' . RunView::outcomeText($run, $now), ' -');
             $text    = RunView::whenText((int) $run->getProperty('started'), $now) . ' - ' . $what;
             $ticks  .= '<li data-outcome="' . $kind . '" data-stored="' . ($run->storesItems() ? 'yes' : 'no') . '">'
                 . '<a href="#aa-import-runs" title="' . safe($text) . '">' . RunView::markHtml($kind)
@@ -914,13 +919,17 @@ final class DetailPage
                 }
             }
         }
-        $keys = array_values(array_unique(array_filter($keys, static fn(string $k): bool => preg_match(Stream::KEY, $k) === 1)));
-        sort($keys, SORT_NATURAL);
-        $none = $keys ? '' : _m('No stream is known yet - run the import or check the source first.');
+        $names  = $this->streamNames();
+        $labels = [];
+        foreach (array_filter($keys, static fn(string $k): bool => preg_match(Stream::KEY, $k) === 1) as $key) {
+            $labels[$key] = isset($names[$key]) ? $names[$key] . ' (' . $key . ')' : $key;
+        }
+        Langs::sortLocale($labels);
+        $none = $labels ? '' : _m('No stream is known yet - run the import or check the source first.');
         $off  = ($why !== '') ? $why : $none;
-        $options = implode('', array_map(static fn(string $k): string => '<option value="' . safe($k) . '">' . safe($k) . '</option>', $keys));
+        $options = implode('', array_map(static fn(string $k, string $label): string => '<option value="' . safe($k) . '">' . safe($label) . '</option>', array_map('strval', array_keys($labels)), $labels));
         return '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions aa-import-rare">' . $this->hidden('stream')
-            . '<label>' . _m('One stream') . ' <select name="stream_key"' . ($keys ? '' : ' disabled') . '>' . $options . '</select></label> '
+            . '<label>' . _m('One stream') . ' <select name="stream_key"' . ($labels ? '' : ' disabled') . '>' . $options . '</select></label> '
             . self::button(_m('Run the stream'), $off, ['name' => 'dry', 'value' => '0', 'class' => 'aa-import-quiet'])
             . ' ' . self::button(_m('Dry run of the stream'), $off, ['name' => 'dry', 'value' => '1', 'class' => 'aa-import-quiet'])
             // a run in the way is said above the form already
@@ -1169,8 +1178,9 @@ final class DetailPage
         };
     }
 
-    /** what kind of run it was: how much it reads, a dry run, who started it */
-    private static function kindOfRun(Run $run): string
+    /** what kind of run it was: how much it reads, a dry run, who started it
+     *  @param array<string, string> $names of streamNames() */
+    private static function kindOfRun(Run $run, array $names): string
     {
         $how = RunView::howItRan($run);
         if ($run->mode() !== 'run') {
@@ -1179,7 +1189,7 @@ final class DetailPage
         $chosen = $run->chosenStreams();
         $what   = match (true) {
             $chosen === null      => _m('full run'),
-            count($chosen) === 1  => _m('one stream (%1)', [$chosen[0]]),
+            count($chosen) === 1  => isset($names[$chosen[0]]) ? _m('one stream: %1 (%2)', [$names[$chosen[0]], $chosen[0]]) : _m('one stream (%1)', [$chosen[0]]),
             default               => _m('%1 streams', [count($chosen)]),
         };
         return trim($what . ', ' . $how, ', ');
@@ -1372,6 +1382,22 @@ final class DetailPage
             $this->import = Run::newestOf($this->id())[1];
         }
         return $this->import;
+    }
+
+    /** @return array<string, string> stream key => its name, as the last check of the source stored the
+     *  streams with its catalog - the page never asks the source for them; a stream without a name is left out */
+    private function streamNames(): array
+    {
+        if ($this->names === null) {
+            $this->names = [];
+            foreach (Catalog::forDefinition($this->id())?->streams() ?? [] as $stream) {
+                $name = trim($stream->label);
+                if (($name !== '') && ($name !== $stream->key)) {
+                    $this->names[$stream->key] = $name;
+                }
+            }
+        }
+        return $this->names;
     }
 
     private function streamState(): ?StreamState

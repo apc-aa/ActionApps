@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Import;
 
+use AA\Import\Catalog;
+use AA\Import\CatalogPage;
 use AA\Import\CheckResult;
 use AA\Import\Definition;
 use AA\Import\DetailPage;
@@ -11,6 +13,7 @@ use AA\Import\Registry;
 use AA\Import\Run;
 use AA\Import\RunCursor;
 use AA\Import\Service;
+use AA\Import\Stream;
 use AA\Import\StreamState;
 use AA\IO\DB\DB_AA;
 use AA\Util\FormToken;
@@ -678,6 +681,51 @@ final class DetailPageTest extends TestCase
         $this->assertFalse(self::buttons($html)['stream']['disabled']);
         $this->assertSame([], TableDb::writes(), 'read only');
         $this->assertSame([], \ServiceSource::$created, 'the source is not asked');
+    }
+
+    /** the stream table names a stream by its name from the stored catalog, the key small under it */
+    public function test_streams_showNameThenKey(): void
+    {
+        self::definition();
+        $state = StreamState::create(self::DEF);
+        $state->record('s1', ['v' => '1']);
+        $state->record('s2', ['v' => '2']);
+        $state->store();
+        self::catalogStreams([new Stream('s1', 'Počet <b>obyvatel</b>', [], 'e1')]);
+        TableDb::$log = [];
+
+        $html = self::page()->streamsHtml();
+
+        $this->assertStringContainsString('<th scope="row" data-label="Stream">Počet &lt;b&gt;obyvatel&lt;/b&gt;<small class="aa-import-key">s1</small></th>', $html);
+        $this->assertStringContainsString('<th scope="row" data-label="Stream">s2</th>', $html, 'no name known: the key alone');
+        $this->assertSame([], TableDb::writes(), 'read only');
+        $this->assertSame([], \ServiceSource::$created, 'the source is not asked');
+    }
+
+    /** one stream is chosen by its name; the key is what the form sends */
+    public function test_oneStreamSelect_listsNames_sortedByName(): void
+    {
+        self::definition();
+        $state = StreamState::create(self::DEF);
+        foreach (['s1', 's2', 's3', 's4'] as $key) {
+            $state->record($key, ['v' => '1']);
+        }
+        $state->store();
+        self::catalogStreams([new Stream('s1', 'Wages', [], 'e1'), new Stream('s2', 'Čistota', [], 'e2'), new Stream('s3', 'Ceny', [], 'e3')]);
+
+        preg_match_all('~<option value="([^"]*)">([^<]*)</option>~', self::page()->actionsHtml(time()), $options, PREG_SET_ORDER);
+
+        $this->assertSame([['s3', 'Ceny (s3)'], ['s2', 'Čistota (s2)'], ['s4', 's4'], ['s1', 'Wages (s1)']], array_map(static fn(array $m): array => [$m[1], $m[2]], $options));
+    }
+
+    /** a run of one stream says which by its name */
+    public function test_runKind_namesTheStream(): void
+    {
+        self::definition();
+        self::catalogStreams([new Stream('s2', 'Počet obyvatel', [], 'e2')]);
+        self::act(['action' => 'stream', 'stream_key' => 's2', 'dry' => '0']);
+
+        $this->assertStringContainsString('<small>one stream: Počet obyvatel (s2), by hand</small></th>', self::page()->runsHtml(time()));
     }
 
     public function test_buttons_formsCarryTheTokenOfTheImport(): void
@@ -1554,6 +1602,16 @@ final class DetailPageTest extends TestCase
         $r = Service::start(Definition::fresh(self::DEF) ?? throw new \LogicException('No definition'), $mode, [], 'manual', AuthGetUid());
         self::assertSame('queued', $r->code);
         return $r->runId;
+    }
+
+    /** the streams of the source as the last check stored them with its catalog - their names
+     *  @param list<Stream> $streams */
+    private static function catalogStreams(array $streams): void
+    {
+        $catalog = Catalog::create(self::DEF);
+        $catalog->listStreams($streams);
+        $catalog->addPage(new CatalogPage([], ''), self::NOW);
+        $catalog->store();
     }
 
     /** a stream the page can offer */
