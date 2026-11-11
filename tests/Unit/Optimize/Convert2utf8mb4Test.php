@@ -39,7 +39,7 @@ final class Convert2utf8mb4Test extends TestCase
             'latin1 table without texts'  => [['hit_archive' => self::table('latin1_swedish_ci')], [], self::ONE_BYTE, ['hit_archive']],
             'cp1250 table'                => [['slice' => self::table('cp1250_general_ci')], [self::column('slice', 'name', 'varchar(100)', 'cp1250_general_ci')], self::ONE_BYTE, ['slice']],
             'latin1 column in utf8 table' => [['content' => self::table('utf8mb4_general_ci')], [self::column('content', 'text', 'longtext')], self::ONE_BYTE, ['content']],
-            'utf8mb4 and binary'          => [['view' => self::table('utf8mb4_czech_ci'), 'b' => self::table('binary')], [], self::ONE_BYTE, []],
+            'utf8mb4 and binary'          => [['view' => self::table('utf8mb4_general_ci'), 'b' => self::table('binary')], [], self::ONE_BYTE, []],
             'backup table'                => [['bck_item' => self::table('latin1_swedish_ci')], [self::column('bck_item', 'flags')], self::ONE_BYTE, []],
             'utf8mb3 tables'              => [['item' => self::table('utf8mb3_czech_ci'), 'old' => self::table('utf8_general_ci'), 'slice' => self::table('latin1_swedish_ci')], [], self::UTF8MB3, ['item', 'old']],
         ];
@@ -76,6 +76,25 @@ final class Convert2utf8mb4Test extends TestCase
         );
     }
 
+    /** a database in two utf8mb4 collations refuses to compare their columns ("Illegal mix of collations") */
+    public function test_alterSqls_recollatesOtherUtf8mb4Tables(): void
+    {
+        $tables  = ['content' => self::table('utf8mb4_general_ci'), 'item' => self::table('utf8mb4_czech_ci'), 'pwd' => self::table('utf8mb4_bin'), 'view' => self::table('utf8mb4_czech_ci')];
+        $columns = [
+            self::column('content', 'text', 'longtext', 'utf8mb4_general_ci'),
+            self::column('content', 'flag', 'char(1)', 'utf8mb4_bin', 'NO'),
+            self::column('item', 'headline', 'text', 'utf8mb4_unicode_ci'),
+            self::column('view', 'name', 'varchar(50)', 'utf8mb4_czech_ci'),
+        ];
+        $sqls = Convert2utf8mb4::alterSqls($tables, $columns, self::UTF8MB3, 'utf8mb4_czech_ci', true);
+
+        self::assertSame([
+            'content' => 'ALTER TABLE `content` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_czech_ci, MODIFY `text` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_czech_ci NULL',
+            'item'    => 'ALTER TABLE `item` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_czech_ci, MODIFY `headline` text CHARACTER SET utf8mb4 COLLATE utf8mb4_czech_ci NULL',
+        ], $sqls);
+        self::assertSame([], Convert2utf8mb4::alterSqls($tables, $columns, self::ONE_BYTE, 'utf8mb4_czech_ci')['content'] ?? [], 'only the utf8mb4 converter recollates');
+    }
+
     /** utf8mb4 keys of varchar(255) do not fit the 767 bytes of COMPACT rows */
     public function test_alterSqls_switchesCompactRowsToDynamic(): void
     {
@@ -90,6 +109,8 @@ final class Convert2utf8mb4Test extends TestCase
     public static function collationProvider(): array
     {
         return [
+            'a language order wins'  => [['a' => 'utf8mb3_czech_ci', 'b' => 'utf8mb4_general_ci', 'c' => 'utf8mb4_general_ci', 'bck_d' => 'utf8mb3_slovak_ci', 'bck_e' => 'utf8mb3_slovak_ci'], 'utf8mb4_general_ci', 'utf8mb4_czech_ci'],
+            'generic orders are not' => [['a' => 'utf8mb3_unicode_ci', 'b' => 'utf8mb4_uca1400_ai_ci', 'c' => 'utf8mb4_general_nopad_ci', 'd' => 'utf8mb4_0900_as_ci'], 'utf8mb4_general_ci', 'utf8mb4_uca1400_ai_ci'],
             'utf8mb4 tables decide'  => [['a' => 'utf8mb4_czech_ci', 'c' => 'utf8mb4_bin', 'c2' => 'utf8mb4_bin', 'bck_a' => 'utf8mb4_unicode_ci', 'bck_b' => 'utf8mb4_unicode_ci', 'd' => 'latin1_swedish_ci'], 'utf8mb4_general_ci', 'utf8mb4_czech_ci'],
             'then database default'  => [['d' => 'latin1_swedish_ci', 'e' => 'utf8mb3_general_ci'], 'utf8mb4_general_ci', 'utf8mb4_general_ci'],
             'else the fallback'      => [['d' => 'latin1_swedish_ci'], 'latin1_swedish_ci', 'utf8mb4_unicode_ci'],
@@ -144,6 +165,8 @@ final class Convert2utf8mb4Test extends TestCase
             'converted'               => [Convert2utf8mb4::class, ['item' => self::table('utf8mb4_general_ci')], 'utf8mb4_general_ci', true],
             'utf8mb3 table'           => [Convert2utf8mb4::class, ['item' => self::table('utf8mb3_general_ci')], 'utf8mb4_general_ci', false],
             'database default'        => [Convert2utf8mb4::class, ['item' => self::table('utf8mb4_general_ci')], 'utf8mb3_general_ci', false],
+            'other utf8mb4 default'   => [Convert2utf8mb4::class, ['item' => self::table('utf8mb4_czech_ci')], 'utf8mb4_general_ci', false],
+            'other default for 1Byte' => [Convertlatin2Utf8Mb4::class, ['item' => self::table('utf8mb4_czech_ci')], 'utf8mb4_general_ci', true],
             'latin1 table for 1Byte'  => [Convertlatin2Utf8Mb4::class, ['item' => self::table('latin1_swedish_ci')], 'utf8mb4_general_ci', false],
         ];
     }
@@ -225,7 +248,7 @@ trait FakeDb
     {
         $collations = array_map(static fn($table) => (string) $table['TABLE_COLLATION'], $this->fake_tables);
         $collation = self::targetCollation($collations, $this->fake_db_collation, $this->fallbackCollation($collations));
-        return ['tables' => $this->fake_tables, 'sqls' => self::alterSqls($this->fake_tables, [], $this->fake_charsets, $collation), 'collation' => $collation, 'db_collation' => $this->fake_db_collation];
+        return ['tables' => $this->fake_tables, 'sqls' => self::alterSqls($this->fake_tables, [], $this->fake_charsets, $collation, $this->recollates()), 'collation' => $collation, 'db_collation' => $this->fake_db_collation];
     }
 
     protected function connectionCharset(): string
