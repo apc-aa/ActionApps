@@ -30,13 +30,11 @@ Endurance matters more than novelty. APC-AA exists to outlast every commercial C
 
 ## Positioning
 
-*Taken from the code and the documentation; the wording is not yet confirmed by the maintainer.*
-
 Three mechanisms together are what a neighbouring CMS does not offer:
 
-- **Content pooling.** Items are fed (syndicated) between slices, also between separate installs; `central/` manages several installs and moves whole applications from one to another.
 - **One install, many sites.** A single code tree serves the sites of many organizations, so an update or a fix reaches all of them at once.
 - **The data model belongs to the user.** A slice gets new fields, views and templates in the admin, with no schema change and no deploy.
+- **Content pooling.** Items are fed (syndicated) between slices, also between separate installs; `central/` manages several installs and moves whole applications from one to another.
 
 Not recorded: which products organizations weigh ActionApps against, and why they stay.
 
