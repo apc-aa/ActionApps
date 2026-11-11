@@ -136,23 +136,58 @@ final class ContextTest extends TestCase
         self::assertSame($first, $second);
     }
 
-    public function test_http_otherUrlPostOrFailure_asksAgain(): void
+    public function test_http_otherUrl_replacesTheOneRemembered(): void
     {
-        $ctx = $this->context([
-            new MockResponse('a'), new MockResponse('b'), new MockResponse('a2'), new MockResponse('a3'), new MockResponse('a4'),
-            new MockResponse('p1'), new MockResponse('p2'),
-            new MockResponse('', ['http_code' => 500]), new MockResponse('', ['http_code' => 500]),
-        ]);
-        $get = fn(string $url, bool $follow = true, array $headers = []): string => $ctx->http($follow)->request('GET', $url, null, $headers)->body;
+        $ctx = $this->context([new MockResponse('a'), new MockResponse('b'), new MockResponse('a2')]);
+        $get = fn(string $url): string => $ctx->http()->request('GET', $url)->body;
 
-        self::assertSame(['a', 'b', 'a2'], [$get('https://1.1.1.1/a'), $get('https://1.1.1.1/b'), $get('https://1.1.1.1/a')], 'another URL replaces the one remembered');
-        self::assertSame('a3', $get('https://1.1.1.1/a', false), 'without redirects');
-        self::assertSame('a4', $get('https://1.1.1.1/a', false, ['Accept' => 'text/csv']), 'other headers');
+        self::assertSame(['a', 'b', 'a2'], [$get('https://1.1.1.1/a'), $get('https://1.1.1.1/b'), $get('https://1.1.1.1/a')]);
+        self::assertCount(3, $this->requests);
+    }
+
+    public function test_http_sameUrlWithoutRedirects_asksAgain(): void
+    {
+        $ctx = $this->context([new MockResponse('a'), new MockResponse('a2')]);
+
+        self::assertSame('a', $ctx->http()->request('GET', 'https://1.1.1.1/a')->body);
+        self::assertSame('a2', $ctx->http(false)->request('GET', 'https://1.1.1.1/a')->body);
+    }
+
+    public function test_http_sameUrlOtherHeaders_asksAgain(): void
+    {
+        $ctx = $this->context([new MockResponse('a'), new MockResponse('a2')]);
+
+        self::assertSame('a', $ctx->http()->request('GET', 'https://1.1.1.1/a')->body);
+        self::assertSame('a2', $ctx->http()->request('GET', 'https://1.1.1.1/a', null, ['Accept' => 'text/csv'])->body);
+    }
+
+    // a POST may change what the server answers
+    public function test_http_samePostTwice_asksTwice(): void
+    {
+        $ctx = $this->context([new MockResponse('p1'), new MockResponse('p2')]);
+
         self::assertSame('p1', $ctx->http()->request('POST', 'https://1.1.1.1/p', 'x')->body);
         self::assertSame('p2', $ctx->http()->request('POST', 'https://1.1.1.1/p', 'x')->body);
+    }
+
+    public function test_http_failedGet_asksAgain(): void
+    {
+        $ctx = $this->context([new MockResponse('', ['http_code' => 500]), new MockResponse('ok')]);
+
         self::assertSame(500, $ctx->http()->request('GET', 'https://1.1.1.1/e')->status);
-        self::assertSame(500, $ctx->http()->request('GET', 'https://1.1.1.1/e')->status);
-        self::assertCount(9, $this->requests);
+        self::assertSame('ok', $ctx->http()->request('GET', 'https://1.1.1.1/e')->body);
+    }
+
+    // a source polling one status URL must still stop at the end of the step
+    public function test_http_rememberedGet_spentBudgetThrows(): void
+    {
+        $now = 1000.0;
+        $ctx = $this->context([new MockResponse('a')], 10.0, now: $now);
+        $ctx->http()->request('GET', 'https://1.1.1.1/a');
+        $now += 11.0;
+
+        $this->expectException(BatchBudgetSpent::class);
+        $ctx->http()->request('GET', 'https://1.1.1.1/a');
     }
 
     // a client error is an answer: the grabber decides what it means

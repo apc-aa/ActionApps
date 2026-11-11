@@ -73,11 +73,9 @@ final class Context
     /** one connection for all requests of the step, under a new guard each time */
     private ?HttpClientInterface $connection = null;
 
-    /** a hash of the request, so the object holds no URL or header with a key */
-    private string $lastGet = '';
-
-    /** the answer to $lastGet - only the last one: a file may be tens of MB */
-    private ?Response $lastAnswer = null;
+    /** @var ?array{string, Response} the last good GET: a hash of the request (no URL or header with a key
+     *  in the object) and its answer - only the last one, a file may be tens of MB */
+    private ?array $lastGet = null;
 
     /** @var array<string, array{code: string, text: string}> the first remarks, by code and text */
     private array $remarks = [];
@@ -242,18 +240,19 @@ final class Context
      */
     private function send(string $method, #[SensitiveParameter] string $url, #[SensitiveParameter] ?string $body, #[SensitiveParameter] array $headers, int $redirects): Response
     {
-        // check(), probe() and the jobs of a step often read the same file; a new step asks again
-        $request = hash('sha256', serialize([$method, $url, $body, $headers, $redirects]));
-        if (($request === $this->lastGet) && ($this->lastAnswer !== null)) {
-            return $this->lastAnswer;
+        // even a remembered answer ends with the step: a source polling one URL must not outlive its lease
+        $seconds = $this->budget->httpTimeout();
+        // check(), probe() and the jobs of a step often read the same file; a new step asks again.
+        // A POST may change what the server answers, so only a GET is remembered.
+        $request = ($method === 'GET') ? hash('sha256', serialize([$url, $body, $headers, $redirects])) : null;
+        if (($request !== null) && ($this->lastGet !== null) && ($request === $this->lastGet[0])) {
+            return $this->lastGet[1];
         }
-        $this->lastGet    = '';
-        $this->lastAnswer = null;
+        $this->lastGet = null;
         // the guard checks this too; kept here so the rule does not depend on the library
         if (preg_match('~^https?://~i', $url) !== 1) {
             throw $this->failure(false, 'Only http(s) addresses are imported', $url, TransportException::ADDRESS);
         }
-        $seconds = $this->budget->httpTimeout();
         $this->connection ??= $this->transport ?? HttpClient::create();
         $client = Client::publicOnly(timeout: $seconds, idle: min(self::IDLE_SECONDS, $seconds), agent: Client::agent('import'), redirects: $redirects, transport: $this->connection, maxBytes: $this->maxBytes);
 
@@ -268,10 +267,9 @@ final class Context
         if (($redirects > 0) && ($answer->redirect !== '')) {
             throw $this->failure(false, "More than $redirects redirects", $url, SourceFailure::REDIRECTS);
         }
-        // a POST may change what the server answers; a failure is to be asked again
-        if (($method === 'GET') && $answer->ok()) {
-            $this->lastGet    = $request;
-            $this->lastAnswer = $answer;
+        // a failure is to be asked again
+        if (($request !== null) && $answer->ok()) {
+            $this->lastGet = [$request, $answer];
         }
         return $answer;
     }
