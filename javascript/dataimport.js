@@ -1,6 +1,7 @@
 /*
  * The import detail page (admin/se_dataimport.php): asks before a form marked data-aa-confirm is sent,
- * and follows a running run - while the page is visible it asks for the run's progress every 5 s and,
+ * opens the closed section the address points at, filters the rows of a table by a box marked
+ * data-aa-filter, and follows a running run - while the page is visible it asks for the run's progress every 5 s and,
  * when it differs from what the page shows, replaces the sections marked data-aa-live by freshly
  * rendered ones. Nothing of the progress JSON goes into the page: the server renders and escapes it.
  *
@@ -25,20 +26,69 @@
             form.classList.remove('aa-updating');
             return;
         }
-        form.classList.add('aa-updating');
+        // the catalog sends one entry: only its row waits, the rest of the table stays readable
+        const row = form.classList.contains('aa-import-adopt') ? e.submitter?.closest('tr') : null;
+        (row ? row.querySelectorAll('td') : [form]).forEach((el) => el.classList.add('aa-updating'));
+    });
+    // back from the bfcache the page's guard unlocks the forms, this the rows
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted) {
+            document.querySelectorAll('td.aa-updating').forEach((td) => td.classList.remove('aa-updating'));
+        }
     });
 
-    // a link to a closed list (the item errors of a run) opens it, and its section, before it scrolls there
-    document.addEventListener('click', (e) => {
-        const link = (e.target instanceof Element) ? e.target.closest('a[data-aa-open]') : null;
+    /** opens the details the element of id #$hash is in, and the details it is */
+    const openHash = (hash) => {
         let box = null;
         try {
-            box = link ? document.getElementById(decodeURIComponent(link.hash.slice(1))) : null;
+            box = hash ? document.getElementById(decodeURIComponent(hash.slice(1))) : null;
         } catch {
             // a malformed escape names nothing to open
         }
         for (let d = box?.closest('details'); d; d = d.parentElement?.closest('details')) {
             d.open = true;
+        }
+    };
+
+    // a link to a closed list (the item errors of a run) opens it, and its section, before it scrolls there
+    document.addEventListener('click', (e) => {
+        const link = (e.target instanceof Element) ? e.target.closest('a[data-aa-open]') : null;
+        if (link) {
+            openHash(link.hash);
+        }
+    });
+    // the catalog is closed by default; the return after its Add or Update points at it
+    window.addEventListener('hashchange', () => openHash(location.hash));
+
+    // without diacritics, so "pocet" finds "Počet"
+    const fold = (text) => text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+
+    /** shows the rows of the table of $box that have all the words of its search box and, when its
+     *  checkbox is on, can be added; the button cell does not count - every row has "Add" or "Update" */
+    const applyFilter = (box) => {
+        const table = document.getElementById(box.dataset.aaFilter);
+        if (!table) {
+            return;
+        }
+        const words = fold(box.querySelector('input[type="search"]')?.value ?? '').split(/\s+/).filter(Boolean);
+        const only  = box.querySelector('input[type="checkbox"]')?.checked ?? false;
+        const rows  = [...(table.tBodies[0]?.rows ?? [])];
+        let shown   = 0;
+        rows.forEach((tr) => {
+            const text = fold([...tr.cells].filter((td) => !td.querySelector('button')).map((td) => td.textContent).join(' '));
+            tr.hidden  = (only && (tr.dataset.addable !== 'yes')) || !words.every((w) => text.includes(w));
+            shown     += tr.hidden ? 0 : 1;
+        });
+        const out = box.querySelector('output');
+        if (out) {
+            out.textContent = (box.dataset.aaShown ?? '').replace('%1', String(shown)).replace('%2', String(rows.length));
+        }
+    };
+
+    document.addEventListener('input', (e) => {
+        const box = (e.target instanceof Element) ? e.target.closest('[data-aa-filter]') : null;
+        if (box) {
+            applyFilter(box);
         }
     });
 
@@ -186,9 +236,19 @@
         schedule();
     };
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', follow);
-    } else {
+    const start = () => {
+        openHash(location.hash);
+        // without the script the filter would do nothing, so it shows only with it
+        document.querySelectorAll('[data-aa-filter]').forEach((box) => {
+            box.hidden = false;
+            applyFilter(box);
+        });
         follow();
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start);
+    } else {
+        start();
     }
 })();

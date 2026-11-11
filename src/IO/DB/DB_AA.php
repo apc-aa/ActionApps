@@ -53,7 +53,7 @@ final class DB_AA
             if (!$db->commit()) {
                 // PDO runs in silent error mode, so a failed commit only returns false.
                 // The writes are gone, so the caller must not be told the block succeeded.
-                throw new \RuntimeException('DB_AA::transaction(): commit failed, the block was not stored');
+                throw new TransactionFailed('DB_AA::transaction(): commit failed, the block was not stored');
             }
             return $ret;
         } catch (\Throwable $e) {

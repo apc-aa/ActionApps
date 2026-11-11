@@ -18,6 +18,15 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "„je“ platí, keď je niektorá z hodnôt položky medzi zaškrtnutými hodnotami, „nie je“, keď nie je žiadna. „je vyplnená“ platí pre akúkoľvek hodnotu okrem prázdnej a 0, teda aj pre zaškrtnuté zaškrtávacie pole.", // ai 2026-11
+// "None - the import is disabled" => "Žiadne – import je vypnutý", // ai 2026-10
+// "The import is switched off." => "Import je vypnutý.", // ai 2026-10
+// "The import is disabled, so no planned task starts it." => "Import je vypnutý, takže ho žiadna naplánovaná úloha nespustí.", // ai 2026-10
+// "(import off)" => "(import vypnutý)", // ai 2026-10
+// "one stream (%1)" => "jeden prúd (%1)", // ai 2026-10
+// "Disabled - it does not start" => "Vypnuté - nespúšťa sa", // ai 2026-10
+// "Expected a JSON object {\"column\": \"field id\"}" => "Očakávaný objekt JSON {\"column\": \"field id\"}", // ai 2026-10
+// "JSON object: the column name in the first row => the field it fills" => "Objekt JSON: názov stĺpca v prvom riadku => položka, ktorú plní", // ai 2026-10
 // "Parameter wizard" => "Sprievodca parametrami", // ai 2026-06
 // "the update may still be running on the remote AA - wait, then run Test before retrying" => "aktualizácia na vzdialenom AA možno ešte beží – počkajte a pred ďalším pokusom spustite test", // ai 2026-10
 // "Set letterhead to a text" => "Nastavte letterhead na text", // ai 2026-11
@@ -267,7 +276,7 @@ return [
 
 // admin/aa_cron.php, row 47
 // src/AA_Plannedtask.php, row 82, 182
-// src/Import/Definition.php, row 135, 163
+// src/Import/Definition.php, row 136, 164
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Posledné spustenie", // ai 2026-06
 
@@ -352,7 +361,7 @@ return [
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // central/optimize.php, row 65
-// src/Import/DetailPage.php, row 510
+// src/Import/DetailPage.php, row 548
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Platnosť formulára vypršala; obnovte stránku a skúste to znova.", // ai 2026-10
 
@@ -501,7 +510,6 @@ return [
 "Off since %1, %2" => "Vypnuté od %1, %2", // ai 2026-10
 
 // admin/aa_security.php, row 143
-// src/Import/DetailPage.php, row 726
 "Off" => "Vypnuté", // ai 2026-10
 
 // admin/aa_security.php, row 148
@@ -526,7 +534,7 @@ return [
 
 // admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 395
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
@@ -729,7 +737,7 @@ return [
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 295
 // central/appstore.php, row 164
-// include/searchlib.php, row 1016
+// include/searchlib.php, row 1103
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Moduly", // ai 2026-06
 
@@ -992,12 +1000,13 @@ return [
 "Shortcut to edit ITEM" => "Skratka na úpravu SPRÁVY", // ai 2026-06
 
 // admin/aafinder.php, row 526
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 576
 // include/searchlib.php, row 50, 51, 129, 138
 "contains" => "obsahuje", // ai 2026-06
 
 // admin/aafinder.php, row 527
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 584
 // include/searchlib.php, row 129, 138
 "is" => "je", // ai 2026-06
@@ -1088,12 +1097,12 @@ return [
 // admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
-// admin/se_showif.php, row 123
+// admin/se_showif.php, row 124
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
 // include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 369
+// include/searchlib.php, row 446
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1139,7 +1148,7 @@ return [
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
 // include/stringexpand.php, row 99
-// src/Import/DetailPage.php, row 1025, 1091
+// src/Import/DetailPage.php, row 1076, 1142
 // src/Optimize/CheckImports.php, row 239, 241
 "Code" => "Kód", // ai 2026-06
 
@@ -1147,7 +1156,7 @@ return [
 "HTML output" => "HTML výstup", // ai 2026-06
 
 // admin/console.php, row 73, 75
-// central/optimize.php, row 210
+// central/optimize.php, row 209
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "Výsledok", // ai 2026-06
 
@@ -1162,7 +1171,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "OK", // ai 2026-10
@@ -1210,7 +1219,7 @@ return [
 // admin/discedit.php, row 135
 // admin/related_sel.php, row 168
 // admin/se_views.php, row 136
-// src/Import/DetailPage.php, row 313
+// src/Import/DetailPage.php, row 337
 // src/Manager.php, row 230
 // src/Optimize/AbstractOptimize.php, row 175
 "Actions" => "Akcia",
@@ -1240,7 +1249,7 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
@@ -1277,7 +1286,7 @@ return [
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 123, 267
 // include/logs.php, row 1071
-// include/mail.php, row 699
+// include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Predmet",
 
@@ -1653,7 +1662,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 370
+// include/searchlib.php, row 447
 "Descending" => "Zostupne",
 
 // admin/se_compact.php, row 244
@@ -1678,7 +1687,7 @@ return [
 "Can't delete constant group" => "Skupinu hodnôt nie je možné zmazať", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
-// admin/se_showif.php, row 157
+// admin/se_showif.php, row 162
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1692,7 +1701,7 @@ return [
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckServerRefusals.php, row 67
@@ -1701,6 +1710,7 @@ return [
 // admin/se_constant.php, row 176, 378
 // admin/se_mapping.php, row 179
 // admin/se_profile.php, row 209
+// admin/se_showif.php, row 133
 // include/constants.php, row 453
 // include/constedit.php, row 76
 // include/searchlib.php, row 177
@@ -1879,7 +1889,7 @@ return [
 
 // admin/se_csv_import.php, row 278
 // include/scroller.php, row 86
-// src/Import/DetailPage.php, row 422
+// src/Import/DetailPage.php, row 453
 "Next" => "Ďalej", // ai 2026-06
 
 // admin/se_csv_import2.php, row 199
@@ -1930,8 +1940,8 @@ return [
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
-// src/Import/Definition.php, row 135, 165
-// src/Import/DetailCatalog.php, row 145
+// src/Import/Definition.php, row 136, 166
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Akcia", // ai 2026-06
 
@@ -2111,7 +2121,7 @@ return [
 
 // admin/se_export.php, row 167
 // include/exporter.class.php, row 553
-// include/searchlib.php, row 1012
+// include/searchlib.php, row 1099
 "Conditions" => "Podmienky", // ai 2026-06
 
 // admin/se_export.php, row 167
@@ -2120,7 +2130,7 @@ return [
 
 // admin/se_export.php, row 168
 // include/exporter.class.php, row 554
-// include/searchlib.php, row 1014
+// include/searchlib.php, row 1101
 "Sort" => "Zoradenie", // ai 2026-06
 
 // admin/se_export.php, row 168
@@ -2238,7 +2248,7 @@ return [
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
-// src/Import/DetailCatalog.php, row 151
+// src/Import/DetailCatalog.php, row 179
 "Update" => "Zmeniť",
 
 // admin/se_filters.php, row 169
@@ -2257,7 +2267,7 @@ return [
 "No category defined" => "Kategórie neboli definované",
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1424
+// src/Manager.php, row 1415
 "Select all" => "Vybrať zobrazené",
 
 // admin/se_filters.php, row 320
@@ -2442,7 +2452,7 @@ return [
 
 // admin/se_inputform.php, row 424, 440, 451, 479, 522
 // include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 // src/Util/Paramwizard.php, row 154
 "Parameters" => "Parametre",
 
@@ -2518,8 +2528,6 @@ return [
 "8 UPPERCASE letters or _" => "8 VEĽKÝCH písmen alebo _", // ai 2026-06
 
 // admin/se_inputform.php, row 515
-// src/Import/DetailPage.php, row 604
-// src/Import/RunView.php, row 188
 "Disabled" => "Zakázané", // ai 2026-06
 
 // admin/se_inputform.php, row 516
@@ -2573,10 +2581,10 @@ return [
 "Node" => "Uzol", // ai 2026-06
 
 // admin/se_inter_import.php, row 96
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // misc/datovka/datovka.php, row 158
-// src/Import/DetailConfig.php, row 291
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailConfig.php, row 282
+// src/Import/DetailPage.php, row 401
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Util/Note.php, row 64
 "State" => "Stav", // ai 2026-06
@@ -3095,104 +3103,115 @@ return [
 // admin/se_showif.php, row 77
 "The form has expired. Close it and open it again." => "Platnosť formulára vypršala. Zatvorte ho a otvorte znova.", // ai 2026-11
 
-// admin/se_showif.php, row 117
-"is checked" => "je zaškrtnutá", // ai 2026-11
-
-// admin/se_showif.php, row 117
-"is not checked" => "nie je zaškrtnutá", // ai 2026-11
-
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchlib.php, row 129, 138
 "is not" => "nie je", // ai 2026-06
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
+// include/searchbar.class.php, row 580
+// include/searchlib.php, row 53, 56, 129, 138
+"begins with" => "začína", // ai 2026-06
+
+// admin/se_showif.php, row 116
 "is filled" => "je vyplnená", // ai 2026-11
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 "is empty" => "je prázdna", // ai 2026-11
 
-// admin/se_showif.php, row 120
+// admin/se_showif.php, row 119
+"is checked" => "je zaškrtnutá", // ai 2026-11
+
+// admin/se_showif.php, row 119
+"is not checked" => "nie je zaškrtnutá", // ai 2026-11
+
+// admin/se_showif.php, row 121
 "— add a rule —" => "— pridať pravidlo —", // ai 2026-11
 
-// admin/se_showif.php, row 128
+// admin/se_showif.php, row 129
 "Comparison" => "Porovnanie", // ai 2026-11
 
-// admin/se_showif.php, row 144
+// admin/se_showif.php, row 149
 "Values, one per line" => "Hodnoty, každá na samostatnom riadku", // ai 2026-11
 
-// admin/se_showif.php, row 151
+// admin/se_showif.php, row 156
 // include/field.class.php, row 797
 "Display condition" => "Podmienka zobrazenia", // ai 2026-11
 
-// admin/se_showif.php, row 163
+// admin/se_showif.php, row 168
 "Show the field when all of these hold" => "Zobraziť položku, ak platia všetky tieto pravidlá", // ai 2026-11
 
-// admin/se_showif.php, row 165
+// admin/se_showif.php, row 170
 "AA expression (optional)" => "Výraz AA (nepovinné)", // ai 2026-11
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 // src/Optimize/ImgMeasuring.php, row 54
 "Expression" => "Výraz", // ai 2026-10
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 "Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "Ak ho necháte prázdny, použijú sa len pravidlá. Ak je vyplnený, položka sa zobrazí, len keď výsledok nie je prázdny ani 0. Vyhodnocuje sa pri otvorení formulára a pri uložení správy.", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Clear the field when a rule hides it" => "Vyčistiť položku, keď ju pravidlo skryje", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "Nezaškrtnuté: upravovaná správa si hodnotu ponechá, nová správa dostane predvolenú hodnotu položky. Položka skrytá výrazom sa nikdy nezmení.", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 177
+"As a condition of a view" => "Ako podmienka pohľadu", // ai 2026-11
+
+// admin/se_showif.php, row 181
 "Used by" => "Používajú ju", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 181
 "no field" => "žiadna položka", // ai 2026-11
 
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 "Save the changes to this condition. They apply to every field that uses it." => "Uloží zmeny tejto podmienky. Prejavia sa vo všetkých položkách, ktoré ju používajú.", // ai 2026-11
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 // admin/se_view.php, row 486
 "Save as new" => "Uložiť ako nový", // ai 2026-06
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 "Keep the original condition as it is and save this form as another condition under a new name." => "Ponechá pôvodnú podmienku bez zmeny a uloží tento formulár ako ďalšiu podmienku pod novým názvom.", // ai 2026-11
 
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 "Delete the condition. The fields that use it will be shown always." => "Zmaže podmienku. Položky, ktoré ju používajú, sa budú zobrazovať vždy.", // ai 2026-11
 
-// admin/se_showif.php, row 180
+// admin/se_showif.php, row 188
 "Delete the condition? The fields that use it will be shown always." => "Zmazať podmienku? Položky, ktoré ju používajú, sa budú zobrazovať vždy.", // ai 2026-11
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 // include/formutil.php, row 219, 224, 3009, 3013
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Zrušiť",
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 "Close without saving." => "Zavrie bez uloženia.", // ai 2026-11
 
-// admin/se_showif.php, row 187
+// admin/se_showif.php, row 195
 "How it works" => "Ako to funguje", // ai 2026-11
 
-// admin/se_showif.php, row 188
-"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "„je“ platí, keď je niektorá z hodnôt položky medzi zaškrtnutými hodnotami, „nie je“, keď nie je žiadna. „je vyplnená“ platí pre akúkoľvek hodnotu okrem prázdnej a 0, teda aj pre zaškrtnuté zaškrtávacie pole.", // ai 2026-11
+// admin/se_showif.php, row 196
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. Upper and lower case do not count, accents do. \"is empty\" holds also for a field without a value; in a field stored as a number 0 counts as empty." => "„je“ platí, keď je jedna z hodnôt položky medzi zaškrtnutými hodnotami, „nie je“, keď nie je žiadna. Na veľkosti písmen nezáleží, na diakritike áno. „je prázdna“ platí aj pre položku bez hodnoty; v položke uloženej ako číslo sa 0 počíta ako prázdna hodnota.", // ai 2026-11
 
-// admin/se_showif.php, row 189
+// admin/se_showif.php, row 197
+"The rules are AA conditions, written as in views. The condition shown below selects nearly the same items in a view; accents and empty values may be compared a little differently. In an AA expression write : as #:." => "Pravidlá sú podmienky AA, zapísané ako v pohľadoch. Podmienka zobrazená nižšie vyberie v pohľade takmer tie isté správy; diakritika a prázdne hodnoty sa môžu porovnávať trochu inak. Vo výraze AA píšte : ako #:.", // ai 2026-11
+
+// admin/se_showif.php, row 198
 "The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "Pravidlá sledujú formulár priebežne, ako ho užívateľ upravuje. Výraz sa vyhodnocuje len pri otvorení formulára a pri uložení správy, vždy nad uloženou správou (pri novej správe nad predvolenými hodnotami).", // ai 2026-11
 
-// admin/se_showif.php, row 190
+// admin/se_showif.php, row 199
 "A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "Položka skrytá pravidlom sa uloží prázdna, pokiaľ nie je zrušené zaškrtnutie „Vyčistiť položku“. Položka s heslom, dátumy, stav a položka skrytá výrazom si hodnotu ponechajú.", // ai 2026-11
 
-// admin/se_showif.php, row 191
+// admin/se_showif.php, row 200
 "A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "Položku s podmienkou zobrazuje a skrýva podmienka, nie skript zo stránky „Triggery položiek“.", // ai 2026-11
 
-// admin/se_showif.php, row 192
+// admin/se_showif.php, row 201
 "With an input form template from a view, a field hidden by the expression stays in the source of the page." => "Ak sa šablóna vstupného formulára berie z pohľadu, položka skrytá výrazom zostáva v zdrojovom kóde stránky.", // ai 2026-11
 
-// admin/se_showif.php, row 193
+// admin/se_showif.php, row 202
 "Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "Podmienky platia len pre formulár správy v administrácii. V anonymných formulároch a pri importoch je povinná položka povinná vždy.", // ai 2026-11
 
 // admin/se_statistics.php, row 97
@@ -3349,7 +3368,7 @@ return [
 
 // admin/se_views.php, row 149, 203, 223
 // include/formutil.php, row 1818, 1825
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
 "New" => "Nový",
@@ -3392,7 +3411,7 @@ return [
 "View items" => "Zobraziť správy", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1429
+// src/Manager.php, row 1420
 "Selected items" => "Zmeniť vybrané",
 
 // admin/search_replace.php, row 180
@@ -3513,8 +3532,8 @@ return [
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
-// src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1281
+// src/Import/DetailCatalog.php, row 179
+// src/Manager.php, row 239, 1272
 "Add" => "Pridať",
 
 // admin/slicedel.php, row 51
@@ -3838,7 +3857,7 @@ return [
 "Import into this slice - whatever file says" => "Importovať do tohoto modulu - bez ohľadu na to, čo hovorí súbor", // ai 2026-06
 
 // admin/sliceimp.php, row 467
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Dry run" => "Skúšobný beh", // ai 2026-06
 
 // admin/sliceimp.php, row 469
@@ -4194,29 +4213,29 @@ return [
 "Show selected users" => "Zobraziť vybraných užívateľov", // ai 2026-06
 
 // admin/write_mail.php, row 124, 274
-// include/mail.php, row 700
+// include/mail.php, row 666
 "Body" => "Text", // ai 2026-06
 
 // admin/write_mail.php, row 125, 275
 "From (email)" => "Od (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 126, 276
-// include/mail.php, row 702
+// include/mail.php, row 668
 "Reply to (email)" => "Odpovedať na (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 127, 277
-// include/mail.php, row 703
+// include/mail.php, row 669
 "Errors to (email)" => "Chyby na (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 128, 278
 "Sender (email)" => "Odosielateľ (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 129, 279
-// include/mail.php, row 694
+// include/mail.php, row 658
 "Language (charset)" => "Jazyk (znaková sada)", // ai 2026-06
 
 // admin/write_mail.php, row 130, 280
-// include/mail.php, row 692
+// include/mail.php, row 656
 "Use HTML" => "Použiť HTML", // ai 2026-06
 
 // admin/write_mail.php, row 131, 271
@@ -4227,8 +4246,8 @@ return [
 
 // admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
-// src/Import/Definition.php, row 92
-// src/Import/DetailConfig.php, row 394
+// src/Import/Definition.php, row 93
+// src/Import/DetailConfig.php, row 385
 "Filter" => "Filter", // ai 2026-10
 
 // admin/write_mail.php, row 188
@@ -4483,8 +4502,8 @@ return [
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
 // include/logs.php, row 1213
-// src/Import/Definition.php, row 85, 113
-// src/Import/DetailConfig.php, row 188, 202
+// src/Import/Definition.php, row 86, 114
+// src/Import/DetailConfig.php, row 171, 185
 // src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "Zdroj", // ai 2026-06
@@ -4914,19 +4933,19 @@ return [
 "Transferring the items" => "Prenos správ", // ai 2026-10
 
 // central/installapp.php, row 1368
-// central/optimize.php, row 261
+// central/optimize.php, row 260
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Zastavené chybou", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 259
+// central/optimize.php, row 258
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Dokončené", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 260
+// central/optimize.php, row 259
 "Ended" => "Ukončené", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -4990,13 +5009,13 @@ return [
 "Show the final check" => "Zobraziť záverečnú kontrolu", // ai 2026-10
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 206
-// src/Import/DetailPage.php, row 938, 947
+// central/optimize.php, row 205
+// src/Import/DetailPage.php, row 989, 998
 "Continue" => "Pokračovať", // ai 2026-06
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 207
-// src/Import/DetailPage.php, row 958
+// central/optimize.php, row 206
+// src/Import/DetailPage.php, row 1009
 "End" => "Ukončiť", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
@@ -5020,7 +5039,7 @@ return [
 // central/optimize.php, row 85
 "An AA may still be asked - press Continue again in a few minutes." => "Dotaz na niektoré AA možno ešte prebieha - o niekoľko minút znova stlačte „Pokračovať“.", // ai 2026-11
 
-// central/optimize.php, row 86, 187
+// central/optimize.php, row 86, 186
 "No such run." => "Taký beh neexistuje.", // ai 2026-11
 
 // central/optimize.php, row 87
@@ -5041,7 +5060,7 @@ return [
 // central/optimize.php, row 140
 "Run an Optimize task on several AAs" => "Spustiť úlohu optimalizácie na viacerých AA", // ai 2026-11
 
-// central/optimize.php, row 148, 171
+// central/optimize.php, row 148, 170
 // src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckOptimizeRuns.php, row 55
 // src/Optimize/CheckQueue.php, row 98, 178
@@ -5056,65 +5075,65 @@ return [
 // central/optimize.php, row 151
 "Repair tests first, repairs only where the test fails, then tests again." => "Oprava najprv otestuje, opraví len tam, kde test zlyhá, a potom otestuje znova.", // ai 2026-11
 
-// central/optimize.php, row 153, 210
+// central/optimize.php, row 153, 209
 // include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// central/optimize.php, row 159
+// central/optimize.php, row 158
 "An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "AA bez platného tokenu nič neodpovie - najprv preň získajte token v zozname Central (platí jeden deň).", // ai 2026-11
 
-// central/optimize.php, row 160
+// central/optimize.php, row 159
 "Start" => "Spustiť", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Last runs" => "Posledné behy", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 // src/Optimize/CheckImports.php, row 151, 155
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Optimize/CheckOptimizeRuns.php, row 54
 "Started" => "Začiatok", // ai 2026-10
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Results" => "Výsledky", // ai 2026-11
 
-// central/optimize.php, row 197
+// central/optimize.php, row 196
 "Started %1 by %2" => "Spustené %1 užívateľom %2", // ai 2026-11
 
-// central/optimize.php, row 198
+// central/optimize.php, row 197
 "%1 of %2 AAs done" => "Hotové AA: %1 z %2", // ai 2026-11
 
-// central/optimize.php, row 208
+// central/optimize.php, row 207
 "The run goes on in the task queue of this AA - you may close this page." => "Beh pokračuje vo fronte úloh tohto AA - túto stránku môžete zavrieť.", // ai 2026-11
 
-// central/optimize.php, row 210, 229
+// central/optimize.php, row 209, 228
 "Report" => "Hlásenie", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Waiting" => "Čaká", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Not asked" => "Nedotazované", // ai 2026-11
 
-// central/optimize.php, row 225
+// central/optimize.php, row 224
 "The test after the repair comes next." => "Nasleduje test po oprave.", // ai 2026-11
 
-// central/optimize.php, row 232
+// central/optimize.php, row 231
 "The test after the repair" => "Test po oprave", // ai 2026-11
 
-// central/optimize.php, row 242
+// central/optimize.php, row 241
 "Another run" => "Ďalší beh", // ai 2026-11
 
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 "OK - nothing to repair" => "OK - nie je čo opraviť", // ai 2026-11
 
-// central/optimize.php, row 249
+// central/optimize.php, row 248
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
 // src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
@@ -5123,37 +5142,37 @@ return [
 // src/Optimize/StateCheckModel.php, row 219
 "Problem" => "Problém", // ai 2026-10
 
-// central/optimize.php, row 250
+// central/optimize.php, row 249
 "Repaired" => "Opravené", // ai 2026-11
 
-// central/optimize.php, row 251
+// central/optimize.php, row 250
 "Repair failed" => "Oprava zlyhala", // ai 2026-11
 
-// central/optimize.php, row 252
+// central/optimize.php, row 251
 "Not done" => "Nevykonané", // ai 2026-11
 
-// central/optimize.php, row 262
+// central/optimize.php, row 261
 "No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "Už dlho neprišiel žiadny krok - beží fronta úloh tohto AA? „Pokračovať“ to skúsi hneď.", // ai 2026-11
 
-// central/optimize.php, row 263
+// central/optimize.php, row 262
 "Waiting to ask an AA again" => "Čaká sa na opätovný dotaz na AA", // ai 2026-11
 
-// central/optimize.php, row 264
+// central/optimize.php, row 263
 "Running in the task queue" => "Beží vo fronte úloh", // ai 2026-11
 
-// central/optimize.php, row 274
+// central/optimize.php, row 273
 "%1 runs another update now." => "%1 práve vykonáva inú aktualizáciu.", // ai 2026-11
 
-// central/optimize.php, row 275
+// central/optimize.php, row 274
 "%1 did not answer in time." => "Od %1 neprišla včas odpoveď.", // ai 2026-11
 
-// central/optimize.php, row 276
+// central/optimize.php, row 275
 "The user who started the run is no superadmin any more." => "Užívateľ, ktorý beh spustil, už nie je superadmin.", // ai 2026-11
 
-// central/optimize.php, row 277
+// central/optimize.php, row 276
 "Error %1" => "Chyba %1", // ai 2026-11
 
-// central/optimize.php, row 279
+// central/optimize.php, row 278
 "Asked again at %1 - Continue asks now." => "Ďalší dotaz o %1 - „Pokračovať“ sa opýta hneď.", // ai 2026-11
 
 // central/responder.php, row 112
@@ -5637,7 +5656,7 @@ return [
 "Level count" => "Počet úrovní", // ai 2026-06
 
 // include/constedit_util.php, row 137, 140
-// src/Import/Definition.php, row 140
+// src/Import/Definition.php, row 141
 "Select" => "Vybrať", // ai 2026-06
 
 // include/constedit_util.php, row 599
@@ -6052,7 +6071,7 @@ return [
 
 // include/formutil.php, row 1829
 // include/menu.php, row 141
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Zmena súčasných práv",
 
@@ -6066,7 +6085,7 @@ return [
 
 // include/formutil.php, row 2223
 // include/stringexpand.php, row 11543, 11566
-// src/Import/DetailCatalog.php, row 150
+// src/Import/DetailCatalog.php, row 178
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "nová", // ai 2026-06
@@ -6322,7 +6341,7 @@ return [
 "Short ID" => "Krátke ID", // ai 2026-06
 
 // include/itemfunc.php, row 204
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 "Details" => "Podrobnosti", // ai 2026-06
 
 // include/itemfunc.php, row 245
@@ -6725,7 +6744,7 @@ return [
 "Checks" => "Kontroly", // ai 2026-10
 
 // include/logs.php, row 796, 827
-// src/Import/DetailPage.php, row 300, 367, 800
+// src/Import/DetailPage.php, row 324, 391, 840
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Spustiť", // ai 2026-10
@@ -6762,7 +6781,7 @@ return [
 
 // include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 825
+// src/Manager.php, row 816
 "Module ID" => "ID modulu", // ai 2026-06
 
 // include/logs.php, row 921
@@ -6802,7 +6821,7 @@ return [
 "Items planned" => "Plánované správy", // ai 2026-06
 
 // include/logs.php, row 1095
-// src/Import/DetailPage.php, row 1025
+// src/Import/DetailPage.php, row 1076
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Správa", // ai 2026-06
 
@@ -6825,13 +6844,13 @@ return [
 "Collection" => "Kolekcia", // ai 2026-06
 
 // include/logs.php, row 1123, 1174, 1186, 1321
-// src/Import/Definition.php, row 154
+// src/Import/Definition.php, row 155
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Detail", // ai 2026-10
 
 // include/logs.php, row 1173
-// src/Import/Definition.php, row 135, 162
+// src/Import/Definition.php, row 136, 163
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Stav", // ai 2026-06
 
@@ -6845,7 +6864,7 @@ return [
 "Errors" => "Chyby", // ai 2026-06
 
 // include/logs.php, row 1240
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Outcome" => "Výsledok", // ai 2026-06
 
 // include/logs.php, row 1256
@@ -6868,29 +6887,29 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "Dôvod", // ai 2026-10
 
-// include/mail.php, row 693
+// include/mail.php, row 657
 "Email type" => "Typ e-mailu", // ai 2026-06
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 "— all modules (global) —" => "— všetky moduly (globálne) —", // ai 2026-10
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Vlastník",
 
-// include/mail.php, row 698
+// include/mail.php, row 662
 "Description/Result" => "Popis/Výsledok", // ai 2026-06
 
-// include/mail.php, row 701
+// include/mail.php, row 667
 "From (email) " => "Od (e-mail)", // ai 2026-06
 
-// include/mail.php, row 704
+// include/mail.php, row 670
 "Envelop sender (email)" => "Odosielateľ obálky (e-mail)", // ai 2026-06
 
-// include/mail.php, row 705
+// include/mail.php, row 671
 // misc/datovka/datovka.php, row 156
 "Attachments" => "Prílohy", // ai 2026-06
 
@@ -6959,8 +6978,8 @@ return [
 "Filters" => "Filtre",
 
 // include/menu.php, row 159
-// src/Import/Definition.php, row 87
-// src/Import/DetailConfig.php, row 359
+// src/Import/Definition.php, row 88
+// src/Import/DetailConfig.php, row 350
 "Mapping" => "Mapovanie",
 
 // include/menu.php, row 160, 224
@@ -7069,7 +7088,7 @@ return [
 "Slice structure" => "Štruktúra modulu",
 
 // include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
+// src/Import/Definition.php, row 136, 162
 // src/Optimize/CheckImportStores.php, row 53
 // src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "Import", // ai 2026-11
@@ -7153,7 +7172,7 @@ return [
 "What's working, what isn't — tell the AA team." => "Čo funguje a čo nie — napíšte tímu AA.", // ai 2026-06
 
 // include/menu_util.php, row 632
-// src/Import/Definition.php, row 86
+// src/Import/Definition.php, row 87
 "Settings" => "Nastavenia", // ai 2026-06
 
 // include/menu_util.php, row 635
@@ -7228,7 +7247,7 @@ return [
 "Array returned" => "Vrátené pole", // ai 2026-06
 
 // include/scroller.php, row 87
-// src/Import/DetailPage.php, row 420
+// src/Import/DetailPage.php, row 451
 "Previous" => "Predchádzajúce", // ai 2026-06
 
 // include/scroller.php, row 296
@@ -7277,10 +7296,6 @@ return [
 
 // include/searchbar.class.php, row 566
 "And" => "a zároveň", // ai 2026-06
-
-// include/searchbar.class.php, row 580
-// include/searchlib.php, row 53, 56, 129, 138
-"begins with" => "začína", // ai 2026-06
 
 // include/searchbar.class.php, row 608
 "Clear" => "Vyčistiť", // ai 2026-06
@@ -7358,7 +7373,7 @@ return [
 // include/statestore.php, row 1367
 "select ..." => "vyberte ...", // ai 2026-06
 
-// include/searchlib.php, row 371
+// include/searchlib.php, row 448
 "Limit" => "Limit", // ai 2026-10
 
 // include/slice.class.php, row 428
@@ -8179,7 +8194,7 @@ return [
 "page length (number of items)" => "dĺžka stránky (počet správ)", // ai 2026-06
 
 // slice.php, row 621
-// src/Manager.php, row 890
+// src/Manager.php, row 881
 "No item found" => "Nenalezena žádná zpráva",
 
 // src/AA_Plannedtask.php, row 72
@@ -8290,43 +8305,43 @@ return [
 // src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Prechádzať súbory modulu môžu iba jeho editori", // ai 2026-10
 
-// src/Central/Actionapps.php, row 185
+// src/Central/Actionapps.php, row 180
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Toto PHP nemá AES-GCM (sodium) – prihlasovací token nemožno uložiť šifrovane", // ai 2026-10
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not configured" => "Nenakonfigurované", // ai 2026-06
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not authenticated - get a token" => "Neautentifikované – získajte token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Authenticated until %1" => "Autentifikované do %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Expired - get a token" => "Vypršalo – získajte token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 245
+// src/Central/Actionapps.php, row 236
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "Vzdialené AA odmietlo prihlásenie: nesprávne užívateľské meno alebo heslo, účet s dvojfázovým prihlásením (Central zatiaľ nevie poslať kód), alebo užívateľ tam nie je superadmin", // ai 2026-11
 
-// src/Central/Actionapps.php, row 247
+// src/Central/Actionapps.php, row 238
 "The remote AA gave no login token - update it" => "Vzdialené AA nevydalo prihlasovací token – aktualizujte ho", // ai 2026-10
 
-// src/Central/Actionapps.php, row 248
+// src/Central/Actionapps.php, row 239
 "The remote AA gave a token for longer than a day - update the remote AA" => "Vzdialené AA vydalo token na dlhšie ako jeden deň – aktualizujte vzdialené AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 284
+// src/Central/Actionapps.php, row 275
 "Can't get org_name - " => "Nepodarilo sa získať org_name -", // ai 2026-06
 
-// src/Central/Actionapps.php, row 338
+// src/Central/Actionapps.php, row 329
 "Unexpected response from remote AA" => "Neočakávaná odpoveď vzdialeného AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 341
+// src/Central/Actionapps.php, row 332
 "This AA does not support this command (update it first)" => "Toto AA tento príkaz nepodporuje (najprv ho aktualizujte)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 344
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Uložený prihlasovací token nemožno použiť (zmenil sa AA_SECRET, heslo k databáze alebo adresa tohto AA) – znova autentifikujte toto AA na stránke ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 354
+// src/Central/Actionapps.php, row 345
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Pre toto AA nie je prihlasovací token – autentifikujte toto AA na stránke ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -9452,22 +9467,28 @@ return [
 // src/Credential/Store.php, row 55
 "set (%1)" => "nastavené (%1)", // ai 2026-10
 
-// src/Form/ShowConditions.php, row 317
+// src/Form/ShowConditions.php, row 354
 "Fill in the name of the condition." => "Vyplňte názov podmienky.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 321
+// src/Form/ShowConditions.php, row 358
 "Another condition of this slice is called %1." => "Podmienka s názvom %1 v tomto module už existuje.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 333
+// src/Form/ShowConditions.php, row 371
 "The field %1 is not in this slice." => "Položka %1 nie je v tomto module.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 335
+// src/Form/ShowConditions.php, row 373
 "Choose how to compare the field %1." => "Vyberte, ako porovnať položku %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 337
+// src/Form/ShowConditions.php, row 375
 "Fill in the values of the field %1." => "Vyplňte hodnoty položky %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 344
+// src/Form/ShowConditions.php, row 377
+"A value of the field %1 contains both kinds of quotes." => "Hodnota položky %1 obsahuje oba druhy úvodzoviek.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 380
+"The value of the field %1 must not contain a backslash." => "Hodnota položky %1 nesmie obsahovať spätnú lomku.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 393
 "Add a rule or an expression." => "Pridajte pravidlo alebo výraz.", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
@@ -9485,7 +9506,7 @@ return [
 // src/IO/Grabber/CSV.php, row 94
 // src/IO/Grabber/JsonLD.php, row 104
 // src/IO/Grabber/XML.php, row 108
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "URL of the file" => "URL súboru", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 95
@@ -9659,835 +9680,874 @@ return [
 // src/IO/OnPageChanger.php, row 55
 "No permission - no user is authenticated. Try to relogin, please." => "Chýba právo - nie je prihlásený žiadny užívateľ. Skúste sa, prosím, znovu prihlásiť.", // ai 2026-06
 
-// src/Import/Definition.php, row 88
-// src/Import/DetailConfig.php, row 390
+// src/Import/Definition.php, row 89
+// src/Import/DetailConfig.php, row 381
 "Key fields" => "Kľúčové položky", // ai 2026-10
 
-// src/Import/Definition.php, row 89
-// src/Import/DetailConfig.php, row 391
+// src/Import/Definition.php, row 90
+// src/Import/DetailConfig.php, row 382
 "Store mode" => "Spôsob uloženia", // ai 2026-10
 
-// src/Import/Definition.php, row 90
-// src/Import/DetailConfig.php, row 392
+// src/Import/Definition.php, row 91
+// src/Import/DetailConfig.php, row 383
 "Validation" => "Validácia", // ai 2026-10
 
-// src/Import/Definition.php, row 91
-// src/Import/DetailConfig.php, row 393
+// src/Import/Definition.php, row 92
+// src/Import/DetailConfig.php, row 384
 "After a stream" => "Po skončení prúdu", // ai 2026-10
 
-// src/Import/Definition.php, row 93
-// src/Import/DetailPage.php, row 604
+// src/Import/Definition.php, row 94
 // src/Optimize/CheckImports.php, row 215
 "Enabled" => "Povolené", // ai 2026-10
 
-// src/Import/Definition.php, row 113
+// src/Import/Definition.php, row 114
 "The source is changed in the import detail." => "Zdroj sa mení v detaile importu.", // ai 2026-10
 
-// src/Import/Definition.php, row 129
+// src/Import/Definition.php, row 130
 "The slice has no import yet." => "Modul zatiaľ nemá žiadny import.", // ai 2026-10
 
-// src/Import/Definition.php, row 135, 164
+// src/Import/Definition.php, row 136, 165
 "Next plan" => "Ďalšie spustenie", // ai 2026-10
 
-// src/Import/Definition.php, row 367
-"None - the import is disabled" => "Žiadne – import je vypnutý", // ai 2026-10
+// src/Import/Definition.php, row 372
+// src/Import/DetailPage.php, row 766, 772
+"Not planned" => "Nenaplánované", // ai 2026-10
 
-// src/Import/Definition.php, row 370
+// src/Import/Definition.php, row 375
 "Not planned - no task starts it" => "Neplánované – žiadna úloha ho nespúšťa", // ai 2026-10
 
-// src/Import/Definition.php, row 423
+// src/Import/Definition.php, row 428
 "The import needs a name." => "Import potrebuje názov.", // ai 2026-10
 
-// src/Import/Definition.php, row 427
+// src/Import/Definition.php, row 432
 "The name of an import may not contain a colon (:) or look like an id." => "Názov importu nesmie obsahovať dvojbodku (:) ani vyzerať ako id.", // ai 2026-10
 
-// src/Import/Definition.php, row 430
+// src/Import/Definition.php, row 435
 "Another import of the slice has this name." => "Iný import modulu má tento názov.", // ai 2026-10
 
-// src/Import/Definition.php, row 438
+// src/Import/Definition.php, row 443
 "Change the source in the import detail." => "Zdroj zmeňte v detaile importu.", // ai 2026-10
 
-// src/Import/Definition.php, row 446
-// src/Import/DetailPage.php, row 545
+// src/Import/Definition.php, row 451
+// src/Import/DetailPage.php, row 584
 "Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "Importy tu nemôžu bežať: ich databázové tabuľky (object_text, toexecute) nepodporujú transakcie (InnoDB).", // ai 2026-10
 
-// src/Import/Definition.php, row 455
+// src/Import/Definition.php, row 460
 "The mapping of the import is not valid." => "Mapovanie importu nie je platné.", // ai 2026-10
 
-// src/Import/Definition.php, row 477
+// src/Import/Definition.php, row 482
 "The import source refused these settings: %1" => "Zdroj importu odmietol tieto nastavenia: %1", // ai 2026-10
 
-// src/Import/Definition.php, row 480
-"Only a user who manages the feeding of the slice may change its imports." => "Importy modulu smie meniť len užívateľ, ktorý spravuje výmenu správ modulu.", // ai 2026-10
-
-// src/Import/Definition.php, row 481
-"This import uses API keys, so only a superadmin may change or delete it." => "Tento import používa API kľúče, preto ho smie meniť alebo mazať len superadmin.", // ai 2026-10
-
 // src/Import/Definition.php, row 482
-"The import was not saved - it is not an import of this slice." => "Import nebol uložený – nejde o import tohto modulu.", // ai 2026-10
-
-// src/Import/Definition.php, row 483
-// src/Import/DetailPage.php, row 546
-"The import source is not available." => "Zdroj importu nie je k dispozícii.", // ai 2026-10
-
-// src/Import/Definition.php, row 484
-"The import source did not give its mapping." => "Zdroj importu neposkytol svoje mapovanie.", // ai 2026-10
+"The setting \"%1\" of the import source is not valid: %2" => "Nastavenie „%1“ zdroja importu nie je platné: %2", // ai 2026-11
 
 // src/Import/Definition.php, row 485
-"The mapping of the import does not fit the slice." => "Mapovanie importu nezodpovedá modulu.", // ai 2026-10
+"Only a user who manages the feeding of the slice may change its imports." => "Importy modulu smie meniť len užívateľ, ktorý spravuje výmenu správ modulu.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
-// src/Import/DetailPage.php, row 548
-"A setting of the import source is not valid." => "Nastavenie zdroja importu nie je platné.", // ai 2026-10
-
-// src/Import/Definition.php, row 486
-"The setting \"%1\" of the import source is not valid." => "Nastavenie „%1“ zdroja importu nie je platné.", // ai 2026-10
+"This import uses API keys, so only a superadmin may change or delete it." => "Tento import používa API kľúče, preto ho smie meniť alebo mazať len superadmin.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
-// src/Import/DetailPage.php, row 549
-"The settings name a slice whose feeding you do not manage." => "Nastavenia uvádzajú modul, ktorého výmenu správ nespravujete.", // ai 2026-10
-
-// src/Import/Definition.php, row 487
-"The setting \"%1\" names a slice whose feeding you do not manage." => "Nastavenie „%1“ uvádza modul, ktorého výmenu správ nespravujete.", // ai 2026-10
+"The import was not saved - it is not an import of this slice." => "Import nebol uložený – nejde o import tohto modulu.", // ai 2026-10
 
 // src/Import/Definition.php, row 488
-"The settings of the import changed meanwhile. Reload the page and set them again." => "Nastavenia importu sa medzitým zmenili. Načítajte stránku znova a nastavte ich znova.", // ai 2026-10
+// src/Import/DetailPage.php, row 585
+"The import source is not available." => "Zdroj importu nie je k dispozícii.", // ai 2026-10
 
 // src/Import/Definition.php, row 489
+"The import source did not give its mapping." => "Zdroj importu neposkytol svoje mapovanie.", // ai 2026-10
+
+// src/Import/Definition.php, row 490
+"The mapping of the import does not fit the slice." => "Mapovanie importu nezodpovedá modulu.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+// src/Import/DetailPage.php, row 587
+"A setting of the import source is not valid." => "Nastavenie zdroja importu nie je platné.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+"The setting \"%1\" of the import source is not valid." => "Nastavenie „%1“ zdroja importu nie je platné.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+// src/Import/DetailPage.php, row 588
+"The settings name a slice whose feeding you do not manage." => "Nastavenia uvádzajú modul, ktorého výmenu správ nespravujete.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+"The setting \"%1\" names a slice whose feeding you do not manage." => "Nastavenie „%1“ uvádza modul, ktorého výmenu správ nespravujete.", // ai 2026-10
+
+// src/Import/Definition.php, row 493
+"The settings of the import changed meanwhile. Reload the page and set them again." => "Nastavenia importu sa medzitým zmenili. Načítajte stránku znova a nastavte ich znova.", // ai 2026-10
+
+// src/Import/Definition.php, row 494
 "The import source refused these settings." => "Zdroj importu tieto nastavenia odmietol.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 31
+// src/Import/DetailCatalog.php, row 33
 "No catalog yet. Check source lists what the source offers." => "Zatiaľ žiadny katalóg. Čo zdroj ponúka, vypíše tlačidlo „Skontrolovať zdroj“.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 37
+// src/Import/DetailCatalog.php, row 39
 "The stored catalog cannot be read. The next check of the source lists it again." => "Uložený katalóg nie je možné prečítať. Ďalšia kontrola zdroja ho vypíše znova.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 41
+// src/Import/DetailCatalog.php, row 48
 "The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "Katalóg je neúplný: posledná kontrola ho nevypísala celý (zatiaľ záznamov: %1). Kým ho kontrola nevypíše celý, nič sa pri zdroji nehlási ako chýbajúce.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 42
+// src/Import/DetailCatalog.php, row 49
 "Listed by the check of %1: %2 entries." => "Kontrola z %1 vypísala záznamov: %2.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 47
+// src/Import/DetailCatalog.php, row 54
 "Pages of the catalog" => "Stránky katalógu", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 74
+// src/Import/DetailCatalog.php, row 55
+"%1 entries, %2 can be added" => "záznamov: %1, možno pridať: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 55
+"%1 entries" => "záznamov: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 58
+"%1 missing at the source" => "chýba v zdroji: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 61
+"%1 renamed at the source" => "premenované v zdroji: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 90
 "The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "Prúd bol z katalógu pridaný alebo aktualizovaný. V časti „Prúdy“ sa zobrazí po ďalšej kontrole zdroja.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 75
+// src/Import/DetailCatalog.php, row 91
 "The catalog has no such entry. Check the source to list its catalog again." => "Katalóg taký záznam nemá. Skontrolujte zdroj, aby sa katalóg vypísal znova.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 76, 77
+// src/Import/DetailCatalog.php, row 92, 93
 "Nothing was added from the catalog:" => "Z katalógu nebolo nič pridané:", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 85
+// src/Import/DetailCatalog.php, row 101
 "This import uses API keys, so only a superadmin may add streams from its catalog." => "Tento import používa API kľúče, preto smie prúdy z jeho katalógu pridávať len superadmin.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 86
+// src/Import/DetailCatalog.php, row 102
 "Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "Pridávanie z katalógu vyžaduje právo upravovať všetky správy modulu, do ktorého zdroj pridáva svoje prúdy.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 87
+// src/Import/DetailCatalog.php, row 103
 "The import source cannot add streams from its catalog." => "Zdroj importu nevie pridávať prúdy zo svojho katalógu.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 88
+// src/Import/DetailCatalog.php, row 104
 "The import source could not be reached or did not answer. Try again later." => "Zdroj importu nebol dostupný alebo neodpovedal. Skúste to neskôr.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 102
+// src/Import/DetailCatalog.php, row 118
 "1 entry is new at the source - no stream comes from it." => "1 záznam je pri zdroji nový – nevychádza z neho žiadny prúd.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 103
+// src/Import/DetailCatalog.php, row 119
 "%1 entries are new at the source - no stream comes from them." => "Nových záznamov pri zdroji: %1 – nevychádza z nich žiadny prúd.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Missing at the source" => "Pri zdroji chýba", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Renamed at the source" => "Pri zdroji premenované", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124, 143
-// src/Import/DetailPage.php, row 377, 1025, 1046
+// src/Import/DetailCatalog.php, row 140, 169
+// src/Import/DetailPage.php, row 401, 1076, 1097
 "Stream" => "Prúd", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Catalog key" => "Kľúč v katalógu", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name of the stream" => "Názov prúdu", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name in the catalog" => "Názov v katalógu", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailCatalog.php, row 166
+"%1 entries on this page cannot be added or updated: %2" => "Záznamy na tejto stránke, ktoré nemožno pridať ani aktualizovať (%1): %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailConfig.php, row 282
 "Key" => "Kľúč", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailPage.php, row 353, 706
 "Updated" => "Aktualizované", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 171
+// src/Import/DetailCatalog.php, row 198
+"%1 of %2 entries on this page" => "Záznamy na tejto stránke: %1 z %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 199
+"Filter this page" => "Filtrovať túto stránku", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 200
+"Only entries that can be added" => "Len záznamy, ktoré možno pridať", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 207
 "Catalog of the source" => "Katalóg zdroja", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 136
+// src/Import/DetailConfig.php, row 119
 "The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "Mapovanie bolo znova nastavené zo zdroja. Zahodilo sa, čo import o prúdoch vedel (verzie, časy importu a posledná kontrola zdroja), takže ďalší beh ich načíta všetky znova.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 137
+// src/Import/DetailConfig.php, row 120
 "The mapping is the same as the source gives - nothing changed." => "Mapovanie je rovnaké, aké dáva zdroj – nič sa nezmenilo.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 138, 139
+// src/Import/DetailConfig.php, row 121, 122
 "The mapping was not reset:" => "Mapovanie nebolo obnovené:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 140
+// src/Import/DetailConfig.php, row 123
 "The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "Nastavenia boli uložené a mapovanie bolo znova nastavené zo zdroja. Ak bol otvorený beh, bol ukončený a zahodilo sa, čo import o prúdoch vedel.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 141
+// src/Import/DetailConfig.php, row 124
 "The settings are the same as stored - nothing changed." => "Nastavenia sú rovnaké ako uložené – nič sa nezmenilo.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 142
+// src/Import/DetailConfig.php, row 125
 // src/Isds/Registry/Page.php, row 326
 "The settings were not saved:" => "Nastavenia neboli uložené:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 144
+// src/Import/DetailConfig.php, row 127
 "Choose a source." => "Zvoľte zdroj.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 155, 179
+// src/Import/DetailConfig.php, row 138, 162
 "Settings of the source" => "Nastavenia zdroja", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 159
+// src/Import/DetailConfig.php, row 142
 "Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "Plánované spustenia stále bežia s uloženými nastaveniami; ak chcete import spustiť ručne, zmeňte ich v časti %1 nižšie.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 161
+// src/Import/DetailConfig.php, row 144
 "Change the settings or the source in %1 below." => "Zmeňte nastavenia alebo zdroj v časti %1 nižšie.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 188
+// src/Import/DetailConfig.php, row 171
 "No other source is available." => "Žiadny iný zdroj nie je k dispozícii.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 192
+// src/Import/DetailConfig.php, row 175
 "(current)" => "(aktuálny)", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 203
+// src/Import/DetailConfig.php, row 186
 "Show its settings" => "Zobraziť jeho nastavenia", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 204
+// src/Import/DetailConfig.php, row 187
 "Keep the current source" => "Ponechať aktuálny zdroj", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 214
+// src/Import/DetailConfig.php, row 196
 "This source is not available, so its settings cannot be shown. Choose another source above." => "Tento zdroj nie je k dispozícii, takže jeho nastavenia nie je možné zobraziť. Zvoľte vyššie iný zdroj.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 222
+// src/Import/DetailConfig.php, row 204
 "The stored settings cannot be read; saving the form stores them again." => "Uložené nastavenia nie je možné prečítať; uložením formulára sa uložia znova.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 228
+// src/Import/DetailConfig.php, row 209
 "The source did not describe its settings, so they cannot be changed now." => "Zdroj svoje nastavenia nepopísal, takže ich teraz nie je možné zmeniť.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 232
+// src/Import/DetailConfig.php, row 214
 "You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "Meníte zdroj z %1 na %2. Uloženie ukončí otvorený beh, zahodí, čo import vie o prúdoch a katalógu, a prevezme mapovanie z nového zdroja.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 233
+// src/Import/DetailConfig.php, row 215
 "Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "Zmeniť zdroj? Otvorený beh sa skončí, čo import vie o prúdoch, sa zahodí a mapovanie sa prevezme z nového zdroja.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 234
+// src/Import/DetailConfig.php, row 216
 "Change the source and save" => "Zmeniť zdroj a uložiť", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 236
+// src/Import/DetailConfig.php, row 218
 "Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "Uloženie zmenených nastavení ukončí otvorený beh, zahodí, čo import vie o prúdoch a katalógu, a znova nastaví mapovanie zo zdroja. Nezmenené nastavenia nič nemenia.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 237
+// src/Import/DetailConfig.php, row 219
 "Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "Uložiť nastavenia? Ak sa zmenili, otvorený beh sa skončí, čo import vie o prúdoch, sa zahodí a mapovanie sa znova nastaví zo zdroja.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 238
+// src/Import/DetailConfig.php, row 220
 // src/Isds/Registry/Page.php, row 617
 "Save the settings" => "Uložiť nastavenia", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 272
+// src/Import/DetailConfig.php, row 263
 "The source has no settings." => "Zdroj nemá žiadne nastavenia.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 283
+// src/Import/DetailConfig.php, row 274
 "Keys" => "Kľúče", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 285
+// src/Import/DetailConfig.php, row 276
 "The source did not say which keys it needs." => "Zdroj neuviedol, ktoré kľúče potrebuje.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 288
+// src/Import/DetailConfig.php, row 279
 "The source needs no key." => "Zdroj nepotrebuje žiadny kľúč.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailConfig.php, row 282
 // src/Widget/Widget.php, row 848
 "Hint" => "Nápoveda", // ai 2026-06
 
-// src/Import/DetailConfig.php, row 297
+// src/Import/DetailConfig.php, row 288
 "Key is set" => "Kľúč je nastavený", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 298
+// src/Import/DetailConfig.php, row 289
 "Key is damaged" => "Kľúč je poškodený", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 299
+// src/Import/DetailConfig.php, row 290
 "Key is missing" => "Kľúč chýba", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 305
+// src/Import/DetailConfig.php, row 296
 "The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "Kľúče nastavuje správca servera v config.php, nikdy tu. Bez kľúča zdroj zlyhá, keď ho potrebuje; poškodený kľúč obsahuje zalomenie riadku a nikdy sa neodošle.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 327
+// src/Import/DetailConfig.php, row 318
 "define one of %1 in config.php" => "definujte jednu z %1 v config.php", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 350
+// src/Import/DetailConfig.php, row 341
 "The mapping of the import cannot be read. Reset it from the source." => "Mapovanie importu nie je možné prečítať. Obnovte ho zo zdroja.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 356
+// src/Import/DetailConfig.php, row 347
 "Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "Obnoviť mapovanie zo zdroja? Mapovanie, kľúčové položky, spôsob uloženia, validácia, výraz po skončení prúdu a filter sa nahradia tým, čo dáva zdroj.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 357
+// src/Import/DetailConfig.php, row 348
 "Reset mapping from the source" => "Obnoviť mapovanie zo zdroja", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 358
+// src/Import/DetailConfig.php, row 349
 "Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Znova nastaví mapovanie, kľúčové položky, spôsob uloženia, validáciu, výraz po skončení prúdu a filter tak, ako ich zdroj dáva pre uložené nastavenia. Nové mapovanie zahodí, čo import o prúdoch vedel, takže ďalší beh ich načíta všetky znova. Nie je to možné, kým je beh otvorený, zastavený chybou alebo sa ešte dokončuje.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 366
+// src/Import/DetailConfig.php, row 357
 "The mapping has no rows." => "Mapovanie nemá žiadne riadky.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Target" => "Cieľ", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Transformation" => "Transformácia", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 379
+// src/Import/DetailConfig.php, row 370
 "the field the job parameter names" => "položka určená parametrom úlohy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 269
+// src/Import/DetailPage.php, row 293
 "This page is out of date – reload it." => "Táto stránka je zastaraná – načítajte ju znova.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 282
+// src/Import/DetailPage.php, row 306
 "Last import" => "Posledný import", // ai 2026-10
 
-// src/Import/DetailPage.php, row 283
+// src/Import/DetailPage.php, row 307
 "Next start" => "Ďalšie spustenie", // ai 2026-10
 
-// src/Import/DetailPage.php, row 284
+// src/Import/DetailPage.php, row 308
 "Last check of the source" => "Posledná kontrola zdroja", // ai 2026-10
 
-// src/Import/DetailPage.php, row 290
+// src/Import/DetailPage.php, row 314
 "Overview" => "Prehľad", // ai 2026-10
 
-// src/Import/DetailPage.php, row 300
+// src/Import/DetailPage.php, row 324
 "Imports every stream." => "Importuje všetky prúdy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301, 801
+// src/Import/DetailPage.php, row 325, 841
 "Run changed only" => "Spustiť len zmenené", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301
+// src/Import/DetailPage.php, row 325
 "Skips the streams the source says did not change." => "Preskočí prúdy, ktoré sa podľa zdroja nezmenili.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302, 367, 802
+// src/Import/DetailPage.php, row 326, 391, 842
 "Check source" => "Skontrolovať zdroj", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302
+// src/Import/DetailPage.php, row 326
 "Asks the source whether it works. Stores nothing." => "Opýta sa zdroja, či funguje. Nič neukladá.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Reads up to 500 items and shows what it would store. Stores nothing." => "Načíta až 500 správ a ukáže, čo by uložil. Nič neukladá.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 309
+// src/Import/DetailPage.php, row 333
 "More actions" => "Ďalšie akcie", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327, 352
+// src/Import/DetailPage.php, row 351, 376
 "Runs" => "Behy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327
+// src/Import/DetailPage.php, row 351
 "No run yet." => "Zatiaľ žiadny beh.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Took" => "Trvanie", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Read" => "Načítané", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Skipped" => "Preskočené", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Filtered out" => "Odfiltrované", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Item errors" => "Chyby správ", // ai 2026-10
 
-// src/Import/DetailPage.php, row 342
+// src/Import/DetailPage.php, row 366
 "working %1" => "z toho práca %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 366
+// src/Import/DetailPage.php, row 390
 "The stored state of the streams cannot be read." => "Uložený stav prúdov nie je možné prečítať.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 367
+// src/Import/DetailPage.php, row 391
 "No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Zatiaľ nebol importovaný ani skontrolovaný žiadny prúd. Zoznam naplní tlačidlo %1 alebo %2 v časti Akcie vyššie.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 368, 396
+// src/Import/DetailPage.php, row 392, 421
 "Streams" => "Prúdy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Records" => "Záznamy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Last recorded" => "Posledný zápis", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Source checked" => "Kontrola zdroja", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Data version" => "Verzia dát", // ai 2026-10
 
-// src/Import/DetailPage.php, row 390
+// src/Import/DetailPage.php, row 415
 "by the run started %1" => "v behu spustenom %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 395
+// src/Import/DetailPage.php, row 420
 "Pages of the streams" => "Stránky prúdov", // ai 2026-10
 
-// src/Import/DetailPage.php, row 421
+// src/Import/DetailPage.php, row 452
 "Page %1 of %2" => "Strana %1 z %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 507
+// src/Import/DetailPage.php, row 545
 "The run is queued. It goes on in the background; reload the page to see how far it got." => "Beh je zaradený do frontu. Pokračuje na pozadí; ako ďaleko sa dostal, uvidíte po obnovení stránky.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 508
+// src/Import/DetailPage.php, row 546
 "The run goes on - its next step is queued." => "Beh pokračuje – jeho ďalší krok čaká vo fronte.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 509
+// src/Import/DetailPage.php, row 547
 "The run is ended. What it imported stays." => "Beh bol ukončený. Čo naimportoval, zostáva.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 511
+// src/Import/DetailPage.php, row 549
 "No such action." => "Taká akcia neexistuje.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 512
+// src/Import/DetailPage.php, row 550
 "Choose a stream of the source." => "Vyberte prúd zdroja.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 513
-"Not started." => "Nespustené.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 515
-"Its last step may still be working. Try again in a few minutes." => "Jeho posledný krok možno ešte beží. Skúste to znova o niekoľko minút.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 516
-"This import no longer exists in this slice." => "Tento import už v tomto module neexistuje.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 517
-"No such run of this import." => "Taký beh tohto importu neexistuje.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 518
-"The run is finished already." => "Beh je už dokončený.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 520
-"The action failed. The log of import failures has its cause." => "Akcia zlyhala. Príčinu nájdete v logu chýb importu.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Posledný beh skončil chybou. Najprv pri ňom zvoľte „Pokračovať“ alebo „Ukončiť“. Plánované spustenie ho ukončí samo, ručné spustenie nie.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first." => "Posledný beh skončil chybou. Najprv pri ňom zvoľte „Pokračovať“ alebo „Ukončiť“.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Na poslednom behu už dlho nepracoval žiadny krok. Najprv pri ňom zvoľte „Pokračovať“ alebo „Ukončiť“. Plánované spustenie ho ukončí samo, ručné spustenie nie.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first." => "Na poslednom behu už dlho nepracoval žiadny krok. Najprv pri ňom zvoľte „Pokračovať“ alebo „Ukončiť“.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 533
-"The last step of the previous run is still finishing. Try again in a few minutes." => "Posledný krok predchádzajúceho behu sa ešte dokončuje. Skúste to znova o niekoľko minút.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 534
-"Its next step is already on its way." => "Jeho ďalší krok je už na ceste.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 535
-"The last run is still running." => "Posledný beh ešte beží.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 544
-"Only a user who manages the feeding of the slice may run its imports." => "Importy modulu smie spúšťať len užívateľ, ktorý spravuje jeho výmenu správ.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 547
-"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Definíciu importu nie je možné použiť – jej mapovanie nezodpovedá modulu alebo ho nie je možné prečítať (DEFINITION).", // ai 2026-10
-
-// src/Import/DetailPage.php, row 550
-"The source has no such stream now." => "Zdroj teraz taký prúd nemá.", // ai 2026-10
-
 // src/Import/DetailPage.php, row 551
-"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Kód zdroja importu zlyhal (SOURCE). Triedu a riadok nájdete v logu chýb importu.", // ai 2026-10
+"At most (items) takes a whole number greater than 0, or nothing for all items (500 in a dry run)." => "Do poľa „Najviac (správ)“ zadajte celé číslo väčšie ako 0, alebo ho nechajte prázdne pre všetky správy (pri skúšobnom behu 500).", // ai 2026-11
 
 // src/Import/DetailPage.php, row 552
-"The first row of the file lacks columns the mapping needs." => "Prvému riadku súboru chýbajú stĺpce, ktoré mapovanie potrebuje.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 553
-"The source did not accept the key." => "Zdroj neprijal kľúč.", // ai 2026-10
+"Not started." => "Nespustené.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 554
-"The key of the source is damaged in the configuration." => "Kľúč zdroja je v konfigurácii poškodený.", // ai 2026-10
+"Its last step may still be working. Try again in a few minutes." => "Jeho posledný krok možno ešte beží. Skúste to znova o niekoľko minút.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 555
-"The source could not be reached." => "K zdroju sa nepodarilo pripojiť.", // ai 2026-10
+"This import no longer exists in this slice." => "Tento import už v tomto module neexistuje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 556
-"The run is finished; it cannot go on." => "Beh je dokončený; nemôže pokračovať.", // ai 2026-10
+"No such run of this import." => "Taký beh tohto importu neexistuje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 557
-"The import is switched off." => "Import je vypnutý.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 558
-"This import uses API keys, so only a superadmin may do this." => "Tento import používa API kľúče, preto to smie urobiť len superadmin.", // ai 2026-10
+"The run is finished already." => "Beh je už dokončený.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 559
-"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Zdroj importu nevie určiť verzie svojich prúdov, takže nemá stav, ktorý by bolo možné zaznamenať.", // ai 2026-10
+"The action failed. The log of import failures has its cause." => "Akcia zlyhala. Príčinu nájdete v logu chýb importu.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 560
-"The import source refused: %1" => "Zdroj importu odmietol: %1", // ai 2026-10
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Posledný beh skončil chybou. Najprv pri ňom zvoľte „Pokračovať“ alebo „Ukončiť“. Plánované spustenie ho ukončí samo, ručné spustenie nie.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first." => "Posledný beh skončil chybou. Najprv pri ňom zvoľte „Pokračovať“ alebo „Ukončiť“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 571
-"The request to the source failed." => "Požiadavka na zdroj zlyhala.", // ai 2026-10
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Na poslednom behu už dlho nepracoval žiadny krok. Najprv pri ňom zvoľte „Pokračovať“ alebo „Ukončiť“. Plánované spustenie ho ukončí samo, ručné spustenie nie.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 571
+"No step has worked on the last run for a long time. Continue it or End it first." => "Na poslednom behu už dlho nepracoval žiadny krok. Najprv pri ňom zvoľte „Pokračovať“ alebo „Ukončiť“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 572
-"The source is not available now." => "Zdroj teraz nie je dostupný.", // ai 2026-10
+"The last step of the previous run is still finishing. Try again in a few minutes." => "Posledný krok predchádzajúceho behu sa ešte dokončuje. Skúste to znova o niekoľko minút.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 588
-// src/Import/RunView.php, row 177
-"No import yet" => "Zatiaľ žiadny import", // ai 2026-10
+// src/Import/DetailPage.php, row 573
+"Its next step is already on its way." => "Jeho ďalší krok je už na ceste.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 574
+"The last run is still running." => "Posledný beh ešte beží.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 583
+"Only a user who manages the feeding of the slice may run its imports." => "Importy modulu smie spúšťať len užívateľ, ktorý spravuje jeho výmenu správ.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 586
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Definíciu importu nie je možné použiť – jej mapovanie nezodpovedá modulu alebo ho nie je možné prečítať (DEFINITION).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 589
-"Latest run: %1" => "Posledný beh: %1", // ai 2026-10
+"The source has no such stream now." => "Zdroj teraz taký prúd nemá.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 590
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Kód zdroja importu zlyhal (SOURCE). Triedu a riadok nájdete v logu chýb importu.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 591
+"The first row of the file lacks columns the mapping needs." => "Prvému riadku súboru chýbajú stĺpce, ktoré mapovanie potrebuje.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 592
+"The source did not accept the key." => "Zdroj neprijal kľúč.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 593
+"The key of the source is damaged in the configuration." => "Kľúč zdroja je v konfigurácii poškodený.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 594
+"The source could not be reached." => "K zdroju sa nepodarilo pripojiť.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 595
+"The database did not store the imported items; the source is not at fault." => "Databáza importované správy neuložila; chyba nie je na strane zdroja.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 596
+"The run is finished; it cannot go on." => "Beh je dokončený; nemôže pokračovať.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 597
+"The import runs only by hand, so a planned task does not start it." => "Import sa spúšťa len ručne, takže ho naplánovaná úloha nespustí.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 598
+"This import uses API keys, so only a superadmin may do this." => "Tento import používa API kľúče, preto to smie urobiť len superadmin.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 599
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Zdroj importu nevie určiť verzie svojich prúdov, takže nemá stav, ktorý by bolo možné zaznamenať.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 600
+"The import source refused: %1" => "Zdroj importu odmietol: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 611
+"The request to the source failed." => "Požiadavka na zdroj zlyhala.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 612
+"The source is not available now." => "Zdroj teraz nie je dostupný.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 628
+// src/Import/RunView.php, row 183
+"No import yet" => "Zatiaľ žiadny import", // ai 2026-10
+
+// src/Import/DetailPage.php, row 629
+"Latest run: %1" => "Posledný beh: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 635
 "Since then: %1" => "Odvtedy: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "Source: %1" => "Zdroj: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "this source is not available" => "tento zdroj nie je dostupný", // ai 2026-10
 
-// src/Import/DetailPage.php, row 626
+// src/Import/DetailPage.php, row 666
 "First item error:" => "Prvá chyba správy:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Latest runs" => "Posledné behy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Outcomes of the latest runs, newest first" => "Výsledky posledných behov, najnovšie prvé", // ai 2026-10
 
-// src/Import/DetailPage.php, row 654
+// src/Import/DetailPage.php, row 694
 "Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Najnovšie prvé. Čiarkovaný kruh je beh, ktorý nič neuložil: kontrola zdroja, skúšobný beh alebo zaznamenanie stavu. Plný štvorec %1 je beh ukončený pred dokončením.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 679
+// src/Import/DetailPage.php, row 719
 "The open run" => "Otvorený beh", // ai 2026-10
 
-// src/Import/DetailPage.php, row 681
+// src/Import/DetailPage.php, row 721
 "Streams done: %1 of %2." => "Hotové prúdy: %1 z %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 684
+// src/Import/DetailPage.php, row 724
 "Now at: %1." => "Práve spracúva: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 686
+// src/Import/DetailPage.php, row 726
 "Last progress: %1." => "Posledný pokrok: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 689
+// src/Import/DetailPage.php, row 729
 "Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "Nič ďalšie sa neimportuje, kým nezasiahnete alebo kým import znova nespustí naplánovaná úloha (tým sa tento beh ukončí).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 690
+// src/Import/DetailPage.php, row 730
 "Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "„Pokračovať“ nadviaže tam, kde sa beh zastavil, keď odstránite príčinu; „Ukončiť“ ho definitívne zastaví a ponechá, čo bolo naimportované.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 691
+// src/Import/DetailPage.php, row 731
 "No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "Už dlho na ňom nepracoval žiadny krok – overte, že cron spúšťa front úloh a že jeho kolá sú na krok dosť dlhé (TOEXECUTE_ALLOWED_TIME v config.php). „Pokračovať“ to teraz skúsi znova; „Ukončiť“ ho definitívne zastaví a ponechá, čo bolo naimportované. Plánované spustenie importu ho ukončí a začne nový beh.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 692
+// src/Import/DetailPage.php, row 732
 "A step is working now." => "Práve pracuje krok.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 694
+// src/Import/DetailPage.php, row 734
 "Waiting to try again at %1 after 1 failed try." => "Čaká na nový pokus o %1 po 1 neúspešnom pokuse.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 695
+// src/Import/DetailPage.php, row 735
 "Waiting to try again at %1 after %2 failed tries." => "Čaká na nový pokus o %1 po %2 neúspešných pokusoch.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 696
+// src/Import/DetailPage.php, row 736
 "Waiting to try again at %1." => "Čaká na nový pokus o %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 698, 944
+// src/Import/DetailPage.php, row 738, 995
 "Its last step may still be working." => "Jeho posledný krok možno ešte beží.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 699
+// src/Import/DetailPage.php, row 739
 "Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "Jeho posledný krok sa zastavil pred dokončením. Front úloh ho skúsi znova do %1 minút; „Skúsiť hneď“ to urobí okamžite.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue until %1." => "Jeho ďalší krok čaká vo fronte úloh do %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue." => "Jeho ďalší krok čaká vo fronte úloh.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 726
-"The import is disabled, so no planned task starts it." => "Import je vypnutý, takže ho žiadna naplánovaná úloha nespustí.", // ai 2026-10
+// src/Import/DetailPage.php, row 766
+"Planned tasks start it only once Enabled is ticked (Edit in the list of imports)." => "Naplánované úlohy ho spustia, až keď bude zaškrtnuté „Povolené“ („Editácia“ v zozname importov).", // ai 2026-11
 
-// src/Import/DetailPage.php, row 732
-"Not planned" => "Nenaplánované", // ai 2026-10
-
-// src/Import/DetailPage.php, row 733
+// src/Import/DetailPage.php, row 773
 "A planned task calls it, but none has a time to start it." => "Volá ho naplánovaná úloha, ale žiadna nemá nastavený čas spustenia.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 734
+// src/Import/DetailPage.php, row 774
 "It runs only when you start it. To run it on a schedule, add a planned task." => "Beží, len keď ho spustíte. Na spúšťanie podľa plánu pridajte naplánovanú úlohu.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 745
+// src/Import/DetailPage.php, row 785
 "Written by hand, a planned task starts it with %1." => "Ručne zapísaná naplánovaná úloha ho spustí pomocou %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 756
+// src/Import/DetailPage.php, row 796
 "Planned tasks need the Forms permission" => "„Naplánované úlohy“ vyžadujú právo „Formuláre“", // ai 2026-10
 
-// src/Import/DetailPage.php, row 760
+// src/Import/DetailPage.php, row 800
 "Planned tasks: %1" => "Naplánované úlohy: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 761
+// src/Import/DetailPage.php, row 801
 "Planned tasks: %1, next %2" => "Naplánované úlohy: %1, nabudúce %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 763, 778
+// src/Import/DetailPage.php, row 803, 818
 "Schedule" => "Naplánovať", // ai 2026-10
 
-// src/Import/DetailPage.php, row 766
-"(import off)" => "(import vypnutý)", // ai 2026-10
+// src/Import/DetailPage.php, row 806
+"(does not start it now)" => "(teraz ho nespustí)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "next %1" => "nabudúce %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "no time set" => "bez nastaveného času", // ai 2026-10
 
-// src/Import/DetailPage.php, row 774
+// src/Import/DetailPage.php, row 814
 "save the task again to let it start the import" => "uložte úlohu znova, aby mohla spustiť import", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "queued" => "vo fronte", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "not queued" => "nie je vo fronte", // ai 2026-10
 
-// src/Import/DetailPage.php, row 793
+// src/Import/DetailPage.php, row 833
 "Import %1" => "Import %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "mode set by an expression" => "režim určený výrazom", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "unknown mode %1" => "neznámy režim %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Passed" => "V poriadku", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Failed" => "Zlyhalo", // ai 2026-10
 
-// src/Import/DetailPage.php, row 828
+// src/Import/DetailPage.php, row 868
 "Taken from the run list: the stream state holds no newer check result." => "Prevzaté zo zoznamu behov: stav prúdov neobsahuje novší výsledok kontroly.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "The stored result cannot be read." => "Uložený výsledok nie je možné prečítať.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "Never checked" => "Nikdy nekontrolované", // ai 2026-10
 
-// src/Import/DetailPage.php, row 849
+// src/Import/DetailPage.php, row 893
 "The mapping of the import cannot be read; no run starts until it is set again." => "Mapovanie importu nie je možné prečítať; kým ho znova nenastavíte, žiadny beh sa nespustí.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 856
+// src/Import/DetailPage.php, row 900
 "The mapping does not fit the slice; no run starts until it is fixed:" => "Mapovanie nezodpovedá modulu; kým ho neopravíte, žiadny beh sa nespustí:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 899
+// src/Import/DetailPage.php, row 912
+"The source is not set up yet." => "Zdroj ešte nie je nastavený.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 948
 "No stream is known yet - run the import or check the source first." => "Zatiaľ nie je známy žiadny prúd – najprv spustite import alebo skontrolujte zdroj.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 903
+// src/Import/DetailPage.php, row 952
 "One stream" => "Jeden prúd", // ai 2026-10
 
-// src/Import/DetailPage.php, row 904
-"Run the stream" => "Spustiť prúd", // ai 2026-10
+// src/Import/DetailPage.php, row 953
+"At most (items)" => "Najviac (správ)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 905
+// src/Import/DetailPage.php, row 955
 "Dry run of the stream" => "Skúšobný beh prúdu", // ai 2026-10
 
-// src/Import/DetailPage.php, row 918
+// src/Import/DetailPage.php, row 956
+"Run the stream" => "Spustiť prúd", // ai 2026-10
+
+// src/Import/DetailPage.php, row 969
 "Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "Zaznamenať verzie, ktoré má zdroj teraz, ako keby boli naimportované? Prúdy, ktoré sa potom nezmenia, sa importovať nebudú.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 919
+// src/Import/DetailPage.php, row 970
 "Record the current state of the source" => "Zaznamenať aktuálny stav zdroja", // ai 2026-10
 
-// src/Import/DetailPage.php, row 921
+// src/Import/DetailPage.php, row 972
 "Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Uloží verziu, ktorú má každý prúd teraz, bez importovania, takže „Spustiť len zmenené“ potom vezme len to, čo sa zmení neskôr. Použite to, len keď sú dáta zdroja už v module.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 937
+// src/Import/DetailPage.php, row 988
 "No run is open." => "Žiadny beh nie je otvorený.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 943
+// src/Import/DetailPage.php, row 994
 "Its step is working now." => "Jeho krok práve pracuje.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 947
+// src/Import/DetailPage.php, row 998
 "Try now" => "Skúsiť hneď", // ai 2026-10
 
-// src/Import/DetailPage.php, row 957
+// src/Import/DetailPage.php, row 1008
 "End the run for good? What it imported stays; the next run starts from the beginning." => "Definitívne ukončiť beh? Čo naimportoval, zostane; ďalší beh začne od začiatku.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1024
+// src/Import/DetailPage.php, row 1075
 "The first item errors (%1)" => "Prvé chyby správ (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1025, 1046
+// src/Import/DetailPage.php, row 1076, 1097
 "Job" => "Úloha", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1036
+// src/Import/DetailPage.php, row 1087
 "Skipped - the key came out empty (%1)" => "Preskočené – kľúč vyšiel prázdny (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1046
+// src/Import/DetailPage.php, row 1097
 "Source value" => "Hodnota zo zdroja", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of 1 job." => "Filter neponechal žiadnu správu z 1 úlohy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of %1 jobs." => "Filter neponechal žiadnu správu z %1 úloh.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1057
+// src/Import/DetailPage.php, row 1108
 "If those items should be imported, check the filter in Mapping." => "Ak sa tieto správy majú importovať, skontrolujte filter v časti „Mapovanie“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in 1 stream; the rest of it was skipped." => "Zdroj sa v 1 prúde zacyklil; jeho zvyšok bol preskočený.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in %1 streams; the rest of each was skipped." => "Zdroj sa zacyklil v %1 prúdoch; zvyšok každého z nich bol preskočený.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1067
+// src/Import/DetailPage.php, row 1118
 "The source pages wrongly or changed its paging; check the source, then run the import again." => "Zdroj stránkuje chybne alebo zmenil stránkovanie; skontrolujte zdroj a potom import spustite znova.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1082
+// src/Import/DetailPage.php, row 1133
 "Remarks of the source (%1)" => "Poznámky zdroja (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1091
+// src/Import/DetailPage.php, row 1142
 "Remark" => "Poznámka", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1099
+// src/Import/DetailPage.php, row 1150
 "The dry run found no item to store." => "Skúšobný beh nenašiel žiadnu správu na uloženie.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1101
+// src/Import/DetailPage.php, row 1152
 "What the dry run would store - the first %1 items" => "Čo by skúšobný beh uložil – prvé správy (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Last try failed:" => "Posledný pokus zlyhal:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Error:" => "Chyba:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1124
+// src/Import/DetailPage.php, row 1175
 "At: %1" => "Kde: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1126
+// src/Import/DetailPage.php, row 1177
 "What to do:" => "Čo robiť:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1136
+// src/Import/DetailPage.php, row 1187
 "Check the address of the source in its settings, then Continue or End the run." => "Skontrolujte adresu zdroja v jeho nastaveniach a potom pri behu zvoľte „Pokračovať“ alebo „Ukončiť“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1140
+// src/Import/DetailPage.php, row 1191
 "Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "Opravte mapovanie stĺpcov alebo súbor tak, aby chýbajúce stĺpce existovali, a potom znova spustite „Skontrolovať zdroj“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1141
+// src/Import/DetailPage.php, row 1192
 "Check the key of the source in its settings, then run Check source." => "Skontrolujte kľúč zdroja v jeho nastaveniach a potom spustite „Skontrolovať zdroj“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1142
+// src/Import/DetailPage.php, row 1193
 "Enter the key of the source again in its settings, then run Check source." => "Zadajte kľúč zdroja v jeho nastaveniach znova a potom spustite „Skontrolovať zdroj“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1143
+// src/Import/DetailPage.php, row 1194
 "The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "K zdroju sa nepodarilo pripojiť. Skontrolujte jeho adresu v nastaveniach; ak je správna, zvoľte pri behu neskôr „Pokračovať“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1144
+// src/Import/DetailPage.php, row 1195
 "Correct the settings of the source, then run Check source." => "Opravte nastavenia zdroja a potom spustite „Skontrolovať zdroj“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1145
+// src/Import/DetailPage.php, row 1196
 "Choose a stream the source still has, then start the import again." => "Vyberte prúd, ktorý zdroj stále má, a potom import spustite znova.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1146
+// src/Import/DetailPage.php, row 1197
 "Check that every mapped field exists in the slice, then start the import again." => "Overte, že každá mapovaná položka v module existuje, a potom import spustite znova.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1147
+// src/Import/DetailPage.php, row 1198
 "Look the failure up in the log of import failures, then Continue or End the run." => "Vyhľadajte chybu v logu chýb importu a potom pri behu zvoľte „Pokračovať“ alebo „Ukončiť“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1161
+// src/Import/DetailPage.php, row 1199
+"Continue the run later; if the database keeps refusing, tell its administrator." => "Pokračujte v behu neskôr; ak databáza naďalej odmieta, informujte jej administrátora.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 1213
 "full run" => "úplný beh", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1162
-"one stream (%1)" => "jeden prúd (%1)", // ai 2026-10
+// src/Import/DetailPage.php, row 1214
+"one stream: %1" => "jeden prúd: %1", // ai 2026-11
 
-// src/Import/DetailPage.php, row 1163
+// src/Import/DetailPage.php, row 1215
 "%1 streams" => "prúdy: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Baseline only" => "Len zaznamenaný stav", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Nothing imported yet. Run changed only takes what changes after this." => "Zatiaľ nič nenaimportované. „Spustiť len zmenené“ vezme len to, čo sa zmení potom.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207, 1208
+// src/Import/DetailPage.php, row 1259, 1260
 "Imported with item errors" => "Naimportované s chybami správ", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207
+// src/Import/DetailPage.php, row 1259
 "1 item error in the run that imported it - see Runs." => "1 chyba správy v behu, ktorý ho naimportoval – pozri „Behy“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1208
+// src/Import/DetailPage.php, row 1260
 "%1 item errors in the run that imported it - see Runs." => "Chyby správ (%1) v behu, ktorý ho naimportoval – pozri „Behy“.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "Imported" => "Naimportované", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source was asked again after the import." => "Po importe bol zdroj znova dopytovaný.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source has not been asked since." => "Zdroj odvtedy dopytovaný nebol.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Checked, not imported yet" => "Skontrolované, zatiaľ nenaimportované", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Run imports it; Run changed only too, as it has no version to compare." => "„Spustiť“ ho naimportuje; „Spustiť len zmenené“ tiež, pretože nemá verziu na porovnanie.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "Not seen yet" => "Zatiaľ nezistené", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "No run has imported or checked it." => "Žiadny beh ho nenaimportoval ani neskontroloval.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1228
+// src/Import/DetailPage.php, row 1280
 "%1 read" => "načítané: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1229
+// src/Import/DetailPage.php, row 1281
 "%1 new, %2 updated, %3 skipped" => "nových %1, aktualizovaných %2, preskočených %3", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1230
+// src/Import/DetailPage.php, row 1282
 "%1 filtered out" => "odfiltrovaných %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "dry run - nothing stored" => "skúšobný beh - nič neuložené", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "all streams of the run together" => "všetky prúdy behu spolu", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1250
+// src/Import/DetailPage.php, row 1302
 "None yet - an import records it" => "Zatiaľ žiadna - zaznamená ju import", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1251
+// src/Import/DetailPage.php, row 1303
 "None - the source gives no version" => "Žiadna - zdroj verziu neuvádza", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1" => "trvalo %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1, working %2" => "trvalo %1, z toho práca %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1310
+// src/Import/DetailPage.php, row 1362
 "%1 s" => "%1 s", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313
+// src/Import/DetailPage.php, row 1365
 "%1 min %2 s" => "%1 min %2 s", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313, 1315
+// src/Import/DetailPage.php, row 1365, 1367
 // src/Optimize/StateCheckModel.php, row 257
 "%1 min" => "%1 min", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1315
+// src/Import/DetailPage.php, row 1367
 // src/Optimize/StateCheckModel.php, row 258
 "%1 h" => "%1 h", // ai 2026-10
 
@@ -10545,7 +10605,7 @@ return [
 // src/Import/RunView.php, row 74
 "Stuck — see State Check" => "Zaseknuté — pozri „Kontrola stavu“", // ai 2026-10
 
-// src/Import/RunView.php, row 75, 171
+// src/Import/RunView.php, row 75, 177
 "Running" => "Beží", // ai 2026-10
 
 // src/Import/RunView.php, row 76
@@ -10600,167 +10660,197 @@ return [
 // src/Import/RunView.php, row 131
 "%1 days ago" => "pred %1 dňami", // ai 2026-10
 
-// src/Import/RunView.php, row 159, 162, 165, 169
+// src/Import/RunView.php, row 162, 168, 171, 175
 "Failing" => "Zlyháva", // ai 2026-10
 
-// src/Import/RunView.php, row 159
+// src/Import/RunView.php, row 162
 "The source of this import is not available, so it cannot run." => "Zdroj tohto importu nie je dostupný, takže nemôže bežať.", // ai 2026-10
 
-// src/Import/RunView.php, row 162
+// src/Import/RunView.php, row 165
+"Not set up" => "Nenastavené", // ai 2026-11
+
+// src/Import/RunView.php, row 165
+"Fill in these settings of the source: %1." => "Vyplňte tieto nastavenia zdroja: %1.", // ai 2026-11
+
+// src/Import/RunView.php, row 168
 "The mapping does not fit the slice, so no run can start until it is fixed." => "Mapovanie nezodpovedá modulu, takže kým ho neopravíte, žiadny beh sa nespustí.", // ai 2026-10
 
-// src/Import/RunView.php, row 169
+// src/Import/RunView.php, row 175
 "A run has made no progress for a long time - cron may not be running its steps." => "Beh sa už dlho nepohol - cron možno nespúšťa jeho kroky.", // ai 2026-10
 
-// src/Import/RunView.php, row 170, 178, 181, 182, 183
+// src/Import/RunView.php, row 176, 184, 187, 188, 189
 "Needs attention" => "Vyžaduje pozornosť", // ai 2026-10
 
-// src/Import/RunView.php, row 170
+// src/Import/RunView.php, row 176
 "A run failed a step and waits to try again." => "Beh zlyhal v kroku a čaká na nový pokus.", // ai 2026-10
 
-// src/Import/RunView.php, row 171
+// src/Import/RunView.php, row 177
 "A run is in progress: %1." => "Beh prebieha: %1.", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "Never ran" => "Nikdy nespustené", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "No run yet. Run starts the first import." => "Zatiaľ žiadny beh. „Spustiť“ zaháji prvý import.", // ai 2026-10
 
-// src/Import/RunView.php, row 177
+// src/Import/RunView.php, row 183
 "Only source checks or dry runs so far - nothing was imported." => "Zatiaľ len kontroly zdroja alebo skúšobné behy - nič nebolo naimportované.", // ai 2026-10
 
-// src/Import/RunView.php, row 179
+// src/Import/RunView.php, row 185
 "The last import stopped by an error and was then ended, so the data may be incomplete." => "Posledný import sa zastavil na chybe a potom bol ukončený, takže dáta môžu byť neúplné.", // ai 2026-10
 
-// src/Import/RunView.php, row 180
+// src/Import/RunView.php, row 186
 "The last import was ended before it finished, so the data may be incomplete." => "Posledný import bol ukončený pred dokončením, takže dáta môžu byť neúplné.", // ai 2026-10
 
-// src/Import/RunView.php, row 181
+// src/Import/RunView.php, row 187
 "The last import finished, but 1 item could not be stored." => "Posledný import dobehol, ale 1 správu sa nepodarilo uložiť.", // ai 2026-10
 
-// src/Import/RunView.php, row 182
+// src/Import/RunView.php, row 188
 "The last import finished, but %1 items could not be stored." => "Posledný import dobehol, ale niektoré správy sa nepodarilo uložiť (počet: %1).", // ai 2026-10
 
-// src/Import/RunView.php, row 183
+// src/Import/RunView.php, row 189
 "The last full import read nothing - the source may be empty." => "Posledný úplný import nič nenačítal - zdroj je možno prázdny.", // ai 2026-10
 
-// src/Import/RunView.php, row 184, 185
+// src/Import/RunView.php, row 190, 191
 "Healthy" => "V poriadku", // ai 2026-10
 
-// src/Import/RunView.php, row 184
+// src/Import/RunView.php, row 190
 "The last import finished without errors; nothing had changed." => "Posledný import dobehol bez chýb; nič sa nezmenilo.", // ai 2026-10
 
-// src/Import/RunView.php, row 185
+// src/Import/RunView.php, row 191
 "The last import finished without errors (%1 read)." => "Posledný import dobehol bez chýb (načítaných %1).", // ai 2026-10
 
-// src/Import/RunView.php, row 188
-"Runs only by hand." => "Spúšťa sa len ručne.", // ai 2026-10
-
-// src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "Posledný skúšobný beh sa zastavil na chybe. Kým nezasiahnete, nič ďalšie sa neimportuje.", // ai 2026-10
+// src/Import/RunView.php, row 198
+"The source refuses its settings." => "Zdroj odmieta svoje nastavenia.", // ai 2026-11
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "Posledná kontrola zdroja sa zastavila na chybe. Kým nezasiahnete, nič ďalšie sa neimportuje.", // ai 2026-10
-
-// src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Zaznamenanie stavu zdroja sa zastavilo na chybe. Kým nezasiahnete, nič ďalšie sa neimportuje.", // ai 2026-10
-
-// src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "Posledný import sa zastavil na chybe. Kým nezasiahnete, nič ďalšie sa neimportuje.", // ai 2026-10
-
-// src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "Kontrola zdroja zlyhala - nič nenaimportované", // ai 2026-10
+"The source refuses its settings: %1" => "Zdroj odmieta svoje nastavenia: %1", // ai 2026-11
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "Prebieha kontrola zdroja", // ai 2026-10
+"The last dry run stopped by an error. Nothing more is imported until you act." => "Posledný skúšobný beh sa zastavil na chybe. Kým nezasiahnete, nič ďalšie sa neimportuje.", // ai 2026-10
+
+// src/Import/RunView.php, row 214
+"The last source check stopped by an error. Nothing more is imported until you act." => "Posledná kontrola zdroja sa zastavila na chybe. Kým nezasiahnete, nič ďalšie sa neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 215
-"Source reachable - nothing imported" => "Zdroj je dostupný - nič nenaimportované", // ai 2026-10
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Zaznamenanie stavu zdroja sa zastavilo na chybe. Kým nezasiahnete, nič ďalšie sa neimportuje.", // ai 2026-10
 
-// src/Import/RunView.php, row 217
-"Nothing had changed" => "Nič sa nezmenilo", // ai 2026-10
-
-// src/Import/RunView.php, row 218
-"Nothing read" => "Nič nenačítané", // ai 2026-10
-
-// src/Import/RunView.php, row 219
-"%1 read, %2 new, %3 changed" => "Načítaných %1, nových %2, zmenených %3", // ai 2026-10
-
-// src/Import/RunView.php, row 221
-"%1 (nothing stored)" => "%1 (nič neuložené)", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of 1 stream - nothing imported" => "Zaznamenaný stav 1 prúdu - nič nenaimportované", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of %1 streams - nothing imported" => "Zaznamenaný stav prúdov: %1 - nič nenaimportované", // ai 2026-10
+// src/Import/RunView.php, row 216
+"The last import stopped by an error. Nothing more is imported until you act." => "Posledný import sa zastavil na chybe. Kým nezasiahnete, nič ďalšie sa neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 228
-"%1 without a version" => "Bez verzie: %1", // ai 2026-10
+"Source check failed - nothing imported" => "Kontrola zdroja zlyhala - nič nenaimportované", // ai 2026-10
+
+// src/Import/RunView.php, row 229
+"Source check under way" => "Prebieha kontrola zdroja", // ai 2026-10
+
+// src/Import/RunView.php, row 231
+"Source reachable - nothing imported" => "Zdroj je dostupný - nič nenaimportované", // ai 2026-10
+
+// src/Import/RunView.php, row 233
+"Nothing had changed" => "Nič sa nezmenilo", // ai 2026-10
+
+// src/Import/RunView.php, row 234
+"Nothing read" => "Nič nenačítané", // ai 2026-10
+
+// src/Import/RunView.php, row 235
+"%1 read, %2 new, %3 changed" => "Načítaných %1, nových %2, zmenených %3", // ai 2026-10
 
 // src/Import/RunView.php, row 237
-"changed only" => "len zmenené", // ai 2026-10
+"%1 (nothing stored)" => "%1 (nič neuložené)", // ai 2026-10
 
-// src/Import/RunView.php, row 238
-"check" => "kontrola", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of 1 stream - nothing imported" => "Zaznamenaný stav 1 prúdu - nič nenaimportované", // ai 2026-10
 
-// src/Import/RunView.php, row 239
-"recording the state of the source" => "zaznamenanie stavu zdroja", // ai 2026-10
-
-// src/Import/RunView.php, row 242
-"dry run" => "skúšobný beh", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of %1 streams - nothing imported" => "Zaznamenaný stav prúdov: %1 - nič nenaimportované", // ai 2026-10
 
 // src/Import/RunView.php, row 244
-"by hand" => "ručne", // ai 2026-10
+"%1 without a version" => "Bez verzie: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 245
-"planned" => "podľa plánu", // ai 2026-10
+// src/Import/RunView.php, row 254
+"changed only" => "len zmenené", // ai 2026-10
 
-// src/Import/RunView.php, row 246
-"on an event" => "pri udalosti", // ai 2026-10
+// src/Import/RunView.php, row 255
+"check" => "kontrola", // ai 2026-10
+
+// src/Import/RunView.php, row 256
+"recording the state of the source" => "zaznamenanie stavu zdroja", // ai 2026-10
 
 // src/Import/RunView.php, row 259
-"Disabled - it does not start" => "Vypnuté - nespúšťa sa", // ai 2026-10
+"dry run" => "skúšobný beh", // ai 2026-10
 
-// src/Import/RunView.php, row 268
+// src/Import/RunView.php, row 261
+"first %1 items" => "prvé správy: %1", // ai 2026-11
+
+// src/Import/RunView.php, row 263
+"by hand" => "ručne", // ai 2026-10
+
+// src/Import/RunView.php, row 264
+"planned" => "podľa plánu", // ai 2026-10
+
+// src/Import/RunView.php, row 265
+"on an event" => "pri udalosti", // ai 2026-10
+
+// src/Import/RunView.php, row 285
+"Runs only by hand." => "Spúšťa sa len ručne.", // ai 2026-10
+
+// src/Import/RunView.php, row 294
 "No run yet" => "Zatiaľ žiadny beh", // ai 2026-10
 
-// src/Import/RunView.php, row 280
+// src/Import/RunView.php, row 306
 "1 item error" => "1 chyba správy", // ai 2026-10
 
-// src/Import/RunView.php, row 281
+// src/Import/RunView.php, row 307
 "%1 item errors" => "Chyby správ: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 284
+// src/Import/RunView.php, row 310
 "Last import: %1" => "Posledný import: %1", // ai 2026-10
 
 // src/Import/SliceIdSetting.php, row 22
 "No slice ID" => "Chýba ID modulu", // ai 2026-10
 
-// src/Import/Source/CsvColumnsSetting.php, row 31
-"Expected a JSON object {\"column\": \"field id\"}" => "Očakávaný objekt JSON {\"column\": \"field id\"}", // ai 2026-10
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"no column" => "žiadny stĺpec", // ai 2026-11
 
-// src/Import/Source/CsvurlSource.php, row 42
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"more than %1 columns" => "viac ako %1 stĺpcov", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 73
+"not a field the import may fill" => "nie je položka, ktorú môže import vyplniť", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 74
+"the column name is empty, too long or holds invisible characters" => "názov stĺpca je prázdny, príliš dlhý alebo obsahuje neviditeľné znaky", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 75
+"the column is named twice" => "stĺpec je uvedený dvakrát", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 89
+"Line %1: %2" => "Riadok %1: %2", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 119
+"expected \"column = field id\"" => "očakáva sa „stĺpec = id položky“", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 43
 "CSV file at a URL" => "CSV súbor na URL", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 47
+// src/Import/Source/CsvurlSource.php, row 48
 "Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "Importuje riadky CSV súboru z verejnej http(s) adresy; nastavenie určuje, ktorý stĺpec plní ktorú položku.", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "http or https only, on a public address, without a user name and password" => "len http alebo https, na verejnej adrese, bez užívateľského mena a hesla", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 55
+// src/Import/Source/CsvurlSource.php, row 56
 // src/Widget/Widget.php, row 743, 812
 "Columns" => "Stĺpce", // ai 2026-06
 
-// src/Import/Source/CsvurlSource.php, row 55
-"JSON object: the column name in the first row => the field it fills" => "Objekt JSON: názov stĺpca v prvom riadku => položka, ktorú plní", // ai 2026-10
-
 // src/Import/Source/CsvurlSource.php, row 56
+"One line per column: its name in the first row = the id of the field it fills" => "Jeden riadok na stĺpec: jeho názov v prvom riadku CSV = id položky, ktorú vypĺňa", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 57
 "Key column" => "Kľúčový stĺpec", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 56
+// src/Import/Source/CsvurlSource.php, row 57
 "The column that identifies the item; it must be one of the columns" => "Stĺpec, ktorý identifikuje správu; musí byť jedným zo stĺpcov", // ai 2026-10
 
 // src/Isds/Advice.php, row 48
@@ -11481,40 +11571,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "Tento riadok tu nemožno uložiť.", // ai 2026-10
 
-// src/Manager.php, row 821
+// src/Manager.php, row 812
 "Searchbar" => "Vyhľadávacia lišta", // ai 2026-06
 
-// src/Manager.php, row 822
+// src/Manager.php, row 813
 "Scroller" => "Stránkovanie", // ai 2026-06
 
-// src/Manager.php, row 823
+// src/Manager.php, row 814
 "Msg" => "Hlásenie", // ai 2026-06
 
-// src/Manager.php, row 824
+// src/Manager.php, row 815
 "Bin" => "Schránka", // ai 2026-06
 
-// src/Manager.php, row 826
+// src/Manager.php, row 817
 "Manager ID" => "ID manažéra", // ai 2026-06
 
-// src/Manager.php, row 1200
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "Akcia nebola vykonaná - použite tlačidlo na stránke.", // ai 2026-10
 
-// src/Manager.php, row 1281
+// src/Manager.php, row 1272
 "Edit id" => "Id pre editáciu", // ai 2026-06
 
-// src/Manager.php, row 1295
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Viac riadkov vyberiete kliknutím s podržanou klávesou Shift", // ai 2026-06
 
-// src/Manager.php, row 1333
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "Naozaj chcete vyprázdniť kôš?", // ai 2026-06
 
-// src/Manager.php, row 1435
+// src/Manager.php, row 1426
 "Go" => "Choď",
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "Nie je vybraná žiadna správa. Vykonať akciu pre všetky vyfiltrované správy? ", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "Run for %1 items" => "Spustiť pre %1 správ", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47

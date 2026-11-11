@@ -6,6 +6,7 @@ namespace AA\Import;
 
 use AA;
 use AA\Http\TransportException;
+use AA\IO\DB\TransactionFailed;
 use AA\IO\Grabber\AbstractGrabber;
 use AA\IO\Saver;
 use AA\IO\SourceFailure;
@@ -84,6 +85,9 @@ class Run extends BatchRun
 
     /** the modes that store nothing in the slice: they ask the source and record what it says */
     public const SOURCE_ONLY_MODES = ['check', 'baseline'];
+
+    /** the run's error code when the database refused to commit what a job stored - not the source's fault */
+    public const COMMIT = 'COMMIT';
 
     /** what walkJobs() and runJob() return when the step stops at the cursor */
     private const STOP = 'stop';
@@ -201,6 +205,12 @@ class Run extends BatchRun
     public function isDry(): bool
     {
         return (string) $this->dry === '1';
+    }
+
+    /** source items the run reads at most; 0 = all */
+    public function limit(): int
+    {
+        return (int) $this->limit;
     }
 
     /** @return ?list<string> the streams the user chose for the run; null = all the source has */
@@ -556,7 +566,8 @@ class Run extends BatchRun
 
     /**
      * Three steps without progress. A step that never fits a queue round ends in error - skipping
-     * what does not fit would lose data quietly. Any other failure skips the job (the next
+     * what does not fit would lose data quietly; so does a job whose commit the database refused,
+     * at the stream and job it stopped at (COMMIT). Any other failure skips the job (the next
      * one gets failed = 1, the last one closes the stream without its version) once check() says
      * the source is up; the third job skipped in a row (RunCursor::SKIPS_IN_A_ROW) skips the rest
      * of its stream (JOBS_FAILING); a stream whose jobs() fails then is closed. A source that cannot
@@ -568,6 +579,10 @@ class Run extends BatchRun
         $pos  = RunCursor::fromPosition($last->position);
         $keys = $this->streamKeys();
         $ctx  = null;
+        // a job the database would not store is no fault of the job - skipped, its items would be lost
+        if ($last->retry === self::COMMIT) {
+            throw new BatchFailed(self::COMMIT, (string) ($last->extra['where'] ?? ''));
+        }
         // a check or a baseline has nothing to skip: its cycle, its failed check() end it
         if (($last->retry === 'NO_PROGRESS') || $this->sourceOnly()) {
             return null;
@@ -747,6 +762,11 @@ class Run extends BatchRun
                 default => ($e instanceof SourceUnavailable) ? $e->reason : 'TRANSPORT',
             };
             return $this->stopped($pos, $from, $keys, $retry, ($retry === '') ? '' : SourceFailure::detailOf($e));
+        } catch (TransactionFailed $e) {
+            // the database refused a commit, not the source: the job goes again from the cursor (what
+            // it stored before is stored once more) and three refusals in a row end the run
+            AA_Log::write(Toexecute::FAILED_EVENT, $this->selector(), Toexecute::failureParams($this->getId(), $e));
+            return $this->stopped($pos, $from, $keys, self::COMMIT, where: RunCursor::where($keys[$pos['i']] ?? '', $pos['job'], $ctx));
         } catch (\Throwable $e) {
             throw $this->failure($e, $keys, $pos, $ctx);
         }
@@ -1055,7 +1075,7 @@ class Run extends BatchRun
     /** what the report says of a stream skipped by walkJobs() at $pos: which one, and how the source went round */
     private static function cycleRemark(Stream $stream, array $pos, int $limit): string
     {
-        $name = (($stream->label !== '') && ($stream->label !== $stream->key)) ? "{$stream->label} ({$stream->key})" : $stream->key;
+        $name = Stream::displayName($stream->key, $stream->label);
         $how  = ($pos['pages'] >= $limit) ? "handed out more than $limit jobs" : 'handed out the same job twice in a row';
         return "Stream $name: the source $how; the rest of the stream was skipped";
     }
@@ -1331,8 +1351,9 @@ class Run extends BatchRun
         return [$new, $counts];
     }
 
-    /** @param list<string> $keys */
-    private function result(array $pos, bool $finished, array $keys, string $retry = '', string $retryDetail = ''): BatchStepResult
+    /** @param list<string> $keys
+     *  @param string $where where a retry that may end the run stopped, for its error */
+    private function result(array $pos, bool $finished, array $keys, string $retry = '', string $retryDetail = '', string $where = ''): BatchStepResult
     {
         [$remarks, $remarked] = $this->newRemarks();
         return new BatchStepResult(
@@ -1349,6 +1370,7 @@ class Run extends BatchRun
                 'collisions' => $this->stepCollisions, 'empty_keys' => $this->stepEmptyKeys, 'remarks' => $remarks,
                 // the step ends on a fresh instance of the run, which never saw work() begin
                 'work_ms' => (int) round(max(0.0, static::microNow() - ($this->workFrom ?? static::microNow())) * 1000),
+                'where'   => $where,
             ],
             $retryDetail,
         );
@@ -1357,7 +1379,7 @@ class Run extends BatchRun
     /** a step cut short at $pos: progress, or no progress with a reason the core can retry
      *  @param list<string> $keys
      *  @param string $detail SourceFailure::$detail of the failure behind $retry */
-    private function stopped(array $pos, array $from, array $keys, string $retry, string $detail = ''): BatchStepResult
+    private function stopped(array $pos, array $from, array $keys, string $retry, string $detail = '', string $where = ''): BatchStepResult
     {
         if (($retry !== '') && !$this->sourceOnly() && BatchPosition::same($from, ['checked' => $from['checked']] + $pos)) {
             // a check() passed is no progress of a step that failed before any job started (streams(),
@@ -1367,7 +1389,7 @@ class Run extends BatchRun
         if (($retry === '') && BatchPosition::same($from, $pos)) {
             $retry = 'NO_PROGRESS';
         }
-        return $this->result($pos, false, $keys, $retry, $detail);
+        return $this->result($pos, false, $keys, $retry, $detail, $where);
     }
 
     /** source items the run read in the steps before and in this one */
@@ -1379,7 +1401,7 @@ class Run extends BatchRun
     /** @phpstan-impure the step's tally grows between calls */
     private function limitReached(): bool
     {
-        $limit = (int) $this->limit;
+        $limit = $this->limit();
         return ($limit > 0) && ($this->readSoFar() >= $limit);
     }
 
@@ -1387,7 +1409,7 @@ class Run extends BatchRun
      *  more than that in its job - limitReached() counts all it read and stops the run after the job */
     private function limitLeft(): int
     {
-        $limit = (int) $this->limit;
+        $limit = $this->limit();
         return ($limit > 0) ? max(1, $limit - $this->readSoFar()) : 0;
     }
 

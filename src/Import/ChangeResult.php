@@ -14,7 +14,8 @@ namespace AA\Import;
 final class ChangeResult
 {
     /** @param string $message the source's own words on settings it refused (SETTINGS), as Context::remarkText()
-     *                         keeps them; plain text, escaped on output */
+     *                         keeps them, or what the validator of the setting in $detail said; plain text,
+     *                         escaped on output */
     public function __construct(public readonly string $code, public readonly string $detail = '', public readonly string $message = '') {}
 
     public function done(): bool

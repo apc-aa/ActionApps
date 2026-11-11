@@ -71,9 +71,6 @@ final class InstallRun extends CentralRun
     private const KEEP = 100;
     /** S, E and I findings of the batches kept for the progress page - the warnings are counted apart */
     private const KEPT_FINDINGS = 200;
-    /** seconds before a failed source is asked again: after a step that still moved on, after the first
-     *  and the second failure in a row (the third stops the run) - the user waits at the progress page */
-    protected const RETRY = [60, 300, 900];
     /** seconds for each answer of the source in the final check - it has no budget of its own */
     private const CHECK_TIMEOUT = 10;
 

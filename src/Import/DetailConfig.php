@@ -7,8 +7,9 @@ namespace AA\Import;
 use AA\Credential\Store;
 use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
+use AA\Widget\CodWidget;
+use AA\Widget\TxtWidget;
 use AA\Widget\Widget;
-use Throwable;
 
 /**
  * The part of the import detail that changes what runs are made of: the settings of the source and
@@ -21,12 +22,6 @@ final class DetailConfig
 {
     /** @param ?\Closure(): string $busy why a run is in the way of a reset ('' = none), asked only when the page is shown */
     public function __construct(private readonly Definition $def, private readonly string $uid, private readonly ?\Closure $busy = null) {}
-
-    /** @param mixed $chosen the source the user picked to switch to (?source=), from the request */
-    public function html(mixed $chosen = null): string
-    {
-        return $this->settingsHtml($chosen) . $this->mappingHtml();
-    }
 
     // ------------------------------------------------------------ actions
 
@@ -83,22 +78,17 @@ final class DetailConfig
      */
     private function postedSettings(string $source, array $post): array
     {
-        $class = Registry::sources()[$source] ?? null;
-        if ($class === null) {
-            return [];
-        }
-        $fields = $post['aa']['u' . $this->id()] ?? null;
-        $fields = is_array($fields) ? $fields : [];
-        try {
-            $declared = $class::getClassProperties();
-        } catch (Throwable) {
-            // Service asks again, logs it and says why
-            return [];
-        }
+        // a source not available or failing: Service asks again, logs it and says why
+        $declared = Registry::declaredSettings($source) ?? [];
+        $fields   = $post['aa']['u' . $this->id()] ?? null;
+        $fields   = is_array($fields) ? $fields : [];
         $stored   = ($source === $this->def->sourceType()) ? $this->storedSettings() : [];
         $settings = [];
         foreach ($declared as $name => $property) {
-            if (!self::isEditable($property)) {
+            if (!($property instanceof \AA_Property)) {
+                continue;
+            }
+            if (!Registry::isEditable($property)) {
                 if (isset($stored[$name])) {
                     $settings[(string) $name] = $stored[$name];
                 }
@@ -111,13 +101,6 @@ final class DetailConfig
             }
         }
         return $settings;
-    }
-
-    /** Text, int, bool and float settings are edited in the form; read-only, hidden and object ones
-     *  are shown as text - their widgets would print the value unescaped or post it back as typed. */
-    private static function isEditable(\AA_Property $property): bool
-    {
-        return !$property->isObject() && !in_array($property->getType(), ['readonly', 'hidden'], true);
     }
 
     /** a refusal for the session: "CODE:detail", and the source's words when it has them
@@ -209,8 +192,7 @@ final class DetailConfig
     private function settingsFormHtml(string $type): string
     {
         $current = $this->def->sourceType();
-        $class   = Registry::sources()[$type] ?? null;
-        if ($class === null) {
+        if (!isset(Registry::sources()[$type])) {
             return '<p class="aa-import-why">' . _m('This source is not available, so its settings cannot be shown. Choose another source above.') . '</p>';
         }
         $change = ($type !== $current);
@@ -221,12 +203,12 @@ final class DetailConfig
             $stored = [];
             $note   = '<div class="aa-err">' . _m('The stored settings cannot be read; saving the form stores them again.') . '</div>';
         }
-        try {
-            $fields = $this->fieldsHtml($class::getClassProperties(), $stored);
-        } catch (Throwable) {
+        $declared = Registry::declaredSettings($type);
+        if ($declared === null) {
             // a page that only reads logs nothing - a save asks the source again and logs it
             return '<div class="aa-err">' . _m('The source did not describe its settings, so they cannot be changed now.') . '</div>';
         }
+        $fields = $this->fieldsHtml($declared, $stored);
         $why = $this->manageWhy($change ? $type : null);
         if ($change) {
             $what    = _m('You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source.', [safe(Definition::sourceName($current)), safe(Definition::sourceName($type))]);
@@ -254,19 +236,28 @@ final class DetailConfig
             if (!($property instanceof \AA_Property)) {
                 continue;
             }
-            if (!self::isEditable($property)) {
+            if (!Registry::isEditable($property)) {
                 $html .= '<p class="aa-import-fixed">' . safe((string) $property->getName()) . ': ' . (isset($stored[$name]) ? '<code>' . safe($stored[$name]) . '</code>' : '--') . '</p>';
                 continue;
             }
-            $default = Service::settingDefault($property);
+            $default   = Service::settingDefault($property);
+            $validator = $property->getValidator();
             if (isset($stored[$name])) {
-                $content->setAaValue($property->getId(), new \AA_Value($stored[$name]));
+                $content->setAaValue($property->getId(), new \AA_Value(($validator instanceof EditedAsText) ? $validator->formText($stored[$name]) : $stored[$name]));
             } elseif ($default !== null) {
                 // a blank setting is not stored, so its default is what the source reads
                 $content->setAaValue($property->getId(), new \AA_Value($default));
             }
+            $widget = null;
+            if ($property->defaultWidget() instanceof CodWidget) {
+                // a plain text area: a setting holds lines of data, which the code editor would colour as HTML -
+                // as plain text even while empty, when the property's default would make it HTML
+                $property = clone $property;
+                $property->content_type_switch_default = 0;
+                $widget   = new TxtWidget(['rows' => 6]);
+            }
             $form = new \AA_Form();
-            $property->addPropertyFormrows($form);
+            $property->addPropertyFormrows($form, $widget);
             $html .= $form->getRowsHtml($content);
         }
         return ($html === '') ? '<p class="aa-empty-note">' . _m('The source has no settings.') . '</p>' : $html;

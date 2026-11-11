@@ -15,6 +15,15 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "\x84je\x93 plat\xED, ke\xEF je niektor\xE1 z hodn\xF4t polo\x9Eky medzi za\x9Akrtnut\xFDmi hodnotami, \x84nie je\x93, ke\xEF nie je \x9Eiadna. \x84je vyplnen\xE1\x93 plat\xED pre ak\xFAko\xBEvek hodnotu okrem pr\xE1zdnej a 0, teda aj pre za\x9Akrtnut\xE9 za\x9Akrt\xE1vacie pole.", // ai 2026-11
+// "None - the import is disabled" => "\x8Eiadne \x96 import je vypnut\xFD", // ai 2026-10
+// "The import is switched off." => "Import je vypnut\xFD.", // ai 2026-10
+// "The import is disabled, so no planned task starts it." => "Import je vypnut\xFD, tak\x9Ee ho \x9Eiadna napl\xE1novan\xE1 \xFAloha nespust\xED.", // ai 2026-10
+// "(import off)" => "(import vypnut\xFD)", // ai 2026-10
+// "one stream (%1)" => "jeden pr\xFAd (%1)", // ai 2026-10
+// "Disabled - it does not start" => "Vypnut\xE9 - nesp\xFA\x9A\x9Da sa", // ai 2026-10
+// "Expected a JSON object {\"column\": \"field id\"}" => "O\xE8ak\xE1van\xFD objekt JSON {\"column\": \"field id\"}", // ai 2026-10
+// "JSON object: the column name in the first row => the field it fills" => "Objekt JSON: n\xE1zov st\xE5pca v prvom riadku => polo\x9Eka, ktor\xFA pln\xED", // ai 2026-10
 // "Parameter wizard" => "Sprievodca parametrami", // ai 2026-06
 // "the update may still be running on the remote AA - wait, then run Test before retrying" => "aktualiz\xE1cia na vzdialenom AA mo\x9Eno e\x9Ate be\x9E\xED \x96 po\xE8kajte a pred \xEFal\x9A\xEDm pokusom spustite test", // ai 2026-10
 // "Set letterhead to a text" => "Nastavte letterhead na text", // ai 2026-11
@@ -264,7 +273,7 @@ return [
 
 // admin/aa_cron.php, row 47
 // src/AA_Plannedtask.php, row 82, 182
-// src/Import/Definition.php, row 135, 163
+// src/Import/Definition.php, row 136, 164
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Posledn\xE9 spustenie", // ai 2026-06
 
@@ -349,7 +358,7 @@ return [
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // central/optimize.php, row 65
-// src/Import/DetailPage.php, row 510
+// src/Import/DetailPage.php, row 548
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Platnos\x9D formul\xE1ra vypr\x9Aala; obnovte str\xE1nku a sk\xFAste to znova.", // ai 2026-10
 
@@ -498,7 +507,6 @@ return [
 "Off since %1, %2" => "Vypnut\xE9 od %1, %2", // ai 2026-10
 
 // admin/aa_security.php, row 143
-// src/Import/DetailPage.php, row 726
 "Off" => "Vypnut\xE9", // ai 2026-10
 
 // admin/aa_security.php, row 148
@@ -523,7 +531,7 @@ return [
 
 // admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 395
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
@@ -726,7 +734,7 @@ return [
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 295
 // central/appstore.php, row 164
-// include/searchlib.php, row 1016
+// include/searchlib.php, row 1103
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Moduly", // ai 2026-06
 
@@ -989,12 +997,13 @@ return [
 "Shortcut to edit ITEM" => "Skratka na \xFApravu SPR\xC1VY", // ai 2026-06
 
 // admin/aafinder.php, row 526
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 576
 // include/searchlib.php, row 50, 51, 129, 138
 "contains" => "obsahuje", // ai 2026-06
 
 // admin/aafinder.php, row 527
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 584
 // include/searchlib.php, row 129, 138
 "is" => "je", // ai 2026-06
@@ -1085,12 +1094,12 @@ return [
 // admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
-// admin/se_showif.php, row 123
+// admin/se_showif.php, row 124
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
 // include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 369
+// include/searchlib.php, row 446
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1136,7 +1145,7 @@ return [
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
 // include/stringexpand.php, row 99
-// src/Import/DetailPage.php, row 1025, 1091
+// src/Import/DetailPage.php, row 1076, 1142
 // src/Optimize/CheckImports.php, row 239, 241
 "Code" => "K\xF3d", // ai 2026-06
 
@@ -1144,7 +1153,7 @@ return [
 "HTML output" => "HTML v\xFDstup", // ai 2026-06
 
 // admin/console.php, row 73, 75
-// central/optimize.php, row 210
+// central/optimize.php, row 209
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "V\xFDsledok", // ai 2026-06
 
@@ -1159,7 +1168,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "OK", // ai 2026-10
@@ -1207,7 +1216,7 @@ return [
 // admin/discedit.php, row 135
 // admin/related_sel.php, row 168
 // admin/se_views.php, row 136
-// src/Import/DetailPage.php, row 313
+// src/Import/DetailPage.php, row 337
 // src/Manager.php, row 230
 // src/Optimize/AbstractOptimize.php, row 175
 "Actions" => "Akcia",
@@ -1237,7 +1246,7 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
@@ -1274,7 +1283,7 @@ return [
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 123, 267
 // include/logs.php, row 1071
-// include/mail.php, row 699
+// include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Predmet",
 
@@ -1650,7 +1659,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 370
+// include/searchlib.php, row 447
 "Descending" => "Zostupne",
 
 // admin/se_compact.php, row 244
@@ -1675,7 +1684,7 @@ return [
 "Can't delete constant group" => "Skupinu hodn\xF4t nie je mo\x9En\xE9 zmaza\x9D", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
-// admin/se_showif.php, row 157
+// admin/se_showif.php, row 162
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1689,7 +1698,7 @@ return [
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckServerRefusals.php, row 67
@@ -1698,6 +1707,7 @@ return [
 // admin/se_constant.php, row 176, 378
 // admin/se_mapping.php, row 179
 // admin/se_profile.php, row 209
+// admin/se_showif.php, row 133
 // include/constants.php, row 453
 // include/constedit.php, row 76
 // include/searchlib.php, row 177
@@ -1876,7 +1886,7 @@ return [
 
 // admin/se_csv_import.php, row 278
 // include/scroller.php, row 86
-// src/Import/DetailPage.php, row 422
+// src/Import/DetailPage.php, row 453
 "Next" => "\xCFalej", // ai 2026-06
 
 // admin/se_csv_import2.php, row 199
@@ -1927,8 +1937,8 @@ return [
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
-// src/Import/Definition.php, row 135, 165
-// src/Import/DetailCatalog.php, row 145
+// src/Import/Definition.php, row 136, 166
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Akcia", // ai 2026-06
 
@@ -2108,7 +2118,7 @@ return [
 
 // admin/se_export.php, row 167
 // include/exporter.class.php, row 553
-// include/searchlib.php, row 1012
+// include/searchlib.php, row 1099
 "Conditions" => "Podmienky", // ai 2026-06
 
 // admin/se_export.php, row 167
@@ -2117,7 +2127,7 @@ return [
 
 // admin/se_export.php, row 168
 // include/exporter.class.php, row 554
-// include/searchlib.php, row 1014
+// include/searchlib.php, row 1101
 "Sort" => "Zoradenie", // ai 2026-06
 
 // admin/se_export.php, row 168
@@ -2235,7 +2245,7 @@ return [
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
-// src/Import/DetailCatalog.php, row 151
+// src/Import/DetailCatalog.php, row 179
 "Update" => "Zmeni\x9D",
 
 // admin/se_filters.php, row 169
@@ -2254,7 +2264,7 @@ return [
 "No category defined" => "Kateg\xF3rie neboli definovan\xE9",
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1424
+// src/Manager.php, row 1415
 "Select all" => "Vybra\x9D zobrazen\xE9",
 
 // admin/se_filters.php, row 320
@@ -2439,7 +2449,7 @@ return [
 
 // admin/se_inputform.php, row 424, 440, 451, 479, 522
 // include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 // src/Util/Paramwizard.php, row 154
 "Parameters" => "Parametre",
 
@@ -2515,8 +2525,6 @@ return [
 "8 UPPERCASE letters or _" => "8 VE\xBCK\xDDCH p\xEDsmen alebo _", // ai 2026-06
 
 // admin/se_inputform.php, row 515
-// src/Import/DetailPage.php, row 604
-// src/Import/RunView.php, row 188
 "Disabled" => "Zak\xE1zan\xE9", // ai 2026-06
 
 // admin/se_inputform.php, row 516
@@ -2570,10 +2578,10 @@ return [
 "Node" => "Uzol", // ai 2026-06
 
 // admin/se_inter_import.php, row 96
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // misc/datovka/datovka.php, row 158
-// src/Import/DetailConfig.php, row 291
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailConfig.php, row 282
+// src/Import/DetailPage.php, row 401
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Util/Note.php, row 64
 "State" => "Stav", // ai 2026-06
@@ -3092,104 +3100,115 @@ return [
 // admin/se_showif.php, row 77
 "The form has expired. Close it and open it again." => "Platnos\x9D formul\xE1ra vypr\x9Aala. Zatvorte ho a otvorte znova.", // ai 2026-11
 
-// admin/se_showif.php, row 117
-"is checked" => "je za\x9Akrtnut\xE1", // ai 2026-11
-
-// admin/se_showif.php, row 117
-"is not checked" => "nie je za\x9Akrtnut\xE1", // ai 2026-11
-
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchlib.php, row 129, 138
 "is not" => "nie je", // ai 2026-06
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
+// include/searchbar.class.php, row 580
+// include/searchlib.php, row 53, 56, 129, 138
+"begins with" => "za\xE8\xEDna", // ai 2026-06
+
+// admin/se_showif.php, row 116
 "is filled" => "je vyplnen\xE1", // ai 2026-11
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 "is empty" => "je pr\xE1zdna", // ai 2026-11
 
-// admin/se_showif.php, row 120
+// admin/se_showif.php, row 119
+"is checked" => "je za\x9Akrtnut\xE1", // ai 2026-11
+
+// admin/se_showif.php, row 119
+"is not checked" => "nie je za\x9Akrtnut\xE1", // ai 2026-11
+
+// admin/se_showif.php, row 121
 "\xE2\x80\x94 add a rule \xE2\x80\x94" => "\x97 prida\x9D pravidlo \x97", // ai 2026-11
 
-// admin/se_showif.php, row 128
+// admin/se_showif.php, row 129
 "Comparison" => "Porovnanie", // ai 2026-11
 
-// admin/se_showif.php, row 144
+// admin/se_showif.php, row 149
 "Values, one per line" => "Hodnoty, ka\x9Ed\xE1 na samostatnom riadku", // ai 2026-11
 
-// admin/se_showif.php, row 151
+// admin/se_showif.php, row 156
 // include/field.class.php, row 797
 "Display condition" => "Podmienka zobrazenia", // ai 2026-11
 
-// admin/se_showif.php, row 163
+// admin/se_showif.php, row 168
 "Show the field when all of these hold" => "Zobrazi\x9D polo\x9Eku, ak platia v\x9Aetky tieto pravidl\xE1", // ai 2026-11
 
-// admin/se_showif.php, row 165
+// admin/se_showif.php, row 170
 "AA expression (optional)" => "V\xFDraz AA (nepovinn\xE9)", // ai 2026-11
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 // src/Optimize/ImgMeasuring.php, row 54
 "Expression" => "V\xFDraz", // ai 2026-10
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 "Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "Ak ho nech\xE1te pr\xE1zdny, pou\x9Eij\xFA sa len pravidl\xE1. Ak je vyplnen\xFD, polo\x9Eka sa zobraz\xED, len ke\xEF v\xFDsledok nie je pr\xE1zdny ani 0. Vyhodnocuje sa pri otvoren\xED formul\xE1ra a pri ulo\x9Een\xED spr\xE1vy.", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Clear the field when a rule hides it" => "Vy\xE8isti\x9D polo\x9Eku, ke\xEF ju pravidlo skryje", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "Neza\x9Akrtnut\xE9: upravovan\xE1 spr\xE1va si hodnotu ponech\xE1, nov\xE1 spr\xE1va dostane predvolen\xFA hodnotu polo\x9Eky. Polo\x9Eka skryt\xE1 v\xFDrazom sa nikdy nezmen\xED.", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 177
+"As a condition of a view" => "Ako podmienka poh\xBEadu", // ai 2026-11
+
+// admin/se_showif.php, row 181
 "Used by" => "Pou\x9E\xEDvaj\xFA ju", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 181
 "no field" => "\x9Eiadna polo\x9Eka", // ai 2026-11
 
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 "Save the changes to this condition. They apply to every field that uses it." => "Ulo\x9E\xED zmeny tejto podmienky. Prejavia sa vo v\x9Aetk\xFDch polo\x9Ek\xE1ch, ktor\xE9 ju pou\x9E\xEDvaj\xFA.", // ai 2026-11
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 // admin/se_view.php, row 486
 "Save as new" => "Ulo\x9Ei\x9D ako nov\xFD", // ai 2026-06
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 "Keep the original condition as it is and save this form as another condition under a new name." => "Ponech\xE1 p\xF4vodn\xFA podmienku bez zmeny a ulo\x9E\xED tento formul\xE1r ako \xEFal\x9Aiu podmienku pod nov\xFDm n\xE1zvom.", // ai 2026-11
 
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 "Delete the condition. The fields that use it will be shown always." => "Zma\x9Ee podmienku. Polo\x9Eky, ktor\xE9 ju pou\x9E\xEDvaj\xFA, sa bud\xFA zobrazova\x9D v\x9Edy.", // ai 2026-11
 
-// admin/se_showif.php, row 180
+// admin/se_showif.php, row 188
 "Delete the condition? The fields that use it will be shown always." => "Zmaza\x9D podmienku? Polo\x9Eky, ktor\xE9 ju pou\x9E\xEDvaj\xFA, sa bud\xFA zobrazova\x9D v\x9Edy.", // ai 2026-11
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 // include/formutil.php, row 219, 224, 3009, 3013
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Zru\x9Ai\x9D",
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 "Close without saving." => "Zavrie bez ulo\x9Eenia.", // ai 2026-11
 
-// admin/se_showif.php, row 187
+// admin/se_showif.php, row 195
 "How it works" => "Ako to funguje", // ai 2026-11
 
-// admin/se_showif.php, row 188
-"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "\x84je\x93 plat\xED, ke\xEF je niektor\xE1 z hodn\xF4t polo\x9Eky medzi za\x9Akrtnut\xFDmi hodnotami, \x84nie je\x93, ke\xEF nie je \x9Eiadna. \x84je vyplnen\xE1\x93 plat\xED pre ak\xFAko\xBEvek hodnotu okrem pr\xE1zdnej a 0, teda aj pre za\x9Akrtnut\xE9 za\x9Akrt\xE1vacie pole.", // ai 2026-11
+// admin/se_showif.php, row 196
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. Upper and lower case do not count, accents do. \"is empty\" holds also for a field without a value; in a field stored as a number 0 counts as empty." => "\x84je\x93 plat\xED, ke\xEF je jedna z hodn\xF4t polo\x9Eky medzi za\x9Akrtnut\xFDmi hodnotami, \x84nie je\x93, ke\xEF nie je \x9Eiadna. Na ve\xBEkosti p\xEDsmen nez\xE1le\x9E\xED, na diakritike \xE1no. \x84je pr\xE1zdna\x93 plat\xED aj pre polo\x9Eku bez hodnoty; v polo\x9Eke ulo\x9Eenej ako \xE8\xEDslo sa 0 po\xE8\xEDta ako pr\xE1zdna hodnota.", // ai 2026-11
 
-// admin/se_showif.php, row 189
+// admin/se_showif.php, row 197
+"The rules are AA conditions, written as in views. The condition shown below selects nearly the same items in a view; accents and empty values may be compared a little differently. In an AA expression write : as #:." => "Pravidl\xE1 s\xFA podmienky AA, zap\xEDsan\xE9 ako v poh\xBEadoch. Podmienka zobrazen\xE1 ni\x9E\x9Aie vyberie v poh\xBEade takmer tie ist\xE9 spr\xE1vy; diakritika a pr\xE1zdne hodnoty sa m\xF4\x9Eu porovn\xE1va\x9D trochu inak. Vo v\xFDraze AA p\xED\x9Ate : ako #:.", // ai 2026-11
+
+// admin/se_showif.php, row 198
 "The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "Pravidl\xE1 sleduj\xFA formul\xE1r priebe\x9Ene, ako ho u\x9E\xEDvate\xBE upravuje. V\xFDraz sa vyhodnocuje len pri otvoren\xED formul\xE1ra a pri ulo\x9Een\xED spr\xE1vy, v\x9Edy nad ulo\x9Eenou spr\xE1vou (pri novej spr\xE1ve nad predvolen\xFDmi hodnotami).", // ai 2026-11
 
-// admin/se_showif.php, row 190
+// admin/se_showif.php, row 199
 "A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "Polo\x9Eka skryt\xE1 pravidlom sa ulo\x9E\xED pr\xE1zdna, pokia\xBE nie je zru\x9Aen\xE9 za\x9Akrtnutie \x84Vy\xE8isti\x9D polo\x9Eku\x93. Polo\x9Eka s heslom, d\xE1tumy, stav a polo\x9Eka skryt\xE1 v\xFDrazom si hodnotu ponechaj\xFA.", // ai 2026-11
 
-// admin/se_showif.php, row 191
+// admin/se_showif.php, row 200
 "A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "Polo\x9Eku s podmienkou zobrazuje a skr\xFDva podmienka, nie skript zo str\xE1nky \x84Triggery polo\x9Eiek\x93.", // ai 2026-11
 
-// admin/se_showif.php, row 192
+// admin/se_showif.php, row 201
 "With an input form template from a view, a field hidden by the expression stays in the source of the page." => "Ak sa \x9Aabl\xF3na vstupn\xE9ho formul\xE1ra berie z poh\xBEadu, polo\x9Eka skryt\xE1 v\xFDrazom zost\xE1va v zdrojovom k\xF3de str\xE1nky.", // ai 2026-11
 
-// admin/se_showif.php, row 193
+// admin/se_showif.php, row 202
 "Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "Podmienky platia len pre formul\xE1r spr\xE1vy v administr\xE1cii. V anonymn\xFDch formul\xE1roch a pri importoch je povinn\xE1 polo\x9Eka povinn\xE1 v\x9Edy.", // ai 2026-11
 
 // admin/se_statistics.php, row 97
@@ -3346,7 +3365,7 @@ return [
 
 // admin/se_views.php, row 149, 203, 223
 // include/formutil.php, row 1818, 1825
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
 "New" => "Nov\xFD",
@@ -3389,7 +3408,7 @@ return [
 "View items" => "Zobrazi\x9D spr\xE1vy", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1429
+// src/Manager.php, row 1420
 "Selected items" => "Zmeni\x9D vybran\xE9",
 
 // admin/search_replace.php, row 180
@@ -3510,8 +3529,8 @@ return [
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
-// src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1281
+// src/Import/DetailCatalog.php, row 179
+// src/Manager.php, row 239, 1272
 "Add" => "Prida\x9D",
 
 // admin/slicedel.php, row 51
@@ -3835,7 +3854,7 @@ return [
 "Import into this slice - whatever file says" => "Importova\x9D do tohoto modulu - bez oh\xBEadu na to, \xE8o hovor\xED s\xFAbor", // ai 2026-06
 
 // admin/sliceimp.php, row 467
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Dry run" => "Sk\xFA\x9Aobn\xFD beh", // ai 2026-06
 
 // admin/sliceimp.php, row 469
@@ -4191,29 +4210,29 @@ return [
 "Show selected users" => "Zobrazi\x9D vybran\xFDch u\x9E\xEDvate\xBEov", // ai 2026-06
 
 // admin/write_mail.php, row 124, 274
-// include/mail.php, row 700
+// include/mail.php, row 666
 "Body" => "Text", // ai 2026-06
 
 // admin/write_mail.php, row 125, 275
 "From (email)" => "Od (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 126, 276
-// include/mail.php, row 702
+// include/mail.php, row 668
 "Reply to (email)" => "Odpoveda\x9D na (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 127, 277
-// include/mail.php, row 703
+// include/mail.php, row 669
 "Errors to (email)" => "Chyby na (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 128, 278
 "Sender (email)" => "Odosielate\xBE (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 129, 279
-// include/mail.php, row 694
+// include/mail.php, row 658
 "Language (charset)" => "Jazyk (znakov\xE1 sada)", // ai 2026-06
 
 // admin/write_mail.php, row 130, 280
-// include/mail.php, row 692
+// include/mail.php, row 656
 "Use HTML" => "Pou\x9Ei\x9D HTML", // ai 2026-06
 
 // admin/write_mail.php, row 131, 271
@@ -4224,8 +4243,8 @@ return [
 
 // admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
-// src/Import/Definition.php, row 92
-// src/Import/DetailConfig.php, row 394
+// src/Import/Definition.php, row 93
+// src/Import/DetailConfig.php, row 385
 "Filter" => "Filter", // ai 2026-10
 
 // admin/write_mail.php, row 188
@@ -4480,8 +4499,8 @@ return [
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
 // include/logs.php, row 1213
-// src/Import/Definition.php, row 85, 113
-// src/Import/DetailConfig.php, row 188, 202
+// src/Import/Definition.php, row 86, 114
+// src/Import/DetailConfig.php, row 171, 185
 // src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "Zdroj", // ai 2026-06
@@ -4911,19 +4930,19 @@ return [
 "Transferring the items" => "Prenos spr\xE1v", // ai 2026-10
 
 // central/installapp.php, row 1368
-// central/optimize.php, row 261
+// central/optimize.php, row 260
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Zastaven\xE9 chybou", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 259
+// central/optimize.php, row 258
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Dokon\xE8en\xE9", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 260
+// central/optimize.php, row 259
 "Ended" => "Ukon\xE8en\xE9", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -4987,13 +5006,13 @@ return [
 "Show the final check" => "Zobrazi\x9D z\xE1vere\xE8n\xFA kontrolu", // ai 2026-10
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 206
-// src/Import/DetailPage.php, row 938, 947
+// central/optimize.php, row 205
+// src/Import/DetailPage.php, row 989, 998
 "Continue" => "Pokra\xE8ova\x9D", // ai 2026-06
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 207
-// src/Import/DetailPage.php, row 958
+// central/optimize.php, row 206
+// src/Import/DetailPage.php, row 1009
 "End" => "Ukon\xE8i\x9D", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
@@ -5017,7 +5036,7 @@ return [
 // central/optimize.php, row 85
 "An AA may still be asked - press Continue again in a few minutes." => "Dotaz na niektor\xE9 AA mo\x9Eno e\x9Ate prebieha - o nieko\xBEko min\xFAt znova stla\xE8te \x84Pokra\xE8ova\x9D\x93.", // ai 2026-11
 
-// central/optimize.php, row 86, 187
+// central/optimize.php, row 86, 186
 "No such run." => "Tak\xFD beh neexistuje.", // ai 2026-11
 
 // central/optimize.php, row 87
@@ -5038,7 +5057,7 @@ return [
 // central/optimize.php, row 140
 "Run an Optimize task on several AAs" => "Spusti\x9D \xFAlohu optimaliz\xE1cie na viacer\xFDch AA", // ai 2026-11
 
-// central/optimize.php, row 148, 171
+// central/optimize.php, row 148, 170
 // src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckOptimizeRuns.php, row 55
 // src/Optimize/CheckQueue.php, row 98, 178
@@ -5053,65 +5072,65 @@ return [
 // central/optimize.php, row 151
 "Repair tests first, repairs only where the test fails, then tests again." => "Oprava najprv otestuje, oprav\xED len tam, kde test zlyh\xE1, a potom otestuje znova.", // ai 2026-11
 
-// central/optimize.php, row 153, 210
+// central/optimize.php, row 153, 209
 // include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// central/optimize.php, row 159
+// central/optimize.php, row 158
 "An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "AA bez platn\xE9ho tokenu ni\xE8 neodpovie - najprv pre\xF2 z\xEDskajte token v zozname Central (plat\xED jeden de\xF2).", // ai 2026-11
 
-// central/optimize.php, row 160
+// central/optimize.php, row 159
 "Start" => "Spusti\x9D", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Last runs" => "Posledn\xE9 behy", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 // src/Optimize/CheckImports.php, row 151, 155
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Optimize/CheckOptimizeRuns.php, row 54
 "Started" => "Za\xE8iatok", // ai 2026-10
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Results" => "V\xFDsledky", // ai 2026-11
 
-// central/optimize.php, row 197
+// central/optimize.php, row 196
 "Started %1 by %2" => "Spusten\xE9 %1 u\x9E\xEDvate\xBEom %2", // ai 2026-11
 
-// central/optimize.php, row 198
+// central/optimize.php, row 197
 "%1 of %2 AAs done" => "Hotov\xE9 AA: %1 z %2", // ai 2026-11
 
-// central/optimize.php, row 208
+// central/optimize.php, row 207
 "The run goes on in the task queue of this AA - you may close this page." => "Beh pokra\xE8uje vo fronte \xFAloh tohto AA - t\xFAto str\xE1nku m\xF4\x9Eete zavrie\x9D.", // ai 2026-11
 
-// central/optimize.php, row 210, 229
+// central/optimize.php, row 209, 228
 "Report" => "Hl\xE1senie", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Waiting" => "\xC8ak\xE1", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Not asked" => "Nedotazovan\xE9", // ai 2026-11
 
-// central/optimize.php, row 225
+// central/optimize.php, row 224
 "The test after the repair comes next." => "Nasleduje test po oprave.", // ai 2026-11
 
-// central/optimize.php, row 232
+// central/optimize.php, row 231
 "The test after the repair" => "Test po oprave", // ai 2026-11
 
-// central/optimize.php, row 242
+// central/optimize.php, row 241
 "Another run" => "\xCFal\x9A\xED beh", // ai 2026-11
 
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 "OK - nothing to repair" => "OK - nie je \xE8o opravi\x9D", // ai 2026-11
 
-// central/optimize.php, row 249
+// central/optimize.php, row 248
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
 // src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
@@ -5120,37 +5139,37 @@ return [
 // src/Optimize/StateCheckModel.php, row 219
 "Problem" => "Probl\xE9m", // ai 2026-10
 
-// central/optimize.php, row 250
+// central/optimize.php, row 249
 "Repaired" => "Opraven\xE9", // ai 2026-11
 
-// central/optimize.php, row 251
+// central/optimize.php, row 250
 "Repair failed" => "Oprava zlyhala", // ai 2026-11
 
-// central/optimize.php, row 252
+// central/optimize.php, row 251
 "Not done" => "Nevykonan\xE9", // ai 2026-11
 
-// central/optimize.php, row 262
+// central/optimize.php, row 261
 "No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "U\x9E dlho nepri\x9Aiel \x9Eiadny krok - be\x9E\xED fronta \xFAloh tohto AA? \x84Pokra\xE8ova\x9D\x93 to sk\xFAsi hne\xEF.", // ai 2026-11
 
-// central/optimize.php, row 263
+// central/optimize.php, row 262
 "Waiting to ask an AA again" => "\xC8ak\xE1 sa na op\xE4tovn\xFD dotaz na AA", // ai 2026-11
 
-// central/optimize.php, row 264
+// central/optimize.php, row 263
 "Running in the task queue" => "Be\x9E\xED vo fronte \xFAloh", // ai 2026-11
 
-// central/optimize.php, row 274
+// central/optimize.php, row 273
 "%1 runs another update now." => "%1 pr\xE1ve vykon\xE1va in\xFA aktualiz\xE1ciu.", // ai 2026-11
 
-// central/optimize.php, row 275
+// central/optimize.php, row 274
 "%1 did not answer in time." => "Od %1 nepri\x9Ala v\xE8as odpove\xEF.", // ai 2026-11
 
-// central/optimize.php, row 276
+// central/optimize.php, row 275
 "The user who started the run is no superadmin any more." => "U\x9E\xEDvate\xBE, ktor\xFD beh spustil, u\x9E nie je superadmin.", // ai 2026-11
 
-// central/optimize.php, row 277
+// central/optimize.php, row 276
 "Error %1" => "Chyba %1", // ai 2026-11
 
-// central/optimize.php, row 279
+// central/optimize.php, row 278
 "Asked again at %1 - Continue asks now." => "\xCFal\x9A\xED dotaz o %1 - \x84Pokra\xE8ova\x9D\x93 sa op\xFDta hne\xEF.", // ai 2026-11
 
 // central/responder.php, row 112
@@ -5634,7 +5653,7 @@ return [
 "Level count" => "Po\xE8et \xFArovn\xED", // ai 2026-06
 
 // include/constedit_util.php, row 137, 140
-// src/Import/Definition.php, row 140
+// src/Import/Definition.php, row 141
 "Select" => "Vybra\x9D", // ai 2026-06
 
 // include/constedit_util.php, row 599
@@ -6049,7 +6068,7 @@ return [
 
 // include/formutil.php, row 1829
 // include/menu.php, row 141
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Zmena s\xFA\xE8asn\xFDch pr\xE1v",
 
@@ -6063,7 +6082,7 @@ return [
 
 // include/formutil.php, row 2223
 // include/stringexpand.php, row 11543, 11566
-// src/Import/DetailCatalog.php, row 150
+// src/Import/DetailCatalog.php, row 178
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "nov\xE1", // ai 2026-06
@@ -6319,7 +6338,7 @@ return [
 "Short ID" => "Kr\xE1tke ID", // ai 2026-06
 
 // include/itemfunc.php, row 204
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 "Details" => "Podrobnosti", // ai 2026-06
 
 // include/itemfunc.php, row 245
@@ -6722,7 +6741,7 @@ return [
 "Checks" => "Kontroly", // ai 2026-10
 
 // include/logs.php, row 796, 827
-// src/Import/DetailPage.php, row 300, 367, 800
+// src/Import/DetailPage.php, row 324, 391, 840
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Spusti\x9D", // ai 2026-10
@@ -6759,7 +6778,7 @@ return [
 
 // include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 825
+// src/Manager.php, row 816
 "Module ID" => "ID modulu", // ai 2026-06
 
 // include/logs.php, row 921
@@ -6799,7 +6818,7 @@ return [
 "Items planned" => "Pl\xE1novan\xE9 spr\xE1vy", // ai 2026-06
 
 // include/logs.php, row 1095
-// src/Import/DetailPage.php, row 1025
+// src/Import/DetailPage.php, row 1076
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Spr\xE1va", // ai 2026-06
 
@@ -6822,13 +6841,13 @@ return [
 "Collection" => "Kolekcia", // ai 2026-06
 
 // include/logs.php, row 1123, 1174, 1186, 1321
-// src/Import/Definition.php, row 154
+// src/Import/Definition.php, row 155
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Detail", // ai 2026-10
 
 // include/logs.php, row 1173
-// src/Import/Definition.php, row 135, 162
+// src/Import/Definition.php, row 136, 163
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Stav", // ai 2026-06
 
@@ -6842,7 +6861,7 @@ return [
 "Errors" => "Chyby", // ai 2026-06
 
 // include/logs.php, row 1240
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Outcome" => "V\xFDsledok", // ai 2026-06
 
 // include/logs.php, row 1256
@@ -6865,29 +6884,29 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "D\xF4vod", // ai 2026-10
 
-// include/mail.php, row 693
+// include/mail.php, row 657
 "Email type" => "Typ e-mailu", // ai 2026-06
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 "\xE2\x80\x94 all modules (global) \xE2\x80\x94" => "\x97 v\x9Aetky moduly (glob\xE1lne) \x97", // ai 2026-10
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Vlastn\xEDk",
 
-// include/mail.php, row 698
+// include/mail.php, row 662
 "Description/Result" => "Popis/V\xFDsledok", // ai 2026-06
 
-// include/mail.php, row 701
+// include/mail.php, row 667
 "From (email) " => "Od (e-mail)", // ai 2026-06
 
-// include/mail.php, row 704
+// include/mail.php, row 670
 "Envelop sender (email)" => "Odosielate\xBE ob\xE1lky (e-mail)", // ai 2026-06
 
-// include/mail.php, row 705
+// include/mail.php, row 671
 // misc/datovka/datovka.php, row 156
 "Attachments" => "Pr\xEDlohy", // ai 2026-06
 
@@ -6956,8 +6975,8 @@ return [
 "Filters" => "Filtre",
 
 // include/menu.php, row 159
-// src/Import/Definition.php, row 87
-// src/Import/DetailConfig.php, row 359
+// src/Import/Definition.php, row 88
+// src/Import/DetailConfig.php, row 350
 "Mapping" => "Mapovanie",
 
 // include/menu.php, row 160, 224
@@ -7066,7 +7085,7 @@ return [
 "Slice structure" => "\x8Atrukt\xFAra modulu",
 
 // include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
+// src/Import/Definition.php, row 136, 162
 // src/Optimize/CheckImportStores.php, row 53
 // src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "Import", // ai 2026-11
@@ -7150,7 +7169,7 @@ return [
 "What's working, what isn't \xE2\x80\x94 tell the AA team." => "\xC8o funguje a \xE8o nie \x97 nap\xED\x9Ate t\xEDmu AA.", // ai 2026-06
 
 // include/menu_util.php, row 632
-// src/Import/Definition.php, row 86
+// src/Import/Definition.php, row 87
 "Settings" => "Nastavenia", // ai 2026-06
 
 // include/menu_util.php, row 635
@@ -7225,7 +7244,7 @@ return [
 "Array returned" => "Vr\xE1ten\xE9 pole", // ai 2026-06
 
 // include/scroller.php, row 87
-// src/Import/DetailPage.php, row 420
+// src/Import/DetailPage.php, row 451
 "Previous" => "Predch\xE1dzaj\xFAce", // ai 2026-06
 
 // include/scroller.php, row 296
@@ -7274,10 +7293,6 @@ return [
 
 // include/searchbar.class.php, row 566
 "And" => "a z\xE1rove\xF2", // ai 2026-06
-
-// include/searchbar.class.php, row 580
-// include/searchlib.php, row 53, 56, 129, 138
-"begins with" => "za\xE8\xEDna", // ai 2026-06
 
 // include/searchbar.class.php, row 608
 "Clear" => "Vy\xE8isti\x9D", // ai 2026-06
@@ -7355,7 +7370,7 @@ return [
 // include/statestore.php, row 1367
 "select ..." => "vyberte ...", // ai 2026-06
 
-// include/searchlib.php, row 371
+// include/searchlib.php, row 448
 "Limit" => "Limit", // ai 2026-10
 
 // include/slice.class.php, row 428
@@ -8176,7 +8191,7 @@ return [
 "page length (number of items)" => "d\xE5\x9Eka str\xE1nky (po\xE8et spr\xE1v)", // ai 2026-06
 
 // slice.php, row 621
-// src/Manager.php, row 890
+// src/Manager.php, row 881
 "No item found" => "Nenalezena \x9E\xE1dn\xE1 zpr\xE1va",
 
 // src/AA_Plannedtask.php, row 72
@@ -8287,43 +8302,43 @@ return [
 // src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Prech\xE1dza\x9D s\xFAbory modulu m\xF4\x9Eu iba jeho editori", // ai 2026-10
 
-// src/Central/Actionapps.php, row 185
+// src/Central/Actionapps.php, row 180
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Toto PHP nem\xE1 AES-GCM (sodium) \x96 prihlasovac\xED token nemo\x9Eno ulo\x9Ei\x9D \x9Aifrovane", // ai 2026-10
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not configured" => "Nenakonfigurovan\xE9", // ai 2026-06
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not authenticated - get a token" => "Neautentifikovan\xE9 \x96 z\xEDskajte token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Authenticated until %1" => "Autentifikovan\xE9 do %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Expired - get a token" => "Vypr\x9Aalo \x96 z\xEDskajte token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 245
+// src/Central/Actionapps.php, row 236
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "Vzdialen\xE9 AA odmietlo prihl\xE1senie: nespr\xE1vne u\x9E\xEDvate\xBEsk\xE9 meno alebo heslo, \xFA\xE8et s dvojf\xE1zov\xFDm prihl\xE1sen\xEDm (Central zatia\xBE nevie posla\x9D k\xF3d), alebo u\x9E\xEDvate\xBE tam nie je superadmin", // ai 2026-11
 
-// src/Central/Actionapps.php, row 247
+// src/Central/Actionapps.php, row 238
 "The remote AA gave no login token - update it" => "Vzdialen\xE9 AA nevydalo prihlasovac\xED token \x96 aktualizujte ho", // ai 2026-10
 
-// src/Central/Actionapps.php, row 248
+// src/Central/Actionapps.php, row 239
 "The remote AA gave a token for longer than a day - update the remote AA" => "Vzdialen\xE9 AA vydalo token na dlh\x9Aie ako jeden de\xF2 \x96 aktualizujte vzdialen\xE9 AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 284
+// src/Central/Actionapps.php, row 275
 "Can't get org_name - " => "Nepodarilo sa z\xEDska\x9D org_name -", // ai 2026-06
 
-// src/Central/Actionapps.php, row 338
+// src/Central/Actionapps.php, row 329
 "Unexpected response from remote AA" => "Neo\xE8ak\xE1van\xE1 odpove\xEF vzdialen\xE9ho AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 341
+// src/Central/Actionapps.php, row 332
 "This AA does not support this command (update it first)" => "Toto AA tento pr\xEDkaz nepodporuje (najprv ho aktualizujte)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 344
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Ulo\x9Een\xFD prihlasovac\xED token nemo\x9Eno pou\x9Ei\x9D (zmenil sa AA_SECRET, heslo k datab\xE1ze alebo adresa tohto AA) \x96 znova autentifikujte toto AA na str\xE1nke ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 354
+// src/Central/Actionapps.php, row 345
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Pre toto AA nie je prihlasovac\xED token \x96 autentifikujte toto AA na str\xE1nke ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -9449,22 +9464,28 @@ return [
 // src/Credential/Store.php, row 55
 "set (%1)" => "nastaven\xE9 (%1)", // ai 2026-10
 
-// src/Form/ShowConditions.php, row 317
+// src/Form/ShowConditions.php, row 354
 "Fill in the name of the condition." => "Vypl\xF2te n\xE1zov podmienky.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 321
+// src/Form/ShowConditions.php, row 358
 "Another condition of this slice is called %1." => "Podmienka s n\xE1zvom %1 v tomto module u\x9E existuje.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 333
+// src/Form/ShowConditions.php, row 371
 "The field %1 is not in this slice." => "Polo\x9Eka %1 nie je v tomto module.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 335
+// src/Form/ShowConditions.php, row 373
 "Choose how to compare the field %1." => "Vyberte, ako porovna\x9D polo\x9Eku %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 337
+// src/Form/ShowConditions.php, row 375
 "Fill in the values of the field %1." => "Vypl\xF2te hodnoty polo\x9Eky %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 344
+// src/Form/ShowConditions.php, row 377
+"A value of the field %1 contains both kinds of quotes." => "Hodnota polo\x9Eky %1 obsahuje oba druhy \xFAvodzoviek.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 380
+"The value of the field %1 must not contain a backslash." => "Hodnota polo\x9Eky %1 nesmie obsahova\x9D sp\xE4tn\xFA lomku.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 393
 "Add a rule or an expression." => "Pridajte pravidlo alebo v\xFDraz.", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
@@ -9482,7 +9503,7 @@ return [
 // src/IO/Grabber/CSV.php, row 94
 // src/IO/Grabber/JsonLD.php, row 104
 // src/IO/Grabber/XML.php, row 108
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "URL of the file" => "URL s\xFAboru", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 95
@@ -9656,835 +9677,874 @@ return [
 // src/IO/OnPageChanger.php, row 55
 "No permission - no user is authenticated. Try to relogin, please." => "Ch\xFDba pr\xE1vo - nie je prihl\xE1sen\xFD \x9Eiadny u\x9E\xEDvate\xBE. Sk\xFAste sa, pros\xEDm, znovu prihl\xE1si\x9D.", // ai 2026-06
 
-// src/Import/Definition.php, row 88
-// src/Import/DetailConfig.php, row 390
+// src/Import/Definition.php, row 89
+// src/Import/DetailConfig.php, row 381
 "Key fields" => "K\xBE\xFA\xE8ov\xE9 polo\x9Eky", // ai 2026-10
 
-// src/Import/Definition.php, row 89
-// src/Import/DetailConfig.php, row 391
+// src/Import/Definition.php, row 90
+// src/Import/DetailConfig.php, row 382
 "Store mode" => "Sp\xF4sob ulo\x9Eenia", // ai 2026-10
 
-// src/Import/Definition.php, row 90
-// src/Import/DetailConfig.php, row 392
+// src/Import/Definition.php, row 91
+// src/Import/DetailConfig.php, row 383
 "Validation" => "Valid\xE1cia", // ai 2026-10
 
-// src/Import/Definition.php, row 91
-// src/Import/DetailConfig.php, row 393
+// src/Import/Definition.php, row 92
+// src/Import/DetailConfig.php, row 384
 "After a stream" => "Po skon\xE8en\xED pr\xFAdu", // ai 2026-10
 
-// src/Import/Definition.php, row 93
-// src/Import/DetailPage.php, row 604
+// src/Import/Definition.php, row 94
 // src/Optimize/CheckImports.php, row 215
 "Enabled" => "Povolen\xE9", // ai 2026-10
 
-// src/Import/Definition.php, row 113
+// src/Import/Definition.php, row 114
 "The source is changed in the import detail." => "Zdroj sa men\xED v detaile importu.", // ai 2026-10
 
-// src/Import/Definition.php, row 129
+// src/Import/Definition.php, row 130
 "The slice has no import yet." => "Modul zatia\xBE nem\xE1 \x9Eiadny import.", // ai 2026-10
 
-// src/Import/Definition.php, row 135, 164
+// src/Import/Definition.php, row 136, 165
 "Next plan" => "\xCFal\x9Aie spustenie", // ai 2026-10
 
-// src/Import/Definition.php, row 367
-"None - the import is disabled" => "\x8Eiadne \x96 import je vypnut\xFD", // ai 2026-10
+// src/Import/Definition.php, row 372
+// src/Import/DetailPage.php, row 766, 772
+"Not planned" => "Nenapl\xE1novan\xE9", // ai 2026-10
 
-// src/Import/Definition.php, row 370
+// src/Import/Definition.php, row 375
 "Not planned - no task starts it" => "Nepl\xE1novan\xE9 \x96 \x9Eiadna \xFAloha ho nesp\xFA\x9A\x9Da", // ai 2026-10
 
-// src/Import/Definition.php, row 423
+// src/Import/Definition.php, row 428
 "The import needs a name." => "Import potrebuje n\xE1zov.", // ai 2026-10
 
-// src/Import/Definition.php, row 427
+// src/Import/Definition.php, row 432
 "The name of an import may not contain a colon (:) or look like an id." => "N\xE1zov importu nesmie obsahova\x9D dvojbodku (:) ani vyzera\x9D ako id.", // ai 2026-10
 
-// src/Import/Definition.php, row 430
+// src/Import/Definition.php, row 435
 "Another import of the slice has this name." => "In\xFD import modulu m\xE1 tento n\xE1zov.", // ai 2026-10
 
-// src/Import/Definition.php, row 438
+// src/Import/Definition.php, row 443
 "Change the source in the import detail." => "Zdroj zme\xF2te v detaile importu.", // ai 2026-10
 
-// src/Import/Definition.php, row 446
-// src/Import/DetailPage.php, row 545
+// src/Import/Definition.php, row 451
+// src/Import/DetailPage.php, row 584
 "Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "Importy tu nem\xF4\x9Eu be\x9Ea\x9D: ich datab\xE1zov\xE9 tabu\xBEky (object_text, toexecute) nepodporuj\xFA transakcie (InnoDB).", // ai 2026-10
 
-// src/Import/Definition.php, row 455
+// src/Import/Definition.php, row 460
 "The mapping of the import is not valid." => "Mapovanie importu nie je platn\xE9.", // ai 2026-10
 
-// src/Import/Definition.php, row 477
+// src/Import/Definition.php, row 482
 "The import source refused these settings: %1" => "Zdroj importu odmietol tieto nastavenia: %1", // ai 2026-10
 
-// src/Import/Definition.php, row 480
-"Only a user who manages the feeding of the slice may change its imports." => "Importy modulu smie meni\x9D len u\x9E\xEDvate\xBE, ktor\xFD spravuje v\xFDmenu spr\xE1v modulu.", // ai 2026-10
-
-// src/Import/Definition.php, row 481
-"This import uses API keys, so only a superadmin may change or delete it." => "Tento import pou\x9E\xEDva API k\xBE\xFA\xE8e, preto ho smie meni\x9D alebo maza\x9D len superadmin.", // ai 2026-10
-
 // src/Import/Definition.php, row 482
-"The import was not saved - it is not an import of this slice." => "Import nebol ulo\x9Een\xFD \x96 nejde o import tohto modulu.", // ai 2026-10
-
-// src/Import/Definition.php, row 483
-// src/Import/DetailPage.php, row 546
-"The import source is not available." => "Zdroj importu nie je k dispoz\xEDcii.", // ai 2026-10
-
-// src/Import/Definition.php, row 484
-"The import source did not give its mapping." => "Zdroj importu neposkytol svoje mapovanie.", // ai 2026-10
+"The setting \"%1\" of the import source is not valid: %2" => "Nastavenie \x84%1\x93 zdroja importu nie je platn\xE9: %2", // ai 2026-11
 
 // src/Import/Definition.php, row 485
-"The mapping of the import does not fit the slice." => "Mapovanie importu nezodpoved\xE1 modulu.", // ai 2026-10
+"Only a user who manages the feeding of the slice may change its imports." => "Importy modulu smie meni\x9D len u\x9E\xEDvate\xBE, ktor\xFD spravuje v\xFDmenu spr\xE1v modulu.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
-// src/Import/DetailPage.php, row 548
-"A setting of the import source is not valid." => "Nastavenie zdroja importu nie je platn\xE9.", // ai 2026-10
-
-// src/Import/Definition.php, row 486
-"The setting \"%1\" of the import source is not valid." => "Nastavenie \x84%1\x93 zdroja importu nie je platn\xE9.", // ai 2026-10
+"This import uses API keys, so only a superadmin may change or delete it." => "Tento import pou\x9E\xEDva API k\xBE\xFA\xE8e, preto ho smie meni\x9D alebo maza\x9D len superadmin.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
-// src/Import/DetailPage.php, row 549
-"The settings name a slice whose feeding you do not manage." => "Nastavenia uv\xE1dzaj\xFA modul, ktor\xE9ho v\xFDmenu spr\xE1v nespravujete.", // ai 2026-10
-
-// src/Import/Definition.php, row 487
-"The setting \"%1\" names a slice whose feeding you do not manage." => "Nastavenie \x84%1\x93 uv\xE1dza modul, ktor\xE9ho v\xFDmenu spr\xE1v nespravujete.", // ai 2026-10
+"The import was not saved - it is not an import of this slice." => "Import nebol ulo\x9Een\xFD \x96 nejde o import tohto modulu.", // ai 2026-10
 
 // src/Import/Definition.php, row 488
-"The settings of the import changed meanwhile. Reload the page and set them again." => "Nastavenia importu sa medzit\xFDm zmenili. Na\xE8\xEDtajte str\xE1nku znova a nastavte ich znova.", // ai 2026-10
+// src/Import/DetailPage.php, row 585
+"The import source is not available." => "Zdroj importu nie je k dispoz\xEDcii.", // ai 2026-10
 
 // src/Import/Definition.php, row 489
+"The import source did not give its mapping." => "Zdroj importu neposkytol svoje mapovanie.", // ai 2026-10
+
+// src/Import/Definition.php, row 490
+"The mapping of the import does not fit the slice." => "Mapovanie importu nezodpoved\xE1 modulu.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+// src/Import/DetailPage.php, row 587
+"A setting of the import source is not valid." => "Nastavenie zdroja importu nie je platn\xE9.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+"The setting \"%1\" of the import source is not valid." => "Nastavenie \x84%1\x93 zdroja importu nie je platn\xE9.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+// src/Import/DetailPage.php, row 588
+"The settings name a slice whose feeding you do not manage." => "Nastavenia uv\xE1dzaj\xFA modul, ktor\xE9ho v\xFDmenu spr\xE1v nespravujete.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+"The setting \"%1\" names a slice whose feeding you do not manage." => "Nastavenie \x84%1\x93 uv\xE1dza modul, ktor\xE9ho v\xFDmenu spr\xE1v nespravujete.", // ai 2026-10
+
+// src/Import/Definition.php, row 493
+"The settings of the import changed meanwhile. Reload the page and set them again." => "Nastavenia importu sa medzit\xFDm zmenili. Na\xE8\xEDtajte str\xE1nku znova a nastavte ich znova.", // ai 2026-10
+
+// src/Import/Definition.php, row 494
 "The import source refused these settings." => "Zdroj importu tieto nastavenia odmietol.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 31
+// src/Import/DetailCatalog.php, row 33
 "No catalog yet. Check source lists what the source offers." => "Zatia\xBE \x9Eiadny katal\xF3g. \xC8o zdroj pon\xFAka, vyp\xED\x9Ae tla\xE8idlo \x84Skontrolova\x9D zdroj\x93.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 37
+// src/Import/DetailCatalog.php, row 39
 "The stored catalog cannot be read. The next check of the source lists it again." => "Ulo\x9Een\xFD katal\xF3g nie je mo\x9En\xE9 pre\xE8\xEDta\x9D. \xCFal\x9Aia kontrola zdroja ho vyp\xED\x9Ae znova.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 41
+// src/Import/DetailCatalog.php, row 48
 "The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "Katal\xF3g je ne\xFApln\xFD: posledn\xE1 kontrola ho nevyp\xEDsala cel\xFD (zatia\xBE z\xE1znamov: %1). K\xFDm ho kontrola nevyp\xED\x9Ae cel\xFD, ni\xE8 sa pri zdroji nehl\xE1si ako ch\xFDbaj\xFAce.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 42
+// src/Import/DetailCatalog.php, row 49
 "Listed by the check of %1: %2 entries." => "Kontrola z %1 vyp\xEDsala z\xE1znamov: %2.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 47
+// src/Import/DetailCatalog.php, row 54
 "Pages of the catalog" => "Str\xE1nky katal\xF3gu", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 74
+// src/Import/DetailCatalog.php, row 55
+"%1 entries, %2 can be added" => "z\xE1znamov: %1, mo\x9Eno prida\x9D: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 55
+"%1 entries" => "z\xE1znamov: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 58
+"%1 missing at the source" => "ch\xFDba v zdroji: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 61
+"%1 renamed at the source" => "premenovan\xE9 v zdroji: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 90
 "The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "Pr\xFAd bol z katal\xF3gu pridan\xFD alebo aktualizovan\xFD. V \xE8asti \x84Pr\xFAdy\x93 sa zobraz\xED po \xEFal\x9Aej kontrole zdroja.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 75
+// src/Import/DetailCatalog.php, row 91
 "The catalog has no such entry. Check the source to list its catalog again." => "Katal\xF3g tak\xFD z\xE1znam nem\xE1. Skontrolujte zdroj, aby sa katal\xF3g vyp\xEDsal znova.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 76, 77
+// src/Import/DetailCatalog.php, row 92, 93
 "Nothing was added from the catalog:" => "Z katal\xF3gu nebolo ni\xE8 pridan\xE9:", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 85
+// src/Import/DetailCatalog.php, row 101
 "This import uses API keys, so only a superadmin may add streams from its catalog." => "Tento import pou\x9E\xEDva API k\xBE\xFA\xE8e, preto smie pr\xFAdy z jeho katal\xF3gu prid\xE1va\x9D len superadmin.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 86
+// src/Import/DetailCatalog.php, row 102
 "Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "Prid\xE1vanie z katal\xF3gu vy\x9Eaduje pr\xE1vo upravova\x9D v\x9Aetky spr\xE1vy modulu, do ktor\xE9ho zdroj prid\xE1va svoje pr\xFAdy.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 87
+// src/Import/DetailCatalog.php, row 103
 "The import source cannot add streams from its catalog." => "Zdroj importu nevie prid\xE1va\x9D pr\xFAdy zo svojho katal\xF3gu.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 88
+// src/Import/DetailCatalog.php, row 104
 "The import source could not be reached or did not answer. Try again later." => "Zdroj importu nebol dostupn\xFD alebo neodpovedal. Sk\xFAste to nesk\xF4r.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 102
+// src/Import/DetailCatalog.php, row 118
 "1 entry is new at the source - no stream comes from it." => "1 z\xE1znam je pri zdroji nov\xFD \x96 nevych\xE1dza z neho \x9Eiadny pr\xFAd.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 103
+// src/Import/DetailCatalog.php, row 119
 "%1 entries are new at the source - no stream comes from them." => "Nov\xFDch z\xE1znamov pri zdroji: %1 \x96 nevych\xE1dza z nich \x9Eiadny pr\xFAd.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Missing at the source" => "Pri zdroji ch\xFDba", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Renamed at the source" => "Pri zdroji premenovan\xE9", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124, 143
-// src/Import/DetailPage.php, row 377, 1025, 1046
+// src/Import/DetailCatalog.php, row 140, 169
+// src/Import/DetailPage.php, row 401, 1076, 1097
 "Stream" => "Pr\xFAd", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Catalog key" => "K\xBE\xFA\xE8 v katal\xF3gu", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name of the stream" => "N\xE1zov pr\xFAdu", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name in the catalog" => "N\xE1zov v katal\xF3gu", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailCatalog.php, row 166
+"%1 entries on this page cannot be added or updated: %2" => "Z\xE1znamy na tejto str\xE1nke, ktor\xE9 nemo\x9Eno prida\x9D ani aktualizova\x9D (%1): %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailConfig.php, row 282
 "Key" => "K\xBE\xFA\xE8", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailPage.php, row 353, 706
 "Updated" => "Aktualizovan\xE9", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 171
+// src/Import/DetailCatalog.php, row 198
+"%1 of %2 entries on this page" => "Z\xE1znamy na tejto str\xE1nke: %1 z %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 199
+"Filter this page" => "Filtrova\x9D t\xFAto str\xE1nku", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 200
+"Only entries that can be added" => "Len z\xE1znamy, ktor\xE9 mo\x9Eno prida\x9D", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 207
 "Catalog of the source" => "Katal\xF3g zdroja", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 136
+// src/Import/DetailConfig.php, row 119
 "The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "Mapovanie bolo znova nastaven\xE9 zo zdroja. Zahodilo sa, \xE8o import o pr\xFAdoch vedel (verzie, \xE8asy importu a posledn\xE1 kontrola zdroja), tak\x9Ee \xEFal\x9A\xED beh ich na\xE8\xEDta v\x9Aetky znova.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 137
+// src/Import/DetailConfig.php, row 120
 "The mapping is the same as the source gives - nothing changed." => "Mapovanie je rovnak\xE9, ak\xE9 d\xE1va zdroj \x96 ni\xE8 sa nezmenilo.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 138, 139
+// src/Import/DetailConfig.php, row 121, 122
 "The mapping was not reset:" => "Mapovanie nebolo obnoven\xE9:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 140
+// src/Import/DetailConfig.php, row 123
 "The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "Nastavenia boli ulo\x9Een\xE9 a mapovanie bolo znova nastaven\xE9 zo zdroja. Ak bol otvoren\xFD beh, bol ukon\xE8en\xFD a zahodilo sa, \xE8o import o pr\xFAdoch vedel.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 141
+// src/Import/DetailConfig.php, row 124
 "The settings are the same as stored - nothing changed." => "Nastavenia s\xFA rovnak\xE9 ako ulo\x9Een\xE9 \x96 ni\xE8 sa nezmenilo.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 142
+// src/Import/DetailConfig.php, row 125
 // src/Isds/Registry/Page.php, row 326
 "The settings were not saved:" => "Nastavenia neboli ulo\x9Een\xE9:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 144
+// src/Import/DetailConfig.php, row 127
 "Choose a source." => "Zvo\xBEte zdroj.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 155, 179
+// src/Import/DetailConfig.php, row 138, 162
 "Settings of the source" => "Nastavenia zdroja", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 159
+// src/Import/DetailConfig.php, row 142
 "Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "Pl\xE1novan\xE9 spustenia st\xE1le be\x9Eia s ulo\x9Een\xFDmi nastaveniami; ak chcete import spusti\x9D ru\xE8ne, zme\xF2te ich v \xE8asti %1 ni\x9E\x9Aie.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 161
+// src/Import/DetailConfig.php, row 144
 "Change the settings or the source in %1 below." => "Zme\xF2te nastavenia alebo zdroj v \xE8asti %1 ni\x9E\x9Aie.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 188
+// src/Import/DetailConfig.php, row 171
 "No other source is available." => "\x8Eiadny in\xFD zdroj nie je k dispoz\xEDcii.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 192
+// src/Import/DetailConfig.php, row 175
 "(current)" => "(aktu\xE1lny)", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 203
+// src/Import/DetailConfig.php, row 186
 "Show its settings" => "Zobrazi\x9D jeho nastavenia", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 204
+// src/Import/DetailConfig.php, row 187
 "Keep the current source" => "Ponecha\x9D aktu\xE1lny zdroj", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 214
+// src/Import/DetailConfig.php, row 196
 "This source is not available, so its settings cannot be shown. Choose another source above." => "Tento zdroj nie je k dispoz\xEDcii, tak\x9Ee jeho nastavenia nie je mo\x9En\xE9 zobrazi\x9D. Zvo\xBEte vy\x9A\x9Aie in\xFD zdroj.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 222
+// src/Import/DetailConfig.php, row 204
 "The stored settings cannot be read; saving the form stores them again." => "Ulo\x9Een\xE9 nastavenia nie je mo\x9En\xE9 pre\xE8\xEDta\x9D; ulo\x9Een\xEDm formul\xE1ra sa ulo\x9Eia znova.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 228
+// src/Import/DetailConfig.php, row 209
 "The source did not describe its settings, so they cannot be changed now." => "Zdroj svoje nastavenia nepop\xEDsal, tak\x9Ee ich teraz nie je mo\x9En\xE9 zmeni\x9D.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 232
+// src/Import/DetailConfig.php, row 214
 "You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "Men\xEDte zdroj z %1 na %2. Ulo\x9Eenie ukon\xE8\xED otvoren\xFD beh, zahod\xED, \xE8o import vie o pr\xFAdoch a katal\xF3gu, a prevezme mapovanie z nov\xE9ho zdroja.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 233
+// src/Import/DetailConfig.php, row 215
 "Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "Zmeni\x9D zdroj? Otvoren\xFD beh sa skon\xE8\xED, \xE8o import vie o pr\xFAdoch, sa zahod\xED a mapovanie sa prevezme z nov\xE9ho zdroja.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 234
+// src/Import/DetailConfig.php, row 216
 "Change the source and save" => "Zmeni\x9D zdroj a ulo\x9Ei\x9D", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 236
+// src/Import/DetailConfig.php, row 218
 "Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "Ulo\x9Eenie zmenen\xFDch nastaven\xED ukon\xE8\xED otvoren\xFD beh, zahod\xED, \xE8o import vie o pr\xFAdoch a katal\xF3gu, a znova nastav\xED mapovanie zo zdroja. Nezmenen\xE9 nastavenia ni\xE8 nemenia.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 237
+// src/Import/DetailConfig.php, row 219
 "Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "Ulo\x9Ei\x9D nastavenia? Ak sa zmenili, otvoren\xFD beh sa skon\xE8\xED, \xE8o import vie o pr\xFAdoch, sa zahod\xED a mapovanie sa znova nastav\xED zo zdroja.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 238
+// src/Import/DetailConfig.php, row 220
 // src/Isds/Registry/Page.php, row 617
 "Save the settings" => "Ulo\x9Ei\x9D nastavenia", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 272
+// src/Import/DetailConfig.php, row 263
 "The source has no settings." => "Zdroj nem\xE1 \x9Eiadne nastavenia.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 283
+// src/Import/DetailConfig.php, row 274
 "Keys" => "K\xBE\xFA\xE8e", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 285
+// src/Import/DetailConfig.php, row 276
 "The source did not say which keys it needs." => "Zdroj neuviedol, ktor\xE9 k\xBE\xFA\xE8e potrebuje.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 288
+// src/Import/DetailConfig.php, row 279
 "The source needs no key." => "Zdroj nepotrebuje \x9Eiadny k\xBE\xFA\xE8.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailConfig.php, row 282
 // src/Widget/Widget.php, row 848
 "Hint" => "N\xE1poveda", // ai 2026-06
 
-// src/Import/DetailConfig.php, row 297
+// src/Import/DetailConfig.php, row 288
 "Key is set" => "K\xBE\xFA\xE8 je nastaven\xFD", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 298
+// src/Import/DetailConfig.php, row 289
 "Key is damaged" => "K\xBE\xFA\xE8 je po\x9Akoden\xFD", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 299
+// src/Import/DetailConfig.php, row 290
 "Key is missing" => "K\xBE\xFA\xE8 ch\xFDba", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 305
+// src/Import/DetailConfig.php, row 296
 "The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "K\xBE\xFA\xE8e nastavuje spr\xE1vca servera v config.php, nikdy tu. Bez k\xBE\xFA\xE8a zdroj zlyh\xE1, ke\xEF ho potrebuje; po\x9Akoden\xFD k\xBE\xFA\xE8 obsahuje zalomenie riadku a nikdy sa neodo\x9Ale.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 327
+// src/Import/DetailConfig.php, row 318
 "define one of %1 in config.php" => "definujte jednu z %1 v config.php", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 350
+// src/Import/DetailConfig.php, row 341
 "The mapping of the import cannot be read. Reset it from the source." => "Mapovanie importu nie je mo\x9En\xE9 pre\xE8\xEDta\x9D. Obnovte ho zo zdroja.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 356
+// src/Import/DetailConfig.php, row 347
 "Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "Obnovi\x9D mapovanie zo zdroja? Mapovanie, k\xBE\xFA\xE8ov\xE9 polo\x9Eky, sp\xF4sob ulo\x9Eenia, valid\xE1cia, v\xFDraz po skon\xE8en\xED pr\xFAdu a filter sa nahradia t\xFDm, \xE8o d\xE1va zdroj.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 357
+// src/Import/DetailConfig.php, row 348
 "Reset mapping from the source" => "Obnovi\x9D mapovanie zo zdroja", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 358
+// src/Import/DetailConfig.php, row 349
 "Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Znova nastav\xED mapovanie, k\xBE\xFA\xE8ov\xE9 polo\x9Eky, sp\xF4sob ulo\x9Eenia, valid\xE1ciu, v\xFDraz po skon\xE8en\xED pr\xFAdu a filter tak, ako ich zdroj d\xE1va pre ulo\x9Een\xE9 nastavenia. Nov\xE9 mapovanie zahod\xED, \xE8o import o pr\xFAdoch vedel, tak\x9Ee \xEFal\x9A\xED beh ich na\xE8\xEDta v\x9Aetky znova. Nie je to mo\x9En\xE9, k\xFDm je beh otvoren\xFD, zastaven\xFD chybou alebo sa e\x9Ate dokon\xE8uje.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 366
+// src/Import/DetailConfig.php, row 357
 "The mapping has no rows." => "Mapovanie nem\xE1 \x9Eiadne riadky.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Target" => "Cie\xBE", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Transformation" => "Transform\xE1cia", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 379
+// src/Import/DetailConfig.php, row 370
 "the field the job parameter names" => "polo\x9Eka ur\xE8en\xE1 parametrom \xFAlohy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 269
+// src/Import/DetailPage.php, row 293
 "This page is out of date \xE2\x80\x93 reload it." => "T\xE1to str\xE1nka je zastaran\xE1 \x96 na\xE8\xEDtajte ju znova.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 282
+// src/Import/DetailPage.php, row 306
 "Last import" => "Posledn\xFD import", // ai 2026-10
 
-// src/Import/DetailPage.php, row 283
+// src/Import/DetailPage.php, row 307
 "Next start" => "\xCFal\x9Aie spustenie", // ai 2026-10
 
-// src/Import/DetailPage.php, row 284
+// src/Import/DetailPage.php, row 308
 "Last check of the source" => "Posledn\xE1 kontrola zdroja", // ai 2026-10
 
-// src/Import/DetailPage.php, row 290
+// src/Import/DetailPage.php, row 314
 "Overview" => "Preh\xBEad", // ai 2026-10
 
-// src/Import/DetailPage.php, row 300
+// src/Import/DetailPage.php, row 324
 "Imports every stream." => "Importuje v\x9Aetky pr\xFAdy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301, 801
+// src/Import/DetailPage.php, row 325, 841
 "Run changed only" => "Spusti\x9D len zmenen\xE9", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301
+// src/Import/DetailPage.php, row 325
 "Skips the streams the source says did not change." => "Presko\xE8\xED pr\xFAdy, ktor\xE9 sa pod\xBEa zdroja nezmenili.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302, 367, 802
+// src/Import/DetailPage.php, row 326, 391, 842
 "Check source" => "Skontrolova\x9D zdroj", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302
+// src/Import/DetailPage.php, row 326
 "Asks the source whether it works. Stores nothing." => "Op\xFDta sa zdroja, \xE8i funguje. Ni\xE8 neuklad\xE1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Reads up to 500 items and shows what it would store. Stores nothing." => "Na\xE8\xEDta a\x9E 500 spr\xE1v a uk\xE1\x9Ee, \xE8o by ulo\x9Eil. Ni\xE8 neuklad\xE1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 309
+// src/Import/DetailPage.php, row 333
 "More actions" => "\xCFal\x9Aie akcie", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327, 352
+// src/Import/DetailPage.php, row 351, 376
 "Runs" => "Behy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327
+// src/Import/DetailPage.php, row 351
 "No run yet." => "Zatia\xBE \x9Eiadny beh.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Took" => "Trvanie", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Read" => "Na\xE8\xEDtan\xE9", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Skipped" => "Presko\xE8en\xE9", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Filtered out" => "Odfiltrovan\xE9", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Item errors" => "Chyby spr\xE1v", // ai 2026-10
 
-// src/Import/DetailPage.php, row 342
+// src/Import/DetailPage.php, row 366
 "working %1" => "z toho pr\xE1ca %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 366
+// src/Import/DetailPage.php, row 390
 "The stored state of the streams cannot be read." => "Ulo\x9Een\xFD stav pr\xFAdov nie je mo\x9En\xE9 pre\xE8\xEDta\x9D.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 367
+// src/Import/DetailPage.php, row 391
 "No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Zatia\xBE nebol importovan\xFD ani skontrolovan\xFD \x9Eiadny pr\xFAd. Zoznam napln\xED tla\xE8idlo %1 alebo %2 v \xE8asti Akcie vy\x9A\x9Aie.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 368, 396
+// src/Import/DetailPage.php, row 392, 421
 "Streams" => "Pr\xFAdy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Records" => "Z\xE1znamy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Last recorded" => "Posledn\xFD z\xE1pis", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Source checked" => "Kontrola zdroja", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Data version" => "Verzia d\xE1t", // ai 2026-10
 
-// src/Import/DetailPage.php, row 390
+// src/Import/DetailPage.php, row 415
 "by the run started %1" => "v behu spustenom %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 395
+// src/Import/DetailPage.php, row 420
 "Pages of the streams" => "Str\xE1nky pr\xFAdov", // ai 2026-10
 
-// src/Import/DetailPage.php, row 421
+// src/Import/DetailPage.php, row 452
 "Page %1 of %2" => "Strana %1 z %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 507
+// src/Import/DetailPage.php, row 545
 "The run is queued. It goes on in the background; reload the page to see how far it got." => "Beh je zaraden\xFD do frontu. Pokra\xE8uje na pozad\xED; ako \xEFaleko sa dostal, uvid\xEDte po obnoven\xED str\xE1nky.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 508
+// src/Import/DetailPage.php, row 546
 "The run goes on - its next step is queued." => "Beh pokra\xE8uje \x96 jeho \xEFal\x9A\xED krok \xE8ak\xE1 vo fronte.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 509
+// src/Import/DetailPage.php, row 547
 "The run is ended. What it imported stays." => "Beh bol ukon\xE8en\xFD. \xC8o naimportoval, zost\xE1va.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 511
+// src/Import/DetailPage.php, row 549
 "No such action." => "Tak\xE1 akcia neexistuje.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 512
+// src/Import/DetailPage.php, row 550
 "Choose a stream of the source." => "Vyberte pr\xFAd zdroja.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 513
-"Not started." => "Nespusten\xE9.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 515
-"Its last step may still be working. Try again in a few minutes." => "Jeho posledn\xFD krok mo\x9Eno e\x9Ate be\x9E\xED. Sk\xFAste to znova o nieko\xBEko min\xFAt.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 516
-"This import no longer exists in this slice." => "Tento import u\x9E v tomto module neexistuje.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 517
-"No such run of this import." => "Tak\xFD beh tohto importu neexistuje.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 518
-"The run is finished already." => "Beh je u\x9E dokon\xE8en\xFD.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 520
-"The action failed. The log of import failures has its cause." => "Akcia zlyhala. Pr\xED\xE8inu n\xE1jdete v logu ch\xFDb importu.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Posledn\xFD beh skon\xE8il chybou. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93. Pl\xE1novan\xE9 spustenie ho ukon\xE8\xED samo, ru\xE8n\xE9 spustenie nie.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first." => "Posledn\xFD beh skon\xE8il chybou. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Na poslednom behu u\x9E dlho nepracoval \x9Eiadny krok. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93. Pl\xE1novan\xE9 spustenie ho ukon\xE8\xED samo, ru\xE8n\xE9 spustenie nie.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first." => "Na poslednom behu u\x9E dlho nepracoval \x9Eiadny krok. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 533
-"The last step of the previous run is still finishing. Try again in a few minutes." => "Posledn\xFD krok predch\xE1dzaj\xFAceho behu sa e\x9Ate dokon\xE8uje. Sk\xFAste to znova o nieko\xBEko min\xFAt.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 534
-"Its next step is already on its way." => "Jeho \xEFal\x9A\xED krok je u\x9E na ceste.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 535
-"The last run is still running." => "Posledn\xFD beh e\x9Ate be\x9E\xED.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 544
-"Only a user who manages the feeding of the slice may run its imports." => "Importy modulu smie sp\xFA\x9A\x9Da\x9D len u\x9E\xEDvate\xBE, ktor\xFD spravuje jeho v\xFDmenu spr\xE1v.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 547
-"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Defin\xEDciu importu nie je mo\x9En\xE9 pou\x9Ei\x9D \x96 jej mapovanie nezodpoved\xE1 modulu alebo ho nie je mo\x9En\xE9 pre\xE8\xEDta\x9D (DEFINITION).", // ai 2026-10
-
-// src/Import/DetailPage.php, row 550
-"The source has no such stream now." => "Zdroj teraz tak\xFD pr\xFAd nem\xE1.", // ai 2026-10
-
 // src/Import/DetailPage.php, row 551
-"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "K\xF3d zdroja importu zlyhal (SOURCE). Triedu a riadok n\xE1jdete v logu ch\xFDb importu.", // ai 2026-10
+"At most (items) takes a whole number greater than 0, or nothing for all items (500 in a dry run)." => "Do po\xBEa \x84Najviac (spr\xE1v)\x93 zadajte cel\xE9 \xE8\xEDslo v\xE4\xE8\x9Aie ako 0, alebo ho nechajte pr\xE1zdne pre v\x9Aetky spr\xE1vy (pri sk\xFA\x9Aobnom behu 500).", // ai 2026-11
 
 // src/Import/DetailPage.php, row 552
-"The first row of the file lacks columns the mapping needs." => "Prv\xE9mu riadku s\xFAboru ch\xFDbaj\xFA st\xE5pce, ktor\xE9 mapovanie potrebuje.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 553
-"The source did not accept the key." => "Zdroj neprijal k\xBE\xFA\xE8.", // ai 2026-10
+"Not started." => "Nespusten\xE9.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 554
-"The key of the source is damaged in the configuration." => "K\xBE\xFA\xE8 zdroja je v konfigur\xE1cii po\x9Akoden\xFD.", // ai 2026-10
+"Its last step may still be working. Try again in a few minutes." => "Jeho posledn\xFD krok mo\x9Eno e\x9Ate be\x9E\xED. Sk\xFAste to znova o nieko\xBEko min\xFAt.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 555
-"The source could not be reached." => "K zdroju sa nepodarilo pripoji\x9D.", // ai 2026-10
+"This import no longer exists in this slice." => "Tento import u\x9E v tomto module neexistuje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 556
-"The run is finished; it cannot go on." => "Beh je dokon\xE8en\xFD; nem\xF4\x9Ee pokra\xE8ova\x9D.", // ai 2026-10
+"No such run of this import." => "Tak\xFD beh tohto importu neexistuje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 557
-"The import is switched off." => "Import je vypnut\xFD.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 558
-"This import uses API keys, so only a superadmin may do this." => "Tento import pou\x9E\xEDva API k\xBE\xFA\xE8e, preto to smie urobi\x9D len superadmin.", // ai 2026-10
+"The run is finished already." => "Beh je u\x9E dokon\xE8en\xFD.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 559
-"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Zdroj importu nevie ur\xE8i\x9D verzie svojich pr\xFAdov, tak\x9Ee nem\xE1 stav, ktor\xFD by bolo mo\x9En\xE9 zaznamena\x9D.", // ai 2026-10
+"The action failed. The log of import failures has its cause." => "Akcia zlyhala. Pr\xED\xE8inu n\xE1jdete v logu ch\xFDb importu.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 560
-"The import source refused: %1" => "Zdroj importu odmietol: %1", // ai 2026-10
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Posledn\xFD beh skon\xE8il chybou. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93. Pl\xE1novan\xE9 spustenie ho ukon\xE8\xED samo, ru\xE8n\xE9 spustenie nie.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first." => "Posledn\xFD beh skon\xE8il chybou. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 571
-"The request to the source failed." => "Po\x9Eiadavka na zdroj zlyhala.", // ai 2026-10
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Na poslednom behu u\x9E dlho nepracoval \x9Eiadny krok. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93. Pl\xE1novan\xE9 spustenie ho ukon\xE8\xED samo, ru\xE8n\xE9 spustenie nie.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 571
+"No step has worked on the last run for a long time. Continue it or End it first." => "Na poslednom behu u\x9E dlho nepracoval \x9Eiadny krok. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 572
-"The source is not available now." => "Zdroj teraz nie je dostupn\xFD.", // ai 2026-10
+"The last step of the previous run is still finishing. Try again in a few minutes." => "Posledn\xFD krok predch\xE1dzaj\xFAceho behu sa e\x9Ate dokon\xE8uje. Sk\xFAste to znova o nieko\xBEko min\xFAt.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 588
-// src/Import/RunView.php, row 177
-"No import yet" => "Zatia\xBE \x9Eiadny import", // ai 2026-10
+// src/Import/DetailPage.php, row 573
+"Its next step is already on its way." => "Jeho \xEFal\x9A\xED krok je u\x9E na ceste.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 574
+"The last run is still running." => "Posledn\xFD beh e\x9Ate be\x9E\xED.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 583
+"Only a user who manages the feeding of the slice may run its imports." => "Importy modulu smie sp\xFA\x9A\x9Da\x9D len u\x9E\xEDvate\xBE, ktor\xFD spravuje jeho v\xFDmenu spr\xE1v.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 586
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Defin\xEDciu importu nie je mo\x9En\xE9 pou\x9Ei\x9D \x96 jej mapovanie nezodpoved\xE1 modulu alebo ho nie je mo\x9En\xE9 pre\xE8\xEDta\x9D (DEFINITION).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 589
-"Latest run: %1" => "Posledn\xFD beh: %1", // ai 2026-10
+"The source has no such stream now." => "Zdroj teraz tak\xFD pr\xFAd nem\xE1.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 590
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "K\xF3d zdroja importu zlyhal (SOURCE). Triedu a riadok n\xE1jdete v logu ch\xFDb importu.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 591
+"The first row of the file lacks columns the mapping needs." => "Prv\xE9mu riadku s\xFAboru ch\xFDbaj\xFA st\xE5pce, ktor\xE9 mapovanie potrebuje.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 592
+"The source did not accept the key." => "Zdroj neprijal k\xBE\xFA\xE8.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 593
+"The key of the source is damaged in the configuration." => "K\xBE\xFA\xE8 zdroja je v konfigur\xE1cii po\x9Akoden\xFD.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 594
+"The source could not be reached." => "K zdroju sa nepodarilo pripoji\x9D.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 595
+"The database did not store the imported items; the source is not at fault." => "Datab\xE1za importovan\xE9 spr\xE1vy neulo\x9Eila; chyba nie je na strane zdroja.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 596
+"The run is finished; it cannot go on." => "Beh je dokon\xE8en\xFD; nem\xF4\x9Ee pokra\xE8ova\x9D.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 597
+"The import runs only by hand, so a planned task does not start it." => "Import sa sp\xFA\x9A\x9Da len ru\xE8ne, tak\x9Ee ho napl\xE1novan\xE1 \xFAloha nespust\xED.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 598
+"This import uses API keys, so only a superadmin may do this." => "Tento import pou\x9E\xEDva API k\xBE\xFA\xE8e, preto to smie urobi\x9D len superadmin.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 599
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Zdroj importu nevie ur\xE8i\x9D verzie svojich pr\xFAdov, tak\x9Ee nem\xE1 stav, ktor\xFD by bolo mo\x9En\xE9 zaznamena\x9D.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 600
+"The import source refused: %1" => "Zdroj importu odmietol: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 611
+"The request to the source failed." => "Po\x9Eiadavka na zdroj zlyhala.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 612
+"The source is not available now." => "Zdroj teraz nie je dostupn\xFD.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 628
+// src/Import/RunView.php, row 183
+"No import yet" => "Zatia\xBE \x9Eiadny import", // ai 2026-10
+
+// src/Import/DetailPage.php, row 629
+"Latest run: %1" => "Posledn\xFD beh: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 635
 "Since then: %1" => "Odvtedy: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "Source: %1" => "Zdroj: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "this source is not available" => "tento zdroj nie je dostupn\xFD", // ai 2026-10
 
-// src/Import/DetailPage.php, row 626
+// src/Import/DetailPage.php, row 666
 "First item error:" => "Prv\xE1 chyba spr\xE1vy:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Latest runs" => "Posledn\xE9 behy", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Outcomes of the latest runs, newest first" => "V\xFDsledky posledn\xFDch behov, najnov\x9Aie prv\xE9", // ai 2026-10
 
-// src/Import/DetailPage.php, row 654
+// src/Import/DetailPage.php, row 694
 "Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Najnov\x9Aie prv\xE9. \xC8iarkovan\xFD kruh je beh, ktor\xFD ni\xE8 neulo\x9Eil: kontrola zdroja, sk\xFA\x9Aobn\xFD beh alebo zaznamenanie stavu. Pln\xFD \x9Atvorec %1 je beh ukon\xE8en\xFD pred dokon\xE8en\xEDm.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 679
+// src/Import/DetailPage.php, row 719
 "The open run" => "Otvoren\xFD beh", // ai 2026-10
 
-// src/Import/DetailPage.php, row 681
+// src/Import/DetailPage.php, row 721
 "Streams done: %1 of %2." => "Hotov\xE9 pr\xFAdy: %1 z %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 684
+// src/Import/DetailPage.php, row 724
 "Now at: %1." => "Pr\xE1ve sprac\xFAva: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 686
+// src/Import/DetailPage.php, row 726
 "Last progress: %1." => "Posledn\xFD pokrok: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 689
+// src/Import/DetailPage.php, row 729
 "Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "Ni\xE8 \xEFal\x9Aie sa neimportuje, k\xFDm nezasiahnete alebo k\xFDm import znova nespust\xED napl\xE1novan\xE1 \xFAloha (t\xFDm sa tento beh ukon\xE8\xED).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 690
+// src/Import/DetailPage.php, row 730
 "Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "\x84Pokra\xE8ova\x9D\x93 nadvia\x9Ee tam, kde sa beh zastavil, ke\xEF odstr\xE1nite pr\xED\xE8inu; \x84Ukon\xE8i\x9D\x93 ho definit\xEDvne zastav\xED a ponech\xE1, \xE8o bolo naimportovan\xE9.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 691
+// src/Import/DetailPage.php, row 731
 "No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "U\x9E dlho na \xF2om nepracoval \x9Eiadny krok \x96 overte, \x9Ee cron sp\xFA\x9A\x9Da front \xFAloh a \x9Ee jeho kol\xE1 s\xFA na krok dos\x9D dlh\xE9 (TOEXECUTE_ALLOWED_TIME v config.php). \x84Pokra\xE8ova\x9D\x93 to teraz sk\xFAsi znova; \x84Ukon\xE8i\x9D\x93 ho definit\xEDvne zastav\xED a ponech\xE1, \xE8o bolo naimportovan\xE9. Pl\xE1novan\xE9 spustenie importu ho ukon\xE8\xED a za\xE8ne nov\xFD beh.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 692
+// src/Import/DetailPage.php, row 732
 "A step is working now." => "Pr\xE1ve pracuje krok.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 694
+// src/Import/DetailPage.php, row 734
 "Waiting to try again at %1 after 1 failed try." => "\xC8ak\xE1 na nov\xFD pokus o %1 po 1 ne\xFAspe\x9Anom pokuse.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 695
+// src/Import/DetailPage.php, row 735
 "Waiting to try again at %1 after %2 failed tries." => "\xC8ak\xE1 na nov\xFD pokus o %1 po %2 ne\xFAspe\x9An\xFDch pokusoch.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 696
+// src/Import/DetailPage.php, row 736
 "Waiting to try again at %1." => "\xC8ak\xE1 na nov\xFD pokus o %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 698, 944
+// src/Import/DetailPage.php, row 738, 995
 "Its last step may still be working." => "Jeho posledn\xFD krok mo\x9Eno e\x9Ate be\x9E\xED.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 699
+// src/Import/DetailPage.php, row 739
 "Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "Jeho posledn\xFD krok sa zastavil pred dokon\xE8en\xEDm. Front \xFAloh ho sk\xFAsi znova do %1 min\xFAt; \x84Sk\xFAsi\x9D hne\xEF\x93 to urob\xED okam\x9Eite.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue until %1." => "Jeho \xEFal\x9A\xED krok \xE8ak\xE1 vo fronte \xFAloh do %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue." => "Jeho \xEFal\x9A\xED krok \xE8ak\xE1 vo fronte \xFAloh.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 726
-"The import is disabled, so no planned task starts it." => "Import je vypnut\xFD, tak\x9Ee ho \x9Eiadna napl\xE1novan\xE1 \xFAloha nespust\xED.", // ai 2026-10
+// src/Import/DetailPage.php, row 766
+"Planned tasks start it only once Enabled is ticked (Edit in the list of imports)." => "Napl\xE1novan\xE9 \xFAlohy ho spustia, a\x9E ke\xEF bude za\x9Akrtnut\xE9 \x84Povolen\xE9\x93 (\x84Edit\xE1cia\x93 v zozname importov).", // ai 2026-11
 
-// src/Import/DetailPage.php, row 732
-"Not planned" => "Nenapl\xE1novan\xE9", // ai 2026-10
-
-// src/Import/DetailPage.php, row 733
+// src/Import/DetailPage.php, row 773
 "A planned task calls it, but none has a time to start it." => "Vol\xE1 ho napl\xE1novan\xE1 \xFAloha, ale \x9Eiadna nem\xE1 nastaven\xFD \xE8as spustenia.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 734
+// src/Import/DetailPage.php, row 774
 "It runs only when you start it. To run it on a schedule, add a planned task." => "Be\x9E\xED, len ke\xEF ho spust\xEDte. Na sp\xFA\x9A\x9Danie pod\xBEa pl\xE1nu pridajte napl\xE1novan\xFA \xFAlohu.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 745
+// src/Import/DetailPage.php, row 785
 "Written by hand, a planned task starts it with %1." => "Ru\xE8ne zap\xEDsan\xE1 napl\xE1novan\xE1 \xFAloha ho spust\xED pomocou %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 756
+// src/Import/DetailPage.php, row 796
 "Planned tasks need the Forms permission" => "\x84Napl\xE1novan\xE9 \xFAlohy\x93 vy\x9Eaduj\xFA pr\xE1vo \x84Formul\xE1re\x93", // ai 2026-10
 
-// src/Import/DetailPage.php, row 760
+// src/Import/DetailPage.php, row 800
 "Planned tasks: %1" => "Napl\xE1novan\xE9 \xFAlohy: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 761
+// src/Import/DetailPage.php, row 801
 "Planned tasks: %1, next %2" => "Napl\xE1novan\xE9 \xFAlohy: %1, nabud\xFAce %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 763, 778
+// src/Import/DetailPage.php, row 803, 818
 "Schedule" => "Napl\xE1nova\x9D", // ai 2026-10
 
-// src/Import/DetailPage.php, row 766
-"(import off)" => "(import vypnut\xFD)", // ai 2026-10
+// src/Import/DetailPage.php, row 806
+"(does not start it now)" => "(teraz ho nespust\xED)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "next %1" => "nabud\xFAce %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "no time set" => "bez nastaven\xE9ho \xE8asu", // ai 2026-10
 
-// src/Import/DetailPage.php, row 774
+// src/Import/DetailPage.php, row 814
 "save the task again to let it start the import" => "ulo\x9Ete \xFAlohu znova, aby mohla spusti\x9D import", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "queued" => "vo fronte", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "not queued" => "nie je vo fronte", // ai 2026-10
 
-// src/Import/DetailPage.php, row 793
+// src/Import/DetailPage.php, row 833
 "Import %1" => "Import %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "mode set by an expression" => "re\x9Eim ur\xE8en\xFD v\xFDrazom", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "unknown mode %1" => "nezn\xE1my re\x9Eim %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Passed" => "V poriadku", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Failed" => "Zlyhalo", // ai 2026-10
 
-// src/Import/DetailPage.php, row 828
+// src/Import/DetailPage.php, row 868
 "Taken from the run list: the stream state holds no newer check result." => "Prevzat\xE9 zo zoznamu behov: stav pr\xFAdov neobsahuje nov\x9A\xED v\xFDsledok kontroly.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "The stored result cannot be read." => "Ulo\x9Een\xFD v\xFDsledok nie je mo\x9En\xE9 pre\xE8\xEDta\x9D.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "Never checked" => "Nikdy nekontrolovan\xE9", // ai 2026-10
 
-// src/Import/DetailPage.php, row 849
+// src/Import/DetailPage.php, row 893
 "The mapping of the import cannot be read; no run starts until it is set again." => "Mapovanie importu nie je mo\x9En\xE9 pre\xE8\xEDta\x9D; k\xFDm ho znova nenastav\xEDte, \x9Eiadny beh sa nespust\xED.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 856
+// src/Import/DetailPage.php, row 900
 "The mapping does not fit the slice; no run starts until it is fixed:" => "Mapovanie nezodpoved\xE1 modulu; k\xFDm ho neoprav\xEDte, \x9Eiadny beh sa nespust\xED:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 899
+// src/Import/DetailPage.php, row 912
+"The source is not set up yet." => "Zdroj e\x9Ate nie je nastaven\xFD.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 948
 "No stream is known yet - run the import or check the source first." => "Zatia\xBE nie je zn\xE1my \x9Eiadny pr\xFAd \x96 najprv spustite import alebo skontrolujte zdroj.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 903
+// src/Import/DetailPage.php, row 952
 "One stream" => "Jeden pr\xFAd", // ai 2026-10
 
-// src/Import/DetailPage.php, row 904
-"Run the stream" => "Spusti\x9D pr\xFAd", // ai 2026-10
+// src/Import/DetailPage.php, row 953
+"At most (items)" => "Najviac (spr\xE1v)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 905
+// src/Import/DetailPage.php, row 955
 "Dry run of the stream" => "Sk\xFA\x9Aobn\xFD beh pr\xFAdu", // ai 2026-10
 
-// src/Import/DetailPage.php, row 918
+// src/Import/DetailPage.php, row 956
+"Run the stream" => "Spusti\x9D pr\xFAd", // ai 2026-10
+
+// src/Import/DetailPage.php, row 969
 "Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "Zaznamena\x9D verzie, ktor\xE9 m\xE1 zdroj teraz, ako keby boli naimportovan\xE9? Pr\xFAdy, ktor\xE9 sa potom nezmenia, sa importova\x9D nebud\xFA.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 919
+// src/Import/DetailPage.php, row 970
 "Record the current state of the source" => "Zaznamena\x9D aktu\xE1lny stav zdroja", // ai 2026-10
 
-// src/Import/DetailPage.php, row 921
+// src/Import/DetailPage.php, row 972
 "Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Ulo\x9E\xED verziu, ktor\xFA m\xE1 ka\x9Ed\xFD pr\xFAd teraz, bez importovania, tak\x9Ee \x84Spusti\x9D len zmenen\xE9\x93 potom vezme len to, \xE8o sa zmen\xED nesk\xF4r. Pou\x9Eite to, len ke\xEF s\xFA d\xE1ta zdroja u\x9E v module.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 937
+// src/Import/DetailPage.php, row 988
 "No run is open." => "\x8Eiadny beh nie je otvoren\xFD.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 943
+// src/Import/DetailPage.php, row 994
 "Its step is working now." => "Jeho krok pr\xE1ve pracuje.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 947
+// src/Import/DetailPage.php, row 998
 "Try now" => "Sk\xFAsi\x9D hne\xEF", // ai 2026-10
 
-// src/Import/DetailPage.php, row 957
+// src/Import/DetailPage.php, row 1008
 "End the run for good? What it imported stays; the next run starts from the beginning." => "Definit\xEDvne ukon\xE8i\x9D beh? \xC8o naimportoval, zostane; \xEFal\x9A\xED beh za\xE8ne od za\xE8iatku.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1024
+// src/Import/DetailPage.php, row 1075
 "The first item errors (%1)" => "Prv\xE9 chyby spr\xE1v (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1025, 1046
+// src/Import/DetailPage.php, row 1076, 1097
 "Job" => "\xDAloha", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1036
+// src/Import/DetailPage.php, row 1087
 "Skipped - the key came out empty (%1)" => "Presko\xE8en\xE9 \x96 k\xBE\xFA\xE8 vy\x9Aiel pr\xE1zdny (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1046
+// src/Import/DetailPage.php, row 1097
 "Source value" => "Hodnota zo zdroja", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of 1 job." => "Filter neponechal \x9Eiadnu spr\xE1vu z 1 \xFAlohy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of %1 jobs." => "Filter neponechal \x9Eiadnu spr\xE1vu z %1 \xFAloh.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1057
+// src/Import/DetailPage.php, row 1108
 "If those items should be imported, check the filter in Mapping." => "Ak sa tieto spr\xE1vy maj\xFA importova\x9D, skontrolujte filter v \xE8asti \x84Mapovanie\x93.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in 1 stream; the rest of it was skipped." => "Zdroj sa v 1 pr\xFAde zacyklil; jeho zvy\x9Aok bol presko\xE8en\xFD.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in %1 streams; the rest of each was skipped." => "Zdroj sa zacyklil v %1 pr\xFAdoch; zvy\x9Aok ka\x9Ed\xE9ho z nich bol presko\xE8en\xFD.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1067
+// src/Import/DetailPage.php, row 1118
 "The source pages wrongly or changed its paging; check the source, then run the import again." => "Zdroj str\xE1nkuje chybne alebo zmenil str\xE1nkovanie; skontrolujte zdroj a potom import spustite znova.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1082
+// src/Import/DetailPage.php, row 1133
 "Remarks of the source (%1)" => "Pozn\xE1mky zdroja (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1091
+// src/Import/DetailPage.php, row 1142
 "Remark" => "Pozn\xE1mka", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1099
+// src/Import/DetailPage.php, row 1150
 "The dry run found no item to store." => "Sk\xFA\x9Aobn\xFD beh nena\x9Aiel \x9Eiadnu spr\xE1vu na ulo\x9Eenie.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1101
+// src/Import/DetailPage.php, row 1152
 "What the dry run would store - the first %1 items" => "\xC8o by sk\xFA\x9Aobn\xFD beh ulo\x9Eil \x96 prv\xE9 spr\xE1vy (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Last try failed:" => "Posledn\xFD pokus zlyhal:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Error:" => "Chyba:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1124
+// src/Import/DetailPage.php, row 1175
 "At: %1" => "Kde: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1126
+// src/Import/DetailPage.php, row 1177
 "What to do:" => "\xC8o robi\x9D:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1136
+// src/Import/DetailPage.php, row 1187
 "Check the address of the source in its settings, then Continue or End the run." => "Skontrolujte adresu zdroja v jeho nastaveniach a potom pri behu zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1140
+// src/Import/DetailPage.php, row 1191
 "Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "Opravte mapovanie st\xE5pcov alebo s\xFAbor tak, aby ch\xFDbaj\xFAce st\xE5pce existovali, a potom znova spustite \x84Skontrolova\x9D zdroj\x93.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1141
+// src/Import/DetailPage.php, row 1192
 "Check the key of the source in its settings, then run Check source." => "Skontrolujte k\xBE\xFA\xE8 zdroja v jeho nastaveniach a potom spustite \x84Skontrolova\x9D zdroj\x93.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1142
+// src/Import/DetailPage.php, row 1193
 "Enter the key of the source again in its settings, then run Check source." => "Zadajte k\xBE\xFA\xE8 zdroja v jeho nastaveniach znova a potom spustite \x84Skontrolova\x9D zdroj\x93.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1143
+// src/Import/DetailPage.php, row 1194
 "The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "K zdroju sa nepodarilo pripoji\x9D. Skontrolujte jeho adresu v nastaveniach; ak je spr\xE1vna, zvo\xBEte pri behu nesk\xF4r \x84Pokra\xE8ova\x9D\x93.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1144
+// src/Import/DetailPage.php, row 1195
 "Correct the settings of the source, then run Check source." => "Opravte nastavenia zdroja a potom spustite \x84Skontrolova\x9D zdroj\x93.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1145
+// src/Import/DetailPage.php, row 1196
 "Choose a stream the source still has, then start the import again." => "Vyberte pr\xFAd, ktor\xFD zdroj st\xE1le m\xE1, a potom import spustite znova.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1146
+// src/Import/DetailPage.php, row 1197
 "Check that every mapped field exists in the slice, then start the import again." => "Overte, \x9Ee ka\x9Ed\xE1 mapovan\xE1 polo\x9Eka v module existuje, a potom import spustite znova.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1147
+// src/Import/DetailPage.php, row 1198
 "Look the failure up in the log of import failures, then Continue or End the run." => "Vyh\xBEadajte chybu v logu ch\xFDb importu a potom pri behu zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1161
+// src/Import/DetailPage.php, row 1199
+"Continue the run later; if the database keeps refusing, tell its administrator." => "Pokra\xE8ujte v behu nesk\xF4r; ak datab\xE1za na\xEFalej odmieta, informujte jej administr\xE1tora.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 1213
 "full run" => "\xFApln\xFD beh", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1162
-"one stream (%1)" => "jeden pr\xFAd (%1)", // ai 2026-10
+// src/Import/DetailPage.php, row 1214
+"one stream: %1" => "jeden pr\xFAd: %1", // ai 2026-11
 
-// src/Import/DetailPage.php, row 1163
+// src/Import/DetailPage.php, row 1215
 "%1 streams" => "pr\xFAdy: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Baseline only" => "Len zaznamenan\xFD stav", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Nothing imported yet. Run changed only takes what changes after this." => "Zatia\xBE ni\xE8 nenaimportovan\xE9. \x84Spusti\x9D len zmenen\xE9\x93 vezme len to, \xE8o sa zmen\xED potom.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207, 1208
+// src/Import/DetailPage.php, row 1259, 1260
 "Imported with item errors" => "Naimportovan\xE9 s chybami spr\xE1v", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207
+// src/Import/DetailPage.php, row 1259
 "1 item error in the run that imported it - see Runs." => "1 chyba spr\xE1vy v behu, ktor\xFD ho naimportoval \x96 pozri \x84Behy\x93.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1208
+// src/Import/DetailPage.php, row 1260
 "%1 item errors in the run that imported it - see Runs." => "Chyby spr\xE1v (%1) v behu, ktor\xFD ho naimportoval \x96 pozri \x84Behy\x93.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "Imported" => "Naimportovan\xE9", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source was asked again after the import." => "Po importe bol zdroj znova dopytovan\xFD.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source has not been asked since." => "Zdroj odvtedy dopytovan\xFD nebol.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Checked, not imported yet" => "Skontrolovan\xE9, zatia\xBE nenaimportovan\xE9", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Run imports it; Run changed only too, as it has no version to compare." => "\x84Spusti\x9D\x93 ho naimportuje; \x84Spusti\x9D len zmenen\xE9\x93 tie\x9E, preto\x9Ee nem\xE1 verziu na porovnanie.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "Not seen yet" => "Zatia\xBE nezisten\xE9", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "No run has imported or checked it." => "\x8Eiadny beh ho nenaimportoval ani neskontroloval.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1228
+// src/Import/DetailPage.php, row 1280
 "%1 read" => "na\xE8\xEDtan\xE9: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1229
+// src/Import/DetailPage.php, row 1281
 "%1 new, %2 updated, %3 skipped" => "nov\xFDch %1, aktualizovan\xFDch %2, presko\xE8en\xFDch %3", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1230
+// src/Import/DetailPage.php, row 1282
 "%1 filtered out" => "odfiltrovan\xFDch %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "dry run - nothing stored" => "sk\xFA\x9Aobn\xFD beh - ni\xE8 neulo\x9Een\xE9", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "all streams of the run together" => "v\x9Aetky pr\xFAdy behu spolu", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1250
+// src/Import/DetailPage.php, row 1302
 "None yet - an import records it" => "Zatia\xBE \x9Eiadna - zaznamen\xE1 ju import", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1251
+// src/Import/DetailPage.php, row 1303
 "None - the source gives no version" => "\x8Eiadna - zdroj verziu neuv\xE1dza", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1" => "trvalo %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1, working %2" => "trvalo %1, z toho pr\xE1ca %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1310
+// src/Import/DetailPage.php, row 1362
 "%1 s" => "%1 s", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313
+// src/Import/DetailPage.php, row 1365
 "%1 min %2 s" => "%1 min %2 s", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313, 1315
+// src/Import/DetailPage.php, row 1365, 1367
 // src/Optimize/StateCheckModel.php, row 257
 "%1 min" => "%1 min", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1315
+// src/Import/DetailPage.php, row 1367
 // src/Optimize/StateCheckModel.php, row 258
 "%1 h" => "%1 h", // ai 2026-10
 
@@ -10542,7 +10602,7 @@ return [
 // src/Import/RunView.php, row 74
 "Stuck \xE2\x80\x94 see State Check" => "Zaseknut\xE9 \x97 pozri \x84Kontrola stavu\x93", // ai 2026-10
 
-// src/Import/RunView.php, row 75, 171
+// src/Import/RunView.php, row 75, 177
 "Running" => "Be\x9E\xED", // ai 2026-10
 
 // src/Import/RunView.php, row 76
@@ -10597,167 +10657,197 @@ return [
 // src/Import/RunView.php, row 131
 "%1 days ago" => "pred %1 d\xF2ami", // ai 2026-10
 
-// src/Import/RunView.php, row 159, 162, 165, 169
+// src/Import/RunView.php, row 162, 168, 171, 175
 "Failing" => "Zlyh\xE1va", // ai 2026-10
 
-// src/Import/RunView.php, row 159
+// src/Import/RunView.php, row 162
 "The source of this import is not available, so it cannot run." => "Zdroj tohto importu nie je dostupn\xFD, tak\x9Ee nem\xF4\x9Ee be\x9Ea\x9D.", // ai 2026-10
 
-// src/Import/RunView.php, row 162
+// src/Import/RunView.php, row 165
+"Not set up" => "Nenastaven\xE9", // ai 2026-11
+
+// src/Import/RunView.php, row 165
+"Fill in these settings of the source: %1." => "Vypl\xF2te tieto nastavenia zdroja: %1.", // ai 2026-11
+
+// src/Import/RunView.php, row 168
 "The mapping does not fit the slice, so no run can start until it is fixed." => "Mapovanie nezodpoved\xE1 modulu, tak\x9Ee k\xFDm ho neoprav\xEDte, \x9Eiadny beh sa nespust\xED.", // ai 2026-10
 
-// src/Import/RunView.php, row 169
+// src/Import/RunView.php, row 175
 "A run has made no progress for a long time - cron may not be running its steps." => "Beh sa u\x9E dlho nepohol - cron mo\x9Eno nesp\xFA\x9A\x9Da jeho kroky.", // ai 2026-10
 
-// src/Import/RunView.php, row 170, 178, 181, 182, 183
+// src/Import/RunView.php, row 176, 184, 187, 188, 189
 "Needs attention" => "Vy\x9Eaduje pozornos\x9D", // ai 2026-10
 
-// src/Import/RunView.php, row 170
+// src/Import/RunView.php, row 176
 "A run failed a step and waits to try again." => "Beh zlyhal v kroku a \xE8ak\xE1 na nov\xFD pokus.", // ai 2026-10
 
-// src/Import/RunView.php, row 171
+// src/Import/RunView.php, row 177
 "A run is in progress: %1." => "Beh prebieha: %1.", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "Never ran" => "Nikdy nespusten\xE9", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "No run yet. Run starts the first import." => "Zatia\xBE \x9Eiadny beh. \x84Spusti\x9D\x93 zah\xE1ji prv\xFD import.", // ai 2026-10
 
-// src/Import/RunView.php, row 177
+// src/Import/RunView.php, row 183
 "Only source checks or dry runs so far - nothing was imported." => "Zatia\xBE len kontroly zdroja alebo sk\xFA\x9Aobn\xE9 behy - ni\xE8 nebolo naimportovan\xE9.", // ai 2026-10
 
-// src/Import/RunView.php, row 179
+// src/Import/RunView.php, row 185
 "The last import stopped by an error and was then ended, so the data may be incomplete." => "Posledn\xFD import sa zastavil na chybe a potom bol ukon\xE8en\xFD, tak\x9Ee d\xE1ta m\xF4\x9Eu by\x9D ne\xFApln\xE9.", // ai 2026-10
 
-// src/Import/RunView.php, row 180
+// src/Import/RunView.php, row 186
 "The last import was ended before it finished, so the data may be incomplete." => "Posledn\xFD import bol ukon\xE8en\xFD pred dokon\xE8en\xEDm, tak\x9Ee d\xE1ta m\xF4\x9Eu by\x9D ne\xFApln\xE9.", // ai 2026-10
 
-// src/Import/RunView.php, row 181
+// src/Import/RunView.php, row 187
 "The last import finished, but 1 item could not be stored." => "Posledn\xFD import dobehol, ale 1 spr\xE1vu sa nepodarilo ulo\x9Ei\x9D.", // ai 2026-10
 
-// src/Import/RunView.php, row 182
+// src/Import/RunView.php, row 188
 "The last import finished, but %1 items could not be stored." => "Posledn\xFD import dobehol, ale niektor\xE9 spr\xE1vy sa nepodarilo ulo\x9Ei\x9D (po\xE8et: %1).", // ai 2026-10
 
-// src/Import/RunView.php, row 183
+// src/Import/RunView.php, row 189
 "The last full import read nothing - the source may be empty." => "Posledn\xFD \xFApln\xFD import ni\xE8 nena\xE8\xEDtal - zdroj je mo\x9Eno pr\xE1zdny.", // ai 2026-10
 
-// src/Import/RunView.php, row 184, 185
+// src/Import/RunView.php, row 190, 191
 "Healthy" => "V poriadku", // ai 2026-10
 
-// src/Import/RunView.php, row 184
+// src/Import/RunView.php, row 190
 "The last import finished without errors; nothing had changed." => "Posledn\xFD import dobehol bez ch\xFDb; ni\xE8 sa nezmenilo.", // ai 2026-10
 
-// src/Import/RunView.php, row 185
+// src/Import/RunView.php, row 191
 "The last import finished without errors (%1 read)." => "Posledn\xFD import dobehol bez ch\xFDb (na\xE8\xEDtan\xFDch %1).", // ai 2026-10
 
-// src/Import/RunView.php, row 188
-"Runs only by hand." => "Sp\xFA\x9A\x9Da sa len ru\xE8ne.", // ai 2026-10
-
-// src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "Posledn\xFD sk\xFA\x9Aobn\xFD beh sa zastavil na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
+// src/Import/RunView.php, row 198
+"The source refuses its settings." => "Zdroj odmieta svoje nastavenia.", // ai 2026-11
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "Posledn\xE1 kontrola zdroja sa zastavila na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
-
-// src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Zaznamenanie stavu zdroja sa zastavilo na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
-
-// src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "Posledn\xFD import sa zastavil na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
-
-// src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "Kontrola zdroja zlyhala - ni\xE8 nenaimportovan\xE9", // ai 2026-10
+"The source refuses its settings: %1" => "Zdroj odmieta svoje nastavenia: %1", // ai 2026-11
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "Prebieha kontrola zdroja", // ai 2026-10
+"The last dry run stopped by an error. Nothing more is imported until you act." => "Posledn\xFD sk\xFA\x9Aobn\xFD beh sa zastavil na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
+
+// src/Import/RunView.php, row 214
+"The last source check stopped by an error. Nothing more is imported until you act." => "Posledn\xE1 kontrola zdroja sa zastavila na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 215
-"Source reachable - nothing imported" => "Zdroj je dostupn\xFD - ni\xE8 nenaimportovan\xE9", // ai 2026-10
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Zaznamenanie stavu zdroja sa zastavilo na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
 
-// src/Import/RunView.php, row 217
-"Nothing had changed" => "Ni\xE8 sa nezmenilo", // ai 2026-10
-
-// src/Import/RunView.php, row 218
-"Nothing read" => "Ni\xE8 nena\xE8\xEDtan\xE9", // ai 2026-10
-
-// src/Import/RunView.php, row 219
-"%1 read, %2 new, %3 changed" => "Na\xE8\xEDtan\xFDch %1, nov\xFDch %2, zmenen\xFDch %3", // ai 2026-10
-
-// src/Import/RunView.php, row 221
-"%1 (nothing stored)" => "%1 (ni\xE8 neulo\x9Een\xE9)", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of 1 stream - nothing imported" => "Zaznamenan\xFD stav 1 pr\xFAdu - ni\xE8 nenaimportovan\xE9", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of %1 streams - nothing imported" => "Zaznamenan\xFD stav pr\xFAdov: %1 - ni\xE8 nenaimportovan\xE9", // ai 2026-10
+// src/Import/RunView.php, row 216
+"The last import stopped by an error. Nothing more is imported until you act." => "Posledn\xFD import sa zastavil na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 228
-"%1 without a version" => "Bez verzie: %1", // ai 2026-10
+"Source check failed - nothing imported" => "Kontrola zdroja zlyhala - ni\xE8 nenaimportovan\xE9", // ai 2026-10
+
+// src/Import/RunView.php, row 229
+"Source check under way" => "Prebieha kontrola zdroja", // ai 2026-10
+
+// src/Import/RunView.php, row 231
+"Source reachable - nothing imported" => "Zdroj je dostupn\xFD - ni\xE8 nenaimportovan\xE9", // ai 2026-10
+
+// src/Import/RunView.php, row 233
+"Nothing had changed" => "Ni\xE8 sa nezmenilo", // ai 2026-10
+
+// src/Import/RunView.php, row 234
+"Nothing read" => "Ni\xE8 nena\xE8\xEDtan\xE9", // ai 2026-10
+
+// src/Import/RunView.php, row 235
+"%1 read, %2 new, %3 changed" => "Na\xE8\xEDtan\xFDch %1, nov\xFDch %2, zmenen\xFDch %3", // ai 2026-10
 
 // src/Import/RunView.php, row 237
-"changed only" => "len zmenen\xE9", // ai 2026-10
+"%1 (nothing stored)" => "%1 (ni\xE8 neulo\x9Een\xE9)", // ai 2026-10
 
-// src/Import/RunView.php, row 238
-"check" => "kontrola", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of 1 stream - nothing imported" => "Zaznamenan\xFD stav 1 pr\xFAdu - ni\xE8 nenaimportovan\xE9", // ai 2026-10
 
-// src/Import/RunView.php, row 239
-"recording the state of the source" => "zaznamenanie stavu zdroja", // ai 2026-10
-
-// src/Import/RunView.php, row 242
-"dry run" => "sk\xFA\x9Aobn\xFD beh", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of %1 streams - nothing imported" => "Zaznamenan\xFD stav pr\xFAdov: %1 - ni\xE8 nenaimportovan\xE9", // ai 2026-10
 
 // src/Import/RunView.php, row 244
-"by hand" => "ru\xE8ne", // ai 2026-10
+"%1 without a version" => "Bez verzie: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 245
-"planned" => "pod\xBEa pl\xE1nu", // ai 2026-10
+// src/Import/RunView.php, row 254
+"changed only" => "len zmenen\xE9", // ai 2026-10
 
-// src/Import/RunView.php, row 246
-"on an event" => "pri udalosti", // ai 2026-10
+// src/Import/RunView.php, row 255
+"check" => "kontrola", // ai 2026-10
+
+// src/Import/RunView.php, row 256
+"recording the state of the source" => "zaznamenanie stavu zdroja", // ai 2026-10
 
 // src/Import/RunView.php, row 259
-"Disabled - it does not start" => "Vypnut\xE9 - nesp\xFA\x9A\x9Da sa", // ai 2026-10
+"dry run" => "sk\xFA\x9Aobn\xFD beh", // ai 2026-10
 
-// src/Import/RunView.php, row 268
+// src/Import/RunView.php, row 261
+"first %1 items" => "prv\xE9 spr\xE1vy: %1", // ai 2026-11
+
+// src/Import/RunView.php, row 263
+"by hand" => "ru\xE8ne", // ai 2026-10
+
+// src/Import/RunView.php, row 264
+"planned" => "pod\xBEa pl\xE1nu", // ai 2026-10
+
+// src/Import/RunView.php, row 265
+"on an event" => "pri udalosti", // ai 2026-10
+
+// src/Import/RunView.php, row 285
+"Runs only by hand." => "Sp\xFA\x9A\x9Da sa len ru\xE8ne.", // ai 2026-10
+
+// src/Import/RunView.php, row 294
 "No run yet" => "Zatia\xBE \x9Eiadny beh", // ai 2026-10
 
-// src/Import/RunView.php, row 280
+// src/Import/RunView.php, row 306
 "1 item error" => "1 chyba spr\xE1vy", // ai 2026-10
 
-// src/Import/RunView.php, row 281
+// src/Import/RunView.php, row 307
 "%1 item errors" => "Chyby spr\xE1v: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 284
+// src/Import/RunView.php, row 310
 "Last import: %1" => "Posledn\xFD import: %1", // ai 2026-10
 
 // src/Import/SliceIdSetting.php, row 22
 "No slice ID" => "Ch\xFDba ID modulu", // ai 2026-10
 
-// src/Import/Source/CsvColumnsSetting.php, row 31
-"Expected a JSON object {\"column\": \"field id\"}" => "O\xE8ak\xE1van\xFD objekt JSON {\"column\": \"field id\"}", // ai 2026-10
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"no column" => "\x9Eiadny st\xE5pec", // ai 2026-11
 
-// src/Import/Source/CsvurlSource.php, row 42
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"more than %1 columns" => "viac ako %1 st\xE5pcov", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 73
+"not a field the import may fill" => "nie je polo\x9Eka, ktor\xFA m\xF4\x9Ee import vyplni\x9D", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 74
+"the column name is empty, too long or holds invisible characters" => "n\xE1zov st\xE5pca je pr\xE1zdny, pr\xEDli\x9A dlh\xFD alebo obsahuje nevidite\xBEn\xE9 znaky", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 75
+"the column is named twice" => "st\xE5pec je uveden\xFD dvakr\xE1t", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 89
+"Line %1: %2" => "Riadok %1: %2", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 119
+"expected \"column = field id\"" => "o\xE8ak\xE1va sa \x84st\xE5pec = id polo\x9Eky\x93", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 43
 "CSV file at a URL" => "CSV s\xFAbor na URL", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 47
+// src/Import/Source/CsvurlSource.php, row 48
 "Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "Importuje riadky CSV s\xFAboru z verejnej http(s) adresy; nastavenie ur\xE8uje, ktor\xFD st\xE5pec pln\xED ktor\xFA polo\x9Eku.", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "http or https only, on a public address, without a user name and password" => "len http alebo https, na verejnej adrese, bez u\x9E\xEDvate\xBEsk\xE9ho mena a hesla", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 55
+// src/Import/Source/CsvurlSource.php, row 56
 // src/Widget/Widget.php, row 743, 812
 "Columns" => "St\xE5pce", // ai 2026-06
 
-// src/Import/Source/CsvurlSource.php, row 55
-"JSON object: the column name in the first row => the field it fills" => "Objekt JSON: n\xE1zov st\xE5pca v prvom riadku => polo\x9Eka, ktor\xFA pln\xED", // ai 2026-10
-
 // src/Import/Source/CsvurlSource.php, row 56
+"One line per column: its name in the first row = the id of the field it fills" => "Jeden riadok na st\xE5pec: jeho n\xE1zov v prvom riadku CSV = id polo\x9Eky, ktor\xFA vyp\xE5\xF2a", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 57
 "Key column" => "K\xBE\xFA\xE8ov\xFD st\xE5pec", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 56
+// src/Import/Source/CsvurlSource.php, row 57
 "The column that identifies the item; it must be one of the columns" => "St\xE5pec, ktor\xFD identifikuje spr\xE1vu; mus\xED by\x9D jedn\xFDm zo st\xE5pcov", // ai 2026-10
 
 // src/Isds/Advice.php, row 48
@@ -11478,40 +11568,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "Tento riadok tu nemo\x9Eno ulo\x9Ei\x9D.", // ai 2026-10
 
-// src/Manager.php, row 821
+// src/Manager.php, row 812
 "Searchbar" => "Vyh\xBEad\xE1vacia li\x9Ata", // ai 2026-06
 
-// src/Manager.php, row 822
+// src/Manager.php, row 813
 "Scroller" => "Str\xE1nkovanie", // ai 2026-06
 
-// src/Manager.php, row 823
+// src/Manager.php, row 814
 "Msg" => "Hl\xE1senie", // ai 2026-06
 
-// src/Manager.php, row 824
+// src/Manager.php, row 815
 "Bin" => "Schr\xE1nka", // ai 2026-06
 
-// src/Manager.php, row 826
+// src/Manager.php, row 817
 "Manager ID" => "ID mana\x9E\xE9ra", // ai 2026-06
 
-// src/Manager.php, row 1200
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "Akcia nebola vykonan\xE1 - pou\x9Eite tla\xE8idlo na str\xE1nke.", // ai 2026-10
 
-// src/Manager.php, row 1281
+// src/Manager.php, row 1272
 "Edit id" => "Id pre edit\xE1ciu", // ai 2026-06
 
-// src/Manager.php, row 1295
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Viac riadkov vyberiete kliknut\xEDm s podr\x9Eanou kl\xE1vesou Shift", // ai 2026-06
 
-// src/Manager.php, row 1333
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "Naozaj chcete vypr\xE1zdni\x9D k\xF4\x9A?", // ai 2026-06
 
-// src/Manager.php, row 1435
+// src/Manager.php, row 1426
 "Go" => "Cho\xEF",
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "Nie je vybran\xE1 \x9Eiadna spr\xE1va. Vykona\x9D akciu pre v\x9Aetky vyfiltrovan\xE9 spr\xE1vy? ", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "Run for %1 items" => "Spusti\x9D pre %1 spr\xE1v", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47

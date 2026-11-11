@@ -81,10 +81,11 @@ class Langs
     /** Sorts the values as text by the locale the language file set (setlocale), keeping the keys and the
      *  order of equal values. By ICU, since PHP 8.6 deprecates SORT_LOCALE_STRING and strcoll(); it puts
      *  digits before letters, where glibc puts them after.
-     *  @param array<int|string, mixed> $arr */
-    public static function sortLocale(array &$arr, bool $desc = false): void
+     *  @param array<int|string, mixed> $arr
+     *  @param bool $numeric digits compared as numbers: s2 before s10 */
+    public static function sortLocale(array &$arr, bool $desc = false, bool $numeric = false): void
     {
-        $collator = self::collator();
+        $collator = self::collator($numeric);
         $keys = [];
         foreach ($arr as $k => $v) {
             $keys[$k] = (string) $collator->getSortKey(self::utf8((string) $v));
@@ -93,16 +94,20 @@ class Langs
     }
 
     /** Spaces and punctuation count only when the text ties otherwise (shifted, quaternary), as in glibc: „Ekolist sorts under E. */
-    private static function collator(): \Collator
+    private static function collator(bool $numeric = false): \Collator
     {
         static $collators = [];
         $locale = (string) setlocale(LC_COLLATE, '0');
-        if (!isset($collators[$locale])) {
-            $collators[$locale] = new \Collator($locale);
-            $collators[$locale]->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED);
-            $collators[$locale]->setStrength(\Collator::QUATERNARY);
+        $id     = $locale . ($numeric ? '#n' : '');
+        if (!isset($collators[$id])) {
+            $collators[$id] = new \Collator($locale);
+            $collators[$id]->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED);
+            $collators[$id]->setStrength(\Collator::QUATERNARY);
+            if ($numeric) {
+                $collators[$id]->setAttribute(\Collator::NUMERIC_COLLATION, \Collator::ON);
+            }
         }
-        return $collators[$locale];
+        return $collators[$id];
     }
 
     /** ICU reads UTF-8 only and fails on anything else: text of a non-UTF install is converted, invalid bytes replaced */

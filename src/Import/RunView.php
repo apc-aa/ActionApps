@@ -28,7 +28,7 @@ final class RunView
     ];
 
     /** the mark of each kind of health() */
-    private const VERDICT_MARKS = ['ok' => 'ok', 'warn' => 'warn', 'bad' => 'error', 'run' => 'running', 'off' => 'checked', 'idle' => 'checked'];
+    private const VERDICT_MARKS = ['ok' => 'ok', 'warn' => 'warn', 'bad' => 'error', 'run' => 'running', 'idle' => 'checked'];
 
     /** one of MARKS, hidden from screen readers - the word beside it is read instead */
     public static function markHtml(string $mark): string
@@ -145,18 +145,24 @@ final class RunView
 
     /**
      * Is the import in order? One verdict for the list and the detail: its kind (ok, warn, bad, run,
-     * off, idle - for CSS and the sign), a word and the reason in a sentence. A run in the way or
-     * a source that cannot run weighs more than the last import; a disabled import is not failing,
-     * it runs only by hand. $mappingOk is true where the caller cannot afford to check it.
+     * idle - for CSS and the sign), a word and the reason in a sentence. A run in the way or a source
+     * that cannot run weighs more than the last import. An import that never ran and lacks settings is
+     * new, not failing: its mapping may come from them. Whether a planned task starts it is another
+     * fact (byHandHtml()). $mappingOk is true where the caller cannot afford to check it.
+     * @param ?list<string> $lacks Definition::setUpLacks() of the stored settings; null = the source takes them
      * @param ?Run $newest the newest run - the open one, if any, as only one is ever open
      * @param ?Run $import the newest import (Run::storesItems())
+     * @param string $refusal the source's words setUpLacks() gives with no setting lacking
      * @return array{kind: string, word: string, reason: string}
      */
-    public static function health(bool $enabled, bool $hasSource, bool $mappingOk, ?Run $newest, ?Run $import, int $now): array
+    public static function health(bool $hasSource, ?array $lacks, bool $mappingOk, ?Run $newest, ?Run $import, int $now, string $refusal = ''): array
     {
         $say = static fn(string $kind, string $word, string $reason): array => ['kind' => $kind, 'word' => $word, 'reason' => $reason];
         if (!$hasSource) {
             return $say('bad', _m('Failing'), _m('The source of this import is not available, so it cannot run.'));
+        }
+        if (self::notSetUp($lacks, $newest)) {
+            return $say('idle', _m('Not set up'), $lacks ? _m('Fill in these settings of the source: %1.', [implode(', ', $lacks)]) : self::refusedText($refusal));
         }
         if (!$mappingOk) {
             return $say('bad', _m('Failing'), _m('The mapping does not fit the slice, so no run can start until it is fixed.'));
@@ -171,8 +177,8 @@ final class RunView
                 default                  => $say('run', _m('Running'), _m('A run is in progress: %1.', [self::outcome($newest, $now)['word']])),
             };
         }
-        $errors  = $import?->counts()['errors'] ?? 0;
-        $verdict = match (true) {
+        $errors = $import?->counts()['errors'] ?? 0;
+        return match (true) {
             $newest === null                => $say('idle', _m('Never ran'), _m('No run yet. Run starts the first import.')),
             $import === null                => $say('idle', _m('No import yet'), _m('Only source checks or dry runs so far - nothing was imported.')),
             $import->state() === Run::ENDED => $say('warn', _m('Needs attention'), (self::outcome($import, $now)['kind'] === 'error')
@@ -184,10 +190,20 @@ final class RunView
             $import->counts()['read'] === 0 => $say('ok', _m('Healthy'), _m('The last import finished without errors; nothing had changed.')),
             default                         => $say('ok', _m('Healthy'), _m('The last import finished without errors (%1 read).', [$import->counts()['read']])),
         };
-        if (!$enabled && in_array($verdict['kind'], ['ok', 'idle'], true)) {
-            return $say('off', _m('Disabled'), _m('Runs only by hand.') . ' ' . $verdict['reason']);
-        }
-        return $verdict;
+    }
+
+    /** why the source refuses settings of which none is blank: its own words when it said any */
+    public static function refusedText(string $refusal): string
+    {
+        return ($refusal === '') ? _m('The source refuses its settings.') : _m('The source refuses its settings: %1', [$refusal]);
+    }
+
+    /** A new import whose source refuses its settings: it never ran, so nothing failed yet - the page
+     *  shows its settings first and its starts say why they are off
+     *  @param ?list<string> $lacks Definition::setUpLacks() */
+    public static function notSetUp(?array $lacks, ?Run $newest): bool
+    {
+        return ($lacks !== null) && ($newest === null);
     }
 
     /** why a run stopped by an error blocks the import, named by what the run was */
@@ -228,10 +244,11 @@ final class RunView
         return ($counts['unversioned'] > 0) ? $text . '. ' . _m('%1 without a version', [$counts['unversioned']]) : $text;
     }
 
-    /** how $run ran - its mode, dry, its trigger - in words, plain text */
+    /** how $run ran - its mode, dry, a limit of its own, its trigger - in words, plain text */
     public static function howItRan(Run $run): string
     {
         $trigger = (string) $run->getProperty('trigger');
+        $limit   = $run->limit();
         $about   = [
             match ($run->mode()) {
                 'changed'  => _m('changed only'),
@@ -240,6 +257,8 @@ final class RunView
                 default    => '',
             },
             $run->isDry() ? _m('dry run') : '',
+            // a run cut short must not look like a full one; the usual cap of a dry run goes unsaid
+            (($limit > 0) && !($run->isDry() && ($limit === Service::DRY_LIMIT))) ? _m('first %1 items', [$limit]) : '',
             match (true) {
                 $trigger === 'manual'               => _m('by hand'),
                 str_starts_with($trigger, 'plan:')  => _m('planned'),
@@ -250,13 +269,20 @@ final class RunView
         return implode(', ', array_filter($about));
     }
 
-    /** the verdict of health() for a row of the list, and under it why
+    /** the verdict of health() for a row of the list, beside it whether only a start by hand runs it,
+     *  under it why
      *  @param array{kind: string, word: string, reason: string} $verdict */
     public static function statusHtml(array $verdict, bool $enabled): string
     {
-        return self::chipHtml($verdict['kind'], $verdict['word'])
-            . '<small class="aa-import-sub">' . safe($verdict['reason']) . '</small>'
-            . ((!$enabled && ($verdict['kind'] !== 'off')) ? '<small class="aa-import-sub aa-import-off">' . safe(_m('Disabled - it does not start')) . '</small>' : '');
+        return self::chipHtml($verdict['kind'], $verdict['word']) . self::byHandHtml($enabled)
+            . '<small class="aa-import-sub">' . safe($verdict['reason']) . '</small>';
+    }
+
+    /** The one wording of an import no planned task starts, beside its verdict; '' for an enabled
+     *  one, whose next start the schedule shows. Not a verdict: such an import may be in order. */
+    public static function byHandHtml(bool $enabled): string
+    {
+        return $enabled ? '' : ' <span class="aa-import-byhand">' . safe(_m('Runs only by hand.')) . '</span>';
     }
 
     /** The newest run for a row of the list: when, how, what it did; when it stored nothing, also

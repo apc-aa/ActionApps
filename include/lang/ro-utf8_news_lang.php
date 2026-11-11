@@ -20,6 +20,15 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "„este” e valabil când una dintre valorile câmpului se află printre valorile bifate, „nu este” când niciuna nu se află. „este completat” e valabil pentru orice valoare în afară de gol și 0, deci și pentru o casetă bifată.", // ai 2026-11
+// "None - the import is disabled" => "Niciuna – importul este dezactivat", // ai 2026-10
+// "The import is switched off." => "Importul este oprit.", // ai 2026-10
+// "The import is disabled, so no planned task starts it." => "Importul este dezactivat, așa că nicio sarcină planificată nu îl pornește.", // ai 2026-10
+// "(import off)" => "(import oprit)", // ai 2026-10
+// "one stream (%1)" => "un flux (%1)", // ai 2026-10
+// "Disabled - it does not start" => "Dezactivat - nu pornește", // ai 2026-10
+// "Expected a JSON object {\"column\": \"field id\"}" => "Se aștepta un obiect JSON {\"column\": \"field id\"}", // ai 2026-10
+// "JSON object: the column name in the first row => the field it fills" => "Obiect JSON: numele coloanei din primul rând => câmpul pe care îl completează", // ai 2026-10
 // "Parameter wizard" => "Asistent parametri", // ai 2026-06
 // "the update may still be running on the remote AA - wait, then run Test before retrying" => "actualizarea poate rula încă pe AA-ul distant - așteptați, apoi rulați „Testează” înainte de a reîncerca", // ai 2026-10
 // "Set letterhead to a text" => "Setați letterhead la un text", // ai 2026-11
@@ -314,7 +323,7 @@ return [
 
 // admin/aa_cron.php, row 47
 // src/AA_Plannedtask.php, row 82, 182
-// src/Import/Definition.php, row 135, 163
+// src/Import/Definition.php, row 136, 164
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Ultima rulare", // ai 2026-06
 
@@ -399,7 +408,7 @@ return [
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // central/optimize.php, row 65
-// src/Import/DetailPage.php, row 510
+// src/Import/DetailPage.php, row 548
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Formularul a expirat; reîncărcați pagina și încercați din nou.", // ai 2026-10
 
@@ -548,7 +557,6 @@ return [
 "Off since %1, %2" => "Dezactivat din %1, %2", // ai 2026-10
 
 // admin/aa_security.php, row 143
-// src/Import/DetailPage.php, row 726
 "Off" => "Dezactivat", // ai 2026-10
 
 // admin/aa_security.php, row 148
@@ -573,7 +581,7 @@ return [
 
 // admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 395
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
@@ -776,7 +784,7 @@ return [
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 295
 // central/appstore.php, row 164
-// include/searchlib.php, row 1016
+// include/searchlib.php, row 1103
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Secțiuni", // ai 2026-06
 
@@ -1039,12 +1047,13 @@ return [
 "Shortcut to edit ITEM" => "Scurtătură pentru editarea ARTICOLULUI", // ai 2026-06
 
 // admin/aafinder.php, row 526
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 576
 // include/searchlib.php, row 50, 51, 129, 138
 "contains" => "conține", // ai 2026-06
 
 // admin/aafinder.php, row 527
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 584
 // include/searchlib.php, row 129, 138
 "is" => "este", // ai 2026-06
@@ -1135,12 +1144,12 @@ return [
 // admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
-// admin/se_showif.php, row 123
+// admin/se_showif.php, row 124
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
 // include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 369
+// include/searchlib.php, row 446
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1186,7 +1195,7 @@ return [
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
 // include/stringexpand.php, row 99
-// src/Import/DetailPage.php, row 1025, 1091
+// src/Import/DetailPage.php, row 1076, 1142
 // src/Optimize/CheckImports.php, row 239, 241
 "Code" => "Cod", // ai 2026-06
 
@@ -1194,7 +1203,7 @@ return [
 "HTML output" => "Ieșire HTML", // ai 2026-06
 
 // admin/console.php, row 73, 75
-// central/optimize.php, row 210
+// central/optimize.php, row 209
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "Rezultat", // ai 2026-06
 
@@ -1209,7 +1218,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "Bine",
@@ -1257,7 +1266,7 @@ return [
 // admin/discedit.php, row 135
 // admin/related_sel.php, row 168
 // admin/se_views.php, row 136
-// src/Import/DetailPage.php, row 313
+// src/Import/DetailPage.php, row 337
 // src/Manager.php, row 230
 // src/Optimize/AbstractOptimize.php, row 175
 "Actions" => "Acţiuni",
@@ -1287,7 +1296,7 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
@@ -1324,7 +1333,7 @@ return [
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 123, 267
 // include/logs.php, row 1071
-// include/mail.php, row 699
+// include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Subiect",
 
@@ -1701,7 +1710,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 370
+// include/searchlib.php, row 447
 "Descending" => "Descrescător",
 
 // admin/se_compact.php, row 244
@@ -1726,7 +1735,7 @@ return [
 "Can't delete constant group" => "Grupul de constante nu poate fi șters", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
-// admin/se_showif.php, row 157
+// admin/se_showif.php, row 162
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1740,7 +1749,7 @@ return [
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckServerRefusals.php, row 67
@@ -1749,6 +1758,7 @@ return [
 // admin/se_constant.php, row 176, 378
 // admin/se_mapping.php, row 179
 // admin/se_profile.php, row 209
+// admin/se_showif.php, row 133
 // include/constants.php, row 453
 // include/constedit.php, row 76
 // include/searchlib.php, row 177
@@ -1927,7 +1937,7 @@ return [
 
 // admin/se_csv_import.php, row 278
 // include/scroller.php, row 86
-// src/Import/DetailPage.php, row 422
+// src/Import/DetailPage.php, row 453
 "Next" => "Următor",
 
 // admin/se_csv_import2.php, row 199
@@ -1978,8 +1988,8 @@ return [
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
-// src/Import/Definition.php, row 135, 165
-// src/Import/DetailCatalog.php, row 145
+// src/Import/Definition.php, row 136, 166
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Acțiune", // ai 2026-06
 
@@ -2159,7 +2169,7 @@ return [
 
 // admin/se_export.php, row 167
 // include/exporter.class.php, row 553
-// include/searchlib.php, row 1012
+// include/searchlib.php, row 1099
 "Conditions" => "Condiții", // ai 2026-06
 
 // admin/se_export.php, row 167
@@ -2168,7 +2178,7 @@ return [
 
 // admin/se_export.php, row 168
 // include/exporter.class.php, row 554
-// include/searchlib.php, row 1014
+// include/searchlib.php, row 1101
 "Sort" => "Sortare", // ai 2026-06
 
 // admin/se_export.php, row 168
@@ -2286,7 +2296,7 @@ return [
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
-// src/Import/DetailCatalog.php, row 151
+// src/Import/DetailCatalog.php, row 179
 "Update" => "Actualizare",
 
 // admin/se_filters.php, row 169
@@ -2305,7 +2315,7 @@ return [
 "No category defined" => "Nici o categorie definită",
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1424
+// src/Manager.php, row 1415
 "Select all" => "Selectează tot",
 
 // admin/se_filters.php, row 320
@@ -2490,7 +2500,7 @@ return [
 
 // admin/se_inputform.php, row 424, 440, 451, 479, 522
 // include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 // src/Util/Paramwizard.php, row 154
 "Parameters" => "Parametrii",
 
@@ -2566,8 +2576,6 @@ return [
 "8 UPPERCASE letters or _" => "8 litere MAJUSCULE sau _", // ai 2026-06
 
 // admin/se_inputform.php, row 515
-// src/Import/DetailPage.php, row 604
-// src/Import/RunView.php, row 188
 "Disabled" => "Dezactivat", // ai 2026-06
 
 // admin/se_inputform.php, row 516
@@ -2621,10 +2629,10 @@ return [
 "Node" => "Nod", // ai 2026-06
 
 // admin/se_inter_import.php, row 96
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // misc/datovka/datovka.php, row 158
-// src/Import/DetailConfig.php, row 291
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailConfig.php, row 282
+// src/Import/DetailPage.php, row 401
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Util/Note.php, row 64
 "State" => "Stare", // ai 2026-06
@@ -3143,104 +3151,115 @@ return [
 // admin/se_showif.php, row 77
 "The form has expired. Close it and open it again." => "Formularul a expirat. Închideți-l și deschideți-l din nou.", // ai 2026-11
 
-// admin/se_showif.php, row 117
-"is checked" => "este bifat", // ai 2026-11
-
-// admin/se_showif.php, row 117
-"is not checked" => "nu este bifat", // ai 2026-11
-
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchlib.php, row 129, 138
 "is not" => "nu este", // ai 2026-06
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
+// include/searchbar.class.php, row 580
+// include/searchlib.php, row 53, 56, 129, 138
+"begins with" => "începe cu", // ai 2026-06
+
+// admin/se_showif.php, row 116
 "is filled" => "este completat", // ai 2026-11
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 "is empty" => "este gol", // ai 2026-11
 
-// admin/se_showif.php, row 120
+// admin/se_showif.php, row 119
+"is checked" => "este bifat", // ai 2026-11
+
+// admin/se_showif.php, row 119
+"is not checked" => "nu este bifat", // ai 2026-11
+
+// admin/se_showif.php, row 121
 "— add a rule —" => "— adăugați o regulă —", // ai 2026-11
 
-// admin/se_showif.php, row 128
+// admin/se_showif.php, row 129
 "Comparison" => "Comparație", // ai 2026-11
 
-// admin/se_showif.php, row 144
+// admin/se_showif.php, row 149
 "Values, one per line" => "Valori, câte una pe rând", // ai 2026-11
 
-// admin/se_showif.php, row 151
+// admin/se_showif.php, row 156
 // include/field.class.php, row 797
 "Display condition" => "Condiție de afișare", // ai 2026-11
 
-// admin/se_showif.php, row 163
+// admin/se_showif.php, row 168
 "Show the field when all of these hold" => "Afișează câmpul când toate acestea sunt îndeplinite", // ai 2026-11
 
-// admin/se_showif.php, row 165
+// admin/se_showif.php, row 170
 "AA expression (optional)" => "Expresie AA (opțional)", // ai 2026-11
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 // src/Optimize/ImgMeasuring.php, row 54
 "Expression" => "Expresie", // ai 2026-10
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 "Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "Lăsați gol pentru a folosi doar regulile. Când este completată, câmpul se afișează doar dacă rezultatul nu este gol și nu este 0. Se evaluează la deschiderea formularului și la salvarea articolului.", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Clear the field when a rule hides it" => "Golește câmpul când o regulă îl ascunde", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "Nebifat: un articol editat își păstrează valoarea, un articol nou primește valoarea implicită a câmpului. Un câmp ascuns de expresie nu este modificat niciodată.", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 177
+"As a condition of a view" => "Ca condiție într-o vedere", // ai 2026-11
+
+// admin/se_showif.php, row 181
 "Used by" => "Folosită de", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 181
 "no field" => "niciun câmp", // ai 2026-11
 
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 "Save the changes to this condition. They apply to every field that uses it." => "Salvează modificările acestei condiții. Ele se aplică tuturor câmpurilor care o folosesc.", // ai 2026-11
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 // admin/se_view.php, row 486
 "Save as new" => "Salvează ca nou", // ai 2026-06
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 "Keep the original condition as it is and save this form as another condition under a new name." => "Păstrează condiția originală neschimbată și salvează acest formular ca altă condiție, sub un nume nou.", // ai 2026-11
 
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 "Delete the condition. The fields that use it will be shown always." => "Șterge condiția. Câmpurile care o folosesc vor fi afișate întotdeauna.", // ai 2026-11
 
-// admin/se_showif.php, row 180
+// admin/se_showif.php, row 188
 "Delete the condition? The fields that use it will be shown always." => "Ștergeți condiția? Câmpurile care o folosesc vor fi afișate întotdeauna.", // ai 2026-11
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 // include/formutil.php, row 219, 224, 3009, 3013
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Anulare",
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 "Close without saving." => "Închide fără salvare.", // ai 2026-11
 
-// admin/se_showif.php, row 187
+// admin/se_showif.php, row 195
 "How it works" => "Cum funcționează", // ai 2026-11
 
-// admin/se_showif.php, row 188
-"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "„este” e valabil când una dintre valorile câmpului se află printre valorile bifate, „nu este” când niciuna nu se află. „este completat” e valabil pentru orice valoare în afară de gol și 0, deci și pentru o casetă bifată.", // ai 2026-11
+// admin/se_showif.php, row 196
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. Upper and lower case do not count, accents do. \"is empty\" holds also for a field without a value; in a field stored as a number 0 counts as empty." => "„este” este îndeplinit când una dintre valorile câmpului se află printre valorile bifate, „nu este” când niciuna nu se află. Literele mari și mici nu contează, diacriticele da. „este gol” este îndeplinit și pentru un câmp fără valoare; într-un câmp stocat ca număr, 0 contează ca gol.", // ai 2026-11
 
-// admin/se_showif.php, row 189
+// admin/se_showif.php, row 197
+"The rules are AA conditions, written as in views. The condition shown below selects nearly the same items in a view; accents and empty values may be compared a little differently. In an AA expression write : as #:." => "Regulile sunt condiții AA, scrise ca în vederi. Condiția afișată mai jos selectează într-o vedere aproape aceleași articole; diacriticele și valorile goale pot fi comparate puțin diferit. Într-o expresie AA scrieți : ca #:.", // ai 2026-11
+
+// admin/se_showif.php, row 198
 "The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "Regulile urmăresc formularul în timp ce utilizatorul îl editează. Expresia se evaluează doar la deschiderea formularului și la salvarea articolului, întotdeauna asupra articolului stocat (la un articol nou: asupra valorilor implicite).", // ai 2026-11
 
-// admin/se_showif.php, row 190
+// admin/se_showif.php, row 199
 "A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "Un câmp ascuns de o regulă se salvează gol, cu excepția cazului în care „Golește câmpul” este debifat. Un câmp de parolă, datele, starea și un câmp ascuns de expresie își păstrează valoarea.", // ai 2026-11
 
-// admin/se_showif.php, row 191
+// admin/se_showif.php, row 200
 "A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "Un câmp cu o condiție este afișat și ascuns de condiție, nu de un script „Trigger cîmp”.", // ai 2026-11
 
-// admin/se_showif.php, row 192
+// admin/se_showif.php, row 201
 "With an input form template from a view, a field hidden by the expression stays in the source of the page." => "Cu un șablon de formular de introducere dintr-o vedere, un câmp ascuns de expresie rămâne în sursa paginii.", // ai 2026-11
 
-// admin/se_showif.php, row 193
+// admin/se_showif.php, row 202
 "Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "Condițiile se aplică doar formularului de articol din administrare. În formularele anonime și la importuri, un câmp obligatoriu este obligatoriu întotdeauna.", // ai 2026-11
 
 // admin/se_statistics.php, row 97
@@ -3397,7 +3416,7 @@ return [
 
 // admin/se_views.php, row 149, 203, 223
 // include/formutil.php, row 1818, 1825
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
 "New" => "Nou",
@@ -3440,7 +3459,7 @@ return [
 "View items" => "Arată articolele", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1429
+// src/Manager.php, row 1420
 "Selected items" => "Elemente selectate",
 
 // admin/search_replace.php, row 180
@@ -3561,8 +3580,8 @@ return [
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
-// src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1281
+// src/Import/DetailCatalog.php, row 179
+// src/Manager.php, row 239, 1272
 "Add" => "Adaugă",
 
 // admin/slicedel.php, row 51
@@ -3886,7 +3905,7 @@ return [
 "Import into this slice - whatever file says" => "Importă în această secțiune - indiferent ce spune fișierul", // ai 2026-06
 
 // admin/sliceimp.php, row 467
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Dry run" => "Rulare de probă", // ai 2026-06
 
 // admin/sliceimp.php, row 469
@@ -4242,29 +4261,29 @@ return [
 "Show selected users" => "Arată utilizatorii selectați", // ai 2026-06
 
 // admin/write_mail.php, row 124, 274
-// include/mail.php, row 700
+// include/mail.php, row 666
 "Body" => "Text", // ai 2026-06
 
 // admin/write_mail.php, row 125, 275
 "From (email)" => "De la (email)", // ai 2026-06
 
 // admin/write_mail.php, row 126, 276
-// include/mail.php, row 702
+// include/mail.php, row 668
 "Reply to (email)" => "Răspunde la (email)", // ai 2026-06
 
 // admin/write_mail.php, row 127, 277
-// include/mail.php, row 703
+// include/mail.php, row 669
 "Errors to (email)" => "Erori către (email)", // ai 2026-06
 
 // admin/write_mail.php, row 128, 278
 "Sender (email)" => "Expeditor (email)", // ai 2026-06
 
 // admin/write_mail.php, row 129, 279
-// include/mail.php, row 694
+// include/mail.php, row 658
 "Language (charset)" => "Limbă (set de caractere)", // ai 2026-06
 
 // admin/write_mail.php, row 130, 280
-// include/mail.php, row 692
+// include/mail.php, row 656
 "Use HTML" => "Folosește HTML", // ai 2026-06
 
 // admin/write_mail.php, row 131, 271
@@ -4275,8 +4294,8 @@ return [
 
 // admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
-// src/Import/Definition.php, row 92
-// src/Import/DetailConfig.php, row 394
+// src/Import/Definition.php, row 93
+// src/Import/DetailConfig.php, row 385
 "Filter" => "Filtru",
 
 // admin/write_mail.php, row 188
@@ -4531,8 +4550,8 @@ return [
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
 // include/logs.php, row 1213
-// src/Import/Definition.php, row 85, 113
-// src/Import/DetailConfig.php, row 188, 202
+// src/Import/Definition.php, row 86, 114
+// src/Import/DetailConfig.php, row 171, 185
 // src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "Sursă", // ai 2026-06
@@ -4962,19 +4981,19 @@ return [
 "Transferring the items" => "Transferul articolelor", // ai 2026-10
 
 // central/installapp.php, row 1368
-// central/optimize.php, row 261
+// central/optimize.php, row 260
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Oprit de o eroare", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 259
+// central/optimize.php, row 258
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Terminat", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 260
+// central/optimize.php, row 259
 "Ended" => "Încheiat", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -5038,13 +5057,13 @@ return [
 "Show the final check" => "Afișați verificarea finală", // ai 2026-10
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 206
-// src/Import/DetailPage.php, row 938, 947
+// central/optimize.php, row 205
+// src/Import/DetailPage.php, row 989, 998
 "Continue" => "Continuă", // ai 2026-06
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 207
-// src/Import/DetailPage.php, row 958
+// central/optimize.php, row 206
+// src/Import/DetailPage.php, row 1009
 "End" => "Încheie", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
@@ -5068,7 +5087,7 @@ return [
 // central/optimize.php, row 85
 "An AA may still be asked - press Continue again in a few minutes." => "Un AA poate fi încă în curs de interogare - apăsați din nou „Continuă” peste câteva minute.", // ai 2026-11
 
-// central/optimize.php, row 86, 187
+// central/optimize.php, row 86, 186
 "No such run." => "Nu există o astfel de rulare.", // ai 2026-11
 
 // central/optimize.php, row 87
@@ -5089,7 +5108,7 @@ return [
 // central/optimize.php, row 140
 "Run an Optimize task on several AAs" => "Rularea unei sarcini de optimizare pe mai multe AA-uri", // ai 2026-11
 
-// central/optimize.php, row 148, 171
+// central/optimize.php, row 148, 170
 // src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckOptimizeRuns.php, row 55
 // src/Optimize/CheckQueue.php, row 98, 178
@@ -5104,65 +5123,65 @@ return [
 // central/optimize.php, row 151
 "Repair tests first, repairs only where the test fails, then tests again." => "Repararea testează mai întâi, repară doar unde testul eșuează, apoi testează din nou.", // ai 2026-11
 
-// central/optimize.php, row 153, 210
+// central/optimize.php, row 153, 209
 // include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// central/optimize.php, row 159
+// central/optimize.php, row 158
 "An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "Un AA fără un token valid nu răspunde - obțineți mai întâi tokenul lui din lista Central (este valabil o zi).", // ai 2026-11
 
-// central/optimize.php, row 160
+// central/optimize.php, row 159
 "Start" => "Pornește", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Last runs" => "Ultimele rulări", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 // src/Optimize/CheckImports.php, row 151, 155
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Optimize/CheckOptimizeRuns.php, row 54
 "Started" => "Pornire", // ai 2026-10
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Results" => "Rezultate", // ai 2026-11
 
-// central/optimize.php, row 197
+// central/optimize.php, row 196
 "Started %1 by %2" => "Pornită la %1 de %2", // ai 2026-11
 
-// central/optimize.php, row 198
+// central/optimize.php, row 197
 "%1 of %2 AAs done" => "AA-uri finalizate: %1 din %2", // ai 2026-11
 
-// central/optimize.php, row 208
+// central/optimize.php, row 207
 "The run goes on in the task queue of this AA - you may close this page." => "Rularea continuă în coada de sarcini a acestui AA - puteți închide această pagină.", // ai 2026-11
 
-// central/optimize.php, row 210, 229
+// central/optimize.php, row 209, 228
 "Report" => "Raport", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Waiting" => "Așteaptă", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Not asked" => "Neinterogat", // ai 2026-11
 
-// central/optimize.php, row 225
+// central/optimize.php, row 224
 "The test after the repair comes next." => "Urmează testul de după reparare.", // ai 2026-11
 
-// central/optimize.php, row 232
+// central/optimize.php, row 231
 "The test after the repair" => "Testul de după reparare", // ai 2026-11
 
-// central/optimize.php, row 242
+// central/optimize.php, row 241
 "Another run" => "Altă rulare", // ai 2026-11
 
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 "OK - nothing to repair" => "OK - nimic de reparat", // ai 2026-11
 
-// central/optimize.php, row 249
+// central/optimize.php, row 248
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
 // src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
@@ -5171,37 +5190,37 @@ return [
 // src/Optimize/StateCheckModel.php, row 219
 "Problem" => "Problemă", // ai 2026-10
 
-// central/optimize.php, row 250
+// central/optimize.php, row 249
 "Repaired" => "Reparat", // ai 2026-11
 
-// central/optimize.php, row 251
+// central/optimize.php, row 250
 "Repair failed" => "Reparare eșuată", // ai 2026-11
 
-// central/optimize.php, row 252
+// central/optimize.php, row 251
 "Not done" => "Neefectuat", // ai 2026-11
 
-// central/optimize.php, row 262
+// central/optimize.php, row 261
 "No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "De mult timp nu a mai venit niciun pas - rulează coada de sarcini a acestui AA? „Continuă” încearcă imediat.", // ai 2026-11
 
-// central/optimize.php, row 263
+// central/optimize.php, row 262
 "Waiting to ask an AA again" => "Se așteaptă reinterogarea unui AA", // ai 2026-11
 
-// central/optimize.php, row 264
+// central/optimize.php, row 263
 "Running in the task queue" => "În curs în coada de sarcini", // ai 2026-11
 
-// central/optimize.php, row 274
+// central/optimize.php, row 273
 "%1 runs another update now." => "%1 rulează acum o altă actualizare.", // ai 2026-11
 
-// central/optimize.php, row 275
+// central/optimize.php, row 274
 "%1 did not answer in time." => "%1 nu a răspuns la timp.", // ai 2026-11
 
-// central/optimize.php, row 276
+// central/optimize.php, row 275
 "The user who started the run is no superadmin any more." => "Utilizatorul care a pornit rularea nu mai este superadmin.", // ai 2026-11
 
-// central/optimize.php, row 277
+// central/optimize.php, row 276
 "Error %1" => "Eroare %1", // ai 2026-11
 
-// central/optimize.php, row 279
+// central/optimize.php, row 278
 "Asked again at %1 - Continue asks now." => "Reinterogare la %1 - „Continuă” interoghează acum.", // ai 2026-11
 
 // central/responder.php, row 112
@@ -5685,7 +5704,7 @@ return [
 "Level count" => "Număr nivele",
 
 // include/constedit_util.php, row 137, 140
-// src/Import/Definition.php, row 140
+// src/Import/Definition.php, row 141
 "Select" => "Selectare",
 
 // include/constedit_util.php, row 599
@@ -6100,7 +6119,7 @@ return [
 
 // include/formutil.php, row 1829
 // include/menu.php, row 141
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Schimbă",
 
@@ -6114,7 +6133,7 @@ return [
 
 // include/formutil.php, row 2223
 // include/stringexpand.php, row 11543, 11566
-// src/Import/DetailCatalog.php, row 150
+// src/Import/DetailCatalog.php, row 178
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "nou", // ai 2026-06
@@ -6370,7 +6389,7 @@ return [
 "Short ID" => "ID scurt", // ai 2026-06
 
 // include/itemfunc.php, row 204
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 "Details" => "Detalii", // ai 2026-06
 
 // include/itemfunc.php, row 245
@@ -6773,7 +6792,7 @@ return [
 "Checks" => "Verificări", // ai 2026-10
 
 // include/logs.php, row 796, 827
-// src/Import/DetailPage.php, row 300, 367, 800
+// src/Import/DetailPage.php, row 324, 391, 840
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Rulează", // ai 2026-10
@@ -6810,7 +6829,7 @@ return [
 
 // include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 825
+// src/Manager.php, row 816
 "Module ID" => "ID modul", // ai 2026-06
 
 // include/logs.php, row 921
@@ -6850,7 +6869,7 @@ return [
 "Items planned" => "Articole planificate", // ai 2026-06
 
 // include/logs.php, row 1095
-// src/Import/DetailPage.php, row 1025
+// src/Import/DetailPage.php, row 1076
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Mesaj", // ai 2026-06
 
@@ -6873,13 +6892,13 @@ return [
 "Collection" => "Colecţie", // ai 2026-06
 
 // include/logs.php, row 1123, 1174, 1186, 1321
-// src/Import/Definition.php, row 154
+// src/Import/Definition.php, row 155
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Detaliu", // ai 2026-06
 
 // include/logs.php, row 1173
-// src/Import/Definition.php, row 135, 162
+// src/Import/Definition.php, row 136, 163
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Stare", // ai 2026-06
 
@@ -6893,7 +6912,7 @@ return [
 "Errors" => "Erori", // ai 2026-06
 
 // include/logs.php, row 1240
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Outcome" => "Rezultat", // ai 2026-06
 
 // include/logs.php, row 1256
@@ -6916,29 +6935,29 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "Motiv", // ai 2026-10
 
-// include/mail.php, row 693
+// include/mail.php, row 657
 "Email type" => "Tip email", // ai 2026-06
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 "— all modules (global) —" => "— toate modulele (global) —", // ai 2026-10
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Proprietar",
 
-// include/mail.php, row 698
+// include/mail.php, row 662
 "Description/Result" => "Descriere/Rezultat", // ai 2026-06
 
-// include/mail.php, row 701
+// include/mail.php, row 667
 "From (email) " => "De la (email)", // ai 2026-06
 
-// include/mail.php, row 704
+// include/mail.php, row 670
 "Envelop sender (email)" => "Expeditor plic (email)", // ai 2026-06
 
-// include/mail.php, row 705
+// include/mail.php, row 671
 // misc/datovka/datovka.php, row 156
 "Attachments" => "Atașamente", // ai 2026-06
 
@@ -7007,8 +7026,8 @@ return [
 "Filters" => "Filtre",
 
 // include/menu.php, row 159
-// src/Import/Definition.php, row 87
-// src/Import/DetailConfig.php, row 359
+// src/Import/Definition.php, row 88
+// src/Import/DetailConfig.php, row 350
 "Mapping" => "Mapare",
 
 // include/menu.php, row 160, 224
@@ -7117,7 +7136,7 @@ return [
 "Slice structure" => "Structură secţiune",
 
 // include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
+// src/Import/Definition.php, row 136, 162
 // src/Optimize/CheckImportStores.php, row 53
 // src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "Import", // ai 2026-11
@@ -7201,7 +7220,7 @@ return [
 "What's working, what isn't — tell the AA team." => "Ce funcţionează, ce nu — spuneţi echipei AA.", // ai 2026-06
 
 // include/menu_util.php, row 632
-// src/Import/Definition.php, row 86
+// src/Import/Definition.php, row 87
 "Settings" => "Setări", // ai 2026-06
 
 // include/menu_util.php, row 635
@@ -7276,7 +7295,7 @@ return [
 "Array returned" => "Array returnat", // ai 2026-06
 
 // include/scroller.php, row 87
-// src/Import/DetailPage.php, row 420
+// src/Import/DetailPage.php, row 451
 "Previous" => "Precedent",
 
 // include/scroller.php, row 296
@@ -7325,10 +7344,6 @@ return [
 
 // include/searchbar.class.php, row 566
 "And" => "Și", // ai 2026-06
-
-// include/searchbar.class.php, row 580
-// include/searchlib.php, row 53, 56, 129, 138
-"begins with" => "începe cu", // ai 2026-06
 
 // include/searchbar.class.php, row 608
 "Clear" => "Golește", // ai 2026-06
@@ -7406,7 +7421,7 @@ return [
 // include/statestore.php, row 1367
 "select ..." => "selectați ...", // ai 2026-06
 
-// include/searchlib.php, row 371
+// include/searchlib.php, row 448
 "Limit" => "Limită", // ai 2026-06
 
 // include/slice.class.php, row 428
@@ -8230,7 +8245,7 @@ return [
 "page length (number of items)" => "lungimea paginii (număr de articole)", // ai 2026-06
 
 // slice.php, row 621
-// src/Manager.php, row 890
+// src/Manager.php, row 881
 "No item found" => "Nu am găsit nici un articol",
 
 // src/AA_Plannedtask.php, row 72
@@ -8341,43 +8356,43 @@ return [
 // src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Doar editorii secțiunii îi pot răsfoi fișierele", // ai 2026-10
 
-// src/Central/Actionapps.php, row 185
+// src/Central/Actionapps.php, row 180
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Acest PHP nu are AES-GCM (sodium) - tokenul de autentificare nu poate fi stocat criptat", // ai 2026-10
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not configured" => "Neconfigurat", // ai 2026-06
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not authenticated - get a token" => "Neautentificat - obțineți un token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Authenticated until %1" => "Autentificat până la %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Expired - get a token" => "Expirat - obțineți un token", // ai 2026-10
 
-// src/Central/Actionapps.php, row 245
+// src/Central/Actionapps.php, row 236
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "AA-ul la distanță a refuzat autentificarea: nume de utilizator sau parolă greșite, un cont cu autentificare în doi pași (Central nu poate trimite încă codul) sau utilizatorul nu este superadmin acolo", // ai 2026-11
 
-// src/Central/Actionapps.php, row 247
+// src/Central/Actionapps.php, row 238
 "The remote AA gave no login token - update it" => "AA-ul distant nu a dat niciun token de autentificare - actualizați-l", // ai 2026-10
 
-// src/Central/Actionapps.php, row 248
+// src/Central/Actionapps.php, row 239
 "The remote AA gave a token for longer than a day - update the remote AA" => "AA-ul distant a dat un token pentru mai mult de o zi - actualizați AA-ul distant", // ai 2026-10
 
-// src/Central/Actionapps.php, row 284
+// src/Central/Actionapps.php, row 275
 "Can't get org_name - " => "Nu pot obține org_name - ", // ai 2026-06
 
-// src/Central/Actionapps.php, row 338
+// src/Central/Actionapps.php, row 329
 "Unexpected response from remote AA" => "Răspuns neașteptat de la AA-ul distant", // ai 2026-10
 
-// src/Central/Actionapps.php, row 341
+// src/Central/Actionapps.php, row 332
 "This AA does not support this command (update it first)" => "Acest AA nu acceptă această comandă (actualizați-l mai întâi)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 344
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Tokenul de autentificare stocat nu poate fi folosit (s-a schimbat AA_SECRET, parola bazei de date sau adresa acestui AA) - autentificați din nou acest AA pe pagina ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 354
+// src/Central/Actionapps.php, row 345
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Niciun token de autentificare pentru acest AA - folosiți „Autentificare” pentru acest AA pe pagina ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -9503,22 +9518,28 @@ return [
 // src/Credential/Store.php, row 55
 "set (%1)" => "setat (%1)", // ai 2026-10
 
-// src/Form/ShowConditions.php, row 317
+// src/Form/ShowConditions.php, row 354
 "Fill in the name of the condition." => "Completați numele condiției.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 321
+// src/Form/ShowConditions.php, row 358
 "Another condition of this slice is called %1." => "O altă condiție a acestei secțiuni se numește %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 333
+// src/Form/ShowConditions.php, row 371
 "The field %1 is not in this slice." => "Câmpul %1 nu este în această secțiune.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 335
+// src/Form/ShowConditions.php, row 373
 "Choose how to compare the field %1." => "Alegeți cum se compară câmpul %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 337
+// src/Form/ShowConditions.php, row 375
 "Fill in the values of the field %1." => "Completați valorile câmpului %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 344
+// src/Form/ShowConditions.php, row 377
+"A value of the field %1 contains both kinds of quotes." => "O valoare a câmpului %1 conține ambele tipuri de ghilimele.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 380
+"The value of the field %1 must not contain a backslash." => "Valoarea câmpului %1 nu trebuie să conțină bară oblică inversă.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 393
 "Add a rule or an expression." => "Adăugați o regulă sau o expresie.", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
@@ -9536,7 +9557,7 @@ return [
 // src/IO/Grabber/CSV.php, row 94
 // src/IO/Grabber/JsonLD.php, row 104
 // src/IO/Grabber/XML.php, row 108
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "URL of the file" => "URL-ul fișierului", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 95
@@ -9710,835 +9731,874 @@ return [
 // src/IO/OnPageChanger.php, row 55
 "No permission - no user is authenticated. Try to relogin, please." => "Fără drepturi - niciun utilizator nu este autentificat. Vă rugăm să vă reconectați.", // ai 2026-06
 
-// src/Import/Definition.php, row 88
-// src/Import/DetailConfig.php, row 390
+// src/Import/Definition.php, row 89
+// src/Import/DetailConfig.php, row 381
 "Key fields" => "Câmpuri cheie", // ai 2026-10
 
-// src/Import/Definition.php, row 89
-// src/Import/DetailConfig.php, row 391
+// src/Import/Definition.php, row 90
+// src/Import/DetailConfig.php, row 382
 "Store mode" => "Mod de stocare", // ai 2026-10
 
-// src/Import/Definition.php, row 90
-// src/Import/DetailConfig.php, row 392
+// src/Import/Definition.php, row 91
+// src/Import/DetailConfig.php, row 383
 "Validation" => "Validare", // ai 2026-10
 
-// src/Import/Definition.php, row 91
-// src/Import/DetailConfig.php, row 393
+// src/Import/Definition.php, row 92
+// src/Import/DetailConfig.php, row 384
 "After a stream" => "După un flux", // ai 2026-10
 
-// src/Import/Definition.php, row 93
-// src/Import/DetailPage.php, row 604
+// src/Import/Definition.php, row 94
 // src/Optimize/CheckImports.php, row 215
 "Enabled" => "Activat", // ai 2026-10
 
-// src/Import/Definition.php, row 113
+// src/Import/Definition.php, row 114
 "The source is changed in the import detail." => "Sursa se modifică în detaliile importului.", // ai 2026-10
 
-// src/Import/Definition.php, row 129
+// src/Import/Definition.php, row 130
 "The slice has no import yet." => "Secțiunea nu are încă niciun import.", // ai 2026-10
 
-// src/Import/Definition.php, row 135, 164
+// src/Import/Definition.php, row 136, 165
 "Next plan" => "Următoarea rulare", // ai 2026-10
 
-// src/Import/Definition.php, row 367
-"None - the import is disabled" => "Niciuna – importul este dezactivat", // ai 2026-10
+// src/Import/Definition.php, row 372
+// src/Import/DetailPage.php, row 766, 772
+"Not planned" => "Neplanificat", // ai 2026-10
 
-// src/Import/Definition.php, row 370
+// src/Import/Definition.php, row 375
 "Not planned - no task starts it" => "Neplanificat – nicio sarcină nu îl pornește", // ai 2026-10
 
-// src/Import/Definition.php, row 423
+// src/Import/Definition.php, row 428
 "The import needs a name." => "Importul trebuie să aibă un nume.", // ai 2026-10
 
-// src/Import/Definition.php, row 427
+// src/Import/Definition.php, row 432
 "The name of an import may not contain a colon (:) or look like an id." => "Numele unui import nu poate conține două puncte (:) și nici nu poate arăta ca un id.", // ai 2026-10
 
-// src/Import/Definition.php, row 430
+// src/Import/Definition.php, row 435
 "Another import of the slice has this name." => "Un alt import al secțiunii are acest nume.", // ai 2026-10
 
-// src/Import/Definition.php, row 438
+// src/Import/Definition.php, row 443
 "Change the source in the import detail." => "Modificați sursa în detaliile importului.", // ai 2026-10
 
-// src/Import/Definition.php, row 446
-// src/Import/DetailPage.php, row 545
+// src/Import/Definition.php, row 451
+// src/Import/DetailPage.php, row 584
 "Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "Importurile nu pot rula aici: tabelele lor din baza de date (object_text, toexecute) nu suportă tranzacții (InnoDB).", // ai 2026-10
 
-// src/Import/Definition.php, row 455
+// src/Import/Definition.php, row 460
 "The mapping of the import is not valid." => "Maparea importului nu este validă.", // ai 2026-10
 
-// src/Import/Definition.php, row 477
+// src/Import/Definition.php, row 482
 "The import source refused these settings: %1" => "Sursa importului a refuzat aceste setări: %1", // ai 2026-10
 
-// src/Import/Definition.php, row 480
-"Only a user who manages the feeding of the slice may change its imports." => "Doar un utilizator care administrează alimentarea secțiunii poate modifica importurile ei.", // ai 2026-10
-
-// src/Import/Definition.php, row 481
-"This import uses API keys, so only a superadmin may change or delete it." => "Acest import folosește chei API, de aceea doar un superadmin îl poate modifica sau șterge.", // ai 2026-10
-
 // src/Import/Definition.php, row 482
-"The import was not saved - it is not an import of this slice." => "Importul nu a fost salvat – nu este un import al acestei secțiuni.", // ai 2026-10
-
-// src/Import/Definition.php, row 483
-// src/Import/DetailPage.php, row 546
-"The import source is not available." => "Sursa importului nu este disponibilă.", // ai 2026-10
-
-// src/Import/Definition.php, row 484
-"The import source did not give its mapping." => "Sursa importului nu a furnizat maparea sa.", // ai 2026-10
+"The setting \"%1\" of the import source is not valid: %2" => "Setarea „%1” a sursei de import nu este validă: %2", // ai 2026-11
 
 // src/Import/Definition.php, row 485
-"The mapping of the import does not fit the slice." => "Maparea importului nu corespunde secțiunii.", // ai 2026-10
+"Only a user who manages the feeding of the slice may change its imports." => "Doar un utilizator care administrează alimentarea secțiunii poate modifica importurile ei.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
-// src/Import/DetailPage.php, row 548
-"A setting of the import source is not valid." => "O setare a sursei de import nu este validă.", // ai 2026-10
-
-// src/Import/Definition.php, row 486
-"The setting \"%1\" of the import source is not valid." => "Setarea „%1” a sursei de import nu este validă.", // ai 2026-10
+"This import uses API keys, so only a superadmin may change or delete it." => "Acest import folosește chei API, de aceea doar un superadmin îl poate modifica sau șterge.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
-// src/Import/DetailPage.php, row 549
-"The settings name a slice whose feeding you do not manage." => "Setările indică o secțiune a cărei alimentare nu o administrați.", // ai 2026-10
-
-// src/Import/Definition.php, row 487
-"The setting \"%1\" names a slice whose feeding you do not manage." => "Setarea „%1” indică o secțiune a cărei alimentare nu o administrați.", // ai 2026-10
+"The import was not saved - it is not an import of this slice." => "Importul nu a fost salvat – nu este un import al acestei secțiuni.", // ai 2026-10
 
 // src/Import/Definition.php, row 488
-"The settings of the import changed meanwhile. Reload the page and set them again." => "Între timp, setările importului s-au modificat. Reîncărcați pagina și setați-le din nou.", // ai 2026-10
+// src/Import/DetailPage.php, row 585
+"The import source is not available." => "Sursa importului nu este disponibilă.", // ai 2026-10
 
 // src/Import/Definition.php, row 489
+"The import source did not give its mapping." => "Sursa importului nu a furnizat maparea sa.", // ai 2026-10
+
+// src/Import/Definition.php, row 490
+"The mapping of the import does not fit the slice." => "Maparea importului nu corespunde secțiunii.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+// src/Import/DetailPage.php, row 587
+"A setting of the import source is not valid." => "O setare a sursei de import nu este validă.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+"The setting \"%1\" of the import source is not valid." => "Setarea „%1” a sursei de import nu este validă.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+// src/Import/DetailPage.php, row 588
+"The settings name a slice whose feeding you do not manage." => "Setările indică o secțiune a cărei alimentare nu o administrați.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+"The setting \"%1\" names a slice whose feeding you do not manage." => "Setarea „%1” indică o secțiune a cărei alimentare nu o administrați.", // ai 2026-10
+
+// src/Import/Definition.php, row 493
+"The settings of the import changed meanwhile. Reload the page and set them again." => "Între timp, setările importului s-au modificat. Reîncărcați pagina și setați-le din nou.", // ai 2026-10
+
+// src/Import/Definition.php, row 494
 "The import source refused these settings." => "Sursa de import a refuzat aceste setări.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 31
+// src/Import/DetailCatalog.php, row 33
 "No catalog yet. Check source lists what the source offers." => "Încă nu există catalog. Ce oferă sursa, afișează butonul „Verifică sursa”.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 37
+// src/Import/DetailCatalog.php, row 39
 "The stored catalog cannot be read. The next check of the source lists it again." => "Catalogul salvat nu poate fi citit. Următoarea verificare a sursei îl va lista din nou.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 41
+// src/Import/DetailCatalog.php, row 48
 "The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "Catalogul este incomplet: ultima verificare nu l-a listat integral (intrări până acum: %1). Nimic nu este raportat ca lipsă la sursă până când o verificare nu îl listează integral.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 42
+// src/Import/DetailCatalog.php, row 49
 "Listed by the check of %1: %2 entries." => "Listate de verificarea din %1 – intrări: %2.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 47
+// src/Import/DetailCatalog.php, row 54
 "Pages of the catalog" => "Paginile catalogului", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 74
+// src/Import/DetailCatalog.php, row 55
+"%1 entries, %2 can be added" => "intrări: %1, se pot adăuga: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 55
+"%1 entries" => "intrări: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 58
+"%1 missing at the source" => "lipsesc la sursă: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 61
+"%1 renamed at the source" => "redenumite la sursă: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 90
 "The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "Fluxul a fost adăugat sau actualizat din catalog. Va apărea în „Fluxuri” după următoarea verificare a sursei.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 75
+// src/Import/DetailCatalog.php, row 91
 "The catalog has no such entry. Check the source to list its catalog again." => "Catalogul nu are o astfel de intrare. Verificați sursa pentru a-i lista din nou catalogul.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 76, 77
+// src/Import/DetailCatalog.php, row 92, 93
 "Nothing was added from the catalog:" => "Nimic nu a fost adăugat din catalog:", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 85
+// src/Import/DetailCatalog.php, row 101
 "This import uses API keys, so only a superadmin may add streams from its catalog." => "Acest import folosește chei API, de aceea doar un superadministrator poate adăuga fluxuri din catalogul său.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 86
+// src/Import/DetailCatalog.php, row 102
 "Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "Adăugarea din catalog necesită dreptul de a edita toate articolele secțiunii în care sursa își adaugă fluxurile.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 87
+// src/Import/DetailCatalog.php, row 103
 "The import source cannot add streams from its catalog." => "Sursa de import nu poate adăuga fluxuri din catalogul său.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 88
+// src/Import/DetailCatalog.php, row 104
 "The import source could not be reached or did not answer. Try again later." => "Sursa de import nu a putut fi contactată sau nu a răspuns. Încercați din nou mai târziu.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 102
+// src/Import/DetailCatalog.php, row 118
 "1 entry is new at the source - no stream comes from it." => "1 intrare este nouă la sursă – din ea nu provine niciun flux.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 103
+// src/Import/DetailCatalog.php, row 119
 "%1 entries are new at the source - no stream comes from them." => "Intrări noi la sursă: %1 – din ele nu provine niciun flux.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Missing at the source" => "Lipsă la sursă", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Renamed at the source" => "Redenumite la sursă", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124, 143
-// src/Import/DetailPage.php, row 377, 1025, 1046
+// src/Import/DetailCatalog.php, row 140, 169
+// src/Import/DetailPage.php, row 401, 1076, 1097
 "Stream" => "Flux", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Catalog key" => "Cheie în catalog", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name of the stream" => "Numele fluxului", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name in the catalog" => "Numele în catalog", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailCatalog.php, row 166
+"%1 entries on this page cannot be added or updated: %2" => "Intrări de pe această pagină care nu pot fi adăugate sau actualizate: %1. Motiv: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailConfig.php, row 282
 "Key" => "Cheie", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailPage.php, row 353, 706
 "Updated" => "Actualizat", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 171
+// src/Import/DetailCatalog.php, row 198
+"%1 of %2 entries on this page" => "%1 din %2 intrări de pe această pagină", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 199
+"Filter this page" => "Filtrează pagina", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 200
+"Only entries that can be added" => "Doar intrările care pot fi adăugate", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 207
 "Catalog of the source" => "Catalogul sursei", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 136
+// src/Import/DetailConfig.php, row 119
 "The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "Maparea a fost setată din nou din sursă. Ce știa importul despre fluxuri – versiuni, momentele importului și ultima verificare a sursei – a fost șters, astfel că următoarea rulare le va citi pe toate din nou.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 137
+// src/Import/DetailConfig.php, row 120
 "The mapping is the same as the source gives - nothing changed." => "Maparea este aceeași cu cea dată de sursă – nu s-a modificat nimic.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 138, 139
+// src/Import/DetailConfig.php, row 121, 122
 "The mapping was not reset:" => "Maparea nu a fost resetată:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 140
+// src/Import/DetailConfig.php, row 123
 "The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "Setările au fost salvate și maparea a fost setată din nou din sursă. Dacă o rulare era deschisă, a fost încheiată, iar ce știa importul despre fluxuri a fost șters.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 141
+// src/Import/DetailConfig.php, row 124
 "The settings are the same as stored - nothing changed." => "Setările sunt aceleași cu cele salvate – nu s-a modificat nimic.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 142
+// src/Import/DetailConfig.php, row 125
 // src/Isds/Registry/Page.php, row 326
 "The settings were not saved:" => "Setările nu au fost salvate:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 144
+// src/Import/DetailConfig.php, row 127
 "Choose a source." => "Alegeți o sursă.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 155, 179
+// src/Import/DetailConfig.php, row 138, 162
 "Settings of the source" => "Setările sursei", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 159
+// src/Import/DetailConfig.php, row 142
 "Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "Pornirile planificate rulează în continuare cu setările salvate; pentru a rula importul manual, modificați-le în %1 mai jos.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 161
+// src/Import/DetailConfig.php, row 144
 "Change the settings or the source in %1 below." => "Modificați setările sau sursa în %1 mai jos.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 188
+// src/Import/DetailConfig.php, row 171
 "No other source is available." => "Nu este disponibilă nicio altă sursă.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 192
+// src/Import/DetailConfig.php, row 175
 "(current)" => "(actuală)", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 203
+// src/Import/DetailConfig.php, row 186
 "Show its settings" => "Afișează setările ei", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 204
+// src/Import/DetailConfig.php, row 187
 "Keep the current source" => "Păstrează sursa actuală", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 214
+// src/Import/DetailConfig.php, row 196
 "This source is not available, so its settings cannot be shown. Choose another source above." => "Această sursă nu este disponibilă, așa că setările ei nu pot fi afișate. Alegeți mai sus o altă sursă.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 222
+// src/Import/DetailConfig.php, row 204
 "The stored settings cannot be read; saving the form stores them again." => "Setările salvate nu pot fi citite; salvarea formularului le salvează din nou.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 228
+// src/Import/DetailConfig.php, row 209
 "The source did not describe its settings, so they cannot be changed now." => "Sursa nu și-a descris setările, așa că acum nu pot fi modificate.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 232
+// src/Import/DetailConfig.php, row 214
 "You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "Schimbați sursa din %1 în %2. Salvarea încheie rularea deschisă, șterge ce știe importul despre fluxuri și catalog și preia maparea de la noua sursă.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 233
+// src/Import/DetailConfig.php, row 215
 "Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "Schimbați sursa? Rularea deschisă se încheie, ce știe importul despre fluxuri se șterge, iar maparea se preia de la noua sursă.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 234
+// src/Import/DetailConfig.php, row 216
 "Change the source and save" => "Schimbă sursa și salvează", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 236
+// src/Import/DetailConfig.php, row 218
 "Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "Salvarea setărilor modificate încheie rularea deschisă, șterge ce știe importul despre fluxuri și catalog și setează din nou maparea din sursă. Setările nemodificate nu schimbă nimic.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 237
+// src/Import/DetailConfig.php, row 219
 "Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "Salvați setările? Dacă s-au modificat, rularea deschisă se încheie, ce știe importul despre fluxuri se șterge, iar maparea se setează din nou din sursă.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 238
+// src/Import/DetailConfig.php, row 220
 // src/Isds/Registry/Page.php, row 617
 "Save the settings" => "Salvează setările", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 272
+// src/Import/DetailConfig.php, row 263
 "The source has no settings." => "Sursa nu are setări.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 283
+// src/Import/DetailConfig.php, row 274
 "Keys" => "Chei", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 285
+// src/Import/DetailConfig.php, row 276
 "The source did not say which keys it needs." => "Sursa nu a precizat de ce chei are nevoie.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 288
+// src/Import/DetailConfig.php, row 279
 "The source needs no key." => "Sursa nu are nevoie de cheie.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailConfig.php, row 282
 // src/Widget/Widget.php, row 848
 "Hint" => "Sugestie", // ai 2026-06
 
-// src/Import/DetailConfig.php, row 297
+// src/Import/DetailConfig.php, row 288
 "Key is set" => "Cheia este setată", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 298
+// src/Import/DetailConfig.php, row 289
 "Key is damaged" => "Cheia este deteriorată", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 299
+// src/Import/DetailConfig.php, row 290
 "Key is missing" => "Cheia lipsește", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 305
+// src/Import/DetailConfig.php, row 296
 "The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "Cheile le setează administratorul serverului în config.php, niciodată aici. Fără cheie, sursa eșuează când are nevoie de ea; o cheie deteriorată conține un salt de linie și nu este trimisă niciodată.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 327
+// src/Import/DetailConfig.php, row 318
 "define one of %1 in config.php" => "definiți una dintre %1 în config.php", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 350
+// src/Import/DetailConfig.php, row 341
 "The mapping of the import cannot be read. Reset it from the source." => "Maparea importului nu poate fi citită. Resetați-o din sursă.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 356
+// src/Import/DetailConfig.php, row 347
 "Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "Resetați maparea din sursă? Maparea, câmpurile cheie, modul de stocare, validarea, expresia de după un flux și filtrul se înlocuiesc cu ce dă sursa.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 357
+// src/Import/DetailConfig.php, row 348
 "Reset mapping from the source" => "Resetează maparea din sursă", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 358
+// src/Import/DetailConfig.php, row 349
 "Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Setează din nou maparea, câmpurile cheie, modul de stocare, validarea, expresia de după un flux și filtrul așa cum le dă sursa pentru setările salvate. O mapare nouă șterge ce știa importul despre fluxuri, astfel că următoarea rulare le citește pe toate din nou. Este refuzată cât timp o rulare este deschisă, oprită de o eroare sau încă în curs de finalizare.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 366
+// src/Import/DetailConfig.php, row 357
 "The mapping has no rows." => "Maparea nu are rânduri.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Target" => "Țintă", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Transformation" => "Transformare", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 379
+// src/Import/DetailConfig.php, row 370
 "the field the job parameter names" => "câmpul indicat de parametrul lucrării", // ai 2026-10
 
-// src/Import/DetailPage.php, row 269
+// src/Import/DetailPage.php, row 293
 "This page is out of date – reload it." => "Această pagină este învechită – reîncărcați-o.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 282
+// src/Import/DetailPage.php, row 306
 "Last import" => "Ultimul import", // ai 2026-10
 
-// src/Import/DetailPage.php, row 283
+// src/Import/DetailPage.php, row 307
 "Next start" => "Următoarea pornire", // ai 2026-10
 
-// src/Import/DetailPage.php, row 284
+// src/Import/DetailPage.php, row 308
 "Last check of the source" => "Ultima verificare a sursei", // ai 2026-10
 
-// src/Import/DetailPage.php, row 290
+// src/Import/DetailPage.php, row 314
 "Overview" => "Prezentare generală", // ai 2026-10
 
-// src/Import/DetailPage.php, row 300
+// src/Import/DetailPage.php, row 324
 "Imports every stream." => "Importă toate fluxurile.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301, 801
+// src/Import/DetailPage.php, row 325, 841
 "Run changed only" => "Rulează doar modificate", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301
+// src/Import/DetailPage.php, row 325
 "Skips the streams the source says did not change." => "Omite fluxurile care, potrivit sursei, nu s-au modificat.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302, 367, 802
+// src/Import/DetailPage.php, row 326, 391, 842
 "Check source" => "Verifică sursa", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302
+// src/Import/DetailPage.php, row 326
 "Asks the source whether it works. Stores nothing." => "Întreabă sursa dacă funcționează. Nu salvează nimic.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Reads up to 500 items and shows what it would store. Stores nothing." => "Citește până la 500 de articole și arată ce ar salva. Nu salvează nimic.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 309
+// src/Import/DetailPage.php, row 333
 "More actions" => "Alte acțiuni", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327, 352
+// src/Import/DetailPage.php, row 351, 376
 "Runs" => "Rulări", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327
+// src/Import/DetailPage.php, row 351
 "No run yet." => "Încă nicio rulare.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Took" => "Durată", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Read" => "Citite", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Skipped" => "Omise", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Filtered out" => "Filtrate", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Item errors" => "Erori articole", // ai 2026-10
 
-// src/Import/DetailPage.php, row 342
+// src/Import/DetailPage.php, row 366
 "working %1" => "din care lucru %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 366
+// src/Import/DetailPage.php, row 390
 "The stored state of the streams cannot be read." => "Starea salvată a fluxurilor nu poate fi citită.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 367
+// src/Import/DetailPage.php, row 391
 "No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Încă niciun flux nu a fost importat sau verificat. Lista o completează %1 sau %2 (Acțiuni, mai sus).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 368, 396
+// src/Import/DetailPage.php, row 392, 421
 "Streams" => "Fluxuri", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Records" => "Înregistrări", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Last recorded" => "Ultima înregistrare", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Source checked" => "Sursă verificată", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Data version" => "Versiune date", // ai 2026-10
 
-// src/Import/DetailPage.php, row 390
+// src/Import/DetailPage.php, row 415
 "by the run started %1" => "de rularea pornită la %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 395
+// src/Import/DetailPage.php, row 420
 "Pages of the streams" => "Paginile fluxurilor", // ai 2026-10
 
-// src/Import/DetailPage.php, row 421
+// src/Import/DetailPage.php, row 452
 "Page %1 of %2" => "Pagina %1 din %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 507
+// src/Import/DetailPage.php, row 545
 "The run is queued. It goes on in the background; reload the page to see how far it got." => "Rularea a fost pusă în coadă. Continuă în fundal; reîncărcați pagina pentru a vedea cât a avansat.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 508
+// src/Import/DetailPage.php, row 546
 "The run goes on - its next step is queued." => "Rularea continuă – următorul ei pas este în coadă.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 509
+// src/Import/DetailPage.php, row 547
 "The run is ended. What it imported stays." => "Rularea a fost încheiată. Ce a importat rămâne.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 511
+// src/Import/DetailPage.php, row 549
 "No such action." => "Nu există o astfel de acțiune.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 512
+// src/Import/DetailPage.php, row 550
 "Choose a stream of the source." => "Alegeți un flux al sursei.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 513
-"Not started." => "Nu a pornit.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 515
-"Its last step may still be working. Try again in a few minutes." => "Ultimul ei pas poate fi încă în lucru. Încercați din nou peste câteva minute.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 516
-"This import no longer exists in this slice." => "Acest import nu mai există în această secțiune.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 517
-"No such run of this import." => "Nu există o astfel de rulare a acestui import.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 518
-"The run is finished already." => "Rularea este deja terminată.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 520
-"The action failed. The log of import failures has its cause." => "Acțiunea a eșuat. Cauza se află în jurnalul erorilor de import.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Ultima rulare s-a oprit din cauza unei erori. Mai întâi alegeți pentru ea „Continuă” sau „Încheie”. O pornire planificată o încheie singură; o pornire manuală nu.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first." => "Ultima rulare s-a oprit din cauza unei erori. Mai întâi alegeți pentru ea „Continuă” sau „Încheie”.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "De mult timp niciun pas nu a lucrat la ultima rulare. Mai întâi alegeți pentru ea „Continuă” sau „Încheie”. O pornire planificată o încheie singură; o pornire manuală nu.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first." => "De mult timp niciun pas nu a lucrat la ultima rulare. Mai întâi alegeți pentru ea „Continuă” sau „Încheie”.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 533
-"The last step of the previous run is still finishing. Try again in a few minutes." => "Ultimul pas al rulării anterioare încă se finalizează. Încercați din nou peste câteva minute.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 534
-"Its next step is already on its way." => "Următorul ei pas este deja pe drum.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 535
-"The last run is still running." => "Ultima rulare încă rulează.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 544
-"Only a user who manages the feeding of the slice may run its imports." => "Importurile secțiunii le poate rula doar un utilizator care administrează alimentarea ei.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 547
-"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Definiția importului nu poate fi folosită – maparea ei nu se potrivește cu secțiunea sau nu poate fi citită (DEFINITION).", // ai 2026-10
-
-// src/Import/DetailPage.php, row 550
-"The source has no such stream now." => "Sursa nu are acum un astfel de flux.", // ai 2026-10
-
 // src/Import/DetailPage.php, row 551
-"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Codul sursei de import a eșuat (SOURCE). Clasa și linia se află în jurnalul erorilor de import.", // ai 2026-10
+"At most (items) takes a whole number greater than 0, or nothing for all items (500 in a dry run)." => "„Cel mult (articole)” acceptă un număr întreg mai mare decât 0 sau nimic pentru toate articolele (500 la o rulare de probă).", // ai 2026-11
 
 // src/Import/DetailPage.php, row 552
-"The first row of the file lacks columns the mapping needs." => "Primului rând al fișierului îi lipsesc coloane de care are nevoie maparea.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 553
-"The source did not accept the key." => "Sursa nu a acceptat cheia.", // ai 2026-10
+"Not started." => "Nu a pornit.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 554
-"The key of the source is damaged in the configuration." => "Cheia sursei este deteriorată în configurație.", // ai 2026-10
+"Its last step may still be working. Try again in a few minutes." => "Ultimul ei pas poate fi încă în lucru. Încercați din nou peste câteva minute.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 555
-"The source could not be reached." => "Sursa nu a putut fi contactată.", // ai 2026-10
+"This import no longer exists in this slice." => "Acest import nu mai există în această secțiune.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 556
-"The run is finished; it cannot go on." => "Rularea este terminată; nu poate continua.", // ai 2026-10
+"No such run of this import." => "Nu există o astfel de rulare a acestui import.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 557
-"The import is switched off." => "Importul este oprit.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 558
-"This import uses API keys, so only a superadmin may do this." => "Acest import folosește chei API, de aceea doar un superadministrator poate face acest lucru.", // ai 2026-10
+"The run is finished already." => "Rularea este deja terminată.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 559
-"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Sursa de import nu poate indica versiunile fluxurilor sale, așa că nu are o stare care să poată fi înregistrată.", // ai 2026-10
+"The action failed. The log of import failures has its cause." => "Acțiunea a eșuat. Cauza se află în jurnalul erorilor de import.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 560
-"The import source refused: %1" => "Sursa de import a refuzat: %1", // ai 2026-10
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Ultima rulare s-a oprit din cauza unei erori. Mai întâi alegeți pentru ea „Continuă” sau „Încheie”. O pornire planificată o încheie singură; o pornire manuală nu.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first." => "Ultima rulare s-a oprit din cauza unei erori. Mai întâi alegeți pentru ea „Continuă” sau „Încheie”.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 571
-"The request to the source failed." => "Cererea către sursă a eșuat.", // ai 2026-10
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "De mult timp niciun pas nu a lucrat la ultima rulare. Mai întâi alegeți pentru ea „Continuă” sau „Încheie”. O pornire planificată o încheie singură; o pornire manuală nu.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 571
+"No step has worked on the last run for a long time. Continue it or End it first." => "De mult timp niciun pas nu a lucrat la ultima rulare. Mai întâi alegeți pentru ea „Continuă” sau „Încheie”.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 572
-"The source is not available now." => "Sursa nu este disponibilă acum.", // ai 2026-10
+"The last step of the previous run is still finishing. Try again in a few minutes." => "Ultimul pas al rulării anterioare încă se finalizează. Încercați din nou peste câteva minute.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 588
-// src/Import/RunView.php, row 177
-"No import yet" => "Încă niciun import", // ai 2026-10
+// src/Import/DetailPage.php, row 573
+"Its next step is already on its way." => "Următorul ei pas este deja pe drum.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 574
+"The last run is still running." => "Ultima rulare încă rulează.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 583
+"Only a user who manages the feeding of the slice may run its imports." => "Importurile secțiunii le poate rula doar un utilizator care administrează alimentarea ei.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 586
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Definiția importului nu poate fi folosită – maparea ei nu se potrivește cu secțiunea sau nu poate fi citită (DEFINITION).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 589
-"Latest run: %1" => "Ultima rulare: %1", // ai 2026-10
+"The source has no such stream now." => "Sursa nu are acum un astfel de flux.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 590
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Codul sursei de import a eșuat (SOURCE). Clasa și linia se află în jurnalul erorilor de import.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 591
+"The first row of the file lacks columns the mapping needs." => "Primului rând al fișierului îi lipsesc coloane de care are nevoie maparea.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 592
+"The source did not accept the key." => "Sursa nu a acceptat cheia.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 593
+"The key of the source is damaged in the configuration." => "Cheia sursei este deteriorată în configurație.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 594
+"The source could not be reached." => "Sursa nu a putut fi contactată.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 595
+"The database did not store the imported items; the source is not at fault." => "Baza de date nu a stocat articolele importate; sursa nu este de vină.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 596
+"The run is finished; it cannot go on." => "Rularea este terminată; nu poate continua.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 597
+"The import runs only by hand, so a planned task does not start it." => "Importul rulează doar manual, deci o sarcină planificată nu îl pornește.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 598
+"This import uses API keys, so only a superadmin may do this." => "Acest import folosește chei API, de aceea doar un superadministrator poate face acest lucru.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 599
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Sursa de import nu poate indica versiunile fluxurilor sale, așa că nu are o stare care să poată fi înregistrată.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 600
+"The import source refused: %1" => "Sursa de import a refuzat: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 611
+"The request to the source failed." => "Cererea către sursă a eșuat.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 612
+"The source is not available now." => "Sursa nu este disponibilă acum.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 628
+// src/Import/RunView.php, row 183
+"No import yet" => "Încă niciun import", // ai 2026-10
+
+// src/Import/DetailPage.php, row 629
+"Latest run: %1" => "Ultima rulare: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 635
 "Since then: %1" => "De atunci: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "Source: %1" => "Sursă: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "this source is not available" => "această sursă nu este disponibilă", // ai 2026-10
 
-// src/Import/DetailPage.php, row 626
+// src/Import/DetailPage.php, row 666
 "First item error:" => "Prima eroare de articol:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Latest runs" => "Ultimele rulări", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Outcomes of the latest runs, newest first" => "Rezultatele ultimelor rulări, cele mai noi primele", // ai 2026-10
 
-// src/Import/DetailPage.php, row 654
+// src/Import/DetailPage.php, row 694
 "Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Cele mai noi primele. Un cerc punctat este o rulare care nu a salvat nimic: o verificare, o rulare de probă sau o înregistrare a stării. Un pătrat plin %1 este o rulare încheiată înainte de a se termina.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 679
+// src/Import/DetailPage.php, row 719
 "The open run" => "Rularea deschisă", // ai 2026-10
 
-// src/Import/DetailPage.php, row 681
+// src/Import/DetailPage.php, row 721
 "Streams done: %1 of %2." => "Fluxuri terminate: %1 din %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 684
+// src/Import/DetailPage.php, row 724
 "Now at: %1." => "Se procesează acum: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 686
+// src/Import/DetailPage.php, row 726
 "Last progress: %1." => "Ultimul progres: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 689
+// src/Import/DetailPage.php, row 729
 "Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "Nu se mai importă nimic până când nu interveniți sau până când o sarcină planificată pornește din nou importul (ceea ce încheie această rulare).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 690
+// src/Import/DetailPage.php, row 730
 "Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "„Continuă” reia de unde s-a oprit, după ce cauza este remediată; „Încheie” o oprește definitiv și păstrează ce a fost importat.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 691
+// src/Import/DetailPage.php, row 731
 "No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "De mult timp niciun pas nu a lucrat la ea – verificați că cron rulează coada de sarcini și că turele ei sunt suficient de lungi pentru un pas (TOEXECUTE_ALLOWED_TIME în config.php). „Continuă” o încearcă din nou acum; „Încheie” o oprește definitiv și păstrează ce a fost importat. O pornire planificată a importului o încheie și pornește o rulare nouă.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 692
+// src/Import/DetailPage.php, row 732
 "A step is working now." => "Un pas lucrează acum.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 694
+// src/Import/DetailPage.php, row 734
 "Waiting to try again at %1 after 1 failed try." => "Așteaptă o nouă încercare la %1 după 1 încercare eșuată.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 695
+// src/Import/DetailPage.php, row 735
 "Waiting to try again at %1 after %2 failed tries." => "Așteaptă o nouă încercare la %1 după încercări eșuate: %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 696
+// src/Import/DetailPage.php, row 736
 "Waiting to try again at %1." => "Așteaptă o nouă încercare la %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 698, 944
+// src/Import/DetailPage.php, row 738, 995
 "Its last step may still be working." => "Ultimul ei pas poate fi încă în lucru.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 699
+// src/Import/DetailPage.php, row 739
 "Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "Ultimul ei pas s-a oprit fără să se termine. Coada de sarcini îl încearcă din nou în cel mult %1 min.; „Încearcă acum” o face imediat.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue until %1." => "Următorul ei pas așteaptă în coada de sarcini până la %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue." => "Următorul ei pas așteaptă în coada de sarcini.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 726
-"The import is disabled, so no planned task starts it." => "Importul este dezactivat, așa că nicio sarcină planificată nu îl pornește.", // ai 2026-10
+// src/Import/DetailPage.php, row 766
+"Planned tasks start it only once Enabled is ticked (Edit in the list of imports)." => "„Sarcini planificate” îl pornesc numai după ce este bifat „Activat” („Editare” în lista importurilor).", // ai 2026-11
 
-// src/Import/DetailPage.php, row 732
-"Not planned" => "Neplanificat", // ai 2026-10
-
-// src/Import/DetailPage.php, row 733
+// src/Import/DetailPage.php, row 773
 "A planned task calls it, but none has a time to start it." => "O sarcină planificată îl apelează, dar niciuna nu are setată o oră de pornire.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 734
+// src/Import/DetailPage.php, row 774
 "It runs only when you start it. To run it on a schedule, add a planned task." => "Rulează doar când îl porniți. Pentru a-l rula după un program, adăugați o sarcină planificată.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 745
+// src/Import/DetailPage.php, row 785
 "Written by hand, a planned task starts it with %1." => "Scrisă manual, o sarcină planificată îl pornește cu %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 756
+// src/Import/DetailPage.php, row 796
 "Planned tasks need the Forms permission" => "„Sarcini planificate” necesită dreptul „Formulare”", // ai 2026-10
 
-// src/Import/DetailPage.php, row 760
+// src/Import/DetailPage.php, row 800
 "Planned tasks: %1" => "Sarcini planificate: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 761
+// src/Import/DetailPage.php, row 801
 "Planned tasks: %1, next %2" => "Sarcini planificate: %1, următoarea %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 763, 778
+// src/Import/DetailPage.php, row 803, 818
 "Schedule" => "Planificare", // ai 2026-10
 
-// src/Import/DetailPage.php, row 766
-"(import off)" => "(import oprit)", // ai 2026-10
+// src/Import/DetailPage.php, row 806
+"(does not start it now)" => "(acum nu îl pornește)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "next %1" => "următoarea %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "no time set" => "fără oră setată", // ai 2026-10
 
-// src/Import/DetailPage.php, row 774
+// src/Import/DetailPage.php, row 814
 "save the task again to let it start the import" => "salvați din nou sarcina pentru ca ea să poată porni importul", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "queued" => "în coadă", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "not queued" => "nu este în coadă", // ai 2026-10
 
-// src/Import/DetailPage.php, row 793
+// src/Import/DetailPage.php, row 833
 "Import %1" => "Import %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "mode set by an expression" => "mod setat printr-o expresie", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "unknown mode %1" => "mod necunoscut %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Passed" => "Reușit", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Failed" => "Eșuat", // ai 2026-10
 
-// src/Import/DetailPage.php, row 828
+// src/Import/DetailPage.php, row 868
 "Taken from the run list: the stream state holds no newer check result." => "Preluat din lista rulărilor: starea fluxurilor nu conține un rezultat de verificare mai nou.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "The stored result cannot be read." => "Rezultatul salvat nu poate fi citit.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "Never checked" => "Niciodată verificat", // ai 2026-10
 
-// src/Import/DetailPage.php, row 849
+// src/Import/DetailPage.php, row 893
 "The mapping of the import cannot be read; no run starts until it is set again." => "Maparea importului nu poate fi citită; nicio rulare nu pornește până când nu este setată din nou.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 856
+// src/Import/DetailPage.php, row 900
 "The mapping does not fit the slice; no run starts until it is fixed:" => "Maparea nu se potrivește cu secțiunea; nicio rulare nu pornește până când nu este corectată:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 899
+// src/Import/DetailPage.php, row 912
+"The source is not set up yet." => "Sursa nu este încă configurată.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 948
 "No stream is known yet - run the import or check the source first." => "Încă nu se cunoaște niciun flux – mai întâi rulați importul sau verificați sursa.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 903
+// src/Import/DetailPage.php, row 952
 "One stream" => "Un flux", // ai 2026-10
 
-// src/Import/DetailPage.php, row 904
-"Run the stream" => "Rulează fluxul", // ai 2026-10
+// src/Import/DetailPage.php, row 953
+"At most (items)" => "Cel mult (articole)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 905
+// src/Import/DetailPage.php, row 955
 "Dry run of the stream" => "Rulare de probă a fluxului", // ai 2026-10
 
-// src/Import/DetailPage.php, row 918
+// src/Import/DetailPage.php, row 956
+"Run the stream" => "Rulează fluxul", // ai 2026-10
+
+// src/Import/DetailPage.php, row 969
 "Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "Înregistrați versiunile pe care sursa le are acum, ca și cum ar fi fost importate? Fluxurile care nu se modifică ulterior nu vor fi importate.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 919
+// src/Import/DetailPage.php, row 970
 "Record the current state of the source" => "Înregistrează starea actuală a sursei", // ai 2026-10
 
-// src/Import/DetailPage.php, row 921
+// src/Import/DetailPage.php, row 972
 "Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Salvează versiunea pe care o are acum fiecare flux, fără import, astfel încât „Rulează doar modificate” să preia apoi doar ce se modifică ulterior. Folosiți-o doar când datele sursei sunt deja în secțiune.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 937
+// src/Import/DetailPage.php, row 988
 "No run is open." => "Nicio rulare nu este deschisă.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 943
+// src/Import/DetailPage.php, row 994
 "Its step is working now." => "Pasul ei lucrează acum.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 947
+// src/Import/DetailPage.php, row 998
 "Try now" => "Încearcă acum", // ai 2026-10
 
-// src/Import/DetailPage.php, row 957
+// src/Import/DetailPage.php, row 1008
 "End the run for good? What it imported stays; the next run starts from the beginning." => "Încheiați definitiv rularea? Ce a importat rămâne; următoarea rulare începe de la început.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1024
+// src/Import/DetailPage.php, row 1075
 "The first item errors (%1)" => "Primele erori de articol (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1025, 1046
+// src/Import/DetailPage.php, row 1076, 1097
 "Job" => "Lucrare", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1036
+// src/Import/DetailPage.php, row 1087
 "Skipped - the key came out empty (%1)" => "Omise – cheia a ieșit goală (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1046
+// src/Import/DetailPage.php, row 1097
 "Source value" => "Valoare din sursă", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of 1 job." => "Filtrul nu a păstrat niciun articol din 1 lucrare.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of %1 jobs." => "Lucrări din care filtrul nu a păstrat niciun articol: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1057
+// src/Import/DetailPage.php, row 1108
 "If those items should be imported, check the filter in Mapping." => "Dacă acele articole trebuie importate, verificați filtrul din „Mapare”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in 1 stream; the rest of it was skipped." => "Sursa s-a ciclat într-un flux; restul lui a fost omis.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in %1 streams; the rest of each was skipped." => "Sursa s-a ciclat în fluxuri: %1; restul fiecăruia a fost omis.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1067
+// src/Import/DetailPage.php, row 1118
 "The source pages wrongly or changed its paging; check the source, then run the import again." => "Sursa paginează greșit sau și-a schimbat paginarea; verificați sursa, apoi rulați din nou importul.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1082
+// src/Import/DetailPage.php, row 1133
 "Remarks of the source (%1)" => "Observațiile sursei (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1091
+// src/Import/DetailPage.php, row 1142
 "Remark" => "Observație", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1099
+// src/Import/DetailPage.php, row 1150
 "The dry run found no item to store." => "Rularea de probă nu a găsit niciun articol de salvat.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1101
+// src/Import/DetailPage.php, row 1152
 "What the dry run would store - the first %1 items" => "Ce ar salva rularea de probă – primele articole (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Last try failed:" => "Ultima încercare a eșuat:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Error:" => "Eroare:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1124
+// src/Import/DetailPage.php, row 1175
 "At: %1" => "Loc: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1126
+// src/Import/DetailPage.php, row 1177
 "What to do:" => "Ce trebuie făcut:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1136
+// src/Import/DetailPage.php, row 1187
 "Check the address of the source in its settings, then Continue or End the run." => "Verificați adresa sursei în setările ei, apoi alegeți pentru rulare „Continuă” sau „Încheie”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1140
+// src/Import/DetailPage.php, row 1191
 "Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "Corectați maparea coloanelor sau fișierul, astfel încât coloanele lipsă să existe, apoi rulați din nou „Verifică sursa”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1141
+// src/Import/DetailPage.php, row 1192
 "Check the key of the source in its settings, then run Check source." => "Verificați cheia sursei în setările ei, apoi rulați „Verifică sursa”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1142
+// src/Import/DetailPage.php, row 1193
 "Enter the key of the source again in its settings, then run Check source." => "Introduceți din nou cheia sursei în setările ei, apoi rulați „Verifică sursa”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1143
+// src/Import/DetailPage.php, row 1194
 "The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "Sursa nu a putut fi contactată. Verificați-i adresa în setări; dacă este corectă, alegeți mai târziu „Continuă” pentru rulare.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1144
+// src/Import/DetailPage.php, row 1195
 "Correct the settings of the source, then run Check source." => "Corectați setările sursei, apoi rulați „Verifică sursa”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1145
+// src/Import/DetailPage.php, row 1196
 "Choose a stream the source still has, then start the import again." => "Alegeți un flux pe care sursa încă îl are, apoi porniți din nou importul.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1146
+// src/Import/DetailPage.php, row 1197
 "Check that every mapped field exists in the slice, then start the import again." => "Verificați că fiecare câmp mapat există în secțiune, apoi porniți din nou importul.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1147
+// src/Import/DetailPage.php, row 1198
 "Look the failure up in the log of import failures, then Continue or End the run." => "Căutați eroarea în jurnalul erorilor de import, apoi alegeți pentru rulare „Continuă” sau „Încheie”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1161
+// src/Import/DetailPage.php, row 1199
+"Continue the run later; if the database keeps refusing, tell its administrator." => "Continuați rularea mai târziu; dacă baza de date refuză în continuare, anunțați administratorul ei.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 1213
 "full run" => "rulare completă", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1162
-"one stream (%1)" => "un flux (%1)", // ai 2026-10
+// src/Import/DetailPage.php, row 1214
+"one stream: %1" => "un flux: %1", // ai 2026-11
 
-// src/Import/DetailPage.php, row 1163
+// src/Import/DetailPage.php, row 1215
 "%1 streams" => "fluxuri: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Baseline only" => "Doar starea înregistrată", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Nothing imported yet. Run changed only takes what changes after this." => "Încă nimic importat. „Rulează doar modificate” preia ce se modifică de acum înainte.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207, 1208
+// src/Import/DetailPage.php, row 1259, 1260
 "Imported with item errors" => "Importat cu erori de articol", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207
+// src/Import/DetailPage.php, row 1259
 "1 item error in the run that imported it - see Runs." => "1 eroare de articol în rularea care l-a importat – vezi „Rulări”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1208
+// src/Import/DetailPage.php, row 1260
 "%1 item errors in the run that imported it - see Runs." => "Erori de articol (%1) în rularea care l-a importat – vezi „Rulări”.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "Imported" => "Importat", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source was asked again after the import." => "Sursa a fost interogată din nou după import.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source has not been asked since." => "De atunci sursa nu a mai fost interogată.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Checked, not imported yet" => "Verificat, încă neimportat", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Run imports it; Run changed only too, as it has no version to compare." => "„Rulează” îl importă; și „Rulează doar modificate”, deoarece nu are o versiune de comparat.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "Not seen yet" => "Încă nevăzut", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "No run has imported or checked it." => "Nicio rulare nu l-a importat sau verificat.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1228
+// src/Import/DetailPage.php, row 1280
 "%1 read" => "citite: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1229
+// src/Import/DetailPage.php, row 1281
 "%1 new, %2 updated, %3 skipped" => "noi: %1, actualizate: %2, omise: %3", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1230
+// src/Import/DetailPage.php, row 1282
 "%1 filtered out" => "filtrate: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "dry run - nothing stored" => "rulare de probă – nimic salvat", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "all streams of the run together" => "toate fluxurile rulării împreună", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1250
+// src/Import/DetailPage.php, row 1302
 "None yet - an import records it" => "Încă niciuna - o înregistrează un import", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1251
+// src/Import/DetailPage.php, row 1303
 "None - the source gives no version" => "Niciuna - sursa nu indică versiunea", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1" => "a durat %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1, working %2" => "a durat %1, din care lucru %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1310
+// src/Import/DetailPage.php, row 1362
 "%1 s" => "%1 s", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313
+// src/Import/DetailPage.php, row 1365
 "%1 min %2 s" => "%1 min %2 s", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313, 1315
+// src/Import/DetailPage.php, row 1365, 1367
 // src/Optimize/StateCheckModel.php, row 257
 "%1 min" => "%1 min", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1315
+// src/Import/DetailPage.php, row 1367
 // src/Optimize/StateCheckModel.php, row 258
 "%1 h" => "%1 h", // ai 2026-10
 
@@ -10596,7 +10656,7 @@ return [
 // src/Import/RunView.php, row 74
 "Stuck — see State Check" => "Blocat — vedeți Verificare stare", // ai 2026-10
 
-// src/Import/RunView.php, row 75, 171
+// src/Import/RunView.php, row 75, 177
 "Running" => "În curs", // ai 2026-10
 
 // src/Import/RunView.php, row 76
@@ -10651,167 +10711,197 @@ return [
 // src/Import/RunView.php, row 131
 "%1 days ago" => "acum %1 zile", // ai 2026-10
 
-// src/Import/RunView.php, row 159, 162, 165, 169
+// src/Import/RunView.php, row 162, 168, 171, 175
 "Failing" => "Eșuează", // ai 2026-10
 
-// src/Import/RunView.php, row 159
+// src/Import/RunView.php, row 162
 "The source of this import is not available, so it cannot run." => "Sursa acestui import nu este disponibilă, deci nu poate rula.", // ai 2026-10
 
-// src/Import/RunView.php, row 162
+// src/Import/RunView.php, row 165
+"Not set up" => "Neconfigurat", // ai 2026-11
+
+// src/Import/RunView.php, row 165
+"Fill in these settings of the source: %1." => "Completați aceste setări ale sursei: %1.", // ai 2026-11
+
+// src/Import/RunView.php, row 168
 "The mapping does not fit the slice, so no run can start until it is fixed." => "Maparea nu se potrivește cu secțiunea, deci nicio rulare nu poate porni până nu este corectată.", // ai 2026-10
 
-// src/Import/RunView.php, row 169
+// src/Import/RunView.php, row 175
 "A run has made no progress for a long time - cron may not be running its steps." => "O rulare nu a avansat de mult timp - poate cron nu îi execută pașii.", // ai 2026-10
 
-// src/Import/RunView.php, row 170, 178, 181, 182, 183
+// src/Import/RunView.php, row 176, 184, 187, 188, 189
 "Needs attention" => "Necesită atenție", // ai 2026-10
 
-// src/Import/RunView.php, row 170
+// src/Import/RunView.php, row 176
 "A run failed a step and waits to try again." => "O rulare a eșuat la un pas și așteaptă o nouă încercare.", // ai 2026-10
 
-// src/Import/RunView.php, row 171
+// src/Import/RunView.php, row 177
 "A run is in progress: %1." => "O rulare este în curs: %1.", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "Never ran" => "Nu a rulat niciodată", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "No run yet. Run starts the first import." => "Încă nicio rulare. „Rulează” pornește primul import.", // ai 2026-10
 
-// src/Import/RunView.php, row 177
+// src/Import/RunView.php, row 183
 "Only source checks or dry runs so far - nothing was imported." => "Până acum doar verificări ale sursei sau rulări de probă - nu s-a importat nimic.", // ai 2026-10
 
-// src/Import/RunView.php, row 179
+// src/Import/RunView.php, row 185
 "The last import stopped by an error and was then ended, so the data may be incomplete." => "Ultimul import s-a oprit din cauza unei erori și apoi a fost încheiat, deci datele pot fi incomplete.", // ai 2026-10
 
-// src/Import/RunView.php, row 180
+// src/Import/RunView.php, row 186
 "The last import was ended before it finished, so the data may be incomplete." => "Ultimul import a fost încheiat înainte de a se finaliza, deci datele pot fi incomplete.", // ai 2026-10
 
-// src/Import/RunView.php, row 181
+// src/Import/RunView.php, row 187
 "The last import finished, but 1 item could not be stored." => "Ultimul import s-a finalizat, dar 1 articol nu a putut fi stocat.", // ai 2026-10
 
-// src/Import/RunView.php, row 182
+// src/Import/RunView.php, row 188
 "The last import finished, but %1 items could not be stored." => "Ultimul import s-a finalizat, dar unele articole nu au putut fi stocate: %1.", // ai 2026-10
 
-// src/Import/RunView.php, row 183
+// src/Import/RunView.php, row 189
 "The last full import read nothing - the source may be empty." => "Ultimul import complet nu a citit nimic - poate sursa este goală.", // ai 2026-10
 
-// src/Import/RunView.php, row 184, 185
+// src/Import/RunView.php, row 190, 191
 "Healthy" => "În regulă", // ai 2026-10
 
-// src/Import/RunView.php, row 184
+// src/Import/RunView.php, row 190
 "The last import finished without errors; nothing had changed." => "Ultimul import s-a finalizat fără erori; nu se schimbase nimic.", // ai 2026-10
 
-// src/Import/RunView.php, row 185
+// src/Import/RunView.php, row 191
 "The last import finished without errors (%1 read)." => "Ultimul import s-a finalizat fără erori (citite: %1).", // ai 2026-10
 
-// src/Import/RunView.php, row 188
-"Runs only by hand." => "Rulează doar manual.", // ai 2026-10
-
-// src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "Ultima rulare de probă s-a oprit din cauza unei erori. Nu se mai importă nimic până nu interveniți.", // ai 2026-10
+// src/Import/RunView.php, row 198
+"The source refuses its settings." => "Sursa își refuză setările.", // ai 2026-11
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "Ultima verificare a sursei s-a oprit din cauza unei erori. Nu se mai importă nimic până nu interveniți.", // ai 2026-10
-
-// src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Înregistrarea stării sursei s-a oprit din cauza unei erori. Nu se mai importă nimic până nu interveniți.", // ai 2026-10
-
-// src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "Ultimul import s-a oprit din cauza unei erori. Nu se mai importă nimic până nu interveniți.", // ai 2026-10
-
-// src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "Verificarea sursei a eșuat - nu s-a importat nimic", // ai 2026-10
+"The source refuses its settings: %1" => "Sursa își refuză setările: %1", // ai 2026-11
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "Verificarea sursei este în curs", // ai 2026-10
+"The last dry run stopped by an error. Nothing more is imported until you act." => "Ultima rulare de probă s-a oprit din cauza unei erori. Nu se mai importă nimic până nu interveniți.", // ai 2026-10
+
+// src/Import/RunView.php, row 214
+"The last source check stopped by an error. Nothing more is imported until you act." => "Ultima verificare a sursei s-a oprit din cauza unei erori. Nu se mai importă nimic până nu interveniți.", // ai 2026-10
 
 // src/Import/RunView.php, row 215
-"Source reachable - nothing imported" => "Sursa este accesibilă - nu s-a importat nimic", // ai 2026-10
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Înregistrarea stării sursei s-a oprit din cauza unei erori. Nu se mai importă nimic până nu interveniți.", // ai 2026-10
 
-// src/Import/RunView.php, row 217
-"Nothing had changed" => "Nu se schimbase nimic", // ai 2026-10
-
-// src/Import/RunView.php, row 218
-"Nothing read" => "Nu s-a citit nimic", // ai 2026-10
-
-// src/Import/RunView.php, row 219
-"%1 read, %2 new, %3 changed" => "citite: %1, noi: %2, modificate: %3", // ai 2026-10
-
-// src/Import/RunView.php, row 221
-"%1 (nothing stored)" => "%1 (nimic stocat)", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of 1 stream - nothing imported" => "S-a înregistrat starea unui flux - nu s-a importat nimic", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of %1 streams - nothing imported" => "S-a înregistrat starea fluxurilor: %1 - nu s-a importat nimic", // ai 2026-10
+// src/Import/RunView.php, row 216
+"The last import stopped by an error. Nothing more is imported until you act." => "Ultimul import s-a oprit din cauza unei erori. Nu se mai importă nimic până nu interveniți.", // ai 2026-10
 
 // src/Import/RunView.php, row 228
-"%1 without a version" => "fără versiune: %1", // ai 2026-10
+"Source check failed - nothing imported" => "Verificarea sursei a eșuat - nu s-a importat nimic", // ai 2026-10
+
+// src/Import/RunView.php, row 229
+"Source check under way" => "Verificarea sursei este în curs", // ai 2026-10
+
+// src/Import/RunView.php, row 231
+"Source reachable - nothing imported" => "Sursa este accesibilă - nu s-a importat nimic", // ai 2026-10
+
+// src/Import/RunView.php, row 233
+"Nothing had changed" => "Nu se schimbase nimic", // ai 2026-10
+
+// src/Import/RunView.php, row 234
+"Nothing read" => "Nu s-a citit nimic", // ai 2026-10
+
+// src/Import/RunView.php, row 235
+"%1 read, %2 new, %3 changed" => "citite: %1, noi: %2, modificate: %3", // ai 2026-10
 
 // src/Import/RunView.php, row 237
-"changed only" => "doar modificate", // ai 2026-10
+"%1 (nothing stored)" => "%1 (nimic stocat)", // ai 2026-10
 
-// src/Import/RunView.php, row 238
-"check" => "verificare", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of 1 stream - nothing imported" => "S-a înregistrat starea unui flux - nu s-a importat nimic", // ai 2026-10
 
-// src/Import/RunView.php, row 239
-"recording the state of the source" => "înregistrarea stării sursei", // ai 2026-10
-
-// src/Import/RunView.php, row 242
-"dry run" => "rulare de probă", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of %1 streams - nothing imported" => "S-a înregistrat starea fluxurilor: %1 - nu s-a importat nimic", // ai 2026-10
 
 // src/Import/RunView.php, row 244
-"by hand" => "manual", // ai 2026-10
+"%1 without a version" => "fără versiune: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 245
-"planned" => "planificat", // ai 2026-10
+// src/Import/RunView.php, row 254
+"changed only" => "doar modificate", // ai 2026-10
 
-// src/Import/RunView.php, row 246
-"on an event" => "la un eveniment", // ai 2026-10
+// src/Import/RunView.php, row 255
+"check" => "verificare", // ai 2026-10
+
+// src/Import/RunView.php, row 256
+"recording the state of the source" => "înregistrarea stării sursei", // ai 2026-10
 
 // src/Import/RunView.php, row 259
-"Disabled - it does not start" => "Dezactivat - nu pornește", // ai 2026-10
+"dry run" => "rulare de probă", // ai 2026-10
 
-// src/Import/RunView.php, row 268
+// src/Import/RunView.php, row 261
+"first %1 items" => "primele articole: %1", // ai 2026-11
+
+// src/Import/RunView.php, row 263
+"by hand" => "manual", // ai 2026-10
+
+// src/Import/RunView.php, row 264
+"planned" => "planificat", // ai 2026-10
+
+// src/Import/RunView.php, row 265
+"on an event" => "la un eveniment", // ai 2026-10
+
+// src/Import/RunView.php, row 285
+"Runs only by hand." => "Rulează doar manual.", // ai 2026-10
+
+// src/Import/RunView.php, row 294
 "No run yet" => "Încă nicio rulare", // ai 2026-10
 
-// src/Import/RunView.php, row 280
+// src/Import/RunView.php, row 306
 "1 item error" => "1 eroare la articole", // ai 2026-10
 
-// src/Import/RunView.php, row 281
+// src/Import/RunView.php, row 307
 "%1 item errors" => "erori la articole: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 284
+// src/Import/RunView.php, row 310
 "Last import: %1" => "Ultimul import: %1", // ai 2026-10
 
 // src/Import/SliceIdSetting.php, row 22
 "No slice ID" => "Lipsește ID-ul secțiunii", // ai 2026-10
 
-// src/Import/Source/CsvColumnsSetting.php, row 31
-"Expected a JSON object {\"column\": \"field id\"}" => "Se aștepta un obiect JSON {\"column\": \"field id\"}", // ai 2026-10
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"no column" => "nicio coloană", // ai 2026-11
 
-// src/Import/Source/CsvurlSource.php, row 42
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"more than %1 columns" => "prea multe coloane (maximum %1)", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 73
+"not a field the import may fill" => "nu este un câmp pe care importul îl poate completa", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 74
+"the column name is empty, too long or holds invisible characters" => "numele coloanei este gol, prea lung sau conține caractere invizibile", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 75
+"the column is named twice" => "coloana este numită de două ori", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 89
+"Line %1: %2" => "Linia %1: %2", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 119
+"expected \"column = field id\"" => "se așteaptă „coloană = id-ul câmpului”", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 43
 "CSV file at a URL" => "Fișier CSV la un URL", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 47
+// src/Import/Source/CsvurlSource.php, row 48
 "Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "Importă rândurile unui fișier CSV de la o adresă publică http(s); setările stabilesc ce coloană completează ce câmp.", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "http or https only, on a public address, without a user name and password" => "doar http sau https, la o adresă publică, fără nume de utilizator și parolă", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 55
+// src/Import/Source/CsvurlSource.php, row 56
 // src/Widget/Widget.php, row 743, 812
 "Columns" => "Coloane", // ai 2026-06
 
-// src/Import/Source/CsvurlSource.php, row 55
-"JSON object: the column name in the first row => the field it fills" => "Obiect JSON: numele coloanei din primul rând => câmpul pe care îl completează", // ai 2026-10
-
 // src/Import/Source/CsvurlSource.php, row 56
+"One line per column: its name in the first row = the id of the field it fills" => "O linie pe coloană: numele ei din primul rând = id-ul câmpului pe care îl completează", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 57
 "Key column" => "Coloană cheie", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 56
+// src/Import/Source/CsvurlSource.php, row 57
 "The column that identifies the item; it must be one of the columns" => "Coloana care identifică articolul; trebuie să fie una dintre coloane", // ai 2026-10
 
 // src/Isds/Advice.php, row 48
@@ -11532,40 +11622,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "Nu puteți salva acest rând aici.", // ai 2026-10
 
-// src/Manager.php, row 821
+// src/Manager.php, row 812
 "Searchbar" => "Bară de căutare", // ai 2026-06
 
-// src/Manager.php, row 822
+// src/Manager.php, row 813
 "Scroller" => "Paginare", // ai 2026-06
 
-// src/Manager.php, row 823
+// src/Manager.php, row 814
 "Msg" => "Mesaj", // ai 2026-06
 
-// src/Manager.php, row 824
+// src/Manager.php, row 815
 "Bin" => "Dosar", // ai 2026-06
 
-// src/Manager.php, row 826
+// src/Manager.php, row 817
 "Manager ID" => "ID manager", // ai 2026-06
 
-// src/Manager.php, row 1200
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "Acțiunea nu a fost efectuată - folosiți butonul de pe pagină.", // ai 2026-10
 
-// src/Manager.php, row 1281
+// src/Manager.php, row 1272
 "Edit id" => "Editare id", // ai 2026-06
 
-// src/Manager.php, row 1295
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Țineți apăsat Shift și dați clic pentru a selecta mai multe rânduri", // ai 2026-06
 
-// src/Manager.php, row 1333
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "Sigur doriți să goliți coșul de gunoi?", // ai 2026-06
 
-// src/Manager.php, row 1435
+// src/Manager.php, row 1426
 "Go" => "Dute",
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "Niciun articol selectat. Efectuați acțiunea pentru toate articolele filtrate? ", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "Run for %1 items" => "Execută pentru %1 articole", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47

@@ -18,6 +18,15 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "«дорівнює» виконується, коли одне зі значень поля є серед позначених значень, «не є» — коли жодне. «заповнене» виконується для будь-якого значення, крім порожнього та 0, тож і для позначеного прапорця.", // ai 2026-11
+// "None - the import is disabled" => "Немає — імпорт вимкнено", // ai 2026-10
+// "The import is switched off." => "Імпорт вимкнено.", // ai 2026-10
+// "The import is disabled, so no planned task starts it." => "Імпорт вимкнено, тому жодне заплановане завдання його не запустить.", // ai 2026-10
+// "(import off)" => "(імпорт вимкнено)", // ai 2026-10
+// "one stream (%1)" => "один потік (%1)", // ai 2026-10
+// "Disabled - it does not start" => "Вимкнено - не запускається", // ai 2026-10
+// "Expected a JSON object {\"column\": \"field id\"}" => "Очікується об'єкт JSON {\"column\": \"field id\"}", // ai 2026-10
+// "JSON object: the column name in the first row => the field it fills" => "Об'єкт JSON: назва стовпця в першому рядку => поле, яке він заповнює", // ai 2026-10
 // "Parameter wizard" => "Майстер параметрів", // ai 2026-06
 // "the update may still be running on the remote AA - wait, then run Test before retrying" => "оновлення на віддаленому AA, можливо, ще триває – зачекайте й перед повторною спробою запустіть «Тест»", // ai 2026-10
 // "Set letterhead to a text" => "Задайте для letterhead текст", // ai 2026-11
@@ -181,7 +190,7 @@ return [
 
 // admin/aa_cron.php, row 47
 // src/AA_Plannedtask.php, row 82, 182
-// src/Import/Definition.php, row 135, 163
+// src/Import/Definition.php, row 136, 164
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Останній запуск", // ai 2026-06
 
@@ -266,7 +275,7 @@ return [
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // central/optimize.php, row 65
-// src/Import/DetailPage.php, row 510
+// src/Import/DetailPage.php, row 548
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Термін дії форми минув; оновіть сторінку й спробуйте ще раз.", // ai 2026-10
 
@@ -415,7 +424,6 @@ return [
 "Off since %1, %2" => "Вимкнено з %1, %2", // ai 2026-10
 
 // admin/aa_security.php, row 143
-// src/Import/DetailPage.php, row 726
 "Off" => "Вимкнено", // ai 2026-10
 
 // admin/aa_security.php, row 148
@@ -440,7 +448,7 @@ return [
 
 // admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 395
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
@@ -643,7 +651,7 @@ return [
 // admin/aafinder.php, row 484, 497
 // admin/se_inputform.php, row 295
 // central/appstore.php, row 164
-// include/searchlib.php, row 1016
+// include/searchlib.php, row 1103
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Рубрики", // ai 2026-06
 
@@ -906,12 +914,13 @@ return [
 "Shortcut to edit ITEM" => "Швидке посилання для редагування СТАТТІ", // ai 2026-06
 
 // admin/aafinder.php, row 526
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 576
 // include/searchlib.php, row 50, 51, 129, 138
 "contains" => "містить", // ai 2026-06
 
 // admin/aafinder.php, row 527
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchbar.class.php, row 584
 // include/searchlib.php, row 129, 138
 "is" => "дорівнює", // ai 2026-06
@@ -1002,12 +1011,12 @@ return [
 // admin/se_fields.php, row 357
 // admin/se_javascript.php, row 86
 // admin/se_profile.php, row 207
-// admin/se_showif.php, row 123
+// admin/se_showif.php, row 124
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
 // include/field.class.php, row 1405, 1409
 // include/form.class.php, row 211
-// include/searchlib.php, row 369
+// include/searchlib.php, row 446
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
@@ -1053,7 +1062,7 @@ return [
 // admin/console.php, row 70
 // admin/se_javascript.php, row 75
 // include/stringexpand.php, row 99
-// src/Import/DetailPage.php, row 1025, 1091
+// src/Import/DetailPage.php, row 1076, 1142
 // src/Optimize/CheckImports.php, row 239, 241
 "Code" => "Код", // ai 2026-06
 
@@ -1061,7 +1070,7 @@ return [
 "HTML output" => "Вивід HTML", // ai 2026-06
 
 // admin/console.php, row 73, 75
-// central/optimize.php, row 210
+// central/optimize.php, row 209
 // src/Optimize/AbstractOptimize.php, row 178
 "Result" => "Результат", // ai 2026-06
 
@@ -1076,7 +1085,7 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 // src/Manageraction/Central_Linkcheck.php, row 42
 // src/Optimize/StateCheckModel.php, row 222
 "OK" => "OK", // ai 2026-10
@@ -1124,7 +1133,7 @@ return [
 // admin/discedit.php, row 135
 // admin/related_sel.php, row 168
 // admin/se_views.php, row 136
-// src/Import/DetailPage.php, row 313
+// src/Import/DetailPage.php, row 337
 // src/Manager.php, row 230
 // src/Optimize/AbstractOptimize.php, row 175
 "Actions" => "Дії", // ai 2026-06
@@ -1154,7 +1163,7 @@ return [
 // admin/discedit.php, row 166
 // admin/se_inter_export.php, row 132
 // admin/se_inter_import.php, row 76, 96
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 // admin/se_views.php, row 150
 // admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
@@ -1191,7 +1200,7 @@ return [
 // admin/discedit2.php, row 92, 146
 // admin/write_mail.php, row 123, 267
 // include/logs.php, row 1071
-// include/mail.php, row 699
+// include/mail.php, row 663
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Тема", // ai 2026-06
 
@@ -1568,7 +1577,7 @@ return [
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 370
+// include/searchlib.php, row 447
 "Descending" => "За спаданням", // ai 2026-06
 
 // admin/se_compact.php, row 244
@@ -1593,7 +1602,7 @@ return [
 "Can't delete constant group" => "Групу констант не можна видалити", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
-// admin/se_showif.php, row 157
+// admin/se_showif.php, row 162
 // admin/se_users.php, row 185
 // admin/se_views.php, row 134
 // admin/um_gedit.php, row 298, 301
@@ -1607,7 +1616,7 @@ return [
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckServerRefusals.php, row 67
@@ -1616,6 +1625,7 @@ return [
 // admin/se_constant.php, row 176, 378
 // admin/se_mapping.php, row 179
 // admin/se_profile.php, row 209
+// admin/se_showif.php, row 133
 // include/constants.php, row 453
 // include/constedit.php, row 76
 // include/searchlib.php, row 177
@@ -1794,7 +1804,7 @@ return [
 
 // admin/se_csv_import.php, row 278
 // include/scroller.php, row 86
-// src/Import/DetailPage.php, row 422
+// src/Import/DetailPage.php, row 453
 "Next" => "Далі", // ai 2026-06
 
 // admin/se_csv_import2.php, row 199
@@ -1845,8 +1855,8 @@ return [
 // include/metabase.class.php, row 1667
 // include/statestore.php, row 1081, 1418
 // src/AA_Plannedtask.php, row 182
-// src/Import/Definition.php, row 135, 165
-// src/Import/DetailCatalog.php, row 145
+// src/Import/Definition.php, row 136, 166
+// src/Import/DetailCatalog.php, row 169
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Дія", // ai 2026-06
 
@@ -2026,7 +2036,7 @@ return [
 
 // admin/se_export.php, row 167
 // include/exporter.class.php, row 553
-// include/searchlib.php, row 1012
+// include/searchlib.php, row 1099
 "Conditions" => "Умови", // ai 2026-06
 
 // admin/se_export.php, row 167
@@ -2035,7 +2045,7 @@ return [
 
 // admin/se_export.php, row 168
 // include/exporter.class.php, row 554
-// include/searchlib.php, row 1014
+// include/searchlib.php, row 1101
 "Sort" => "Сортування", // ai 2026-06
 
 // admin/se_export.php, row 168
@@ -2153,7 +2163,7 @@ return [
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 202, 2986
 // modules/jump/modedit.php, row 179
-// src/Import/DetailCatalog.php, row 151
+// src/Import/DetailCatalog.php, row 179
 "Update" => "Змінити", // ai 2026-06
 
 // admin/se_filters.php, row 169
@@ -2172,7 +2182,7 @@ return [
 "No category defined" => "Рубрику не визначено", // ai 2026-06
 
 // admin/se_filters.php, row 258
-// src/Manager.php, row 1424
+// src/Manager.php, row 1415
 "Select all" => "Вибрати все", // ai 2026-06
 
 // admin/se_filters.php, row 320
@@ -2357,7 +2367,7 @@ return [
 
 // admin/se_inputform.php, row 424, 440, 451, 479, 522
 // include/logs.php, row 640
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 // src/Util/Paramwizard.php, row 154
 "Parameters" => "Параметри", // ai 2026-06
 
@@ -2433,8 +2443,6 @@ return [
 "8 UPPERCASE letters or _" => "8 ВЕЛИКИХ літер або _", // ai 2026-06
 
 // admin/se_inputform.php, row 515
-// src/Import/DetailPage.php, row 604
-// src/Import/RunView.php, row 188
 "Disabled" => "Вимкнено", // ai 2026-06
 
 // admin/se_inputform.php, row 516
@@ -2488,10 +2496,10 @@ return [
 "Node" => "Вузол", // ai 2026-06
 
 // admin/se_inter_import.php, row 96
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // misc/datovka/datovka.php, row 158
-// src/Import/DetailConfig.php, row 291
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailConfig.php, row 282
+// src/Import/DetailPage.php, row 401
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Util/Note.php, row 64
 "State" => "Стан", // ai 2026-06
@@ -3010,104 +3018,115 @@ return [
 // admin/se_showif.php, row 77
 "The form has expired. Close it and open it again." => "Термін дії форми минув. Закрийте її та відкрийте знову.", // ai 2026-11
 
-// admin/se_showif.php, row 117
-"is checked" => "позначене", // ai 2026-11
-
-// admin/se_showif.php, row 117
-"is not checked" => "не позначене", // ai 2026-11
-
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 // include/searchlib.php, row 129, 138
 "is not" => "не є", // ai 2026-06
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
+// include/searchbar.class.php, row 580
+// include/searchlib.php, row 53, 56, 129, 138
+"begins with" => "починається з", // ai 2026-06
+
+// admin/se_showif.php, row 116
 "is filled" => "заповнене", // ai 2026-11
 
-// admin/se_showif.php, row 118
+// admin/se_showif.php, row 116
 "is empty" => "порожнє", // ai 2026-11
 
-// admin/se_showif.php, row 120
+// admin/se_showif.php, row 119
+"is checked" => "позначене", // ai 2026-11
+
+// admin/se_showif.php, row 119
+"is not checked" => "не позначене", // ai 2026-11
+
+// admin/se_showif.php, row 121
 "— add a rule —" => "— додати правило —", // ai 2026-11
 
-// admin/se_showif.php, row 128
+// admin/se_showif.php, row 129
 "Comparison" => "Порівняння", // ai 2026-11
 
-// admin/se_showif.php, row 144
+// admin/se_showif.php, row 149
 "Values, one per line" => "Значення, по одному на рядок", // ai 2026-11
 
-// admin/se_showif.php, row 151
+// admin/se_showif.php, row 156
 // include/field.class.php, row 797
 "Display condition" => "Умова відображення", // ai 2026-11
 
-// admin/se_showif.php, row 163
+// admin/se_showif.php, row 168
 "Show the field when all of these hold" => "Показувати поле, коли виконуються всі ці умови", // ai 2026-11
 
-// admin/se_showif.php, row 165
+// admin/se_showif.php, row 170
 "AA expression (optional)" => "Вираз AA (необов’язково)", // ai 2026-11
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 // src/Optimize/ImgMeasuring.php, row 54
 "Expression" => "Вираз", // ai 2026-10
 
-// admin/se_showif.php, row 166
+// admin/se_showif.php, row 171
 "Leave empty to use the rules alone. When filled, the field is shown only if the result is not empty and not 0. Evaluated when the form is opened and when the item is saved." => "Залиште порожнім, щоб діяли лише правила. Якщо вираз заповнено, поле відображається, лише коли результат не порожній і не 0. Обчислюється під час відкриття форми та збереження статті.", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Clear the field when a rule hides it" => "Очистити поле, коли його приховає правило", // ai 2026-11
 
-// admin/se_showif.php, row 169
+// admin/se_showif.php, row 174
 "Unchecked: an edited item keeps its value, a new item gets the field's default. A field hidden by the expression is never changed." => "Не позначено: редагована стаття зберігає своє значення, нова стаття отримає значення поля за замовчуванням. Поле, приховане виразом, ніколи не змінюється.", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 177
+"As a condition of a view" => "Як умова вигляду", // ai 2026-11
+
+// admin/se_showif.php, row 181
 "Used by" => "Використовують", // ai 2026-11
 
-// admin/se_showif.php, row 173
+// admin/se_showif.php, row 181
 "no field" => "жодне поле", // ai 2026-11
 
-// admin/se_showif.php, row 176
+// admin/se_showif.php, row 184
 "Save the changes to this condition. They apply to every field that uses it." => "Зберегти зміни цієї умови. Вони діють для всіх полів, які її використовують.", // ai 2026-11
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 // admin/se_view.php, row 486
 "Save as new" => "Зберегти як новий", // ai 2026-06
 
-// admin/se_showif.php, row 178
+// admin/se_showif.php, row 186
 "Keep the original condition as it is and save this form as another condition under a new name." => "Залишити початкову умову без змін і зберегти цю форму як іншу умову під новою назвою.", // ai 2026-11
 
-// admin/se_showif.php, row 179
+// admin/se_showif.php, row 187
 "Delete the condition. The fields that use it will be shown always." => "Видалити умову. Поля, які її використовують, відображатимуться завжди.", // ai 2026-11
 
-// admin/se_showif.php, row 180
+// admin/se_showif.php, row 188
 "Delete the condition? The fields that use it will be shown always." => "Видалити умову? Поля, які її використовують, відображатимуться завжди.", // ai 2026-11
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 // include/formutil.php, row 219, 224, 3009, 3013
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Скасувати", // ai 2026-06
 
-// admin/se_showif.php, row 183
+// admin/se_showif.php, row 191
 "Close without saving." => "Закрити без збереження.", // ai 2026-11
 
-// admin/se_showif.php, row 187
+// admin/se_showif.php, row 195
 "How it works" => "Як це працює", // ai 2026-11
 
-// admin/se_showif.php, row 188
-"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "«дорівнює» виконується, коли одне зі значень поля є серед позначених значень, «не є» — коли жодне. «заповнене» виконується для будь-якого значення, крім порожнього та 0, тож і для позначеного прапорця.", // ai 2026-11
+// admin/se_showif.php, row 196
+"\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. Upper and lower case do not count, accents do. \"is empty\" holds also for a field without a value; in a field stored as a number 0 counts as empty." => "«дорівнює» виконується, коли одне зі значень поля є серед позначених значень, «не є» — коли жодне. Великі й малі літери не враховуються, діакритичні знаки — враховуються. «порожнє» виконується також для поля без значення; у полі, що зберігається як число, 0 вважається порожнім.", // ai 2026-11
 
-// admin/se_showif.php, row 189
+// admin/se_showif.php, row 197
+"The rules are AA conditions, written as in views. The condition shown below selects nearly the same items in a view; accents and empty values may be compared a little differently. In an AA expression write : as #:." => "Правила — це умови AA, записані так само, як у виглядах. Умова, наведена нижче, вибирає у вигляді майже ті самі статті; діакритичні знаки та порожні значення можуть порівнюватися трохи інакше. У виразі AA пишіть : як #:.", // ai 2026-11
+
+// admin/se_showif.php, row 198
 "The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values)." => "Правила стежать за формою, поки користувач її редагує. Вираз обчислюється лише під час відкриття форми та збереження статті, завжди над збереженою статтею (у новій статті — над значеннями за замовчуванням).", // ai 2026-11
 
-// admin/se_showif.php, row 190
+// admin/se_showif.php, row 199
 "A field hidden by a rule is saved empty, unless \"Clear the field\" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value." => "Поле, приховане правилом, зберігається порожнім, якщо не знято позначку «Очистити поле». Поле пароля, дати, статус і поле, приховане виразом, зберігають своє значення.", // ai 2026-11
 
-// admin/se_showif.php, row 191
+// admin/se_showif.php, row 200
 "A field with a condition is shown and hidden by the condition, not by a Field Triggers script." => "Поле з умовою показує й приховує умова, а не скрипт «Тригери полів».", // ai 2026-11
 
-// admin/se_showif.php, row 192
+// admin/se_showif.php, row 201
 "With an input form template from a view, a field hidden by the expression stays in the source of the page." => "Якщо форма введення використовує шаблон із вигляду, поле, приховане виразом, залишається у вихідному коді сторінки.", // ai 2026-11
 
-// admin/se_showif.php, row 193
+// admin/se_showif.php, row 202
 "Conditions apply only to the item form of the administration. In anonymous forms and imports a required field is required always." => "Умови діють лише у формі статті в адмініструванні. В анонімних формах та імпортах обов’язкове поле обов’язкове завжди.", // ai 2026-11
 
 // admin/se_statistics.php, row 97
@@ -3264,7 +3283,7 @@ return [
 
 // admin/se_views.php, row 149, 203, 223
 // include/formutil.php, row 1818, 1825
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 // src/Isds/Registry/MatchRow.php, row 85
 // src/Optimize/StateCheckModel.php, row 231
 "New" => "Новий", // ai 2026-06
@@ -3307,7 +3326,7 @@ return [
 "View items" => "Переглянути статті", // ai 2026-06
 
 // admin/search_replace.php, row 170
-// src/Manager.php, row 1429
+// src/Manager.php, row 1420
 "Selected items" => "Вибрані статті", // ai 2026-06
 
 // admin/search_replace.php, row 180
@@ -3428,8 +3447,8 @@ return [
 // include/mlx.php, row 377
 // include/profile.php, row 170
 // include/sliceadd.php, row 71, 85
-// src/Import/DetailCatalog.php, row 151
-// src/Manager.php, row 239, 1281
+// src/Import/DetailCatalog.php, row 179
+// src/Manager.php, row 239, 1272
 "Add" => "Додати", // ai 2026-06
 
 // admin/slicedel.php, row 51
@@ -3753,7 +3772,7 @@ return [
 "Import into this slice - whatever file says" => "Імпортувати в цю рубрику — незалежно від того, що каже файл", // ai 2026-06
 
 // admin/sliceimp.php, row 467
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Dry run" => "Пробний запуск", // ai 2026-06
 
 // admin/sliceimp.php, row 469
@@ -4109,29 +4128,29 @@ return [
 "Show selected users" => "Показати вибраних користувачів", // ai 2026-06
 
 // admin/write_mail.php, row 124, 274
-// include/mail.php, row 700
+// include/mail.php, row 666
 "Body" => "Текст", // ai 2026-06
 
 // admin/write_mail.php, row 125, 275
 "From (email)" => "Від (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 126, 276
-// include/mail.php, row 702
+// include/mail.php, row 668
 "Reply to (email)" => "Відповідати на (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 127, 277
-// include/mail.php, row 703
+// include/mail.php, row 669
 "Errors to (email)" => "Помилки на (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 128, 278
 "Sender (email)" => "Відправник (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 129, 279
-// include/mail.php, row 694
+// include/mail.php, row 658
 "Language (charset)" => "Мова (кодування)", // ai 2026-06
 
 // admin/write_mail.php, row 130, 280
-// include/mail.php, row 692
+// include/mail.php, row 656
 "Use HTML" => "Використати HTML", // ai 2026-06
 
 // admin/write_mail.php, row 131, 271
@@ -4142,8 +4161,8 @@ return [
 
 // admin/write_mail.php, row 164
 // include/searchbar.class.php, row 652
-// src/Import/Definition.php, row 92
-// src/Import/DetailConfig.php, row 394
+// src/Import/Definition.php, row 93
+// src/Import/DetailConfig.php, row 385
 "Filter" => "Фільтр", // ai 2026-06
 
 // admin/write_mail.php, row 188
@@ -4398,8 +4417,8 @@ return [
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
 // include/logs.php, row 1213
-// src/Import/Definition.php, row 85, 113
-// src/Import/DetailConfig.php, row 188, 202
+// src/Import/Definition.php, row 86, 114
+// src/Import/DetailConfig.php, row 171, 185
 // src/Optimize/CheckImports.php, row 177, 179
 // src/Widget/RichtextMarkup.php, row 84
 "Source" => "Джерело", // ai 2026-06
@@ -4829,19 +4848,19 @@ return [
 "Transferring the items" => "Перенесення статей", // ai 2026-10
 
 // central/installapp.php, row 1368
-// central/optimize.php, row 261
+// central/optimize.php, row 260
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Зупинено через помилку", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 259
+// central/optimize.php, row 258
 // include/logs.php, row 799
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Завершено", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 260
+// central/optimize.php, row 259
 "Ended" => "Припинено", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -4905,13 +4924,13 @@ return [
 "Show the final check" => "Показати підсумкову перевірку", // ai 2026-10
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 206
-// src/Import/DetailPage.php, row 938, 947
+// central/optimize.php, row 205
+// src/Import/DetailPage.php, row 989, 998
 "Continue" => "Продовжити", // ai 2026-06
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 207
-// src/Import/DetailPage.php, row 958
+// central/optimize.php, row 206
+// src/Import/DetailPage.php, row 1009
 "End" => "Завершити", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
@@ -4935,7 +4954,7 @@ return [
 // central/optimize.php, row 85
 "An AA may still be asked - press Continue again in a few minutes." => "Деяку AA, можливо, ще опитують — за кілька хвилин натисніть «Продовжити» знову.", // ai 2026-11
 
-// central/optimize.php, row 86, 187
+// central/optimize.php, row 86, 186
 "No such run." => "Такого виконання немає.", // ai 2026-11
 
 // central/optimize.php, row 87
@@ -4956,7 +4975,7 @@ return [
 // central/optimize.php, row 140
 "Run an Optimize task on several AAs" => "Запустити завдання «Оптимізувати» на кількох AA", // ai 2026-11
 
-// central/optimize.php, row 148, 171
+// central/optimize.php, row 148, 170
 // src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckOptimizeRuns.php, row 55
 // src/Optimize/CheckQueue.php, row 98, 178
@@ -4971,65 +4990,65 @@ return [
 // central/optimize.php, row 151
 "Repair tests first, repairs only where the test fails, then tests again." => "Виправлення спершу тестує, виправляє лише там, де тест не пройде, а потім тестує знову.", // ai 2026-11
 
-// central/optimize.php, row 153, 210
+// central/optimize.php, row 153, 209
 // include/logs.php, row 723
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// central/optimize.php, row 159
+// central/optimize.php, row 158
 "An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "AA без дійсного токена нічого не відповість — спершу отримайте її токен у списку Central (діє один день).", // ai 2026-11
 
-// central/optimize.php, row 160
+// central/optimize.php, row 159
 "Start" => "Запустити", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Last runs" => "Останні виконання", // ai 2026-11
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 // include/logs.php, row 798
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 // src/Optimize/CheckImports.php, row 151, 155
 // src/Optimize/CheckInstallRuns.php, row 54
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Optimize/CheckOptimizeRuns.php, row 54
 "Started" => "Початок", // ai 2026-10
 
-// central/optimize.php, row 171
+// central/optimize.php, row 170
 "Results" => "Результати", // ai 2026-11
 
-// central/optimize.php, row 197
+// central/optimize.php, row 196
 "Started %1 by %2" => "Запущено %1, користувач %2", // ai 2026-11
 
-// central/optimize.php, row 198
+// central/optimize.php, row 197
 "%1 of %2 AAs done" => "Виконано AA: %1 з %2", // ai 2026-11
 
-// central/optimize.php, row 208
+// central/optimize.php, row 207
 "The run goes on in the task queue of this AA - you may close this page." => "Виконання триває в черзі завдань цієї AA — цю сторінку можна закрити.", // ai 2026-11
 
-// central/optimize.php, row 210, 229
+// central/optimize.php, row 209, 228
 "Report" => "Звіт", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Waiting" => "Очікує", // ai 2026-11
 
-// central/optimize.php, row 216
+// central/optimize.php, row 215
 "Not asked" => "Не опитано", // ai 2026-11
 
-// central/optimize.php, row 225
+// central/optimize.php, row 224
 "The test after the repair comes next." => "Далі буде тест після виправлення.", // ai 2026-11
 
-// central/optimize.php, row 232
+// central/optimize.php, row 231
 "The test after the repair" => "Тест після виправлення", // ai 2026-11
 
-// central/optimize.php, row 242
+// central/optimize.php, row 241
 "Another run" => "Нове виконання", // ai 2026-11
 
-// central/optimize.php, row 248
+// central/optimize.php, row 247
 "OK - nothing to repair" => "OK — нічого виправляти", // ai 2026-11
 
-// central/optimize.php, row 249
+// central/optimize.php, row 248
 // src/Optimize/CheckAlerts.php, row 145
 // src/Optimize/CheckIsds.php, row 142, 154
 // src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
@@ -5038,37 +5057,37 @@ return [
 // src/Optimize/StateCheckModel.php, row 219
 "Problem" => "Проблема", // ai 2026-10
 
-// central/optimize.php, row 250
+// central/optimize.php, row 249
 "Repaired" => "Виправлено", // ai 2026-11
 
-// central/optimize.php, row 251
+// central/optimize.php, row 250
 "Repair failed" => "Виправлення не вдалося", // ai 2026-11
 
-// central/optimize.php, row 252
+// central/optimize.php, row 251
 "Not done" => "Не виконано", // ai 2026-11
 
-// central/optimize.php, row 262
+// central/optimize.php, row 261
 "No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "Уже довго не надійшов жоден крок — чи працює черга завдань цієї AA? «Продовжити» спробує негайно.", // ai 2026-11
 
-// central/optimize.php, row 263
+// central/optimize.php, row 262
 "Waiting to ask an AA again" => "Очікування на повторне опитування AA", // ai 2026-11
 
-// central/optimize.php, row 264
+// central/optimize.php, row 263
 "Running in the task queue" => "Виконується в черзі завдань", // ai 2026-11
 
-// central/optimize.php, row 274
+// central/optimize.php, row 273
 "%1 runs another update now." => "%1 зараз виконує інше оновлення.", // ai 2026-11
 
-// central/optimize.php, row 275
+// central/optimize.php, row 274
 "%1 did not answer in time." => "%1 — відповідь не надійшла вчасно.", // ai 2026-11
 
-// central/optimize.php, row 276
+// central/optimize.php, row 275
 "The user who started the run is no superadmin any more." => "Користувач, який запустив виконання, уже не є суперадміністратором.", // ai 2026-11
 
-// central/optimize.php, row 277
+// central/optimize.php, row 276
 "Error %1" => "Помилка %1", // ai 2026-11
 
-// central/optimize.php, row 279
+// central/optimize.php, row 278
 "Asked again at %1 - Continue asks now." => "Повторне опитування о %1 — «Продовжити» опитає зараз.", // ai 2026-11
 
 // central/responder.php, row 112
@@ -5552,7 +5571,7 @@ return [
 "Level count" => "Кількість рівнів", // ai 2026-06
 
 // include/constedit_util.php, row 137, 140
-// src/Import/Definition.php, row 140
+// src/Import/Definition.php, row 141
 "Select" => "Вибрати", // ai 2026-06
 
 // include/constedit_util.php, row 599
@@ -5967,7 +5986,7 @@ return [
 
 // include/formutil.php, row 1829
 // include/menu.php, row 141
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Змінити", // ai 2026-06
 
@@ -5981,7 +6000,7 @@ return [
 
 // include/formutil.php, row 2223
 // include/stringexpand.php, row 11543, 11566
-// src/Import/DetailCatalog.php, row 150
+// src/Import/DetailCatalog.php, row 178
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "нова", // ai 2026-06
@@ -6237,7 +6256,7 @@ return [
 "Short ID" => "Короткий Id", // ai 2026-06
 
 // include/itemfunc.php, row 204
-// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailCatalog.php, row 169
 "Details" => "Подробиці", // ai 2026-06
 
 // include/itemfunc.php, row 245
@@ -6640,7 +6659,7 @@ return [
 "Checks" => "Перевірки", // ai 2026-10
 
 // include/logs.php, row 796, 827
-// src/Import/DetailPage.php, row 300, 367, 800
+// src/Import/DetailPage.php, row 324, 391, 840
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
 "Run" => "Запустити", // ai 2026-10
@@ -6677,7 +6696,7 @@ return [
 
 // include/logs.php, row 904, 1272, 1287
 // modules/jump/modedit.php, row 177
-// src/Manager.php, row 825
+// src/Manager.php, row 816
 "Module ID" => "ID модуля", // ai 2026-06
 
 // include/logs.php, row 921
@@ -6717,7 +6736,7 @@ return [
 "Items planned" => "Заплановано записів", // ai 2026-06
 
 // include/logs.php, row 1095
-// src/Import/DetailPage.php, row 1025
+// src/Import/DetailPage.php, row 1076
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Повідомлення", // ai 2026-06
 
@@ -6740,13 +6759,13 @@ return [
 "Collection" => "Колекція", // ai 2026-06
 
 // include/logs.php, row 1123, 1174, 1186, 1321
-// src/Import/Definition.php, row 154
+// src/Import/Definition.php, row 155
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Деталі", // ai 2026-06
 
 // include/logs.php, row 1173
-// src/Import/Definition.php, row 135, 162
+// src/Import/Definition.php, row 136, 163
 // src/Isds/Registry/Page.php, row 514
 "Status" => "Стан", // ai 2026-06
 
@@ -6760,7 +6779,7 @@ return [
 "Errors" => "Помилки", // ai 2026-06
 
 // include/logs.php, row 1240
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Outcome" => "Результат", // ai 2026-06
 
 // include/logs.php, row 1256
@@ -6783,29 +6802,29 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "Причина", // ai 2026-10
 
-// include/mail.php, row 693
+// include/mail.php, row 657
 "Email type" => "Тип e-mailу", // ai 2026-06
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 "— all modules (global) —" => "— усі модулі (глобально) —", // ai 2026-10
 
-// include/mail.php, row 697
+// include/mail.php, row 661
 // include/modutils.php, row 88, 177
 // include/slicedit.php, row 188
 // include/statestore.php, row 1081
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Власник", // ai 2026-06
 
-// include/mail.php, row 698
+// include/mail.php, row 662
 "Description/Result" => "Опис/Результат", // ai 2026-06
 
-// include/mail.php, row 701
+// include/mail.php, row 667
 "From (email) " => "Від (e-mail)", // ai 2026-06
 
-// include/mail.php, row 704
+// include/mail.php, row 670
 "Envelop sender (email)" => "Відправник конверта (e-mail)", // ai 2026-06
 
-// include/mail.php, row 705
+// include/mail.php, row 671
 // misc/datovka/datovka.php, row 156
 "Attachments" => "Вкладення", // ai 2026-06
 
@@ -6874,8 +6893,8 @@ return [
 "Filters" => "Фільтри", // ai 2026-06
 
 // include/menu.php, row 159
-// src/Import/Definition.php, row 87
-// src/Import/DetailConfig.php, row 359
+// src/Import/Definition.php, row 88
+// src/Import/DetailConfig.php, row 350
 "Mapping" => "Зіставлення", // ai 2026-06
 
 // include/menu.php, row 160, 224
@@ -6984,7 +7003,7 @@ return [
 "Slice structure" => "Структура рубрики", // ai 2026-06
 
 // include/menu_util.php, row 96
-// src/Import/Definition.php, row 135, 161
+// src/Import/Definition.php, row 136, 162
 // src/Optimize/CheckImportStores.php, row 53
 // src/Optimize/CheckImports.php, row 177, 179, 290, 390
 "Import" => "Імпорт", // ai 2026-11
@@ -7068,7 +7087,7 @@ return [
 "What's working, what isn't — tell the AA team." => "Що працює, а що ні — повідомте команду AA.", // ai 2026-06
 
 // include/menu_util.php, row 632
-// src/Import/Definition.php, row 86
+// src/Import/Definition.php, row 87
 "Settings" => "Налаштування", // ai 2026-06
 
 // include/menu_util.php, row 635
@@ -7143,7 +7162,7 @@ return [
 "Array returned" => "Повернено масив", // ai 2026-06
 
 // include/scroller.php, row 87
-// src/Import/DetailPage.php, row 420
+// src/Import/DetailPage.php, row 451
 "Previous" => "Попередні", // ai 2026-06
 
 // include/scroller.php, row 296
@@ -7192,10 +7211,6 @@ return [
 
 // include/searchbar.class.php, row 566
 "And" => "і водночас", // ai 2026-06
-
-// include/searchbar.class.php, row 580
-// include/searchlib.php, row 53, 56, 129, 138
-"begins with" => "починається з", // ai 2026-06
 
 // include/searchbar.class.php, row 608
 "Clear" => "Очистити", // ai 2026-06
@@ -7273,7 +7288,7 @@ return [
 // include/statestore.php, row 1367
 "select ..." => "виберіть...", // ai 2026-06
 
-// include/searchlib.php, row 371
+// include/searchlib.php, row 448
 "Limit" => "Ліміт", // ai 2026-06
 
 // include/slice.class.php, row 428
@@ -8097,7 +8112,7 @@ return [
 "page length (number of items)" => "довжина сторінки (кількість статей)", // ai 2026-06
 
 // slice.php, row 621
-// src/Manager.php, row 890
+// src/Manager.php, row 881
 "No item found" => "Жодної статті не знайдено", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 72
@@ -8208,43 +8223,43 @@ return [
 // src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Переглядати файли рубрики можуть лише її редактори", // ai 2026-10
 
-// src/Central/Actionapps.php, row 185
+// src/Central/Actionapps.php, row 180
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Цей PHP не має AES-GCM (sodium) – токен входу не можна зберегти зашифрованим", // ai 2026-10
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not configured" => "Не налаштовано", // ai 2026-06
 
-// src/Central/Actionapps.php, row 215
+// src/Central/Actionapps.php, row 208
 "Not authenticated - get a token" => "Не автентифіковано – отримайте токен", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Authenticated until %1" => "Автентифіковано до %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 218
+// src/Central/Actionapps.php, row 211
 "Expired - get a token" => "Термін минув – отримайте токен", // ai 2026-10
 
-// src/Central/Actionapps.php, row 245
+// src/Central/Actionapps.php, row 236
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "Віддалена AA відхилила вхід: неправильне ім’я користувача чи пароль, обліковий запис із двофакторним входом (Central поки не вміє надіслати код) або користувач там не є суперадміністратором", // ai 2026-11
 
-// src/Central/Actionapps.php, row 247
+// src/Central/Actionapps.php, row 238
 "The remote AA gave no login token - update it" => "Віддалене AA не видало токен входу – оновіть його", // ai 2026-10
 
-// src/Central/Actionapps.php, row 248
+// src/Central/Actionapps.php, row 239
 "The remote AA gave a token for longer than a day - update the remote AA" => "Віддалене AA видало токен довше ніж на день – оновіть віддалене AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 284
+// src/Central/Actionapps.php, row 275
 "Can't get org_name - " => "Не вдалося отримати org_name —", // ai 2026-06
 
-// src/Central/Actionapps.php, row 338
+// src/Central/Actionapps.php, row 329
 "Unexpected response from remote AA" => "Неочікувана відповідь віддаленого AA", // ai 2026-10
 
-// src/Central/Actionapps.php, row 341
+// src/Central/Actionapps.php, row 332
 "This AA does not support this command (update it first)" => "Це AA не підтримує цю команду (спершу оновіть його)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 353
+// src/Central/Actionapps.php, row 344
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Збережений токен входу не можна використати (змінився AA_SECRET, пароль до бази даних або адреса цього AA) – знову автентифікуйте це AA на сторінці ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 354
+// src/Central/Actionapps.php, row 345
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Для цього AA немає токена входу – автентифікуйте це AA на сторінці ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -9370,22 +9385,28 @@ return [
 // src/Credential/Store.php, row 55
 "set (%1)" => "встановлено (%1)", // ai 2026-10
 
-// src/Form/ShowConditions.php, row 317
+// src/Form/ShowConditions.php, row 354
 "Fill in the name of the condition." => "Заповніть назву умови.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 321
+// src/Form/ShowConditions.php, row 358
 "Another condition of this slice is called %1." => "Інша умова цієї рубрики називається %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 333
+// src/Form/ShowConditions.php, row 371
 "The field %1 is not in this slice." => "Поле %1 не належить до цієї рубрики.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 335
+// src/Form/ShowConditions.php, row 373
 "Choose how to compare the field %1." => "Виберіть, як порівнювати поле %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 337
+// src/Form/ShowConditions.php, row 375
 "Fill in the values of the field %1." => "Заповніть значення поля %1.", // ai 2026-11
 
-// src/Form/ShowConditions.php, row 344
+// src/Form/ShowConditions.php, row 377
+"A value of the field %1 contains both kinds of quotes." => "Значення поля %1 містить обидва види лапок.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 380
+"The value of the field %1 must not contain a backslash." => "Значення поля %1 не може містити зворотну скісну риску.", // ai 2026-11
+
+// src/Form/ShowConditions.php, row 393
 "Add a rule or an expression." => "Додайте правило або вираз.", // ai 2026-11
 
 // src/IO/Grabber/AARSS.php, row 118
@@ -9403,7 +9424,7 @@ return [
 // src/IO/Grabber/CSV.php, row 94
 // src/IO/Grabber/JsonLD.php, row 104
 // src/IO/Grabber/XML.php, row 108
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "URL of the file" => "URL файлу", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 95
@@ -9577,835 +9598,874 @@ return [
 // src/IO/OnPageChanger.php, row 55
 "No permission - no user is authenticated. Try to relogin, please." => "Немає прав - жоден користувач не автентифікований. Спробуйте, будь ласка, увійти знову.", // ai 2026-06
 
-// src/Import/Definition.php, row 88
-// src/Import/DetailConfig.php, row 390
+// src/Import/Definition.php, row 89
+// src/Import/DetailConfig.php, row 381
 "Key fields" => "Ключові поля", // ai 2026-10
 
-// src/Import/Definition.php, row 89
-// src/Import/DetailConfig.php, row 391
+// src/Import/Definition.php, row 90
+// src/Import/DetailConfig.php, row 382
 "Store mode" => "Режим збереження", // ai 2026-10
 
-// src/Import/Definition.php, row 90
-// src/Import/DetailConfig.php, row 392
+// src/Import/Definition.php, row 91
+// src/Import/DetailConfig.php, row 383
 "Validation" => "Валідація", // ai 2026-10
 
-// src/Import/Definition.php, row 91
-// src/Import/DetailConfig.php, row 393
+// src/Import/Definition.php, row 92
+// src/Import/DetailConfig.php, row 384
 "After a stream" => "Після потоку", // ai 2026-10
 
-// src/Import/Definition.php, row 93
-// src/Import/DetailPage.php, row 604
+// src/Import/Definition.php, row 94
 // src/Optimize/CheckImports.php, row 215
 "Enabled" => "Увімкнено", // ai 2026-10
 
-// src/Import/Definition.php, row 113
+// src/Import/Definition.php, row 114
 "The source is changed in the import detail." => "Джерело змінюється в деталях імпорту.", // ai 2026-10
 
-// src/Import/Definition.php, row 129
+// src/Import/Definition.php, row 130
 "The slice has no import yet." => "Рубрика ще не має жодного імпорту.", // ai 2026-10
 
-// src/Import/Definition.php, row 135, 164
+// src/Import/Definition.php, row 136, 165
 "Next plan" => "Наступний запуск", // ai 2026-10
 
-// src/Import/Definition.php, row 367
-"None - the import is disabled" => "Немає — імпорт вимкнено", // ai 2026-10
+// src/Import/Definition.php, row 372
+// src/Import/DetailPage.php, row 766, 772
+"Not planned" => "Не заплановано", // ai 2026-10
 
-// src/Import/Definition.php, row 370
+// src/Import/Definition.php, row 375
 "Not planned - no task starts it" => "Не заплановано — жодне завдання його не запускає", // ai 2026-10
 
-// src/Import/Definition.php, row 423
+// src/Import/Definition.php, row 428
 "The import needs a name." => "Імпорт потребує назви.", // ai 2026-10
 
-// src/Import/Definition.php, row 427
+// src/Import/Definition.php, row 432
 "The name of an import may not contain a colon (:) or look like an id." => "Назва імпорту не може містити двокрапку (:) або мати вигляд id.", // ai 2026-10
 
-// src/Import/Definition.php, row 430
+// src/Import/Definition.php, row 435
 "Another import of the slice has this name." => "Інший імпорт рубрики має таку назву.", // ai 2026-10
 
-// src/Import/Definition.php, row 438
+// src/Import/Definition.php, row 443
 "Change the source in the import detail." => "Змініть джерело в деталях імпорту.", // ai 2026-10
 
-// src/Import/Definition.php, row 446
-// src/Import/DetailPage.php, row 545
+// src/Import/Definition.php, row 451
+// src/Import/DetailPage.php, row 584
 "Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "Імпорти тут не можуть виконуватися: їхні таблиці бази даних (object_text, toexecute) не підтримують транзакції (InnoDB).", // ai 2026-10
 
-// src/Import/Definition.php, row 455
+// src/Import/Definition.php, row 460
 "The mapping of the import is not valid." => "Зіставлення імпорту недійсне.", // ai 2026-10
 
-// src/Import/Definition.php, row 477
+// src/Import/Definition.php, row 482
 "The import source refused these settings: %1" => "Джерело імпорту відхилило ці налаштування: %1", // ai 2026-10
 
-// src/Import/Definition.php, row 480
-"Only a user who manages the feeding of the slice may change its imports." => "Змінювати імпорти рубрики може лише користувач, який керує передаванням цієї рубрики.", // ai 2026-10
-
-// src/Import/Definition.php, row 481
-"This import uses API keys, so only a superadmin may change or delete it." => "Цей імпорт використовує API-ключі, тому змінювати або видаляти його може лише суперадміністратор.", // ai 2026-10
-
 // src/Import/Definition.php, row 482
-"The import was not saved - it is not an import of this slice." => "Імпорт не збережено — це не імпорт цієї рубрики.", // ai 2026-10
-
-// src/Import/Definition.php, row 483
-// src/Import/DetailPage.php, row 546
-"The import source is not available." => "Джерело імпорту недоступне.", // ai 2026-10
-
-// src/Import/Definition.php, row 484
-"The import source did not give its mapping." => "Джерело імпорту не надало свого зіставлення.", // ai 2026-10
+"The setting \"%1\" of the import source is not valid: %2" => "Налаштування «%1» джерела імпорту недійсне: %2", // ai 2026-11
 
 // src/Import/Definition.php, row 485
-"The mapping of the import does not fit the slice." => "Зіставлення імпорту не відповідає рубриці.", // ai 2026-10
+"Only a user who manages the feeding of the slice may change its imports." => "Змінювати імпорти рубрики може лише користувач, який керує передаванням цієї рубрики.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
-// src/Import/DetailPage.php, row 548
-"A setting of the import source is not valid." => "Налаштування джерела імпорту недійсне.", // ai 2026-10
-
-// src/Import/Definition.php, row 486
-"The setting \"%1\" of the import source is not valid." => "Налаштування «%1» джерела імпорту недійсне.", // ai 2026-10
+"This import uses API keys, so only a superadmin may change or delete it." => "Цей імпорт використовує API-ключі, тому змінювати або видаляти його може лише суперадміністратор.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
-// src/Import/DetailPage.php, row 549
-"The settings name a slice whose feeding you do not manage." => "Налаштування вказують рубрику, передаванням якої Ви не керуєте.", // ai 2026-10
-
-// src/Import/Definition.php, row 487
-"The setting \"%1\" names a slice whose feeding you do not manage." => "Налаштування «%1» вказує рубрику, передаванням якої Ви не керуєте.", // ai 2026-10
+"The import was not saved - it is not an import of this slice." => "Імпорт не збережено — це не імпорт цієї рубрики.", // ai 2026-10
 
 // src/Import/Definition.php, row 488
-"The settings of the import changed meanwhile. Reload the page and set them again." => "Налаштування імпорту тим часом змінилися. Перезавантажте сторінку і задайте їх знову.", // ai 2026-10
+// src/Import/DetailPage.php, row 585
+"The import source is not available." => "Джерело імпорту недоступне.", // ai 2026-10
 
 // src/Import/Definition.php, row 489
+"The import source did not give its mapping." => "Джерело імпорту не надало свого зіставлення.", // ai 2026-10
+
+// src/Import/Definition.php, row 490
+"The mapping of the import does not fit the slice." => "Зіставлення імпорту не відповідає рубриці.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+// src/Import/DetailPage.php, row 587
+"A setting of the import source is not valid." => "Налаштування джерела імпорту недійсне.", // ai 2026-10
+
+// src/Import/Definition.php, row 491
+"The setting \"%1\" of the import source is not valid." => "Налаштування «%1» джерела імпорту недійсне.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+// src/Import/DetailPage.php, row 588
+"The settings name a slice whose feeding you do not manage." => "Налаштування вказують рубрику, передаванням якої Ви не керуєте.", // ai 2026-10
+
+// src/Import/Definition.php, row 492
+"The setting \"%1\" names a slice whose feeding you do not manage." => "Налаштування «%1» вказує рубрику, передаванням якої Ви не керуєте.", // ai 2026-10
+
+// src/Import/Definition.php, row 493
+"The settings of the import changed meanwhile. Reload the page and set them again." => "Налаштування імпорту тим часом змінилися. Перезавантажте сторінку і задайте їх знову.", // ai 2026-10
+
+// src/Import/Definition.php, row 494
 "The import source refused these settings." => "Джерело імпорту відхилило ці налаштування.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 31
+// src/Import/DetailCatalog.php, row 33
 "No catalog yet. Check source lists what the source offers." => "Каталогу ще немає. Що пропонує джерело, виведе кнопка «Перевірити джерело».", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 37
+// src/Import/DetailCatalog.php, row 39
 "The stored catalog cannot be read. The next check of the source lists it again." => "Збережений каталог не вдається прочитати. Наступна перевірка джерела виведе його знову.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 41
+// src/Import/DetailCatalog.php, row 48
 "The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "Каталог неповний: остання перевірка вивела його не весь (поки записів: %1). Доки перевірка не виведе його повністю, нічого не позначається як відсутнє в джерелі.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 42
+// src/Import/DetailCatalog.php, row 49
 "Listed by the check of %1: %2 entries." => "Перевірка від %1 вивела записів: %2.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 47
+// src/Import/DetailCatalog.php, row 54
 "Pages of the catalog" => "Сторінки каталогу", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 74
+// src/Import/DetailCatalog.php, row 55
+"%1 entries, %2 can be added" => "Записів: %1, з них можна додати: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 55
+"%1 entries" => "Записів: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 58
+"%1 missing at the source" => "у джерелі бракує: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 61
+"%1 renamed at the source" => "у джерелі перейменовано: %1", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 90
 "The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "Потік додано або оновлено з каталогу. У розділі «Потоки» він з'явиться після наступної перевірки джерела.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 75
+// src/Import/DetailCatalog.php, row 91
 "The catalog has no such entry. Check the source to list its catalog again." => "Каталог не має такого запису. Перевірте джерело, щоб каталог було виведено знову.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 76, 77
+// src/Import/DetailCatalog.php, row 92, 93
 "Nothing was added from the catalog:" => "З каталогу нічого не додано:", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 85
+// src/Import/DetailCatalog.php, row 101
 "This import uses API keys, so only a superadmin may add streams from its catalog." => "Цей імпорт використовує API-ключі, тому додавати потоки з його каталогу може лише суперадміністратор.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 86
+// src/Import/DetailCatalog.php, row 102
 "Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "Для додавання з каталогу потрібен дозвіл редагувати всі статті рубрики, до якої джерело додає свої потоки.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 87
+// src/Import/DetailCatalog.php, row 103
 "The import source cannot add streams from its catalog." => "Джерело імпорту не вміє додавати потоки зі свого каталогу.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 88
+// src/Import/DetailCatalog.php, row 104
 "The import source could not be reached or did not answer. Try again later." => "Джерело імпорту недоступне або не відповіло. Спробуйте пізніше.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 102
+// src/Import/DetailCatalog.php, row 118
 "1 entry is new at the source - no stream comes from it." => "1 запис у джерелі новий – з нього не надходить жоден потік.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 103
+// src/Import/DetailCatalog.php, row 119
 "%1 entries are new at the source - no stream comes from them." => "Нових записів у джерелі: %1 – з них не надходить жоден потік.", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Missing at the source" => "Відсутні в джерелі", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 111
+// src/Import/DetailCatalog.php, row 127
 "Renamed at the source" => "Перейменовані в джерелі", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124, 143
-// src/Import/DetailPage.php, row 377, 1025, 1046
+// src/Import/DetailCatalog.php, row 140, 169
+// src/Import/DetailPage.php, row 401, 1076, 1097
 "Stream" => "Потік", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Catalog key" => "Ключ у каталозі", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name of the stream" => "Назва потоку", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 124
+// src/Import/DetailCatalog.php, row 140
 "Name in the catalog" => "Назва в каталозі", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailCatalog.php, row 166
+"%1 entries on this page cannot be added or updated: %2" => "Записи на цій сторінці (%1) не можна додати чи оновити: %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailConfig.php, row 282
 "Key" => "Ключ", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 143
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailPage.php, row 353, 706
 "Updated" => "Оновлено", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 171
+// src/Import/DetailCatalog.php, row 198
+"%1 of %2 entries on this page" => "Записів на цій сторінці: %1 з %2", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 199
+"Filter this page" => "Фільтрувати цю сторінку", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 200
+"Only entries that can be added" => "Лише записи, які можна додати", // ai 2026-11
+
+// src/Import/DetailCatalog.php, row 207
 "Catalog of the source" => "Каталог джерела", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 136
+// src/Import/DetailConfig.php, row 119
 "The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "Зіставлення було знову налаштовано з джерела. Те, що імпорт знав про потоки (версії, час імпорту та остання перевірка джерела), відкинуто, тож наступний запуск прочитає їх усі знову.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 137
+// src/Import/DetailConfig.php, row 120
 "The mapping is the same as the source gives - nothing changed." => "Зіставлення таке саме, як дає джерело – нічого не змінилося.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 138, 139
+// src/Import/DetailConfig.php, row 121, 122
 "The mapping was not reset:" => "Зіставлення не було скинуто:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 140
+// src/Import/DetailConfig.php, row 123
 "The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "Налаштування збережено, а зіставлення знову налаштовано з джерела. Якщо запуск був відкритий, його завершено, а те, що імпорт знав про потоки, відкинуто.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 141
+// src/Import/DetailConfig.php, row 124
 "The settings are the same as stored - nothing changed." => "Налаштування такі самі, як збережені – нічого не змінилося.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 142
+// src/Import/DetailConfig.php, row 125
 // src/Isds/Registry/Page.php, row 326
 "The settings were not saved:" => "Налаштування не було збережено:", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 144
+// src/Import/DetailConfig.php, row 127
 "Choose a source." => "Виберіть джерело.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 155, 179
+// src/Import/DetailConfig.php, row 138, 162
 "Settings of the source" => "Налаштування джерела", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 159
+// src/Import/DetailConfig.php, row 142
 "Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "Заплановані запуски й далі виконуються зі збереженими налаштуваннями; щоб запустити імпорт вручну, змініть їх у розділі %1 нижче.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 161
+// src/Import/DetailConfig.php, row 144
 "Change the settings or the source in %1 below." => "Змініть налаштування або джерело в розділі %1 нижче.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 188
+// src/Import/DetailConfig.php, row 171
 "No other source is available." => "Інше джерело недоступне.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 192
+// src/Import/DetailConfig.php, row 175
 "(current)" => "(поточне)", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 203
+// src/Import/DetailConfig.php, row 186
 "Show its settings" => "Показати його налаштування", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 204
+// src/Import/DetailConfig.php, row 187
 "Keep the current source" => "Залишити поточне джерело", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 214
+// src/Import/DetailConfig.php, row 196
 "This source is not available, so its settings cannot be shown. Choose another source above." => "Це джерело недоступне, тому його налаштування не можна показати. Виберіть інше джерело вище.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 222
+// src/Import/DetailConfig.php, row 204
 "The stored settings cannot be read; saving the form stores them again." => "Збережені налаштування не вдається прочитати; збереження форми запише їх знову.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 228
+// src/Import/DetailConfig.php, row 209
 "The source did not describe its settings, so they cannot be changed now." => "Джерело не описало своїх налаштувань, тому зараз їх не можна змінити.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 232
+// src/Import/DetailConfig.php, row 214
 "You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "Ви змінюєте джерело з %1 на %2. Збереження завершить відкритий запуск, відкине те, що імпорт знає про потоки й каталог, і візьме зіставлення з нового джерела.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 233
+// src/Import/DetailConfig.php, row 215
 "Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "Змінити джерело? Відкритий запуск завершиться, те, що імпорт знає про потоки, буде відкинуто, а зіставлення буде взято з нового джерела.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 234
+// src/Import/DetailConfig.php, row 216
 "Change the source and save" => "Змінити джерело й зберегти", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 236
+// src/Import/DetailConfig.php, row 218
 "Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "Збереження змінених налаштувань завершить відкритий запуск, відкине те, що імпорт знає про потоки й каталог, і знову налаштує зіставлення з джерела. Незмінені налаштування нічого не змінюють.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 237
+// src/Import/DetailConfig.php, row 219
 "Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "Зберегти налаштування? Якщо вони змінилися, відкритий запуск завершиться, те, що імпорт знає про потоки, буде відкинуто, а зіставлення буде знову налаштовано з джерела.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 238
+// src/Import/DetailConfig.php, row 220
 // src/Isds/Registry/Page.php, row 617
 "Save the settings" => "Зберегти налаштування", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 272
+// src/Import/DetailConfig.php, row 263
 "The source has no settings." => "Джерело не має налаштувань.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 283
+// src/Import/DetailConfig.php, row 274
 "Keys" => "Ключі", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 285
+// src/Import/DetailConfig.php, row 276
 "The source did not say which keys it needs." => "Джерело не вказало, які ключі йому потрібні.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 288
+// src/Import/DetailConfig.php, row 279
 "The source needs no key." => "Джерелу не потрібен ключ.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 291
+// src/Import/DetailConfig.php, row 282
 // src/Widget/Widget.php, row 848
 "Hint" => "Підказка", // ai 2026-06
 
-// src/Import/DetailConfig.php, row 297
+// src/Import/DetailConfig.php, row 288
 "Key is set" => "Ключ задано", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 298
+// src/Import/DetailConfig.php, row 289
 "Key is damaged" => "Ключ пошкоджено", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 299
+// src/Import/DetailConfig.php, row 290
 "Key is missing" => "Ключ відсутній", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 305
+// src/Import/DetailConfig.php, row 296
 "The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "Ключі задає адміністратор сервера в config.php, ніколи не тут. Без свого ключа джерело зазнає збою, коли ключ йому знадобиться; пошкоджений ключ містить розрив рядка і ніколи не надсилається.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 327
+// src/Import/DetailConfig.php, row 318
 "define one of %1 in config.php" => "визначте одну з %1 у config.php", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 350
+// src/Import/DetailConfig.php, row 341
 "The mapping of the import cannot be read. Reset it from the source." => "Зіставлення імпорту не вдається прочитати. Скиньте його з джерела.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 356
+// src/Import/DetailConfig.php, row 347
 "Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "Скинути зіставлення з джерела? Зіставлення, ключові поля, режим збереження, перевірку, вираз після потоку та фільтр буде замінено тим, що дає джерело.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 357
+// src/Import/DetailConfig.php, row 348
 "Reset mapping from the source" => "Скинути зіставлення з джерела", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 358
+// src/Import/DetailConfig.php, row 349
 "Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Знову налаштовує зіставлення, ключові поля, режим збереження, перевірку, вираз після потоку та фільтр так, як їх дає джерело для збережених налаштувань. Нове зіставлення відкидає те, що імпорт знав про потоки, тож наступний запуск прочитає їх усі знову. Це неможливо, поки запуск відкритий, зупинений помилкою або ще завершується.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 366
+// src/Import/DetailConfig.php, row 357
 "The mapping has no rows." => "Зіставлення не має рядків.", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Target" => "Ціль", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 369
+// src/Import/DetailConfig.php, row 360
 "Transformation" => "Перетворення", // ai 2026-10
 
-// src/Import/DetailConfig.php, row 379
+// src/Import/DetailConfig.php, row 370
 "the field the job parameter names" => "поле, яке називає параметр завдання", // ai 2026-10
 
-// src/Import/DetailPage.php, row 269
+// src/Import/DetailPage.php, row 293
 "This page is out of date – reload it." => "Ця сторінка застаріла – перезавантажте її.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 282
+// src/Import/DetailPage.php, row 306
 "Last import" => "Останній імпорт", // ai 2026-10
 
-// src/Import/DetailPage.php, row 283
+// src/Import/DetailPage.php, row 307
 "Next start" => "Наступний запуск", // ai 2026-10
 
-// src/Import/DetailPage.php, row 284
+// src/Import/DetailPage.php, row 308
 "Last check of the source" => "Остання перевірка джерела", // ai 2026-10
 
-// src/Import/DetailPage.php, row 290
+// src/Import/DetailPage.php, row 314
 "Overview" => "Огляд", // ai 2026-10
 
-// src/Import/DetailPage.php, row 300
+// src/Import/DetailPage.php, row 324
 "Imports every stream." => "Імпортує всі потоки.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301, 801
+// src/Import/DetailPage.php, row 325, 841
 "Run changed only" => "Запустити змінені", // ai 2026-10
 
-// src/Import/DetailPage.php, row 301
+// src/Import/DetailPage.php, row 325
 "Skips the streams the source says did not change." => "Пропускає потоки, які, за даними джерела, не змінилися.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302, 367, 802
+// src/Import/DetailPage.php, row 326, 391, 842
 "Check source" => "Перевірити джерело", // ai 2026-10
 
-// src/Import/DetailPage.php, row 302
+// src/Import/DetailPage.php, row 326
 "Asks the source whether it works. Stores nothing." => "Запитує джерело, чи воно працює. Нічого не зберігає.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 303
+// src/Import/DetailPage.php, row 327
 "Reads up to 500 items and shows what it would store. Stores nothing." => "Читає до 500 статей і показує, що було б збережено. Нічого не зберігає.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 309
+// src/Import/DetailPage.php, row 333
 "More actions" => "Інші дії", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327, 352
+// src/Import/DetailPage.php, row 351, 376
 "Runs" => "Виконання", // ai 2026-10
 
-// src/Import/DetailPage.php, row 327
+// src/Import/DetailPage.php, row 351
 "No run yet." => "Ще жодного виконання.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329
+// src/Import/DetailPage.php, row 353
 "Took" => "Тривалість", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Read" => "Прочитано", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Skipped" => "Пропущено", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Filtered out" => "Відфільтровано", // ai 2026-10
 
-// src/Import/DetailPage.php, row 329, 666
+// src/Import/DetailPage.php, row 353, 706
 "Item errors" => "Помилки статей", // ai 2026-10
 
-// src/Import/DetailPage.php, row 342
+// src/Import/DetailPage.php, row 366
 "working %1" => "з них робочий час %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 366
+// src/Import/DetailPage.php, row 390
 "The stored state of the streams cannot be read." => "Збережений стан потоків не вдається прочитати.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 367
+// src/Import/DetailPage.php, row 391
 "No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Ще жоден потік не імпортовано й не перевірено. Список заповнить кнопка %1 або %2 (розділ «Дії» вище).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 368, 396
+// src/Import/DetailPage.php, row 392, 421
 "Streams" => "Потоки", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Records" => "Записи", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Last recorded" => "Останній запис", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Source checked" => "Перевірка джерела", // ai 2026-10
 
-// src/Import/DetailPage.php, row 377
+// src/Import/DetailPage.php, row 401
 "Data version" => "Версія даних", // ai 2026-10
 
-// src/Import/DetailPage.php, row 390
+// src/Import/DetailPage.php, row 415
 "by the run started %1" => "запуском, розпочатим %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 395
+// src/Import/DetailPage.php, row 420
 "Pages of the streams" => "Сторінки потоків", // ai 2026-10
 
-// src/Import/DetailPage.php, row 421
+// src/Import/DetailPage.php, row 452
 "Page %1 of %2" => "Сторінка %1 з %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 507
+// src/Import/DetailPage.php, row 545
 "The run is queued. It goes on in the background; reload the page to see how far it got." => "Запуск поставлено в чергу. Він триває у фоні; перезавантажте сторінку, щоб побачити, наскільки він просунувся.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 508
+// src/Import/DetailPage.php, row 546
 "The run goes on - its next step is queued." => "Запуск триває – його наступний крок у черзі.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 509
+// src/Import/DetailPage.php, row 547
 "The run is ended. What it imported stays." => "Запуск завершено. Те, що він імпортував, залишається.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 511
+// src/Import/DetailPage.php, row 549
 "No such action." => "Такої дії не існує.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 512
+// src/Import/DetailPage.php, row 550
 "Choose a stream of the source." => "Виберіть потік джерела.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 513
-"Not started." => "Не запущено.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 515
-"Its last step may still be working. Try again in a few minutes." => "Його останній крок, можливо, ще виконується. Спробуйте знову за кілька хвилин.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 516
-"This import no longer exists in this slice." => "Цього імпорту в цій рубриці вже не існує.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 517
-"No such run of this import." => "Такого запуску цього імпорту не існує.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 518
-"The run is finished already." => "Запуск уже завершено.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 520
-"The action failed. The log of import failures has its cause." => "Дія не вдалася. Причину наведено в журналі збоїв імпорту.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Останній запуск зупинився через помилку. Спершу виберіть для нього «Продовжити» або «Завершити». Запланований запуск завершить його сам, ручний – ні.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first." => "Останній запуск зупинився через помилку. Спершу виберіть для нього «Продовжити» або «Завершити».", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Над останнім запуском уже давно не працював жоден крок. Спершу виберіть для нього «Продовжити» або «Завершити». Запланований запуск завершить його сам, ручний – ні.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first." => "Над останнім запуском уже давно не працював жоден крок. Спершу виберіть для нього «Продовжити» або «Завершити».", // ai 2026-10
-
-// src/Import/DetailPage.php, row 533
-"The last step of the previous run is still finishing. Try again in a few minutes." => "Останній крок попереднього запуску ще завершується. Спробуйте знову за кілька хвилин.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 534
-"Its next step is already on its way." => "Його наступний крок уже в дорозі.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 535
-"The last run is still running." => "Останній запуск ще виконується.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 544
-"Only a user who manages the feeding of the slice may run its imports." => "Запускати імпорти рубрики може лише користувач, який керує її передаванням.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 547
-"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Визначення імпорту не можна використати – його зіставлення не відповідає рубриці або його не вдається прочитати (DEFINITION).", // ai 2026-10
-
-// src/Import/DetailPage.php, row 550
-"The source has no such stream now." => "Джерело зараз не має такого потоку.", // ai 2026-10
-
 // src/Import/DetailPage.php, row 551
-"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Код джерела імпорту дав збій (SOURCE). Клас і рядок наведено в журналі збоїв імпорту.", // ai 2026-10
+"At most (items) takes a whole number greater than 0, or nothing for all items (500 in a dry run)." => "«Не більше (статей)» приймає ціле число, більше за 0, або нічого для всіх статей (у пробному запуску 500).", // ai 2026-11
 
 // src/Import/DetailPage.php, row 552
-"The first row of the file lacks columns the mapping needs." => "У першому рядку файлу бракує стовпців, потрібних для зіставлення.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 553
-"The source did not accept the key." => "Джерело не прийняло ключ.", // ai 2026-10
+"Not started." => "Не запущено.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 554
-"The key of the source is damaged in the configuration." => "Ключ джерела в конфігурації пошкоджено.", // ai 2026-10
+"Its last step may still be working. Try again in a few minutes." => "Його останній крок, можливо, ще виконується. Спробуйте знову за кілька хвилин.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 555
-"The source could not be reached." => "Не вдалося з'єднатися з джерелом.", // ai 2026-10
+"This import no longer exists in this slice." => "Цього імпорту в цій рубриці вже не існує.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 556
-"The run is finished; it cannot go on." => "Запуск завершено; продовжити його не можна.", // ai 2026-10
+"No such run of this import." => "Такого запуску цього імпорту не існує.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 557
-"The import is switched off." => "Імпорт вимкнено.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 558
-"This import uses API keys, so only a superadmin may do this." => "Цей імпорт використовує API-ключі, тому це може зробити лише суперадміністратор.", // ai 2026-10
+"The run is finished already." => "Запуск уже завершено.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 559
-"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Джерело імпорту не вміє визначати версії своїх потоків, тож немає стану, який можна записати.", // ai 2026-10
+"The action failed. The log of import failures has its cause." => "Дія не вдалася. Причину наведено в журналі збоїв імпорту.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 560
-"The import source refused: %1" => "Джерело імпорту відмовило: %1", // ai 2026-10
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Останній запуск зупинився через помилку. Спершу виберіть для нього «Продовжити» або «Завершити». Запланований запуск завершить його сам, ручний – ні.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 570
+"The last run stopped by an error. Continue it or End it first." => "Останній запуск зупинився через помилку. Спершу виберіть для нього «Продовжити» або «Завершити».", // ai 2026-10
 
 // src/Import/DetailPage.php, row 571
-"The request to the source failed." => "Запит до джерела не вдався.", // ai 2026-10
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Над останнім запуском уже давно не працював жоден крок. Спершу виберіть для нього «Продовжити» або «Завершити». Запланований запуск завершить його сам, ручний – ні.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 571
+"No step has worked on the last run for a long time. Continue it or End it first." => "Над останнім запуском уже давно не працював жоден крок. Спершу виберіть для нього «Продовжити» або «Завершити».", // ai 2026-10
 
 // src/Import/DetailPage.php, row 572
-"The source is not available now." => "Джерело зараз недоступне.", // ai 2026-10
+"The last step of the previous run is still finishing. Try again in a few minutes." => "Останній крок попереднього запуску ще завершується. Спробуйте знову за кілька хвилин.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 588
-// src/Import/RunView.php, row 177
-"No import yet" => "Ще жодного імпорту", // ai 2026-10
+// src/Import/DetailPage.php, row 573
+"Its next step is already on its way." => "Його наступний крок уже в дорозі.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 574
+"The last run is still running." => "Останній запуск ще виконується.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 583
+"Only a user who manages the feeding of the slice may run its imports." => "Запускати імпорти рубрики може лише користувач, який керує її передаванням.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 586
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Визначення імпорту не можна використати – його зіставлення не відповідає рубриці або його не вдається прочитати (DEFINITION).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 589
-"Latest run: %1" => "Останнє виконання: %1", // ai 2026-10
+"The source has no such stream now." => "Джерело зараз не має такого потоку.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 590
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Код джерела імпорту дав збій (SOURCE). Клас і рядок наведено в журналі збоїв імпорту.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 591
+"The first row of the file lacks columns the mapping needs." => "У першому рядку файлу бракує стовпців, потрібних для зіставлення.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 592
+"The source did not accept the key." => "Джерело не прийняло ключ.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 593
+"The key of the source is damaged in the configuration." => "Ключ джерела в конфігурації пошкоджено.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 594
+"The source could not be reached." => "Не вдалося з'єднатися з джерелом.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 595
+"The database did not store the imported items; the source is not at fault." => "База даних не зберегла імпортовані статті; джерело в цьому не винне.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 596
+"The run is finished; it cannot go on." => "Запуск завершено; продовжити його не можна.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 597
+"The import runs only by hand, so a planned task does not start it." => "Імпорт запускається лише вручну, тож заплановане завдання його не запускає.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 598
+"This import uses API keys, so only a superadmin may do this." => "Цей імпорт використовує API-ключі, тому це може зробити лише суперадміністратор.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 599
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Джерело імпорту не вміє визначати версії своїх потоків, тож немає стану, який можна записати.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 600
+"The import source refused: %1" => "Джерело імпорту відмовило: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 611
+"The request to the source failed." => "Запит до джерела не вдався.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 612
+"The source is not available now." => "Джерело зараз недоступне.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 628
+// src/Import/RunView.php, row 183
+"No import yet" => "Ще жодного імпорту", // ai 2026-10
+
+// src/Import/DetailPage.php, row 629
+"Latest run: %1" => "Останнє виконання: %1", // ai 2026-10
+
+// src/Import/DetailPage.php, row 635
 "Since then: %1" => "Відтоді: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "Source: %1" => "Джерело: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 604
+// src/Import/DetailPage.php, row 644
 "this source is not available" => "це джерело недоступне", // ai 2026-10
 
-// src/Import/DetailPage.php, row 626
+// src/Import/DetailPage.php, row 666
 "First item error:" => "Перша помилка статті:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Latest runs" => "Останні виконання", // ai 2026-10
 
-// src/Import/DetailPage.php, row 653
+// src/Import/DetailPage.php, row 693
 "Outcomes of the latest runs, newest first" => "Результати останніх запусків, найновіші першими", // ai 2026-10
 
-// src/Import/DetailPage.php, row 654
+// src/Import/DetailPage.php, row 694
 "Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Найновіші першими. Пунктирне коло – запуск, який нічого не зберіг: перевірка джерела, пробний запуск або запис стану. Заповнений квадрат %1 – запуск, завершений до закінчення.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 679
+// src/Import/DetailPage.php, row 719
 "The open run" => "Поточне виконання", // ai 2026-10
 
-// src/Import/DetailPage.php, row 681
+// src/Import/DetailPage.php, row 721
 "Streams done: %1 of %2." => "Готові потоки: %1 з %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 684
+// src/Import/DetailPage.php, row 724
 "Now at: %1." => "Зараз обробляє: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 686
+// src/Import/DetailPage.php, row 726
 "Last progress: %1." => "Останній поступ: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 689
+// src/Import/DetailPage.php, row 729
 "Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "Більше нічого не імпортується, доки Ви не втрутитеся або доки заплановане завдання знову не запустить імпорт (це завершить цей запуск).", // ai 2026-10
 
-// src/Import/DetailPage.php, row 690
+// src/Import/DetailPage.php, row 730
 "Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "«Продовжити» відновить запуск із місця зупинки, щойно причину буде усунено; «Завершити» зупинить його остаточно й залишить те, що було імпортовано.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 691
+// src/Import/DetailPage.php, row 731
 "No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "Над ним уже давно не працював жоден крок – перевірте, що cron запускає чергу завдань і що її цикли достатньо довгі для кроку (TOEXECUTE_ALLOWED_TIME у config.php). «Продовжити» спробує знову зараз; «Завершити» зупинить його остаточно й залишить те, що було імпортовано. Запланований запуск імпорту завершить його й почне новий запуск.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 692
+// src/Import/DetailPage.php, row 732
 "A step is working now." => "Зараз виконується крок.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 694
+// src/Import/DetailPage.php, row 734
 "Waiting to try again at %1 after 1 failed try." => "Очікує нової спроби о %1 після 1 невдалої спроби.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 695
+// src/Import/DetailPage.php, row 735
 "Waiting to try again at %1 after %2 failed tries." => "Очікує нової спроби о %1; невдалих спроб: %2.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 696
+// src/Import/DetailPage.php, row 736
 "Waiting to try again at %1." => "Очікує нової спроби о %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 698, 944
+// src/Import/DetailPage.php, row 738, 995
 "Its last step may still be working." => "Його останній крок, можливо, ще виконується.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 699
+// src/Import/DetailPage.php, row 739
 "Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "Його останній крок зупинився, не завершившись. Черга завдань спробує його знову протягом %1 хв; «Спробувати зараз» зробить це негайно.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue until %1." => "Його наступний крок чекає в черзі завдань до %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 708
+// src/Import/DetailPage.php, row 748
 "Its next step waits in the task queue." => "Його наступний крок чекає в черзі завдань.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 726
-"The import is disabled, so no planned task starts it." => "Імпорт вимкнено, тому жодне заплановане завдання його не запустить.", // ai 2026-10
+// src/Import/DetailPage.php, row 766
+"Planned tasks start it only once Enabled is ticked (Edit in the list of imports)." => "«Заплановані завдання» запускають його, лише коли позначено «Увімкнено» («Редагувати» у списку імпортів).", // ai 2026-11
 
-// src/Import/DetailPage.php, row 732
-"Not planned" => "Не заплановано", // ai 2026-10
-
-// src/Import/DetailPage.php, row 733
+// src/Import/DetailPage.php, row 773
 "A planned task calls it, but none has a time to start it." => "Його викликає заплановане завдання, але жодне не має часу запуску.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 734
+// src/Import/DetailPage.php, row 774
 "It runs only when you start it. To run it on a schedule, add a planned task." => "Він виконується лише тоді, коли Ви його запустите. Щоб запускати його за розкладом, додайте заплановане завдання.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 745
+// src/Import/DetailPage.php, row 785
 "Written by hand, a planned task starts it with %1." => "Записане вручну заплановане завдання запускає його так: %1.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 756
+// src/Import/DetailPage.php, row 796
 "Planned tasks need the Forms permission" => "Заплановані завдання потребують дозволу «Форми»", // ai 2026-10
 
-// src/Import/DetailPage.php, row 760
+// src/Import/DetailPage.php, row 800
 "Planned tasks: %1" => "Заплановані завдання: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 761
+// src/Import/DetailPage.php, row 801
 "Planned tasks: %1, next %2" => "Заплановані завдання: %1, наступне %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 763, 778
+// src/Import/DetailPage.php, row 803, 818
 "Schedule" => "Запланувати", // ai 2026-10
 
-// src/Import/DetailPage.php, row 766
-"(import off)" => "(імпорт вимкнено)", // ai 2026-10
+// src/Import/DetailPage.php, row 806
+"(does not start it now)" => "(зараз його не запускає)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "next %1" => "наступне %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 773
+// src/Import/DetailPage.php, row 813
 "no time set" => "час не задано", // ai 2026-10
 
-// src/Import/DetailPage.php, row 774
+// src/Import/DetailPage.php, row 814
 "save the task again to let it start the import" => "збережіть завдання ще раз, щоб воно могло запустити імпорт", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "queued" => "у черзі", // ai 2026-10
 
-// src/Import/DetailPage.php, row 775
+// src/Import/DetailPage.php, row 815
 "not queued" => "не в черзі", // ai 2026-10
 
-// src/Import/DetailPage.php, row 793
+// src/Import/DetailPage.php, row 833
 "Import %1" => "Імпорт %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "mode set by an expression" => "режим, заданий виразом", // ai 2026-10
 
-// src/Import/DetailPage.php, row 803
+// src/Import/DetailPage.php, row 843
 "unknown mode %1" => "невідомий режим %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Passed" => "Успішно", // ai 2026-10
 
-// src/Import/DetailPage.php, row 826, 833
+// src/Import/DetailPage.php, row 866, 873
 "Failed" => "Не вдалося", // ai 2026-10
 
-// src/Import/DetailPage.php, row 828
+// src/Import/DetailPage.php, row 868
 "Taken from the run list: the stream state holds no newer check result." => "Взято зі списку запусків: стан потоків не містить новішого результату перевірки.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "The stored result cannot be read." => "Збережений результат не вдається прочитати.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 831
+// src/Import/DetailPage.php, row 871
 "Never checked" => "Ще не перевірялося", // ai 2026-10
 
-// src/Import/DetailPage.php, row 849
+// src/Import/DetailPage.php, row 893
 "The mapping of the import cannot be read; no run starts until it is set again." => "Зіставлення імпорту не вдається прочитати; жоден запуск не почнеться, доки його не буде налаштовано знову.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 856
+// src/Import/DetailPage.php, row 900
 "The mapping does not fit the slice; no run starts until it is fixed:" => "Зіставлення не відповідає рубриці; жоден запуск не почнеться, доки його не виправлено:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 899
+// src/Import/DetailPage.php, row 912
+"The source is not set up yet." => "Джерело ще не налаштовано.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 948
 "No stream is known yet - run the import or check the source first." => "Ще не відомо жодного потоку – спершу запустіть імпорт або перевірте джерело.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 903
+// src/Import/DetailPage.php, row 952
 "One stream" => "Один потік", // ai 2026-10
 
-// src/Import/DetailPage.php, row 904
-"Run the stream" => "Запустити потік", // ai 2026-10
+// src/Import/DetailPage.php, row 953
+"At most (items)" => "Не більше (статей)", // ai 2026-11
 
-// src/Import/DetailPage.php, row 905
+// src/Import/DetailPage.php, row 955
 "Dry run of the stream" => "Пробний запуск потоку", // ai 2026-10
 
-// src/Import/DetailPage.php, row 918
+// src/Import/DetailPage.php, row 956
+"Run the stream" => "Запустити потік", // ai 2026-10
+
+// src/Import/DetailPage.php, row 969
 "Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "Записати версії, які джерело має зараз, так, ніби їх імпортовано? Потоки, які після цього не зміняться, не імпортуватимуться.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 919
+// src/Import/DetailPage.php, row 970
 "Record the current state of the source" => "Записати поточний стан джерела", // ai 2026-10
 
-// src/Import/DetailPage.php, row 921
+// src/Import/DetailPage.php, row 972
 "Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Зберігає версію, яку кожен потік має зараз, без імпорту, тож «Запустити змінені» потім візьме лише те, що зміниться пізніше. Використовуйте це, лише коли дані джерела вже є в рубриці.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 937
+// src/Import/DetailPage.php, row 988
 "No run is open." => "Жоден запуск не відкритий.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 943
+// src/Import/DetailPage.php, row 994
 "Its step is working now." => "Його крок зараз виконується.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 947
+// src/Import/DetailPage.php, row 998
 "Try now" => "Спробувати зараз", // ai 2026-10
 
-// src/Import/DetailPage.php, row 957
+// src/Import/DetailPage.php, row 1008
 "End the run for good? What it imported stays; the next run starts from the beginning." => "Остаточно завершити запуск? Те, що він імпортував, залишиться; наступний запуск почнеться з початку.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1024
+// src/Import/DetailPage.php, row 1075
 "The first item errors (%1)" => "Перші помилки статей (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1025, 1046
+// src/Import/DetailPage.php, row 1076, 1097
 "Job" => "Задача", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1036
+// src/Import/DetailPage.php, row 1087
 "Skipped - the key came out empty (%1)" => "Пропущено – ключ вийшов порожнім (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1046
+// src/Import/DetailPage.php, row 1097
 "Source value" => "Значення з джерела", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of 1 job." => "Фільтр не залишив жодної статті з 1 задачі.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1056
+// src/Import/DetailPage.php, row 1107
 "The filter kept no item of %1 jobs." => "Фільтр не залишив жодної статті з %1 задач.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1057
+// src/Import/DetailPage.php, row 1108
 "If those items should be imported, check the filter in Mapping." => "Якщо ці статті мають імпортуватися, перевірте фільтр у розділі «Зіставлення».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in 1 stream; the rest of it was skipped." => "Джерело зациклилося в 1 потоці; його решту пропущено.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1066
+// src/Import/DetailPage.php, row 1117
 "The source went round in %1 streams; the rest of each was skipped." => "Джерело зациклилося в %1 потоках; решту кожного з них пропущено.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1067
+// src/Import/DetailPage.php, row 1118
 "The source pages wrongly or changed its paging; check the source, then run the import again." => "Джерело неправильно розбиває на сторінки або змінило розбиття; перевірте джерело, а потім знову запустіть імпорт.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1082
+// src/Import/DetailPage.php, row 1133
 "Remarks of the source (%1)" => "Зауваження джерела (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1091
+// src/Import/DetailPage.php, row 1142
 "Remark" => "Зауваження", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1099
+// src/Import/DetailPage.php, row 1150
 "The dry run found no item to store." => "Пробний запуск не знайшов жодної статті для збереження.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1101
+// src/Import/DetailPage.php, row 1152
 "What the dry run would store - the first %1 items" => "Що зберіг би пробний запуск – перші статті (%1)", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Last try failed:" => "Остання спроба не вдалася:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1123
+// src/Import/DetailPage.php, row 1174
 "Error:" => "Помилка:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1124
+// src/Import/DetailPage.php, row 1175
 "At: %1" => "Де: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1126
+// src/Import/DetailPage.php, row 1177
 "What to do:" => "Що робити:", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1136
+// src/Import/DetailPage.php, row 1187
 "Check the address of the source in its settings, then Continue or End the run." => "Перевірте адресу джерела в його налаштуваннях, а потім виберіть для запуску «Продовжити» або «Завершити».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1140
+// src/Import/DetailPage.php, row 1191
 "Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "Виправте зіставлення стовпців або файл так, щоб відсутні стовпці існували, а потім знову натисніть «Перевірити джерело».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1141
+// src/Import/DetailPage.php, row 1192
 "Check the key of the source in its settings, then run Check source." => "Перевірте ключ джерела в його налаштуваннях, а потім натисніть «Перевірити джерело».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1142
+// src/Import/DetailPage.php, row 1193
 "Enter the key of the source again in its settings, then run Check source." => "Знову введіть ключ джерела в його налаштуваннях, а потім натисніть «Перевірити джерело».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1143
+// src/Import/DetailPage.php, row 1194
 "The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "Не вдалося з'єднатися з джерелом. Перевірте його адресу в налаштуваннях; якщо вона правильна, пізніше виберіть для запуску «Продовжити».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1144
+// src/Import/DetailPage.php, row 1195
 "Correct the settings of the source, then run Check source." => "Виправте налаштування джерела, а потім натисніть «Перевірити джерело».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1145
+// src/Import/DetailPage.php, row 1196
 "Choose a stream the source still has, then start the import again." => "Виберіть потік, який джерело ще має, а потім знову запустіть імпорт.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1146
+// src/Import/DetailPage.php, row 1197
 "Check that every mapped field exists in the slice, then start the import again." => "Перевірте, що кожне зіставлене поле існує в рубриці, а потім знову запустіть імпорт.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1147
+// src/Import/DetailPage.php, row 1198
 "Look the failure up in the log of import failures, then Continue or End the run." => "Знайдіть збій у журналі збоїв імпорту, а потім виберіть для запуску «Продовжити» або «Завершити».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1161
+// src/Import/DetailPage.php, row 1199
+"Continue the run later; if the database keeps refusing, tell its administrator." => "Продовжте виконання пізніше; якщо база даних і далі відмовлятиме, повідомте її адміністратора.", // ai 2026-11
+
+// src/Import/DetailPage.php, row 1213
 "full run" => "повне виконання", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1162
-"one stream (%1)" => "один потік (%1)", // ai 2026-10
+// src/Import/DetailPage.php, row 1214
+"one stream: %1" => "один потік: %1", // ai 2026-11
 
-// src/Import/DetailPage.php, row 1163
+// src/Import/DetailPage.php, row 1215
 "%1 streams" => "потоків: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Baseline only" => "Лише записаний стан", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1199
+// src/Import/DetailPage.php, row 1251
 "Nothing imported yet. Run changed only takes what changes after this." => "Ще нічого не імпортовано. «Запустити змінені» візьме те, що зміниться після цього.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207, 1208
+// src/Import/DetailPage.php, row 1259, 1260
 "Imported with item errors" => "Імпортовано з помилками статей", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1207
+// src/Import/DetailPage.php, row 1259
 "1 item error in the run that imported it - see Runs." => "1 помилка статті в запуску, який його імпортував – див. «Виконання».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1208
+// src/Import/DetailPage.php, row 1260
 "%1 item errors in the run that imported it - see Runs." => "Помилок статей у запуску, який його імпортував: %1 – див. «Виконання».", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "Imported" => "Імпортовано", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source was asked again after the import." => "Після імпорту джерело запитано знову.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1210
+// src/Import/DetailPage.php, row 1262
 "The source has not been asked since." => "Відтоді джерело не запитувалося.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Checked, not imported yet" => "Перевірено, ще не імпортовано", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1214
+// src/Import/DetailPage.php, row 1266
 "Run imports it; Run changed only too, as it has no version to compare." => "«Запустити» імпортує його; «Запустити змінені» теж, бо він не має версії для порівняння.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "Not seen yet" => "Ще не виявлено", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1215
+// src/Import/DetailPage.php, row 1267
 "No run has imported or checked it." => "Жоден запуск його не імпортував і не перевірив.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1228
+// src/Import/DetailPage.php, row 1280
 "%1 read" => "прочитано: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1229
+// src/Import/DetailPage.php, row 1281
 "%1 new, %2 updated, %3 skipped" => "нових: %1, оновлених: %2, пропущених: %3", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1230
+// src/Import/DetailPage.php, row 1282
 "%1 filtered out" => "відфільтровано: %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "dry run - nothing stored" => "пробний запуск – нічого не збережено", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1231
+// src/Import/DetailPage.php, row 1283
 "all streams of the run together" => "усі потоки виконання разом", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1250
+// src/Import/DetailPage.php, row 1302
 "None yet - an import records it" => "Ще немає – її запише імпорт", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1251
+// src/Import/DetailPage.php, row 1303
 "None - the source gives no version" => "Немає – джерело не надає версії", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1" => "тривало %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1356
 "took %1, working %2" => "тривало %1, з них робочий час %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1310
+// src/Import/DetailPage.php, row 1362
 "%1 s" => "%1 с", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313
+// src/Import/DetailPage.php, row 1365
 "%1 min %2 s" => "%1 хв %2 с", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1313, 1315
+// src/Import/DetailPage.php, row 1365, 1367
 // src/Optimize/StateCheckModel.php, row 257
 "%1 min" => "%1 хв", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1315
+// src/Import/DetailPage.php, row 1367
 // src/Optimize/StateCheckModel.php, row 258
 "%1 h" => "%1 год", // ai 2026-10
 
@@ -10463,7 +10523,7 @@ return [
 // src/Import/RunView.php, row 74
 "Stuck — see State Check" => "Застрягло — див. «Перевірка стану»", // ai 2026-10
 
-// src/Import/RunView.php, row 75, 171
+// src/Import/RunView.php, row 75, 177
 "Running" => "Виконується", // ai 2026-10
 
 // src/Import/RunView.php, row 76
@@ -10518,167 +10578,197 @@ return [
 // src/Import/RunView.php, row 131
 "%1 days ago" => "%1 дн. тому", // ai 2026-10
 
-// src/Import/RunView.php, row 159, 162, 165, 169
+// src/Import/RunView.php, row 162, 168, 171, 175
 "Failing" => "Збій", // ai 2026-10
 
-// src/Import/RunView.php, row 159
+// src/Import/RunView.php, row 162
 "The source of this import is not available, so it cannot run." => "Джерело цього імпорту недоступне, тому імпорт не може виконуватися.", // ai 2026-10
 
-// src/Import/RunView.php, row 162
+// src/Import/RunView.php, row 165
+"Not set up" => "Не налаштовано", // ai 2026-11
+
+// src/Import/RunView.php, row 165
+"Fill in these settings of the source: %1." => "Заповніть ці налаштування джерела: %1.", // ai 2026-11
+
+// src/Import/RunView.php, row 168
 "The mapping does not fit the slice, so no run can start until it is fixed." => "Зіставлення не відповідає рубриці, тому жодне виконання не почнеться, доки його не виправите.", // ai 2026-10
 
-// src/Import/RunView.php, row 169
+// src/Import/RunView.php, row 175
 "A run has made no progress for a long time - cron may not be running its steps." => "Виконання вже довго не просувається - можливо, cron не запускає його кроки.", // ai 2026-10
 
-// src/Import/RunView.php, row 170, 178, 181, 182, 183
+// src/Import/RunView.php, row 176, 184, 187, 188, 189
 "Needs attention" => "Потребує уваги", // ai 2026-10
 
-// src/Import/RunView.php, row 170
+// src/Import/RunView.php, row 176
 "A run failed a step and waits to try again." => "Виконання не пройшло крок і чекає на повторну спробу.", // ai 2026-10
 
-// src/Import/RunView.php, row 171
+// src/Import/RunView.php, row 177
 "A run is in progress: %1." => "Триває виконання: %1.", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "Never ran" => "Ще не виконувався", // ai 2026-10
 
-// src/Import/RunView.php, row 176
+// src/Import/RunView.php, row 182
 "No run yet. Run starts the first import." => "Ще жодного виконання. «Запустити» почне перший імпорт.", // ai 2026-10
 
-// src/Import/RunView.php, row 177
+// src/Import/RunView.php, row 183
 "Only source checks or dry runs so far - nothing was imported." => "Поки що лише перевірки джерела або пробні виконання - нічого не імпортовано.", // ai 2026-10
 
-// src/Import/RunView.php, row 179
+// src/Import/RunView.php, row 185
 "The last import stopped by an error and was then ended, so the data may be incomplete." => "Останній імпорт зупинився через помилку, а потім був завершений, тому дані можуть бути неповними.", // ai 2026-10
 
-// src/Import/RunView.php, row 180
+// src/Import/RunView.php, row 186
 "The last import was ended before it finished, so the data may be incomplete." => "Останній імпорт було завершено до його закінчення, тому дані можуть бути неповними.", // ai 2026-10
 
-// src/Import/RunView.php, row 181
+// src/Import/RunView.php, row 187
 "The last import finished, but 1 item could not be stored." => "Останній імпорт завершився, але 1 статтю не вдалося зберегти.", // ai 2026-10
 
-// src/Import/RunView.php, row 182
+// src/Import/RunView.php, row 188
 "The last import finished, but %1 items could not be stored." => "Останній імпорт завершився, але не вдалося зберегти статей: %1.", // ai 2026-10
 
-// src/Import/RunView.php, row 183
+// src/Import/RunView.php, row 189
 "The last full import read nothing - the source may be empty." => "Останній повний імпорт нічого не прочитав - можливо, джерело порожнє.", // ai 2026-10
 
-// src/Import/RunView.php, row 184, 185
+// src/Import/RunView.php, row 190, 191
 "Healthy" => "Справний", // ai 2026-10
 
-// src/Import/RunView.php, row 184
+// src/Import/RunView.php, row 190
 "The last import finished without errors; nothing had changed." => "Останній імпорт завершився без помилок; нічого не змінилося.", // ai 2026-10
 
-// src/Import/RunView.php, row 185
+// src/Import/RunView.php, row 191
 "The last import finished without errors (%1 read)." => "Останній імпорт завершився без помилок (прочитано: %1).", // ai 2026-10
 
-// src/Import/RunView.php, row 188
-"Runs only by hand." => "Запускається лише вручну.", // ai 2026-10
-
-// src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "Останнє пробне виконання зупинилося через помилку. Доки Ви не втрутитеся, нічого більше не імпортується.", // ai 2026-10
+// src/Import/RunView.php, row 198
+"The source refuses its settings." => "Джерело відхиляє свої налаштування.", // ai 2026-11
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "Остання перевірка джерела зупинилася через помилку. Доки Ви не втрутитеся, нічого більше не імпортується.", // ai 2026-10
-
-// src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Запис стану джерела зупинився через помилку. Доки Ви не втрутитеся, нічого більше не імпортується.", // ai 2026-10
-
-// src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "Останній імпорт зупинився через помилку. Доки Ви не втрутитеся, нічого більше не імпортується.", // ai 2026-10
-
-// src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "Перевірка джерела не вдалася - нічого не імпортовано", // ai 2026-10
+"The source refuses its settings: %1" => "Джерело відхиляє свої налаштування: %1", // ai 2026-11
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "Триває перевірка джерела", // ai 2026-10
+"The last dry run stopped by an error. Nothing more is imported until you act." => "Останнє пробне виконання зупинилося через помилку. Доки Ви не втрутитеся, нічого більше не імпортується.", // ai 2026-10
+
+// src/Import/RunView.php, row 214
+"The last source check stopped by an error. Nothing more is imported until you act." => "Остання перевірка джерела зупинилася через помилку. Доки Ви не втрутитеся, нічого більше не імпортується.", // ai 2026-10
 
 // src/Import/RunView.php, row 215
-"Source reachable - nothing imported" => "Джерело доступне - нічого не імпортовано", // ai 2026-10
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Запис стану джерела зупинився через помилку. Доки Ви не втрутитеся, нічого більше не імпортується.", // ai 2026-10
 
-// src/Import/RunView.php, row 217
-"Nothing had changed" => "Нічого не змінилося", // ai 2026-10
-
-// src/Import/RunView.php, row 218
-"Nothing read" => "Нічого не прочитано", // ai 2026-10
-
-// src/Import/RunView.php, row 219
-"%1 read, %2 new, %3 changed" => "Прочитано: %1, нових: %2, змінених: %3", // ai 2026-10
-
-// src/Import/RunView.php, row 221
-"%1 (nothing stored)" => "%1 (нічого не збережено)", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of 1 stream - nothing imported" => "Записано стан 1 потоку - нічого не імпортовано", // ai 2026-10
-
-// src/Import/RunView.php, row 227
-"Recorded the state of %1 streams - nothing imported" => "Записано стан потоків: %1 - нічого не імпортовано", // ai 2026-10
+// src/Import/RunView.php, row 216
+"The last import stopped by an error. Nothing more is imported until you act." => "Останній імпорт зупинився через помилку. Доки Ви не втрутитеся, нічого більше не імпортується.", // ai 2026-10
 
 // src/Import/RunView.php, row 228
-"%1 without a version" => "Без версії: %1", // ai 2026-10
+"Source check failed - nothing imported" => "Перевірка джерела не вдалася - нічого не імпортовано", // ai 2026-10
+
+// src/Import/RunView.php, row 229
+"Source check under way" => "Триває перевірка джерела", // ai 2026-10
+
+// src/Import/RunView.php, row 231
+"Source reachable - nothing imported" => "Джерело доступне - нічого не імпортовано", // ai 2026-10
+
+// src/Import/RunView.php, row 233
+"Nothing had changed" => "Нічого не змінилося", // ai 2026-10
+
+// src/Import/RunView.php, row 234
+"Nothing read" => "Нічого не прочитано", // ai 2026-10
+
+// src/Import/RunView.php, row 235
+"%1 read, %2 new, %3 changed" => "Прочитано: %1, нових: %2, змінених: %3", // ai 2026-10
 
 // src/Import/RunView.php, row 237
-"changed only" => "лише змінені", // ai 2026-10
+"%1 (nothing stored)" => "%1 (нічого не збережено)", // ai 2026-10
 
-// src/Import/RunView.php, row 238
-"check" => "перевірка", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of 1 stream - nothing imported" => "Записано стан 1 потоку - нічого не імпортовано", // ai 2026-10
 
-// src/Import/RunView.php, row 239
-"recording the state of the source" => "запис стану джерела", // ai 2026-10
-
-// src/Import/RunView.php, row 242
-"dry run" => "пробний запуск", // ai 2026-10
+// src/Import/RunView.php, row 243
+"Recorded the state of %1 streams - nothing imported" => "Записано стан потоків: %1 - нічого не імпортовано", // ai 2026-10
 
 // src/Import/RunView.php, row 244
-"by hand" => "вручну", // ai 2026-10
+"%1 without a version" => "Без версії: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 245
-"planned" => "за планом", // ai 2026-10
+// src/Import/RunView.php, row 254
+"changed only" => "лише змінені", // ai 2026-10
 
-// src/Import/RunView.php, row 246
-"on an event" => "за подією", // ai 2026-10
+// src/Import/RunView.php, row 255
+"check" => "перевірка", // ai 2026-10
+
+// src/Import/RunView.php, row 256
+"recording the state of the source" => "запис стану джерела", // ai 2026-10
 
 // src/Import/RunView.php, row 259
-"Disabled - it does not start" => "Вимкнено - не запускається", // ai 2026-10
+"dry run" => "пробний запуск", // ai 2026-10
 
-// src/Import/RunView.php, row 268
+// src/Import/RunView.php, row 261
+"first %1 items" => "перші статті: %1", // ai 2026-11
+
+// src/Import/RunView.php, row 263
+"by hand" => "вручну", // ai 2026-10
+
+// src/Import/RunView.php, row 264
+"planned" => "за планом", // ai 2026-10
+
+// src/Import/RunView.php, row 265
+"on an event" => "за подією", // ai 2026-10
+
+// src/Import/RunView.php, row 285
+"Runs only by hand." => "Запускається лише вручну.", // ai 2026-10
+
+// src/Import/RunView.php, row 294
 "No run yet" => "Ще жодного виконання", // ai 2026-10
 
-// src/Import/RunView.php, row 280
+// src/Import/RunView.php, row 306
 "1 item error" => "1 помилка статті", // ai 2026-10
 
-// src/Import/RunView.php, row 281
+// src/Import/RunView.php, row 307
 "%1 item errors" => "Помилок статей: %1", // ai 2026-10
 
-// src/Import/RunView.php, row 284
+// src/Import/RunView.php, row 310
 "Last import: %1" => "Останній імпорт: %1", // ai 2026-10
 
 // src/Import/SliceIdSetting.php, row 22
 "No slice ID" => "Немає ID рубрики", // ai 2026-10
 
-// src/Import/Source/CsvColumnsSetting.php, row 31
-"Expected a JSON object {\"column\": \"field id\"}" => "Очікується об'єкт JSON {\"column\": \"field id\"}", // ai 2026-10
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"no column" => "жодного стовпця", // ai 2026-11
 
-// src/Import/Source/CsvurlSource.php, row 42
+// src/Import/Source/CsvColumnsSetting.php, row 66
+"more than %1 columns" => "забагато стовпців (понад %1)", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 73
+"not a field the import may fill" => "це не поле, яке імпорт може заповнювати", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 74
+"the column name is empty, too long or holds invisible characters" => "назва стовпця порожня, задовга або містить невидимі символи", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 75
+"the column is named twice" => "стовпець указано двічі", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 89
+"Line %1: %2" => "Рядок %1: %2", // ai 2026-11
+
+// src/Import/Source/CsvColumnsSetting.php, row 119
+"expected \"column = field id\"" => "очікується «стовпець = ID поля»", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 43
 "CSV file at a URL" => "CSV файл за URL", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 47
+// src/Import/Source/CsvurlSource.php, row 48
 "Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "Імпортує рядки CSV файлу з публічної адреси http(s); налаштування визначають, який стовпець заповнює яке поле.", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 53
+// src/Import/Source/CsvurlSource.php, row 54
 "http or https only, on a public address, without a user name and password" => "лише http або https, на публічній адресі, без імені користувача та пароля", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 55
+// src/Import/Source/CsvurlSource.php, row 56
 // src/Widget/Widget.php, row 743, 812
 "Columns" => "Стовпці", // ai 2026-06
 
-// src/Import/Source/CsvurlSource.php, row 55
-"JSON object: the column name in the first row => the field it fills" => "Об'єкт JSON: назва стовпця в першому рядку => поле, яке він заповнює", // ai 2026-10
-
 // src/Import/Source/CsvurlSource.php, row 56
+"One line per column: its name in the first row = the id of the field it fills" => "Один рядок на стовпець: його назва в першому рядку файлу = ID поля, яке він заповнює", // ai 2026-11
+
+// src/Import/Source/CsvurlSource.php, row 57
 "Key column" => "Ключовий стовпець", // ai 2026-10
 
-// src/Import/Source/CsvurlSource.php, row 56
+// src/Import/Source/CsvurlSource.php, row 57
 "The column that identifies the item; it must be one of the columns" => "Стовпець, що ідентифікує статтю; має бути одним зі стовпців", // ai 2026-10
 
 // src/Isds/Advice.php, row 48
@@ -11399,40 +11489,40 @@ return [
 // src/Manager.php, row 668
 "You can not save this row here." => "Тут не можна зберегти цей рядок.", // ai 2026-10
 
-// src/Manager.php, row 821
+// src/Manager.php, row 812
 "Searchbar" => "Панель пошуку", // ai 2026-06
 
-// src/Manager.php, row 822
+// src/Manager.php, row 813
 "Scroller" => "Посторінкування", // ai 2026-06
 
-// src/Manager.php, row 823
+// src/Manager.php, row 814
 "Msg" => "Повідомлення", // ai 2026-06
 
-// src/Manager.php, row 824
+// src/Manager.php, row 815
 "Bin" => "Кошик", // ai 2026-06
 
-// src/Manager.php, row 826
+// src/Manager.php, row 817
 "Manager ID" => "ID менеджера", // ai 2026-06
 
-// src/Manager.php, row 1200
+// src/Manager.php, row 1191
 "The action was not performed - use the button on the page." => "Дію не виконано - скористайтеся кнопкою на сторінці.", // ai 2026-10
 
-// src/Manager.php, row 1281
+// src/Manager.php, row 1272
 "Edit id" => "Id для редагування", // ai 2026-06
 
-// src/Manager.php, row 1295
+// src/Manager.php, row 1286
 "Hold Shift and click to select multiple rows" => "Утримуйте Shift і клацайте, щоб вибрати кілька рядків", // ai 2026-06
 
-// src/Manager.php, row 1333
+// src/Manager.php, row 1324
 "Are you sure you want to empty trash?" => "Ви впевнені, що хочете очистити кошик?", // ai 2026-06
 
-// src/Manager.php, row 1435
+// src/Manager.php, row 1426
 "Go" => "Виконати", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "No item selected. Perform action for all filtered items? " => "Не вибрано жодної статті. Виконати дію для всіх відфільтрованих статей?", // ai 2026-06
 
-// src/Manager.php, row 1448
+// src/Manager.php, row 1439
 "Run for %1 items" => "Виконати для %1 статей", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47

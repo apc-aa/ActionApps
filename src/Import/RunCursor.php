@@ -17,7 +17,7 @@ final class RunCursor
     /** the most jobs of one stream a source may declare (SourceInterface::maxJobsPerStream()) */
     public const MAX_JOBS = 100000;
 
-    /** failed jobs in a row that skip the rest of their stream: each costs three steps, ~1 h */
+    /** failed jobs in a row that skip the rest of their stream: each costs three steps, ~20 min */
     public const SKIPS_IN_A_ROW = 3;
 
     /**

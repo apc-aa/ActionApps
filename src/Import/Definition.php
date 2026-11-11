@@ -10,6 +10,7 @@ use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
+use AA\Later\BatchBudget;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
 use AA\Later\Toexecute;
@@ -330,9 +331,13 @@ final class Definition extends AA_Object implements InternalExpandInterface
      *  @return array{kind: string, word: string, reason: string} */
     private static function rowHealth(AA_Content $content, int $now): array
     {
-        $hasSource          = isset(Registry::sources()[(string) $content->getValue('source')]);
+        $type               = (string) $content->getValue('source');
+        $hasSource          = isset(Registry::sources()[$type]);
         [$newest, $import] = self::latestRuns((string) $content->getId());
-        return RunView::health((string) $content->getValue('enabled') === '1', $hasSource, true, $newest, $import, $now);
+        // once it ran, its runs tell - the source is not asked
+        $refusal = '';
+        $lacks   = ($hasSource && ($newest === null)) ? self::setUpLacks($type, (string) $content->getValue('settings'), $refusal) : null;
+        return RunView::health($hasSource, $lacks, true, $newest, $import, $now, $refusal);
     }
 
     /** Run::newestOf() of definition $id, read once for the cells of its row
@@ -362,9 +367,9 @@ final class Definition extends AA_Object implements InternalExpandInterface
 
     private static function nextPlanHtml(AA_Content $content, int $now): string
     {
-        // a planned start of a disabled import does nothing
+        // a planned start of a disabled import does nothing; the status says it runs only by hand
         if ((string) $content->getValue('enabled') !== '1') {
-            return '<span class="aa-import-none">' . safe(_m('None - the import is disabled')) . '</span>';
+            return '<span class="aa-import-none">' . safe(_m('Not planned')) . '</span>';
         }
         $next = self::nextPlannedOf((string) $content->getOwnerId(), (string) $content->getId(), (string) $content->getName(), $now);
         return ($next === null) ? '<span class="aa-import-none">' . safe(_m('Not planned - no task starts it')) . '</span>' : date('Y-m-d H:i', $next);
@@ -474,7 +479,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
     public static function refusal(string $code, string $detail = '', string $message = ''): string
     {
         if (($code === 'SETTINGS') && ($message !== '')) {
-            return _m('The import source refused these settings: %1', [$message]);
+            return ($detail === '') ? _m('The import source refused these settings: %1', [$message]) : _m('The setting "%1" of the import source is not valid: %2', [$detail, $message]);
         }
         return match ($code) {
             'FORBIDDEN'    => _m('Only a user who manages the feeding of the slice may change its imports.'),
@@ -816,15 +821,69 @@ final class Definition extends AA_Object implements InternalExpandInterface
         return (($rows['aa_type'] ?? '') === self::class) && (($rows['aa_owner'] ?? '') === strtolower((string) $this->getOwnerId()));
     }
 
+    /**
+     * What an import still needs before it can run: null when source $type takes the stored settings
+     * $json - or fails for another reason, which the page says apart - else, as the source refuses
+     * them (SETTINGS), the labels of the settings of the form it requires and lacks; [] when no blank
+     * one explains the refusal. Asks the source's code, never the network.
+     * @param string $refusal set to the source's words (refusalWords()) when it returns []
+     * @return ?list<string>
+     */
+    public static function setUpLacks(string $type, string $json, string &$refusal = ''): ?array
+    {
+        $refusal = '';
+        try {
+            $settings = self::settingsOf(['settings' => $json]);
+        } catch (SourceRefused) {
+            // the settings section says the stored settings cannot be read
+            return null;
+        }
+        try {
+            Registry::create($type, $settings);
+            return null;
+        } catch (SourceRefused $e) {
+            if ($e->reason !== 'SETTINGS') {
+                return null;
+            }
+            $lacks = self::unsetSettings($type, $settings);
+            // nothing blank: only the source can say what to fix
+            $refusal = $lacks ? '' : self::refusalWords($type, $e);
+            return $lacks;
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /** What source $type said refusing its settings, kept as a remark of a run is: the words may hold
+     *  what the form posted or, by mistake, a key. '' when it said nothing. */
+    public static function refusalWords(string $type, SourceFailure $e): string
+    {
+        // SourceFailure gives its reason as the message when it got none
+        return ($e->getMessage() === $e->reason) ? '' : (new Context(self::sourceCredentials($type), new BatchBudget(microtime(true))))->remarkText($e->getMessage());
+    }
+
+    /**
+     * The labels of the settings of the form that source $type requires without a default and
+     * $settings lack. [] for a source that is not available or whose code fails here.
+     * @param array<string, string> $settings as settingsOf() gives them
+     * @return list<string>
+     */
+    private static function unsetSettings(string $type, array $settings): array
+    {
+        $unset = [];
+        foreach (Registry::declaredSettings($type) ?? [] as $name => $property) {
+            if (($property instanceof \AA_Property) && Registry::isEditable($property) && $property->isRequired()
+                && (trim($settings[$name] ?? '') === '') && (Service::settingDefault($property) === null)) {
+                $unset[] = (string) $property->getName();
+            }
+        }
+        return $unset;
+    }
+
     /** whether source $type declares settings; a source whose code fails here has none to set */
     private static function hasSettings(string $type): bool
     {
-        $class = Registry::sources()[$type] ?? null;
-        try {
-            return ($class !== null) && ($class::getClassProperties() !== []);
-        } catch (Throwable) {
-            return false;
-        }
+        return (bool) Registry::declaredSettings($type);
     }
 
     /** A new definition has no settings yet, so the source is asked without them. An unknown source
@@ -836,6 +895,13 @@ final class Definition extends AA_Object implements InternalExpandInterface
         }
         try {
             $this->applyMapping(Registry::create((string) $this->source, [])->defaultMapping());
+        } catch (SourceRefused $e) {
+            // a source that needs its settings gives the mapping with them
+            if ($e->reason === 'SETTINGS') {
+                $this->applyMapping(new Mapping([]));
+            } else {
+                $this->noDefaultMapping = true;
+            }
         } catch (Throwable) {
             $this->noDefaultMapping = true;
         }

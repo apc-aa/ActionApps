@@ -17,6 +17,7 @@ use AA\IO\Grabber\CSV;
 use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
 use AA_Property;
+use AA_Validate;
 
 /**
  * A CSV file at a public http(s) address, its first row naming the columns. It has no mapping editor
@@ -52,7 +53,7 @@ final class CsvurlSource extends AbstractSource implements Checkable, Probeable
         return [
             'url'        => new AA_Property('url', _m('URL of the file'), 'string', false, true, ['regexp', ['pattern' => self::URL]], true, _m('http or https only, on a public address, without a user name and password'), '', 'https://example.org/data.csv'),
             'delimiter'  => self::delimiterProperty(),
-            'columns'    => new AA_Property('columns', _m('Columns'), 'text', false, true, new CsvColumnsSetting(), true, _m('JSON object: the column name in the first row => the field it fills'), '', '{"Name": "headline........", "Code": "text...........1"}'),
+            'columns'    => new AA_Property('columns', _m('Columns'), 'text', false, true, new CsvColumnsSetting(), true, _m('One line per column: its name in the first row = the id of the field it fills'), '', "Name = headline........\nCode = text...........1"),
             'key_column' => new AA_Property('key_column', _m('Key column'), 'string', false, true, 'text', true, _m('The column that identifies the item; it must be one of the columns'), '', 'Code'),
         ];
     }
@@ -66,16 +67,25 @@ final class CsvurlSource extends AbstractSource implements Checkable, Probeable
         return $property->setDefault(',');
     }
 
-    /** Validated here again - stored settings reach a run without the form */
+    /** Validated here again - stored settings reach a run without the form. A required setting left
+     *  blank refuses them too: the page then shows a new import as not set up. */
     public static function fromSettings(array $settings): static
     {
         foreach (self::getClassProperties() as $name => $property) {
             $value     = $settings[$name] ?? '';
             $validator = $property->getValidator();
-            if (!$validator->varempty($value) && !$validator->validate($value)) {
-                throw new SourceRefused('SETTINGS', "The setting $name is not valid");
+            // a validator that fails without a word must not pass on the one before
+            AA_Validate::lastErr(0, '');
+            if ($validator->varempty($value)) {
+                if ($property->isRequired() && ($property->getDefault() === null)) {
+                    throw new SourceRefused('SETTINGS', "The setting $name is missing");
+                }
+            } elseif (!$validator->validate($value)) {
+                $why = AA_Validate::lastErrMsg();
+                throw new SourceRefused('SETTINGS', "The setting $name is not valid" . (($why === '') ? '' : ": $why"));
             }
         }
+        // valid by the loop above
         $columns = CsvColumnsSetting::parse($settings['columns'] ?? '') ?? [];
         $key     = $settings['key_column'] ?? '';
         if (($key !== '') && !isset($columns[$key])) {

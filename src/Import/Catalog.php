@@ -54,6 +54,12 @@ final class Catalog extends AA_Object
         return ['entries', 'time', 'streams'];
     }
 
+    /** the page reads the streams on every refresh, the entries (up to MAX_BYTES) only for the catalog */
+    protected static function lazyProperties(): array
+    {
+        return ['entries'];
+    }
+
     /** Adds the entries of a page (an entry of the same key is replaced); the last page ('' next)
      *  marks the catalog filled at $now. A fill starts with create() for its first page and goes on
      *  with forDefinition() for the others - starting from forDefinition() keeps the entries the
@@ -123,6 +129,14 @@ final class Catalog extends AA_Object
     public function count(): int
     {
         return count($this->rows());
+    }
+
+    /** how many of $keys are entries the source says it would add - without making an entry of each
+     *  @param list<string> $keys */
+    public function addable(array $keys): int
+    {
+        $rows = $this->rows();
+        return count(array_filter($keys, static fn(string $key): bool => isset($rows[$key]) && (($rows[$key][3] ?? '') === '')));
     }
 
     /** @return list<CatalogEntry> $length entries from the $offset-th on - a page of a listing, without
@@ -203,6 +217,7 @@ final class Catalog extends AA_Object
     private function rows(): array
     {
         if ($this->rows === null) {
+            $this->readLazy('entries');
             $this->rows = [];
             foreach ($this->decode((string) $this->entries, self::DEPTH) as $key => $row) {
                 $row              = (array) $row;
