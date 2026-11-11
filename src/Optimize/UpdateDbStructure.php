@@ -9,6 +9,7 @@ use AA_MbC;
 use AA_MbI;
 use AA_MbT;
 use AA_Metabase;
+use RuntimeException;
 
 /** Brings the database structure to the AA template (include/metabase_schema.php): creates a missing
  *  table and changes a differing one by ALTER TABLE in place. The server keeps the rows and the writes
@@ -86,12 +87,9 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
      */
     public function repair(): bool
     {
-        $reported = ($this->plan !== null);   // by test() - the chain runs it first
-        $ok       = true;
+        $ok = true;
         foreach ($this->plan() as $tablename => $plan) {
-            if (!$reported) {
-                $this->reportLeft($tablename, $plan);
-            }
+            $this->reportLeft($tablename, $plan);   // the chain clears the report of test() before repair()
             if ($plan['action'] === 'create') {
                 $ok = $this->run($tablename, $this->templateMetabase()->getCreateSql($tablename)) && $ok;
             } elseif ($plan['action'] === 'alter') {
@@ -162,14 +160,19 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
      *  a too long text) stops it instead of being changed, and with a short wait for the table: the queries
      *  coming meanwhile queue behind a waiting ALTER, the site would stand. The connection settings are set
      *  back - it may be persistent and serve the next request.
+     *  A failed SET (the connection lost) is reported for the table, the next tables are still tried.
      * @return string the error, '' when done */
     private function strictly(string $sql): string
     {
-        $this->query("SET @aa_sql_mode = @@SESSION.sql_mode, @aa_lock_wait = @@SESSION.lock_wait_timeout, SESSION sql_mode = 'STRICT_ALL_TABLES', SESSION lock_wait_timeout = " . self::LOCK_WAIT);
         try {
-            return $this->tryQuery($sql);
-        } finally {
-            $this->query('SET SESSION sql_mode = @aa_sql_mode, SESSION lock_wait_timeout = @aa_lock_wait');
+            $this->query("SET @aa_sql_mode = @@SESSION.sql_mode, @aa_lock_wait = @@SESSION.lock_wait_timeout, SESSION sql_mode = 'STRICT_ALL_TABLES', SESSION lock_wait_timeout = " . self::LOCK_WAIT);
+            try {
+                return $this->tryQuery($sql);
+            } finally {
+                $this->query('SET SESSION sql_mode = @aa_sql_mode, SESSION lock_wait_timeout = @aa_lock_wait');
+            }
+        } catch (RuntimeException) {
+            return 'the connection to the database failed - check whether the table changed';
         }
     }
 
@@ -185,10 +188,11 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         $template   = $this->templateMetabase();
         $live       = $this->liveMetabase();
         $collations = $this->liveCollations();
+        $rename     = $this->canRenameIndex();
         $this->plan = [];
         foreach ($template->tables as $tablename => $table) {
             $current = $live->tables[$tablename] ?? null;
-            $changes = $current ? self::changes($table, $current, $collations[$tablename] ?? []) : ['alter' => [], 'extra' => [], 'kept' => []];
+            $changes = $current ? self::changes($table, $current, $collations[$tablename] ?? [], $rename) : ['alter' => [], 'extra' => [], 'kept' => []];
             $this->plan[$tablename] = [
                 'action'   => $current ? ($changes['alter'] ? 'alter' : 'none') : 'create',
                 'alter'    => $changes['alter'],
@@ -217,6 +221,21 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         return $live;
     }
 
+    /** RENAME INDEX is in MariaDB since 10.5.2 and in MySQL since 5.7 - AA runs on older MariaDB too */
+    protected function canRenameIndex(): bool
+    {
+        return self::renamesIndex((string) DB_AA::select1('ver', 'SELECT VERSION() AS ver'));
+    }
+
+    /** does the server of this VERSION() know RENAME INDEX */
+    public static function renamesIndex(string $version): bool
+    {
+        if (!preg_match('/^(\d+\.\d+\.\d+)/', $version, $m)) {
+            return false;
+        }
+        return version_compare($m[1], (stripos($version, 'mariadb') !== false) ? '10.5.2' : '5.7.0', '>=');
+    }
+
     /** the collation of each text column of this database - the template names none
      * @return array<string, array<string, string>> table => column => collation */
     protected function liveCollations(): array
@@ -232,12 +251,13 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
      *  indexes the template does not know (a column may hold data, an index may serve a slow query of the
      *  site), a column the template would narrow (a shorter text, a smaller number, signed for unsigned, a
      *  number for a text) and the template indexes over such a column. A changed column keeps its collation
-     *  and comment; an index the template has under another name is renamed. The order of the columns
+     *  and comment; an index the template has under another name is renamed ($rename), or dropped and
+     *  added under the template name on an older server - never kept twice. The order of the columns
      *  stays: AA names the columns it writes, and moving one would rebuild the table for nothing.
      * @param array<string, string> $collations live column => collation
      * @return array{alter: string[], extra: string[], kept: string[]}
      */
-    public static function changes(AA_MbT $template, AA_MbT $live, array $collations = []): array
+    public static function changes(AA_MbT $template, AA_MbT $live, array $collations = [], bool $rename = true): array
     {
         $modify = $add = $kept = $kept_columns = [];
         foreach ($template->c as $name => $column) {
@@ -253,7 +273,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
             }
         }
 
-        $drop    = $rename = $add_index = [];
+        $drop    = $renamed = $add_index = [];
         $unknown = array_diff_key($live->i, $template->i);
         foreach ($template->i as $name => $index) {
             $current = $live->i[$name] ?? null;
@@ -265,9 +285,12 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
                 continue;
             }
             if (!$current && ($same = self::sameIndex($index, $unknown))) {
-                $rename[] = "RENAME INDEX `$same` TO `$name`";
                 unset($unknown[$same]);
-                continue;
+                if ($rename) {
+                    $renamed[] = "RENAME INDEX `$same` TO `$name`";
+                    continue;
+                }
+                $drop[] = "DROP INDEX `$same`";
             }
             if ($current) {
                 $drop[] = ($current->s === 'P') ? 'DROP PRIMARY KEY' : "DROP INDEX `$name`";
@@ -278,7 +301,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         foreach (array_keys($unknown) as $name) {
             $extra[] = "index $name";
         }
-        return ['alter' => array_merge($drop, $modify, $add, $rename, $add_index), 'extra' => $extra, 'kept' => $kept];
+        return ['alter' => array_merge($drop, $modify, $add, $renamed, $add_index), 'extra' => $extra, 'kept' => $kept];
     }
 
     /** The template column with the live collation and comment - the template names neither, and MODIFY
@@ -313,11 +336,12 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
             // an unsigned number has one bit more than the signed one of the same size
             'int'     => ($t_size * 8 - ($t_unsigned ? 0 : 1)) >= ($l_size * 8 - ($l_unsigned ? 0 : 1)),
             'decimal' => ($t_size[0] - $t_size[1] >= $l_size[0] - $l_size[1]) && ($t_size[1] >= $l_size[1]),
+            'float'   => ($t_size[0] >= $l_size[0]) && ($t_size[1] >= $l_size[1]) && ($t_size[2] >= $l_size[2]),
             default   => $t_size >= $l_size,
         };
     }
 
-    /** [kind, size, unsigned] of a column type: int (bytes), float (bytes), decimal ([digits, decimals]),
+    /** [kind, size, unsigned] of a column type: int (bytes), float ([bytes, integer digits, decimals]), decimal ([digits, decimals]),
      *  string (characters or bytes it takes), other (0) */
     private static function kind(string $type): array
     {
@@ -326,8 +350,9 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         if (preg_match('/^(tiny|small|medium|big)?int\b/', $type, $m)) {
             return ['int', ['tiny' => 1, 'small' => 2, 'medium' => 3, '' => 4, 'big' => 8][$m[1] ?? ''], $unsigned];
         }
-        if (preg_match('/^(float|double|real)\b/', $type, $m)) {
-            return ['float', ($m[1] === 'float') ? 4 : 8, $unsigned];
+        if (preg_match('/^(float|double|real)(?:\((\d+),(\d+)\))?/', $type, $m)) {
+            // float(M,D) rounds to D decimals; without them the value is stored as it is
+            return ['float', [($m[1] === 'float') ? 4 : 8, isset($m[2]) ? (int) $m[2] - (int) $m[3] : PHP_INT_MAX, isset($m[3]) ? (int) $m[3] : PHP_INT_MAX], $unsigned];
         }
         if (preg_match('/^(?:decimal|numeric)(?:\((\d+)(?:,(\d+))?\))?/', $type, $m)) {
             return ['decimal', [(int) ($m[1] ?? 10), (int) ($m[2] ?? 0)], $unsigned];
