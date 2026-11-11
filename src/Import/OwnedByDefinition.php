@@ -21,8 +21,18 @@ trait OwnedByDefinition
     /** the stored JSON could not be read - the record acts as empty (a full import, an empty catalog) */
     private bool $damaged = false;
 
+    /** @var list<string> lazyProperties() forDefinition() has not read yet */
+    private array $unread = [];
+
     /** @return list<string> the properties the class keeps; store() writes them */
     abstract protected static function ownProperties(): array;
+
+    /** @return list<string> of ownProperties(), those forDefinition() leaves until readLazy() - large
+     *  values a page often does not need */
+    protected static function lazyProperties(): array
+    {
+        return [];
+    }
 
     /** an empty record of $defId; its store() replaces the stored one */
     public static function create(string $defId): static
@@ -36,15 +46,27 @@ trait OwnedByDefinition
     /** the record of $defId as stored now; null when there is none (or something foreign at its id) */
     public static function forDefinition(string $defId): ?static
     {
-        $rows = self::rowsOf($defId, []);
+        $lazy  = static::lazyProperties();
+        $eager = array_values(array_diff(static::ownProperties(), $lazy));
+        $rows  = self::rowsOf($defId, $lazy ? ['aa_type', 'aa_owner', ...$eager] : []);
         if (!self::isOwn($rows, $defId)) {
             return null;
         }
         $record = self::create($defId);
-        foreach (static::ownProperties() as $property) {
+        foreach ($eager as $property) {
             $record->$property = $rows[$property] ?? '';
         }
+        $record->unread = $lazy;
         return $record;
+    }
+
+    /** a property of lazyProperties() as stored, read once - before it is used or stored */
+    private function readLazy(string $property): void
+    {
+        if (in_array($property, $this->unread, true)) {
+            $this->unread    = array_values(array_diff($this->unread, [$property]));
+            $this->$property = self::rowsOf((string) $this->getOwnerId(), [$property])[$property] ?? '';
+        }
     }
 
     public static function idOf(string $defId): string
@@ -85,6 +107,10 @@ trait OwnedByDefinition
         $defId = (string) $this->getOwnerId();
         if ($this->getId() !== self::idOf($defId)) {
             throw new UnexpectedValueException(static::class . ' is stored only at the id of its definition');
+        }
+        foreach ($this->unread as $property) {
+            // update() writes every own property: one not read would be stored empty
+            $this->readLazy($property);
         }
         DB_AA::transaction(function () use ($defId): void {
             $rows = self::rowsOf($defId, ['aa_type', 'aa_owner']);

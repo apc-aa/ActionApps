@@ -90,4 +90,21 @@ final class StreamTest extends TestCase
         self::assertSame('rok', $stream->versionField);
         self::assertSame('Label', $stream->label);
     }
+
+    /** @return array<string, array{string, string, string}> key, name, shown */
+    public static function displayNames(): array
+    {
+        return [
+            'name and key'   => ['s1', 'Počet obyvatel', 'Počet obyvatel (s1)'],
+            'no name'        => ['s1', '', 's1'],
+            'only spaces'    => ['s1', '  ', 's1'],
+            'the key itself' => ['s1', 's1', 's1'],
+        ];
+    }
+
+    #[DataProvider('displayNames')]
+    public function test_displayName_nameThenKey(string $key, string $name, string $shown): void
+    {
+        self::assertSame($shown, Stream::displayName($key, $name));
+    }
 }

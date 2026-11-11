@@ -309,6 +309,45 @@ final class CatalogTest extends TestCase
     }
 
     /** stores the catalog and returns its entries as stored */
+    // the page reads the streams of a catalog on every refresh; its entries may be megabytes
+    public function test_forDefinition_readsEntriesOnlyWhenNeeded(): void
+    {
+        $catalog = Catalog::create(self::DEF);
+        $catalog->listStreams([new Stream('s1', 'Alpha', [], 'a')]);
+        $catalog->addPage(new CatalogPage([new CatalogEntry('a', 'Alpha')]), self::TIME);
+        $catalog->store();
+
+        $again = Catalog::forDefinition(self::DEF);
+        self::assertNotNull($again);
+        self::assertSame(['s1'], array_map(static fn(Stream $s): string => $s->key, $again->streams()));
+        self::storedSet($catalog->getId(), 'entries', '{"b":["Beta","",[]]}');
+
+        self::assertSame(['b'], array_map(static fn(CatalogEntry $e): string => $e->key, $again->entries()), 'read when first needed');
+    }
+
+    // a record whose entries were never read must not store them empty
+    public function test_store_keepsEntriesNotRead(): void
+    {
+        $catalog = Catalog::create(self::DEF);
+        $catalog->addPage(new CatalogPage([new CatalogEntry('a', 'Alpha')]), self::TIME);
+        $catalog->store();
+
+        $again = Catalog::forDefinition(self::DEF);
+        self::assertNotNull($again);
+        $again->listStreams([new Stream('s2', 'Beta', [], 'b')]);
+        $again->store();
+
+        self::assertSame('{"a":["Alpha","",[]]}', self::stored($catalog->getId())['entries']);
+    }
+
+    public function test_addable_countsKeysWithoutRefusal(): void
+    {
+        $catalog = Catalog::create(self::DEF);
+        $catalog->addPage(new CatalogPage([new CatalogEntry('a', 'Alpha'), new CatalogEntry('b', 'Beta', refusal: 'No data'), new CatalogEntry('c', 'Ce')]), self::TIME);
+
+        self::assertSame(2, $catalog->addable(['a', 'b', 'c', 'gone']));
+    }
+
     private static function storedEntries(Catalog $catalog): string
     {
         $catalog->store();

@@ -207,6 +207,12 @@ class Run extends BatchRun
         return (string) $this->dry === '1';
     }
 
+    /** source items the run reads at most; 0 = all */
+    public function limit(): int
+    {
+        return (int) $this->limit;
+    }
+
     /** @return ?list<string> the streams the user chose for the run; null = all the source has */
     public function chosenStreams(): ?array
     {
@@ -1069,7 +1075,7 @@ class Run extends BatchRun
     /** what the report says of a stream skipped by walkJobs() at $pos: which one, and how the source went round */
     private static function cycleRemark(Stream $stream, array $pos, int $limit): string
     {
-        $name = (($stream->label !== '') && ($stream->label !== $stream->key)) ? "{$stream->label} ({$stream->key})" : $stream->key;
+        $name = Stream::displayName($stream->key, $stream->label);
         $how  = ($pos['pages'] >= $limit) ? "handed out more than $limit jobs" : 'handed out the same job twice in a row';
         return "Stream $name: the source $how; the rest of the stream was skipped";
     }
@@ -1395,7 +1401,7 @@ class Run extends BatchRun
     /** @phpstan-impure the step's tally grows between calls */
     private function limitReached(): bool
     {
-        $limit = (int) $this->limit;
+        $limit = $this->limit();
         return ($limit > 0) && ($this->readSoFar() >= $limit);
     }
 
@@ -1403,7 +1409,7 @@ class Run extends BatchRun
      *  more than that in its job - limitReached() counts all it read and stops the run after the job */
     private function limitLeft(): int
     {
-        $limit = (int) $this->limit;
+        $limit = $this->limit();
         return ($limit > 0) ? max(1, $limit - $this->readSoFar()) : 0;
     }
 

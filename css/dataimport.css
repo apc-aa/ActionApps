@@ -91,6 +91,8 @@
 .aa-import-runs th, .aa-import-runs td, .aa-import-streams th, .aa-import-streams td, .aa-import-catalog th, .aa-import-catalog td, .aa-import-diff th, .aa-import-diff td { padding: 0.3em 0.6em; vertical-align: top; }
 .aa-import-catalog td, .aa-import-diff td { overflow-wrap: anywhere; }
 .aa-import-adopt { margin: 0; }
+/* only the row of the entry sent waits */
+.aa-import-adopt.aa-updating { mask-image: none; animation: none; }
 .aa-import-catalog tr[hidden] { display: none; }
 .aa-import-catalog button { white-space: nowrap; }
 .aa-import-sample { margin: 0.3em 0; }

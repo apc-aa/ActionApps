@@ -26,7 +26,15 @@
             form.classList.remove('aa-updating');
             return;
         }
-        form.classList.add('aa-updating');
+        // the catalog sends one entry: only its row waits, the rest of the table stays readable
+        const row = form.classList.contains('aa-import-adopt') ? e.submitter?.closest('tr') : null;
+        (row ? row.querySelectorAll('td') : [form]).forEach((el) => el.classList.add('aa-updating'));
+    });
+    // back from the bfcache the page's guard unlocks the forms, this the rows
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted) {
+            document.querySelectorAll('td.aa-updating').forEach((td) => td.classList.remove('aa-updating'));
+        }
     });
 
     /** opens the details the element of id #$hash is in, and the details it is */

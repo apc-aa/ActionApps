@@ -53,6 +53,14 @@ final class LangsTest extends TestCase
         self::assertSame($keys, array_keys($values));
     }
 
+    // names that end in a number: s2 before s10
+    public function test_sortLocale_numeric_comparesNumbersByValue(): void
+    {
+        $values = ['s10', 's2', 's1', 'a'];
+        Langs::sortLocale($values, numeric: true);
+        self::assertSame(['a', 's1', 's2', 's10'], array_values($values));
+    }
+
     /** @return array<string, array{string, list<int>}> language, keys in the sorted order */
     public static function encodings(): array
     {

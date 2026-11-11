@@ -18,14 +18,15 @@ final class DetailCatalog
     /** where the section starts, for a link back to it */
     public const ANCHOR = '#aa-import-catalog';
 
-    public function __construct(private readonly Definition $def, private readonly string $uid) {}
+    /** @param \Closure(): ?Catalog $catalog the catalog record of the page, read once for all its parts */
+    public function __construct(private readonly Definition $def, private readonly string $uid, private readonly \Closure $catalog) {}
 
     /** @param mixed $page the page of the listing (?catalog_page=), from the request; a link to a page
      *                     opens the section, which is closed otherwise - the catalog may be long */
     public function html(mixed $page = null): string
     {
         $class   = Registry::sources()[$this->def->sourceType()] ?? null;
-        $catalog = Catalog::forDefinition($this->id());
+        $catalog = ($this->catalog)();
         if ($catalog === null) {
             // a source gone may have left its catalog; one without a catalog has nothing to show
             return (($class !== null) && is_subclass_of($class, Cataloged::class))
@@ -51,8 +52,16 @@ final class DetailCatalog
         $shown  = DetailPage::pageOf($page, $pages);
         $html  .= $this->listingHtml($catalog->entriesAt(($shown - 1) * DetailPage::PAGE_SIZE, DetailPage::PAGE_SIZE), $streams, $adopts, $why, $shown);
         $html  .= DetailPage::pagerHtml($this->def, 'catalog_page', self::ANCHOR, _m('Pages of the catalog'), $shown, $pages);
-        $counts = $adopts ? _m('%1 entries, %2 can be added', [$count, ($why === '') ? self::addable($catalog, $diff['new']) : 0]) : _m('%1 entries', [$count]);
-        return self::section($html, ' <span class="aa-import-count">' . $counts . '</span>', $page !== null);
+        $counts = [$adopts ? _m('%1 entries, %2 can be added', [$count, ($why === '') ? $catalog->addable($diff['new']) : 0]) : _m('%1 entries', [$count])];
+        // what changed at the source is worth seeing without opening the section
+        if ($diff['missing']) {
+            $counts[] = _m('%1 missing at the source', [count($diff['missing'])]);
+        }
+        if ($diff['renamed']) {
+            $counts[] = _m('%1 renamed at the source', [count($diff['renamed'])]);
+        }
+        $open = ($page !== null) || $diff['missing'] || $diff['renamed'];
+        return self::section($html, ' <span class="aa-import-count">' . implode(', ', $counts) . '</span>', $open);
     }
 
     // ------------------------------------------------------------ actions
@@ -132,17 +141,10 @@ final class DetailCatalog
         return $html . '<table class="aa-import-diff"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th></tr></thead><tbody>' . $rows . '</tbody></table>';
     }
 
-    /** how many of the new entries the source would add
-     *  @param list<string> $new catalog keys no stream comes from */
-    private static function addable(Catalog $catalog, array $new): int
-    {
-        return count(array_filter($new, static fn(string $key): bool => $catalog->entry($key)?->refusal === ''));
-    }
-
     /** One page of the entries with the streams that come from each; when the source adopts entries,
      *  one form with an Add or Update button per entry - off for an entry the source said it would
-     *  refuse. A reason all the disabled entries share is said once above the table, a different one
-     *  beside its entry.
+     *  refuse, with the reason in its title. A reason all the disabled entries share is said once above
+     *  the table, a different one beside its entry.
      *  @param list<CatalogEntry> $entries  @param list<Stream> $streams  @param string $why off for all entries */
     private function listingHtml(array $entries, array $streams, bool $adopts, string $why, int $page): string
     {
@@ -153,8 +155,10 @@ final class DetailCatalog
         foreach ($streams as $stream) {
             $from[$stream->catalogKey][] = $stream->key;
         }
-        $off      = array_values(array_filter($entries, static fn(CatalogEntry $e): bool => ($why !== '') || ($e->refusal !== '')));
-        $reasons  = array_unique(array_map(static fn(CatalogEntry $e): string => $e->refusal, $off));
+        // why the button of each entry is off; '' = it is on
+        $offWhy   = array_map(static fn(CatalogEntry $e): string => ($why !== '') ? $why : $e->refusal, $entries);
+        $off      = array_filter($offWhy, static fn(string $reason): bool => $reason !== '');
+        $reasons  = array_unique(array_map(static fn(CatalogEntry $e): string => $e->refusal, array_intersect_key($entries, $off)));
         $common   = ((count($off) > 1) && (count($reasons) === 1)) ? (string) reset($reasons) : '';
         $html     = '';
         if ($adopts) {
@@ -165,14 +169,14 @@ final class DetailCatalog
         $heads    = [_m('Key'), _m('Name'), _m('Updated'), _m('Details'), _m('Stream')] + ($adopts ? [5 => _m('Action')] : []);
         $labels   = array_map(static fn(string $head): string => ' data-label="' . safe($head) . '"', $heads);
         $table    = '<table id="aa-import-catalog-list" class="aa-import-catalog"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th></tr></thead><tbody>';
-        foreach ($entries as $e) {
+        foreach ($entries as $i => $e) {
             $keys     = $from[$e->key] ?? [];
-            $disabled = ($why !== '') || ($e->refusal !== '');
+            $disabled = isset($off[$i]);
             $details  = implode('; ', array_map(static fn(string $name, string $value): string => safe($name) . ': ' . safe($value), array_map('strval', array_keys($e->meta)), array_map('strval', $e->meta)));
             $table   .= '<tr' . ($adopts ? ' data-addable="' . ((!$disabled && !$keys) ? 'yes' : 'no') . '"' : '') . '>'
                 . '<td' . $labels[0] . '>' . safe($e->key) . '</td><td' . $labels[1] . '>' . safe($e->name) . '</td><td' . $labels[2] . '>' . safe($e->updated) . '</td><td' . $labels[3] . '>' . $details . '</td>'
                 . '<td' . $labels[4] . '>' . ($keys ? safe(implode(', ', $keys)) : _m('new')) . '</td>'
-                . ($adopts ? '<td' . $labels[5] . '>' . DetailPage::button($keys ? _m('Update') : _m('Add'), '', ['name' => 'key', 'value' => $e->key] + ($disabled ? ['disabled' => 'disabled'] : []))
+                . ($adopts ? '<td' . $labels[5] . '>' . DetailPage::button($keys ? _m('Update') : _m('Add'), $offWhy[$i], ['name' => 'key', 'value' => $e->key])
                     . (($e->refusal === $common) ? '' : DetailPage::whyHtml($e->refusal)) . '</td>' : '')
                 . '</tr>';
         }
@@ -192,7 +196,7 @@ final class DetailCatalog
     private static function filterHtml(bool $addable): string
     {
         return '<div class="aa-import-filter" data-aa-filter="aa-import-catalog-list" data-aa-shown="' . safe(_m('%1 of %2 entries on this page')) . '" hidden>'
-            . '<label>' . _m('Filter this page') . ' <input type="search" autocomplete="off"></label>'
+            . '<label>' . _m('Filter this page') . ' <input' . htmlattr(['type' => 'search', 'autocomplete' => 'off']) . '></label>'
             . ($addable ? '<label><input type="checkbox"> ' . _m('Only entries that can be added') . '</label>' : '')
             . '<output aria-live="polite"></output></div>';
     }

@@ -28,7 +28,7 @@ final class Service
     private const KEEP_RUNS = 20;
 
     /** source items a dry run reads unless told */
-    private const DRY_LIMIT = 500;
+    public const DRY_LIMIT = 500;
 
     private const MODES = ['run', 'changed', 'check', 'baseline'];
 

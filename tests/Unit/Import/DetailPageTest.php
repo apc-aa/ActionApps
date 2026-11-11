@@ -475,8 +475,10 @@ final class DetailPageTest extends TestCase
     {
         yield 'run'           => [['action' => 'run'], 'full run, by hand'];
         yield 'dry'           => [['action' => 'dry'], 'full run, dry run, by hand'];
-        yield 'run of stream' => [['action' => 'stream', 'stream_key' => 's2', 'dry' => '0'], 'one stream (s2), by hand'];
-        yield 'dry of stream' => [['action' => 'stream', 'stream_key' => 's3', 'dry' => '1'], 'one stream (s3), dry run, by hand'];
+        yield 'run of stream' => [['action' => 'stream', 'stream_key' => 's2', 'dry' => '0'], 'one stream: s2, by hand'];
+        yield 'dry of stream' => [['action' => 'stream', 'stream_key' => 's3', 'dry' => '1'], 'one stream: s3, dry run, by hand'];
+        yield 'first items'   => [['action' => 'stream', 'stream_key' => 's2', 'dry' => '0', 'limit' => '3'], 'one stream: s2, first 3 items, by hand'];
+        yield 'dry, first'    => [['action' => 'stream', 'stream_key' => 's2', 'dry' => '1', 'limit' => '7'], 'one stream: s2, dry run, first 7 items, by hand'];
         yield 'changed'       => [['action' => 'changed'], 'changed only, by hand'];
     }
 
@@ -728,6 +730,59 @@ final class DetailPageTest extends TestCase
         $this->assertStringContainsString('<small>one stream: Počet obyvatel (s2), by hand</small></th>', self::page()->runsHtml(time()));
     }
 
+    // keys that end in a number, by their number
+    public function test_oneStreamSelect_numbersInOrder(): void
+    {
+        self::definition();
+        $state = StreamState::create(self::DEF);
+        foreach (['s10', 's2', 's1'] as $key) {
+            $state->record($key, ['v' => '1']);
+        }
+        $state->store();
+
+        preg_match_all('~<option value="([^"]*)">~', self::page()->actionsHtml(time()), $options);
+
+        $this->assertSame(['s1', 's2', 's10'], $options[1]);
+    }
+
+    // the refresh while a run goes on reads the names of the streams, not the catalog's entries (up to 5 MB)
+    public function test_liveSections_doNotReadTheCatalogEntries(): void
+    {
+        self::definition();
+        self::knownStream();
+        self::catalogStreams([new Stream('s1', 'Wages', [], 'e1')]);
+        TableDb::$log = [];
+
+        $html = self::page()->html(time());
+
+        $this->assertStringContainsString('Wages (s1)', $html);
+        $catalogReads = array_filter(TableDb::$log, static fn(string $sql): bool => str_contains($sql, Catalog::idOf(self::DEF)));
+        $this->assertNotEmpty($catalogReads);
+        foreach ($catalogReads as $sql) {
+            $this->assertStringNotContainsString("'entries'", $sql);
+            $this->assertStringContainsString("'streams'", $sql, 'only the properties it needs');
+        }
+    }
+
+    // Enter in the number field sends the form with its first button: that must store nothing
+    public function test_oneStreamForm_firstButtonIsTheDryRun(): void
+    {
+        self::definition();
+        self::knownStream();
+
+        $doc = new \DOMDocument();
+        @$doc->loadHTML('<?xml encoding="UTF-8"><body>' . self::page()->actionsHtml(time()) . '</body>');
+        $first = null;
+        foreach ($doc->getElementsByTagName('form') as $form) {
+            if ($form->getElementsByTagName('select')->length > 0) {
+                $first = $form->getElementsByTagName('button')->item(0);
+            }
+        }
+
+        $this->assertNotNull($first);
+        $this->assertSame(['dry', '1'], [$first->getAttribute('name'), $first->getAttribute('value')]);
+    }
+
     /** a small live batch of one stream: the form of one stream says at most how many items */
     public function test_oneStreamForm_hasLimit(): void
     {
@@ -773,17 +828,28 @@ final class DetailPageTest extends TestCase
         $this->assertSame([$dry, $limit, ['s2']], [$run['dry'], $run['limit'], json_decode($run['stream_keys'], true)]);
     }
 
-    public function test_oneStreamPost_badLimit_isRefused(): void
+    /** @return iterable<string, array{mixed}> */
+    public static function badLimits(): iterable
+    {
+        yield 'zero'     => ['0'];
+        yield 'negative' => ['-2'];
+        yield 'text'     => ['abc'];
+        yield 'fraction' => ['2.5'];
+        yield 'too big'  => ['99999999999999999999'];
+        yield 'array'    => [['3']];
+    }
+
+    #[DataProvider('badLimits')]
+    public function test_oneStreamPost_badLimit_isRefused(mixed $limit): void
     {
         self::definition();
 
-        foreach (['zero' => '0', 'negative' => '-2', 'text' => 'abc', 'fraction' => '2.5', 'too big' => '99999999999999999999', 'array' => ['3']] as $case => $limit) {
-            $msg = self::act(['action' => 'stream', 'stream_key' => 's2', 'dry' => '0', 'limit' => $limit]);
+        $msg = self::act(['action' => 'stream', 'stream_key' => 's2', 'dry' => '1', 'limit' => $limit]);
 
-            $this->assertStringContainsString('aa-err', $msg, $case);
-            $this->assertStringContainsString('At most (items)', $msg, $case);
-            $this->assertSame([], Run::unfinished(self::DEF), $case);
-        }
+        $this->assertStringContainsString('aa-err', $msg);
+        $this->assertStringContainsString('At most (items)', $msg);
+        $this->assertStringContainsString('500 in a dry run', $msg, 'empty is not all items in a dry run');
+        $this->assertSame([], Run::unfinished(self::DEF));
     }
 
     public function test_buttons_formsCarryTheTokenOfTheImport(): void

@@ -208,6 +208,23 @@ final class DetailCatalogTest extends TestCase
         $this->assertSame([], TableDb::writes(), 'read only');
     }
 
+    // a stream whose entry is gone or renamed is worth seeing without opening the catalog
+    public function test_catalogDiff_inTheSummaryAndOpen(): void
+    {
+        self::definition();
+        self::catalog(
+            [new CatalogEntry('e1', 'Prices'), new CatalogEntry('e2', 'Wages, new name')],
+            [new Stream('s1', 'Prices', [], 'e1'), new Stream('s2', 'Wages', [], 'e2'), new Stream('s3', 'Old', [], 'gone')],
+        );
+
+        $details = self::dom(self::catalogHtml())->getElementById('aa-import-catalog');
+
+        $this->assertNotNull($details);
+        $this->assertTrue($details->hasAttribute('open'));
+        $summary = trim((string) preg_replace('/\s+/', ' ', (string) $details->getElementsByTagName('summary')->item(0)?->textContent));
+        $this->assertSame('Catalog of the source 2 entries, 0 can be added, 1 missing at the source, 1 renamed at the source', $summary);
+    }
+
     public function test_catalog_incompleteShownNoMissing(): void
     {
         self::definition();
@@ -299,7 +316,7 @@ final class DetailCatalogTest extends TestCase
         $this->assertStringNotContainsString('<b>per', $html);
 
         \AdoptSource::$credentials = [['vendor' => 'csu', 'context' => '']];
-        $this->assertSame(1, substr_count(self::catalogHtml(), 'only a superadmin'), 'a reason for all entries goes first, once');
+        $this->assertSame(1, substr_count(self::text(self::catalogHtml()), 'only a superadmin'), 'a reason for all entries goes first, once');
         $this->assertSame('Add empty <b>per</b>', self::tableRows(self::catalogHtml(), 'aa-import-catalog')[1][5], 'the reason of the entry stays beside it');
         \AdoptSource::$credentials = [];
 
@@ -363,9 +380,11 @@ final class DetailCatalogTest extends TestCase
 
         $html = self::catalogHtml();
 
-        $this->assertSame(1, substr_count($html, 'no data for the period'));
+        $this->assertSame(1, substr_count(self::text($html), 'no data for the period'));
         $this->assertSame(['Add', 'Add', 'Add', 'Add'], array_column(self::tableRows($html, 'aa-import-catalog'), 5), 'no reason beside a row');
-        $this->assertSame(['', 'disabled', 'disabled', 'disabled'], array_map(static fn(\DOMElement $b): string => $b->getAttribute('disabled'), iterator_to_array(self::dom($html)->getElementsByTagName('button'))));
+        $buttons = iterator_to_array(self::dom($html)->getElementsByTagName('button'));
+        $this->assertSame(['', 'disabled', 'disabled', 'disabled'], array_map(static fn(\DOMElement $b): string => $b->getAttribute('disabled'), $buttons));
+        $this->assertSame(['', 'no data for the period', 'no data for the period', 'no data for the period'], array_map(static fn(\DOMElement $b): string => $b->getAttribute('title'), $buttons), 'yet each button says why');
     }
 
     /** the filter of the page tells the entries that can be added by data-addable */

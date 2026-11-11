@@ -229,10 +229,11 @@ final class RunView
         return ($counts['unversioned'] > 0) ? $text . '. ' . _m('%1 without a version', [$counts['unversioned']]) : $text;
     }
 
-    /** how $run ran - its mode, dry, its trigger - in words, plain text */
+    /** how $run ran - its mode, dry, a limit of its own, its trigger - in words, plain text */
     public static function howItRan(Run $run): string
     {
         $trigger = (string) $run->getProperty('trigger');
+        $limit   = $run->limit();
         $about   = [
             match ($run->mode()) {
                 'changed'  => _m('changed only'),
@@ -241,6 +242,8 @@ final class RunView
                 default    => '',
             },
             $run->isDry() ? _m('dry run') : '',
+            // a run cut short must not look like a full one; the usual cap of a dry run goes unsaid
+            (($limit > 0) && !($run->isDry() && ($limit === Service::DRY_LIMIT))) ? _m('first %1 items', [$limit]) : '',
             match (true) {
                 $trigger === 'manual'               => _m('by hand'),
                 str_starts_with($trigger, 'plan:')  => _m('planned'),

@@ -43,6 +43,14 @@ final class Stream
         $this->params = self::strings($params);
     }
 
+    /** how a stream is named to the user: its name with the key in brackets, the key alone when the
+     *  name is empty or the key itself */
+    public static function displayName(string $key, string $name): string
+    {
+        $name = trim($name);
+        return (($name === '') || ($name === $key)) ? $key : "$name ($key)";
+    }
+
     /**
      * Parameter values as strings: they end up in a URL or a field, and a stored and a fresh
      * value must compare equal. Null, bool and float have no single string form (a float prints
