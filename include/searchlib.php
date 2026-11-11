@@ -286,26 +286,53 @@ class AA_Condition extends AA_Object
      * an item without the value, as ISNULL does (both join LEFT). Strings compare as the _ci collations of
      * the database: case and trailing spaces do not count. Accents do count - the collations of the AA databases
      * differ in them. A number field stores no '', its empty value is 0.
-     * Checked for =, ==, <>, BEGIN, CONTAIN, ISNULL and NOTNULL; other operators compare each value alone (LIKE and
-     * RLIKE without the OR / wildcards of SQL). matches() knows no field types - a number field compares as text there.
+     * Checked for =, ==, <>, BEGIN, CONTAIN, LIKE, RLIKE, LLIKE, XLIKE, ISNULL and NOTNULL; other operators compare
+     * each value alone. matches() knows no field types - a number field compares as text there.
      * @param callable(string): array $valuesOf field id => its values
      * @param list<string> $numeric ids of the fields stored as numbers
      */
     public function matchesValues(callable $valuesOf, array $numeric = []): bool
     {
+        $expression = $this->expression();
         foreach ($this->fields as $field) {
             $is_num = in_array($field, $numeric, true);
             $values = array_map(static fn($v): string => (($v = (string) $v) === '' && $is_num) ? '0' : $v, $valuesOf($field));
-            if ($this->fieldMatches($values, $is_num)) {
+            if ($this->fieldMatches($values, $is_num, $expression)) {
                 return true;
             }
         }
         return false;
     }
 
-    /** @param list<string> $values */
-    private function fieldMatches(array $values, bool $numeric): bool
+    /**
+     * The value of an operator SQL reads as an expression, as AA_Dbcondition passes it to the parser; null for other
+     * operators. false = a syntax error, which makes SQL take every item.
+     */
+    private function expression(): QueryExpression|false|null
     {
+        $value = match ($this->operator) {
+            '=', 'XLIKE'              => ($this->operator === 'XLIKE') ? $this->value : stripslashes($this->value),
+            'LIKE', 'RLIKE', 'LLIKE'  => str_replace(['*', '?'], ['%', '_'], trim(stripslashes($this->value))),
+            default                   => null,
+        };
+        return ($value === null) ? null : (QueryExpression::tryParse($value) ?? false);
+    }
+
+    /** @param list<string> $values */
+    private function fieldMatches(array $values, bool $numeric, QueryExpression|false|null $expression): bool
+    {
+        if ($expression !== null) {
+            if ($expression === false) {
+                return true;
+            }
+            $operator = $this->operator;
+            foreach ($values as $v) {
+                if ($expression->matches(static fn(string $word): bool => ($operator === '=') ? self::sameValue($v, $word, $numeric) : QueryExpression::likeMatches($v, $word, $operator))) {
+                    return true;
+                }
+            }
+            return false;
+        }
         switch ($this->operator) {
             case 'ISNULL':
                 return !$values || array_filter($values, static fn(string $v): bool => self::isEmptyValue($v, $numeric)) !== [];
@@ -315,37 +342,23 @@ class AA_Condition extends AA_Object
             case '<>':
                 $value = $this->comparedValues()[0];
                 return !array_filter($values, static fn(string $v): bool => self::sameValue($v, $value, $numeric));
-            case '=':
-                // a syntax error makes SQL take every item, with the value or without
-                $expression = QueryExpression::tryParse(stripslashes($this->value));
-                return !$expression || array_filter($values, static fn(string $v): bool => $expression->matches(static fn(string $word): bool => self::sameValue($v, $word, $numeric))) !== [];
         }
         foreach ($values as $v) {
-            if ($this->_compare($v, $numeric)) {
+            if ($this->compare($v, $numeric)) {
                 return true;
             }
         }
         return false;
     }
 
-    /** _compare function
-     *  Postfiltering, when the item (field value) is already loaded
-     * @param $field_value
-     * @return bool
-     */
-    public function _compare($field_value, bool $numeric = false): bool
+    /** one value against an operator that compares each value alone (the others: fieldMatches()) */
+    private function compare(string $field_value, bool $numeric): bool
     {
-        $field_value = (string) $field_value;
         switch ($this->operator) {
             case 'CONTAIN':
-            case 'LIKE':
-            case 'XLIKE':
                 return str_contains(mb_strtolower($field_value), mb_strtolower($this->value));
             case 'BEGIN':
-            case 'RLIKE':
                 return str_starts_with(mb_strtolower($field_value), mb_strtolower($this->value));
-            case 'LLIKE':
-                return str_ends_with(mb_strtolower($field_value), mb_strtolower($this->value));
             case 'REGEXP':
                 return preg_match('/' . str_replace('/', '\/', $this->value) . '/', $field_value);
             case 'NOTREGEXP':
@@ -357,17 +370,8 @@ class AA_Condition extends AA_Object
             case 'BETWEEN':
                 $arr = explode(",", $this->value);
                 return ((int) $field_value >= (int) $arr[0] && (int) $field_value <= (int) $arr[1]);
-            case 'ISNULL':
-                return self::isEmptyValue($field_value, $numeric);
-            case 'NOTNULL':
-                return !self::isEmptyValue($field_value, $numeric);
             case '==':                                           // exact match - no SQL parsing
                 return self::sameValue($field_value, $this->value, $numeric);
-            case '=':
-                return QueryExpression::tryParse(stripslashes($this->value))?->matches(static fn(string $word): bool => self::sameValue($field_value, $word, $numeric)) ?? true;
-            case '!=':
-            case '<>':
-                return !self::sameValue($field_value, $this->comparedValues()[0], $numeric);
             case '<=':
                 return $field_value <= $this->value;
             case '<':

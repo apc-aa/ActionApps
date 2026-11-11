@@ -88,31 +88,77 @@ final class QueryExpression
     public function toSql(string $column, string $operator): string
     {
         [$op, $pre, $post] = self::SQL[strtoupper($operator)] ?? self::SQL['LIKE'];
-        $sql = static function (array $node) use (&$sql, $column, $op, $pre, $post): string {
-            return match ($node[0]) {
-                'word'  => DB_AA::quoteIdentifier($column) . "$op '$pre" . addslashes($node[1]) . "$post'",
-                'or'    => implode(' or ', array_map($sql, $node[1])),
-                'and'   => implode(' and ', array_map($sql, $node[1])),
-                'not'   => 'not (' . $sql($node[1]) . ')',
-                default => '(' . $sql($node[1]) . ')',   // group
-            };
-        };
-        return $sql($this->tree);
+        // the escaping DB_AA uses for a literal; the words keep % and _ as wildcards of LIKE
+        return self::sqlOf($this->tree, DB_AA::quoteIdentifier($column) . "$op '$pre", "$post'");
     }
 
     /** @param callable(string): bool $equals whether the value compared matches the word */
     public function matches(callable $equals): bool
     {
-        $eval = static function (array $node) use (&$eval, $equals): bool {
-            return match ($node[0]) {
-                'word'  => $equals($node[1]),
-                'or'    => in_array(true, array_map($eval, $node[1]), true),
-                'and'   => !in_array(false, array_map($eval, $node[1]), true),
-                'not'   => !$eval($node[1]),
-                default => $eval($node[1]),               // group
-            };
-        };
-        return $eval($this->tree);
+        return self::holds($this->tree, $equals);
+    }
+
+    /**
+     * Whether the value matches the word as the SQL of toSql() compares it by a LIKE operator: % and _ are wildcards,
+     * a backslash makes the next character plain; case does not count, as in the _ci collations.
+     */
+    public static function likeMatches(string $value, string $word, string $operator): bool
+    {
+        [, $pre, $post] = self::SQL[strtoupper($operator)] ?? self::SQL['LIKE'];
+        $regex = '';
+        $chars = mb_str_split($pre . $word . $post);
+        for ($i = 0, $n = count($chars); $i < $n; ++$i) {
+            if (($chars[$i] === '\\') && ($i + 1 < $n)) {
+                $regex .= preg_quote($chars[++$i], '/');
+            } else {
+                $regex .= match ($chars[$i]) {
+                    '%'     => '.*',
+                    '_'     => '.',
+                    default => preg_quote($chars[$i], '/'),
+                };
+            }
+        }
+        // D: a final newline is a character to LIKE, $ alone would skip it
+        return (bool) preg_match('/^' . $regex . '$/Disu', $value);
+    }
+
+    private static function sqlOf(array $node, string $before, string $after): string
+    {
+        switch ($node[0]) {
+            case 'word':
+                return $before . addslashes($node[1]) . $after;
+            case 'or':
+            case 'and':
+                return implode(" $node[0] ", array_map(static fn(array $child): string => self::sqlOf($child, $before, $after), $node[1]));
+            case 'not':
+                return 'not (' . self::sqlOf($node[1], $before, $after) . ')';
+        }
+        return '(' . self::sqlOf($node[1], $before, $after) . ')';     // group
+    }
+
+    private static function holds(array $node, callable $equals): bool
+    {
+        switch ($node[0]) {
+            case 'word':
+                return $equals($node[1]);
+            case 'or':
+                foreach ($node[1] as $child) {
+                    if (self::holds($child, $equals)) {
+                        return true;
+                    }
+                }
+                return false;
+            case 'and':
+                foreach ($node[1] as $child) {
+                    if (!self::holds($child, $equals)) {
+                        return false;
+                    }
+                }
+                return true;
+            case 'not':
+                return !self::holds($node[1], $equals);
+        }
+        return self::holds($node[1], $equals);                        // group
     }
 
     private static function orTerm(array $tokens, int &$i): array

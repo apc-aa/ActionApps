@@ -7,8 +7,9 @@ namespace AA\Search;
 /**
  * Splits the value of a search condition (=, LIKE, RLIKE, ...) into tokens: words, "phrases" and 'phrases',
  * AND (also +), OR, NOT (also - before a word) and parentheses (also [] and {}). Words next to each other
- * are joined by an implicit AND. A minus or an apostrophe inside a word belongs to it; a phrase without
- * its closing quote is left out.
+ * are joined by an implicit AND. A minus inside a word or at the end of the input belongs to the word, and so
+ * does an apostrophe that is neither first nor last, unless its two neighbours together form a run of the special
+ * characters (+-"' \t(){}[]); a phrase without its closing quote is left out.
  */
 final class QueryLexer
 {
@@ -40,7 +41,7 @@ final class QueryLexer
                 $i        = $end + 1;
             } elseif (str_contains('+-({[)}]', $char)) {
                 $tokens[] = [match ($char) {
-                    '+' => self::AND, '-' => self::NOT, '(', '{', '[' => self::OPEN, default => self::CLOSE
+                    '+' => self::AND, '-' => self::NOT, '(', '{', '[' => self::OPEN, default => self::CLOSE,
                 }, $char];
                 ++$i;
             } else {
@@ -50,7 +51,7 @@ final class QueryLexer
                 }
                 $word     = substr($input, $start, $i - $start);
                 $tokens[] = [match (strtolower($word)) {
-                    'and' => self::AND, 'or' => self::OR, 'not' => self::NOT, default => self::WORD
+                    'and' => self::AND, 'or' => self::OR, 'not' => self::NOT, default => self::WORD,
                 }, $word];
             }
             $i += strspn($input, self::WHITE, $i);
@@ -67,7 +68,7 @@ final class QueryLexer
         return $ret;
     }
 
-    /** a minus inside a word or at the end of the input, an apostrophe between letters, do not end the word */
+    /** whether the character at $i still belongs to the word being read */
     private static function inWord(string $input, int $i, int $length): bool
     {
         $char = $input[$i];
@@ -77,7 +78,7 @@ final class QueryLexer
         if ($char === '-') {
             return ($i && !str_contains(self::SPECIAL, $input[$i - 1])) || ($i === $length - 1);
         }
-        // the two neighbours are looked up as one string, as the original lexer did
+        // both neighbours as one string: a two-character run of SPECIAL ends the word
         return ($char === "'") && $i && ($i !== $length - 1) && !str_contains(self::SPECIAL, $input[$i - 1] . $input[$i + 1]);
     }
 }

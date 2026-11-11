@@ -10,9 +10,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
- * The value of a search condition read once into a tree: its SQL must stay what the former parser of
- * include/sql_parser.php built (recorded in fixtures/query_sql_pins.php), and deciding over loaded values
- * reads the same tree.
+ * The value of a search condition read once into a tree: the SQL it gives for a corpus of values is pinned in
+ * fixtures/query_sql_pins.php, and deciding over loaded values reads the same tree.
  */
 final class QueryExpressionTest extends TestCase
 {
@@ -105,6 +104,34 @@ final class QueryExpressionTest extends TestCase
     public function test_alternatives(string $text, ?array $expected): void
     {
         $this->assertSame($expected, QueryExpression::parse($text)->alternatives());
+    }
+
+    /** @return array<string, array{string, string, string, bool}> value, word, operator, expected */
+    public static function likes(): array
+    {
+        return [
+            'LIKE anywhere, other case' => ['Praha 5', 'AHA', 'LIKE', true],
+            'RLIKE at the start'        => ['Praha', 'pra', 'RLIKE', true],
+            'RLIKE not at the start'    => ['Opraha', 'pra', 'RLIKE', false],
+            'LLIKE at the end'          => ['Praha', 'ha', 'LLIKE', true],
+            'XLIKE whole'               => ['Praha', 'praha', 'XLIKE', true],
+            'XLIKE part'                => ['Praha', 'pra', 'XLIKE', false],
+            '% wildcard'                => ['Praha', 'p%a', 'XLIKE', true],
+            '_ wildcard'                => ['Praha', 'pr_ha', 'XLIKE', true],
+            'escaped %'                 => ['10% off', '10\\%', 'RLIKE', true],
+            'escaped % is plain'        => ['100 off', '10\\%', 'RLIKE', false],
+            'regex characters plain'    => ['a.b', 'a.b', 'XLIKE', true],
+            'regex dot no wildcard'     => ['axb', 'a.b', 'XLIKE', false],
+            'multibyte'                 => ['Žluťoučký', 'ŽLUŤ', 'RLIKE', true],
+            'final newline counts'      => ["the end\n", 'end', 'LLIKE', false],
+            'final newline, XLIKE'      => ["abc\n", 'abc', 'XLIKE', false],
+        ];
+    }
+
+    #[DataProvider('likes')]
+    public function test_likeMatches(string $value, string $word, string $operator, bool $expected): void
+    {
+        $this->assertSame($expected, QueryExpression::likeMatches($value, $word, $operator));
     }
 
     public function test_syntax_errors(): void
