@@ -188,11 +188,10 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         $template   = $this->templateMetabase();
         $live       = $this->liveMetabase();
         $collations = $this->liveCollations();
-        $rename     = $this->canRenameIndex();
         $this->plan = [];
         foreach ($template->tables as $tablename => $table) {
             $current = $live->tables[$tablename] ?? null;
-            $changes = $current ? self::changes($table, $current, $collations[$tablename] ?? [], $rename) : ['alter' => [], 'extra' => [], 'kept' => []];
+            $changes = $current ? self::changes($table, $current, $collations[$tablename] ?? []) : ['alter' => [], 'extra' => [], 'kept' => []];
             $this->plan[$tablename] = [
                 'action'   => $current ? ($changes['alter'] ? 'alter' : 'none') : 'create',
                 'alter'    => $changes['alter'],
@@ -221,21 +220,6 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         return $live;
     }
 
-    /** RENAME INDEX is in MariaDB since 10.5.2 and in MySQL since 5.7 - AA runs on older MariaDB too */
-    protected function canRenameIndex(): bool
-    {
-        return self::renamesIndex((string) DB_AA::select1('ver', 'SELECT VERSION() AS ver'));
-    }
-
-    /** does the server of this VERSION() know RENAME INDEX */
-    public static function renamesIndex(string $version): bool
-    {
-        if (!preg_match('/^(\d+\.\d+\.\d+)/', $version, $m)) {
-            return false;
-        }
-        return version_compare($m[1], (stripos($version, 'mariadb') !== false) ? '10.5.2' : '5.7.0', '>=');
-    }
-
     /** the collation of each text column of this database - the template names none
      * @return array<string, array<string, string>> table => column => collation */
     protected function liveCollations(): array
@@ -251,13 +235,12 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
      *  indexes the template does not know (a column may hold data, an index may serve a slow query of the
      *  site), a column the template would narrow (a shorter text, a smaller number, signed for unsigned, a
      *  number for a text) and the template indexes over such a column. A changed column keeps its collation
-     *  and comment; an index the template has under another name is renamed ($rename), or dropped and
-     *  added under the template name on an older server - never kept twice. The order of the columns
+     *  and comment; an index the template has under another name is renamed - never kept twice. The order of the columns
      *  stays: AA names the columns it writes, and moving one would rebuild the table for nothing.
      * @param array<string, string> $collations live column => collation
      * @return array{alter: string[], extra: string[], kept: string[]}
      */
-    public static function changes(AA_MbT $template, AA_MbT $live, array $collations = [], bool $rename = true): array
+    public static function changes(AA_MbT $template, AA_MbT $live, array $collations = []): array
     {
         $modify = $add = $kept = $kept_columns = [];
         foreach ($template->c as $name => $column) {
@@ -286,11 +269,8 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
             }
             if (!$current && ($same = self::sameIndex($index, $unknown))) {
                 unset($unknown[$same]);
-                if ($rename) {
-                    $renamed[] = "RENAME INDEX `$same` TO `$name`";
-                    continue;
-                }
-                $drop[] = "DROP INDEX `$same`";
+                $renamed[] = "RENAME INDEX `$same` TO `$name`";
+                continue;
             }
             if ($current) {
                 $drop[] = ($current->s === 'P') ? 'DROP PRIMARY KEY' : "DROP INDEX `$name`";

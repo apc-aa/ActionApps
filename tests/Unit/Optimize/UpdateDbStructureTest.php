@@ -205,32 +205,6 @@ namespace Tests\Unit\Optimize {
             self::assertSame(['text mediumtext (template varchar(255))', 'index text'], $changes['kept']);
         }
 
-        public function test_changes_templateIndexUnderAnotherNameOnOldServer_droppedAndAdded(): void
-        {
-            $live = self::content([], ['item_id' => false, 'item_field' => ['t' => 'content', 'n' => 'item_field', 's' => 'I', 'c' => [1 => 'item_id', 2 => 'field_id']]]);
-
-            self::assertSame(['DROP INDEX `item_field`', 'ADD KEY item_id (`item_id`,`field_id`)'], UpdateDbStructure::changes(self::content(), $live, [], false)['alter']);
-        }
-
-        public static function serverVersions(): array
-        {
-            return [
-                'MariaDB 10.11'  => ['10.11.6-MariaDB-log', true],
-                'MariaDB 10.5.2' => ['10.5.2-MariaDB', true],
-                'MariaDB 10.4'   => ['10.4.32-MariaDB', false],
-                'MySQL 8'        => ['8.0.36', true],
-                'MySQL 5.7'      => ['5.7.44-log', true],
-                'MySQL 5.6'      => ['5.6.51', false],
-                'unknown'        => ['', false],
-            ];
-        }
-
-        #[DataProvider('serverVersions')]
-        public function test_renamesIndex_serverVersion(string $version, bool $renames): void
-        {
-            self::assertSame($renames, UpdateDbStructure::renamesIndex($version));
-        }
-
         public function test_changes_templateIndexUnderAnotherName_renamed(): void
         {
             $live    = self::content([], ['item_id' => false, 'item_field' => ['t' => 'content', 'n' => 'item_field', 's' => 'I', 'c' => [1 => 'item_id', 2 => 'field_id']]]);
@@ -259,11 +233,6 @@ namespace Tests\Unit\Optimize {
                 protected function liveCollations(): array
                 {
                     return [];
-                }
-
-                protected function canRenameIndex(): bool
-                {
-                    return true;
                 }
 
                 protected function templateMetabase(): AA_Metabase
