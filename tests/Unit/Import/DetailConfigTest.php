@@ -307,6 +307,31 @@ final class DetailConfigTest extends TestCase
         $this->assertContains("Název = headline........\n{id} = text...........1\nKód = text...........2", array_map(static fn(\DOMElement $t): string => $t->textContent, $textareas), 'shown as the lines typed');
     }
 
+    /** columns stored by an older version, sent back as the form shows them, change nothing - the
+     *  open run, the state of the streams and the mapping stay */
+    #[DataProvider('olderColumns')]
+    public function test_columns_olderStoredFormSentBack_same(string $stored): void
+    {
+        self::perms(PS_FEEDING, PS_FEEDING);
+        $settings = ['url' => 'https://example.org/data.csv', 'key_column' => 'Code'];
+        self::definition(['source' => 'core:csvurl', 'settings' => json_encode($settings + ['columns' => $stored])]);
+        $def = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
+
+        $shown = (new \AA\Import\Source\CsvColumnsSetting())->formText($stored);
+        $this->assertSame('SAME', Service::changeSettings($def, 'core:csvurl', $settings + ['columns' => $shown], AuthGetUid())->code);
+        $this->assertSame('SAME', Service::changeSettings($def, 'core:csvurl', $settings + ['columns' => $stored], AuthGetUid())->code);
+        $this->assertSame('CHANGED', Service::changeSettings($def, 'core:csvurl', $settings + ['columns' => "Name = headline........\nCode = text...........2"], AuthGetUid())->code);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function olderColumns(): array
+    {
+        return [
+            'JSON as typed' => ['{"Name": "headline........", "Code": "text...........1"}'],
+            'lines'         => ["Name = headline........\nCode = text...........1\n"],
+        ];
+    }
+
     // the columns of a new import are empty: still a plain text area
     public function test_columns_emptyIsPlainText(): void
     {

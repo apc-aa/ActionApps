@@ -684,6 +684,12 @@ final class Service
             $property = $declared[$name] ?? null;
             if (($property instanceof \AA_Property) ? self::isUnset($property, $value) : (trim($value) === '')) {
                 unset($stored[$name]);
+                continue;
+            }
+            // an older version stored it as typed; checkSettings() turned the new one into the stored form
+            $validator = ($property instanceof \AA_Property) ? $property->getValidator() : null;
+            if (($validator instanceof EditedAsText) && $validator->validate($value)) {
+                $stored[$name] = (string) $value;
             }
         }
         $stored   = self::withoutDefaults($stored, $declared);
