@@ -226,13 +226,22 @@ function AA_ShowIfInit(cfg) {
     const off    = new Set(cfg.off || []);
     const hidden = new Set(cfg.hidden || []);   // the last known state - the server's until the browser knows better
 
+    // as AA_Condition::matchesValues() and the SQL of the condition: case and trailing spaces do not count,
+    // the empty value of a number field is 0
+    const lower = v => v.replace(/ +$/, '').toLowerCase();
+    const num   = v => parseFloat(v) || 0;
     const holds = (rule, values) => {
-        const filled = values.some(v => v !== '' && v !== '0');
+        const n     = rule.n;
+        const same  = (a, b) => n ? num(a) === num(b) : lower(a) === lower(b);
+        const empty = v => n ? num(v) === 0 : lower(v) === '';
+        const has   = test => values.some(test);
         switch (rule.op) {
-            case 'in':     return values.some(v => rule.v.includes(v));
-            case 'notin':  return !values.some(v => rule.v.includes(v));
-            case 'filled': return filled;
-            case 'empty':  return !filled;
+            case '=':       return has(v => rule.v.some(w => same(v, w)));
+            case '<>':      return !has(v => same(v, rule.v[0]));
+            case 'BEGIN':   return has(v => v.toLowerCase().startsWith(rule.v[0].toLowerCase()));
+            case 'CONTAIN': return has(v => v.toLowerCase().includes(rule.v[0].toLowerCase()));
+            case 'ISNULL':  return !values.length || has(empty);
+            case 'NOTNULL': return has(v => !empty(v));
         }
         return true;
     };

@@ -69,11 +69,12 @@ namespace AA\Tests\Unit\Form {
             return $fields;
         }
 
-        private static function conds(bool $clear = true, string $expr = '', ?array $rule = null): ShowConditions
+        /** @param string $conds the rules, by default "category is Akce" */
+        private static function conds(bool $clear = true, string $expr = '', string $conds = ''): ShowConditions
         {
             return ShowConditions::fromJson(json_encode(['showif' => [self::KEY => [
                 'name'  => 'Akce',
-                'all'   => [$rule ?? ['field' => self::CAT, 'op' => 'in', 'values' => ['Akce']]],
+                'conds' => $conds ?: 'd-' . self::CAT . '-=-"Akce"',
                 'expr'  => $expr,
                 'clear' => $clear,
             ]]]));
@@ -169,27 +170,36 @@ namespace AA\Tests\Unit\Form {
             $this->assertSame([], $hidden);
         }
 
-        public function test_apply_checkbox_on_counts_as_filled(): void
+        public function test_apply_checkbox_on_counts_as_checked(): void
         {
-            $conds   = self::conds(true, '', ['field' => self::SWITCH, 'op' => 'filled', 'values' => []]);
+            $conds   = self::conds(true, '', 'd-' . self::SWITCH . '-=-"1"');
             $content = self::content([self::SWITCH => 'on', self::START => '999']);
             $this->assertSame([], $conds->apply($content, self::fields(), self::content([self::SWITCH => '0']), false));
             $this->assertSame(['999'], $content->getValuesArray(self::START));
         }
 
+        /** as getFieldValues() reads the form: '' is no value, so a field with another value is not empty */
+        public function test_hiddenFor_empty_string_is_no_value(): void
+        {
+            $conds   = self::conds(true, '', 'd-' . self::CAT . '-ISNULL-1');
+            $content = self::content([self::START => '999']);
+            $content->setAaValue(self::CAT, new AA_Value(['', 'Akce']));
+            $this->assertArrayHasKey(self::START, $conds->hiddenFor(self::fields(), $content));
+            $content->setAaValue(self::CAT, new AA_Value(['']));
+            $this->assertSame([], $conds->hiddenFor(self::fields(), $content));
+        }
+
         public function test_formConfig_shape(): void
         {
-            $conds = ShowConditions::fromJson(json_encode(['showif' => [self::KEY => [
-                'name' => 'Akce',
-                'all'  => [
-                    ['field' => self::CAT, 'op' => 'in', 'values' => ['Akce', 'Kurz']],
-                    ['field' => 'nofield.........', 'op' => 'filled'],   // the slice has no such field - the rule holds
-                ],
-                'expr' => '',
-            ]]]));
-            $cfg = $conds->formConfig(self::fields([], 'ffffffff'), [self::START => ShowConditions::LIVE, self::PASSWORD => ShowConditions::STATIC]);
+            // nofield: the slice has no such field - the rule holds
+            $conds = self::conds(true, '', 'd-' . self::CAT . '-=-"Akce" OR "Kurz"-nofield.........-NOTNULL-1-' . self::CAT . '-<>-"x"-' . self::EXPIRY . '-ISNULL-1');
+            $cfg   = $conds->formConfig(self::fields([], 'ffffffff', [self::EXPIRY => ['dte', '']]), [self::START => ShowConditions::LIVE, self::PASSWORD => ShowConditions::STATIC]);
 
-            $rules = [['fid' => self::CAT, 'op' => 'in', 'v' => ['Akce', 'Kurz']]];
+            $rules = [
+                ['fid' => self::CAT, 'op' => '=', 'v' => ['Akce', 'Kurz'], 'n' => false],
+                ['fid' => self::CAT, 'op' => '<>', 'v' => ['x'], 'n' => false],
+                ['fid' => self::EXPIRY, 'op' => 'ISNULL', 'v' => [], 'n' => true],   // an int column of the item table
+            ];
             $this->assertSame([self::START => $rules, self::PASSWORD => $rules], $cfg['fields']);
             $this->assertSame([self::START], $cfg['hidden']);
             $this->assertSame([self::PASSWORD], $cfg['off']);
@@ -197,11 +207,11 @@ namespace AA\Tests\Unit\Form {
 
         public function test_formConfig_json_is_script_safe(): void
         {
-            $conds = self::conds(true, '', ['field' => self::CAT, 'op' => 'in', 'values' => ['</script><b>', "a'b\"&"]]);
+            $conds = self::conds(true, '', 'd-' . self::CAT . '-=-' . \AA_Condition::orExpression(['</script><b>', "a'b&"]));
             $json  = json_encode($conds->formConfig(self::fields(), []), ScriptTag::JS_JSON);
             $this->assertStringNotContainsString('<', $json);
             $this->assertStringNotContainsString("'", $json);
-            $this->assertSame(['</script><b>', "a'b\"&"], json_decode($json, true)['fields'][self::START][0]['v']);
+            $this->assertSame(['</script><b>', "a'b&"], json_decode($json, true)['fields'][self::START][0]['v']);
         }
 
         /** a field the user may not edit (profile hide&fill, frozen by feeding) keeps its stored value */
@@ -241,7 +251,7 @@ namespace AA\Tests\Unit\Form {
         /** the expression sees what the form was drawn from - the stored item - so drawing and saving agree */
         public function test_hiddenFor_expression_uses_stored_item_on_update(): void
         {
-            $conds = self::conds(true, '{start_date......}', ['field' => self::SWITCH, 'op' => 'empty', 'values' => []]);
+            $conds = self::conds(true, '{start_date......}', 'd-' . self::SWITCH . '-<>-"1"');
             $form  = self::content([self::START => '0']);
             $this->assertArrayNotHasKey(self::START, $conds->hiddenFor(self::fields(), $form, self::content([self::START => '1'])));
             $this->assertSame(ShowConditions::STATIC, $conds->hiddenFor(self::fields(), $form, self::content([self::START => '0']))[self::START] ?? null);
@@ -250,7 +260,7 @@ namespace AA\Tests\Unit\Form {
         /** a new item: the expression sees the defaults, as when the empty form was drawn */
         public function test_hiddenFor_expression_uses_defaults_on_insert(): void
         {
-            $conds  = self::conds(true, '{switch..........}', ['field' => self::CAT, 'op' => 'filled', 'values' => []]);
+            $conds  = self::conds(true, '{switch..........}', 'd-' . self::CAT . '-NOTNULL-1');
             $fields = self::fields([self::SWITCH => 'txt:1']);
             $this->assertArrayNotHasKey(self::START, $conds->hiddenFor($fields, self::content([self::SWITCH => '0', self::CAT => 'x']), null, true));
         }

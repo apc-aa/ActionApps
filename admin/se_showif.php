@@ -94,28 +94,29 @@ if ($update || $saveasnew || $delete) {
     }
 }
 
-// the form shows what was posted (a field picked in a rule, an error), else the condition
+// the form shows what was posted (a field or a comparison picked in a rule, an error), else the condition
 if ($posted) {
-    $form = ['name' => $name, 'all' => [], 'expr' => $expr, 'clear' => $clear];
+    $form = ['name' => $name, 'rows' => [], 'expr' => $expr, 'clear' => $clear];
     foreach ($rules as $row) {
         if (is_array($row) && is_string($row['field'] ?? null) && isset($names[$row['field']])) {
             // a field picked anew in the row starts without the values of the previous one
-            $same          = ($row['was'] ?? null) === $row['field'];
-            $form['all'][] = ['field' => $row['field'], 'op' => $same ? (string) ($row['op'] ?? '') : '', 'values' => $same ? ShowConditions::postedValues($row) : []];
+            $same           = ($row['was'] ?? null) === $row['field'];
+            $form['rows'][] = ['field' => $row['field'], 'op' => $same ? (string) ($row['op'] ?? '') : '', 'values' => $same ? ShowConditions::postedValues($row) : []];
         }
     }
 } else {
-    $form = $cond ?? ['name' => '', 'all' => [], 'expr' => '', 'clear' => true];
+    $form = $cond ? ['rows' => $conds->rows($key)] + $cond : ['name' => '', 'rows' => [], 'expr' => '', 'clear' => true];
 }
-$form['all'][] = ['field' => '', 'op' => '', 'values' => []];   // the row for a new rule
+$form['rows'][] = ['field' => '', 'op' => '', 'values' => []];   // the row for a new rule
 
-/** one row of the rule table: the field (changing it redraws the form), how to compare, the values */
+/** one row of the rule table: the field and the comparison (changing them redraws the form), the values */
 function ShowIfRuleRow(int $i, array $rule, array $names, AA_Fields $fields): string
 {
     $field   = $rule['field'] ? $fields->getField($rule['field']) : null;
     $is_chb  = $field?->getWidget() instanceof AA\Widget\ChbWidget;
-    $ops     = $is_chb ? ['filled' => _m('is checked'), 'empty' => _m('is not checked')]
-                       : ['in' => _m('is'), 'notin' => _m('is not'), 'filled' => _m('is filled'), 'empty' => _m('is empty')];
+    // a checked checkbox stores 1
+    $ops     = $is_chb ? ['=' => _m('is checked'), '<>' => _m('is not checked')]
+                       : ['=' => _m('is'), '<>' => _m('is not'), 'BEGIN' => _m('begins with'), 'CONTAIN' => _m('contains'), 'NOTNULL' => _m('is filled'), 'ISNULL' => _m('is empty')];
     $op      = isset($ops[$rule['op']]) ? $rule['op'] : array_key_first($ops);
     $choices = ['' => $field ? '—' : _m('— add a rule —')] + $names;
 
@@ -125,8 +126,12 @@ function ShowIfRuleRow(int $i, array $rule, array $names, AA_Fields $fields): st
         return $ret . '</div>';
     }
     $ret .= '<input type="hidden" name="rule[' . $i . '][was]" value="' . safe($rule['field']) . '">';
-    $ret .= getFrmSelectEasy("rule[$i][op]", $ops, $op, ['aria-label' => _m('Comparison')]);
-    if (!$is_chb) {
+    $ret .= getFrmSelectEasy("rule[$i][op]", $ops, $op, ['onchange' => 'this.form.submit()', 'aria-label' => _m('Comparison')]);
+    if ($is_chb) {
+        $ret .= '<input type="hidden" name="rule[' . $i . '][values][]" value="1">';
+    } elseif (in_array($op, ['BEGIN', 'CONTAIN'], true)) {
+        $ret .= '<input type="text" name="rule[' . $i . '][text]" value="' . safe($rule['values'][0] ?? '') . '" size="30" aria-label="' . safe(_m('Value')) . '">';
+    } elseif (in_array($op, ['=', '<>'], true)) {
         try {
             $options = $field->getWidget()?->getFormattedOptions('', null, '', false, 101) ?? [];
         } catch (Throwable) {
@@ -157,7 +162,7 @@ FrmTabCaption();
 FrmInputText('name', _m('Name'), $form['name'], 254, 40, true);
 
 $rows = '';
-foreach ($form['all'] as $i => $rule) {
+foreach ($form['rows'] as $i => $rule) {
     $rows .= ShowIfRuleRow($i, $rule, $names, $fields);
 }
 FrmStaticText(_m('Show the field when all of these hold'), $rows, '', '', false);
@@ -168,6 +173,9 @@ echo '</table></details></td></tr>';
 
 FrmInputChBox('clear', _m('Clear the field when a rule hides it'), (bool) $form['clear'], false, '', 1, false, _m('Unchecked: an edited item keeps its value, a new item gets the field\'s default. A field hidden by the expression is never changed.'));
 
+if (($key !== '') && ($cond['conds'] !== '')) {
+    FrmStaticText(_m('As a condition of a view'), '<code>' . safe($cond['conds']) . '</code>', '', '', false);
+}
 if ($key !== '') {
     $used = array_map(static fn($fid) => $fields->getField($fid)->getName(), array_keys(ShowConditions::assigned($fields), $key, true));
     FrmStaticText(_m('Used by'), $used ? implode(', ', $used) : _m('no field'));
@@ -185,7 +193,8 @@ FrmTabEnd($buttons);
 echo '</form>';
 
 $apage->addHelpbox(_m('How it works'), '<ul>'
-    . '<li>' . _m('"is" holds when one of the field\'s values is among the checked values, "is not" when none is. "is filled" holds for any value other than empty and 0, so also for a checked checkbox.') . '</li>'
+    . '<li>' . _m('"is" holds when one of the field\'s values is among the checked values, "is not" when none is. Upper and lower case do not count, accents do. "is empty" holds also for a field without a value; in a field stored as a number 0 counts as empty.') . '</li>'
+    . '<li>' . _m('The rules are AA conditions, written as in views. A view or {ids} given the condition shown below finds the items whose values satisfy the rules.') . '</li>'
     . '<li>' . _m('The rules follow the form while the user edits it. The expression is evaluated only when the form is opened and when the item is saved, always over the stored item (a new item: over the default values).') . '</li>'
     . '<li>' . _m('A field hidden by a rule is saved empty, unless "Clear the field" is unchecked. A password field, the dates, the status and a field hidden by the expression keep their value.') . '</li>'
     . '<li>' . _m('A field with a condition is shown and hidden by the condition, not by a Field Triggers script.') . '</li>'

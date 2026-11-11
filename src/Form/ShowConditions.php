@@ -8,25 +8,27 @@ use AA\IO\DB\DB_AA;
 
 /**
  * Named display conditions of a slice: a field of the admin item form is shown only while its condition holds.
- * A condition is an array {name: string, all: list<{field: string, op: string, values: list<string>}>, expr: string, clear: bool}
- * stored under "showif" in slice.aditional (JSON); a field picks one by key under "showif" in field.aditional.
+ * A condition is an array {name: string, conds: string, expr: string, clear: bool} stored under "showif"
+ * in slice.aditional (JSON); a field picks one by key under "showif" in field.aditional.
+ * The rules (conds) are AA conditions in the d- form of views - d-category.......1-=-"News" OR "Events" -
+ * of the operators the browser evaluates alike (AA_Condition::matchesValues() and AA_ShowIfInit()), one field each.
  * It is not a permission - it only tidies the form.
  */
 final class ShowConditions
 {
-    public const OPS    = ['in', 'notin', 'filled', 'empty'];
+    public const OPS    = ['=', '<>', 'BEGIN', 'CONTAIN', 'ISNULL', 'NOTNULL'];
     /** hidden by the rules - the browser may show it again */
     public const LIVE   = 1;
     /** hidden by the expression - until the form is opened again */
     public const STATIC = 2;
 
-    private const KEY_RE    = '/^[0-9a-f]{8}$/D';
-    private const FIELD_RE  = '/^[A-Za-z0-9_.]{16}$/D';
-    /** operators that compare with values */
-    private const VALUE_OPS = ['in', 'notin'];
+    private const KEY_RE   = '/^[0-9a-f]{8}$/D';
+    private const FIELD_RE = '/^[A-Za-z0-9_.]{16}$/D';
 
-    /** @var array<string, array> */
+    /** @var array<string, array{name: string, conds: string, expr: string, clear: bool}> */
     private array $conds = [];
+    /** @var array<string, list<\AA_Condition>> key => the rules of the condition */
+    private array $rules = [];
 
     /** Reads slice.aditional; anything malformed is left out, so a broken condition never hides a field. */
     public static function fromJson(?string $slice_aditional): self
@@ -36,8 +38,8 @@ final class ShowConditions
         if (is_array($list)) {
             foreach ($list as $key => $cond) {
                 $key = (string) $key;
-                if (self::isKey($key) && is_array($cond) && ($cond = self::normalize($cond))) {
-                    $ret->conds[$key] = $cond;
+                if (self::isKey($key) && is_array($cond)) {
+                    $ret->set($key, $cond);
                 }
             }
         }
@@ -80,14 +82,46 @@ final class ShowConditions
         return $this->conds[$key] ?? null;
     }
 
+    /** A condition without a name is left out, a rule the browser could not evaluate is dropped. */
     public function set(string $key, array $cond): void
     {
-        $this->conds[$key] = $cond;
+        $name = is_string($cond['name'] ?? null) ? trim($cond['name']) : '';
+        if ($name === '') {
+            return;
+        }
+        $rules              = self::parse(is_string($cond['conds'] ?? null) ? $cond['conds'] : '');
+        $this->rules[$key]  = $rules;
+        $this->conds[$key]  = [
+            'name'  => $name,
+            'conds' => self::toString($rules),
+            'expr'  => is_string($cond['expr'] ?? null) ? $cond['expr'] : '',
+            'clear' => (bool) ($cond['clear'] ?? true),
+        ];
     }
 
     public function remove(string $key): void
     {
-        unset($this->conds[$key]);
+        unset($this->conds[$key], $this->rules[$key]);
+    }
+
+    /**
+     * The rules as the editor shows them, one row per field and comparison: the alternatives of "=" together,
+     * the "<>" of one field following each other together (all of them must hold - the field is none of them).
+     * @return list<array{field: string, op: string, values: list<string>}>
+     */
+    public function rows(string $key): array
+    {
+        $ret = [];
+        foreach ($this->rules[$key] ?? [] as $rule) {
+            $row  = ['field' => $rule->getFields()[0], 'op' => $rule->getOperator(), 'values' => self::values($rule)];
+            $last = array_key_last($ret);
+            if (($row['op'] === '<>') && ($last !== null) && ($ret[$last]['op'] === '<>') && ($ret[$last]['field'] === $row['field'])) {
+                $ret[$last]['values'] = array_merge($ret[$last]['values'], $row['values']);
+            } else {
+                $ret[] = $row;
+            }
+        }
+        return $ret;
     }
 
     public static function isKey(string $key): bool
@@ -102,24 +136,6 @@ final class ShowConditions
             $key = bin2hex(random_bytes(4));
         } while (ctype_digit($key));
         return $key;
-    }
-
-    /**
-     * Values compare as strings, exactly. "filled" means truthy (not '' and not '0'), so a checkbox reads
-     * the same from the form ('on') and from the database ('1' / '0').
-     * @param array{op: string, values: list<string>} $rule
-     * @param array<int|string|float|null> $values
-     */
-    public static function ruleMatches(array $rule, array $values): bool
-    {
-        $values = array_map('strval', $values);
-        return match ($rule['op']) {
-            'in'     => (bool) array_intersect($values, $rule['values']),
-            'notin'  => !array_intersect($values, $rule['values']),
-            'filled' => self::filled($values),
-            'empty'  => !self::filled($values),
-            default  => true,
-        };
     }
 
     /** key of the condition the field uses; '' = none or malformed */
@@ -149,32 +165,35 @@ final class ShowConditions
      * @param array<string, string> $assigned id of every field of the slice => key of its condition or ''
      * @param callable(string): list<string> $valuesOf field id => its values
      * @param callable(string): string $expand expression => its result
+     * @param list<string> $numeric ids of the fields stored as numbers - their 0 is empty
      * @return array<string, int> id of a hidden field => LIVE|STATIC
      */
-    public function hidden(array $assigned, callable $valuesOf, callable $expand): array
+    public function hidden(array $assigned, callable $valuesOf, callable $expand, array $numeric = []): array
     {
         $state = [];   // field id => 0 shown | LIVE | STATIC | -1 being evaluated
-        $eval  = function (string $fid) use (&$eval, &$state, $assigned, $valuesOf, $expand): int {
+        $eval  = function (string $fid) use (&$eval, &$state, $assigned, $valuesOf, $expand, $numeric): int {
             if (isset($state[$fid])) {
                 return max(0, $state[$fid]);
             }
-            $cond = $this->conds[$assigned[$fid] ?? ''] ?? null;
+            $key  = $assigned[$fid] ?? '';
+            $cond = $this->conds[$key] ?? null;
             if ($cond === null) {
                 return $state[$fid] = 0;
             }
-            if (($cond['expr'] !== '') && !self::filled([trim($expand($cond['expr']))])) {
+            if (($cond['expr'] !== '') && in_array(trim($expand($cond['expr'])), ['', '0'], true)) {
                 return $state[$fid] = self::STATIC;
             }
             $state[$fid] = -1;
             $ret = 0;
-            foreach ($cond['all'] as $rule) {
-                if (!array_key_exists($rule['field'], $assigned)) {
+            foreach ($this->rules[$key] as $rule) {
+                $ctl = $rule->getFields()[0];
+                if (!array_key_exists($ctl, $assigned)) {
                     continue;
                 }
-                if (($ret = max($ret, $eval($rule['field']))) === self::STATIC) {
+                if (($ret = max($ret, $eval($ctl))) === self::STATIC) {
                     break;
                 }
-                if (($ret === 0) && !self::ruleMatches($rule, $valuesOf($rule['field']))) {
+                if (($ret === 0) && !$rule->matchesValues($valuesOf, $numeric)) {
                     $ret = self::LIVE;
                 }
             }
@@ -210,17 +229,23 @@ final class ShowConditions
             return $profile->getFormFieldValue($field->getId()) ?? $field->getDefault(true);
         };
         $values   = [];
+        // '' is no value - as getFieldValues() reads the form in the browser
         $valuesOf = function (string $fid) use (&$values, $fields, $content, $fallback, $defaults, $default): array {
             if (isset($values[$fid])) {
                 return $values[$fid];
             }
             if ($content->isSet($fid)) {
-                return $values[$fid] = $content->getValuesArray($fid);
+                $ret = $content->getValuesArray($fid);
+                // a checkbox of an old form sends 'on', which its inserter stores as 1
+                if (str_starts_with((string) $fields->getField($fid)?->getProperty('input_show_func'), 'chb')) {
+                    $ret = array_map(static fn($v) => ($v === 'on') ? '1' : $v, $ret);
+                }
+            } elseif ($fallback?->isSet($fid)) {
+                $ret = $fallback->getValuesArray($fid);
+            } else {
+                $ret = ($defaults && ($field = $fields->getField($fid))) ? $default($field)->getValues() : [];
             }
-            if ($fallback?->isSet($fid)) {
-                return $values[$fid] = $fallback->getValuesArray($fid);
-            }
-            return $values[$fid] = ($defaults && ($field = $fields->getField($fid))) ? $default($field)->getValues() : [];
+            return $values[$fid] = array_values(array_filter(array_map('strval', $ret), static fn(string $v): bool => $v !== ''));
         };
         $item    = null;
         $results = [];
@@ -238,7 +263,7 @@ final class ShowConditions
             }
             return $results[$expr] ??= \AA::Un($expr, '', $item);
         };
-        return $this->hidden(self::assigned($fields), $valuesOf, $expand);
+        return $this->hidden(self::assigned($fields), $valuesOf, $expand, self::numeric($fields));
     }
 
     /**
@@ -281,19 +306,26 @@ final class ShowConditions
      * What AA_ShowIfInit() (javascript/inputform.js) needs. A rule on a field the slice does not have is left
      * out - it holds, as in hidden().
      * @param array<string, int> $hidden the result of hiddenFor()
-     * @return array{fields: array<string, list<array{fid: string, op: string, v: list<string>}>>, hidden: list<string>, off: list<string>}
-     *  fields = every field with a known condition => its rules; hidden = fields LIVE; off = fields STATIC
+     * @return array{fields: array<string, list<array{fid: string, op: string, v: list<string>, n: bool}>>, hidden: list<string>, off: list<string>}
+     *  fields = every field with a known condition => its rules (v = the compared values, n = a number field);
+     *  hidden = fields LIVE; off = fields STATIC
      */
     public function formConfig(\AA_Fields $fields, array $hidden): array
     {
         $assigned = self::assigned($fields);
+        $numeric  = self::numeric($fields);
         $ret      = ['fields' => [], 'hidden' => [], 'off' => []];
         foreach ($assigned as $fid => $key) {
-            if (($key === '') || !($cond = $this->conds[$key] ?? null)) {
+            if (!isset($this->conds[$key])) {
                 continue;
             }
-            $rules = array_filter($cond['all'], static fn(array $rule): bool => array_key_exists($rule['field'], $assigned));
-            $ret['fields'][$fid] = array_values(array_map(static fn(array $rule): array => ['fid' => $rule['field'], 'op' => $rule['op'], 'v' => $rule['values']], $rules));
+            $ret['fields'][$fid] = [];
+            foreach ($this->rules[$key] as $rule) {
+                $ctl = $rule->getFields()[0];
+                if (array_key_exists($ctl, $assigned)) {
+                    $ret['fields'][$fid][] = ['fid' => $ctl, 'op' => $rule->getOperator(), 'v' => self::values($rule), 'n' => in_array($ctl, $numeric, true)];
+                }
+            }
         }
         foreach ($hidden as $fid => $how) {
             $ret[($how === self::STATIC) ? 'off' : 'hidden'][] = (string) $fid;
@@ -303,7 +335,8 @@ final class ShowConditions
 
     /**
      * The condition the editor (admin/se_showif.php) posted. A rule row without a field is skipped; the values
-     * come from the checkboxes and from the text area, one per line.
+     * come from the checkboxes and from the text area, one per line. "is" becomes one "=" of the values joined
+     * by OR, "is not" one "<>" for each value; "begins with" and "contains" take the first value.
      * @param array $post name, rule[i][field|op|values[]|text], expr, clear
      * @param array<string, string> $names id of a field of the slice => its name
      * @param string $key key of the edited condition, '' for a new one - its own name is no clash
@@ -321,29 +354,38 @@ final class ShowConditions
                 $errors[] = _m('Another condition of this slice is called %1.', [$name]);
             }
         }
-        $all = [];
+        $rules = [];
         foreach ((is_array($post['rule'] ?? null) ? $post['rule'] : []) as $row) {
             $field = is_array($row) && is_string($row['field'] ?? null) ? $row['field'] : '';
             if ($field === '') {
                 continue;
             }
-            $label = $names[$field] ?? $field;
-            $op    = $row['op'] ?? null;
+            $label  = $names[$field] ?? $field;
+            $op     = $row['op'] ?? null;
+            $values = self::postedValues($row);
             if (!isset($names[$field])) {
                 $errors[] = _m('The field %1 is not in this slice.', [$label]);
             } elseif (!in_array($op, self::OPS, true)) {
                 $errors[] = _m('Choose how to compare the field %1.', [$label]);
-            } elseif (!($rule = self::rule($field, $op, self::postedValues($row)))) {
+            } elseif (!$values && !in_array($op, ['ISNULL', 'NOTNULL'], true)) {
                 $errors[] = _m('Fill in the values of the field %1.', [$label]);
+            } elseif (($op === '=') && (($expression = \AA_Condition::orExpression($values)) === null)) {
+                $errors[] = _m('A value of the field %1 contains both kinds of quotes.', [$label]);
             } else {
-                $all[] = $rule;
+                $rules = array_merge($rules, match ($op) {
+                    '='                 => [new \AA_Condition([$field], '=', $expression)],
+                    // quoted, so that a value starting with - or a quote survives the d- form
+                    '<>'                => array_map(static fn(string $v): \AA_Condition => new \AA_Condition([$field], '<>', '"' . $v . '"'), $values),
+                    'BEGIN', 'CONTAIN'  => [new \AA_Condition([$field], $op, $values[0])],
+                    default             => [new \AA_Condition([$field], $op, '1')],
+                });
             }
         }
         $expr = is_string($post['expr'] ?? null) ? trim($post['expr']) : '';
-        if (!$all && ($expr === '')) {
+        if (!$rules && ($expr === '')) {
             $errors[] = _m('Add a rule or an expression.');
         }
-        return $errors ? [null, $errors] : [['name' => $name, 'all' => $all, 'expr' => $expr, 'clear' => isset($post['clear'])], []];
+        return $errors ? [null, $errors] : [['name' => $name, 'conds' => self::toString($rules), 'expr' => $expr, 'clear' => isset($post['clear'])], []];
     }
 
     /**
@@ -387,50 +429,51 @@ final class ShowConditions
         return $ret;
     }
 
-    /** @param list<string> $values */
-    private static function filled(array $values): bool
+    /** @return list<string> ids of the fields stored as numbers, as the SQL of a condition sees them */
+    private static function numeric(\AA_Fields $fields): array
     {
-        foreach ($values as $v) {
-            if (($v !== '') && ($v !== '0')) {
-                return true;
+        $ret = [];
+        foreach ($fields as $fid => $field) {
+            $column = $field->storageColumn();
+            if (($field->storageTable() === 'item') ? (\AA::Metabase()->getFieldType('item', $column) === 'int') : ($column === 'number')) {
+                $ret[] = (string) $fid;
             }
         }
-        return false;
-    }
-
-    /** the condition with only what it may hold, or null when it has no name */
-    private static function normalize(array $cond): ?array
-    {
-        $name = is_string($cond['name'] ?? null) ? trim($cond['name']) : '';
-        if ($name === '') {
-            return null;
-        }
-        $all = [];
-        foreach ((array) ($cond['all'] ?? []) as $rule) {
-            if (is_array($rule) && is_string($rule['field'] ?? null) && preg_match(self::FIELD_RE, $rule['field']) && is_string($rule['op'] ?? null)
-                && ($rule = self::rule($rule['field'], $rule['op'], array_values(array_map('strval', array_filter((array) ($rule['values'] ?? []), 'is_scalar')))))) {
-                $all[] = $rule;
-            }
-        }
-        return [
-            'name'  => $name,
-            'all'   => $all,
-            'expr'  => is_string($cond['expr'] ?? null) ? $cond['expr'] : '',
-            'clear' => (bool) ($cond['clear'] ?? true),
-        ];
+        return $ret;
     }
 
     /**
-     * @param list<string> $values
-     * @return ?array the rule, null for an unknown operator or a comparison with no values
+     * The rules of a d- string the browser evaluates alike: one field, an operator of OPS, "=" only with
+     * alternatives joined by OR. Anything else is left out - a broken rule never hides a field.
+     * @return list<\AA_Condition>
      */
-    private static function rule(string $field, string $op, array $values): ?array
+    private static function parse(string $conds): array
     {
-        if (!in_array($op, self::OPS, true)) {
-            return null;
+        if (!str_starts_with(trim($conds), 'd-')) {
+            return [];
         }
-        $compares = in_array($op, self::VALUE_OPS, true);
-        return ($compares && !$values) ? null : ['field' => $field, 'op' => $op, 'values' => $compares ? $values : []];
+        $set = new \AA_Set();
+        $set->_parseViewConds($conds);
+        return array_values(array_filter($set->getConditions(), static fn(\AA_Condition $rule): bool => (count($rule->getFields()) === 1)
+            && preg_match(self::FIELD_RE, $rule->getFields()[0])
+            && in_array($rule->getOperator(), self::OPS, true)
+            && (self::values($rule) !== null)));
+    }
+
+    /** @param list<\AA_Condition> $rules */
+    private static function toString(array $rules): string
+    {
+        $set = new \AA_Set();
+        foreach ($rules as $rule) {
+            $set->addCondition($rule);
+        }
+        return $set->getCondsAsString();
+    }
+
+    /** @return ?list<string> what the rule compares with: none for ISNULL / NOTNULL; null when "=" is more than OR */
+    private static function values(\AA_Condition $rule): ?array
+    {
+        return in_array($rule->getOperator(), ['ISNULL', 'NOTNULL'], true) ? [] : $rule->comparedValues();
     }
 
     /** @return array<string, mixed> the JSON object, [] for anything else */

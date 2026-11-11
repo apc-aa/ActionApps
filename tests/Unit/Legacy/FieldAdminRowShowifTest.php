@@ -36,8 +36,8 @@ namespace Tests\Unit\Legacy {
         private static function conds(): ShowConditions
         {
             return ShowConditions::fromJson(json_encode(['showif' => [
-                'aaaaaaaa' => ['name' => '<b>Akce</b> "x"', 'all' => [], 'expr' => '1'],
-                'bbbbbbbb' => ['name' => 'Kurz', 'all' => [], 'expr' => '1'],
+                'aaaaaaaa' => ['name' => '<b>Akce</b> "x"', 'expr' => '1'],
+                'bbbbbbbb' => ['name' => 'Kurz', 'expr' => '1'],
             ]]));
         }
 
