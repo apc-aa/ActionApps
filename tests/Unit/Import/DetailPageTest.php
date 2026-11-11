@@ -208,6 +208,22 @@ final class DetailPageTest extends TestCase
         $this->assertStringContainsString('The source is not set up yet.', $html);
     }
 
+    /** settings all filled in, yet refused: the page says the source's words, not to fill something in */
+    public function test_newImport_sourceRefusingFilledSettings_saysItsWords(): void
+    {
+        \ServiceSource::$refuse = new \AA\IO\SourceRefused('SETTINGS', 'The key column <b>Code</b> must be one of the columns');
+        self::definition();
+
+        $html = self::page()->overviewHtml(time()) . self::page()->actionsHtml(time());
+
+        $this->assertStringContainsString('Not set up', $html);
+        $this->assertStringContainsString('<p class="aa-import-reason">The source refuses its settings: The key column &lt;b&gt;Code&lt;/b&gt; must be one of the columns</p>', $html);
+        $this->assertStringContainsString('<p class="aa-import-why">The source refuses its settings: The key column &lt;b&gt;Code&lt;/b&gt; must be one of the columns</p>', $html, 'the starts say why they are off');
+        $this->assertStringNotContainsString('Fill in', $html);
+        $this->assertStringNotContainsString('The source is not set up yet.', $html);
+        $this->assertStringNotContainsString('<b>', $html);
+    }
+
     // a required setting the source takes blank blocks nothing - Service would not refuse the start
     public function test_newImport_requiredSettingTheSourceTakesBlank_blocksNothing(): void
     {

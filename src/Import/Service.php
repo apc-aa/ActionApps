@@ -610,17 +610,14 @@ final class Service
         return array_values(array_filter($ids, static fn(string $id): bool => DB_AA::test('module', [['id', $id, 'l'], ['type', 'S']])));
     }
 
-    /** SETTINGS with the source's own words when fromSettings() of $source refused the settings together,
-     *  else $otherwise. The words may hold what the form posted or, by mistake, a key - so they pass
-     *  redact() and are kept as a remark of a run is. */
+    /** SETTINGS with the source's own words (Definition::refusalWords()) when fromSettings() of $source
+     *  refused the settings together, else $otherwise */
     private static function settingsRefused(string $id, string $source, Throwable $e, string $otherwise): ChangeResult
     {
-        if (self::sourceFailure($id, $e) !== 'SETTINGS') {
+        if ((self::sourceFailure($id, $e) !== 'SETTINGS') || !($e instanceof SourceFailure)) {
             return new ChangeResult($otherwise);
         }
-        // SourceFailure gives its reason as the message when it got none
-        $words = ($e->getMessage() === 'SETTINGS') ? '' : (new Context(Definition::sourceCredentials($source), new BatchBudget(microtime(true))))->remarkText($e->getMessage());
-        return new ChangeResult('SETTINGS', '', $words);
+        return new ChangeResult('SETTINGS', '', Definition::refusalWords($source, $e));
     }
 
     /** The code of a failure of the source's own code. A bug is logged (class and line, never its

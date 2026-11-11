@@ -75,6 +75,9 @@ final class DetailPage
     /** @var list<string>|null|false Definition::setUpLacks() of the stored settings, read once per page; false = not read yet */
     private array|false|null $lacks = false;
 
+    /** Definition::setUpLacks() gives the source's words with it */
+    private string $refusal = '';
+
     /** @var array<string, int> run id => Run::queuedUntil(), read once per page */
     private array $queuedUntil = [];
 
@@ -297,7 +300,7 @@ final class DetailPage
     {
         $runs   = $this->runs();
         $open   = $this->openRun();
-        $health = RunView::health($this->hasSource(), $this->lacks(), $this->problems() === [], $runs[0] ?? null, $this->lastImport(), $now);
+        $health = RunView::health($this->hasSource(), $this->lacks(), $this->problems() === [], $runs[0] ?? null, $this->lastImport(), $now, $this->refusal);
         $html   = $this->healthHtml($health) . $this->problemsHtml() . $this->ribbonHtml($runs, $now)
             . '<div class="aa-import-glance">'
             . '<div class="aa-import-last"><h3>' . _m('Last import') . '</h3>' . $this->lastImportHtml($runs, $now) . '</div>'
@@ -906,7 +909,7 @@ final class DetailPage
         return match (true) {
             $busy !== ''                        => $busy,
             !$this->hasSource()                 => self::reasonText('NO_SOURCE'),
-            $this->notSetUp()                   => _m('The source is not set up yet.'),
+            $this->notSetUp()                   => $this->lacks() ? _m('The source is not set up yet.') : RunView::refusedText($this->refusal),
             $this->problems() !== []            => self::reasonText('DEFINITION'),
             default                             => '',
         };
@@ -1458,7 +1461,7 @@ final class DetailPage
     private function lacks(): ?array
     {
         if ($this->lacks === false) {
-            $this->lacks = ($this->hasSource() && ($this->runs() === [])) ? Definition::setUpLacks($this->def->sourceType(), $this->def->snapshot()['settings'] ?? '') : null;
+            $this->lacks = ($this->hasSource() && ($this->runs() === [])) ? Definition::setUpLacks($this->def->sourceType(), $this->def->snapshot()['settings'] ?? '', $this->refusal) : null;
         }
         return $this->lacks;
     }

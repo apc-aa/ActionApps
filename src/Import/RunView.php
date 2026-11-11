@@ -152,16 +152,17 @@ final class RunView
      * @param ?list<string> $lacks Definition::setUpLacks() of the stored settings; null = the source takes them
      * @param ?Run $newest the newest run - the open one, if any, as only one is ever open
      * @param ?Run $import the newest import (Run::storesItems())
+     * @param string $refusal the source's words setUpLacks() gives with no setting lacking
      * @return array{kind: string, word: string, reason: string}
      */
-    public static function health(bool $hasSource, ?array $lacks, bool $mappingOk, ?Run $newest, ?Run $import, int $now): array
+    public static function health(bool $hasSource, ?array $lacks, bool $mappingOk, ?Run $newest, ?Run $import, int $now, string $refusal = ''): array
     {
         $say = static fn(string $kind, string $word, string $reason): array => ['kind' => $kind, 'word' => $word, 'reason' => $reason];
         if (!$hasSource) {
             return $say('bad', _m('Failing'), _m('The source of this import is not available, so it cannot run.'));
         }
         if (self::notSetUp($lacks, $newest)) {
-            return $say('idle', _m('Not set up'), $lacks ? _m('Fill in these settings of the source: %1.', [implode(', ', $lacks)]) : _m('Fill in the settings of the source.'));
+            return $say('idle', _m('Not set up'), $lacks ? _m('Fill in these settings of the source: %1.', [implode(', ', $lacks)]) : self::refusedText($refusal));
         }
         if (!$mappingOk) {
             return $say('bad', _m('Failing'), _m('The mapping does not fit the slice, so no run can start until it is fixed.'));
@@ -189,6 +190,12 @@ final class RunView
             $import->counts()['read'] === 0 => $say('ok', _m('Healthy'), _m('The last import finished without errors; nothing had changed.')),
             default                         => $say('ok', _m('Healthy'), _m('The last import finished without errors (%1 read).', [$import->counts()['read']])),
         };
+    }
+
+    /** why the source refuses settings of which none is blank: its own words when it said any */
+    public static function refusedText(string $refusal): string
+    {
+        return ($refusal === '') ? _m('The source refuses its settings.') : _m('The source refuses its settings: %1', [$refusal]);
     }
 
     /** A new import whose source refuses its settings: it never ran, so nothing failed yet - the page

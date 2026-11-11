@@ -10,6 +10,7 @@ use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
+use AA\Later\BatchBudget;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
 use AA\Later\Toexecute;
@@ -334,8 +335,9 @@ final class Definition extends AA_Object implements InternalExpandInterface
         $hasSource          = isset(Registry::sources()[$type]);
         [$newest, $import] = self::latestRuns((string) $content->getId());
         // once it ran, its runs tell - the source is not asked
-        $lacks = ($hasSource && ($newest === null)) ? self::setUpLacks($type, (string) $content->getValue('settings')) : null;
-        return RunView::health($hasSource, $lacks, true, $newest, $import, $now);
+        $refusal = '';
+        $lacks   = ($hasSource && ($newest === null)) ? self::setUpLacks($type, (string) $content->getValue('settings'), $refusal) : null;
+        return RunView::health($hasSource, $lacks, true, $newest, $import, $now, $refusal);
     }
 
     /** Run::newestOf() of definition $id, read once for the cells of its row
@@ -824,10 +826,12 @@ final class Definition extends AA_Object implements InternalExpandInterface
      * $json - or fails for another reason, which the page says apart - else, as the source refuses
      * them (SETTINGS), the labels of the settings of the form it requires and lacks; [] when no blank
      * one explains the refusal. Asks the source's code, never the network.
+     * @param string $refusal set to the source's words (refusalWords()) when it returns []
      * @return ?list<string>
      */
-    public static function setUpLacks(string $type, string $json): ?array
+    public static function setUpLacks(string $type, string $json, string &$refusal = ''): ?array
     {
+        $refusal = '';
         try {
             $settings = self::settingsOf(['settings' => $json]);
         } catch (SourceRefused) {
@@ -838,10 +842,24 @@ final class Definition extends AA_Object implements InternalExpandInterface
             Registry::create($type, $settings);
             return null;
         } catch (SourceRefused $e) {
-            return ($e->reason === 'SETTINGS') ? self::unsetSettings($type, $settings) : null;
+            if ($e->reason !== 'SETTINGS') {
+                return null;
+            }
+            $lacks = self::unsetSettings($type, $settings);
+            // nothing blank: only the source can say what to fix
+            $refusal = $lacks ? '' : self::refusalWords($type, $e);
+            return $lacks;
         } catch (Throwable) {
             return null;
         }
+    }
+
+    /** What source $type said refusing its settings, kept as a remark of a run is: the words may hold
+     *  what the form posted or, by mistake, a key. '' when it said nothing. */
+    public static function refusalWords(string $type, SourceFailure $e): string
+    {
+        // SourceFailure gives its reason as the message when it got none
+        return ($e->getMessage() === $e->reason) ? '' : (new Context(self::sourceCredentials($type), new BatchBudget(microtime(true))))->remarkText($e->getMessage());
     }
 
     /**

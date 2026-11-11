@@ -127,7 +127,11 @@ final class RunViewTest extends TestCase
         $run = new Run(['state' => Run::ERROR, 'mode' => 'run']);
         self::assertSame('bad', RunView::health(true, ['Columns'], true, $run, null, $now)['kind'], 'once it ran, its runs tell');
         self::assertSame('bad', RunView::health(false, ['Columns'], true, null, null, $now)['kind'], 'a source that is gone first');
-        self::assertSame('Fill in the settings of the source.', RunView::health(true, [], true, null, null, $now)['reason'], 'refused, yet no blank setting to name');
+        self::assertSame('The source refuses its settings.', RunView::health(true, [], true, null, null, $now)['reason'], 'refused, yet no blank setting to name');
+        $refused = RunView::health(true, [], true, null, null, $now, 'The key column <b>Code</b> must be one of the columns');
+        self::assertSame('The source refuses its settings: The key column <b>Code</b> must be one of the columns', $refused['reason'], 'its words say what to fix');
+        self::assertStringContainsString('&lt;b&gt;Code', RunView::statusHtml($refused, true));
+        self::assertSame('Fill in these settings of the source: Columns.', RunView::health(true, ['Columns'], true, null, null, $now, 'Columns are missing')['reason'], 'a blank setting says it plainer');
         self::assertSame('Never ran', RunView::health(true, null, true, null, null, $now)['word'], 'settings the source takes');
     }
 
