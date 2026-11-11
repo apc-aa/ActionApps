@@ -1,8 +1,10 @@
 # Product
 
-## Register
+<!-- impeccable:product-schema 1 -->
 
-product
+## Platform
+
+web
 
 ## Users
 
@@ -26,6 +28,36 @@ The product's job is to make a single small NGO behave like a much larger publis
 
 Endurance matters more than novelty. APC-AA exists to outlast every commercial CMS its users would otherwise have to migrate off of.
 
+## Positioning
+
+*Taken from the code and the documentation; the wording is not yet confirmed by the maintainer.*
+
+Three mechanisms together are what a neighbouring CMS does not offer:
+
+- **Content pooling.** Items are fed (syndicated) between slices, also between separate installs; `central/` manages several installs and moves whole applications from one to another.
+- **One install, many sites.** A single code tree serves the sites of many organizations, so an update or a fix reaches all of them at once.
+- **The data model belongs to the user.** A slice gets new fields, views and templates in the admin, with no schema change and no deploy.
+
+Not recorded: which products organizations weigh ActionApps against, and why they stay.
+
+## Operating Context
+
+- **Editors** work in the Item Manager and the item editor (`admin/itemedit.php`). **Site builders** write templates in the admin in the `{…}` expression language and look commands up in the AA Expression Reference (`https://actionapps.org/expressions/`).
+- **Operators** read State Check (`admin/aa_statecheck.php`) and the mail it sends. Its readers are technicians and system administrators, not editors.
+- The admin ships in 15 languages (`include/lang/`). New texts are written in English and translated afterwards.
+- An install updates by pulling the built `dist` branch (or its SVN mirror); nothing is built on the server. `cron.php` runs the scheduled work, and long jobs (imports, mail, feeds) run from a task queue in short steps, so their pages show state and progress instead of waiting.
+- The admin stylesheets are edited by hand, also by a designer, and are served unminified.
+- The product is maintained by a very small team.
+
+## Capabilities and Constraints
+
+- **Terms to keep in the interface:** slice, item, field, view, alias, constants, feeding, site (the module); the item bins (active, pending, expired, hold bin, trash); the roles author, editor, administrator and superadmin.
+- **Server-rendered PHP 8.2+ over MySQL/MariaDB.** Admin pages are plain HTML and CSS with a little JavaScript, no single-page framework. Colours and sizes are custom properties on `:root` in `admin-ecn.css`, which a skin may override; each newer surface has its own small stylesheet in `css/`.
+- **Third-party libraries are served by the install itself** (`cdn/`, a local mirror), not from an external CDN.
+- **Browsers:** Baseline Widely Available (`.browserslistrc`).
+- **Building blocks, not fixed screens:** 28 field widgets (`src/Widget/`), several hundred template commands, and the modules site, alerts, polls, links and jump.
+- **Out of scope for now:** right-to-left layouts (see Accessibility & Inclusion).
+
 ## Brand Personality
 
 Three words: **frank, patient, civic**.
@@ -45,7 +77,26 @@ What APC-AA should NOT look like, in order of how easy it is to drift into each 
 3. **Dark observability dashboard** (Grafana, Datadog). Cold dark surfaces, neon traces, ops-engineer aesthetic. Mismatched with editorial work and with APC's warm-cream existing palette.
 4. **AI-app chat aesthetic** (Claude, Cursor, modern composer-led tools). Monochrome with one purple accent, big text composer in the middle, soft pillowy shadows. Currently saturated; would make APC-AA feel like a trend chaser. The opposite of civic.
 
-The existing warm-cream variable (`--clr-basic-dark: #e8e3d4`) already resists most of these naturally. Keep it; don't replace it with a cooler "modern" grey.
+The existing warm-cream palette (the `--clr-basic*` variables in `admin-ecn.css`, such as `--clr-basic: #ebdcc3`) already resists most of these naturally. Keep it; don't replace it with a cooler "modern" grey.
+
+## Evidence on Hand
+
+- `DESIGN.md` with `.impeccable/design.json`: the recorded visual system of the admin.
+- `doc/`: FAQ, developer notes, the Central reference (`doc/central.md`) and the database schema (`doc/AAdb.html`, outdated). `INSTALL.md` and `UPDATE.md` describe installing and updating.
+- AA Expression Reference at `https://actionapps.org/expressions/`: every template command with examples that also run as tests.
+- `doc/archive/sourceforge/*.json`: the bug reports, support and feature requests of the former SourceForge tracker, in the users' own words.
+- `tests/`: the PHPUnit suite that CI runs on every push.
+
+Absent, and not to be made up: a logo or brand mark (the repository holds only `images/favicon.ico`), screenshots of the admin, testimonials or case studies, usage numbers, a list of organizations, any record of user research.
+
+## Product Principles
+
+Decisions the maintainer recorded for development; they bind the interface as much as the code.
+
+1. **Endurance over novelty.** A change has to make the product easier to keep running for another decade: no build step on the server, a small proven library before own code, and never a large framework for a small need.
+2. **One way to do each thing.** Every shared job has a single path (items, lists of managed records and their actions, outgoing requests, keys), and a new feature extends it. For the user that means the same list, the same buttons and the same rules on every page.
+3. **Built from its own parts.** Data of modest volume lives in a slice, not in a new table. The user then gets fields, translations, history and templates with it, and can extend a feature without a developer.
+4. **Nothing fails silently.** A feature that works in the background (queue, mail, import, cache, an outside service) ships together with its State Check finding, so the operator learns of a failure where they already look.
 
 ## Design Principles
 

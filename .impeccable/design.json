@@ -1,30 +1,30 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-05-28T00:00:00Z",
+  "generatedAt": "2026-11-11T10:27:12Z",
   "title": "Design System: APC-AA",
   "extensions": {
     "colorMeta": {
-      "press-paper":          { "role": "neutral",   "displayName": "Press Paper",          "canonical": "oklch(96.5% 0.003 80)",  "tonalRamp": ["oklch(20% 0.003 80)","oklch(32% 0.003 80)","oklch(45% 0.003 80)","oklch(58% 0.003 80)","oklch(70% 0.003 80)","oklch(82% 0.003 80)","oklch(90% 0.003 80)","oklch(96.5% 0.003 80)"] },
-      "bond-paper":           { "role": "neutral",   "displayName": "Bond Paper",           "canonical": "oklch(94% 0.006 78)" },
-      "dust-jacket":          { "role": "neutral",   "displayName": "Dust Jacket",          "canonical": "oklch(91% 0.012 78)" },
-      "newsroom-sand":        { "role": "primary",   "displayName": "Newsroom Sand",        "canonical": "oklch(88% 0.04 78)",    "tonalRamp": ["oklch(20% 0.04 78)","oklch(34% 0.04 78)","oklch(48% 0.04 78)","oklch(60% 0.04 78)","oklch(72% 0.04 78)","oklch(80% 0.04 78)","oklch(88% 0.04 78)","oklch(95% 0.025 78)"] },
-      "reporters-tan":        { "role": "neutral",   "displayName": "Reporter's Tan",       "canonical": "oklch(80% 0.05 78)" },
-      "filing-cabinet":       { "role": "neutral",   "displayName": "Filing Cabinet",       "canonical": "oklch(65% 0.05 78)" },
-      "press-black":          { "role": "primary",   "displayName": "Press Black",          "canonical": "oklch(22% 0.005 78)",   "tonalRamp": ["oklch(15% 0.005 78)","oklch(22% 0.005 78)","oklch(32% 0.005 78)","oklch(45% 0.005 78)","oklch(58% 0.005 78)","oklch(72% 0.005 78)","oklch(85% 0.005 78)","oklch(95% 0.005 78)"] },
-      "margin-line":          { "role": "neutral",   "displayName": "Margin Line",          "canonical": "oklch(86% 0.025 78)" },
-      "brass-stamp":          { "role": "primary",   "displayName": "Brass Stamp",          "canonical": "oklch(75% 0.085 80)",   "tonalRamp": ["oklch(25% 0.085 80)","oklch(38% 0.085 80)","oklch(50% 0.085 80)","oklch(60% 0.085 80)","oklch(68% 0.085 80)","oklch(75% 0.085 80)","oklch(85% 0.06 80)","oklch(93% 0.035 80)"] },
-      "hover-olive":          { "role": "neutral",   "displayName": "Hover Olive",          "canonical": "oklch(67% 0.09 95)" },
-      "olive-ink":            { "role": "neutral",   "displayName": "Olive Ink",            "canonical": "oklch(43% 0.07 95)" },
-      "selected-highlighter": { "role": "neutral",   "displayName": "Selected Highlighter", "canonical": "oklch(92% 0.06 90)" },
-      "floating-paper":       { "role": "neutral",   "displayName": "Floating Paper",       "canonical": "oklch(98.5% 0.003 78)" },
-      "published-green":      { "role": "secondary", "displayName": "Published Green",      "canonical": "oklch(72% 0.16 160)",   "tonalRamp": ["oklch(20% 0.08 160)","oklch(32% 0.12 160)","oklch(45% 0.15 160)","oklch(56% 0.17 160)","oklch(64% 0.17 160)","oklch(72% 0.16 160)","oklch(83% 0.10 160)","oklch(93% 0.05 160)"] },
-      "link-slate":           { "role": "neutral",   "displayName": "Link Slate",           "canonical": "oklch(36% 0.14 270)" },
-      "link-hover-blue":      { "role": "neutral",   "displayName": "Link Hover Blue",      "canonical": "oklch(60% 0.18 240)" },
-      "visited-muted":        { "role": "neutral",   "displayName": "Visited Muted",        "canonical": "oklch(55% 0.08 320)" },
-      "data-cnm-best":        { "role": "tertiary",  "displayName": "Filed Green",          "canonical": "oklch(52% 0.10 150)" },
-      "data-cm-good":         { "role": "tertiary",  "displayName": "Working Green",        "canonical": "oklch(72% 0.13 135)" },
-      "data-ncm-bad":         { "role": "tertiary",  "displayName": "Deadline Orange",      "canonical": "oklch(63% 0.16 35)" },
-      "data-ncnm-worst":      { "role": "tertiary",  "displayName": "Stop the Press",       "canonical": "oklch(43% 0.18 25)" }
+      "press-paper":          { "role": "neutral",   "displayName": "Press Paper",          "canonical": "oklch(96.4% 0.003 106)",  "tonalRamp": ["oklch(16% 0.003 106)","oklch(27% 0.003 106)","oklch(38% 0.003 106)","oklch(50% 0.003 106)","oklch(61% 0.003 106)","oklch(72% 0.003 106)","oklch(83% 0.003 106)","oklch(96.4% 0.003 106)"] },
+      "bond-paper":           { "role": "neutral",   "displayName": "Bond Paper",           "canonical": "oklch(94% 0.011 90)",     "tonalRamp": ["oklch(16% 0.011 90)","oklch(27% 0.011 90)","oklch(38% 0.011 90)","oklch(50% 0.011 90)","oklch(61% 0.011 90)","oklch(72% 0.011 90)","oklch(83% 0.011 90)","oklch(94% 0.011 90)"] },
+      "dust-jacket":          { "role": "neutral",   "displayName": "Dust Jacket",          "canonical": "oklch(91.5% 0.014 93)",   "tonalRamp": ["oklch(16% 0.014 93)","oklch(27% 0.014 93)","oklch(38% 0.014 93)","oklch(50% 0.014 93)","oklch(61% 0.014 93)","oklch(72% 0.014 93)","oklch(83% 0.014 93)","oklch(91.5% 0.014 93)"] },
+      "newsroom-sand":        { "role": "primary",   "displayName": "Newsroom Sand",        "canonical": "oklch(90% 0.037 81)",     "tonalRamp": ["oklch(16% 0.037 81)","oklch(27% 0.037 81)","oklch(38% 0.037 81)","oklch(50% 0.037 81)","oklch(61% 0.037 81)","oklch(72% 0.037 81)","oklch(83% 0.037 81)","oklch(90% 0.037 81)"] },
+      "reporters-tan":        { "role": "neutral",   "displayName": "Reporter's Tan",       "canonical": "oklch(82.2% 0.046 79)",   "tonalRamp": ["oklch(16% 0.039 79)","oklch(27% 0.046 79)","oklch(38% 0.046 79)","oklch(50% 0.046 79)","oklch(61% 0.046 79)","oklch(72% 0.046 79)","oklch(82.2% 0.046 79)","oklch(94% 0.046 79)"] },
+      "filing-cabinet":       { "role": "neutral",   "displayName": "Filing Cabinet",       "canonical": "oklch(68.4% 0.045 81)",   "tonalRamp": ["oklch(16% 0.039 81)","oklch(27% 0.045 81)","oklch(38% 0.045 81)","oklch(50% 0.045 81)","oklch(61% 0.045 81)","oklch(68.4% 0.045 81)","oklch(83% 0.045 81)","oklch(94% 0.045 81)"] },
+      "press-black":          { "role": "primary",   "displayName": "Press Black",          "canonical": "oklch(23.9% 0 0)",        "tonalRamp": ["oklch(16% 0 0)","oklch(23.9% 0 0)","oklch(38% 0 0)","oklch(50% 0 0)","oklch(61% 0 0)","oklch(72% 0 0)","oklch(83% 0 0)","oklch(94% 0 0)"] },
+      "margin-line":          { "role": "neutral",   "displayName": "Margin Line",          "canonical": "oklch(87.3% 0.027 90)",   "tonalRamp": ["oklch(16% 0.027 90)","oklch(27% 0.027 90)","oklch(38% 0.027 90)","oklch(50% 0.027 90)","oklch(61% 0.027 90)","oklch(72% 0.027 90)","oklch(87.3% 0.027 90)","oklch(94% 0.027 90)"] },
+      "brass-stamp":          { "role": "primary",   "displayName": "Brass Stamp",          "canonical": "oklch(77.7% 0.075 90)",   "tonalRamp": ["oklch(16% 0.039 90)","oklch(27% 0.057 90)","oklch(38% 0.075 90)","oklch(50% 0.075 90)","oklch(61% 0.075 90)","oklch(72% 0.075 90)","oklch(77.7% 0.075 90)","oklch(94% 0.075 90)"] },
+      "hover-olive":          { "role": "neutral",   "displayName": "Hover Olive",          "canonical": "oklch(67.5% 0.094 99)",   "tonalRamp": ["oklch(16% 0.039 99)","oklch(27% 0.058 99)","oklch(38% 0.08 99)","oklch(50% 0.094 99)","oklch(61% 0.094 99)","oklch(67.5% 0.094 99)","oklch(83% 0.094 99)","oklch(94% 0.094 99)"] },
+      "olive-ink":            { "role": "neutral",   "displayName": "Olive Ink",            "canonical": "oklch(48.1% 0.081 98)",   "tonalRamp": ["oklch(16% 0.039 98)","oklch(27% 0.058 98)","oklch(38% 0.08 98)","oklch(48.1% 0.081 98)","oklch(61% 0.081 98)","oklch(72% 0.081 98)","oklch(83% 0.081 98)","oklch(94% 0.081 98)"] },
+      "selected-highlighter": { "role": "neutral",   "displayName": "Selected Highlighter", "canonical": "oklch(92.6% 0.048 90)",   "tonalRamp": ["oklch(16% 0.039 90)","oklch(27% 0.048 90)","oklch(38% 0.048 90)","oklch(50% 0.048 90)","oklch(61% 0.048 90)","oklch(72% 0.048 90)","oklch(83% 0.048 90)","oklch(92.6% 0.048 90)"] },
+      "floating-paper":       { "role": "neutral",   "displayName": "Floating Paper",       "canonical": "oklch(98.6% 0 0)",        "tonalRamp": ["oklch(16% 0 0)","oklch(27% 0 0)","oklch(38% 0 0)","oklch(50% 0 0)","oklch(61% 0 0)","oklch(72% 0 0)","oklch(83% 0 0)","oklch(98.6% 0 0)"] },
+      "published-green":      { "role": "secondary", "displayName": "Published Green",      "canonical": "oklch(68.8% 0.139 165)",  "tonalRamp": ["oklch(16% 0.038 165)","oklch(27% 0.058 165)","oklch(38% 0.081 165)","oklch(50% 0.106 165)","oklch(61% 0.129 165)","oklch(68.8% 0.139 165)","oklch(83% 0.139 165)","oklch(94% 0.09 165)"] },
+      "link-slate":           { "role": "neutral",   "displayName": "Link Slate",           "canonical": "oklch(40.7% 0.15 271)",   "tonalRamp": ["oklch(16% 0.109 271)","oklch(27% 0.15 271)","oklch(40.7% 0.15 271)","oklch(50% 0.15 271)","oklch(61% 0.15 271)","oklch(72% 0.145 271)","oklch(83% 0.084 271)","oklch(94% 0.029 271)"] },
+      "link-hover-blue":      { "role": "neutral",   "displayName": "Link Hover Blue",      "canonical": "oklch(58.3% 0.164 250)",  "tonalRamp": ["oklch(16% 0.052 250)","oklch(27% 0.078 250)","oklch(38% 0.108 250)","oklch(50% 0.141 250)","oklch(58.3% 0.164 250)","oklch(72% 0.152 250)","oklch(83% 0.088 250)","oklch(94% 0.03 250)"] },
+      "visited-muted":        { "role": "neutral",   "displayName": "Visited Muted",        "canonical": "oklch(56.9% 0.077 316)",  "tonalRamp": ["oklch(16% 0.077 316)","oklch(27% 0.077 316)","oklch(38% 0.077 316)","oklch(50% 0.077 316)","oklch(56.9% 0.077 316)","oklch(72% 0.077 316)","oklch(83% 0.077 316)","oklch(94% 0.043 316)"] },
+      "data-cnm-best":        { "role": "tertiary",  "displayName": "Filed Green",          "canonical": "oklch(52.9% 0.103 156)",  "tonalRamp": ["oklch(16% 0.044 156)","oklch(27% 0.067 156)","oklch(38% 0.093 156)","oklch(52.9% 0.103 156)","oklch(61% 0.103 156)","oklch(72% 0.103 156)","oklch(83% 0.103 156)","oklch(94% 0.096 156)"] },
+      "data-cm-good":         { "role": "tertiary",  "displayName": "Working Green",        "canonical": "oklch(70.5% 0.112 136)",  "tonalRamp": ["oklch(16% 0.056 136)","oklch(27% 0.084 136)","oklch(38% 0.112 136)","oklch(50% 0.112 136)","oklch(61% 0.112 136)","oklch(70.5% 0.112 136)","oklch(83% 0.112 136)","oklch(94% 0.112 136)"] },
+      "data-ncm-bad":         { "role": "tertiary",  "displayName": "Deadline Orange",      "canonical": "oklch(64.9% 0.157 37)",   "tonalRamp": ["oklch(16% 0.065 37)","oklch(27% 0.094 37)","oklch(38% 0.13 37)","oklch(50% 0.157 37)","oklch(64.9% 0.157 37)","oklch(72% 0.157 37)","oklch(83% 0.097 37)","oklch(94% 0.031 37)"] },
+      "data-ncnm-worst":      { "role": "tertiary",  "displayName": "Stop the Press",       "canonical": "oklch(46.3% 0.162 26)",   "tonalRamp": ["oklch(16% 0.072 26)","oklch(27% 0.112 26)","oklch(38% 0.156 26)","oklch(46.3% 0.162 26)","oklch(61% 0.162 26)","oklch(72% 0.162 26)","oklch(83% 0.094 26)","oklch(94% 0.03 26)"] }
     },
     "typographyMeta": {
       "display":    { "displayName": "Display / H1",     "purpose": "Page-level section title. Deliberately normal-weight, not bold. The page heading announces; it does not shout." },
@@ -42,12 +42,13 @@
     "motion": [
       { "name": "legacy-slow",   "value": "all 0.3s",                       "purpose": "Existing transition pattern across legacy buttons. Grandfathered; do not extend." },
       { "name": "modern",        "value": "0.15s cubic-bezier(0.5,1,0.89,1)", "purpose": "Recommended for new components. ease-out-quart; no bounce, no elastic." },
-      { "name": "modern-fast",   "value": "0.12s cubic-bezier(0.5,1,0.89,1)", "purpose": "Border-color and box-shadow transitions on inputs/buttons in modern focus treatment." }
+      { "name": "modern-fast",   "value": "0.12s ease",                    "purpose": "Border-color and focus-ring changes on the dropdown-style controls in admin-ecn.css; their option rows fade the background in 0.08s." }
     ],
     "breakpoints": [
-      { "name": "mobile-narrow", "value": "640px",  "purpose": "Narrow phones; admin density forces some controls to wrap." },
-      { "name": "tablet",        "value": "900px",  "purpose": "Used by `.aa-stat-chart` aspect-ratio override and several admin layouts." },
-      { "name": "desktop",       "value": "1200px", "purpose": "Standard admin desktop." }
+      { "name": "narrow",      "value": "640px",  "purpose": "Phone layout of the newer admin surfaces (css/dataimport.css at 40em; aa-isds.css and aa-params.css switch nearby, at 600px and 620px)." },
+      { "name": "admin-shell", "value": "768px",  "purpose": "The main admin breakpoint (admin-ecn.css, css/aa-system.css, css/dataimport.css at 48em): below it the page background turns white and side-by-side blocks stack." },
+      { "name": "tablet",      "value": "900px",  "purpose": "Statistics charts get a taller aspect ratio below it (`.aa-stat-chart`); aa-isds.css has a rule at the same width." },
+      { "name": "desktop",     "value": "1200px", "purpose": "Below it the slice heading (`.slicehead`) gets extra left padding." }
     ]
   },
   "components": [
@@ -57,7 +58,7 @@
       "refersTo": "button-default",
       "description": "The workhorse. Square, dense, near-black on warm background. Used for almost every admin action except publish/save.",
       "html": "<button class=\"ds-btn\">Show</button>",
-      "css": ".ds-btn { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 16px; padding: 6px 12px; margin: 2px; background-color: #1f1f1f; color: #f3f3f1; border: solid 1px transparent; border-radius: 0; text-decoration: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1), color 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-btn:hover { background-color: #A8977A; color: #f3f3f1; } .ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
+      "css": ".ds-btn { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 16px; padding: 6px 12px; margin: 2px; background-color: var(--clr-dark, #1f1f1f); color: var(--clr-body, #f3f3f1); border: solid 1px transparent; border-radius: 0; text-decoration: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1), color 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-btn:hover { background-color: var(--clr-basic-darker, #A8977A); color: var(--clr-body, #f3f3f1); } .ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
     },
     {
       "name": "Primary Button",
@@ -65,7 +66,7 @@
       "refersTo": "button-primary",
       "description": "Publish / save / confirm only. The single saturated voice in the chrome.",
       "html": "<button class=\"ds-btn-primary\">Publish</button>",
-      "css": ".ds-btn-primary { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 16px; padding: 6px 12px; margin: 2px; background-color: #1eb585; color: #f3f3f1; border: solid 1px transparent; border-radius: 0; text-decoration: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-btn-primary:hover { background-color: #189869; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
+      "css": ".ds-btn-primary { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 16px; padding: 6px 12px; margin: 2px; background-color: var(--clr-green, #1eb585); color: var(--clr-body, #f3f3f1); border: solid 1px transparent; border-radius: 0; text-decoration: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-btn-primary:hover { background-color: #189869; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
     },
     {
       "name": "Secondary Button",
@@ -73,7 +74,7 @@
       "refersTo": "button-secondary",
       "description": "Transparent over warm surface. Use when an action is real but secondary in priority.",
       "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
-      "css": ".ds-btn-secondary { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 16px; padding: 6px 12px; margin: 2px; background-color: rgba(255,255,255,0.2); color: #6a5e22; border: solid 1px rgba(26,4,4,0.3); border-radius: 0; text-decoration: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1), color 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-btn-secondary:hover { background-color: #d5c2a4; color: #1f1f1f; } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
+      "css": ".ds-btn-secondary { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 16px; padding: 6px 12px; margin: 2px; background-color: rgba(255,255,255,0.2); color: var(--clr-text-accent, #6a5e22); border: solid 1px rgba(26,4,4,0.3); border-radius: 0; text-decoration: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1), color 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-btn-secondary:hover { background-color: var(--clr-basic-dark, #d5c2a4); color: var(--clr-dark, #1f1f1f); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
     },
     {
       "name": "Text Input",
@@ -81,7 +82,7 @@
       "refersTo": "input-text",
       "description": "Dense, square, white on warm surface. Border is Margin Line; focus shifts to Hover Olive plus a gold focus ring.",
       "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Item headline\" />",
-      "css": ".ds-input { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 1.4; padding: 3px 4px; margin: 2px; background: #ffffff; color: #1f1f1f; border: 1px solid #dcd5c2; border-radius: 0; box-sizing: border-box; max-width: 100%; transition: border-color 0.12s cubic-bezier(0.5,1,0.89,1), box-shadow 0.12s cubic-bezier(0.5,1,0.89,1); } .ds-input:focus, .ds-input:focus-visible { outline: none; border-color: #a59850; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
+      "css": ".ds-input { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 1.4; padding: 3px 4px; margin: 2px; background: #ffffff; color: var(--clr-dark, #1f1f1f); border: 1px solid var(--clr-border, #dcd5c2); border-radius: 0; box-sizing: border-box; max-width: 100%; transition: border-color 0.12s cubic-bezier(0.5,1,0.89,1), box-shadow 0.12s cubic-bezier(0.5,1,0.89,1); } .ds-input:focus, .ds-input:focus-visible { outline: none; border-color: var(--clr-border-hover, #a59850); box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
     },
     {
       "name": "Details Chip",
@@ -89,7 +90,7 @@
       "refersTo": "chip-details",
       "description": "The pill-shaped expander. Sole rounded primitive in the system. Toggleable affordance.",
       "html": "<details class=\"ds-details\"><summary>Show advanced</summary><p style=\"font-size:0.955rem;margin:0.5em 0;color:#6a5e22\">Hidden until requested.</p></details>",
-      "css": ".ds-details summary { cursor: pointer; padding: 4px 12px; margin-bottom: 0; display: inline-block; background-color: rgba(255,255,255,0.2); border: solid 1px rgba(26,4,4,0.3); color: #61454A; border-radius: 13px; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1), color 0.15s cubic-bezier(0.5,1,0.89,1); list-style: none; } .ds-details summary::-webkit-details-marker { display: none; } .ds-details summary:after { content: ''; display: inline-block; border: solid 4px transparent; border-top-color: #61454A; margin-left: 6px; transform: translateY(2px); transition: transform 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-details[open] summary:after { transform: translateY(-2px) rotate(180deg); } .ds-details summary:hover { background-color: #d5c2a4; color: #1f1f1f; }"
+      "css": ".ds-details summary { cursor: pointer; padding: 4px 12px; margin-bottom: 0; display: inline-block; background-color: rgba(255,255,255,0.2); border: solid 1px rgba(26,4,4,0.3); color: #61454A; border-radius: 13px; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1), color 0.15s cubic-bezier(0.5,1,0.89,1); list-style: none; } .ds-details summary::-webkit-details-marker { display: none; } .ds-details summary:after { content: ''; display: inline-block; border: solid 4px transparent; border-top-color: #61454A; margin-left: 6px; transform: translateY(2px); transition: transform 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-details[open] summary:after { transform: translateY(-2px) rotate(180deg); } .ds-details summary:hover { background-color: var(--clr-basic-dark, #d5c2a4); color: var(--clr-dark, #1f1f1f); }"
     },
     {
       "name": "Stats Cell with In-Cell Bar",
@@ -97,7 +98,7 @@
       "refersTo": "table-cell",
       "description": "Numeric table cell with a 3px bar at the bottom encoding the value as length, and HSL-tinted hue swinging red→amber→green with --pct.",
       "html": "<table class=\"ds-stat-table\"><thead><tr><th>Slice</th><th>Cache %</th></tr></thead><tbody><tr><td>Headlines</td><td class=\"ds-stat-bar ds-stat-cache\" style=\"--pct:82\">82%</td></tr><tr><td>Archive</td><td class=\"ds-stat-bar ds-stat-cache\" style=\"--pct:34\">34%</td></tr></tbody></table>",
-      "css": ".ds-stat-table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-family: 'Open Sans', sans-serif; font-size: 1rem; } .ds-stat-table thead th { padding: 4px 6px; text-align: right; background-color: #d5c2a4; color: rgb(0 0 0 / 80%); font-weight: 400; border-left: solid 1px rgba(255,255,255,0.45); border-top: solid 1px rgba(255,255,255,0.45); } .ds-stat-table tbody td { padding: 2px 6px; text-align: right; white-space: nowrap; line-height: 1.3; } .ds-stat-table tbody td:first-child { text-align: left; background-color: #ffffff; } .ds-stat-table tbody tr:nth-of-type(even) td:first-child { background-color: #f3efe6; } .ds-stat-bar { background-image: linear-gradient(to right, var(--bar, #7a9) calc(var(--pct, 0) * 1%), transparent 0); background-repeat: no-repeat; background-position: left bottom; background-size: 100% 3px; } .ds-stat-cache { --bar: hsl(calc(var(--pct, 0) * 1.2), 60%, 55%); }"
+      "css": ".ds-stat-table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-family: 'Open Sans', sans-serif; font-size: 1rem; } .ds-stat-table thead th { padding: 4px 6px; text-align: right; background-color: var(--clr-basic-dark, #d5c2a4); color: rgb(0 0 0 / 80%); font-weight: 400; border-left: solid 1px rgba(255,255,255,0.45); border-top: solid 1px rgba(255,255,255,0.45); } .ds-stat-table tbody td { padding: 2px 6px; text-align: right; white-space: nowrap; line-height: 1.3; } .ds-stat-table tbody td:first-child { text-align: left; background-color: #ffffff; } .ds-stat-table tbody tr:nth-of-type(even) td:first-child { background-color: #f3efe6; } .ds-stat-bar { background-image: linear-gradient(to right, var(--bar, #7a9) calc(var(--pct, 0) * 1%), transparent 0); background-repeat: no-repeat; background-position: left bottom; background-size: 100% 3px; } .ds-stat-cache { --bar: hsl(calc(var(--pct, 0) * 1.2), 60%, 55%); }"
     },
     {
       "name": "Drill-down Link",
@@ -113,7 +114,7 @@
       "refersTo": "floating-paper",
       "description": "Dropdown / popover surface. Paper hovering above paper: warm-tinted shadow, near-white fill, no border decoration.",
       "html": "<div class=\"ds-popover\"><p style=\"margin:0;font-family:'Open Sans',sans-serif;font-size:0.955rem;color:#1f1f1f;\">Filter by slice</p><ul style=\"margin:8px 0 0;padding:0 0 0 18px;font-family:'Open Sans',sans-serif;font-size:0.955rem;color:#6a5e22\"><li>Headlines</li><li>Archive</li><li>Events</li></ul></div>",
-      "css": ".ds-popover { display: inline-block; padding: 12px 16px; background-color: #fbfaf9; border: 1px solid #dcd5c2; border-radius: 6px; box-shadow: 0 14px 36px rgba(60, 50, 20, 0.20); max-width: 280px; }"
+      "css": ".ds-popover { display: inline-block; padding: 12px 16px; background-color: var(--clr-surface-popup, #fbfaf9); border: 1px solid var(--clr-border, #dcd5c2); border-radius: 6px; box-shadow: 0 14px 36px rgba(60, 50, 20, 0.20); max-width: 280px; }"
     }
   ],
   "narrative": {
