@@ -30,6 +30,8 @@ The most common case is an access code left in `service/sql_update.php`. The exc
 
 Log in as superadmin and open **AA → Optimize**. Search for `sql_update` in the **Types** column,
 select all rows and run **Test**. Then run **Repair** on the rows that report a problem.
+The update needs the database server from [INSTALL.md](INSTALL.md#requirements) (MariaDB 10.11);
+an older one refuses some of the changes, and the report lists the tables left unchanged.
 
 If you cannot log in, for example because the update needs a new column first, use
 `service/sql_update.php` as described in [INSTALL.md, step 5](INSTALL.md#5-create-the-database-tables).

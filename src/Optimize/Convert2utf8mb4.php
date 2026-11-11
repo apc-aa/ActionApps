@@ -28,7 +28,7 @@ class Convert2utf8mb4 extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("Convert old database collation utf8 (or utf8mb3) to utf8mb4 for all tables and set database default to utf8mb4");
+        return _m("Convert the utf8 (utf8mb3) tables to utf8mb4 and bring all tables and the database default to one collation - a language one (e.g. Czech) when the database has it");
     }
 
     /** Test function
@@ -85,9 +85,9 @@ class Convert2utf8mb4 extends AbstractOptimize
     /** new tables get the database default collation, so it must be the one of the tables
      * @param array{db_collation: string, collation: string} $plan
      */
-    protected function defaultOk(array $plan): bool
+    private function defaultOk(array $plan): bool
     {
-        return $plan['db_collation'] === $plan['collation'];
+        return $this->recollates() ? ($plan['db_collation'] === $plan['collation']) : str_starts_with($plan['db_collation'], 'utf8mb4_');
     }
 
     /** @return string[] charsets of the columns to convert (utf8mb3 is called utf8 in MySQL and older MariaDB) */
@@ -116,13 +116,18 @@ class Convert2utf8mb4 extends AbstractOptimize
     protected function plan(): array
     {
         $schema = $this->schema();
-        $tables = DB_AA::select(['TABLE_NAME' => []], 'SELECT TABLE_NAME, TABLE_COLLATION, ENGINE, ROW_FORMAT FROM information_schema.TABLES', [['TABLE_SCHEMA', $schema], ['TABLE_TYPE', 'BASE TABLE']]);
+        $tables = DB_AA::select(['TABLE_NAME' => []], 'SELECT TABLE_NAME, TABLE_COLLATION, ENGINE, ROW_FORMAT, DATA_LENGTH, INDEX_LENGTH FROM information_schema.TABLES', [['TABLE_SCHEMA', $schema], ['TABLE_TYPE', 'BASE TABLE']]);
         $charsets = $this->sourceCharsets();
-        $columns = DB_AA::select([], 'SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT, COLUMN_COMMENT, COLLATION_NAME FROM information_schema.COLUMNS', [['TABLE_SCHEMA', $schema], ['CHARACTER_SET_NAME', array_merge($charsets, ['utf8mb4'])]]);
+        $columns = DB_AA::select([], 'SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT, COLUMN_COMMENT, COLLATION_NAME FROM information_schema.COLUMNS', [['TABLE_SCHEMA', $schema], ['CHARACTER_SET_NAME', $this->recollates() ? array_merge($charsets, ['utf8mb4']) : $charsets]]);
         $db_collation = (string) DB_AA::select1('DEFAULT_COLLATION_NAME', 'SELECT DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA', [['SCHEMA_NAME', $schema]]);
         $collations = array_map(static fn($table) => (string) $table['TABLE_COLLATION'], $tables);
-        $collation = self::targetCollation($collations, $db_collation, $this->fallbackCollation($collations));
-        return ['tables' => $tables, 'sqls' => self::alterSqls($tables, $columns, $charsets, $collation, $this->recollates()), 'collation' => $collation, 'db_collation' => $db_collation];
+        $collation = self::targetCollation($collations, $db_collation, $this->fallbackCollation($collations), $this->recollates());
+        $sqls = self::alterSqls($tables, $columns, $charsets, $collation, $this->recollates());
+        // the big tables first: a failing ALTER (lock, time) stops the repair before the small tables
+        // are in another utf8mb4 collation than the big ones - two of them cannot be compared
+        $size = static fn($name) => (int) $tables[$name]['DATA_LENGTH'] + (int) $tables[$name]['INDEX_LENGTH'];
+        uksort($sqls, static fn($a, $b) => $size($b) <=> $size($a));
+        return ['tables' => $tables, 'sqls' => $sqls, 'collation' => $collation, 'db_collation' => $db_collation];
     }
 
     /** utf8mb3 texts fit utf8mb4 as they are, whatever the connection */
@@ -157,18 +162,24 @@ class Convert2utf8mb4 extends AbstractOptimize
 
     /** One collation for all the tables - the database refuses to compare columns of two different
      *  utf8mb4 collations ("Illegal mix of collations"), e.g. in a join of content with constant.
-     *  A language order (Czech) of any utf8 table decides first - the general one would lose it; then the
-     *  tables already in utf8mb4 (not backups, not case sensitive _bin), then the database default.
+     *  A language order (Czech) of any utf8 table or of the database default decides first - the general one
+     *  would lose it - when the other utf8mb4 tables are converted to it too ($language_first); then the
+     *  tables already in utf8mb4 (not backups or temporary, not case sensitive), then the database default.
      * @param array<string, string> $collations [table_name => table_collation]
      */
-    public static function targetCollation(array $collations, string $db_collation, string $fallback): string
+    public static function targetCollation(array $collations, string $db_collation, string $fallback, bool $language_first = true): string
     {
-        $tables   = array_filter($collations, static fn($tablename) => !str_starts_with((string) $tablename, 'bck_'), ARRAY_FILTER_USE_KEY);
-        $language = array_count_values(array_filter(array_map(static fn($collation) => self::languageCollation((string) $collation), $tables)));
-        $utf8mb4  = array_count_values(array_filter($tables, static fn($collation) => str_starts_with((string) $collation, 'utf8mb4_') && $collation !== 'utf8mb4_bin'));
+        $tables   = array_filter($collations, static fn($tablename) => !preg_match('/^(bck|tmp)_/', (string) $tablename), ARRAY_FILTER_USE_KEY);
+        $language = $language_first ? array_count_values(array_filter(array_map(static fn($collation) => self::languageCollation((string) $collation), [...array_values($tables), $db_collation]))) : [];
+        $utf8mb4  = array_count_values(array_filter($tables, static fn($collation) => str_starts_with((string) $collation, 'utf8mb4_') && !self::caseSensitive((string) $collation)));
         arsort($language);
         arsort($utf8mb4);
         return (string) (array_key_first($language) ?? array_key_first($utf8mb4) ?? (str_starts_with($db_collation, 'utf8mb4_') ? $db_collation : $fallback));
+    }
+
+    private static function caseSensitive(string $collation): bool
+    {
+        return (bool) preg_match('/_(bin|cs)$/', $collation);
     }
 
     /** utf8mb4 variant of an utf8 collation ordering by a language (utf8mb3_czech_ci => utf8mb4_czech_ci), else '' */
@@ -195,7 +206,7 @@ class Convert2utf8mb4 extends AbstractOptimize
         $modify = [];
         foreach ($columns as $col) {
             // a case sensitive column stays case sensitive
-            $case_sensitive = preg_match('/_(bin|cs)$/', (string) $col['COLLATION_NAME']);
+            $case_sensitive = self::caseSensitive((string) $col['COLLATION_NAME']);
             if (str_starts_with((string) $col['COLLATION_NAME'], 'utf8mb4_') && (!$recollate || $case_sensitive || ($col['COLLATION_NAME'] === $collation))) {
                 continue;
             }
@@ -207,7 +218,7 @@ class Convert2utf8mb4 extends AbstractOptimize
         }
         $ret = [];
         foreach ($tables as $tablename => $table) {
-            $other_utf8mb4 = $recollate && str_starts_with((string) $table['TABLE_COLLATION'], 'utf8mb4_') && !in_array($table['TABLE_COLLATION'], [$collation, 'utf8mb4_bin'], true);
+            $other_utf8mb4 = $recollate && str_starts_with((string) $table['TABLE_COLLATION'], 'utf8mb4_') && ($table['TABLE_COLLATION'] !== $collation) && !self::caseSensitive((string) $table['TABLE_COLLATION']);
             if (str_starts_with($tablename, 'bck_') || (!isset($modify[$tablename]) && !$other_utf8mb4 && !in_array(strtok((string) $table['TABLE_COLLATION'], '_'), $charsets, true))) {
                 continue;
             }

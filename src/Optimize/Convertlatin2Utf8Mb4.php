@@ -50,12 +50,6 @@ class Convertlatin2Utf8Mb4 extends \AA\Optimize\Convert2utf8mb4
         return false;
     }
 
-    /** @param array{db_collation: string, collation: string} $plan */
-    protected function defaultOk(array $plan): bool
-    {
-        return str_starts_with($plan['db_collation'], 'utf8mb4_');
-    }
-
     /** @param array<string, string> $collations [table_name => table_collation] */
     protected function fallbackCollation(array $collations): string
     {

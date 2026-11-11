@@ -79,7 +79,7 @@ final class Convert2utf8mb4Test extends TestCase
     /** a database in two utf8mb4 collations refuses to compare their columns ("Illegal mix of collations") */
     public function test_alterSqls_recollatesOtherUtf8mb4Tables(): void
     {
-        $tables  = ['content' => self::table('utf8mb4_general_ci'), 'item' => self::table('utf8mb4_czech_ci'), 'pwd' => self::table('utf8mb4_bin'), 'view' => self::table('utf8mb4_czech_ci')];
+        $tables  = ['content' => self::table('utf8mb4_general_ci'), 'item' => self::table('utf8mb4_czech_ci'), 'pwd' => self::table('utf8mb4_nopad_bin'), 'view' => self::table('utf8mb4_czech_ci')];
         $columns = [
             self::column('content', 'text', 'longtext', 'utf8mb4_general_ci'),
             self::column('content', 'flag', 'char(1)', 'utf8mb4_bin', 'NO'),
@@ -109,9 +109,10 @@ final class Convert2utf8mb4Test extends TestCase
     public static function collationProvider(): array
     {
         return [
-            'a language order wins'  => [['a' => 'utf8mb3_czech_ci', 'b' => 'utf8mb4_general_ci', 'c' => 'utf8mb4_general_ci', 'bck_d' => 'utf8mb3_slovak_ci', 'bck_e' => 'utf8mb3_slovak_ci'], 'utf8mb4_general_ci', 'utf8mb4_czech_ci'],
+            'a language order wins'  => [['a' => 'utf8mb3_czech_ci', 'b' => 'utf8mb4_general_ci', 'c' => 'utf8mb4_general_ci', 'bck_d' => 'utf8mb3_slovak_ci', 'tmp_e' => 'utf8mb3_slovak_ci', 'tmp_f' => 'utf8mb3_slovak_ci'], 'utf8mb4_general_ci', 'utf8mb4_czech_ci'],
+            'also of the default'    => [['a' => 'utf8mb4_general_ci'], 'utf8mb4_czech_ci', 'utf8mb4_czech_ci'],
             'generic orders are not' => [['a' => 'utf8mb3_unicode_ci', 'b' => 'utf8mb4_uca1400_ai_ci', 'c' => 'utf8mb4_general_nopad_ci', 'd' => 'utf8mb4_0900_as_ci'], 'utf8mb4_general_ci', 'utf8mb4_uca1400_ai_ci'],
-            'utf8mb4 tables decide'  => [['a' => 'utf8mb4_czech_ci', 'c' => 'utf8mb4_bin', 'c2' => 'utf8mb4_bin', 'bck_a' => 'utf8mb4_unicode_ci', 'bck_b' => 'utf8mb4_unicode_ci', 'd' => 'latin1_swedish_ci'], 'utf8mb4_general_ci', 'utf8mb4_czech_ci'],
+            'utf8mb4 tables decide'  => [['a' => 'utf8mb4_czech_ci', 'c' => 'utf8mb4_bin', 'c2' => 'utf8mb4_nopad_bin', 'c3' => 'utf8mb4_nopad_bin', 'bck_a' => 'utf8mb4_unicode_ci', 'bck_b' => 'utf8mb4_unicode_ci', 'd' => 'latin1_swedish_ci'], 'utf8mb4_general_ci', 'utf8mb4_czech_ci'],
             'then database default'  => [['d' => 'latin1_swedish_ci', 'e' => 'utf8mb3_general_ci'], 'utf8mb4_general_ci', 'utf8mb4_general_ci'],
             'else the fallback'      => [['d' => 'latin1_swedish_ci'], 'latin1_swedish_ci', 'utf8mb4_unicode_ci'],
         ];
@@ -122,6 +123,14 @@ final class Convert2utf8mb4Test extends TestCase
     public function test_targetCollation_picksOneForAllTables(array $collations, string $db_collation, string $expected): void
     {
         self::assertSame($expected, Convert2utf8mb4::targetCollation($collations, $db_collation, 'utf8mb4_unicode_ci'));
+    }
+
+    /** the 1Byte converter leaves the utf8mb4 tables as they are, so it must not pick another collation for them */
+    public function test_targetCollation_withoutRecollation_utf8mb4TablesDecide(): void
+    {
+        $collations = ['a' => 'utf8mb4_general_ci', 'b' => 'utf8mb4_general_ci', 'c' => 'utf8mb4_czech_ci', 'd' => 'cp1250_czech_cs'];
+
+        self::assertSame('utf8mb4_general_ci', Convert2utf8mb4::targetCollation($collations, 'utf8mb4_czech_ci', 'utf8mb4_unicode_ci', false));
     }
 
     /** an utf8mb3 database keeps the sorting of its tables, e.g. Czech */
@@ -247,7 +256,7 @@ trait FakeDb
     protected function plan(): array
     {
         $collations = array_map(static fn($table) => (string) $table['TABLE_COLLATION'], $this->fake_tables);
-        $collation = self::targetCollation($collations, $this->fake_db_collation, $this->fallbackCollation($collations));
+        $collation = self::targetCollation($collations, $this->fake_db_collation, $this->fallbackCollation($collations), $this->recollates());
         return ['tables' => $this->fake_tables, 'sqls' => self::alterSqls($this->fake_tables, [], $this->fake_charsets, $collation, $this->recollates()), 'collation' => $collation, 'db_collation' => $this->fake_db_collation];
     }
 
