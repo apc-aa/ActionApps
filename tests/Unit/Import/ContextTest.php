@@ -124,6 +124,37 @@ final class ContextTest extends TestCase
         self::assertSame([200, 'data'], [$answer->status, $answer->body]);
     }
 
+    // check(), probe() and the job of one step all read the same file
+    public function test_http_sameGetTwice_asksTheTransportOnce(): void
+    {
+        $ctx    = $this->context([new MockResponse('data'), new MockResponse('other')]);
+        $first  = $ctx->http()->request('GET', 'https://1.1.1.1/data', null, ['Accept' => 'text/csv']);
+        $second = $ctx->http()->request('GET', 'https://1.1.1.1/data', null, ['Accept' => 'text/csv']);
+
+        self::assertCount(1, $this->requests);
+        self::assertSame('data', $second->body);
+        self::assertSame($first, $second);
+    }
+
+    public function test_http_otherUrlPostOrFailure_asksAgain(): void
+    {
+        $ctx = $this->context([
+            new MockResponse('a'), new MockResponse('b'), new MockResponse('a2'), new MockResponse('a3'), new MockResponse('a4'),
+            new MockResponse('p1'), new MockResponse('p2'),
+            new MockResponse('', ['http_code' => 500]), new MockResponse('', ['http_code' => 500]),
+        ]);
+        $get = fn(string $url, bool $follow = true, array $headers = []): string => $ctx->http($follow)->request('GET', $url, null, $headers)->body;
+
+        self::assertSame(['a', 'b', 'a2'], [$get('https://1.1.1.1/a'), $get('https://1.1.1.1/b'), $get('https://1.1.1.1/a')], 'another URL replaces the one remembered');
+        self::assertSame('a3', $get('https://1.1.1.1/a', false), 'without redirects');
+        self::assertSame('a4', $get('https://1.1.1.1/a', false, ['Accept' => 'text/csv']), 'other headers');
+        self::assertSame('p1', $ctx->http()->request('POST', 'https://1.1.1.1/p', 'x')->body);
+        self::assertSame('p2', $ctx->http()->request('POST', 'https://1.1.1.1/p', 'x')->body);
+        self::assertSame(500, $ctx->http()->request('GET', 'https://1.1.1.1/e')->status);
+        self::assertSame(500, $ctx->http()->request('GET', 'https://1.1.1.1/e')->status);
+        self::assertCount(9, $this->requests);
+    }
+
     // a client error is an answer: the grabber decides what it means
     public function test_http_errorStatusIsAnswer(): void
     {

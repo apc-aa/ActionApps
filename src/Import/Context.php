@@ -73,6 +73,12 @@ final class Context
     /** one connection for all requests of the step, under a new guard each time */
     private ?HttpClientInterface $connection = null;
 
+    /** a hash of the request, so the object holds no URL or header with a key */
+    private string $lastGet = '';
+
+    /** the answer to $lastGet - only the last one: a file may be tens of MB */
+    private ?Response $lastAnswer = null;
+
     /** @var array<string, array{code: string, text: string}> the first remarks, by code and text */
     private array $remarks = [];
 
@@ -120,7 +126,8 @@ final class Context
      * starts (BatchBudgetSpent - the step's own end, not a failure of the source). The port is not
      * restricted: the source takes its URL from its settings. A non-2xx status is an answer - what it means is up to the caller. DNS is
      * not limited by the budget: neither the guard's lookup nor the second one that sorts a blocked
-     * host, so a failing resolver can take up to about twice its timeout.
+     * host, so a failing resolver can take up to about twice its timeout. The same GET right after
+     * a 2xx answer to it gets that answer again, without asking the server.
      */
     public function http(bool $follow = true): ClientInterface
     {
@@ -235,6 +242,13 @@ final class Context
      */
     private function send(string $method, #[SensitiveParameter] string $url, #[SensitiveParameter] ?string $body, #[SensitiveParameter] array $headers, int $redirects): Response
     {
+        // check(), probe() and the jobs of a step often read the same file; a new step asks again
+        $request = hash('sha256', serialize([$method, $url, $body, $headers, $redirects]));
+        if (($request === $this->lastGet) && ($this->lastAnswer !== null)) {
+            return $this->lastAnswer;
+        }
+        $this->lastGet    = '';
+        $this->lastAnswer = null;
         // the guard checks this too; kept here so the rule does not depend on the library
         if (preg_match('~^https?://~i', $url) !== 1) {
             throw $this->failure(false, 'Only http(s) addresses are imported', $url, TransportException::ADDRESS);
@@ -253,6 +267,11 @@ final class Context
         // the guard hands over the last 3xx when redirects ran out; with none allowed it is the answer
         if (($redirects > 0) && ($answer->redirect !== '')) {
             throw $this->failure(false, "More than $redirects redirects", $url, SourceFailure::REDIRECTS);
+        }
+        // a POST may change what the server answers; a failure is to be asked again
+        if (($method === 'GET') && $answer->ok()) {
+            $this->lastGet    = $request;
+            $this->lastAnswer = $answer;
         }
         return $answer;
     }

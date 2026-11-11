@@ -101,7 +101,31 @@ final class CsvurlSourceRunTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
-        self::assertSame(2, count(TestRun::$requests) - $requests, 'check() and probe() only');
+        self::assertSame(1, count(TestRun::$requests) - $requests, 'check() and probe() of one step download once');
         self::assertSame([], TestRun::stored());
+    }
+
+    public function test_changedRun_checkProbeAndJobInOneStep_downloadOnce(): void
+    {
+        $run = self::startCsv("Name,Code,Note\nA,K1,a\nB,K2,b\n", 'changed');
+
+        $steps = self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertCount(1, $steps);
+        self::assertSame(['A', 'B'], TestRun::storedValues('headline........'));
+        self::assertSame(['GET ' . self::URL], TestRun::$requests);
+    }
+
+    // the file may change between steps; a step keeps nothing for the next one
+    public function test_nextStep_downloadsAgain(): void
+    {
+        TestRun::$itemSeconds = 10.0;
+        self::startCsv("Name,Code,Note\nA,K1,a\nB,K2,b\nC,K3,c\nD,K4,d\nE,K5,e\n", 'changed');
+
+        self::runOne();
+        self::assertCount(1, TestRun::$requests);
+        self::runOne();
+        self::assertCount(2, TestRun::$requests);
     }
 }
