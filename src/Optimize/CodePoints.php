@@ -12,9 +12,10 @@ use AA_Object;
 
 /** Where template code lives - the code points admin/aafinder.php searches: views, slice,
  *  module and site settings, fields (alias functions), site spots, object_text and the items
- *  of Code slices - and besides them the Alerts e-mails and the item fields shown by the alias
- *  function f_y or edited by the code widget in any slice. For the checks which look for an
- *  expression in all of them.
+ *  of Code slices - and besides them the item fields shown by the alias function f_y or edited
+ *  by the code widget in any slice. The Alerts e-mails only on request ($mails): their code
+ *  is no page, a check about pages would report them wrongly. For the checks which look for
+ *  an expression in all of them.
  */
 final class CodePoints
 {
@@ -28,8 +29,13 @@ final class CodePoints
         'field'       => ['iid' => '`id`', 'sid' => 'LOWER(HEX(`slice_id`))'],
         'site_spot'   => ['iid' => '`spot_id`', 'sid' => 'LOWER(HEX(`site_id`))'],
         'object_text' => ['iid' => '`object_id`'],
-        'email'       => ['iid' => '`id`', 'sid' => 'LOWER(HEX(`owner_module_id`))'],
     ];
+
+    /** the Alerts e-mails, the same way as TABLES */
+    private const MAILS = ['email' => ['iid' => '`id`', 'sid' => 'LOWER(HEX(`owner_module_id`))']];
+
+    /** items whose content one query of texts() reads - the memory stays bounded on any slice */
+    private const ITEMS_CHUNK = 500;
 
     /** Every code value containing $needle - a LIKE scan over every code column; cheap on any
      *  real install (the code tables are small) but not index-only, so for extended checks.
@@ -37,9 +43,9 @@ final class CodePoints
      *  @return \Generator<int, array{table: string, column: string, iid: string, sid?: string, txt: string}>
      *          a row Adminlink::linkByTable($row['table'], $row['column'], $row) links to
      */
-    public static function containing(string $needle): \Generator
+    public static function containing(string $needle, bool $mails = false): \Generator
     {
-        foreach (self::TABLES as $table => $ids) {
+        foreach (self::tables($mails) as $table => $ids) {
             foreach (self::columns($table) as $column) {
                 $query = "SELECT $ids[iid] AS iid" . (isset($ids['sid']) ? ", $ids[sid] AS sid" : '') . ", `$column` AS txt FROM `$table`";
                 foreach (DB_AA::select([], $query, [["`$column`", $needle, 'CONTAIN']]) as $row) {
@@ -50,18 +56,19 @@ final class CodePoints
 
         $query = 'SELECT LOWER(HEX(`content`.`item_id`)) AS iid, LOWER(HEX(`item`.`slice_id`)) AS sid, `content`.`text` AS txt FROM `content`, `item`';
         foreach (self::itemScopes() as $scope) {
-            foreach (DB_AA::select([], $query, array_merge([['content.item_id', 'item.id', 'j']], $scope, [['content.text', $needle, 'CONTAIN']])) as $row) {
+            foreach (DB_AA::select([], $query, array_merge([['content.item_id', 'item.id', 'j']], self::scopeWhere($scope), [['content.text', $needle, 'CONTAIN']])) as $row) {
                 yield self::row('content', 'text', $row);
             }
         }
     }
 
     /** Every code text, for a check looking for many needles: one read of all the code instead of a scan
-     *  per needle. One column (or one group of item fields) is in memory at a time.
+     *  per needle. One column, or the code fields of ITEMS_CHUNK items, is in memory at a time - the
+     *  f_y fields of a big install hold hundreds of MB.
      *  @return \Generator<int, string> */
-    public static function texts(): \Generator
+    public static function texts(bool $mails = false): \Generator
     {
-        foreach (self::TABLES as $table => $ids) {
+        foreach (self::tables($mails) as $table => $ids) {
             foreach (self::columns($table) as $column) {
                 foreach (DB_AA::select('txt', "SELECT `$column` AS txt FROM `$table`", [["`$column`", '', 'FILLED']]) as $txt) {
                     yield (string) $txt;
@@ -69,23 +76,47 @@ final class CodePoints
             }
         }
         foreach (self::itemScopes() as $scope) {
-            foreach (DB_AA::select('txt', 'SELECT `content`.`text` AS txt FROM `content`, `item`', array_merge([['content.item_id', 'item.id', 'j']], $scope, [['content.text', '', 'FILLED']])) as $txt) {
-                yield (string) $txt;
+            foreach ($scope['slices'] as $sid) {
+                $items = DB_AA::select('iid', 'SELECT LOWER(HEX(`id`)) AS iid FROM `item`', [['slice_id', $sid, 'l']]);
+                foreach (array_chunk($items, self::ITEMS_CHUNK) as $chunk) {
+                    $where = [['item_id', $chunk, 'l'], ['text', '', 'FILLED']];
+                    if ($scope['fields'] !== null) {
+                        $where[] = ['field_id', $scope['fields']];
+                    }
+                    foreach (DB_AA::select('txt', 'SELECT `text` AS txt FROM `content`', $where) as $txt) {
+                        yield (string) $txt;
+                    }
+                }
             }
         }
     }
 
-    /** Conditions selecting the item fields holding code: all the fields of the Code slices (slice type
-     *  "___Code...", the way aafinder's "Code Items" checkbox scopes them), and the fields with the alias
-     *  function f_y or the code widget cod - one condition for the slices sharing the same such fields,
-     *  so no other field of a slice is read.
-     *  @return list<list<array>> DB_AA $where arrays */
+    /** @return array<string, array<string, string>> */
+    private static function tables(bool $mails): array
+    {
+        return $mails ? self::TABLES + self::MAILS : self::TABLES;
+    }
+
+    /** @param array{slices: string[], fields: ?string[]} $scope
+     *  @return list<array> the DB_AA $where of the scope over `content`, `item` */
+    private static function scopeWhere(array $scope): array
+    {
+        return ($scope['fields'] === null)
+            ? [['item.slice_id', $scope['slices'], 'l']]
+            : [['item.slice_id', $scope['slices'], 'l'], ['content.field_id', $scope['fields']]];
+    }
+
+    /** The item fields holding code: all the fields of the Code slices (slice type "___Code...", the way
+     *  aafinder's "Code Items" checkbox scopes them; fields null), and the fields with the alias function
+     *  f_y or the code widget cod - one scope for the slices sharing the same such fields, so no other
+     *  field of a slice is read.
+     *  @return list<array{slices: string[], fields: ?string[]}> */
     private static function itemScopes(): array
     {
         $scopes      = [];
         $code_slices = DB_AA::select('lid', 'SELECT LOWER(HEX(`id`)) AS lid FROM `slice`', [['type', '___Code', 'BEGIN']]);
         if ($code_slices) {
-            $scopes[] = [['item.slice_id', $code_slices, 'l']];
+            $scopes[] = ['slices' => $code_slices, 'fields' => null];
         }
         $fields = [];
         foreach ([['alias1_func', 'f_y'], ['alias2_func', 'f_y'], ['alias3_func', 'f_y'], ['input_show_func', 'cod']] as [$column, $prefix]) {
@@ -101,15 +132,15 @@ final class CodePoints
             $by_fields[json_encode(array_keys($ids))][] = $sid;
         }
         foreach ($by_fields as $ids => $slices) {
-            $scopes[] = [['item.slice_id', $slices, 'l'], ['content.field_id', json_decode((string) $ids, true)]];
+            $scopes[] = ['slices' => $slices, 'fields' => json_decode((string) $ids, true)];
         }
         return $scopes;
     }
 
     /** Is $needle anywhere in the code - containing() with one LIMIT 1 probe per column, for a yes/no */
-    public static function contains(string $needle): bool
+    public static function contains(string $needle, bool $mails = false): bool
     {
-        foreach (self::TABLES as $table => $ids) {
+        foreach (self::tables($mails) as $table => $ids) {
             foreach (self::columns($table) as $column) {
                 if (DB_AA::test($table, [["`$column`", $needle, 'CONTAIN']])) {
                     return true;
@@ -117,7 +148,7 @@ final class CodePoints
             }
         }
         foreach (self::itemScopes() as $scope) {
-            if (DB_AA::test(['content', 'item'], array_merge([['content.text', $needle, 'CONTAIN'], ['content.item_id', 'item.id', 'j']], $scope))) {
+            if (DB_AA::test(['content', 'item'], array_merge([['content.text', $needle, 'CONTAIN'], ['content.item_id', 'item.id', 'j']], self::scopeWhere($scope)))) {
                 return true;
             }
         }
@@ -127,10 +158,10 @@ final class CodePoints
     /** the code values containing $needle which $keep accepts
      *  @param callable(string): bool $keep
      *  @return list<array{table: string, column: string, iid: string, sid?: string, txt: string}> */
-    public static function matching(string $needle, callable $keep): array
+    public static function matching(string $needle, callable $keep, bool $mails = false): array
     {
         $rows = [];
-        foreach (self::containing($needle) as $row) {
+        foreach (self::containing($needle, $mails) as $row) {
             if ($keep($row['txt'])) {
                 $rows[] = $row;
             }

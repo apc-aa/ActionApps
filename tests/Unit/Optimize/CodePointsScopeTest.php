@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 /**
  * CodePoints searches template code wherever it lives: besides views, settings, spots and Code slices also the
- * Alerts e-mails and the item fields shown by f_y or edited by the code widget in any slice - and of such a
- * slice only those fields, so the text of an ordinary field is never taken for code.
+ * item fields shown by f_y or edited by the code widget in any slice - and of such a slice only those fields,
+ * so the text of an ordinary field is never taken for code - and the Alerts e-mails when the check asks.
  */
 
 namespace {
@@ -49,12 +49,20 @@ namespace Tests\Unit\Optimize {
             RecordingDb::reset();
             $GLOBALS['spareDBs'] = [new RecordingDb(), new RecordingDb()];
             RecordingDb::$answer = static fn(string $sql): array => match (true) {
-                str_contains($sql, 'AS lid FROM `slice`')                                => [['lid' => self::CODE]],
-                str_contains($sql, 'AS sid, `id` FROM `field` WHERE alias1_func')        => [['sid' => self::NEWS, 'id' => 'full_text.......'], ['sid' => self::PAGES, 'id' => 'full_text.......'], ['sid' => self::CODE, 'id' => 'text...........1']],
-                str_contains($sql, 'AS sid, `id` FROM `field` WHERE input_show_func')    => [['sid' => self::SITE, 'id' => 'code............']],
-                str_starts_with($sql, 'SELECT `body` AS txt FROM `email`')               => [['txt' => '{view.php?vid=5}']],
-                default                                                                  => [],
+                str_contains($sql, 'AS lid FROM `slice`')                             => [['lid' => self::CODE]],
+                str_contains($sql, 'AS sid, `id` FROM `field` WHERE alias1_func')     => [['sid' => self::NEWS, 'id' => 'full_text.......'], ['sid' => self::PAGES, 'id' => 'full_text.......'], ['sid' => self::CODE, 'id' => 'text...........1']],
+                str_contains($sql, 'AS sid, `id` FROM `field` WHERE input_show_func') => [['sid' => self::SITE, 'id' => 'code............']],
+                str_contains($sql, 'AS iid FROM `item`')                              => self::items($sql),
+                str_starts_with($sql, 'SELECT `body` AS txt FROM `email`')            => [['txt' => '{view.php?vid=5}']],
+                default                                                               => [],
             };
+        }
+
+        /** 1200 items in the slice NEWS, one in each other */
+        private static function items(string $sql): array
+        {
+            $count = str_contains($sql, self::NEWS) ? 1200 : 1;
+            return array_map(static fn($i) => ['iid' => sprintf('%032x', $i + 1)], range(0, $count - 1));
         }
 
         protected function tearDown(): void
@@ -63,34 +71,41 @@ namespace Tests\Unit\Optimize {
             RecordingDb::reset();
         }
 
-        /** @return string[] the item reads, one per scope */
-        private static function itemReads(): array
+        /** @return string[] the reads of item content */
+        private static function contentReads(): array
         {
-            return array_values(array_filter(RecordingDb::$log, static fn($s) => str_contains($s, 'FROM `content`, `item`')));
+            return array_values(array_filter(RecordingDb::$log, static fn($s) => str_starts_with($s, 'SELECT `text` AS txt FROM `content`')));
         }
 
-        public function test_texts_codeFieldsOfOrdinarySlices_readWithTheirSlicesOnly(): void
+        public function test_texts_codeFieldsOfOrdinarySlices_readOnlyTheirFieldsInChunks(): void
         {
-            $texts = iterator_to_array(CodePoints::texts(), false);
+            iterator_to_array(CodePoints::texts(), false);
 
-            self::assertContains('{view.php?vid=5}', $texts);
-            $reads = self::itemReads();
-            self::assertCount(3, $reads, 'Code slices, the slices sharing full_text, the slice with the code widget');
-            self::assertStringContainsString(self::CODE, $reads[0]);
-            self::assertStringNotContainsString('field_id', $reads[0]);
-            self::assertStringContainsString("'full_text.......'", $reads[1]);
-            self::assertStringContainsString(self::NEWS, $reads[1]);
-            self::assertStringContainsString(self::PAGES, $reads[1]);
-            self::assertStringNotContainsString(self::CODE, $reads[1], 'a Code slice is read whole already');
-            self::assertStringContainsString("'code............'", $reads[2]);
-            self::assertStringNotContainsString("'full_text.......'", $reads[2]);
+            $reads = self::contentReads();
+            // CODE: 1 chunk, all fields; NEWS: 1200 items = 3 chunks; PAGES, SITE: 1 chunk each
+            self::assertCount(6, $reads);
+            self::assertStringNotContainsString('field_id', $reads[0], 'a Code slice is read whole');
+            foreach (array_slice($reads, 1, 4) as $read) {
+                self::assertStringContainsString("'full_text.......'", $read);
+            }
+            self::assertStringContainsString("'code............'", $reads[5]);
+            self::assertStringNotContainsString("'full_text.......'", $reads[5]);
+            self::assertSame(0, count(array_filter(RecordingDb::$log, static fn($s) => str_contains($s, 'FROM `content`, `item`'))), 'no join over a whole scope');
         }
 
-        public function test_contains_inAnEmail_found(): void
+        public function test_texts_mails_onlyOnRequest(): void
         {
+            self::assertNotContains('{view.php?vid=5}', iterator_to_array(CodePoints::texts(), false));
+            self::assertContains('{view.php?vid=5}', iterator_to_array(CodePoints::texts(true), false));
+        }
+
+        public function test_contains_inAnEmail_onlyOnRequest(): void
+        {
+            // an e-mail is no page - a check about pages must not report it
             RecordingDb::$answer = static fn(string $sql): array => (str_contains($sql, '"email"') || str_contains($sql, '`email`')) && str_contains($sql, '`body`') ? [['x' => 1]] : [];
 
-            self::assertTrue(CodePoints::contains('{view.php'));
+            self::assertFalse(CodePoints::contains('{view.php'));
+            self::assertTrue(CodePoints::contains('{view.php', true));
         }
     }
 }

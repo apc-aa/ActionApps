@@ -69,7 +69,7 @@ class DbInconsistencyConstants extends AbstractOptimize
     /** @return iterable<string> */
     protected function codeTexts(): iterable
     {
-        yield from CodePoints::texts();
+        yield from CodePoints::texts(true);   // a constant used only in an Alerts e-mail is used
         yield $this->customCode();
     }
 

@@ -51,7 +51,8 @@ namespace Tests\Unit\Optimize {
                 str_contains($sql, 'AS sid') && str_contains($sql, 'alias1_func') => [['sid' => self::SLICE, 'id' => 'text...........1']],
                 str_starts_with($sql, 'SELECT `odd` AS txt FROM `view`')          => [['txt' => '{constant:in_view:x}']],
                 str_starts_with($sql, 'SELECT `body` AS txt FROM `email`')        => [['txt' => '{options:in_email}']],
-                str_contains($sql, 'AS txt FROM `content`, `item`')              => str_contains($sql, "'text...........1'") ? [['txt' => '{constant:in_item:y}']] : [],
+                str_contains($sql, 'AS iid FROM `item`')                         => [['iid' => 'bb11bb11bb11bb11bb11bb11bb11bb11']],
+                str_starts_with($sql, 'SELECT `text` AS txt FROM `content`')      => str_contains($sql, "'text...........1'") ? [['txt' => '{constant:in_item:y}']] : [],
                 default                                                           => [],
             };
         }
@@ -89,7 +90,7 @@ namespace Tests\Unit\Optimize {
             // one read of all the code, not a LIKE scan per group (aadb: 100 slices with code fields, daily)
             self::optimize()->notUsed();
 
-            self::assertSame(1, count(array_filter(RecordingDb::$log, static fn($s) => str_contains($s, 'FROM `content`, `item`'))));
+            self::assertSame(1, count(array_filter(RecordingDb::$log, static fn($s) => str_starts_with($s, 'SELECT `text` AS txt FROM `content`'))));
             self::assertSame([], array_values(array_filter(RecordingDb::$log, static fn($s) => str_contains($s, "LIKE '%"))));
         }
 
