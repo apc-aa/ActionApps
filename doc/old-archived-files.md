@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/tests/Unit/Legacy/**MetabaseCompareTest.php** - and the method AA_Metabase::compare() it tested (include/metabase.class.php)  
+Whole-table comparison of the template and the live database: equal or not, by the CREATE TABLE of each table. UpdateDbStructure used it to decide which table to copy into a new one.  
+_UpdateDbStructure changes a table in place now and compares column by column and index by index (UpdateDbStructure::changes(), tests/Unit/Optimize/UpdateDbStructureTest.php); compare() had no caller left. AA_Metabase::comparable() stays. Removed 2026-11-11 - honzam_
+
 /include/**sql_parser.php**  
 Lexer and LL(1) parser of the value of a search condition (SQL_Lex, TokenList, Syntax, SQL_Parser_Constants): words, "phrases", AND/OR/NOT and parentheses turned straight into the SQL of =, LIKE, RLIKE, LLIKE and XLIKE.  
 _Replaced by AA\Search\QueryLexer and AA\Search\QueryExpression (src/Search/): the value is read once into a tree, which gives the same SQL (pinned by tests/Unit/Search/fixtures/query_sql_pins.php) and also decides over values already loaded (AA_Condition::matchesValues()), so the postfilter and the item form cannot read the value differently from the database. Removed 2026-11-11 - honzam_

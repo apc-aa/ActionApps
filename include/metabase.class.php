@@ -1402,41 +1402,6 @@ class AA_Metabase
         );
     }
 
-    /** Compares two metabases - this and the $metabase supplied by the parameter
-     *  You can use it to check, which tables should be updated
-     * @param AA_Metabase $metabase - the second metabase which will be compared to $this
-     *
-     * @return array
-     */
-    public function compare(AA_Metabase $metabase): array
-    {
-        $diffs = [];
-        foreach ($this->tables as $tablename => $table) {
-            $table_sql_1 = $table->getCompareSql();
-            $table_sql_2 = isset($metabase->tables[$tablename]) ? $metabase->tables[$tablename]->getCompareSql() : '';
-
-            $diffs[$tablename] = [
-                'equal'  => (self::comparable($table_sql_1) === self::comparable($table_sql_2)),
-                'table1' => $table_sql_1,
-                'table2' => $table_sql_2,
-            ];
-        }
-
-        // all the tables not pressent in the template
-        $uncompared = array_diff($metabase->getTableNames(), $this->getTableNames());
-        foreach ($uncompared as $tablename) {
-            if (str_starts_with($tablename, 'bck_')) {
-                continue;
-            }
-            $diffs[$tablename] = [
-                'equal'  => false,
-                'table1' => '',
-                'table2' => $metabase->getCreateSql($tablename),
-            ];
-        }
-        return $diffs;
-    }
-
     /** getContent function for loading content of specified table for manager
      *  class
      *
