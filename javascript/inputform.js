@@ -236,7 +236,8 @@ function AA_ShowIfInit(cfg) {
         const empty = v => n ? num(v) === 0 : lower(v) === '';
         const has   = test => values.some(test);
         switch (rule.op) {
-            case '=':       return has(v => rule.v.some(w => same(v, w)));
+            case '=':
+            case '==':      return has(v => rule.v.some(w => same(v, w)));
             case '<>':      return !has(v => same(v, rule.v[0]));
             case 'BEGIN':   return has(v => v.toLowerCase().startsWith(rule.v[0].toLowerCase()));
             case 'CONTAIN': return has(v => v.toLowerCase().includes(rule.v[0].toLowerCase()));

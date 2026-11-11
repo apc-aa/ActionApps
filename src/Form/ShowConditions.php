@@ -17,7 +17,7 @@ use AA\Search\QueryExpression;
  */
 final class ShowConditions
 {
-    public const OPS    = ['=', '<>', 'BEGIN', 'CONTAIN', 'ISNULL', 'NOTNULL'];
+    public const OPS    = ['=', '==', '<>', 'BEGIN', 'CONTAIN', 'ISNULL', 'NOTNULL'];
     /** hidden by the rules - the browser may show it again */
     public const LIVE   = 1;
     /** hidden by the expression - until the form is opened again */
@@ -107,15 +107,16 @@ final class ShowConditions
     }
 
     /**
-     * The rules as the editor shows them, one row per field and comparison: the alternatives of "=" together,
-     * the "<>" of one field following each other together (all of them must hold - the field is none of them).
+     * The rules as the editor shows them, one row per field and comparison: "==" as "=" of one value, the alternatives
+     * of "=" together, the "<>" of one field following each other together (all of them must hold - the field is none of them).
      * @return list<array{field: string, op: string, values: list<string>}>
      */
     public function rows(string $key): array
     {
         $ret = [];
         foreach ($this->rules[$key] ?? [] as $rule) {
-            $row  = ['field' => $rule->getFields()[0], 'op' => $rule->getOperator(), 'values' => self::values($rule)];
+            $op   = $rule->getOperator();
+            $row  = ['field' => $rule->getFields()[0], 'op' => ($op === '==') ? '=' : $op, 'values' => self::values($rule)];
             $last = array_key_last($ret);
             if (($row['op'] === '<>') && ($last !== null) && ($ret[$last]['op'] === '<>') && ($ret[$last]['field'] === $row['field'])) {
                 $ret[$last]['values'] = array_merge($ret[$last]['values'], $row['values']);
@@ -338,7 +339,8 @@ final class ShowConditions
     /**
      * The condition the editor (admin/se_showif.php) posted. A rule row without a field is skipped; the values
      * come from the checkboxes and from the text area, one per line. "is" becomes one "=" of the values joined
-     * by OR, "is not" one "<>" for each value; "begins with" and "contains" take the first value.
+     * by OR - one value "==", the exact match -, "is not" one "<>" for each value; "begins with" and "contains"
+     * take the first value.
      * @param array $post name, rule[i][field|op|values[]|text], expr, clear
      * @param array<string, string> $names id of a field of the slice => its name
      * @param string $key key of the edited condition, '' for a new one - its own name is no clash
@@ -378,7 +380,7 @@ final class ShowConditions
                 $errors[] = _m('The value of the field %1 must not contain a backslash.', [$label]);
             } else {
                 $rules = array_merge($rules, match ($op) {
-                    '='                 => [new \AA_Condition([$field], '=', $expression)],
+                    '='                 => [self::exact($values) ? new \AA_Condition([$field], '==', $values[0]) : new \AA_Condition([$field], '=', $expression)],
                     // quoted, so that a value starting with a quote survives; the SQL strips slashes
                     '<>'                => array_map(static fn(string $v): \AA_Condition => new \AA_Condition([$field], '<>', '"' . str_replace('\\', '\\\\', $v) . '"'), $values),
                     'BEGIN', 'CONTAIN'  => [new \AA_Condition([$field], $op, $values[0])],
@@ -432,6 +434,16 @@ final class ShowConditions
             $ret[(string) $fid] = self::keyOfField($field['aditional']);
         }
         return $ret;
+    }
+
+    /**
+     * One value the d- form keeps as it is, unquoted: no backslash and no %22 around it, which reading
+     * the d- form would strip or decode.
+     * @param list<string> $values
+     */
+    private static function exact(array $values): bool
+    {
+        return (count($values) === 1) && !str_contains($values[0], '\\') && !(str_starts_with($values[0], '%22') && str_ends_with($values[0], '%22'));
     }
 
     /** @return list<string> ids of the fields stored as numbers, as the SQL of a condition sees them */

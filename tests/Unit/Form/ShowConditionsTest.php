@@ -348,6 +348,19 @@ final class ShowConditionsTest extends TestCase
         ], $conds->rows('cccccccc'));
     }
 
+    public function test_fromPost_one_value_is_exact_match(): void
+    {
+        $post = fn(array $values): array => ['name' => 'Akce', 'rule' => [['field' => self::CAT, 'op' => '=', 'values' => $values]]];
+        [$cond] = self::withKurz()->fromPost($post(['Internet & ICT']), self::NAMES, '');
+        $this->assertSame('d-' . self::CAT . '-==-Internet & ICT', $cond['conds']);
+        [$back] = self::withKurz()->fromPost($post(['C:\\dir']), self::NAMES, '');
+        $this->assertSame('d-' . self::CAT . '-=-"C:\\\\dir"', $back['conds'], 'a backslash would not survive unquoted');
+
+        $conds = self::withKurz();
+        $conds->set('cccccccc', $cond);
+        $this->assertSame([['field' => self::CAT, 'op' => '=', 'values' => ['Internet & ICT']]], $conds->rows('cccccccc'));
+    }
+
     public function test_fromPost_unchecked_clear_is_false(): void
     {
         [$cond] = self::withKurz()->fromPost(['name' => 'Akce', 'expr' => '1'], self::NAMES, '');
