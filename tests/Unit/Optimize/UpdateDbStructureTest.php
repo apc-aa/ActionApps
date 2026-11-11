@@ -112,6 +112,7 @@ namespace Tests\Unit\Optimize {
             $live     = AA_MbT::fromArray(['t' => 'cron', 'k' => [], 'i' => ['PRIMARY' => ['t' => 'cron', 'n' => 'PRIMARY', 's' => 'P', 'c' => [1 => 'id', 2 => 'x']]], 'c' => ['id' => ['id', 'bigint(20)', false, 'PRI', null, 'auto_increment', '']], 'f' => null]);
 
             self::assertSame(['DROP PRIMARY KEY', 'ADD PRIMARY KEY (`id`)'], UpdateDbStructure::changes($template, $live)['alter']);
+            self::assertSame(['DROP PRIMARY KEY'], UpdateDbStructure::changes($template, $live)['checks']['ADD PRIMARY KEY (`id`)']['with']);
         }
 
         public static function narrowingTypes(): array
@@ -129,6 +130,9 @@ namespace Tests\Unit\Optimize {
                 'float of less digits'        => ['double(10,4)', 'double(12,4)'],
                 'a text for a number'         => ['int(11)', 'varchar(20)'],
                 'a number for a text'         => ['varchar(255)', 'int(11)'],
+                'a date for a text'           => ['date', 'varchar(20)'],
+                'a date for a datetime'       => ['date', 'datetime'],
+                'an enum without a value'     => ["enum('a','b')", "enum('a','b','c')"],
             ];
         }
 
@@ -152,6 +156,7 @@ namespace Tests\Unit\Optimize {
                 'bigint unsigned for int unsigned' => ['bigint(20) unsigned', 'int(10) unsigned', 'MODIFY COLUMN `text` bigint(20) unsigned'],
                 'a text for a date'             => ['varchar(20)', 'date', 'MODIFY COLUMN `text` varchar(20)'],
                 'double for float(10,2)'        => ['double', 'float(10,2)', 'MODIFY COLUMN `text` double'],
+                'an enum with one more value'   => ["enum('a','b','c')", "enum('b','a')", "MODIFY COLUMN `text` enum('a','b','c')"],
             ];
         }
 
@@ -302,15 +307,28 @@ namespace Tests\Unit\Optimize {
         {
             // another column type cannot be changed while writes go on - on 8 million rows that stops the e-shop for minutes
             RecordingDb::$fail_on    = 'ALTER TABLE `content`';
-            RecordingDb::$fail_error = 'LOCK=NONE is not supported';
+            RecordingDb::$fail_error = 'SQLSTATE[0A000]: Feature not supported: 1846 LOCK=NONE is not supported. Reason: Cannot change column type. Try LOCK=SHARED';
             self::tableSize(900 * 1048576);
             $optimize = self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()]);
 
             self::assertFalse($optimize->repair());
             self::assertSame(1, RecordingDb::count('SET SESSION sql_mode = @aa_sql_mode'));
             self::assertSame(1, RecordingDb::count('SET @aa_sql_mode'));
-            self::assertStringContainsString('(900 MB) not changed: LOCK=NONE is not supported', $optimize->report());
+            self::assertStringContainsString('(900 MB) not changed: SQLSTATE[0A000]: Feature not supported: 1846 LOCK=NONE is not supported', $optimize->report());
             self::assertStringContainsString("Run it when the traffic is low: SET SESSION sql_mode = &apos;STRICT_ALL_TABLES&apos;; ALTER TABLE `content` MODIFY COLUMN `text` longtext;", $optimize->report());
+        }
+
+        public function test_repair_bigTableRefusedForTheData_notListedForTheNight(): void
+        {
+            // a NULL stays at night too; a big table is not scanned for it before - the scan takes as long as the ALTER
+            RecordingDb::$fail_on    = 'ALTER TABLE `content`';
+            RecordingDb::$fail_error = 'SQLSTATE[22004]: Null value not allowed: 1138 Invalid use of NULL value';
+            self::tableSize(900 * 1048576);
+            $optimize = self::optimize(['content' => self::content(['item_id' => ['item_id', 'varbinary(16)', true, 'MUL', null, '', '']]), 'cron' => self::cron()]);
+
+            self::assertFalse($optimize->repair());
+            self::assertStringContainsString('content not changed - the database refused the change: SQLSTATE[22004]', $optimize->report());
+            self::assertStringNotContainsString('Run it when the traffic is low', $optimize->report());
         }
 
         public function test_repair_tableInUse_notChangedTryLater(): void
@@ -379,26 +397,40 @@ namespace Tests\Unit\Optimize {
             self::assertSame(['ALTER TABLE `content` ADD KEY item_id (`item_id`,`field_id`)'], self::alterLog());
         }
 
-        /** @return array<string, array{AA_MbT, AA_MbT, array<string, string>, array<string, array{sql: string, kept: string, with: string}>}> */
+        /** @return array<string, array{AA_MbT, AA_MbT, array<string, string>, array<string, array{sql: string, kept: string, with: string[]}>}> */
         public static function dataChecks(): array
         {
-            $unique = ['item_id' => ['t' => 'content', 'n' => 'item_id', 's' => 'U', 'c' => [1 => 'item_id', 2 => ['text', '12']]]];
+            $unique   = ['item_id' => ['t' => 'content', 'n' => 'item_id', 's' => 'U', 'c' => [1 => 'item_id', 2 => ['text', '12']]]];
+            $primary  = ['PRIMARY' => ['t' => 'content', 'n' => 'PRIMARY', 's' => 'P', 'c' => [1 => 'id']]];
+            $id       = ['id' => ['id', 'int(10) unsigned', false, 'PRI', null, 'auto_increment', '']];
+            $text_key = ['text' => ['t' => 'content', 'n' => 'text', 's' => 'U', 'c' => [1 => 'field_id']]];
             return [
                 'NULL for NOT NULL' => [self::content(), self::content(['item_id' => ['item_id', 'varbinary(16)', true, 'MUL', null, '', '']]), [], [
-                    "MODIFY COLUMN `item_id` varbinary(16) NOT NULL default '                '" => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE `item_id` IS NULL', 'kept' => 'item_id varbinary(16) (template varbinary(16)) - the data do not fit', 'with' => ''],
+                    "MODIFY COLUMN `item_id` varbinary(16) NOT NULL default '                '" => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE `item_id` IS NULL', 'kept' => 'item_id varbinary(16) (template varbinary(16)) - the data do not fit', 'with' => []],
                 ]],
                 'text into binary' => [self::content(), self::content(['field_id' => ['field_id', 'varchar(16)', false, '', '                ', '', '']]), ['field_id' => 'utf8mb4_czech_ci'], [
-                    "MODIFY COLUMN `field_id` varbinary(16) NOT NULL default '                '" => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE LENGTH(`field_id`) > 16', 'kept' => 'field_id varchar(16) (template varbinary(16)) - the data do not fit', 'with' => ''],
+                    "MODIFY COLUMN `field_id` varbinary(16) NOT NULL default '                '" => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE LENGTH(`field_id`) > 16', 'kept' => 'field_id varchar(16) (template varbinary(16)) - the data do not fit', 'with' => []],
                 ]],
                 'binary widened'   => [self::content(), self::content(['field_id' => ['field_id', 'varbinary(8)', false, '', '                ', '', '']]), [], []],
                 'new key'          => [self::content(), self::content([], ['item_id' => null]), [], []],
                 'unique key'       => [self::content([], $unique), self::content(), [], [
-                    'ADD UNIQUE KEY item_id (`item_id`,`text`(12))' => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE NOT (`item_id` IS NULL OR `text` IS NULL) GROUP BY `item_id`, LEFT(`text`, 12) HAVING COUNT(*) > 1', 'kept' => 'index item_id - duplicate values', 'with' => 'DROP INDEX `item_id`'],
+                    'ADD UNIQUE KEY item_id (`item_id`,`text`(12))' => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE NOT (`item_id` IS NULL OR `text` IS NULL) GROUP BY `item_id`, LEFT(`text`, 12) HAVING COUNT(*) > 1', 'kept' => 'index item_id - duplicate values', 'with' => ['DROP INDEX `item_id`']],
                 ]],
                 'primary key'      => [self::content([], ['PRIMARY' => ['t' => 'content', 'n' => 'PRIMARY', 's' => 'P', 'c' => [1 => 'item_id', 2 => 'field_id']]]), self::content(), [], [
-                    'ADD PRIMARY KEY (`item_id`,`field_id`)' => ['sql' => 'SELECT 1 AS misfit FROM `content` GROUP BY `item_id`, `field_id` HAVING COUNT(*) > 1 OR MAX(`item_id` IS NULL OR `field_id` IS NULL)', 'kept' => 'index PRIMARY - duplicate values', 'with' => ''],
+                    'ADD PRIMARY KEY (`item_id`,`field_id`)' => ['sql' => 'SELECT 1 AS misfit FROM `content` GROUP BY `item_id`, `field_id` HAVING COUNT(*) > 1 OR MAX(`item_id` IS NULL OR `field_id` IS NULL)', 'kept' => 'index PRIMARY - duplicate values', 'with' => []],
                 ]],
                 'unique renamed'   => [self::content([], $unique), self::content([], ['item_id' => null, 'old' => ['n' => 'old'] + $unique['item_id']]), [], []],
+                'unique over a new column' => [self::content(['code' => ['code', 'varbinary(8)', false, '', '', '', '']], ['code' => ['t' => 'content', 'n' => 'code', 's' => 'U', 'c' => [1 => 'code']]]), self::content(), [], [
+                    'ADD UNIQUE KEY code (`code`)' => ['sql' => 'SELECT 1 AS misfit FROM `content` HAVING COUNT(*) > 1', 'kept' => 'index code - duplicate values', 'with' => []],
+                ]],
+                'new auto_increment key'   => [self::content($id, $primary), self::content(), [], []],
+                'auto_increment to a key'  => [self::content($id, $primary), self::content(['id' => ['id', 'int(10) unsigned', false, '', '0', '', '']]), [], [
+                    'ADD PRIMARY KEY (`id`)' => ['sql' => 'SELECT 1 AS misfit FROM `content` GROUP BY `id` HAVING COUNT(*) > 1 OR MAX(`id` IS NULL)', 'kept' => 'index PRIMARY - duplicate values', 'with' => ['MODIFY COLUMN `id` int(10) unsigned NOT NULL auto_increment']],
+                ]],
+                'text turned binary key'   => [self::content([], $text_key), self::content(['field_id' => ['field_id', 'varchar(16)', false, '', '                ', '', '']]), ['field_id' => 'utf8mb4_czech_ci'], [
+                    "MODIFY COLUMN `field_id` varbinary(16) NOT NULL default '                '" => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE LENGTH(`field_id`) > 16', 'kept' => 'field_id varchar(16) (template varbinary(16)) - the data do not fit', 'with' => []],
+                    'ADD UNIQUE KEY text (`field_id`)' => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE NOT (`field_id` IS NULL) GROUP BY CAST(`field_id` AS BINARY) HAVING COUNT(*) > 1', 'kept' => 'index text - duplicate values', 'with' => ['DROP INDEX `text`']],
+                ]],
             ];
         }
 
@@ -447,6 +479,18 @@ namespace Tests\Unit\Optimize {
             self::misfitFor('nothing');
             self::assertTrue(self::optimize(['content' => self::content(), 'cron' => self::cron()], $unique)->repair());
             self::assertSame(['ALTER TABLE `content` DROP INDEX `item_id`, ADD UNIQUE KEY item_id (`item_id`,`field_id`)'], self::alterLog());
+        }
+
+        public function test_repair_duplicatesForAPrimaryKey_itsAutoIncrementKeptToo(): void
+        {
+            // an auto_increment column must be a key - without the primary key the ALTER would be refused
+            $template = self::content(['id' => ['id', 'int(10) unsigned', false, 'PRI', null, 'auto_increment', '']], ['PRIMARY' => ['t' => 'content', 'n' => 'PRIMARY', 's' => 'P', 'c' => [1 => 'id']]]);
+            self::misfitFor('HAVING COUNT(*) > 1');
+            $optimize = self::optimize(['content' => self::content(['id' => ['id', 'int(10) unsigned', false, '', '0', '', '']]), 'cron' => self::cron()], $template);
+
+            self::assertTrue($optimize->repair());
+            self::assertSame([], self::alterLog());
+            self::assertStringContainsString('index PRIMARY - duplicate values', $optimize->report());
         }
 
         public function test_changes_myisamPrefixOfALongText_sameIndex(): void

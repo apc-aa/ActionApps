@@ -133,7 +133,8 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
             $sql  .= ', ROW_FORMAT=DYNAMIC';
             $error = $this->strictly($sql . $lock);
         }
-        if (($lock === '') || ($error === '') || self::busy($error)) {
+        if (($lock === '') || !preg_match('/: (1845|1846|1799) /', $error)) {
+            // 1845, 1846: not without a lock; 1799: too many writes meanwhile - a data error would stay at night
             return $this->result($tablename, $error);
         }
         $this->message(_m('Table %1 (%2 MB) not changed: %3. Run it when the traffic is low: %4', [safe($tablename), round($size / 1048576), safe($error), safe("SET SESSION sql_mode = 'STRICT_ALL_TABLES'; $sql;")]));
@@ -252,15 +253,15 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
 
     /** The changes the data of the table do not fit, moved from 'alter' to 'kept' - the server would refuse the
      *  whole ALTER in strict mode. Checked on small tables only: on a big one the scan would take minutes.
-     * @param array{alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string}>} $changes
+     * @param array{alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string[]}>} $changes
      * @param callable(string): bool $misfits does the query find a row
-     * @return array{alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string}>}
+     * @return array{alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string[]}>}
      */
     private static function withoutMisfits(array $changes, callable $misfits): array
     {
         foreach ($changes['checks'] as $clause => $check) {
             if ($misfits($check['sql'])) {
-                $changes['alter']  = array_values(array_diff($changes['alter'], [$clause, $check['with']]));
+                $changes['alter']  = array_values(array_diff($changes['alter'], [$clause, ...$check['with']]));
                 $changes['kept'][] = $check['kept'];
             }
         }
@@ -274,14 +275,15 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
      *  and comment; an index the template has under another name is renamed - never kept twice. The order of the columns
      *  stays: AA names the columns it writes, and moving one would rebuild the table for nothing.
      *  'checks' are the queries finding the rows a clause would not fit: a NULL for NOT NULL, a text longer
-     *  than its new binary column, a duplicate in a new unique key ('with' = the drop of the key it replaces).
+     *  than its new binary column, a duplicate in a new unique key ('with' = the clauses that go only with it:
+     *  the drop of the key it replaces, auto_increment of its column - such a column must be a key).
      * @param array<string, string> $collations live column => collation
      * @param bool $myisam the live table is MyISAM - its index on a long text is a prefix
-     * @return array{alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string}>}
+     * @return array{alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string[]}>}
      */
     public static function changes(AA_MbT $template, AA_MbT $live, array $collations = [], bool $myisam = false): array
     {
-        $modify = $add = $kept = $kept_columns = $checks = [];
+        $modify = $add = $kept = $kept_columns = $checks = $to_binary = $auto = [];
         $from   = "SELECT 1 AS misfit FROM `{$template->t}`";
         foreach ($template->c as $name => $column) {
             if (!isset($live->c[$name])) {
@@ -294,11 +296,17 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
                     if ($live->c[$name]->c[2] && !$column->c[2]) {
                         $misfit[] = "`$name` IS NULL";
                     }
-                    if (($collations[$name] ?? '') && preg_match('/^(?:var)?binary\((\d+)\)/i', $column->c[1], $m)) {
-                        $misfit[] = "LENGTH(`$name`) > {$m[1]}";   // the binary column takes the bytes of the text
+                    if (($collations[$name] ?? '') && preg_match('/^(?:var)?binary\((\d+)\)|blob$/i', $column->c[1], $m)) {
+                        $to_binary[$name] = true;
+                        if (isset($m[1])) {
+                            $misfit[] = "LENGTH(`$name`) > {$m[1]}";   // the binary column takes the bytes of the text
+                        }
                     }
                     if ($misfit) {
-                        $checks[$clause] = ['sql' => "$from WHERE " . implode(' OR ', $misfit), 'kept' => "$name {$live->c[$name]->c[1]} (template {$column->c[1]}) - the data do not fit", 'with' => ''];
+                        $checks[$clause] = ['sql' => "$from WHERE " . implode(' OR ', $misfit), 'kept' => "$name {$live->c[$name]->c[1]} (template {$column->c[1]}) - the data do not fit", 'with' => []];
+                    }
+                    if (str_contains((string) $column->c[5], 'auto_increment') && !str_contains((string) $live->c[$name]->c[5], 'auto_increment')) {
+                        $auto[$name] = $clause;
                     }
                 } else {
                     $kept[]         = "$name {$live->c[$name]->c[1]} (template {$column->c[1]})";
@@ -329,12 +337,9 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
                 $drop[] = $dropped;
             }
             $add_index[] = $clause = 'ADD ' . $index->getCreateSql();
-            if ($index->s !== 'I') {
-                // a unique key takes any number of rows with a NULL, a primary key none
-                $parts = array_map(static fn($col) => is_array($col) ? "LEFT(`{$col[0]}`, {$col[1]})" : "`$col`", $index->c);
-                $nulls = implode(' OR ', array_map(static fn($col) => "`$col` IS NULL", self::indexColumns($index)));
-                $sql   = ($index->s === 'P') ? "$from GROUP BY " . implode(', ', $parts) . " HAVING COUNT(*) > 1 OR MAX($nulls)" : "$from WHERE NOT ($nulls) GROUP BY " . implode(', ', $parts) . ' HAVING COUNT(*) > 1';
-                $checks[$clause] = ['sql' => $sql, 'kept' => "index $name - duplicate values", 'with' => $dropped];
+            if (($index->s !== 'I') && ($sql = self::duplicatesSql($index, $template, $live, $to_binary))) {
+                $with            = array_values(array_intersect_key($auto, array_flip(self::indexColumns($index))));
+                $checks[$clause] = ['sql' => $sql, 'kept' => "index $name - duplicate values", 'with' => array_values(array_filter([$dropped, ...$with]))];
             }
         }
         $extra = array_values(array_diff(array_keys($live->c), array_keys($template->c)));
@@ -342,6 +347,35 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
             $extra[] = "index $name";
         }
         return ['alter' => array_merge($drop, $modify, $add, $renamed, $add_index), 'extra' => $extra, 'kept' => $kept, 'checks' => $checks];
+    }
+
+    /** The query finding the rows a new unique or primary key would not take, '' when there can be none. A column
+     *  the same ALTER adds has one value in all the rows - an auto_increment one another in each row, and a NULL
+     *  is allowed in a unique key any number of times.
+     * @param array<string, true> $to_binary the columns the ALTER changes from a text to binary
+     */
+    private static function duplicatesSql(AA_MbI $index, AA_MbT $template, AA_MbT $live, array $to_binary): string
+    {
+        $parts = $nulls = [];
+        foreach ($index->c as $col) {
+            [$name, $prefix] = is_array($col) ? $col : [$col, ''];
+            if (!isset($live->c[$name])) {
+                $new = $template->c[$name] ?? null;
+                if (!$new || str_contains((string) $new->c[5], 'auto_increment') || (($index->s === 'U') && $new->c[2] && ($new->c[4] === null))) {
+                    return '';
+                }
+                continue;
+            }
+            $value   = isset($to_binary[$name]) ? "CAST(`$name` AS BINARY)" : "`$name`";   // the binary key tells 'a' from 'A'
+            $parts[] = $prefix ? "LEFT($value, $prefix)" : $value;
+            $nulls[] = "`$name` IS NULL";
+        }
+        $from  = "SELECT 1 AS misfit FROM `{$template->t}`";
+        $group = $parts ? ' GROUP BY ' . implode(', ', $parts) : '';
+        if ($index->s === 'P') {
+            return "$from$group HAVING COUNT(*) > 1" . ($nulls ? ' OR MAX(' . implode(' OR ', $nulls) . ')' : '');   // no NULL in a primary key
+        }
+        return $from . ($nulls ? ' WHERE NOT (' . implode(' OR ', $nulls) . ')' : '') . "$group HAVING COUNT(*) > 1";
     }
 
     /** The template column with the live collation and comment - the template names neither, and MODIFY
@@ -359,15 +393,15 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         return $sql;
     }
 
-    /** Can the template type hold every value of the live type? A number and a non-number never; a text,
-     *  a date and an enum are changed into each other (strict mode stops a value that does not fit). */
+    /** Can the template type hold every value of the live type? A number and a non-number never; a date or an
+     *  enum is written into a text, never a text into a date or an enum - a value might not fit; an enum (a set)
+     *  holds the values of its shorter list. */
     private static function holds(string $template, string $live): bool
     {
         [$t_kind, $t_size, $t_unsigned] = self::kind($template);
         [$l_kind, $l_size, $l_unsigned] = self::kind($live);
-        $numeric = ['int', 'float', 'decimal'];
         if ($t_kind !== $l_kind) {
-            return !in_array($t_kind, $numeric, true) && !in_array($l_kind, $numeric, true);
+            return ($t_kind === 'string') && in_array($l_kind, ['enum', 'set', 'other'], true);
         }
         if ($t_unsigned && !$l_unsigned) {
             return false;                                       // the negative numbers
@@ -377,12 +411,14 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
             'int'     => ($t_size * 8 - ($t_unsigned ? 0 : 1)) >= ($l_size * 8 - ($l_unsigned ? 0 : 1)),
             'decimal' => ($t_size[0] - $t_size[1] >= $l_size[0] - $l_size[1]) && ($t_size[1] >= $l_size[1]),
             'float'   => ($t_size[0] >= $l_size[0]) && ($t_size[1] >= $l_size[1]) && ($t_size[2] >= $l_size[2]),
+            'enum', 'set' => !array_diff($l_size, $t_size),
+            'other'   => strtolower($template) === strtolower($live),
             default   => $t_size >= $l_size,
         };
     }
 
     /** [kind, size, unsigned] of a column type: int (bytes), float ([bytes, integer digits, decimals]), decimal ([digits, decimals]),
-     *  string (characters or bytes it takes), other (0) */
+     *  string (characters or bytes it takes), enum and set (the values), other (0) - a date */
     private static function kind(string $type): array
     {
         $type     = strtolower($type);
@@ -402,6 +438,10 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         }
         if (preg_match('/^(tiny|medium|long)?(?:text|blob)$/', $type, $m)) {
             return ['string', ['tiny' => 255, '' => 65535, 'medium' => 16777215, 'long' => 4294967295][$m[1] ?? ''], false];
+        }
+        if (preg_match('/^(enum|set)\((.*)\)/s', $type, $m)) {
+            preg_match_all("/'((?:[^']|'')*)'/", $m[2], $values);
+            return [$m[1], $values[1], false];
         }
         return ['other', 0, false];
     }
