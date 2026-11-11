@@ -1390,6 +1390,18 @@ class AA_Metabase
     }
 
 
+    /** SQL of a table or column with the differences that mean nothing to AA left out: char and varchar
+     *  (some MySQL versions never convert one to the other), binary and varbinary, a default of
+     *  spaces or '0', NOT NULL of a timestamp */
+    public static function comparable(string $sql): string
+    {
+        return str_replace(
+            ['varchar', " default '                '", " default '                                '", " default '0'", 'timestamp NOT NULL', 'varbinary'],
+            ['char', '', '', '', 'timestamp', 'binary'],
+            $sql,
+        );
+    }
+
     /** Compares two metabases - this and the $metabase supplied by the parameter
      *  You can use it to check, which tables should be updated
      * @param AA_Metabase $metabase - the second metabase which will be compared to $this
@@ -1399,18 +1411,12 @@ class AA_Metabase
     public function compare(AA_Metabase $metabase): array
     {
         $diffs = [];
-
-        // for us are varchar and char the same - some tables are never converted
-        // to char in some versions of MySQL, so the test is always false
-        $eq_vars   = ['varchar', " default '                '", " default '                                '", " default '0'", "timestamp NOT NULL", 'varbinary'];
-        $eq_novars = ['char'   , '', '', '', 'timestamp', 'binary'];
-
         foreach ($this->tables as $tablename => $table) {
             $table_sql_1 = $table->getCompareSql();
             $table_sql_2 = isset($metabase->tables[$tablename]) ? $metabase->tables[$tablename]->getCompareSql() : '';
 
             $diffs[$tablename] = [
-                'equal'  => (str_replace($eq_vars, $eq_novars, $table_sql_1) === str_replace($eq_vars, $eq_novars, $table_sql_2)),
+                'equal'  => (self::comparable($table_sql_1) === self::comparable($table_sql_2)),
                 'table1' => $table_sql_1,
                 'table2' => $table_sql_2,
             ];
