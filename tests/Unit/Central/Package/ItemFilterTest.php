@@ -143,7 +143,7 @@ final class ItemFilterTest extends TestCase
         }
     }
 
-    /** a quote as the last character used to read past the end of the value (include/sql_parser.php) */
+    /** a quote as the last character used to read past the end of the value (the former include/sql_parser.php) */
     public function test_a_quote_at_the_end_warns_of_nothing(): void
     {
         set_error_handler(static fn(int $no, string $message): never => throw new ErrorException($message, 0, $no));

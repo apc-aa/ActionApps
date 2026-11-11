@@ -27,10 +27,10 @@
 
 use AA\IO\DB\DB_AA;
 use AA\Security\ViewSlices;
+use AA\Search\QueryExpression;
 use AA\Util\Langs;
 use AA\Util\Url;
 
-require_once __DIR__ . "/sql_parser.php";
 require_once __DIR__ . "/zids.php";
 
 //define('AA_REGEXP_MAIL', '[a-z0-9!#$%&1*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&1*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+(?:[A-Z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)');
@@ -317,9 +317,8 @@ class AA_Condition extends AA_Object
                 return !array_filter($values, static fn(string $v): bool => self::sameValue($v, $value, $numeric));
             case '=':
                 // a syntax error makes SQL take every item, with the value or without
-                $tokens  = SQL_Lex::lex(trim(stripslashes($this->value)));
-                $matches = static fn(string $v): ?bool => self::expressionMatches($tokens, static fn(string $alt): bool => self::sameValue($v, $alt, $numeric));
-                return $values ? (bool) array_filter($values, static fn(string $v): bool => $matches($v) ?? true) : ($matches('') === null);
+                $expression = QueryExpression::tryParse(stripslashes($this->value));
+                return !$expression || array_filter($values, static fn(string $v): bool => $expression->matches(static fn(string $word): bool => self::sameValue($v, $word, $numeric))) !== [];
         }
         foreach ($values as $v) {
             if ($this->_compare($v, $numeric)) {
@@ -365,7 +364,7 @@ class AA_Condition extends AA_Object
             case '==':                                           // exact match - no SQL parsing
                 return self::sameValue($field_value, $this->value, $numeric);
             case '=':
-                return self::expressionMatches(SQL_Lex::lex(trim(stripslashes($this->value))), static fn(string $alt): bool => self::sameValue($field_value, $alt, $numeric)) ?? true;
+                return QueryExpression::tryParse(stripslashes($this->value))?->matches(static fn(string $word): bool => self::sameValue($field_value, $word, $numeric)) ?? true;
             case '!=':
             case '<>':
                 return !self::sameValue($field_value, $this->comparedValues()[0], $numeric);
@@ -397,55 +396,13 @@ class AA_Condition extends AA_Object
     {
         switch ($this->operator) {
             case '=':
-                return self::alternatives(stripslashes($this->value));
+                return QueryExpression::tryParse(stripslashes($this->value))?->alternatives();
             case '!=':
             case '<>':
                 $value = stripslashes($this->value);
                 return [(str_starts_with($value, '"') || str_starts_with($value, "'")) ? substr($value, 1, -1) : $value];
         }
         return [$this->value];
-    }
-
-    /**
-     * The values of an "=" expression that only joins them by OR - "News" OR "Events" - else null.
-     * @return ?list<string>
-     */
-    public static function alternatives(string $expression): ?array
-    {
-        $ret    = [];
-        $tokens = SQL_Lex::lex(trim($expression));
-        foreach ($tokens as $i => $token) {
-            $expect = ($i % 2) ? SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_OR : SQL_Parser_Constants::TOKEN_TYPE_STRING;
-            if ($token['type'] === SQL_Parser_Constants::TOKEN_TYPE_EOF) {
-                return ($ret && ($i % 2)) ? $ret : null;
-            }
-            if ($token['type'] !== $expect) {
-                return null;
-            }
-            if ($expect === SQL_Parser_Constants::TOKEN_TYPE_STRING) {
-                $ret[] = (string) $token['value'];
-            }
-        }
-        return null;
-    }
-
-    /**
-     * "=" expression matching any of the values - each a phrase, so spaces, OR and parentheses inside it are text;
-     * a backslash doubled, as the SQL and comparedValues() strip slashes.
-     * @param list<string> $values
-     * @return ?string null for no value, or a value with both kinds of quotes, which a phrase cannot hold
-     */
-    public static function orExpression(array $values): ?string
-    {
-        $phrases = [];
-        foreach ($values as $value) {
-            $quote = str_contains($value, '"') ? "'" : '"';
-            if (str_contains($value, $quote)) {
-                return null;
-            }
-            $phrases[] = $quote . str_replace('\\', '\\\\', $value) . $quote;
-        }
-        return $phrases ? implode(' OR ', $phrases) : null;
     }
 
     /** as the _ci collations compare: case and trailing spaces do not count; a number field compares numbers */
@@ -457,62 +414,6 @@ class AA_Condition extends AA_Object
     private static function isEmptyValue(string $value, bool $numeric): bool
     {
         return $numeric ? ((float) $value == 0) : (rtrim($value, ' ') === '');
-    }
-
-    /**
-     * Evaluates the "=" expression for one value, by the grammar of Syntax, which builds its SQL:
-     * OR of AND of [NOT] (a word, a "phrase", or a parenthesized expression).
-     * @param array $tokens the expression by SQL_Lex::lex()
-     * @param callable(string): bool $equals whether the value equals the word
-     * @return ?bool null on a syntax error
-     */
-    private static function expressionMatches(array $tokens, callable $equals): ?bool
-    {
-        $i = 0;
-        try {
-            $ret = self::orTerm($tokens, $i, $equals);
-            return ($tokens[$i]['type'] === SQL_Parser_Constants::TOKEN_TYPE_EOF) ? $ret : null;
-        } catch (UnexpectedValueException) {
-            return null;
-        }
-    }
-
-    private static function orTerm(array $tokens, int &$i, callable $equals): bool
-    {
-        $ret = self::andTerm($tokens, $i, $equals);
-        while ($tokens[$i]['type'] === SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_OR) {
-            ++$i;
-            $ret = self::andTerm($tokens, $i, $equals) || $ret;   // the right side is read even when the left holds
-        }
-        return $ret;
-    }
-
-    private static function andTerm(array $tokens, int &$i, callable $equals): bool
-    {
-        $ret = self::factor($tokens, $i, $equals);
-        while ($tokens[$i]['type'] === SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_AND) {
-            ++$i;
-            $ret = self::factor($tokens, $i, $equals) && $ret;
-        }
-        return $ret;
-    }
-
-    private static function factor(array $tokens, int &$i, callable $equals): bool
-    {
-        $not = ($tokens[$i]['type'] === SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT);
-        $i  += (int) $not;
-        switch ($tokens[$i]['type']) {
-            case SQL_Parser_Constants::TOKEN_TYPE_STRING:
-                return $not xor $equals((string) $tokens[$i++]['value']);
-            case SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS:
-                ++$i;
-                $ret = self::orTerm($tokens, $i, $equals);
-                if ($tokens[$i++]['type'] !== SQL_Parser_Constants::TOKEN_TYPE_RIGHT_PARENTHESIS) {
-                    throw new UnexpectedValueException('missing )');
-                }
-                return $not xor $ret;
-        }
-        throw new UnexpectedValueException('unexpected token');
     }
 }
 
@@ -1378,12 +1279,7 @@ class AA_Dbcondition
             case 'BITSET':
                 return ['INNER', '', "($qfield & " . (int) $querystring . " = " . (int) $querystring . ")"];
             case 'XLIKE':
-                $ret = (new Syntax($field, $operator, SQL_Lex::lex(trim($querystring))))->S();
-                if ($ret === "_SYNTAX_ERROR") {
-                    AA::$debug && AA::$dbg->warn("Query syntax error: " . Syntax::lastErrMsg() . ',' . $field . ',' . ',' . $querystring);
-                    return ['ALL', '', "1=1"];
-                }
-                return ($ret ? ['INNER', '', "($ret)"] : ['ALL', '', "1=1"]);
+                return self::expressionSql($field, $operator, $querystring);
         }
 
         // query string could be slashed - sometimes :-(
@@ -1412,15 +1308,7 @@ class AA_Dbcondition
                 // no break
             case '=':
                 // it is not possible to use wildcard characters with '='
-                $syntax = new Syntax($field, $operator, SQL_Lex::lex(trim($querystring)));
-
-                // ret will be quoted
-                $ret = $syntax->S();
-                if ($ret === "_SYNTAX_ERROR") {
-                    AA::$debug && AA::$dbg->warn("Query syntax error: " . Syntax::lastErrMsg() . ',' . $field . ',' . ',' . $querystring);
-                    return ['ALL', '', "1=1"];
-                }
-                return ($ret ? ['INNER', '', "($ret)"] : ['ALL', '', "1=1"]);   // maybe we can change LEFT to INNER
+                return self::expressionSql($field, $operator, $querystring);
             case 'BETWEEN':
                 // unquoted in SQL and public via conds[]: two numbers, or nothing (anything else never worked)
                 $arr = array_map('trim', explode(',', $querystring));
@@ -1463,6 +1351,16 @@ class AA_Dbcondition
         return ['ALL', '', "1=1"];
     }
 
+    /** the words of the value compared by the operator; a syntax error takes every item */
+    private static function expressionSql(string $field, string $operator, string $querystring): array
+    {
+        try {
+            return ['INNER', '', '(' . QueryExpression::parse($querystring)->toSql($field, $operator) . ')'];
+        } catch (InvalidArgumentException $e) {
+            AA::$debug && AA::$dbg->warn('Query syntax error: ' . $e->getMessage() . ',' . $field . ',' . $querystring);
+            return ['ALL', '', '1=1'];
+        }
+    }
 }
 
 // -------------------------------------------------------------------------------------------

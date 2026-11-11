@@ -207,7 +207,7 @@ namespace AA\Tests\Unit\Form {
 
         public function test_formConfig_json_is_script_safe(): void
         {
-            $conds = self::conds(true, '', 'd-' . self::CAT . '-=-' . \AA_Condition::orExpression(['</script><b>', "a'b&"]));
+            $conds = self::conds(true, '', 'd-' . self::CAT . '-=-' . \AA\Search\QueryExpression::ofAlternatives(['</script><b>', "a'b&"]));
             $json  = json_encode($conds->formConfig(self::fields(), []), ScriptTag::JS_JSON);
             $this->assertStringNotContainsString('<', $json);
             $this->assertStringNotContainsString("'", $json);

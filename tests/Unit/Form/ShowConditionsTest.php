@@ -195,7 +195,7 @@ final class ShowConditionsTest extends TestCase
     private static function rule(string $field, string $op, array $values = []): string
     {
         $value = match ($op) {
-            '='     => \AA_Condition::orExpression($values),
+            '='     => \AA\Search\QueryExpression::ofAlternatives($values),
             '<>'    => '"' . $values[0] . '"',
             default => '1',
         };

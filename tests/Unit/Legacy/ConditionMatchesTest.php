@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Legacy;
 
+use AA\Search\QueryExpression;
 use AA_Condition;
 use AA_Set;
 use ItemContent;
@@ -107,46 +108,21 @@ final class ConditionMatchesTest extends TestCase
         $this->assertFalse((new AA_Set(null, 'd-' . self::F . '-ISNULL-1'))->matches($content));
     }
 
-    /** @return array<string, array{string, ?list<string>}> */
-    public static function alternatives(): array
-    {
-        return [
-            'phrases'        => ['"News" OR "Events"', ['News', 'Events']],
-            'words'          => ['News or Events', ['News', 'Events']],
-            'one'            => ['"Internet & ICT"', ['Internet & ICT']],
-            'apostrophes'    => ["'Say \"hi\"' OR \"it's\"", ['Say "hi"', "it's"]],
-            'implicit AND'   => ['"News" "Events"', null],
-            'NOT'            => ['NOT "News"', null],
-            'parentheses'    => ['("News")', null],
-            'empty'          => ['', null],
-            'dangling OR'    => ['"News" OR', null],
-        ];
-    }
-
-    /** @param ?list<string> $expected */
-    #[DataProvider('alternatives')]
-    public function test_alternatives(string $expression, ?array $expected): void
-    {
-        $this->assertSame($expected, AA_Condition::alternatives($expression));
-    }
-
-    public function test_orExpression_reads_back(): void
+    public function test_comparedValues_of_alternatives(): void
     {
         $values = ['News', 'Say "hi"', "it's", 'A-B', 'x OR y', '(z)', 'C:\\dir'];
-        $expr   = AA_Condition::orExpression($values);
-        $this->assertSame($values, (new AA_Condition([self::F], '=', $expr))->comparedValues());
-        $this->assertNull(AA_Condition::orExpression(['both " and \'']));
-        $this->assertNull(AA_Condition::orExpression([]));
+        $this->assertSame($values, (new AA_Condition([self::F], '=', QueryExpression::ofAlternatives($values)))->comparedValues());
+        $this->assertNull((new AA_Condition([self::F], '=', 'NOT "a"'))->comparedValues());
     }
 
     public function test_d_string_round_trip(): void
     {
         $set = new AA_Set();
-        $set->addCondition(new AA_Condition([self::F], '=', AA_Condition::orExpression(['A-B', 'C--D', 'E-'])));
+        $set->addCondition(new AA_Condition([self::F], '=', QueryExpression::ofAlternatives(['A-B', 'C--D', 'E-'])));
         $set->addCondition(new AA_Condition([self::F], '<>', '"-x"'));
         $set->addCondition(new AA_Condition([self::F], 'ISNULL', '1'));
         $set->addCondition(new AA_Condition([self::F], 'BEGIN', '-5'));
-        $set->addCondition(new AA_Condition([self::F], '=', AA_Condition::orExpression(['C:\\dir'])));
+        $set->addCondition(new AA_Condition([self::F], '=', QueryExpression::ofAlternatives(['C:\\dir'])));
         $string = $set->getCondsAsString();
 
         $back = (new AA_Set(null, $string))->getConditions();

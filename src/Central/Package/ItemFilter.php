@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use AA\Search\QueryExpression;
 use AA\Util\Langs;
 use AA_Dbcondition;
 use AA_Field;
 use AA_Operators;
 use AA_View_Commands;
-use SQL_Lex;
-use SQL_Parser_Constants;
 
 /** The items of a slice a transfer takes: `d-<fields>-<operator>-<value>[-…]` as in {ids} and views,
  *  conditions joined by AND, split by AA_View_Commands and evaluated by QueryZids() - so a condition
@@ -211,8 +210,7 @@ final readonly class ItemFilter
      *  phrase would select nearly all: the search syntax must read exactly that literal */
     private static function literal(string $value): bool
     {
-        $tokens  = SQL_Lex::lex($value);
         $literal = in_array($value[0], ['"', "'"], true) ? substr($value, 1, -1) : $value;
-        return (count($tokens) === 2) && ($tokens[0]['type'] === SQL_Parser_Constants::TOKEN_TYPE_STRING) && ($tokens[0]['value'] === $literal);
+        return QueryExpression::tryParse($value)?->alternatives() === [$literal];
     }
 }

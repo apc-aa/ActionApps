@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Form;
 
 use AA\IO\DB\DB_AA;
+use AA\Search\QueryExpression;
 
 /**
  * Named display conditions of a slice: a field of the admin item form is shown only while its condition holds.
@@ -370,7 +371,7 @@ final class ShowConditions
                 $errors[] = _m('Choose how to compare the field %1.', [$label]);
             } elseif (!$values && !in_array($op, ['ISNULL', 'NOTNULL'], true)) {
                 $errors[] = _m('Fill in the values of the field %1.', [$label]);
-            } elseif (($op === '=') && (($expression = \AA_Condition::orExpression($values)) === null)) {
+            } elseif (($op === '=') && (($expression = QueryExpression::ofAlternatives($values)) === null)) {
                 $errors[] = _m('A value of the field %1 contains both kinds of quotes.', [$label]);
             } elseif (in_array($op, ['BEGIN', 'CONTAIN'], true) && str_contains($values[0], '\\')) {
                 // the d- form strips slashes of an unquoted value

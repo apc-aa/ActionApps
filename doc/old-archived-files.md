@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/include/**sql_parser.php**  
+Lexer and LL(1) parser of the value of a search condition (SQL_Lex, TokenList, Syntax, SQL_Parser_Constants): words, "phrases", AND/OR/NOT and parentheses turned straight into the SQL of =, LIKE, RLIKE, LLIKE and XLIKE.  
+_Replaced by AA\Search\QueryLexer and AA\Search\QueryExpression (src/Search/): the value is read once into a tree, which gives the same SQL (pinned by tests/Unit/Search/fixtures/query_sql_pins.php) and also decides over values already loaded (AA_Condition::matchesValues()), so the postfilter and the item form cannot read the value differently from the database. Removed 2026-11-11 - honzam_
+
 /admin/**param_wizard.php**  
 "Parameter Wizard" - a popup from the field page (input type, default, validation, insert, alias functions) and from the CSV import: a form for the parameters of the selected type that wrote them back into the text field of the opener, by position.  
 _Replaced by the element <aa-params> right in the page (javascript/widgets/aa-params.js, definitions from AA\Util\Paramwizard): it keeps parameters by name when the type changes, and the alias functions and import actions show a help of the selected function. getParamWizardLink(), Paramwizard::getParamWizardArr() and the JS CallParamWizard() went with it. Removed 2026-11-10 - honzam_

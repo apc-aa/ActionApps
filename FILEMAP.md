@@ -470,6 +470,13 @@ Exact host as RP ID; an account with a passkey no longer logs in by password alo
 |------|---------|---------|------|
 | Form/ShowConditions.php | Named display conditions of a slice (slice.aditional), the one each field picks (field.aditional); hides fields in the item form and decides what saving a hidden field does | ShowConditions::forSlice(), hiddenFor(), apply(), formConfig(), fromPost() | M |
 
+### Search (the value of a search condition)
+
+| File | Purpose | Key Classes/Functions | Size |
+|------|---------|----------------------|------|
+| Search/QueryLexer.php | Tokens of a condition value: words, phrases, AND/OR/NOT (+ -), parentheses, implicit AND | QueryLexer::lex() | S |
+| Search/QueryExpression.php | The value read into one tree: its SQL (AA_Dbcondition) and the decision over loaded values (AA_Condition) | QueryExpression::parse(), toSql(), matches(), alternatives(), ofAlternatives() | S |
+
 ### Widget (UI Components)
 
 | File | Purpose | Key API | Size |
@@ -668,7 +675,6 @@ Note: *.php3 files are legacy wrappers that include the .php version.
 | slice.php | Public slice display | | M |
 | sliceadd.php | Create new slice interface | | M |
 | slicedit.php | Slice editor interface | | L |
-| sql_parser.php | SQL statement parser | AA_Sqlparser | M |
 | statestore.php | Object state persistence | AA_Storable, AA_Object | XL |
 | stringexpand.php | Template expansion engine (400+ expansions) | AA_Stringexpand_*, AA_Aliasfunc | XL |
 | table.class.php | HTML table rendering | AA_Table | M |
