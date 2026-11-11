@@ -52,7 +52,7 @@ final class CsvurlSource extends AbstractSource implements Checkable, Probeable
         return [
             'url'        => new AA_Property('url', _m('URL of the file'), 'string', false, true, ['regexp', ['pattern' => self::URL]], true, _m('http or https only, on a public address, without a user name and password'), '', 'https://example.org/data.csv'),
             'delimiter'  => self::delimiterProperty(),
-            'columns'    => new AA_Property('columns', _m('Columns'), 'text', false, true, new CsvColumnsSetting(), true, _m('JSON object: the column name in the first row => the field it fills'), '', '{"Name": "headline........", "Code": "text...........1"}'),
+            'columns'    => new AA_Property('columns', _m('Columns'), 'text', false, true, new CsvColumnsSetting(), true, _m('One line per column: its name in the first row = the id of the field it fills'), '', "Name = headline........\nCode = text...........1"),
             'key_column' => new AA_Property('key_column', _m('Key column'), 'string', false, true, 'text', true, _m('The column that identifies the item; it must be one of the columns'), '', 'Code'),
         ];
     }
@@ -76,7 +76,8 @@ final class CsvurlSource extends AbstractSource implements Checkable, Probeable
                 throw new SourceRefused('SETTINGS', "The setting $name is not valid");
             }
         }
-        $columns = CsvColumnsSetting::parse($settings['columns'] ?? '') ?? [];
+        $text    = $settings['columns'] ?? '';
+        $columns = (trim($text) === '') ? [] : (CsvColumnsSetting::parse($text, $why) ?? throw new SourceRefused('SETTINGS', "Columns, $why"));
         $key     = $settings['key_column'] ?? '';
         if (($key !== '') && !isset($columns[$key])) {
             throw new SourceRefused('SETTINGS', 'The key column must be one of the columns');

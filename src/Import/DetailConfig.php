@@ -7,6 +7,7 @@ namespace AA\Import;
 use AA\Credential\Store;
 use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
+use AA\Widget\TxtWidget;
 use AA\Widget\Widget;
 use Throwable;
 
@@ -266,7 +267,8 @@ final class DetailConfig
                 $content->setAaValue($property->getId(), new \AA_Value($default));
             }
             $form = new \AA_Form();
-            $property->addPropertyFormrows($form);
+            // a plain text area: a text setting holds lines of data, which the code editor would colour as HTML
+            $property->addPropertyFormrows($form, ($property->getType() === 'text') ? new TxtWidget(['rows' => 6]) : null);
             $html .= $form->getRowsHtml($content);
         }
         return ($html === '') ? '<p class="aa-empty-note">' . _m('The source has no settings.') . '</p>' : $html;

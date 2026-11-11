@@ -226,10 +226,32 @@ final class CsvurlSourceTest extends TestCase
     #[DataProvider('badColumns')]
     public function test_settings_badColumnsRefused(string $columns): void
     {
-        $value = $columns;
-        self::assertFalse(CsvurlSource::getClassProperties()['columns']->getValidator()->validate($value), 'refused already by the form');
-
+        self::assertNull(CsvColumnsSetting::parse($columns));
         self::assertRefused(fn() => self::source(['columns' => $columns, 'key_column' => '']));
+    }
+
+    /** the source refuses the columns as a whole, naming the line at fault - the form could only say the setting is wrong */
+    public function test_columns_badLine_isRefusedWithItsNumber(): void
+    {
+        $bad = [
+            "Name = headline........\nCode text...........1"      => 'line 2',
+            "Name = headline........\n\nCode = headline"          => 'line 3',
+            "Name = status_code.....\n"                           => 'line 1',
+            " = headline........"                                 => 'line 1',
+            "Name = headline........\nName = text...........1"    => 'line 2',
+        ];
+        foreach ($bad as $columns => $line) {
+            try {
+                self::source(['columns' => $columns, 'key_column' => '']);
+                self::fail("not refused: $columns");
+            } catch (SourceRefused $e) {
+                self::assertSame('SETTINGS', $e->reason);
+                self::assertStringContainsString("Columns, $line:", $e->getMessage(), $columns);
+            }
+        }
+        $value = "Code text";
+        self::assertTrue(CsvurlSource::getClassProperties()['columns']->getValidator()->validate($value), 'the source says which line, so the form lets it through');
+        self::assertSame(['a=b' => 'headline........', 'Code' => 'text...........1'], CsvColumnsSetting::parse("a=b = headline........\r\n  Code=text...........1  "), 'the last = splits; spaces around go');
     }
 
     public static function badColumns(): array

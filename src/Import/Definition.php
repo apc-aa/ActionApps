@@ -330,9 +330,16 @@ final class Definition extends AA_Object implements InternalExpandInterface
      *  @return array{kind: string, word: string, reason: string} */
     private static function rowHealth(AA_Content $content, int $now): array
     {
-        $hasSource          = isset(Registry::sources()[(string) $content->getValue('source')]);
+        $type               = (string) $content->getValue('source');
+        $hasSource          = isset(Registry::sources()[$type]);
         [$newest, $import] = self::latestRuns((string) $content->getId());
-        return RunView::health($hasSource, true, $newest, $import, $now);
+        try {
+            $unset = self::unsetSettings($type, self::settingsOf(['settings' => (string) $content->getValue('settings')]));
+        } catch (SourceRefused) {
+            // the detail says the stored settings cannot be read
+            $unset = [];
+        }
+        return RunView::health($hasSource, $unset, true, $newest, $import, $now);
     }
 
     /** Run::newestOf() of definition $id, read once for the cells of its row
@@ -814,6 +821,30 @@ final class Definition extends AA_Object implements InternalExpandInterface
     private function isOwn(array $rows): bool
     {
         return (($rows['aa_type'] ?? '') === self::class) && (($rows['aa_owner'] ?? '') === strtolower((string) $this->getOwnerId()));
+    }
+
+    /**
+     * The labels of the settings source $type needs (required, without a default) that $settings
+     * lack - what a new import must be given before it can run. [] for a source that is not
+     * available or whose code fails here: the page says that otherwise.
+     * @param array<string, string> $settings as settingsOf() gives them
+     * @return list<string>
+     */
+    public static function unsetSettings(string $type, array $settings): array
+    {
+        $class = Registry::sources()[$type] ?? null;
+        try {
+            $declared = ($class === null) ? [] : $class::getClassProperties();
+        } catch (Throwable) {
+            return [];
+        }
+        $unset = [];
+        foreach ($declared as $name => $property) {
+            if ($property->isRequired() && (trim($settings[$name] ?? '') === '') && (Service::settingDefault($property) === null)) {
+                $unset[] = (string) $property->getName();
+            }
+        }
+        return $unset;
     }
 
     /** whether source $type declares settings; a source whose code fails here has none to set */

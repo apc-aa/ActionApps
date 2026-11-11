@@ -93,7 +93,7 @@ final class RunViewTest extends TestCase
     {
         $runs    = array_map(static fn(array $p): Run => new Run($p), $props);
         $import  = array_values(array_filter($runs, static fn(Run $r): bool => $r->storesItems()))[0] ?? null;
-        $verdict = RunView::health($source, $mapping, $runs[0] ?? null, $import, 1_900_000_000);
+        $verdict = RunView::health($source, [], $mapping, $runs[0] ?? null, $import, 1_900_000_000);
 
         self::assertSame($kind, $verdict['kind']);
         self::assertStringContainsString($reason, $verdict['reason']);
@@ -104,7 +104,7 @@ final class RunViewTest extends TestCase
     public function test_health_disabledAndHealthy_staysHealthy(): void
     {
         $import  = new Run(['state' => Run::DONE, 'mode' => 'run', 'counts' => '{"read":3}']);
-        $verdict = RunView::health(true, true, $import, $import, 1_900_000_000);
+        $verdict = RunView::health(true, [], true, $import, $import, 1_900_000_000);
 
         self::assertSame(['ok', 'Healthy'], [$verdict['kind'], $verdict['word']]);
         self::assertStringNotContainsString('by hand', $verdict['reason']);
@@ -113,6 +113,20 @@ final class RunViewTest extends TestCase
         self::assertStringContainsString('Runs only by hand.', $off);
         self::assertStringNotContainsString('Disabled', $off);
         self::assertStringNotContainsString('Runs only by hand.', RunView::statusHtml($verdict, true));
+    }
+
+    /** settings the source needs and no run yet: a new import, not a failing one - its mapping comes from them */
+    public function test_health_newImportWithoutSettings_isNotSetUp(): void
+    {
+        $now     = 1_900_000_000;
+        $verdict = RunView::health(true, ['URL of the file', 'Columns'], false, null, null, $now);
+
+        self::assertSame(['idle', 'Not set up'], [$verdict['kind'], $verdict['word']]);
+        self::assertSame('Fill in these settings of the source: URL of the file, Columns.', $verdict['reason']);
+
+        $run = new Run(['state' => Run::ERROR, 'mode' => 'run']);
+        self::assertSame('bad', RunView::health(true, ['Columns'], true, $run, null, $now)['kind'], 'once it ran, its runs tell');
+        self::assertSame('bad', RunView::health(false, ['Columns'], true, null, null, $now)['kind'], 'a source that is gone first');
     }
 
     public function test_age_roughlyAndNothingWhenTooOld(): void

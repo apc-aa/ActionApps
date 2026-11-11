@@ -270,8 +270,9 @@ final class DetailConfigTest extends TestCase
         $id  = (string) $def->getId();
         $this->assertSame([], TableDb::rows('toexecute'));
         $page = DetailPage::forRequest(self::SLICE, $id, AuthGetUid()) ?? throw new \LogicException('No page');
-        $this->assertStringContainsString('The mapping has no key field, so an item cannot be found again.', $page->overviewHtml(time()));
-        $this->assertStringContainsString('(DEFINITION)', $page->actionsHtml(time()), 'the start buttons say why they are off');
+        $this->assertStringContainsString('Not set up', $page->overviewHtml(time()));
+        $this->assertStringNotContainsString('The mapping has no key field', $page->overviewHtml(time()), 'the settings give it');
+        $this->assertStringContainsString('The source is not set up yet.', $page->actionsHtml(time()), 'the start buttons say why they are off');
         $refused = Service::start($def, 'run', [], 'manual', AuthGetUid());
         $this->assertSame(['invalid', 'DEFINITION'], [$refused->code, $refused->reason]);
 
@@ -283,6 +284,26 @@ final class DetailConfigTest extends TestCase
         $this->assertSame([], $def->mapping()->problems(self::SLICE));
         $this->assertSame('queued', Service::start($def, 'run', [], 'manual', AuthGetUid())->code);
         $this->assertContains('Import_' . $id, array_column(self::queue(), 'selector'));
+    }
+
+    /** the columns are typed as lines "column = field"; a JSON object, as stored before, reads the same */
+    public function test_columns_linesAndJson_giveTheSameMapping(): void
+    {
+        self::perms(PS_FEEDING, PS_FEEDING);
+        $mappings = [];
+        foreach (['lines' => "Název = headline........\nKód = text...........1\n", 'json' => '{"Název": "headline........", "Kód": "text...........1"}'] as $case => $columns) {
+            self::definition(['source' => 'core:csvurl']);
+            $def = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
+            $r   = Service::changeSettings($def, 'core:csvurl', ['url' => 'https://example.org/data.csv', 'columns' => $columns, 'key_column' => 'Kód'], AuthGetUid());
+            $this->assertSame('CHANGED', $r->code, $case);
+            $mappings[$case] = (Definition::fresh(self::DEF) ?? throw new \LogicException('No definition'))->mapping();
+        }
+        $this->assertEquals($mappings['json'], $mappings['lines']);
+        $this->assertSame(['text...........1'], $mappings['lines']->keyFields);
+
+        $doc = self::dom(self::config()->settingsHtml());
+        $this->assertSame(0, $doc->getElementsByTagName('aa-code')->length, 'a plain text area: lines of data, not code');
+        $this->assertGreaterThan(0, $doc->getElementsByTagName('textarea')->length);
     }
 
     // ------------------------------------------------------------ refused starts point to the settings

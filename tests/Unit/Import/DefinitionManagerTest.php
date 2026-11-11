@@ -265,6 +265,19 @@ final class DefinitionManagerTest extends TestCase
         self::assertStringContainsString('Not planned', $html, 'a planned task does not start it');
     }
 
+    /** a new import whose source needs settings reads as not set up in the list too, until they are given */
+    public function test_list_newImportWithoutSettings_isNotSetUp(): void
+    {
+        $id = self::definition('prices');
+        self::storedSet($id, 'source', 'core:csvurl');
+
+        self::assertStringContainsString('Not set up', self::rendered($id));
+        self::assertStringContainsString('Fill in these settings of the source: URL of the file, Columns, Key column.', self::rendered($id));
+
+        self::storedSet($id, 'settings', '{"url":"https://example.org/a.csv","columns":"A = headline........","key_column":"A"}');
+        self::assertStringNotContainsString('Not set up', self::rendered($id));
+    }
+
     public function test_noDisabledLabelAnywhere(): void
     {
         $id = self::definition('prices');

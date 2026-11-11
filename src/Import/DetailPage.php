@@ -65,6 +65,9 @@ final class DetailPage
     /** @var list<string>|null|false the mapping problems; null = the mapping cannot be read, false = not read yet */
     private array|false|null $problems = false;
 
+    /** @var ?list<string> Definition::unsetSettings() of the stored settings, read once per page */
+    private ?array $unset = null;
+
     /** @var array<string, int> run id => Run::queuedUntil(), read once per page */
     private array $queuedUntil = [];
 
@@ -234,6 +237,17 @@ final class DetailPage
         return is_array($outcome) ? self::outcomeHtml((string) ($outcome[0] ?? ''), (string) ($outcome[1] ?? ''), (string) ($outcome[2] ?? '')) : '';
     }
 
+    /** The whole page. An import not set up yet starts with the settings of its source - the one thing
+     *  it needs; the mapping, made from them, stays below.
+     *  @param array<mixed> $get $_GET: the source picked and the pages of the listings */
+    public function pageHtml(int $now, array $get): string
+    {
+        $config   = $this->config();
+        $settings = $config->settingsHtml($get['source'] ?? null);
+        $rest     = $this->html($now) . $this->streamsHtml($get['streams_page'] ?? null) . $this->catalog()->html($get['catalog_page'] ?? null);
+        return ($this->notSetUp() ? $settings . $rest : $rest . $settings) . $config->mappingHtml();
+    }
+
     /** the sections that follow a running run - the ones the script of the page replaces */
     public function html(int $now): string
     {
@@ -276,7 +290,7 @@ final class DetailPage
     {
         $runs   = $this->runs();
         $open   = $this->openRun();
-        $health = RunView::health($this->hasSource(), $this->problems() === [], $runs[0] ?? null, $this->lastImport(), $now);
+        $health = RunView::health($this->hasSource(), $this->unsetSettings(), $this->problems() === [], $runs[0] ?? null, $this->lastImport(), $now);
         $html   = $this->healthHtml($health) . $this->problemsHtml() . self::ribbonHtml($runs, $now)
             . '<div class="aa-import-glance">'
             . '<div class="aa-import-last"><h3>' . _m('Last import') . '</h3>' . $this->lastImportHtml($runs, $now) . '</div>'
@@ -842,9 +856,13 @@ final class DetailPage
         return $html . '</p>';
     }
 
-    /** the problems of the mapping in words - each refuses every start (DEFINITION) */
+    /** the problems of the mapping in words - each refuses every start (DEFINITION); none before the
+     *  import is set up, as its mapping may come from the settings */
     private function problemsHtml(): string
     {
+        if ($this->notSetUp()) {
+            return '';
+        }
         $problems = $this->problems();
         if ($problems === null) {
             return '<div class="aa-err">' . _m('The mapping of the import cannot be read; no run starts until it is set again.') . '</div>';
@@ -866,6 +884,7 @@ final class DetailPage
         return match (true) {
             $busy !== ''                        => $busy,
             !$this->hasSource()                 => self::reasonText('NO_SOURCE'),
+            $this->notSetUp()                   => _m('The source is not set up yet.'),
             $this->problems() !== []            => self::reasonText('DEFINITION'),
             default                             => '',
         };
@@ -1379,6 +1398,25 @@ final class DetailPage
     private function hasSource(): bool
     {
         return isset(Registry::sources()[$this->def->sourceType()]);
+    }
+
+    /** @return list<string> Definition::unsetSettings(); [] when the stored settings cannot be read - the settings section says so */
+    private function unsetSettings(): array
+    {
+        if ($this->unset === null) {
+            try {
+                $this->unset = Definition::unsetSettings($this->def->sourceType(), Definition::settingsOf($this->def->snapshot()));
+            } catch (SourceRefused) {
+                $this->unset = [];
+            }
+        }
+        return $this->unset;
+    }
+
+    /** never ran and lacks settings its source needs - RunView::health() says "Not set up" */
+    private function notSetUp(): bool
+    {
+        return ($this->unsetSettings() !== []) && ($this->runs() === []);
     }
 
     /** @return ?array{role: string, state: string, label: string, done: int, total: int, moved: int, started: int,

@@ -81,7 +81,7 @@ $apage->addRequire(get_aa_url('css/dataimport.css', ['v' => AA_JS_VERSION], fals
 // asks before End and before a change of the settings, follows a running run
 $apage->addRequire(get_aa_url('javascript/dataimport.min.js', ['v' => AA_JS_VERSION], false));
 // before the head: the widgets of the settings form add the scripts they need
-$body = $page->html(Run::clock()) . $page->streamsHtml($_GET['streams_page'] ?? null) . $page->catalog()->html($_GET['catalog_page'] ?? null) . $page->config()->html($_GET['source'] ?? null);
+$body = $page->pageHtml(Run::clock(), $_GET);
 $apage->printHead();
 
 echo $page->outcomeOnceHtml();

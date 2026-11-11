@@ -166,6 +166,30 @@ final class DetailPageTest extends TestCase
         $this->assertStringContainsString('Planned tasks start it only once', $off);
     }
 
+    /** a new import of a source that needs settings: they come first, open, and the page says it once */
+    public function test_detail_newImport_settingsFirstAndOpen_messageOnce(): void
+    {
+        self::definition(['source' => 'core:csvurl', 'mapping' => '', 'key_fields' => '']);
+        $reason = 'Fill in these settings of the source: URL of the file, Columns, Key column.';
+
+        $html = self::page()->pageHtml(time(), []);
+
+        $this->assertMatchesRegularExpression('~^<details id="aa-import-settings" class="aa-page-section" open~', $html, 'the settings first and open');
+        $this->assertLessThan(strpos($html, 'id="aa-import-actions"'), strpos($html, 'id="aa-import-settings"'));
+        $this->assertGreaterThan(strpos($html, 'id="aa-import-overview"'), strpos($html, 'id="aa-import-mapping"'), 'the mapping, made from them, stays below');
+        $this->assertSame(1, substr_count($html, $reason));
+        $this->assertStringContainsString('data-kind="idle"', $html);
+        $this->assertStringContainsString('Not set up', $html);
+        $this->assertStringNotContainsString('Failing', $html);
+        $this->assertStringNotContainsString('The mapping does not fit', $html, 'its mapping is empty only for want of the settings');
+        $this->assertSame(1, substr_count($html, '<p class="aa-import-why">The source is not set up yet.</p>'), 'the actions say their common reason once');
+
+        self::definition(['source' => 'core:csvurl', 'mapping' => '', 'key_fields' => '', 'settings' => '{"url":"https://example.org/a.csv","columns":"A = headline........","key_column":"A"}'], self::SIBLING);
+        $set = (DetailPage::forRequest(self::SLICE, self::SIBLING, AuthGetUid()) ?? throw new \LogicException('No page'))->pageHtml(time(), []);
+        $this->assertLessThan(strpos($set, 'id="aa-import-settings"'), strpos($set, 'id="aa-import-overview"'), 'set up, the overview leads');
+        $this->assertStringNotContainsString('Not set up', $set);
+    }
+
     public function test_noDisabledLabelAnywhere(): void
     {
         self::definition(['enabled' => '0']);
