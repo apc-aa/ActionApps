@@ -75,8 +75,8 @@
 .aa-import-actions button.aa-import-primary:hover:not(:disabled) { background-color: var(--clr-text-accent); border-color: var(--clr-text-accent); }
 .aa-import-actions button.aa-import-quiet { background: transparent; color: var(--clr-text-accent); border: 1px solid var(--clr-text-accent); }
 .aa-import-actions button.aa-import-quiet:hover:not(:disabled) { background: var(--clr-basic); color: var(--clr-dark); }
-.aa-import-actions button:disabled { cursor: not-allowed; background-color: var(--clr-basic-light); color: var(--import-muted); border: 1px dashed var(--clr-basic-darker); }
-.aa-import-actions button:focus-visible { outline: 2px solid var(--clr-dark); outline-offset: 2px; }
+.aa-import-actions button:disabled, .aa-import-adopt button:disabled { cursor: not-allowed; background-color: var(--clr-basic-light); color: var(--import-muted); border: 1px dashed var(--clr-basic-darker); }
+.aa-import-actions button:focus-visible, .aa-import-adopt button:focus-visible { outline: 2px solid var(--clr-dark); outline-offset: 2px; }
 .aa-import-open { display: flex; flex-wrap: wrap; align-items: center; gap: 0 0.8em; margin: 0.8em 0 0; padding-top: 0.6em; border-top: 1px solid var(--clr-border); }
 .aa-import-open form { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0 0.6em; }
 .aa-import-open > .aa-import-why { margin: 0; }
@@ -91,6 +91,8 @@
 .aa-import-runs th, .aa-import-runs td, .aa-import-streams th, .aa-import-streams td, .aa-import-catalog th, .aa-import-catalog td, .aa-import-diff th, .aa-import-diff td { padding: 0.3em 0.6em; vertical-align: top; }
 .aa-import-catalog td, .aa-import-diff td { overflow-wrap: anywhere; }
 .aa-import-adopt { margin: 0; }
+.aa-import-catalog tr[hidden] { display: none; }
+.aa-import-catalog button { white-space: nowrap; }
 .aa-import-sample { margin: 0.3em 0; }
 
 /* runs */
@@ -133,6 +135,12 @@
 .aa-import-vfull[open] > code { display: block; margin-top: 0.2em; user-select: all; }
 .aa-import-empty { margin: 0.6em 0; padding: 0.9em 1.1em; background: var(--clr-basic-light); border: 1px dashed var(--clr-border); color: var(--clr-dark); }
 
+/* catalog */
+.aa-import-count { font-size: var(--sz-s); font-weight: 400; letter-spacing: normal; color: var(--import-muted); }
+.aa-import-filter:not([hidden]) { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4em 1.4em; }
+.aa-import-filter input[type="search"] { width: 16em; max-width: 100%; }
+.aa-import-filter output { color: var(--import-muted); font-variant-numeric: tabular-nums; }
+
 /* settings, mapping */
 .aa-import-mapping, .aa-import-keys { border-collapse: collapse; }
 .aa-import-mapping th, .aa-import-keys th { text-align: left; }
@@ -155,7 +163,7 @@
 }
 @media (max-width: 40em) {
     .aa-import-glance { grid-template-columns: 1fr; }
-    .aa-import-runs thead, .aa-import-streams thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .aa-import-runs thead, .aa-import-streams thead, .aa-import-catalog thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     .aa-import-runs, .aa-import-runs tbody, .aa-import-streams, .aa-import-streams tbody, .aa-import-streams tr, .aa-import-streams th, .aa-import-streams td { display: block; }
     .aa-import-ribbon li a { width: 2.75em; height: 2.75em; }
     .aa-import-ribbon li a svg { width: 18px; height: 18px; }
@@ -176,4 +184,10 @@
     .aa-import-streams td { display: grid; grid-template-columns: 8.5em 1fr; gap: 0 0.6em; padding-top: 0.1em; padding-bottom: 0.1em; overflow-wrap: anywhere; }
     .aa-import-streams td::before { grid-column: 1; grid-row: 1; }
     .aa-import-streams td > * { grid-column: 2; }
+    .aa-import-catalog, .aa-import-catalog tbody, .aa-import-catalog tr:not([hidden]) { display: block; }
+    .aa-import-catalog tr { padding: 0.5em 0; border-bottom: 1px solid var(--clr-border); }
+    .aa-import-catalog td { display: grid; grid-template-columns: 7em 1fr; gap: 0 0.6em; padding: 0.1em 0.6em; }
+    .aa-import-catalog td:empty { display: none; }
+    .aa-import-catalog td::before { content: attr(data-label); color: var(--import-muted); }
+    .aa-import-catalog td > * { grid-column: 2; justify-self: start; }
 }

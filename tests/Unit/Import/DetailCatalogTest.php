@@ -295,19 +295,103 @@ final class DetailCatalogTest extends TestCase
 
         $this->assertSame(['e1', 'e2', 'e3'], array_column(self::tableRows($html, 'aa-import-catalog'), 0), 'all of them listed');
         $this->assertSame(['', 'disabled', 'disabled'], array_map(static fn(\DOMElement $b): string => $b->getAttribute('disabled'), $buttons));
-        $this->assertSame('empty <b>per</b>', $buttons[1]->getAttribute('title'));
         $this->assertSame(['Add', 'Add empty <b>per</b>', 'Update empty per'], array_column(self::tableRows($html, 'aa-import-catalog'), 5));
         $this->assertStringNotContainsString('<b>per', $html);
 
         \AdoptSource::$credentials = [['vendor' => 'csu', 'context' => '']];
-        $keys = iterator_to_array(self::dom(self::catalogHtml())->getElementsByTagName('button'));
-        $this->assertStringContainsString('only a superadmin', $keys[1]->getAttribute('title'), 'a reason for all entries goes first');
+        $this->assertSame(1, substr_count(self::catalogHtml(), 'only a superadmin'), 'a reason for all entries goes first, once');
         $this->assertSame('Add empty <b>per</b>', self::tableRows(self::catalogHtml(), 'aa-import-catalog')[1][5], 'the reason of the entry stays beside it');
         \AdoptSource::$credentials = [];
 
         $msg = self::act(['action' => 'adopt', 'key' => 'e2']);
         $this->assertStringContainsString('aa-ok', $msg, 'the fake source adopts anything');
         $this->assertSame(['e2'], array_map(static fn(CatalogEntry $e): string => $e->key, \AdoptSource::$adopted));
+    }
+
+    /** the catalog may be long: closed, its summary says how many entries and how many can be added;
+     *  a link to a page of it opens it */
+    public function test_listing_isClosedWithCounts(): void
+    {
+        self::definition();
+        self::catalog(
+            [new CatalogEntry('e1', 'Prices'), new CatalogEntry('e2', 'Wages'), new CatalogEntry('e3', 'Rents', [], '', 'empty'), new CatalogEntry('e4', 'Fees')],
+            [new Stream('s1', 'Prices', [], 'e1')],
+        );
+
+        $html    = self::catalogHtml();
+        $details = self::dom($html)->getElementById('aa-import-catalog');
+
+        $this->assertNotNull($details);
+        $this->assertFalse($details->hasAttribute('open'), 'closed by default');
+        $summary = trim((string) preg_replace('/\s+/', ' ', (string) $details->getElementsByTagName('summary')->item(0)?->textContent));
+        $this->assertSame('Catalog of the source 4 entries, 2 can be added', $summary, 'e1 has a stream, e3 is refused');
+        $this->assertTrue((bool) self::dom(self::catalogHtml('2'))->getElementById('aa-import-catalog')?->hasAttribute('open'), 'a page link opens it');
+
+        \AdoptSource::$credentials = [['vendor' => 'csu', 'context' => '']];
+        $this->assertStringContainsString('4 entries, 0 can be added', self::text(self::catalogHtml()), 'keys: nothing for an administrator');
+    }
+
+    /** one form for the table: its token once, each entry a button posting its key */
+    public function test_listing_hasOneFormAndButtonPerKey(): void
+    {
+        self::definition();
+        self::catalog([new CatalogEntry('e1', 'Prices'), new CatalogEntry('e2', 'Wages'), new CatalogEntry('e3', 'Rents')], [new Stream('s2', 'Wages', [], 'e2')]);
+
+        $html = self::catalogHtml('1');
+        $dom  = self::dom($html);
+
+        $this->assertSame(1, $dom->getElementsByTagName('form')->length);
+        $this->assertSame(1, substr_count($html, 'name="token"'));
+        $this->assertSame(1, substr_count($html, 'name="action" value="adopt"'));
+        $buttons = iterator_to_array($dom->getElementsByTagName('button'));
+        $this->assertSame([['key', 'e1', 'Add'], ['key', 'e2', 'Update'], ['key', 'e3', 'Add']], array_map(static fn(\DOMElement $b): array => [$b->getAttribute('name'), $b->getAttribute('value'), $b->textContent], $buttons));
+        $this->assertSame(['e1', 'e2', 'e3'], self::formKeys($html));
+        $this->assertStringContainsString('type="search"', $html);
+        foreach ($dom->getElementsByTagName('form')->item(0)?->getElementsByTagName('input') ?? [] as $input) {
+            $this->assertSame('hidden', $input->getAttribute('type'), 'the filter is outside: Enter in it must not send the form');
+        }
+    }
+
+    /** a reason all the disabled entries of the page share is said once, above the table */
+    public function test_listing_commonRefusalShownOnce(): void
+    {
+        self::definition();
+        self::catalog(
+            [new CatalogEntry('e1', 'Prices'), new CatalogEntry('e2', 'Wages', [], '', 'no data for the period'), new CatalogEntry('e3', 'Rents', [], '', 'no data for the period'), new CatalogEntry('e4', 'Fees', [], '', 'no data for the period')],
+            [],
+        );
+
+        $html = self::catalogHtml();
+
+        $this->assertSame(1, substr_count($html, 'no data for the period'));
+        $this->assertSame(['Add', 'Add', 'Add', 'Add'], array_column(self::tableRows($html, 'aa-import-catalog'), 5), 'no reason beside a row');
+        $this->assertSame(['', 'disabled', 'disabled', 'disabled'], array_map(static fn(\DOMElement $b): string => $b->getAttribute('disabled'), iterator_to_array(self::dom($html)->getElementsByTagName('button'))));
+    }
+
+    /** the filter of the page tells the entries that can be added by data-addable */
+    public function test_listing_rowsCarryAddable(): void
+    {
+        self::definition();
+        self::catalog(
+            [new CatalogEntry('e1', 'Prices'), new CatalogEntry('e2', 'Wages'), new CatalogEntry('e3', 'Rents', [], '', 'empty')],
+            [new Stream('s2', 'Wages', [], 'e2')],
+        );
+        $addable = static function (string $html): array {
+            $out = [];
+            foreach (self::dom($html)->getElementsByTagName('tr') as $tr) {
+                if ($tr->hasAttribute('data-addable')) {
+                    $out[] = $tr->getAttribute('data-addable');
+                }
+            }
+            return $out;
+        };
+
+        $html = self::catalogHtml();
+        $this->assertSame(['yes', 'no', 'no'], $addable($html), 'an update and a refused entry are not to add');
+        $this->assertStringContainsString('type="checkbox"', $html);
+
+        \AdoptSource::$credentials = [['vendor' => 'csu', 'context' => '']];
+        $this->assertSame(['no', 'no', 'no'], $addable(self::catalogHtml()));
     }
 
     // ------------------------------------------------------------ adopt
@@ -652,13 +736,13 @@ final class DetailCatalogTest extends TestCase
         return $id;
     }
 
-    /** @return list<string> the keys the Add/Update forms of $html post */
+    /** @return list<string> the keys the Add/Update buttons of $html post */
     private static function formKeys(string $html): array
     {
         $keys = [];
-        foreach (self::dom($html)->getElementsByTagName('input') as $input) {
-            if ($input->getAttribute('name') === 'key') {
-                $keys[] = $input->getAttribute('value');
+        foreach (self::dom($html)->getElementsByTagName('button') as $button) {
+            if ($button->getAttribute('name') === 'key') {
+                $keys[] = $button->getAttribute('value');
             }
         }
         return $keys;

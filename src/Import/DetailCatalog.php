@@ -20,7 +20,8 @@ final class DetailCatalog
 
     public function __construct(private readonly Definition $def, private readonly string $uid) {}
 
-    /** @param mixed $page the page of the listing (?catalog_page=), from the request */
+    /** @param mixed $page the page of the listing (?catalog_page=), from the request; a link to a page
+     *                     opens the section, which is closed otherwise - the catalog may be long */
     public function html(mixed $page = null): string
     {
         $class   = Registry::sources()[$this->def->sourceType()] ?? null;
@@ -36,16 +37,22 @@ final class DetailCatalog
         if ($catalog->damaged()) {
             return self::section('<div class="aa-err">' . _m('The stored catalog cannot be read. The next check of the source lists it again.') . '</div>');
         }
+        $adopts = ($class !== null) && is_subclass_of($class, CatalogAdoptable::class);
+        // a source with keys is the superadmin's, as is every change of its import; the right to the
+        // slice the source adds to is checked on the click - the page would have to run the source to know it
+        $why    = ($this->def->manageRefusal($this->uid) === null) ? '' : self::reasonText('KEYS');
+        $diff   = $catalog->diff($streams);
         $filled = $catalog->filledAt();
         $html   = '<p>' . (($filled === null)
             ? _m('The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole.', [$count])
             : _m('Listed by the check of %1: %2 entries.', [date('Y-m-d H:i', $filled), $count])) . '</p>';
-        $html   .= $this->diffHtml($catalog, $streams);
-        $pages   = DetailPage::pagesOf($count);
-        $page    = DetailPage::pageOf($page, $pages);
-        $html   .= $this->listingHtml($catalog->entriesAt(($page - 1) * DetailPage::PAGE_SIZE, DetailPage::PAGE_SIZE), $streams, ($class !== null) && is_subclass_of($class, CatalogAdoptable::class), $page);
-        $html   .= DetailPage::pagerHtml($this->def, 'catalog_page', self::ANCHOR, _m('Pages of the catalog'), $page, $pages);
-        return self::section($html);
+        $html  .= $this->diffHtml($catalog, $diff, $streams);
+        $pages  = DetailPage::pagesOf($count);
+        $shown  = DetailPage::pageOf($page, $pages);
+        $html  .= $this->listingHtml($catalog->entriesAt(($shown - 1) * DetailPage::PAGE_SIZE, DetailPage::PAGE_SIZE), $streams, $adopts, $why, $shown);
+        $html  .= DetailPage::pagerHtml($this->def, 'catalog_page', self::ANCHOR, _m('Pages of the catalog'), $shown, $pages);
+        $counts = $adopts ? _m('%1 entries, %2 can be added', [$count, ($why === '') ? self::addable($catalog, $diff['new']) : 0]) : _m('%1 entries', [$count]);
+        return self::section($html, ' <span class="aa-import-count">' . $counts . '</span>', $page !== null);
     }
 
     // ------------------------------------------------------------ actions
@@ -93,10 +100,10 @@ final class DetailCatalog
     // ------------------------------------------------------------ parts
 
     /** the streams whose entry is gone or renamed; how many entries are new
+     *  @param array{new: list<string>, missing: list<string>, renamed: list<string>} $diff of Catalog::diff($streams)
      *  @param list<Stream> $streams */
-    private function diffHtml(Catalog $catalog, array $streams): string
+    private function diffHtml(Catalog $catalog, array $diff, array $streams): string
     {
-        $diff  = $catalog->diff($streams);
         $new   = count($diff['new']);
         $html  = match (true) {
             $new === 1 => '<p>' . _m('1 entry is new at the source - no stream comes from it.') . '</p>',
@@ -125,10 +132,19 @@ final class DetailCatalog
         return $html . '<table class="aa-import-diff"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th></tr></thead><tbody>' . $rows . '</tbody></table>';
     }
 
-    /** One page of the entries with the streams that come from each; Add or Update when the source
-     *  adopts entries - off, with the reason, for an entry the source said it would refuse.
-     *  @param list<CatalogEntry> $entries  @param list<Stream> $streams */
-    private function listingHtml(array $entries, array $streams, bool $adopts, int $page): string
+    /** how many of the new entries the source would add
+     *  @param list<string> $new catalog keys no stream comes from */
+    private static function addable(Catalog $catalog, array $new): int
+    {
+        return count(array_filter($new, static fn(string $key): bool => $catalog->entry($key)?->refusal === ''));
+    }
+
+    /** One page of the entries with the streams that come from each; when the source adopts entries,
+     *  one form with an Add or Update button per entry - off for an entry the source said it would
+     *  refuse. A reason all the disabled entries share is said once above the table, a different one
+     *  beside its entry.
+     *  @param list<CatalogEntry> $entries  @param list<Stream> $streams  @param string $why off for all entries */
+    private function listingHtml(array $entries, array $streams, bool $adopts, string $why, int $page): string
     {
         if (!$entries) {
             return '';
@@ -137,38 +153,54 @@ final class DetailCatalog
         foreach ($streams as $stream) {
             $from[$stream->catalogKey][] = $stream->key;
         }
-        // a source with keys is the superadmin's, as is every change of its import; the right to the
-        // slice the source adds to is checked on the click - the page would have to run the source to know it
-        $why   = ($this->def->manageRefusal($this->uid) === null) ? '' : self::reasonText('KEYS');
-        $heads = [_m('Key'), _m('Name'), _m('Updated'), _m('Details'), _m('Stream')];
-        $html  = ($adopts && ($why !== '')) ? '<p class="aa-import-why">' . safe($why) . '</p>' : '';
-        $html .= '<table class="aa-import-catalog"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th>' . ($adopts ? '<th scope="col">' . _m('Action') . '</th>' : '') . '</tr></thead><tbody>';
+        $off      = array_values(array_filter($entries, static fn(CatalogEntry $e): bool => ($why !== '') || ($e->refusal !== '')));
+        $reasons  = array_unique(array_map(static fn(CatalogEntry $e): string => $e->refusal, $off));
+        $common   = ((count($off) > 1) && (count($reasons) === 1)) ? (string) reset($reasons) : '';
+        $html     = '';
+        if ($adopts) {
+            $html .= ($why === '') ? '' : '<p class="aa-import-why">' . safe($why) . '</p>';
+            $html .= ($common === '') ? '' : '<p class="aa-import-why">' . _m('%1 entries on this page cannot be added or updated: %2', [count($off), safe($common)]) . '</p>';
+        }
+        $html    .= self::filterHtml($adopts && ($why === ''));
+        $heads    = [_m('Key'), _m('Name'), _m('Updated'), _m('Details'), _m('Stream')] + ($adopts ? [5 => _m('Action')] : []);
+        $labels   = array_map(static fn(string $head): string => ' data-label="' . safe($head) . '"', $heads);
+        $table    = '<table id="aa-import-catalog-list" class="aa-import-catalog"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th></tr></thead><tbody>';
         foreach ($entries as $e) {
-            $keys    = $from[$e->key] ?? [];
-            $details = implode('; ', array_map(static fn(string $name, string $value): string => safe($name) . ': ' . safe($value), array_map('strval', array_keys($e->meta)), array_map('strval', $e->meta)));
-            $html   .= '<tr><td>' . safe($e->key) . '</td><td>' . safe($e->name) . '</td><td>' . safe($e->updated) . '</td><td>' . $details . '</td>'
-                . '<td>' . ($keys ? safe(implode(', ', $keys)) : _m('new')) . '</td>'
-                . ($adopts ? '<td>' . $this->adoptFormHtml($e->key, $keys ? _m('Update') : _m('Add'), $why, $e->refusal, $page) . '</td>' : '')
+            $keys     = $from[$e->key] ?? [];
+            $disabled = ($why !== '') || ($e->refusal !== '');
+            $details  = implode('; ', array_map(static fn(string $name, string $value): string => safe($name) . ': ' . safe($value), array_map('strval', array_keys($e->meta)), array_map('strval', $e->meta)));
+            $table   .= '<tr' . ($adopts ? ' data-addable="' . ((!$disabled && !$keys) ? 'yes' : 'no') . '"' : '') . '>'
+                . '<td' . $labels[0] . '>' . safe($e->key) . '</td><td' . $labels[1] . '>' . safe($e->name) . '</td><td' . $labels[2] . '>' . safe($e->updated) . '</td><td' . $labels[3] . '>' . $details . '</td>'
+                . '<td' . $labels[4] . '>' . ($keys ? safe(implode(', ', $keys)) : _m('new')) . '</td>'
+                . ($adopts ? '<td' . $labels[5] . '>' . DetailPage::button($keys ? _m('Update') : _m('Add'), '', ['name' => 'key', 'value' => $e->key] + ($disabled ? ['disabled' => 'disabled'] : []))
+                    . (($e->refusal === $common) ? '' : DetailPage::whyHtml($e->refusal)) . '</td>' : '')
                 . '</tr>';
         }
-        return $html . '</tbody></table>';
-    }
-
-    /** @param string $why for all entries, shown once above the table  @param string $refusal of this entry, shown with it */
-    private function adoptFormHtml(string $key, string $label, string $why, string $refusal, int $page): string
-    {
-        return '<form method="post" action="' . safe(DetailPage::urlOf($this->def)) . '" class="aa-import-adopt">'
+        $table .= '</tbody></table>';
+        if (!$adopts) {
+            return $html . $table;
+        }
+        return $html . '<form method="post" action="' . safe(DetailPage::urlOf($this->def)) . '" class="aa-import-adopt">'
             . DetailPage::tokenFields($this->id(), 'adopt')
-            . DetailPage::hiddenInput('key', $key)
             . (($page > 1) ? DetailPage::hiddenInput('catalog_page', (string) $page) : '')
-            . DetailPage::button($label, ($why !== '') ? $why : $refusal, [])
-            . DetailPage::whyHtml($refusal)
-            . '</form>';
+            . $table . '</form>';
     }
 
-    private static function section(string $body): string
+    /** The filter of the listed page, for javascript/dataimport.js: hidden until the script shows it, and
+     *  outside the form - Enter in it would send the form with its first button.
+     *  @param bool $addable whether the rows say which of them can be added */
+    private static function filterHtml(bool $addable): string
     {
-        return DetailPage::section('catalog', _m('Catalog of the source'), $body, false);
+        return '<div class="aa-import-filter" data-aa-filter="aa-import-catalog-list" data-aa-shown="' . safe(_m('%1 of %2 entries on this page')) . '" hidden>'
+            . '<label>' . _m('Filter this page') . ' <input type="search" autocomplete="off"></label>'
+            . ($addable ? '<label><input type="checkbox"> ' . _m('Only entries that can be added') . '</label>' : '')
+            . '<output aria-live="polite"></output></div>';
+    }
+
+    /** @param string $counts HTML after the title */
+    private static function section(string $body, string $counts = '', bool $open = true): string
+    {
+        return DetailPage::section('catalog', _m('Catalog of the source') . $counts, $body, false, $open);
     }
 
     private function id(): string

@@ -1471,8 +1471,8 @@ final class DetailPage
     }
 
     /** $live: the script replaces the section by the one of a fresh page while a run moves */
-    public static function section(string $name, string $title, string $body, bool $live = true): string
+    public static function section(string $name, string $title, string $body, bool $live = true, bool $open = true): string
     {
-        return '<details id="aa-import-' . $name . '" class="aa-page-section" open' . ($live ? ' data-aa-live' : '') . '><summary><h2 class="aa-tab-title">' . $title . '</h2></summary>' . $body . '</details>';
+        return '<details id="aa-import-' . $name . '" class="aa-page-section"' . ($open ? ' open' : '') . ($live ? ' data-aa-live' : '') . '><summary><h2 class="aa-tab-title">' . $title . '</h2></summary>' . $body . '</details>';
     }
 }
