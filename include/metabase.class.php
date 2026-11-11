@@ -1392,13 +1392,13 @@ class AA_Metabase
 
     /** SQL of a table or column with the differences that mean nothing to AA left out: char and varchar
      *  (some MySQL versions never convert one to the other), binary and varbinary, a default of
-     *  spaces or '0', NOT NULL of a timestamp */
+     *  spaces or '0', NOT NULL of a timestamp, the display width of an integer (MySQL 8 does not show it) */
     public static function comparable(string $sql): string
     {
         return str_replace(
             ['varchar', " default '                '", " default '                                '", " default '0'", 'timestamp NOT NULL', 'varbinary'],
             ['char', '', '', '', 'timestamp', 'binary'],
-            $sql,
+            preg_replace('/\b(tinyint|smallint|mediumint|int|bigint)\(\d+\)/', '$1', $sql),
         );
     }
 

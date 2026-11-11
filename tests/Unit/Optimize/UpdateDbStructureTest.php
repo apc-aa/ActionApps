@@ -114,31 +114,101 @@ namespace Tests\Unit\Optimize {
             self::assertSame(['DROP PRIMARY KEY', 'ADD PRIMARY KEY (`id`)'], UpdateDbStructure::changes($template, $live)['alter']);
         }
 
-        public static function widerColumns(): array
+        public static function narrowingTypes(): array
         {
             return [
-                'longtext for mediumtext' => ['mediumtext', 'longtext'],
-                'varbinary(32) for 16'    => ['varbinary(16)', 'varbinary(32)'],
-                'mediumtext for varchar'  => ['varbinary(255)', 'mediumtext'],
+                'longtext for mediumtext'     => ['mediumtext', 'longtext'],
+                'varbinary(32) for 16'        => ['varbinary(16)', 'varbinary(32)'],
+                'mediumtext for varchar'      => ['varbinary(255)', 'mediumtext'],
+                'bigint for int'              => ['int(11)', 'bigint(20)'],
+                'unsigned for signed'         => ['int(11)', 'int(10) unsigned'],
+                'signed for unsigned'         => ['int(10) unsigned', 'int(11)'],
+                'double for float'            => ['float', 'double'],
+                'more decimals'               => ['decimal(10,2)', 'decimal(10,4)'],
+                'a text for a number'         => ['int(11)', 'varchar(20)'],
+                'a number for a text'         => ['varchar(255)', 'int(11)'],
             ];
         }
 
-        #[DataProvider('widerColumns')]
-        public function test_changes_liveColumnWider_keptAndListed(string $template_type, string $live_type): void
+        #[DataProvider('narrowingTypes')]
+        public function test_changes_templateWouldNarrow_keptAndListed(string $template_type, string $live_type): void
         {
-            // a narrower column would cut the values (strict mode refuses it); a password hash or a long condition must stay
-            $template = self::content(['text' => ['text', $template_type, true, 'MUL', null, '', '']]);
-            $changes  = UpdateDbStructure::changes($template, self::content(['text' => ['text', $live_type, true, 'MUL', null, '', '']]));
+            // a narrower column would cut or change the values; a password hash or a long condition must stay
+            $template = self::content(['text' => ['text', $template_type, true, '', null, '', '']], ['text' => false]);
+            $changes  = UpdateDbStructure::changes($template, self::content(['text' => ['text', $live_type, true, '', null, '', '']], ['text' => false]));
 
             self::assertSame([], $changes['alter']);
-            self::assertSame(["text $live_type"], $changes['wider']);
+            self::assertSame(["text $live_type (template $template_type)"], $changes['kept']);
         }
 
-        public function test_changes_liveColumnNarrower_widened(): void
+        public static function wideningTypes(): array
         {
-            $changes = UpdateDbStructure::changes(self::content(), self::content(['text' => ['text', 'text', true, 'MUL', null, '', '']]));
+            return [
+                'longtext for text'             => ['longtext', 'text', 'MODIFY COLUMN `text` longtext'],
+                'bigint for int'                => ['bigint(20)', 'int(11)', 'MODIFY COLUMN `text` bigint(20)'],
+                'int for smallint unsigned'     => ['int(11)', 'smallint(5) unsigned', 'MODIFY COLUMN `text` int(11)'],
+                'bigint unsigned for int unsigned' => ['bigint(20) unsigned', 'int(10) unsigned', 'MODIFY COLUMN `text` bigint(20) unsigned'],
+                'a text for a date'             => ['varchar(20)', 'date', 'MODIFY COLUMN `text` varchar(20)'],
+            ];
+        }
 
-            self::assertSame(['MODIFY COLUMN `text` longtext'], $changes['alter']);
+        #[DataProvider('wideningTypes')]
+        public function test_changes_templateHoldsTheValues_changed(string $template_type, string $live_type, string $modify): void
+        {
+            $template = self::content(['text' => ['text', $template_type, true, '', null, '', '']], ['text' => false]);
+            $changes  = UpdateDbStructure::changes($template, self::content(['text' => ['text', $live_type, true, '', null, '', '']], ['text' => false]));
+
+            self::assertSame([$modify], $changes['alter']);
+            self::assertSame([], $changes['kept']);
+        }
+
+        public function test_changes_integerDisplayWidthOnly_noChange(): void
+        {
+            // MySQL 8 does not show the width, MariaDB does - it means nothing for the values
+            $template = self::content(['text' => ['text', 'int(11)', true, '', null, '', '']], ['text' => false]);
+
+            self::assertSame([], UpdateDbStructure::changes($template, self::content(['text' => ['text', 'int', true, '', null, '', '']], ['text' => false]))['alter']);
+        }
+
+        public function test_changes_changedColumn_keepsItsCollationAndComment(): void
+        {
+            // aadb tables have the cp1250 default and utf8mb4_czech_ci columns - MODIFY without COLLATE would convert the column
+            $live = self::content(['text' => ['text', 'text', true, 'MUL', null, '', "it's"]]);
+
+            self::assertSame(
+                ["MODIFY COLUMN `text` longtext COLLATE utf8mb4_czech_ci COMMENT 'it''s'"],
+                UpdateDbStructure::changes(self::content(), $live, ['text' => 'utf8mb4_czech_ci'])['alter'],
+            );
+        }
+
+        public function test_changes_binaryColumn_noCollation(): void
+        {
+            $live = self::content(['field_id' => ['field_id', 'varbinary(16)', true, '', null, '', '']]);
+
+            self::assertSame(
+                ["MODIFY COLUMN `field_id` varbinary(16) NOT NULL default '                '"],
+                UpdateDbStructure::changes(self::content(), $live, ['field_id' => 'utf8mb4_general_ci'])['alter'],
+            );
+        }
+
+        public function test_changes_indexOverAKeptColumn_leftAndListed(): void
+        {
+            // the template index has no prefix for a TEXT column - adding it would fail (MySQL error 1170)
+            $template = self::content(['text' => ['text', 'varchar(255)', true, 'MUL', null, '', '']], ['text' => ['t' => 'content', 'n' => 'text', 's' => 'I', 'c' => [1 => 'text']]]);
+            $live     = self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']], ['text' => ['t' => 'content', 'n' => 'text', 's' => 'I', 'c' => [1 => ['text', '10']]]]);
+            $changes  = UpdateDbStructure::changes($template, $live);
+
+            self::assertSame([], $changes['alter']);
+            self::assertSame(['text mediumtext (template varchar(255))', 'index text'], $changes['kept']);
+        }
+
+        public function test_changes_templateIndexUnderAnotherName_renamed(): void
+        {
+            $live    = self::content([], ['item_id' => false, 'item_field' => ['t' => 'content', 'n' => 'item_field', 's' => 'I', 'c' => [1 => 'item_id', 2 => 'field_id']]]);
+            $changes = UpdateDbStructure::changes(self::content(), $live);
+
+            self::assertSame(['RENAME INDEX `item_field` TO `item_id`'], $changes['alter']);
+            self::assertSame([], $changes['extra']);
         }
 
         public function test_changes_columnAndIndexTheTemplateLacks_reportedNotDropped(): void
@@ -156,6 +226,11 @@ namespace Tests\Unit\Optimize {
         {
             return new class ($live) extends UpdateDbStructure {
                 public function __construct(private array $live) {}
+
+                protected function liveCollations(): array
+                {
+                    return [];
+                }
 
                 protected function templateMetabase(): AA_Metabase
                 {
@@ -179,15 +254,15 @@ namespace Tests\Unit\Optimize {
         public function test_repair_nullableIdsOfABigTable_oneAlterWithoutLockInStrictModeThenModeBack(): void
         {
             // InnoDB makes the column NOT NULL in place and lets the e-shop write meanwhile
-            self::rows(8500000);
+            self::tableSize(900 * 1048576);
             $live = self::content(['item_id' => ['item_id', 'varbinary(16)', true, 'MUL', null, '', '']]);
 
             self::assertFalse(self::optimize(['content' => $live, 'cron' => self::cron()])->test());
             self::assertTrue(self::optimize(['content' => $live, 'cron' => self::cron()])->repair());
             self::assertSame([
-                "SET @aa_sql_mode = @@SESSION.sql_mode, SESSION sql_mode = 'STRICT_ALL_TABLES'",
+                "SET @aa_sql_mode = @@SESSION.sql_mode, @aa_lock_wait = @@SESSION.lock_wait_timeout, SESSION sql_mode = 'STRICT_ALL_TABLES', SESSION lock_wait_timeout = 5",
                 "ALTER TABLE `content` MODIFY COLUMN `item_id` varbinary(16) NOT NULL default '                ', LOCK=NONE",
-                'SET SESSION sql_mode = @aa_sql_mode',
+                'SET SESSION sql_mode = @aa_sql_mode, SESSION lock_wait_timeout = @aa_lock_wait',
             ], array_values(array_filter(RecordingDb::$log, static fn($s) => !str_contains($s, 'information_schema'))));
         }
 
@@ -202,10 +277,10 @@ namespace Tests\Unit\Optimize {
             self::assertStringNotContainsString('`note`', implode("\n", RecordingDb::$log));
         }
 
-        /** the content table as SHOW reports its rows */
-        private static function rows(int $rows): void
+        /** the size of the content table (data and indexes) as information_schema reports it */
+        private static function tableSize(int $bytes): void
         {
-            RecordingDb::$answer = static fn(string $sql): array => str_contains($sql, 'information_schema.TABLES') ? [['TABLE_ROWS' => $rows]] : [];
+            RecordingDb::$answer = static fn(string $sql): array => str_contains($sql, 'information_schema.TABLES') ? [['size' => $bytes]] : [];
         }
 
         private static function alterLog(): array
@@ -216,20 +291,35 @@ namespace Tests\Unit\Optimize {
         public function test_repair_bigTableNeedingALock_listedNotRun(): void
         {
             // another column type cannot be changed while writes go on - on 8 million rows that stops the e-shop for minutes
-            RecordingDb::$fail_on = 'ALTER TABLE `content`';
-            self::rows(8500000);
+            RecordingDb::$fail_on    = 'ALTER TABLE `content`';
+            RecordingDb::$fail_error = 'LOCK=NONE is not supported';
+            self::tableSize(900 * 1048576);
             $optimize = self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()]);
 
             self::assertFalse($optimize->repair());
             self::assertSame(1, RecordingDb::count('SET SESSION sql_mode = @aa_sql_mode'));
             self::assertSame(1, RecordingDb::count('SET @aa_sql_mode'));
-            self::assertStringContainsString('Run it when the traffic is low: ALTER TABLE `content` MODIFY COLUMN `text` longtext;', $optimize->report());
+            self::assertStringContainsString('(900 MB) not changed: LOCK=NONE is not supported', $optimize->report());
+            self::assertStringContainsString("Run it when the traffic is low: SET SESSION sql_mode = &apos;STRICT_ALL_TABLES&apos;; ALTER TABLE `content` MODIFY COLUMN `text` longtext;", $optimize->report());
+        }
+
+        public function test_repair_tableInUse_notChangedTryLater(): void
+        {
+            // a long query holds the table; the ALTER gives up after seconds instead of stopping the queries behind it
+            RecordingDb::$fail_on    = 'ALTER TABLE `content`';
+            RecordingDb::$fail_error = 'SQLSTATE[HY000]: General error: 1205 Lock wait timeout exceeded; try restarting transaction';
+            self::tableSize(900 * 1048576);
+            $optimize = self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()]);
+
+            self::assertFalse($optimize->repair());
+            self::assertStringContainsString('content not changed - other queries are using it', $optimize->report());
+            self::assertStringNotContainsString('Run it when the traffic is low', $optimize->report());
         }
 
         public function test_repair_smallTable_runWithoutAskingForNoLock(): void
         {
             // its lock lasts seconds; a refused LOCK=NONE would only add a database error to the log
-            self::rows(1145);
+            self::tableSize(4 * 1048576);
 
             self::assertTrue(self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()])->repair());
             self::assertSame(['ALTER TABLE `content` MODIFY COLUMN `text` longtext'], self::alterLog());
@@ -239,11 +329,11 @@ namespace Tests\Unit\Optimize {
         {
             // a NULL in a column that becomes NOT NULL stops the ALTER in strict mode; the table stays as it was
             RecordingDb::$fail_on = 'ALTER TABLE `content`';
-            self::rows(10);
+            self::tableSize(16384);
             $optimize = self::optimize(['content' => self::content(['item_id' => ['item_id', 'varbinary(16)', true, 'MUL', null, '', '']]), 'cron' => self::cron()]);
 
             self::assertFalse($optimize->repair());
-            self::assertSame('SET SESSION sql_mode = @aa_sql_mode', end(RecordingDb::$log));
+            self::assertSame('SET SESSION sql_mode = @aa_sql_mode, SESSION lock_wait_timeout = @aa_lock_wait', end(RecordingDb::$log));
             self::assertStringContainsString('content not changed - the database refused the change', $optimize->report());
         }
 
@@ -260,9 +350,25 @@ namespace Tests\Unit\Optimize {
             self::assertSame([], RecordingDb::$log);
         }
 
-        public function test_test_tableTheTemplateLacks_notOk(): void
+        public function test_test_onlyWhatRepairLeaves_okAndListed(): void
         {
-            self::assertFalse(self::optimize(['content' => self::content(), 'cron' => self::cron(), 'mine' => self::cron()])->test());
+            // a table, a column or an index of the site, or a wider column, is no reason to run the repair again and again
+            $live     = self::content(['note' => ['note', 'text', true, '', null, '', ''], 'text' => ['text', 'longtext', true, 'MUL', null, '', '']]);
+            $optimize = self::optimize(['content' => $live, 'cron' => self::cron(), 'mine' => self::cron()]);
+
+            self::assertTrue($optimize->test());
+            self::assertStringContainsString('mine is not in the template', $optimize->report());
+            self::assertStringContainsString('the template does not know - left as they are; delete them manually, if nothing uses them: note', $optimize->report());
+        }
+
+        public function test_repair_afterTest_onePlanAndOneListing(): void
+        {
+            $optimize = self::optimize(['content' => self::content(['note' => ['note', 'text', true, '', null, '', '']]), 'cron' => self::cron()]);
+
+            $optimize->test();
+            $optimize->repair();
+
+            self::assertSame(1, substr_count($optimize->report(), 'delete them manually'));
         }
 
         public function test_repair_justPrint_changesNothing(): void
