@@ -120,30 +120,20 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
     /** A big table is changed only without locking it (LOCK=NONE), as InnoDB can do it for indexes, NOT NULL,
      *  a new column or a longer varchar - another type of a column or a MyISAM table would stop the writes for
      *  minutes, so the server refuses and the ALTER is listed for a manual run when the traffic is low. A small
-     *  table is changed in any way - its lock lasts seconds. A failed ALTER leaves the table as it was.
-     *  A change the data do not fit (a too long text, a NULL for NOT NULL, a duplicate for a unique key) is
-     *  left out and the rest of the table is changed. */
+     *  table is changed in any way - its lock lasts seconds. A failed ALTER leaves the table as it was. */
     private function alter(string $tablename, array $clauses): bool
     {
         $table = $this->liveTables()[$tablename] ?? [];
         $size  = (int) ($table['size'] ?? 0);
-        if ((($table['ENGINE'] ?? '') === 'InnoDB') && in_array($table['ROW_FORMAT'] ?? '', ['Compact', 'Redundant'], true)) {
-            $clauses[] = 'ROW_FORMAT=DYNAMIC';   // strict InnoDB refuses to rebuild an old table whose row could exceed 8 kB
+        $lock  = ($size > self::LOCKED_SIZE) ? ', LOCK=NONE' : '';
+        $sql   = "ALTER TABLE `$tablename` " . implode(', ', $clauses);
+        $error = $this->strictly($sql . $lock);
+        if (str_contains($error, ': 1118 ') && (($table['ENGINE'] ?? '') === 'InnoDB') && in_array($table['ROW_FORMAT'] ?? '', ['Compact', 'Redundant'], true)) {
+            // strict InnoDB refuses to rebuild an old table whose row could exceed 8 kB (Row size too large)
+            $sql  .= ', ROW_FORMAT=DYNAMIC';
+            $error = $this->strictly($sql . $lock);
         }
-        while (true) {
-            $sql   = "ALTER TABLE `$tablename` " . implode(', ', $clauses);
-            $error = $this->strictly(($size > self::LOCKED_SIZE) ? "$sql, LOCK=NONE" : $sql);
-            $rest  = ($error === '') ? $clauses : self::withoutRefused($clauses, $error);
-            if ($rest === $clauses) {
-                break;
-            }
-            $this->message(_m('Table %1 keeps %2 as it is - the data do not fit the template: %3', [safe($tablename), safe(implode(', ', array_diff($clauses, $rest))), safe($error)]));
-            if (!array_diff($rest, ['ROW_FORMAT=DYNAMIC'])) {
-                return true;
-            }
-            $clauses = $rest;
-        }
-        if (($size <= self::LOCKED_SIZE) || ($error === '') || self::busy($error)) {
+        if (($lock === '') || ($error === '') || self::busy($error)) {
             return $this->result($tablename, $error);
         }
         $this->message(_m('Table %1 (%2 MB) not changed: %3. Run it when the traffic is low: %4', [safe($tablename), round($size / 1048576), safe($error), safe("SET SESSION sql_mode = 'STRICT_ALL_TABLES'; $sql;")]));
@@ -153,23 +143,6 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
     private function run(string $tablename, string $sql): bool
     {
         return $this->result($tablename, $this->strictly($sql));
-    }
-
-    /** the clauses without the one the database refused for the data: the change of the column the error names,
-     *  or both the drop and the add of the unique key it names
-     * @param string[] $clauses
-     * @return string[]
-     */
-    private static function withoutRefused(array $clauses, string $error): array
-    {
-        if (preg_match("/ for column (?:`[^`]*`\\.`[^`]*`\\.)?[`']([^`']+)[`']/", $error, $m)) {
-            $refused = '/^MODIFY COLUMN `' . preg_quote($m[1], '/') . '` /';
-        } elseif (preg_match("/Duplicate entry .* for key '([^']+)'/s", $error, $m)) {
-            $refused = ($m[1] === 'PRIMARY') ? '/^(DROP|ADD) PRIMARY KEY/' : '/^(DROP INDEX `' . preg_quote($m[1], '/') . '`$|ADD (UNIQUE )?KEY ' . preg_quote($m[1], '/') . ' \\()/';
-        } else {
-            return $clauses;
-        }
-        return array_values(array_filter($clauses, static fn($clause) => !preg_match($refused, $clause)));
     }
 
     private function result(string $tablename, string $error): bool
@@ -227,7 +200,10 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         foreach ($template->tables as $tablename => $table) {
             $current = $live->tables[$tablename] ?? null;
             $myisam  = ($tables[$tablename]['ENGINE'] ?? '') === 'MyISAM';
-            $changes = $current ? self::changes($table, $current, $collations[$tablename] ?? [], $myisam) : ['alter' => [], 'extra' => [], 'kept' => []];
+            $changes = $current ? self::changes($table, $current, $collations[$tablename] ?? [], $myisam) : ['alter' => [], 'extra' => [], 'kept' => [], 'checks' => []];
+            if ($changes['checks'] && ((int) ($tables[$tablename]['size'] ?? 0) <= self::LOCKED_SIZE)) {
+                $changes = self::withoutMisfits($changes, static fn(string $sql): bool => (bool) DB_AA::select1('misfit', $sql));
+            }
             $this->plan[$tablename] = [
                 'action'   => $current ? ($changes['alter'] ? 'alter' : 'none') : 'create',
                 'alter'    => $changes['alter'],
@@ -274,25 +250,56 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         return $collations;
     }
 
+    /** The changes the data of the table do not fit, moved from 'alter' to 'kept' - the server would refuse the
+     *  whole ALTER in strict mode. Checked on small tables only: on a big one the scan would take minutes.
+     * @param array{alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string}>} $changes
+     * @param callable(string): bool $misfits does the query find a row
+     * @return array{alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string}>}
+     */
+    private static function withoutMisfits(array $changes, callable $misfits): array
+    {
+        foreach ($changes['checks'] as $clause => $check) {
+            if ($misfits($check['sql'])) {
+                $changes['alter']  = array_values(array_diff($changes['alter'], [$clause, $check['with']]));
+                $changes['kept'][] = $check['kept'];
+            }
+        }
+        return $changes;
+    }
+
     /** The ALTER TABLE clauses that bring the live table to the template. Never changed: the live columns and
      *  indexes the template does not know (a column may hold data, an index may serve a slow query of the
      *  site), a column the template would narrow (a shorter text, a smaller number, signed for unsigned, a
      *  number for a text) and the template indexes over such a column. A changed column keeps its collation
      *  and comment; an index the template has under another name is renamed - never kept twice. The order of the columns
      *  stays: AA names the columns it writes, and moving one would rebuild the table for nothing.
+     *  'checks' are the queries finding the rows a clause would not fit: a NULL for NOT NULL, a text longer
+     *  than its new binary column, a duplicate in a new unique key ('with' = the drop of the key it replaces).
      * @param array<string, string> $collations live column => collation
      * @param bool $myisam the live table is MyISAM - its index on a long text is a prefix
-     * @return array{alter: string[], extra: string[], kept: string[]}
+     * @return array{alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string}>}
      */
     public static function changes(AA_MbT $template, AA_MbT $live, array $collations = [], bool $myisam = false): array
     {
-        $modify = $add = $kept = $kept_columns = [];
+        $modify = $add = $kept = $kept_columns = $checks = [];
+        $from   = "SELECT 1 AS misfit FROM `{$template->t}`";
         foreach ($template->c as $name => $column) {
             if (!isset($live->c[$name])) {
                 $add[] = 'ADD COLUMN ' . trim($column->getCreateSql());
             } elseif (AA_Metabase::comparable($column->getCreateSql()) !== AA_Metabase::comparable($live->c[$name]->getCreateSql())) {
                 if (self::holds($column->c[1], $live->c[$name]->c[1])) {
-                    $modify[] = 'MODIFY COLUMN ' . self::definition($column, $live->c[$name], $collations[$name] ?? '');
+                    $clause   = 'MODIFY COLUMN ' . self::definition($column, $live->c[$name], $collations[$name] ?? '');
+                    $modify[] = $clause;
+                    $misfit   = [];
+                    if ($live->c[$name]->c[2] && !$column->c[2]) {
+                        $misfit[] = "`$name` IS NULL";
+                    }
+                    if (($collations[$name] ?? '') && preg_match('/^(?:var)?binary\((\d+)\)/i', $column->c[1], $m)) {
+                        $misfit[] = "LENGTH(`$name`) > {$m[1]}";   // the binary column takes the bytes of the text
+                    }
+                    if ($misfit) {
+                        $checks[$clause] = ['sql' => "$from WHERE " . implode(' OR ', $misfit), 'kept' => "$name {$live->c[$name]->c[1]} (template {$column->c[1]}) - the data do not fit", 'with' => ''];
+                    }
                 } else {
                     $kept[]         = "$name {$live->c[$name]->c[1]} (template {$column->c[1]})";
                     $kept_columns[] = $name;
@@ -317,16 +324,24 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
                 $renamed[] = "RENAME INDEX `$same` TO `$name`";
                 continue;
             }
-            if ($current) {
-                $drop[] = ($current->s === 'P') ? 'DROP PRIMARY KEY' : "DROP INDEX `$name`";
+            $dropped = $current ? (($current->s === 'P') ? 'DROP PRIMARY KEY' : "DROP INDEX `$name`") : '';
+            if ($dropped) {
+                $drop[] = $dropped;
             }
-            $add_index[] = 'ADD ' . $index->getCreateSql();
+            $add_index[] = $clause = 'ADD ' . $index->getCreateSql();
+            if ($index->s !== 'I') {
+                // a unique key takes any number of rows with a NULL, a primary key none
+                $parts = array_map(static fn($col) => is_array($col) ? "LEFT(`{$col[0]}`, {$col[1]})" : "`$col`", $index->c);
+                $nulls = implode(' OR ', array_map(static fn($col) => "`$col` IS NULL", self::indexColumns($index)));
+                $sql   = ($index->s === 'P') ? "$from GROUP BY " . implode(', ', $parts) . " HAVING COUNT(*) > 1 OR MAX($nulls)" : "$from WHERE NOT ($nulls) GROUP BY " . implode(', ', $parts) . ' HAVING COUNT(*) > 1';
+                $checks[$clause] = ['sql' => $sql, 'kept' => "index $name - duplicate values", 'with' => $dropped];
+            }
         }
         $extra = array_values(array_diff(array_keys($live->c), array_keys($template->c)));
         foreach (array_keys($unknown) as $name) {
             $extra[] = "index $name";
         }
-        return ['alter' => array_merge($drop, $modify, $add, $renamed, $add_index), 'extra' => $extra, 'kept' => $kept];
+        return ['alter' => array_merge($drop, $modify, $add, $renamed, $add_index), 'extra' => $extra, 'kept' => $kept, 'checks' => $checks];
     }
 
     /** The template column with the live collation and comment - the template names neither, and MODIFY
@@ -397,13 +412,16 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
      */
     private static function myisamIndex(AA_MbI $index, AA_MbT $template, array $collations): AA_MbI
     {
+        if ($index->s !== 'I') {
+            return $index;   // a longer unique key becomes a HASH key, a primary one is refused
+        }
         $wanted = clone $index;
         foreach ($wanted->c as $position => $column) {
             if (is_array($column) || !isset($template->c[$column])) {
                 continue;
             }
             [$kind, $length] = self::kind($template->c[$column]->c[1]);
-            $bytes = match (strtok($collations[$column] ?? '', '_')) {
+            $bytes = match (explode('_', $collations[$column] ?? '', 2)[0]) {
                 'utf8mb4'         => 4,
                 'utf8mb3', 'utf8' => 3,
                 default           => 1,

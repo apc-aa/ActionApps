@@ -225,10 +225,10 @@ namespace Tests\Unit\Optimize {
         }
 
         /** UpdateDbStructure over these live tables (name => table) */
-        private static function optimize(array $live): UpdateDbStructure
+        private static function optimize(array $live, ?AA_MbT $content = null): UpdateDbStructure
         {
-            return new class ($live) extends UpdateDbStructure {
-                public function __construct(private array $live) {}
+            return new class ($live, $content) extends UpdateDbStructure {
+                public function __construct(private array $live, private ?AA_MbT $content) {}
 
                 protected function liveCollations(): array
                 {
@@ -239,7 +239,7 @@ namespace Tests\Unit\Optimize {
                 {
                     $template = new AA_Metabase();
                     $template->tables = [
-                        'content' => AA_MbT::fromArray(['t' => 'content', 'k' => [], 'i' => UpdateDbStructureTest::INDEXES, 'c' => UpdateDbStructureTest::COLUMNS, 'f' => null]),
+                        'content' => $this->content ?? AA_MbT::fromArray(['t' => 'content', 'k' => [], 'i' => UpdateDbStructureTest::INDEXES, 'c' => UpdateDbStructureTest::COLUMNS, 'f' => null]),
                         'cron'    => AA_MbT::fromArray(['t' => 'cron', 'k' => [], 'i' => [], 'c' => ['id' => ['id', 'bigint(20)', false, '', null, '', '']], 'f' => null]),
                     ];
                     return $template;
@@ -256,7 +256,8 @@ namespace Tests\Unit\Optimize {
 
         public function test_repair_nullableIdsOfABigTable_oneAlterWithoutLockInStrictModeThenModeBack(): void
         {
-            // InnoDB makes the column NOT NULL in place and lets the e-shop write meanwhile
+            // InnoDB makes the column NOT NULL in place and lets the e-shop write meanwhile; no scan for a NULL
+            // before - on a big table it takes as long as the ALTER, which stops at a NULL itself
             self::tableSize(900 * 1048576);
             $live = self::content(['item_id' => ['item_id', 'varbinary(16)', true, 'MUL', null, '', '']]);
 
@@ -359,51 +360,93 @@ namespace Tests\Unit\Optimize {
             self::assertSame([], array_filter(RecordingDb::$log, static fn($s) => !str_contains($s, 'information_schema')));
         }
 
-        public function test_repair_oldCompactTable_rebuiltAsDynamic(): void
+        public function test_repair_oldCompactTableRefused_rebuiltAsDynamic(): void
         {
             // strict InnoDB refuses to rebuild a COMPACT table whose row could exceed 8 kB (sasa field, slice, view)
             self::liveTable('InnoDB', 'Compact');
+            RecordingDb::$fail_if = static fn(string $sql): ?string => (str_starts_with($sql, 'ALTER') && !str_contains($sql, 'ROW_FORMAT')) ? 'SQLSTATE[42000]: Syntax error or access violation: 1118 Row size too large. The maximum row size for the used table type, not counting BLOBs, is 8126.' : null;
 
             self::assertTrue(self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()])->repair());
             self::assertSame(['ALTER TABLE `content` MODIFY COLUMN `text` longtext, ROW_FORMAT=DYNAMIC'], self::alterLog());
         }
 
-        public function test_repair_dataDoNotFitAColumn_columnKeptRestChanged(): void
+        public function test_repair_oldCompactTable_notRebuiltForAnIndex(): void
         {
-            // a NULL in a column that becomes NOT NULL must not keep the new index from being added
-            self::liveTable('InnoDB', 'Dynamic');
-            RecordingDb::$fail_if = static fn(string $sql): ?string => str_contains($sql, 'MODIFY COLUMN `item_id`') ? "SQLSTATE[01000]: Warning: 1265 Data truncated for column 'item_id' at row 7" : null;
-            $live     = self::content(['item_id' => ['item_id', 'varbinary(16)', true, 'MUL', null, '', '']], ['item_id' => null]);
-            $optimize = self::optimize(['content' => $live, 'cron' => self::cron()]);
+            // an index is added without copying the rows - ROW_FORMAT would rebuild the whole table
+            self::liveTable('InnoDB', 'Compact');
 
-            self::assertTrue($optimize->repair());
+            self::assertTrue(self::optimize(['content' => self::content([], ['item_id' => null]), 'cron' => self::cron()])->repair());
             self::assertSame(['ALTER TABLE `content` ADD KEY item_id (`item_id`,`field_id`)'], self::alterLog());
-            self::assertStringContainsString('content keeps MODIFY COLUMN `item_id` varbinary(16) NOT NULL default &apos;                &apos; as it is - the data do not fit the template', $optimize->report());
         }
 
-        /** @return array<string, array{string, string[]}> */
-        public static function refusals(): array
+        /** @return array<string, array{AA_MbT, AA_MbT, array<string, string>, array<string, array{sql: string, kept: string, with: string}>}> */
+        public static function dataChecks(): array
         {
+            $unique = ['item_id' => ['t' => 'content', 'n' => 'item_id', 's' => 'U', 'c' => [1 => 'item_id', 2 => ['text', '12']]]];
             return [
-                'multibyte text'    => ["SQLSTATE[22001]: String data, right truncated: 1406 Data too long for column 'text' at row 3", ['ADD KEY item_id (`item_id`,`field_id`)']],
-                'utf8 in latin1'    => ["SQLSTATE[22007]: 1366 Incorrect string value: '\\xC5\\x99' for column `aadb`.`content`.`text` at row 3", ['ADD KEY item_id (`item_id`,`field_id`)']],
-                'duplicate in key'  => ["SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'ab-1' for key 'item_id'", ['MODIFY COLUMN `text` longtext']],
-                'not about data'    => ['SQLSTATE[HY000]: General error: 1205 Lock wait timeout exceeded', []],
+                'NULL for NOT NULL' => [self::content(), self::content(['item_id' => ['item_id', 'varbinary(16)', true, 'MUL', null, '', '']]), [], [
+                    "MODIFY COLUMN `item_id` varbinary(16) NOT NULL default '                '" => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE `item_id` IS NULL', 'kept' => 'item_id varbinary(16) (template varbinary(16)) - the data do not fit', 'with' => ''],
+                ]],
+                'text into binary' => [self::content(), self::content(['field_id' => ['field_id', 'varchar(16)', false, '', '                ', '', '']]), ['field_id' => 'utf8mb4_czech_ci'], [
+                    "MODIFY COLUMN `field_id` varbinary(16) NOT NULL default '                '" => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE LENGTH(`field_id`) > 16', 'kept' => 'field_id varchar(16) (template varbinary(16)) - the data do not fit', 'with' => ''],
+                ]],
+                'binary widened'   => [self::content(), self::content(['field_id' => ['field_id', 'varbinary(8)', false, '', '                ', '', '']]), [], []],
+                'new key'          => [self::content(), self::content([], ['item_id' => null]), [], []],
+                'unique key'       => [self::content([], $unique), self::content(), [], [
+                    'ADD UNIQUE KEY item_id (`item_id`,`text`(12))' => ['sql' => 'SELECT 1 AS misfit FROM `content` WHERE NOT (`item_id` IS NULL OR `text` IS NULL) GROUP BY `item_id`, LEFT(`text`, 12) HAVING COUNT(*) > 1', 'kept' => 'index item_id - duplicate values', 'with' => 'DROP INDEX `item_id`'],
+                ]],
+                'primary key'      => [self::content([], ['PRIMARY' => ['t' => 'content', 'n' => 'PRIMARY', 's' => 'P', 'c' => [1 => 'item_id', 2 => 'field_id']]]), self::content(), [], [
+                    'ADD PRIMARY KEY (`item_id`,`field_id`)' => ['sql' => 'SELECT 1 AS misfit FROM `content` GROUP BY `item_id`, `field_id` HAVING COUNT(*) > 1 OR MAX(`item_id` IS NULL OR `field_id` IS NULL)', 'kept' => 'index PRIMARY - duplicate values', 'with' => ''],
+                ]],
+                'unique renamed'   => [self::content([], $unique), self::content([], ['item_id' => null, 'old' => ['n' => 'old'] + $unique['item_id']]), [], []],
             ];
         }
 
-        /** @param string[] $passed */
-        #[DataProvider('refusals')]
-        public function test_repair_refusedForTheData_onlyThatClauseLeftOut(string $error, array $passed): void
+        /** @param array<string, string> $collations */
+        #[DataProvider('dataChecks')]
+        public function test_changes_clauseTheDataMayNotFit_checkQuery(AA_MbT $template, AA_MbT $live, array $collations, array $checks): void
         {
-            self::liveTable('InnoDB', 'Dynamic');
-            // the first ALTER with both clauses fails, one clause alone passes
-            RecordingDb::$fail_if = static fn(string $sql): ?string => (str_starts_with($sql, 'ALTER') && str_contains($sql, ', ')) ? $error : null;
-            $live = self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']], ['item_id' => null]);
+            // strict mode stops the whole ALTER at one such row - the query finds it before
+            self::assertSame($checks, UpdateDbStructure::changes($template, $live, $collations)['checks']);
+        }
 
-            self::optimize(['content' => $live, 'cron' => self::cron()])->repair();
+        /** small tables answer: this check query finds a row */
+        private static function misfitFor(string $part): void
+        {
+            RecordingDb::$answer = static fn(string $sql): array => match (true) {
+                str_contains($sql, 'information_schema.TABLES') => [['TABLE_NAME' => 'content', 'ENGINE' => 'InnoDB', 'ROW_FORMAT' => 'Dynamic', 'size' => 16384]],
+                str_contains($sql, 'AS misfit') && str_contains($sql, $part) => [['misfit' => '1']],
+                default => [],
+            };
+        }
 
-            self::assertSame(array_map(static fn($clause) => "ALTER TABLE `content` $clause", $passed), self::alterLog());
+        public function test_repairAndTest_dataDoNotFitAColumn_columnKeptRestChanged(): void
+        {
+            // a NULL in a column that becomes NOT NULL must not keep the new index from being added
+            self::misfitFor('`item_id` IS NULL');
+            $item_nullable = ['item_id' => ['item_id', 'varbinary(16)', true, 'MUL', null, '', '']];
+            $optimize      = self::optimize(['content' => self::content($item_nullable, ['item_id' => null]), 'cron' => self::cron()]);
+
+            self::assertTrue($optimize->repair());
+            self::assertSame(['ALTER TABLE `content` ADD KEY item_id (`item_id`,`field_id`)'], self::alterLog());
+            self::assertStringContainsString('item_id varbinary(16) (template varbinary(16)) - the data do not fit', $optimize->report());
+            // what the repair left is no reason to run it again and again
+            self::assertTrue(self::optimize(['content' => self::content($item_nullable), 'cron' => self::cron()])->test());
+        }
+
+        public function test_repair_duplicatesForANewUniqueKey_oldKeyStays(): void
+        {
+            $unique = self::content([], ['item_id' => ['t' => 'content', 'n' => 'item_id', 's' => 'U', 'c' => [1 => 'item_id', 2 => 'field_id']]]);
+            self::misfitFor('HAVING COUNT(*) > 1');
+            $optimize = self::optimize(['content' => self::content(), 'cron' => self::cron()], $unique);
+
+            self::assertTrue($optimize->repair());
+            self::assertSame([], self::alterLog());
+            self::assertStringContainsString('index item_id - duplicate values', $optimize->report());
+
+            self::misfitFor('nothing');
+            self::assertTrue(self::optimize(['content' => self::content(), 'cron' => self::cron()], $unique)->repair());
+            self::assertSame(['ALTER TABLE `content` DROP INDEX `item_id`, ADD UNIQUE KEY item_id (`item_id`,`field_id`)'], self::alterLog());
         }
 
         public function test_changes_myisamPrefixOfALongText_sameIndex(): void
@@ -415,6 +458,8 @@ namespace Tests\Unit\Optimize {
             self::assertSame([], UpdateDbStructure::changes($template, $live, ['text' => 'utf8mb4_general_ci'], true)['alter']);
             self::assertSame(['DROP INDEX `text`', 'ADD KEY text (`text`)'], UpdateDbStructure::changes($template, $live, ['text' => 'utf8mb4_general_ci'])['alter']);
             self::assertSame(['DROP INDEX `text`', 'ADD KEY text (`text`)'], UpdateDbStructure::changes($template, $live, ['text' => 'utf8mb3_general_ci'], true)['alter'], 'utf8mb3: 765 bytes fit');
+            $unique = self::content(['text' => ['text', 'varchar(255)', true, 'MUL', null, '', '']], ['text' => ['t' => 'content', 'n' => 'text', 's' => 'U', 'c' => [1 => 'text']]]);
+            self::assertSame([], UpdateDbStructure::changes($unique, $unique, ['text' => 'utf8mb4_general_ci'], true)['alter'], 'a long unique key is a HASH key, not shortened');
         }
 
         public function test_test_onlyWhatRepairLeaves_okAndListed(): void
