@@ -197,6 +197,21 @@ final class ClientTest extends TestCase
         $client->request('GET', 'https://example.org/endless');
     }
 
+    /** a fetcher of pages does not download a film to find it is no page: the body of another type is not read */
+    public function test_aBodyOfAnotherTypeIsNotRead(): void
+    {
+        $client = new Client(maxBytes: 10, types: ['text/html'], http: new MockHttpClient([
+            new MockResponse(str_repeat('x', 100), ['response_headers' => ['Content-Type' => 'application/pdf']]),
+            new MockResponse('<p>a</p>', ['response_headers' => ['Content-Type' => 'Text/HTML; charset=utf-8']]),
+            new MockResponse('?'),
+        ]));
+
+        $file = $client->request('GET', 'https://example.org/leaflet');
+        self::assertSame([200, '', 'application/pdf'], [$file->status, $file->body, $file->headers['content-type']], 'nor refused as too large - it was never read');
+        self::assertSame('<p>a</p>', $client->request('GET', 'https://example.org/page')->body);
+        self::assertSame('', $client->request('GET', 'https://example.org/unknown')->body, 'no type, no page');
+    }
+
     public function test_aBodyUpToTheLimitComesBackWhole(): void
     {
         $client = new Client(maxBytes: 10, http: new MockHttpClient([
