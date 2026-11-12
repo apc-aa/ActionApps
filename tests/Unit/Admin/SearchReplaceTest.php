@@ -29,6 +29,7 @@ final class SearchReplaceTest extends TestCase
         $filter = self::at('~if \(\(string\) \$group === \'sel_item\'\) \{\s*(?://[^\n]*\n\s*)*\$zids = \$zids->itemFilter\(\[AA::\$module_id\]\);~');
         $this->assertGreaterThan($picked, $filter);
         $this->assertLessThan(self::at('~->setZids\(~'), $filter, 'the ids must be filtered before the transformator gets them');
+        $this->assertLessThan(self::at('~\$zids->chunk\(~'), $filter, 'and before they are split into tasks');
     }
 
     /** the select leaves out the fields that place the item (slice_id, id, short_id) */
