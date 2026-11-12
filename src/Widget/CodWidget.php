@@ -17,6 +17,9 @@ use AA_Value;
 /** Code editor */
 class CodWidget extends TxtWidget
 {
+    /** set by the code which builds the form - no field setting */
+    private bool $editor = false;
+
     /** widget name  */
     public static function name(): string
     {
@@ -26,6 +29,20 @@ class CodWidget extends TxtWidget
     protected function requireLibs($aa_property, $winfo): array
     {
         return array_merge(['aa-code@1'], parent::requireLibs($aa_property, $winfo));
+    }
+
+    /** Opens in the code view as before, with Edit in Editor to switch to TinyMCE - for a field whose
+     *  HTML the editor may rewrite, so it opens there only when the user asks. */
+    public function withEditor(): static
+    {
+        $this->editor = true;
+        return $this;
+    }
+
+    /** @inheritDoc */
+    public function offersEditor(): bool
+    {
+        return $this->editor;
     }
 
     /** @return AA_Value for the data send by the widget

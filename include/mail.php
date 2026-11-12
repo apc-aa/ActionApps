@@ -33,6 +33,7 @@ use AA\Later\LaterInterface;
 use AA\Later\Toexecute;
 use AA\Managed;
 use AA\Util\Langs;
+use AA\Widget\CodWidget;
 
 require_once __DIR__ . "/item.php";
 require_once __DIR__ . "/item_content.php";
@@ -650,6 +651,51 @@ function html2text($html, $encoding='utf-8'): string
     return preg_replace($search, $replace, $html);
 }
 
+/** The editor of a mail body: the code editor, which keeps the body byte for byte. TinyMCE rewrites what
+ *  it saves (loose text into <p>, letters into entities), so it opens only on Edit in Editor - offered
+ *  where it does not break the body: a new mail ($email null) or an HTML mail without {...} template
+ *  commands, without a whole page (<html>, <body>), which it cuts to the body, and without parts of a
+ *  table or a list outside it (<tr>, <td>, <li>, an unclosed <table>), which it drops or wraps - an
+ *  Alerts body is often a few rows of the table of the mail template. */
+function MailBodyWidget(?AA_Content $email): CodWidget {
+    return MailBodyKeptByEditor($email) ? (new CodWidget())->withEditor() : new CodWidget();
+}
+
+/** whether TinyMCE keeps the structure of the body of $email - see MailBodyWidget() */
+function MailBodyKeptByEditor(?AA_Content $email): bool {
+    if (!$email) {
+        return true;
+    }
+    $body = (string) $email->getValue('body');
+    if (!$email->getValue('html') || str_contains($body, '{')) {
+        return false;
+    }
+    $body = preg_replace('/<!--(?:-?>|.*?-->)/s', '', $body);   // a tag in a comment is no tag; <!--> is empty
+    if ($body === null) {
+        return false;   // a comment too long for PCRE - nothing below could be trusted
+    }
+    if (preg_match('/<\/?(?:!doctype|html|head|body)[\s\/>]/i', $body)) {
+        return false;
+    }
+    foreach (['table' => 't[rdh]|tbody|thead|tfoot|caption|colgroup|col', '[ou]l' => 'li'] as $parent => $parts) {
+        $depth = 0;   // how many parents the tag is in
+        preg_match_all("/<(\\/?)(?:($parent)|$parts)[\\s\\/>]/i", $body, $tags, PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL);
+        foreach ($tags as [, $close, $is_parent]) {
+            if ($is_parent === null) {
+                if ($depth < 1) {
+                    return false;   // a part outside its parent
+                }
+            } elseif (($depth += $close ? -1 : 1) < 0) {
+                return false;       // a parent closed before it was opened
+            }
+        }
+        if ($depth) {
+            return false;           // a parent left open
+        }
+    }
+    return true;
+}
+
 function GetMailManaged(): Managed {
     $managed = AA::Metabase()->getManagerConf('email');
     $managed->setColumns2show(['id', 'type', 'subject', 'description']);
@@ -661,9 +707,7 @@ function GetMailManaged(): Managed {
     $managed->setWidgetSetting('owner_module_id', ['enum' => ['' => _m('— all modules (global) —')] + AA_Module::getUserModules(), 'name' => _m('Owner'), 'required' => false]);
     $managed->setWidgetSetting('description', ['name' => _m('Description/Result')]);
     $managed->setWidgetSetting('subject', ['name' => _m('Subject')]);
-    // Rich editor (CKEditor) only for token-free bodies; templates with {...} commands
-    // keep the code editor so their raw markup is not reformatted on save.
-    $managed->setWidgetSetting('body', ['name' => _m('Body'), 'widget' => static fn ($body) => str_contains((string) $body, '{') ? 'cod' : 'edt']);
+    $managed->setWidgetSetting('body', ['name' => _m('Body'), 'widget' => MailBodyWidget(...)]);
     $managed->setWidgetSetting('header_from', ['name' => _m('From (email) ')]);
     $managed->setWidgetSetting('reply_to', ['name' => _m('Reply to (email)')]);
     $managed->setWidgetSetting('errors_to', ['name' => _m('Errors to (email)')]);

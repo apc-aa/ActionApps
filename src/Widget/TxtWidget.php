@@ -61,13 +61,19 @@ class TxtWidget extends Widget
         return (bool) $this->getProperty('audio_enable', false);
     }
 
+    /** whether a code editor offers Edit in Editor (CodWidget::withEditor()) */
+    public function offersEditor(): bool
+    {
+        return false;
+    }
+
     /** libs to run after the page DOM is loaded */
     protected function requireLibs($aa_property, $winfo): array
     {
         $ret = (count($aa_property->getTranslations()) > 1) ? ['aa-jslib@3'] : [];
         // the view follows the stored value (_getRawHtml() passes it); the default flag only without one
         $view = $winfo['view'] ?? (($aa_property->getContentTypeDefault() & FLAG_HTML) ? 'code' : '');
-        if ($aa_property->getContentTypeSwitches()) {
+        if ($aa_property->getContentTypeSwitches() || in_array($view, ['switch-code', 'switch-plain'], true)) {
             $ret[] = 'aa-richtext@1';
         } elseif ($view === 'code') {
             $ret[] = 'aa-code@1';
@@ -122,7 +128,7 @@ class TxtWidget extends Widget
 
         $value = $content->getAaValue($aa_property->getId());
         // how the field is edited follows the format the value has now
-        $view       = self::view($this instanceof EdtWidget, $this instanceof CodWidget, $aa_property->getContentTypeSwitches(), (bool) (AA_Formatters::getCurrentFormatter($value, $aa_property) & FLAG_HTML));
+        $view       = self::view($this instanceof EdtWidget, $this instanceof CodWidget, $aa_property->getContentTypeSwitches(), (bool) (AA_Formatters::getCurrentFormatter($value, $aa_property) & FLAG_HTML), $this->offersEditor());
         $rich_attrs = in_array($view, ['rich', 'switch-code', 'switch-plain'], true) ? $this->richtextAttrs($base_name, $content, $type, $view) : [];
         $def_rows = $this->getProperty('rows', 4);
 
@@ -253,13 +259,14 @@ class TxtWidget extends Widget
 
     /**
      * How the field is edited: 'rich' TinyMCE (edt); 'switch-code' / 'switch-plain' <aa-richtext>
-     * following the HTML / Plain text switch; 'code' CodeMirror (HTML without a switch, and cod);
+     * following the HTML / Plain text switch, with Edit in Editor - and a code editor which offers
+     * the editor, without a switch; 'code' CodeMirror (HTML without a switch, and cod);
      * '' the bare textarea (plain text only).
      */
-    public static function view(bool $is_edt, bool $is_cod, int $switches, bool $is_html): string
+    public static function view(bool $is_edt, bool $is_cod, int $switches, bool $is_html, bool $cod_editor = false): string
     {
         return match (true) {
-            $is_cod         => 'code',
+            $is_cod         => $cod_editor ? 'switch-code' : 'code',
             $is_edt         => 'rich',
             $switches !== 0 => $is_html ? 'switch-code' : 'switch-plain',
             $is_html        => 'code',
