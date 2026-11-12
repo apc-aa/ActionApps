@@ -28,12 +28,17 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/logs.php";
 require_once __DIR__ . "/../include/varset.php";
+
+/** the same in se_import.php, which sends it */
+const FEEDING_TOKEN = 'aa-feeding';
 
 try {
     // array ( )
@@ -43,6 +48,7 @@ try {
     // array ( 0 => 3, )
     $to_all = InputVars::boolGET('to_all', true);
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -51,6 +57,10 @@ try {
 if (!IfSlPerm(PS_FEEDING)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change feeding setting"), "admin");
     exit;
+}
+// the imports and exports change only by the Update button of se_import.php
+if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(FEEDING_TOKEN, $token, $_SERVER)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base() . "se_import.php"), MsgErr(_m('The form has expired; reload the page and try again.')), "admin");
 }
 
 $err = [];          // error array (Init - just for initializing variable

@@ -46,6 +46,14 @@ final class FeedingWriteGateTest extends TestCase
         $this->assertMatchesRegularExpression('~FormToken::(?:get|field)\(' . $const . '\)~', $sender, "$file does not send $const");
     }
 
+    public function test_imports_and_exports_change_only_with_the_token(): void
+    {
+        $src = self::source('admin/se_import2.php');
+        $this->assertToken($src, 'FEEDING_TOKEN');
+        $this->assertRefusedBeforeWrites($src, 'FEEDING_TOKEN', ['doUpdate(', 'doInsertMulti(', '->query(']);
+        $this->assertSent('admin/se_import.php', $src, 'FEEDING_TOKEN');
+    }
+
     public function test_filters_change_only_with_the_token_and_for_an_own_feed(): void
     {
         $src = self::source('admin/se_filters2.php');
