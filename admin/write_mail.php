@@ -215,6 +215,10 @@ if (!$send) {               // for the first time - directly from item manager
         } else {
             // get reader's zids
             $zids = getZidsFromGroupSelect($group, $items, $searchbar);
+            if ((string) $group === 'sel_item') {
+                // picked ids come with the request; the bins and stored searches are queried in this slice already
+                $zids = $zids->itemFilter([AA::$module_id]);
+            }
             // the following functionality could be extended by adding third
             // parameter $recipient (for testing e-mail)
             $mails_sent  = AA_Mail::sendToReader($mail_id, $zids, AA::$module_id);

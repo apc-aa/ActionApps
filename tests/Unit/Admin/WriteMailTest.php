@@ -33,4 +33,13 @@ final class WriteMailTest extends TestCase
         }
         $this->assertGreaterThan($gate, self::at('~<form name="mailform" method="post" enctype="multipart/form-data">\';\s*echo FormToken::field\(WRITE_MAIL_TOKEN\);~'));
     }
+
+    /** sendToReader() itself takes readers of any slice - {mail} sends to several - so the page limits them */
+    public function test_picked_recipients_are_limited_to_the_slice(): void
+    {
+        $picked = self::at('~\$zids = getZidsFromGroupSelect\(\$group, \$items, \$searchbar\);~');
+        $filter = self::at('~if \(\(string\) \$group === \'sel_item\'\) \{\s*(?://[^\n]*\n\s*)*\$zids = \$zids->itemFilter\(\[AA::\$module_id\]\);~');
+        $this->assertGreaterThan($picked, $filter);
+        $this->assertLessThan(self::at('~AA_Mail::sendToReader\(\$mail_id, \$zids,~'), $filter);
+    }
 }
