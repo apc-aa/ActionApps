@@ -918,7 +918,7 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
 
             if ($metabase->isColumn('item', $clean_name)) {
                 $item_fields[]    = $clean_name;
-            } else {
+            } elseif (is_string($field_name) && AA_Field::isValidFieldId($field_name)) {   // the ids go into the SQL below; no other id is stored
                 $content_fields[] = $field_name;
             }
         }
