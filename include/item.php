@@ -1463,7 +1463,9 @@ class AA_Item
                 return $sess->id();
             case "disc":
                 // _#DISCEDIT used on admin page index.php for edit discussion comments
-                return con_url(StateUrl("discedit.php"), "item_id=" . $this->getItemID());
+                // the page works on items of the module in its URL - so the item's own slice
+                $sid = $this->getSliceID();
+                return con_url(is_long_id($sid) ? get_url('discedit.php', ['module_id' => $sid]) : StateUrl("discedit.php"), "item_id=" . $this->getItemID());
                 // These next two return values from globals that would actually be better coming froom the item or itemview,
                 // otherwise won't work if there are nested views.
             case "itemcount":
