@@ -49,6 +49,19 @@ final class DisceditTest extends TestCase
         $this->assertSame(4, substr_count($src, 'PostDiscAction("\' . get_url("./discedit.php", [\'mode\' => '), 'each action posts');
     }
 
+    /** the comment is rewritten only from the page's own form; an expired one shows the edited values again */
+    public function test_edit_needs_the_form_token(): void
+    {
+        $gate = self::at('discedit2.php', '~\$foreign = ResponderPolicy::isForeignBrowserRequest\(\$_SERVER\);\s*\$expired = \$update && \(\$foreign \|\| !FormToken::checkPost\(DISCEDIT2_TOKEN, \$token, \$_SERVER\)\);~');
+        $this->assertLessThan(self::at('discedit2.php', '~if \(!count\(\$err\) && !\$expired\) \{\s*DB_AA::update\(\'discussion\'~'), $gate);
+        // values posted from another site never fill the form - the page would add its token to them
+        $this->assertGreaterThan($gate, self::at('discedit2.php', '~if \(\(!\$expired \|\| \$foreign\) && \(\$row = DB_AA::select1\(\[\], \'SELECT \* FROM discussion\'~'));
+        $this->assertSame(1, preg_match('~"token"\s*=> \[\'type\' => \'hidden\', \'value\' => FormToken::get\(DISCEDIT2_TOKEN\)\]~', self::source('discedit2.php')), 'the form sends the token');
+        // the form shown again sends the item id it came with - $item_id of the expired form is not the packed one of the row
+        $this->assertGreaterThan(self::at('discedit2.php', '~DiscussionInSlice\(\$item_id, \$d_id~'), self::at('discedit2.php', '~\$item_id_hex = \$item_id;~'), 'the id is the checked one');
+        $this->assertSame(1, preg_match('~"item_id" => \[\'type\' => \'hidden\', \'value\' => \$item_id_hex\]~', self::source('discedit2.php')));
+    }
+
     public function test_edit_works_only_on_a_comment_of_an_item_of_the_slice(): void
     {
         $check = self::at('discedit2.php', '~if \(!DiscussionInSlice\(\$item_id, \$d_id, AA::\$module_id\)\) \{[^}]*exit;~');
