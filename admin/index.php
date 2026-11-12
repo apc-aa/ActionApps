@@ -179,7 +179,7 @@ $manager_settings = [
 ];
 
 $managed = (new Managed())->setSettings($manager_settings);
-$managed->setTitle($slice->getName() . ' - ' . (($slice->type() === 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager')));
+$managed->setTitle(safe($slice->getName()) . ' - ' . (($slice->type() === 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager')));
 $manager = new Manager('item' . $module_id, $managed);
 
 if ($change_id || $r_state["module_id"] !== $module_id) {
