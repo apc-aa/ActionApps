@@ -81,6 +81,21 @@ final class SliceSettingsWriteGateTest extends TestCase
         $this->assertStringNotContainsString('window.location', self::source('admin/se_fields.php'));
     }
 
+    /** an expired form keeps the typed templates and says so on the page - the popup of $err is gone in seconds */
+    public function test_fulltext_page_shows_the_expired_form_on_the_page(): void
+    {
+        $src      = self::source('admin/se_fulltext.php');
+        $decision = strpos($src, '(!$update || !count($err) || $foreign)');
+        $moved    = preg_match('~if \(isset\(\$err\[\'token\'\]\)\) \{\s*\$Msg = \$err\[\'token\'\];[^\n]*\s*unset\(\$err\[\'token\'\]\);~', $src, $m, PREG_OFFSET_CAPTURE) ? $m[0][1] : false;
+        $head     = strpos($src, '$apage->printHead($err, $Msg);');
+
+        $this->assertNotFalse($decision, 'the typed templates are not kept');
+        $this->assertNotFalse($moved, 'the message is not moved to the page');
+        $this->assertNotFalse($head);
+        $this->assertGreaterThan($decision, $moved, 'moved before $err decides which templates the form shows');
+        $this->assertLessThan($head, $moved);
+    }
+
     private static function source(string $file): string
     {
         return (string) file_get_contents(dirname(__DIR__, 3) . '/' . $file);
