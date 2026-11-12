@@ -74,7 +74,7 @@ if (!IsSuperadmin()) {
 }
 
 const STATECHECK_TAGS = StateCheckModel::TAGS;
-const STATECHECK_TOKEN = 'aa_statecheck';
+const STATECHECK_TOKEN = StateCheckModel::FORM_TOKEN;
 
 /** an empty cell: a dash to the eye, $missing to a screen reader */
 function statecheck_dash(string $missing): string
