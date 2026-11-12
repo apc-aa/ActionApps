@@ -931,7 +931,8 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
             $item_fields[] = 'id';
         }
         if ($use_short_ids && !in_array('short_id', $item_fields)) {
-            $item_fields[] = 'short_id';
+            $item_fields[]          = 'short_id';
+            $real_item_fields2get[] = 'short_id';   // the content is keyed by it below
         }
 
         // every item gets u_slice_id...... below - and the reading password is checked per slice
@@ -1005,8 +1006,8 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
                 }
                 $unpermitted[$unpack_id] = true;
                 foreach (array_keys($c4id) as $fid) {
-                    // at least id and slice_id should be correct.............. for AA_Items::getItems()
-                    if (!in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
+                    // the ids and the slice stay - AA_Items keys its cache by the short id, short ids key the content
+                    if (!in_array($fid, ['id..............','short_id........','slice_id........','unpacked_id.....','u_slice_id......'])) {
                         $content[$unpack_id][$fid] = $ERR_VALUE;
                     }
                 }
