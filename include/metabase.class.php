@@ -938,7 +938,6 @@ class AA_Metabase
             'constant',
             'constant_slice',
             'cron',
-            'db_sequence',
             'discussion',
             'email',
             'event',

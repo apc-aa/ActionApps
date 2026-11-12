@@ -74,18 +74,6 @@ return [
         ],
         'f' => null,
     ],
-    'auth_log' => [
-        't' => 'auth_log',
-        'k' => ['created' => true],
-        'i' => [
-            'PRIMARY' => ['t' => 'auth_log', 'n' => 'PRIMARY', 's' => 'P', 'c' => [1 => 'created']],
-        ],
-        'c' => [
-            'result' => ['result', 'mediumtext', false, '', null, '', ''],
-            'created' => ['created', 'int(11)', false, 'PRI', '0', '', ''],
-        ],
-        'f' => null,
-    ],
     'auth_user' => [
         't' => 'auth_user',
         'k' => ['username' => true],
@@ -273,18 +261,6 @@ return [
             'script' => ['script', 'varchar(100)', true, '', null, '', ''],
             'params' => ['params', 'varchar(200)', true, '', null, '', ''],
             'last_run' => ['last_run', 'bigint(30)', true, '', null, '', ''],
-        ],
-        'f' => null,
-    ],
-    'db_sequence' => [
-        't' => 'db_sequence',
-        'k' => ['seq_name' => true],
-        'i' => [
-            'PRIMARY' => ['t' => 'db_sequence', 'n' => 'PRIMARY', 's' => 'P', 'c' => [1 => 'seq_name']],
-        ],
-        'c' => [
-            'seq_name' => ['seq_name', 'varchar(127)', false, 'PRI', '', '', ''],
-            'nextid' => ['nextid', 'int(10) unsigned', false, '', '0', '', ''],
         ],
         'f' => null,
     ],
