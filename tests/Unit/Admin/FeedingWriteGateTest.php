@@ -46,6 +46,27 @@ final class FeedingWriteGateTest extends TestCase
         $this->assertMatchesRegularExpression('~FormToken::(?:get|field)\(' . $const . '\)~', $sender, "$file does not send $const");
     }
 
+    public function test_inter_import_is_created_only_with_the_token(): void
+    {
+        $src = self::source('admin/se_inter_import3.php');
+        $this->assertToken($src, 'INTER_IMPORT_TOKEN');
+        $this->assertRefusedBeforeWrites($src, 'INTER_IMPORT_TOKEN', ['doInsert(', 'doReplace(', 'doInsertMulti(']);
+        $this->assertSent('admin/se_inter_import2.php', $src, 'INTER_IMPORT_TOKEN');
+    }
+
+    /** Preview and Load only show the form; Save and Finish write */
+    public function test_csv_import_saves_and_stores_only_with_the_token(): void
+    {
+        $src = self::source('admin/se_csv_import2.php');
+        $this->assertToken($src, 'CSV_IMPORT_TOKEN');
+        $this->assertSame(1, substr_count($src, 'FormToken::field(CSV_IMPORT_TOKEN)'));
+        $this->assertStringContainsString('$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(CSV_IMPORT_TOKEN, $token, $_SERVER);', $src);
+        $this->assertSame(1, substr_count($src, 'doInsertMulti('));
+        $this->assertMatchesRegularExpression('~if \(\$save && \$may_write\) \{\s*\$obj_id = new_id\(\);\s*AA::Metabase\(\)->doInsertMulti\(~', $src);
+        $this->assertSame(1, substr_count($src, '$importer->upload()'));
+        $this->assertMatchesRegularExpression('~if \(\$upload && \$may_write\) \{\s*\$importer->upload\(\);~', $src);
+    }
+
     public function test_imports_and_exports_change_only_with_the_token(): void
     {
         $src = self::source('admin/se_import2.php');

@@ -33,9 +33,11 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\IO\ImportFile;
 use AA\Security\ViewSlices;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\Paramwizard;
@@ -48,6 +50,8 @@ mgettext_bind(Langs::currentLang(), 'param_wizard');   // texts of the import ac
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/feeding.php";
+
+const CSV_IMPORT_TOKEN = 'aa-csv-import';
 
 try {
     // array ( 'insert_new' => 1, 'overwrite' => 1, )
@@ -81,7 +85,8 @@ try {
     $preview = InputVars::boolPOST('preview');
     $upload = InputVars::boolPOST('upload');
     $cancel = InputVars::boolPOST('cancel');
-    
+    $token  = InputVars::stringPOST('token');
+
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -434,6 +439,7 @@ class AA_Csv_Importer {
 
 
         echo '<form enctype="multipart/form-data" method=post name="f" action="'. StateUrl(self_base() . "se_csv_import2.php") .'">';
+        echo FormToken::field(CSV_IMPORT_TOKEN);
 
         FrmTabCaption(_m("Mapping settings"));
         ?>
@@ -550,7 +556,13 @@ if ( $load ) {
 // before saving - the setting is stored for the slice the importer names
 $importer->check();
 
-if ( $save ) {
+// the setting is saved and the items stored only from the form of this page; Preview and Load only show
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(CSV_IMPORT_TOKEN, $token, $_SERVER);
+if (($save || $upload) && !$may_write) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));
+}
+
+if ($save && $may_write) {
     $obj_id = new_id();
     AA::Metabase()->doInsertMulti('object_text', [
         ['object_id' => $obj_id, 'property' => 'type',     'value' => 'AA_Csv_Importer'],
@@ -560,7 +572,7 @@ if ( $save ) {
     ]);
 }
 
-if ($upload) {
+if ($upload && $may_write) {
     $importer->upload();
 }
 
@@ -575,6 +587,6 @@ if ($preview) {
     $importer->preview();
 }
 
-$importer->printForm(!($preview || $load || $save));
+$importer->printForm(!($preview || $load || $save || $upload));   // a refused Finish keeps the mapping
 
 $apage->printFoot();

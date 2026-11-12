@@ -31,9 +31,14 @@
 
 use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
+
+/** the same in se_inter_import3.php, which checks it */
+const INTER_IMPORT_TOKEN = 'aa-inter-import';
+
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You do not have permissions to change feeding setting"));
     exit;
@@ -95,6 +100,7 @@ $apage = new AA_Adminpageutil('sliceadmin', 'n_import');
 $apage->setTitle(_m("Inter node import settings"));
 $apage->setForm(['action' => 'se_inter_import3.php']);
 $apage->printHead($err, $Msg);
+echo FormToken::field(INTER_IMPORT_TOKEN);
 
 $form_buttons = [
     "new_in_feed"      => ['type' => 'submit', 'value' => _m("Choose slice")],
