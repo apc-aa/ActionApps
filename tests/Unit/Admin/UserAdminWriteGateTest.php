@@ -18,6 +18,7 @@ final class UserAdminWriteGateTest extends TestCase
         return [
             'users'  => ['admin/um_uedit.php', 'UM_USER_TOKEN', ['delUser', 'ProcessUser']],
             'groups' => ['admin/um_gedit.php', 'UM_GROUP_TOKEN', ['delGroup', '/include/um_gedit.php']],
+            'roles'  => ['admin/se_users.php', 'SE_USERS_TOKEN', ['ChangeRole']],
         ];
     }
 

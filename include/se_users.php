@@ -51,6 +51,10 @@ function CanChangeRole($user_perm, $editor_perm, $role_perm): bool
 function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role): void
 {
     if ($UsrAdd) {
+        // the role name comes from the request; SUPER is a right to the whole AA, not to a slice
+        if (!in_array($role, AA_Perm::PERMS_ROLES_MODULES['S'], true)) {
+            return;
+        }
         if (CanChangeRole(AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, AA_Perm::ROLES[$role]['perm'])) {
             AA::$perm->addPerm($UsrAdd, $slice_id, "slice", AA_Perm::ROLES[$role]['id']);
             AA::$perm->invalidateCache();
