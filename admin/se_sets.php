@@ -31,6 +31,7 @@
 */
 
 use AA\Central\ResponderPolicy;
+use AA\Managed;
 use AA\Util\FormToken;
 use AA\Util\InputVars;
 
@@ -100,6 +101,10 @@ if ($update) {
                 break;
             }
             if ((($objid ?? '') !== '') && !in_array($objid, $own, true)) {
+                // State Check lists it with the refused object forms
+                $objid  = is_string($objid) ? $objid : '';
+                $stored = AA_Object::storedIdentity($objid);
+                Managed::logRefusal((string) AA::$module_id, $objid, 'AA_Set', $stored['aa_type'], $stored['aa_owner']);
                 $err["objid$k"] = MsgErr(_m('Set %1 is not a set of this slice', [$k]));
                 break;
             }
