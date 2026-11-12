@@ -16,7 +16,8 @@ final class SliceSettingsWriteGateTest extends TestCase
     public static function pages(): array
     {
         return [
-            'fields' => ['admin/se_fields.php', 'FIELDS_TOKEN', ['delete', 'doUpdate', 'storeAdminRows', 'repair4modules'], 2],
+            'fields'           => ['admin/se_fields.php', 'FIELDS_TOKEN', ['delete', 'doUpdate', 'storeAdminRows', 'repair4modules'], 2],
+            'constants import' => ['admin/se_constant_import.php', 'CONSTANT_IMPORT_TOKEN', ['add_constant_group'], 1],
         ];
     }
 
@@ -44,6 +45,23 @@ final class SliceSettingsWriteGateTest extends TestCase
             foreach ($calls as $index) {
                 $this->assertMatchesRegularExpression('~(?:\(|&&)\s*\$may_write\s*(?:&&|\))~', self::enclosingConditions($tokens, $index), "$function() in $file runs without the form token");
             }
+        }
+    }
+
+    /** The constants page shows the group also after a rejected change (the hierarchical editor reads its
+     *  settings on the way), so instead of gating each write it drops the requested changes first. */
+    public function test_constants_page_drops_the_changes_without_the_token(): void
+    {
+        $file = 'admin/se_constant.php';
+        $this->test_gate_needs_the_token_and_own_origin($file, 'CONSTANT_TOKEN', [], 1);
+        $src  = self::source($file);
+        $drop = strpos($src, '$update    = $deleteGroup = false;');
+        $this->assertNotFalse($drop, 'the changes are not dropped');
+        $this->assertSame(1, preg_match('~if \(\(\$update \|\| \$deleteGroup \|\| \(\$hcalldata !== \'\'\) \|\| \(\$new_owner_id !== \'\'\)\) && !\$may_write\) \{[^}]*\$update    = \$deleteGroup = false;\s*\$hcalldata = \$new_owner_id = \'\';~', $src));
+        foreach (['delete_constant_group(', 'hcUpdate()', 'doUpdate(', 'doInsert(', 'DB_AA::delete('] as $write) {
+            $at = strpos($src, $write);
+            $this->assertNotFalse($at, "$write not found");
+            $this->assertGreaterThan($drop, $at, "$write runs before the changes are dropped");
         }
     }
 

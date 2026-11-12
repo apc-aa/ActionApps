@@ -32,12 +32,16 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/constedit_util.php";
+
+const CONSTANT_IMPORT_TOKEN = 'aa-constant-import';
 
 try {
     // array ( 'seo........…' => 1, )
@@ -49,6 +53,7 @@ try {
     $delimiter = InputVars::stringSlashedPOST('delimiter');
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
+    $token = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -66,7 +71,13 @@ if (!IfSlPerm(PS_FIELDS)) {
 
 $back_url = ($return_url ? ($fid ? get_url($return_url, ['fid' => $fid]) : $return_url) : "index.php");
 
-if ($update) {
+// the group is created only from this page's own form
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(CONSTANT_IMPORT_TOKEN, $token, $_SERVER);
+if ($update && !$may_write) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
+
+if ($may_write && $update) {
     do {
         $err = [];          // error array (Init - just for initializing variable
         $new_group_id = stripslashes(str_replace(':', '-', $new_group_id));  // we don't need ':'
@@ -135,5 +146,6 @@ $delimiters = [
 FrmInputSelect('delimiter', _m('Name - Value delimiter'), $delimiters, '', true);
 FrmTextarea('constant_list', _m("Constants"), $constant_list, 25, 60, false, _m('write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)'));
 FrmTabEnd($form_buttons);
+echo FormToken::field(CONSTANT_IMPORT_TOKEN);
 
 $apage->printFoot();

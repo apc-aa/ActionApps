@@ -27,13 +27,17 @@
 // Parameters: group_id - identifier of constant group
 //             as_new - if we want to create new category group based on an existing (id of "template" group)
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/constedit_util.php";
+
+const CONSTANT_TOKEN = 'aa-constant';
 
 try {
     // array ( )
@@ -74,6 +78,7 @@ try {
 
     $value = InputVars::arrayPOST('value');
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
@@ -101,6 +106,15 @@ $may_edit_slice = static fn(string $slice_id): bool => CheckPerms(AuthGetUid(), 
 $constant_info  = $group_id ? constant_group_owner($group_id) : false;
 
 $superadmin     = IsSuperadmin();
+
+// constants change only from this page's own form (the hierarchical editor too); otherwise the group is just shown
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(CONSTANT_TOKEN, $token, $_SERVER);
+if (($update || $deleteGroup || ($hcalldata !== '') || ($new_owner_id !== '')) && !$may_write) {
+    $from_form = $update;   // the edited values stay in view
+    $update    = $deleteGroup = false;
+    $hcalldata = $new_owner_id = '';
+    $Msg       = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
 
 // Check permissions - before anything is changed. Some groups may be only viewed (core, shared).
 $readonly = '';     // why the group can't be changed
@@ -308,6 +322,7 @@ if ($readonly) {
 }
 ?>
  <input type="hidden" name="group_id" value="<?php echo varname4form($group_id); /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
+ <?php echo FormToken::field(CONSTANT_TOKEN); /* also for the hierarchical editor */ ?>
 <?php
 
 // load the HIERARCHICAL EDITOR
