@@ -95,6 +95,10 @@ if (!$fill) {               // for the first time - directly from item manager
     if ($_REQUEST[SEARCH_REPLACE_PREFIX] && str_starts_with(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')) {   // strtolower is fix for php4, where case of any class is small
         $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX], AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
         $zids           = (($group === 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar));
+        if ((string) $group === 'sel_item') {
+            // picked ids come with the request; the bins and stored searches are queried in this slice already
+            $zids = $zids->itemFilter([AA::$module_id]);
+        }
 
         $transformator  = new AA_Transformator($transformation, $field_id, null, $silent, ($silent && $field_id === 'last_edit.......' && IsSuperadmin()));
         if ($tasks > 0) {
