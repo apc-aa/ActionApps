@@ -66,6 +66,24 @@ final class SliceSettingsWriteGateTest extends TestCase
         }
     }
 
+    /** SliceEditProcess() also checks the permission, so the slice settings page always calls it and drops
+     *  the changes first. The add-slice pages post here without add/update just to open the form - no token. */
+    public function test_slice_settings_page_drops_the_changes_without_the_token(): void
+    {
+        $file = 'admin/slicedit.php';
+        $this->test_gate_needs_the_token_and_own_origin($file, 'SLICEDIT_TOKEN', [], 1);
+        $src = self::source($file);
+        $this->assertSame(1, preg_match('~\$expired\s*=\s*\(\$add \|\| \$update \|\| !empty\(\$_POST\[\'aa\'\]\)\) && !\$may_write;~', $src), 'a change goes without the token');
+        // AA_Slice::processModuleObject() saves the additional settings from $_POST['aa'] on its own
+        $drop = preg_match('~if \(\$expired\) \{[^}]*unset\(\$_POST\[\'aa\'\]\);~', $src, $m, PREG_OFFSET_CAPTURE) ? $m[0][1] : false;
+        $this->assertNotFalse($drop, 'the additional settings are not dropped');
+        $this->assertCount(1, self::calls(\PhpToken::tokenize($src), 'SliceEditProcess'));
+        $call = (int) strpos($src, '$err = SliceEditProcess(');
+        $this->assertGreaterThan($drop, $call, 'SliceEditProcess() runs before the changes are dropped');
+        $this->assertStringContainsString(', $add && $may_write, $update && $may_write, ', substr($src, $call, (int) strpos($src, ';', $call) - $call), 'add/update run without the token');
+        $this->assertStringContainsString('$redisplay  = ($has_errors || $expired) && ($add || $update);', $src, 'an expired form loses the typed values');
+    }
+
     public function test_slice_import_takes_its_data_from_the_form_only(): void
     {
         $src = self::source('admin/sliceimp.php');
