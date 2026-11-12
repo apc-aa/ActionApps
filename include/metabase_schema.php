@@ -802,6 +802,7 @@ return [
             'PRIMARY' => ['t' => 'log', 'n' => 'PRIMARY', 's' => 'P', 'c' => [1 => 'id']],
             'time' => ['t' => 'log', 'n' => 'time', 's' => 'I', 'c' => [1 => 'time']],
             'type_time' => ['t' => 'log', 'n' => 'type_time', 's' => 'I', 'c' => [1 => 'type', 2 => 'time']],
+            'type_selector_time' => ['t' => 'log', 'n' => 'type_selector_time', 's' => 'I', 'c' => [1 => 'type', 2 => ['selector', '40'], 3 => 'time']],
         ],
         'c' => [
             'id' => ['id', 'int(11)', false, 'PRI', null, 'auto_increment', ''],
