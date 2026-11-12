@@ -9973,36 +9973,15 @@ class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
     }
 }
 
-/**  */
+/** Does nothing - it was a debugging command. Kept empty, so a template still calling it does not print
+ *  its parameters, a user name and a password, as the text of an unknown command.
+ *  @deprecated
+ */
 class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
-    /**
-     * @param string $text
-     * @return string|void
-     */
-    function expand($username='', $password='', $code2fa=''): string
+    function expand(): string
     {
-        if (!strlen($username) || !strlen($password) || !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa, true)) || $uid !== AuthGetUid()) {
-            return '';
-        }
-        $ga = new PHPGangsta_GoogleAuthenticator();
-        $secret = $ga->createSecret();
-
-
-        $qrCodeUrl = $ga->getQRCodeGoogleUrl('Blog', $secret);
-        echo "Google Charts URL for the QR-Code: ".$qrCodeUrl."\n\n";
-
-        $oneCode = $ga->getCode($secret);
-        echo "Checking Code '$oneCode' and Secret '$secret':\n";
-
-        $checkResult = $ga->verifyCode($secret, $oneCode, 2);    // 2 = 2*30sec clock tolerance
-        if ($checkResult) {
-            echo 'OK';
-        } else {
-            echo 'FAILED';
-        }
         return '';
     }
-
 }
 
 /** computes MD5 hash */
