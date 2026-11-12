@@ -38,6 +38,11 @@ class Actionapps
     /** encrypted by another key (AA_SECRET changed) or for another address (the row was edited) */
     public const CREDENTIAL_UNREADABLE = 'unreadable';
 
+    /** credentialBadge() states */
+    public const BADGE_OK        = 'ok';
+    public const BADGE_GET_TOKEN = 'get-token';
+    public const BADGE_NONE      = 'none';
+
     private const SEALED = 'v1:';
 
     /** no answer in the time given - the remote AA may still work on the request */
@@ -198,27 +203,31 @@ class Actionapps
         return function_exists('sodium_crypto_aead_aes256gcm_is_available') && sodium_crypto_aead_aes256gcm_is_available();
     }
 
-    /** What the Central list says of the login. The claims are read unverified - a display only. A token
-     *  dies by its exp or by its age (LoginToken::verify()), whichever comes first. */
-    public function credentialBadge(?int $now = null): string
+    /** What the Central list says of the login: state = one of BADGE_* (CSS class aa-auth-<state>, none
+     *  stays uncoloured) and text. The claims are read unverified - a display only. A token dies by its
+     *  exp or by its age (LoginToken::verify()), whichever comes first.
+     *  @return array{state: string, text: string} */
+    public function credentialBadge(?int $now = null): array
     {
         [$state, $jwt] = $this->credential();
         $claims        = ($jwt === null) ? null : RemoteSource::claims($jwt);
         if (!is_int($claims['iat'] ?? null) || !is_int($claims['exp'] ?? null)) {
-            return ($state === self::CREDENTIAL_NONE) ? _m('Not configured') : _m('Not authenticated - get a token');
+            return ($state === self::CREDENTIAL_NONE) ? ['state' => self::BADGE_NONE, 'text' => _m('Not configured')] : ['state' => self::BADGE_GET_TOKEN, 'text' => _m('Not authenticated - get a token')];
         }
         $until = min($claims['exp'], LoginToken::ageLimit($claims['iat']));
-        return ($until > ($now ?? time())) ? _m('Authenticated until %1', [date('Y-m-d H:i', $until)]) : _m('Expired - get a token');
+        return ($until > ($now ?? time())) ? ['state' => self::BADGE_OK, 'text' => _m('Authenticated until %1', [date('Y-m-d H:i', $until)])] : ['state' => self::BADGE_GET_TOKEN, 'text' => _m('Expired - get a token')];
     }
 
-    /** The central_conf rows for the list of the Central page: AA_ADMIN_PWD holds its credentialBadge(),
-     *  never the stored value
+    /** The central_conf rows for the list of the Central page: AA_ADMIN_PWD holds the text of its
+     *  credentialBadge() (never the stored value), auth_state its state
      *  @param array{table: string} $settings @return array<string, \AA_Content> */
     public static function listContent(zids $zids, array $settings): array
     {
         $content = \AA_Metabase::getContent($zids, $settings);
         foreach ($content as $row) {
-            $row->setValue('AA_ADMIN_PWD', (new self(new ItemContent($row->getContent())))->credentialBadge());
+            $badge = (new self(new ItemContent($row->getContent())))->credentialBadge();
+            $row->setValue('AA_ADMIN_PWD', $badge['text']);
+            $row->setValue('auth_state', $badge['state']);
         }
         return $content;
     }

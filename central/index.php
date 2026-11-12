@@ -126,7 +126,7 @@ $managed->addColumn('admin_link', _m('Admin Link'), '<a href="_#AA_HTTP_/_#AA_BA
 // AA_ADMI2, escaped) Actionapps::credentialBadge() (listContent()), never the stored value.
 $auth_format = ''
     . '<div class="aa-auth-cell">'
-    .   '<div>_#AA_ADMI2</div>'
+    .   '<div><span class="aa-auth aa-auth-{auth_state}">_#AA_ADMI2</span></div>'
     .   '<details>'
     .     '<summary>'._m('Authenticate').'</summary>'
     .     '<div>'

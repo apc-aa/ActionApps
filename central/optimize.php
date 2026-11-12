@@ -152,8 +152,9 @@ function optimize_form(array $checked, string $task, string $method): void
     FrmTabEnd();
     echo '<table class="aa-optimize"><tr><th></th><th>' . _m('AA') . '</th><th>' . _m('Auth') . '</th></tr>';
     foreach ($aas as $id => $aa) {
+        $badge = $aa->credentialBadge();
         echo '<tr><td><input type="checkbox" name="aa[]" value="' . (int) $id . '" id="aa-optimize-' . (int) $id . '"' . (in_array((int) $id, $checked, true) ? ' checked' : '') . '></td>'
-            . '<td><label for="aa-optimize-' . (int) $id . '">' . safe($aa->getName()) . '</label></td><td>' . safe($aa->credentialBadge()) . '</td></tr>';
+            . '<td><label for="aa-optimize-' . (int) $id . '">' . safe($aa->getName()) . '</label></td><td><span class="aa-auth aa-auth-' . safe($badge['state']) . '">' . safe($badge['text']) . '</span></td></tr>';
     }
     echo '</table><p>' . _m('An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day).') . '</p>'
         . '<p><button class="btn-l" type="submit">' . _m('Start') . '</button></p></form>';

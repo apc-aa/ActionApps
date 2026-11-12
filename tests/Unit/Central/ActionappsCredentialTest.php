@@ -273,23 +273,27 @@ final class ActionappsCredentialTest extends TestCase
             ['1' => 'Authenticated until ' . date('Y-m-d H:i', time() + 3600), '2' => 'Not authenticated - get a token', '3' => 'Not authenticated - get a token', '4' => 'Expired - get a token', '5' => 'Not configured'],
             array_map(static fn($c) => $c->getValue('AA_ADMIN_PWD'), $content),
         );
+        self::assertSame(
+            ['1' => Actionapps::BADGE_OK, '2' => Actionapps::BADGE_GET_TOKEN, '3' => Actionapps::BADGE_GET_TOKEN, '4' => Actionapps::BADGE_GET_TOKEN, '5' => Actionapps::BADGE_NONE],
+            array_map(static fn($c) => $c->getValue('auth_state'), $content),
+        );
     }
 
-    /** @return array<string, array{array<string, int>, string}> claims => the badge */
+    /** @return array<string, array{array<string, int>, array{state: string, text: string}}> claims => the badge */
     public static function badges(): array
     {
         $now = 1_800_000_000;
         return [
-            'a year of exp, issued two days ago' => [['iat' => $now - 2 * 86400, 'exp' => $now + 300 * 86400], 'Expired - get a token'],
-            'a year of exp, issued an hour ago'  => [['iat' => $now - 3600, 'exp' => $now + 300 * 86400], 'Authenticated until ' . date('Y-m-d H:i', $now - 3600 + 86400 + 300)],
-            'a day, issued an hour ago'          => [['iat' => $now - 3600, 'exp' => $now - 3600 + 86400], 'Authenticated until ' . date('Y-m-d H:i', $now - 3600 + 86400)],
-            'no iat'                             => [['exp' => $now + 3600], 'Not authenticated - get a token'],
+            'a year of exp, issued two days ago' => [['iat' => $now - 2 * 86400, 'exp' => $now + 300 * 86400], ['state' => Actionapps::BADGE_GET_TOKEN, 'text' => 'Expired - get a token']],
+            'a year of exp, issued an hour ago'  => [['iat' => $now - 3600, 'exp' => $now + 300 * 86400], ['state' => Actionapps::BADGE_OK, 'text' => 'Authenticated until ' . date('Y-m-d H:i', $now - 3600 + 86400 + 300)]],
+            'a day, issued an hour ago'          => [['iat' => $now - 3600, 'exp' => $now - 3600 + 86400], ['state' => Actionapps::BADGE_OK, 'text' => 'Authenticated until ' . date('Y-m-d H:i', $now - 3600 + 86400)]],
+            'no iat'                             => [['exp' => $now + 3600], ['state' => Actionapps::BADGE_GET_TOKEN, 'text' => 'Not authenticated - get a token']],
         ];
     }
 
-    /** @param array<string, int> $claims */
+    /** @param array<string, int> $claims @param array{state: string, text: string} $badge */
     #[DataProvider('badges')]
-    public function test_the_badge_shows_when_the_token_dies_by_exp_or_by_its_age(array $claims, string $badge): void
+    public function test_the_badge_shows_when_the_token_dies_by_exp_or_by_its_age(array $claims, array $badge): void
     {
         $aa = self::aa();
         $aa->setAuthToken(self::jwt(['sub' => '7'] + $claims));

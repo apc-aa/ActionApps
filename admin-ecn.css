@@ -830,6 +830,10 @@ table.aa-history-fields thead th {
 .aa-diff { white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal; line-height: 1.5; }
 .aa-diff ins { background: var(--clr-diff-ins-bg); color: var(--clr-diff-ins-text); text-decoration: none; border-radius: 2px; padding: 0 1px; }
 .aa-diff del { background: var(--clr-diff-del-bg); color: var(--clr-diff-del-text); text-decoration: line-through; border-radius: 2px; padding: 0 1px; }
+/* Central: login state of a remote AA */
+.aa-auth { display: inline-block; border-radius: 3px; padding: 1px 6px; }
+.aa-auth-ok { background: var(--clr-diff-ins-bg); color: var(--clr-diff-ins-text); }
+.aa-auth-get-token { background: var(--clr-diff-del-bg); color: var(--clr-diff-del-text); }
 /* Per-event view toggle (Diff / Version A / Version B) + raw-value code blocks for copy-paste. */
 .aa-h-viewtoggle { display: inline-flex; border: 1px solid var(--clr-border); border-radius: 6px; overflow: hidden; }
 .aa-h-vbtn {
