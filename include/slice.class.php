@@ -428,7 +428,10 @@ abstract class AA_Module
         return empty($class) ? null : $class::isProperty($prop);
     }
 
-    protected static function getModuleObjectId($module_id): string
+    /** Where the module's settings object lives - derived from the class name, so a caller can
+     *  look several of them up at once without loading every module.
+     */
+    public static function getModuleObjectId($module_id): string
     {
         return empty(static::SETTING_CLASS) ? '' : string2id(static::SETTING_CLASS . $module_id);
     }

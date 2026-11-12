@@ -113,6 +113,14 @@ namespace Tests\Unit\Legacy {
             self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $id, 'the backslashes must not survive into the id');
         }
 
+        /** a caller that looks up the settings of several modules at once asks for the id without loading any module */
+        public function test_getModuleObjectId_isAskedFromOutside(): void
+        {
+            self::assertSame(ModuleWithNamespacedSettings::objectId(self::MODULE_ID), ModuleWithNamespacedSettings::getModuleObjectId(self::MODULE_ID));
+            self::assertSame(string2id('AA_Modulesettings_Site' . self::MODULE_ID), \AA_Module_Site::getModuleObjectId(self::MODULE_ID));
+            self::assertSame('', \AA_Module_Polls::getModuleObjectId(self::MODULE_ID), 'a type without settings');
+        }
+
         public function test_load_returnsTheNamespacedClassStoredInAaType(): void
         {
             self::storedSettings('cz');
