@@ -700,6 +700,27 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return array_map('strval', DB_AA::select(['property' => 'value'], $sql));
     }
 
+    /** The class and the owner of what is stored under $id now - past the load() cache.
+     *  @param bool $lock  SELECT ... FOR UPDATE - inside the caller's transaction
+     *  @return array{aa_type: string, aa_owner: string}  '' - no such row
+     */
+    final public static function storedIdentity(string $id, bool $lock = false): array
+    {
+        $rows = self::textRows($id, $lock, ['aa_type', 'aa_owner']);
+        return ['aa_type' => $rows['aa_type'] ?? '', 'aa_owner' => $rows['aa_owner'] ?? ''];
+    }
+
+    /** $stored names $class: the same name in any letter case (PHP class names ignore it), or another
+     *  name of the same class - data keep the name a class had before a rename (class_alias) */
+    final public static function isClass(string $stored, string $class): bool
+    {
+        if (strcasecmp($stored, $class) === 0) {
+            return true;
+        }
+        return ($stored !== '') && class_exists($stored) && class_exists($class)
+            && ((new \ReflectionClass($stored))->getName() === (new \ReflectionClass($class))->getName());
+    }
+
     /** the tables an object's properties live in - the order matters: load() merges them in it,
      *  so a property with rows in two tables takes the later one's values */
     private const STORAGE_TABLES = ['object_text', 'object_integer', 'object_float'];
