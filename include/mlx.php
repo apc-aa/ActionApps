@@ -304,11 +304,9 @@ class MLX
      */
     public function itemform($params, $content4id, $action, $lang, $mlxid): array
     {
-        global $DOCUMENT_URI;
-        global $PHP_SELF;
         $mlxout   = MLX_HTML_TABHD;
-        $mlx_url  = ($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PHP_SELF . ($return_url ? "?return_url=" . rawurlencode($return_url) : ''));
-        $mlx_url .= "?" . $this->getparamstring($params);
+        // relative - the links stay on the page that shows the form (the editor or an SSI page)
+        $mlx_url  = "?" . $this->getparamstring($params);
         switch ($action) {
             case "update":
             case "edit":
