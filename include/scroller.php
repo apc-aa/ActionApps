@@ -236,6 +236,16 @@ class AA_Scroller extends AA_Storable {
         return a_href(get_url($this->urldefault, ["scr_{$this->id}_Go"=>$page] + $add_url), $text, $add_a) . "\n";
     }
 
+    /** onclick that loads $url into $target. The URL may carry request text and one caller writes
+     *  the attribute without HTML escaping, so it is escaped for JS alone: no ' " \ nor a character
+     *  reference (&apos;, &#39;) can end the string; ordinary URLs come out unchanged.
+     */
+    protected static function ajaxOnclick(string $target, string $url): string
+    {
+        $js = static fn(string $s): string => preg_replace('/&(?=#|[A-Za-z][A-Za-z0-9]*;)/', '\\x26', str_replace('"', '\\x22', escape4js($s)));
+        return "AA_Ajax('" . $js($target) . "','" . $js($url) . "');return false;";
+    }
+
     protected function nav(string $target='', bool $all=false): string
     {
         if (!$this->itmcnt || ($pgcnt = $this->pageCount()) < 2) {
@@ -409,7 +419,7 @@ class AA_Scroller_Sitemodule extends AA_Scroller {
             if (!$v) {
                 $out .= "<a class=\"nolink". (($k == $this->current) ? " active" : 'dots') . "\" href=\"#\">$k</a>";
             } elseif ($target) {
-                $out .= "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
+                $out .= "<a href=\"javascript:void(0)\" onclick=\"". self::ajaxOnclick($target, $v) ."\" $add>$k</a>";
             } else {
                 $out .= "<a href=\"$url&amp;$v\" $add>$k</a>";
             }
@@ -462,7 +472,7 @@ class AA_Scroller_Router extends AA_Scroller {
         $url = $this->router->go2url("xpage={$page}");
         if ($target) {
             // $add_url ignored - used for listlen - not used here
-            $add_a   += ['onclick'=>"AA_Ajax('$target','$url');return false;"];
+            $add_a   += ['onclick'=>self::ajaxOnclick($target, $url)];
             return a_href('javascript:void(0)', $text, $add_a) . "\n";
         }
         return a_href(get_url($url, $add_url), $text, $add_a) . "\n";
