@@ -406,5 +406,20 @@ namespace Tests\Unit\Legacy {
                 self::row('ABC', 'C:\\dir\\new', "\\\\'", 3, "end\\", 3),
             ]);
         }
+
+        /** getHierConstBoxes() in an input form: the level names come from the widget parameters */
+        public function test_hierConstBoxes_levelNamesAreText(): void
+        {
+            $out = getHierConstBoxes(1, 2, false, 'v746578742e2e2e2e2e2e2e2e2e2e2e31[]', false, 0, 0, ['Kraj', '<b>x']);
+            $this->assertStringContainsString('>Kraj</label>', $out);
+            $this->assertStringContainsString('>&lt;b&gt;x</label>', $out);
+            $this->assertStringContainsString("onClick=\"hcAddItemTo(1,0,'v746578742e2e2e2e2e2e2e2e2e2e2e31[]'); \"", $out);
+        }
+
+        public function test_hierConstBoxes_targetBoxStaysInTheString(): void
+        {
+            $out = getHierConstBoxes(1, 1, false, "a');alert(\"1", false, 0, 0, ['Kraj']);
+            $this->assertStringContainsString("onClick=\"hcAddItemTo(1,0,'a\\&apos;);alert(&quot;1'); \"", $out);
+        }
     }
 }
