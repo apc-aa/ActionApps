@@ -50,6 +50,7 @@ class AA_Profile_Rule
 
 
 /** PrintRuleRow function
+ *  Delete sends the token form of se_profile.php, with the rule id in the query.
  * @param $rid
  * @param $prop
  * @param $col1
@@ -66,7 +67,7 @@ function PrintRuleRow($rid, $prop, $col1 = "", $col2 = "", $col3 = "", $col4 = "
           <td>$col2&nbsp;</td>
           <td>$col3&nbsp;</td>
           <td>$col4&nbsp;</td>
-          <td><a href=\"" . StateUrl("se_profile.php?del=$rid&uid=$uid") . "\" class='aa-button-delete'>" . _m("Delete") . "</a></td>
+          <td><button type=\"submit\" form=\"aa-profile-form\" formaction=\"" . safe(StateUrl('se_profile.php?del=' . (int) $rid . '&uid=' . rawurlencode($uid))) . "\" class='aa-button-delete'>" . _m("Delete") . "</button></td>
         </tr>";
 }
 

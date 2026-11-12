@@ -25,7 +25,9 @@
 
 // expected $uid - user id we have to edit profile for
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -35,17 +37,20 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/profile.php";
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 
+const PROFILE_TOKEN = 'aa-profile';
+
 try {
-    $uid        = InputVars::stringGET('uid',true);
-    $add        = InputVars::boolGET('add');
+    $uid        = InputVars::stringGETPOST('uid',true);
+    $add        = InputVars::boolPOST('add');
     $del        = InputVars::intGET('del');  // id of deleted
-    $set_as     = InputVars::boolGET('set_as');
-    $set_as_uid = InputVars::stringGET('set_as_uid');
-    $property   = InputVars::stringGET('property');
-    $param      = InputVars::stringGET('param');
-    $field_id   = InputVars::stringGET('field_id');
-    $fnction    = InputVars::stringGET('fnction');
-    $html       = InputVars::boolGET('html');
+    $set_as     = InputVars::boolPOST('set_as');
+    $set_as_uid = InputVars::stringPOST('set_as_uid');
+    $property   = InputVars::stringPOST('property');
+    $param      = InputVars::stringPOST('param');
+    $field_id   = InputVars::stringPOST('field_id');
+    $fnction    = InputVars::stringPOST('fnction');
+    $html       = InputVars::boolPOST('html');
+    $token      = InputVars::stringPOST('token');
 
     $cancel = InputVars::boolPOST('cancel');
     
@@ -64,7 +69,13 @@ if (!IfSlPerm(PS_USERS)) {
 $err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-if ( $del ) {
+// rules change only from this page's own forms
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(PROFILE_TOKEN, $token, $_SERVER);
+if (($del || $add || $set_as) && !$may_write) {
+    $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+}
+
+if ($may_write && $del) {
     DB_AA::delete('profile', [['id', $del], ['slice_id', AA::$module_id, 'l']]);
     // slice identification is not necessary
        // $SQL = "DELETE FROM profile WHERE id='$del' AND slice_id='$p_slice_id'";
@@ -76,11 +87,11 @@ if ( $del ) {
     $Msg = MsgOk(_m("Rule deleted"));
 }
 
-if ( $add && !AA_Profile::addProfileProperty($uid, AA::$module_id, $property, $field_id, $fnction, $param, $html) ) {
+if ($may_write && $add && !AA_Profile::addProfileProperty($uid, AA::$module_id, $property, $field_id, $fnction, $param, $html) ) {
     $Msg = MsgOk(_m("Error: Can't add rule"));
 }
 
-if ( $set_as ) {
+if ($may_write && $set_as) {
     AA_Profile::copyProfile(AA::$module_id, $set_as_uid, $uid);
 }
 
@@ -182,6 +193,9 @@ $apage->setTitle(_m("Admin - user Profiles"));
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
+// the Delete buttons of the rules send this form (by their form= attribute)
+echo '<form id="aa-profile-form" method="post">' . FormToken::field(PROFILE_TOKEN) . '</form>';
+
 echo "
  <table class=\"aa-table\">
   <tr class=\"aa-tbl-header\">
@@ -239,7 +253,7 @@ PrintSetRule(14,'ui_inputform_hide',$inputform_hide,   [],                0,    
 
 echo "</table>
     </form>
-    <form name=\"sf\" action='se_profile.php'>
+    <form name=\"sf\" method=\"post\" action='se_profile.php'>" . FormToken::field(PROFILE_TOKEN) . "
       <input type=\"hidden\" name=\"uid\" value='$uid'>
       <input type=\"hidden\" name=\"add\" value='1'>
       <input type=\"hidden\" name=\"property\">
@@ -257,7 +271,7 @@ if (is_array($set_as_from) && count($set_as_from)) {
     foreach ($set_as_from as $from_uid) {
         $set_as_from[$from_uid] = perm_username($from_uid);
     }
-    echo '<form name="cpf" action="se_profile.php">
+    echo '<form name="cpf" method="post" action="se_profile.php">' . FormToken::field(PROFILE_TOKEN) . '
       <input type="hidden" name="uid" value="' .$uid.'">
       <input type="hidden" name="set_as" value="1">'.
       StateHidden();

@@ -16,9 +16,10 @@ final class UserAdminWriteGateTest extends TestCase
     public static function pages(): array
     {
         return [
-            'users'  => ['admin/um_uedit.php', 'UM_USER_TOKEN', ['delUser', 'ProcessUser']],
-            'groups' => ['admin/um_gedit.php', 'UM_GROUP_TOKEN', ['delGroup', '/include/um_gedit.php']],
-            'roles'  => ['admin/se_users.php', 'SE_USERS_TOKEN', ['ChangeRole']],
+            'users'    => ['admin/um_uedit.php', 'UM_USER_TOKEN', ['delUser', 'ProcessUser']],
+            'groups'   => ['admin/um_gedit.php', 'UM_GROUP_TOKEN', ['delGroup', '/include/um_gedit.php']],
+            'roles'    => ['admin/se_users.php', 'SE_USERS_TOKEN', ['ChangeRole']],
+            'profiles' => ['admin/se_profile.php', 'PROFILE_TOKEN', ['delete', 'addProfileProperty', 'copyProfile']],
         ];
     }
 
@@ -42,7 +43,7 @@ final class UserAdminWriteGateTest extends TestCase
             $calls = self::calls($src, $function);
             $this->assertNotEmpty($calls, "$function() not found in $file");
             foreach ($calls as $index) {
-                $this->assertStringContainsString('$may_write', self::enclosingConditions($src, $index), "$function() in $file runs without the form token");
+                $this->assertMatchesRegularExpression('~(?:\(|&&)\s*\$may_write\s*(?:&&|\))~', self::enclosingConditions($src, $index), "$function() in $file runs without the form token");
             }
         }
     }
@@ -71,14 +72,25 @@ final class UserAdminWriteGateTest extends TestCase
         return $found;
     }
 
-    /** Conditions of all if/elseif blocks around the token, innermost first */
+    /** Conditions of all if/elseif blocks around the token, innermost first. A call inside a condition
+     *  counts with the part of the condition before it - && evaluates left to right. */
     private static function enclosingConditions(string $src, int $index): string
     {
         $tokens = \PhpToken::tokenize($src);
+        $text   = static fn(int $from, int $to): string => implode('', array_map(static fn(\PhpToken $t): string => $t->text, array_slice($tokens, $from, $to - $from + 1)));
         $conds  = [];
         $depth  = 0;
+        $parens = 0;
         for ($i = $index - 1; $i >= 0; $i--) {
-            if ($tokens[$i]->text === '}') {
+            if ($tokens[$i]->text === ')') {
+                $parens++;
+            } elseif ($tokens[$i]->text === '(') {
+                if ($parens > 0) {
+                    $parens--;
+                } elseif ($tokens[self::skip($tokens, $i, -1)]->is([T_IF, T_ELSEIF])) {
+                    $conds[] = $text($i, $index);
+                }
+            } elseif ($tokens[$i]->text === '}') {
                 $depth++;
             } elseif (in_array($tokens[$i]->text, ['{', '${'], true)) {
                 if ($depth > 0) {
@@ -91,7 +103,7 @@ final class UserAdminWriteGateTest extends TestCase
                 }
                 $open = self::matchingOpen($tokens, $close);
                 if ($tokens[self::skip($tokens, $open, -1)]->is([T_IF, T_ELSEIF])) {
-                    $conds[] = implode('', array_map(static fn(\PhpToken $t): string => $t->text, array_slice($tokens, $open, $close - $open + 1)));
+                    $conds[] = $text($open, $close);
                 }
             }
         }
