@@ -23,6 +23,9 @@ use Symfony\Contracts\HttpClient\ResponseStreamInterface;
  */
 final class ClientTest extends TestCase
 {
+    /** a public address as a literal, so no test asks DNS */
+    private const PUBLIC_IP = '93.184.215.14';
+
     public function test_theStatusAndBodyComeBackWhateverTheServiceSaid(): void
     {
         $client = new Client(http: new MockHttpClient([
@@ -264,27 +267,101 @@ final class ClientTest extends TestCase
         self::assertSame('', $client->request('GET', 'https://example.org/new')->redirect, 'an answer that is not a 3xx points nowhere');
     }
 
-    // the transport would answer, so an exception means the guard refused the address
+    // the transport would answer, so an exception means the guard refused the address - and nothing was even sent
     #[DataProvider('privateUrls')]
     public function test_publicOnly_refusesThePrivateNetwork(string $url, string $host): void
     {
-        $client = Client::publicOnly(transport: new MockHttpClient(new MockResponse('secret')));
+        $sent   = 0;
+        $client = Client::publicOnly(transport: new MockHttpClient(static function () use (&$sent): MockResponse {
+            $sent++;
+            return new MockResponse('secret');
+        }));
         try {
             $client->request('GET', $url);
             self::fail('TransportException expected');
         } catch (TransportException $e) {
             self::assertSame($host, $e->blockedHost());
+            self::assertSame(0, $sent);
         }
     }
 
     public static function privateUrls(): array
     {
         return [
-            'loopback'   => ['http://127.0.0.1/server-status', '127.0.0.1'],
-            'private'    => ['http://10.0.0.1/admin', '10.0.0.1'],
-            'link-local' => ['http://169.254.169.254/latest/meta-data/', '169.254.169.254'],
-            'ipv6'       => ['http://[::1]/', '[::1]'],
+            'loopback'                   => ['http://127.0.0.1/server-status', '127.0.0.1'],
+            'loopback, other port'       => ['http://127.0.0.2:8080/admin', '127.0.0.2'],
+            'private'                    => ['http://10.0.0.1/admin', '10.0.0.1'],
+            'private 192.168/16'         => ['https://192.168.1.1/', '192.168.1.1'],
+            'private 172.16/12'          => ['http://172.16.0.1/', '172.16.0.1'],
+            'link-local'                 => ['http://169.254.169.254/latest/meta-data/', '169.254.169.254'],
+            'this host'                  => ['http://0.0.0.0/', '0.0.0.0'],
+            'ipv6'                       => ['http://[::1]/', '[::1]'],
+            'IPv6 unique local fc00::/7' => ['http://[fc00::1]/', '[fc00::1]'],
+            'IPv6 unique local fd..'     => ['http://[fd12:3456::1]/', '[fd12:3456::1]'],
+            'IPv6 link local'            => ['http://[fe80::1]/', '[fe80::1]'],
+            'IPv4 in IPv6'               => ['http://[::ffff:127.0.0.1]/', '[::ffff:127.0.0.1]'],
+            'a name of this host'        => ['http://localhost/', 'localhost'],
+            'decimal loopback'           => ['http://2130706433/', '2130706433'],
         ];
+    }
+
+    /** a public page that sends us on to a private one is refused at the hop, before it is asked */
+    public function test_publicOnly_refusesARedirectToAPrivateAddress(): void
+    {
+        $asked = [];
+        $client = Client::publicOnly(redirects: 3, transport: new MockHttpClient(static function (string $method, string $url) use (&$asked): MockResponse {
+            $asked[] = $url;
+            return new MockResponse('', ['http_code' => 302, 'primary_ip' => self::PUBLIC_IP, 'redirect_url' => 'http://169.254.169.254/latest/meta-data/', 'response_headers' => ['Location' => 'http://169.254.169.254/latest/meta-data/']]);
+        }));
+
+        try {
+            $client->request('GET', 'http://' . self::PUBLIC_IP . '/page');
+            self::fail('the redirect was followed');
+        } catch (TransportException) {
+            self::assertSame(['http://' . self::PUBLIC_IP . '/page'], $asked);
+        }
+    }
+
+    /** the name was public when checked, the connection landed elsewhere (a DNS answer that changed) */
+    public function test_publicOnly_refusesAConnectionThatLandsOnAPrivateAddress(): void
+    {
+        $client = Client::publicOnly(transport: new MockHttpClient([new MockResponse('secret', ['primary_ip' => '10.0.0.7'])]));
+
+        $this->expectException(TransportException::class);
+        $client->request('GET', 'http://' . self::PUBLIC_IP . '/');
+    }
+
+    public function test_publicOnly_followsAPublicRedirect(): void
+    {
+        $client = Client::publicOnly(redirects: 3, transport: new MockHttpClient([
+            new MockResponse('', ['http_code' => 301, 'primary_ip' => self::PUBLIC_IP, 'redirect_url' => 'http://' . self::PUBLIC_IP . '/new', 'response_headers' => ['Location' => '/new']]),
+            new MockResponse('<html>hello</html>', ['primary_ip' => self::PUBLIC_IP]),
+        ]));
+
+        $answer = $client->request('GET', 'http://' . self::PUBLIC_IP . '/old');
+        self::assertSame([200, '<html>hello</html>'], [$answer->status, $answer->body], 'a public redirect is followed as asked');
+    }
+
+    /** the guard follows redirects itself - it must still stop where the caller said */
+    public function test_publicOnly_followsNoMoreRedirectsThanAsked(): void
+    {
+        $asked = 0;
+        $client = Client::publicOnly(redirects: 2, transport: new MockHttpClient(static function () use (&$asked): MockResponse {
+            $asked++;
+            return new MockResponse('', ['http_code' => 302, 'primary_ip' => self::PUBLIC_IP, 'redirect_url' => 'http://' . self::PUBLIC_IP . "/hop$asked"]);
+        }));
+
+        $answer = $client->request('GET', 'http://' . self::PUBLIC_IP . '/');
+        self::assertSame([302, 3], [$answer->status, $asked], 'the first request and two hops');
+        self::assertSame(302, (Client::publicOnly(transport: new MockHttpClient([new MockResponse('', ['http_code' => 302, 'primary_ip' => self::PUBLIC_IP, 'redirect_url' => 'http://' . self::PUBLIC_IP . '/x'])])))->request('GET', 'http://' . self::PUBLIC_IP . '/')->status, 'none by default');
+    }
+
+    public function test_publicOnly_onlyWebAddresses(): void
+    {
+        $client = Client::publicOnly(transport: new MockHttpClient([new MockResponse('x')]));
+
+        $this->expectException(TransportException::class);
+        $client->request('GET', 'ftp://' . self::PUBLIC_IP . '/file');
     }
 
     // a public address literal: the guard resolves host names, and the documentation ranges count as reserved
@@ -313,6 +390,14 @@ final class ClientTest extends TestCase
     {
         $this->expectException(ResponseTooLargeException::class);
         Client::publicOnly(transport: new MockHttpClient(new MockResponse(str_repeat('x', 11))), maxBytes: 10)->request('GET', 'https://1.1.1.1/');
+    }
+
+    public function test_publicOnly_keepsTheIdleLimit(): void
+    {
+        $slow = Client::publicOnly(idle: 1, maxBytes: 10, transport: new MockHttpClient([new MockResponse(['xx', ''], ['primary_ip' => self::PUBLIC_IP])]));
+
+        $this->expectException(TransportException::class);
+        $slow->request('GET', 'http://' . self::PUBLIC_IP . '/stall');
     }
 
     /** @param array{?string, ?string, ?string} $expected local_cert, local_pk, passphrase */
