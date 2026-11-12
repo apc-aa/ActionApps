@@ -35,6 +35,7 @@
 
 use AA\IO\DB\DB_AA;
 use AA\IO\ImportFile;
+use AA\Security\ViewSlices;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\Paramwizard;
@@ -285,6 +286,9 @@ class AA_Csv_Importer {
             // huhl($csvRec, $fieldNames, $trans_actions, $slice->getFields(), $itemContent);
 
             if (!$err) {
+                $err = $this->foreignItemError($itemContent);
+            }
+            if (!$err) {
                 $itemContent->setSliceID($this->slice_id);
                 $added_to_db = $itemContent->storeItem($this->actionIfItemExists, $this->insertSilent ? ItemContent::FLAG_JUST_STORE : [false]);     // not invalidate cache
                 if (!$added_to_db) {
@@ -315,6 +319,30 @@ class AA_Csv_Importer {
 
         $msg = _m("Added to slice"). $this->slice_id ." :<br><br>\n". $msg." <br><br>\n";
         MsgPage($msg . $logMsg, StateUrl(self_base() . "se_csv_import.php"));
+    }
+
+    /** The import rewrites by id only items of its own slice - storing would move an item of another slice
+     *  here. The modes that store a row with a taken id under a new id, or skip it, never touch such an item.
+     *  @return string the error for the row, '' when it may be stored
+     */
+    private function foreignItemError(ItemContent $content): string
+    {
+        if ($this->itemId === 'new') {
+            return '';    // the id is a new one
+        }
+        if (in_array($this->actionIfItemExists, ['insert_new', 'insert_if_new', 'insert_as_new'], true)) {
+            return '';
+        }
+        $id = $content->getItemID();
+        if ($id === '') {
+            return '';    // storeItem() refuses it, or stores the item with a new id
+        }
+        // the item table would cut a longer hexadecimal id to the id of some existing item
+        if (!is_long_id($id)) {
+            return _m("Bad item ID %1", [safe($id)]);
+        }
+        $slices = ViewSlices::itemSlicesFromDb('l', [$id]);
+        return ($slices && strcasecmp((string) reset($slices), (string) $this->slice_id)) ? _m('The item %1 belongs to another slice', [$id]) : '';
     }
 
 /** preview function
