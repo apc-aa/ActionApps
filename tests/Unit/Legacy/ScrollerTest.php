@@ -28,6 +28,7 @@ namespace Tests\Unit\Legacy {
     use AA_Router_Seo;
     use AA_Scroller_Easy;
     use AA_Scroller_Router;
+    use AA_Scroller_Sitemodule;
     use AA_Scroller_View;
     use PHPUnit\Framework\TestCase;
 
@@ -119,6 +120,22 @@ namespace Tests\Unit\Legacy {
 
             self::assertStringNotContainsString('a="', $html);
             self::assertStringNotContainsString("'", str_replace(["AA_Ajax('res','", "');return false;"], '', self::onclickJs($html)));
+        }
+
+        public function test_get_stateOfThePage_isHtmlEscapedInLinks(): void
+        {
+            $GLOBALS['apc_state'] = ['state' => 'cz-2'];
+            try {
+                $plain = (new AA_Scroller_Sitemodule('5', 10, 25))->get();
+                $GLOBALS['apc_state'] = ['state' => '"><b>x'];
+                $odd = (new AA_Scroller_Sitemodule('5', 10, 25))->get();
+            } finally {
+                unset($GLOBALS['apc_state']);
+            }
+
+            self::assertStringContainsString('<a href="?scrl=5&amp;apc=cz-2&amp;scr_5_Go=2" class="scroller">2</a>', $plain);
+            self::assertStringContainsString('apc=&quot;&gt;&lt;b&gt;x&amp;', $odd);
+            self::assertStringNotContainsString('<b>', $odd);
         }
 
         public function test_routerLink_ajaxTarget_escapesApostrophe(): void

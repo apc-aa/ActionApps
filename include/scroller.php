@@ -402,7 +402,7 @@ class AA_Scroller_Sitemodule extends AA_Scroller {
         $out = '';
 
         if ($GLOBALS['apc_state']) {
-            $url .= '&amp;apc='.$GLOBALS['apc_state']['state'];
+            $url .= '&amp;apc='.safe($GLOBALS['apc_state']['state']);   // view.php takes apc_state from the request
         }
         $i   = 0;
         $arr = $this->navarray();
