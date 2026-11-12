@@ -117,9 +117,9 @@ if ($feed_id) { // cross server feeding
             $ext_categs[FeedUtil::UNPACKED_AA_OTHER_CATEGOR]['name']  = _m('Other categories');
         } else {                              // individual categories
             // set according the posted values
-            foreach ($_GET['F'] as $index => $id) {
+            foreach ($F as $index => $id) {
                 $from_cat = ParseIdA($id, $app);
-                $ext_categs[$from_cat]['target_category_id'] = $_GET['T'][$index];
+                $ext_categs[$from_cat]['target_category_id'] = $T[$index] ?? '';
                 $ext_categs[$from_cat]['approved']           = $app;
             }
         }
@@ -165,10 +165,10 @@ if ($feed_id) { // cross server feeding
             'to_approved'    => (int) $app,
             'to_category_id' => $id ?: '',
         ];
-    } elseif (isset($_GET['F']) && is_array($_GET['F'])) {            // insert to categories
-        foreach ($_GET['F'] as $index => $val) {
+    } elseif ($F) {            // insert to categories
+        foreach ($F as $index => $val) {
             $from_cat = ParseIdA($val, $app);
-            $to_cat = $_GET['T'][$index];
+            $to_cat = $T[$index] ?? '';
             if ($to_cat == FeedUtil::UNPACKED_AA_THE_SAME_CATE || $to_cat == "0") { // "0" is from older versions - it could be never "0"
                 $to_cat = $from_cat;
             }

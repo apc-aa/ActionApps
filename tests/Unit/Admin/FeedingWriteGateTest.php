@@ -95,6 +95,15 @@ final class FeedingWriteGateTest extends TestCase
         $this->assertStringContainsString("if (DB_AA::test('external_feeds', [['feed_id', \$feed_id, 'i'], ['slice_id', AA::\$module_id, 'l']]) && (\$ext_categs = FeedUtil::GetExternalCategories(\$feed_id))) {", $src);
     }
 
+    /** the categories come only through InputVars; a source category without its target counts as none */
+    public function test_filters_read_the_checked_categories(): void
+    {
+        $src = self::source('admin/se_filters2.php');
+        $this->assertStringNotContainsString('$_GET', $src);
+        $this->assertSame(2, substr_count($src, 'foreach ($F as $index => '));
+        $this->assertSame(2, substr_count($src, '$T[$index] ?? \'\''));
+    }
+
     public function test_inter_import_deletes_only_an_own_feed_with_the_token(): void
     {
         $src = self::source('admin/se_inter_import.php');
