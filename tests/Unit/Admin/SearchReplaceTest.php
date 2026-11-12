@@ -30,4 +30,13 @@ final class SearchReplaceTest extends TestCase
         $this->assertGreaterThan($picked, $filter);
         $this->assertLessThan(self::at('~->setZids\(~'), $filter, 'the ids must be filtered before the transformator gets them');
     }
+
+    /** the select leaves out the fields that place the item (slice_id, id, short_id) */
+    public function test_only_an_offered_field_is_changed(): void
+    {
+        $offered = self::at('~\$field_select\[\$fld_id\] = ~');
+        $check   = self::at('~if \(!isset\(\$field_select\[\$field_id\]\)\) \{[^}]*break;~');
+        $this->assertLessThan($check, $offered, 'the offered fields must be known before the check');
+        $this->assertLessThan(self::at('~new AA_Transformator\(~'), $check);
+    }
 }

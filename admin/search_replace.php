@@ -80,65 +80,7 @@ if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
 
 $searchbar = new AA_Searchbar(AA::$module_id);   // mainly for bookmarks
 $items = $chb;
-
-if (!$fill) {               // for the first time - directly from item manager
-    $sess->register('r_sr_state');
-    unset($r_sr_state);       // clear if it was filled
-    $r_sr_state['items'] = $items;
-    // init variable settings goes here
-} else {
-    $items     = $r_sr_state['items'];  // session variable holds selected items from item manager
-    // we really want to fill fields
-    $zids          = new zids();
-    $updated_items = 0;
-    $planned = 0;
-    if ($_REQUEST[SEARCH_REPLACE_PREFIX] && str_starts_with(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')) {   // strtolower is fix for php4, where case of any class is small
-        $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX], AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
-        $zids           = (($group === 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar));
-        if ((string) $group === 'sel_item') {
-            // picked ids come with the request; the bins and stored searches are queried in this slice already
-            $zids = $zids->itemFilter([AA::$module_id]);
-        }
-
-        $transformator  = new AA_Transformator($transformation, $field_id, null, $silent, ($silent && $field_id === 'last_edit.......' && IsSuperadmin()));
-        if ($tasks > 0) {
-            $zids_chunked = $zids->chunk($tasks);
-            $toexecute = new Toexecute();
-
-            foreach ($zids_chunked as $chunk) {
-                $toexecute->later($transformator->setZids($chunk), [], 'ModifyItemContent');
-                $planned += $chunk->count();
-            }
-        } else {
-            $updated_items = $transformator->setZids($zids)->transform();
-        }
-    }
-
-    $Msg     = MsgOk(_m("Items selected: %1, Items successfully updated: %2, Items planned: %3", [$zids->count(), $updated_items, $planned]));
-    if ((string) $group === "sel_item") {
-        $sel = "LIST";
-    } elseif ((string) $group === "testitemgroup") {
-        $sel = "TEST";
-    } else {
-        $sel = get_if($group, "0");  // bookmarks groups are identified by numbers
-    }
-    AA_Log::write("ITEM_FIELD", $sel, new AA_Logentry_Iff(['selected' => $zids->count(), 'updated' => $updated_items, 'planned' => $planned]));
-}
-
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-echo '
-  <title>' . _m("Modify items") . '</title>';
-echo getFrmJavascriptFile('javascript/inputform.min.js', ['v' => AA_JS_VERSION]);
-IncludeManagerJavascript();
-echo '
-</head>
-<body>
-  <h1>' . _m("Modify items") . '</h1>
-  <form name="modifyitemsform" method="post">';
-
-echo GetPrintArray($err);
-echo $Msg;
+$err   = [];
 
 $slice  = AA_Slice::getModule(AA::$module_id);
 
@@ -162,6 +104,72 @@ foreach ($fields as $fld_id => $fld_name) {
     }
     $field_copy_arr[$fld_id] = "$fld_name ($fld_id)";
 }
+
+if (!$fill) {               // for the first time - directly from item manager
+    $sess->register('r_sr_state');
+    unset($r_sr_state);       // clear if it was filled
+    $r_sr_state['items'] = $items;
+    // init variable settings goes here
+} else {
+    $items     = $r_sr_state['items'];  // session variable holds selected items from item manager
+    do {
+        // only the fields the form offers - the reserved ones bind the item to its slice and ids
+        if (!isset($field_select[$field_id])) {
+            $err['field_id'] = MsgErr(_m("You do not have permission to edit items this way in this slice"));
+            break;
+        }
+        // we really want to fill fields
+        $zids          = new zids();
+        $updated_items = 0;
+        $planned = 0;
+        if ($_REQUEST[SEARCH_REPLACE_PREFIX] && str_starts_with(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')) {   // strtolower is fix for php4, where case of any class is small
+            $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX], AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
+            $zids           = (($group === 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar));
+            if ((string) $group === 'sel_item') {
+                // picked ids come with the request; the bins and stored searches are queried in this slice already
+                $zids = $zids->itemFilter([AA::$module_id]);
+            }
+
+            $transformator  = new AA_Transformator($transformation, $field_id, null, $silent, ($silent && $field_id === 'last_edit.......' && IsSuperadmin()));
+            if ($tasks > 0) {
+                $zids_chunked = $zids->chunk($tasks);
+                $toexecute = new Toexecute();
+
+                foreach ($zids_chunked as $chunk) {
+                    $toexecute->later($transformator->setZids($chunk), [], 'ModifyItemContent');
+                    $planned += $chunk->count();
+                }
+            } else {
+                $updated_items = $transformator->setZids($zids)->transform();
+            }
+        }
+
+        $Msg     = MsgOk(_m("Items selected: %1, Items successfully updated: %2, Items planned: %3", [$zids->count(), $updated_items, $planned]));
+        if ((string) $group === "sel_item") {
+            $sel = "LIST";
+        } elseif ((string) $group === "testitemgroup") {
+            $sel = "TEST";
+        } else {
+            $sel = get_if($group, "0");  // bookmarks groups are identified by numbers
+        }
+        AA_Log::write("ITEM_FIELD", $sel, new AA_Logentry_Iff(['selected' => $zids->count(), 'updated' => $updated_items, 'planned' => $planned]));
+    } while (false);
+}
+
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+echo '
+  <title>' . _m("Modify items") . '</title>';
+echo getFrmJavascriptFile('javascript/inputform.min.js', ['v' => AA_JS_VERSION]);
+IncludeManagerJavascript();
+echo '
+</head>
+<body>
+  <h1>' . _m("Modify items") . '</h1>
+  <form name="modifyitemsform" method="post">';
+
+echo GetPrintArray($err);
+echo $Msg;
 
 $params = [
     'field_copy_arr' => $field_copy_arr,
