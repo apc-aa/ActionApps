@@ -29,7 +29,9 @@
 //           $d_id
 //           $h
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -37,6 +39,7 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/discussion.php";
 require_once __DIR__ . "/../include/item.php";
 
+const DISCEDIT_TOKEN = 'aa-discedit';
 
 try {
     // array ( '5c9c0780a5c…' => 1, '60df0a16831…' => 1, 'db996299264…' => 7, '8bf7dd29548…' => 2, '0ae33f40354…' => 5, )
@@ -48,6 +51,7 @@ try {
     // array ( 'hide' => 14, 'delete' => 1, 'deleteshown' => 1, 'deleteall' => 1, )
     $mode = InputVars::stringGET('mode'); // alpha
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -66,6 +70,12 @@ if (!DiscussionInSlice($item_id, '', AA::$module_id)) {
 }
 // a comment of another item is left alone, as one deleted meanwhile (a reload after Delete)
 if (($d_id !== '') && !DiscussionInSlice($item_id, $d_id, AA::$module_id)) {
+    $mode = '';
+}
+// comments change only from this page's own buttons
+if (in_array($mode, ['hide', 'delete', 'deleteall', 'deleteshown'], true)
+    && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(DISCEDIT_TOKEN, $token, $_SERVER))) {
+    $Msg  = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
     $mode = '';
 }
 
@@ -109,23 +119,39 @@ GetDiscussionThread($tree, "0", 0, $outcome);         // get array of images
 
 
 $script2run = '<script>
+  // the action is in the url, the token goes in a POST - a form of its own, as the page form leads to index.php
+  function PostDiscAction(url) {
+    const form = document.createElement("form");
+    form.method = "post";
+    form.action = url;
+    const input = document.createElement("input");
+    input.type  = "hidden";
+    input.name  = "token";
+    input.value = "' . FormToken::get(DISCEDIT_TOKEN) . '";
+    form.append(input);
+    document.body.append(form);
+    form.submit();
+  }
+  function HideComment(id, h) {
+    PostDiscAction("' . get_url("./discedit.php", ['mode' => 'hide', 'item_id' => $item_id], true) . '&d_id=" + encodeURIComponent(id) + "&h=" + h);
+  }
   function DeleteComment(id) {
     if ( !confirm("' . _m("Are you sure you want to delete selected comment?") . '")) {
        return;
     }
-    window.location = "' . get_url("./discedit.php", ['mode' => 'delete', 'item_id' => $item_id], true) . '&d_id=" + encodeURIComponent(id);
+    PostDiscAction("' . get_url("./discedit.php", ['mode' => 'delete', 'item_id' => $item_id], true) . '&d_id=" + encodeURIComponent(id));
   }
   function DeleteAllComments() {
     if ( !confirm("' . _m("Are you sure you want to delete ALL comments? There is no way back!") . '")) {
        return;
     }
-    window.location = "' . get_url("./discedit.php", ['mode' => 'deleteall', 'item_id' => $item_id], true) . '";
+    PostDiscAction("' . get_url("./discedit.php", ['mode' => 'deleteall', 'item_id' => $item_id], true) . '");
   }
   function DeleteAllHiddenComments() {
     if ( !confirm("' . _m("Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!") . '")) {
        return;
     }
-    window.location = "' . get_url("./discedit.php", ['mode' => 'deleteshown', 'item_id' => $item_id], true) . '";
+    PostDiscAction("' . get_url("./discedit.php", ['mode' => 'deleteshown', 'item_id' => $item_id], true) . '");
   }
 </script>';
 
@@ -173,7 +199,7 @@ if (!$outcome) {
         echo   "<a class=aa-button-edit href=" . con_url("discedit2.php", ["d_id" => $d_id,"item_id" => $item_id], true) . "><small>" . _m("Edit") . "</small></a>";
         $s = ($h = !$dcontent[$d_id]["d_state........."][0]['value']) ? _m("Hide") : _m("Approve");
         echo   "<a class=aa-button-delete href=\"javascript:DeleteComment('" . $d_id . "')\"><small>" . _m("Delete") . "</small></a>";
-        echo   "<a class='btn btn-secondary' href=" . con_url("discedit.php", ["mode" => 'hide','h' => $h, 'd_id' => $d_id, 'item_id' => $item_id], true) . "><small>" . $s . "</small></a>";
+        echo   "<a class='btn btn-secondary' href=\"javascript:HideComment('" . $d_id . "', " . ($h ? 1 : 0) . ")\"><small>" . $s . "</small></a>";
         echo "</td></tr>\n";
     }
 }

@@ -34,6 +34,21 @@ final class DisceditTest extends TestCase
         }
     }
 
+    /** a link to the page only shows the comments; its buttons post the page's token */
+    public function test_change_needs_the_form_token(): void
+    {
+        $gate = self::at('discedit.php', '~if \(in_array\(\$mode, \[\'hide\', \'delete\', \'deleteall\', \'deleteshown\'\], true\)\s*'
+            . '&& \(ResponderPolicy::isForeignBrowserRequest\(\$_SERVER\) \|\| !FormToken::checkPost\(DISCEDIT_TOKEN, \$token, \$_SERVER\)\)\) \{[^}]*\$mode = \'\';~');
+        foreach (['DB_AA::update\(', 'DeleteNode\(', 'DeleteDiscForItem\(', 'updateDiscussionCount\('] as $use) {
+            $this->assertLessThan(self::at('discedit.php', "~$use~"), $gate, "$use must not run before the token check");
+        }
+        $src = self::source('discedit.php');
+        $this->assertStringContainsString('input.value = "\' . FormToken::get(DISCEDIT_TOKEN) . \'";', $src);
+        $this->assertStringNotContainsString('window.location', $src);
+        $this->assertSame(0, preg_match('~con_url\([^;]*["\']mode["\']~', $src), 'no action link');
+        $this->assertSame(4, substr_count($src, 'PostDiscAction("\' . get_url("./discedit.php", [\'mode\' => '), 'each action posts');
+    }
+
     public function test_edit_works_only_on_a_comment_of_an_item_of_the_slice(): void
     {
         $check = self::at('discedit2.php', '~if \(!DiscussionInSlice\(\$item_id, \$d_id, AA::\$module_id\)\) \{[^}]*exit;~');
