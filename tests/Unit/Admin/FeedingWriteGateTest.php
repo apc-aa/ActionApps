@@ -46,6 +46,15 @@ final class FeedingWriteGateTest extends TestCase
         $this->assertMatchesRegularExpression('~FormToken::(?:get|field)\(' . $const . '\)~', $sender, "$file does not send $const");
     }
 
+    /** a link only shows the Run (or Test) button, which posts the token to the same address; only Source reads */
+    public function test_feed_run_is_queued_only_with_the_token(): void
+    {
+        $src = self::source('admin/xmlclient.php');
+        $this->assertToken($src, 'FEED_RUN_TOKEN');
+        $this->assertSame(1, preg_match('~if \(\(\$fire !== \'display\'\) && ' . self::refused('FEED_RUN_TOKEN') . '\) \{\s*MsgPage\(\'<form method="post">\' \. FormToken::field\(FEED_RUN_TOKEN\)~', $src, $m, PREG_OFFSET_CAPTURE), 'no FEED_RUN_TOKEN gate');
+        $this->assertGreaterThan($m[0][1], (int) strpos($src, '->feed($fire)'));
+    }
+
     public function test_inter_import_is_created_only_with_the_token(): void
     {
         $src = self::source('admin/se_inter_import3.php');

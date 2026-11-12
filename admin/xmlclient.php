@@ -1,7 +1,9 @@
 <?php
 
+use AA\Central\ResponderPolicy;
 use AA\IO\Feed;
 use AA\Later\FeedsRun;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 /** Cross-Server Networking - client module
@@ -66,10 +68,13 @@ require_once __DIR__ . "/../include/itemfunc.php";
 require_once __DIR__ . "/../include/notify.php";
 require_once __DIR__ . "/../include/feeding.php";
 
+const FEED_RUN_TOKEN = 'aa-feed-run';
+
 try {
     $debugfeed  = InputVars::intGET('debugfeed');
     $feed_id    = InputVars::intGET('feed_id');
     $rssfeed_id = InputVars::intGET('rssfeed_id');
+    $token      = InputVars::stringPOST('token');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -118,6 +123,12 @@ if ($feed_id) {          // just one specified APC feed
     $feed = null;
 }
 xmlclient_check_perm($feed);
+
+// Source only reads. A run, and a test too (it moves the newest item of the feed on), goes by the button
+// of this page - a POST to the same address - so the Run and Test links and the menu show the button first
+if (($fire !== 'display') && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(FEED_RUN_TOKEN, $token, $_SERVER))) {
+    MsgPage('<form method="post">' . FormToken::field(FEED_RUN_TOKEN) . '<button type="submit" class="aa-button-run">' . (($fire === 'test') ? _m('Test') : _m('Run (queue)')) . '</button></form>');
+}
 
 // debug levels 8+ print the fetch URLs and the feed itself, which carry the node password
 if (!IsSuperadmin()) {
