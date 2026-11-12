@@ -89,42 +89,42 @@ function PrintRule($rule, $fields, $selector_names = []): void
         case 'input_view':
         case 'listlen':
         case 'admin_perm':
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], "", $rule['value']);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], "", safe($rule['value']));
             break;
         case 'admin_order':
             $fid = substr($rule['value'], 0, -1);
             $ord = substr($rule['value'], -1);
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fid . '<small> (' . $fields[$fid] . ')</small>', $SORTORDER_TYPES[$ord]);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], safe($fid) . '<small> (' . safe($fields[$fid]) . ')</small>', $SORTORDER_TYPES[$ord]);
             break;
         case 'admin_search':
             $pos = strpos($rule['value'], ':');
             $fid = substr($rule['value'], 0, $pos);
             $val = substr($rule['value'], $pos + 1);
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $val);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], safe($fid) . '<small> (' . safe($fields[$fid]) . ')</small>', safe($val));
             break;
         case 'hide':
-            PrintRuleRow($rid, $PROPERTY_TYPES[$rule['value'] == 1 ? 'hide' : 'show'], $rule['selector'] . '<small> (' . $fields[$rule['selector']] . ')</small>');
+            PrintRuleRow($rid, $PROPERTY_TYPES[$rule['value'] == 1 ? 'hide' : 'show'], safe($rule['selector']) . '<small> (' . safe($fields[$rule['selector']]) . ')</small>');
             break;
         case 'fill':
         case 'hide&fill':
         case 'predefine':
             if (!$rule['value']) {   // for 'show' the hide&fill value is '0' and in this case
-                PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector'] . '<small> (' . $fields[$rule['selector']] . ')</small>', _m('--disabled-- (added by "Show field" rule)'));
+                PrintRuleRow($rid, $PROPERTY_TYPES[$prop], safe($rule['selector']) . '<small> (' . safe($fields[$rule['selector']]) . ')</small>', _m('--disabled-- (added by "Show field" rule)'));
                 break;
             }
             $fnc = ParseFnc(substr($rule['value'], 2));  // all default should have fnc:param format
             PrintRuleRow(
                 $rid,
                 $PROPERTY_TYPES[$prop],
-                $rule['selector'] . '<small> (' . $fields[$rule['selector']] . ')</small>',
+                safe($rule['selector']) . '<small> (' . safe($fields[$rule['selector']]) . ')</small>',
                 $INPUT_DEFAULT_TYPES[$fnc['fnc']],
-                $fnc['param'],
+                safe($fnc['param']),
                 ($rule['value'][0] == '1') ? 'HTML' : "",
             );
             break;
         case 'ui_manager':
         case 'ui_inputform':
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $selector_names[$rule['selector']] ?? safe($rule['selector']), $rule['value']);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $selector_names[$rule['selector']] ?? safe($rule['selector']), safe($rule['value']));
             break;
         case 'ui_manager_hide':
         case 'ui_inputform_hide':
