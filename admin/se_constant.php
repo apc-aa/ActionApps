@@ -100,7 +100,7 @@ if (($as_new === null) || ($group_id === null)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m('Wrong constant group id'), "admin");
     exit;
 }
-$back_url  = ($return_url ? ($fid    ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php");
+$back_url  = (($return_url && IsNavigableUrl($return_url)) ? ($fid    ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php");
 $from_form = false;  // display the values from form (after unsucessful update)
 $may_edit_slice = static fn(string $slice_id): bool => CheckPerms(AuthGetUid(), "slice", $slice_id, PS_FIELDS);
 $constant_info  = $group_id ? constant_group_owner($group_id) : false;

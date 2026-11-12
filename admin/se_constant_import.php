@@ -69,7 +69,7 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-$back_url = ($return_url ? ($fid ? get_url($return_url, ['fid' => $fid]) : $return_url) : "index.php");
+$back_url = (($return_url && IsNavigableUrl($return_url)) ? ($fid ? get_url($return_url, ['fid' => $fid]) : $return_url) : "index.php");
 
 // the group is created only from this page's own form
 $may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(CONSTANT_IMPORT_TOKEN, $token, $_SERVER);
