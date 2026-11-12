@@ -30,7 +30,9 @@
  * @param $chb[] - array of selected users (in reader management slice)
 */
 
+use AA\Central\ResponderPolicy;
 use AA\Mail\RepeatedBulkMail;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 
@@ -38,6 +40,8 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../modules/alerts/util.php";
 require_once __DIR__ . "/../include/varset.php";
+
+const WRITE_MAIL_TOKEN = 'aa-write-mail';
 
 try {
     // $chb - arr send to selected users
@@ -84,6 +88,7 @@ try {
     $testemail = InputVars::stringPOST('testemail');
     $cancel = InputVars::boolPOST('cancel');
     $resend = InputVars::boolPOST('resend');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -117,6 +122,11 @@ if (!$send) {               // for the first time - directly from item manager
     $items     = $r_wm_state['items'];  // session variable holds selected items fmom item manager
     // we really want to send email - so store template
     do {
+        // a sent email cannot be recalled - only from the form of this page
+        if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(WRITE_MAIL_TOKEN, $token, $_SERVER)) {
+            $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+            break;
+        }
         // --- write the e-mail template to the table ---
         $description     = date('Y-m-d H:i:s') . ', ' . AuthGetUid();
         $type            = 'bulk email';
@@ -250,6 +260,7 @@ if ($queued) {
 }
 echo '
   <form name="mailform" method="post" enctype="multipart/form-data">';
+echo FormToken::field(WRITE_MAIL_TOKEN);
 
 
 FrmTabCaption((is_array($items) ? _m("Recipients") : (_m("Stored searches for ") . $slice->getName())));
