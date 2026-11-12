@@ -81,7 +81,7 @@ if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(
  */
 function ParseIdA($param, &$app): string
 {
-    if (preg_match("/([0-9a-f]{1,32}|0)-([01])/i", $param, $parse)) {  // slice_id or 0
+    if (preg_match('/^([0-9a-f]{1,32}|0)-([01])$/Di', $param, $parse)) {  // category id or 0, the whole value
         $app = $parse[2];
         return $parse[1];
     }

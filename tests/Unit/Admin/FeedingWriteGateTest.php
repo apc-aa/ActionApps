@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Admin;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /** The feeding and import settings change what flows into a slice, so each change may run only from
@@ -106,6 +107,30 @@ final class FeedingWriteGateTest extends TestCase
         $this->assertStringNotContainsString('$_GET', $src);
         $this->assertSame(2, substr_count($src, 'foreach ($F as $index => '));
         $this->assertSame(2, substr_count($src, '$T[$index] ?? \'\''));
+    }
+
+    /** @return array<string, array{string, list<string>|null}>  value sent by se_filters.php, [category, approved] or null */
+    public static function categoryValues(): array
+    {
+        return [
+            'category id'         => ['41415f5468655f53616d655f43617465-1', ['41415f5468655f53616d655f43617465', '1']],
+            'no category'         => ['0-0', ['0', '0']],
+            'upper case id'       => ['ABCDEF0123-1', ['ABCDEF0123', '1']],
+            'empty id'            => ['-1', null],
+            'something before'    => ['x0-1', null],
+            'something after'     => ['0-1x', null],
+            'new line after'      => ["0-1\n", null],
+            'longer than an id'   => [str_repeat('a', 33) . '-1', null],
+        ];
+    }
+
+    /** se_filters.php sends "<category id or 0>-<0|1>"; a value of another shape is no category at all */
+    #[DataProvider('categoryValues')]
+    public function test_filters_take_only_a_whole_category_value(string $value, ?array $parsed): void
+    {
+        $src = self::source('admin/se_filters2.php');
+        $this->assertSame(1, preg_match("~function ParseIdA\(\\\$param, &\\\$app\): string\s*\{\s*if \(preg_match\('([^'\\\\]+)', \\\$param, \\\$parse\)\) \{~", $src, $m), 'ParseIdA() is not the expected one');
+        $this->assertSame($parsed, preg_match($m[1], $value, $parse) ? [$parse[1], $parse[2]] : null);
     }
 
     public function test_inter_import_deletes_only_an_own_feed_with_the_token(): void
