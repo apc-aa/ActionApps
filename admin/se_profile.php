@@ -254,7 +254,7 @@ PrintSetRule(14,'ui_inputform_hide',$inputform_hide,   [],                0,    
 echo "</table>
     </form>
     <form name=\"sf\" method=\"post\" action='se_profile.php'>" . FormToken::field(PROFILE_TOKEN) . "
-      <input type=\"hidden\" name=\"uid\" value='$uid'>
+      <input type=\"hidden\" name=\"uid\" value='" . safe($uid) . "'>
       <input type=\"hidden\" name=\"add\" value='1'>
       <input type=\"hidden\" name=\"property\">
       <input type=\"hidden\" name=\"param\">
@@ -272,7 +272,7 @@ if (is_array($set_as_from) && count($set_as_from)) {
         $set_as_from[$from_uid] = perm_username($from_uid);
     }
     echo '<form name="cpf" method="post" action="se_profile.php">' . FormToken::field(PROFILE_TOKEN) . '
-      <input type="hidden" name="uid" value="' .$uid.'">
+      <input type="hidden" name="uid" value="' . safe($uid) . '">
       <input type="hidden" name="set_as" value="1">'.
       StateHidden();
 
