@@ -59,6 +59,15 @@ if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to edit all items."), "items");
     exit;
 }
+// the right is to this slice, the ids come in the URL
+if (!DiscussionInSlice($item_id, '', AA::$module_id)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permission to edit items in this slice"), "items");
+    exit;
+}
+// a comment of another item is left alone, as one deleted meanwhile (a reload after Delete)
+if (($d_id !== '') && !DiscussionInSlice($item_id, $d_id, AA::$module_id)) {
+    $mode = '';
+}
 
 $err = [];          // error array (Init - just for initializing variable
 

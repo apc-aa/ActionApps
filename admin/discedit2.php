@@ -85,6 +85,12 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/discussion.php";
 require_once __DIR__ . "/../include/item.php";
 
+// the right is to this slice, the ids come in the URL
+if (!DiscussionInSlice($item_id, $d_id, AA::$module_id)) {
+    MsgPage(_m("You do not have permission to edit items in this slice"));
+    exit;
+}
+
 $err = [];          // error array (Init - just for initializing variable
 
 if ($update) {
