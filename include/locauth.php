@@ -225,8 +225,9 @@ class AA_Auth extends Auth
         $this->auth['at']    = time();
         $this->auth['via']   = $method;
         if ($method === 'free') {
-            // crawlers follow the free links, a row each visit would bury the real logins - a row a day shows it is used
-            LogOnce::daily('FREE_LOGIN', $uname);
+            // crawlers follow the free links, a row each visit would bury the real logins - a row a day shows it is used;
+            // under the stored login name publicPassword() asks for - the link may write it in another case
+            LogOnce::daily('FREE_LOGIN', AA::$perm->getUserLoginName($uid) ?: $uname);
         } else {
             AA_Log::write('LOGIN', AA_Log::context($uid, false), LoginThrottle::stored($uname));
         }

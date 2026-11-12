@@ -52,9 +52,10 @@ namespace Tests\Unit\Legacy {
             return in_array((string) $uid, self::USERS, true);
         }
 
+        /** the login name in any case, with edge spaces - as the SQL backend finds it */
         public function authenticateUsername($username, $password, $code2fa = ''): false|string
         {
-            return ($password === 'pw') ? (self::USERS[$username] ?? false) : false;
+            return ($password === 'pw') ? (self::USERS[mb_strtolower(trim((string) $username))] ?? false) : false;
         }
 
         public function passkeyId(string $uid): ?string
@@ -386,6 +387,13 @@ namespace Tests\Unit\Legacy {
 
             $this->assertTrue(AA_Auth::publicPassword('8'));
             $this->assertFalse(AA_Auth::publicPassword('7'));
+        }
+
+        /** a free link may name the account in another case, with spaces - the row is under the stored name publicPassword() asks for */
+        public function test_freeLogin_nameWrittenOtherwise_rowUnderTheLoginName(): void
+        {
+            $this->assertSame('8', (new AA_Auth())->freeLogin('Eva ', 'pw'));
+            $this->assertSame([['FREE_LOGIN', 'eva', '']], self::logRows());
         }
 
         public function test_isFresh_tenMinutesAfterTheLogin_no(): void
