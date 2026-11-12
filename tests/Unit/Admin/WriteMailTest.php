@@ -52,4 +52,10 @@ final class WriteMailTest extends TestCase
         $this->assertSame(1, substr_count(self::source(), 'new AA_Mailtemplate('));
         $this->assertGreaterThan($use, self::at('~str_replace\(\[\'_#BODYTEXT\',\'_#SUBJECT_\'\], \[\$body, \$subject\],~'), 'the template gets the typed input');
     }
+
+    public function test_test_address_is_escaped(): void
+    {
+        $this->assertStringNotContainsString('value="\' . $testemail', self::source());
+        self::at('~name="testemail" value="\' \. safe\(\$testemail\) \. \'"~');
+    }
 }
