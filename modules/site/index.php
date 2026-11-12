@@ -23,7 +23,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // used in initpage.php3 script to include config.php from the right directory
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../../include/init_page.php";
@@ -47,6 +49,7 @@ try {
     $content = InputVars::stringPOST('content');
     $name = InputVars::stringPOST('name');
     $cancel = InputVars::boolPOST('cancel');
+    $token = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -79,6 +82,14 @@ if ($go_sid) {
 }
 
 $current_spot_id = $tree->getCurrentId();
+
+// the tree and the spots change only from this editor; the spot code runs on the site, so its form needs the token too
+$spot_write = ($content !== '') || ($name !== '');
+if (($akce !== '' || $addcond !== '' || $addvar !== '' || $delvar !== '' || $delcond !== '' || $spot_write)
+    && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || ($spot_write && !FormToken::checkPost(AA_Module_Site::SPOT_TOKEN, $token, $_SERVER)))) {
+    $akce = $addcond = $addvar = $delvar = $delcond = $content = $name = '';
+    $Msg  = MsgErr(_m('The form has expired; reload the page and try again.'));
+}
 
 switch ($akce) {
     case 's': $tree->addInSequence($current_spot_id, 'spot');
