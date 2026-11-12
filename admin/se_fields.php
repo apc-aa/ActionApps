@@ -29,11 +29,13 @@
 // expected $slice_id for edit slice, nothing for adding slice
 // optional slice_fields = 1 (for slice fields)
 
+use AA\Central\ResponderPolicy;
 use AA\Form\ShowConditions;
 use AA\IO\DB\DB_AA;
 use AA\Optimize\ChangeF_h2F_1;
 use AA\Optimize\ChangeF_t2F_1;
 use AA\Optimize\ChangeF_t2F__;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 use AA\Util\ScriptTag;
 
@@ -41,6 +43,7 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 
+const FIELDS_TOKEN = 'aa-fields';
 
 try {
     // array ( '' => 7, )-array ( 'Analyze' => 2, )
@@ -75,6 +78,7 @@ try {
     // array ( ' Změnit [^…' => 32, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
     
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
@@ -91,6 +95,12 @@ if (!IfSlPerm(PS_FIELDS) || !$slice) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
+
+// fields change only from this page's own form and buttons
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(FIELDS_TOKEN, $token, $_SERVER);
+if (($del || ($move_als && $move_als_to) || ($update && $name) || $fix) && !$may_write) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
 
 /** ShowNewField function
  * @param          $from_slice
@@ -132,7 +142,7 @@ function ShowNewField($from_slice, bool $slice_fields, array $template_slices): 
 }
 
 
-if ($del) {
+if ($may_write && $del) {
     if (!DB_AA::delete('field', [['id',$fid], ['slice_id',AA::$module_id,'l']])) {  // not necessary - we have set the halt_on_error
         $err["DB"] = MsgErr("Can't change field");
         exit;
@@ -142,7 +152,7 @@ if ($del) {
     $Msg = MsgOk(_m("Field delete OK"));
 }
 
-if ($move_als && $move_als_to) {
+if ($may_write && $move_als && $move_als_to) {
     [$m_name,$m_fid,$m_pos]  = explode('|',$move_als,3);   // _#HEADLINE|headline........|2
     $m_pos = (int)$m_pos;
 
@@ -180,7 +190,7 @@ if ($move_als && $move_als_to) {
 
 $template_slices = AA_Fields::templateSlices(AA::$module_id);
 
-if ($update && $name) {
+if ($may_write && $update && $name) {
     $err = array_merge($err, AA_Fields::storeAdminRows(AA::$module_id, $name, $pri, $req, $shw, (string) $ftype, (bool) $slice_fields, array_keys($template_slices), $shwif));
     AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
     if (!count($err)) {
@@ -224,7 +234,7 @@ $aliasmovejs = <<<JS
         handle: 'i',
         onAdd: function (e) {
           if (confirm("$QUESTION")) {
-              window.location='?' + new URLSearchParams({ module_id: '$MOD_ID', move_als: e.item.textContent+'|'+e.item.dataset.fld, move_als_to: e.target.dataset.fld}).toString();
+              PostFieldsAction('?' + new URLSearchParams({ module_id: '$MOD_ID', move_als: e.item.textContent+'|'+e.item.dataset.fld, move_als_to: e.target.dataset.fld}).toString());
           }
       }
       });
@@ -238,7 +248,20 @@ $headcode = '
             return;
         }
         const url = "'. get_url('', ["del" => 1, "analyze" => ($analyze || $fix)] + ($slice_fields ? ['slice_fields' => 1] : []), true). '";
-        window.location=url + "&fid=" + encodeURIComponent(id);
+        PostFieldsAction(url + "&fid=" + encodeURIComponent(id));
+      }
+      // the action is in the url, the token goes in a POST - a form of its own, as the page form holds the field rows
+      function PostFieldsAction(url) {
+        const form = document.createElement("form");
+        form.method = "post";
+        form.action = url;
+        const input = document.createElement("input");
+        input.type  = "hidden";
+        input.name  = "token";
+        input.value = "' . FormToken::get(FIELDS_TOKEN) . '";
+        form.append(input);
+        document.body.append(form);
+        form.submit();
       }
     </script>
     ';
@@ -340,7 +363,7 @@ if ($analyze) {
     }
 }
 
-if ($fix) {
+if ($may_write && $fix) {
     ($optimizer = new ChangeF_h2F_1())->repair4modules([AA::$module_id]);
     $code .= $optimizer->report();
     ($optimizer = new ChangeF_t2F_1())->repair4modules([AA::$module_id]);
@@ -375,5 +398,6 @@ $form_buttons['slice_fields'] = ['value' => ($slice_fields ? 1 : 0)];
 $code .= ShowNewField($from_slice, (bool) $slice_fields, $template_slices);
 $code .= '</tbody>';
 $code .= getFrmTabEnd( $form_buttons);
+$code .= FormToken::field(FIELDS_TOKEN);
 
 $apage->printAllPage($code, $err, $Msg);
