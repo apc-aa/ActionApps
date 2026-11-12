@@ -27,7 +27,9 @@
 
 /** This script is total mess (passing parameters in and out in globals...) - use rather another type of import - Central, ... HM 2022-12 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 $require_default_lang     = true;      // do not use module specific language file
@@ -42,11 +44,13 @@ require_once __DIR__ . "/../include/formutil.php";
 
 require_once __DIR__. "/sliceimp_xml.php";          // insert xml parser
 
+const SLICEIMP_TOKEN = 'aa-sliceimp';
+
 try {
-    $slice_def           = InputVars::stringGETPOST('slice_def');
-    $data_conflicts_list = InputVars::stringGETPOST('data_conflicts_list');
-    $conflicts_list      = InputVars::stringGETPOST('conflicts_list');
-    $view_conflicts_list = InputVars::stringGETPOST('view_conflicts_list');
+    $slice_def           = InputVars::stringPOST('slice_def');
+    $data_conflicts_list = InputVars::stringPOST('data_conflicts_list');
+    $conflicts_list      = InputVars::stringPOST('conflicts_list');
+    $view_conflicts_list = InputVars::stringPOST('view_conflicts_list');
 
     $submit           = InputVars::stringGETPOST('submit');
     $only_data        = InputVars::boolPOST('only_data');
@@ -55,6 +59,7 @@ try {
     $dry_run          = InputVars::boolPOST('dry_run');
     // array ( '' => 4, )
     $cancel = InputVars::stringGETPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
@@ -77,7 +82,7 @@ function prove_ID($slice): bool {
     $res = $resolve_conflicts[$slice["id"]];
     if (strlen($res) && (strlen($res) !== 16))	{
         if ((strlen($res) !== 32)) {
-            echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", [$res, strlen ($res)])."<br>\n";
+            echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", [safe($res), strlen ($res)])."<br>\n";
         }
         $res = pack_id($res);
         if (strlen($res) === 16) {
@@ -274,8 +279,14 @@ if ($cancel) {
 $IDconflict = false;
 $imported_count = 0;
 
+// data are imported only from this page's own form (both steps of it)
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(SLICEIMP_TOKEN, $token, $_SERVER);
+if ((($slice_def != '') || !empty($_FILES['slice_def_file']['tmp_name'])) && !$may_write) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
+
 // import via exported file
-if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
+if ($may_write && is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
     $slice_def_bck = $slice_def = Files::getUploadedFile('slice_def_file');
 }
 
@@ -306,7 +317,7 @@ if ($data_conflicts_list) {
     }
 }
 
-if ($slice_def != "") {
+if ($may_write && ($slice_def != "")) {
     sliceimp_xml_parse($slice_def, $dry_run, $force_this_slice);
 }
 
@@ -480,4 +491,5 @@ foreach ($data_conflicts_ID as $c_id => $name) {
 
 
 <?php
+echo FormToken::field(SLICEIMP_TOKEN);
 $apage->printFoot();

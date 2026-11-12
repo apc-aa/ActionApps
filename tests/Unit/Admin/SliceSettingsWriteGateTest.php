@@ -7,7 +7,7 @@ namespace Tests\Unit\Admin;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/** The slice settings pages change fields and constants, so each write may run only from the page's
+/** The slice settings pages change fields and constants or import slices, so each write may run only from the page's
  *  own form: a POST carrying its token, not sent by a page of another origin. The pages need a session
  *  and the permission backend, so the tests read their source. */
 final class SliceSettingsWriteGateTest extends TestCase
@@ -18,6 +18,7 @@ final class SliceSettingsWriteGateTest extends TestCase
         return [
             'fields'           => ['admin/se_fields.php', 'FIELDS_TOKEN', ['delete', 'doUpdate', 'storeAdminRows', 'repair4modules'], 2],
             'constants import' => ['admin/se_constant_import.php', 'CONSTANT_IMPORT_TOKEN', ['add_constant_group'], 1],
+            'slice import'     => ['admin/sliceimp.php', 'SLICEIMP_TOKEN', ['getUploadedFile', 'sliceimp_xml_parse'], 1],
         ];
     }
 
@@ -63,6 +64,15 @@ final class SliceSettingsWriteGateTest extends TestCase
             $this->assertNotFalse($at, "$write not found");
             $this->assertGreaterThan($drop, $at, "$write runs before the changes are dropped");
         }
+    }
+
+    public function test_slice_import_takes_its_data_from_the_form_only(): void
+    {
+        $src = self::source('admin/sliceimp.php');
+        foreach (['slice_def', 'conflicts_list', 'view_conflicts_list', 'data_conflicts_list'] as $var) {
+            $this->assertStringContainsString("InputVars::stringPOST('$var')", $src);
+        }
+        $this->assertStringContainsString('[safe($res), strlen ($res)]', $src, 'the id from the request is printed escaped');
     }
 
     public function test_fields_page_scripts_post_their_actions(): void
