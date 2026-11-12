@@ -51,4 +51,11 @@ final class SearchReplaceTest extends TestCase
         $form = self::at('~<form name="modifyitemsform" method="post">\';\s*echo FormToken::field\(SEARCH_REPLACE_TOKEN\);~');
         $this->assertGreaterThan($gate, $form);
     }
+
+    /** a cookie of the same name would override the posted value in $_REQUEST */
+    public function test_transformation_comes_from_the_posted_form(): void
+    {
+        $this->assertStringNotContainsString('$_REQUEST', self::source());
+        $this->assertGreaterThan(self::at('~\$transform = InputVars::stringPOST\(\'transform\'\);~'), self::at('~AA_Object::factory\(\$transform, AA_Transformation::getRequestVariables\(SEARCH_REPLACE_PREFIX, \$transform\)\)~'));
+    }
 }

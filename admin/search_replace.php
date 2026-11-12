@@ -131,8 +131,8 @@ if (!$fill) {               // for the first time - directly from item manager
         $zids          = new zids();
         $updated_items = 0;
         $planned = 0;
-        if ($_REQUEST[SEARCH_REPLACE_PREFIX] && str_starts_with(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')) {   // strtolower is fix for php4, where case of any class is small
-            $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX], AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
+        if ($transform && str_starts_with(strtolower($transform), 'aa_transformation_')) {   // strtolower is fix for php4, where case of any class is small
+            $transformation = AA_Object::factory($transform, AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $transform));
             $zids           = (($group === 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar));
             if ((string) $group === 'sel_item') {
                 // picked ids come with the request; the bins and stored searches are queried in this slice already
