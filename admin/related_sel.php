@@ -62,7 +62,7 @@ $sess->register('r_state'); // make sure it is _SESSION variable
 if (isset($_GET['sid'])) {
     $sid         = InputVars::idGET('sid');
     $var_id      = InputVars::stringGET('var_id');
-    if (!preg_match('~^[A-Za-z0-9_.\[\]/-]*$~D', $var_id)) {   // a form variable name, written into a javascript: link
+    if (!preg_match('~^[A-Za-z0-9_.\[\]/-]*$~D', $var_id)) {   // a form variable name, written into the onclick of the Add buttons
         $var_id = '';
     }
     $mode        = InputVars::stringGET('mode');
@@ -134,7 +134,9 @@ if (!$slice_field) {
 
 for ($i = 0, $ino = strlen($mode); $i < $ino; ++$i) {
     $m1 = substr($mode, $i, 1);
-    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','" . TPS['AMB'][$m1]['tag'] . "','" . TPS['AMB'][$m1]['prefix'] . "','" . TPS['AMB'][$m1]['tag'] . "_#ITEM_ID_','{safe:{javascript:{expand:" . $slice_field . "}}}')\" class=\"aa-button\">" . _mdelayed(TPS['AMB'][$m1]['str']) . "</a>&nbsp;";
+    // a javascript: URL would be percent-decoded before it runs, so the title goes through onclick as a JSON string;
+    // the alias pass after the row is expanded must not find "_#" of the title (the browser decodes &#35; to # again)
+    $mode_string .= "&nbsp;<a href=\"#\" onclick=\"SelectRelations('$var_id','" . TPS['AMB'][$m1]['tag'] . "','" . TPS['AMB'][$m1]['prefix'] . "','" . TPS['AMB'][$m1]['tag'] . "_#ITEM_ID_',{str_replace:[\"_#\"]:[\"_&#35;\"]:{safe:{jsonstring:{expand:" . $slice_field . "}}}});return false;\" class=\"aa-button\">" . _mdelayed(TPS['AMB'][$m1]['str']) . "</a>&nbsp;";
 }
 
 $aliases = $slice->aliases();
