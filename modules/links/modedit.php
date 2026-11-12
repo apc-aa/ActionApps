@@ -106,6 +106,9 @@ if ($is_add) {
         MsgPage(_m('No permission to add module'));
         exit;
     }
+} elseif ($module_id && !AA_Module_Links::getOwnModule($module_id)) {   // an id of another module type
+    MsgPage(_m("Module not found."));
+    exit;
 } elseif (!CheckPerms(AuthGetUid(), "slice", $module_id, PS_LINKS_SETTINGS)) {
     // edit module
     MsgPage(_m('No permission to edit module'));

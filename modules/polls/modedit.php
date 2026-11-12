@@ -100,6 +100,9 @@ if ($is_add) {
         MsgPage(_m("You do not have permissions to add polls"));
         exit;
     }
+} elseif ($module_id && !AA_Module_Polls::getOwnModule($module_id)) {   // an id of another module type
+    MsgPage(_m("Module not found."));
+    exit;
 } elseif (!CheckPerms(AuthGetUid(), "slice", $module_id, PS_MODP_SETTINGS)) {
     // edit module
     MsgPage(_m("You do not have permissions to edit this poll"));

@@ -89,6 +89,9 @@ if ($is_add) {
         MsgPage(_m("You do not have permissions to add slice"));
         exit;
     }
+} elseif ($module_id && !AA_Module_Alerts::getOwnModule($module_id)) {   // an id of another module type
+    MsgPage(_m("Module not found."));
+    exit;
 } elseif (!IfSlPerm(PS_USERS)) {
     MsgPage(_m("You do not have permissions to edit this Alerts module"));
     exit;
