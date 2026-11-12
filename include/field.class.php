@@ -1436,6 +1436,12 @@ class AA_Fields implements IteratorAggregate, Countable
                 $err['DB'] = MsgErr(_m("Can't copy field"));
                 continue;
             }
+            // editors of this slice may edit the items a related-item field edits - the same rule as se_inputform.php
+            $edit_target = (($template['input_show_func'] ?? '') === '') ? '' : RelatedItemEditTarget((new AA_Field($template))->getWidget());
+            if (($edit_target !== '') && !IfSlPerm(PS_EDIT_ALL_ITEMS, $edit_target)) {
+                $err['DB'] = MsgErr(_m("You can relate only to a slice where you may edit all items"));
+                continue;
+            }
             // AA_Core_Fields.. identifies its templates by bare type ('text'), user added templates by full id
             $ftype_base = ($slice_fields ? '_' : '') . self::getFieldType($tpl_id);
             $max = -1;
