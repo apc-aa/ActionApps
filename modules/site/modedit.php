@@ -106,8 +106,10 @@ $err = [];          // error array (Init - just for initializing variable
 
 $superadmin  = IsSuperadmin();
 $module_id   = $slice_id;
+// adding or editing is decided once - for the permission check, the processing and the write target
+$is_add      = (bool) $template['W'];
 
-if ($template['W']) {        // add module
+if ($is_add) {        // add module
     if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
         MsgPage(_m("You do not have permissions to add slice"));
         exit;
@@ -124,11 +126,11 @@ if ($template['W']) {        // add module
 
 
 // additional settings - just make sure it is set
-if (!$add && ($settings_error = AA_Module_Site::processModuleObject($module_id))) {
+if (!$is_add && ($settings_error = AA_Module_Site::processModuleObject($module_id))) {
     $err['settings'] = MsgErr($settings_error . ' ' . _m('The settings and the other fields of this page were not saved.'));
 }
 
-if ($add || $update) {
+if ($is_add ? $add : $update) {
     do {
         if (!$owner ) {  // insert new owner
             if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err))) {
@@ -149,7 +151,7 @@ if ($add || $update) {
         // it selected, also one the user has no rights to); dropping any is fine
         if (!isset($err['uses_modules'])) {
             $uses_modules    = array_map('strtolower', (array) $uses_modules);
-            $related_modules = ($update && $module_id) ? DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]) : [];
+            $related_modules = (!$is_add && $module_id) ? DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]) : [];
             $refused         = array_filter($uses_modules, static fn($id) => (($g_modules[$id]['type'] ?? 'W') === 'W') && !in_array($id, $related_modules, true));
             if ($refused) {
                 $err['uses_modules'] = MsgErr(_m('You can not use these modules in the site - you have no permission to them: %1', [safe(implode(', ', $refused))]));
@@ -161,7 +163,7 @@ if ($add || $update) {
         }
 
         // write all fields needed for module table
-        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : null, $superadmin, 'W', $name, $slice_url, $priority, $lang_file, $owner, $deleted );
+        $module_id = WriteModuleFields($is_add ? null : ($module_id ?: null), $superadmin, 'W', $name, $slice_url, $priority, $lang_file, $owner, $deleted );
 
         if (!$module_id) {   // error?
             break;
@@ -181,7 +183,7 @@ if ($add || $update) {
         }
 
         // now set all module specific settings
-        if ( $update ) {
+        if (!$is_add) {
             if (!AA::Metabase()->doUpdate('site', ['id' => $module_id, 'state_file' => $state_file, 'flag' => $router])) {  // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change site");
                 break;
@@ -210,7 +212,7 @@ if ($add || $update) {
                 break;
             }
         }
-        if ($update && $superadmin && ($app_store !== '')) {
+        if (!$is_add && $superadmin && ($app_store !== '')) {
             if (!FormToken::check(MODEDIT_APP_TOKEN, $app_store)) {
                 $err['app_store'] = MsgErr(_m('The form has expired; reload the page and try again.'));
                 break;
