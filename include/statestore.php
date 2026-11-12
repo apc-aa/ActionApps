@@ -798,9 +798,9 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return $ret;
     }
 
-    /** Loads object from database: AA_Object::load($set_id, 'AA_Set')
+    /** Loads object from database: AA_Object::load($set_id, 'AA_Set') or AA_Set::load($set_id)
      * @param $id - aa_id - object id
-     * @param $type - object class - like 'AA_Form'
+     * @param $type - object class - like 'AA_Form'; null when the object is not of it (or of the class load() is called on)
      * @static
      * @return AA_Object | null
      */
@@ -840,9 +840,16 @@ class AA_Object extends AA_Storable implements AA_iEditable
             return null;
         }
 
-        if (!$type) {
-            $type = $by_table['object_text']['aa_type'][0] ?? '';
-            if (!$type || !class_exists($type)) {
+        // the id may come from a link or a form - an object of another class must not pass as $type
+        $stored = (string) ($by_table['object_text']['aa_type'][0] ?? '');
+        if ($type) {
+            if (!is_a($stored, $type, true)) {     // a subclass, an old name (class_alias) or other letter case passes
+                return null;
+            }
+        } else {
+            $type = $stored;
+            // AA_Set::load($id) gives an AA_Set or nothing, AA_Object::load($id) any stored object
+            if (!$type || !class_exists($type) || !is_a($type, static::class, true)) {
                 return null;
             }
             $properties = $type::getClassProperties();

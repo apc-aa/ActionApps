@@ -61,6 +61,18 @@ namespace Tests\Unit\Legacy {
         }
     }
 
+    class BaseLoadedObject extends AA_Object
+    {
+        public $title;
+
+        public static function getClassProperties(): array
+        {
+            return ['title' => new AA_Property('title', 'Title', 'string', false)];
+        }
+    }
+
+    final class SubLoadedObject extends BaseLoadedObject {}
+
     /**
      * Characterization of AA_Object::load() (include/statestore.php): what an object looks
      * like after loading from the object_text / object_integer / object_float rows, and how
@@ -74,6 +86,9 @@ namespace Tests\Unit\Legacy {
         public static function setUpBeforeClass(): void
         {
             require_once __DIR__ . '/fixtures/store_fixtures.php';
+            if (!class_exists('Tests_Unit_Legacy_LoadedAlias', false)) {
+                class_alias(LoadedObject::class, 'Tests_Unit_Legacy_LoadedAlias');
+            }
         }
 
         /** object id => table => rows; '*' answers for any id not listed */
@@ -306,6 +321,61 @@ namespace Tests\Unit\Legacy {
             foreach (['object_text', 'object_integer', 'object_float'] as $table) {
                 self::assertStringContainsString("`$table`", RecordingDb::$log[0], 'the class is not known before the read, so every table is in it');
             }
+        }
+
+        private static function stored(string $class): array
+        {
+            return ['object_text' => [
+                ['aa_type', $class, 0],
+                ['aa_owner', 'owner-id', 0],
+                ['title', 'Hello', 0],
+            ]];
+        }
+
+        /** the id may come from a link or a form - an object of another class is not one of the asked class */
+        public function test_load_typed_idOfAnotherClass_isNull(): void
+        {
+            self::rows(self::stored(ParentObject::class));
+
+            self::assertNull(AA_Object::load(self::id(__FUNCTION__), LoadedObject::class));
+        }
+
+        public function test_load_calledOnAClass_idOfAnotherClass_isNull(): void
+        {
+            self::rows(self::stored(ParentObject::class));
+
+            self::assertNull(LoadedObject::load(self::id(__FUNCTION__)));
+        }
+
+        public function test_load_typed_storedWithoutAClass_isNull(): void
+        {
+            self::rows(['object_text' => [['aa_owner', 'owner-id', 0], ['title', 'half', 0]]]);
+
+            self::assertNull(AA_Object::load(self::id(__FUNCTION__), LoadedObject::class));
+        }
+
+        public function test_load_typed_storedSubclass_isLoaded(): void
+        {
+            self::rows(self::stored(SubLoadedObject::class));
+
+            self::assertInstanceOf(BaseLoadedObject::class, AA_Object::load(self::id(__FUNCTION__), BaseLoadedObject::class));
+            self::assertInstanceOf(SubLoadedObject::class, BaseLoadedObject::load(self::id(__FUNCTION__ . 'untyped')));
+        }
+
+        public function test_load_typed_storedUnderAnAlias_isLoaded(): void
+        {
+            self::rows(self::stored('Tests_Unit_Legacy_LoadedAlias'));
+            self::assertInstanceOf(LoadedObject::class, AA_Object::load(self::id(__FUNCTION__), LoadedObject::class));
+
+            self::rows(self::stored(strtolower(LoadedObject::class)));
+            self::assertInstanceOf(LoadedObject::class, AA_Object::load(self::id(__FUNCTION__ . 'case'), LoadedObject::class));
+        }
+
+        public function test_load_untypedOnTheBase_loadsWhatIsStored(): void
+        {
+            self::rows(self::stored(ParentObject::class));
+
+            self::assertInstanceOf(ParentObject::class, AA_Object::load(self::id(__FUNCTION__)));
         }
     }
 }
