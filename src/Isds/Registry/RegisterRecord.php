@@ -64,6 +64,12 @@ final class RegisterRecord extends AA_Object
         });
     }
 
+    /** @inheritDoc */
+    protected function ownsItsId(): bool
+    {
+        return $this->getId() === self::id();
+    }
+
     /** derived from AA_ID, so it cannot meet a random object id */
     private static function id(): string
     {

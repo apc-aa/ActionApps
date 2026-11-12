@@ -59,6 +59,12 @@ final class Config extends AA_Object
         ];
     }
 
+    /** @inheritDoc - the owner is the slice */
+    protected function ownsItsId(): bool
+    {
+        return $this->getId() === self::idFor((string) $this->getOwnerId());
+    }
+
     /** derived from the slice, so a slice has one record and it cannot meet a random object id;
      *  is_long_id() takes capitals too, AA stores ids in small letters */
     public static function idFor(string $sliceId): string

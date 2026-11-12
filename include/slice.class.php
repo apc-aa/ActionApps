@@ -1539,6 +1539,12 @@ abstract class AA_AbstractModulesettings extends AA_Object
     {
         return false;
     }
+
+    /** @inheritDoc - the id is AA_Module::getModuleObjectId() of the owner */
+    protected function ownsItsId(): bool
+    {
+        return $this->getId() === string2id(static::class . $this->aa_owner);
+    }
 }
 
 /** Slice settings */

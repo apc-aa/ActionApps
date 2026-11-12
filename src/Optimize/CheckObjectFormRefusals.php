@@ -15,6 +15,8 @@ use AA_Log;
  *  posting objects or rows of another module - the form class of a table is _T<table>; not the actions
  *  of the pages over all modules, which list objects the user can not change. And the Item Manager's
  *  export to slice posting items of another slice (_Titem) - to be copied out of it, not written.
+ *  And any save of an object (AA_Object::save(), update()) at an id holding an object of another
+ *  module or class, from a page that did not check the id itself.
  *  Logged once a day per module, object and user. Index-only, hence basic.
  */
 class CheckObjectFormRefusals extends AbstractOptimize
