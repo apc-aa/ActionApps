@@ -305,7 +305,6 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Optimize/RemoveAaCronEntries.php | sql_update: delete the AA jobs (alerts, xmlclient, linkcheck, toexecute, optimize, mysql_auth) from the `cron` table - they are queue tasks now | RemoveAaCronEntries | S |
 | Optimize/RemoveUndefineAlias.php | Remove undefined aliases | RemoveUndefineAlias | M |
 | Optimize/RequiredChecboxes.php | Handle required checkboxes | RequiredChecboxes | S |
-| Optimize/RestoreBckTables.php | Restore backup tables | RestoreBckTables | S |
 | Optimize/SeoDuplicates.php | Find SEO field duplicates | SeoDuplicates | S |
 | Optimize/SetExpirydate.php | Set item expiry date | SetExpirydate | S |
 | Optimize/UpdateDbStructure.php | Update database schema | UpdateDbStructure | M |

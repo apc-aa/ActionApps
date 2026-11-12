@@ -55,6 +55,10 @@ final class RecordingDb extends DB_PDO
     /** a statement starting with this string throws - simulates a failing write mid-transaction
      *  (with halting off it returns false instead) */
     public static ?string $fail_on = null;
+    /** the error text of the $fail_on statement - a server message, like a lock wait timeout */
+    public static ?string $fail_error = null;
+    /** @var null|callable(string): ?string  the server error of a statement, null when it passes */
+    public static $fail_if = null;
     /** a statement starting with this string returns false - what DB_PDO does on a handle that only reports errors */
     public static ?string $refuse_on = null;
     /** @var array<string, array> table => columns as DB_PDO::metadata() lists them (name, type) */
@@ -78,6 +82,8 @@ final class RecordingDb extends DB_PDO
         self::$snapshot = [];
         self::$answer   = null;
         self::$fail_on  = null;
+        self::$fail_error = null;
+        self::$fail_if  = null;
         self::$refuse_on = null;
         self::$metadata = [];
         self::$affected = null;
@@ -91,8 +97,8 @@ final class RecordingDb extends DB_PDO
 
     public function query($Query_String): bool
     {
-        if (self::$fail_on !== null && str_starts_with($Query_String, self::$fail_on)) {
-            throw new \RuntimeException('RecordingDb: simulated failure of ' . self::$fail_on);
+        if (($error = self::failure($Query_String)) !== null) {
+            throw new \RuntimeException($error);
         }
         if (self::$refuse_on !== null && str_starts_with($Query_String, self::$refuse_on)) {
             return false;
@@ -104,6 +110,25 @@ final class RecordingDb extends DB_PDO
         $this->rows      = self::applyToContent($Query_String)
             ?? ((self::$answer && preg_match('/^(SELECT|SHOW)\s/', $Query_String)) ? (self::$answer)($Query_String) : []);
         return true;
+    }
+
+    /** the simulated server error of the statement ($fail_on, $fail_if), null when it passes */
+    private static function failure(string $sql): ?string
+    {
+        if (self::$fail_on !== null && str_starts_with($sql, self::$fail_on)) {
+            return self::$fail_error ?? ('RecordingDb: simulated failure of ' . self::$fail_on);
+        }
+        return (self::$fail_if !== null) ? (self::$fail_if)($sql) : null;
+    }
+
+    /** query() with a failure or refusal as its text, the way DB_PDO::tryQuery() answers */
+    public function tryQuery(string $sql): string
+    {
+        try {
+            return $this->query($sql) ? '' : 'refused';
+        } catch (\RuntimeException $e) {
+            return $e->getMessage();
+        }
     }
 
     /** Applies a `content` statement to the table; null when the statement is about another table. */
@@ -213,7 +238,7 @@ final class RecordingDb extends DB_PDO
     /** with halting off a failing statement returns false, as DB_PDO does */
     public function query_halt(string $Query_String, string $mode): bool
     {
-        if ($mode === 'no' && self::$fail_on !== null && str_starts_with($Query_String, self::$fail_on)) {
+        if (($mode === 'no') && (self::failure($Query_String) !== null)) {
             return false;
         }
         return $this->query($Query_String);

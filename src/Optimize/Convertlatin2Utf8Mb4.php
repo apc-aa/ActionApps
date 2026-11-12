@@ -44,6 +44,12 @@ class Convertlatin2Utf8Mb4 extends \AA\Optimize\Convert2utf8mb4
         return false;
     }
 
+    /** the collation of the utf8mb4 tables is the job of Convert2utf8mb4 */
+    protected function recollates(): bool
+    {
+        return false;
+    }
+
     /** @param array<string, string> $collations [table_name => table_collation] */
     protected function fallbackCollation(array $collations): string
     {

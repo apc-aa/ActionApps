@@ -223,7 +223,6 @@ namespace Tests\Unit\Central {
             sort($sorted);
             $this->assertSame($sorted, $ranks, 'in this order');
             $this->assertCount(count(OptimizeRun::tasks()), array_merge(...array_values(array_map('array_keys', $groups))), 'each task once');
-            $this->assertArrayNotHasKey('AA\Optimize\RestoreBckTables', OptimizeRun::tasks(), 'its test passes when backups exist - no repair where it fails');
         }
 
         public function test_tasks_start_with_the_whole_sql_update_and_name_the_classes(): void

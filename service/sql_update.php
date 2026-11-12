@@ -26,7 +26,6 @@ https://www.apc.org/
 
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\Chain;
-use AA\Optimize\RestoreBckTables;
 use AA\Util\InputVars;
 use AA\Util\ReportTrait;
 
@@ -47,11 +46,13 @@ const ACCESS_CODE = '';
  *  the latest structure, create all tables, ...
  *  It can be used for upgrade from previous versions of apc-aa or for creating
  *  new database.
- *  It creates temporary tables first, then copies data from old tables to the
- *  temporary ones (tmp_*) and after successful copy it drops old tables and
- *  renames temporary ones to right names. Then it possibly updates common
- *  records (like default field definitions, module templates, constants and
- *  templates).</p>
+ *  It creates the missing tables and changes the differing ones in place
+ *  (ALTER TABLE), so the data stay; the tables, columns and indexes it does not
+ *  know and the columns it would narrow are only listed. Then it possibly
+ *  updates common records (like default field definitions, module templates,
+ *  constants and templates).
+ *  The backup tables bck_* left by older versions, which copied the tables,
+ *  can be deleted by the Optimize "Delete backup tables".
  *
  *  However, it is strongly recommended backup your current database !!!
  *  Use something like:
@@ -77,18 +78,18 @@ if (!$silent) {
       </head>
       <body>
       <h1>ActionApps database update</h1>
-      <p>This script is written to be not destructive. It creates temporary tables
-         first, then copies data from old tables to the temporary ones (tmp_*) and
-         after successful copy it drops old tables and renames temporary ones to
-         right names. Then it possibly updates common records (like default field
-         definitions, module templates, constants and templates).</p>
+      <p>This script is written to be not destructive. It creates the missing tables
+         and changes the differing ones in place (ALTER TABLE), so the data stay;
+         the tables, columns and indexes it does not know and the columns it would
+         narrow are only listed. Then it possibly updates common records (like
+         default field definitions, module templates, constants and templates).</p>
       <p style="color:red;">However, it is strongly recommended backup your current
       database !!!</p>
       <p>See instructions directly in this file (sql_update.php) on the server.</p>';
 }
 
 if (!constant('ACCESS_CODE') || strlen(constant('ACCESS_CODE')) < 10) {
-    echo '<p>For update or restore you need to edit this script on the server
+    echo '<p>For an update you need to edit this script on the server
           (sql_update.php) and fill there some Access Code which you then fill
           also here (it is for security reasons).</p>
           <p>Just refresh this page after you fill the Access code to the file.</p>
@@ -123,7 +124,6 @@ if (!$silent) {
 
             <input type="submit" name="dotest" value="Test">
             <input type="submit" name="update" value="Install / Update">
-            <input type="submit" name="restore" value="Restore">
           </form>';
 }
 
@@ -143,14 +143,6 @@ class AA_SQL_Updater
         [$result, $msg] = Chain::test($this->getOptimizers());
         $this->message($msg);
         return $result;
-    }
-
-    public function restore(): bool
-    {
-        $optimizer = new RestoreBckTables();
-        $optimizer->repair();
-        $this->message($optimizer->report());
-        return true;
     }
 
     public function update(): bool
@@ -181,20 +173,6 @@ if (InputVars::stringGET('update')) {
     } else {
         try {
             $status = $updater->update();
-        } finally {
-            $release();
-        }
-        echo ($status ? 'OK ' : 'Err ') . $updater->report();
-    }
-} elseif (InputVars::stringGET('restore')) {
-    if (!$fire) {
-        AbstractOptimize::justPrint(true);
-    }
-    if (!($release = Chain::tryLock('sql_update', $holder))) {   // restores the tables an update rebuilds
-        echo 'Err ' . Chain::runningMessage('sql_update', $holder);
-    } else {
-        try {
-            $status = $updater->restore();
         } finally {
             $release();
         }
