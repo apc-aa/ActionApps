@@ -336,13 +336,13 @@ if ($cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list |
     if (is_array($imported_list)) {
         echo "</p>" . _m("Added were:") . "</p>";
         foreach ($imported_list as $desc) {
-            echo $desc . "<br>";
+            echo safe($desc) . "<br>";
         }
     }
     if (is_array($overwritten_list)) {
         echo "</p>" . _m("Overwritten were:") . "</p>";
         foreach ($overwritten_list as $desc) {
-            echo $desc . "<br>";
+            echo safe($desc) . "<br>";
         }
     }
 
@@ -351,19 +351,19 @@ if ($cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list |
     if (is_array($data_imported_list)) {
         echo "</p>" . _m("Added were:") . "</p>";
         foreach ($data_imported_list as $desc) {
-            echo $desc . "<br>";
+            echo safe($desc) . "<br>";
         }
     }
     if (is_array($data_overwritten_list)) {
         echo "</p>" . _m("Overwritten were:") . "</p>";
         foreach ($data_overwritten_list as $desc) {
-            echo $desc . "<br>";
+            echo safe($desc) . "<br>";
         }
     }
     if (is_array($data_import_failure)) {
         echo "</p>" . _m("Failed were:") . "</p>";
         foreach ($data_import_failure as $desc) {
-            echo $desc . "<br>";
+            echo safe($desc) . "<br>";
         }
     }
 
@@ -383,7 +383,7 @@ if ($cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list |
 <textarea name="conflicts_list" rows=<?php echo count($conflicts_ID) ?> cols="90">
 <?php
 foreach ($conflicts_ID as $c_id => $name) {
-    echo $name . ":\t" . $c_id . " -> " . $c_id . "\n";
+    echo safe($name . ":\t" . $c_id . " -> " . $c_id) . "\n";   // the textarea decodes it back for the post
 }
 ?>
 </textarea>
@@ -401,7 +401,7 @@ foreach ($conflicts_ID as $c_id => $name) {
 <textarea name="view_conflicts_list" rows=<?php echo count($view_conflicts_ID) ?> cols="90">
 <?php
 foreach ($view_conflicts_ID as $c_id => $name) {
-    echo $name . ":\t" . $c_id . " -> " . $c_id . "\n";
+    echo safe($name . ":\t" . $c_id . " -> " . $c_id) . "\n";
 }
 ?>
 </textarea></p></td>
@@ -416,7 +416,7 @@ foreach ($view_conflicts_ID as $c_id => $name) {
         <textarea name="data_conflicts_list" rows=<?php echo count($data_conflicts_ID) ?> cols="90">
 <?php
 foreach ($data_conflicts_ID as $c_id => $name) {
-    echo substr($name, 0, 27) . ":\t" . $c_id . " -> " . $c_id . "\n";
+    echo safe(substr($name, 0, 27) . ":\t" . $c_id . " -> " . $c_id) . "\n";
 }
 ?>
 </textarea>
