@@ -391,6 +391,7 @@ function array_merge_append_global($newValues): void
         if (InputVars::isProtectedGlobal((string) $key)) {
             continue;
         }
+        $value = InputVars::requestGlobal((string) $key, $value);
         if (!isset($GLOBALS[$key]) || !is_array($GLOBALS[$key]) || !is_array($value)) {
             $GLOBALS[$key] = $value;
         } else {
@@ -1520,7 +1521,7 @@ function add_post2shtml_vars($delete = true): void
                     continue;
                 }
                 global $$var;
-                $$var = $value;
+                $$var = InputVars::requestGlobal((string) $var, $value);
             }
         }
     }

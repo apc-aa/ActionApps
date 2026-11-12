@@ -38,7 +38,7 @@ namespace Tests\Unit\Legacy {
      */
     final class RequestGlobalsTest extends TestCase
     {
-        private const TOUCHED = ['r_superuser', 'permission_uid', 'permission_to', 'auth', 'sess', 'slices', 'plain', 'encap', 'slice_id', 'x', 'r_packed_state_vars'];
+        private const TOUCHED = ['r_superuser', 'permission_uid', 'permission_to', 'auth', 'sess', 'slices', 'plain', 'encap', 'slice_id', 'x', 'r_packed_state_vars', 'apc_state'];
 
         public static function setUpBeforeClass(): void
         {
@@ -100,7 +100,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_quotevars_does_not_set_the_permission_cache(): void
         {
-            $_POST = ['r_superuser' => ['aa' => 1], 'permission_uid' => '1', 'permission_to' => ['slice' => []], 'plain' => "O'Neil", 'encap' => '1', 'slice_id' => 'x'];
+            $_POST = ['r_superuser' => ['aa' => 1], 'permission_uid' => '1', 'permission_to' => ['slice' => []], 'plain' => "O'Neil", 'encap' => '1', 'slice_id' => 'x', 'apc_state' => ['xuid' => 'u1', 'xpage' => '2']];
 
             InputVars::QuoteVars('post', ['encap' => 1, 'slice_id' => 1]);
 
@@ -110,6 +110,7 @@ namespace Tests\Unit\Legacy {
             $this->assertArrayNotHasKey('encap', $GLOBALS);
             $this->assertArrayNotHasKey('slice_id', $GLOBALS);
             $this->assertSame("O\\'Neil", $GLOBALS['plain'], 'form fields still come, slashed');
+            $this->assertSame(['xpage' => '2'], $GLOBALS['apc_state']);
         }
 
         public function test_add_vars_does_not_set_the_permission_cache(): void
@@ -120,6 +121,18 @@ namespace Tests\Unit\Legacy {
             $this->assertArrayNotHasKey('permission_uid', $GLOBALS);
             $this->assertSame('abc', $GLOBALS['slices']);
             $this->assertSame('x', $GLOBALS['plain']);
+        }
+
+        public function test_add_vars_keeps_the_login_and_router_out_of_apc_state(): void
+        {
+            unset($GLOBALS['apc_state']);
+            try {
+                add_vars('apc_state[xuid]=u1&apc_state[xuser]=joe&apc_state[router]=stdClass&apc_state[xpage]=2');
+
+                $this->assertSame(['xpage' => '2'], $GLOBALS['apc_state']);
+            } finally {
+                unset($GLOBALS['apc_state']);
+            }
         }
 
         public function test_post2shtml_id_other_than_an_id_does_not_reach_the_database(): void
@@ -200,7 +213,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_stored_post_does_not_set_the_permission_cache(): void
         {
-            $vars = serialize(['post' => ['r_superuser' => ['aa' => true], 'permission_uid' => '1', 'plain' => 'x'], 'get' => [], 'files' => [], 'cookie' => []]);
+            $vars = serialize(['post' => ['r_superuser' => ['aa' => true], 'permission_uid' => '1', 'plain' => 'x', 'apc_state' => ['xuser' => 'joe', 'xpage' => '2']], 'get' => [], 'files' => [], 'cookie' => []]);
             $db = new class ($vars) {
                 public function __construct(private string $vars) {}
 
@@ -235,6 +248,7 @@ namespace Tests\Unit\Legacy {
             $this->assertArrayNotHasKey('r_superuser', $GLOBALS);
             $this->assertArrayNotHasKey('permission_uid', $GLOBALS);
             $this->assertSame('x', $GLOBALS['plain']);
+            $this->assertSame(['xpage' => '2'], $GLOBALS['apc_state']);
         }
 
         /** @return array<string, array{string}> */
@@ -260,6 +274,16 @@ namespace Tests\Unit\Legacy {
             $this->assertGreaterThan(0, $loops);
             $this->assertSame($loops, $guarded);
             $this->assertMatchesRegularExpression('#require_once __DIR__ \. \'[./]*/src/Util/InputVars\.php\';#', $src);
+        }
+
+        /** apc_state of the request loses the keys only the site router and the login set */
+        #[DataProvider('requestLoopScripts')]
+        public function test_request_loops_filter_the_values(string $script): void
+        {
+            $src = (string) file_get_contents(__DIR__ . '/../../../' . $script);
+            $loops    = preg_match_all('/foreach \(\$_REQUEST as \$k => \$v\)/', $src);
+            $filtered = preg_match_all('/\$\$k = AddslashesDeep\(\\\\AA\\\\Util\\\\InputVars::requestGlobal\(\(string\) \$k, \$v\)\);/', $src);
+            $this->assertSame($loops, $filtered);
         }
     }
 }

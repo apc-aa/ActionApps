@@ -232,6 +232,18 @@ class InputVars
         return str_starts_with($name, '_') || ($name === 'GLOBALS') || in_array($name, self::SESSION_GLOBALS, true) || in_array($name, self::DEBUG_GLOBALS, true);
     }
 
+    /** $value of the request variable $name as it may become a global. apc_state loses the keys only the
+     *  site router and the login set: {xuser} reads the visitor from xuid/xuser and AA_Router::singleton()
+     *  makes the class 'router' names. The rest of the state (xpage, ...) may come with a URL.
+     */
+    public static function requestGlobal(string $name, mixed $value): mixed
+    {
+        if (($name === 'apc_state') && is_array($value)) {
+            unset($value['xuid'], $value['xuser'], $value['router']);
+        }
+        return $value;
+    }
+
     /** function for processing posted or get variables
      * adds quotes, if magic_quotes are switched off
      * except of variables in $skip array (useful for 'encap' for example)
@@ -243,7 +255,7 @@ class InputVars
         $arr = ($method === "get") ? $_GET : $_POST;
         foreach ($arr as $k => $v) {
             if (!isset($skip[$k]) && !self::isProtectedGlobal((string) $k)) {
-                $GLOBALS[$k] = self::AddslashesArray($v);
+                $GLOBALS[$k] = self::AddslashesArray(self::requestGlobal((string) $k, $v));
             }
         }
     }

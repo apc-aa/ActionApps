@@ -91,6 +91,9 @@ class AA_Router
     public static function singleton($type, $slices = null, $home = '', $web_languages = null, ?array $rules = null): AA_Router
     {
         if (!isset(self::$_instance)) {
+            if (!is_string($type) || !is_a($type, self::class, true)) {   // the name is read from apc_state
+                $type = AA_Router_Seo::class;
+            }
             self::$_instance = new $type($slices, $home);
         }
         if (is_array($web_languages)) {

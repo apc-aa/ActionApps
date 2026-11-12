@@ -78,7 +78,7 @@ require_once __DIR__ . '/src/Util/InputVars.php';   // the autoloader comes late
 unset($_REQUEST['als'], $_REQUEST['apc_state']);
 foreach ($_REQUEST as $k => $v) {
     if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
-        $$k = AddslashesDeep($v);
+        $$k = AddslashesDeep(\AA\Util\InputVars::requestGlobal((string) $k, $v));
     }
 }
 
@@ -357,7 +357,7 @@ if ( isset($_POST['aa']) || isset($_FILES['aa']) ) {
 // however the new code should use $_POST, which are NOT quoted
 foreach ($_REQUEST as $k => $v) {
     if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
-        $$k = AddslashesDeep($v);
+        $$k = AddslashesDeep(\AA\Util\InputVars::requestGlobal((string) $k, $v));
     }
 }
 
