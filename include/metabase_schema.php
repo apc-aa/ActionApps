@@ -876,7 +876,7 @@ return [
         'c' => [
             'id' => ['id', 'bigint(20)', false, 'PRI', null, 'auto_increment', ''],
             'object_id' => ['object_id', 'varbinary(32)', false, 'MUL', '                                ', '', ''],
-            'property' => ['property', 'varbinary(16)', false, 'MUL', '                ', '', ''],
+            'property' => ['property', 'varbinary(32)', false, 'MUL', '                ', '', ''],
             'priority' => ['priority', 'smallint(20)', true, '', null, '', ''],
             'value' => ['value', 'double', true, '', null, '', ''],
             'flag' => ['flag', 'smallint(6)', true, '', null, '', ''],
@@ -894,7 +894,7 @@ return [
         'c' => [
             'id' => ['id', 'bigint(20)', false, 'PRI', null, 'auto_increment', ''],
             'object_id' => ['object_id', 'varbinary(32)', false, 'MUL', '                                ', '', ''],
-            'property' => ['property', 'varbinary(16)', false, 'MUL', '                ', '', ''],
+            'property' => ['property', 'varbinary(32)', false, 'MUL', '                ', '', ''],
             'priority' => ['priority', 'smallint(20)', true, '', null, '', ''],
             'value' => ['value', 'bigint(20)', true, '', null, '', ''],
             'flag' => ['flag', 'smallint(6)', true, '', null, '', ''],
@@ -912,7 +912,7 @@ return [
         'c' => [
             'id' => ['id', 'bigint(20)', false, 'PRI', null, 'auto_increment', ''],
             'object_id' => ['object_id', 'varbinary(32)', false, 'MUL', '                                ', '', ''],
-            'property' => ['property', 'varbinary(16)', false, 'MUL', '                ', '', ''],
+            'property' => ['property', 'varbinary(32)', false, 'MUL', '                ', '', ''],
             'priority' => ['priority', 'smallint(20)', true, '', null, '', ''],
             'value' => ['value', 'longtext', true, '', null, '', ''],
             'flag' => ['flag', 'smallint(6)', true, '', null, '', ''],

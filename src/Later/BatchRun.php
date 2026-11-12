@@ -1076,7 +1076,7 @@ abstract class BatchRun extends AA_Object
             if (in_array($id, self::STATE_PROPS, true)) {
                 continue;
             }
-            // object_text.property is varbinary(16)
+            // object_text.property is varbinary(16) in a database whose structure has not been updated
             if (str_starts_with($id, 'aa_') || in_array($id, ['locked', 'claimed'], true) || (strlen($id) > 16) || (AA_Property::storageType($property->getType()) !== 'object_text')) {
                 throw new \LogicException("Batch run property $id must be text, at most 16 bytes and named neither aa_* nor locked nor claimed");
             }
