@@ -76,7 +76,7 @@ $editor_perms = AA::$perm->getModulePerms(AuthGetUid(), $slice_id);
  * @param $url
  * @param $txt
  */
-function IfLink($cond, $url, $txt, $class = 'btn btn-secondary'): string
+function IfRoleButton($cond, $url, $txt, $class = 'btn btn-secondary'): string
 {
     return '<td>' . ($cond ? '<button type="submit" form="aa-role-form" formaction="' . safe($url) . "\" class='$class'>$txt</button>" : $txt) . "</td>\n";
 }
@@ -128,10 +128,10 @@ function PrintUser($perm, $usr_id, $editor_perm): void
     echo "<td>" . (safe($usrinfo['mail'] ?? '') ?: "&nbsp;") . "</td>\n";
     echo "<td>" . UserTypeLabel($usrinfo, $usr_id) . "</td>\n";
 
-    echo IfLink(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "AUTHOR"], true), _m("Author"));
-    echo IfLink(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["EDITOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "EDITOR"], true), _m("Editor"));
-    echo IfLink(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["ADMINISTRATOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "ADMINISTRATOR"], true), _m("Administrator"));
-    echo IfLink(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']), get_url('', ['UsrDel' => $usr_id, 'role' => "AUTHOR"], true), _m("Revoke"), 'aa-button-delete');
+    echo IfRoleButton(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "AUTHOR"], true), _m("Author"));
+    echo IfRoleButton(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["EDITOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "EDITOR"], true), _m("Editor"));
+    echo IfRoleButton(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["ADMINISTRATOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "ADMINISTRATOR"], true), _m("Administrator"));
+    echo IfRoleButton(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']), get_url('', ['UsrDel' => $usr_id, 'role' => "AUTHOR"], true), _m("Revoke"), 'aa-button-delete');
 
     // show profile button also for groups
     $cnt = ($cnt = DB_AA::count('profile', [
@@ -150,11 +150,10 @@ $apage = new AA_Adminpageutil('sliceadmin', $show_adduser ? "addusers" : "users"
 $apage->setTitle(_m("Admin - Permissions"));
 $apage->setForm();
 
-$err = [];
 // rights change only from this page's own buttons
 $may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(SE_USERS_TOKEN, $token, $_SERVER);
 if (!$show_adduser && ($UsrAdd || $UsrDel) && !$may_write) {
-    $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
 }
 $apage->printHead($err, $Msg);
 

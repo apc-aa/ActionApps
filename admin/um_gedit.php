@@ -101,11 +101,10 @@ if (!IfSlPerm(PS_NEW_USER)) {
     exit;
 }
 
-$err       = [];          // error array (Init - just for initializing variable)
 // groups and their rights change only from this page's own forms
 $may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(UM_GROUP_TOKEN, $token, $_SERVER);
 if (!$may_write && (($submit_action === "grp_del" && $selected_group) || $add_submit || $submit_action === "update_submit")) {
-    $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
 }
 
 if ($may_write && $submit_action === "grp_del" && $selected_group) {
@@ -143,6 +142,7 @@ if ( $selected_group ) {
     }
 }
 
+$err = [];          // error array (Init - just for initializing variable)
 $varset      = new Cvarset();
 
 // Process submitted form -------------------------------------------------------
@@ -244,15 +244,20 @@ FrmTabEnd();
 
 do {
     if ( $grp_new || ($grp_edit && $selected_group !== "n" )) {
-        if ($grp_edit && $submit_action !== "update_submit") {
+        if ($grp_edit) {
             if ( !is_array($group_data = AA::$perm->getGroup($selected_group))) {
                 break;
             }
-            $group_name        = $group_data['name'];
-            $group_description = $group_data['description'];
-            $aa_users          = AA::$perm->getObjectsPerms(AA_ID, "aa");
-            if (str_contains($aa_users[$selected_group] ?? '', AA_Perm::ROLES["SUPER"]['id'])) {
-                $group_super   = true;
+            // a refused update shows what was posted; name and description are posted only when editable
+            if ($submit_action !== "update_submit" || !AA::$perm->isUserEditable($selected_group)) {
+                $group_name        = $group_data['name'];
+                $group_description = $group_data['description'];
+            }
+            if ($submit_action !== "update_submit") {
+                $aa_users          = AA::$perm->getObjectsPerms(AA_ID, "aa");
+                if (str_contains($aa_users[$selected_group] ?? '', AA_Perm::ROLES["SUPER"]['id'])) {
+                    $group_super   = true;
+                }
             }
         }
     } else {
@@ -301,6 +306,7 @@ $form_buttons["cancel"]         = ["url"=>"um_gedit.php"];
 $form_buttons["selected_group"] = ["value"=>$selected_group];
 $form_buttons["posted_users"]   = ["value"=>"0"];
 $form_buttons["submit_action"]  = ["value"=>"0"];
+$form_buttons["token"]          = ["value"=>FormToken::get(UM_GROUP_TOKEN)];
 
 if ( $grp_edit || $submit_action === "update_submit" ) {
     FrmStaticText(_m("Group Id"), $group_data['uid']);
@@ -353,7 +359,6 @@ if ( !$add_submit && !$grp_new ) {
     $mod_types = PrintModulePermModificator($selected_group);   // shared with um_gedit.php
 }
 
-echo FormToken::field(UM_GROUP_TOKEN);
 FrmTabEnd($form_buttons);
 
 echo '</form>';

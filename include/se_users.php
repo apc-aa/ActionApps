@@ -109,9 +109,9 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr = true): void
     echo "<td>" . (safe($usr['mail'] ?? '') ?: "&nbsp;") . "</td>\n";
     echo "<td>" . UserTypeLabel($usrinfo, $usr_id) . "</td>\n";
 
-    echo IfLink(($editor_role > AA_Perm::ROLES["AUTHOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'AUTHOR'], true), _m("Author"));
-    echo IfLink(($editor_role > AA_Perm::ROLES["EDITOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'EDITOR'], true), _m("Editor"));
-    echo IfLink(($editor_role > AA_Perm::ROLES["ADMINISTRATOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'ADMINISTRATOR'], true), _m("Administrator"));
+    echo IfRoleButton(($editor_role > AA_Perm::ROLES["AUTHOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'AUTHOR'], true), _m("Author"));
+    echo IfRoleButton(($editor_role > AA_Perm::ROLES["EDITOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'EDITOR'], true), _m("Editor"));
+    echo IfRoleButton(($editor_role > AA_Perm::ROLES["ADMINISTRATOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'ADMINISTRATOR'], true), _m("Administrator"));
     echo "</tr>\n";
 }
 

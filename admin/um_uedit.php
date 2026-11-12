@@ -117,11 +117,10 @@ if (!IfSlPerm(PS_NEW_USER)) {
     exit;
 }
 
-$err       = [];          // error array (Init - just for initializing variable
 // accounts and their rights change only from this page's own forms
 $may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(UM_USER_TOKEN, $token, $_SERVER);
 if (!$may_write && (($submit_action === "usr_del" && $selected_user) || $add_submit || $submit_action === "update_submit")) {
-    $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
 }
 
 if ($may_write && $submit_action === "usr_del" && $selected_user) {
@@ -183,6 +182,7 @@ if ( $selected_group ) {
     }
 }
 
+$err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
 // Process submited form -------------------------------------------------------
@@ -422,8 +422,9 @@ $form_buttons["selected_user"] = ["value"=>$selected_user];
 $form_buttons["posted_groups"] = ["value"=>"0"];
 $form_buttons["submit_action"] = ["value"=>"0"];
 $form_buttons["cancel"]        = ["url"=>"um_uedit.php"];
+$form_buttons["token"]         = ["value"=>FormToken::get(UM_USER_TOKEN)];
 
-echo FormToken::field(UM_USER_TOKEN);
+
 FrmTabEnd($form_buttons);
 
 if ( !$add_submit && !$usr_new) {

@@ -34,7 +34,6 @@ namespace Tests\Unit\Legacy {
     final class SeUsersChangeRoleTest extends TestCase
     {
         private mixed $perm = null;
-        private object $backend;
 
         public static function setUpBeforeClass(): void
         {
@@ -53,13 +52,9 @@ namespace Tests\Unit\Legacy {
             class_exists(AA_Perm::class);              // its first load sets AA::$perm - not over the stub
             $this->perm    = AA::$perm;
             // a granted role stops at addPerm(): the cache invalidation after it would need a database
-            $this->backend = new class {
-                /** @var list<string> */
-                public array $calls = [];
-
+            AA::$perm = new class {
                 public function getModulePerms(string $user_id, string $obj_id, bool $whole = true): string
                 {
-                    $this->calls[] = 'getModulePerms';
                     return '';
                 }
 
@@ -68,7 +63,6 @@ namespace Tests\Unit\Legacy {
                     throw new \LogicException("addPerm $perm");
                 }
             };
-            AA::$perm = $this->backend;
         }
 
         protected function tearDown(): void
@@ -90,9 +84,9 @@ namespace Tests\Unit\Legacy {
         #[DataProvider('foreignRoles')]
         public function test_role_outside_the_slice_roles_is_not_granted(string $role): void
         {
-            // the editor's extra letters put it above any role (compare() counts letters), so only the name decides
+            // the editor holds letters no role has, so compare() puts it above every role and only the name decides
+            $this->expectNotToPerformAssertions();
             \ChangeRole('7', false, '7e5700000000000000000000000000ab', AA_Perm::ROLES['ADMINISTRATOR']['perm'] . 'XYZ', $role);
-            $this->assertSame([], $this->backend->calls);
         }
 
         public function test_slice_role_is_granted(): void

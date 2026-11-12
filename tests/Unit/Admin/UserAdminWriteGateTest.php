@@ -12,19 +12,19 @@ use PHPUnit\Framework\TestCase;
  *  the permission backend, so the tests read their source. */
 final class UserAdminWriteGateTest extends TestCase
 {
-    /** @return array<string, array{string, string, list<string>}>  page, its token constant, calls (or included files) that write */
+    /** @return array<string, array{string, string, list<string>, int}>  page, its token constant, calls (or included files) that write, forms that send them */
     public static function pages(): array
     {
         return [
-            'users'    => ['admin/um_uedit.php', 'UM_USER_TOKEN', ['delUser', 'ProcessUser']],
-            'groups'   => ['admin/um_gedit.php', 'UM_GROUP_TOKEN', ['delGroup', '/include/um_gedit.php']],
-            'roles'    => ['admin/se_users.php', 'SE_USERS_TOKEN', ['ChangeRole']],
-            'profiles' => ['admin/se_profile.php', 'PROFILE_TOKEN', ['delete', 'addProfileProperty', 'copyProfile']],
+            'users'    => ['admin/um_uedit.php', 'UM_USER_TOKEN', ['delUser', 'ProcessUser'], 2],
+            'groups'   => ['admin/um_gedit.php', 'UM_GROUP_TOKEN', ['delGroup', '/include/um_gedit.php'], 2],
+            'roles'    => ['admin/se_users.php', 'SE_USERS_TOKEN', ['ChangeRole'], 1],
+            'profiles' => ['admin/se_profile.php', 'PROFILE_TOKEN', ['delete', 'addProfileProperty', 'copyProfile'], 3],
         ];
     }
 
     #[DataProvider('pages')]
-    public function test_gate_needs_the_token_and_own_origin(string $file, string $const, array $writes): void
+    public function test_gate_needs_the_token_and_own_origin(string $file, string $const, array $writes, int $forms): void
     {
         $src = self::source($file);
         $this->assertSame(1, preg_match('~^const ' . $const . ' = \'aa-[a-z-]+\';$~m', $src), "$file: no $const");
@@ -32,18 +32,20 @@ final class UserAdminWriteGateTest extends TestCase
             '~\$may_write\s*=\s*!ResponderPolicy::isForeignBrowserRequest\(\$_SERVER\)\s*&&\s*FormToken::checkPost\(' . $const . ',\s*\$token,\s*\$_SERVER\);~',
             $src,
         ), "$file: \$may_write is not the token and origin check");
-        $this->assertStringContainsString('FormToken::field(' . $const . ')', $src, "$file: a form without the token");
+        // every writing form carries it - as the hidden field, or as the value of a hidden form button
+        $sent = substr_count($src, 'FormToken::field(' . $const . ')') + substr_count($src, 'FormToken::get(' . $const . ')');
+        $this->assertSame($forms, $sent, "$file: a form without the token");
     }
 
     #[DataProvider('pages')]
-    public function test_every_write_runs_under_the_gate(string $file, string $const, array $writes): void
+    public function test_every_write_runs_under_the_gate(string $file, string $const, array $writes, int $forms): void
     {
-        $src = self::source($file);
+        $tokens = \PhpToken::tokenize(self::source($file));
         foreach ($writes as $function) {
-            $calls = self::calls($src, $function);
+            $calls = self::calls($tokens, $function);
             $this->assertNotEmpty($calls, "$function() not found in $file");
             foreach ($calls as $index) {
-                $this->assertMatchesRegularExpression('~(?:\(|&&)\s*\$may_write\s*(?:&&|\))~', self::enclosingConditions($src, $index), "$function() in $file runs without the form token");
+                $this->assertMatchesRegularExpression('~(?:\(|&&)\s*\$may_write\s*(?:&&|\))~', self::enclosingConditions($tokens, $index), "$function() in $file runs without the form token");
             }
         }
     }
@@ -53,11 +55,11 @@ final class UserAdminWriteGateTest extends TestCase
         return (string) file_get_contents(dirname(__DIR__, 3) . '/' . $file);
     }
 
-    /** @return list<int>  token indexes of the calls of $function (its definition skipped), or of the string naming a file */
-    private static function calls(string $src, string $function): array
+    /** @param list<\PhpToken> $tokens
+     *  @return list<int>  token indexes of the calls of $function (its definition skipped), or of the string naming a file */
+    private static function calls(array $tokens, string $function): array
     {
-        $tokens = \PhpToken::tokenize($src);
-        $found  = [];
+        $found = [];
         foreach ($tokens as $i => $token) {
             if (str_ends_with($function, '.php')) {
                 if ($token->is(T_CONSTANT_ENCAPSED_STRING) && str_contains($token->text, $function)) {
@@ -73,10 +75,10 @@ final class UserAdminWriteGateTest extends TestCase
     }
 
     /** Conditions of all if/elseif blocks around the token, innermost first. A call inside a condition
-     *  counts with the part of the condition before it - && evaluates left to right. */
-    private static function enclosingConditions(string $src, int $index): string
+     *  counts with the part of the condition before it - && evaluates left to right.
+     *  @param list<\PhpToken> $tokens */
+    private static function enclosingConditions(array $tokens, int $index): string
     {
-        $tokens = \PhpToken::tokenize($src);
         $text   = static fn(int $from, int $to): string => implode('', array_map(static fn(\PhpToken $t): string => $t->text, array_slice($tokens, $from, $to - $from + 1)));
         $conds  = [];
         $depth  = 0;
