@@ -26,5 +26,8 @@ final class ConstantBackUrlTest extends TestCase
         $src = (string) file_get_contents(dirname(__DIR__, 3) . '/' . $file);
         $this->assertSame(1, preg_match_all('~\$back_url\s*=~', $src), 'one place builds the back URL');
         $this->assertSame(1, preg_match('~\$back_url\s*= \(\(\$return_url && IsNavigableUrl\(\$return_url\)\) \?~', $src));
+        // the URL goes to the Location header and to the Cancel button, which escapes it itself
+        $this->assertStringContainsString("get_url(\$return_url, ['fid' => \$fid])", $src);
+        $this->assertStringNotContainsString('con_url($return_url', $src);
     }
 }
