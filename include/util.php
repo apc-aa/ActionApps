@@ -1762,6 +1762,32 @@ class AA_Credentials
         }
     }
 
+    /** the passwords and open slices known now, and the slice_pwd global checkCryptedPassword() registers - for restore()
+     *  @return array{array<string, true>, array<string, true>, mixed} */
+    public function snapshot(): array
+    {
+        return [$this->_pwd, $this->_request_slices, $GLOBALS['slice_pwd'] ?? null];
+    }
+
+    /** Back to what snapshot() saw: a queue runs more tasks in one process, and a task must not read with
+     *  the passwords the one before it learned ({view.php?...&slice_pwd=} sets the global, too). A slice
+     *  closed so gets its cached reads forgotten. */
+    public function restore(array $snapshot): void
+    {
+        [$pwd, $request_slices, $slice_pwd] = $snapshot;
+        $narrowed = array_diff_key($this->_pwd, $pwd) || array_diff_key($this->_request_slices, $request_slices) || (($GLOBALS['slice_pwd'] ?? null) !== $slice_pwd);
+        $this->_pwd            = $pwd;
+        $this->_request_slices = $request_slices;
+        if ($slice_pwd === null) {
+            unset($GLOBALS['slice_pwd']);
+        } else {
+            $GLOBALS['slice_pwd'] = $slice_pwd;
+        }
+        if ($narrowed) {
+            self::forgetReads();
+        }
+    }
+
     /** we are sending collected slice passwords to {ajax...} - never the slices opened by id (openForRequest()) */
     public function getAsToken(): string
     {
