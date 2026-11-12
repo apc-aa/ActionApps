@@ -437,6 +437,17 @@ $MAILMAN_SYNCHRO_DIR = "/www/mailman/";
  */
 // define('AA_APIKEY_OPENAI', 'sk-...');
 
+/** Keys for outside services are constants named AA_APIKEY_<VENDOR> or, when the vendor
+ *  has more than one, AA_APIKEY_<VENDOR>_<CONTEXT> (the more specific one wins) - new code
+ *  asks AA\Credential\Store::resolve('vendor', 'context') and does not read the constant
+ *  itself. A missing key just switches the feature off. A key is one line: a line break
+ *  would add a header of its own to a request. Keys in use:
+ *   - AA_APIKEY_OPENAI - voice dictation fallback (above)
+ *   - AA_APIKEY_MAPY   - mapy.com map tiles in the GPS input widget
+ *   - an import source that needs a key names its constant on the source's settings
+ */
+// define('AA_APIKEY_MAPY', '...');
+
 /** Upper bound (seconds) for a single dictation recording. The per-widget
  *  `audio_max_seconds` property overrides this default. Enforced client-side
  *  (auto-stop) and server-side (reject oversized uploads — paid-API cost guard).
