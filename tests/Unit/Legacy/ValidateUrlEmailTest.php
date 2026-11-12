@@ -39,6 +39,30 @@ final class ValidateUrlEmailTest extends TestCase
         $this->assertSame($valid, AA_Validate::factoryByString($validator)->validate($value));
     }
 
+    /** @return array<string, array{string, bool}> */
+    public static function emails(): array
+    {
+        return [
+            'plain'                 => ['a@b.cz', true],
+            'long top level domain' => ['a@b.digital', true],
+            '63 letters long one'   => ['a@b.' . str_repeat('x', 63), true],
+            'national one'          => ['a@b.xn--p1ai', true],
+            'longer than DNS'       => ['a@b.' . str_repeat('x', 64), false],
+            'new line at the end'   => ["a@b.cz\n", false],
+            'another header line'   => ["a@b.cz\nBcc: x@y.cz", false],
+            'no top level domain'   => ['a@b', false],
+        ];
+    }
+
+    /** the address may end up in a mail header, so a new line must not pass */
+    #[DataProvider('emails')]
+    public function test_validate_email(string $value, bool $valid): void
+    {
+        $this->assertSame($valid, AA_Validate::doValidate($value, 'email'));
+        $err = [];
+        $this->assertSame($valid, ValidateInput('mail', 'E-mail', $value, $err, true, 'email'));
+    }
+
     /** the browser stops at the length too, the input keeps its own type */
     public function test_getHtmlInputAttr_carriesTheLength(): void
     {
