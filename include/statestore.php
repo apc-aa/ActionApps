@@ -1545,7 +1545,8 @@ class AA_Temporary_Table
             }
             $fields[] = match ($property->getType()) {
                 'int'   => "$prop_id INT",
-                default => "$prop_id VARCHAR(255)",
+                // the whole text - the filter searches all of it
+                default => "$prop_id MEDIUMTEXT",
             };
         }
         return $fields;
@@ -1558,8 +1559,10 @@ class AA_Temporary_Table
     private function create(array $contents): void
     {
         $fields = implode(',', $this->fieldsFromProperties());
-        $SQL = "CREATE TEMPORARY TABLE IF NOT EXISTS {$this->tablename} ({$fields})";
-        DB_AA::sql($SQL);
+        // a persistent connection still holds the table of an earlier request, with its rows and its old columns
+        DB_AA::sql("DROP TEMPORARY TABLE IF EXISTS {$this->tablename}");
+        // not the server's default_tmp_storage_engine: MEMORY refuses TEXT columns
+        DB_AA::sql("CREATE TEMPORARY TABLE {$this->tablename} ({$fields}) ENGINE=InnoDB");
         ($metabase = AA::Metabase())->addTable(AA_MbT::factoryFromDb($this->tablename));
         $metabase->doInsertMulti($this->tablename, array_map(static fn($content) => $content->getAllAsScalar(', '), $contents));
     }
