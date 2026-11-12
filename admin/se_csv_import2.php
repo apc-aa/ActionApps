@@ -457,18 +457,20 @@ class AA_Csv_Importer {
                foreach ( $outFields as $f_id => $f_name) {
                    echo "<tr><th>$f_name</th>\n";
                    echo "<td>";
-                   FrmSelectEasy("mapping[$f_id]", $inFields, $set_default ? findNearestText($f_id, $f_name, $inFields) : $this->mapping[$f_id]);		// todo - multiple
+                   // a field added to the slice after the setting was saved has no mapping - no source and the
+                   // default action leave it untouched (the browser would select the first option otherwise)
+                   FrmSelectEasy("mapping[$f_id]", $inFields, $set_default ? findNearestText($f_id, $f_name, $inFields) : ($this->mapping[$f_id] ?? '__empty__'));		// todo - multiple
                    echo "</td>";
                    echo "<td>";
-                   FrmSelectEasy("actions[$f_id]", $actionList, $set_default ? "default" : $this->actions[$f_id]);
+                   FrmSelectEasy("actions[$f_id]", $actionList, $set_default ? "default" : ($this->actions[$f_id] ?? 'default'));
                    echo "</td>";
 
-                   echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default && $this->html[$f_id]) {
+                   echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default && ($this->html[$f_id] ?? false)) {
                        echo "checked";
                    }
                    echo  "></td>";
                    echo "<td><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) {
-                       echo safe(stripslashes($this->params[$f_id]));
+                       echo safe(stripslashes($this->params[$f_id] ?? ''));
                    }
                    echo "\"></td>";
                    echo "<td class=\"tabhlp\"><aa-params" . htmlattr(['list' => 'TRANS_ACTIONS', 'type-name' => "actions[$f_id]", 'view' => 'help']) . "></aa-params></td>";
