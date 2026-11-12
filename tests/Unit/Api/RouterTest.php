@@ -28,7 +28,7 @@ final class RouterTest extends TestCase
     {
         ini_set('error_log', (string) $this->log_before);
         @unlink($this->log);
-        unset($_GET['_path'], $_SERVER['REQUEST_METHOD']);
+        unset($_GET['_path'], $_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'], $_SERVER['REQUEST_URI']);
     }
 
     public function test_dispatch_exception_answers_without_its_message(): void
@@ -42,6 +42,22 @@ final class RouterTest extends TestCase
 
         self::assertSame(['error' => 'Internal error'], json_decode($body, true));
         self::assertStringContainsString('/var/www/secret', (string) file_get_contents($this->log), 'the admin finds it in the log');
+    }
+
+    /** ?_path[]=x is not a path; the router answers 404 instead of dying in trim(). */
+    public function test_dispatch_aPathThatIsNotAString_isNoRoute(): void
+    {
+        $_GET['_path']           = ['v1/boom'];
+        $_SERVER['PATH_INFO']    = '';
+        $_SERVER['REQUEST_URI']  = '/aadev/api/';
+        $router = new Router();
+        $router->register('GET', '/v1/boom', static fn() => throw new \RuntimeException('the array was taken for a path'));
+
+        ob_start();
+        $router->dispatch();
+        $body = (string) ob_get_clean();
+
+        self::assertSame('Not Found', json_decode($body, true)['error'] ?? null);
     }
 
     // Apache decodes the path before the rule copies it into the query: without B,

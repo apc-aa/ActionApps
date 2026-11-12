@@ -49,7 +49,7 @@ class Router
     private function extractPath(): string
     {
         // Preferred: the rewrite rule hands the path via ?_path=v1/ping.
-        if (isset($_GET['_path']) && $_GET['_path'] !== '') {
+        if (isset($_GET['_path']) && is_string($_GET['_path']) && $_GET['_path'] !== '') {
             return '/' . trim($_GET['_path'], '/');
         }
         // PATH_INFO fallback (when AcceptPathInfo is on).
