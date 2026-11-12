@@ -94,5 +94,38 @@ namespace Tests\Unit\Legacy {
         {
             self::assertSame($expected, AA_Module::getFallbackModuleId($modules, $type));
         }
+
+        /**
+         * The page init_page.php runs for is the first included file inside the AA tree, not the
+         * first included file: under php-cgi an auto_prepend_file comes before the page, and a
+         * page taken for "somewhere else" has no module type - a site page opened with no module
+         * chosen would run on the first slice rather than on a site module.
+         */
+        public function testPageScript_isTheFirstIncludedFileInsideTheAaTree(): void
+        {
+            $base  = sys_get_temp_dir() . '/aa-pagescript-' . getmypid();
+            $root  = $base . '/aa';
+            $files = ['prepend.php', 'aa-other/admin/x.php', 'aa/admin/se_users.php', 'aa/include/init_page.php'];
+            foreach ($files as $file) {
+                @mkdir(dirname("$base/$file"), 0777, true);
+                touch("$base/$file");
+            }
+            @symlink($root, "$base/link");
+            $root = (string) realpath($root);   // what init_page.php passes: dirname(__DIR__), symlinks resolved
+            try {
+                $included = ["$base/prepend.php", "$base/aa-other/admin/x.php", "$base/aa/admin/se_users.php", "$base/aa/include/init_page.php"];
+                self::assertSame('admin/se_users.php', AA_Module::pageScript($included, $root), 'a prepend and a look-alike directory are not the page');
+                self::assertSame('admin/se_users.php', AA_Module::pageScript(["$base/link/admin/se_users.php"], $root), 'a path through a symlink is the same page');
+                self::assertSame('', AA_Module::pageScript(["$base/prepend.php", "$base/missing.php"], $root), 'nothing inside AA - no page to name');
+            } finally {
+                @unlink("$base/link");
+                foreach ($files as $file) {
+                    @unlink("$base/$file");
+                }
+                foreach (['aa-other/admin', 'aa-other', 'aa/admin', 'aa/include', 'aa', ''] as $dir) {
+                    @rmdir("$base/$dir");
+                }
+            }
+        }
     }
 }

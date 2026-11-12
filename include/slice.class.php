@@ -275,6 +275,23 @@ abstract class AA_Module
         return array_key_last($modules);
     }
 
+    /** The page being run, relative to the AA root ('admin/se_users.php'); '' when no included file lies
+     *  in AA. Not simply the first included file: under php-cgi an auto_prepend_file comes before the page.
+     * @param string[] $included_files  get_included_files()
+     * @param string   $aa_root         the AA root with symlinks resolved - dirname(__DIR__) in include/
+     */
+    public static function pageScript(array $included_files, string $aa_root): string
+    {
+        $root = rtrim($aa_root, '/') . '/';
+        foreach ($included_files as $file) {
+            $path = (string) realpath($file);
+            if (str_starts_with($path, $root)) {
+                return substr($path, strlen($root));
+            }
+        }
+        return '';
+    }
+
     /** Returns 'class', 'url', 'menu', 'letter' for module
      *
      * @param $info string  - 'class' | 'url' | 'menu' | 'letter' | 'type'
