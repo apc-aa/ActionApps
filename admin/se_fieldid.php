@@ -214,6 +214,9 @@ if ($update && $new_id_text && AA::$module_id) {
         $err[] = _m("The new ID is not valid");
     } elseif (in_array($new_id, RESERVED_IDS)) {
         $err[] = _m("This ID is reserved") . " ($new_id).";
+    } elseif (AA_Field::isProtectedType(AA_Fields::getFieldType($old_id)) && !AA_Field::isProtectedType($new_id)) {
+        // the type at the very start of the id keeps the stored values hidden - not one behind an underscore
+        $err[] = _m("A password or secret field can be renamed only to another password or secret field");
     } elseif (DB_AA::test("field", [["slice_id", AA::$module_id, 'l'], ["id", $new_id]])) {    // prove the field does not exist
         $err[] = _m("This ID is already used") . " ($new_id).";
     } else {
