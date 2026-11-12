@@ -1552,7 +1552,8 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         }
         $user_info = AA_Reader::getReaderItemContent($id);
 
-        if ($user_info->isEmpty()) {
+        // a reader out of the active bin cannot log in, so a session he still has must not keep the role either
+        if ($user_info->isEmpty() || !$user_info->isActive()) {
             return [];
         }
 
