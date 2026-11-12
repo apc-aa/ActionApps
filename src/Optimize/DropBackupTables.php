@@ -5,10 +5,8 @@ namespace AA\Optimize;
 use AA;
 use AA_Metabase;
 
-/** Drop all bck_* tables
- *  This script DELETES all the current tables (slice, item, ...) where we have
- *  bck_table and renames all backup tables (bck_slice, bck_item, ...) to right
- *  names (slice, item, ...).
+/** Drops all the bck_* tables - the backups older versions of the database update left when they copied
+ *  a table into a new one
  */
 class DropBackupTables extends \AA\Optimize\AbstractOptimize
 {

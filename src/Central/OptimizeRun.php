@@ -57,10 +57,6 @@ final class OptimizeRun extends CentralRun
     /** what the form of central/optimize.php sends with its token */
     public const FORM_TOKEN = 'central-optimize';
 
-    /** Optimize classes a run never offers: their test does not say "nothing to repair" - RestoreBckTables
-     *  passes when backups exist, and its repair replaces the tables that have a backup by it */
-    private const EXCLUDED = [\AA\Optimize\RestoreBckTables::class];
-
     /** finished runs kept for their results */
     private const KEEP = 20;
     /** AAs one run asks at most */
@@ -140,14 +136,14 @@ final class OptimizeRun extends CentralRun
     /** The tasks in groups for the choice, the recommended first: the whole sql_update; the repairs; the
      *  repairs that read whole big tables (CHECK_SLOW - minutes on a big database, longer than a request
      *  waits); the tests by their State Check category; the steps of sql_update one by one; the fixes
-     *  made for one website. An Optimize class is a task when it has a name and a test (and is not EXCLUDED);
+     *  made for one website. An Optimize class is a task when it has a name and a test;
      *  the group comes from its types() and whether it has a repair.
      *  @return array<string, array<string, string>> group => task => name, by name */
     public static function taskGroups(): array
     {
         $found = [];
         foreach (AA_Components::getClassNames('AA\\Optimize\\', null, false) as $class) {
-            if (!is_subclass_of($class, AbstractOptimize::class) || ($class::name() === '') || !in_array('test', $class::actions(), true) || in_array($class, self::EXCLUDED, true)) {
+            if (!is_subclass_of($class, AbstractOptimize::class) || ($class::name() === '') || !in_array('test', $class::actions(), true)) {
                 continue;
             }
             $types = $class::types();

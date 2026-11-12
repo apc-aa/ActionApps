@@ -146,11 +146,11 @@ class DbBinaryTrailingZeros extends AbstractOptimize
         $this->_fixTable('jump', 'slice_id', "varbinary(16)  NOT NULL default ''");
         $this->_fixTable('jump', 'dest_slice_id', "varbinary(16)  NOT NULL default ''");
         $this->_fixTable('object_float', 'object_id', "varbinary(32)  NOT NULL default ''");
-        $this->_fixTable('object_float', 'property', "varbinary(16)  NOT NULL default ''");
+        $this->_fixTable('object_float', 'property', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('object_integer', 'object_id', "varbinary(32)  NOT NULL default ''");
-        $this->_fixTable('object_integer', 'property', "varbinary(16)  NOT NULL default ''");
+        $this->_fixTable('object_integer', 'property', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('object_text', 'object_id', "varbinary(32)  NOT NULL default ''");
-        $this->_fixTable('object_text', 'property', "varbinary(16)  NOT NULL default ''");
+        $this->_fixTable('object_text', 'property', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('pagecache', 'id', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('pagecache_str2find', 'pagecache_id', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('polls', 'id', "varbinary(32)  NOT NULL default ''");
@@ -178,19 +178,19 @@ class DbBinaryTrailingZeros extends AbstractOptimize
         $this->_fixTable('slice', 'type', "varbinary(16)  default NULL");
         $this->_fixTable('slice', 'mlxctrl', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('view', 'slice_id', "varbinary(16)  NOT NULL default ''");
-        $this->_fixTable('view', 'order1', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'order2', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'group_by1', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'group_by2', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'cond1field', "varbinary(16)  default NULL");
+        $this->_fixTable('view', 'order1', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'order2', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'group_by1', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'group_by2', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'cond1field', "varbinary(32)  default NULL");
         $this->_fixTable('view', 'cond1op', "varbinary(10)  default NULL");
-        $this->_fixTable('view', 'cond2field', "varbinary(16)  default NULL");
+        $this->_fixTable('view', 'cond2field', "varbinary(32)  default NULL");
         $this->_fixTable('view', 'cond2op', "varbinary(10)  default NULL");
-        $this->_fixTable('view', 'cond3field', "varbinary(16)  default NULL");
+        $this->_fixTable('view', 'cond3field', "varbinary(32)  default NULL");
         $this->_fixTable('view', 'cond3op', "varbinary(10)  default NULL");
-        $this->_fixTable('view', 'field1', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'field2', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'field3', "varbinary(16)  default NULL");
+        $this->_fixTable('view', 'field1', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'field2', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'field3', "varbinary(32)  default NULL");
 
 
         /*

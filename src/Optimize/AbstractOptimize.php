@@ -230,6 +230,14 @@ abstract class AbstractOptimize implements NamedInterface
         return $ret;
     }
 
+    /** query() for a statement the server may refuse as expected: the refusal comes back as its text, not
+     *  as an exception and a logged database error. '' = done (or only printed) */
+    protected function tryQuery(string $SQL): string
+    {
+        $this->message(safe($SQL));
+        return self::justPrint() ? '' : $this->queryDb()->tryQuery($SQL);
+    }
+
     /** Runs $work as ONE transaction (DB_AA::transaction()) on the handle query() uses: one commit
      *  instead of one per statement, and a failure in the middle leaves the tables as they were.
      *  No DDL inside (it commits implicitly). In the dry run (justPrint()) $work just runs.

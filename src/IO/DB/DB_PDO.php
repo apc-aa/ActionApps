@@ -312,6 +312,22 @@ class DB_PDO
         return $ret;
     }
 
+    /** A statement the server may refuse as expected (an ALTER it cannot do online): the refusal comes back
+     *  as its text and is neither logged nor printed as a database error. '' = done */
+    public function tryQuery(string $sql): string
+    {
+        if (!$this->connect()) {
+            return 'no connection to the database';
+        }
+        try {
+            $this->sth = $this->dbh->query($sql, PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
+        $this->Row = 0;
+        return $this->sth ? '' : (string) ($this->dbh->errorInfo()[2] ?? 'refused');
+    }
+
     /* public: perform a query */
     private function query_internal($Query_String): bool
     {

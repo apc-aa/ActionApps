@@ -39,6 +39,9 @@ use AA\Manageraction\Central_MoveItem;
 use AA\Manageraction\Central_OptimizeRun;
 use AA\Manageraction\Central_Tab;
 use AA\Manageraction\Manageractions;
+use AA\Optimize\CentralTokenColumn;
+use AA\Optimize\Finding;
+use AA\Optimize\StateCheckModel;
 
 use AA\Util\FormToken;
 use AA\Util\InputVars;
@@ -126,7 +129,7 @@ $managed->addColumn('admin_link', _m('Admin Link'), '<a href="_#AA_HTTP_/_#AA_BA
 // AA_ADMI2, escaped) Actionapps::credentialBadge() (listContent()), never the stored value.
 $auth_format = ''
     . '<div class="aa-auth-cell">'
-    .   '<div>_#AA_ADMI2</div>'
+    .   '<div><span class="aa-auth aa-auth-{auth_state}">_#AA_ADMI2</span></div>'
     .   '<details>'
     .     '<summary>'._m('Authenticate').'</summary>'
     .     '<div>'
@@ -165,6 +168,17 @@ if (!in_array($manager->getBin(), ['app', 'appb', 'appc'], true)) {
     $managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR', 'admin_link', 'auth']);
 }
 $html = $manager->getDisplayPage();
+
+// a too short column cuts every token Get Token stores - the Repair of State Check widens it
+foreach ((new CentralTokenColumn())->findings() as $finding) {
+    if ($finding->severity === Finding::ERROR) {
+        $html = MsgErr(
+            safe($finding->title) . '. ' . safe($finding->advice)
+            . '<form method="post" action="' . safe(get_admin_url('aa_statecheck.php')) . '">' . FormToken::field(StateCheckModel::FORM_TOKEN)
+            . '<button class="aa-button-run" type="submit" name="repair" value="' . (new ReflectionClass(CentralTokenColumn::class))->getShortName() . '">' . _m('Repair') . '</button></form>'
+        ) . $html;
+    }
+}
 
 // JS helper for the per-row Authenticate button: builds & POSTs a hidden form.
 // Required because the manager already wraps rows in <form>, and HTML5 disallows nested forms.

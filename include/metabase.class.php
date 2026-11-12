@@ -938,7 +938,6 @@ class AA_Metabase
             'constant',
             'constant_slice',
             'cron',
-            'db_sequence',
             'discussion',
             'email',
             'event',
@@ -1390,45 +1389,16 @@ class AA_Metabase
     }
 
 
-    /** Compares two metabases - this and the $metabase supplied by the parameter
-     *  You can use it to check, which tables should be updated
-     * @param AA_Metabase $metabase - the second metabase which will be compared to $this
-     *
-     * @return array
-     */
-    public function compare(AA_Metabase $metabase): array
+    /** SQL of a table or column with the differences that mean nothing to AA left out: char and varchar
+     *  (some MySQL versions never convert one to the other), binary and varbinary, a default of
+     *  spaces or '0', NOT NULL of a timestamp, the display width of an integer (MySQL 8 does not show it) */
+    public static function comparable(string $sql): string
     {
-        $diffs = [];
-
-        // for us are varchar and char the same - some tables are never converted
-        // to char in some versions of MySQL, so the test is always false
-        $eq_vars   = ['varchar', " default '                '", " default '                                '", " default '0'", "timestamp NOT NULL", 'varbinary'];
-        $eq_novars = ['char'   , '', '', '', 'timestamp', 'binary'];
-
-        foreach ($this->tables as $tablename => $table) {
-            $table_sql_1 = $table->getCompareSql();
-            $table_sql_2 = isset($metabase->tables[$tablename]) ? $metabase->tables[$tablename]->getCompareSql() : '';
-
-            $diffs[$tablename] = [
-                'equal'  => (str_replace($eq_vars, $eq_novars, $table_sql_1) === str_replace($eq_vars, $eq_novars, $table_sql_2)),
-                'table1' => $table_sql_1,
-                'table2' => $table_sql_2,
-            ];
-        }
-
-        // all the tables not pressent in the template
-        $uncompared = array_diff($metabase->getTableNames(), $this->getTableNames());
-        foreach ($uncompared as $tablename) {
-            if (str_starts_with($tablename, 'bck_')) {
-                continue;
-            }
-            $diffs[$tablename] = [
-                'equal'  => false,
-                'table1' => '',
-                'table2' => $metabase->getCreateSql($tablename),
-            ];
-        }
-        return $diffs;
+        return str_replace(
+            ['varchar', " default '                '", " default '                                '", " default '0'", 'timestamp NOT NULL', 'varbinary'],
+            ['char', '', '', '', 'timestamp', 'binary'],
+            preg_replace('/\b(tinyint|smallint|mediumint|int|bigint)\(\d+\)/', '$1', $sql),
+        );
     }
 
     /** getContent function for loading content of specified table for manager

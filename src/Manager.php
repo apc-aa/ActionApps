@@ -350,7 +350,8 @@ class Managed
 
     /**
      * @param string $id
-     * @param array  $setting  ['type'=>bool|enum|string, 'enum'=>['x','y'], 'name'=>'', 'help'=>'']
+     * @param array  $setting  ['type'=>bool|enum|string, 'enum'=>['x','y'], 'name'=>'', 'help'=>'',
+     *                         'widget'=>'edt'|Widget|fn(?AA_Content $record): string|Widget - the stored row, null in the Add form]
      */
     public function setWidgetSetting(string $id, array $setting): void
     {
@@ -578,14 +579,14 @@ class Managed_Table extends Managed
                 }
                 if (isset($setting['widget'])) {
                     $w = $setting['widget'];
-                    // a non-string callable is a chooser fn($current_value): widget-code|Widget
-                    // — e.g. pick the rich editor only for token-free bodies
+                    // a non-string callable is a chooser fn(?AA_Content $record): widget-code|Widget,
+                    // given the stored row (null in the Add form) - e.g. the editor of a mail body
                     if (is_callable($w) && !is_string($w)) {
                         if (!$record_loaded) {
                             $record        = $id ? ($this->getContent(new zids($id, $this->getZidsType()))[$id] ?? null) : null;
                             $record_loaded = true;
                         }
-                        $w = $w($record ? (string) $record->getAaValue($k)->getValue() : '');
+                        $w = $w($record);
                     }
                     // accept a ready Widget instance or a short-code string ('edt', 'edt:20', ...)
                     $widgets[$k] = $w instanceof Widget ? $w : Widget::factoryByString((string) $w);

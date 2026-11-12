@@ -631,9 +631,8 @@ function add_constant_group(string $group_id, $constants2import): true|string
 
 // -------------------------------------------------------------------
 
-/** Groups AA itself defines and relies on - never deleted, edited only by a superadmin.
- *  lt_groupNames is the list of all the groups. */
-const AA_CONSTANT_GROUPS_CORE = ['lt_groupNames', ...AA\Optimize\RedefineCoreConstants::GROUPS];
+/** Groups AA itself defines and relies on - never deleted, edited only by a superadmin */
+const AA_CONSTANT_GROUPS_CORE = AA\Optimize\RedefineCoreConstants::CORE_GROUPS;
 
 /** delete_constant_group function
 *   Deletes a constant group. If $slice_id is provided, the group

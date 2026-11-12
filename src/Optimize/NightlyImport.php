@@ -25,7 +25,7 @@ final class NightlyImport
     /** the POST field that marks a push */
     public const FIELD = 'nightly_import';
     /** the purpose of the FormToken the page's own forms carry */
-    private const TOKEN = 'aa_statecheck';
+    private const TOKEN = StateCheckModel::FORM_TOKEN;
 
     public const MAX_BYTES    = 256 * 1024;
     public const MAX_FINDINGS = 1000;

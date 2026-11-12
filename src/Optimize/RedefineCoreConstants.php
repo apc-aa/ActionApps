@@ -9,8 +9,11 @@ use AA\IO\DB\DB_AA;
 /** Recreates the "ActionApps Core" constants (delete and insert). */
 class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize
 {
-    /** the constant groups this class (re)defines - AA_CONSTANT_GROUPS_CORE in include/constedit_util.php */
+    /** the constant groups this class (re)defines */
     public const GROUPS = ['lt_codepages', 'lt_languages', 'AA_Core_Bins....', 'lt_apcCategories'];
+
+    /** groups AA itself relies on - never deleted, edited only by a superadmin; lt_groupNames lists all the groups */
+    public const CORE_GROUPS = ['lt_groupNames', ...self::GROUPS];
 
     /** Name function
      * @return string - a name

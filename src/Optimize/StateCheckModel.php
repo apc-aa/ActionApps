@@ -42,6 +42,9 @@ final class StateCheckModel
     /** sections open on the page; the others start collapsed */
     public const OPEN_SECTIONS = [self::NEW, self::ONGOING];
 
+    /** the purpose of the FormToken every POST to the State Check page carries - a Repair button elsewhere too */
+    public const FORM_TOKEN = 'aa_statecheck';
+
     public const ACTION_RECHECK = 'recheck';
     public const ACTION_REPAIR = 'repair';
     public const ACTION_RESOLVE = 'resolve';
