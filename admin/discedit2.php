@@ -143,8 +143,8 @@ if ($update) {
     }
 }
 
-// set variables from table discussion - an expired form keeps the edited values, unless they came from another site
-if ((!$expired || $foreign) && ($row = DB_AA::select1([], 'SELECT * FROM discussion', [['id', $d_id, 'l']]))) {
+// set variables from table discussion - a sent form keeps the edited values, unless they came from another site
+if ((!$update || $foreign) && ($row = DB_AA::select1([], 'SELECT * FROM discussion', [['id', $d_id, 'l']]))) {
     RestoreVariables($row);
 }
 
