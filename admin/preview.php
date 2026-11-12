@@ -41,9 +41,6 @@ try {
     $sh_itm = InputVars::idGET('sh_itm', true);
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
-$sh_itm     = $_GET['sh_itm'];
-$return_url = $_GET['return_url'];
-
 $slice = AA_Slice::getModule(AA::$module_id);
 if ($slice === null) {
      echo _m("Wrong slice_id.");
@@ -59,7 +56,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </head>
 <!-- frames -->
 <frameset  rows="30,*">
-   <frame name="Navigation" src="<?php echo con_url(StateUrl("prev_navigation.php"),"sh_itm=$sh_itm&return_url=$return_url"); ?>" marginwidth="10" marginheight="10" scrolling="no" frameborder="0">
-   <frame name="Item" src="<?php echo $preview_url; ?>" marginwidth="10" marginheight="10" scrolling="auto" frameborder="0">
+   <frame name="Navigation" src="<?php echo con_url(StateUrl("prev_navigation.php"), ['sh_itm' => $sh_itm, 'return_url' => $return_url]); ?>" marginwidth="10" marginheight="10" scrolling="no" frameborder="0">
+   <frame name="Item" src="<?php echo safe($preview_url); ?>" marginwidth="10" marginheight="10" scrolling="auto" frameborder="0">
 </frameset>
 </html>

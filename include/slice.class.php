@@ -872,7 +872,7 @@ class AA_Slice extends AA_Module
             }
             $url = $preview_url;
         } elseif ($fallback_old_sh_itm) {
-            $url = con_url($this->getProperty('slice_url'), "sh_itm=$item_id");
+            $url = get_url($this->getProperty('slice_url'), ['sh_itm' => $item_id]);
         }
 
         // The candidate may come from raw unaliased item field / slice property content, so only
