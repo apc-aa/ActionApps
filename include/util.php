@@ -1515,7 +1515,7 @@ function add_post2shtml_vars($delete = true): void
     $var_types = ["post","get","files","cookie"];
 
     foreach ($var_types as $var_type) {
-        if (is_array($vars[$var_type])) {
+        if (is_array($vars[$var_type] ?? null)) {   // a row holds only the parts post2shtml.php stores
             foreach ($vars[$var_type] as $var => $value) {
                 if (InputVars::isProtectedGlobal((string) $var)) {   // any visitor can store the vars
                     continue;

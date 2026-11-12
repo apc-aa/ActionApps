@@ -327,7 +327,6 @@ final class PageCacheVaryTest extends TestCase
         'src/Util/InputVars.php'            => [1, '{qs:} skips a cookie PHP put into $_REQUEST'],
         'filldisc.php'                      => [1, 'form handler, never cached'],
         'filler.php'                        => [2, 'form handler, never cached'],
-        'post2shtml.php'                    => [1, 'form handler, never cached'],
     ];
 
     public function test_aa_code_reads_cookies_only_through_the_tracker(): void
