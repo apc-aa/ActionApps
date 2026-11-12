@@ -241,15 +241,7 @@ function SendOkPage($txt, $new_ids = []): void
             $retcode = (string) ($_REQUEST["ret_code"] ?? '') ?: (SignedExpression::isSigned($enc) ? $enc : (string) base64_decode(strtr($enc, ' ', '+')));
 
             if ( $retcode === 'AA_2FA_QR') {   // very special case for 2FA secret
-                $secret = strlen(AuthGetUid()) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', AuthGetUid(), 'l']]) : '';
-
-                $qr = '--';
-                if ($secret) {
-                    $ga = new PHPGangsta_GoogleAuthenticator();
-                    $qrCodeUrl = $ga->getQRCodeGoogleUrl($_SERVER['SERVER_NAME'], $secret);
-                    $qr = "<img src=\"$qrCodeUrl\">";
-                }
-                $ret[reset($new_ids)] = $qr;
+                $ret[reset($new_ids)] = AA_Inserter_2fa::secretQr();
             } else {
                 foreach ($new_ids as $long_id) {
                     $item       = AA_Item::getItem(new zids($long_id, 'l'));

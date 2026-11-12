@@ -32,7 +32,9 @@ namespace Tests\Unit\Legacy {
     use AA_Field;
     use AA_Field_Writer;
     use AA_Inserter;
+    use AA_Inserter_2fa;
     use AA_Value;
+    use Closure;
     use Cvarset;
     use ItemContent;
     use PHPUnit\Framework\TestCase;
@@ -85,7 +87,11 @@ namespace Tests\Unit\Legacy {
         {
             $GLOBALS['spareDBs'] = [];
             AA::$perm            = null;
-            unset($GLOBALS['auth']);
+            unset($GLOBALS['auth'], $_SERVER['SERVER_NAME']);
+            Closure::bind(static function (): void {
+                AA_Inserter_2fa::$verified_uid = '';
+                AA_Inserter_2fa::$get_secret   = [];
+            }, null, AA_Inserter_2fa::class)();
         }
 
         // ------------------------------------------------------------ helpers
@@ -670,6 +676,83 @@ namespace Tests\Unit\Legacy {
             $this->assertCount(1, RecordingDb::$content);
             $this->assertSame('secret..........', RecordingDb::$content[0]['field']);
             $this->assertDoesNotMatchRegularExpression('/^[A-Z2-7]{16}$/', RecordingDb::$content[0]['text'], 'stored encrypted, not as the bare secret');
+        }
+
+        /** Get Secret: the store writes nothing; the secret is shown only after a field proved the password */
+        private function getSecretQr(string $sent): string
+        {
+            $this->loginAs(self::USER);
+            $_SERVER['SERVER_NAME'] = 'example.org';
+            $this->store([$this->field('secret..........', ['input_insert_func' => '2fa'])], ['secret..........' => $sent]);
+            $this->assertSame([], RecordingDb::$log, 'nothing written');
+            RecordingDb::$answer = static fn(string $sql): array => str_contains($sql, 'AS secret FROM content') ? [['secret' => 'JBSWY3DPEHPK3PXP']] : [];
+            return AA_Inserter_2fa::secretQr();
+        }
+
+        public function test_2fa_getSecret_rightPassword_qrDrawnLocally(): void
+        {
+            $qr = $this->getSecretQr('AA_doNotGenerate:honza:pwd:');
+            $this->assertStringStartsWith('<img src="data:image/png;base64,', $qr);
+            $this->assertStringNotContainsString('qrserver', $qr);
+        }
+
+        public function test_2fa_getSecret_wrongPassword_noSecret(): void
+        {
+            $this->assertSame('Wrong password or code', $this->getSecretQr('AA_doNotGenerate:honza:wrong:'));
+        }
+
+        /** a form saved with the 2FA password filled in (autofill) is no login attempt - only Get Secret checks it */
+        public function test_2fa_formSaved_noLoginAttempt(): void
+        {
+            $this->loginAs(self::USER);
+            AA::$perm = new class {
+                public int $calls = 0;
+
+                public function authenticateUsername($username, $password, $code2fa): string|false
+                {
+                    ++$this->calls;
+                    return false;
+                }
+            };
+            $this->store([$this->field('secret..........', ['input_insert_func' => '2fa'])], ['secret..........' => 'AA_doNotGenerate:honza:pwd:']);
+            $this->assertSame(0, AA::$perm->calls);
+        }
+
+        /** Get Secret with the password left empty is no failed login */
+        public function test_2fa_getSecret_noPassword_noLoginAttempt(): void
+        {
+            $this->loginAs(self::USER);
+            AA::$perm = new class {
+                public int $calls = 0;
+
+                public function authenticateUsername($username, $password, $code2fa): string|false
+                {
+                    ++$this->calls;
+                    return false;
+                }
+            };
+            $this->store([$this->field('secret..........', ['input_insert_func' => '2fa'])], ['secret..........' => 'AA_doNotGenerate:honza::']);
+            $this->assertSame('Wrong password or code', AA_Inserter_2fa::secretQr());
+            $this->assertSame(0, AA::$perm->calls);
+        }
+
+        public function test_2fa_generate_thenQrShown(): void
+        {
+            $this->loginAs(self::USER);
+            $_SERVER['SERVER_NAME'] = 'example.org';
+            $this->store([$this->field('secret..........', ['input_insert_func' => '2fa'])], ['secret..........' => 'AA_2FASECRET:honza:pwd:']);
+            $secret = RecordingDb::$content[0]['text'];
+            RecordingDb::$answer = static fn(string $sql): array => str_contains($sql, 'AS secret FROM content') ? [['secret' => $secret]] : [];
+
+            $this->assertStringStartsWith('<img src="data:image/png;base64,', AA_Inserter_2fa::secretQr());
+        }
+
+        /** another user's session - his own secret only after his own password, not after honza's */
+        public function test_2fa_getSecret_otherUserLoggedIn_noSecret(): void
+        {
+            $this->getSecretQr('AA_doNotGenerate:honza:pwd:');
+            $GLOBALS['auth'] = new FakeAuth(self::OTHER);   // AA::$perm still finds honza by his password
+            $this->assertSame('Wrong password or code', AA_Inserter_2fa::secretQr());
         }
 
         // ------------------------------------------------------------ the whole storeItem()
