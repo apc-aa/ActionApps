@@ -110,6 +110,7 @@ final class LibxmlTest extends TestCase
         self::assertNull(Libxml::declaredEncoding('<?xml version="1.0"?><a/>'));
         self::assertSame('utf-8', Libxml::declaredEncoding("\xEF\xBB\xBF<?xml version='1.0' encoding = 'utf-8'?><a/>"));
         self::assertSame('UTF-7', Libxml::declaredEncoding('<?xml version="1.0" encoding="UTF-7"?>'));
+        self::assertSame('UTF-7', Libxml::declaredEncoding("<?xml version='1.0'encoding='UTF-7'?>"), 'without the blank libxml still reads it');
         self::assertNull(Libxml::declaredEncoding('<a/><?xml version="1.0" encoding="UTF-7"?>'), 'only a declaration at the start counts');
     }
 

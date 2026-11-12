@@ -141,7 +141,8 @@ final class Libxml
             return null;
         }
         $end   = strpos($xml, '?>', $start);
-        $found = preg_match('/\sencoding\s*=\s*(["\'])([^"\']*)\1/', substr($xml, $start, $end === false ? null : $end - $start), $m);
+        // no blank required before it: libxml in recover mode reads version="1.0"encoding="…" as well
+        $found = preg_match('/encoding\s*=\s*(["\'])([^"\']*)\1/', substr($xml, $start, $end === false ? null : $end - $start), $m);
         return match ($found) {
             1       => $m[2],
             0       => null,
