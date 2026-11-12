@@ -11508,6 +11508,18 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
 
+    /** id of the item to edit, from the URL - only an item of the managed slices
+     * @param string[] $slices_arr
+     */
+    private static function editId(string $cmdvar, array $slices_arr): string
+    {
+        $edit_id = $_GET[$cmdvar] ?? '';
+        if (!is_string($edit_id) || !is_long_id($edit_id)) {
+            return '';
+        }
+        return (new zids($edit_id, 'l'))->itemFilter($slices_arr)->isEmpty() ? '' : $edit_id;
+    }
+
     /**
      * @param string $slices
      * @param string $field
@@ -11583,10 +11595,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         $inner_code = '';
         $standard_mgr = true;
 //      if ($edit_code AND (is_long_id($_GET['aaedit']) OR (is_long_id($_GET[$cmdvar])) )) {
-        if ($edit_code && is_long_id($_GET[$cmdvar])) {
+        if ($edit_code && ($edit_id = self::editId($cmdvar, $slices_arr))) {
 
-            // @todo check slice of edited item to match $slices
-            $inner_code = StrExp('item', [$_GET[$cmdvar], $edit_code]);
+            $inner_code = StrExp('item', [$edit_id, $edit_code]);
             $footer     = '';
             if ( $mode_arr['B'] ) {
                 $footer .= $mode_arr['X'] ? '<footer><article><i class="ico back" onclick="history.back();">' . $mode_arr['B'] . '</i></article></footer>'
