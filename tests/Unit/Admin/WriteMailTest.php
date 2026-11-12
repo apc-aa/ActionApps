@@ -42,4 +42,14 @@ final class WriteMailTest extends TestCase
         $this->assertGreaterThan($picked, $filter);
         $this->assertLessThan(self::at('~AA_Mail::sendToReader\(\$mail_id, \$zids,~'), $filter);
     }
+
+    /** the select lists the templates of the user's modules only */
+    public function test_only_an_offered_template_is_used(): void
+    {
+        $offered = self::at('~\$user_templates = GetUserEmails\("user template"\);~');
+        $use     = self::at('~if \(\$template_id && isset\(\$user_templates\[\$template_id\]\) && !\(\$mailtemplate = new AA_Mailtemplate\(~');
+        $this->assertLessThan($use, $offered);
+        $this->assertSame(1, substr_count(self::source(), 'new AA_Mailtemplate('));
+        $this->assertGreaterThan($use, self::at('~str_replace\(\[\'_#BODYTEXT\',\'_#SUBJECT_\'\], \[\$body, \$subject\],~'), 'the template gets the typed input');
+    }
 }

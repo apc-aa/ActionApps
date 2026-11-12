@@ -112,6 +112,8 @@ AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
 $slice       = AA_Slice::getModule(AA::$module_id);
 
+$user_templates = GetUserEmails("user template");  // false or array['id']=>'name'
+
 if (!$send) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
     unset($r_wm_state);       // clear if it was filled
@@ -188,8 +190,9 @@ if (!$send) {               // for the first time - directly from item manager
             'html'            => $html,
         ];
 
-        if ($template_id && !($mailtemplate = new AA_Mailtemplate((int) $template_id))->isEmpty()) {
-            $email['body'] = str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']], $mailtemplate['body']);
+        // only a template the form offers - the others belong to modules the user has no role in
+        if ($template_id && isset($user_templates[$template_id]) && !($mailtemplate = new AA_Mailtemplate((int) $template_id))->isEmpty()) {
+            $email['body'] = str_replace(['_#BODYTEXT','_#SUBJECT_'], [$body, $subject], $mailtemplate['body']);
         } else {
             $email['body'] = $body;
         }
@@ -273,20 +276,18 @@ $messages['view_items']     = _m("View Recipients");
 $messages['selected_items'] = _m('Selected users');
 $additional[]               = ['text' => '<input type="text" name="testemail" value="' . $testemail . '" size="80"> ' . _m('Test email address(es)'), 'varname' => 'testuser'];
 
-$user_templates = GetUserEmails("user template");  // false or array['id']=>'name'
-
 FrmItemGroupSelect($items, $searchbar, $group, 'users', $messages, $additional);
 
 FrmTabSeparator(_m('Write the email'));
 
-FrmInputText('subject', _m('Subject'), $_POST['subject'], 254, 80, true);
+FrmInputText('subject', _m('Subject'), $subject, 254, 80, true);
 //FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true, '', '', '', true);  // enable rich text area
 
 if ($user_templates) {
-    FrmInputSelect('template_id', _m('Email template'), $user_templates, $_POST['template_id']);
+    FrmInputSelect('template_id', _m('Email template'), $user_templates, $template_id);
 }
 
-FrmTextarea('body', _m('Body'), $_POST['body'], 30, 80, true, '', '', '', true);  // enable rich text area
+FrmTextarea('body', _m('Body'), $body, 30, 80, true, '', '', '', true);  // enable rich text area
 FrmInputEmail('header_from', _m('From (email)'), $_POST['header_from'], 254, 80, true);
 FrmInputEmail('reply_to', _m('Reply to (email)'), $_POST['reply_to'], 254, 80);
 FrmInputEmail('errors_to', _m('Errors to (email)'), $_POST['errors_to'], 254, 80);
