@@ -83,6 +83,10 @@ spl_autoload_register(static function ($class_name) {
         'AA_Property'        => 'include/widget.class.php',
         'AA_Poll'            => 'modules/polls/include/poll.class.php',
         'AA_Polls'           => 'modules/polls/include/poll.class.php',
+        // the site module includes this itself; code elsewhere that translates an address of a
+        // website into its state would otherwise have to include it by path
+        'AA_Router'          => 'modules/site/router.class.php',
+        'AA_Router_Seo'      => 'modules/site/router.class.php',
         'sitetree'           => 'modules/site/sitetree.php',
         'AA_Serializable'    => 'include/statestore.php',
         'AA_Storable'        => 'include/statestore.php',
