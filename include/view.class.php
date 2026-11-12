@@ -162,12 +162,13 @@ class AA_View
     }
 
 
-    /** Sets ['banners']
-     * @param $banner_param
+    /** Sets the banners of this call - AA_Views keeps one AA_View for the request, so no banner of an earlier call stays
+     *  (a call without banners leaves no banner keys in the fields, which getViewInfo() exports)
+     * @param array $banner_param as parseBannerParam() returns it
      */
-    public function setBannerParam($banner_param): void
+    public function setBannerParam(array $banner_param): void
     {
-        $this->fields = array_merge((array) $this->fields, $banner_param);
+        $this->fields = array_merge(array_diff_key((array) $this->fields, ['banners' => 1, 'banners_from_request' => 1]), $banner_param);
     }
 
     /** old GetViewConds function
@@ -368,7 +369,7 @@ class AA_View
                         $bparam['set'][$foo_vid] = 'random-' . ($foo_fld ?: 1);
                     }
                     $ret['banners'][$foo_pos] = http_build_query($bparam, '', '&');   // not arg_separator.output - it may be &amp;
-                    $ret['banners_from_request'] = $from_request;   // set only with banners: setBannerParam() merges, so the banners left from an earlier call keep their own flag
+                    $ret['banners_from_request'] = $from_request;
                 }
             }
         }

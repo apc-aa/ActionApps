@@ -213,6 +213,22 @@ final class ViewBannerParamTest extends TestCase
         $this->assertFalse($format['banners_from_request']);
     }
 
+    /** AA_Views keeps one AA_View per request - a call with no banner draws none of an earlier call's */
+    public function test_setBannerParam_callWithoutBanner_dropsTheBannersOfAnEarlierCall(): void
+    {
+        $view = new AA_View(15, array_fill_keys(self::FORMAT_FIELDS, ''));
+        $view->setBannerParam(AA_View::parseBannerParam('0-30', true));
+
+        $view->setBannerParam(AA_View::parseBannerParam('', true));
+        $this->assertEmpty($view->getViewFormat('', true)['banners']);
+        $this->assertFalse($view->getViewFormat('', true)['banners_from_request']);
+        $this->assertSame([], array_intersect_key($view->getViewInfo(), ['banners' => 1, 'banners_from_request' => 1]), 'nothing for the export of the view');
+
+        $view->setBannerParam(AA_View::parseBannerParam('0-31', false));
+        $view->setBannerParam(AA_View::parseBannerParam('top-32', false));   // no valid banner
+        $this->assertEmpty($view->getViewFormat()['banners']);
+    }
+
     /** a view the URL called draws only the banners the URL chose - not those a template call in the request left there */
     public function test_getViewFormat_calledFromUrl_dropsTheBannersATemplateLeft(): void
     {
