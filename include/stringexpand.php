@@ -9365,6 +9365,8 @@ class AA_Stringexpand_Qrcode extends AA_Stringexpand {
 class AA_Stringexpand_Qrpay extends AA_Stringexpand {
     function expand($account='', $amount='', $currency='', $reference_number='', $message='', $due_date='', $specific_symbol='', $recipient_name=''): string
     {
+        // "*" separates the fields of the payment string - a value ends there, as a reader of the string ends it
+        [$reference_number, $message, $specific_symbol, $recipient_name] = array_map(static fn($value): string => explode('*', (string) $value, 2)[0], [$reference_number, $message, $specific_symbol, $recipient_name]);
         if (!$account || !$amount) {
             return '';
         }

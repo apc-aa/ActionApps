@@ -95,4 +95,37 @@ final class StringexpandQrpayTest extends TestCase
     {
         return (new \AA_Stringexpand_Qrpay([]))->expand($account, $amount, $currency, $reference_number);
     }
+
+    /** reference number, message, specific symbol, recipient name */
+    private static function payment(string $vs, string $msg, string $ss, string $name): string
+    {
+        return (new \AA_Stringexpand_Qrpay([]))->expand(self::ACCOUNT, '100', 'CZK', $vs, $msg, '', $ss, $name);
+    }
+
+    /** the output templates of live sites rely on */
+    public function test_expand_ordinaryValues_asTheLibraryDrawsThem(): void
+    {
+        $qr = new \Defr\QRPlatba\QRPlatba(self::ACCOUNT, 100.0, '2024001', 'CZK');
+        $qr->setMessage('Faktura 2024: Novák & syn')->setSpecificSymbol('77')->setRecipientName('Ecn Studio s.r.o.');
+        self::assertSame($qr->getQRCodeImage(false, 800, 2), self::payment('2024001', 'Faktura 2024: Novák & syn', '77', 'Ecn Studio s.r.o.'));
+    }
+
+    /** @return array<string, array{string, string, string, string}> */
+    public static function valuesWithAsterisk(): array
+    {
+        $acc = '*ACC:CZ6508000000192000145399';
+        return [
+            'reference number' => ['2024001' . $acc, 'Faktura', '77', 'Ecn'],
+            'message'          => ['2024001', 'Faktura' . $acc, '77', 'Ecn'],
+            'specific symbol'  => ['2024001', 'Faktura', '77' . $acc, 'Ecn'],
+            'recipient name'   => ['2024001', 'Faktura', '77', 'Ecn' . $acc],
+        ];
+    }
+
+    /** "*" separates the fields of the payment string, so a value cannot add a field (another account) */
+    #[DataProvider('valuesWithAsterisk')]
+    public function test_expand_valueWithAsterisk_endsThere(string $vs, string $msg, string $ss, string $name): void
+    {
+        self::assertSame(md5(self::payment('2024001', 'Faktura', '77', 'Ecn')), md5(self::payment($vs, $msg, $ss, $name)));
+    }
 }
