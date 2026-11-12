@@ -112,7 +112,7 @@ AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
 $slice       = AA_Slice::getModule(AA::$module_id);
 
-$user_templates = GetUserEmails("user template");  // false or array['id']=>'name'
+$user_templates = GetUserEmails("user template");  // id => description
 
 if (!$send) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
@@ -284,7 +284,7 @@ FrmInputText('subject', _m('Subject'), $subject, 254, 80, true);
 //FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true, '', '', '', true);  // enable rich text area
 
 if ($user_templates) {
-    FrmInputSelect('template_id', _m('Email template'), $user_templates, $template_id);
+    FrmInputSelect('template_id', _m('Email template'), $user_templates, $template_id ?: '');   // 0 would show as a missing option
 }
 
 FrmTextarea('body', _m('Body'), $body, 30, 80, true, '', '', '', true);  // enable rich text area

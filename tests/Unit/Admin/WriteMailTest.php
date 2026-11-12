@@ -53,6 +53,12 @@ final class WriteMailTest extends TestCase
         $this->assertGreaterThan($use, self::at('~str_replace\(\[\'_#BODYTEXT\',\'_#SUBJECT_\'\], \[\$body, \$subject\],~'), 'the template gets the typed input');
     }
 
+    /** intPOST() gives 0 when no template is chosen; the select must not offer a missing "0" for it */
+    public function test_no_template_preselects_nothing(): void
+    {
+        self::at('~FrmInputSelect\(\'template_id\', _m\(\'Email template\'\), \$user_templates, \$template_id \?: \'\'\);~');
+    }
+
     public function test_test_address_is_escaped(): void
     {
         $this->assertStringNotContainsString('value="\' . $testemail', self::source());
