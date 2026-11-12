@@ -20,8 +20,14 @@ final class SiteIndexGuardTest extends TestCase
         $src   = self::source('modules/site/index.php');
         $guard = strpos($src, 'ResponderPolicy::isForeignBrowserRequest($_SERVER)');
         $this->assertNotFalse($guard, 'no origin check');
-        $this->assertStringContainsString('FormToken::checkPost(AA_Module_Site::SPOT_TOKEN, $token, $_SERVER)', $src);
-        $this->assertStringContainsString('$akce = $addcond = $addvar = $delvar = $delcond = $content = $name = \'\';', $src);
+        // every change counts, the token only for the spot form - the tree links carry none
+        $this->assertSame(1, preg_match(
+            '~\$spot_write = \(\$content !== \'\'\) \|\| \(\$name !== \'\'\);\s*'
+            . 'if \(\(\$akce !== \'\' \|\| \$addcond !== \'\' \|\| \$addvar !== \'\' \|\| \$delvar !== \'\' \|\| \$delcond !== \'\' \|\| \$spot_write\)\s*'
+            . '&& \(ResponderPolicy::isForeignBrowserRequest\(\$_SERVER\) \|\| \(\$spot_write && !FormToken::checkPost\(AA_Module_Site::SPOT_TOKEN, \$token, \$_SERVER\)\)\)\) \{\s*'
+            . '\$akce = \$addcond = \$addvar = \$delvar = \$delcond = \$content = \$name = \'\';~',
+            $src,
+        ), 'the guard does not cover every change');
 
         // nothing may change the tree or a spot before the guard
         foreach (['switch ($akce)', '->addCondition(', '->addVariable(', '->removeVariable(', '->removeCondition(', 'doUpdate(', 'doInsert(', '->saveTree(', 'invalidateFor('] as $write) {

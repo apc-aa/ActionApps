@@ -362,17 +362,18 @@ namespace Tests\Unit\Legacy {
         public static function relatedTemplates(): array
         {
             return [
-                'edits, no right there'     => ['relation.......1', PS_EDIT_SELF_ITEMS, false],
-                'edits, may edit all there' => ['relation.......1', PS_EDIT_ALL_ITEMS, true],
+                // the permission constants are not defined yet when the providers run
+                'edits, no right there'     => ['relation.......1', 'PS_EDIT_SELF_ITEMS', false],
+                'edits, may edit all there' => ['relation.......1', 'PS_EDIT_ALL_ITEMS', true],
                 'only points there'         => ['relation.......2', '', true],
             ];
         }
 
         /** a field that edits the items of another slice needs a user who may edit all items there - as in se_inputform.php */
         #[\PHPUnit\Framework\Attributes\DataProvider('relatedTemplates')]
-        public function test_templateEditingAnotherSliceNeedsItsRight(string $tpl_id, string $third_perms, bool $copied): void
+        public function test_templateEditingAnotherSliceNeedsItsRight(string $tpl_id, string $third_perm, bool $copied): void
         {
-            self::perms([self::SLICE => PS_FIELDS, self::OTHER => PS_FIELDS, self::THIRD => $third_perms]);
+            self::perms([self::SLICE => PS_FIELDS, self::OTHER => PS_FIELDS, self::THIRD => ($third_perm === '') ? '' : constant($third_perm)]);
 
             $err = AA_Fields::storeAdminRows(self::SLICE, ['New_Field' => 'Related'], ['New_Field' => '100'], [], [], self::OTHER . "-$tpl_id", false, [self::CORE, self::SLICE, self::OTHER]);
 
