@@ -178,19 +178,19 @@ class DbBinaryTrailingZeros extends AbstractOptimize
         $this->_fixTable('slice', 'type', "varbinary(16)  default NULL");
         $this->_fixTable('slice', 'mlxctrl', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('view', 'slice_id', "varbinary(16)  NOT NULL default ''");
-        $this->_fixTable('view', 'order1', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'order2', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'group_by1', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'group_by2', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'cond1field', "varbinary(16)  default NULL");
+        $this->_fixTable('view', 'order1', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'order2', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'group_by1', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'group_by2', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'cond1field', "varbinary(32)  default NULL");
         $this->_fixTable('view', 'cond1op', "varbinary(10)  default NULL");
-        $this->_fixTable('view', 'cond2field', "varbinary(16)  default NULL");
+        $this->_fixTable('view', 'cond2field', "varbinary(32)  default NULL");
         $this->_fixTable('view', 'cond2op', "varbinary(10)  default NULL");
-        $this->_fixTable('view', 'cond3field', "varbinary(16)  default NULL");
+        $this->_fixTable('view', 'cond3field', "varbinary(32)  default NULL");
         $this->_fixTable('view', 'cond3op', "varbinary(10)  default NULL");
-        $this->_fixTable('view', 'field1', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'field2', "varbinary(16)  default NULL");
-        $this->_fixTable('view', 'field3', "varbinary(16)  default NULL");
+        $this->_fixTable('view', 'field1', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'field2', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'field3', "varbinary(32)  default NULL");
 
 
         /*
