@@ -12,11 +12,12 @@ use PHPUnit\Framework\TestCase;
  *  the permission backend, so the tests read their source. */
 final class UserAdminWriteGateTest extends TestCase
 {
-    /** @return array<string, array{string, string, list<string>}>  page, its token constant, calls that write */
+    /** @return array<string, array{string, string, list<string>}>  page, its token constant, calls (or included files) that write */
     public static function pages(): array
     {
         return [
-            'users' => ['admin/um_uedit.php', 'UM_USER_TOKEN', ['delUser', 'ProcessUser']],
+            'users'  => ['admin/um_uedit.php', 'UM_USER_TOKEN', ['delUser', 'ProcessUser']],
+            'groups' => ['admin/um_gedit.php', 'UM_GROUP_TOKEN', ['delGroup', '/include/um_gedit.php']],
         ];
     }
 
@@ -50,13 +51,17 @@ final class UserAdminWriteGateTest extends TestCase
         return (string) file_get_contents(dirname(__DIR__, 3) . '/' . $file);
     }
 
-    /** @return list<int>  token indexes of the calls of $function (its definition skipped) */
+    /** @return list<int>  token indexes of the calls of $function (its definition skipped), or of the string naming a file */
     private static function calls(string $src, string $function): array
     {
         $tokens = \PhpToken::tokenize($src);
         $found  = [];
         foreach ($tokens as $i => $token) {
-            if ($token->is(T_STRING) && strcasecmp($token->text, $function) === 0
+            if (str_ends_with($function, '.php')) {
+                if ($token->is(T_CONSTANT_ENCAPSED_STRING) && str_contains($token->text, $function)) {
+                    $found[] = $i;
+                }
+            } elseif ($token->is(T_STRING) && strcasecmp($token->text, $function) === 0
                 && ($tokens[self::skip($tokens, $i, 1)]->text ?? '') === '('
                 && !$tokens[self::skip($tokens, $i, -1)]->is(T_FUNCTION)) {
                 $found[] = $i;

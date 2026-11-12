@@ -34,6 +34,8 @@
 */
 
 
+use AA\Central\ResponderPolicy;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
@@ -44,6 +46,8 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 
 require_once __DIR__ . "/../include/um_util.php";
+
+const UM_GROUP_TOKEN = 'aa-um-group';
 
 try {
     // array ( 1 => 4, )-array ( 1 => 2, )
@@ -83,7 +87,8 @@ try {
     // array ( '' => 4, )
     $usr1_flt = InputVars::stringPOST('usr1_flt'); // empty
     $cancel = InputVars::boolGETPOST('cancel');
-    
+    $token  = InputVars::stringPOST('token');
+
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -96,7 +101,14 @@ if (!IfSlPerm(PS_NEW_USER)) {
     exit;
 }
 
-if ( $submit_action === "grp_del" && $selected_group ) {
+$err       = [];          // error array (Init - just for initializing variable)
+// groups and their rights change only from this page's own forms
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(UM_GROUP_TOKEN, $token, $_SERVER);
+if (!$may_write && (($submit_action === "grp_del" && $selected_group) || $add_submit || $submit_action === "update_submit")) {
+    $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+}
+
+if ($may_write && $submit_action === "grp_del" && $selected_group) {
     AA::$perm->delGroup( $selected_group );     // default is to delete any references as well
     go_url( StateUrl($_SERVER['PHP_SELF']) );
 }
@@ -131,12 +143,11 @@ if ( $selected_group ) {
     }
 }
 
-$err = [];          // error array (Init - just for initializing variable)
 $varset      = new Cvarset();
 
 // Process submitted form -------------------------------------------------------
 
-if ( $add_submit || $submit_action === "update_submit") {
+if ($may_write && ($add_submit || $submit_action === "update_submit")) {
     // all the actions are in following require_once (we reuse this part of code for slice wizard)
     require_once __DIR__ . "/../include/um_gedit.php";
     // reload the page
@@ -222,6 +233,7 @@ FrmTabSeparator("");
           ?></td>
             <td width="33%"><input type="submit" name="grp_edit" value="<?php echo _m("Edit")?>">&nbsp;
                 <input type="hidden" name="submit_action" value=0>  <!-- to this variable store "usr_del" (by javascript) -->
+                <?php echo FormToken::field(UM_GROUP_TOKEN) ?>
                 <input type="button" name="grp_del" value="<?php echo _m("Delete")?>" onclick="ReallyDelete()"></td>
      </tr>
     </table>
@@ -341,6 +353,7 @@ if ( !$add_submit && !$grp_new ) {
     $mod_types = PrintModulePermModificator($selected_group);   // shared with um_gedit.php
 }
 
+echo FormToken::field(UM_GROUP_TOKEN);
 FrmTabEnd($form_buttons);
 
 echo '</form>';
