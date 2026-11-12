@@ -95,6 +95,32 @@ namespace Tests\Unit\Legacy {
             self::assertSame($expected, AA_Module::getFallbackModuleId($modules, $type));
         }
 
+        /** @return array<string, array{string, string, bool}> */
+        public static function refusals(): array
+        {
+            $own = 'modules/site/index.php';
+            return [
+                'a generic page: to the module page' => ['admin/se_tasks.php', '/aa/admin/se_tasks.php', false],
+                'the module page itself'             => [$own, "/aa/$own", true],
+                'a page that could not be named'     => ['', '/aa/admin/se_tasks.php', true],
+                // an auto_prepend_file inside the AA tree is resolved first - the server still runs the module page
+                'a prepend in the tree, module page' => ['waf-prepend.php', "/aa/$own", true],
+                'a prepend in the tree, other page'  => ['waf-prepend.php', '/aa/admin/se_tasks.php', false],
+                'a look-alike address'               => ['admin/se_tasks.php', '/aa/xmodules/site/index.php', false],
+            ];
+        }
+
+        /**
+         * A refused page goes to the module's own page - unless it is that page, as resolved or as
+         * the server runs it: sent there, it would be refused again, in a circle. Both answers
+         * refuse, so a wrong SCRIPT_NAME opens nothing.
+         */
+        #[DataProvider('refusals')]
+        public function testRefuseInPlace_whenTheRedirectWouldComeBack(string $script, string $script_name, bool $expected): void
+        {
+            self::assertSame($expected, AA_Module::refuseInPlace($script, $script_name, 'modules/site/index.php'));
+        }
+
         /**
          * The page init_page.php runs for is the first included file inside the AA tree, not the
          * first included file: under php-cgi an auto_prepend_file comes before the page, and a

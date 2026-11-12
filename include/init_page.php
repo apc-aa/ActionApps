@@ -139,15 +139,25 @@ if (!$no_slice_id) {
     }
 
 
+    $script = AA_Module::pageScript(get_included_files(), dirname(__DIR__));   // this page, relative to the AA root
+
     if ($after_login || !$g_modules[AA::$module_id]) {
         // no module id, or one the user can't access (e.g. just deleted) - prefer the page's own module type
-        $script        = AA_Module::pageScript(get_included_files(), dirname(__DIR__));   // this page, relative to the AA root
         $page_type     = AA_Moduleregistry::typeOfScript($script);
         AA::$module_id = AA_Module::getFallbackModuleId($g_modules, $page_type);
         // nothing of this page's type - go to the fallback module's own page rather than run e.g. alerts/modedit.php on a slice
         if ($g_modules[AA::$module_id]['type'] !== $page_type) {
             go_url(AA_Module::getModuleUrl(AA::$module_id));
         }
+    }
+
+    // A module type whose role letters are not slice rights keeps the generic pages from its users (mayRunPage()).
+    // To the module's own page, not MsgPage(): its Back link would lead to the refused page again.
+    if (!AA_Module::mayRunPageOn($script, AA::$module_id)) {
+        if (AA_Module::refuseInPlace($script, (string) ($_SERVER['SCRIPT_NAME'] ?? ''), AA_Module::getModuleInfo('url', AA::$module_id))) {
+            MsgPage(_m("You do not have permissions to access this page"));
+        }
+        go_url(AA_Module::getModuleUrl(AA::$module_id));
     }
 
     $p_slice_id = q_pack_id(AA::$module_id);

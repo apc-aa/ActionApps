@@ -64,6 +64,8 @@ if (!IfSlPerm(PS_USERS)) {
 }
 
 $editor_perms = AA::$perm->getModulePerms(AuthGetUid(), $slice_id);
+// profiles belong to slices - a module type may keep se_profile.php from its users (mayRunPage())
+$show_profiles = AA_Module::mayRunPageOn('admin/se_profile.php', AA::$module_id);
 
 /** function shows link only if condition is true
  * @param $cond
@@ -80,8 +82,9 @@ function IfLink($cond, $url, $txt, $class = 'btn btn-secondary'): string
  * @param $perm
  * @param $usr_id
  * @param $editor_perm
+ * @param bool $show_profiles  whether the module lets its users open se_profile.php
  */
-function PrintUser($perm, $usr_id, $editor_perm): void
+function PrintUser($perm, $usr_id, $editor_perm, bool $show_profiles): void
 {
 
     $username   = perm_username($usr_id);
@@ -128,12 +131,14 @@ function PrintUser($perm, $usr_id, $editor_perm): void
     echo IfLink(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']), get_url('', ['UsrDel' => $usr_id, 'role' => "AUTHOR"], true), _m("Revoke"), 'aa-button-delete');
 
     // show profile button also for groups
-    $cnt = ($cnt = DB_AA::count('profile', [
-        ['slice_id', $GLOBALS['slice_id'], 'l'],
-        ['uid', $usr_id],
-    ])) ? " <span class='aa-bin-cnt'>$cnt</span>" : '';
+    if ($show_profiles) {
+        $cnt = ($cnt = DB_AA::count('profile', [
+            ['slice_id', $GLOBALS['slice_id'], 'l'],
+            ['uid', $usr_id],
+        ])) ? " <span class='aa-bin-cnt'>$cnt</span>" : '';
 
-    echo "<td><button type=\"button\" name=\"uid\" onclick=\"window.location='" . StateUrl("se_profile.php?uid=$usr_id_enc") . "'\">" . _m("Profile") . "$cnt</button></td>\n";
+        echo "<td><button type=\"button\" name=\"uid\" onclick=\"window.location='" . StateUrl("se_profile.php?uid=$usr_id_enc") . "'\">" . _m("Profile") . "$cnt</button></td>\n";
+    }
     echo "</tr>\n";
 }
 
@@ -182,20 +187,22 @@ if ($continue) {
         }
     }
 
-    echo "<tr><th></th><th>" . _m("Name") . "</th><th>" . _m("Username") . "</th><th>" . _m("Email") . "</th><th>" . _m("Type") . "</th><th>" . _m("Author") . "</th><th>" . _m("Editor") . "</th><th>" . _m("Administrator") . "</th><th>" . _m("Revoke") . "</th><th>" . _m("Profile") . "</th></tr>\n";
+    echo "<tr><th></th><th>" . _m("Name") . "</th><th>" . _m("Username") . "</th><th>" . _m("Email") . "</th><th>" . _m("Type") . "</th><th>" . _m("Author") . "</th><th>" . _m("Editor") . "</th><th>" . _m("Administrator") . "</th><th>" . _m("Revoke") . "</th>" . ($show_profiles ? "<th>" . _m("Profile") . "</th>" : '') . "</tr>\n";
     foreach ($slice_users as $usr_id => $prm) {
-        PrintUser($prm, $usr_id, $editor_perms);
+        PrintUser($prm, $usr_id, $editor_perms, $show_profiles);
     }
 
-    $cnt = ($cnt = DB_AA::count('profile', [
-        ['slice_id', AA::$module_id, 'l'],
-        ['uid', '*'],
-    ])) ? " <span class='aa-bin-cnt'>$cnt</span>" : '';
+    if ($show_profiles) {
+        $cnt = ($cnt = DB_AA::count('profile', [
+            ['slice_id', AA::$module_id, 'l'],
+            ['uid', '*'],
+        ])) ? " <span class='aa-bin-cnt'>$cnt</span>" : '';
 
-    echo "<tr><td>&nbsp;</td>
+        echo "<tr><td>&nbsp;</td>
               <td colspan=\"8\">" . _m("Default user profile") . "</td>
               <td><button type=\"button\" name=\"uid\" onclick=\"window.location='" . StateUrl("se_profile.php?uid=*") . "'\">" . _m("Profile") . "$cnt</button></td>\n";
-    echo "</tr>\n";
+        echo "</tr>\n";
+    }
 
     echo "</table>
     </form></td></tr></table>";

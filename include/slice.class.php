@@ -292,6 +292,39 @@ abstract class AA_Module
         return '';
     }
 
+    /** May the current user run the admin page $script with this module selected? init_page.php
+     *  asks before every page and sends a refusal to the module's own page (which must never be
+     *  refused). The generic pages (admin/*, central/*) read the role letters as slice rights - a
+     *  type whose letters mean something else lists here what its users may open.
+     * @param string $script     page path relative to the AA root ('admin/se_users.php')
+     * @param string $module_id  the selected module (unpacked)
+     */
+    public static function mayRunPage(string $script, string $module_id): bool
+    {
+        return true;
+    }
+
+    /** mayRunPage() of the type of $module_id - what init_page.php asks, and a page about another page
+     *  it links to. No module, or a type AA no longer knows, runs as a slice and refuses nothing.
+     */
+    public static function mayRunPageOn(string $script, ?string $module_id): bool
+    {
+        $module = self::getModule($module_id);
+        return !$module || $module::mayRunPage($script, (string) $module_id);
+    }
+
+    /** Should init_page.php answer a refused page in place rather than send it to the module's own page?
+     *  Yes when it is that page - as resolved, or as the server runs it (an auto_prepend_file inside the
+     *  AA tree resolves first) - or when it could not be named: the redirect would be refused in a circle.
+     * @param string $script       the page as pageScript() resolved it
+     * @param string $script_name  $_SERVER['SCRIPT_NAME']
+     * @param string $module_url   the module's own page - getModuleInfo('url')
+     */
+    public static function refuseInPlace(string $script, string $script_name, string $module_url): bool
+    {
+        return ($script === '') || ($script === $module_url) || str_ends_with($script_name, '/' . $module_url);
+    }
+
     /** Returns 'class', 'url', 'menu', 'letter' for module
      *
      * @param $info string  - 'class' | 'url' | 'menu' | 'letter' | 'type'
