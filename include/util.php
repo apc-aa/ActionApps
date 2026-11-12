@@ -96,6 +96,9 @@ function xmltag($tag, $content, $attr = []): string
 function expand_return_url($session = true): string
 {
     global $return_url, $sess;
+    if (!IsNavigableUrl((string) $return_url)) {   // it comes from the request
+        return '';
+    }
     return ($session && is_object($sess)) ? StateUrl($return_url) : $return_url;
 }
 
@@ -114,8 +117,8 @@ function go_return_or_url($url, $usejs = false, $session = false): void
 {
     global $return_url;
 
-    if ($return_url) {
-        go_url(expand_return_url($session), '', $usejs);
+    if ($return_url && (($back = expand_return_url($session)) !== '')) {
+        go_url($back, '', $usejs);
     } elseif ($url) {
         go_url(StateUrl($url));
     }
