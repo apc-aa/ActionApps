@@ -152,10 +152,14 @@ class AA_Permsystem_Sql extends AA_Permsystem {
                  return false;
              }
          }
-         // a later account of the same id would log in by them
-         (new Store())->deleteAll((string) $this->passkeyId((string) $user_id));
+         $passkey_id = (string) $this->passkeyId((string) $user_id);   // while the account exists
          // cancel the user
-         return false !== DB_AA::delete('users', [['id', $user_id]]);
+         if (false === DB_AA::delete('users', [['id', $user_id]])) {
+             return false;      // the account stays, and logs in as before - by its passkeys too
+         }
+         // a later account of the same id would log in by them
+         (new Store())->deleteAll($passkey_id);
+         return true;
     }
 
     /** changeUser function

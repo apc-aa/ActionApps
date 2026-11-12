@@ -180,6 +180,7 @@ namespace {
 namespace Tests\Unit\Legacy {
 
     use AA;
+    use AA\Passkey\Store;
     use AA_Perm;
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
@@ -324,6 +325,32 @@ namespace Tests\Unit\Legacy {
 
             self::assertFalse($write());
             self::assertSame($before, RecordingDb::$log);
+        }
+
+        /** a refused delete leaves the account as it was, its passkeys too; a done one takes them after it */
+        public function test_delUser_refusedDelete_keepsPasskeys(): void
+        {
+            Store::reset();
+            RecordingDb::$answer = static fn(string $sql): array => match (true) {
+                str_contains($sql, 'FROM `users` WHERE id = 7') => [['id' => '7', 'name' => 'Jan Novak', 'givenname' => 'Jan', 'login' => 'jan', 'sn' => 'Novak', 'mail' => 'jan@example.org', 'type' => 'User']],
+                str_contains($sql, 'information_schema.tables') => [['table_schema' => 'aa_test']],
+                default => [],
+            };
+            try {
+                RecordingDb::$refuse_on = 'DELETE FROM `users`';
+                self::assertFalse(AA::$perm->delUser('7'));
+                self::assertSame([], preg_grep('/authenticator/', RecordingDb::$log));
+
+                RecordingDb::$refuse_on = null;
+                RecordingDb::$log       = [];
+                self::assertTrue(AA::$perm->delUser('7'));
+                $deletes = array_values(preg_grep('/^DELETE FROM `(users|authenticator)`/', RecordingDb::$log));
+                self::assertCount(2, $deletes);
+                self::assertStringStartsWith('DELETE FROM `users`', $deletes[0]);
+                self::assertStringStartsWith('DELETE FROM `authenticator`', $deletes[1]);
+            } finally {
+                Store::reset();
+            }
         }
 
         public function test_bothBackendsLoadInOneProcess(): void
