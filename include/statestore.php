@@ -539,13 +539,6 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return $this->aa_id;
     }
 
-
-    public static function updateProperties(array $props): void
-    {
-        AA_Object::load($id, $class)?->setOwnerId($dest_slice_id)->update(['aa_owner']);
-    }
-
-
     /** Update just selected properties - also the owner: a task moved to another slice keeps its id
      * @param  array  $prop_names  like ['status', 'status_text']
      * @throws \UnexpectedValueException  the id holds an object of another class - nothing written
