@@ -80,8 +80,12 @@ final class FeedingWriteGateTest extends TestCase
     {
         $src = self::source('admin/se_import2.php');
         $this->assertToken($src, 'FEEDING_TOKEN');
-        $this->assertRefusedBeforeWrites($src, 'FEEDING_TOKEN', ['doUpdate(', 'doInsertMulti(', '->query(']);
+        $this->assertRefusedBeforeWrites($src, 'FEEDING_TOKEN', ['doUpdate(', 'doInsertMulti(', 'DB_AA::delete(']);
         $this->assertSent('admin/se_import.php', $src, 'FEEDING_TOKEN');
+        // a removed export or import deletes just the one pair of this slice and the other one
+        $this->assertStringNotContainsString('->query(', $src);
+        $this->assertStringContainsString("DB_AA::delete('feedperms', [['from_id', AA::\$module_id, 'l'], ['to_id', \$to, 'l']]);", $src);
+        $this->assertStringContainsString("DB_AA::delete('feeds', [['to_id', AA::\$module_id, 'l'], ['from_id', \$from, 'l']]);", $src);
     }
 
     public function test_filters_change_only_with_the_token_and_for_an_own_feed(): void

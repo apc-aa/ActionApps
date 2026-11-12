@@ -77,13 +77,6 @@ if (($slice->getProperty('export_to_all') ? 1 : 0) !== ($to_all ? 1 : 0)) {
 // feeding lookup
 $feedto = DB_AA::select(['unid' => true], "SELECT LOWER(HEX(`to_id`)) AS unid FROM `feedperms`", [['from_id',AA::$module_id,'l']]);
 
-//$feedto["Init"] = false;  // create array
-//$SQL= "SELECT to_id FROM feedperms WHERE from_id='$p_slice_id'";
-//$db->query($SQL);
-//while ($db->next_record()) {
-//    $feedto[unpack_id($db->f('to_id'))] = true;
-//}
-
 do {
     if (isset($E) && is_array($E)) {  // Export to any slice
         $feedperms = [];
@@ -104,8 +97,7 @@ do {
     }
     foreach ($feedto as $to => $val) {
         if ($val) {
-            $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id=" . xpack_id($to);
-            $db->query($SQL);
+            DB_AA::delete('feedperms', [['from_id', AA::$module_id, 'l'], ['to_id', $to, 'l']]);
             AA_Log::write("FEED_DSBLE", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $to]));   // $to is the target id ($val is the loop's keep/remove flag)
         }
     }
@@ -138,8 +130,7 @@ do {
 
     foreach ($feedfrom as $from => $val) {  // delete removed feeds
         if ($val) {
-            $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id=" . xpack_id($from);
-            $db->query($SQL);
+            DB_AA::delete('feeds', [['to_id', AA::$module_id, 'l'], ['from_id', $from, 'l']]);
             AA_Log::write("FEED_DEL", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $from]));   // $from is the source id ($val is the loop's keep/remove flag)
         }
     }
