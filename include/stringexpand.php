@@ -10320,7 +10320,7 @@ class AA_Password_Manager_Reader {
         $user_info = AA_Reader::getReaderItemContent($user_id);
 
         $email     = (string) $user_info->getValue(FIELDID_EMAIL);
-        $pwdkey    = self::resetKey($user_id, $email, (int) round(now()/60));
+        $pwdkey    = self::resetKey($user_id, $email, (string) $user_info->getValue(FIELDID_PASSWORD), (int) round(now()/60));
         $pwd_param = "aapwd2=$pwdkey-$user_id";
 
         // send it via email
@@ -10415,22 +10415,23 @@ class AA_Password_Manager_Reader {
         if (($user_info = AA_Reader::getReaderItemContent($user_id))->isEmpty()) {
             return false;
         }
-        return self::keyMatches((string) $key, $user_id, (string) $user_info->getValue(FIELDID_EMAIL), (int) round(now()/60));
+        return self::keyMatches((string) $key, $user_id, (string) $user_info->getValue(FIELDID_EMAIL), (string) $user_info->getValue(FIELDID_PASSWORD), (int) round(now()/60));
     }
 
-    /** the key was issued for this user and e-mail in one of the last KEY_TIMEOUT minutes */
-    public static function keyMatches(string $key, string $user_id, string $email, int $minute): bool {
+    /** the key was issued for this user, e-mail and password in one of the last KEY_TIMEOUT minutes */
+    public static function keyMatches(string $key, string $user_id, string $email, string $pwd_hash, int $minute): bool {
         for ($i=0; $i< self::KEY_TIMEOUT; $i++) {
-            if (hash_equals(self::resetKey($user_id, $email, $minute - $i), $key)) {
+            if (hash_equals(self::resetKey($user_id, $email, $pwd_hash, $minute - $i), $key)) {
                 return true;
             }
         }
         return false;
     }
 
-    /** the key of the password reset link, valid in the minute it names */
-    private static function resetKey(string $user_id, string $email, int $minute): string {
-        return hash_hmac('sha256', "$user_id\0$email\0$minute", Secret::key('reader-reset'));
+    /** the key of the password reset link, valid in the minute it names
+     *  @param $pwd_hash the stored password hash - a changed password ends the key, so the link works once */
+    private static function resetKey(string $user_id, string $email, string $pwd_hash, int $minute): string {
+        return hash_hmac('sha256', "$user_id\0$email\0$pwd_hash\0$minute", Secret::key('reader-reset'));
     }
 
     private static function bad($text) : string {
