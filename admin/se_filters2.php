@@ -35,12 +35,17 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
+
+/** the same in se_filters.php, which sends it */
+const FEEDING_FILTER_TOKEN = 'aa-feeding-filters';
 
 try {
     // array ( '0-0' => 1, '0-1' => 5, )
@@ -56,6 +61,7 @@ try {
     // array ( 'dcf6f197e02…' => 2, '4429a8e44bb…' => 5, '6c81ec28dd4…' => 1, )
     $import_id = InputVars::idGET('import_id', true);
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -63,6 +69,10 @@ try {
 if (!IfSlPerm(PS_FEEDING)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change feeding setting"), "admin");
     exit;
+}
+// the filters change only by the Update button of se_filters.php
+if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(FEEDING_FILTER_TOKEN, $token, $_SERVER)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base() . "se_filters.php") . "&import_id=$import_id", MsgErr(_m('The form has expired; reload the page and try again.')), "admin");
 }
 /** ParseIdA function
  * @param $param
@@ -83,7 +93,8 @@ $err = [];       // error array (Init - just for initializing variable)
 if ($feed_id) { // cross server feeding
     // setting filters from external slice
 
-    if ($ext_categs = FeedUtil::GetExternalCategories($feed_id)) {
+    // only an import into this slice
+    if (DB_AA::test('external_feeds', [['feed_id', $feed_id, 'i'], ['slice_id', AA::$module_id, 'l']]) && ($ext_categs = FeedUtil::GetExternalCategories($feed_id))) {
         // clear setting of feeding
         // Note all external categories MUST be stored in the ef_categories
         // table even if no feed (we need to have listing of external categs)
