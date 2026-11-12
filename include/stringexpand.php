@@ -8935,14 +8935,15 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
         $size  = get_if($size, 48);
         $title = str_contains($name, '@') ? aa_substr($name,0,aa_strpos($name,'@')) : $name;
 
-        if ($img = AA::Un("{img:$image:w=$size&h=$size&iar=1:imgb:$title}")) {
+        // the name is item content - passed as a parameter, never parsed as an expression
+        if ($img = StrExp('img', [$image, "w=$size&h=$size&iar=1", 'imgb', $title])) {
             return $img;
         }
         $nplus    = $title . '--';
         $match    = [];
         $initials = aa_substr($nplus,0,1). (preg_match('/.[ ._-]+([^ ._-])/u', $title, $match) ? $match[1] : aa_substr($nplus,1,1))  ;
         $color    = (crc32($name) % 8) + 1;
-        return "<div class=\"dis-color$color\" title=\"$title\">$initials</div>";
+        return "<div class=\"dis-color$color\" title=\"" . safe($title) . '">' . safe($initials) . '</div>';
     }
 }
 
