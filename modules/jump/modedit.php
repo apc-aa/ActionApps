@@ -26,13 +26,17 @@ https://www.apc.org/
     $update=1 .. write changes to database
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/varset.php";
+
+const MODEDIT_JUMP_TOKEN = 'aa-modedit-jump';
 
 try {
     // array ( '6c81ec28dd4…' => 4, '28c1fa37265…' => 1, 'c390fa58964…' => 1, '5916c1036b8…' => 2, 'da5b0c89fd3…' => 2, )
@@ -52,6 +56,7 @@ try {
     // array ( ' Změnit [^…' => 5, ' Create [^S…' => 4, ' Update [^S…' => 1, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
+    $token = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -79,13 +84,20 @@ if ($edit && !$jump_id && count($jumps)) {
 }
 
 
+// the module changes only from this page's own form; choosing a module to edit only reads
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(MODEDIT_JUMP_TOKEN, $token, $_SERVER);
+$expired   = $update && !$may_write;
+if ($expired) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
+
 $apage = new AA_Adminpageutil('aaadmin', 'jumpedit');
 $apage->setTitle($jump_id ? _m("Edit Jump module") : _m("Create new Jump module"));
 $apage->addRequire('aa-jslib@1');
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
-if ($update) {
+if ($update && $may_write) {
     if (!$jump_id) {
         $jump_id = new_id();
     }
@@ -112,7 +124,9 @@ if ($update) {
     $jumps = DB_AA::select(['jid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', [['type','J']]);
 }
 
-if (!$jump_id) {
+if ($expired) {
+    // the typed values stay in the form
+} elseif (!$jump_id) {
     $jump_name = $jump_url = $dest_id = "";
 } else {
     $row = DB_AA::select1([], "SELECT name,destination,dest_slice_id FROM jump INNER JOIN module
@@ -147,7 +161,7 @@ if ($jump_id) {
 
 echo '<br>
 <form name=f action="' . StateUrl("modedit.php") . '" method="post">
-<input type=hidden name="jump_id" value="' . $jump_id . '">';
+<input type=hidden name="jump_id" value="' . $jump_id . '">' . FormToken::field(MODEDIT_JUMP_TOKEN);
 if ($edit) {
     echo "<input type=hidden name='edit' value='1'>";
 }

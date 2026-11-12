@@ -33,7 +33,9 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 
@@ -51,6 +53,8 @@ require_once __DIR__ . "/../../include/modutils.php";
 require_once __DIR__ . "/../../include/perm_core.php";
 require_once __DIR__ . "/util.php";
 
+const MODEDIT_ALERTS_TOKEN = 'aa-modedit-alerts';
+
 try {
     $name            = InputVars::stringPOST('name');
     $slice_url       = InputVars::stringPOST('slice_url');
@@ -66,6 +70,7 @@ try {
     $insert          = InputVars::boolPOST('insert');
     $update          = InputVars::boolPOST('update');
     $cancel          = InputVars::boolPOST('cancel');
+    $token           = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -97,7 +102,15 @@ if ($is_add) {
     exit;
 }
 
-if ($is_add ? $insert : $update) {
+// the module changes only from this page's own form; the add-module page opens it by a GET without insert/update
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(MODEDIT_ALERTS_TOKEN, $token, $_SERVER);
+$write     = $is_add ? $insert : $update;
+$expired   = $write && !$may_write;
+if ($expired) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
+
+if ($write && $may_write) {
     do {
         if (!$owner) {  // insert new owner
             if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err))) {
@@ -143,10 +156,11 @@ if ($is_add ? $insert : $update) {
 
 // And the form -----------------------------------------------------
 
+$redisplay     = $expired || count($err);   // show the submitted values, not the stored ones
 $source_id     = $module_id;
 $collection_id = '';
 
-if (!count($err) && !$is_add && $module_id) {   // fresh edit - load current collection values
+if (!$redisplay && !$is_add && $module_id) {   // fresh edit - load current collection values
     $coll            = (array) DB_AA::select1('', "SELECT id, emailid_welcome, emailid_alert FROM alerts_collection", [['module_id', $module_id, 'l']]);
     $collection_id   = $coll['id'] ?? '';
     $emailid_welcome = $coll['emailid_welcome'] ?? 0;
@@ -165,7 +179,7 @@ $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("Alerts Settings"), $form_buttons);
 
-$marr = RenderModuleFieldsForm($source_id, $superadmin, $is_add, (bool) count($err), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
+$marr = RenderModuleFieldsForm($source_id, $superadmin, $is_add, $redisplay, compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
 $lang_file = rtrim((string) ($marr[3] ?? ''), '3');   // trim old php3 lang-file extension
 
 FrmInputSelect("lang_file", _m("language"), Langs::getFiles('alerts'), $lang_file);
@@ -190,6 +204,7 @@ if (!$is_add && $collection_id !== '') {
     FrmStaticText(_m("alerts ID"), safe($collection_id));
 }
 
+echo FormToken::field(MODEDIT_ALERTS_TOKEN);
 FrmTabEnd($form_buttons);
 
 $apage->printFoot();
