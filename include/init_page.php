@@ -67,6 +67,7 @@ if ($free) {
 }
 
 require_once __DIR__ . "/locauth.php";
+NormalizePhpSelf();
 
 // Save before getting the session stored variables
 // At least it does sanity check.
