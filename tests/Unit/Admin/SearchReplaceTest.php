@@ -39,4 +39,15 @@ final class SearchReplaceTest extends TestCase
         $this->assertLessThan($check, $offered, 'the offered fields must be known before the check');
         $this->assertLessThan(self::at('~new AA_Transformator\(~'), $check);
     }
+
+    /** the first POST from the Item Manager only opens the page; the change runs from its own form */
+    public function test_change_needs_the_form_token(): void
+    {
+        $gate = self::at('~if \(ResponderPolicy::isForeignBrowserRequest\(\$_SERVER\) \|\| !FormToken::checkPost\(SEARCH_REPLACE_TOKEN, \$token, \$_SERVER\)\) \{[^}]*break;~');
+        $this->assertGreaterThan(self::at('~\} else \{\s*\$items\s*= \$r_sr_state\[\'items\'\];~'), $gate, 'the gate belongs to the fill branch');
+        $this->assertLessThan(self::at('~new AA_Transformator\(~'), $gate);
+        $this->assertLessThan(self::at('~AA_Log::write\(~'), $gate);
+        $form = self::at('~<form name="modifyitemsform" method="post">\';\s*echo FormToken::field\(SEARCH_REPLACE_TOKEN\);~');
+        $this->assertGreaterThan($gate, $form);
+    }
 }

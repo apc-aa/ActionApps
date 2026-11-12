@@ -28,7 +28,9 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\Later\Toexecute;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -37,6 +39,7 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/transformation.class.php";
 
 const SEARCH_REPLACE_PREFIX = 'transform';
+const SEARCH_REPLACE_TOKEN  = 'aa-search-replace';
 
 try {
     // array ( )
@@ -65,6 +68,7 @@ try {
     $tasks = InputVars::intPOST('tasks');
     // $transform* // not necessary
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -113,6 +117,11 @@ if (!$fill) {               // for the first time - directly from item manager
 } else {
     $items     = $r_sr_state['items'];  // session variable holds selected items from item manager
     do {
+        // the change can rewrite the whole slice - only from the form of this page
+        if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(SEARCH_REPLACE_TOKEN, $token, $_SERVER)) {
+            $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+            break;
+        }
         // only the fields the form offers - the reserved ones bind the item to its slice and ids
         if (!isset($field_select[$field_id])) {
             $err['field_id'] = MsgErr(_m("You do not have permission to edit items this way in this slice"));
@@ -167,6 +176,7 @@ echo '
 <body>
   <h1>' . _m("Modify items") . '</h1>
   <form name="modifyitemsform" method="post">';
+echo FormToken::field(SEARCH_REPLACE_TOKEN);
 
 echo GetPrintArray($err);
 echo $Msg;
