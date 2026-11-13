@@ -4,7 +4,7 @@
  * matched as the expander pairs them. Over whatever language the editor has, so it works inside
  * HTML attributes too.
  */
-import { ViewPlugin, Decoration, EditorView, showTooltip } from '@codemirror/view';
+import { ViewPlugin, Decoration, EditorView, showPanel } from '@codemirror/view';
 import { RangeSetBuilder, StateEffect, StateField } from '@codemirror/state';
 import { autocompletion, pickedCompletion } from '@codemirror/autocomplete';
 import { bracketMatching } from '@codemirror/language';
@@ -68,7 +68,7 @@ let warned   = false;
 /** an expired session or a lost connection may come back - but not a request on every key */
 const RETRY_MS = 60000;
 
-/** Once per page, on the first need: most editors are never asked for a hint.
+/** Once per page, when an editor first gets the focus: most editors are never written in.
  *  @return {Promise<?Map>} null when the catalog cannot be had now (not logged in) */
 function loadCommands() {
     loading ??= fetch(CATALOG_URL, { headers: { Accept: 'application/json' } })
@@ -133,46 +133,61 @@ async function aaCompletions(context) {
     return { from: word.from + 1, options: options.filter(o => o.label.startsWith(typed)), filter: false };
 }
 
-const commandsLoaded = StateEffect.define();
+const commandsLoaded = StateEffect.define();   // a transaction, so the hint field sees the catalog
 const focusChanged   = StateEffect.define();
 
-function hintDom({ name, param, cmd }) {
-    const dom  = document.createElement('div');
-    dom.className = 'cm-aa-hint';
-    const code = dom.appendChild(document.createElement('code'));
+const TIP = '{ + letter: AA commands · Ctrl+Space: suggestions';
+
+/** {name:param:…} with the parameter the cursor is in bold, and what the command does */
+function hintContent({ name, param }, cmd) {
+    const code = document.createElement('code');
     code.append(`{${name}`);
     for (const part of signature(cmd, param)) {
         code.append(':', part.current ? Object.assign(document.createElement('b'), { textContent: part.text }) : part.text);
     }
     code.append('}');
-    if (cmd.desc) {
-        dom.appendChild(document.createElement('div')).textContent = cmd.desc;
-    }
-    return { dom };
+    return cmd.desc ? [code, Object.assign(document.createElement('span'), { textContent: cmd.desc })] : [code];
 }
 
-function hintTooltip(state, focused, previous) {
-    // the catalog not loaded (yet): hintLoader looks for the parameter itself
-    if (!commands?.size) {
-        return null;
+/**
+ * A line under the editor rather than a tooltip, which would hide the lines above the cursor. One line
+ * in any case (the description is cut, whole in the title), so the page does not jump as the cursor moves.
+ */
+class HintPanel {
+    dom = Object.assign(document.createElement('div'), { className: 'cm-aa-hint' });
+    key = null;
+
+    constructor(view) {
+        this.render(view);
     }
-    const sel = state.selection.main;
-    const ctx = (focused && sel.empty) ? paramAt(state, sel.head) : null;
-    const cmd = ctx ? commands.get(ctx.name) : null;
-    if (!cmd) {
-        return null;
+
+    update(update) {
+        if (update.docChanged || update.selectionSet || update.focusChanged) {
+            this.render(update.view);
+        }
     }
-    // at the parameter, or at the line typed in when the parameter starts above it - CodeMirror hides
-    // a tooltip whose place is scrolled away, and long {switch:...} blocks span many lines
-    const pos = Math.max(ctx.start, state.doc.lineAt(sel.head).from);
-    const key = `${pos}:${ctx.name}:${ctx.param}`;
-    // typing within one parameter keeps the tooltip - a new one on each key would flicker
-    return (previous?.key === key) ? previous : { key, pos, above: true, create: () => hintDom({ ...ctx, cmd }) };
+
+    render(view) {
+        const sel = view.state.selection.main;
+        const ctx = (view.hasFocus && sel.empty) ? paramAt(view.state, sel.head) : null;
+        const cmd = ctx ? commands.get(ctx.name) : null;
+        const key = view.hasFocus ? (cmd ? `${ctx.name}:${ctx.param}` : 'tip') : '';
+        if (key === this.key) {
+            return;                     // typing within one parameter
+        }
+        this.key = key;
+        // blank in an editor the focus left - several fields of a page may hold expressions
+        const parts = cmd ? hintContent(ctx, cmd) : (view.hasFocus ? [TIP] : []);
+        this.dom.replaceChildren(...parts);
+        this.dom.title = cmd ? parts.map(part => part.textContent).join(' - ') : '';
+    }
 }
 
-/** the hint shows in the focused editor only - several fields of a page may hold expressions */
+const hintPanel = view => new HintPanel(view);
+
+/** from the first focus on, and only with the catalog, which is not there for anonymous users */
 const hint = StateField.define({
-    create: () => ({ focused: false, tooltip: null }),
+    create: () => ({ focused: false, shown: false }),
     update(value, tr) {
         let focused = value.focused;
         for (const e of tr.effects) {
@@ -180,31 +195,31 @@ const hint = StateField.define({
                 focused = e.value;
             }
         }
-        const stale = tr.docChanged || tr.selection || (focused !== value.focused) || tr.effects.some(e => e.is(commandsLoaded));
-        return stale ? { focused, tooltip: hintTooltip(tr.state, focused, value.tooltip) } : value;
+        // it stays when the focus leaves: the editor shrinking then would move the page under the
+        // pointer, and the click that took the focus away would land on something else
+        const shown = value.shown || (focused && !!commands?.size);
+        return ((focused === value.focused) && (shown === value.shown)) ? value : { focused, shown };
     },
-    provide: f => showTooltip.from(f, value => value.tooltip),
+    provide: f => showPanel.from(f, value => (value.shown ? hintPanel : null)),
 });
 
-/** loads the catalog when the cursor first stands in a parameter, and shows the hint then */
+/** loads the catalog when an editor gets the focus or is written in, and shows the hint then */
 const hintLoader = ViewPlugin.fromClass(class {
     waiting = false;    // one dispatch per editor - the fetch itself is shared anyway
 
     update(update) {
-        if (commands || this.waiting || !(update.docChanged || update.selectionSet)) {
+        if (commands || this.waiting || !update.view.hasFocus || !(update.focusChanged || update.docChanged || update.selectionSet)) {
             return;
         }
-        if (paramAt(update.state, update.state.selection.main.head)) {
-            this.waiting = true;
-            loadCommands().then((loaded) => {
-                if (loaded) {
-                    // a view destroyed meanwhile ignores the dispatch
-                    update.view.dispatch({ effects: commandsLoaded.of(null) });
-                } else {
-                    this.waiting = false;   // loadCommands() says when to ask the server again
-                }
-            });
-        }
+        this.waiting = true;
+        loadCommands().then((loaded) => {
+            if (loaded) {
+                // a view destroyed meanwhile ignores the dispatch
+                update.view.dispatch({ effects: commandsLoaded.of(null) });
+            } else {
+                this.waiting = false;   // loadCommands() says when to ask the server again
+            }
+        });
     }
 });
 

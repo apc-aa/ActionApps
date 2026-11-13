@@ -546,10 +546,15 @@ aa-code .cm-scroller {
 }
 /* {#…} - not in the output */
 aa-code .cm-aa-comment, aa-code .cm-aa-comment span { color: #6e6e6e; font-style: italic; }
-/* parameters of the {command} being typed */
-aa-code .cm-aa-hint { max-width: 40em; padding: 3px 6px; font-size: 12px; }
+/* the line under the editor: parameters of the {command} being typed */
+aa-code .cm-aa-hint { min-height: 1.5em; padding: 2px 6px; font-size: 12px; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #555; }
+/* top: the code font would make the line taller than the text one */
+aa-code .cm-aa-hint > * { vertical-align: top; }
+aa-code .cm-aa-hint code { color: #222; }
 aa-code .cm-aa-hint b { color: #1a4d8f; }
-aa-code .cm-aa-hint div { margin-top: 2px; color: #555; }
+aa-code .cm-aa-hint span { margin-left: 1em; }
+/* blank while the focus is elsewhere: it would stick to the window bottom over the text */
+aa-code .cm-panels-bottom:has(> .cm-aa-hint:only-child:empty) { position: static; }
 aa-code[invalid], aa-richtext[invalid] { outline: 2px solid #c00; outline-offset: 1px; }
 aa-code[disabled] .cm-editor { background: #f2f2f2; opacity: .7; }
 .aa-invalid-msg { color: #c00; margin: .25em 0; }
