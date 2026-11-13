@@ -108,11 +108,26 @@ namespace Tests\Unit\Legacy {
         {
             $page = AA::Un("<main>{{$command}::$field_id}</main>", '', self::item($field_id, $source, $field_id === 'full_text.......'));
 
-            $name = preg_quote(htmlspecialchars('aa[u' . self::ITEM . '][' . str_replace('.', '_', $field_id) . '][0]'), '~');
-            self::assertMatchesRegularExpression("~<(textarea|input)[^>]* name=\"$name\"~", $page);
-            preg_match("~<textarea[^>]* name=\"$name\"[^>]*>(.*?)</textarea>~s", $page, $textarea);
-            preg_match("~<input[^>]* name=\"$name\"[^>]* value=\"([^\"]*)\"~", $page, $input);
-            self::assertSame($source, html_entity_decode($textarea[1] ?? $input[1], ENT_QUOTES | ENT_HTML5));
+            self::assertSame($source, self::control($page, $field_id));
+        }
+
+        /** an alias in braces is expanded before the command - the way to give the callback a value of the item */
+        public function test_expand_aliasInBracesInFunction_isExpanded(): void
+        {
+            $page = AA::Un("<main>{live::headline........::f('{_#HEADLINE}')}</main>", '', self::item('headline........', 'Price', false));
+
+            self::assertStringContainsString("this, f('Price'))", $page);
+        }
+
+        /** the value of the form control as the browser reads it */
+        private static function control(string $page, string $field_id): string
+        {
+            $dom = new \DOMDocument();
+            $dom->loadHTML('<?xml encoding="utf-8"?>' . $page, LIBXML_NOERROR | LIBXML_NOWARNING);
+            $name = 'aa[u' . self::ITEM . '][' . str_replace('.', '_', $field_id) . '][0]';
+            $el   = (new \DOMXPath($dom))->query("//textarea[@name='$name'] | //input[@name='$name']")->item(0);
+            self::assertInstanceOf(\DOMElement::class, $el, "no control $name in: $page");
+            return ($el->tagName === 'textarea') ? $el->textContent : $el->getAttribute('value');
         }
 
         private static function item(string $field_id, string $source, bool $html): AA_Item
