@@ -804,7 +804,7 @@ class AA_Inputfield {
             // Could be field_id (then it is grabbed from item and truncated to 50
             // characters, or normal AA format string.
             // Headline is default (if empty "$slice_field" is passed)
-            $slice = AA_Slice::getModule($sid);
+            $slice = AA_Slice::getOwnModule($sid);   // the field settings offer Alerts modules, too
             if (!$slice_field) {
                 $slice_field = $slice?->getFields()->firstOfTypeFieldId('headline');
                 if (!$slice_field) {
@@ -2217,7 +2217,7 @@ class AA_Inputfield {
 
             $this->echoo("\n<div class='aa-wi2-add'>");
             if (!$slice_field) {
-                $slice_field = '{'.AA_Slice::getModule($sid)?->getFields()->firstOfTypeFieldId('headline').'}';
+                $slice_field = '{'.AA_Slice::getOwnModule($sid)?->getFields()->firstOfTypeFieldId('headline').'}';
             }
             $form_url = get_aa_url('form.php', ['form_id' => $addform, 'type' => 'ajax', 'ret_code' => \AA\Security\SignedExpression::sign($slice_field)]);
             $img      = GetAAImage('icon_new.gif', _m('new'), 17, 17);

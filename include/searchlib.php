@@ -1786,6 +1786,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     ParseMultiSelectConds($conds);
     ParseEasyConds($conds, $defaultCondsOperator);
+    $fields = $slice = null;
 
     // we need fields just in case we use sort or conds. Not necessary for
     // restrict_zids queries, where we often do not have slice id
@@ -1795,7 +1796,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
         }
 
         // get the fields for the first slice (used as template - we expect that all slices in the query has the same structure)
-        if (!empty($slices) && ($slice = AA_Slice::getModule(reset($slices)))) {
+        if (!empty($slices) && ($slice = AA_Slice::getOwnModule(reset($slices)))) {
             // @todo convert whole $slices to AA_Slice
             // access the fields through slice - it is better for caching of values
             $fields = $slice->getFields();
@@ -2356,7 +2357,7 @@ class QueryZidsHelper
         }
 
         if (!$slice && $slices) {
-            $slice = AA_Slice::getModule(reset($slices));
+            $slice = AA_Slice::getOwnModule(reset($slices));
         }
 
         /** @todo deal with no slice id for restrict_zids without conds */

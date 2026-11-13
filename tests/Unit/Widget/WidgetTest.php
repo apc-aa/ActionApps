@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Widget;
 
+use AA\Widget\IsoWidget;
 use AA\Widget\Widget;
+use AA_Module;
+use AA_Moduleconfig;
 use AA_Value;
+use Closure;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use zids;
 
@@ -123,6 +128,31 @@ final class WidgetTest extends TestCase
         );
         self::assertSame('<option value="a">A</option>', $widget->getSelectOptions($options, 'unselected'));
         self::assertSame('<option value="b" class="sel_on">B</option>', $widget->getSelectOptions(array_slice($options, 0, 2), 'selected', true));
+    }
+
+    /** `#sLiCe-` may name a module that is no slice - the field settings offer Alerts modules - it has no items */
+    public function test_getFormattedOptions_moduleIsNoSlice_noOptions(): void
+    {
+        $id = '0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d';
+        new class ($id) extends AA_Module {
+            public function __construct(string $id)
+            {
+                $this->module_id = $id;
+                AA_Module::$_modules[$id] = $this;
+            }
+
+            public static function getModuleconfig(): AA_Moduleconfig
+            {
+                throw new LogicException('not used');
+            }
+        };
+        try {
+            self::assertSame([], (new IsoWidget(['const' => '#sLiCe-' . $id]))->getFormattedOptions());
+        } finally {
+            Closure::bind(static function () use ($id): void {
+                unset(AA_Module::$_modules[$id]);
+            }, null, AA_Module::class)();
+        }
     }
 
     /** @param array<string, string> $names what the constant group says about the missing value */

@@ -209,7 +209,7 @@ class Widget extends AA_Object implements NamedInterface
              *  characters, or normal AA format string.
              *  Headline is default (if empty "$slice_field" is passed)
              */
-            $slice = AA_Slice::getModule($sid);
+            $slice = AA_Slice::getOwnModule($sid);   // the field settings offer Alerts modules, too
             if (!$slice_field) {
                 $slice_field = $slice?->getFields()->firstOfTypeFieldId('headline');
                 if (!$slice_field) {

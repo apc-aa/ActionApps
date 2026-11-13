@@ -72,7 +72,7 @@ if (isset($_GET['sid'])) {
     $showcondsrw = InputVars::stringGET('showcondsrw');
     $sort        = InputVars::stringGET('sort');
     $slice_field = InputVars::stringGET('slice_field');
-    $is_field    = static fn(string $field_id): bool => !is_null(AA_Slice::getModule($sid)?->getField($field_id));
+    $is_field    = static fn(string $field_id): bool => !is_null(AA_Slice::getOwnModule($sid)?->getField($field_id));
     // unsigned only a field or an alias like the default - other text would be HTML here and an expression in {expand:}
     // below; a stale signature just falls back to the headline, so the protection switch is not needed here
     $plain = preg_match('/^(?:[a-z0-9_.]{16}|_#[0-9A-Z_]{8})$/D', $slice_field) && ((strlen($slice_field) !== 16) || $is_field($slice_field));
@@ -115,10 +115,10 @@ if (isset($_GET['sid'])) {
 }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$slice       = AA_Slice::getModule($sid);
+$slice       = AA_Slice::getOwnModule($sid);
 
 if (!$slice) {
-    echo "<Error - no slice found<br>";
+    echo "Error - no slice found<br>";
     echo "<hr>sid<br><pre>";
     print_r($sid);
     exit;
