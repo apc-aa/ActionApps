@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Security;
 
+use AA\Util\Txt;
+
 /**
  * A value a page takes from its URL for its templates: als[NAME] of a view, slice or site page
  * ({NAME}, {_#NAME}) and the state of a site page ({xqs}, {xseo1}, ...). The URL can carry any
@@ -36,7 +38,7 @@ final class UrlValue
     {
         return (self::hasExpression($value) && (self::expression($param, $value) !== null))
             ? $value
-            : str_replace('_#', '_&#35;', self::asText($value));   // als[] and cmd[]=d- of the same URL fill aliases with any HTML
+            : Txt::aliasesAsText(self::asText($value));   // als[] and cmd[]=d- of the same URL fill aliases with any HTML
     }
 
     /** a refused value as text that no command turns back into an expression ({foreach}, {expand}, ...) */

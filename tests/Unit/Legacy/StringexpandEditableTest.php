@@ -15,6 +15,7 @@ namespace {
         'DB_NAME'         => 'aa_test',
         'DB_USER'         => 'aa',
         'DB_PASSWORD'     => '',
+        'DEFAULT_LANG_INCLUDE' => 'en-utf8_news_lang.php',
     ] as $k => $v) {
         if (!defined($k)) {
             define($k, $v);
@@ -40,6 +41,7 @@ namespace Tests\Unit\Legacy {
      * {editable:<item>:<field>} puts the field into the page to be edited and saved back as it is
      * stored, so a command in the text must reach the browser as written - an _#ALIAS in it too,
      * though the page expands the editable as part of an alias (_#FULLEDIT = f_t:{editable:...}).
+     * The same for the widget of {live}, {edit} and {editfull} in a row of a view.
      * Own process: the slice and the item stay in the module and item caches.
      */
     #[RunClassInSeparateProcess]
@@ -81,6 +83,36 @@ namespace Tests\Unit\Legacy {
             self::assertMatchesRegularExpression("~^<main><$tag contenteditable=true [^>]*data-aa-field=\"$field\"[^>]*>.*</$tag></main>$~s", $page);
             preg_match("~<$tag [^>]*>(.*)</$tag>~s", $page, $match);
             self::assertSame($content, $match[1]);
+        }
+
+        /**
+         * the widget's control holds the stored text - the browser decodes the HTML to it
+         * @return array<string, array{string, string, string}> command, field, stored text
+         */
+        public static function widgets(): array
+        {
+            $text  = "<p>{siteitem:technicka-specifikace:_#HEADLINE}</p>\n<p>_#SEO_URL_ & {ids:x}</p>";
+            $short = 'Price _#HEADLINE & {ids:x} <b>"_#SEO_URL_"</b>';
+            return [
+                'live textarea'     => ['live', 'full_text.......', $text],
+                'edit textarea'     => ['edit', 'full_text.......', $text],
+                'editfull textarea' => ['editfull', 'full_text.......', $text],
+                'live input'        => ['live', 'headline........', $short],
+                'edit input'        => ['edit', 'headline........', $short],
+                'editfull input'    => ['editfull', 'headline........', $short],
+            ];
+        }
+
+        #[DataProvider('widgets')]
+        public function test_expand_inRowOfAView_widgetHoldsTheSource(string $command, string $field_id, string $source): void
+        {
+            $page = AA::Un("<main>{{$command}::$field_id}</main>", '', self::item($field_id, $source, $field_id === 'full_text.......'));
+
+            $name = preg_quote(htmlspecialchars('aa[u' . self::ITEM . '][' . str_replace('.', '_', $field_id) . '][0]'), '~');
+            self::assertMatchesRegularExpression("~<(textarea|input)[^>]* name=\"$name\"~", $page);
+            preg_match("~<textarea[^>]* name=\"$name\"[^>]*>(.*?)</textarea>~s", $page, $textarea);
+            preg_match("~<input[^>]* name=\"$name\"[^>]* value=\"([^\"]*)\"~", $page, $input);
+            self::assertSame($source, html_entity_decode($textarea[1] ?? $input[1], ENT_QUOTES | ENT_HTML5));
         }
 
         private static function item(string $field_id, string $source, bool $html): AA_Item

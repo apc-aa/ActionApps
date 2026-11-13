@@ -5301,7 +5301,8 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
                 }
                 //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
                 $aa_property = $field->getAaProperty($widget_prop);
-                $ret         = $widget?->$type($aa_property, $itemcontent, $function) ?? '';
+                // the widget holds the stored value to be saved back - the enclosing template would substitute its _#ALIASES
+                $ret         = Txt::aliasesAsText($widget?->$type($aa_property, $itemcontent, $function) ?? '');
                 // $widget->registerRequires(); // now in _finalizeHtml
                 AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we should distinguish
             }
@@ -5502,9 +5503,8 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                     $pholder = strlen($placeholder) ? 'placeholder="'.$placeholder.'"' : '';
                     $iid     = $item->getItemID();
                     $tag     = $field->isMultiline() ? 'div' : 'span';
-                    // the editor saves back what it is shown - this and every enclosing template would substitute
-                    // an _#ALIAS of the text, the entity passes them all and the browser shows '#' again
-                    $source  = str_replace('_#', '_&#35;', $item->f_h($field_id, 'AA_DashOrLanG'));
+                    // the editor saves back what it is shown - this and every enclosing template would substitute an _#ALIAS of the text
+                    $source  = Txt::aliasesAsText($item->f_h($field_id, 'AA_DashOrLanG'));
                     // do not change the string: contenteditable=true id=... we are using it in AA__SiteUpdateParts() (aajslib-jquery.php)
                     $ret     = "<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">$source</$tag>";
 
