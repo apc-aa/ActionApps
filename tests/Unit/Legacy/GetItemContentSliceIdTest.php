@@ -84,6 +84,21 @@ namespace Tests\Unit\Legacy {
             self::assertSame($keys, $returned);
         }
 
+        /** the content SELECT names only field ids - anything else asked for is left out, and with it the SELECT when nothing is left */
+        public function test_GetItemContent_notAFieldId_leftOutOfTheContentSelect(): void
+        {
+            $content_selects = static fn(): array => array_values(array_filter(RecordingDb::$log, static fn(string $s): bool => str_contains($s, ' FROM content ')));
+
+            GetItemContent(new zids([self::ITEM], 'l'), false, true, ['headline........', "head'line......."]);
+            self::assertCount(1, $content_selects());
+            self::assertStringContainsString(" AND field_id = 'headline........' ", $content_selects()[0]);
+
+            RecordingDb::reset();
+            RecordingDb::$answer = static fn(string $sql): array => self::answer($sql);
+            GetItemContent(new zids([self::ITEM], 'l'), false, true, ["x' OR '1'='1"]);
+            self::assertSame([], $content_selects());
+        }
+
         /** the columns the item SELECT names, of one stored item; its content rows */
         private static function answer(string $sql): array
         {

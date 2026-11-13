@@ -25,7 +25,9 @@ https://www.apc.org/
     $update=1 .. write changes to database
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 // Creating a module: slicedit.php always sends no_slice_id, the template only when one exists already.
@@ -41,6 +43,7 @@ require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/date.php";
 require_once __DIR__ . "/../../include/modutils.php";
 
+const MODEDIT_POLLS_TOKEN = 'aa-modedit-polls';
 
 try {
     // array ( 'AA_POLLS2' => 1, 'AA_POLLSs' => 6, 'AA_POLLSq' => 1, )
@@ -74,6 +77,7 @@ try {
     $deleted = InputVars::boolPOST('deleted');
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
+    $token = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -100,13 +104,24 @@ if ($is_add) {
         MsgPage(_m("You do not have permissions to add polls"));
         exit;
     }
+} elseif ($module_id && !AA_Module_Polls::getOwnModule($module_id)) {   // an id of another module type
+    MsgPage(_m("Module not found."));
+    exit;
 } elseif (!CheckPerms(AuthGetUid(), "slice", $module_id, PS_MODP_SETTINGS)) {
     // edit module
     MsgPage(_m("You do not have permissions to edit this poll"));
     exit;
 }
 
-if ($is_add ? $insert : $update) {
+// the module changes only from this page's own form; the add-module page opens it by a GET without insert/update
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(MODEDIT_POLLS_TOKEN, $token, $_SERVER);
+$write     = $is_add ? $insert : $update;
+$expired   = $write && !$may_write;
+if ($expired) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
+
+if ($write && $may_write) {
     do {
         if (!$owner) {  // insert new owner
             if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err))) {
@@ -207,6 +222,7 @@ if ($is_add ? $insert : $update) {
 
 // And the form -----------------------------------------------------
 
+$redisplay   = $expired || count($err);   // the module fields show the submitted values; the module's own settings reload
 $source_id   = ($template['P'] ? substr($template['P'], 1) : $module_id);
 
 // load module specific data
@@ -230,7 +246,7 @@ $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("Polls Module general data"), $form_buttons);
 
-$marr = RenderModuleFieldsForm($source_id, $superadmin, (bool) $template['P'], (bool) count($err), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
+$marr = RenderModuleFieldsForm($source_id, $superadmin, (bool) $template['P'], $redisplay, compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
 $lang_file = rtrim($marr[3], '3');   // trim for old php3 lang file extension
 
 FrmInputSelect("lang_file", _m("Used Language File"), AA_Moduleregistry::info('P', 'langs'), $lang_file);
@@ -244,6 +260,7 @@ FrmInputNumber("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout);
 FrmInputChBox("set_cookies", _m("Use cookies"), $set_cookies);
 FrmInputText("cookies_prefix", _m("Cookies prefix"), $cookies_prefix);
 //    FrmInputText("params",        _m("Parameters"),         $params);     // @todo - add paramwizard
+echo FormToken::field(MODEDIT_POLLS_TOKEN);
 FrmTabEnd($form_buttons);
 
 $apage->printFoot();

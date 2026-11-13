@@ -176,8 +176,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem
         if (!($ds = InitLDAP())) {
             return false;
         }
-        // a new account of the same login gets the same DN - and would log in by them
-        (new Store())->deleteAll((string) $this->passkeyId((string) $user_id));
+        $passkey_id = (string) $this->passkeyId((string) $user_id);   // while the account exists
 
         // To keep integrity of LDAP DB, we should also delete all references
         // to this user in other LDAP entries (e.g. member=.., apcaci=..).
@@ -206,6 +205,10 @@ class AA_Permsystem_Ldap extends AA_Permsystem
         $r = @ldap_delete($ds, $user_id);
 
         ldap_unbind($ds);
+        if ($r) {
+            // a new account of the same login gets the same DN - and would log in by them
+            (new Store())->deleteAll($passkey_id);
+        }
         return $r;
     }
 

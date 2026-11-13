@@ -46,6 +46,7 @@ namespace Tests\Unit\Legacy {
         private const IN_OPEN   = '0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b';
         private const IN_2      = '0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c';
         private const MASK      = 'Error: Missing Reading Password';
+        private const SHORT     = [self::IN_CLOSED => 11, self::IN_OPEN => 12, self::IN_2 => 13];
 
         /** @var array<string, string> item => its slice, what the item table holds */
         private static array $items = [];
@@ -144,6 +145,23 @@ namespace Tests\Unit\Legacy {
             }
         }
 
+        /**
+         * Read by short ids, the content is keyed by them - an item of a closed slice too, whose short id is no
+         * secret (the caller asked by it), and with the fields restricted
+         * @param list<string> $fields
+         */
+        #[DataProvider('shapes')]
+        public function test_GetItemContent_shortIds_keyedByTheShortIds(array $fields): void
+        {
+            self::$items = [self::IN_CLOSED => self::CLOSED, self::IN_OPEN => self::OPEN];
+
+            $content = GetItemContent(new zids([11, 12], 's'), false, false, $fields);
+
+            self::assertSame([11, 12], array_keys($content));
+            self::assertSame([self::IN_CLOSED, self::MASK], [$content[11]['unpacked_id.....'][0]['value'], $content[11]['headline........'][0]['value']]);
+            self::assertSame([self::IN_OPEN, 'Brno'], [$content[12]['unpacked_id.....'][0]['value'], $content[12]['headline........'][0]['value']]);
+        }
+
         /** @param array<string, string> $items item => its slice
          *  @param list<string>          $fields
          *  @return array<string, array<string, list<array{value: mixed}>>> */
@@ -159,7 +177,7 @@ namespace Tests\Unit\Legacy {
             if (preg_match('/^SELECT (.+?) FROM item WHERE/', $sql, $m)) {
                 $rows = [];
                 foreach (self::$items as $id => $slice) {
-                    $row    = ['id' => pack_id($id), 'slice_id' => pack_id($slice), 'publish_date' => '1700000000'] + array_fill_keys(\AA::Metabase()->getColumnNames('item'), '1');
+                    $row    = ['id' => pack_id($id), 'slice_id' => pack_id($slice), 'short_id' => self::SHORT[$id], 'publish_date' => '1700000000'] + array_fill_keys(\AA::Metabase()->getColumnNames('item'), '1');
                     $rows[] = ($m[1] === '*') ? $row : array_intersect_key($row, array_flip(explode(',', $m[1])));
                 }
                 return $rows;

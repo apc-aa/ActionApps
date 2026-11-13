@@ -434,9 +434,8 @@ class AA_Showview
             AA::$langnum = [Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         }
 
-        if ($this->_view_param["banner"]) {
-            $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"], $this->from_request));  // if banner set format
-        }
+        // also with no banner - the view of an earlier call in the request keeps its banners
+        $view->setBannerParam(AA_View::parseBannerParam($this->_view_param['banner'] ?? '', $this->from_request));
 
         if (($slice_id = $this->_view_param["slice_id"]) && !is_long_id($slice_id)) { // unpacked
             $this->outputEnd($view, $dbgtime, "View parameter slice_id is not slice ID. If you want to use more slices, use parameter slices.");

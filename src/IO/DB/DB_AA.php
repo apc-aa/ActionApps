@@ -421,7 +421,8 @@ final class DB_AA
     }
 
     /** creates cols string for INSERT or UPDATE
-     * @param array<array{0: string, 1: mixed, 2?: string}> $varlist [column, value, type] - type optional
+     * @param array<array{0: string, 1: mixed, 2?: string}> $varlist [column, value, type] - type optional:
+     *                                                       'i' int, 'l' long id, anything else an escaped string
      * @return string
      */
     protected static function makeCols(array $varlist): string
@@ -434,7 +435,6 @@ final class DB_AA
             $part  = match ($type) {
                 "i" => (int) $value,
                 "l" => xpack_id($value),
-                "q" => "'$value'",
                 default => "'" . addslashes($value) . "'",
             };
             $cols .= "$delim $name = $part";

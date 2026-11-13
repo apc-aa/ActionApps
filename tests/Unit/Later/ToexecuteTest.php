@@ -32,7 +32,9 @@ namespace Tests\Unit\Later {
     use AA\Later\Toexecute;
     use AA\Optimize\CheckQueue;
     use AA\Util\LogOnce;
+    use AA_Credentials;
     use AA_Logentry;
+    use Closure;
     use PDO;
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
@@ -84,6 +86,11 @@ namespace Tests\Unit\Later {
             $GLOBALS['spareDBs'] = [];
             (new ReflectionProperty(DB_AA::class, 'lock_db'))->setValue(null, null);
             set_time_limit(0);   // execute_one() sets a 30 s limit - it must not outlive the test
+            CredentialsTask::$known = [];
+            unset($GLOBALS['slice_pwd']);
+            Closure::bind(function (): void {
+                $this->_pwd = [];
+            }, AA_Credentials::singleton(), AA_Credentials::class)();
         }
 
         /** the tests that expect the default 16 s round cannot run with the constant set */
@@ -342,6 +349,22 @@ namespace Tests\Unit\Later {
             $report = json_encode($toexecute->reportRows());
             $this->assertStringNotContainsString('<img', $report, 'the Task Manager prints the report as HTML');
             $this->assertStringContainsString('&lt;img', $report);
+        }
+
+        /** a task must not read with the slice passwords the one before it learned - even when it failed */
+        public function test_execute_slicePasswordOfTask_forgottenForTheNext(): void
+        {
+            AA_Credentials::singleton()->register(AA_Credentials::encrypt('known-before'));
+            $this->seed(new CredentialsTask('learn'), 'test-learn', 9);
+            $this->seed(new CredentialsTask('learn', true), 'test-learn-fail', 8);
+            $this->seed(new CredentialsTask('check'), 'test-check', 7);
+            $this->seed(new CredentialsTask('url'), 'test-url', 6);
+            $this->seed(new CredentialsTask('check', true), 'test-check-after-url', 5);
+
+            (new Toexecute())->execute();
+
+            $this->assertSame(['learn' => [true, true], 'learn-fail' => [true, true], 'check' => [false, true], 'url' => [true, true], 'check-fail' => [false, true]], CredentialsTask::$known);
+            $this->assertArrayNotHasKey('slice_pwd', $GLOBALS);
         }
 
         public function test_execute_parked_task_is_not_overdue(): void
@@ -803,6 +826,30 @@ namespace Tests\Unit\Later {
             $stmt = self::$pdo->prepare('SELECT priority, execute_after FROM toexecute WHERE id = ?');
             $stmt->execute([self::$id]);
             self::$seen = array_map('intval', $stmt->fetch(PDO::FETCH_ASSOC));
+            return 'ok';
+        }
+    }
+
+    /** learns a slice password, or only looks; records whether that one and the one known before are known */
+    final class CredentialsTask
+    {
+        /** @var array<string, array{bool, bool}> */
+        public static array $known = [];
+
+        public function __construct(public string $mode = 'check', public bool $fail = false) {}
+
+        public function toexecutelater(array $params): string
+        {
+            $credentials = AA_Credentials::singleton();
+            if ($this->mode === 'learn') {
+                $credentials->register(AA_Credentials::encrypt('queue-task'));
+            } elseif ($this->mode === 'url') {
+                $GLOBALS['slice_pwd'] = 'queue-task';   // as {view.php?vid=..&slice_pwd=..} leaves it
+            }
+            self::$known[$this->mode . ($this->fail ? '-fail' : '')] = [$credentials->checkCryptedPassword(AA_Credentials::encrypt('queue-task')), $credentials->checkCryptedPassword(AA_Credentials::encrypt('known-before'))];
+            if ($this->fail) {
+                throw new \RuntimeException('failed');
+            }
             return 'ok';
         }
     }

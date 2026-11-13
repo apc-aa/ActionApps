@@ -112,8 +112,10 @@ namespace {
 
 namespace Tests\Unit\Legacy {
 
+    use AA\Passkey\Store;
     use AA_Permsystem_Ldap;
     use PHPUnit\Framework\TestCase;
+    use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
     /** Records every ldap_* call as "name json(args)" and answers from per-function queues */
     final class LdapStub
@@ -230,6 +232,29 @@ namespace Tests\Unit\Legacy {
 
             self::assertTrue((new AA_Permsystem_Ldap())->delUser(self::USER, 2));
             self::assertSame('ldap_delete ["ds","uid=jan,ou=People,ou=AA"]', LdapStub::$log[count(LdapStub::$log) - 2]);
+        }
+
+        /** a refused delete leaves the account as it was, its passkeys too; a done one takes them after it */
+        public function test_delUser_refusedDelete_keepsPasskeys(): void
+        {
+            require_once __DIR__ . '/fixtures/store_fixtures.php';
+            Store::reset();
+            RecordingDb::reset();
+            RecordingDb::$answer = static fn(string $sql): array => str_contains($sql, 'information_schema.tables') ? [['table_schema' => 'aa_test']] : [];
+            $GLOBALS['spareDBs'] = [new RecordingDb()];
+            try {
+                LdapStub::$answers = ['ldap_get_dn' => [self::USER], 'ldap_delete' => [false]];
+                self::assertFalse((new AA_Permsystem_Ldap())->delUser(self::USER, 0));
+                self::assertSame([], RecordingDb::$log);
+
+                LdapStub::$answers = ['ldap_get_dn' => [self::USER]];
+                self::assertTrue((new AA_Permsystem_Ldap())->delUser(self::USER, 0));
+                self::assertNotEmpty(preg_grep('/^DELETE FROM `authenticator`/', RecordingDb::$log));
+            } finally {
+                $GLOBALS['spareDBs'] = [];
+                RecordingDb::reset();
+                Store::reset();
+            }
         }
 
         public function test_addPerm_createsAMissingAclObjectFirst(): void

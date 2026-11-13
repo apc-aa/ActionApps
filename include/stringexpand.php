@@ -8938,14 +8938,15 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
         $size  = get_if($size, 48);
         $title = str_contains($name, '@') ? aa_substr($name,0,aa_strpos($name,'@')) : $name;
 
-        if ($img = AA::Un("{img:$image:w=$size&h=$size&iar=1:imgb:$title}")) {
+        // the name is item content - passed as a parameter, never parsed as an expression
+        if ($img = StrExp('img', [$image, "w=$size&h=$size&iar=1", 'imgb', $title])) {
             return $img;
         }
         $nplus    = $title . '--';
         $match    = [];
         $initials = aa_substr($nplus,0,1). (preg_match('/.[ ._-]+([^ ._-])/u', $title, $match) ? $match[1] : aa_substr($nplus,1,1))  ;
         $color    = (crc32($name) % 8) + 1;
-        return "<div class=\"dis-color$color\" title=\"$title\">$initials</div>";
+        return "<div class=\"dis-color$color\" title=\"" . safe($title) . '">' . safe($initials) . '</div>';
     }
 }
 
@@ -9367,6 +9368,8 @@ class AA_Stringexpand_Qrcode extends AA_Stringexpand {
 class AA_Stringexpand_Qrpay extends AA_Stringexpand {
     function expand($account='', $amount='', $currency='', $reference_number='', $message='', $due_date='', $specific_symbol='', $recipient_name=''): string
     {
+        // "*" separates the fields of the payment string - a value ends there, as a reader of the string ends it
+        [$reference_number, $message, $specific_symbol, $recipient_name] = array_map(static fn($value): string => explode('*', (string) $value, 2)[0], [$reference_number, $message, $specific_symbol, $recipient_name]);
         if (!$account || !$amount) {
             return '';
         }
@@ -9975,36 +9978,15 @@ class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
     }
 }
 
-/**  */
+/** Does nothing - it was a debugging command. Kept empty, so a template still calling it does not print
+ *  its parameters, a user name and a password, as the text of an unknown command.
+ *  @deprecated
+ */
 class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
-    /**
-     * @param string $text
-     * @return string|void
-     */
-    function expand($username='', $password='', $code2fa=''): string
+    function expand(): string
     {
-        if (!strlen($username) || !strlen($password) || !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa, true)) || $uid !== AuthGetUid()) {
-            return '';
-        }
-        $ga = new PHPGangsta_GoogleAuthenticator();
-        $secret = $ga->createSecret();
-
-
-        $qrCodeUrl = $ga->getQRCodeGoogleUrl('Blog', $secret);
-        echo "Google Charts URL for the QR-Code: ".$qrCodeUrl."\n\n";
-
-        $oneCode = $ga->getCode($secret);
-        echo "Checking Code '$oneCode' and Secret '$secret':\n";
-
-        $checkResult = $ga->verifyCode($secret, $oneCode, 2);    // 2 = 2*30sec clock tolerance
-        if ($checkResult) {
-            echo 'OK';
-        } else {
-            echo 'FAILED';
-        }
         return '';
     }
-
 }
 
 /** computes MD5 hash */
@@ -10341,7 +10323,7 @@ class AA_Password_Manager_Reader {
         $user_info = AA_Reader::getReaderItemContent($user_id);
 
         $email     = (string) $user_info->getValue(FIELDID_EMAIL);
-        $pwdkey    = self::resetKey($user_id, $email, (int) round(now()/60));
+        $pwdkey    = self::resetKey($user_id, $email, (string) $user_info->getValue(FIELDID_PASSWORD), (int) round(now()/60));
         $pwd_param = "aapwd2=$pwdkey-$user_id";
 
         // send it via email
@@ -10436,22 +10418,23 @@ class AA_Password_Manager_Reader {
         if (($user_info = AA_Reader::getReaderItemContent($user_id))->isEmpty()) {
             return false;
         }
-        return self::keyMatches((string) $key, $user_id, (string) $user_info->getValue(FIELDID_EMAIL), (int) round(now()/60));
+        return self::keyMatches((string) $key, $user_id, (string) $user_info->getValue(FIELDID_EMAIL), (string) $user_info->getValue(FIELDID_PASSWORD), (int) round(now()/60));
     }
 
-    /** the key was issued for this user and e-mail in one of the last KEY_TIMEOUT minutes */
-    public static function keyMatches(string $key, string $user_id, string $email, int $minute): bool {
+    /** the key was issued for this user, e-mail and password in one of the last KEY_TIMEOUT minutes */
+    public static function keyMatches(string $key, string $user_id, string $email, string $pwd_hash, int $minute): bool {
         for ($i=0; $i< self::KEY_TIMEOUT; $i++) {
-            if (hash_equals(self::resetKey($user_id, $email, $minute - $i), $key)) {
+            if (hash_equals(self::resetKey($user_id, $email, $pwd_hash, $minute - $i), $key)) {
                 return true;
             }
         }
         return false;
     }
 
-    /** the key of the password reset link, valid in the minute it names */
-    private static function resetKey(string $user_id, string $email, int $minute): string {
-        return hash_hmac('sha256', "$user_id\0$email\0$minute", Secret::key('reader-reset'));
+    /** the key of the password reset link, valid in the minute it names
+     *  @param $pwd_hash the stored password hash - a changed password ends the key, so the link works once */
+    private static function resetKey(string $user_id, string $email, string $pwd_hash, int $minute): string {
+        return hash_hmac('sha256', "$user_id\0$email\0$pwd_hash\0$minute", Secret::key('reader-reset'));
     }
 
     private static function bad($text) : string {
@@ -11510,6 +11493,18 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
 
+    /** id of the item to edit, from the URL - only an item of the managed slices
+     * @param string[] $slices_arr
+     */
+    private static function editId(string $cmdvar, array $slices_arr): string
+    {
+        $edit_id = $_GET[$cmdvar] ?? '';
+        if (!is_string($edit_id) || !is_long_id($edit_id)) {
+            return '';
+        }
+        return (new zids($edit_id, 'l'))->itemFilter($slices_arr)->isEmpty() ? '' : $edit_id;
+    }
+
     /**
      * @param string $slices
      * @param string $field
@@ -11585,10 +11580,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         $inner_code = '';
         $standard_mgr = true;
 //      if ($edit_code AND (is_long_id($_GET['aaedit']) OR (is_long_id($_GET[$cmdvar])) )) {
-        if ($edit_code && is_long_id($_GET[$cmdvar])) {
+        if ($edit_code && ($edit_id = self::editId($cmdvar, $slices_arr))) {
 
-            // @todo check slice of edited item to match $slices
-            $inner_code = StrExp('item', [$_GET[$cmdvar], $edit_code]);
+            $inner_code = StrExp('item', [$edit_id, $edit_code]);
             $footer     = '';
             if ( $mode_arr['B'] ) {
                 $footer .= $mode_arr['X'] ? '<footer><article><i class="ico back" onclick="history.back();">' . $mode_arr['B'] . '</i></article></footer>'

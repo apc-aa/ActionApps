@@ -87,6 +87,7 @@ abstract class AA_Transformation implements NamedInterface
     }
 
     /** Grabs only variables, which is intended for class $classname
+     *  Only from the posted form - in $_REQUEST a cookie of the same name would win.
      * @param $input_id
      * @param $classname
      * @return string[]
@@ -98,7 +99,7 @@ abstract class AA_Transformation implements NamedInterface
             return $ret;
         }
         $prefix = $input_id . substr($classname, 18);
-        foreach ($_REQUEST as $varname => $varvalue) {
+        foreach ($_POST as $varname => $varvalue) {
             if (str_starts_with($varname, $prefix)) {
                 // filter out the prefix
                 $ret[substr($varname, strlen($prefix))] = $varvalue;

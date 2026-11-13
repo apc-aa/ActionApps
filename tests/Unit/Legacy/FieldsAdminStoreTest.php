@@ -73,6 +73,9 @@ namespace Tests\Unit\Legacy {
             self::OTHER . '-headline........' => ['id' => 'headline........', 'name' => 'Title', 'input_help' => 'from other', 'in_item_tbl' => '', 'text_stored' => '1'],
             // a template field that uses a display condition of its own slice
             self::OTHER . '-headline.......x' => ['id' => 'headline.......x', 'name' => 'Title', 'in_item_tbl' => '', 'text_stored' => '1', 'aditional' => '{"showif":"aaaaaaaa"}'],
+            // related items of the third slice - with the button that edits them, and without it
+            self::OTHER . '-relation.......1' => ['id' => 'relation.......1', 'name' => 'Related', 'in_item_tbl' => '', 'text_stored' => '1', 'input_show_func' => 'rim:#sLiCe-' . self::THIRD . ':headline........:MRDE'],
+            self::OTHER . '-relation.......2' => ['id' => 'relation.......2', 'name' => 'Related', 'in_item_tbl' => '', 'text_stored' => '1', 'input_show_func' => 'rim:#sLiCe-' . self::THIRD . ':headline........:MRD'],
         ];
 
         public static function setUpBeforeClass(): void
@@ -354,6 +357,28 @@ namespace Tests\Unit\Legacy {
             $inserted = RecordingDb::inserts('field');
             $this->assertCount(1, $inserted);
             $this->assertSame(['id' => 'headline.......1', 'slice_id' => self::SLICE, 'name' => 'Titulek 2', 'input_help' => 'from other', 'input_pri' => 7], self::columns($inserted[0], ['id', 'slice_id', 'name', 'input_help', 'input_pri']));
+        }
+
+        public static function relatedTemplates(): array
+        {
+            return [
+                // the permission constants are not defined yet when the providers run
+                'edits, no right there'     => ['relation.......1', 'PS_EDIT_SELF_ITEMS', false],
+                'edits, may edit all there' => ['relation.......1', 'PS_EDIT_ALL_ITEMS', true],
+                'only points there'         => ['relation.......2', '', true],
+            ];
+        }
+
+        /** a field that edits the items of another slice needs a user who may edit all items there - as in se_inputform.php */
+        #[\PHPUnit\Framework\Attributes\DataProvider('relatedTemplates')]
+        public function test_templateEditingAnotherSliceNeedsItsRight(string $tpl_id, string $third_perm, bool $copied): void
+        {
+            self::perms([self::SLICE => PS_FIELDS, self::OTHER => PS_FIELDS, self::THIRD => ($third_perm === '') ? '' : constant($third_perm)]);
+
+            $err = AA_Fields::storeAdminRows(self::SLICE, ['New_Field' => 'Related'], ['New_Field' => '100'], [], [], self::OTHER . "-$tpl_id", false, [self::CORE, self::SLICE, self::OTHER]);
+
+            $this->assertSame($copied ? [] : ['DB'], array_keys($err));
+            $this->assertCount($copied ? 1 : 0, RecordingDb::inserts('field'));
         }
 
         public function test_emptyNewFieldIsNotAdded(): void

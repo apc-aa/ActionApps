@@ -49,12 +49,12 @@ if ( $return_url !== 'close_dialog' ) {
 echo ' &nbsp; ';
 if ( $return_url === 'close_dialog' ) {
     $go2url = 'javascript:window.close()';
-} elseif ( $return_url ) {
+} elseif ( $return_url && IsNavigableUrl($return_url) ) {
     $go2url = $return_url;
 } else {
     $go2url = StateUrl("index.php");
 }
-echo '<a href="'. $go2url .'" target="_parent" class="btn btn-s">'. _m("OK") .'</a>';
+echo '<a href="'. safe($go2url) .'" target="_parent" class="btn btn-s">'. _m("OK") .'</a>';
 ?>
 </div>
 </body>

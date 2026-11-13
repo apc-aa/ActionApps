@@ -293,4 +293,19 @@ final class InputVarsTest extends TestCase
         $in = ['a' => "O'B", 'b' => ['c' => 'say "hi"']];
         $this->assertSame($in, InputVars::StripslashesArray(InputVars::AddslashesArray($in)));
     }
+
+    /** {xuser} reads the visitor from apc_state and AA_Router::singleton() makes the class it names -
+     *  only the site router and the login set those keys, the rest of the state may come with a URL */
+    public function test_requestGlobal_apcState_dropsRouterAndLoginKeys(): void
+    {
+        $state = ['xpage' => '2', 'xuid' => 'u1', 'xuser' => 'joe', 'router' => 'stdClass', 'state' => 'x'];
+
+        $this->assertSame(['xpage' => '2', 'state' => 'x'], InputVars::requestGlobal('apc_state', $state));
+    }
+
+    public function test_requestGlobal_otherValues_passUnchanged(): void
+    {
+        $this->assertSame(['xuid' => 'u1'], InputVars::requestGlobal('other', ['xuid' => 'u1']));
+        $this->assertSame('xuid', InputVars::requestGlobal('apc_state', 'xuid'));
+    }
 }

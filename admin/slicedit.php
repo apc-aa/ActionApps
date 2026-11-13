@@ -26,7 +26,9 @@
 */
 // expected $slice_id for edit slice, no_slice_id=1 for adding slice
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\Langs;
 use AA\Util\InputVars;
 
@@ -41,6 +43,8 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/mlx.php";
 require_once __DIR__ . "/../include/slicedit.php";
 require_once __DIR__ . "/../include/modutils.php";
+
+const SLICEDIT_TOKEN = 'aa-slicedit';
 
 try {
     // array ( )
@@ -129,6 +133,7 @@ try {
     // array ( )
     $wiz = InputVars::arrayPOST('wiz');
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -182,7 +187,15 @@ $superadmin  = IsSuperadmin();
 
 $set_template_id = $template_from_slice ? $template_id2 : $template_id;
 
-$err = SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add, $update, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role);
+// the slice changes only from this page's own form; sliceadd.php posts here without add/update just to open it
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(SLICEDIT_TOKEN, $token, $_SERVER);
+$expired   = ($add || $update || !empty($_POST['aa'])) && !$may_write;
+if ($expired) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+    unset($_POST['aa']);   // the additional settings - AA_Slice::processModuleObject() saves them from there
+}
+
+$err = SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add && $may_write, $update && $may_write, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role);
 
 $foo_source = (($slice_id == "") ? $set_template_id : $slice_id);
 
@@ -197,9 +210,10 @@ if (!$sarr) {
 
 $is_new     = ($slice_id == "");
 $has_errors = (bool) count($err);
+$redisplay  = ($has_errors || $expired) && ($add || $update);
 
-// On validation error, redisplay form with user's submitted values instead of template/DB values
-if ($has_errors && ($add || $update)) {
+// On validation error or an expired form, redisplay form with user's submitted values instead of template/DB values
+if ($redisplay) {
     $sarr['slice_type']            = $slice_type;
     $sarr['template']              = $template ? 1 : 0;
     $sarr['permit_anonymous_post'] = $permit_anonymous_post;
@@ -248,7 +262,7 @@ if ($slice_id == "") {
 
 FrmTabCaption(_m("Slice"), $form_buttons);
 
-RenderModuleFieldsForm($foo_source, $superadmin, $is_new, $has_errors && ($add || $update), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
+RenderModuleFieldsForm($foo_source, $superadmin, $is_new, $redisplay, compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
 
 $convert_action = '';
 if (DB_CHARACTER_SET === "cp1250" && $slice_id && AA_Slice::getModule($slice_id)?->getCharset() === 'windows-1250') {
@@ -319,6 +333,7 @@ if ($slice_id == "") {
     echo "<input type=\"hidden\" name=\"user_role\" value='" . safe($user_role) . "'>";
     // end of fields storing values from wizard
 }
+echo FormToken::field(SLICEDIT_TOKEN);
 FrmTabEnd($form_buttons);
 
 $apage->printFoot();

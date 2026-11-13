@@ -237,6 +237,9 @@ if ($id) {
         MsgPage(MsgErr(_m("Error: You have no rights to edit item.")));
         exit;
     }
+    if ($add) {
+        $content4id = new ItemContent();   // a new item - the AJAX calls of its form see none of the item that named the slice
+    }
 
 } else {
     $content4id = new ItemContent();

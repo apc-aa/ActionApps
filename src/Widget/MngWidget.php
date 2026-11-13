@@ -53,6 +53,15 @@ class MngWidget extends Widget
         return Widget::propertiesShop(['const', 'related_field', 'row_code', 'row_edit', 'mng_buttons', 'sort_by']);
     }
 
+    /** The stored connector, or '' for a value that cannot be one - it goes into the {manager} expression below
+     *  and into its condition (where "-" separates, and AAnoCONDITION drops the condition).
+     *  Connectors are new_id(); a plain token is kept, so data stored some other way still finds its rows.
+     */
+    private static function connector(string $value): string
+    {
+        return (preg_match('~^[0-9A-Za-z_.]+$~D', $value) && ($value !== 'AAnoCONDITION')) ? $value : '';
+    }
+
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      *
@@ -70,8 +79,8 @@ class MngWidget extends Widget
         $base_name   = FormArray::getName4Form($property_id, $content, $this->item_index);
         $base_id     = FormArray::formName2Id($base_name);
         $input_name  = $base_name . "[0]";
-        $value = $content->getAaValue($property_id);
-        $input_value = safe($value->getValue());
+        $stored      = (string) $content->getAaValue($property_id)->getValue();
+        $input_value = self::connector($stored);
 
         // we store the connector id to cookie in order we have it during AJAX call - Parts renewal
         $sess_var = get_short_hash($base_id);
@@ -87,7 +96,8 @@ class MngWidget extends Widget
             } else {
                 $input_value = new_id();
                 //if (($type === 'ajax') OR ($type === 'live')) {
-                if (is_long_id($item_id)) {
+                // a refused value is replaced only when the item is saved, not by showing the form
+                if (is_long_id($item_id) && ($stored === '')) {
                     // we have to store the connectorID to the database immediately
                     UpdateField($item_id, $property_id, new AA_Value($input_value, FLAG_HTML), ItemContent::FLAG_JUST_STORE);
                 }

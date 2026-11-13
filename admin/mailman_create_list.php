@@ -40,7 +40,9 @@
 */
 
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -49,12 +51,15 @@ require_once __DIR__ . "/../include/varset.php";
 
 require_once __DIR__ . "/../include/itemfunc.php";
 
+const MAILMAN_TOKEN = 'aa-mailman-list';
+
 try {
     $admin_email = InputVars::stringPOST('admin_email');
     $admin_password = InputVars::stringPOST('admin_password'); // alpha
     $create_list = InputVars::stringPOST('create_list');
     $list_name = InputVars::stringPOST('list_name'); // alpha
     $cancel = InputVars::boolPOST('cancel');
+    $token = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -86,8 +91,19 @@ $row = DB_AA::select1([], 'SELECT field.input_show_func, field.name FROM field',
 $field_name = $row["name"] ?? null;
 [,$groupid] = explode(":", $row["input_show_func"] ?? null);
 
+// the values become a line of the command file for Mailman and the list name a file name
 if ($create_list && $admin_email && $list_name && $admin_password) {
-    add_mailman_list($admin_email, $list_name, $admin_password, $groupid);
+    if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(MAILMAN_TOKEN, $token, $_SERVER)) {
+        echo MsgErr(_m('The form has expired; reload the page and try again.'));
+    } elseif (!AA_Mailman::isListName($list_name)) {
+        echo MsgErr(_m("List name") . ': ' . _m("Do not match the pattern"));
+    } elseif (!preg_match('/^\S+\z/', $admin_email) || !filter_var($admin_email, FILTER_VALIDATE_EMAIL)) {   // a quoted address may hold a space
+        echo MsgErr(_m("Admin email") . ': ' . _m("Do not match the pattern"));
+    } elseif (!preg_match('/^\S+\z/', $admin_password)) {
+        echo MsgErr(_m("Admin password") . ': ' . _m("Do not match the pattern"));
+    } else {
+        add_mailman_list($admin_email, $list_name, $admin_password, $groupid);
+    }
 }
 /** add_mailman_list function
  * Creates a new mailman list
@@ -147,15 +163,16 @@ echo '
     onsubmit="return this.list_name.value != \'\' && this.admin_email.value != \'\'
     && this.admin_password.value != \'\'">
 <input type="hidden" name="slice_id" value="' . AA::$module_id . '">
+' . FormToken::field(MAILMAN_TOKEN) . '
 <table width="440">
 <tr class="aa-tbl-header"><th colspan="2">' . _m("List Settings") . '</th></tr>
 <tr><td colspan="2">' . _m("The list will be added to mailman and also
     to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings.", [$field_name]) . '<br><br>'
 . _m("All the fields are required.") . '</td></tr>
 <tr><th>' . caption(_m("List name")) . '</th>
-<td><input type="text" name="list_name" size="20" value="' . $list_name . '"></td></tr>
+<td><input type="text" name="list_name" size="20" value="' . safe($list_name) . '"></td></tr>
 <tr><th>' . caption(_m("Admin email")) . '</th>
-<td><input type="text" name="admin_email" value="' . str_replace('"', '&quot;', $admin_email) . '" size="50"></td></tr>
+<td><input type="text" name="admin_email" value="' . safe($admin_email) . '" size="50"></td></tr>
 <tr><th>' . caption(_m("Admin password")) . '</th>
 <td><input type="password" name="admin_password" size="20"></td></tr>';
 echo '

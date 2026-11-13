@@ -145,6 +145,10 @@ $apage->setTitle(_m("Admin - design Fulltext view"));
 $apage->setSubtitle(_m("Use these boxes ( with the tags listed below ) to control what appears on full text view of each item"));
 $apage->addRequire('aa-code@1');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
+if (isset($err['token'])) {
+    $Msg = $err['token'];   // on the page, not a passing popup
+    unset($err['token']);
+}
 $apage->printHead($err, $Msg);
 
 

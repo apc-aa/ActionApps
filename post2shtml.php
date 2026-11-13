@@ -14,7 +14,7 @@
  *
  * The script works in these steps:
  *
- * 1. All the data coming in POST, GET, COOKIES and FILES is serialized and stored
+ * 1. All the data coming in POST, GET and FILES is serialized and stored
  *    into the database, table post2shtml, with a new unique ID post2shtml_id
  * 2. The web server is redirected to "some_page.shtml?post2sthml_id=aa45db3d345de..."
  * 3. The web server parses the page "some_page.shtml" and comes to some
@@ -82,11 +82,11 @@ function store_vars(): void
 {
     global $shtml_page;
 
+    // not the cookies - they hold the visitor's session, and the page the visitor is sent to gets them anyway
     $vars = [
         "post"   => &$_POST,
         "get"    => &$_GET,
         "files"  => &$_FILES,
-        "cookie" => &$_COOKIE,
     ];
 
     foreach ($vars as $key => $foo) {

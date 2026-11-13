@@ -152,12 +152,6 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
         exit;
     }
 
-    // Add new editor / administrator from Wizard page
-    if ($user_firstname || $user_surname) {
-        $err = ProcessUser($submit_action, $selected_user, $err, $add_submit, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role);
-    }
-
-
     // additional settings
     if ($settings_error = AA_Slice::processModuleObject($slice_id)) {
         $err['settings'] = MsgErr($settings_error . ' ' . _m('The settings and the other fields of this page were not saved.'));

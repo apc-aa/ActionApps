@@ -25,7 +25,11 @@ namespace {
 
 namespace Tests\Unit\Legacy {
 
+    use AA_Router_Seo;
     use AA_Scroller_Easy;
+    use AA_Scroller_Router;
+    use AA_Scroller_Sitemodule;
+    use AA_Scroller_View;
     use PHPUnit\Framework\TestCase;
 
     /**
@@ -38,6 +42,7 @@ namespace Tests\Unit\Legacy {
         {
             require_once __DIR__ . '/fixtures/store_fixtures.php';
             require_once __DIR__ . '/../../../include/scroller.php';
+            require_once __DIR__ . '/../../../modules/site/router.class.php';
         }
 
         public function test_unserialize_keepsPageSizeItemCountAndPage(): void
@@ -74,6 +79,89 @@ namespace Tests\Unit\Legacy {
             } finally {
                 $_GET = [];
             }
+        }
+
+        /** the JavaScript the browser runs from the first onclick of $html */
+        private static function onclickJs(string $html): string
+        {
+            self::assertSame(1, preg_match('/onclick="([^"]*)"/', $html, $m), $html);
+            return html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5);
+        }
+
+        private static function viewPager(string $request_uri): string
+        {
+            $_SERVER['REQUEST_URI'] = $request_uri;
+            $GLOBALS['apc_state']   = null;
+            try {
+                return (new AA_Scroller_View('5', 10, 25))->get('', '', '', '', 'res');
+            } finally {
+                unset($_SERVER['REQUEST_URI'], $GLOBALS['apc_state']);
+            }
+        }
+
+        public function test_get_ajaxTarget_ordinaryUrl_keepsMarkup(): void
+        {
+            $html = self::viewPager('/cz/news?x=1');
+
+            self::assertStringContainsString("onclick=\"AA_Ajax('res','/cz/news?set[5]=page-2&x=1');return false;\"", $html);
+        }
+
+        public function test_get_ajaxTarget_apostropheInRequestUri_staysInString(): void
+        {
+            $js = self::onclickJs(self::viewPager("/view.php/'-alert(1)-'?vid=5"));
+
+            self::assertSame("AA_Ajax('res','/view.php/\\'-alert(1)-\\'?set[5]=page-2&vid=5');return false;", $js);
+        }
+
+        /** the attribute is written without HTML escaping - neither a quote nor a character reference may leave the string */
+        public function test_get_ajaxTarget_quoteAndReferenceInRequestUri_stayInString(): void
+        {
+            $html = self::viewPager('/cz/x?a="&apos;&#39;&#x27;');
+
+            self::assertStringNotContainsString('a="', $html);
+            self::assertStringNotContainsString("'", str_replace(["AA_Ajax('res','", "');return false;"], '', self::onclickJs($html)));
+        }
+
+        public function test_get_stateOfThePage_isHtmlEscapedInLinks(): void
+        {
+            $GLOBALS['apc_state'] = ['state' => 'cz-2'];
+            try {
+                $plain = (new AA_Scroller_Sitemodule('5', 10, 25))->get();
+                $GLOBALS['apc_state'] = ['state' => '"><b>x'];
+                $odd = (new AA_Scroller_Sitemodule('5', 10, 25))->get();
+            } finally {
+                unset($GLOBALS['apc_state']);
+            }
+
+            self::assertStringContainsString('<a href="?scrl=5&amp;apc=cz-2&amp;scr_5_Go=2" class="scroller">2</a>', $plain);
+            self::assertStringContainsString('apc=&quot;&gt;&lt;b&gt;x&amp;', $odd);
+            self::assertStringNotContainsString('<b>', $odd);
+        }
+
+        public function test_routerLink_ajaxTarget_escapesApostrophe(): void
+        {
+            $router = new class ([], '/cz/') extends AA_Router_Seo {
+                public function go2url($query_string): string
+                {
+                    return "/cz/x'-alert(1)-'?" . $query_string;
+                }
+            };
+            $html = (new AA_Scroller_Router('5', 10, 25))->setRouter($router)->scroller('res');
+
+            self::assertSame("AA_Ajax('res','/cz/x\\'-alert(1)-\\'?xpage=2');return false;", self::onclickJs($html));
+        }
+
+        public function test_routerLink_ajaxTarget_ordinaryUrl_keepsMarkup(): void
+        {
+            $router = new class ([], '/cz/') extends AA_Router_Seo {
+                public function go2url($query_string): string
+                {
+                    return '/cz/news?a=1&' . $query_string;
+                }
+            };
+            $html = (new AA_Scroller_Router('5', 10, 25))->setRouter($router)->scroller('res');
+
+            self::assertStringContainsString('onclick="AA_Ajax(&apos;res&apos;,&apos;/cz/news?a=1&amp;xpage=2&apos;);return false;"', $html);
         }
 
         public function test_update_withoutUrlParameters_keepsPageSilently(): void

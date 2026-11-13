@@ -340,6 +340,18 @@ function DeleteDiscForItem($item_id, $slice_id, $state = 99999): void
     freeDB($db);
 }
 
+/** May the comment pages of slice $slice_id show and change the comments of $item_id?
+ *  The pages are reached by ids in the URL, so the item must be in the slice
+ *  and the comment $d_id, when given, under that item.
+ */
+function DiscussionInSlice(string $item_id, string $d_id, string $slice_id): bool
+{
+    if (!is_long_id($item_id) || !DB_AA::test('item', [['id', $item_id, 'l'], ['slice_id', $slice_id, 'l']])) {
+        return false;
+    }
+    return ($d_id === '') || DB_AA::test('discussion', [['id', $d_id, 'l'], ['item_id', $item_id, 'l']]);
+}
+
 /** updateDiscussionCount function
  * Update a count of discussion comments in the view table
  * (called after adding|deleting|hiding|approving comment)

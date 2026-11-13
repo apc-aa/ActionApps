@@ -369,6 +369,10 @@ if ( !$update ) {  // set variables from database
     } elseif ($new_templ && $view_view) {
         // new view from template
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['id', $view_view, 'i']]);
+        // only a view of the user's modules, as the list on se_views.php offers - another is like an unknown id
+        if ($vw_data && !IsSuperadmin() && empty($g_modules[unpack_id($vw_data['slice_id'])])) {
+            $vw_data = [];
+        }
     } elseif ( $view_type === 'inputform') {
         // new view - inputform
         $vw_data['odd'] = (new inputform())->getForm(new ItemContent(), $slice); // get current input form template

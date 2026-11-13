@@ -25,7 +25,9 @@ https://www.apc.org/
     $update=1 .. write changes to database
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 $LINKS_LANGUAGE_FILES = [
@@ -50,6 +52,8 @@ require_once __DIR__ . "/../../include/date.php";
 require_once __DIR__ . "/../../include/modutils.php";
 require_once __DIR__ . "/../../include/mgettext.php";
 require_once __DIR__ . "/../../modules/links/util.php";
+
+const MODEDIT_LINKS_TOKEN = 'aa-modedit-links';
 
 try {
     // array ( ' Vložit […' => 6, )
@@ -81,6 +85,7 @@ try {
     $deleted = InputVars::boolPOST('deleted');
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
+    $token = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -106,13 +111,24 @@ if ($is_add) {
         MsgPage(_m('No permission to add module'));
         exit;
     }
+} elseif ($module_id && !AA_Module_Links::getOwnModule($module_id)) {   // an id of another module type
+    MsgPage(_m("Module not found."));
+    exit;
 } elseif (!CheckPerms(AuthGetUid(), "slice", $module_id, PS_LINKS_SETTINGS)) {
     // edit module
     MsgPage(_m('No permission to edit module'));
     exit;
 }
 
-if ($is_add ? ($insert && $superadmin) : $update) {
+// the module changes only from this page's own form; the add-module page opens it by a GET without insert/update
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(MODEDIT_LINKS_TOKEN, $token, $_SERVER);
+$write     = $is_add ? ($insert && $superadmin) : $update;
+$expired   = $write && !$may_write;
+if ($expired) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
+
+if ($write && $may_write) {
     do {
         if (!$owner) { // insert new owner
             if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err))) {
@@ -187,6 +203,7 @@ if ($is_add ? ($insert && $superadmin) : $update) {
 
 // And the form -----------------------------------------------------
 
+$redisplay   = $expired || count($err);   // the module fields show the submitted values; the module's own settings reload
 $source_id   = ($template['Links'] ? substr($template['Links'], 1) : $module_id);
 
 // load module specific data
@@ -207,7 +224,7 @@ $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m('Module Links data'));
 
-$marr = RenderModuleFieldsForm($source_id, $superadmin, (bool) $template['Links'], (bool) count($err), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
+$marr = RenderModuleFieldsForm($source_id, $superadmin, (bool) $template['Links'], $redisplay, compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
 $lang_file = rtrim($marr[3], '3');   // trim for old php3 lang file extension
 
 FrmInputSelect("lang_file", _m('Used Language File'), $LINKS_LANGUAGE_FILES, $lang_file);
@@ -227,6 +244,7 @@ if ($superadmin) {
     FrmStaticText(_m("Select start id"), $select_start);
 }
 
+echo FormToken::field(MODEDIT_LINKS_TOKEN);
 if ($template['Links']) {
     FrmTabEnd(['insert', 'template[Links]' => ['type' => "hidden", 'value' => $template['Links']]]);
 } else {

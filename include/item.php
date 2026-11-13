@@ -1279,6 +1279,18 @@ class AA_Item
             print("f_q cannot yet return $fieldToReturn fields");
             return '';
         }
+        // the content table is read directly, so the fields AA never shows (password, its copy, 2FA secret)
+        // must be refused here - a field of a protected type even where the slice does not define it
+        foreach ([$fieldToMatch, $fieldToReturn] as $fid) {
+            if (AA_Field::isProtectedType(AA_Fields::getFieldType((string) $fid))) {
+                return '';
+            }
+        }
+        $blurb_slice = ($fieldToMatch === "id..............") ? AA_Slice::getSliceIdFromItemId((string) $stringToMatch) : ($p[1] ?: (defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : ''));
+        $protected   = AA_Slice::getOwnModule($blurb_slice)?->protectedFieldIds() ?? [];
+        if (isset($protected[$fieldToMatch]) || isset($protected[$fieldToReturn])) {
+            return '';
+        }
 
         if ($fieldToMatch === "id..............") {
             // Special case id... its not a real field
@@ -1286,12 +1298,12 @@ class AA_Item
             $where = [['c2.field_id', $fieldToReturn], ['c2.item_id', $stringToMatch, 'l']];
         } elseif ($fieldToMatch === "short_id........") {
             $SQL   = "SELECT c2.text AS text FROM item LEFT JOIN content c2 ON item.id = c2.item_id";
-            $where = [['slice_id', $p[1] ?: (defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : ''), 'l'], ['item.short_id', $stringToMatch], ['c2.field_id', $fieldToReturn]];
+            $where = [['slice_id', $blurb_slice, 'l'], ['item.short_id', $stringToMatch], ['c2.field_id', $fieldToReturn]];
         } else {
             $SQL   = "SELECT c2.text AS text
                     FROM item LEFT JOIN content c1 ON item.id = c1.item_id
                               LEFT JOIN content c2 ON item.id = c2.item_id";
-            $where = [['slice_id', $p[1] ?: (defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : ''), 'l'], ['c1.field_id', $fieldToMatch], ['c2.field_id', $fieldToReturn], ['c1.text', $stringToMatch]];
+            $where = [['slice_id', $blurb_slice, 'l'], ['c1.field_id', $fieldToMatch], ['c2.field_id', $fieldToReturn], ['c1.text', $stringToMatch]];
         }
         $row = DB_AA::select1([], $SQL, $where);
         return $row ? $row['text'] : '';
@@ -1463,7 +1475,9 @@ class AA_Item
                 return $sess->id();
             case "disc":
                 // _#DISCEDIT used on admin page index.php for edit discussion comments
-                return con_url(StateUrl("discedit.php"), "item_id=" . $this->getItemID());
+                // the page works on items of the module in its URL - so the item's own slice
+                $sid = $this->getSliceID();
+                return con_url(is_long_id($sid) ? get_url('discedit.php', ['module_id' => $sid]) : StateUrl("discedit.php"), "item_id=" . $this->getItemID());
                 // These next two return values from globals that would actually be better coming froom the item or itemview,
                 // otherwise won't work if there are nested views.
             case "itemcount":

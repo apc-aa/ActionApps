@@ -304,11 +304,9 @@ class MLX
      */
     public function itemform($params, $content4id, $action, $lang, $mlxid): array
     {
-        global $DOCUMENT_URI;
-        global $PHP_SELF;
         $mlxout   = MLX_HTML_TABHD;
-        $mlx_url  = ($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PHP_SELF . ($return_url ? "?return_url=" . rawurlencode($return_url) : ''));
-        $mlx_url .= "?" . $this->getparamstring($params);
+        // relative - the links stay on the page that shows the form (the editor or an SSI page)
+        $mlx_url  = "?" . $this->getparamstring($params);
         switch ($action) {
             case "update":
             case "edit":
@@ -389,7 +387,7 @@ class MLX
             }
             $mlxout .= ">&nbsp;";
             if ($href) { //TODO implement something that saves on switch
-                $mlxout .= "<a href='$mlx_url$href'>";
+                $mlxout .= "<a href='" . safe($mlx_url . $href) . "'>";
                 // $mlxout .= "<a href='javascript:mlx_saveOnSwitch($mlx_url$href)'>";
             }
             $langName = $GLOBALS['g_const_Lang'][$fname];
@@ -424,7 +422,7 @@ class MLX
             $content = GetItemContent($mlxid);
             //var_dump($content);
             if (!$content) {
-                $this->fatal(_m("Bad item ID %1", [$mlxid]) . var_export($mlxid, true));
+                $this->fatal(safe(_m("Bad item ID %1", [$mlxid]) . var_export($mlxid, true)));
             }
             $content4mlxid = $content[$mlxid];
         }
@@ -445,13 +443,10 @@ class MLX
      */
     public function getparamstring($params): string
     {
+        $mlx_url = '';
         foreach ($params as $k => $v) {
-            $mlx_url .= "$k=";
-            $mlx_url .= match (gettype($v)) {
-                'boolean' => $v ? "true" : "false",
-                default   => $v,
-            };
-            $mlx_url .= "&";
+            // the values come from the request ('encap') and the query is written into an href
+            $mlx_url .= rawurlencode((string) $k) . '=' . rawurlencode(is_bool($v) ? ($v ? 'true' : 'false') : (string) $v) . '&';
         }
         return $mlx_url;
     }

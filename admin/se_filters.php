@@ -30,10 +30,14 @@
 
 use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
+
+/** the same in se_filters2.php, which checks it */
+const FEEDING_FILTER_TOKEN = 'aa-feeding-filters';
 
 try {
     // array ( 'dcf6f197e02…' => 3, '6c81ec28dd4…' => 4, '4429a8e44bb…' => 8, )
@@ -154,6 +158,7 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
 $apage = new AA_Adminpageutil('sliceadmin','filters');
 $apage->setTitle(_m("Admin - Content Pooling - Filters"));
 $apage->addRequire('InitPage();', 'AA_Req_Load');
+$apage->addRequire(get_aa_url('javascript/manager.min.js', ['v' => AA_JS_VERSION]));   // AA_PostForm()
 $apage->printHead($err, $Msg);
 
 $form_buttons= [
@@ -289,7 +294,7 @@ FrmTabEnd($form_buttons);
     }
 
     function UpdateFilters(slice_id, import_id) {
-        var url = "<?php echo StateUrl(self_base() . "se_filters2.php")?>"
+        var url = <?php echo json_encode(StateUrl('se_filters2.php')) ?>;
         var done = 0
         url += "&slice_id=" + slice_id
         url += "&import_id=" + import_id
@@ -319,7 +324,7 @@ FrmTabEnd($form_buttons);
         if (done == 0) {
             alert ( "<?php echo _m("No From category selected!") ?>" )
         } else {
-            window.location=url
+            AA_PostForm(url, {token: <?php echo json_encode(FormToken::get(FEEDING_FILTER_TOKEN)) ?>})
         }
     }
 

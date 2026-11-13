@@ -38,6 +38,7 @@
 use AA\IO\DB\DB_AA;
 use AA\Util\ArrTrait;
 use AA\Util\ChangesMonitor;
+use AA\Util\FormToken;
 use AA\Util\Langs;
 use AA\Util\Searchfields;
 use AA\Util\SingletonTrait;
@@ -871,7 +872,7 @@ class AA_Slice extends AA_Module
             }
             $url = $preview_url;
         } elseif ($fallback_old_sh_itm) {
-            $url = con_url($this->getProperty('slice_url'), "sh_itm=$item_id");
+            $url = get_url($this->getProperty('slice_url'), ['sh_itm' => $item_id]);
         }
 
         // The candidate may come from raw unaliased item field / slice property content, so only
@@ -1121,6 +1122,9 @@ class AA_Module_Site extends AA_Module
     // (= flag means "don't stringexpand text)"
     public const FLAG_COLLAPSE = 4;   // (visualy) Collapsed spot
 
+    /** token of the spot form of the editor (modules/site/index.php) */
+    public const SPOT_TOKEN = 'aa-site-spot';
+
     /** the packed id of the module new sites are copied from (modules/site/modedit.php, AA\Optimize\RedefineSiteTemplates) */
     public const TEMPLATE_ID = 'SiteTemplate....';
 
@@ -1329,8 +1333,9 @@ class AA_Module_Site extends AA_Module
             ],
         ];
 
-        echo "<br><form method='post' name=fs action=\"" . $_SERVER['PHP_SELF'] . "\">";
+        echo "<br><form method='post' name=fs action=\"" . safe($_SERVER['PHP_SELF']) . "\">";
         echo $tree->getCurrentSpotId();
+        echo FormToken::field(self::SPOT_TOKEN);
         FrmTabCaption('Edit spot', $form_buttons, true);   // buttons also on top, sticky (itemedit pattern)
         FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false);
         FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true, code: true);

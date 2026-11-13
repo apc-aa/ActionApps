@@ -117,6 +117,14 @@ namespace Tests\Unit\Legacy {
             self::assertArrayNotHasKey('aa', $_POST);
         }
 
+        /** admin/slicedit.php drops $_POST['aa'] of a form without its token and relies on this */
+        public function test_aRequestWithoutTheForm_writesNothing(): void
+        {
+            ScopedSettingsModule::processModuleObject(self::MODULE_ID);
+
+            self::assertSame([], array_values(array_filter(RecordingDb::$log, static fn(string $sql) => !str_starts_with($sql, 'SELECT'))));
+        }
+
         public function test_theModulesOwnKeyIsTheOneThatIsProcessed(): void
         {
             $own         = ScopedSettingsModule::objectId(self::MODULE_ID);

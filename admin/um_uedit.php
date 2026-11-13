@@ -37,7 +37,9 @@
 */
 
 
+use AA\Central\ResponderPolicy;
 use AA\Passkey\Store;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
@@ -46,6 +48,8 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/um_util.php";
+
+const UM_USER_TOKEN = 'aa-um-user';
 
 try {
     // array ( 1 => 3, )-array ( 1 => 5, )
@@ -99,7 +103,8 @@ try {
     $usr1_flt = InputVars::stringPOST('usr1_flt'); // empty
     $grp1_flt = InputVars::stringPOST('grp1_flt'); // empty
     $cancel = InputVars::boolPOST('cancel');
-    
+    $token  = InputVars::stringPOST('token');
+
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -112,7 +117,13 @@ if (!IfSlPerm(PS_NEW_USER)) {
     exit;
 }
 
-if ( $submit_action === "usr_del" && $selected_user ) {
+// accounts and their rights change only from this page's own forms
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(UM_USER_TOKEN, $token, $_SERVER);
+if (!$may_write && (($submit_action === "usr_del" && $selected_user) || $add_submit || $submit_action === "update_submit")) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
+
+if ($may_write && $submit_action === "usr_del" && $selected_user) {
     AA::$perm->delUser( $selected_user );    // default is to delete any references as well
     go_url( StateUrl($_SERVER['PHP_SELF']) );
 }
@@ -176,7 +187,7 @@ $varset      = new Cvarset();
 
 // Process submited form -------------------------------------------------------
 
-if ($add_submit || $submit_action === "update_submit") {
+if ($may_write && ($add_submit || $submit_action === "update_submit")) {
 
     $err = ProcessUser($submit_action, $selected_user, $err, $add_submit, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role);
 
@@ -265,6 +276,7 @@ FrmTabSeparator("");
           ?></td>
             <td width="33%"><input type="submit" name="usr_edit" value="<?php echo _m("Edit")?>">&nbsp;
                 <input type="hidden" name="submit_action" value="0">  <!-- to this variable store "usr_del" (by javascript) -->
+                <?php echo FormToken::field(UM_USER_TOKEN) ?>
                 <input type="button" name="usr_del" value="<?php echo _m("Delete")?>" onclick="ReallyDelete()"></td>
      </tr>
     </table>
@@ -410,6 +422,7 @@ $form_buttons["selected_user"] = ["value"=>$selected_user];
 $form_buttons["posted_groups"] = ["value"=>"0"];
 $form_buttons["submit_action"] = ["value"=>"0"];
 $form_buttons["cancel"]        = ["url"=>"um_uedit.php"];
+$form_buttons["token"]         = ["value"=>FormToken::get(UM_USER_TOKEN)];
 
 
 FrmTabEnd($form_buttons);

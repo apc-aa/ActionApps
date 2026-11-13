@@ -96,6 +96,9 @@ function xmltag($tag, $content, $attr = []): string
 function expand_return_url($session = true): string
 {
     global $return_url, $sess;
+    if (!IsNavigableUrl((string) $return_url)) {   // it comes from the request
+        return '';
+    }
     return ($session && is_object($sess)) ? StateUrl($return_url) : $return_url;
 }
 
@@ -114,8 +117,8 @@ function go_return_or_url($url, $usejs = false, $session = false): void
 {
     global $return_url;
 
-    if ($return_url) {
-        go_url(expand_return_url($session), '', $usejs);
+    if ($return_url && (($back = expand_return_url($session)) !== '')) {
+        go_url($back, '', $usejs);
     } elseif ($url) {
         go_url(StateUrl($url));
     }
@@ -388,6 +391,7 @@ function array_merge_append_global($newValues): void
         if (InputVars::isProtectedGlobal((string) $key)) {
             continue;
         }
+        $value = InputVars::requestGlobal((string) $key, $value);
         if (!isset($GLOBALS[$key]) || !is_array($GLOBALS[$key]) || !is_array($value)) {
             $GLOBALS[$key] = $value;
         } else {
@@ -914,7 +918,7 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
 
             if ($metabase->isColumn('item', $clean_name)) {
                 $item_fields[]    = $clean_name;
-            } else {
+            } elseif (is_string($field_name) && AA_Field::isValidFieldId($field_name)) {   // the ids go into the SQL below; no other id is stored
                 $content_fields[] = $field_name;
             }
         }
@@ -927,7 +931,8 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
             $item_fields[] = 'id';
         }
         if ($use_short_ids && !in_array('short_id', $item_fields)) {
-            $item_fields[] = 'short_id';
+            $item_fields[]          = 'short_id';
+            $real_item_fields2get[] = 'short_id';   // the content is keyed by it below
         }
 
         // every item gets u_slice_id...... below - and the reading password is checked per slice
@@ -1001,8 +1006,8 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
                 }
                 $unpermitted[$unpack_id] = true;
                 foreach (array_keys($c4id) as $fid) {
-                    // at least id and slice_id should be correct.............. for AA_Items::getItems()
-                    if (!in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
+                    // the ids and the slice stay - AA_Items keys its cache by the short id, short ids key the content
+                    if (!in_array($fid, ['id..............','short_id........','slice_id........','unpacked_id.....','u_slice_id......'])) {
                         $content[$unpack_id][$fid] = $ERR_VALUE;
                     }
                 }
@@ -1511,13 +1516,13 @@ function add_post2shtml_vars($delete = true): void
     $var_types = ["post","get","files","cookie"];
 
     foreach ($var_types as $var_type) {
-        if (is_array($vars[$var_type])) {
+        if (is_array($vars[$var_type] ?? null)) {   // a row holds only the parts post2shtml.php stores
             foreach ($vars[$var_type] as $var => $value) {
                 if (InputVars::isProtectedGlobal((string) $var)) {   // any visitor can store the vars
                     continue;
                 }
                 global $$var;
-                $$var = $value;
+                $$var = InputVars::requestGlobal((string) $var, $value);
             }
         }
     }
@@ -1755,6 +1760,32 @@ class AA_Credentials
     {
         if (!empty($crypted_slice_pwd)) {
             $this->_pwd[$crypted_slice_pwd] = true;
+        }
+    }
+
+    /** the passwords and open slices known now, and the slice_pwd global checkCryptedPassword() registers - for restore()
+     *  @return array{array<string, true>, array<string, true>, mixed} */
+    public function snapshot(): array
+    {
+        return [$this->_pwd, $this->_request_slices, $GLOBALS['slice_pwd'] ?? null];
+    }
+
+    /** Back to what snapshot() saw: a queue runs more tasks in one process, and a task must not read with
+     *  the passwords the one before it learned ({view.php?...&slice_pwd=} sets the global, too). A slice
+     *  closed so gets its cached reads forgotten. */
+    public function restore(array $snapshot): void
+    {
+        [$pwd, $request_slices, $slice_pwd] = $snapshot;
+        $narrowed = array_diff_key($this->_pwd, $pwd) || array_diff_key($this->_request_slices, $request_slices) || (($GLOBALS['slice_pwd'] ?? null) !== $slice_pwd);
+        $this->_pwd            = $pwd;
+        $this->_request_slices = $request_slices;
+        if ($slice_pwd === null) {
+            unset($GLOBALS['slice_pwd']);
+        } else {
+            $GLOBALS['slice_pwd'] = $slice_pwd;
+        }
+        if ($narrowed) {
+            self::forgetReads();
         }
     }
 

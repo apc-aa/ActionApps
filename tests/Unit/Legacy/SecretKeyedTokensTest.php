@@ -64,29 +64,38 @@ namespace Tests\Unit\Legacy {
             $this->assertSame('', AA_Stringexpand_Encrypt::decrypt_time_token($three_hours_old, 'mail-form', 2));
         }
 
-        /** the key as the reset e-mail carries it */
-        private static function resetKey(string $user_id, string $email, int $minute): string
+        /** the key as the reset e-mail carries it; $pwd_hash is the stored password hash */
+        private static function resetKey(string $user_id, string $email, int $minute, string $pwd_hash = 'h1'): string
         {
-            return hash_hmac('sha256', "$user_id\0$email\0$minute", Secret::key('reader-reset'));
+            return hash_hmac('sha256', "$user_id\0$email\0$pwd_hash\0$minute", Secret::key('reader-reset'));
         }
 
         public function test_reset_key_is_valid_for_its_timeout(): void
         {
             $now = 29_000_000;
-            $this->assertTrue(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1', 'a@example.org', $now), 'u1', 'a@example.org', $now));
-            $this->assertTrue(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1', 'a@example.org', $now - 149), 'u1', 'a@example.org', $now));
-            $this->assertFalse(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1', 'a@example.org', $now - 150), 'u1', 'a@example.org', $now), 'expired');
-            $this->assertFalse(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1', 'a@example.org', $now + 1), 'u1', 'a@example.org', $now), 'from the future');
+            $this->assertTrue(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1', 'a@example.org', $now), 'u1', 'a@example.org', 'h1', $now));
+            $this->assertTrue(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1', 'a@example.org', $now - 149), 'u1', 'a@example.org', 'h1', $now));
+            $this->assertFalse(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1', 'a@example.org', $now - 150), 'u1', 'a@example.org', 'h1', $now), 'expired');
+            $this->assertFalse(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1', 'a@example.org', $now + 1), 'u1', 'a@example.org', 'h1', $now), 'from the future');
         }
 
         public function test_reset_key_is_bound_to_the_user_and_the_email(): void
         {
             $now = 29_000_000;
             $key = self::resetKey('u1', 'a@example.org', $now);
-            $this->assertFalse(AA_Password_Manager_Reader::keyMatches($key, 'u2', 'a@example.org', $now));
-            $this->assertFalse(AA_Password_Manager_Reader::keyMatches($key, 'u1', 'b@example.org', $now));
-            $this->assertFalse(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1a', '@example.org', $now), 'u1', 'a@example.org', $now), 'the parts do not run into each other');
-            $this->assertFalse(AA_Password_Manager_Reader::keyMatches(md5('u1a@example.org' . AA_ID . $now), 'u1', 'a@example.org', $now), 'the old AA_ID key is refused');
+            $this->assertFalse(AA_Password_Manager_Reader::keyMatches($key, 'u2', 'a@example.org', 'h1', $now));
+            $this->assertFalse(AA_Password_Manager_Reader::keyMatches($key, 'u1', 'b@example.org', 'h1', $now));
+            $this->assertFalse(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1a', '@example.org', $now), 'u1', 'a@example.org', 'h1', $now), 'the parts do not run into each other');
+            $this->assertFalse(AA_Password_Manager_Reader::keyMatches(md5('u1a@example.org' . AA_ID . $now), 'u1', 'a@example.org', 'h1', $now), 'the old AA_ID key is refused');
+        }
+
+        public function test_reset_key_dies_with_a_password_change(): void
+        {
+            $now = 29_000_000;
+            $key = self::resetKey('u1', 'a@example.org', $now - 5, 'h1');
+            $this->assertTrue(AA_Password_Manager_Reader::keyMatches($key, 'u1', 'a@example.org', 'h1', $now));
+            $this->assertFalse(AA_Password_Manager_Reader::keyMatches($key, 'u1', 'a@example.org', 'h2', $now), 'the password changed');
+            $this->assertFalse(AA_Password_Manager_Reader::keyMatches(hash_hmac('sha256', "u1\0a@example.org\0" . ($now - 5), Secret::key('reader-reset')), 'u1', 'a@example.org', 'h1', $now), 'a key without the password is refused');
         }
 
         /** {encrypt}/{decrypt} hand the text and key to Crypt - AA's error handler keeps the arguments of every stack frame */
