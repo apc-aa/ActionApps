@@ -331,6 +331,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Optimize/CheckPhpFatals.php | State Check: PHP fatal errors of the last 7 days by file and line | CheckPhpFatals | S |
 | Optimize/CheckQueuedClassMissing.php | State Check: queued tasks of a class this AA does not have | CheckQueuedClassMissing | S |
 | Optimize/CheckQueue.php | State Check: task queue runs, who drives it, time-limit overruns, given-up tasks | CheckQueue | M |
+| Optimize/CheckRelatedFieldsWithoutSlice.php | State Check (extended): related-item fields whose `#sLiCe-` names no slice (an Alerts module, a module missing here) | CheckRelatedFieldsWithoutSlice | S |
 | Optimize/CheckRequiredSettings.php | State Check: slices with required settings fields empty | CheckRequiredSettings | S |
 | Optimize/CheckRunner.php | Runs the check classes, times each, drops findings marked resolved | CheckRunner | S |
 | Optimize/CheckSecret.php | State Check: AA_SECRET is set in config.php | CheckSecret | S |

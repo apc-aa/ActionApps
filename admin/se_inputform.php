@@ -295,8 +295,9 @@ foreach (GetConstants('lt_groupNames', 'name') as $val => $name) {
 $constants['AA_OPTGROUP 2'] = _m('Slices');
 
 // add slices to constant array (good for related stories, link to authors ...)
+// slices only - an Alerts module has no items to offer
 foreach ($g_modules as $k => $v) {
-    if (($v['type'] === 'S') || ($v['type'] === 'Alerts')) {
+    if ($v['type'] === 'S') {
         $constants["#sLiCe-" . $k] =  $v['name'];
     }
 }
