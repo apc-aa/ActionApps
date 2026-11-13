@@ -1,0 +1,110 @@
+<?php
+
+declare(strict_types=1);
+
+// store_fixtures loads the real locsess.php, which needs the constants include/config.php normally provides.
+
+namespace {
+    foreach ([
+        'AA_INSTAL_URL'   => 'http://localhost/aa/',
+        'AA_INSTAL_PATH'  => '/aa/',
+        'IMG_UPLOAD_PATH' => sys_get_temp_dir() . '/',
+        'AA_BASE_PATH'    => dirname(__DIR__, 3) . '/',
+        'PERM_LIB'        => 'sql',
+        'DB_HOST'         => 'localhost',
+        'DB_NAME'         => 'aa_test',
+        'DB_USER'         => 'aa',
+        'DB_PASSWORD'     => '',
+    ] as $k => $v) {
+        if (!defined($k)) {
+            define($k, $v);
+        }
+    }
+}
+
+namespace Tests\Unit\Legacy {
+
+    use AA;
+    use AA_Alias;
+    use AA_Aliases;
+    use AA_Field;
+    use AA_Item;
+    use AA_Items;
+    use PHPUnit\Framework\Attributes\DataProvider;
+    use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
+    use PHPUnit\Framework\TestCase;
+    use Tests\Unit\Legacy\Fixtures\FakeFields;
+    use Tests\Unit\Legacy\Fixtures\FakeSlice;
+
+    /**
+     * {editable:<item>:<field>} puts the field into the page to be edited and saved back as it is
+     * stored, so a command in the text must reach the browser as written - an _#ALIAS in it too,
+     * though the page expands the editable as part of an alias (_#FULLEDIT = f_t:{editable:...}).
+     * Own process: the slice and the item stay in the module and item caches.
+     */
+    #[RunClassInSeparateProcess]
+    final class StringexpandEditableTest extends TestCase
+    {
+        private const SLICE = '3dc6868dff6ab21b1028a19bd9afbd3f';
+        private const ITEM  = 'a5e179dd7b4dbfa92cdd72356f0898f2';
+
+        public static function setUpBeforeClass(): void
+        {
+            require_once __DIR__ . '/../fixtures/util_shims.php';
+            require_once __DIR__ . '/fixtures/store_fixtures.php';
+            (new FakeSlice(self::SLICE))->setFields(new FakeFields(self::SLICE, [
+                self::field('full_text.......', 'txt:16'),
+                self::field('headline........', 'fld'),
+            ]));
+            AA::$langnum = [0];   // a page without translations
+        }
+
+        /**
+         * &#35; is '#' to the browser, so the editor gets the stored text back
+         * @return array<string, array{string, string, bool, string, string}> field, stored text, is HTML, element, its content
+         */
+        public static function sources(): array
+        {
+            return [
+                'command with an alias' => ['full_text.......', '<p>{siteitem:technicka-specifikace:_#FULLTEXT}</p>', true, 'div', '<p>{siteitem:technicka-specifikace:_&#35;FULLTEXT}</p>'],
+                'alias in an attribute' => ['full_text.......', '<p><a href="_#SEO_URL_">{headline........}</a></p>', true, 'div', '<p><a href="_&#35;SEO_URL_">{headline........}</a></p>'],
+                'plain text'            => ['headline........', 'Price _#HEADLINE & {ids:x}', false, 'span', 'Price _&#35;HEADLINE &amp; {ids:x}'],
+            ];
+        }
+
+        #[DataProvider('sources')]
+        public function test_expand_inAliasOfThePage_browserGetsTheSource(string $field_id, string $source, bool $html, string $tag, string $content): void
+        {
+            $page = AA::Un('<main>_#FULLEDIT</main>', '', self::item($field_id, $source, $html));
+
+            $field = preg_quote($field_id, '~');
+            self::assertMatchesRegularExpression("~^<main><$tag contenteditable=true [^>]*data-aa-field=\"$field\"[^>]*>.*</$tag></main>$~s", $page);
+            preg_match("~<$tag [^>]*>(.*)</$tag>~s", $page, $match);
+            self::assertSame($content, $match[1]);
+        }
+
+        private static function item(string $field_id, string $source, bool $html): AA_Item
+        {
+            $aliases = (new AA_Aliases())
+                ->addAlias(new AA_Alias('_#FULLEDIT', "f_t:{editable:{id..............}:$field_id}", $field_id))
+                ->addAlias(new AA_Alias('_#FULLTEXT', 'f_y:', 'full_text.......'))
+                ->addAlias(new AA_Alias('_#HEADLINE', 'f_h:', 'headline........'))
+                ->addAlias(new AA_Alias('_#SEO_URL_', 'f_t:https://example.org/', 'headline........'));
+            $content = [
+                'u_slice_id......' => [['value' => self::SLICE]],
+                'unpacked_id.....' => [['value' => self::ITEM]],
+                'short_id........' => [['value' => 7]],
+                'headline........' => [['value' => 'The article', 'flag' => 0]],
+                'full_text.......' => [['value' => 'The whole article', 'flag' => FLAG_HTML]],
+            ];
+            $content[$field_id] = [['value' => $source, 'flag' => $html ? FLAG_HTML : 0]];
+            // {editable:<item id>:...} takes the item from the cache, as a page that shows it does
+            return AA_Items::singleton()->_store(new AA_Item($content, $aliases));
+        }
+
+        private static function field(string $id, string $widget): AA_Field
+        {
+            return new AA_Field(['id' => $id, 'slice_id' => pack_id(self::SLICE), 'name' => $id, 'input_show_func' => $widget, 'input_insert_func' => 'qte', 'input_validate' => 'text', 'text_stored' => 1] + array_fill_keys(['content_edit', 'multiple', 'required', 'html_default', 'html_show', 'input_pri', 'search_pri', 'feed'], 0) + array_fill_keys(AA_Field::USED_FIELDS, ''));
+        }
+    }
+}

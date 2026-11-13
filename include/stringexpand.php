@@ -5502,8 +5502,11 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                     $pholder = strlen($placeholder) ? 'placeholder="'.$placeholder.'"' : '';
                     $iid     = $item->getItemID();
                     $tag     = $field->isMultiline() ? 'div' : 'span';
+                    // the editor saves back what it is shown - this and every enclosing template would substitute
+                    // an _#ALIAS of the text, the entity passes them all and the browser shows '#' again
+                    $source  = str_replace('_#', '_&#35;', $item->f_h($field_id, 'AA_DashOrLanG'));
                     // do not change the string: contenteditable=true id=... we are using it in AA__SiteUpdateParts() (aajslib-jquery.php)
-                    $ret     = AA::Un("<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
+                    $ret     = "<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">$source</$tag>";
 
                     AA::Stringexpander()->addRequire('aa-editable@1');
                     AA::Stringexpander()->addRequire('aa-jslib');  // AA_Toolbar(), AA_SaveEditors()
