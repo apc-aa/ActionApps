@@ -82,6 +82,21 @@ final class ModuleSettingsWriteGateTest extends TestCase
         $this->assertLessThan(strpos($src, '$apage->printHead('), $m[0][1], "$file: the message comes after the page head");
     }
 
+    /** the typed name and owner of a new module must reach the redisplayed form unchanged */
+    #[DataProvider('pages')]
+    public function test_redisplay_keeps_the_typed_name_and_owner(string $file, string $const, array $writes, array $expired): void
+    {
+        $src    = self::source($file);
+        $render = strpos($src, 'RenderModuleFieldsForm(');
+        if ($render === false) {
+            $this->addToAssertionCount(1);   // the page has no common module fields
+            return;
+        }
+        $from = strpos($src, '$redisplay');
+        $this->assertNotFalse($from, "$file: no \$redisplay");
+        $this->assertDoesNotMatchRegularExpression('~\$(name|owner)\s*=[^=]~', substr($src, $from, $render - $from), "$file: the typed name or owner is overwritten before the form");
+    }
+
     private static function source(string $file): string
     {
         return (string) file_get_contents(dirname(__DIR__, 3) . '/' . $file);

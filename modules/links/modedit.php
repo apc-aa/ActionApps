@@ -213,11 +213,6 @@ if ($row) {
 }
 $id = unpack_id($row['id'] ?? null);  // correct ids
 
-if ($template['Links']) {           // set new name and owner for NEW module
-    $name  = "";
-    $owner = "";
-}
-
 $apage = new AA_Adminpageutil('modadmin', 'main');
 $apage->setTitle($template['Links'] ? _m("Add Links module") : _m("Edit Links module"));
 $apage->printHead($err, $Msg);
