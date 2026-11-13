@@ -111,12 +111,40 @@ namespace Tests\Unit\Legacy {
             self::assertSame($source, self::control($page, $field_id));
         }
 
-        /** an alias in braces is expanded before the command - the way to give the callback a value of the item */
-        public function test_expand_aliasInBracesInFunction_isExpanded(): void
+        /**
+         * only the control holds the stored value - the callback, the label and the help around it are
+         * the template's own text, so the page substitutes their _#ALIASES; an alias in braces is
+         * expanded before the command, wherever it is
+         * @return array<string, array{string, string}> command, what the page holds
+         */
+        public static function widgetParts(): array
         {
-            $page = AA::Un("<main>{live::headline........::f('{_#HEADLINE}')}</main>", '', self::item('headline........', 'Price', false));
+            return [
+                'callback'               => ["{live::headline........::f('_#HEADLINE')}", "this, f('Price'))"],
+                'callback in braces'     => ["{live::headline........::f('{_#HEADLINE}')}", "this, f('Price'))"],
+                'label'                  => ['{editfull::headline........::::{"name":"Name _#HEADLINE","input_help":"Help _#HEADLINE"}}', '>Name Price</label>'],
+                'help'                   => ['{editfull::headline........::::{"name":"Name _#HEADLINE","input_help":"Help _#HEADLINE"}}', '<small>Help Price</small>'],
+                'placeholder in control' => ['{edit::headline........::::{"placeholder":"e.g. _#HEADLINE"}}', 'placeholder="e.g. _&#35;HEADLINE"'],
+                'placeholder in braces'  => ['{edit::headline........::::{"placeholder":"e.g. {_#HEADLINE}"}}', 'placeholder="e.g. Price"'],
+            ];
+        }
 
-            self::assertStringContainsString("this, f('Price'))", $page);
+        #[DataProvider('widgetParts')]
+        public function test_expand_widgetParts_onlyTheControlKeepsAliases(string $command, string $expected): void
+        {
+            $page = AA::Un("<main>$command</main>", '', self::item('headline........', 'Price', false));
+
+            self::assertStringContainsString($expected, $page);
+        }
+
+        /** the field keeps one widget for the whole page - other commands showing it must get its aliases as before */
+        public function test_expand_sameFieldElsewhere_widgetUnchanged(): void
+        {
+            $item = self::item('headline........', 'Price _#HEADLINE', false);
+            AA::Un('<main>{edit::headline........}</main>', '', $item);
+            $field = \AA_Slice::getModule(self::SLICE)->getField('headline........');
+
+            self::assertStringContainsString('value="Price _#HEADLINE"', $field->getWidget()->getOnlyHtml($field->getAaProperty(), $item->getItemContent()));
         }
 
         /** the value of the form control as the browser reads it */

@@ -12,6 +12,7 @@ namespace AA\Widget;
 use AA;
 use AA\FormArray;
 use AA\Util\NamedInterface;
+use AA\Util\Txt;
 use AA_Components;
 use AA_Condition;
 use AA_Content;
@@ -45,6 +46,28 @@ class Widget extends AA_Object implements NamedInterface
 
     /** properties that came with a request (Get_Widget) - already expanded by {ajax}, never expanded again */
     protected array $literal = [];
+
+    /** the control shows _#ALIASES as text - see withAliasesAsText() */
+    private bool $aliases_as_text = false;
+
+    /** A copy whose control (the stored value saved back) carries _#ALIASES as text: a template around
+     *  the widget would substitute them. What the widget adds around the control - label, help, callback - stays the template's.
+     *  A copy, because the field keeps one widget for all commands of the page. */
+    public function withAliasesAsText(): static
+    {
+        $widget = clone $this;
+        $widget->aliases_as_text = true;
+        return $widget;
+    }
+
+    private function rawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
+        $winfo = $this->_getRawHtml($aa_property, $content, $type);
+        if ($this->aliases_as_text && isset($winfo['html'])) {
+            $winfo['html'] = Txt::aliasesAsText($winfo['html']);
+        }
+        return $winfo;
+    }
 
     /** name function - part of Widget API
      *
@@ -471,7 +494,7 @@ class Widget extends AA_Object implements NamedInterface
      */
     public function getHtml(AA_Property $aa_property, AA_Content $content, $function = null): string
     {
-        return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
+        return $this->_finalizeHtml($this->rawHtml($aa_property, $content), $aa_property);
     }
 
     /** Get just widget HTML for using in form - without label...
@@ -486,7 +509,7 @@ class Widget extends AA_Object implements NamedInterface
      */
     public function getOnlyHtml(AA_Property $aa_property, AA_Content $content, $function = null): string
     {
-        return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property, true);
+        return $this->_finalizeHtml($this->rawHtml($aa_property, $content), $aa_property, true);
     }
 
     /** Decorate widget in the standard AA form - start
@@ -621,7 +644,7 @@ class Widget extends AA_Object implements NamedInterface
     public function getLiveHtml(AA_Property $aa_property, AA_Content $content, $function = null): string
     {
         // add JS OK Function
-        return str_replace('AA_LIVE_OK_FUNC', $function ?: "''", $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live'), $aa_property));
+        return str_replace('AA_LIVE_OK_FUNC', $function ?: "''", $this->_finalizeLiveHtml($this->rawHtml($aa_property, $content, 'live'), $aa_property));
     }
 
     /* Decorates Live Widget. Prepared for overriding in subclasses */

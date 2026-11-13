@@ -5301,8 +5301,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
                 }
                 //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
                 $aa_property = $field->getAaProperty($widget_prop);
-                // the widget holds the stored value to be saved back - the enclosing template would substitute its _#ALIASES
-                $ret         = Txt::aliasesAsText($widget?->$type($aa_property, $itemcontent, $function) ?? '');
+                $ret         = $widget?->withAliasesAsText()->$type($aa_property, $itemcontent, $function) ?? '';
                 // $widget->registerRequires(); // now in _finalizeHtml
                 AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we should distinguish
             }
