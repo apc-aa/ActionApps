@@ -8,13 +8,19 @@ use AA\Mailbulk\Letter;
 use AA\Mailbulk\Mailer;
 use AA\Mailbulk\Run;
 
-/** A run over the test's letter, mailer and clock; it opens no slices. */
+/** A run over the test's letter, mailer and clock; it opens no slices, and its item's slice and list are what the test says. */
 class TestRun extends Run
 {
     public static ?FakeLetter $letter = null;
     public static ?ScriptedMailer $mailer = null;
     public static ?int $now = null;
     public static ?float $microNow = null;
+    /** the slice of the item; null = the item is gone */
+    public static ?string $itemSlice = self::SLICE;
+    /** the list may send items of the slice */
+    public static bool $relates = true;
+
+    public const SLICE = 'feed0000000000000000000000000001';
 
     public static function reset(): void
     {
@@ -22,6 +28,8 @@ class TestRun extends Run
         self::$mailer   = new ScriptedMailer();
         self::$now      = null;
         self::$microNow = null;
+        self::$itemSlice = self::SLICE;
+        self::$relates   = true;
     }
 
     protected function letter(): Letter
@@ -37,6 +45,16 @@ class TestRun extends Run
     protected function slices(): array
     {
         return [];
+    }
+
+    protected function itemSlice(): ?string
+    {
+        return self::$itemSlice;
+    }
+
+    protected function listRelates(string $slice): bool
+    {
+        return self::$relates && ($slice === self::$itemSlice);
     }
 
     protected static function now(): int

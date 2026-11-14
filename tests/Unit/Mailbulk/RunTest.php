@@ -8,9 +8,11 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA\Mailbulk\Outcome;
 use AA\Mailbulk\Recipients;
+use AA\Later\Toexecute;
 use AA\Mailbulk\Run;
 use AA_Credentials;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Later\Fixtures\BatchRunTables;
 use Tests\Unit\Mailbulk\Fixtures\FakeLetter;
 use Tests\Unit\Mailbulk\Fixtures\ScriptedMailer;
@@ -106,16 +108,24 @@ final class RunTest extends TestCase
         return TestRun::get($id) ?? throw new \LogicException('No run');
     }
 
-    /** @return list<int> a JSON list of indexes of the record */
-    private static function list(string $id, string $property): array
+    /** @return list<int> the indexes of the readers with $outcome (failed, skipped, uncertain) */
+    private static function list(string $id, string $outcome): array
     {
-        return json_decode(self::stored($id)[$property] ?: '[]', true, 512, JSON_THROW_ON_ERROR);
+        $map = json_decode(self::stored($id)['outcomes'] ?: '{}', true, 512, JSON_THROW_ON_ERROR);
+        return array_keys(array_filter($map, static fn(string $o): bool => $o === $outcome[0]));
     }
 
     /** @return array<int, string> */
     private static function notes(string $id): array
     {
         return json_decode(self::stored($id)['notes'] ?: '{}', true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /** the done and total progress() shows */
+    private static function progressOf(string $id): string
+    {
+        $progress = json_decode(self::stored($id)['progress'], true, 512, JSON_THROW_ON_ERROR);
+        return json_encode(['done' => $progress['done'], 'total' => $progress['total']], JSON_THROW_ON_ERROR);
     }
 
     /** the record of the run as it is at the moment the process dies, then the queue past its lease */
@@ -182,13 +192,39 @@ final class RunTest extends TestCase
         self::assertSame('step 1', self::runQueued());
 
         $stored = self::stored($id);
-        self::assertSame(['1', '', 'SMTP', '421 try later'], [$stored['cursor'], $stored['mark'], $stored['retry_code'], $stored['note']]);
+        self::assertSame(['1', '', 'SMTP', '421 try later', 'retry'], [$stored['cursor'], $stored['mark'], $stored['retry_code'], $stored['note'], $stored['retrying']]);
         self::assertSame((string) (self::NOW + 60), $stored['next_at'], 'it waits before trying again');
         self::assertSame([], self::list($id, 'uncertain'));
 
         TestRun::$now = self::NOW + 60;
         self::assertSame('done', self::runQueued());
         self::assertSame(self::addresses(0, 1, 1, 2), self::mailer()->sent());
+        self::assertSame(['', ''], [self::stored($id)['note'], self::stored($id)['retrying']], 'a mail sent since: the old reason goes');
+    }
+
+    public function test_work_deferred_staysOnTheSameRecipient(): void
+    {
+        $id                       = self::queued(2);
+        self::mailer()->outcomes = [Outcome::Deferred];
+        self::mailer()->detail   = '450 mailbox busy';
+
+        self::assertSame('step 1', self::runQueued());
+
+        $stored = self::stored($id);
+        self::assertSame(['0', 'SMTP', 'deferred', '450 mailbox busy'], [$stored['cursor'], $stored['retry_code'], $stored['retrying'], $stored['note']]);
+    }
+
+    public function test_work_halt_endsInErrorSMTP_atOnce_markCleared(): void
+    {
+        $id                       = self::queued(3);
+        self::mailer()->outcomes = [Outcome::Sent, Outcome::Halt];
+        self::mailer()->detail   = '535 authentication failed';
+
+        self::assertSame('error SMTP', self::runQueued());
+
+        $stored = self::stored($id);
+        self::assertSame([Run::ERROR, '1', '', '535 authentication failed'], [$stored['state'], $stored['cursor'], $stored['mark'], $stored['note']]);
+        self::assertSame([[], [], []], [self::list($id, 'failed'), self::list($id, 'skipped'), self::list($id, 'uncertain')], 'no reader is marked');
     }
 
     public function test_work_uncertainOutcome_movesOn(): void
@@ -230,18 +266,91 @@ final class RunTest extends TestCase
         self::assertSame(['sent' => 2, 'failed' => 0, 'skipped' => 1, 'uncertain' => 0], self::runOf($id)->outcomes());
     }
 
-    public function test_work_renderOrPrepareThrows_isFailedWithTheMessage(): void
+    public function test_work_renderOrPrepareThrows_isFailed_theTextOnlyInTheLog(): void
     {
         $id                                              = self::queued(3);
-        self::letter()->messages[self::reader(0)]        = new \RuntimeException('Unknown alias _#NAME');
+        self::letter()->messages[self::reader(0)]        = new \RuntimeException('Unknown alias _#NAME secret');
         self::mailer()->prepareThrows[self::address(1)] = new \RuntimeException('Image not found');
 
         self::assertSame('done', self::runQueued());
 
         self::assertSame(self::addresses(2), self::mailer()->sent());
         self::assertSame([0, 1], self::list($id, 'failed'));
-        self::assertSame([0 => 'Unknown alias _#NAME', 1 => 'Image not found'], self::notes($id));
-        self::assertSame('', self::stored($id)['mark'], 'no mark for a mail never sent');
+        self::assertSame([0 => 'The mail could not be rendered.', 1 => 'The mail could not be rendered.'], self::notes($id));
+        self::assertSame(['', '0'], [self::stored($id)['mark'], self::stored($id)['unmade']], 'no mark for a mail never sent; a mail sent since resets the count');
+        $logged = array_values(array_filter(TableDb::rows('log'), static fn(array $r): bool => $r['type'] === Toexecute::FAILED_EVENT));
+        self::assertCount(2, $logged);
+        self::assertStringContainsString('RuntimeException', $logged[0]['params']);
+        self::assertStringNotContainsString('secret', implode(' ', array_column($logged, 'params')));
+    }
+
+    public function test_work_mailsNotMadeTenTimesInARow_endInErrorLETTER(): void
+    {
+        $id = self::queued(12);
+        foreach (range(1, 10) as $i) {
+            self::letter()->messages[self::reader($i)] = new \RuntimeException('broken template');
+        }
+
+        self::assertSame('error ' . Run::LETTER, self::runQueued());
+
+        self::assertSame(self::addresses(0), self::mailer()->sent());
+        $stored = self::stored($id);
+        self::assertSame(range(1, 10), self::list($id, 'failed'));
+        self::assertSame(['11', '0'], [$stored['cursor'], $stored['unmade']], 'Continue counts anew');
+        self::assertStringContainsString('10 readers in a row', $stored['note']);
+    }
+
+    public function test_work_skipAndFailureBeforeTheMail_writtenWithTheNextMark(): void
+    {
+        $id                                       = self::queued(3);
+        self::letter()->messages[self::reader(0)] = null;
+        self::letter()->messages[self::reader(1)] = new \RuntimeException('broken');
+        $seen                                     = [];
+        self::mailer()->onCall                   = static function (string $call) use ($id, &$seen): void {
+            $seen[] = [$call, self::stored($id)['cursor'], self::stored($id)['mark']];
+        };
+
+        self::assertSame('done', self::runQueued());
+
+        self::assertSame([['prepare', '0', ''], ['send', '2', '2']], $seen, 'no write of their own');
+        self::assertSame([[1], [0]], [self::list($id, 'failed'), self::list($id, 'skipped')]);
+    }
+
+    public function test_work_skipsAtTheEndOfTheStep_areWritten(): void
+    {
+        $id                                       = self::queued(2);
+        self::letter()->messages[self::reader(0)] = null;
+        self::letter()->messages[self::reader(1)] = null;
+
+        self::assertSame('done', self::runQueued());
+
+        self::assertSame([], self::mailer()->calls);
+        self::assertSame(['2', [0, 1]], [self::stored($id)['cursor'], self::list($id, 'skipped')]);
+    }
+
+    public function test_work_recipientsMissingOrNotAsMany_endInErrorRECIPIENTS(): void
+    {
+        foreach ([['total' => '4'], ['recipients' => 'f00d0000000000000000000000000001'], ['total' => '0']] as $props) {
+            $id = self::queued(3, $props);
+
+            self::assertSame('error ' . Run::RECIPIENTS, self::runQueued(), json_encode($props));
+
+            self::assertSame([], self::mailer()->calls);
+            self::storedSet($id, 'state', Run::ENDED);
+        }
+    }
+
+    public function test_work_leaseOutlastsTheLongestSendAndItsRecords(): void
+    {
+        $id    = self::queued(1);
+        $lease = 0;
+        self::mailer()->onCall = static function (string $call) use ($id, &$lease): void {
+            $lease = (int) self::stored($id)['lease'];
+        };
+
+        self::runQueued();
+
+        self::assertGreaterThan(self::NOW + self::mailer()->maxSeconds() + 30, $lease);
     }
 
     public function test_work_budgetSpent_endsTheStepAtTheNextRecipient(): void
@@ -302,6 +411,93 @@ final class RunTest extends TestCase
         self::assertSame(self::addresses(2), self::mailer()->sent());
     }
 
+    public function test_onRetriesExhausted_diedStepAfterAServerRetry_endsInError_recipientKept(): void
+    {
+        $id = self::queued(3, ['cursor' => '1', 'retrying' => 'retry']);
+        self::dead($id, '2');
+
+        self::assertSame('error STEP_DIED', self::runQueued());
+
+        self::assertSame([[], '1'], [self::list($id, 'failed'), self::stored($id)['cursor']]);
+    }
+
+    public function test_onRetriesExhausted_diedStepWithAllRecorded_finishes(): void
+    {
+        $id = self::queued(3, ['cursor' => '3']);
+        self::dead($id, '2');
+
+        self::assertSame('step 1', self::runQueued());
+
+        self::assertSame(['{"i":3}', '{"done":3,"total":3}'], [self::stored($id)['position'], self::progressOf($id)]);
+        self::assertSame('done', self::runQueued());
+        self::assertSame([], self::mailer()->calls);
+    }
+
+    public function test_onRetriesExhausted_deferred_failsTheRecipientAndGoesOn(): void
+    {
+        $id = self::queued(3);
+        self::storedSet($id, 'failures', '2');
+        self::mailer()->outcomes = [Outcome::Deferred];
+        self::mailer()->detail   = '452 mailbox full';
+
+        self::assertSame('step 1', self::runQueued());
+
+        $stored = self::stored($id);
+        self::assertSame([[0], '1', '{"i":1}', '', Run::SENDING], [self::list($id, 'failed'), $stored['cursor'], $stored['position'], $stored['retrying'], $stored['state']]);
+        self::assertSame([0 => 'Temporarily refused: 452 mailbox full'], self::notes($id));
+        self::assertSame('{"done":1,"total":3}', self::progressOf($id));
+
+        self::assertSame('done', self::runQueued());
+        self::assertSame(self::addresses(0, 1, 2), self::mailer()->sent());
+    }
+
+    public function test_outcomes_damagedMap_throws(): void
+    {
+        $id = self::queued(2, ['cursor' => '2', 'outcomes' => '{"1":"f"']);
+
+        $this->expectException(\JsonException::class);
+        self::runOf($id)->outcomes();
+    }
+
+    public function test_stillValid_itemGone_endsTheRun(): void
+    {
+        $id               = self::queued(2);
+        TestRun::$itemSlice = null;
+
+        self::assertSame(Run::ENDED, self::runQueued());
+
+        self::assertSame([], self::mailer()->calls);
+        self::assertSame(Run::ENDED, self::stored($id)['state']);
+    }
+
+    public function test_mayControl_editorOfAllItems_andARelatedList(): void
+    {
+        class_exists(\AA_Perm::class);              // its first load sets AA::$perm - not over the stub
+        $perm     = AA::$perm;
+        AA::$perm = new class {
+            public function isSuperadminUser(string $uid): bool
+            {
+                return $uid === 'admin';
+            }
+
+            public function hasSlicePerm(string $uid, string $slice, string $perm): bool
+            {
+                return ($uid === 'editor') && ($slice === TestRun::SLICE) && ($perm === PS_EDIT_ALL_ITEMS);
+            }
+        };
+        try {
+            $run = self::runOf(self::queued(1));
+
+            self::assertSame([true, false, false, false], [$run->mayControl('editor'), $run->mayControl('admin'), $run->mayControl(''), $run->mayControl('nobody')]);
+            TestRun::$relates = false;
+            self::assertFalse($run->mayControl('editor'), 'the list does not belong to the slice');
+            TestRun::$itemSlice = null;
+            self::assertSame([false, true], [$run->mayControl('editor'), $run->mayControl('admin')], 'the item gone: a superadmin ends it');
+        } finally {
+            AA::$perm = $perm;
+        }
+    }
+
     public function test_onRetriesExhausted_smtp_endsInError_recipientKept(): void
     {
         $id = self::queued(3);
@@ -318,7 +514,7 @@ final class RunTest extends TestCase
 
     public function test_delivered_isBelowCursorWithoutFailedAndSkipped_plusTheMark(): void
     {
-        $id = self::queued(7, ['cursor' => '5', 'mark' => '5', 'failed' => '[1]', 'skipped' => '[3]', 'uncertain' => '[2]']);
+        $id = self::queued(7, ['cursor' => '5', 'mark' => '5', 'outcomes' => '{"1":"f","3":"s","2":"u"}']);
 
         self::assertSame([self::reader(0), self::reader(2), self::reader(4), self::reader(5)], self::runOf($id)->delivered());
     }

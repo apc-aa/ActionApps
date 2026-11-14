@@ -41,6 +41,8 @@ abstract class BatchRun extends AA_Object
     public const FORBIDDEN = 'FORBIDDEN';
     /** BatchFailed reason: a table the run writes in one transaction is not InnoDB; the place is the table */
     public const NO_TRANSACTION = 'NO_TRANSACTION';
+    /** BatchStepResult::$retry of a step that kept dying: work() did not run */
+    public const STEP_DIED = 'STEP_DIED';
 
     /** what the queue row of an ended run expects instead of a fingerprint: it runs afterClose() after
      *  the end has committed - late, and more than once when the queue repeats a row whose process died */
@@ -1197,7 +1199,7 @@ abstract class BatchRun extends AA_Object
         $worked  = null;
         try {
             if ($died) {
-                $result = new BatchStepResult($from, false, retry: 'STEP_DIED');
+                $result = new BatchStepResult($from, false, retry: self::STEP_DIED);
             } elseif ($budget->spent()) {
                 // the claim took what was left - a request now would get no timeout
                 $result = self::spentResult($from);

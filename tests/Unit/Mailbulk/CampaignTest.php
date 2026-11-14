@@ -111,7 +111,7 @@ final class CampaignTest extends TestCase
 
     public function test_start_freezesPendingOnly(): void
     {
-        self::sending(5, Run::DONE, ['cursor' => '5', 'failed' => '[1]', 'skipped' => '[2]', 'uncertain' => '[3]']);
+        self::sending(5, Run::DONE, ['cursor' => '5', 'outcomes' => '{"1":"f","2":"s","3":"u"}']);
 
         $run    = self::campaign()->start(self::letter(0, 1, 2, 3, 4, 5), self::USER, 'https://example.org/');
         $stored = self::stored((string) $run->getId());
@@ -194,11 +194,11 @@ final class CampaignTest extends TestCase
         self::assertSame(['total' => 0, 'sent' => 0, 'failed' => 0, 'skipped' => 0, 'uncertain' => 0, 'date' => 0], self::campaign()->counts());
         self::assertSame('', self::campaign()->state());
 
-        $first = self::sending(5, Run::DONE, ['cursor' => '5', 'failed' => '[1]', 'skipped' => '[2]', 'uncertain' => '[3]'], self::NOW - 3000);
+        $first = self::sending(5, Run::DONE, ['cursor' => '5', 'outcomes' => '{"1":"f","2":"s","3":"u"}'], self::NOW - 3000);
         self::storedSet($first, 'finished', (string) (self::NOW - 2900));
         $second = self::sending(3, Run::DONE, ['cursor' => '3'], self::NOW - 2000);
         self::storedSet($second, 'finished', (string) (self::NOW - 1900));
-        $third = self::sending(4, Run::SENDING, ['cursor' => '2', 'failed' => '[0]'], self::NOW - 1000);
+        $third = self::sending(4, Run::SENDING, ['cursor' => '2', 'outcomes' => '{"0":"f"}'], self::NOW - 1000);
 
         self::assertSame(['total' => 12, 'sent' => 6, 'failed' => 2, 'skipped' => 1, 'uncertain' => 1, 'date' => self::NOW - 1900], self::campaign()->counts());
         self::assertSame([$first, $second, $third], self::runIds(), 'the oldest first');
