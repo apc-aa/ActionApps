@@ -231,7 +231,7 @@ class AA_Collection
         $set = new AA_Set($slice->getId(), ($conds === '') ? null : $conds);
         $set->addCondition(new AA_Condition(FIELDID_MAIL_CONFIRMED, '==', 1));
         // AA_Set silently drops a condition on an unknown field - the mailing would go to everyone
-        if (!self::condsFieldsKnown($set, $slice)) {
+        if (self::condsUnknownFields($set, $slice)) {
             return new zids();
         }
         $readers  = $set->query();
@@ -243,11 +243,24 @@ class AA_Collection
         return new zids(array_values(array_diff($readers->longids(), $unsubscribed->longids())), 'l');
     }
 
-    /** Whether every field the conditions of the set name exists - in the slice, or for a remote condition
-     *  (<field>@<slice>/<relation field>) in the remote slice; the far field of <field>@<relation field> is
-     *  in whatever slice the relation points to, so only the relation field is checked. */
-    private static function condsFieldsKnown(AA_Set $set, AA_Slice $slice): bool
+    /** The fields $conds name that validReaders() cannot check - with any, it finds nobody.
+     *  @param string $conds the conds of {ids}
+     *  @return list<string> */
+    public function unknownCondsFields(string $conds): array
     {
+        if (($conds === '') || !(($slice = $this->getReaderSlice()) instanceof AA_Slice)) {
+            return [];
+        }
+        return self::condsUnknownFields(new AA_Set($slice->getId(), $conds), $slice);
+    }
+
+    /** The fields the conditions of the set name that do not exist - in the slice, or for a remote condition
+     *  (<field>@<slice>/<relation field>) in the remote slice, or for <field>@<relation field> in the slice the
+     *  relation field points to, as AA_Set finds it; a relation field pointing nowhere cannot be checked.
+     *  @return list<string> */
+    private static function condsUnknownFields(AA_Set $set, AA_Slice $slice): array
+    {
+        $unknown = [];
         foreach ($set->getConditions() as $condition) {
             foreach ($condition->getFields() as $fid) {
                 $fid = (string) $fid;
@@ -255,26 +268,25 @@ class AA_Collection
                     continue;
                 }
                 if (!str_contains($fid, '@')) {
-                    if (!$slice->isField(AA_Field::parseWithLang($fid)[0])) {
-                        return false;
+                    $known = $slice->isField(AA_Field::parseWithLang($fid)[0]);
+                } else {
+                    [$far, $relation] = explode('@', $fid, 2);
+                    if (str_contains($relation, '/')) {
+                        [$remote_id, $relation] = explode('/', $relation, 2);
+                        $remote = AA_Slice::getOwnModule(rtrim($remote_id, '+'));
+                        $known  = ($remote instanceof AA_Slice) && $remote->isField($far) && $remote->isField($relation);
+                    } else {
+                        [$type, $remote_id] = array_pad($slice->getField($relation)?->getRelation() ?? [], 2, '');
+                        $remote = ($type === 'relation') ? AA_Slice::getOwnModule($remote_id) : null;
+                        $known  = ($remote instanceof AA_Slice) && $remote->isField($far);
                     }
-                    continue;
                 }
-                [$far, $relation] = explode('@', $fid, 2);
-                if (!str_contains($relation, '/')) {
-                    if (!$slice->isField($relation)) {
-                        return false;
-                    }
-                    continue;
-                }
-                [$remote_id, $relation] = explode('/', $relation, 2);
-                $remote = AA_Slice::getModule(rtrim($remote_id, '+'));
-                if (!($remote instanceof AA_Slice) || !$remote->isField($far) || !$remote->isField($relation)) {
-                    return false;
+                if (!$known) {
+                    $unknown[] = $fid;
                 }
             }
         }
-        return true;
+        return array_values(array_unique($unknown));
     }
 
     /** The rule of validReaders() for one loaded reader - checked again right before the mail goes out,

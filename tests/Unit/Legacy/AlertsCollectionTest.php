@@ -497,6 +497,55 @@ namespace Tests\Unit\Legacy {
             $this->assertNotSame([], self::searches());
         }
 
+        private const REMOTE   = 'f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9';
+        private const RELATION = 'relation........';
+
+        /** the reader slice $slice with a field relation........ shown by $show_func, and the slice REMOTE with a headline */
+        private function relatedSlices(string $slice, string $show_func): void
+        {
+            $this->readerSlice([FIELDID_MAIL_CONFIRMED, FIELDID_EMAIL, self::HOWOFTEN, self::CITY, self::RELATION], $slice);
+            $inner = RecordingDb::$answer;
+            RecordingDb::$answer = static function (string $sql) use ($inner, $show_func): array {
+                if (preg_match('/FROM `field` WHERE `?slice_id`? = 0x' . self::REMOTE . '/', $sql)) {
+                    $asked = preg_match("/ AND id = '([^']*)'/", $sql, $id) ? array_intersect(['headline........'], [$id[1]]) : ['headline........'];
+                    return array_map(
+                        static fn(string $fid): array => array_merge(array_fill_keys(AA::Metabase()->getColumnNames('field'), ''), ['id' => $fid, 'slice_id' => pack_id(self::REMOTE), 'text_stored' => '1']),
+                        array_values($asked),
+                    );
+                }
+                $rows = $inner($sql);
+                return str_contains($sql, 'FROM `field`')
+                    ? array_map(static fn(array $row): array => ($row['id'] === self::RELATION) ? ['input_show_func' => $show_func] + $row : $row, $rows)
+                    : $rows;
+            };
+        }
+
+        public static function condsFields(): array
+        {
+            $points = 'sel:#sLiCe-f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9';
+            return [
+                'known field'                 => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f1', $points, 'd-text...........1-==-Praha', []],
+                'unknown field'               => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f2', $points, 'd-text...........9-==-Praha-text...........1-==-x', ['text...........9']],
+                'far field of the relation'   => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f3', $points, 'd-headline........@relation........-==-x', []],
+                'far field the target lacks'  => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f4', $points, 'd-text...........7@relation........-==-x', ['text...........7@relation........']],
+                'not a relation field'        => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5', 'fld', 'd-headline........@relation........-==-x', ['headline........@relation........']],
+                'any field of the relation'   => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f6', $points, 'd-all_fields@relation........-==-x', []],
+            ];
+        }
+
+        /** AA_Set drops a <far field>@<relation field> whose far field the related slice lacks, as any unknown field */
+        #[DataProvider('condsFields')]
+        public function test_unknownCondsFields_namesWhatCannotBeChecked(string $slice, string $show_func, string $conds, array $expected): void
+        {
+            $this->relatedSlices($slice, $show_func);
+
+            $this->assertSame($expected, self::quietly(static fn() => (new AA_Collection('sQjwa'))->unknownCondsFields($conds)));
+            if ($expected) {
+                $this->assertTrue(self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders($conds))->isEmpty());
+                $this->assertSame([], self::searches());
+            }
+        }
+
         /** a collection row without a reader slice - nothing to search in */
         public function test_validReaders_noReaderSlice_isEmpty(): void
         {

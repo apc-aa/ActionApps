@@ -6,6 +6,7 @@ namespace Tests\Unit\Mailbulk;
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA\Mailbulk\ItemLetter;
 use AA\Mailbulk\Outcome;
 use AA\Mailbulk\Recipients;
 use AA\Later\Toexecute;
@@ -511,6 +512,18 @@ final class RunTest extends TestCase
         $stored = self::stored($id);
         self::assertSame(['0', '', Run::ERROR], [$stored['cursor'], $stored['mark'], $stored['state']]);
         self::assertSame([[], [], []], [self::list($id, 'failed'), self::list($id, 'skipped'), self::list($id, 'uncertain')]);
+    }
+
+    /** a step sends the run's item to the run's list, the tracked addresses on the run's base */
+    public function test_letter_isTheItemOfTheRun(): void
+    {
+        $run = self::runOf(self::queued(1, ['base' => 'https://example.org/aa/']));
+
+        $letter = (new \ReflectionMethod(Run::class, 'letter'))->invoke($run);
+
+        self::assertInstanceOf(ItemLetter::class, $letter);
+        $get = static fn(string $property): mixed => (new \ReflectionProperty(ItemLetter::class, $property))->getValue($letter);
+        self::assertSame([self::ITEM, 'https://example.org/aa/', self::LIST], [$get('itemId'), $get('trackBase'), $get('list')->getId()]);
     }
 
     public function test_delivered_isBelowCursorWithoutFailedAndSkipped_plusTheMark(): void

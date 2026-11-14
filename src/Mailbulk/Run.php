@@ -127,10 +127,11 @@ class Run extends BatchRun
         return $this->itemSlice() !== null;
     }
 
-    /** what renders the mails */
+    /** what renders the mails - a new one each step, so a step sends the item as it is now */
     protected function letter(): Letter
     {
-        throw new \LogicException('A sending has no letter yet');
+        require_once constant('AA_BASE_PATH') . 'modules/alerts/alerts_sending.php';
+        return new ItemLetter(new \AA_Collection((string) $this->list), (string) $this->subject, (string) $this->base);
     }
 
     protected function mailer(): Mailer
