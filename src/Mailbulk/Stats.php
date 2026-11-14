@@ -29,29 +29,27 @@ class Stats
         return ['opened' => (int) $opened, 'clicked' => count(array_unique(array_column($clicks, 'reader')))];
     }
 
-    /** The figures of many sendings at once - a page of them: one search per kind of event and one read of
-     *  the events, whatever the number of the sendings.
+    /** The figures of many sendings at once - a page of them: the opens counted per sending (their ids only,
+     *  shared with counts()), one search of the clicks and one read of them, whatever the number of the sendings.
      *  @param list<string> $itemIds
      *  @return array<string, array{opened: int, clicked: int}> item id (lowercase) => figures, every one of $itemIds */
     public function countsFor(string $statSliceId, array $itemIds): array
     {
         $itemIds = array_values(array_unique(array_map('strtolower', $itemIds)));
-        $figures = array_fill_keys($itemIds, ['opened' => 0, 'clicked' => 0]);
         if (!$itemIds) {
-            return $figures;
+            return [];
         }
-        $opens   = array_fill_keys($this->events($statSliceId, $itemIds, 'open'), true);
-        $ids     = array_values(array_unique([...array_keys($opens), ...$this->events($statSliceId, $itemIds, 'click')]));
+        $figures = [];
+        foreach ($itemIds as $itemId) {
+            // opens far outnumber clicks: reading them to learn their sending would cost more than a count each
+            $opened           = AA::Contentcache()->get_result([$this, 'opensFromDb'], [$statSliceId, $itemId]);
+            $figures[$itemId] = ['opened' => (int) $opened, 'clicked' => 0];
+        }
         $clicked = [];
-        foreach (array_chunk($ids, self::CHUNK) as $chunk) {
-            foreach ($this->content($chunk, ['relation........', 'relation.......1']) as $id => $fields) {
+        foreach (array_chunk($this->events($statSliceId, $itemIds, 'click'), self::CHUNK) as $chunk) {
+            foreach ($this->content($chunk, ['relation........', 'relation.......1']) as $fields) {
                 $item = strtolower((string) ($fields['relation........'][0]['value'] ?? ''));
-                if (!isset($figures[$item])) {
-                    continue;
-                }
-                if (isset($opens[(string) $id])) {
-                    ++$figures[$item]['opened'];
-                } else {
+                if (isset($figures[$item])) {
                     $clicked[$item][(string) ($fields['relation.......1'][0]['value'] ?? '')] = true;
                 }
             }

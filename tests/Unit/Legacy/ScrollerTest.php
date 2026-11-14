@@ -178,5 +178,41 @@ namespace Tests\Unit\Legacy {
             }
             self::assertSame(2, $scr->getCurrent());
         }
+
+        /** not a required parameter: a page that is no number keeps the first page, an admin page needs no catch */
+        #[\PHPUnit\Framework\Attributes\DataProvider('notAPage')]
+        public function test_update_pageNotANumber_staysOnFirstPageSilently(mixed $go): void
+        {
+            $_GET = ['scr_scr_Go' => $go];
+            set_error_handler(static function (int $no, string $msg): never {
+                throw new \ErrorException($msg, 0, $no);
+            });
+            try {
+                $scr = new AA_Scroller_Easy('scr', 20, 57, 'https://example.org/');
+                $scr->update();
+                self::assertSame(1, $scr->getCurrent());
+            } finally {
+                restore_error_handler();
+                $_GET = [];
+            }
+        }
+
+        /** @return array<string, array{mixed}> */
+        public static function notAPage(): array
+        {
+            return ['text' => ['abc'], 'array' => [['2']], 'negative' => ['-5']];
+        }
+
+        public function test_update_pagePastTheEnd_isTheLastPage(): void
+        {
+            $_GET = ['scr_scr_Go' => '999'];
+            try {
+                $scr = new AA_Scroller_Easy('scr', 20, 57, 'https://example.org/');
+                $scr->update();
+                self::assertSame(3, $scr->getCurrent());
+            } finally {
+                $_GET = [];
+            }
+        }
     }
 }

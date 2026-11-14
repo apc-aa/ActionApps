@@ -99,7 +99,7 @@ final class StatsTest extends TestCase
         self::assertSame(['events open', 'events click', 'content source_href.....,relation.......1'], MemoryStats::$reads, 'one read of each per request');
     }
 
-    /** a page of sendings: one search per kind and one read of the events, whatever the number of the sendings */
+    /** a page of sendings: the opens counted by ids per sending, only the clicks read - once, whatever the number of the sendings */
     public function test_countsFor_manyItemsInOneGo(): void
     {
         $stats = new MemoryStats();
@@ -120,7 +120,10 @@ final class StatsTest extends TestCase
             self::OTHER                        => ['opened' => 1, 'clicked' => 1],
             '3333456789abcdef0123456789abcdef' => ['opened' => 0, 'clicked' => 0],
         ], $figures, 'the same figures as counts() of each');
-        self::assertSame(['events open', 'events click', 'content relation........,relation.......1'], MemoryStats::$reads);
+        self::assertSame(['events open', 'events open', 'events open', 'events click', 'content relation........,relation.......1'], MemoryStats::$reads, 'no open read');
+        MemoryStats::$reads = [];
+        $stats->counts(self::STAT_SLICE, self::ITEM);
+        self::assertSame(['events click', 'content source_href.....,relation.......1'], MemoryStats::$reads, 'the opens of the chosen sending counted once per request');
         self::assertSame([], $stats->countsFor(self::STAT_SLICE, []));
     }
 
