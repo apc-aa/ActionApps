@@ -232,7 +232,7 @@ final class AdviceTest extends TestCase
             }
         }
         $outcome = (new \ReflectionClass(Outcome::class))->getConstants(\ReflectionClassConstant::IS_PUBLIC);
-        $codes   = [...$codes, ...array_values(array_diff_key($outcome, array_flip(['NEXT', 'PAUSE', 'FAIL', 'RETHROW']))), BatchRun::NO_TRANSACTION];
+        $codes   = [...$codes, ...array_values(array_diff_key($outcome, array_flip(['NEXT', 'PAUSE', 'FAIL', 'RETHROW']))), BatchRun::NO_TRANSACTION, BatchRun::STEP_DIED];
         foreach (['src/Later/BatchRun.php', 'src/Isds/SendRun.php'] as $file) {
             $source = (string) file_get_contents(dirname(__DIR__, 3) . '/' . $file);
             preg_match_all("~retry: '([A-Z][A-Z0-9_]*)'|->retryOrError\([^;\n]*'([A-Z][A-Z0-9_]*)'|\['([A-Z][A-Z0-9_]*)', get_debug_type~", $source, $m);
