@@ -18,17 +18,32 @@ final class FetchRecordingMail extends \htmlMimeMail
     /** @var list<string> */
     public array $fetched = [];
 
+    /** fetches of all mails of the process */
+    public static int $calls = 0;
+
+    public static string $image = 'image bytes';
+
+    /** the message body handed to mail() */
+    public string $sent = '';
+
     public function getFile($filename): string
     {
         $this->fetched[] = $filename;
-        return str_starts_with($filename, 'http') ? 'image bytes' : '';
+        ++self::$calls;
+        return str_starts_with($filename, 'http') ? self::$image : '';
+    }
+
+    protected function nativeMail(string $to, string $subject, string $body, string $headers, string $params = ''): bool
+    {
+        $this->sent = $body;
+        return true;
     }
 }
 
 /**
- * setHtml() embeds the images of the html into the mail and points their src at the attachment -
- * a mail client has no page url to resolve a relative src against. Separate processes: the test
- * defines AA_INSTAL_URL.
+ * The built message embeds the images of the html and points their src at the attachment - a mail
+ * client has no page url to resolve a relative src against. Separate processes: the test defines
+ * AA_INSTAL_URL, and fetched images are remembered for the whole process.
  */
 #[RunTestsInSeparateProcesses]
 final class HtmlMimeMailImagesTest extends TestCase
@@ -49,17 +64,55 @@ final class HtmlMimeMailImagesTest extends TestCase
         ImgCache::useConfig(self::CACHE_CONFIG);
     }
 
-    /** @return array{0: FetchRecordingMail, 1: string, 2: int} the mail, its html after setHtml(), the number of embedded images */
+    /** @return array{0: FetchRecordingMail, 1: string, 2: int} the mail, its built html with each cid: replaced by the image name, the number of embedded images */
     private static function mail(string $src, ?string $body = null): array
     {
         $mail = new FetchRecordingMail();
         $mail->setHtml($body ?? "<p><img src=\"$src\"></p>");
-        $html   = (new \ReflectionProperty(\htmlMimeMail::class, 'html'))->getValue($mail);
-        $images = (new \ReflectionProperty(\htmlMimeMail::class, 'html_images'))->getValue($mail);
+        $mail->buildMessage();
+        [$html, $images] = self::parts((new \ReflectionProperty(\htmlMimeMail::class, 'output'))->getValue($mail));
         return [$mail, $html, \count($images)];
     }
 
-    public function test_setHtml_absoluteUrl_isEmbedded(): void
+    /**
+     * The html part of a built body, each cid: in it replaced by the name of its image, and the images.
+     * @return array{0: string, 1: array<string, string>} html, cid => base64 body
+     */
+    private static function parts(string $output): array
+    {
+        $html   = $output;   // a message without images is the html part alone
+        $images = [];
+        $names  = [];
+        foreach (preg_split('~^--=_[0-9a-f]+(?:--)?\r?$~m', $output) as $part) {
+            [$head, $body] = array_pad(preg_split('~\r?\n\r?\n~', ltrim($part, "\r\n"), 2), 2, '');
+            if (str_contains($head, 'Content-Type: text/html')) {
+                $html = $body;
+            } elseif (preg_match('~Content-ID: <([0-9a-f]+)>~', $head, $cid) && preg_match('~filename="([^"]*)"~', $head, $name)) {
+                $images[$cid[1]] = trim($body);
+                $names[$cid[1]]  = $name[1];
+            }
+        }
+        $html = rtrim(quoted_printable_decode($html), "\r\n");
+        foreach ($names as $cid => $name) {
+            $html = str_replace("cid:$cid", $name, $html);
+        }
+        return [$html, $images];
+    }
+
+    /** two images go out as two inline parts, each referenced by its cid */
+    public function test_send_embedsImagesAsCids(): void
+    {
+        $mail = new FetchRecordingMail();
+        $mail->setHtml('<img src="https://www.example.org/a.png"><img src="https://www.example.org/b.jpg">');
+        $mail->send(['to@example.org']);
+
+        self::assertSame(2, preg_match_all('~src="cid:[0-9a-f]+"~', quoted_printable_decode($mail->sent)));
+        [$html, $images] = self::parts($mail->sent);
+        self::assertSame('<img src="1a.png"><img src="2b.jpg">', $html);
+        self::assertSame([base64_encode('image bytes'), base64_encode('image bytes')], array_values($images));
+    }
+
+    public function test_build_absoluteUrl_isEmbedded(): void
     {
         [$mail, $html, $embedded] = self::mail('https://www.example.org/img/logo.png');
 
@@ -68,7 +121,7 @@ final class HtmlMimeMailImagesTest extends TestCase
         self::assertSame('<p><img src="1logo.png"></p>', $html);
     }
 
-    public function test_setHtml_rootRelativeImgPhp_isFetchedFromTheAaInstall(): void
+    public function test_build_rootRelativeImgPhp_isFetchedFromTheAaInstall(): void
     {
         [$mail, , $embedded] = self::mail('/actionapps/img.php?src=/files/up/a/p.jpg&amp;w=150');
 
@@ -77,7 +130,7 @@ final class HtmlMimeMailImagesTest extends TestCase
     }
 
     /** {img} links the image cache root-relative on a page served by the host of IMG_UPLOAD_URL */
-    public function test_setHtml_rootRelativeUpload_isFetchedFromTheUploadHost(): void
+    public function test_build_rootRelativeUpload_isFetchedFromTheUploadHost(): void
     {
         [$mail, $html, $embedded] = self::mail('/files/up/mC/pT/abc/p.jpg!w=150.jpg');
 
@@ -87,7 +140,7 @@ final class HtmlMimeMailImagesTest extends TestCase
     }
 
     /** the path stands inside the img.php url too, which must stay whole */
-    public function test_setHtml_uploadPathInsideAnotherUrl_replacesOnlyItsOwnSrc(): void
+    public function test_build_uploadPathInsideAnotherUrl_replacesOnlyItsOwnSrc(): void
     {
         [, $html, $embedded] = self::mail('', '<img src="/files/up/a/p.jpg"><img src="/actionapps/img.php?src=/files/up/a/p.jpg&amp;w=150">');
 
@@ -95,7 +148,7 @@ final class HtmlMimeMailImagesTest extends TestCase
         self::assertSame('<img src="1p.jpg"><img src="2p.jpg">', $html);
     }
 
-    public function test_setHtml_oneImageInTwoSpellings_isOneAttachment(): void
+    public function test_build_oneImageInTwoSpellings_isOneAttachment(): void
     {
         [$mail, $html, $embedded] = self::mail('', '<img src="https://img.example.org/files/up/a/p.jpg"><img src="/files/up/a/p.jpg">');
 
@@ -105,7 +158,7 @@ final class HtmlMimeMailImagesTest extends TestCase
     }
 
     /** only the src is embedded - Apple Mail would show a srcset or <source> candidate instead, a link at best */
-    public function test_setHtml_responsiveCandidates_areRenamed(): void
+    public function test_build_responsiveCandidates_areRenamed(): void
     {
         [$mail, $html, $embedded] = self::mail('', '<picture class=aa-picture>'
             . '<source type="image/avif" srcset="/files/up/mC/pT/a/p.jpg!w=343!f=avif.avif 343w, /files/up/mC/pT/a/p.jpg!w=686!f=avif.avif 686w" sizes="auto, 343px">'
@@ -121,12 +174,76 @@ final class HtmlMimeMailImagesTest extends TestCase
     }
 
     /** a renamed srcset of one url looks like any quoted image path - it must not become an attachment */
-    public function test_setHtml_renamedSrcset_isNotEmbedded(): void
+    public function test_build_renamedSrcset_isNotEmbedded(): void
     {
         [$mail, $html] = self::mail('', '<picture><source srcset="/files/up/a/x.jpg"><img src="/files/up/a/p.jpg" srcset=\'/files/up/a/y.jpg\'></picture>');
 
         self::assertSame(['https://img.example.org/files/up/a/p.jpg'], $mail->fetched);
         self::assertSame('<picture><source data-srcset="/files/up/a/x.jpg"><img src="1p.jpg" data-srcset=\'/files/up/a/y.jpg\'></picture>', $html);
+    }
+
+    public function test_setHtml_fetchesNothing(): void
+    {
+        $mail = new FetchRecordingMail();
+        $mail->setHtml('<img src="https://www.example.org/a.png">');
+
+        self::assertSame([], $mail->fetched);
+    }
+
+    /** a bulk mail builds one message per reader - the image is fetched once for all of them */
+    public function test_twoMailsSameImage_fetchedOnce(): void
+    {
+        [$first, $html1] = self::mail('https://www.example.org/a.png');
+        [$second, $html2] = self::mail('https://www.example.org/a.png');
+
+        self::assertSame(1, FetchRecordingMail::$calls);
+        self::assertSame(['https://www.example.org/a.png'], $first->fetched);
+        self::assertSame([], $second->fetched);
+        self::assertSame('<p><img src="1a.png"></p>', $html2);
+        self::assertSame($html1, $html2);
+    }
+
+    public function test_failedFetch_notRepeatedInProcess(): void
+    {
+        FetchRecordingMail::$image = '';
+        self::mail('https://www.example.org/a.png');
+        [, $html, $embedded] = self::mail('https://www.example.org/a.png');
+
+        self::assertSame(1, FetchRecordingMail::$calls);
+        self::assertSame(0, $embedded);
+        self::assertSame('<p><img src="https://www.example.org/a.png"></p>', $html);
+    }
+
+    /** a queued mail is a serialized object - it carries the html, not the images, and builds again when sent */
+    public function test_serialize_carriesNoImageBodies(): void
+    {
+        FetchRecordingMail::$image = random_bytes(100_000);
+        $mail = new FetchRecordingMail();
+        $mail->setHtml('<p><img src="https://www.example.org/a.png"></p>');
+        $mail->send(['to@example.org']);
+        self::assertStringContainsString(substr(base64_encode(FetchRecordingMail::$image), 0, 76), $mail->sent);
+        $mail->sent = '';   // the capture is the test's own, not a part of the mail
+
+        $serialized = serialize($mail);
+        self::assertLessThan(\strlen(FetchRecordingMail::$image), \strlen($serialized));
+
+        $queued = unserialize($serialized);
+        $queued->send(['to@example.org']);
+        [$html, $images] = self::parts($queued->sent);
+        self::assertSame('<p><img src="1a.png"></p>', $html);
+        self::assertSame([FetchRecordingMail::$image], array_map(base64_decode(...), array_values($images)));
+    }
+
+    /** a file of the sites may change between two mails, and reading it costs no network */
+    public function test_localPath_notCached(): void
+    {
+        foreach ([1, 2] as $i) {
+            $mail = new FetchRecordingMail();
+            $mail->setHtml('<img src="a.png">', null, '/srv/site/files/up/');
+            $mail->buildMessage();
+        }
+
+        self::assertSame(2, FetchRecordingMail::$calls);
     }
 
     private static function srcOnly(string $html): string
@@ -215,7 +332,7 @@ final class HtmlMimeMailImagesTest extends TestCase
     /** a root-relative path names no host AA knows of
      *  @param array<string, mixed>|false $config */
     #[DataProvider('leftAloneProvider')]
-    public function test_setHtml_rootRelative_isLeftAlone(array|false $config, string $src): void
+    public function test_build_rootRelative_isLeftAlone(array|false $config, string $src): void
     {
         ImgCache::useConfig($config);
 
