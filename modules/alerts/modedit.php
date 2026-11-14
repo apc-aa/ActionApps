@@ -248,6 +248,9 @@ if ($has_stat) {
     if ($superadmin && Importer::hasInstallPermission((string) AuthGetUid())) {
         $stat_hlp[] = '<a href="' . safe(AA_INSTAL_PATH . 'central/appstore.php') . '">' . _m('Install from the App store') . '</a>';
     }
+    if (($stat_slice_id !== '') && (($warning = AA_Collection::statSliceWarning($stat_slice_id)) !== '')) {
+        $stat_hlp[] = '<strong>' . safe($warning) . '</strong>';
+    }
     FrmTabSeparator(_m("Statistics"));
     FrmInputSelect("stat_slice_id", _m("Statistics slice"), alertsStatSliceOptions($stored_stat), $stat_slice_id, false, implode('<br>', $stat_hlp));
 }

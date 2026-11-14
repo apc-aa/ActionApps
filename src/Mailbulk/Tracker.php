@@ -11,7 +11,8 @@ use ItemContent;
 /**
  * Writes an open or a click of a tracked address as an item of the statistics slice of the list.
  * The item id is computed from what the event says, so only the first open and the first click
- * on each link of a recipient count. No IP address and nothing of the request is kept.
+ * on each link of a recipient count. The event keeps no IP address and nothing of the request; the log
+ * would, were the history of the slice on - the settings refuse such a slice and State Check warns of it.
  */
 class Tracker
 {

@@ -185,6 +185,26 @@ class AA_Collection
         if ($other) {
             return _m('The slice keeps the statistics of another list already (%1) - each list needs its own', [safe((string) ($other['name'] ?? $other['id']))]);
         }
+        if (self::statSliceKeepsHistory($slice_id)) {
+            return _m('The statistics slice keeps the history of its items - set "Store item history for N days" to 0 in its slice settings');
+        }
+        return '';
+    }
+
+    /** Each new event of a slice with history writes a row of the log, with the address of the request: the
+     *  measuring keeps no address of a reader only when the statistics slice keeps no history. */
+    public static function statSliceKeepsHistory(string $slice_id): bool
+    {
+        return (string) AA_Slice::getModule($slice_id)?->getProperty('historylog') !== '0';
+    }
+
+    /** What to fix on a statistics slice that still measures (HTML-free); '' when nothing. */
+    public static function statSliceWarning(string $slice_id): string
+    {
+        // the readers and the links they clicked are in its items, which slice.php and view.php show without one
+        if (!DB_AA::test('slice', [['id', $slice_id, 'l'], ['reading_password', '', 'NOT LIKE']])) {
+            return _m('The statistics slice has no reading password - set one in its slice settings, so its items are not shown on the web');
+        }
         return '';
     }
 

@@ -928,9 +928,18 @@ namespace Tests\Unit\Legacy {
         /** RecordingDb answers the fields of the slice and the collection already measuring into it (null = none)
          *  @param bool $live    the slice is a live slice module
          *  @param bool $readers the slice is the reader slice of the collection */
-        private static function statSliceWorld(array $fields, ?array $other, bool $live = true, bool $readers = false): void
+        /** @param string $history the historylog setting of the slice; null = never set */
+        private static function statSliceWorld(array $fields, ?array $other, bool $live = true, bool $readers = false, ?string $history = '0', string $password = ''): void
         {
+            // the slice as this world has it, not as an earlier one left it in the module cache
+            $modules = new \ReflectionProperty(\AA_Module::class, '_modules');
+            $modules->setValue(null, array_diff_key((array) $modules->getValue(), [self::STATS => true]));
             RecordingDb::$answer = static fn(string $sql): array => match (true) {
+                str_contains($sql, "FROM `object_text` WHERE object_id")      => ($history === null) ? [] : [
+                    ['tbl' => 'object_text', 'property' => 'aa_type', 'value' => 'AA_Modulesettings_Slice', 'priority' => 0],
+                    ['tbl' => 'object_text', 'property' => 'historylog', 'value' => $history, 'priority' => 0],
+                ],
+                str_starts_with($sql, 'SELECT id FROM "slice" ')              => ($password === '') ? [] : [['id' => pack_id(self::STATS)]],
                 str_starts_with($sql, 'SELECT id FROM field ')                 => array_map(static fn(string $id): array => ['id' => $id], $fields),
                 str_contains($sql, 'FROM alerts_collection AS c')             => $other ? [$other] : [],
                 str_starts_with($sql, 'SELECT id FROM "module" ')             => $live ? [['id' => pack_id(self::STATS)]] : [],
@@ -987,6 +996,25 @@ namespace Tests\Unit\Legacy {
             $this->assertStringContainsString('relation.......1', $refusal);
             $this->assertStringContainsString('source_href.....', $refusal);
             $this->assertStringNotContainsString('category........', $refusal);
+        }
+
+        /** each new event would write a row of the log with the address of the request */
+        public function test_statSlice_keepingHistory_isRefused(): void
+        {
+            foreach ([null, 'ALL', '30'] as $history) {
+                self::statSliceWorld(AA_Collection::STAT_FIELDS, null, history: $history);
+                $this->assertStringContainsString('history', AA_Collection::statSliceRefusal(self::STATS, 'sQjwa'), (string) $history);
+            }
+        }
+
+        public function test_statSliceWarning_noReadingPassword(): void
+        {
+            self::statSliceWorld(AA_Collection::STAT_FIELDS, null);
+            $this->assertStringContainsString('reading password', AA_Collection::statSliceWarning(self::STATS));
+            $this->assertStringContainsString("reading_password NOT LIKE ''", (string) end(RecordingDb::$log));
+
+            self::statSliceWorld(AA_Collection::STAT_FIELDS, null, password: 'set');
+            $this->assertSame('', AA_Collection::statSliceWarning(self::STATS));
         }
 
         public function test_statSlice_malformedId_isRefusedWithoutAsking(): void
