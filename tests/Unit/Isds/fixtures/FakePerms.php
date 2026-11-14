@@ -39,7 +39,13 @@ final class FakePerms extends AA_Permsystem
     {
         self::$saved = self::$saved ?: [AA::$perm];
         $fake        = new self($grants, $groups, $aa);
-        $perm        = new AA_Perm([]);
+        // every module a slice - the type would come from the database
+        $perm        = new class ([]) extends AA_Perm {
+            protected function moduleType(string $module_id): string
+            {
+                return 'S';
+            }
+        };
         (new \ReflectionProperty(AA_Perm::class, 'perm_systems'))->setValue($perm, ['fake' => $fake]);
         AA::$perm = $perm;
 

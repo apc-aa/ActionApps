@@ -91,7 +91,8 @@ const PS_MODP_EDIT_DESIGN    = "B";   // slice | change polls design
 // super         - possibly letters 'QRSTUVW'
 
 //---------- Alerts -----------------
-// The other pages of the module want PS_USERS or PS_FULLTEXT, so an editor sees only the mailings.
+// The other pages of the module want PS_USERS or PS_FULLTEXT, so an editor sees only the mailings;
+// AA_Perm::MODULE_ROLES gives the Editor of the module no other letter.
 // editor        - possibly letters 'hijklmnopqrs'
 const PS_ALERTS_STATS          = "h";   // slice | see the mailings of the list and their statistics
 
@@ -264,7 +265,7 @@ function GetUserSlices(string $perm=''): array|string
     if (!$permission_to || $permission_uid != $user_id) {
         AA::$perm->cache($user_id);
     }
-    if (IsPerm($permission_to['aa'][AA_ID], PS_MANAGE_ALL_SLICES) ) {
+    if (IsPerm($permission_to['aa'][AA_ID] ?? '', PS_MANAGE_ALL_SLICES) ) {
         return 'all';
     }
 
@@ -432,7 +433,8 @@ function FilemanPerms($slice_id): bool
  */
 function GetUserEmails($type = ""): array
 {
-    $slices = GetUserSlices();
+    // the letter of the Owner choice (AA_Module::getUserModules()) - an Editor of an Alerts module has not it
+    $slices = GetUserSlices(PS_EDIT_SELF_ITEMS);
     $where  = [];
     if ($type) {
         $where[] = ['type', $type];
@@ -529,6 +531,14 @@ class AA_Perm {
         ]; // Links module
             // AUTHOR in Links module is public - probably identified by free/freepwd
             // user. (S)he can just add links
+
+    /** Letters of a role in one module type, where they differ from ROLES. Pages and lists check slice
+     *  letters (or "any right") on a module id without asking its type, so an Editor of an Alerts module
+     *  holds only the letter of its mailings page - the author and editor letters would let it in there.
+     */
+    public const MODULE_ROLES = [
+        'Alerts' => ['EDITOR' => PS_ALERTS_STATS],
+    ];
 
     function __construct($systems) {
         foreach ($systems as $system_name) {
@@ -835,7 +845,8 @@ class AA_Perm {
         if ($uid === '') {
             return false;
         }
-        $slice_perm = self::resolveRoles((string) ($this->getUserPerms($uid, 'slice')[$slice_id] ?? ''));
+        $stored     = (string) ($this->getUserPerms($uid, 'slice')[$slice_id] ?? '');
+        $slice_perm = self::resolveRoles($stored, $this->rolesType($slice_id, $stored));
         $aa_perm    = self::resolveRoles((string) ($this->getUserPerms($uid, 'aa')[AA_ID] ?? ''));
         return IsPerm(self::joinSliceAndAAPerm($slice_perm, $aa_perm), $perm);
     }
@@ -1069,7 +1080,7 @@ class AA_Perm {
 
         // Resolve all permission (convert roles into perms)
         foreach ($permission_to["slice"] as $key => $val) {
-            $permission_to["slice"][$key] = self::resolveRoles((string) $val);
+            $permission_to["slice"][$key] = self::resolveRoles((string) $val, $this->rolesType((string) $key, (string) $val));
         }
 
         foreach ($permission_to["aa"] as $key => $val) {
@@ -1148,13 +1159,33 @@ class AA_Perm {
     }
 
     /** Replaces the role digits (1-4) by the letters of the role (ROLES), so rights compare letter by letter
+     *  @param string $module_type type of the module the rights are on - MODULE_ROLES; '' = the ROLES letters
      */
-    public static function resolveRoles(string $perms): string
+    public static function resolveRoles(string $perms, string $module_type = ''): string
     {
-        foreach (self::ROLES as $arr) {
-            $perms = str_replace($arr['id'], $arr['perm'], $perms);
+        $module_roles = self::MODULE_ROLES[$module_type] ?? [];
+        foreach (self::ROLES as $role => $arr) {
+            $perms = str_replace($arr['id'], $module_roles[$role] ?? $arr['perm'], $perms);
         }
         return $perms;
+    }
+
+    /** the type of module $module_id when $perms hold a role of MODULE_ROLES, else '' - no lookup */
+    private function rolesType(string $module_id, string $perms): string
+    {
+        $ids = '';
+        foreach (self::MODULE_ROLES as $roles) {
+            foreach (array_keys($roles) as $role) {
+                $ids .= self::ROLES[$role]['id'];
+            }
+        }
+        return (strpbrk($perms, $ids) === false) ? '' : $this->moduleType($module_id);
+    }
+
+    /** the type of the module the rights are on */
+    protected function moduleType(string $module_id): string
+    {
+        return AA_Module::getModuleType($module_id);
     }
 
     /**

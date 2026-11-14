@@ -33,6 +33,11 @@ final class PermSlicePermTest extends TestCase
             {
                 return ($uid === 'uid-1') ? ($this->stored[$objectType] ?? []) : [];
             }
+
+            protected function moduleType(string $module_id): string
+            {
+                return 'S';
+            }
         };
     }
 

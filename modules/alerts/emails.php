@@ -71,8 +71,9 @@ if ($id) {
 $manager = new Manager('alerts_email', $managed);
 $manager->setAllModules();   // list across all the user's slices, not only the current module
 // Scope to the user's accessible slices, matching GetUserEmails() (which feeds the
-// welcome/alert selects on modedit/send). Superadmin (GetUserSlices()==='all') sees all.
-$myslices = GetUserSlices();
+// welcome/alert selects on modedit/send) and the Owner choice of GetMailManaged(). Superadmin
+// (GetUserSlices()==='all') sees all. Not "any right": an Editor of an Alerts module only reads its mailings.
+$myslices = GetUserSlices(PS_EDIT_SELF_ITEMS);
 if (is_array($myslices)) {
     $slice_ids = array_map('pack_id', array_keys($myslices));
     $manager->setRestrictionConds([
