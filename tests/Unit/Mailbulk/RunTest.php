@@ -472,7 +472,7 @@ final class RunTest extends TestCase
         self::assertSame(Run::ENDED, self::stored($id)['state']);
     }
 
-    public function test_mayControl_editorOfAllItems_andARelatedList(): void
+    public function test_mayControl_editorOfAllItems_evenOfAListNoLongerRelated(): void
     {
         class_exists(\AA_Perm::class);              // its first load sets AA::$perm - not over the stub
         $perm     = AA::$perm;
@@ -491,10 +491,13 @@ final class RunTest extends TestCase
             $run = self::runOf(self::queued(1));
 
             self::assertSame([true, false, false, false], [$run->mayControl('editor'), $run->mayControl('admin'), $run->mayControl(''), $run->mayControl('nobody')]);
+            self::assertTrue(TestRun::mayControlPair('editor', 'abcde', TestRun::SLICE, true));
             TestRun::$relates = false;
-            self::assertFalse($run->mayControl('editor'), 'the list does not belong to the slice');
+            self::assertTrue($run->mayControl('editor'), 'the list no longer belongs to the slice: the sending can still be stopped');
+            self::assertFalse(TestRun::mayControlPair('editor', 'abcde', TestRun::SLICE, true), 'but not sent again');
             TestRun::$itemSlice = null;
             self::assertSame([false, true], [$run->mayControl('editor'), $run->mayControl('admin')], 'the item gone: a superadmin ends it');
+            self::assertFalse(TestRun::mayControlPair('admin', 'abcde', null, true), 'a gone item is never sent');
         } finally {
             AA::$perm = $perm;
         }

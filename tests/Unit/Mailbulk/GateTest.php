@@ -56,6 +56,8 @@ namespace Tests\Unit\Mailbulk {
     final class GateLetter extends ItemLetter
     {
         public static ?string $problem = null;
+        public static ?\Throwable $problemThrows = null;
+        public static string $subject = 'Spring news';
         /** @var list<string> */
         public static array $selection = [];
         /** @var list<string> */
@@ -66,6 +68,8 @@ namespace Tests\Unit\Mailbulk {
         public static function reset(): void
         {
             self::$problem       = null;
+            self::$problemThrows = null;
+            self::$subject       = 'Spring news';
             self::$selection     = [];
             self::$testAddresses = [];
             self::$asked         = [];
@@ -73,6 +77,9 @@ namespace Tests\Unit\Mailbulk {
 
         public function problem(): ?string
         {
+            if (self::$problemThrows !== null) {
+                throw self::$problemThrows;
+            }
             return self::$problem;
         }
 
@@ -89,7 +96,7 @@ namespace Tests\Unit\Mailbulk {
         public function messageFor(string $readerId, bool $test = false): ?Message
         {
             self::$asked[] = [$readerId, $test];
-            return new Message("$readerId@example.org", 'Spring news', '<p>Hello</p>', 'news@example.org', $test ? [] : ['List-Unsubscribe' => '<https://example.org/u>']);
+            return new Message("$readerId@example.org", self::$subject, '<p>Hello</p>', 'news@example.org', $test ? [] : ['List-Unsubscribe' => '<https://example.org/u>']);
         }
 
         public function testAddresses(string $userEmail): array
@@ -109,22 +116,27 @@ namespace Tests\Unit\Mailbulk {
         public static ?string $itemSlice = TestRun::SLICE;
         public static bool $mayEdit = true;
         public static bool $relates = true;
+        public static bool $listExists = true;
         /** @var list<array{string, string, string}> */
         public static array $refusals = [];
+        /** @var list<string> the class of each failure logged */
+        public static array $failures = [];
         public static int $noStores = 0;
         public static ?ScriptedMailer $mailer = null;
-        /** @var list<string> slices opened, per call */
+        /** @var list<string> what each call opened: item, or readers (and the item) */
         public static array $opened = [];
 
         public static function reset(): void
         {
-            self::$itemSlice = TestRun::SLICE;
-            self::$mayEdit   = true;
-            self::$relates   = true;
-            self::$refusals  = [];
-            self::$noStores  = 0;
-            self::$mailer    = new ScriptedMailer();
-            self::$opened    = [];
+            self::$itemSlice  = TestRun::SLICE;
+            self::$mayEdit    = true;
+            self::$relates    = true;
+            self::$listExists = true;
+            self::$refusals   = [];
+            self::$failures   = [];
+            self::$noStores   = 0;
+            self::$mailer     = new ScriptedMailer();
+            self::$opened     = [];
         }
 
         protected function itemSlice(string $itemId): ?string
@@ -132,19 +144,24 @@ namespace Tests\Unit\Mailbulk {
             return self::$itemSlice;
         }
 
-        protected function mayEdit(string $slice): bool
+        protected function listExists(string $list): bool
         {
-            return self::$mayEdit;
+            return self::$listExists;
         }
 
-        protected function relates(string $list, string $slice): bool
+        protected function mayControl(string $list, ?string $slice, bool $needsRelation): bool
         {
-            return self::$relates;
+            return ($slice !== null) && self::$mayEdit && (!$needsRelation || self::$relates);
         }
 
         protected function logRefusal(string $list, string $slice, string $itemId): void
         {
             self::$refusals[] = [$list, $slice, $itemId];
+        }
+
+        protected function logFailure(string $list, string $itemId, \Throwable $e): void
+        {
+            self::$failures[] = $e::class;
         }
 
         protected function campaign(string $list, string $itemId): Campaign
@@ -162,9 +179,9 @@ namespace Tests\Unit\Mailbulk {
             return self::$mailer ?? throw new \LogicException('No mailer');
         }
 
-        protected function withSlices(string $list, string $slice, Closure $fn): mixed
+        protected function withSlices(string $list, string $itemId, bool $readers, Closure $fn): mixed
         {
-            self::$opened[] = $slice;
+            self::$opened[] = $readers ? 'readers' : 'item';
             return $fn();
         }
 
@@ -283,7 +300,9 @@ namespace Tests\Unit\Mailbulk {
             TestGate::$itemSlice = TestRun::SLICE;
             self::assertSame('', (new TestGate())->control('ab"de', self::ITEM), 'no list id');
             self::assertSame('', (new TestGate())->control(self::LIST, 'cafe'), 'no long item id');
-            self::assertSame(0, TestGate::$noStores);
+            TestGate::$listExists = false;
+            self::assertSame('', (new TestGate())->control(self::LIST, self::ITEM), 'no such list');
+            self::assertSame(5, TestGate::$noStores, 'a visitor\'s page without the control is not cached either');
         }
 
         public function test_control_unrelatedList_isEmpty(): void
@@ -291,6 +310,25 @@ namespace Tests\Unit\Mailbulk {
             TestGate::$relates = false;
             self::assertSame('', (new TestGate())->control(self::LIST, self::ITEM));
             self::assertFalse((new TestGate())->allowed(self::LIST, self::ITEM));
+            self::assertTrue((new TestGate())->allowed(self::LIST, self::ITEM, false), 'stopping needs no relation');
+        }
+
+        public function test_unrelatedList_sendingStarted_canOnlyBeStopped(): void
+        {
+            $id                = self::sending(3, Run::ERROR, ['note' => 'SMTP is down']);
+            TestGate::$relates = false;
+
+            $html = (new TestGate())->control(self::LIST, self::ITEM);
+            self::assertSame(['stop'], self::actions($html));
+            self::assertStringContainsString('The list is not related to the item&apos;s slice', $html);
+
+            self::assertSame(["The list is not related to the item's slice", Gate::ERR_DENIED], (new TestGate())->act('resume', self::LIST, self::ITEM), 'plain text - the response escapes it');
+            self::assertSame([[self::LIST, TestRun::SLICE, self::ITEM]], TestGate::$refusals);
+
+            [, $error] = (new TestGate())->act('stop', self::LIST, self::ITEM);
+            self::assertSame(0, $error);
+            self::assertSame(Run::ENDED, self::stored($id)['state']);
+            self::assertCount(1, TestGate::$refusals, 'stop is no refusal');
         }
 
         /** @return array<string, array{?string, array<string, string>, list<string>, list<string>}> state => [run state, its props, actions, texts] */
@@ -320,6 +358,7 @@ namespace Tests\Unit\Mailbulk {
                 self::assertStringContainsString('<span class="aa-mailbulk-text">' . $text . '</span>', $html);
             }
             self::assertSame([], GateLetter::$asked, 'the control renders no mail');
+            self::assertNotContains('readers', TestGate::$opened, 'no template of the page runs with the readers open');
         }
 
         public function test_control_missingAlias_showsProblemAndNoButtons(): void
@@ -346,18 +385,63 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame(1, TestGate::$noStores);
         }
 
+        public function test_failure_isLogged_andTheControlStays(): void
+        {
+            GateLetter::$problemThrows = new \JsonException('damaged');
+
+            self::assertStringContainsString('cannot be shown', (new TestGate())->control(self::LIST, self::ITEM));
+            self::assertSame(['The action failed - see the log', Gate::ERR_FAILED], (new TestGate())->act('test', self::LIST, self::ITEM));
+            self::assertSame([\JsonException::class, \JsonException::class], TestGate::$failures);
+            self::assertSame([], self::runIds());
+        }
+
+        public function test_info_failure_isEmpty(): void
+        {
+            self::sending(2, Run::DONE, ['cursor' => '2', 'outcomes' => '{damaged']);
+
+            self::assertSame('', (new TestGate())->info(self::LIST, self::ITEM, 'sent'));
+            self::assertSame([\JsonException::class], TestGate::$failures);
+        }
+
+        public function test_itemId_inUpperCase_isTheSameSending(): void
+        {
+            $id = self::sending(3, Run::SENDING);
+
+            self::assertSame(0, (new TestGate())->act('stop', self::LIST, strtoupper(self::ITEM))[1]);
+            self::assertSame(Run::ENDED, self::stored($id)['state']);
+        }
+
         public function test_act_prepare_asksWithTheCount(): void
         {
             self::sending(1, Run::DONE, ['cursor' => '1']);
 
             self::assertSame(['Send to 2 recipients?', 0], (new TestGate())->act('prepare', self::LIST, self::ITEM), 'the reader sent to before is left out');
-            self::assertSame([TestRun::SLICE], TestGate::$opened);
+            self::assertSame(['item', 'readers'], TestGate::$opened, 'the problem with the item only, the readers then');
 
             GateLetter::$selection = [self::reader(0)];
             self::assertSame(Gate::ERR_FAILED, (new TestGate())->act('prepare', self::LIST, self::ITEM)[1], 'nobody pending');
 
             GateLetter::$problem = 'No <alias>';
-            self::assertSame(['No &lt;alias&gt;', Gate::ERR_FAILED], (new TestGate())->act('prepare', self::LIST, self::ITEM));
+            self::assertSame(['No <alias>', Gate::ERR_FAILED], (new TestGate())->act('prepare', self::LIST, self::ITEM), 'plain text - the response escapes it');
+        }
+
+        public function test_act_prepare_whileSending_isRefusedBeforeAsking(): void
+        {
+            self::sending(3, Run::SENDING);
+
+            self::assertSame(['A sending of the item to the list is not finished yet', Gate::ERR_FAILED], (new TestGate())->act('prepare', self::LIST, self::ITEM));
+            self::assertSame([], TestGate::$opened, 'no letter made');
+        }
+
+        public function test_act_send_noLock_saysSo(): void
+        {
+            TestCampaign::$lockedByOthers = true;
+            TestCampaign::$holder         = null;
+
+            [$text, $error] = (new TestGate())->act('send', self::LIST, self::ITEM);
+
+            self::assertSame(Gate::ERR_FAILED, $error);
+            self::assertStringContainsString('no lock', $text);
         }
 
         public function test_act_send_startsOneRun(): void
@@ -394,12 +478,13 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame([[self::reader(0), true]], GateLetter::$asked, 'one mail, made as a test');
             self::assertStringContainsString('The test went to t1@example.org, t2@example.org.', $html);
             self::assertSame(['test', 'send'], self::actions($html));
+            self::assertSame(['item', 'readers'], TestGate::$opened, 'the control after the test made no letter again');
             self::assertSame([], self::runIds());
             self::assertSame($rows, count(TableDb::rows('object_text')), 'no state written');
             self::assertSame([], TableDb::rows('toexecute'));
         }
 
-        public function test_act_test_failedAddress_isSaidEscaped(): void
+        public function test_act_test_failedAddress_isSaidInTheControl(): void
         {
             GateLetter::$testAddresses = ['t1@example.org'];
             TestGate::$mailer->outcomes = [Outcome::Failed];
@@ -407,8 +492,17 @@ namespace Tests\Unit\Mailbulk {
 
             [$html, $error] = (new TestGate())->act('test', self::LIST, self::ITEM);
 
-            self::assertSame(Gate::ERR_FAILED, $error);
+            self::assertSame(0, $error, 'the control, not an error text');
             self::assertStringContainsString('t1@example.org (550 &lt;b&gt;no&lt;/b&gt;)', $html);
+            self::assertSame(['test', 'send'], self::actions($html));
+        }
+
+        public function test_act_test_emptyMail_isRefused(): void
+        {
+            GateLetter::$subject = ' ';
+
+            self::assertSame(['The mail has no subject or no text', Gate::ERR_FAILED], (new TestGate())->act('test', self::LIST, self::ITEM));
+            self::assertSame([], TestGate::$mailer?->sent());
         }
 
         public function test_act_stop_endsTheRun(): void
@@ -459,6 +553,8 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame(['', '0', ''], [$gate->info(self::LIST, self::ITEM, 'state'), $gate->info(self::LIST, self::ITEM, 'total'), $gate->info(self::LIST, self::ITEM, 'date')]);
 
             self::sending(4, Run::DONE, ['cursor' => '4', 'outcomes' => '{"1":"f","2":"u"}', 'finished' => '1900000123']);
+            // a Gate reads each sending once per request
+            $gate   = new TestGate();
             $values = array_map(static fn(string $what): string => $gate->info(self::LIST, self::ITEM, $what), Gate::INFO);
 
             self::assertSame([Run::DONE, '4', '2', '1', '0', '1', '1900000123'], $values);

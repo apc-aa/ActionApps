@@ -10839,17 +10839,22 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
  *    {mailbulk:<list id>:<item id>} - the control: its buttons test, send, stop and continue the sending
  *    {mailbulk:info:<list id>:<item id>:<what>} - state ('' not sent, sending, stopped, error, done), total,
  *        sent, failed, skipped, uncertain or date (unix time of the end of the last run), summed over the runs
- *  Both give nothing without the right to edit all items of the item's slice, or for a list of another slice.
- *  The page is not page-cached then. The buttons post to central/responder.php - the template sends nothing.
+ *  Both give nothing without the right to edit all items of the item's slice, or for a list of another slice
+ *  (the control then shows only a sending started before, to stop it). A page with the command is never
+ *  page-cached. The buttons post to central/responder.php - the template sends nothing.
  */
 class AA_Stringexpand_Mailbulk extends AA_Stringexpand_Nevercache {
 
-    function expand($list='', $item='', $info_item='', $what=''): string
+    /** one per request: it keeps what it read of each item and list for the next control */
+    private static ?\AA\Mailbulk\Gate $gate = null;
+
+    // the names say both forms: {mailbulk:<list>:<item>} and {mailbulk:info:<list>:<item>:<what>}
+    function expand($list_or_info='', $item_or_list='', $item='', $what=''): string
     {
-        if ((string)$list === 'info') {
-            return $this->gate()->info((string)$item, (string)$info_item, (string)$what);
+        if ((string)$list_or_info === 'info') {
+            return $this->gate()->info((string)$item_or_list, (string)$item, (string)$what);
         }
-        $control = $this->gate()->control((string)$list, (string)$item);
+        $control = $this->gate()->control((string)$list_or_info, (string)$item_or_list);
         if ($control !== '') {
             AA::Stringexpander()->addRequire('aa-mailbulk@1');
         }
@@ -10858,7 +10863,7 @@ class AA_Stringexpand_Mailbulk extends AA_Stringexpand_Nevercache {
 
     protected function gate(): \AA\Mailbulk\Gate
     {
-        return new \AA\Mailbulk\Gate();
+        return self::$gate ??= new \AA\Mailbulk\Gate();
     }
 }
 

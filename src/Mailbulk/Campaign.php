@@ -91,10 +91,50 @@ class Campaign
         return $sum + ['date' => $date];
     }
 
+    /** a run is not finished, or a step of an ended one may still be sending - no new run may start */
+    public function unfinished(): bool
+    {
+        $runs = $this->runs();
+        $ours = array_map(static fn(Run $run): string => (string) $run->getId(), $runs);
+        return (self::activeOf($runs) !== null) || (bool) array_intersect(static::runClass()::leasedOf($this->itemId), $ours);
+    }
+
     /** @return list<string> the readers of $letter no run of the pair has sent the mail to, nor may have */
     public function pending(Letter $letter): array
     {
         return $this->pendingOf($letter, $this->runs());
+    }
+
+    /** the mail of the first of $pending still valid - a reader who left since the selection has none
+     *  @param list<string> $pending
+     *  @throws BatchFailed RENDER the letter failed to make it; the log has where */
+    public function testMessage(Letter $letter, array $pending): ?Message
+    {
+        foreach (array_slice($pending, 0, self::TEST_READERS) as $readerId) {
+            try {
+                $message = $letter->messageFor($readerId, true);
+            } catch (\Throwable $e) {
+                // never the text, which may carry data or a secret
+                AA_Log::write(Toexecute::FAILED_EVENT, "Mailbulk_{$this->list}_{$this->itemId}", Toexecute::failureParams($this->itemId, $e));
+                throw new BatchFailed(self::RENDER);
+            }
+            if ($message !== null) {
+                return $message;
+            }
+        }
+        return null;
+    }
+
+    /** a template that renders to nothing must not go to thousands; the text of the mail counts as the
+     *  plain-text part shows it (no head, style nor script), and an image alone is content */
+    public static function hasContent(?Message $message): bool
+    {
+        if (($message === null) || (trim($message->subject) === '')) {
+            return false;
+        }
+        require_once constant('AA_BASE_PATH') . 'include/mail.php';
+        $text = trim(html2text($message->html), " \t\n\r\0\x0B\u{a0}");
+        return ($text !== '') || (preg_match('/<img\b/i', $message->html) === 1);
     }
 
     /**
@@ -121,13 +161,11 @@ class Campaign
         try {
             // what others started before the lock
             $this->runs = null;
-            $runs       = $this->runs();
-            $class      = static::runClass();
-            $ours       = array_map(static fn(Run $run): string => (string) $run->getId(), $runs);
-            if (self::activeOf($runs) || array_intersect($class::leasedOf($this->itemId), $ours)) {
+            if ($this->unfinished()) {
                 throw new BatchFailed(self::ACTIVE);
             }
-            $pending = $this->pendingOf($letter, $runs);
+            $class   = static::runClass();
+            $pending = $this->pendingOf($letter, $this->runs());
             if (!$pending) {
                 throw new BatchFailed(self::NOBODY);
             }
@@ -187,43 +225,11 @@ class Campaign
         return null;
     }
 
-    /** the mail of the first of $pending still valid - a reader who left since the selection has none
-     *  @param list<string> $pending
-     *  @throws BatchFailed RENDER the letter failed to make it; the log has where */
-    private function testMessage(Letter $letter, array $pending): ?Message
-    {
-        foreach (array_slice($pending, 0, self::TEST_READERS) as $readerId) {
-            try {
-                $message = $letter->messageFor($readerId, true);
-            } catch (\Throwable $e) {
-                // never the text, which may carry data or a secret
-                AA_Log::write(Toexecute::FAILED_EVENT, "Mailbulk_{$this->list}_{$this->itemId}", Toexecute::failureParams($this->itemId, $e));
-                throw new BatchFailed(self::RENDER);
-            }
-            if ($message !== null) {
-                return $message;
-            }
-        }
-        return null;
-    }
-
     /** @param list<Run> $runs
      *  @return list<string> */
     private function pendingOf(Letter $letter, array $runs): array
     {
         $reached = array_flip(array_merge(...array_map(static fn(Run $run): array => $run->delivered(), $runs)));
         return array_values(array_filter($letter->selection(), static fn(string $id): bool => !isset($reached[$id])));
-    }
-
-    /** a template that renders to nothing must not go to thousands; the text of the mail counts as the
-     *  plain-text part shows it (no head, style nor script), and an image alone is content */
-    private static function hasContent(?Message $message): bool
-    {
-        if (($message === null) || (trim($message->subject) === '')) {
-            return false;
-        }
-        require_once constant('AA_BASE_PATH') . 'include/mail.php';
-        $text = trim(html2text($message->html), " \t\n\r\0\x0B\u{a0}");
-        return ($text !== '') || (preg_match('/<img\b/i', $message->html) === 1);
     }
 }

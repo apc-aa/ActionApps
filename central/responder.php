@@ -31,6 +31,7 @@ use AA\IO\DB\DB_AA;
 use AA\Mailbulk\Gate;
 use AA\Optimize\CheckSessionidUse;
 use AA\Security\LoginThrottle;
+use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\LoginToken;
 
@@ -743,32 +744,32 @@ class AA_Responder_Alertitem extends AA_Responder
 /** An action of the control of a sending ({mailbulk}): AA\Mailbulk\Gate::act() */
 class AA_Responder_Mailbulk extends AA_Responder
 {
-    /** prefixed: the params come from $_REQUEST, where a cookie of the site beats POST */
-    protected string $action;
-    protected string $list;
-    protected string $item_id;
+    private ?Gate $gate = null;
 
-    public function __construct($param = null)
-    {
-        $this->action  = is_string($param['mb_action'] ?? null) ? $param['mb_action'] : '';
-        $this->list    = is_string($param['mb_list'] ?? null) ? $param['mb_list'] : '';
-        $this->item_id = is_string($param['mb_item'] ?? null) ? $param['mb_item'] : '';
-    }
-
+    /** the weaker right - stop and state need no list of the slice; act() checks what each action needs */
     public function isPerm(): bool
     {
-        if (!is_long_id($this->item_id)) {
-            return false;
-        }
-        $item = AA_Items::getItem(new zids($this->item_id, 'l'));
-        // the list is checked by the Gate - it must be related to this slice
-        return $item && IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID());
+        [, $list, $item_id] = self::posted();
+        return $this->gate()->allowed($list, $item_id, false);
     }
 
     public function run(): AA_Response
     {
-        [$text, $error] = (new Gate())->act($this->action, $this->list, $this->item_id);
+        [$text, $error] = $this->gate()->act(...self::posted());
         return new AA_Response($text, $error);
+    }
+
+    protected function gate(): Gate
+    {
+        return $this->gate ??= new Gate();
+    }
+
+    /** action, list, item - from POST only: the params of a responder are $_REQUEST, where a cookie of the
+     *  site beats POST and could turn a test into a send
+     *  @return array{string, string, string} */
+    private static function posted(): array
+    {
+        return array_map(static fn(string $name): string => InputVars::stringPOST($name), ['mb_action', 'mb_list', 'mb_item']);
     }
 }
 

@@ -107,18 +107,47 @@ class Run extends BatchRun
         return 'Mailbulk_' . $this->list . '_' . $this->subject;
     }
 
-    /** an editor of all items of the item's slice, when the list may send them; once the item is gone, a superadmin - to end it */
+    /** an editor of all items of the item's slice, to stop it even after the list stopped belonging to the slice;
+     *  once the item is gone, a superadmin. What sends again (Continue) checks the list too (Gate). */
     public function mayControl(string $uid): bool
+    {
+        return self::mayControlPair($uid, (string) $this->list, $this->itemSlice(), false);
+    }
+
+    /**
+     * The rule of the rights to a sending: an editor of all items of the item's slice; with $needsRelation,
+     * only when the list may send items of that slice. A gone item ($slice null) only a superadmin ends.
+     */
+    public static function mayControlPair(string $uid, string $list, ?string $slice, bool $needsRelation): bool
     {
         if (in_array($uid, ['', 'nobody'], true)) {
             return false;
         }
         class_exists(\AA_Perm::class);           // include/perm_core.php sets AA::$perm - a queue step may not have loaded it
-        $slice = $this->itemSlice();
         if ($slice === null) {
-            return AA::$perm->isSuperadminUser($uid);
+            return !$needsRelation && AA::$perm->isSuperadminUser($uid);
         }
-        return AA::$perm->hasSlicePerm($uid, $slice, PS_EDIT_ALL_ITEMS) && $this->listRelates($slice);
+        if (!AA::$perm->hasSlicePerm($uid, $slice, PS_EDIT_ALL_ITEMS)) {
+            return false;
+        }
+        return !$needsRelation || static::listRelates($list, $slice);
+    }
+
+    /** the slice of an item; null when the item is gone */
+    public static function sliceOfItem(string $itemId): ?string
+    {
+        $slices = ViewSlices::itemSlicesFromDb('l', [$itemId]);
+        return $slices ? (string) reset($slices) : null;
+    }
+
+    /** the slices a step opens: of the readers of $list and the item's $slice
+     *  @return list<string> */
+    public static function slicesOf(string $list, ?string $slice): array
+    {
+        // not AA_Collection::getReaderSlice(): it needs the whole Alerts module loaded and reads the module, not just its id
+        $readers = DB_AA::select1('slice_id', 'SELECT slice_id FROM `alerts_collection`', [['id', $list]]);
+        $slices  = [is_string($readers) ? unpack_id($readers) : '', (string) $slice];
+        return array_values(array_unique(array_filter($slices, is_long_id(...))));
     }
 
     /** a sending of an item deleted ends; one in the trash goes on to its problem() */
@@ -143,24 +172,20 @@ class Run extends BatchRun
      *  @return list<string> */
     protected function slices(): array
     {
-        // not AA_Collection::getReaderSlice(): it needs the whole Alerts module loaded and reads the module, not just its id
-        $readers = DB_AA::select1('slice_id', 'SELECT slice_id FROM `alerts_collection`', [['id', (string) $this->list]]);
-        $slices  = [is_string($readers) ? unpack_id($readers) : '', (string) $this->itemSlice()];
-        return array_values(array_unique(array_filter($slices, is_long_id(...))));
+        return self::slicesOf((string) $this->list, $this->itemSlice());
     }
 
     /** the slice of the item sent; null when the item is gone */
     protected function itemSlice(): ?string
     {
-        $slices = ViewSlices::itemSlicesFromDb('l', [(string) $this->subject]);
-        return $slices ? (string) reset($slices) : null;
+        return self::sliceOfItem((string) $this->subject);
     }
 
     /** the list may send items of $slice */
-    protected function listRelates(string $slice): bool
+    protected static function listRelates(string $list, string $slice): bool
     {
         require_once constant('AA_BASE_PATH') . 'modules/alerts/alerts_sending.php';
-        return \AA_Collection::relatesToSlice((string) $this->list, $slice);
+        return \AA_Collection::relatesToSlice($list, $slice);
     }
 
     /** a send started at the end of the budget must not be taken for a dead step */

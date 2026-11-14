@@ -52,7 +52,7 @@ class TestRun extends Run
         return self::$itemSlice;
     }
 
-    protected function listRelates(string $slice): bool
+    protected static function listRelates(string $list, string $slice): bool
     {
         return self::$relates && ($slice === self::$itemSlice);
     }

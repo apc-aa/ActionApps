@@ -48,6 +48,15 @@ final class StringexpandMailbulkTest extends TestCase
         self::assertStringContainsString('javascript/mailbulk.js', self::head());
     }
 
+    // the module posts through AA_Response() of the AA JS library
+    public function test_expand_control_requiresAnAaJslibVariant(): void
+    {
+        $command = self::command(control: fn(): string => '<span data-aa-mailbulk></span>');
+        $command->expand(self::LIST, self::ITEM);
+
+        self::assertMatchesRegularExpression('~javascript/aajslib-(jquery|legacy)[^"]*\.(js|php)~', self::head());
+    }
+
     public function test_expand_info_goesToTheGate(): void
     {
         $command = self::command(info: fn(string $list, string $item, string $what): string => "$list|$item|$what");
