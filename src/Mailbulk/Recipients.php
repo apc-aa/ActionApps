@@ -29,7 +29,8 @@ final class Recipients extends AA_Object
     }
 
     /**
-     * Stores $readerIds, owned by the item sent, in the caller's transaction
+     * Stores $readerIds, owned by the item sent - in the caller's transaction, so that they commit with
+     * the run that sends to them; without one, in a transaction of its own
      * @param array<mixed> $readerIds long ids of the readers, in the order of sending
      * @return string the id of the list
      * @throws \InvalidArgumentException $itemId or a reader is no long id in small letters
