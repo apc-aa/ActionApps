@@ -16,6 +16,13 @@ namespace AA\Api;
 
 class JsonResponse
 {
+    /**
+     * Every API answer is about the person asking - so it belongs in no cache but their browser's.
+     * Refusals included: a shared proxy holding one person's 401 or 404 under the URL would hand
+     * it to the next person through it.
+     */
+    public const NO_STORE = 'Cache-Control: private, no-store';
+
     private int   $status;
     private array $payload;
 
@@ -35,6 +42,20 @@ class JsonResponse
         return new self($status, ['error' => $message] + $extra);
     }
 
+    /**
+     * The headers this answer sends, in the order emit() sends them.
+     *
+     * @return list<string>
+     */
+    public function headers(): array
+    {
+        return [
+            'Content-Type: application/json; charset=utf-8',
+            'X-Content-Type-Options: nosniff',
+            self::NO_STORE,
+        ];
+    }
+
     public function emit(): void
     {
         // http_response_code() is safe to call even after headers are sent —
@@ -42,8 +63,9 @@ class JsonResponse
         // set the status unconditionally or it stays at the pre-script default.
         http_response_code($this->status);
         if (!headers_sent()) {
-            header('Content-Type: application/json; charset=utf-8');
-            header('X-Content-Type-Options: nosniff');
+            foreach ($this->headers() as $header) {
+                header($header);
+            }
         }
         // < and & escaped: a body that ends up rendered as HTML (output before the header) carries no
         // markup; an invalid byte of foreign data becomes U+FFFD instead of an empty body

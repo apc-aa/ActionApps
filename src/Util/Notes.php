@@ -19,11 +19,12 @@ final class Notes
 
     /** May the current user write notes at all? The same predicate admin/aa_note.php
      *  guards its actions with - a user who would only get "no permissions" back is
-     *  not shown the corner.
+     *  not shown the corner. The form posts on the page's module, so that module must
+     *  also let aa_note.php run (AA_Module::mayRunPage()).
      */
     public static function mayWrite(): bool
     {
-        return IsSuperadmin() || IfSlPerm(PS_EDIT_ALL_ITEMS);
+        return IsSuperadmin() || (IfSlPerm(PS_EDIT_ALL_ITEMS) && \AA_Module::mayRunPageOn('admin/aa_note.php', (string) \AA::$module_id));
     }
 
     /** The corner as an admin page emits it (AA_Adminpageutil::printHead() and the

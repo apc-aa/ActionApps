@@ -122,7 +122,8 @@ class AA_Router
         return ($this->xpage_listings['out'] > 0) && ($this->xpage_listings['in'] === 0);
     }
 
-    protected function setWebLangs(array $web_languages): void
+    /** public, so a router built with "new" (not through singleton()) can be given the languages too */
+    public function setWebLangs(array $web_languages): void
     {
         $this->web_languages = $web_languages;
     }

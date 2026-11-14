@@ -45,12 +45,13 @@ final class Client implements ClientInterface
      * request can choose - otherwise whoever chooses it reads the server's internal services
      * through AA. The sites' own domains keep working: they resolve to public addresses.
      * @param ?HttpClientInterface $transport the connection under the guard; another one for tests only
+     * @param list<string>         $types     as in the constructor
      */
-    public static function publicOnly(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $transport = null, int $maxBytes = 0): self
+    public static function publicOnly(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $transport = null, int $maxBytes = 0, array $types = []): self
     {
         // no proxy: the guard checks the address it resolved itself, a proxy from the server's
         // environment would look the name up again and could reach the private network
-        return new self($timeout, $idle, $agent, $redirects, (new NoPrivateNetworkHttpClient($transport ?? HttpClient::create()))->withOptions(['no_proxy' => '*']), $maxBytes);
+        return new self($timeout, $idle, $agent, $redirects, (new NoPrivateNetworkHttpClient($transport ?? HttpClient::create()))->withOptions(['no_proxy' => '*']), $maxBytes, types: $types);
     }
 
     /**
@@ -69,8 +70,11 @@ final class Client implements ClientInterface
      *                       closed before the answer - a POST that did its work does it twice. The
      *                       NativeHttpClient Symfony takes without the curl extension never reuses one
      * @param ?ClientCertificate $certificate shown to the server in every TLS handshake
+     * @param list<string> $types media types (lower case) whose body is read, [] = every one; the body of
+     *                       another type is not downloaded and comes back empty - a fetcher of pages does not
+     *                       download a film to find it is no page
      */
-    public function __construct(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0, bool $reuse = true, private readonly ?ClientCertificate $certificate = null)
+    public function __construct(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0, bool $reuse = true, private readonly ?ClientCertificate $certificate = null, private readonly array $types = [])
     {
         $options = [
             'max_duration'  => $timeout,
@@ -109,7 +113,11 @@ final class Client implements ClientInterface
                 $out[strtolower($name)] = (string) ($values[0] ?? '');
             }
             // false: do not let the library throw on 4xx/5xx - the status is the answer we want
-            $content = ($this->maxBytes > 0) ? $this->limitedContent($answer, $out, $url, strtoupper($method) !== 'HEAD' && !in_array($status, [204, 304], true)) : $answer->getContent(false);
+            $content = match (true) {
+                !$this->wanted($out['content-type'] ?? '') => $this->skipContent($answer),
+                $this->maxBytes > 0                        => $this->limitedContent($answer, $out, $url, strtoupper($method) !== 'HEAD' && !in_array($status, [204, 304], true)),
+                default                                    => $answer->getContent(false),
+            };
             // where a 3xx we did not follow points, resolved against the request - the link
             // checker records the whole chain and State Check compares the target
             $redirect = (string) ($answer->getInfo('redirect_url') ?? '');
@@ -127,6 +135,25 @@ final class Client implements ClientInterface
         }
 
         return new Response($status, $content, $out, $redirect);
+    }
+
+    /** the media type of a Content-Type header, in lower case, without its parameters: "text/html" */
+    public static function mediaType(string $content_type): string
+    {
+        return strtolower(trim(explode(';', $content_type, 2)[0]));
+    }
+
+    /** whether a body of $content_type is read: its media type is one of $types, or every one is */
+    private function wanted(string $content_type): bool
+    {
+        return ($this->types === []) || in_array(self::mediaType($content_type), $this->types, true);
+    }
+
+    /** the connection is closed rather than the body read; where a redirect points is still known */
+    private function skipContent(ResponseInterface $answer): string
+    {
+        $answer->cancel();
+        return '';
     }
 
     /**

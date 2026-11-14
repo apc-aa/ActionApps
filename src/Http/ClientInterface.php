@@ -16,6 +16,10 @@ interface ClientInterface
      * @param  array<string, string> $headers
      * @throws TransportException    when there was no answer at all (timeout, DNS, refused)
      * @throws ResponseTooLargeException when the client limits the size and the body is over it
+     *
+     * A key can travel in each of $url, $body and $headers (a query parameter, a form with a signed
+     * assertion, the Authorization header), so PHP keeps them out of stack traces and dumps. The
+     * attribute is not inherited: an implementation marks them again, or its traces show them.
      */
-    public function request(string $method, string $url, ?string $body = null, array $headers = []): Response;
+    public function request(string $method, #[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $body = null, #[\SensitiveParameter] array $headers = []): Response;
 }

@@ -496,6 +496,7 @@ class AA_Object extends AA_Storable implements AA_iEditable
     /** AA_iEditable method - save the object to the database
      *
      * @return string|false - id of saved data or false
+     * @throws \UnexpectedValueException  the id holds an object of another module or class - nothing written
      * @throws Exception
      */
     public function save(): false|string
@@ -503,6 +504,7 @@ class AA_Object extends AA_Storable implements AA_iEditable
         if (!$this->aa_owner) {
             throw new \RuntimeException('No owner set for property ' . $this->aa_id . ' - ' . $this->aa_name);
         }
+        $this->refuseForeign();
 
         $this->delete();
         $object_id = $this->getId();
@@ -537,19 +539,21 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return $this->aa_id;
     }
 
-
-    public static function updateProperties(array $props): void
-    {
-        AA_Object::load($id, $class)?->setOwnerId($dest_slice_id)->update(['aa_owner']);
-    }
-
-
-    /** Update just selected properties
+    /** Update just selected properties - also the owner: a task moved to another slice keeps its id
      * @param  array  $prop_names  like ['status', 'status_text']
+     * @throws \UnexpectedValueException  the id holds an object of another class - nothing written
      * @throws Exception
      */
     public function update(array $prop_names): void
     {
+        if (!$prop_names) {
+            // deleteObjects() without properties would delete the whole object
+            throw new \InvalidArgumentException('No property to update in ' . static::class);
+        }
+        $stored = self::storedIdentity((string) $this->getId());
+        if (($stored['aa_type'] !== '') && !self::isClass($stored['aa_type'], static::class)) {
+            $this->refuse($stored);
+        }
         // @todo DB Transaction start
         static::deleteObjects([$this->getId()], $prop_names);
         $object_id = $this->getId();
@@ -557,6 +561,38 @@ class AA_Object extends AA_Storable implements AA_iEditable
         foreach ($prop_names as $property_id) {
             static::getPropertyObject($property_id)?->save($this->$property_id, $object_id, $owner_id);
         }
+    }
+
+    /** The id of an object may come from a form or a link, and save() replaces whatever is stored
+     *  under it - only this module's object of this class may be there. Rows without an owner are a
+     *  save cut short; the next save completes them. */
+    private function refuseForeign(): void
+    {
+        $stored = self::storedIdentity((string) $this->getId());
+        if (($stored['aa_type'] === '') && ($stored['aa_owner'] === '')) {
+            return;
+        }
+        $own = self::isClass($stored['aa_type'], static::class)
+            && (($stored['aa_owner'] === '') || (strcasecmp($stored['aa_owner'], (string) $this->aa_owner) === 0));
+        if (!$own && !$this->ownsItsId()) {
+            $this->refuse($stored);
+        }
+    }
+
+    /** Stops the write - an exception, as several callers ignore what save() returns. Logged as the
+     *  refused object forms are, so State Check shows it.
+     *  @param array{aa_type: string, aa_owner: string} $stored */
+    private function refuse(array $stored): never
+    {
+        Managed::logRefusal((string) $this->aa_owner, (string) $this->getId(), static::class, $stored['aa_type'], $stored['aa_owner']);
+        throw new \UnexpectedValueException('The id of the saved ' . static::class . ' holds another object');
+    }
+
+    /** The id is derived from the class and the owner of this very object, so nothing else belongs
+     *  there: save() replaces whatever lies at it - else an object put there would lock it for good. */
+    protected function ownsItsId(): bool
+    {
+        return false;
     }
 
     /** will be called after saving of the object
@@ -700,6 +736,28 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return array_map('strval', DB_AA::select(['property' => 'value'], $sql));
     }
 
+    /** The class and the owner of what is stored under $id now - past the load() cache. Never locks:
+     *  FOR UPDATE on an id not stored yet locks the gap of the index, and two new objects saved at
+     *  once in two transactions would then deadlock.
+     *  @return array{aa_type: string, aa_owner: string}  '' - no such row
+     */
+    final public static function storedIdentity(string $id): array
+    {
+        $rows = self::textRows($id, false, ['aa_type', 'aa_owner']);
+        return ['aa_type' => $rows['aa_type'] ?? '', 'aa_owner' => $rows['aa_owner'] ?? ''];
+    }
+
+    /** $stored names $class: the same name in any letter case (PHP class names ignore it), or another
+     *  name of the same class - data keep the name a class had before a rename (class_alias) */
+    final public static function isClass(string $stored, string $class): bool
+    {
+        if (strcasecmp($stored, $class) === 0) {
+            return true;
+        }
+        return ($stored !== '') && class_exists($stored) && class_exists($class)
+            && ((new \ReflectionClass($stored))->getName() === (new \ReflectionClass($class))->getName());
+    }
+
     /** the tables an object's properties live in - the order matters: load() merges them in it,
      *  so a property with rows in two tables takes the later one's values */
     private const STORAGE_TABLES = ['object_text', 'object_integer', 'object_float'];
@@ -733,9 +791,9 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return $ret;
     }
 
-    /** Loads object from database: AA_Object::load($set_id, 'AA_Set')
+    /** Loads object from database: AA_Object::load($set_id, 'AA_Set') or AA_Set::load($set_id)
      * @param $id - aa_id - object id
-     * @param $type - object class - like 'AA_Form'
+     * @param $type - object class - like 'AA_Form'; null when the object is not of it (or of the class load() is called on)
      * @static
      * @return AA_Object | null
      */
@@ -775,9 +833,16 @@ class AA_Object extends AA_Storable implements AA_iEditable
             return null;
         }
 
-        if (!$type) {
-            $type = $by_table['object_text']['aa_type'][0] ?? '';
-            if (!$type || !class_exists($type)) {
+        // the id may come from a link or a form - an object of another class must not pass as $type
+        $stored = (string) ($by_table['object_text']['aa_type'][0] ?? '');
+        if ($type) {
+            if (!is_a($stored, $type, true)) {     // a subclass, an old name (class_alias) or other letter case passes
+                return null;
+            }
+        } else {
+            $type = $stored;
+            // AA_Set::load($id) gives an AA_Set or nothing, AA_Object::load($id) any stored object
+            if (!$type || !class_exists($type) || !is_a($type, static::class, true)) {
                 return null;
             }
             $properties = $type::getClassProperties();
