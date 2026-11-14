@@ -18,10 +18,23 @@ class Router
 {
     /** @var array<string,callable> "METHOD /path" => handler */
     private array $routes = [];
+    /** @var array<string,true> paths answered without a session */
+    private array $sessionless = [];
 
-    public function register(string $method, string $path, callable $handler): void
+    /** @param bool $session false: the path opens no session and sends no cookie, whatever the method */
+    public function register(string $method, string $path, callable $handler, bool $session = true): void
     {
         $this->routes[strtoupper($method) . ' ' . $path] = $handler;
+        if (!$session) {
+            $this->sessionless[$path] = true;
+        }
+    }
+
+    /** Should the request open the session? Asked before pageOpen(), so all routes must be registered first. */
+    public function needsSession(): bool
+    {
+        // by the path alone: a HEAD of a mail checker would get a cookie too
+        return !isset($this->sessionless[$this->extractPath()]);
     }
 
     public function dispatch(): void
