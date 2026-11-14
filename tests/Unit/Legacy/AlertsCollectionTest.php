@@ -524,26 +524,36 @@ namespace Tests\Unit\Legacy {
         {
             $points = 'sel:#sLiCe-f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9';
             return [
-                'known field'                 => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f1', $points, 'd-text...........1-==-Praha', []],
-                'unknown field'               => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f2', $points, 'd-text...........9-==-Praha-text...........1-==-x', ['text...........9']],
-                'far field of the relation'   => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f3', $points, 'd-headline........@relation........-==-x', []],
-                'far field the target lacks'  => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f4', $points, 'd-text...........7@relation........-==-x', ['text...........7@relation........']],
-                'not a relation field'        => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5', 'fld', 'd-headline........@relation........-==-x', ['headline........@relation........']],
-                'any field of the relation'   => ['f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f6', $points, 'd-all_fields@relation........-==-x', []],
+                'known field'                 => ['e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e1', $points, 'd-text...........1-==-Praha', []],
+                'unknown field'               => ['e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e2', $points, 'd-text...........9-==-Praha-text...........1-==-x', ['text...........9-==-Praha']],
+                'far field of the relation'   => ['e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e3', $points, 'd-headline........@relation........-==-x', []],
+                'far field the target lacks'  => ['e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e4', $points, 'd-text...........7@relation........-==-x', ['text...........7@relation........-==-x']],
+                'not a relation field'        => ['e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e5', 'fld', 'd-headline........@relation........-==-x', ['headline........@relation........-==-x']],
+                'any field of the relation'   => ['e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e6', $points, 'd-all_fields@relation........-==-x', []],
+                'empty value'                 => ['e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e7', $points, 'd-text...........1-==-', ['text...........1-==-']],
+                'no condition at all'         => ['e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8', $points, 'text...........1-==-Praha', ['text...........1-==-Praha']],
+                'AAnoCONDITION only'          => ['e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e9', $points, 'd-text...........1-==-AAnoCONDITION', ['d-text...........1-==-AAnoCONDITION']],
             ];
         }
 
-        /** AA_Set drops a <far field>@<relation field> whose far field the related slice lacks, as any unknown field */
+        /** AA_Set leaves such conditions out of the search - the mailing would go to more readers than asked */
         #[DataProvider('condsFields')]
-        public function test_unknownCondsFields_namesWhatCannotBeChecked(string $slice, string $show_func, string $conds, array $expected): void
+        public function test_droppedConds_namesWhatTheSearchLeavesOut(string $slice, string $show_func, string $conds, array $expected): void
         {
             $this->relatedSlices($slice, $show_func);
 
-            $this->assertSame($expected, self::quietly(static fn() => (new AA_Collection('sQjwa'))->unknownCondsFields($conds)));
+            $this->assertSame($expected, self::quietly(static fn() => (new AA_Collection('sQjwa'))->droppedConds($conds)));
             if ($expected) {
                 $this->assertTrue(self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders($conds))->isEmpty());
                 $this->assertSame([], self::searches());
             }
+        }
+
+        public function test_droppedConds_noConfirmationField_namesTheConfirmation(): void
+        {
+            $this->readerSlice([FIELDID_EMAIL, self::HOWOFTEN], 'f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f5');
+
+            $this->assertSame([FIELDID_MAIL_CONFIRMED . '-==-1'], self::quietly(static fn() => (new AA_Collection('sQjwa'))->droppedConds('')));
         }
 
         /** a collection row without a reader slice - nothing to search in */
@@ -829,6 +839,62 @@ namespace Tests\Unit\Legacy {
 
             $this->assertSame('sQjwa', $collection->getId());
             $this->assertSame(self::MODULE, $collection->getModuleId());
+        }
+
+        // ---------------------------------------------------------------- the language of the mails
+
+        /** the Alerts module of the collection, in the language of $lang_file */
+        private function alertsModule(string $lang_file): void
+        {
+            Closure::bind(static function (string $id): void {
+                AA_Module::$_modules[$id] = new \AA_Module_Alerts($id);
+            }, null, AA_Module::class)(self::MODULE);
+            $inner = RecordingDb::$answer;
+            RecordingDb::$answer = static fn(string $sql): array => str_starts_with($sql, 'SELECT name, deleted, slice_url, lang_file')
+                ? [['name' => 'News', 'deleted' => '0', 'slice_url' => self::SLICE_URL, 'lang_file' => $lang_file]]
+                : $inner($sql);
+        }
+
+        public function test_lang_twoLettersOfTheAlertsModule(): void
+        {
+            $this->readerSlice();
+            $this->alertsModule('de-utf8_news_lang.php');
+
+            $this->assertSame('de', (new AA_Collection('sQjwa'))->lang());
+        }
+
+        public function test_lang_noAlertsModule_none(): void
+        {
+            $this->readerSlice();
+
+            $this->assertSame('', (new AA_Collection('sQjwa'))->lang());
+        }
+
+        /** the mails of the module are in its language, and the rest of the request stays so */
+        public function test_sendEmails_setsTheLanguageOfTheAlertsModule(): void
+        {
+            $this->mailingWorld();
+            $this->alertsModule('de-utf8_news_lang.php');
+
+            self::quietly(static fn() => self::collection()->sendEmails('daily', ['test@example.org'], false, '', null));
+
+            $this->assertSame('de', $GLOBALS['apc_state']['xlang'] ?? null);
+        }
+
+        public function test_inLang_onlyWhileRunning(): void
+        {
+            $GLOBALS['apc_state']['xlang'] = 'cz';
+
+            $this->assertSame('de', AA_Collection::inLang('de', static fn(): string => $GLOBALS['apc_state']['xlang']));
+            $this->assertSame('cz', $GLOBALS['apc_state']['xlang']);
+            $this->assertSame('cz', AA_Collection::inLang('', static fn(): string => $GLOBALS['apc_state']['xlang']), "'' keeps the language");
+
+            unset($GLOBALS['apc_state']['xlang']);
+            try {
+                AA_Collection::inLang('de', static fn() => throw new \RuntimeException('x'));
+            } catch (\RuntimeException) {
+            }
+            $this->assertArrayNotHasKey('xlang', $GLOBALS['apc_state'], 'set back also when the expansion fails');
         }
 
         // ---------------------------------------------------------------- the statistics slice

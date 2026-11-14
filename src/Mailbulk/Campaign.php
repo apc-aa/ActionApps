@@ -26,7 +26,7 @@ class Campaign
     public const RENDER  = 'RENDER';
 
     /** the overviews keep the name of a sending this long */
-    private const TITLE_LENGTH = 250;
+    public const TITLE_LENGTH = 250;
     /** readers the test mail is made for at most, until one is still valid */
     private const TEST_READERS = 5;
 

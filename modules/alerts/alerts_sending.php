@@ -222,16 +222,15 @@ class AA_Collection
     /** Readers a mailing of this collection may go to: active, confirmed and not unsubscribed. A reader
      *  without the frequency field (or with an empty one) is subscribed - AA_Set cannot match "does not begin
      *  with" on a missing field, hence the second selection and the difference.
-     *  @param string $conds  the conds of {ids} (d-<field>-<operator>-<value>...) - only readers matching them */
+     *  @param string $conds  the conds of {ids} (d-<field>-<operator>-<value>...) - only readers matching them;
+     *                        nobody when the search would leave any of them out (droppedConds()) */
     public function validReaders(string $conds = ''): zids
     {
         if (!(($slice = $this->getReaderSlice()) instanceof AA_Slice)) {
             return new zids();
         }
-        $set = new AA_Set($slice->getId(), ($conds === '') ? null : $conds);
-        $set->addCondition(new AA_Condition(FIELDID_MAIL_CONFIRMED, '==', 1));
-        // AA_Set silently drops a condition on an unknown field - the mailing would go to everyone
-        if (self::condsUnknownFields($set, $slice)) {
+        [$set, $dropped] = self::readerSet($slice, $conds);
+        if ($dropped) {
             return new zids();
         }
         $readers  = $set->query();
@@ -243,50 +242,27 @@ class AA_Collection
         return new zids(array_values(array_diff($readers->longids(), $unsubscribed->longids())), 'l');
     }
 
-    /** The fields $conds name that validReaders() cannot check - with any, it finds nobody.
+    /** What the search of validReaders() would leave out - with any of it, validReaders() finds nobody, as the
+     *  mailing would go to more readers than asked: conditions on fields the reader slice lacks, with an empty
+     *  value, a value it cannot parse... (AA_Set::droppedConditions()), the confirmation of the readers when
+     *  the slice has no such field, and $conds itself when it gives no condition at all.
      *  @param string $conds the conds of {ids}
      *  @return list<string> */
-    public function unknownCondsFields(string $conds): array
+    public function droppedConds(string $conds): array
     {
-        if (($conds === '') || !(($slice = $this->getReaderSlice()) instanceof AA_Slice)) {
-            return [];
-        }
-        return self::condsUnknownFields(new AA_Set($slice->getId(), $conds), $slice);
+        $slice = $this->getReaderSlice();
+        return ($slice instanceof AA_Slice) ? self::readerSet($slice, $conds)[1] : [];
     }
 
-    /** The fields the conditions of the set name that do not exist - in the slice, or for a remote condition
-     *  (<field>@<slice>/<relation field>) in the remote slice, or for <field>@<relation field> in the slice the
-     *  relation field points to, as AA_Set finds it; a relation field pointing nowhere cannot be checked.
-     *  @return list<string> */
-    private static function condsUnknownFields(AA_Set $set, AA_Slice $slice): array
+    /** @return array{AA_Set, list<string>} the search of the confirmed readers matching $conds, what it leaves out */
+    private static function readerSet(AA_Slice $slice, string $conds): array
     {
-        $unknown = [];
-        foreach ($set->getConditions() as $condition) {
-            foreach ($condition->getFields() as $fid) {
-                $fid = (string) $fid;
-                if (isset(AA_Condition::CONDS_NOT_FIELD_NAMES[$fid]) || str_starts_with(strtolower($fid), 'all_fields')) {
-                    continue;
-                }
-                if (!str_contains($fid, '@')) {
-                    $known = $slice->isField(AA_Field::parseWithLang($fid)[0]);
-                } else {
-                    [$far, $relation] = explode('@', $fid, 2);
-                    if (str_contains($relation, '/')) {
-                        [$remote_id, $relation] = explode('/', $relation, 2);
-                        $remote = AA_Slice::getOwnModule(rtrim($remote_id, '+'));
-                        $known  = ($remote instanceof AA_Slice) && $remote->isField($far) && $remote->isField($relation);
-                    } else {
-                        [$type, $remote_id] = array_pad($slice->getField($relation)?->getRelation() ?? [], 2, '');
-                        $remote = ($type === 'relation') ? AA_Slice::getOwnModule($remote_id) : null;
-                        $known  = ($remote instanceof AA_Slice) && $remote->isField($far);
-                    }
-                }
-                if (!$known) {
-                    $unknown[] = $fid;
-                }
-            }
-        }
-        return array_values(array_unique($unknown));
+        $set  = new AA_Set($slice->getId(), ($conds === '') ? null : $conds);
+        // a missing "d-" or a mere AAnoCONDITION - every reader
+        $none = (trim($conds) !== '') && !$set->getConditions();
+        $set->addCondition(new AA_Condition(FIELDID_MAIL_CONFIRMED, '==', 1));
+        $dropped = $set->droppedConditions();
+        return [$set, $none ? [$conds, ...$dropped] : $dropped];
     }
 
     /** The rule of validReaders() for one loaded reader - checked again right before the mail goes out,
@@ -303,6 +279,37 @@ class AA_Collection
     public function getId(): string
     {
         return (string) $this->id;
+    }
+
+    /** the language of the mails of the collection - of its Alerts module, two letters; '' without the module */
+    public function lang(): string
+    {
+        $module = AA_Module_Alerts::getOwnModule($this->getProp('alerts_module_id'));
+        return ($module instanceof AA_Module_Alerts) ? substr($module->getLang(), 0, 2) : '';
+    }
+
+    /** $fn run with the language $lang for the template commands - set back after, as the process may go on with
+     *  other tasks; '' leaves the language as it is
+     *  @template T
+     *  @param callable(): T $fn
+     *  @return T */
+    public static function inLang(string $lang, callable $fn): mixed
+    {
+        if ($lang === '') {
+            return $fn();
+        }
+        $had = array_key_exists('xlang', $GLOBALS['apc_state'] ?? []);
+        $old = $GLOBALS['apc_state']['xlang'] ?? null;
+        $GLOBALS['apc_state']['xlang'] = $lang;
+        try {
+            return $fn();
+        } finally {
+            if ($had) {
+                $GLOBALS['apc_state']['xlang'] = $old;
+            } else {
+                unset($GLOBALS['apc_state']['xlang']);
+            }
+        }
     }
 
     /** @return string long id of the Alerts module */
@@ -362,7 +369,8 @@ class AA_Collection
         // allow to access Reader data (and the data of all the slices with the same password)
         AA_Credentials::singleton()->loadFromSlice($this->getProp('reader_slice_id'));
 
-        $GLOBALS['apc_state']['xlang'] = substr(AA_Module_Alerts::getModule($this->getProp('alerts_module_id'))->getLang(), 0, 2);
+        // for the rest of the request, as the mails always had it
+        $GLOBALS['apc_state']['xlang'] = $this->lang();
 
         // get array of all filters of current collection ($collection_id)
         // !if $update is set (default), then it updates date for lastsent - for

@@ -34,6 +34,7 @@ namespace Tests\Unit\Mailbulk {
     use AA_Items;
     use AA_Slice;
     use ItemContent;
+    use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\MockObject\MockObject;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Legacy\Fixtures\RecordingDb;
@@ -65,11 +66,6 @@ namespace Tests\Unit\Mailbulk {
         protected function aliasesOf(string $sliceId): array
         {
             return self::$aliases[$sliceId] ?? [];
-        }
-
-        protected function lang(): string
-        {
-            return 'en';
         }
     }
 
@@ -174,14 +170,15 @@ namespace Tests\Unit\Mailbulk {
         /** a list whose valid readers are $valid, $invalid fail isValidReader()
          *  @param list<string> $valid
          *  @param list<string> $invalid
-         *  @param list<string> $unknown what unknownCondsFields() names */
-        private function list(array $valid = [self::ANNA, self::BOB, self::CYRIL], array $invalid = [], array $unknown = [], string $url = self::URL, bool $readerSlice = true): AA_Collection&MockObject
+         *  @param list<string> $dropped what droppedConds() names */
+        private function list(array $valid = [self::ANNA, self::BOB, self::CYRIL], array $invalid = [], array $dropped = [], string $url = self::URL, bool $readerSlice = true, string $lang = 'en'): AA_Collection&MockObject
         {
             $list = $this->createMock(AA_Collection::class);
             $list->method('getId')->willReturn('abcde');
             $list->method('getReaderSlice')->willReturn($readerSlice ? $this->createStub(AA_Slice::class) : null);
             $list->method('validReaders')->willReturn(new zids($valid, 'l'));
-            $list->method('unknownCondsFields')->willReturn($unknown);
+            $list->method('droppedConds')->willReturn($dropped);
+            $list->method('lang')->willReturn($lang);
             $list->method('isValidReader')->willReturnCallback(static fn(ItemContent $r): bool => !in_array($r->getItemID(), $invalid, true));
             $list->method('readerLinks')->willReturnCallback(static fn(string $code): array => ['unsubscribe' => $url . '?au=' . $code . '&c=abcde', 'form' => $url . '?ac=' . $code]);
             return $list;
@@ -229,17 +226,82 @@ namespace Tests\Unit\Mailbulk {
         }
 
         /** validReaders() would find nobody, silently */
-        public function test_problem_mailtoOnFieldsTheReadersLack_namesThem(): void
+        public function test_problem_conditionsTheSearchLeavesOut_namesThem(): void
         {
             TestItemLetter::$aliases[self::ITEM_SLICE] += self::itemAliases(['_#MAILTO__' => 'd-text...........9-==-x']);
-            $list = $this->list(unknown: ['text...........9', 'headline........@relation........']);
-            $list->expects(self::once())->method('unknownCondsFields')->with('d-text...........9-==-x');
+            $list = $this->list(dropped: ['text...........9-==-x', 'headline........@relation........-==-y']);
+            $list->expects(self::once())->method('droppedConds')->with('d-text...........9-==-x');
 
             $problem = self::letter($list)->problem();
 
             self::assertNotNull($problem);
-            self::assertStringContainsString('text...........9', $problem);
-            self::assertStringContainsString('headline........@relation........', $problem);
+            self::assertStringContainsString('text...........9-==-x', $problem);
+            self::assertStringContainsString('headline........@relation........-==-y', $problem);
+        }
+
+        /** @return array<string, array{string, bool}> _#MAILFROM => is it a sender */
+        public static function senders(): array
+        {
+            return [
+                'bare address'            => ['news@example.org', true],
+                'name and address'        => ['Spring News <news@example.org>', true],
+                'escaped by the alias'    => ['Tom &amp; Jerry &lt;news@example.org&gt;', true],
+                'empty'                   => ['', false],
+                'no address'              => ['Spring News', false],
+                'two addresses'           => ['news@example.org, other@example.org', false],
+                'broken angle brackets'   => ['Spring News <news@example.org', false],
+            ];
+        }
+
+        #[DataProvider('senders')]
+        public function test_problem_sender(string $from, bool $valid): void
+        {
+            TestItemLetter::$aliases[self::ITEM_SLICE]['_#MAILFROM'] = self::itemAliases(['_#MAILFROM' => $from])['_#MAILFROM'];
+
+            $problem = self::letter($this->list())->problem();
+
+            self::assertSame($valid, $problem === null, (string) $problem);
+            if (!$valid) {
+                self::assertStringContainsString('_#MAILFROM', (string) $problem);
+            }
+        }
+
+        public function test_messageFor_senderDecoded(): void
+        {
+            TestItemLetter::$aliases[self::ITEM_SLICE]['_#MAILFROM'] = self::itemAliases(['_#MAILFROM' => 'Tom &amp; Jerry &lt;news@example.org&gt;'])['_#MAILFROM'];
+
+            self::assertSame('Tom & Jerry <news@example.org>', self::letter($this->list())->messageFor(self::ANNA)?->from);
+        }
+
+        /** the /u patterns refuse such a text - it must not end up empty */
+        public function test_title_invalidUtf8_isKept(): void
+        {
+            TestItemLetter::$items[self::ITEM] = self::item(['headline........' => "Spring \xC3 news"]);
+
+            $title = self::letter($this->list())->title();
+
+            self::assertStringStartsWith('Spring ', $title);
+            self::assertStringEndsWith(' news', $title);
+        }
+
+        /** the subject is text - an inbox shows no tags and no &amp; - in full length */
+        public function test_messageFor_subjectIsPlainText(): void
+        {
+            TestItemLetter::$aliases[self::ITEM_SLICE]['_#MAILSUBJ'] = self::itemAliases(['_#MAILSUBJ' => '<b>Tom &amp; Jerry</b>
+ ' . str_repeat('x', 300)])['_#MAILSUBJ'];
+
+            $subject = self::letter($this->list())->messageFor(self::ANNA)?->subject;
+
+            self::assertSame('Tom & Jerry ' . str_repeat('x', 300), $subject);
+        }
+
+        public function test_messageFor_inTheLanguageOfTheList(): void
+        {
+            TestItemLetter::$aliases[self::ITEM_SLICE]['_#MAILSUBJ'] = self::itemAliases(['_#MAILSUBJ' => '{xlang}'])['_#MAILSUBJ'];
+            $before = $GLOBALS['apc_state']['xlang'] ?? null;
+
+            self::assertSame('de', self::letter($this->list(lang: 'de'))->messageFor(self::ANNA)?->subject);
+            self::assertSame($before, $GLOBALS['apc_state']['xlang'] ?? null);
         }
 
         public function test_title_isTheSubjectWithoutAReader(): void
@@ -271,6 +333,35 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame([[self::ANNA, self::BOB, self::CYRIL], [FIELDID_EMAIL]], $last, 'the addresses only, in one read');
         }
 
+        /** an error text or a list in place of the address - one recipient each is all a mail can take */
+        public function test_selection_onlyOneValidAddressEach(): void
+        {
+            $this->addReader(self::BOB, 'Bob', 'Error: Missing Reading Password');
+            $this->addReader(self::CYRIL, 'Cyril', 'cyril@example.org, cyril2@example.org');
+
+            self::assertSame([self::ANNA], self::letter($this->list())->selection());
+        }
+
+        public function test_selection_readsTheAddressesInChunks(): void
+        {
+            $many = [];
+            for ($i = 0; $i < 5001; $i++) {
+                $many[] = sprintf('%032x', $i + 1);
+            }
+
+            self::letter($this->list($many))->selection();
+
+            $reads = array_filter(TestItemLetter::$reads, static fn(array $read): bool => $read[1] === [FIELDID_EMAIL]);
+            self::assertSame([5000, 1], array_values(array_map(static fn(array $read): int => count($read[0]), $reads)));
+        }
+
+        public function test_messageFor_readerWithoutAValidAddress_isNull(): void
+        {
+            $this->addReader(self::BOB, 'Bob', 'bob@example.org; bob@example.com');
+
+            self::assertNull(self::letter($this->list())->messageFor(self::BOB));
+        }
+
         public function test_selection_sameAddressTwice_onlyFirst(): void
         {
             $this->addReader(self::CYRIL, 'Cyril', ' ANNA@example.org');
@@ -291,6 +382,23 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame('bob@example.org', $bob->to);
             self::assertSame('<p>Hi Anna</p><a href="' . self::URL . '?au=codeAnna&c=abcde">out</a> <a href="' . self::URL . '?ac=codeAnna">form</a>', $anna->html);
             self::assertSame('<p>Hi Bob</p><a href="' . self::URL . '?au=codeBob&c=abcde">out</a> <a href="' . self::URL . '?ac=codeBob">form</a>', $bob->html);
+        }
+
+        /** the commands that cache their output per item must not give one reader's links to the next */
+        public function test_messageFor_cachedCommands_eachReaderOwnLinks(): void
+        {
+            TestItemLetter::$aliases[self::ITEM_SLICE]['_#MAILBODY'] = self::itemAliases([
+                '_#MAILBODY' => '{expand:<a href="_#MAILUNSB">out</a>}|{foreach:x:<a href="_#MAILPREF">form</a>}',
+            ])['_#MAILBODY'];
+            $letter = self::letter($this->list());
+
+            $anna = $letter->messageFor(self::ANNA);
+            $bob  = $letter->messageFor(self::BOB);
+
+            self::assertNotNull($anna);
+            self::assertNotNull($bob);
+            self::assertSame('<a href="' . self::URL . '?au=codeAnna&c=abcde">out</a>|<a href="' . self::URL . '?ac=codeAnna">form</a>', $anna->html);
+            self::assertSame('<a href="' . self::URL . '?au=codeBob&c=abcde">out</a>|<a href="' . self::URL . '?ac=codeBob">form</a>', $bob->html);
         }
 
         public function test_messageFor_itemAliasesExpand(): void
@@ -350,6 +458,18 @@ namespace Tests\Unit\Mailbulk {
 
             unset(TestItemLetter::$aliases[self::ITEM_SLICE]['_#MAILTEST']);
             self::assertSame(['me@example.org'], self::letter($this->list())->testAddresses('me@example.org'));
+        }
+
+        public function test_testAddresses_atMostTen(): void
+        {
+            $twelve = implode(', ', array_map(static fn(int $i): string => "t$i@example.org", range(1, 12)));
+            TestItemLetter::$items[self::ITEM] = self::item(['text...........5' => $twelve]);
+            TestItemLetter::$aliases[self::ITEM_SLICE] += self::itemAliases(['_#MAILTEST' => '_#TESTMAIL']);
+
+            $addresses = self::letter($this->list())->testAddresses('me@example.org');
+
+            self::assertCount(ItemLetter::TEST_ADDRESSES, $addresses);
+            self::assertSame('t10@example.org', end($addresses));
         }
 
         public function test_testReader_matchingAddressElseFirst(): void

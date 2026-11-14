@@ -8,7 +8,6 @@ use AA;
 use AA_Aliases;
 use AA_Collection;
 use AA_Item;
-use AA_Module_Alerts;
 use AA_Slice;
 use ItemContent;
 use zids;
@@ -28,7 +27,11 @@ class ItemLetter implements Letter
     /** the code of no reader - the links of a test mail unsubscribe nobody */
     public const TEST_CODE = 'ABCDE';
 
-    private const TITLE_LENGTH = 250;
+    /** a test goes to this many addresses at most */
+    public const TEST_ADDRESSES = 10;
+
+    /** readers whose addresses one read asks for */
+    private const CHUNK = 5000;
 
     /** false = not read yet, null = the item is gone */
     private ItemContent|false|null $item = false;
@@ -36,6 +39,8 @@ class ItemLetter implements Letter
     private ?array $itemAliases = null;
     /** @var ?array<string, string> reader long id => address of the selection */
     private ?array $addresses = null;
+    private ?AA_Item $withoutReader = null;
+    private ?string $mailto = null;
     private ?string $lang = null;
 
     public function __construct(
@@ -57,18 +62,20 @@ class ItemLetter implements Letter
         if ($missing) {
             return _m('The slice of the item lacks the aliases %1', [implode(', ', $missing)]);
         }
-        $unknown = $this->list->unknownCondsFields($this->mailto());
-        if ($unknown) {
+        if (self::fromAddress($this->from($this->withoutReader())) === null) {
+            return _m('%1 gives no valid sender address', ['_#MAILFROM']);
+        }
+        $dropped = $this->list->droppedConds($this->mailto());
+        if ($dropped) {
             // validReaders() would find nobody, without a word
-            return _m('%1 names fields the slice of the readers lacks or that cannot be checked: %2', [self::MAILTO, implode(', ', $unknown)]);
+            return _m('The readers cannot be selected - the slice of the readers cannot check these conditions (of %1 or the confirmation of the readers): %2', [self::MAILTO, implode(', ', $dropped)]);
         }
         return null;
     }
 
     public function title(): string
     {
-        $title = html_entity_decode(strip_tags($this->expand('_#MAILSUBJ', $this->withoutReader())), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        return mb_substr(trim((string) preg_replace('/\s+/u', ' ', $title)), 0, self::TITLE_LENGTH);
+        return mb_substr(self::plain($this->expand('_#MAILSUBJ', $this->withoutReader())), 0, Campaign::TITLE_LENGTH);
     }
 
     public function selection(): array
@@ -79,7 +86,7 @@ class ItemLetter implements Letter
     public function messageFor(string $readerId, bool $test = false): ?Message
     {
         $reader = $this->contents([$readerId])[$readerId] ?? null;
-        if (($reader === null) || !$this->list->isValidReader($reader)) {
+        if (($reader === null) || !$this->list->isValidReader($reader) || !self::isAddress(trim((string) $reader->getValue(FIELDID_EMAIL)))) {
             return null;
         }
         $code  = $test ? self::TEST_CODE : (string) $reader->getValue(FIELDID_ACCESS_CODE);
@@ -89,23 +96,24 @@ class ItemLetter implements Letter
         $headers = ($test || ($code === '')) ? [] : AA_Collection::unsubscribeHeaders($links['unsubscribe']);
         return new Message(
             trim((string) $reader->getValue(FIELDID_EMAIL)),
-            trim($this->expand('_#MAILSUBJ', $item)),
+            self::plain($this->expand('_#MAILSUBJ', $item)),
             $this->expand('_#MAILBODY', $item),
-            trim($this->expand('_#MAILFROM', $item)),
+            $this->from($item),
             $headers,
         );
     }
 
-    /** The addresses a test mail goes to: _#MAILTEST split at commas, else $userEmail.
+    /** The addresses a test mail goes to: the valid ones of _#MAILTEST split at commas, else $userEmail; at most
+     *  TEST_ADDRESSES.
      *  @return list<string> */
     public function testAddresses(string $userEmail): array
     {
         $given = isset($this->aliases()[self::MAILTEST]) ? explode(',', $this->expand(self::MAILTEST, $this->withoutReader())) : [];
-        $valid = array_values(array_filter(array_map('trim', $given), static fn(string $a): bool => filter_var($a, FILTER_VALIDATE_EMAIL) !== false));
+        $valid = array_values(array_filter(array_map('trim', $given), self::isAddress(...)));
         if ($valid) {
-            return $valid;
+            return array_slice($valid, 0, self::TEST_ADDRESSES);
         }
-        return (filter_var($userEmail, FILTER_VALIDATE_EMAIL) !== false) ? [$userEmail] : [];
+        return self::isAddress($userEmail) ? [$userEmail] : [];
     }
 
     /** the reader whose mail a test sends: the one with $address, else the first of the selection; null = none */
@@ -113,7 +121,7 @@ class ItemLetter implements Letter
     {
         $addresses = $this->addresses();
         $found     = array_search(strtolower(trim($address)), $addresses, true);
-        return ($found !== false) ? (string) $found : (array_key_first($addresses) ?? null);
+        return ($found !== false) ? (string) $found : array_key_first($addresses);
     }
 
     /** @param list<string> $ids long ids
@@ -135,16 +143,6 @@ class ItemLetter implements Letter
         return ($slice instanceof AA_Slice) ? (array) $slice->aliases() : [];
     }
 
-    /** the language of the Alerts module, as its own mails have it */
-    protected function lang(): string
-    {
-        if ($this->lang === null) {
-            $module     = AA_Module_Alerts::getOwnModule($this->list->getModuleId());
-            $this->lang = ($module instanceof AA_Module_Alerts) ? substr($module->getLang(), 0, 2) : '';
-        }
-        return $this->lang;
-    }
-
     private function item(): ?ItemContent
     {
         if ($this->item === false) {
@@ -163,7 +161,8 @@ class ItemLetter implements Letter
         return $this->itemAliases;
     }
 
-    /** the item with the aliases of one reader - a new object for each, so nothing of one reader stays for the next */
+    /** the item with the aliases of one reader - the commands caching their output per item tell the readers apart
+     *  by these text aliases (AA_Item::getCacheId()) */
     private function itemWith(string $readerId, string $unsubscribe, string $form): AA_Item
     {
         $item = $this->item() ?? throw new \RuntimeException('The item to send is gone');
@@ -177,26 +176,58 @@ class ItemLetter implements Letter
 
     private function withoutReader(): AA_Item
     {
-        return $this->itemWith('', '', '');
+        return $this->withoutReader ??= $this->itemWith('', '', '');
     }
 
     /** the conds of _#MAILTO__; '' = all valid readers */
     private function mailto(): string
     {
-        return isset($this->aliases()[self::MAILTO]) ? trim($this->expand(self::MAILTO, $this->withoutReader())) : '';
+        return $this->mailto ??= isset($this->aliases()[self::MAILTO]) ? trim($this->expand(self::MAILTO, $this->withoutReader())) : '';
     }
 
-    /** @return array<string, string> long id => lower-case address of each valid reader the mail goes to, the first one of an address only */
+    /** _#MAILFROM as the mail header wants it - an alias printing HTML gives &amp; and &lt; */
+    private function from(AA_Item $item): string
+    {
+        return trim(html_entity_decode($this->expand('_#MAILFROM', $item), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    }
+
+    /** the address of "Name <address>" or of a bare address; null = none valid */
+    private static function fromAddress(string $from): ?string
+    {
+        if (preg_match('/^[^<>\r\n]*<([^<>]*)>\z/', $from, $m)) {
+            $from = trim($m[1]);
+        }
+        return self::isAddress($from) ? $from : null;
+    }
+
+    /** one valid address - the rule of the test addresses of Alerts */
+    private static function isAddress(string $address): bool
+    {
+        return (AA_Collection::testEmails($address) ?? []) !== [];
+    }
+
+    /** text of the HTML a template gives, on one line - for the subject and the overviews */
+    private static function plain(string $html): string
+    {
+        $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        // the /u pattern refuses invalid UTF-8 - the text must not get lost for that
+        return trim(preg_replace('/\s+/u', ' ', $text) ?? preg_replace('/\s+/', ' ', $text) ?? $text);
+    }
+
+    /** @return array<string, string> long id => lower-case address of each valid reader the mail goes to, the first one of an address only;
+     *  readers without one valid address are left out */
     private function addresses(): array
     {
         if ($this->addresses === null) {
-            $ids      = $this->list->validReaders($this->mailto())->longids();
-            $contents = $ids ? $this->contents($ids, [FIELDID_EMAIL]) : [];
-            $first    = [];
-            foreach ($ids as $id) {
-                $address = strtolower(trim((string) ($contents[$id] ?? null)?->getValue(FIELDID_EMAIL)));
-                if ($address !== '') {
-                    $first[$address] ??= $id;
+            $first = [];
+            foreach (array_chunk($this->list->validReaders($this->mailto())->longids(), self::CHUNK) as $ids) {
+                $contents = $this->contents($ids, [FIELDID_EMAIL]);
+                foreach ($ids as $id) {
+                    $address = strtolower(trim((string) ($contents[$id] ?? null)?->getValue(FIELDID_EMAIL)));
+                    // a list of addresses or an error text in place of the address gets nothing
+                    if (self::isAddress($address)) {
+                        $first[$address] ??= $id;
+                    }
                 }
             }
             $this->addresses = array_flip($first);
@@ -207,20 +238,6 @@ class ItemLetter implements Letter
     /** $alias expanded over $item in the language of the list - only while expanding, a queue process goes on with other tasks */
     private function expand(string $alias, AA_Item $item): string
     {
-        $lang = $this->lang();
-        if ($lang === '') {
-            return AA::Un($alias, '', $item);
-        }
-        $old = $GLOBALS['apc_state']['xlang'] ?? null;
-        $GLOBALS['apc_state']['xlang'] = $lang;
-        try {
-            return AA::Un($alias, '', $item);
-        } finally {
-            if ($old === null) {
-                unset($GLOBALS['apc_state']['xlang']);
-            } else {
-                $GLOBALS['apc_state']['xlang'] = $old;
-            }
-        }
+        return AA_Collection::inLang($this->lang ??= $this->list->lang(), static fn(): string => AA::Un($alias, '', $item));
     }
 }
