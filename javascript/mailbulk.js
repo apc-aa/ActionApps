@@ -18,6 +18,8 @@ export const ANSWER_WAIT = 30_000;
 const BOUND = Symbol.for('aa-mailbulk.bound');
 /** control => the request on its way, {id, poll}; a click meanwhile would start the same action twice */
 const inFlight = new WeakMap();
+/** control => the id of its statistics request on the way - apart: reading them blocks no action nor poll */
+const statsInFlight = new WeakMap();
 /** control => its polling {since, failures}, handed to the control that replaces it */
 const polls = new WeakMap();
 /** controls whose next poll is planned */
@@ -54,8 +56,13 @@ export const insertStats = (control, html, doc) => {
     if (block) {
         control.after(block);
     }
-    return block ?? null;
+    return block;
 };
+
+/** the id of the statistics block of a control - the Statistics button points at it */
+export const statsId = control => `aa-mailbulk-stats-${control.dataset.list}-${control.dataset.item}`;
+
+const escapeHtml = text => String(text).replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
 /** what the module does in a browser; tests give their own */
 const browserEnv = () => ({
@@ -71,7 +78,18 @@ const browserEnv = () => ({
         const next = control.nextElementSibling;
         return next?.classList.contains('aa-mailbulk-stats') ? next : null;
     },
-    insertStats: (control, html) => insertStats(control, html, document),
+    insertStats: (control, html) => {
+        const block = insertStats(control, html, document);
+        if (block) {
+            block.id = statsId(control);
+        }
+        return block;
+    },
+    expanded: (control, open) => {
+        const button = control.querySelector('[data-action="stats"]');
+        button?.setAttribute('aria-expanded', String(open));
+        button?.setAttribute('aria-controls', statsId(control));
+    },
     note: (control, html) => {
         let note = control.querySelector('.aa-mailbulk-error');
         if (!note) {
@@ -120,6 +138,8 @@ export const show = (control, html, env) => {
     const fresh = env.swap(control, html);
     if (fresh) {
         polls.set(fresh, pollOf(control, env));
+        // the block stays below the new control
+        env.expanded(fresh, env.statsOf(fresh) !== null);
         watch(fresh, env);
         // controls an AJAX part of the page brought meanwhile
         for (const other of env.all()) {
@@ -196,32 +216,66 @@ export const watch = (control, env) => {
     }, pollDelay(p.failures));
 };
 
+/** Statistics shown already are hidden, else asked for. They change nothing, so they wait for no action or
+ *  poll and none waits for them; a second click while they are on the way does nothing. */
+const stats = (control, env) => {
+    const shown = env.statsOf(control);
+    if (shown) {
+        shown.remove();
+        env.expanded(control, false);
+        return;
+    }
+    if (statsInFlight.has(control)) {
+        return;
+    }
+    const id = ++lastId;
+    statsInFlight.set(control, id);
+    /** the answer of this request is the one awaited; it ends the wait */
+    const done = () => {
+        if (statsInFlight.get(control) !== id) {
+            return false;
+        }
+        statsInFlight.delete(control);
+        return true;
+    };
+    env.later(done, ANSWER_WAIT);
+    env.respond({ mb_action: 'stats', ...params(control) }, (html) => {
+        if (!done()) {
+            return;
+        }
+        // a poll may have replaced the control meanwhile - the block goes below the one in the page
+        const target = control.isConnected ? control : ([...env.all()].find(c => statsId(c) === statsId(control)) ?? control);
+        if (env.insertStats(target, html)) {
+            env.expanded(target, true);
+        } else {
+            env.note(target, escapeHtml(env.plain(String(html)).trim().slice(0, 200)));
+        }
+    }, (data) => {
+        if (done()) {
+            env.note(control, errorText(data));
+        }
+    });
+};
+
 /**
  * Runs an action of a button. A send asks the server for the number of recipients first and goes only
- * when the user confirms its question. Statistics shown already are hidden, else asked for.
- * An action wins over a poll on its way, whose answer is then left out.
+ * when the user confirms its question. An action wins over a poll on its way, whose answer is then left out.
  */
 export const act = (control, action, env) => {
+    if (action === 'stats') {
+        stats(control, env);
+        return;
+    }
     if (inFlight.get(control)?.poll === false) {
         return;
     }
     // a person acted: the sending is followed from now on, as after a load
     Object.assign(pollOf(control, env), { since: env.now(), failures: 0 });
     const lost = () => refresh(control, env, '');
-    const shown = (action === 'stats') ? env.statsOf(control) : null;
-    if (shown) {
-        shown.remove();
-        return;
-    }
     const run = (mb_action) => {
         const id = begin(control, env, false, lost);
         env.respond({ mb_action, ...params(control) }, (html) => {
-            if (!settle(control, id)) {
-                return;
-            }
-            if (mb_action === 'stats') {
-                env.insertStats(control, html);
-            } else {
+            if (settle(control, id)) {
                 show(control, html, env);
             }
         }, (data) => {
@@ -273,6 +327,9 @@ export const init = (doc, env = browserEnv()) => {
     });
     // out of sight it asks nothing; back in sight it goes on
     doc.addEventListener('visibilitychange', watchAll);
+    for (const control of env.all()) {
+        env.expanded(control, env.statsOf(control) !== null);
+    }
     watchAll();
     return true;
 };

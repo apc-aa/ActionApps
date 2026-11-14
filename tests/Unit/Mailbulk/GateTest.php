@@ -660,7 +660,7 @@ namespace Tests\Unit\Mailbulk {
         public function test_act_stats_returnsTheBlock(): void
         {
             TableDb::$tables['alerts_collection'] = [['id' => self::LIST, 'slice_id' => '', 'module_id' => '', 'emailid_welcome' => null, 'emailid_alert' => null, 'stat_slice_id' => '']];
-            self::assertSame(['', 0], (new TestGate())->act('stats', self::LIST, self::ITEM), 'nothing sent yet');
+            self::assertSame(['The item has not been sent to the list yet', Gate::ERR_FAILED], (new TestGate())->act('stats', self::LIST, self::ITEM), 'nothing sent yet - said, not an empty answer');
 
             $id   = self::sending(2, Run::DONE, ['cursor' => '2', 'outcomes' => '{"1":"f"}', 'finished' => '1900000000']);
             $list = new AA_Collection(self::LIST);

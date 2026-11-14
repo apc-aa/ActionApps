@@ -1,7 +1,7 @@
 // The control of {mailbulk}: a send asks first, an answer replaces the control, a sending refreshes itself.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ANSWER_WAIT, POLL_EVERY, act, init, insertStats, pollDelay, replaceControl, watch } from '../../javascript/mailbulk.js';
+import { ANSWER_WAIT, POLL_EVERY, act, init, insertStats, pollDelay, replaceControl, statsId, watch } from '../../javascript/mailbulk.js';
 import { POLL_FOR } from '../../javascript/aa-poll.js';
 
 const LIST = 'ab00000000000000000000000000000c';
@@ -42,10 +42,16 @@ const fakeEnv = ({ confirm = true } = {}) => {
         blocks: new Map(),
         statsOf: c => env.blocks.get(c) ?? null,
         insertStats: (c, html) => {
+            if (!html.includes('aa-mailbulk-stats')) {
+                return null;
+            }
             const block = { html, remove: () => env.blocks.delete(c) };
             env.blocks.set(c, block);
             return block;
         },
+        /** control => what its Statistics button says: open or not */
+        open: new Map(),
+        expanded: (c, open) => env.open.set(c, open),
     };
     return env;
 };
@@ -302,4 +308,58 @@ test('init_twice_bindsOnce', () => {
     assert.equal(prevented, true);
     assert.deepEqual(actions(env), ['test']);
     assert.equal(polls(env).length, 2);
+});
+
+test('statistics on their way block neither an action nor a poll answer', () => {
+    const env = fakeEnv();
+    const el = control('sending');
+    watch(el, env);
+    polls(env)[0].fn();
+    act(el, 'stats', env);
+    act(el, 'stop', env);
+    assert.deepEqual(actions(env), ['state', 'stats', 'stop'], 'Stop works while the statistics load');
+    env.requests[1].ok('<div class="aa-mailbulk-stats">runs</div>');
+    assert.equal(env.blocks.get(el)?.html, '<div class="aa-mailbulk-stats">runs</div>');
+    env.requests[2].ok('<span data-aa-mailbulk data-state="stopped">Stopped 4 / 9</span>');
+    assert.equal(env.swapped[0].dataset.state, 'stopped', 'the answer of the stop is taken');
+
+    const other = control('sending');
+    watch(other, env);
+    polls(env).at(-1).fn();
+    act(other, 'stats', env);
+    env.requests.at(-2).ok('<span data-aa-mailbulk data-state="sending">Sending 5 / 9</span>');
+    assert.equal(env.swapped.length, 2, 'the poll answer is not dropped by the statistics');
+});
+
+test('statistics do not restart the following of the sending', () => {
+    const env = fakeEnv();
+    const el = control('sending');
+    watch(el, env);
+    env.clock += POLL_FOR;
+    act(el, 'stats', env);
+    polls(env)[0].fn();
+    assert.deepEqual(actions(env), ['stats'], 'an hour passed: no poll, the statistics did not count as acting on the sending');
+});
+
+test('an answer without a block is said, as is a refusal', () => {
+    const env = fakeEnv();
+    const el = control('done');
+    act(el, 'stats', env);
+    env.requests[0].ok('<b>Fatal</b> error & more');
+    assert.deepEqual(env.notes, [{ where: el, html: '&#60;b&#62;Fatal&#60;/b&#62; error &#38; more' }]);
+    act(el, 'stats', env);
+    env.requests[1].err('Error 1: The item has not been sent to the list yet');
+    assert.deepEqual(env.notes[1], { where: el, html: 'The item has not been sent to the list yet' });
+    assert.deepEqual(actions(env), ['stats', 'stats'], 'no refresh of the state - nothing changed');
+});
+
+test('the Statistics button says whether its block is open', () => {
+    const env = fakeEnv();
+    const el = control('done');
+    act(el, 'stats', env);
+    env.requests[0].ok('<div class="aa-mailbulk-stats">runs</div>');
+    assert.equal(env.open.get(el), true);
+    act(el, 'stats', env);
+    assert.equal(env.open.get(el), false);
+    assert.equal(statsId(el), `aa-mailbulk-stats-${LIST}-${ITEM}`);
 });
