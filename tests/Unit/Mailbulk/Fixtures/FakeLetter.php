@@ -11,6 +11,9 @@ use AA\Mailbulk\Message;
 final class FakeLetter implements Letter
 {
     public ?string $problem = null;
+    public string $title = 'Newsletter';
+    /** @var list<string> what selection() gives */
+    public array $selection = [];
     /** @var array<string, Message|\Throwable|null> reader => what messageFor() gives; a Throwable is thrown */
     public array $messages = [];
     /** @var list<string> the readers messageFor() was asked for */
@@ -23,12 +26,12 @@ final class FakeLetter implements Letter
 
     public function title(): string
     {
-        return 'Newsletter';
+        return $this->title;
     }
 
     public function selection(): array
     {
-        return [];
+        return $this->selection;
     }
 
     public function messageFor(string $readerId, bool $test = false): ?Message
