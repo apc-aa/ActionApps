@@ -5,23 +5,14 @@ declare(strict_types=1);
 namespace AA\Mailbulk;
 
 use Closure;
+use htmlMimeMail;
 
 /**
  * The web links of a mail turned into tracked ones. Only the href of <a> changes; every other tag,
- * attribute and character stays as the template wrote it.
+ * attribute and character stays as the template wrote it. Tags are read as htmlMimeMail reads them.
  */
 final class Links
 {
-    /** whitespace as HTML knows it - PCRE's \s takes a vertical tab too, which HTML keeps in a name or value */
-    private const SPACE = '\t\n\f\r ';
-
-    /** the rest of a tag after its name, read as htmlMimeMail reads it: a quote opens a value only right
-     *  after '=', so a '>' or 'href=' inside a value never ends the tag or counts */
-    private const TAG_REST = '(?=[' . self::SPACE . '/>])((?:[^<>=]++|=[' . self::SPACE . ']*+(?:"[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '<>]*+))*+)>';
-
-    /** one attribute (name in group 1, value with its quotes in group 2) or one stray character, in order */
-    private const ATTRIBUTE = '~\G[' . self::SPACE . ']*+(?:(=[^' . self::SPACE . '/>=]*+|[^' . self::SPACE . '/>=]++)(?:[' . self::SPACE . ']*+=[' . self::SPACE . ']*+("[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '>]*+))?|.)~s';
-
     /**
      * @param Closure(string): string $tracked the tracked address of a decoded url; the same url = leave it
      * @param list<string> $skip urls that stay as they are (unsubscribing must not count as a click)
@@ -29,11 +20,11 @@ final class Links
     public static function track(string $html, Closure $tracked, array $skip): string
     {
         return preg_replace_callback(
-            '~<a' . self::TAG_REST . '~i',
+            '~<a' . htmlMimeMail::TAG_REST . '~i',
             static function (array $tag) use ($tracked, $skip): string {
                 $done = false;
                 $rest = preg_replace_callback(
-                    self::ATTRIBUTE,
+                    htmlMimeMail::ATTRIBUTE,
                     static function (array $a) use ($tracked, $skip, &$done): string {
                         if ($done || (strtolower($a[1] ?? '') !== 'href')) {
                             return $a[0];

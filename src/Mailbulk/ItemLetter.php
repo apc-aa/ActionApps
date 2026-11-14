@@ -91,15 +91,15 @@ class ItemLetter implements Letter
         }
         $code  = $test ? self::TEST_CODE : (string) $reader->getValue(FIELDID_ACCESS_CODE);
         $links = $this->list->readerLinks($code);
-        // a test must count nothing
-        $track = !$test && ($this->trackBase !== '') && ($this->list->getStatSliceId() !== '');
+        // a test must count nothing; the base is '' when the list measured nothing at "send" - all mails of a run alike
+        $track = !$test && ($this->trackBase !== '');
         $image = $track ? $this->openImage($readerId) : '';
         $item  = $this->itemWith($readerId, $links['unsubscribe'], $links['form'], $image);
         // without the code the link would unsubscribe nobody
         $headers = ($test || ($code === '')) ? [] : AA_Collection::unsubscribeHeaders($links['unsubscribe']);
         $html    = $this->expand('_#MAILBODY', $item);
         if ($track) {
-            $html = $this->tracked($html, $readerId, [$links['unsubscribe'], $links['form']], $image);
+            $html = $this->tracked($html, $readerId, $code, [$links['unsubscribe'], $links['form']], $image);
         }
         return new Message(
             trim((string) $reader->getValue(FIELDID_EMAIL)),
@@ -190,14 +190,32 @@ class ItemLetter implements Letter
 
     /** $html with its links tracked and the image added, unless _#MAILOPEN placed it already
      *  @param list<string> $skip */
-    private function tracked(string $html, string $readerId, array $skip, string $image): string
+    private function tracked(string $html, string $readerId, string $code, array $skip, string $image): string
     {
-        $html = Links::track($html, fn(string $url): string => $this->hitUrl($readerId, TrackToken::CLICK, $url) ?? $url, $skip);
+        $html = Links::track($html, fn(string $url): string => self::personal($url, $readerId, $code) ? $url : ($this->hitUrl($readerId, TrackToken::CLICK, $url) ?? $url), $skip);
         if (($image === '') || str_contains($html, $image)) {
             return $html;
         }
         $end = strripos($html, '</body>');
         return ($end === false) ? $html . $image : substr_replace($html, $image, $end, 0);
+    }
+
+    /** a link of the reader's own (unsubscribe or form with more parameters, a link built from _#MAILTOID) - once
+     *  tracked, its address with the reader's code or id would land in the statistics, which editors see */
+    private static function personal(string $url, string $readerId, string $code): bool
+    {
+        if (($readerId !== '') && (stripos($url, $readerId) !== false)) {
+            return true;
+        }
+        if ($code === '') {
+            return false;
+        }
+        parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
+        $found = false;
+        array_walk_recursive($query, static function (mixed $value) use ($code, &$found): void {
+            $found = $found || ($value === $code);
+        });
+        return $found;
     }
 
     /** the tracked address under the base the run keeps - a step may run in a tree with another path;

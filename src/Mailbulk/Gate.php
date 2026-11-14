@@ -197,6 +197,12 @@ class Gate
         return (string) $this->collectionOf($list)->getSliceUrl();
     }
 
+    /** long id of the statistics slice of the list, '' = it measures nothing */
+    protected function statSliceId(string $list): string
+    {
+        return $this->collectionOf($list)->getStatSliceId();
+    }
+
     protected function mailer(): Mailer
     {
         return new AaMailer();
@@ -338,9 +344,13 @@ class Gate
     }
 
     /** where the tracked addresses of the mails lead: the list's site with the path of this tree - known
-     *  here, as a step may run in another tree; this tree's own address when the site gives no host */
+     *  here, as a step may run in another tree; this tree's own address when the site gives no host.
+     *  '' = the run tracks nothing: decided once, so a slice added or removed later changes no mail of the run */
     private function trackBase(string $list): string
     {
+        if ($this->statSliceId($list) === '') {
+            return '';
+        }
         $site   = parse_url($this->siteUrl($list)) ?: [];
         $scheme = strtolower((string) ($site['scheme'] ?? ''));
         if (!in_array($scheme, ['http', 'https'], true) || (($site['host'] ?? '') === '')) {

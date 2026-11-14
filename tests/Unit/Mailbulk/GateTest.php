@@ -138,10 +138,12 @@ namespace Tests\Unit\Mailbulk {
         /** @var list<string> what the gate read: slice, list, rights or relation */
         public static array $reads = [];
         public static string $siteUrl = 'https://news.example.org:8443/cz/home?x=1';
+        public static string $statSlice = '5555aaaa5555aaaa5555aaaa5555aaaa';
 
         public static function reset(): void
         {
             self::$siteUrl    = 'https://news.example.org:8443/cz/home?x=1';
+            self::$statSlice  = '5555aaaa5555aaaa5555aaaa5555aaaa';
             self::$itemSlice  = TestRun::SLICE;
             self::$mayEdit    = true;
             self::$relates    = true;
@@ -221,6 +223,11 @@ namespace Tests\Unit\Mailbulk {
         protected function siteUrl(string $list): string
         {
             return self::$siteUrl;
+        }
+
+        protected function statSliceId(string $list): string
+        {
+            return self::$statSlice;
         }
 
         protected function statsView(): StatsView
@@ -542,6 +549,16 @@ namespace Tests\Unit\Mailbulk {
             (new TestGate())->act('send', self::LIST, self::ITEM);
 
             self::assertSame(AA_INSTAL_URL, self::stored(self::runIds()[0])['base']);
+        }
+
+        /** a list without a statistics slice at "send" gets a run that tracks no mail, even if a slice is set later */
+        public function test_act_send_listWithoutStatSlice_noBase(): void
+        {
+            TestGate::$statSlice = '';
+
+            (new TestGate())->act('send', self::LIST, self::ITEM);
+
+            self::assertSame('', self::stored(self::runIds()[0])['base']);
         }
 
         public function test_act_sendTwice_secondIsRefused(): void

@@ -517,14 +517,25 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame('<a href="https://example.org/a">a</a>[]', $html);
         }
 
-        public function test_messageFor_noStatSlice_untouched(): void
+        /** tracking is decided at "send" (the run has a base or not): a mail of the run never checks the list again,
+         *  so all its readers get the same mail - with the slice removed meanwhile the links still redirect */
+        public function test_messageFor_statSliceGoneMidRun_stillTracked(): void
         {
             TestItemLetter::$aliases[self::ITEM_SLICE]['_#MAILBODY'] = self::itemAliases(['_#MAILBODY' => '<a href="https://example.org/a">a</a>[_#MAILOPEN]'])['_#MAILBODY'];
 
             $message = (new TestItemLetter($this->list(), self::ITEM, self::BASE))->messageFor(self::ANNA);
 
             self::assertNotNull($message);
-            self::assertSame('<a href="https://example.org/a">a</a>[]', $message->html);
+            self::assertSame([TrackToken::CLICK, TrackToken::OPEN], array_map(static fn(TrackToken $t): string => $t->kind, self::tokens($message->html)));
+        }
+
+        /** a personal link would put the reader's code or id into the statistics, shown to editors */
+        public function test_messageFor_personalLinks_notTracked(): void
+        {
+            $html = $this->trackedMail('<a href="_#MAILPREF&amp;lang=en">f</a> <a href="_#MAILUNSB#x">u</a> <a href="https://example.org/p?r=_#MAILTOID">p</a> <a href="https://example.org/p/_#MAILTOID/x">q</a> <a href="https://example.org/a?x=codeAnnaX&amp;y=codeAnn">a</a>');
+
+            self::assertStringStartsWith('<a href="' . self::URL . '?ac=codeAnna&amp;lang=en">f</a> <a href="' . self::URL . '?au=codeAnna&c=abcde#x">u</a> <a href="https://example.org/p?r=' . self::ANNA . '">p</a> <a href="https://example.org/p/' . self::ANNA . '/x">q</a> <a href="' . self::BASE, $html);
+            self::assertSame(['https://example.org/a?x=codeAnnaX&y=codeAnn', ''], array_map(static fn(TrackToken $t): string => $t->url, self::tokens($html)), 'only a whole query value is the code');
         }
 
         public function test_messageFor_unsubscribeLink_notTracked(): void

@@ -342,17 +342,18 @@ class htmlMimeMail {
     }
 
     /** whitespace as HTML knows it - PCRE's \s takes a vertical tab too, which HTML keeps in a name or value */
-    private const SPACE = '\t\n\f\r ';
+    public const SPACE = '\t\n\f\r ';
 
     /**
      * The rest of a tag after its name, attributes in group 1. A quote opens a value only right after '='
      * (alt="a > b" stays one value, alt=a"b does not open one). Possessive: a scan never backtracks, so
-     * even hostile markup costs linear time.
+     * even hostile markup costs linear time. Public: AA\Mailbulk\Links reads <a> the same way.
      */
-    private const TAG_REST = '(?=[' . self::SPACE . '/>])((?:[^<>=]++|=[' . self::SPACE . ']*+(?:"[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '<>]*+))*+)>';
+    public const TAG_REST = '(?=[' . self::SPACE . '/>])((?:[^<>=]++|=[' . self::SPACE . ']*+(?:"[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '<>]*+))*+)>';
 
-    /** One attribute (name in group 1) or one stray character, read in order, so a 'srcset=' inside a value never counts. */
-    private const ATTRIBUTE = '~\G[' . self::SPACE . ']*+(?:(=[^' . self::SPACE . '/>=]*+|[^' . self::SPACE . '/>=]++)(?:[' . self::SPACE . ']*+=[' . self::SPACE . ']*+("[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '>]*+))?|.)~s';
+    /** One attribute (name in group 1, value with its quotes in group 2) or one stray character, read in order,
+     *  so a 'srcset=' inside a value never counts. */
+    public const ATTRIBUTE = '~\G[' . self::SPACE . ']*+(?:(=[^' . self::SPACE . '/>=]*+|[^' . self::SPACE . '/>=]++)(?:[' . self::SPACE . ']*+=[' . self::SPACE . ']*+("[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '>]*+))?|.)~s';
 
     /**
      * Renames srcset and sizes of <img> and <source> to data-srcset and data-sizes. The mail embeds only
