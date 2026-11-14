@@ -107,4 +107,15 @@ final class TrackTokenTest extends TestCase
         }
         $this->assertLessThanOrEqual(72, strlen(TrackToken::make(self::LIST, self::ITEM, self::READER, TrackToken::OPEN)), 'goes into every mail');
     }
+
+    /** mails already sent carry tokens in this form: base64url of MAC and data, no padding */
+    public function test_token_formOfSentMails_stillParses(): void
+    {
+        $token = TrackToken::make(self::LIST, self::ITEM, self::READER, TrackToken::CLICK, 'https://example.org/' . str_repeat("\xff\xfe?", 7));
+        $raw   = base64_decode(strtr($token, '-_', '+/'), true);
+
+        $this->assertIsString($raw);
+        $this->assertSame(rtrim(strtr(base64_encode($raw), '+/', '-_'), '='), $token);
+        $this->assertNotNull(TrackToken::parse(base64_encode($raw)), 'the standard alphabet with padding parsed before as well');
+    }
 }

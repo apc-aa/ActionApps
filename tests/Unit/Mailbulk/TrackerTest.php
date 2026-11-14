@@ -27,6 +27,15 @@ final class MemoryTracker extends Tracker
         return $this->statSlices[$list] ?? '';
     }
 
+    /** @var list<list<string>> ids asked for by each look-up */
+    public array $lookups = [];
+
+    protected function existing(array $ids): array
+    {
+        $this->lookups[] = $ids;
+        return array_values(array_intersect($ids, array_keys($this->stored)));
+    }
+
     protected function lock(string $eventId): bool
     {
         $this->lockLog[] = "lock $eventId";
@@ -93,7 +102,7 @@ final class TrackerTest extends TestCase
         $this->assertCount(1, $tracker->stored);
         $id   = (string) array_key_first($tracker->stored);
         $item = $tracker->stored[$id];
-        $this->assertSame(Tracker::eventId(self::LIST, self::ITEM, self::READER, TrackToken::OPEN, ''), $id);
+        $this->assertSame(Tracker::eventId(self::STAT_SLICE, self::LIST, self::ITEM, self::READER, TrackToken::OPEN, ''), $id);
         $this->assertMatchesRegularExpression('/\A[0-9a-f]{32}\z/', $id);
         $this->assertSame(self::STAT_SLICE, $item['slice']);
         $this->assertSame(self::ITEM, $item['fields']['relation........']);
@@ -114,6 +123,43 @@ final class TrackerTest extends TestCase
         $this->assertCount(1, $tracker->stored);
     }
 
+    /** the usual hit - a mail opened again, an image proxy - takes no lock and loads no slice */
+    public function test_record_eventStoredAlready_onlyLooksItUp(): void
+    {
+        $tracker = new MemoryTracker();
+        $tracker->record(self::token(TrackToken::CLICK, self::URL));
+        $tracker->lockLog = $tracker->writes = $tracker->lookups = [];
+
+        $this->assertFalse($tracker->record(self::token(TrackToken::CLICK, self::URL)));
+        $this->assertFalse($tracker->record(self::token(TrackToken::OPEN)));
+
+        $this->assertSame([], $tracker->lockLog);
+        $this->assertSame([], $tracker->writes);
+        $this->assertCount(2, $tracker->lookups, 'one look-up per hit');
+        $this->assertCount(2, $tracker->lookups[0], 'a click asks for its open and itself at once');
+    }
+
+    /** the list got another statistics slice: the new one counts from zero, the old item stays where it is */
+    public function test_record_statSliceSwitched_storesInTheNewSlice(): void
+    {
+        $tracker = new MemoryTracker();
+        $tracker->record(self::token(TrackToken::OPEN));
+        $tracker->statSlices[self::LIST] = '6666bbbb6666bbbb6666bbbb6666bbbb';
+
+        $this->assertTrue($tracker->record(self::token(TrackToken::OPEN)));
+
+        $this->assertSame([self::STAT_SLICE, '6666bbbb6666bbbb6666bbbb6666bbbb'], array_column(array_values($tracker->stored), 'slice'));
+    }
+
+    /** ids with a 00, 27 or trailing 20 byte are mishandled elsewhere in AA - string2id() avoids them */
+    public function test_eventId_isTheAaIdOfTheParts(): void
+    {
+        $id = Tracker::eventId(self::STAT_SLICE, self::LIST, self::ITEM, self::READER, TrackToken::CLICK, self::URL);
+
+        $this->assertSame(string2id(implode("\n", [self::STAT_SLICE, self::LIST, self::ITEM, self::READER, TrackToken::CLICK, self::URL])), $id);
+        $this->assertNotSame($id, Tracker::eventId(self::STAT_SLICE, self::LIST, self::ITEM, self::READER, TrackToken::CLICK, self::URL . 'x'));
+    }
+
     public function test_record_click_storesClickAndOpen(): void
     {
         $tracker = new MemoryTracker();
@@ -121,7 +167,7 @@ final class TrackerTest extends TestCase
         $this->assertTrue($tracker->record(self::token(TrackToken::CLICK, self::URL)));
 
         $this->assertSame(['open', 'click'], $tracker->kinds());
-        $click = $tracker->stored[Tracker::eventId(self::LIST, self::ITEM, self::READER, TrackToken::CLICK, self::URL)];
+        $click = $tracker->stored[Tracker::eventId(self::STAT_SLICE, self::LIST, self::ITEM, self::READER, TrackToken::CLICK, self::URL)];
         $this->assertSame(self::URL, $click['fields']['source_href.....']);
         $this->assertSame(self::ITEM, $click['fields']['relation........']);
         $this->assertSame(self::READER, $click['fields']['relation.......1']);

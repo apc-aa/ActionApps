@@ -60,6 +60,10 @@ $router->register('GET', '/v1/expressions', static function (): JsonResponse {
 $router->register('GET', '/v1/mail/hit', static function (): void {
     (new MailHitController())->respond();
 }, false);
+// link checkers probe the links with HEAD: the answer of GET without the body, nothing counted
+$router->register('HEAD', '/v1/mail/hit', static function (): void {
+    (new MailHitController())->respond(false);
+}, false);
 
 // Start session + auth without triggering the HTML login form on anonymous
 // requests. The per-endpoint handler is responsible for checking $auth->is_user()

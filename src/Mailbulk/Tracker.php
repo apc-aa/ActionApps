@@ -23,23 +23,36 @@ class Tracker
         if ($slice === '') {
             return false;
         }
-        // a click with images blocked in the mail still means the mail was opened
+        $urls = [TrackToken::OPEN => ''];
         if ($token->kind === TrackToken::CLICK) {
-            $this->event($slice, $token, TrackToken::OPEN, '');
+            // a click with images blocked in the mail still means the mail was opened
+            $urls[TrackToken::CLICK] = $token->url;
         }
-        return $this->event($slice, $token, $token->kind, $token->url);
+        $ids = [];
+        foreach ($urls as $kind => $url) {
+            $ids[$kind] = self::eventId($slice, $token->list, $token->itemId, $token->readerId, $kind, $url);
+        }
+        // most hits repeat an event (the mail opened again, an image proxy) - one look-up, no lock, no slice
+        $stored = false;
+        foreach (array_diff($ids, $this->existing(array_values($ids))) as $kind => $id) {
+            $ok = $this->event($slice, $id, $token, $kind, $urls[$kind]);
+            if ($kind === $token->kind) {
+                $stored = $ok;
+            }
+        }
+        return $stored;
     }
 
-    /** @return string long id of the event item: one per list, mailing, reader, kind and link */
-    public static function eventId(string $list, string $itemId, string $readerId, string $kind, string $url): string
+    /** @param string $slice long id of the statistics slice - after a switch of the slice the events count anew
+     *  @return string long id of the event item: one per slice, list, mailing, reader, kind and link */
+    public static function eventId(string $slice, string $list, string $itemId, string $readerId, string $kind, string $url): string
     {
         // no part may hold a newline (TrackToken), so the joined parts cannot collide
-        return md5(implode("\n", [$list, $itemId, $readerId, $kind, $url]));
+        return string2id(implode("\n", [$slice, $list, $itemId, $readerId, $kind, $url]));
     }
 
-    private function event(string $slice, TrackToken $token, string $kind, string $url): bool
+    private function event(string $slice, string $id, TrackToken $token, string $kind, string $url): bool
     {
-        $id = self::eventId($token->list, $token->itemId, $token->readerId, $kind, $url);
         // two hits at once (a mail checker and the reader, a double click) would both pass the duplicate
         // check of storeItem() and the second insert would end the request on a duplicate key
         if (!$this->lock($id)) {
@@ -59,8 +72,6 @@ class Tracker
             foreach ($fields as $field => $value) {
                 $content->setAaValue($field, new AA_Value($value));
             }
-            // storeItem() leaves the error of an earlier call
-            ItemContent::lastErr(0, '');
             // a hit must stay cheap: no feeding, no events, the cache of the pages keeps
             return $this->store($content, 'insert_if_new', ItemContent::FLAG_JUST_STORE);
         } finally {
@@ -76,6 +87,13 @@ class Tracker
         // not AA_Collection: that loads the whole sending code of Alerts at every hit
         $packed = (string) DB_AA::select1('stat_slice_id', 'SELECT stat_slice_id FROM alerts_collection', [['id', $list]]);
         return ($packed === '') ? '' : unpack_id($packed);
+    }
+
+    /** @param list<string> $ids long ids
+     *  @return list<string> those of them already stored */
+    protected function existing(array $ids): array
+    {
+        return DB_AA::select('id', 'SELECT LOWER(HEX(id)) AS id FROM item', [['id', $ids, 'l']]);
     }
 
     protected function lock(string $eventId): bool

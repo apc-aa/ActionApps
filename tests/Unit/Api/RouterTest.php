@@ -44,6 +44,30 @@ final class RouterTest extends TestCase
         self::assertStringContainsString('/var/www/secret', (string) file_get_contents($this->log), 'the admin finds it in the log');
     }
 
+    /** ?_path[]=x is no path - not a TypeError */
+    public function test_needsSession_pathAsArray_isLikeNoPath(): void
+    {
+        $router = new Router();
+        $router->register('GET', '/v1/mail/hit', static fn() => null, false);
+        $_GET['_path'] = ['v1/mail/hit'];
+
+        self::assertTrue($router->needsSession());
+
+        ob_start();
+        $router->dispatch();
+        $body = (string) ob_get_clean();
+        self::assertSame('/', json_decode($body, true)['path'] ?? null);
+    }
+
+    public function test_logError_keepsTheLogEntryOnOneLine(): void
+    {
+        Router::logError("AA API /v1/x\ny", new \RuntimeException("a\r\nb"));
+
+        $line = (string) file_get_contents($this->log);
+        self::assertStringContainsString('AA API /v1/x y: RuntimeException: a b at ', $line);
+        self::assertSame(1, substr_count(rtrim($line), "\n") + 1);
+    }
+
     // an image in a mail must not hand the reader a cookie, nor start a session at every open
     public function test_needsSession_routeWithoutSession_isFalse(): void
     {

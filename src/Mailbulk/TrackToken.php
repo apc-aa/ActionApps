@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Mailbulk;
 
 use AA\Util\Secret;
+use AA\Util\Txt;
 
 /**
  * The signed part of a tracked address in a mail: which list, item and reader opened the mail
@@ -37,13 +38,13 @@ final class TrackToken
             throw new \InvalidArgumentException('Malformed tracked address');
         }
         $data = $kind . chr(strlen($list)) . $list . hex2bin($itemId) . hex2bin($readerId) . $url;
-        return rtrim(strtr(base64_encode(self::mac($data) . $data), '+/', '-_'), '=');
+        return Txt::bin2url(self::mac($data) . $data);
     }
 
     /** @return ?self null when forged or malformed */
     public static function parse(string $token): ?self
     {
-        $raw = base64_decode(strtr($token, '-_', '+/'), true);
+        $raw = Txt::url2bin($token, true);
         if (($raw === false) || (strlen($raw) < self::MAC_BYTES + 2 + 32)) {
             return null;
         }
@@ -74,6 +75,9 @@ final class TrackToken
 
     private static function mac(string $data): string
     {
-        return substr(hash_hmac('sha256', $data, Secret::key('mail-track'), true), 0, self::MAC_BYTES);
+        // the key derivation would otherwise run for every link of every recipient
+        static $key = null;
+        $key ??= Secret::key('mail-track');
+        return substr(hash_hmac('sha256', $data, $key, true), 0, self::MAC_BYTES);
     }
 }

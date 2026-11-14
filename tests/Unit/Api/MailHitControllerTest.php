@@ -108,4 +108,42 @@ final class MailHitControllerTest extends TestCase
         $this->assertSame([200, 'image/gif'], [$open['status'], $open['headers']['Content-Type']]);
         $this->assertStringContainsString('database gone', (string) file_get_contents($this->log), 'the admin finds it in the log');
     }
+
+    /** a header line may hold only ASCII - an IRI of the mail is sent percent-encoded, the rest as it was */
+    public function test_answer_click_locationIsPercentEncodedIri(): void
+    {
+        $url    = 'https://example.org/čaj dnes/?q=%C5%A1&x=ž#a';
+        $answer = (new MailHitController(new ListingTracker()))->answer(TrackToken::make(self::LIST, self::ITEM, self::READER, TrackToken::CLICK, $url));
+
+        $this->assertSame('https://example.org/%C4%8Daj%20dnes/?q=%C5%A1&x=%C5%BE#a', $answer['headers']['Location']);
+    }
+
+    /** link checkers probe with HEAD: they get the answer of GET, nothing is counted */
+    public function test_answer_withoutRecording_answersAlikeAndRecordsNothing(): void
+    {
+        $tracker    = new ListingTracker();
+        $controller = new MailHitController($tracker);
+        $click      = TrackToken::make(self::LIST, self::ITEM, self::READER, TrackToken::CLICK, self::URL);
+        $open       = TrackToken::make(self::LIST, self::ITEM, self::READER, TrackToken::OPEN);
+
+        $this->assertSame([302, self::URL], [$controller->answer($click, false)['status'], $controller->answer($click, false)['headers']['Location']]);
+        $this->assertSame(200, $controller->answer($open, false)['status']);
+        $this->assertSame(404, $controller->answer('garbage', false)['status']);
+        $this->assertSame([], $tracker->recorded);
+    }
+
+    #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+    public function test_respond_head_sendsNoBodyAndRecordsNothing(): void
+    {
+        $tracker = new ListingTracker();
+        $_GET['t'] = TrackToken::make(self::LIST, self::ITEM, self::READER, TrackToken::OPEN);
+
+        ob_start();
+        (new MailHitController($tracker))->respond(false);
+        $body = (string) ob_get_clean();
+
+        $this->assertSame('', $body);
+        $this->assertSame([], $tracker->recorded);
+        $this->assertSame(200, http_response_code());
+    }
 }

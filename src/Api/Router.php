@@ -21,7 +21,8 @@ class Router
     /** @var array<string,true> paths answered without a session */
     private array $sessionless = [];
 
-    /** @param bool $session false: the path opens no session and sends no cookie, whatever the method */
+    /** @param bool $session false: the path opens no session and sends no cookie, whatever the method -
+     *                       a path either has a session or not, so register all its methods alike */
     public function register(string $method, string $path, callable $handler, bool $session = true): void
     {
         $this->routes[strtoupper($method) . ' ' . $path] = $handler;
@@ -54,15 +55,21 @@ class Router
             }
         } catch (\Throwable $e) {
             // the API is public - paths and SQL from the message go to the server log only
-            error_log('AA API ' . $path . ': ' . preg_replace('/[\x00-\x1F\x7F]+/', ' ', get_class($e) . ': ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine()));
+            self::logError('AA API ' . $path, $e);
             JsonResponse::error(500, 'Internal error')->emit();
         }
+    }
+
+    /** Logs an exception the client is not told about, as one line - the message may hold newlines */
+    public static function logError(string $context, \Throwable $e): void
+    {
+        error_log((string) preg_replace('/[\x00-\x1F\x7F]+/', ' ', $context . ': ' . get_class($e) . ': ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine()));
     }
 
     private function extractPath(): string
     {
         // Preferred: the rewrite rule hands the path via ?_path=v1/ping.
-        if (isset($_GET['_path']) && $_GET['_path'] !== '') {
+        if (is_string($_GET['_path'] ?? null) && $_GET['_path'] !== '') {
             return '/' . trim($_GET['_path'], '/');
         }
         // PATH_INFO fallback (when AcceptPathInfo is on).
