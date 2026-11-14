@@ -108,8 +108,10 @@ namespace Tests\Unit\Optimize {
             ['c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3', 'AA\Util\Note', 'text', 'try {debuglog} here'],
             ['d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4', 'AA_Modulesettings_Site', 'ga_id', 'UA-12254263-1'],
             ['d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4', 'AA_Modulesettings_Site', 'alternate_url', 'https://example.org/'],
-            // "fields" is code of an export, but field ids of a condition - class and property go in pairs
+            // "fields" is code of an export, but field ids of a condition - class and property go in pairs,
+            // and a property goes with the class of its own object
             ['e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5', 'AA_Condition', 'fields', 'headline........'],
+            ['f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6', 'AA_Exportsetings', 'fields', '_#HEADLINE'],
         ];
 
         /** Reads of object_text run in SQLite over OBJECTS, so what a query pairs (class with property, object with
@@ -144,7 +146,8 @@ namespace Tests\Unit\Optimize {
         {
             self::answerObjects();
 
-            self::assertSame(['<b>{debuglog:x}</b>', 'UA-12254263-1'], iterator_to_array(CodePoints::texts(), false));
+            // SQLite returns the rows in no set order; duplicates would still count
+            self::assertEqualsCanonicalizing(['<b>{debuglog:x}</b>', 'UA-12254263-1', '_#HEADLINE'], iterator_to_array(CodePoints::texts(), false));
         }
 
         public function test_containing_analyticsIdOfSiteSettings_found(): void
