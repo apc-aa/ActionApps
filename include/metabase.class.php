@@ -1373,7 +1373,9 @@ class AA_Metabase
         $packed_columns = self::getPacked($tablename);
         foreach ($packed_columns as $column) {
             foreach ($data as $k => $v) {
-                $data[$k][$column] = unpack_id($v[$column]);
+                if (array_key_exists($column, $v)) {   // a DB before sql_update lacks newer columns
+                    $data[$k][$column] = unpack_id($v[$column]);
+                }
             }
         }
     }

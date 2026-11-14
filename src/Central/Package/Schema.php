@@ -47,7 +47,7 @@ final class Schema
         'site'                       => ['site', [], ['structure'], 'structure = <spot-tree>'],
         'site_spot'                  => ['site_spot', ['spot_id' => ['spot_id', 'xs:positiveInteger']], []],
         'uses'                       => ['relation', ['destination_id' => ['module', 'longId']], ['source_id', 'flag'], 'only flag REL_FLAG_MODULE_DEPEND ("uses modules")'],
-        'alerts_collection'          => ['alerts_collection', ['id' => ['id', 'collectionId']], []],
+        'alerts_collection'          => ['alerts_collection', ['id' => ['id', 'collectionId']], ['stat_slice_id']],
         'alerts_collection_filter'   => ['alerts_collection_filter', ['collectionid' => ['collection', 'collectionId'], 'filterid' => ['filter', 'xs:positiveInteger'], 'myindex' => ['myindex', 'xs:integer', '0']], []],
         'alerts_collection_howoften' => ['alerts_collection_howoften', ['collectionid' => ['collection', 'collectionId'], 'howoften' => ['howoften', 'xs:string']], ['last']],
         'alerts_filter'              => ['alerts_filter', ['id' => ['id', 'xs:positiveInteger']], []],
@@ -71,7 +71,7 @@ final class Schema
             'mailman_field_lists', 'mlxctrl',
         ],
         'site'              => ['state_file', 'flag'],
-        'alerts_collection' => ['emailid_welcome', 'emailid_alert', 'slice_id', 'stat_slice_id'],
+        'alerts_collection' => ['emailid_welcome', 'emailid_alert', 'slice_id'],
     ];
 
     /** value types other than by the column type: packed ids joined without a separator */

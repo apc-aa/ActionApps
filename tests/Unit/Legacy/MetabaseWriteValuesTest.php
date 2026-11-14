@@ -112,4 +112,14 @@ final class MetabaseWriteValuesTest extends TestCase
             . "(0x$id,'a\\'b\\\\c','Č','1.5','',7,0x$id$id), (0x$id,'g','n','v',DEFAULT,3,DEFAULT)",
         ], RecordingDb::$log);
     }
+
+    /** A DB before sql_update lacks a newer packed column - the row must not get it invented. */
+    public function test_unpackIds_skips_a_packed_column_the_row_lacks(): void
+    {
+        $rows = [['module_id' => pack_id(self::ID), 'slice_id' => pack_id(self::ID)]];
+
+        \AA::Metabase()->unpackIds('alerts_collection', $rows);
+
+        $this->assertSame([['module_id' => self::ID, 'slice_id' => self::ID]], $rows);
+    }
 }

@@ -197,10 +197,9 @@ final class CentralDefinitionModuleTest extends TestCase
         self::collectingWarnings(static fn() => self::load($def, ['definitions' => true]), $warnings);
         $data = $def->getArray();
 
-        // pinned: a packed column the row does not have comes back as '' (module.owner)
-        $this->assertSame([self::TEMPLATE_ID => ['id' => self::TEMPLATE_ID, 'name' => 'News', 'type' => 'S', 'owner' => '']], $data['module']);
-        $this->assertCount(2, $warnings);   // the missing column is read, then unpacked as null
-        $this->assertStringContainsString('owner', $warnings[0]);
+        // a packed column the row does not have (a table before sql_update) stays missing - module.owner here
+        $this->assertSame([self::TEMPLATE_ID => ['id' => self::TEMPLATE_ID, 'name' => 'News', 'type' => 'S']], $data['module']);
+        $this->assertSame([], $warnings);
         $this->assertSame(['headline........', 'text...........1'], array_keys($data['field']));
         $this->assertSame(self::TEMPLATE_ID, $data['field']['headline........']['slice_id']);
         $this->assertSame([12 => ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => 'List']], $data['view']);

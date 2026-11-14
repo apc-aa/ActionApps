@@ -19,7 +19,7 @@
       <table name="constant" columns="name value class pri ancestors description"/>
       <table name="site" columns="state_file flag"/>
       <table name="site_spot" columns="content flag"/>
-      <table name="alerts_collection" columns="emailid_welcome emailid_alert slice_id stat_slice_id"/>
+      <table name="alerts_collection" columns="emailid_welcome emailid_alert slice_id"/>
       <table name="alerts_filter" columns="vid conds description"/>
     </tables>
   </meta>
