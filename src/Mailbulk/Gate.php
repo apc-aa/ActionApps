@@ -39,7 +39,7 @@ class Gate
     private array $slices = [];
     /** @var array<string, ?string> pair and relation => why not; null = allowed */
     private array $denials = [];
-    /** @var array<string, bool> list => it exists */
+    /** @var array<string, string> list id as given => as stored, '' = no such list */
     private array $lists = [];
     /** @var array<string, bool> list, slice and relation => the user may control the sendings */
     private array $rights = [];
@@ -69,6 +69,7 @@ class Gate
     /** the user may send the item to the list; with $toSend false: may stop its sending and see its state */
     public function allowed(string $list, string $itemId, bool $toSend = true): bool
     {
+        $list = $this->listId($list);
         return $this->denial($list, strtolower($itemId), $toSend) === null;
     }
 
@@ -78,6 +79,7 @@ class Gate
         // also when it prints nothing: the page of a visitor must not be served from the cache to an editor
         $this->noStore();
         $itemId = strtolower($itemId);
+        $list   = $this->listId($list);
         try {
             if (($this->denial($list, $itemId, false) !== null)
                 || (($this->denial($list, $itemId, true) !== null) && ($this->campaignOf($list, $itemId)->active() === null))) {
@@ -95,6 +97,7 @@ class Gate
     {
         $this->noStore();
         $itemId = strtolower($itemId);
+        $list   = $this->listId($list);
         if (!in_array($what, self::INFO, true)) {
             return '';
         }
@@ -122,6 +125,7 @@ class Gate
     public function act(string $action, string $list, string $itemId): array
     {
         $itemId = strtolower($itemId);
+        $list   = $this->listId($list);
         try {
             $toSend = !in_array($action, self::WITHOUT_RELATION, true);
             $denial = $this->denial($list, $itemId, $toSend);
@@ -159,9 +163,10 @@ class Gate
         return Run::sliceOfItem($itemId);
     }
 
-    protected function listExists(string $list): bool
+    /** the id of the list as stored; '' = no such list */
+    protected function storedListId(string $list): string
     {
-        return DB_AA::test('alerts_collection', [['id', $list]]);
+        return (string) DB_AA::select1('id', 'SELECT id FROM `alerts_collection`', [['id', $list]]);
     }
 
     /** @param ?string $slice the item's slice, null = the item is gone */
@@ -338,6 +343,24 @@ class Gate
         return $this->slices[$itemId];
     }
 
+    /** The list as stored - some databases compare its id in any case, while the runs are found by the
+     *  exact id: {mailbulk:ABCDE:…} must start and find the runs of list abcde. The id as given when none is
+     *  stored, so a denial says why. */
+    private function listId(string $list): string
+    {
+        return AA_Collection::isValidId($list) ? ($this->stored($list) ?: $list) : $list;
+    }
+
+    /** storedListId() once per id */
+    private function stored(string $list): string
+    {
+        $stored = $this->lists[$list] ??= $this->storedListId($list);
+        if ($stored !== '') {
+            $this->lists[$stored] = $stored;
+        }
+        return $stored;
+    }
+
     private function collectionOf(string $list): AA_Collection
     {
         return $this->collections[$list] ??= new AA_Collection($list);
@@ -404,7 +427,7 @@ class Gate
         if ($toSend) {
             return $this->denial($list, $itemId, false) ?? ($this->rights($list, $this->sliceOf($itemId), true) ? null : _m("The list is not related to the item's slice"));
         }
-        if (!AA_Collection::isValidId($list) || !is_long_id($itemId) || !($this->lists[$list] ??= $this->listExists($list))) {
+        if (!AA_Collection::isValidId($list) || !is_long_id($itemId) || ($this->stored($list) === '')) {
             return _m('Invalid list or item');
         }
         return $this->rights($list, $this->sliceOf($itemId), false) ? null : _m('You may not send this item');

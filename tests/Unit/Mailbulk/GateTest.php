@@ -162,10 +162,11 @@ namespace Tests\Unit\Mailbulk {
             return self::$itemSlice;
         }
 
-        protected function listExists(string $list): bool
+        protected function storedListId(string $list): string
         {
             self::$reads[] = 'list';
-            return self::$listExists;
+            // the database compares the id in any case
+            return (self::$listExists && (strtolower($list) === GateTest::LIST)) ? GateTest::LIST : '';
         }
 
         protected function mayControl(string $list, ?string $slice, bool $needsRelation): bool
@@ -246,7 +247,7 @@ namespace Tests\Unit\Mailbulk {
 
         public const USER_ID = 'uid-1';
         private const ITEM = 'cafe0000000000000000000000000001';
-        private const LIST = 'abcde';
+        public const LIST  = 'abcde';
 
         private mixed $perm = null;
 
@@ -559,6 +560,17 @@ namespace Tests\Unit\Mailbulk {
             (new TestGate())->act('send', self::LIST, self::ITEM);
 
             self::assertSame('', self::stored(self::runIds()[0])['base']);
+        }
+
+        /** a template may name the list in another case: the run keeps the id as stored, so the Alerts page finds it */
+        public function test_act_send_listInAnotherCase_runOfTheStoredId(): void
+        {
+            (new TestGate())->act('send', strtoupper(self::LIST), self::ITEM);
+
+            self::assertCount(1, self::runIds());
+            self::assertSame(self::LIST, self::stored(self::runIds()[0])['list']);
+            self::assertSame(['stop', 'stats'], self::actions((new TestGate())->control(strtoupper(self::LIST), self::ITEM)));
+            self::assertSame(self::stored(self::runIds()[0])['total'], (new TestGate())->info(strtoupper(self::LIST), self::ITEM, 'total'));
         }
 
         public function test_act_sendTwice_secondIsRefused(): void
