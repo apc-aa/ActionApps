@@ -32,6 +32,7 @@ final class CheckSecretTest extends TestCase
         $finding = CheckSecret::assess('', 'a-long-db-password');
         $this->assertSame(Finding::WARNING, $finding->severity);
         $this->assertStringContainsString("define('AA_SECRET'", $finding->advice);
+        $this->assertStringContainsString('breaks the tracked links in mails already sent', $finding->advice, 'set it before the first tracked mail');
     }
 
     public function test_missing_aa_secret_with_a_weak_db_password_is_an_error(): void

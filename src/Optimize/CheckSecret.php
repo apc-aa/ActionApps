@@ -49,7 +49,7 @@ class CheckSecret extends AbstractOptimize
         if (strlen($secret) >= Secret::MIN_LENGTH) {
             return new Finding(Finding::OK, _m('AA_SECRET is set'));
         }
-        $advice = _m("Add to include/config.php: define('AA_SECRET', '...'); with any long random string, e.g. the output of php -r \"echo bin2hex(random_bytes(32));\". Do it when you update AA, so the Centrals authenticate to this AA again only once. Without AA_SECRET a change of DB_PASSWORD has the same effect as a new secret. Centrals keep the database passwords of their AAs in central_conf - another reason for AA_SECRET.");
+        $advice = _m("Add to include/config.php: define('AA_SECRET', '...'); with any long random string, e.g. the output of php -r \"echo bin2hex(random_bytes(32));\". Do it when you update AA, so the Centrals authenticate to this AA again only once. Without AA_SECRET a change of DB_PASSWORD has the same effect as a new secret. Centrals keep the database passwords of their AAs in central_conf - another reason for AA_SECRET. Setting or changing AA_SECRET - or changing DB_PASSWORD while it is unset - breaks the tracked links in mails already sent, so set it before the first mailing with a statistics slice.");
         if ($secret !== '') {
             return new Finding(Finding::ERROR, _m('AA_SECRET is shorter than %1 bytes, so it is ignored', [Secret::MIN_LENGTH]), advice: $advice);
         }
