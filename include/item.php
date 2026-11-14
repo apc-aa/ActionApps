@@ -450,6 +450,8 @@ class AA_Item
     /** @var AA_Aliases|null  */
     private $aliases;           // AA_Aliases with possible generator for alias lazy load
     private $parameters;        // optional additional parameters - copied from itemview->parameters
+    /** ':' + hash of the text aliases, '' without any, null = not counted yet */
+    private ?string $text_aliases_hash = null;
 
     /** item function
      *  Constructor
@@ -650,6 +652,24 @@ class AA_Item
         return $this->content4id->getId();
     }
 
+    /** The id for the caches of the template commands whose output depends on the item: two objects of one
+     *  item may carry other text aliases (AA_Aliases::addTextAlias() - a mail per reader, say) and expand
+     *  differently. Without text aliases it is the id. */
+    public function getCacheId(): string
+    {
+        if ($this->text_aliases_hash === null) {
+            $texts = '';
+            foreach ($this->aliases as $name => $alias) {
+                $def = ($alias instanceof AA_Alias) ? $alias->getFuncDef() : '';
+                if (($def === 'f_p') || str_starts_with($def, 'f_p:')) {
+                    $texts .= "$name\0$def\0";
+                }
+            }
+            $this->text_aliases_hash = ($texts === '') ? '' : ':' . hash('xxh128', $texts);
+        }
+        return $this->getId() . $this->text_aliases_hash;
+    }
+
     /** getSliceID function  */
     public function getSliceID(): string
     {
@@ -756,11 +776,13 @@ class AA_Item
     public function addAlias(AA_Alias $alias): void
     {
         $this->aliases->addAlias($alias);
+        $this->text_aliases_hash = null;
     }
 
     public function setAliases(AA_Aliases $aliases): void
     {
         $this->aliases = $aliases;
+        $this->text_aliases_hash = null;
     }
 
     public function getAlias(string $alias): ?AA_Alias

@@ -8495,8 +8495,8 @@ class AA_Stringexpand_Expand extends AA_Stringexpand {
      */
     function additionalCacheParam(array $params= []): string
     {
-        /** output is different for different items - place item id into cache search */
-        return is_object($this->item) ? $this->item->getId() : '';
+        /** output is different for different items - its text aliases count as well (AA_Item::getCacheId()) */
+        return is_object($this->item) ? $this->item->getCacheId() : '';
     }
 
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -9713,7 +9713,7 @@ class AA_Stringexpand__ extends AA_Stringexpand {
      */
     function additionalCacheParam(array $params= []): string {
         // is it necessary to have $this->item here?
-        return serialize([is_object($this->item) ? $this->item->getId() : '']);
+        return serialize([is_object($this->item) ? $this->item->getCacheId() : '']);
     }
 
     /** Do not qoute results - it is just shortcut, so we need to expand
@@ -10605,8 +10605,8 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
      */
     function additionalCacheParam(array $params= []): string
     {
-        /** output is different for different items - place item id into cache search */
-        return is_object($this->item) ? $this->item->getId() : '';
+        /** output is different for different items - its text aliases count as well (AA_Item::getCacheId()) */
+        return is_object($this->item) ? $this->item->getCacheId() : '';
     }
 
     /**
@@ -11800,8 +11800,8 @@ class AA_Stringexpand_Validate extends AA_Stringexpand {
      */
     function additionalCacheParam(array $params= []): string
     {
-        /** output is different for different items - place item id into cache search */
-        return is_object($this->item) ? $this->item->getId() : '';
+        /** output is different for different items - its text aliases count as well (AA_Item::getCacheId()) */
+        return is_object($this->item) ? $this->item->getCacheId() : '';
     }
 
     /** expand function
