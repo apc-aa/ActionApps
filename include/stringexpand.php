@@ -8171,6 +8171,7 @@ class AA_Requires {
             'aa-isds@1'                   => new AA_Req_Lib(get_aa_url('javascript/aa-isds.js', ['v'=>AA_JS_VERSION],false).' module', '', ['_css-aa-isds@1', 'aa-richtext@1']),
             '_css-aa-isds@1'              => new AA_Req_Css(get_aa_url('css/aa-isds.css', ['v'=>AA_JS_VERSION],false)),
             'aa-passkey@1'                => new AA_Req_Lib(get_aa_url('javascript/aa-passkey.js', ['v'=>AA_JS_VERSION],false).' module'),
+            'aa-mailbulk@1'               => new AA_Req_Lib(get_aa_url('javascript/mailbulk.js', ['v'=>AA_JS_VERSION],false).' module', '', ['aa-jslib@3|aa-jslib@2|aa-jslib@1']),
             'aa-richtext@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-richtext.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
             'aa-editable@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-editable.js', ['v'=>AA_JS_VERSION],false).' module'),
             'aa-speech@1'                 => new AA_Req_Lib(get_aa_url('javascript/aa-speech/aa-speech.js', ['v'=>AA_JS_VERSION],false), '', ['_css-aa-speech@1']),
@@ -10831,6 +10832,33 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
         ";
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_AjaxSendForm
         return $ret;
+    }
+}
+
+/** Prints the control of the sending of an item to a list of readers (Alerts), or one value of that sending.
+ *    {mailbulk:<list id>:<item id>} - the control: its buttons test, send, stop and continue the sending
+ *    {mailbulk:info:<list id>:<item id>:<what>} - state ('' not sent, sending, stopped, error, done), total,
+ *        sent, failed, skipped, uncertain or date (unix time of the end of the last run), summed over the runs
+ *  Both give nothing without the right to edit all items of the item's slice, or for a list of another slice.
+ *  The page is not page-cached then. The buttons post to central/responder.php - the template sends nothing.
+ */
+class AA_Stringexpand_Mailbulk extends AA_Stringexpand_Nevercache {
+
+    function expand($list='', $item='', $info_item='', $what=''): string
+    {
+        if ((string)$list === 'info') {
+            return $this->gate()->info((string)$item, (string)$info_item, (string)$what);
+        }
+        $control = $this->gate()->control((string)$list, (string)$item);
+        if ($control !== '') {
+            AA::Stringexpander()->addRequire('aa-mailbulk@1');
+        }
+        return $control;
+    }
+
+    protected function gate(): \AA\Mailbulk\Gate
+    {
+        return new \AA\Mailbulk\Gate();
     }
 }
 
