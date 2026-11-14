@@ -148,6 +148,8 @@ final class AaMailerTest extends TestCase
         self::assertStringContainsString('List-Unsubscribe: <https://example.org/u?c=1>', $headers);
         self::assertStringContainsString('X-Mailbulk: r1', $headers);
         self::assertStringContainsString('From: News <news@example.org>', $headers);
+        self::assertStringContainsString('Reply-To: News <news@example.org>', $headers);
+        self::assertStringContainsString('Errors-To: News <news@example.org>', $headers);
         self::assertSame('-fnews@example.org', ScriptedAaMail::$captured['params']);
         self::assertSame('reader@example.org', ScriptedAaMail::$captured['to']);
     }
