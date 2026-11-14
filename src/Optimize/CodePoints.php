@@ -34,11 +34,14 @@ final class CodePoints
     /** object class => its properties holding code (templates, AA expressions). Only these are read: the rest
      *  of object_text is data - runs, crawled pages, notes, an alias's usage example - whose text only mentions
      *  expressions; taken for code it gives false findings. The package lint (Central\Package\ObjectExport)
-     *  reads the same properties. */
+     *  reads the same properties.
+     *  List every property the class gives to the template engine (AA::Un(), unalias, an alias of a fieldset):
+     *  one left out hides its code from the checks, and DbInconsistencyConstants Repair deletes a constant
+     *  group only that code uses. */
     public const OBJECT_CODE = [
         'AA_Aliasfunc'            => ['code'],
         'AA_Condition'            => ['value'],
-        'AA_Exportsetings'        => ['fields'],
+        'AA_Exportsetings'        => ['fields', 'expressions', 'filename', 'conds', 'sort'],
         'AA_Modulesettings_Site'  => ['page404_code', 'loginpage_code'],
         'AA_Modulesettings_Slice' => ['nocheck_pending', 'nocheck_expired'],
         'AA_Plannedtask'          => ['task', 'condition'],

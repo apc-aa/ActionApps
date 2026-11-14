@@ -108,22 +108,26 @@ namespace Tests\Unit\Optimize {
             ['c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3', 'AA\Util\Note', 'text', 'try {debuglog} here'],
             ['d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4', 'AA_Modulesettings_Site', 'ga_id', 'UA-12254263-1'],
             ['d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4', 'AA_Modulesettings_Site', 'alternate_url', 'https://example.org/'],
+            // "fields" is code of an export, but field ids of a condition - class and property go in pairs
+            ['e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5', 'AA_Condition', 'fields', 'headline........'],
         ];
 
-        /** A read of object_text answered as the server would, roughly: a read not scoped by class gets every row
-         *  holding the needle, a scoped one those of the class and property it names. Other tables are empty. */
+        /** Reads of object_text run in SQLite over OBJECTS, so what a query pairs (class with property, object with
+         *  its class) is checked, not just what it names. Other tables are empty. */
         private static function answerObjects(): void
         {
-            RecordingDb::$answer = static function (string $sql): array {
-                if (!str_contains($sql, 'object_text')) {
-                    return [];
-                }
-                $scoped = str_contains($sql, "'aa_type'");
-                $needle = preg_match("/LIKE '%(.*?)%'/", $sql, $m) ? stripslashes($m[1]) : '';
-                $rows   = array_filter(self::OBJECTS, static fn(array $o): bool => str_contains($o[3], $needle)
-                    && (!$scoped || (str_contains($sql, "'" . addslashes($o[1]) . "'") && str_contains($sql, "'$o[2]'"))));
-                return array_map(static fn(array $o): array => ['iid' => $o[0], 'txt' => $o[3], 'x' => 1], array_values($rows));
-            };
+            $db     = new \PDO('sqlite::memory:');
+            $db->exec('CREATE TABLE object_text (id INTEGER PRIMARY KEY, object_id TEXT, property TEXT, value TEXT)');
+            $insert = $db->prepare('INSERT INTO object_text (object_id, property, value) VALUES (?, ?, ?)');
+            $types  = [];
+            foreach (self::OBJECTS as [$id, $class, $property, $value]) {
+                $insert->execute([$id, $property, $value]);
+                $types[$id] = $class;
+            }
+            foreach ($types as $id => $class) {
+                $insert->execute([$id, 'aa_type', $class]);
+            }
+            RecordingDb::$answer = static fn(string $sql): array => str_contains($sql, '`object_text`') ? $db->query($sql)->fetchAll(\PDO::FETCH_ASSOC) : [];
         }
 
         public function test_containing_dataObjects_notTakenForCode(): void
@@ -155,9 +159,10 @@ namespace Tests\Unit\Optimize {
 
         public function test_contains_onlyInADataObject_false(): void
         {
-            RecordingDb::$answer = static fn(string $sql): array => (str_contains($sql, 'object_text') && !str_contains($sql, "'aa_type'")) ? [['x' => 1]] : [];
+            self::answerObjects();
 
-            self::assertFalse(CodePoints::contains('{debuglog'));
+            self::assertTrue(CodePoints::contains('{debuglog:x}'));
+            self::assertFalse(CodePoints::contains('/expressions/debuglog'));
         }
 
         /** a renamed property would silently drop its code from every check */
