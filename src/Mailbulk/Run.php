@@ -174,8 +174,9 @@ class Run extends BatchRun
     }
 
     /** Three steps without progress. A reader the server keeps refusing for now fails, the run goes on.
-     *  After steps that died: a mark left is uncertain; with none, the reader the step died on fails - unless
-     *  a retry of the server was waiting, which may be what failed. A server that keeps failing ends the run
+     *  After steps that died: a mark left is uncertain; with none, the reader at the cursor fails - the count
+     *  of the core may include a server retry, yet ending in error would stop on that reader after every
+     *  Continue, and a failed reader goes again with the next run. A server that keeps failing ends the run
      *  in error: Continue tries the same reader again. */
     protected function onRetriesExhausted(BatchStepResult $last): ?BatchStepResult
     {
@@ -190,9 +191,6 @@ class Run extends BatchRun
                 // every reader recorded: the next step finishes
                 return $this->goesOn($total);
             }
-            if ((string) $this->retrying !== '') {
-                return null;
-            }
         }
         $recorded = $this->recordResult(static function (self $run) use ($deferred, $at, $total): bool {
             if (!$deferred && $run->settle()) {
@@ -202,7 +200,7 @@ class Run extends BatchRun
             if (($i >= $total) || ((string) $run->mark !== '')) {
                 return false;
             }
-            $note = $deferred ? 'Temporarily refused: ' . (string) $run->note : 'The sending stopped on this reader three times.';
+            $note = $deferred ? 'Temporarily refused: ' . (string) $run->note : 'The sending kept stopping on this reader.';
             self::record($run, $i, Outcome::Failed, $note);
             $run->retrying = '';
             return true;

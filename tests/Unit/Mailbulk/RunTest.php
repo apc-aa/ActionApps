@@ -411,14 +411,15 @@ final class RunTest extends TestCase
         self::assertSame(self::addresses(2), self::mailer()->sent());
     }
 
-    public function test_onRetriesExhausted_diedStepAfterAServerRetry_endsInError_recipientKept(): void
+    public function test_onRetriesExhausted_diedStepAfterAServerRetry_failsTheRecipientAndGoesOn(): void
     {
+        // a retry of the server left from before Continue must not stop the run on this reader for good
         $id = self::queued(3, ['cursor' => '1', 'retrying' => 'retry']);
         self::dead($id, '2');
 
-        self::assertSame('error STEP_DIED', self::runQueued());
+        self::runQueued();
 
-        self::assertSame([[], '1'], [self::list($id, 'failed'), self::stored($id)['cursor']]);
+        self::assertSame([[1], '2', ''], [self::list($id, 'failed'), self::stored($id)['cursor'], self::stored($id)['retrying']]);
     }
 
     public function test_onRetriesExhausted_diedStepWithAllRecorded_finishes(): void
