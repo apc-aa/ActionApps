@@ -29,6 +29,43 @@ final class CapturingMail extends \htmlMimeMail
     }
 }
 
+/** A server dialogue that ends at the stage the test names - no socket. */
+final class ScriptedTransport extends \AA\Mail\SmtpTransport
+{
+    public function __construct(private readonly int $result, private readonly string $stage) {}
+
+    public function sendRaw(string $envelopeFrom, array $rcpts, string $rfc822): int
+    {
+        return $this->result;
+    }
+
+    public function lastStage(): string
+    {
+        return $this->stage;
+    }
+
+    public function getLastError(): string
+    {
+        return "SmtpTransport[{$this->stage}] 451: try later";
+    }
+
+    public function getLastResponse(): string
+    {
+        return $this->getLastError();
+    }
+}
+
+/** htmlMimeMail over a ScriptedTransport. */
+final class ScriptedSmtpMail extends \htmlMimeMail
+{
+    public ?ScriptedTransport $transport = null;
+
+    protected function smtpTransport(): \AA\Mail\SmtpTransport
+    {
+        return $this->transport ?? throw new \LogicException('No transport scripted');
+    }
+}
+
 /**
  * Unit tests for the message-construction logic shared by, and divergent
  * between, the two transports.
@@ -232,5 +269,37 @@ final class HtmlMimeMailBuildTest extends TestCase
         $this->assertSame(0, $mail->send(['to@example.org']));
         $this->assertSame('mail', $mail->getLastTransport());
         $this->assertSame('mail() returned false', $mail->getLastTransportResponse());
+    }
+
+    // --- SMTP path: whether the server may have the message ----------------
+
+    private function transientAt(string $stage): \AA\Mail\TransientSmtpException
+    {
+        define('AA_MAIL_TRANSPORT', \AA\Mail\SmtpTransport::TRANSPORT_SMTP);
+        $mail = new ScriptedSmtpMail();
+        $mail->transport = new ScriptedTransport(\AA\Mail\SmtpTransport::RESULT_TRANSIENT, $stage);
+        $mail->setFrom('sender@example.org');
+        $mail->setSubject('s');
+        $mail->setText('b');
+        try {
+            $mail->send(['to@example.org']);
+        } catch (\AA\Mail\TransientSmtpException $e) {
+            $this->assertSame('smtp', $mail->getLastTransport());
+            return $e;
+        }
+        $this->fail('a transient failure is thrown');
+    }
+
+    /** DATA and the body go in one Net_SMTP call - a failure there may come after the server took the mail */
+    public function test_sendViaSmtp_transientAtData_isAfterBody(): void
+    {
+        $this->assertTrue($this->transientAt('data')->afterBody());
+    }
+
+    public function test_sendViaSmtp_transientAtRcpt_isNotAfterBody(): void
+    {
+        $e = $this->transientAt('rcptTo');
+        $this->assertFalse($e->afterBody());
+        $this->assertStringContainsString('451', $e->getMessage());
     }
 }

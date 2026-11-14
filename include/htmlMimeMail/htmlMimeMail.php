@@ -878,7 +878,7 @@ class htmlMimeMail {
         $envelopeFrom = $this->resolveEnvelopeFrom();
         $rfc822       = $this->assembleRfc822($recipients);
 
-        $transport = new \AA\Mail\SmtpTransport();
+        $transport = $this->smtpTransport();
         $result    = $transport->sendRaw($envelopeFrom, $rcpts, $rfc822);
 
         $this->last_transport          = \AA\Mail\SmtpTransport::TRANSPORT_SMTP;
@@ -889,12 +889,19 @@ class htmlMimeMail {
                 return count($recipients);
             case \AA\Mail\SmtpTransport::RESULT_TRANSIENT:
                 throw new \AA\Mail\TransientSmtpException(
-                    'SMTP transient failure: ' . $transport->getLastError()
+                    'SMTP transient failure: ' . $transport->getLastError(),
+                    afterBody: $transport->lastStage() === 'data'
                 );
             case \AA\Mail\SmtpTransport::RESULT_PERMANENT:
             default:
                 return 0;
         }
+    }
+
+    /** A seam for the tests - they script the server's answers. */
+    protected function smtpTransport(): \AA\Mail\SmtpTransport
+    {
+        return new \AA\Mail\SmtpTransport();
     }
 
     /**

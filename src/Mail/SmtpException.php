@@ -20,4 +20,17 @@ namespace AA\Mail;
 /**
  * Base SMTP failure. Callers that don't care about retryability catch this.
  */
-abstract class SmtpException extends \RuntimeException {}
+abstract class SmtpException extends \RuntimeException
+{
+    /** @param bool $afterBody the failure came while the message was on its way - the server may have it */
+    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null, private readonly bool $afterBody = false)
+    {
+        parent::__construct($message, $code, $previous);
+    }
+
+    /** A sender that repeats such a mail may deliver it twice. */
+    public function afterBody(): bool
+    {
+        return $this->afterBody;
+    }
+}

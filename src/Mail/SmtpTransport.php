@@ -70,6 +70,7 @@ class SmtpTransport
 
     private string $lastError    = '';
     private string $lastResponse = '';
+    private string $lastStage    = '';
 
     public function __construct()
     {
@@ -128,6 +129,16 @@ class SmtpTransport
         return 'localhost';
     }
 
+    /**
+     * The step of the last dialogue that ran or failed: connect, starttls, auth, mailFrom, rcptTo, data;
+     * '' when nothing was sent. Net_SMTP::data() sends the DATA command and the body in one call, so a
+     * failure at `data` may come after the server took the message.
+     */
+    public function lastStage(): string
+    {
+        return $this->lastStage;
+    }
+
     public function getLastError(): string
     {
         return $this->lastError;
@@ -150,6 +161,7 @@ class SmtpTransport
      */
     public function sendRaw(string $envelopeFrom, array $rcpts, string $rfc822): int
     {
+        $this->lastStage = '';
         if ($envelopeFrom === '' || $rcpts === []) {
             return self::RESULT_PERMANENT;
         }
@@ -175,10 +187,12 @@ class SmtpTransport
         $smtp->setDebug(false);
 
         try {
+            $this->lastStage = 'connect';
             $this->check($smtp->connect($this->timeout), 'connect', $smtp);
 
             if ($this->encryption === self::ENC_TLS) {
-                $starttls = $smtp->starttls();
+                $this->lastStage = 'starttls';
+                $starttls        = $smtp->starttls();
                 /* Net_SMTP returns boolean false (not a PEAR_Error) when STARTTLS is not
                  * advertised by the server -- the classic MitM strip scenario. Treat as
                  * fatal so we don't fall through to cleartext AUTH. */
@@ -192,13 +206,18 @@ class SmtpTransport
 
             if ($this->user !== '') {
                 /* $tls=false because we already called starttls() above. */
+                $this->lastStage = 'auth';
                 $this->check($smtp->auth($this->user, $this->pass, '', false), 'auth', $smtp);
             }
 
+            $this->lastStage = 'mailFrom';
             $this->check($smtp->mailFrom($envelopeFrom), 'mailFrom', $smtp);
+            $this->lastStage = 'rcptTo';
             foreach ($rcpts as $rcpt) {
                 $this->check($smtp->rcptTo($rcpt), 'rcptTo', $smtp);
             }
+            // set before the call - whatever breaks from here on may break after the server took the message
+            $this->lastStage = 'data';
             $this->check($smtp->data($rfc822), 'data', $smtp);
 
             /* Read the final 250 before disconnect() -- QUIT would overwrite it.
