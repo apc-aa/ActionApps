@@ -18,7 +18,8 @@ use Closure;
  * The control of the sending of one item to one list, for an editor of all items of the item's slice when
  * the list belongs to that slice (Run::mayControlPair()). Prints the control and runs its actions; the actions
  * come only as POST through central/responder.php (AA_Responder_Mailbulk), never from expanding a template.
- * One Gate serves one request: it keeps what it read of each item and list.
+ * One Gate serves one request: it keeps what it read of each item and list, and the rights to each list and
+ * slice - a listing of a hundred items asks for them once.
  */
 class Gate
 {
@@ -38,6 +39,12 @@ class Gate
     private array $slices = [];
     /** @var array<string, ?string> pair and relation => why not; null = allowed */
     private array $denials = [];
+    /** @var array<string, bool> list => it exists */
+    private array $lists = [];
+    /** @var array<string, bool> list, slice and relation => the user may control the sendings */
+    private array $rights = [];
+    /** @var array<string, AA_Collection> one per list: the letters of its items read the list once */
+    private array $collections = [];
     /** @var array<string, Campaign> */
     private array $campaigns = [];
     /** @var array<string, ItemLetter> */
@@ -48,6 +55,15 @@ class Gate
     public function __construct()
     {
         require_once constant('AA_BASE_PATH') . 'modules/alerts/alerts_sending.php';
+    }
+
+    /** The slice of an item the page has read already - the control need not read it again.
+     *  @param string $slice long id */
+    public function itemSeen(string $itemId, string $slice): void
+    {
+        if (is_long_id($itemId) && is_long_id($slice)) {
+            $this->slices[strtolower($itemId)] ??= strtolower($slice);
+        }
     }
 
     /** the user may send the item to the list; with $toSend false: may stop its sending and see its state */
@@ -170,7 +186,7 @@ class Gate
 
     protected function letter(string $list, string $itemId): ItemLetter
     {
-        return new ItemLetter(new AA_Collection($list), $itemId);
+        return new ItemLetter($this->collections[$list] ??= new AA_Collection($list), $itemId);
     }
 
     protected function mailer(): Mailer
@@ -346,12 +362,18 @@ class Gate
     private function findDenial(string $list, string $itemId, bool $toSend): ?string
     {
         if ($toSend) {
-            return $this->denial($list, $itemId, false) ?? ($this->mayControl($list, $this->sliceOf($itemId), true) ? null : _m("The list is not related to the item's slice"));
+            return $this->denial($list, $itemId, false) ?? ($this->rights($list, $this->sliceOf($itemId), true) ? null : _m("The list is not related to the item's slice"));
         }
-        if (!AA_Collection::isValidId($list) || !is_long_id($itemId) || !$this->listExists($list)) {
+        if (!AA_Collection::isValidId($list) || !is_long_id($itemId) || !($this->lists[$list] ??= $this->listExists($list))) {
             return _m('Invalid list or item');
         }
-        return $this->mayControl($list, $this->sliceOf($itemId), false) ? null : _m('You may not send this item');
+        return $this->rights($list, $this->sliceOf($itemId), false) ? null : _m('You may not send this item');
+    }
+
+    /** mayControl() once per list, slice and relation - the items of a listing mostly share them */
+    private function rights(string $list, ?string $slice, bool $needsRelation): bool
+    {
+        return $this->rights[$list . ':' . ($slice ?? '') . ':' . (int) $needsRelation] ??= $this->mayControl($list, $slice, $needsRelation);
     }
 
     // ------------------------------------------------------------ rendering

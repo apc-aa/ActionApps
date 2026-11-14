@@ -52,6 +52,8 @@ class AA_Collection
     public $email_id_alert = null;     /** Id of alert email template */
     public $slice_url = null;          /** Used for caching of slice_url */
     public $stat_slice_id = null;      /** Slice id of the statistics slice, '' = nothing measured */
+    /** @var array<string, list<string>> conds => what droppedConds() found */
+    private array $dropped = [];
 
     /** fields a statistics slice must have: the mailing, the recipient, the action (open/click), the link */
     public const STAT_FIELDS = ['relation........', 'relation.......1', 'category........', 'source_href.....'];
@@ -250,8 +252,12 @@ class AA_Collection
      *  @return list<string> */
     public function droppedConds(string $conds): array
     {
-        $slice = $this->getReaderSlice();
-        return ($slice instanceof AA_Slice) ? self::readerSet($slice, $conds)[1] : [];
+        // the letters of a listing of items share the collection, and mostly their conds
+        if (!isset($this->dropped[$conds])) {
+            $slice                 = $this->getReaderSlice();
+            $this->dropped[$conds] = ($slice instanceof AA_Slice) ? self::readerSet($slice, $conds)[1] : [];
+        }
+        return $this->dropped[$conds];
     }
 
     /** @return array{AA_Set, list<string>} the search of the confirmed readers matching $conds, what it leaves out */

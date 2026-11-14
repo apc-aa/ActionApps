@@ -18,6 +18,7 @@ final class StringexpandMailbulkTest extends TestCase
 {
     private const LIST = 'ab00000000000000000000000000000c';
     private const ITEM = 'cd00000000000000000000000000000e';
+    private const SLICE = 'ef00000000000000000000000000000f';
 
     public static function setUpBeforeClass(): void
     {
@@ -74,15 +75,52 @@ final class StringexpandMailbulkTest extends TestCase
         self::assertStringNotContainsString('mailbulk.js', self::head());
     }
 
+    // the item the command is expanded over gives its slice - a listing reads no slice per control
+    public function test_expand_overAnItem_tellsTheGateItsSlice(): void
+    {
+        $seen    = [];
+        $command = self::command(control: fn(): string => '', seen: $seen, item: self::item(['u_slice_id......' => self::SLICE]));
+        $command->expand(self::LIST, self::ITEM);
+
+        self::assertSame([[self::ITEM, self::SLICE]], $seen);
+    }
+
+    // a content not read from the item table (a form, say) has no u_slice_id...... - its slice_id........ is not trusted
+    public function test_expand_overContentWithoutReadSlice_tellsTheGateNothing(): void
+    {
+        $seen    = [];
+        $command = self::command(control: fn(): string => '', seen: $seen, item: self::item(['slice_id........' => self::SLICE]));
+        $command->expand(self::LIST, self::ITEM);
+
+        self::assertSame([], $seen);
+    }
+
+    /** @param array<string, string> $fields */
+    private static function item(array $fields): \AA_Item
+    {
+        $content = ['unpacked_id.....' => [['value' => self::ITEM]]];
+        foreach ($fields as $id => $value) {
+            $content[$id] = [['value' => $value]];
+        }
+        return new \AA_Item(new \ItemContent($content));
+    }
+
     private static function head(): string
     {
         return @AA::Stringexpander()->getRequireHead();   // computeRequires() reads unset keys of its own arrays
     }
 
-    private static function command(?\Closure $control = null, ?\Closure $info = null): AA_Stringexpand_Mailbulk
+    /** @param list<array{string, string}> $seen what itemSeen() got */
+    private static function command(?\Closure $control = null, ?\Closure $info = null, array &$seen = [], ?\AA_Item $item = null): AA_Stringexpand_Mailbulk
     {
-        $gate = new class ($control, $info) extends Gate {
-            public function __construct(private ?\Closure $controlFn, private ?\Closure $infoFn) {}
+        $gate = new class ($control, $info, $seen) extends Gate {
+            /** @param list<array{string, string}> $seen */
+            public function __construct(private ?\Closure $controlFn, private ?\Closure $infoFn, private array &$seen) {}
+
+            public function itemSeen(string $itemId, string $slice): void
+            {
+                $this->seen[] = [$itemId, $slice];
+            }
 
             public function control(string $list, string $itemId): string
             {
@@ -94,10 +132,10 @@ final class StringexpandMailbulkTest extends TestCase
                 return ($this->infoFn)($list, $itemId, $what);
             }
         };
-        return new class ($gate) extends AA_Stringexpand_Mailbulk {
-            public function __construct(private Gate $fake)
+        return new class ($gate, $item) extends AA_Stringexpand_Mailbulk {
+            public function __construct(private Gate $fake, ?\AA_Item $item)
             {
-                parent::__construct([]);
+                parent::__construct(['item' => $item]);
             }
 
             protected function gate(): Gate

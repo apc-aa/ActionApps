@@ -10851,6 +10851,10 @@ class AA_Stringexpand_Mailbulk extends AA_Stringexpand_Nevercache {
     // the names say both forms: {mailbulk:<list>:<item>} and {mailbulk:info:<list>:<item>:<what>}
     function expand($list_or_info='', $item_or_list='', $item='', $what=''): string
     {
+        // mostly the item of the control: its slice is known without a read (u_slice_id...... comes from the item table, not a form)
+        if (($this->item instanceof AA_Item) && is_long_id($slice = (string)$this->item->getval('u_slice_id......'))) {
+            $this->gate()->itemSeen($this->item->getItemId(), $slice);
+        }
         if ((string)$list_or_info === 'info') {
             return $this->gate()->info((string)$item_or_list, (string)$item, (string)$what);
         }

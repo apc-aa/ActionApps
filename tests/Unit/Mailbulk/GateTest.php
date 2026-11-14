@@ -125,6 +125,8 @@ namespace Tests\Unit\Mailbulk {
         public static ?ScriptedMailer $mailer = null;
         /** @var list<string> what each call opened: item, or readers (and the item) */
         public static array $opened = [];
+        /** @var list<string> what the gate read: slice, list, rights or relation */
+        public static array $reads = [];
 
         public static function reset(): void
         {
@@ -137,20 +139,24 @@ namespace Tests\Unit\Mailbulk {
             self::$noStores   = 0;
             self::$mailer     = new ScriptedMailer();
             self::$opened     = [];
+            self::$reads      = [];
         }
 
         protected function itemSlice(string $itemId): ?string
         {
+            self::$reads[] = 'slice';
             return self::$itemSlice;
         }
 
         protected function listExists(string $list): bool
         {
+            self::$reads[] = 'list';
             return self::$listExists;
         }
 
         protected function mayControl(string $list, ?string $slice, bool $needsRelation): bool
         {
+            self::$reads[] = $needsRelation ? 'relation' : 'rights';
             return ($slice !== null) && self::$mayEdit && (!$needsRelation || self::$relates);
         }
 
@@ -311,6 +317,49 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame('', (new TestGate())->control(self::LIST, self::ITEM));
             self::assertFalse((new TestGate())->allowed(self::LIST, self::ITEM));
             self::assertTrue((new TestGate())->allowed(self::LIST, self::ITEM, false), 'stopping needs no relation');
+        }
+
+        // a listing of a hundred items, each with its control: the list and the rights are read once
+        public function test_control_manyItemsOfOneSlice_readTheListAndRightsOnce(): void
+        {
+            $gate = new TestGate();
+            for ($i = 0; $i < 100; ++$i) {
+                self::assertSame(['test', 'send'], self::actions($gate->control(self::LIST, sprintf('cafe%028x', $i))));
+            }
+            $reads = array_count_values(TestGate::$reads);
+            self::assertSame(['list' => 1, 'slice' => 100, 'rights' => 1, 'relation' => 1], $reads);
+            self::assertCount(100, TestGate::$opened, 'the problem of each item is its own');
+        }
+
+        public function test_control_itemsSeen_readNoSlice(): void
+        {
+            $gate = new TestGate();
+            for ($i = 0; $i < 3; ++$i) {
+                $item = sprintf('CAFE%028x', $i);
+                $gate->itemSeen($item, strtoupper(TestRun::SLICE));
+                self::assertNotSame('', $gate->control(self::LIST, $item));
+            }
+            self::assertNotContains('slice', TestGate::$reads);
+        }
+
+        // the rights are of a slice: an item of another one asks again
+        public function test_control_itemOfAnotherSlice_asksItsRights(): void
+        {
+            $gate = new TestGate();
+            $gate->itemSeen(self::ITEM, TestRun::SLICE);
+            $gate->itemSeen('cafe0000000000000000000000000002', 'beef0000000000000000000000000002');
+            $gate->control(self::LIST, self::ITEM);
+            $gate->control(self::LIST, 'cafe0000000000000000000000000002');
+            self::assertSame(['list', 'rights', 'relation', 'rights', 'relation'], TestGate::$reads);
+        }
+
+        public function test_itemSeen_malformedIds_areIgnored(): void
+        {
+            $gate = new TestGate();
+            $gate->itemSeen('cafe', TestRun::SLICE);
+            $gate->itemSeen(self::ITEM, 'not a slice');
+            $gate->control(self::LIST, self::ITEM);
+            self::assertContains('slice', TestGate::$reads);
         }
 
         public function test_unrelatedList_sendingStarted_canOnlyBeStopped(): void
