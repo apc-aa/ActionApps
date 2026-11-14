@@ -16,6 +16,7 @@ namespace {
         'DB_NAME'         => 'aa_test',
         'DB_USER'         => 'aa',
         'DB_PASSWORD'     => '',
+        'DEFAULT_LANG_INCLUDE' => 'en-utf8_news_lang.php',
     ] as $k => $v) {
         if (!defined($k)) {
             define($k, $v);
@@ -470,6 +471,203 @@ namespace Tests\Unit\Legacy {
             }
 
             $this->assertSame($expected, (new AA_Collection('sQjwa'))->isValidReader($reader));
+        }
+
+        // ---------------------------------------------------------------- the mail of a collection
+
+        private const SLICE_URL   = 'https://example.org/news';
+        private const ACCESS_CODE = 'k3y5x';
+        /** the alert template: both links in the body, so they reach the queued mail */
+        private const ALERT_BODY = '<p>U=_#UNSBFORM F=_#COLLFORM</p>';
+
+        /** readerSlice() plus the Alerts module's slice_url, the alert template and reader Anna's content */
+        private function mailingWorld(string $slice_url = self::SLICE_URL): void
+        {
+            self::nothingSentAtOnce();
+            $this->readers = [self::ANNA => [FIELDID_MAIL_CONFIRMED => '1', FIELDID_EMAIL => 'anna@example.org', FIELDID_ACCESS_CODE => self::ACCESS_CODE]];
+            $this->readerSlice();
+            $slice = RecordingDb::$answer;
+            RecordingDb::$answer = function (string $sql) use ($slice, $slice_url): array {
+                if (preg_match('/^SELECT \\* FROM item WHERE\s+item\.id = 0x([0-9a-f]{32})/', $sql, $m) && isset($this->readers[$m[1]])) {
+                    return [array_merge(array_fill_keys(AA::Metabase()->getColumnNames('item'), ''), [
+                        'id' => pack_id($m[1]), 'slice_id' => pack_id(self::READERS), 'status_code' => '1', 'publish_date' => '1', 'expiry_date' => '2000000000',
+                    ])];
+                }
+                if (preg_match('/^SELECT \\* FROM content WHERE item_id = 0x([0-9a-f]{32})/', $sql, $m)) {
+                    $rows = [];
+                    foreach ($this->readers[$m[1]] ?? [] as $field => $text) {
+                        $rows[] = ['item_id' => pack_id($m[1]), 'field_id' => $field, 'number' => '0', 'text' => $text, 'flag' => '0'];
+                    }
+                    return $rows;
+                }
+                if (str_starts_with($sql, 'SELECT slice_url FROM')) {
+                    return [['slice_url' => $slice_url]];
+                }
+                if (str_contains($sql, 'FROM email') || str_contains($sql, 'FROM `email`')) {
+                    return [array_merge(array_fill_keys(AA::Metabase()->getColumnNames('email'), ''), [
+                        'id' => '2', 'subject' => 'News', 'body' => self::ALERT_BODY, 'header_from' => 'news@example.org', 'html' => '1', 'lang' => 'cz_utf8',
+                    ])];
+                }
+                return $slice($sql);
+            };
+        }
+
+        /** AA_Mail::sendLater() sends the first two mails of a process at once (by mail(), for real) - spend
+         *  them on a mail that only pretends, so the mails of the test go to the queue, where they can be read */
+        private static function nothingSentAtOnce(): void
+        {
+            $mail = new class extends \AA_Mail {
+                protected function nativeMail(string $to, string $subject, string $body, string $headers, string $params = ''): bool
+                {
+                    return true;
+                }
+            };
+            $mail->setFromArray(['subject' => 'x', 'body' => 'x', 'header_from' => 'test@example.org', 'reply_to' => '', 'errors_to' => '', 'sender' => '',
+                'lang' => 'utf-8', 'html' => 0, 'cc' => '', 'bcc' => '', 'attachments' => '']);
+            try {
+                self::quietly(static fn() => $mail->sendLater(['one@example.org', 'two@example.org']));
+            } catch (\Exception) {
+                // spent already: this mail went for the queue, where an anonymous class cannot go
+            }
+            RecordingDb::$log = [];
+        }
+
+        /** @return string[] the mails queued, as their INSERTs into toexecute */
+        private static function queuedMails(): array
+        {
+            return array_values(array_filter(RecordingDb::$log, static fn(string $sql) => str_starts_with($sql, 'INSERT INTO `toexecute`')));
+        }
+
+        /** @return array<string, string> the headers of a queued mail */
+        private static function headersOf(string $insert): array
+        {
+            preg_match("/,'(O:7:.*)','a:/s", $insert, $m);
+            $mail = (array) unserialize(stripslashes($m[1]), ['allowed_classes' => false]);
+            return $mail["\0htmlMimeMail\0headers"];
+        }
+
+        public function test_sendEmails_readerMail_linksOfTheReader(): void
+        {
+            $this->mailingWorld();
+            $collection = self::collection();
+
+            $sent = self::quietly(static fn() => $collection->sendEmails('daily', [], false, '', self::ANNA));
+
+            $this->assertSame(1, $sent);
+            $mails = self::queuedMails();
+            $this->assertCount(1, $mails);
+            $this->assertStringContainsString('U=' . self::SLICE_URL . '?au=' . self::ACCESS_CODE . '&c=sQjwa F=' . self::SLICE_URL . '?ac=' . self::ACCESS_CODE . '<', $mails[0]);
+            $this->assertStringContainsString('anna@example.org', $mails[0]);
+        }
+
+        /** a test send goes to the given addresses with the code ABCDE, which belongs to no reader */
+        public function test_sendEmails_testMail_linksOfCodeABCDE(): void
+        {
+            $this->mailingWorld();
+            $collection = self::collection();
+
+            $sent = self::quietly(static fn() => $collection->sendEmails('daily', ['test@example.org'], false, '', null));
+
+            $this->assertSame(1, $sent);
+            $mails = self::queuedMails();
+            $this->assertCount(1, $mails);
+            $this->assertStringContainsString('U=' . self::SLICE_URL . '?au=ABCDE&c=sQjwa F=' . self::SLICE_URL . '?ac=ABCDE<', $mails[0]);
+            $this->assertStringContainsString('test@example.org', $mails[0]);
+        }
+
+        public function test_readerLinks_unsubscribeAndForm(): void
+        {
+            $this->mailingWorld();
+
+            $this->assertSame([
+                'unsubscribe' => self::SLICE_URL . '?au=' . self::ACCESS_CODE . '&c=sQjwa',
+                'form'        => self::SLICE_URL . '?ac=' . self::ACCESS_CODE,
+            ], (new AA_Collection('sQjwa'))->readerLinks(self::ACCESS_CODE));
+        }
+
+        public function test_unsubscribeHeaders_https_bothHeaders(): void
+        {
+            $this->assertSame([
+                'List-Unsubscribe'      => '<https://example.org/news?au=k3y5x&c=sQjwa>',
+                'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+            ], AA_Collection::unsubscribeHeaders('https://example.org/news?au=k3y5x&c=sQjwa'));
+        }
+
+        public static function urlsWithoutHeaders(): array
+        {
+            return [
+                'http'             => ['http://example.org/news?au=k3y5x&c=sQjwa'],
+                'no scheme'        => ['example.org/news?au=k3y5x&c=sQjwa'],
+                'relative'         => ['/news?au=k3y5x&c=sQjwa'],
+                'empty'            => [''],
+                'upper-case HTTPS' => ['HTTPS://example.org/news'],
+                'header injection' => ["https://example.org/news\r\nBcc: x@example.com"],
+                'line feed'        => ["https://example.org/news\nBcc: x@example.com"],
+                'nul byte'         => ["https://example.org/news\0"],
+                'space'            => ['https://example.org/my news'],
+                'closing bracket'  => ['https://example.org/news>, <mailto:x@example.com'],
+                'host missing'     => ['https://'],
+            ];
+        }
+
+        /** mail services post only to https; a URL that would break the header gives none */
+        #[DataProvider('urlsWithoutHeaders')]
+        public function test_unsubscribeHeaders_http_none(string $url): void
+        {
+            $this->assertSame([], AA_Collection::unsubscribeHeaders($url));
+        }
+
+        public function test_sendEmails_readerMail_carriesUnsubscribeHeaders(): void
+        {
+            $this->mailingWorld();
+            $collection = self::collection();
+
+            self::quietly(static fn() => $collection->sendEmails('daily', [], false, '', self::ANNA));
+
+            $headers = self::headersOf(self::queuedMails()[0]);
+            $this->assertSame('<' . self::SLICE_URL . '?au=' . self::ACCESS_CODE . '&c=sQjwa>', $headers['List-Unsubscribe'] ?? null);
+            $this->assertSame('List-Unsubscribe=One-Click', $headers['List-Unsubscribe-Post'] ?? null);
+        }
+
+        /** ABCDE is no reader's code - a one-click unsubscribe from a test mail would unsubscribe nobody */
+        public function test_sendEmails_testMail_carriesNone(): void
+        {
+            $this->mailingWorld();
+            $collection = self::collection();
+
+            self::quietly(static fn() => $collection->sendEmails('daily', ['test@example.org'], false, '', null));
+
+            $headers = self::headersOf(self::queuedMails()[0]);
+            $this->assertArrayNotHasKey('List-Unsubscribe', $headers);
+            $this->assertArrayNotHasKey('List-Unsubscribe-Post', $headers);
+        }
+
+        public function test_sendEmails_httpSliceUrl_readerMailCarriesNone(): void
+        {
+            $this->mailingWorld('http://example.org/news');
+            $collection = self::collection();
+
+            self::quietly(static fn() => $collection->sendEmails('daily', [], false, '', self::ANNA));
+
+            $mails = self::queuedMails();
+            $this->assertCount(1, $mails, 'the mail goes, only without the headers');
+            $this->assertArrayNotHasKey('List-Unsubscribe', self::headersOf($mails[0]));
+        }
+
+        /** a collection whose filters found news for everybody - the filter views are not what is tested here */
+        private static function collection(): AA_Collection
+        {
+            return new class ('sQjwa') extends AA_Collection {
+                public function createFilterText($ho, $update, $item_id): array
+                {
+                    return [];
+                }
+
+                public function getFilterText4Reader($readerContent, array $filters): string
+                {
+                    return '<p>news</p>';
+                }
+            };
         }
 
         public function test_getIdAndModuleId(): void

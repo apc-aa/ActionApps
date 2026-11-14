@@ -480,15 +480,19 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
      * @param $to   string|array
      * @param $item
      * @param $later bool|null
+     * @param array<string, string> $headers  added to the template's headers (name => value)
      *
      * Called as AA_Mail::sendTemplate($mail_id,$to,$item=null)
      */
-     static function sendTemplate($mail_id, $to, $item=null, $later=null): int
+     static function sendTemplate($mail_id, $to, $item=null, $later=null, array $headers = []): int
      {
         // email has the templates in it
         $mail = new AA_Mail;
         if (!$mail->setFromTemplate($mail_id, $item)) {
             return 0;
+        }
+        foreach ($headers as $name => $value) {
+            $mail->setHeader($name, $value);
         }
 
          if (is_null($later)) {

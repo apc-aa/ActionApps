@@ -224,6 +224,30 @@ class AA_Collection
         return $ret;
     }
 
+    /** Links in a reader's mail: unsubscribe from this collection, and the reader's settings form.
+     *  @return array{unsubscribe: string, form: string} */
+    public function readerLinks(string $accessCode): array
+    {
+        return [
+            'unsubscribe' => get_url($this->getSliceUrl(), ['au' => $accessCode, 'c' => $this->id]),
+            'form'        => get_url($this->getSliceUrl(), ['ac' => $accessCode]),
+        ];
+    }
+
+    /** One-click unsubscribe headers (RFC 8058) - mail services post only to https. The URL is built from
+     *  the admin-set slice_url, so anything that could end the header line or the <...> gives none.
+     *  @return array<string, string> header name => value */
+    public static function unsubscribeHeaders(string $unsubscribeUrl): array
+    {
+        if (!preg_match('~^https://[^\x00-\x20\x7f<>]+\z~', $unsubscribeUrl)) {
+            return [];
+        }
+        return [
+            'List-Unsubscribe'      => '<' . $unsubscribeUrl . '>',
+            'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+        ];
+    }
+
     /**
      * @param string        $ho = how often
      * @param string|array  $emails (email, email, ...)
@@ -231,7 +255,7 @@ class AA_Collection
      * @param bool $update    decides whether alerts_filter_howoften.last would be updated,
      *                        i.e. whether this is only a debug trial or the real life
      * @param string $item_id
-     * @param null   $reader_id
+     * @param string|null $reader_id  long id - mail just this reader
      * @return int - count of emails sent
      */
     public function sendEmails($ho, $emails, $update, $item_id, $reader_id): int
@@ -280,14 +304,15 @@ class AA_Collection
                     $als = new AA_Aliases();
                     $als->addTextAlias("_#FILTERS_", $user_text);
                     $als->addTextAlias("_#HOWOFTEN", $ho);
-                    $als->addTextAlias("_#COLLFORM", get_url($this->getSliceUrl(), ['ac' => $readerContent->getValue(FIELDID_ACCESS_CODE)]));
-                    $als->addTextAlias("_#UNSBFORM", get_url($this->getSliceUrl(), ['au' => $readerContent->getValue(FIELDID_ACCESS_CODE),'c' => $this->id]));
+                    $links = $this->readerLinks((string) $readerContent->getValue(FIELDID_ACCESS_CODE));
+                    $als->addTextAlias("_#COLLFORM", $links['form']);
+                    $als->addTextAlias("_#UNSBFORM", $links['unsubscribe']);
 
                     $reader_slice = $this->getReaderSlice();
                     $aliases      = array_merge($reader_slice->aliases(), $als->getArray());
                     $item         = new AA_Item($readerContent, $aliases);
 
-                    if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item)) {
+                    if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item, null, self::unsubscribeHeaders($links['unsubscribe']))) {
                         AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'queued', 'collection' => $this->id, 'detail' => $readerContent->getValue(FIELDID_EMAIL)]));
                         $email_count++;
                     }
@@ -301,8 +326,10 @@ class AA_Collection
             //          $als->addAlias(new AA_Alias("_#FILTERS_", "id..............", 'f_t', array(get_filter_text_4_reader(null, $filters, $this->id))));
             $als->addTextAlias("_#FILTERS_", $this->getFilterText4Reader(null, $filters));
             $als->addTextAlias("_#HOWOFTEN", $ho);
-            $als->addTextAlias("_#COLLFORM", get_url($this->getSliceUrl(), ['ac' => 'ABCDE']));
-            $als->addTextAlias("_#UNSBFORM", get_url($this->getSliceUrl(), ['au' => 'ABCDE','c' => $this->id]));
+            // no reader has the code ABCDE - a test mail gets no unsubscribe headers
+            $links = $this->readerLinks('ABCDE');
+            $als->addTextAlias("_#COLLFORM", $links['form']);
+            $als->addTextAlias("_#UNSBFORM", $links['unsubscribe']);
             $item = new AA_Item('', $als);
             foreach ((array) $emails as $email) {
                 if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $email, $item)) {
