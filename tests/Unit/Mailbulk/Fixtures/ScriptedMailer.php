@@ -44,6 +44,11 @@ final class ScriptedMailer implements Mailer
         return $this->detail;
     }
 
+    public function maxSeconds(): int
+    {
+        return 60;
+    }
+
     /** @return list<string> the addresses sent to, in order */
     public function sent(): array
     {

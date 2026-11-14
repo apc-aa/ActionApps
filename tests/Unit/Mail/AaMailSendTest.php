@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Mail;
 
+use AA\Mail\SmtpTransport;
 use AA\Mail\TransientSmtpException;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
+use Tests\Unit\Mail\Fixtures\ScriptedSmtpTransport;
+use Tests\Unit\Mail\Fixtures\ScriptedSocket;
 
 // the config constants and the DB stand-in come first - include/mail.php boots the legacy code
 require_once dirname(__DIR__) . '/Legacy/fixtures/object_form_fixtures.php';
 require_once dirname(__DIR__, 3) . '/include/mail.php';
+require_once __DIR__ . '/Fixtures/ScriptedSmtp.php';
 
 /** AA_Mail whose send stops on a transient SMTP failure, or hands the mail() arguments over instead of sending. */
 final class TransientAaMail extends \AA_Mail
@@ -23,6 +28,8 @@ final class TransientAaMail extends \AA_Mail
     /** @var array<string, string> */
     public array $captured = [];
 
+    public ?SmtpTransport $transport = null;
+
     // the first thing send() does after the build - a failure here is one of the whole send
     protected function generateMessageId(): string
     {
@@ -30,6 +37,11 @@ final class TransientAaMail extends \AA_Mail
             throw new TransientSmtpException('SmtpTransport[rcptTo] 451: try later', afterBody: $this->afterBody);
         }
         return parent::generateMessageId();
+    }
+
+    protected function smtpTransport(): SmtpTransport
+    {
+        return $this->transport ?? throw new \LogicException('No transport scripted');
     }
 
     protected function nativeMail(string $to, string $subject, string $body, string $headers, string $params = ''): bool
@@ -98,6 +110,19 @@ final class AaMailSendTest extends TestCase
         self::assertSame([], RecordingDb::inserts('toexecute'));
         self::assertCount(1, $warnings);
         self::assertStringContainsString('may have the mail', $warnings[0]);
+    }
+
+    #[RunInSeparateProcess]
+    public function test_send_smtpRefused_returnsZeroAndQueuesNothing(): void
+    {
+        define('AA_MAIL_TRANSPORT', SmtpTransport::TRANSPORT_SMTP);
+        define('AA_SMTP_HOST', 'smtp.example.org');
+        define('AA_SMTP_ENCRYPTION', SmtpTransport::ENC_NONE);
+        $mail            = self::mail('News');
+        $mail->transport = new ScriptedSmtpTransport(ScriptedSocket::server(0, '250 ok', '550 5.1.1 no such user'));
+
+        self::assertSame(0, $mail->send(['reader@example.org']));
+        self::assertSame([], RecordingDb::inserts('toexecute'));
     }
 
     public function test_send_subjectWithALineBreak_addsNoHeader(): void

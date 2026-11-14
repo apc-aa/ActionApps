@@ -22,15 +22,15 @@ namespace AA\Mail;
  */
 abstract class SmtpException extends \RuntimeException
 {
-    /** @param bool $afterBody the failure came while the message was on its way - the server may have it */
-    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null, private readonly bool $afterBody = false)
+    /** @param bool $sendingWide the cause is not this mail - another mail of the same sending fails the same way */
+    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null, private readonly bool $sendingWide = false)
     {
         parent::__construct($message, $code, $previous);
     }
 
-    /** A sender that repeats such a mail may deliver it twice. */
-    public function afterBody(): bool
+    /** Nothing was sent, and the next mail would fail the same way (connection, login, sender, size limit). */
+    public function sendingWide(): bool
     {
-        return $this->afterBody;
+        return $this->sendingWide;
     }
 }

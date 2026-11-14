@@ -239,7 +239,7 @@ class Run extends BatchRun
             return false;
         }
         $outcome = $mailer->send();
-        if ($outcome === Outcome::Retry) {
+        if (in_array($outcome, [Outcome::Retry, Outcome::Deferred, Outcome::Halt], true)) {
             $detail = $mailer->detail();
             // nothing went out: the same reader is tried again
             $cleared = $this->recordResult(static function (self $run) use ($detail): bool {

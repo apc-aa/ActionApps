@@ -106,6 +106,10 @@ try {
     echo "RESULT     : TRANSIENT FAILURE (would be re-queued in production)\n";
     echo "detail     : " . $e->getMessage() . "\n";
     exit(1);
+} catch (\AA\Mail\PermanentSmtpException $e) {
+    echo "RESULT     : PERMANENT REJECT\n";
+    echo "detail     : " . $e->getMessage() . "\n";
+    exit(1);
 } catch (\Throwable $e) {
     echo "RESULT     : ERROR\n";
     echo "detail     : " . get_class($e) . ': ' . $e->getMessage() . "\n";

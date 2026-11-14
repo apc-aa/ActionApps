@@ -224,11 +224,11 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
     }
 
     /**
-     * Sends and logs, with no retry of its own: a transient SMTP failure is thrown to the caller,
-     * which knows from SmtpException::afterBody() whether the server may already have the mail.
+     * Sends and logs, with no retry of its own: an SMTP failure is thrown to the caller, which knows
+     * from it whether the cause is the sending and whether the server may already have the mail.
      *
      * @param string[] $recipients
-     * @throws \AA\Mail\SmtpException transient, or permanent should a transport throw one
+     * @throws \AA\Mail\SmtpException
      */
     public function sendOnce(array $recipients): int
     {
@@ -249,10 +249,12 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
     public function send($recipients): int
     {
         if (!is_array($recipients)) {
-            return parent::send($recipients);   // sends nothing
+            return 0;
         }
         try {
             return $this->sendOnce($recipients);
+        } catch (\AA\Mail\PermanentSmtpException) {
+            return 0;   // logged by sendOnce(); a retry would fail again
         } catch (\AA\Mail\TransientSmtpException $e) {
             if ($e->afterBody()) {
                 // the server may have the mail already - a requeue could deliver it twice

@@ -131,14 +131,19 @@ final class SmtpSendTest extends TestCase
                 $mail->setFrom('sender@example.org');
                 $mail->setSubject('s');
                 $mail->setText('b');
-                $sent = $mail->send(['to@example.org']);
+                try {
+                    $mail->send(['to@example.org']);
+                    $refused = '';
+                } catch (\AA\Mail\PermanentSmtpException $e) {
+                    $refused = $e::class;
+                }
 
-                return [$sent, $mail->getLastTransport(), $mail->getLastTransportResponse()];
+                return [$refused, $mail->getLastTransport(), $mail->getLastTransportResponse()];
             },
         );
 
-        [$sent, $transport, $response] = $run['result'];
-        $this->assertSame(0, $sent);
+        [$refused, $transport, $response] = $run['result'];
+        $this->assertSame(\AA\Mail\PermanentSmtpException::class, $refused);
         $this->assertSame('smtp', $transport);
         $this->assertStringContainsString('550', $response);
         $this->assertStringContainsString('No such user here', $response);

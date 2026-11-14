@@ -12,8 +12,10 @@ use InvalidArgumentException;
  */
 final class Message
 {
-    /** headers that add recipients or that the mail sets itself */
-    private const OWN_HEADERS = ['to', 'cc', 'bcc', 'from', 'subject'];
+    /** headers that add recipients or that the mail sets itself; Resent-* and Content-* as well */
+    private const OWN_HEADERS = [
+        'to', 'cc', 'bcc', 'from', 'subject', 'sender', 'reply-to', 'errors-to', 'return-path', 'mime-version', 'message-id', 'date',
+    ];
 
     /** @param array<string, string> $headers name => value, e.g. List-Unsubscribe */
     public function __construct(
@@ -27,9 +29,19 @@ final class Message
             throw new InvalidArgumentException('Message: one recipient address expected');
         }
         foreach (array_keys($headers) as $name) {
-            if (!preg_match('/^[A-Za-z0-9][A-Za-z0-9-]*$/', (string) $name) || in_array(strtolower((string) $name), self::OWN_HEADERS, true)) {
+            if (!self::allowedHeader((string) $name)) {
                 throw new InvalidArgumentException('Message: header not allowed: ' . preg_replace('/[^\x21-\x7e]/', '?', (string) $name));
             }
         }
+    }
+
+    private static function allowedHeader(string $name): bool
+    {
+        // \z: `$` would let a trailing line break through
+        if (!preg_match('/^[A-Za-z0-9][A-Za-z0-9-]*\z/', $name)) {
+            return false;
+        }
+        $name = strtolower($name);
+        return !in_array($name, self::OWN_HEADERS, true) && !str_starts_with($name, 'resent-') && !str_starts_with($name, 'content-');
     }
 }

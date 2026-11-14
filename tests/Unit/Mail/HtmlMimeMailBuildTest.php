@@ -6,8 +6,11 @@ namespace Tests\Unit\Mail;
 
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Mail\Fixtures\ScriptedSmtpTransport;
+use Tests\Unit\Mail\Fixtures\ScriptedSocket;
 
 require_once dirname(__DIR__, 3) . '/include/htmlMimeMail/htmlMimeMail.php';
+require_once __DIR__ . '/Fixtures/ScriptedSmtp.php';
 
 /**
  * Captures the arguments handed to PHP's mail() instead of actually sending,
@@ -29,36 +32,10 @@ final class CapturingMail extends \htmlMimeMail
     }
 }
 
-/** A server dialogue that ends at the stage the test names - no socket. */
-final class ScriptedTransport extends \AA\Mail\SmtpTransport
-{
-    public function __construct(private readonly int $result, private readonly string $stage) {}
-
-    public function sendRaw(string $envelopeFrom, array $rcpts, string $rfc822): int
-    {
-        return $this->result;
-    }
-
-    public function lastStage(): string
-    {
-        return $this->stage;
-    }
-
-    public function getLastError(): string
-    {
-        return "SmtpTransport[{$this->stage}] 451: try later";
-    }
-
-    public function getLastResponse(): string
-    {
-        return $this->getLastError();
-    }
-}
-
-/** htmlMimeMail over a ScriptedTransport. */
+/** htmlMimeMail over a scripted server. */
 final class ScriptedSmtpMail extends \htmlMimeMail
 {
-    public ?ScriptedTransport $transport = null;
+    public ?ScriptedSmtpTransport $transport = null;
 
     protected function smtpTransport(): \AA\Mail\SmtpTransport
     {
@@ -271,35 +248,71 @@ final class HtmlMimeMailBuildTest extends TestCase
         $this->assertSame('mail() returned false', $mail->getLastTransportResponse());
     }
 
-    // --- SMTP path: whether the server may have the message ----------------
+    // --- SMTP path: what a failure means ------------------------------------
 
-    private function transientAt(string $stage): \AA\Mail\TransientSmtpException
+    private function failureFrom(ScriptedSocket $server): \AA\Mail\SmtpException
     {
         define('AA_MAIL_TRANSPORT', \AA\Mail\SmtpTransport::TRANSPORT_SMTP);
-        $mail = new ScriptedSmtpMail();
-        $mail->transport = new ScriptedTransport(\AA\Mail\SmtpTransport::RESULT_TRANSIENT, $stage);
+        define('AA_SMTP_HOST', 'smtp.example.org');
+        define('AA_SMTP_ENCRYPTION', \AA\Mail\SmtpTransport::ENC_NONE);
+        $mail            = new ScriptedSmtpMail();
+        $mail->transport = new ScriptedSmtpTransport($server);
         $mail->setFrom('sender@example.org');
         $mail->setSubject('s');
         $mail->setText('b');
         try {
             $mail->send(['to@example.org']);
-        } catch (\AA\Mail\TransientSmtpException $e) {
+        } catch (\AA\Mail\SmtpException $e) {
             $this->assertSame('smtp', $mail->getLastTransport());
             return $e;
         }
-        $this->fail('a transient failure is thrown');
+        $this->fail('a failure is thrown');
     }
 
-    /** DATA and the body go in one Net_SMTP call - a failure there may come after the server took the mail */
-    public function test_sendViaSmtp_transientAtData_isAfterBody(): void
+    public function test_sendViaSmtp_answerLostAfterTheBody_isAfterBody(): void
     {
-        $this->assertTrue($this->transientAt('data')->afterBody());
+        $e = $this->failureFrom(ScriptedSocket::server(0, '250 ok', '250 ok', '354 go ahead'));
+        $this->assertInstanceOf(\AA\Mail\TransientSmtpException::class, $e);
+        $this->assertTrue($e->afterBody());
+        $this->assertFalse($e->sendingWide());
     }
 
-    public function test_sendViaSmtp_transientAtRcpt_isNotAfterBody(): void
+    public function test_sendViaSmtp_messageRefusedForNow_isNotAfterBody(): void
     {
-        $e = $this->transientAt('rcptTo');
+        $e = $this->failureFrom(ScriptedSocket::server(0, '250 ok', '250 ok', '354 go ahead', '451 4.7.1 try later'));
+        $this->assertInstanceOf(\AA\Mail\TransientSmtpException::class, $e);
         $this->assertFalse($e->afterBody());
-        $this->assertStringContainsString('451', $e->getMessage());
+        $this->assertFalse($e->sendingWide());
+    }
+
+    public function test_sendViaSmtp_readerGreylisted_isThisMailOnly(): void
+    {
+        $e = $this->failureFrom(ScriptedSocket::server(0, '250 ok', '450 4.2.0 greylisted'));
+        $this->assertInstanceOf(\AA\Mail\TransientSmtpException::class, $e);
+        $this->assertFalse($e->afterBody());
+        $this->assertFalse($e->sendingWide());
+        $this->assertStringContainsString('450', $e->getMessage());
+    }
+
+    public function test_sendViaSmtp_readerUnknown_isPermanentForThisMail(): void
+    {
+        $e = $this->failureFrom(ScriptedSocket::server(0, '250 ok', '550 5.1.1 no such user'));
+        $this->assertInstanceOf(\AA\Mail\PermanentSmtpException::class, $e);
+        $this->assertFalse($e->sendingWide());
+    }
+
+    public function test_sendViaSmtp_senderRefused_isSendingWide(): void
+    {
+        $e = $this->failureFrom(ScriptedSocket::server(0, '553 5.7.1 sender not allowed'));
+        $this->assertInstanceOf(\AA\Mail\PermanentSmtpException::class, $e);
+        $this->assertTrue($e->sendingWide());
+    }
+
+    public function test_sendViaSmtp_noGreeting_isSendingWideTransient(): void
+    {
+        $e = $this->failureFrom(new ScriptedSocket());
+        $this->assertInstanceOf(\AA\Mail\TransientSmtpException::class, $e);
+        $this->assertTrue($e->sendingWide());
+        $this->assertFalse($e->afterBody());
     }
 }

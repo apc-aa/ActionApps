@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Mailbulk;
 
 use AA\Mail\PermanentSmtpException;
+use AA\Mail\SmtpTransport;
 use AA\Mail\TransientSmtpException;
 use AA_Mail;
 use Closure;
@@ -16,6 +17,12 @@ use LogicException;
  */
 final class AaMailer implements Mailer
 {
+    /** the waits of one SMTP send that may each take the full timeout: connect, greeting, EHLO, STARTTLS,
+     *  the TLS handshake, EHLO, AUTH (up to three), MAIL, RCPT, DATA, the body, its answer, QUIT */
+    private const SMTP_WAITS = 15;
+    /** mail() hands the mail to the local MTA - no timeout of ours applies */
+    private const MAIL_SECONDS = 60;
+
     private ?AA_Mail $mail = null;
     private bool $prepared = false;
     private string $to     = '';
@@ -68,17 +75,35 @@ final class AaMailer implements Mailer
             $sent = $mail->sendOnce([$this->to]);
         } catch (TransientSmtpException $e) {
             $this->detail = $e->getMessage();
-            return $e->afterBody() ? Outcome::Uncertain : Outcome::Retry;
+            return match (true) {
+                $e->afterBody()   => Outcome::Uncertain,
+                $e->sendingWide() => Outcome::Retry,
+                default           => Outcome::Deferred,
+            };
         } catch (PermanentSmtpException $e) {
             $this->detail = $e->getMessage();
-            return Outcome::Failed;
+            return $e->sendingWide() ? Outcome::Halt : Outcome::Failed;
+        } catch (\Throwable $e) {
+            $this->detail = $e->getMessage();
+            // once the transport returned the mail may be out (a failed log write); before it, the settings failed
+            return ($mail->getLastTransport() === '') ? Outcome::Halt : Outcome::Uncertain;
         }
         $this->detail = $mail->getLastTransportResponse();
-        return ($sent >= 1) ? Outcome::Sent : Outcome::Failed;
+        // SMTP refusals are thrown; a 0 is mail() whose local MTA did not take the mail
+        return ($sent >= 1) ? Outcome::Sent : Outcome::Retry;
     }
 
     public function detail(): string
     {
         return $this->detail;
+    }
+
+    public function maxSeconds(): int
+    {
+        if (defined('AA_MAIL_TRANSPORT') && (constant('AA_MAIL_TRANSPORT') === SmtpTransport::TRANSPORT_SMTP)) {
+            // +1: Net_Socket counts its deadline in whole seconds
+            return self::SMTP_WAITS * (SmtpTransport::timeout() + 1);
+        }
+        return self::MAIL_SECONDS;
     }
 }

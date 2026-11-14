@@ -778,7 +778,7 @@ class htmlMimeMail {
      * Sends the mail. Transport is chosen from AA_MAIL_TRANSPORT.
      *
      * @param  string[]  $recipients
-     * @throws \AA\Mail\TransientSmtpException on retryable SMTP failure
+     * @throws \AA\Mail\SmtpException when the SMTP server refused the mail or the dialogue failed
      */
     public function send($recipients): int
     {
@@ -870,7 +870,7 @@ class htmlMimeMail {
 
     /**
      * @param string[] $recipients
-     * @throws \AA\Mail\TransientSmtpException
+     * @throws \AA\Mail\SmtpException transient or permanent - it tells whether the cause is the sending
      */
     private function sendViaSmtp(array $recipients): int
     {
@@ -884,18 +884,18 @@ class htmlMimeMail {
         $this->last_transport          = \AA\Mail\SmtpTransport::TRANSPORT_SMTP;
         $this->last_transport_response = $transport->getLastResponse();
 
-        switch ($result) {
-            case \AA\Mail\SmtpTransport::RESULT_SENT:
-                return count($recipients);
-            case \AA\Mail\SmtpTransport::RESULT_TRANSIENT:
-                throw new \AA\Mail\TransientSmtpException(
-                    'SMTP transient failure: ' . $transport->getLastError(),
-                    afterBody: $transport->lastStage() === 'data'
-                );
-            case \AA\Mail\SmtpTransport::RESULT_PERMANENT:
-            default:
-                return 0;
+        if ($result === \AA\Mail\SmtpTransport::RESULT_SENT) {
+            return count($recipients);
         }
+        $sendingWide = ($transport->lastFailure() === \AA\Mail\SmtpTransport::FAILURE_SENDING);
+        if ($result === \AA\Mail\SmtpTransport::RESULT_TRANSIENT) {
+            throw new \AA\Mail\TransientSmtpException(
+                'SMTP transient failure: ' . $transport->getLastError(),
+                sendingWide: $sendingWide,
+                afterBody: $transport->lastFailure() === \AA\Mail\SmtpTransport::FAILURE_UNCERTAIN
+            );
+        }
+        throw new \AA\Mail\PermanentSmtpException('SMTP permanent failure: ' . $transport->getLastError(), sendingWide: $sendingWide);
     }
 
     /** A seam for the tests - they script the server's answers. */

@@ -12,9 +12,12 @@ interface Mailer
 {
     public function prepare(Message $message): void;
 
-    /** sends the prepared message - once */
+    /** sends the prepared message - once; never throws for what the transport does */
     public function send(): Outcome;
 
     /** what the transport said about the last send() */
     public function detail(): string;
+
+    /** the longest one send() may take, in seconds */
+    public function maxSeconds(): int;
 }
