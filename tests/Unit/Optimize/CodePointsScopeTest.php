@@ -6,6 +6,7 @@ declare(strict_types=1);
  * CodePoints searches template code wherever it lives: besides views, settings, spots and Code slices also the
  * item fields shown by f_y or edited by the code widget in any slice - and of such a slice only those fields,
  * so the text of an ordinary field is never taken for code - and the Alerts e-mails when the check asks.
+ * Of object_text only the properties holding code, never the data other objects keep there.
  */
 
 namespace {
@@ -97,6 +98,77 @@ namespace Tests\Unit\Optimize {
         {
             self::assertNotContains('{view.php?vid=5}', iterator_to_array(CodePoints::texts(), false));
             self::assertContains('{view.php?vid=5}', iterator_to_array(CodePoints::texts(true), false));
+        }
+
+        /** object_text rows as AA_Object::save() writes them: [object id, class (its aa_type), property, value] */
+        private const OBJECTS = [
+            ['a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1', 'AA_Aliasfunc', 'code', '<b>{debuglog:x}</b>'],
+            ['a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1', 'AA_Aliasfunc', 'ussage', '{_:Box} - remove {debuglog} before going live'],
+            ['b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2', 'AA\Seo\Crawl\Run', 'pages', '[{"url":"/expressions/debuglog","text":"{debuglog:...}"}]'],
+            ['c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3', 'AA\Util\Note', 'text', 'try {debuglog} here'],
+            ['d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4', 'AA_Modulesettings_Site', 'ga_id', 'UA-12254263-1'],
+            ['d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4', 'AA_Modulesettings_Site', 'alternate_url', 'https://example.org/'],
+        ];
+
+        /** A read of object_text answered as the server would, roughly: a read not scoped by class gets every row
+         *  holding the needle, a scoped one those of the class and property it names. Other tables are empty. */
+        private static function answerObjects(): void
+        {
+            RecordingDb::$answer = static function (string $sql): array {
+                if (!str_contains($sql, 'object_text')) {
+                    return [];
+                }
+                $scoped = str_contains($sql, "'aa_type'");
+                $needle = preg_match("/LIKE '%(.*?)%'/", $sql, $m) ? stripslashes($m[1]) : '';
+                $rows   = array_filter(self::OBJECTS, static fn(array $o): bool => str_contains($o[3], $needle)
+                    && (!$scoped || (str_contains($sql, "'" . addslashes($o[1]) . "'") && str_contains($sql, "'$o[2]'"))));
+                return array_map(static fn(array $o): array => ['iid' => $o[0], 'txt' => $o[3], 'x' => 1], array_values($rows));
+            };
+        }
+
+        public function test_containing_dataObjects_notTakenForCode(): void
+        {
+            self::answerObjects();
+
+            $rows = iterator_to_array(CodePoints::containing('{debuglog'), false);
+
+            // a crawled page, a note or an alias's usage example only mention the expression - never run it
+            self::assertSame([['table' => 'object_text', 'column' => 'value', 'iid' => 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1', 'txt' => '<b>{debuglog:x}</b>']], $rows);
+        }
+
+        public function test_texts_dataObjects_notTakenForCode(): void
+        {
+            self::answerObjects();
+
+            self::assertSame(['<b>{debuglog:x}</b>', 'UA-12254263-1'], iterator_to_array(CodePoints::texts(), false));
+        }
+
+        public function test_containing_analyticsIdOfSiteSettings_found(): void
+        {
+            // {generate:HEAD} prints the snippet with ga_id - CheckUniversalAnalytics finds an old UA id there
+            self::answerObjects();
+
+            $rows = iterator_to_array(CodePoints::containing('UA-'), false);
+
+            self::assertSame(['d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4'], array_column($rows, 'iid'));
+        }
+
+        public function test_contains_onlyInADataObject_false(): void
+        {
+            RecordingDb::$answer = static fn(string $sql): array => (str_contains($sql, 'object_text') && !str_contains($sql, "'aa_type'")) ? [['x' => 1]] : [];
+
+            self::assertFalse(CodePoints::contains('{debuglog'));
+        }
+
+        /** a renamed property would silently drop its code from every check */
+        public function test_objectCode_namesPropertiesTheClassesHave(): void
+        {
+            foreach (CodePoints::OBJECT_CODE as $class => $props) {
+                self::assertTrue(class_exists($class), $class);
+                foreach ($props as $prop) {
+                    self::assertArrayHasKey($prop, $class::getClassProperties(), "$class::$prop");
+                }
+            }
         }
 
         public function test_contains_inAnEmail_onlyOnRequest(): void
