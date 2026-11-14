@@ -75,19 +75,30 @@ namespace Tests\Unit\Legacy {
             require_once __DIR__ . '/../../../modules/alerts/alerts_sending.php';
         }
 
+        /** sendEmails() sets the language of the mails for the rest of the request */
+        private mixed $xlang = null;
+
         protected function setUp(): void
         {
             RecordingDb::reset();
             LogOnce::reset();
             $GLOBALS['spareDBs'] = [new RecordingDb()];
+            $this->xlang = $GLOBALS['apc_state']['xlang'] ?? null;
         }
 
         protected function tearDown(): void
         {
-            self::forgetReaderSlice();
+            $this->forgetReaderSlice();
             $GLOBALS['spareDBs'] = [];
             RecordingDb::reset();
             LogOnce::reset();
+            if ($this->xlang === null) {
+                unset($GLOBALS['apc_state']['xlang']);
+            } else {
+                $GLOBALS['apc_state']['xlang'] = $this->xlang;
+            }
+            // sendEmails() registers the reading password of the reader slice for the request
+            (new \ReflectionProperty(\AA_Credentials::class, 'instance'))->setValue(null, null);
         }
 
         public static function validIds(): array
@@ -270,20 +281,30 @@ namespace Tests\Unit\Legacy {
         /** alerts_collection.stat_slice_id as the database gives it (packed, NULL, '') */
         private ?string $statSlice = null;
 
-        /** AA_Module keeps every module it loaded for the request */
-        private static function forgetReaderSlice(): void
+        /** AA_Module keeps every module it loaded for the request - the reader slice, and the Alerts module
+         *  sendEmails() asks for its language */
+        private function forgetReaderSlice(): void
         {
-            Closure::bind(static function (string $id): void {
-                unset(AA_Module::$_modules[$id]);
-            }, null, AA_Module::class)(self::READERS);
+            Closure::bind(static function (string ...$ids): void {
+                foreach ($ids as $id) {
+                    unset(AA_Module::$_modules[$id]);
+                }
+            }, null, AA_Module::class)($this->readerSliceId, self::MODULE);
         }
 
-        /** RecordingDb answers: the collection, the reader slice and the item searches over $readers */
-        private function readerSlice(): void
+        /** the reader slice of the collection */
+        private string $readerSliceId = self::READERS;
+
+        /** RecordingDb answers: the collection, the reader slice and the item searches over $readers
+         *  @param string[]|null $fields  fields of the reader slice, null = confirmed, e-mail, frequency and city
+         *  @param string        $slice   another id for other fields - AA_Fields keeps the fields of a slice for the process */
+        private function readerSlice(?array $fields = null, string $slice = self::READERS): void
         {
-            RecordingDb::$answer = function (string $sql): array {
+            $this->readerSliceId = $slice;
+            $fields ??= [FIELDID_MAIL_CONFIRMED, FIELDID_EMAIL, self::HOWOFTEN, self::CITY];
+            RecordingDb::$answer = function (string $sql) use ($fields): array {
                 if (str_starts_with($sql, 'SELECT * FROM alerts_collection ')) {
-                    return [['id' => 'sQjwa', 'slice_id' => pack_id(self::READERS), 'module_id' => pack_id(self::MODULE), 'emailid_welcome' => '1', 'emailid_alert' => '2', 'stat_slice_id' => $this->statSlice]];
+                    return [['id' => 'sQjwa', 'slice_id' => pack_id($this->readerSliceId), 'module_id' => pack_id(self::MODULE), 'emailid_welcome' => '1', 'emailid_alert' => '2', 'stat_slice_id' => $this->statSlice]];
                 }
                 if (str_contains($sql, 'FROM `module`')) {
                     return [['unpackid' => self::READERS, 'type' => 'S']];
@@ -292,9 +313,11 @@ namespace Tests\Unit\Legacy {
                     return [array_merge(array_fill_keys(AA::Metabase()->getColumnNames('slice'), ''), ['id' => pack_id($m[1]), 'type' => 'ReaderManagement', 'name' => 'Readers', 'flag' => '0'])];
                 }
                 if (preg_match('/FROM `field` WHERE `?slice_id`? = 0x([0-9a-f]{32})/', $sql, $m)) {
+                    // one field (AA_Field::factoryFromDb()) or all of them
+                    $asked = preg_match("/ AND id = '([^']*)'/", $sql, $id) ? array_intersect($fields, [$id[1]]) : $fields;
                     return array_map(
                         static fn(string $id): array => array_merge(array_fill_keys(AA::Metabase()->getColumnNames('field'), ''), ['id' => $id, 'slice_id' => pack_id($m[1]), 'text_stored' => '1']),
-                        [FIELDID_MAIL_CONFIRMED, FIELDID_EMAIL, self::HOWOFTEN, self::CITY],
+                        array_values($asked),
                     );
                 }
                 if (str_contains($sql, 'as itemid')) {
@@ -397,9 +420,12 @@ namespace Tests\Unit\Legacy {
 
             $this->assertSame([self::ANNA], $valid->longids());
             $searches = self::searches();
-            $this->assertCount(3, $searches);
-            $this->assertStringContainsString('"c0"."text" = \'Praha\'', $searches[2]);
-            $this->assertMatchesRegularExpression('/item\.id IN \(0x' . self::ANNA . ',\s*0x' . self::BOB . '\)/', $searches[2], 'only among the valid readers');
+            $this->assertCount(2, $searches, 'the conds with the confirmation in one search, then the unsubscribed readers');
+            $this->assertStringContainsString("c0.field_id='" . self::CITY . "'", $searches[0]);
+            $this->assertStringContainsString('"c0"."text" = \'Praha\'', $searches[0]);
+            $this->assertStringContainsString("c1.field_id='" . FIELDID_MAIL_CONFIRMED . "'", $searches[0]);
+            $this->assertStringNotContainsString('item.id IN', $searches[0], 'no id list of every valid reader');
+            $this->assertStringContainsString('"c0"."text" LIKE \'unsub%\'', $searches[1]);
         }
 
         public function test_validReaders_withConds_noValidReaderAsksNoMore(): void
@@ -409,8 +435,66 @@ namespace Tests\Unit\Legacy {
 
             $valid = self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders('d-' . self::CITY . '-==-Praha'));
 
-            $this->assertTrue($valid->isEmpty(), 'an empty restriction finds nothing - not every reader of the slice');
-            $this->assertCount(2, self::searches());
+            $this->assertTrue($valid->isEmpty());
+            $this->assertCount(1, self::searches(), 'nobody found - nobody to have unsubscribed');
+        }
+
+        /** a reader slice without the frequency field of the collection - a condition on it would be dropped,
+         *  match everyone and leave nobody */
+        public function test_validReaders_noHowoftenField_everyConfirmedIsValid(): void
+        {
+            $this->readers = [
+                self::ANNA => [FIELDID_MAIL_CONFIRMED => '1'],
+                self::BOB  => [FIELDID_MAIL_CONFIRMED => '0'],
+            ];
+            $this->readerSlice([FIELDID_MAIL_CONFIRMED, FIELDID_EMAIL], 'f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3');
+
+            $valid = self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders());
+
+            $this->assertSame([self::ANNA], $valid->longids());
+            $this->assertCount(1, self::searches());
+        }
+
+        public static function condsOnUnknownFields(): array
+        {
+            return [
+                'unknown field'          => ['d-text...........9-==-Praha'],
+                'one of two unknown'     => ['d-text...........1,text...........9-==-Praha'],
+                'unknown in 2nd cond'    => ['d-text...........1-==-Praha-text...........9-==-x'],
+                'unknown relation field' => ['d-headline........@relation.......9-==-x'],
+                'unknown with language'  => ['d-text...........9|en-==-Praha'],
+            ];
+        }
+
+        /** AA_Set drops a condition on a field the slice lacks - the mailing would go to every reader */
+        #[DataProvider('condsOnUnknownFields')]
+        public function test_validReaders_condsOnUnknownField_findNobody(string $conds): void
+        {
+            $this->readers = [self::ANNA => [FIELDID_MAIL_CONFIRMED => '1', self::CITY => 'Praha']];
+            $this->readerSlice();
+
+            $valid = self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders($conds));
+
+            $this->assertTrue($valid->isEmpty());
+            $this->assertSame([], self::searches());
+        }
+
+        public function test_validReaders_noConfirmationField_findNobody(): void
+        {
+            $this->readers = [self::ANNA => [FIELDID_MAIL_CONFIRMED => '1']];
+            $this->readerSlice([FIELDID_EMAIL, self::HOWOFTEN], 'f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4');
+
+            $this->assertTrue(self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders())->isEmpty());
+        }
+
+        public function test_validReaders_condsOnLanguageOfKnownField_search(): void
+        {
+            $this->readers = [self::ANNA => [FIELDID_MAIL_CONFIRMED => '1', self::CITY => 'Praha']];
+            $this->readerSlice();
+
+            self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders('d-' . self::CITY . '|en-==-Praha'));
+
+            $this->assertNotSame([], self::searches());
         }
 
         /** a collection row without a reader slice - nothing to search in */
@@ -454,6 +538,7 @@ namespace Tests\Unit\Legacy {
                 'no frequency field'    => [['howoften' => null], true],
                 'empty frequency'       => [['howoften' => ''], true],
                 'unsubscribed'          => [['howoften' => 'unsubscribed:2026-11-01 10:00:au'], false],
+                'unsubscribed in caps'  => [['howoften' => 'UNSUBSCRIBED'], false],   // LIKE of the search ignores case too
                 'unconfirmed'           => [['confirmed' => '0'], false],
                 'confirmation missing'  => [['confirmed' => null], false],
                 'no email'              => [['email' => null], false],
@@ -610,6 +695,7 @@ namespace Tests\Unit\Legacy {
                 'space'            => ['https://example.org/my news'],
                 'closing bracket'  => ['https://example.org/news>, <mailto:x@example.com'],
                 'host missing'     => ['https://'],
+                '8-bit'            => ['https://example.org/zprávy'],
             ];
         }
 
@@ -643,6 +729,20 @@ namespace Tests\Unit\Legacy {
             $headers = self::headersOf(self::queuedMails()[0]);
             $this->assertArrayNotHasKey('List-Unsubscribe', $headers);
             $this->assertArrayNotHasKey('List-Unsubscribe-Post', $headers);
+        }
+
+        /** the link would unsubscribe nobody */
+        public function test_sendEmails_readerWithoutAccessCode_carriesNone(): void
+        {
+            $this->mailingWorld();
+            unset($this->readers[self::ANNA][FIELDID_ACCESS_CODE]);
+            $collection = self::collection();
+
+            self::quietly(static fn() => $collection->sendEmails('daily', [], false, '', self::ANNA));
+
+            $mails = self::queuedMails();
+            $this->assertCount(1, $mails);
+            $this->assertArrayNotHasKey('List-Unsubscribe', self::headersOf($mails[0]));
         }
 
         public function test_sendEmails_httpSliceUrl_readerMailCarriesNone(): void
@@ -710,14 +810,37 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([], AA_Collection::missingStatFields(array_merge(['headline........'], AA_Collection::STAT_FIELDS)));
         }
 
-        /** RecordingDb answers the fields of the slice and the collection already measuring into it (null = none) */
-        private static function statSliceWorld(array $fields, ?array $other): void
+        /** RecordingDb answers the fields of the slice and the collection already measuring into it (null = none)
+         *  @param bool $live    the slice is a live slice module
+         *  @param bool $readers the slice is the reader slice of the collection */
+        private static function statSliceWorld(array $fields, ?array $other, bool $live = true, bool $readers = false): void
         {
             RecordingDb::$answer = static fn(string $sql): array => match (true) {
                 str_starts_with($sql, 'SELECT id FROM field ')                 => array_map(static fn(string $id): array => ['id' => $id], $fields),
                 str_contains($sql, 'FROM alerts_collection AS c')             => $other ? [$other] : [],
+                str_starts_with($sql, 'SELECT id FROM "module" ')             => $live ? [['id' => pack_id(self::STATS)]] : [],
+                str_starts_with($sql, 'SELECT id FROM "alerts_collection" ')  => $readers ? [['id' => 'sQjwa']] : [],
                 default                                                       => [],
             };
+        }
+
+        public function test_statSlice_notALiveSlice_isRefused(): void
+        {
+            self::statSliceWorld(AA_Collection::STAT_FIELDS, null, false);
+
+            $this->assertNotSame('', AA_Collection::statSliceRefusal(self::STATS, 'sQjwa'));
+            $sql = RecordingDb::$log[0];
+            $this->assertStringContainsString('id = 0x' . self::STATS, $sql);
+            $this->assertStringContainsString("type = 'S'", $sql);
+            $this->assertStringContainsString('deleted = 0', $sql);
+        }
+
+        public function test_statSlice_theReaderSlice_isRefused(): void
+        {
+            self::statSliceWorld(AA_Collection::STAT_FIELDS, null, true, true);
+
+            $this->assertNotSame('', AA_Collection::statSliceRefusal(self::STATS, 'sQjwa'));
+            $this->assertStringContainsString("id = 'sQjwa' AND slice_id = 0x" . self::STATS, RecordingDb::$log[1]);
         }
 
         public function test_statSlice_usedByAnotherCollection_isRefused(): void

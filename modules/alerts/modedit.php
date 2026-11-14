@@ -62,19 +62,23 @@ const MODEDIT_ALERTS_TOKEN = 'aa-modedit-alerts';
  *  @return array<string, string> long id => name */
 function alertsStatSliceOptions(string $stored): array
 {
+    static $options = [];   // asked by the check of a submit and by the form after it
+    if (isset($options[$stored])) {
+        return $options[$stored];
+    }
     $slices = GetUserSlices(PS_EDIT);   // 'all' for a superadmin
     $where  = [['type', 'S'], ['deleted', 0, 'i']];
     if (is_array($slices)) {
         $where[] = ['id', array_keys($slices) ?: [str_repeat('0', 32)], 'l'];
     }
-    $options = [];
+    $ret = [];
     foreach (DB_AA::select([], 'SELECT id, name FROM module', $where, ['name']) as $row) {
-        $options[unpack_id($row['id'])] = $row['name'];
+        $ret[unpack_id($row['id'])] = $row['name'];
     }
-    if (($stored !== '') && !isset($options[$stored])) {
-        $options[$stored] = (string) DB_AA::select1('name', 'SELECT name FROM module', [['id', $stored, 'l']]);
+    if (($stored !== '') && !isset($ret[$stored])) {
+        $ret[$stored] = (string) DB_AA::select1('name', 'SELECT name FROM module', [['id', $stored, 'l']]);
     }
-    return $options;
+    return $options[$stored] = $ret;
 }
 
 try {
@@ -149,8 +153,9 @@ if ($write && $may_write) {
 
         ValidateModuleFields($name, $slice_url, $priority, $lang_file, $owner, $err);
         $deleted = ($deleted ? 1 : 0);
-        if ($has_stat && ($stat_slice_id !== '')) {
-            if (($stat_slice_id !== $stored_stat) && !isset(alertsStatSliceOptions($stored_stat)[$stat_slice_id])) {
+        // the stored slice is not checked again - a later change of it must not block the other settings
+        if ($has_stat && ($stat_slice_id !== '') && ($stat_slice_id !== $stored_stat)) {
+            if (!isset(alertsStatSliceOptions($stored_stat)[$stat_slice_id])) {
                 $err[] = _m('You may not choose this statistics slice');
             } elseif ($refusal = AA_Collection::statSliceRefusal($stat_slice_id, $collection_id)) {
                 $err[] = $refusal;
@@ -215,6 +220,10 @@ FrmTabCaption(_m("Alerts Settings"), $form_buttons);
 
 $marr = RenderModuleFieldsForm($source_id, $superadmin, $is_add, $redisplay, compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
 $lang_file = rtrim((string) ($marr[3] ?? ''), '3');   // trim old php3 lang-file extension
+// the unsubscribe link is built on the list's URL, and AA_Collection::unsubscribeHeaders() needs it https
+if (!AA_Collection::unsubscribeHeaders(get_url((string) ($marr[1] ?? ''), ['au' => 'x', 'c' => 'x']))) {
+    FrmStaticText('', _m('The URL of this list is not https - the mails go without the one-click unsubscribe header.'));
+}
 
 FrmInputSelect("lang_file", _m("language"), Langs::getFiles('alerts'), $lang_file);
 
@@ -238,10 +247,6 @@ if ($has_stat) {
     $stat_hlp = [_m('The slice where the opens and clicks of the mailings are counted; empty = nothing is measured. Each list needs its own slice.')];
     if ($superadmin && Importer::hasInstallPermission((string) AuthGetUid())) {
         $stat_hlp[] = '<a href="' . safe(AA_INSTAL_PATH . 'central/appstore.php') . '">' . _m('Install from the App store') . '</a>';
-    }
-    // the unsubscribe link is built on the list's URL, and AA_Collection::unsubscribeHeaders() needs it https
-    if (!AA_Collection::unsubscribeHeaders(get_url((string) ($marr[1] ?? ''), ['au' => 'x', 'c' => 'x']))) {
-        $stat_hlp[] = _m('The URL of this list is not https - the mails go without the one-click unsubscribe header.');
     }
     FrmTabSeparator(_m("Statistics"));
     FrmInputSelect("stat_slice_id", _m("Statistics slice"), alertsStatSliceOptions($stored_stat), $stat_slice_id, false, implode('<br>', $stat_hlp));

@@ -59,10 +59,15 @@ namespace Tests\Unit\Optimize {
         }
 
         /** @param list<array<string, mixed>> $sweeps   rows of the frequency query
-         *  @param list<array<string, mixed>> $missing  rows of the missing-selection query */
-        private function answer(array $sweeps, array $missing): void
+         *  @param list<array<string, mixed>> $missing  rows of the missing-selection query
+         *  @param list<array<string, mixed>> $lists    rows of the list-URL query */
+        private function answer(array $sweeps, array $missing, array $lists = []): void
         {
-            TableDb::$answer = static fn(string $sql): array => str_contains($sql, 'LEFT JOIN alerts_filter') ? $missing : $sweeps;
+            TableDb::$answer = static fn(string $sql): array => match (true) {
+                str_contains($sql, 'LEFT JOIN alerts_filter') => $missing,
+                str_contains($sql, 'm.slice_url')             => $lists,
+                default                                        => $sweeps,
+            };
         }
 
         private function missing(int $filterid, ?int $exists, ?int $vid, int $live): array
@@ -122,9 +127,25 @@ namespace Tests\Unit\Optimize {
 
             (new CheckAlerts())->findings();
 
-            $this->assertCount(2, $selects);
+            $this->assertCount(3, $selects);
             $this->assertStringContainsString('INNER JOIN view v ON v.id = f.vid', $selects[0]);
             $this->assertStringContainsString('v.id IS NULL', $selects[1]);
+        }
+
+        public function test_a_list_not_on_https_is_a_warning_naming_it(): void
+        {
+            $list = static fn(string $name, string $url): array => ['module_id' => hex2bin(self::MODULE), 'name' => $name, 'slice_url' => $url];
+            $this->answer([], [], [$list('Secure', 'https://example.org/news'), $list('<Old>', 'http://example.org/news'), $list('Blank', '')]);
+
+            $findings = (new CheckAlerts())->findings();
+
+            $this->assertCount(1, $findings);
+            $f = $findings[0];
+            $this->assertSame([Finding::WARNING, 2, 'not-https'], [$f->severity, $f->count, $f->key]);
+            $this->assertStringContainsString('&lt;Old&gt;', $f->evidence[0][_m('Alerts')]);
+            $this->assertStringContainsString('/aa/modules/alerts/modedit.php?module_id=' . self::MODULE, $f->evidence[0][_m('Alerts')]);
+            $this->assertSame('http://example.org/news', $f->evidence[0][_m('URL')]);
+            $this->assertSame('', $f->evidence[1][_m('URL')]);
         }
     }
 }

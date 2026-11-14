@@ -168,8 +168,12 @@ class AA_Collection
      *  @param string $collection_id '' for a list being created */
     public static function statSliceRefusal(string $slice_id, string $collection_id): string
     {
-        if (!is_long_id($slice_id)) {
+        if (!is_long_id($slice_id) || !DB_AA::test('module', [['id', $slice_id, 'l'], ['type', 'S'], ['deleted', 0, 'i']])) {
             return _m('Statistics slice: no such slice');
+        }
+        // the events would land among the readers
+        if (($collection_id !== '') && DB_AA::test('alerts_collection', [['id', $collection_id], ['slice_id', $slice_id, 'l']])) {
+            return _m('The statistics slice cannot be the slice of the readers');
         }
         $missing = self::missingStatFields(DB_AA::select('id', 'SELECT id FROM field', [['slice_id', $slice_id, 'l']]));
         if ($missing) {
@@ -217,18 +221,60 @@ class AA_Collection
 
     /** Readers a mailing of this collection may go to: active, confirmed and not unsubscribed. A reader
      *  without the frequency field (or with an empty one) is subscribed - AA_Set cannot match "does not begin
-     *  with" on a missing field, hence the two selections.
+     *  with" on a missing field, hence the second selection and the difference.
      *  @param string $conds  the conds of {ids} (d-<field>-<operator>-<value>...) - only readers matching them */
     public function validReaders(string $conds = ''): zids
     {
-        if (!($slice = $this->getReaderSlice())) {
+        if (!(($slice = $this->getReaderSlice()) instanceof AA_Slice)) {
             return new zids();
         }
-        $confirmed = (new AA_Set($slice->getId(), new AA_Condition(FIELDID_MAIL_CONFIRMED, '==', 1)))->query();
-        $unsubscribed = (new AA_Set($slice->getId(), new AA_Condition(getAlertsField(FIELDID_HOWOFTEN, $this->id), 'BEGIN', 'unsub')))->query();
-        $valid = new zids(array_values(array_diff($confirmed->longids(), $unsubscribed->longids())), 'l');
+        $set = new AA_Set($slice->getId(), ($conds === '') ? null : $conds);
+        $set->addCondition(new AA_Condition(FIELDID_MAIL_CONFIRMED, '==', 1));
+        // AA_Set silently drops a condition on an unknown field - the mailing would go to everyone
+        if (!self::condsFieldsKnown($set, $slice)) {
+            return new zids();
+        }
+        $readers  = $set->query();
+        $howoften = getAlertsField(FIELDID_HOWOFTEN, $this->id);
+        if ($readers->isEmpty() || !$slice->isField($howoften)) {
+            return $readers;   // without the field nobody has unsubscribed
+        }
+        $unsubscribed = (new AA_Set($slice->getId(), new AA_Condition($howoften, 'BEGIN', 'unsub')))->query();
+        return new zids(array_values(array_diff($readers->longids(), $unsubscribed->longids())), 'l');
+    }
 
-        return ($conds === '') ? $valid : (new AA_Set($slice->getId(), $conds))->query($valid);
+    /** Whether every field the conditions of the set name exists - in the slice, or for a remote condition
+     *  (<field>@<slice>/<relation field>) in the remote slice; the far field of <field>@<relation field> is
+     *  in whatever slice the relation points to, so only the relation field is checked. */
+    private static function condsFieldsKnown(AA_Set $set, AA_Slice $slice): bool
+    {
+        foreach ($set->getConditions() as $condition) {
+            foreach ($condition->getFields() as $fid) {
+                $fid = (string) $fid;
+                if (isset(AA_Condition::CONDS_NOT_FIELD_NAMES[$fid]) || str_starts_with(strtolower($fid), 'all_fields')) {
+                    continue;
+                }
+                if (!str_contains($fid, '@')) {
+                    if (!$slice->isField(AA_Field::parseWithLang($fid)[0])) {
+                        return false;
+                    }
+                    continue;
+                }
+                [$far, $relation] = explode('@', $fid, 2);
+                if (!str_contains($relation, '/')) {
+                    if (!$slice->isField($relation)) {
+                        return false;
+                    }
+                    continue;
+                }
+                [$remote_id, $relation] = explode('/', $relation, 2);
+                $remote = AA_Slice::getModule(rtrim($remote_id, '+'));
+                if (!($remote instanceof AA_Slice) || !$remote->isField($far) || !$remote->isField($relation)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /** The rule of validReaders() for one loaded reader - checked again right before the mail goes out,
@@ -238,7 +284,7 @@ class AA_Collection
         return $reader->isActive()
             && ($reader->getSliceID() === $this->getProp('reader_slice_id'))
             && ((string) $reader->getValue(FIELDID_MAIL_CONFIRMED) === '1')
-            && !str_starts_with((string) $reader->getValue(getAlertsField(FIELDID_HOWOFTEN, $this->id)), 'unsub')
+            && (strncasecmp((string) $reader->getValue(getAlertsField(FIELDID_HOWOFTEN, $this->id)), 'unsub', 5) !== 0)   // as LIKE in validReaders()
             && (trim((string) $reader->getValue(FIELDID_EMAIL)) !== '');
     }
 
@@ -274,11 +320,12 @@ class AA_Collection
     }
 
     /** One-click unsubscribe headers (RFC 8058) - mail services post only to https. The URL is built from
-     *  the admin-set slice_url, so anything that could end the header line or the <...> gives none.
+     *  the admin-set slice_url, so anything that could end the header line or the <...> gives none; nor
+     *  8-bit bytes - the mailer would encode the header and break the URI.
      *  @return array<string, string> header name => value */
     public static function unsubscribeHeaders(string $unsubscribeUrl): array
     {
-        if (!preg_match('~^https://[^\x00-\x20\x7f<>]+\z~', $unsubscribeUrl)) {
+        if (!preg_match('~^https://[^\x00-\x20\x7f-\xff<>]+\z~', $unsubscribeUrl)) {
             return [];
         }
         return [
@@ -343,7 +390,8 @@ class AA_Collection
                     $als = new AA_Aliases();
                     $als->addTextAlias("_#FILTERS_", $user_text);
                     $als->addTextAlias("_#HOWOFTEN", $ho);
-                    $links = $this->readerLinks((string) $readerContent->getValue(FIELDID_ACCESS_CODE));
+                    $access_code = (string) $readerContent->getValue(FIELDID_ACCESS_CODE);
+                    $links       = $this->readerLinks($access_code);
                     $als->addTextAlias("_#COLLFORM", $links['form']);
                     $als->addTextAlias("_#UNSBFORM", $links['unsubscribe']);
 
@@ -351,7 +399,9 @@ class AA_Collection
                     $aliases      = array_merge($reader_slice->aliases(), $als->getArray());
                     $item         = new AA_Item($readerContent, $aliases);
 
-                    if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item, null, self::unsubscribeHeaders($links['unsubscribe']))) {
+                    // without the code the link would unsubscribe nobody
+                    $headers = ($access_code === '') ? [] : self::unsubscribeHeaders($links['unsubscribe']);
+                    if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item, null, $headers)) {
                         AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'queued', 'collection' => $this->id, 'detail' => $readerContent->getValue(FIELDID_EMAIL)]));
                         $email_count++;
                     }
