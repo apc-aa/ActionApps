@@ -29,12 +29,12 @@ final class MemoryStats extends Stats
         self::$events[$id] = ['slice' => StatsTest::STAT_SLICE, 'item' => $item, 'kind' => $kind, 'url' => $url, 'reader' => $reader];
     }
 
-    protected function events(string $statSliceId, string $itemId, string $kind): array
+    protected function events(string $statSliceId, array $itemIds, string $kind): array
     {
         self::$reads[] = "events $kind";
         return array_keys(array_filter(
             self::$events,
-            static fn(array $e): bool => ($e['slice'] === $statSliceId) && ($e['item'] === $itemId) && ($e['kind'] === $kind),
+            static fn(array $e): bool => ($e['slice'] === $statSliceId) && in_array($e['item'], $itemIds, true) && ($e['kind'] === $kind),
         ));
     }
 
@@ -43,10 +43,11 @@ final class MemoryStats extends Stats
         self::$reads[] = 'content ' . implode(',', $fields);
         $content       = [];
         foreach ($ids as $id) {
-            $content[$id] = [
+            $content[$id] = array_intersect_key([
+                'relation........' => [['value' => self::$events[$id]['item']]],
                 'source_href.....' => [['value' => self::$events[$id]['url']]],
                 'relation.......1' => [['value' => self::$events[$id]['reader']]],
-            ];
+            ], array_flip($fields));
         }
         return $content;
     }
@@ -96,6 +97,31 @@ final class StatsTest extends TestCase
         self::assertSame(['opened' => 3, 'clicked' => 2], $stats->counts(self::STAT_SLICE, strtoupper(self::ITEM)));
         $stats->links(self::STAT_SLICE, self::ITEM);
         self::assertSame(['events open', 'events click', 'content source_href.....,relation.......1'], MemoryStats::$reads, 'one read of each per request');
+    }
+
+    /** a page of sendings: one search per kind and one read of the events, whatever the number of the sendings */
+    public function test_countsFor_manyItemsInOneGo(): void
+    {
+        $stats = new MemoryStats();
+        foreach ([1, 2, 3] as $i) {
+            MemoryStats::add('open', self::reader($i));
+        }
+        MemoryStats::add('click', self::reader(1), 'https://example.org/a');
+        MemoryStats::add('click', self::reader(1), 'https://example.org/b');
+        MemoryStats::add('click', self::reader(2), 'https://example.org/a');
+        MemoryStats::add('open', self::reader(9), '', self::OTHER);
+        MemoryStats::add('click', self::reader(9), 'https://example.org/a', self::OTHER);
+        MemoryStats::add('open', self::reader(7), '', '2222456789abcdef0123456789abcdef');
+
+        $figures = $stats->countsFor(self::STAT_SLICE, [self::ITEM, strtoupper(self::OTHER), '3333456789abcdef0123456789abcdef']);
+
+        self::assertSame([
+            self::ITEM                         => ['opened' => 3, 'clicked' => 2],
+            self::OTHER                        => ['opened' => 1, 'clicked' => 1],
+            '3333456789abcdef0123456789abcdef' => ['opened' => 0, 'clicked' => 0],
+        ], $figures, 'the same figures as counts() of each');
+        self::assertSame(['events open', 'events click', 'content relation........,relation.......1'], MemoryStats::$reads);
+        self::assertSame([], $stats->countsFor(self::STAT_SLICE, []));
     }
 
     public function test_links_countsReadersPerUrl_sortedDesc(): void

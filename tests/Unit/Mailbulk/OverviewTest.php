@@ -5,63 +5,35 @@ declare(strict_types=1);
 namespace Tests\Unit\Mailbulk;
 
 use AA\IO\DB\DB_AA;
+use AA\Mailbulk\Campaign;
 use AA\Mailbulk\Overview;
 use AA\Mailbulk\Recipients;
 use AA\Mailbulk\Run;
-use AA_Module;
-use AA_Module_Alerts;
-use AA_Moduleconfig;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Later\Fixtures\BatchRunTables;
+use Tests\Unit\Mailbulk\Fixtures\TestCampaign;
 use Tests\Unit\Mailbulk\Fixtures\TestRun;
 
 require_once __DIR__ . '/../Later/Fixtures/BatchRunTables.php';
 require_once __DIR__ . '/Fixtures/FakeLetter.php';
 require_once __DIR__ . '/Fixtures/ScriptedMailer.php';
 require_once __DIR__ . '/Fixtures/TestRun.php';
+require_once __DIR__ . '/Fixtures/TestCampaign.php';
 
-/** An overview over TestRun runs; the list of a module is what the test says. */
+/** An overview over TestRun runs; it counts how many sendings it read. */
 final class TestOverview extends Overview
 {
-    /** @var array<string, string> module id => list id */
-    public static array $lists = [];
+    public static int $campaigns = 0;
 
     protected static function runClass(): string
     {
         return TestRun::class;
     }
 
-    protected static function listOf(string $moduleId): string
+    protected function newCampaign(string $itemId): Campaign
     {
-        return self::$lists[$moduleId] ?? '';
-    }
-}
-
-/** An Alerts module in the module cache, no database behind it. */
-final class CachedAlertsModule extends AA_Module_Alerts
-{
-    public static function register(string $moduleId): void
-    {
-        AA_Module::$_modules[$moduleId] = new self($moduleId);
-    }
-
-    public static function forget(string $moduleId): void
-    {
-        unset(AA_Module::$_modules[$moduleId]);
-    }
-}
-
-/** A module of another type in the module cache. */
-final class CachedSliceLikeModule extends AA_Module
-{
-    public static function register(string $moduleId): void
-    {
-        AA_Module::$_modules[$moduleId] = new self($moduleId);
-    }
-
-    public static function getModuleconfig(): AA_Moduleconfig
-    {
-        return new AA_Moduleconfig('X', 'Fake', self::class, 'fake/', 'fake/menu.php', [], false);
+        ++self::$campaigns;
+        return TestCampaign::of(OverviewTest::LIST, $itemId);
     }
 }
 
@@ -74,9 +46,7 @@ final class OverviewTest extends TestCase
         tearDown as private tablesTearDown;
     }
 
-    private const MODULE = '7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a';
-    private const OTHER  = '7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b';
-    private const LIST   = 'abcde';
+    public const LIST    = 'abcde';
     private const ITEM   = 'cafe0000000000000000000000000001';
     private const ITEM2  = 'cafe0000000000000000000000000002';
 
@@ -89,21 +59,18 @@ final class OverviewTest extends TestCase
     {
         $this->tablesSetUp();
         TestRun::reset();
-        TestOverview::$lists = [self::MODULE => self::LIST, self::OTHER => 'other'];
-        CachedAlertsModule::register(self::MODULE);
+        TestOverview::$campaigns = 0;
     }
 
     protected function tearDown(): void
     {
         TestRun::reset();
-        TestOverview::$lists = [];
-        CachedAlertsModule::forget(self::MODULE);
-        CachedAlertsModule::forget(self::OTHER);
         $this->tablesTearDown();
     }
 
-    /** a run of $item to $list started at $at; its id */
-    private static function sending(string $item, int $at, string $title = 'Newsletter', string $list = self::LIST): string
+    /** a run of $item to $list started at $at, to the readers $readers; its id
+     *  @param list<string> $readers */
+    private static function sending(string $item, int $at, string $title = 'Newsletter', string $list = self::LIST, array $readers = ['a0000000000000000000000000000001']): string
     {
         TestRun::$now = $at;
         return DB_AA::transaction(static fn(): string => TestRun::start([
@@ -112,16 +79,18 @@ final class OverviewTest extends TestCase
             'position'   => ['i' => 0],
             'list'       => $list,
             'title'      => $title,
-            'recipients' => Recipients::freeze($item, ['a0000000000000000000000000000001']),
-            'total'      => '1',
+            'recipients' => Recipients::freeze($item, $readers),
+            'total'      => (string) count($readers),
             'cursor'     => '0',
         ])->getId());
     }
 
     private static function overview(): TestOverview
     {
-        return TestOverview::forModule(self::MODULE) ?? throw new \LogicException('No overview');
+        return new TestOverview(self::LIST);
     }
+
+    private const NONE = ['total' => 1, 'sent' => 0, 'failed' => 0, 'skipped' => 0, 'uncertain' => 0];
 
     public function test_page_runsOfOneItemAreOneRow(): void
     {
@@ -145,8 +114,8 @@ final class OverviewTest extends TestCase
         $page = self::overview()->page(1);
 
         self::assertSame([
-            ['item' => self::ITEM, 'title' => 'Second name', 'date' => self::NOW, 'state' => Run::DONE],
-            ['item' => self::ITEM2, 'title' => 'Other', 'date' => self::NOW - 50, 'state' => Run::SENDING],
+            ['item' => self::ITEM, 'title' => 'Second name', 'date' => self::NOW, 'state' => Run::DONE, 'counts' => ['total' => 1] + self::NONE],
+            ['item' => self::ITEM2, 'title' => 'Other', 'date' => self::NOW - 50, 'state' => Run::SENDING, 'counts' => self::NONE],
         ], $page);
         self::assertSame([self::ITEM2], array_column(self::overview()->page(2, 1), 'item'), 'the second page of one row');
         self::assertSame([], self::overview()->page(3, 1));
@@ -167,19 +136,41 @@ final class OverviewTest extends TestCase
         self::assertSame(1, $overview->count());
     }
 
-    public function test_forModule_notAnAlertsModule_isNull(): void
+    /** a run started with no title takes the newest title given before - as the block of the sending names it */
+    public function test_page_titleIsTheNewestGiven(): void
     {
-        CachedSliceLikeModule::register(self::OTHER);
+        self::sending(self::ITEM, self::NOW - 100, 'First name');
+        self::sending(self::ITEM, self::NOW, '  ');
+        self::sending(self::ITEM2, self::NOW - 50, '');
 
-        self::assertNull(TestOverview::forModule(self::OTHER), 'another type: a letter of its own means something else');
-        self::assertNull(TestOverview::forModule('nonsense'));
-        self::assertInstanceOf(TestOverview::class, TestOverview::forModule(self::MODULE));
+        self::assertSame(['First name', self::ITEM2], array_column(self::overview()->page(1), 'title'));
     }
 
-    public function test_forModule_alertsModuleWithoutAList_isNull(): void
+    /** a row of one run is its record; only an item of more runs reads them, each reader counted once */
+    public function test_page_figures_readOnlyForMoreRuns(): void
     {
-        TestOverview::$lists = [];
+        $reader = 'a0000000000000000000000000000001';
+        $first  = self::sending(self::ITEM, self::NOW - 100, readers: [$reader, 'a0000000000000000000000000000002']);
+        self::storedSet($first, 'state', Run::ENDED);
+        self::storedSet($first, 'cursor', '1');
+        self::storedSet($first, 'mark', '1');
+        $second = self::sending(self::ITEM, self::NOW - 50, readers: ['a0000000000000000000000000000002']);
+        self::storedSet($second, 'state', Run::DONE);
+        self::storedSet($second, 'cursor', '1');
+        $single = self::sending(self::ITEM2, self::NOW - 70, readers: [$reader, 'a0000000000000000000000000000002', 'a0000000000000000000000000000003']);
+        self::storedSet($single, 'state', Run::ENDED);
+        self::storedSet($single, 'cursor', '2');
+        self::storedSet($single, 'mark', '2');
+        self::storedSet($single, 'outcomes', '{"1":"f"}');
 
-        self::assertNull(TestOverview::forModule(self::MODULE));
+        $overview = self::overview();
+        $page     = $overview->page(1);
+
+        self::assertSame(['total' => 2, 'sent' => 2, 'failed' => 0, 'skipped' => 0, 'uncertain' => 0], $page[0]['counts'], 'the uncertain reader got it in the second run');
+        self::assertSame(['total' => 3, 'sent' => 1, 'failed' => 1, 'skipped' => 0, 'uncertain' => 1], $page[1]['counts'], 'the mark of a stopped run is uncertain');
+        self::assertSame(1, TestOverview::$campaigns, 'only the item of two runs');
+        self::assertSame(array_diff_key(TestCampaign::of(self::LIST, self::ITEM2)->counts(), ['date' => 1]), $page[1]['counts'], 'one run counts as its sending');
+        self::assertSame($overview->campaign(self::ITEM), $overview->campaign(strtoupper(self::ITEM)), 'the chosen mailing reuses what its row read');
+        self::assertSame(1, TestOverview::$campaigns);
     }
 }

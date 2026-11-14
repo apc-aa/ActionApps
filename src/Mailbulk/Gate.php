@@ -429,7 +429,7 @@ class Gate
         $parts    = [];
         switch ($state) {
             case Run::SENDING:
-                $parts[]  = _m('Sending %1', [$progress]);
+                $parts[]  = StatsView::state($state) . ' ' . $progress;
                 $buttons  = ['stop' => _m('Stop')];
                 break;
             case Run::ERROR:
@@ -438,12 +438,12 @@ class Gate
                 $buttons  = ['resume' => _m('Continue'), 'stop' => _m('Stop')];
                 break;
             case Run::ENDED:
-                $parts[]  = _m('Stopped %1', [$progress]);
+                $parts[]  = StatsView::state($state) . ' ' . $progress;
                 $buttons  = ['send' => _m('Continue…')];
                 break;
             case Run::DONE:
                 $counts   = $campaign->counts();
-                $parts[]  = ($counts['date'] > 0) ? date('Y-m-d H:i', $counts['date']) : '';
+                $parts[]  = StatsView::date($counts['date']);
                 $parts[]  = self::figures($counts);
                 $buttons  = ['send' => _m('Send to new…')];
                 break;

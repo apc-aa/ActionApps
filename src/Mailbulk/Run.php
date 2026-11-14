@@ -242,28 +242,68 @@ class Run extends BatchRun
         return array_reverse(array_values(array_filter(array_map(static fn($id): ?static => static::get((string) $id), $ids))));
     }
 
-    /** The runs of $list as records, the newest first (by start, then id) - no run read, however many.
-     *  @return array<string, array{subject: string, title: string, started: string, finished: string, state: string, total: string}> id => record */
+    /** The runs of $list as records, the newest first - no run read, however many, nor their readers.
+     *  @return array<string, array{subject: string, title: string, started: int, state: string,
+     *          figures: array{total: int, sent: int, failed: int, skipped: int, uncertain: int}}> id => record
+     *  @throws \JsonException a damaged record of outcomes */
     public static function recordsOfList(string $list): array
     {
-        $props   = ['subject', 'title', 'started', 'finished', 'state', 'total'];
         $records = [];
-        foreach (self::records('list', $list, ['list', ...$props]) as $id => $record) {
-            // the id of a list tells case apart, the database comparison need not
-            if (($record['list'] ?? '') === $list) {
-                $records[(string) $id] = array_merge(array_fill_keys($props, ''), array_intersect_key($record, array_flip($props)));
+        foreach (static::recordsOf('list', $list, ['subject', 'title', 'state', 'total', 'cursor', 'outcomes', 'mark']) as $id => $r) {
+            $records[(string) $id] = [
+                'subject' => $r['subject'] ?? '',
+                'title'   => $r['title'] ?? '',
+                'started' => (int) ($r['started'] ?? 0),
+                'state'   => $r['state'] ?? '',
+                'figures' => self::figuresOf($r),
+            ];
+        }
+        return $records;
+    }
+
+    /** The name of a sending: the newest title it was started with - the item may have changed or be gone since.
+     *  @param list<string> $titles the newest first
+     *  @return string the item id when no run has one */
+    public static function titleOf(array $titles, string $itemId): string
+    {
+        foreach ($titles as $title) {
+            if (trim($title) !== '') {
+                return trim($title);
             }
         }
-        uksort($records, static fn($a, $b): int => ((int) $records[$b]['started'] <=> (int) $records[$a]['started']) ?: strcmp((string) $b, (string) $a));
-        return $records;
+        return $itemId;
     }
 
     /** @return array{sent: int, failed: int, skipped: int, uncertain: int} */
     public function outcomes(): array
     {
-        $counts = array_count_values(self::map((string) $this->outcomes));
-        $sum    = ['failed' => $counts['f'] ?? 0, 'skipped' => $counts['s'] ?? 0, 'uncertain' => $counts['u'] ?? 0];
-        return ['sent' => (int) $this->cursor - array_sum($sum)] + $sum;
+        $figures = self::figuresOf([
+            'state'    => $this->state(),
+            'total'    => (string) $this->total,
+            'cursor'   => (string) $this->cursor,
+            'outcomes' => (string) $this->outcomes,
+            'mark'     => (string) $this->mark,
+        ]);
+        unset($figures['total']);
+        return $figures;
+    }
+
+    /** What came of the readers of one run, from its record, counted as Campaign::counts() counts them: a mark
+     *  a dead step left in a finished or stopped run is uncertain; total = the readers such a run tried, all
+     *  readers of one still sending or in error.
+     *  @param array<string, string> $record state, total, cursor, outcomes, mark
+     *  @return array{total: int, sent: int, failed: int, skipped: int, uncertain: int}
+     *  @throws \JsonException a damaged record of outcomes */
+    public static function figuresOf(array $record): array
+    {
+        $counts = array_count_values(self::map($record['outcomes'] ?? ''));
+        $cursor = (int) ($record['cursor'] ?? 0);
+        $total  = (int) ($record['total'] ?? 0);
+        $mark   = (string) ($record['mark'] ?? '');
+        $open   = in_array($record['state'] ?? '', [self::SENDING, self::ERROR], true);
+        $marked = (!$open && ($mark !== '') && ((int) $mark >= $cursor) && ((int) $mark < $total)) ? 1 : 0;
+        $sum    = ['failed' => $counts['f'] ?? 0, 'skipped' => $counts['s'] ?? 0, 'uncertain' => ($counts['u'] ?? 0) + $marked];
+        return ['total' => $open ? $total : $cursor + $marked, 'sent' => $cursor - array_sum($sum) + $marked] + $sum;
     }
 
     /** the readers who got the mail or may have got it - also the one it is going to right now

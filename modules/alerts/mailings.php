@@ -28,7 +28,6 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-use AA\Mailbulk\Campaign;
 use AA\Mailbulk\Overview;
 use AA\Mailbulk\Stats;
 use AA\Mailbulk\StatsView;
@@ -36,22 +35,24 @@ use AA\Util\InputVars;
 
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/formutil.php";
+require_once __DIR__ . "/../../include/scroller.php";
 require_once __DIR__ . "/alerts_sending.php";
 
+// no module: the start after login - the index of this module would send an Editor back here
+$start = get_admin_url('index.php', ['module_id' => ''], false);
 // the type before the right: in another module type the letter of this right means something else
 if (!AA_Module_Alerts::getOwnModule(AA::$module_id)) {
-    MsgPage(_m("Module not found."));
+    MsgPage(_m("Module not found."), $start);
 }
 if (!IfSlPerm(PS_ALERTS_STATS)) {
-    MsgPage(_m("You do not have permissions to access this page"));
+    MsgPage(_m("You do not have permissions to access this page"), $start);
 }
-$overview = Overview::forModule((string) AA::$module_id);
-if ($overview === null) {
-    MsgPage(_m("This Alerts module has no list of readers."));
+$collection = GetCollection(AA::$module_id);
+if (!is_array($collection)) {
+    MsgPage(_m("This Alerts module has no list of readers."), $start);
 }
 
 try {
-    $page_no = InputVars::intGET('page');
     $mailing = InputVars::idGET('mailing');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
@@ -59,12 +60,12 @@ try {
 
 const MAILINGS_PER_PAGE = 50;
 
-$mailingsUrl = static fn(array $params): string => get_url(AA_INSTAL_PATH . 'modules/alerts/mailings.php', ['module_id' => AA::$module_id] + $params);
-
-$list      = new AA_Collection($overview->list());
+$list      = new AA_Collection((string) $collection['id']);
+$overview  = new Overview($list->getId());
 $statSlice = $list->getStatSliceId();
-$pages     = max(1, (int) ceil($overview->count() / MAILINGS_PER_PAGE));
-$page_no   = min(max(1, $page_no), $pages);
+$scroller  = new AA_Scroller_Easy('mb', MAILINGS_PER_PAGE, $overview->count(), get_url(AA_INSTAL_PATH . 'modules/alerts/mailings.php', [], true));
+$scroller->update();
+$page_no   = $scroller->getCurrent();
 
 $apage = new AA_Adminpageutil('admin', 'mailings');
 $apage->setTitle(_m("Mailings and statistics"));
@@ -83,24 +84,21 @@ if ($statSlice !== '') {
     array_push($head, _m("Opened"), _m("Clicked"));
 }
 $table = [array_map(safe(...), $head)];
-$stats = new Stats();
-// the figures only of the rows shown: each reads the runs of its sending
-foreach ($overview->page($page_no, MAILINGS_PER_PAGE) as $row) {
-    $counts = Campaign::of($list->getId(), $row['item'])->counts();
-    $title  = ($row['title'] !== '') ? $row['title'] : $row['item'];
-    $link   = $mailingsUrl(['page' => $page_no, 'mailing' => $row['item']]) . '#aa-mailing';
-    $cells  = [
-        safe(($row['date'] > 0) ? date('Y-m-d H:i', $row['date']) : ''),
-        '<a href="' . safe($link) . '">' . safe($title) . '</a>',
+$rows  = $overview->page($page_no, MAILINGS_PER_PAGE);
+$opens = ($statSlice !== '') ? (new Stats())->countsFor($statSlice, array_column($rows, 'item')) : [];
+foreach ($rows as $row) {
+    $link  = get_url(AA_INSTAL_PATH . 'modules/alerts/mailings.php', ['scr_mb_Go' => $page_no, 'mailing' => $row['item']], true) . '#aa-mailing';
+    $cells = [
+        safe(StatsView::date($row['date'])),
+        '<a href="' . safe($link) . '">' . safe($row['title']) . '</a>',
         safe(StatsView::state($row['state'])),
-        $counts['total'],
-        $counts['sent'],
-        $counts['failed'],
-        $counts['uncertain'],
+        $row['counts']['total'],
+        $row['counts']['sent'],
+        $row['counts']['failed'],
+        $row['counts']['uncertain'],
     ];
     if ($statSlice !== '') {
-        $opens = $stats->counts($statSlice, $row['item']);
-        array_push($cells, $opens['opened'], $opens['clicked']);
+        array_push($cells, $opens[$row['item']]['opened'], $opens[$row['item']]['clicked']);
     }
     $table[] = $cells;
 }
@@ -110,22 +108,11 @@ if (count($table) > 1) {
 } else {
     echo '<p>' . safe(_m("The list has sent nothing yet.")) . '</p>';
 }
-
-if ($pages > 1) {
-    $nav = [];
-    if ($page_no > 1) {
-        $nav[] = '<a href="' . safe($mailingsUrl(['page' => $page_no - 1])) . '">' . safe(_m("Newer")) . '</a>';
-    }
-    $nav[] = safe(_m("Page %1 of %2", [$page_no, $pages]));
-    if ($page_no < $pages) {
-        $nav[] = '<a href="' . safe($mailingsUrl(['page' => $page_no + 1])) . '">' . safe(_m("Older")) . '</a>';
-    }
-    echo '<p>' . implode(' | ', $nav) . '</p>';
-}
+echo $scroller->getNavbar();
 
 // an item id from the request shows only a mailing of this list
 if (($mailing !== '') && $overview->has($mailing)) {
-    echo '<div id="aa-mailing">' . (new StatsView())->mailing($list, $mailing) . '</div>';
+    echo '<div id="aa-mailing">' . (new StatsView())->mailing($list, $mailing, $overview->campaign($mailing)) . '</div>';
 }
 
 $apage->printFoot();

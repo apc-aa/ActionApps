@@ -29,6 +29,39 @@ class Stats
         return ['opened' => (int) $opened, 'clicked' => count(array_unique(array_column($clicks, 'reader')))];
     }
 
+    /** The figures of many sendings at once - a page of them: one search per kind of event and one read of
+     *  the events, whatever the number of the sendings.
+     *  @param list<string> $itemIds
+     *  @return array<string, array{opened: int, clicked: int}> item id (lowercase) => figures, every one of $itemIds */
+    public function countsFor(string $statSliceId, array $itemIds): array
+    {
+        $itemIds = array_values(array_unique(array_map('strtolower', $itemIds)));
+        $figures = array_fill_keys($itemIds, ['opened' => 0, 'clicked' => 0]);
+        if (!$itemIds) {
+            return $figures;
+        }
+        $opens   = array_fill_keys($this->events($statSliceId, $itemIds, 'open'), true);
+        $ids     = array_values(array_unique([...array_keys($opens), ...$this->events($statSliceId, $itemIds, 'click')]));
+        $clicked = [];
+        foreach (array_chunk($ids, self::CHUNK) as $chunk) {
+            foreach ($this->content($chunk, ['relation........', 'relation.......1']) as $id => $fields) {
+                $item = strtolower((string) ($fields['relation........'][0]['value'] ?? ''));
+                if (!isset($figures[$item])) {
+                    continue;
+                }
+                if (isset($opens[(string) $id])) {
+                    ++$figures[$item]['opened'];
+                } else {
+                    $clicked[$item][(string) ($fields['relation.......1'][0]['value'] ?? '')] = true;
+                }
+            }
+        }
+        foreach ($clicked as $item => $readers) {
+            $figures[$item]['clicked'] = count($readers);
+        }
+        return $figures;
+    }
+
     /** @return list<array{url: string, readers: int}> the most clicked links first, at most MAX_LINKS */
     public function links(string $statSliceId, string $itemId): array
     {
@@ -47,7 +80,7 @@ class Stats
     /** the worker of the cache in counts() */
     public function opensFromDb(string $statSliceId, string $itemId): int
     {
-        return count($this->events($statSliceId, $itemId, 'open'));
+        return count($this->events($statSliceId, [$itemId], 'open'));
     }
 
     /** the worker of the cache in clicks()
@@ -55,7 +88,7 @@ class Stats
     public function clicksFromDb(string $statSliceId, string $itemId): array
     {
         $clicks = [];
-        foreach (array_chunk($this->events($statSliceId, $itemId, 'click'), self::CHUNK) as $chunk) {
+        foreach (array_chunk($this->events($statSliceId, [$itemId], 'click'), self::CHUNK) as $chunk) {
             foreach ($this->content($chunk, ['source_href.....', 'relation.......1']) as $fields) {
                 $clicks[] = [
                     'url'    => (string) ($fields['source_href.....'][0]['value'] ?? ''),
@@ -75,11 +108,13 @@ class Stats
 
     // ------------------------------------------------------------ what tests replace
 
-    /** @return list<string> long ids of the events of $kind (open, click) of the sent item */
-    protected function events(string $statSliceId, string $itemId, string $kind): array
+    /** @param list<string> $itemIds the sent items
+     *  @return list<string> long ids of their events of $kind (open, click) */
+    protected function events(string $statSliceId, array $itemIds, string $kind): array
     {
         $conds = [
-            ['relation........' => 1, 'operator' => '==', 'value' => $itemId],
+            // a list of values is one condition, its values joined by OR
+            ['relation........' => 1, 'operator' => '=', 'value' => $itemIds],
             ['category........' => 1, 'operator' => '==', 'value' => $kind],
         ];
         // an event moved to the trash or held back is one the editor of the slice threw out

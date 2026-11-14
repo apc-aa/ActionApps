@@ -4,36 +4,21 @@ declare(strict_types=1);
 
 namespace AA\Mailbulk;
 
-use AA_Module_Alerts;
-
 /**
- * The mailings of the list of one Alerts module: every item the list was sent, its runs together in
- * one row. Reads the records of the runs only, never the runs. Rights are not checked here - the
- * caller has.
+ * The mailings of one list: every item the list was sent, its runs together in one row. A row is read
+ * from the records of the runs; only an item sent by more runs reads its runs, to count each reader
+ * once. Rights are not checked here - the caller has.
  */
 class Overview
 {
-    /** @var ?array<string, array{item: string, title: string, date: int, state: string}> item => row, read once */
+    /** @var ?array<string, array{item: string, titles: list<string>, date: int, state: string, runs: int,
+     *        figures: array{total: int, sent: int, failed: int, skipped: int, uncertain: int}}> item => row, read once */
     private ?array $rows = null;
+    /** @var array<string, Campaign> item => the sending read for its row */
+    private array $campaigns = [];
 
-    final protected function __construct(private readonly string $list) {}
-
-    /** null when the module is no Alerts module or has no list */
-    public static function forModule(string $moduleId): ?static
-    {
-        // the type first: a letter of the Alerts rights means something else in another module
-        if (!is_long_id($moduleId) || (AA_Module_Alerts::getOwnModule($moduleId) === null)) {
-            return null;
-        }
-        $list = static::listOf($moduleId);
-        return ($list === '') ? null : new static($list);
-    }
-
-    /** the id of the list (Alerts collection) */
-    public function list(): string
-    {
-        return $this->list;
-    }
+    /** @param string $list the id of the list (Alerts collection) */
+    public function __construct(private readonly string $list) {}
 
     /** the mailings: the items with at least one run of the list */
     public function count(): int
@@ -41,17 +26,35 @@ class Overview
         return count($this->rows());
     }
 
-    /** @return list<array{item: string, title: string, date: int, state: string}> the newest first, $page counted from 1;
-     *          the title and state of the newest run, date = its start */
+    /** @return list<array{item: string, title: string, date: int, state: string,
+     *          counts: array{total: int, sent: int, failed: int, skipped: int, uncertain: int}}>
+     *          the newest first, $page counted from 1; the state of the newest run, date = its start */
     public function page(int $page, int $size = 50): array
     {
-        return array_values(array_slice($this->rows(), max(0, $page - 1) * max(1, $size), max(1, $size)));
+        $rows = [];
+        foreach (array_slice($this->rows(), max(0, $page - 1) * max(1, $size), max(1, $size)) as $row) {
+            $rows[] = [
+                'item'   => $row['item'],
+                'title'  => Run::titleOf($row['titles'], $row['item']),
+                'date'   => $row['date'],
+                'state'  => $row['state'],
+                'counts' => ($row['runs'] > 1) ? array_diff_key($this->campaign($row['item'])->counts(), ['date' => true]) : $row['figures'],
+            ];
+        }
+        return $rows;
     }
 
     /** the list sent $itemId - an id from a request shows nothing without it */
     public function has(string $itemId): bool
     {
         return isset($this->rows()[strtolower($itemId)]);
+    }
+
+    /** the sending of $itemId, the one its row has read when it did */
+    public function campaign(string $itemId): Campaign
+    {
+        $itemId = strtolower($itemId);
+        return $this->campaigns[$itemId] ??= $this->newCampaign($itemId);
     }
 
     // ------------------------------------------------------------ what tests replace
@@ -62,25 +65,28 @@ class Overview
         return Run::class;
     }
 
-    /** the list of an Alerts module; '' = none */
-    protected static function listOf(string $moduleId): string
+    protected function newCampaign(string $itemId): Campaign
     {
-        require_once constant('AA_BASE_PATH') . 'modules/alerts/util.php';
-        $collection = \GetCollection($moduleId);
-        return is_array($collection) ? (string) $collection['id'] : '';
+        return Campaign::of($this->list, $itemId);
     }
 
     // ------------------------------------------------------------
 
-    /** @return array<string, array{item: string, title: string, date: int, state: string}> */
+    /** @return array<string, array{item: string, titles: list<string>, date: int, state: string, runs: int,
+     *          figures: array{total: int, sent: int, failed: int, skipped: int, uncertain: int}}> */
     private function rows(): array
     {
         if ($this->rows === null) {
             $this->rows = [];
-            // the newest run of an item comes first, so it gives the row
+            // the newest run of an item comes first, so it gives the date and the state
             foreach (static::runClass()::recordsOfList($this->list) as $record) {
-                $item               = $record['subject'];
-                $this->rows[$item] ??= ['item' => $item, 'title' => $record['title'], 'date' => (int) $record['started'], 'state' => $record['state']];
+                $item = $record['subject'];
+                if (isset($this->rows[$item])) {
+                    $this->rows[$item]['titles'][] = $record['title'];
+                    ++$this->rows[$item]['runs'];
+                    continue;
+                }
+                $this->rows[$item] = ['item' => $item, 'titles' => [$record['title']], 'date' => $record['started'], 'state' => $record['state'], 'runs' => 1, 'figures' => $record['figures']];
             }
         }
         return $this->rows;

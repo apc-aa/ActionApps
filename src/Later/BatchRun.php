@@ -930,6 +930,21 @@ abstract class BatchRun extends AA_Object
         return $records;
     }
 
+    /** The runs whose $property is exactly $value, newest first (newerFirst()), as records - no run read,
+     *  however many. The database compares text in any case; the value of an id tells case apart.
+     *  @param list<string> $props further properties to read
+     *  @return array<string, array<string, string>> id => $property, started, finished and $props
+     *  @throws \InvalidArgumentException $property or $props name the sealed secret */
+    final protected static function recordsOf(string $property, string $value, array $props = []): array
+    {
+        $records = array_filter(
+            self::records($property, $value, array_values(array_unique([$property, 'started', 'finished', ...$props]))),
+            static fn(array $r): bool => ($r[$property] ?? '') === $value,
+        );
+        uksort($records, static fn($a, $b): int => self::newerFirst((string) $a, $records[$a], (string) $b, $records[$b]));
+        return $records;
+    }
+
     /** Newest first: by start, then by end (an unfinished run is the newer), then by id. One order for
      *  the lists and cleanup(), so what a page calls the newest run is never what cleanup() takes for an
      *  old one - runs of a subject can start in one second, and ids are random.
@@ -955,7 +970,7 @@ abstract class BatchRun extends AA_Object
      *  @param list<string> $props
      *  @return array<string, array<string, string>> id => property => value
      *  @throws \InvalidArgumentException $property or $props name the sealed secret */
-    final protected static function records(string $property, string|array $value, array $props): array
+    private static function records(string $property, string|array $value, array $props): array
     {
         if (in_array('sealed', [$property, ...$props], true)) {
             throw new \InvalidArgumentException('The sealed secret of a batch run is read by its run only');

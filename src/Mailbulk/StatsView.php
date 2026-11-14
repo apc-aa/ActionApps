@@ -13,19 +13,21 @@ use AA_Collection;
  */
 class StatsView
 {
-    /** @return string HTML; '' when the item was never sent to the list */
-    public function mailing(AA_Collection $list, string $itemId): string
+    /** @param ?Campaign $campaign the sending, when the caller has read it already
+     *  @return string HTML; '' when the item was never sent to the list */
+    public function mailing(AA_Collection $list, string $itemId, ?Campaign $campaign = null): string
     {
         $itemId = strtolower($itemId);
         if (!is_long_id($itemId)) {
             return '';
         }
-        $campaign = $this->campaign($list->getId(), $itemId);
+        $campaign ??= $this->campaign($list->getId(), $itemId);
         $runs     = $campaign->runs();
         if (!$runs) {
             return '';
         }
-        $html = '<h3 class="aa-mailbulk-title">' . safe(self::title($runs, $itemId)) . '</h3>' . self::runsTable($runs, $campaign->counts());
+        $titles = array_map(static fn(Run $run): string => (string) $run->getProperty('title'), array_reverse($runs));
+        $html   = '<h3 class="aa-mailbulk-title">' . safe(Run::titleOf($titles, $itemId)) . '</h3>' . self::runsTable($runs, $campaign->counts());
 
         $statSlice = $list->getStatSliceId();
         if ($statSlice !== '') {
@@ -50,19 +52,6 @@ class StatsView
     }
 
     // ------------------------------------------------------------ rendering
-
-    /** the name the newest run was started with - the item may have changed or be gone since
-     *  @param list<Run> $runs */
-    private static function title(array $runs, string $itemId): string
-    {
-        foreach (array_reverse($runs) as $run) {
-            $title = trim((string) $run->getProperty('title'));
-            if ($title !== '') {
-                return $title;
-            }
-        }
-        return $itemId;
-    }
 
     /** each run, and with more of them the sending as a whole - each reader counted once
      *  @param list<Run> $runs
@@ -112,7 +101,8 @@ class StatsView
         return '<table class="aa-mailbulk-links"><thead><tr><th scope="col">' . safe(_m('Link')) . '</th><th scope="col">' . safe(_m('Readers clicked')) . '</th></tr></thead><tbody>' . $rows . '</tbody></table>';
     }
 
-    private static function date(int $time): string
+    /** a time of a sending for people; '' = none */
+    public static function date(int $time): string
     {
         return ($time > 0) ? date('Y-m-d H:i', $time) : '';
     }

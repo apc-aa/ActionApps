@@ -546,8 +546,9 @@ final class RunTest extends TestCase
         $newest = (strcmp($new, $same) > 0) ? [$new, $same] : [$same, $new];
         self::assertSame([...$newest, $old], array_keys($records));
         self::assertSame(
-            ['subject' => 'cafe0000000000000000000000000003', 'title' => 'New', 'started' => (string) self::NOW, 'finished' => '', 'state' => Run::SENDING, 'total' => '1'],
-            array_intersect_key($records[$new], array_flip(['subject', 'title', 'started', 'finished', 'state', 'total'])),
+            ['subject' => 'cafe0000000000000000000000000003', 'title' => 'New', 'started' => self::NOW, 'state' => Run::SENDING,
+                'figures' => ['total' => 1, 'sent' => 0, 'failed' => 0, 'skipped' => 0, 'uncertain' => 0]],
+            $records[$new],
         );
         self::assertSame(self::ITEM, $records[$old]['subject']);
     }
@@ -559,6 +560,31 @@ final class RunTest extends TestCase
         self::queued(1, ['list' => strtoupper(self::LIST), 'subject' => 'cafe0000000000000000000000000002']);
 
         self::assertSame([$mine], array_keys(TestRun::recordsOfList(self::LIST)));
+    }
+
+    /** a step died between the mark and the result, then the run was stopped: the reader may have got it */
+    public function test_outcomes_markOfAStoppedRun_isUncertain(): void
+    {
+        $id = self::queued(7, ['cursor' => '5', 'mark' => '5', 'outcomes' => '{"1":"f","3":"s","2":"u"}']);
+        self::storedSet($id, 'state', Run::ENDED);
+
+        self::assertSame(['sent' => 2, 'failed' => 1, 'skipped' => 1, 'uncertain' => 2], self::runOf($id)->outcomes());
+        self::assertSame(['total' => 6, 'sent' => 2, 'failed' => 1, 'skipped' => 1, 'uncertain' => 2], Run::figuresOf(self::stored($id)));
+    }
+
+    /** while it sends, the reader of the mark is on the way - counted only in the total */
+    public function test_figuresOf_sendingRun_markNotCounted_totalIsAll(): void
+    {
+        $id = self::queued(7, ['cursor' => '5', 'mark' => '5', 'outcomes' => '{"1":"f"}']);
+
+        self::assertSame(['total' => 7, 'sent' => 4, 'failed' => 1, 'skipped' => 0, 'uncertain' => 0], Run::figuresOf(self::stored($id)));
+    }
+
+    /** the name of a sending: the newest title given */
+    public function test_titleOf_newestNonEmpty_elseTheItem(): void
+    {
+        self::assertSame('Second', Run::titleOf(['', ' Second ', 'First'], self::ITEM));
+        self::assertSame(self::ITEM, Run::titleOf([' ', ''], self::ITEM));
     }
 
     public function test_delivered_isBelowCursorWithoutFailedAndSkipped_plusTheMark(): void
