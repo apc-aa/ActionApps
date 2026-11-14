@@ -127,9 +127,11 @@ namespace Tests\Unit\Mailbulk {
         public static array $opened = [];
         /** @var list<string> what the gate read: slice, list, rights or relation */
         public static array $reads = [];
+        public static string $siteUrl = 'https://news.example.org:8443/cz/home?x=1';
 
         public static function reset(): void
         {
+            self::$siteUrl    = 'https://news.example.org:8443/cz/home?x=1';
             self::$itemSlice  = TestRun::SLICE;
             self::$mayEdit    = true;
             self::$relates    = true;
@@ -204,6 +206,11 @@ namespace Tests\Unit\Mailbulk {
         protected function noStore(): void
         {
             ++self::$noStores;
+        }
+
+        protected function siteUrl(string $list): string
+        {
+            return self::$siteUrl;
         }
     }
 
@@ -503,6 +510,23 @@ namespace Tests\Unit\Mailbulk {
             self::assertCount(1, $ids);
             $stored = self::stored($ids[0]);
             self::assertSame([Run::SENDING, self::USER_ID, '3'], [$stored['state'], $stored['user'], $stored['total']]);
+        }
+
+        /** the step may run in another tree - the base is the site of the list with this tree's path, stored by the run */
+        public function test_act_send_passesTheTrackingBaseOfTheListSite(): void
+        {
+            (new TestGate())->act('send', self::LIST, self::ITEM);
+
+            self::assertSame('https://news.example.org:8443' . AA_INSTAL_PATH, self::stored(self::runIds()[0])['base']);
+        }
+
+        public function test_act_send_listWithoutSite_baseOfThisTree(): void
+        {
+            TestGate::$siteUrl = '';
+
+            (new TestGate())->act('send', self::LIST, self::ITEM);
+
+            self::assertSame(AA_INSTAL_URL, self::stored(self::runIds()[0])['base']);
         }
 
         public function test_act_sendTwice_secondIsRefused(): void

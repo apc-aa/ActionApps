@@ -29,6 +29,7 @@ namespace Tests\Unit\Mailbulk {
     use AA;
     use AA\Mailbulk\ItemLetter;
     use AA\Mailbulk\Message;
+    use AA\Mailbulk\TrackToken;
     use AA_Collection;
     use AA_Item;
     use AA_Items;
@@ -83,6 +84,8 @@ namespace Tests\Unit\Mailbulk {
         private const CYRIL      = 'c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1';
         private const NAME       = 'text...........1';
         private const URL        = 'https://example.org/news';
+        private const STAT       = 'd1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1';
+        private const BASE       = 'https://news.example.org/aa/';
 
         public static function setUpBeforeClass(): void
         {
@@ -171,10 +174,11 @@ namespace Tests\Unit\Mailbulk {
          *  @param list<string> $valid
          *  @param list<string> $invalid
          *  @param list<string> $dropped what droppedConds() names */
-        private function list(array $valid = [self::ANNA, self::BOB, self::CYRIL], array $invalid = [], array $dropped = [], string $url = self::URL, bool $readerSlice = true, string $lang = 'en'): AA_Collection&MockObject
+        private function list(array $valid = [self::ANNA, self::BOB, self::CYRIL], array $invalid = [], array $dropped = [], string $url = self::URL, bool $readerSlice = true, string $lang = 'en', string $stat = ''): AA_Collection&MockObject
         {
             $list = $this->createMock(AA_Collection::class);
             $list->method('getId')->willReturn('abcde');
+            $list->method('getStatSliceId')->willReturn($stat);
             $list->method('getReaderSlice')->willReturn($readerSlice ? $this->createStub(AA_Slice::class) : null);
             $list->method('validReaders')->willReturn(new zids($valid, 'l'));
             $list->method('droppedConds')->willReturn($dropped);
@@ -449,6 +453,111 @@ namespace Tests\Unit\Mailbulk {
 
             self::assertNotNull($message);
             self::assertSame([], $message->headers);
+        }
+
+        /** the mail of $reader to a list with a statistics slice, the tracked addresses under $base */
+        private function trackedMail(string $body, string $reader = self::ANNA, bool $test = false, string $base = self::BASE): string
+        {
+            TestItemLetter::$aliases[self::ITEM_SLICE]['_#MAILBODY'] = self::itemAliases(['_#MAILBODY' => $body])['_#MAILBODY'];
+            $message = (new TestItemLetter($this->list(stat: self::STAT), self::ITEM, $base))->messageFor($reader, $test);
+            self::assertNotNull($message);
+            return $message->html;
+        }
+
+        /** @return list<TrackToken> the tokens of the tracked addresses of $html, in order */
+        private static function tokens(string $html, string $base = self::BASE): array
+        {
+            preg_match_all('~"' . preg_quote($base, '~') . 'api/index\.php\?_path=v1/mail/hit&amp;t=([A-Za-z0-9_-]+)"~', $html, $m);
+            return array_map(static fn(string $t): TrackToken => TrackToken::parse($t) ?? throw new \RuntimeException("bad token $t"), $m[1]);
+        }
+
+        public function test_messageFor_statSlice_tracksLinksAndAddsTheImage(): void
+        {
+            $html = $this->trackedMail('<p>Hi</p><a href="https://example.org/article?a=1&amp;b=2">read</a> <a href="mailto:x@example.org">m</a>');
+
+            $tokens = self::tokens($html);
+            self::assertCount(2, $tokens, $html);
+            self::assertSame(['abcde', self::ITEM, self::ANNA, TrackToken::CLICK, 'https://example.org/article?a=1&b=2'], [$tokens[0]->list, $tokens[0]->itemId, $tokens[0]->readerId, $tokens[0]->kind, $tokens[0]->url]);
+            self::assertSame([TrackToken::OPEN, self::ANNA], [$tokens[1]->kind, $tokens[1]->readerId]);
+            self::assertStringContainsString('<a href="mailto:x@example.org">m</a>', $html);
+            self::assertMatchesRegularExpression('~<a href="mailto:x@example.org">m</a><img src="' . preg_quote(self::BASE, '~') . 'api/index\.php\?_path=v1/mail/hit&amp;t=[A-Za-z0-9_-]+" width="1" height="1" alt="">\z~', $html);
+            // htmlMimeMail would embed an address ending in an image extension
+            self::assertDoesNotMatchRegularExpression('~<img src="[^"]*\.[A-Za-z0-9]+"~', $html);
+        }
+
+        public function test_messageFor_statSlice_imageBeforeTheEndOfBody(): void
+        {
+            $html = $this->trackedMail('<html><body><p>Hi</p></body></html>');
+
+            self::assertMatchesRegularExpression('~<p>Hi</p><img src="[^"]+" width="1" height="1" alt=""></body></html>\z~', $html);
+        }
+
+        public function test_messageFor_mailopenInBody_noSecondImage(): void
+        {
+            $html = $this->trackedMail('<p>Hi</p>_#MAILOPEN<p>Bye</p>');
+
+            self::assertSame(1, substr_count($html, '<img '));
+            self::assertMatchesRegularExpression('~\A<p>Hi</p><img src="[^"]+" width="1" height="1" alt=""><p>Bye</p>\z~', $html);
+            self::assertSame(TrackToken::OPEN, self::tokens($html)[0]->kind);
+        }
+
+        public function test_messageFor_eachReaderOwnTokens(): void
+        {
+            $anna = self::tokens($this->trackedMail('<a href="https://example.org/a">a</a>_#MAILOPEN'));
+            $bob  = self::tokens($this->trackedMail('<a href="https://example.org/a">a</a>_#MAILOPEN', self::BOB));
+
+            self::assertSame([self::ANNA, self::ANNA], [$anna[0]->readerId, $anna[1]->readerId]);
+            self::assertSame([self::BOB, self::BOB], [$bob[0]->readerId, $bob[1]->readerId]);
+        }
+
+        public function test_messageFor_test_notTracked(): void
+        {
+            $html = $this->trackedMail('<a href="https://example.org/a">a</a>[_#MAILOPEN]', test: true);
+
+            self::assertSame('<a href="https://example.org/a">a</a>[]', $html);
+        }
+
+        public function test_messageFor_noStatSlice_untouched(): void
+        {
+            TestItemLetter::$aliases[self::ITEM_SLICE]['_#MAILBODY'] = self::itemAliases(['_#MAILBODY' => '<a href="https://example.org/a">a</a>[_#MAILOPEN]'])['_#MAILBODY'];
+
+            $message = (new TestItemLetter($this->list(), self::ITEM, self::BASE))->messageFor(self::ANNA);
+
+            self::assertNotNull($message);
+            self::assertSame('<a href="https://example.org/a">a</a>[]', $message->html);
+        }
+
+        public function test_messageFor_unsubscribeLink_notTracked(): void
+        {
+            $html = $this->trackedMail('<a href="_#MAILUNSB">out</a> <a href="_#MAILPREF">form</a> <a href="https://example.org/a">a</a>');
+
+            self::assertStringStartsWith('<a href="' . self::URL . '?au=codeAnna&c=abcde">out</a> <a href="' . self::URL . '?ac=codeAnna">form</a> <a href="' . self::BASE, $html);
+            self::assertSame([TrackToken::CLICK, TrackToken::OPEN], array_map(static fn(TrackToken $t): string => $t->kind, self::tokens($html)));
+        }
+
+        public function test_messageFor_untrackableLink_staysAsItIs(): void
+        {
+            $html = $this->trackedMail('<a href="https://example.org/a&#10;b">a</a>');
+
+            self::assertStringStartsWith('<a href="https://example.org/a&#10;b">a</a><img ', $html);
+        }
+
+        public function test_messageFor_usesTheGivenBase_notTheTreeOfTheStep(): void
+        {
+            $base = 'https://other.example.net/aa-dev/';
+
+            $html = $this->trackedMail('<a href="https://example.org/a">a</a>', base: $base);
+
+            self::assertCount(2, self::tokens($html, $base));
+            self::assertStringNotContainsString(AA_INSTAL_URL, $html);
+            self::assertStringNotContainsString(self::BASE, $html);
+        }
+
+        public function test_messageFor_runWithoutBase_notTracked(): void
+        {
+            $html = $this->trackedMail('<a href="https://example.org/a">a</a>[_#MAILOPEN]', base: '');
+
+            self::assertSame('<a href="https://example.org/a">a</a>[]', $html);
         }
 
         public function test_testAddresses_fromAlias_andFallback(): void

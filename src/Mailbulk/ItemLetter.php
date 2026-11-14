@@ -91,13 +91,20 @@ class ItemLetter implements Letter
         }
         $code  = $test ? self::TEST_CODE : (string) $reader->getValue(FIELDID_ACCESS_CODE);
         $links = $this->list->readerLinks($code);
-        $item  = $this->itemWith($readerId, $links['unsubscribe'], $links['form']);
+        // a test must count nothing
+        $track = !$test && ($this->trackBase !== '') && ($this->list->getStatSliceId() !== '');
+        $image = $track ? $this->openImage($readerId) : '';
+        $item  = $this->itemWith($readerId, $links['unsubscribe'], $links['form'], $image);
         // without the code the link would unsubscribe nobody
         $headers = ($test || ($code === '')) ? [] : AA_Collection::unsubscribeHeaders($links['unsubscribe']);
+        $html    = $this->expand('_#MAILBODY', $item);
+        if ($track) {
+            $html = $this->tracked($html, $readerId, [$links['unsubscribe'], $links['form']], $image);
+        }
         return new Message(
             trim((string) $reader->getValue(FIELDID_EMAIL)),
             self::plain($this->expand('_#MAILSUBJ', $item)),
-            $this->expand('_#MAILBODY', $item),
+            $html,
             $this->from($item),
             $headers,
         );
@@ -163,15 +170,47 @@ class ItemLetter implements Letter
 
     /** the item with the aliases of one reader - the commands caching their output per item tell the readers apart
      *  by these text aliases (AA_Item::getCacheId()) */
-    private function itemWith(string $readerId, string $unsubscribe, string $form): AA_Item
+    private function itemWith(string $readerId, string $unsubscribe, string $form, string $open = ''): AA_Item
     {
         $item = $this->item() ?? throw new \RuntimeException('The item to send is gone');
         $own  = (new AA_Aliases())
             ->addTextAlias('_#MAILTOID', $readerId)
             ->addTextAlias('_#MAILUNSB', $unsubscribe)
             ->addTextAlias('_#MAILPREF', $form)
-            ->addTextAlias('_#MAILOPEN', '');
+            ->addTextAlias('_#MAILOPEN', $open);
         return new AA_Item($item, array_merge($this->aliases(), $own->getArray()));
+    }
+
+    /** the image counting the opening, '' when no token can be made */
+    private function openImage(string $readerId): string
+    {
+        $url = $this->hitUrl($readerId, TrackToken::OPEN);
+        return ($url === null) ? '' : '<img src="' . safe($url) . '" width="1" height="1" alt="">';
+    }
+
+    /** $html with its links tracked and the image added, unless _#MAILOPEN placed it already
+     *  @param list<string> $skip */
+    private function tracked(string $html, string $readerId, array $skip, string $image): string
+    {
+        $html = Links::track($html, fn(string $url): string => $this->hitUrl($readerId, TrackToken::CLICK, $url) ?? $url, $skip);
+        if (($image === '') || str_contains($html, $image)) {
+            return $html;
+        }
+        $end = strripos($html, '</body>');
+        return ($end === false) ? $html . $image : substr_replace($html, $image, $end, 0);
+    }
+
+    /** the tracked address under the base the run keeps - a step may run in a tree with another path;
+     *  null for a link a token cannot carry, which then stays as it is. It ends in the token, never in an
+     *  image extension htmlMimeMail would embed. */
+    private function hitUrl(string $readerId, string $kind, string $url = ''): ?string
+    {
+        try {
+            $token = TrackToken::make($this->list->getId(), $this->itemId, $readerId, $kind, $url);
+        } catch (\InvalidArgumentException) {
+            return null;
+        }
+        return $this->trackBase . 'api/index.php?_path=v1/mail/hit&t=' . $token;
     }
 
     private function withoutReader(): AA_Item

@@ -186,7 +186,13 @@ class Gate
 
     protected function letter(string $list, string $itemId): ItemLetter
     {
-        return new ItemLetter($this->collections[$list] ??= new AA_Collection($list), $itemId);
+        return new ItemLetter($this->collectionOf($list), $itemId);
+    }
+
+    /** the address of the list's site, as the admin set it */
+    protected function siteUrl(string $list): string
+    {
+        return (string) $this->collectionOf($list)->getSliceUrl();
     }
 
     protected function mailer(): Mailer
@@ -238,7 +244,7 @@ class Gate
     private function send(string $list, string $itemId): array
     {
         $started = $this->withLetter($list, $itemId, function (ItemLetter $letter) use ($list, $itemId): array {
-            $this->campaignOf($list, $itemId)->start($letter, $this->uid());
+            $this->campaignOf($list, $itemId)->start($letter, $this->uid(), $this->trackBase($list));
             return ['', 0];
         });
         return ($started[1] === 0) ? $this->fresh($list, $itemId) : $started;
@@ -317,6 +323,23 @@ class Gate
             $this->slices[$itemId] = $this->itemSlice($itemId);
         }
         return $this->slices[$itemId];
+    }
+
+    private function collectionOf(string $list): AA_Collection
+    {
+        return $this->collections[$list] ??= new AA_Collection($list);
+    }
+
+    /** where the tracked addresses of the mails lead: the list's site with the path of this tree - known
+     *  here, as a step may run in another tree; this tree's own address when the site gives no host */
+    private function trackBase(string $list): string
+    {
+        $site   = parse_url($this->siteUrl($list)) ?: [];
+        $scheme = strtolower((string) ($site['scheme'] ?? ''));
+        if (!in_array($scheme, ['http', 'https'], true) || (($site['host'] ?? '') === '')) {
+            return (string) constant('AA_INSTAL_URL');
+        }
+        return $scheme . '://' . $site['host'] . (isset($site['port']) ? ':' . $site['port'] : '') . constant('AA_INSTAL_PATH');
     }
 
     private function campaignOf(string $list, string $itemId): Campaign
