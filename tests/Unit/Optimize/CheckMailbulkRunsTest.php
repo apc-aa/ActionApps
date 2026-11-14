@@ -120,10 +120,22 @@ final class CheckMailbulkRunsTest extends TestCase
         $finding = self::only((new TestMailbulkRunsCheck())->findings());
 
         self::assertSame([Finding::WARNING, "stuck:$id", self::NOW - self::HANGS_AFTER - 1], [$finding->severity, $finding->key, $finding->since]);
-        self::assertSame('A mailing has not moved on for 1 hours', $finding->title);
+        self::assertSame(['Mailing "Newsletter <b>11</b>" has not moved on for 1 hours', 'Newsletter <b>11</b>'], [$finding->title, $finding->place], 'named by its title, plain text');
         $evidence = $finding->evidence[0];
         self::assertSame([self::ITEM, self::LIST, 'Newsletter &lt;b&gt;11&lt;/b&gt;', '2 / 3'], [$evidence['Item'], $evidence['List'], $evidence['Mailing'], $evidence['Tried']], 'the item and list named, the title escaped');
         self::assertArrayNotHasKey('Error', $evidence);
+        self::assertArrayNotHasKey('Note', $evidence);
+    }
+
+    public function test_findings_stuckRunWaitingForARetry_showsItsCodeAndNote(): void
+    {
+        $id = self::sending(Run::SENDING, ['note' => '421 <busy>']);
+        self::storedSet($id, 'retry_code', Run::SMTP);
+        self::storedSet($id, 'moved', (string) (self::NOW - self::HANGS_AFTER - 1));
+
+        $evidence = self::only((new TestMailbulkRunsCheck())->findings())->evidence[0];
+
+        self::assertSame([Run::SMTP, '421 &lt;busy&gt;'], [$evidence['Error'], $evidence['Note']]);
     }
 
     public function test_findings_runInError_isError(): void
@@ -135,7 +147,7 @@ final class CheckMailbulkRunsTest extends TestCase
         $finding = self::only((new TestMailbulkRunsCheck())->findings());
 
         self::assertSame([Finding::ERROR, "error:$id", self::NOW - 600], [$finding->severity, $finding->key, $finding->since]);
-        self::assertSame('A mailing stopped by an error', $finding->title);
+        self::assertSame(['Mailing "Newsletter <b>11</b>" stopped by an error', 'Newsletter <b>11</b>'], [$finding->title, $finding->place]);
         $evidence = $finding->evidence[0];
         self::assertSame([self::ITEM, self::LIST, Run::SMTP, 'The relay said &lt;550&gt;'], [$evidence['Item'], $evidence['List'], $evidence['Error'], $evidence['Note']], 'the code and the note, escaped');
         self::assertStringContainsString('mail server', $finding->advice, 'advice by the code');

@@ -49,7 +49,7 @@ class CheckMailbulkRuns extends AbstractOptimize
             } elseif ($run->isStuck($now)) {
                 // a retry waiting is no hang: isStuck() counts from the time the next step was due
                 $idle       = $run->idleSince();
-                $findings[] = $this->ofRun($run, Finding::WARNING, _m('A mailing has not moved on for %1 hours', [intdiv($now - $idle, 3600)]), [], _m('No step of the task queue works on it. Check that cron runs the task queue, then choose Continue by the sending. A reader whose mail may have gone is never sent it again.'), 'stuck', $idle);
+                $findings[] = $this->ofRun($run, Finding::WARNING, _m('Mailing "%1" has not moved on for %2 hours', [self::title($run), intdiv($now - $idle, 3600)]), self::failure($run), _m('No step of the task queue works on it. Check that cron runs the task queue, then choose Continue by the sending. A reader whose mail may have gone is never sent it again.'), 'stuck', $idle);
             }
         }
         return $findings ?: [new Finding(Finding::OK, _m('%1: nothing found', [static::name()]))];
@@ -57,15 +57,30 @@ class CheckMailbulkRuns extends AbstractOptimize
 
     private function inError(Run $run): Finding
     {
-        $error = $run->lastFailure() ?? ['code' => '', 'where' => '', 'detail' => ''];
-        $cause = match ($error['code']) {
-            Run::SMTP   => _m('The mail server did not take the mails: check the SMTP settings of this AA or the relay.'),
-            Run::LETTER => _m('The mail cannot be made: the Note says why. Fix the item or the list.'),
-            default     => _m('Fix what the error code names.'),
+        $cause = match ($run->lastFailure()['code'] ?? '') {
+            Run::SMTP       => _m('The mail server did not take the mails: check the SMTP settings of this AA or the relay.'),
+            Run::LETTER     => _m('The mail cannot be made: the Note says why. Fix the item or the list.'),
+            Run::RECIPIENTS => _m('The readers frozen for this mailing are missing: ask the administrator.'),
+            default         => _m('Fix what the error code names.'),
         };
-        $more = [_m('Error') => safe(trim($error['code'] . ' ' . $error['detail'])), _m('Note') => safe((string) $run->getProperty('note'))];
         // the record keeps no time of the error: it came after the last progress
-        return $this->ofRun($run, Finding::ERROR, _m('A mailing stopped by an error'), $more, $cause . ' ' . _m('Nothing more is sent until someone acts: then choose Continue by the sending. A reader whose mail may have gone is never sent it again.'), 'error', $run->idleSince());
+        return $this->ofRun($run, Finding::ERROR, _m('Mailing "%1" stopped by an error', [self::title($run)]), self::failure($run), $cause . ' ' . _m('Nothing more is sent until someone acts: then choose Continue by the sending. A reader whose mail may have gone is never sent it again.'), 'error', $run->idleSince());
+    }
+
+    /** the error of the run, or the failure its retry waits for, and its note - HTML-escaped; none when there is neither
+     *  @return array<string, string> */
+    private static function failure(Run $run): array
+    {
+        $error = $run->lastFailure();
+        $note  = (string) $run->getProperty('note');
+        $more  = ($error === null) ? [] : [_m('Error') => safe(trim($error['code'] . ' ' . $error['detail']))];
+        return $more + (($note === '') ? [] : [_m('Note') => safe($note)]);
+    }
+
+    /** the name of the mailing for people - its ids are in the evidence */
+    private static function title(Run $run): string
+    {
+        return ((string) $run->getProperty('title')) ?: _m('without a title');
     }
 
     /** @param array<string, string> $more further evidence, HTML-escaped */
@@ -79,7 +94,7 @@ class CheckMailbulkRuns extends AbstractOptimize
             _m('Started') => safe(date('Y-m-d H:i', (int) $run->getProperty('started'))),
             _m('Tried')   => (int) $run->getProperty('cursor') . ' / ' . (int) $run->getProperty('total'),
         ];
-        return new Finding($severity, $title, since: $since, evidence: [$evidence + $more], advice: $advice, key: "$kind:" . $run->getId());
+        return new Finding($severity, $title, since: $since, evidence: [$evidence + $more], advice: $advice, key: "$kind:" . $run->getId(), place: self::title($run));
     }
 
     // ------------------------------------------------------------ what tests replace
