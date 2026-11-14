@@ -990,15 +990,16 @@ class AA_Set extends AA_Object
      *  @return list<string> the conditions as getAsString() writes them */
     public function droppedConditions(): array
     {
+        $own   = array_values($this->conds);   // getConds() numbers them from 0
         $conds = $this->getConds();
         ParseEasyConds($conds);   // leaves out a condition without a value
-        $dropped = array_keys(array_diff_key($this->conds, $conds));
+        $dropped = array_keys(array_diff_key($own, $conds));
         $fields  = $conds ? AA_Slice::getOwnModule((string) reset($this->slices))?->getFields() : null;
         if ($fields) {
             $dropped = array_merge($dropped, (new QueryZidsHelper($fields, $conds, null, null, $this->slices))->dropped());
         }
         sort($dropped);
-        return array_map(fn(int|string $k): string => $this->conds[$k]->getAsString(), $dropped);
+        return array_map(fn(int|string $k): string => $own[$k]->getAsString(), $dropped);
     }
 
     /** getConds function
