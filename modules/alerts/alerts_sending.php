@@ -176,6 +176,44 @@ class AA_Collection
         return $aa_set->query();
     }
 
+    /** Readers a mailing of this collection may go to: active, confirmed and not unsubscribed. A reader
+     *  without the frequency field (or with an empty one) is subscribed - AA_Set cannot match "does not begin
+     *  with" on a missing field, hence the two selections.
+     *  @param string $conds  the conds of {ids} (d-<field>-<operator>-<value>...) - only readers matching them */
+    public function validReaders(string $conds = ''): zids
+    {
+        if (!($slice = $this->getReaderSlice())) {
+            return new zids();
+        }
+        $confirmed = (new AA_Set($slice->getId(), new AA_Condition(FIELDID_MAIL_CONFIRMED, '==', 1)))->query();
+        $unsubscribed = (new AA_Set($slice->getId(), new AA_Condition(getAlertsField(FIELDID_HOWOFTEN, $this->id), 'BEGIN', 'unsub')))->query();
+        $valid = new zids(array_values(array_diff($confirmed->longids(), $unsubscribed->longids())), 'l');
+
+        return ($conds === '') ? $valid : (new AA_Set($slice->getId(), $conds))->query($valid);
+    }
+
+    /** The rule of validReaders() for one loaded reader - checked again right before the mail goes out,
+     *  as the reader may have unsubscribed meanwhile; and a reader without an address gets nothing. */
+    public function isValidReader(ItemContent $reader): bool
+    {
+        return $reader->isActive()
+            && ($reader->getSliceID() === $this->getProp('reader_slice_id'))
+            && ((string) $reader->getValue(FIELDID_MAIL_CONFIRMED) === '1')
+            && !str_starts_with((string) $reader->getValue(getAlertsField(FIELDID_HOWOFTEN, $this->id)), 'unsub')
+            && (trim((string) $reader->getValue(FIELDID_EMAIL)) !== '');
+    }
+
+    public function getId(): string
+    {
+        return (string) $this->id;
+    }
+
+    /** @return string long id of the Alerts module */
+    public function getModuleId(): string
+    {
+        return (string) $this->getProp('alerts_module_id');
+    }
+
     public function getReadersSelectArray($how_often = null): array
     {
         $ret = [];

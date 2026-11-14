@@ -25,9 +25,13 @@ namespace {
 
 namespace Tests\Unit\Legacy {
 
+    use AA;
     use AA\Optimize\CheckAlertitemRefusals;
     use AA\Util\LogOnce;
     use AA_Collection;
+    use AA_Module;
+    use Closure;
+    use ItemContent;
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Legacy\Fixtures\RecordingDb;
@@ -37,7 +41,9 @@ namespace Tests\Unit\Legacy {
      * a request (AA_Responder_Alertitem) and the filter lookup that used to splice the id into
      * its SQL - `xx' #` there mailed the filters of every collection to the caller - and the
      * test-address rule, where a bad address used to mean "none", i.e. a live send to all readers -
-     * and the relation of a collection to the slice whose item is sent through it.
+     * and the relation of a collection to the slice whose item is sent through it - and who a mailing
+     * may go to (validReaders(), isValidReader()), where RecordingDb plays the reader slice and answers
+     * the item searches by the conditions QueryZids puts into the SQL.
      */
     final class AlertsCollectionTest extends TestCase
     {
@@ -77,6 +83,7 @@ namespace Tests\Unit\Legacy {
 
         protected function tearDown(): void
         {
+            self::forgetReaderSlice();
             $GLOBALS['spareDBs'] = [];
             RecordingDb::reset();
             LogOnce::reset();
@@ -242,6 +249,236 @@ namespace Tests\Unit\Legacy {
 
             $this->assertFalse(AA_Collection::relatesToSlice($collection_id, $slice_id));
             $this->assertSame([], RecordingDb::$log);
+        }
+
+        // ---------------------------------------------------------------- who a mailing may go to
+
+        private const READERS = 'f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1';
+        private const MODULE  = 'f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2';
+        private const ANNA    = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1';
+        private const BOB     = 'b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1';
+        private const CYRIL   = 'c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1';
+        private const DORA    = 'd1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1';
+        private const CITY    = 'text...........1';
+        /** the frequency field of collection sQjwa - getAlertsField(FIELDID_HOWOFTEN, 'sQjwa') */
+        private const HOWOFTEN = 'alerts1....sQjwa';
+
+        /** @var array<string, array<string, string>> reader item => field => text; a missing key = no content row */
+        private array $readers = [];
+
+        /** AA_Module keeps every module it loaded for the request */
+        private static function forgetReaderSlice(): void
+        {
+            Closure::bind(static function (string $id): void {
+                unset(AA_Module::$_modules[$id]);
+            }, null, AA_Module::class)(self::READERS);
+        }
+
+        /** RecordingDb answers: the collection, the reader slice and the item searches over $readers */
+        private function readerSlice(): void
+        {
+            RecordingDb::$answer = function (string $sql): array {
+                if (str_starts_with($sql, 'SELECT * FROM alerts_collection ')) {
+                    return [['id' => 'sQjwa', 'slice_id' => pack_id(self::READERS), 'module_id' => pack_id(self::MODULE), 'emailid_welcome' => '1', 'emailid_alert' => '2']];
+                }
+                if (str_contains($sql, 'FROM `module`')) {
+                    return [['unpackid' => self::READERS, 'type' => 'S']];
+                }
+                if (preg_match('/FROM `slice` WHERE id = 0x([0-9a-f]{32})/', $sql, $m)) {
+                    return [array_merge(array_fill_keys(AA::Metabase()->getColumnNames('slice'), ''), ['id' => pack_id($m[1]), 'type' => 'ReaderManagement', 'name' => 'Readers', 'flag' => '0'])];
+                }
+                if (preg_match('/FROM `field` WHERE `?slice_id`? = 0x([0-9a-f]{32})/', $sql, $m)) {
+                    return array_map(
+                        static fn(string $id): array => array_merge(array_fill_keys(AA::Metabase()->getColumnNames('field'), ''), ['id' => $id, 'slice_id' => pack_id($m[1]), 'text_stored' => '1']),
+                        [FIELDID_MAIL_CONFIRMED, FIELDID_EMAIL, self::HOWOFTEN, self::CITY],
+                    );
+                }
+                if (str_contains($sql, 'as itemid')) {
+                    return array_map(static fn(string $id): array => ['itemid' => pack_id($id)], $this->search($sql));
+                }
+                return [];
+            };
+        }
+
+        /** @return string[] ids of the readers the item search finds - by its "field" = 'value' / LIKE 'value%' conditions and its id list */
+        private function search(string $sql): array
+        {
+            preg_match_all('/(c\d+)\.field_id=\'([^\']+)\'/', $sql, $fields, PREG_SET_ORDER);
+            $field_of = array_column($fields, 2, 1);
+            preg_match_all('/"(c\d+)"\."text" (=|LIKE) \'([^\']*)\'/', $sql, $conds, PREG_SET_ORDER);
+            preg_match('/item\.id IN \(([^)]*)\)/', $sql, $in);
+            $found = [];
+            foreach ($this->readers as $id => $values) {
+                if ($in && !str_contains($in[1], $id)) {
+                    continue;
+                }
+                foreach ($conds as [, $alias, $op, $value]) {
+                    $text = $values[$field_of[$alias] ?? ''] ?? null;
+                    if (($text === null) || (($op === '=') ? ($text !== $value) : !str_starts_with($text, rtrim($value, '%')))) {
+                        continue 2;
+                    }
+                }
+                $found[] = $id;
+            }
+            return $found;
+        }
+
+        /** the legacy search code warns about globals a view request would have */
+        private static function quietly(callable $fn): mixed
+        {
+            set_error_handler(static fn(int $no): bool => ($no === E_WARNING));
+            try {
+                return $fn();
+            } finally {
+                restore_error_handler();
+            }
+        }
+
+        /** @return string[] the item searches, in order */
+        private static function searches(): array
+        {
+            return array_values(preg_grep('/ as itemid /', RecordingDb::$log));
+        }
+
+        public function test_validReaders_confirmedAndNotUnsubscribed(): void
+        {
+            $this->readers = [
+                self::ANNA  => [FIELDID_MAIL_CONFIRMED => '1', self::HOWOFTEN => 'daily'],
+                self::BOB   => [FIELDID_MAIL_CONFIRMED => '1', self::HOWOFTEN => 'unsubscribed:2026-11-01 10:00:au'],
+                self::CYRIL => [FIELDID_MAIL_CONFIRMED => '0', self::HOWOFTEN => 'daily'],
+                self::DORA  => [FIELDID_MAIL_CONFIRMED => '1', self::HOWOFTEN => 'unsub'],
+            ];
+            $this->readerSlice();
+
+            $valid = self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders());
+
+            $this->assertSame([self::ANNA], $valid->longids());
+            $searches = self::searches();
+            $this->assertCount(2, $searches, 'the confirmed readers, then the unsubscribed ones - the rest is a set difference');
+            $this->assertStringContainsString("c0.field_id='" . FIELDID_MAIL_CONFIRMED . "'", $searches[0]);
+            $this->assertStringContainsString('"c0"."text" = \'1\'', $searches[0]);
+            $this->assertStringContainsString("c0.field_id='" . self::HOWOFTEN . "'", $searches[1]);
+            $this->assertStringContainsString('"c0"."text" LIKE \'unsub%\'', $searches[1]);
+            foreach ($searches as $sql) {
+                $this->assertStringContainsString('item.slice_id = 0x' . self::READERS, $sql);
+                $this->assertStringContainsString('item.status_code=1', $sql, 'active readers only');
+            }
+        }
+
+        /** safariparkresort.cz: most confirmed readers have no frequency row at all */
+        public function test_validReaders_emptyOrMissingHowoften_isValid(): void
+        {
+            $this->readers = [
+                self::ANNA => [FIELDID_MAIL_CONFIRMED => '1', self::HOWOFTEN => ''],
+                self::BOB  => [FIELDID_MAIL_CONFIRMED => '1'],
+            ];
+            $this->readerSlice();
+
+            $valid = self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders());
+
+            $this->assertSame([self::ANNA, self::BOB], $valid->longids());
+        }
+
+        public function test_validReaders_withConds_restricts(): void
+        {
+            $this->readers = [
+                self::ANNA  => [FIELDID_MAIL_CONFIRMED => '1', self::CITY => 'Praha'],
+                self::BOB   => [FIELDID_MAIL_CONFIRMED => '1', self::CITY => 'Brno'],
+                self::CYRIL => [FIELDID_MAIL_CONFIRMED => '1', self::CITY => 'Praha', self::HOWOFTEN => 'unsubscribed'],
+                self::DORA  => [FIELDID_MAIL_CONFIRMED => '0', self::CITY => 'Praha'],
+            ];
+            $this->readerSlice();
+
+            $valid = self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders('d-' . self::CITY . '-==-Praha'));
+
+            $this->assertSame([self::ANNA], $valid->longids());
+            $searches = self::searches();
+            $this->assertCount(3, $searches);
+            $this->assertStringContainsString('"c0"."text" = \'Praha\'', $searches[2]);
+            $this->assertMatchesRegularExpression('/item\.id IN \(0x' . self::ANNA . ',\s*0x' . self::BOB . '\)/', $searches[2], 'only among the valid readers');
+        }
+
+        public function test_validReaders_withConds_noValidReaderAsksNoMore(): void
+        {
+            $this->readers = [self::ANNA => [FIELDID_MAIL_CONFIRMED => '0', self::CITY => 'Praha']];
+            $this->readerSlice();
+
+            $valid = self::quietly(static fn() => (new AA_Collection('sQjwa'))->validReaders('d-' . self::CITY . '-==-Praha'));
+
+            $this->assertTrue($valid->isEmpty(), 'an empty restriction finds nothing - not every reader of the slice');
+            $this->assertCount(2, self::searches());
+        }
+
+        /** a collection row without a reader slice - nothing to search in */
+        public function test_validReaders_noReaderSlice_isEmpty(): void
+        {
+            RecordingDb::$answer = static fn(string $sql): array => str_starts_with($sql, 'SELECT * FROM alerts_collection ')
+                ? [['id' => 'sQjwa', 'slice_id' => '', 'module_id' => pack_id(self::MODULE), 'emailid_welcome' => '1', 'emailid_alert' => '2']] : [];
+
+            $this->assertTrue((new AA_Collection('sQjwa'))->validReaders()->isEmpty());
+            $this->assertSame([], self::searches());
+        }
+
+        /** a reader as GetItemContent() gives it: active in the reader slice, confirmed, subscribed, with an address
+         *  @param array<string, mixed> $changes  field (or confirmed/email/howoften) => value, null = no such field */
+        private static function reader(array $changes = []): ItemContent
+        {
+            $names  = ['confirmed' => FIELDID_MAIL_CONFIRMED, 'email' => FIELDID_EMAIL, 'howoften' => self::HOWOFTEN];
+            $values = array_merge([
+                'status_code.....' => 1,
+                'publish_date....' => time() - 86400,
+                'expiry_date.....' => time() + 86400,
+                'confirmed'        => '1',
+                'email'            => 'anna@example.org',
+                'howoften'         => 'daily',
+            ], $changes);
+            $reader = new ItemContent();
+            $reader->setSliceID(self::READERS);
+            foreach ($values as $field => $value) {
+                if ($value !== null) {
+                    $reader->setValue($names[$field] ?? $field, $value);
+                }
+            }
+            return $reader;
+        }
+
+        /** data providers run before setUpBeforeClass(), so they name the fields, the constants are not loaded yet */
+        public static function readerChanges(): array
+        {
+            return [
+                'valid'                 => [[], true],
+                'no frequency field'    => [['howoften' => null], true],
+                'empty frequency'       => [['howoften' => ''], true],
+                'unsubscribed'          => [['howoften' => 'unsubscribed:2026-11-01 10:00:au'], false],
+                'unconfirmed'           => [['confirmed' => '0'], false],
+                'confirmation missing'  => [['confirmed' => null], false],
+                'no email'              => [['email' => null], false],
+                'blank email'           => [['email' => ' '], false],
+                'in the holding bin'    => [['status_code.....' => 2], false],
+                'expired'               => [['expiry_date.....' => time() - 60], false],
+                'another slice'         => [[], false, 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'],
+            ];
+        }
+
+        #[DataProvider('readerChanges')]
+        public function test_isValidReader_unsubscribedUnconfirmedOrNoEmail_isFalse(array $changes, bool $expected, ?string $slice_id = null): void
+        {
+            $this->readerSlice();
+            $reader = self::reader($changes);
+            if ($slice_id !== null) {
+                $reader->setSliceID($slice_id);
+            }
+
+            $this->assertSame($expected, (new AA_Collection('sQjwa'))->isValidReader($reader));
+        }
+
+        public function test_getIdAndModuleId(): void
+        {
+            $this->readerSlice();
+            $collection = new AA_Collection('sQjwa');
+
+            $this->assertSame('sQjwa', $collection->getId());
+            $this->assertSame(self::MODULE, $collection->getModuleId());
         }
     }
 }
