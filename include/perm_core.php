@@ -90,6 +90,11 @@ const PS_MODP_SETTINGS       = "A";   // slice | set polls properties
 const PS_MODP_EDIT_DESIGN    = "B";   // slice | change polls design
 // super         - possibly letters 'QRSTUVW'
 
+//---------- Alerts -----------------
+// The other pages of the module want PS_USERS or PS_FULLTEXT, so an editor sees only the mailings.
+// editor        - possibly letters 'hijklmnopqrs'
+const PS_ALERTS_STATS          = "h";   // slice | see the mailings of the list and their statistics
+
 //---------- Links -----------------
 // author        - possibly letters 'abcdefg'
 const PS_LINKS_INHERIT = "a";   // slice | user have also the rights to subcategories
@@ -518,7 +523,7 @@ class AA_Perm {
         'J'     => ["ADMINISTRATOR"],                    // jump module
             // There is no specific roles in 'W', 'A', 'J' modules.
             // See include/constants.php for module definitions
-        'Alerts'=> ["ADMINISTRATOR"],                    // Alerts module
+        'Alerts'=> ["EDITOR","ADMINISTRATOR"],           // Alerts module
         'P'     => ["EDITOR","ADMINISTRATOR"],           // polls module
         'Links' => ["AUTHOR","EDITOR","ADMINISTRATOR"]
         ]; // Links module

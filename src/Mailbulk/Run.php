@@ -242,6 +242,22 @@ class Run extends BatchRun
         return array_reverse(array_values(array_filter(array_map(static fn($id): ?static => static::get((string) $id), $ids))));
     }
 
+    /** The runs of $list as records, the newest first (by start, then id) - no run read, however many.
+     *  @return array<string, array{subject: string, title: string, started: string, finished: string, state: string, total: string}> id => record */
+    public static function recordsOfList(string $list): array
+    {
+        $props   = ['subject', 'title', 'started', 'finished', 'state', 'total'];
+        $records = [];
+        foreach (self::records('list', $list, ['list', ...$props]) as $id => $record) {
+            // the id of a list tells case apart, the database comparison need not
+            if (($record['list'] ?? '') === $list) {
+                $records[(string) $id] = array_merge(array_fill_keys($props, ''), array_intersect_key($record, array_flip($props)));
+            }
+        }
+        uksort($records, static fn($a, $b): int => ((int) $records[$b]['started'] <=> (int) $records[$a]['started']) ?: strcmp((string) $b, (string) $a));
+        return $records;
+    }
+
     /** @return array{sent: int, failed: int, skipped: int, uncertain: int} */
     public function outcomes(): array
     {

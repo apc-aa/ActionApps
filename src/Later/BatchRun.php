@@ -955,7 +955,7 @@ abstract class BatchRun extends AA_Object
      *  @param list<string> $props
      *  @return array<string, array<string, string>> id => property => value
      *  @throws \InvalidArgumentException $property or $props name the sealed secret */
-    private static function records(string $property, string|array $value, array $props): array
+    final protected static function records(string $property, string|array $value, array $props): array
     {
         if (in_array('sealed', [$property, ...$props], true)) {
             throw new \InvalidArgumentException('The sealed secret of a batch run is read by its run only');

@@ -117,7 +117,8 @@ class StatsView
         return ($time > 0) ? date('Y-m-d H:i', $time) : '';
     }
 
-    private static function state(string $state): string
+    /** the name of a run state for people */
+    public static function state(string $state): string
     {
         return match ($state) {
             Run::SENDING => _m('Sending'),

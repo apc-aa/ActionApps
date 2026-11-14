@@ -529,6 +529,38 @@ final class RunTest extends TestCase
         self::assertSame([self::ITEM, 'https://example.org/aa/', self::LIST], [$get('itemId'), $get('trackBase'), $get('list')->getId()]);
     }
 
+    /** an overview of a list reads its runs as records, the newest first, the runs of other lists left out */
+    public function test_recordsOfList_onlyRunsOfTheList_newestFirst(): void
+    {
+        TestRun::$now = self::NOW - 100;
+        $old          = self::queued(1, ['title' => 'Old']);
+        TestRun::$now = self::NOW - 50;
+        self::queued(1, ['list' => 'other', 'subject' => 'cafe0000000000000000000000000002']);
+        TestRun::$now = self::NOW;
+        $new          = self::queued(1, ['subject' => 'cafe0000000000000000000000000003', 'title' => 'New']);
+        $same         = self::queued(1, ['subject' => 'cafe0000000000000000000000000004']);
+
+        $records = TestRun::recordsOfList(self::LIST);
+
+        // one second: the greater id first, as everywhere the runs are listed
+        $newest = (strcmp($new, $same) > 0) ? [$new, $same] : [$same, $new];
+        self::assertSame([...$newest, $old], array_keys($records));
+        self::assertSame(
+            ['subject' => 'cafe0000000000000000000000000003', 'title' => 'New', 'started' => (string) self::NOW, 'finished' => '', 'state' => Run::SENDING, 'total' => '1'],
+            array_intersect_key($records[$new], array_flip(['subject', 'title', 'started', 'finished', 'state', 'total'])),
+        );
+        self::assertSame(self::ITEM, $records[$old]['subject']);
+    }
+
+    /** the id of a list tells case apart - the database need not */
+    public function test_recordsOfList_idDifferingOnlyInCase_isLeftOut(): void
+    {
+        $mine = self::queued(1);
+        self::queued(1, ['list' => strtoupper(self::LIST), 'subject' => 'cafe0000000000000000000000000002']);
+
+        self::assertSame([$mine], array_keys(TestRun::recordsOfList(self::LIST)));
+    }
+
     public function test_delivered_isBelowCursorWithoutFailedAndSkipped_plusTheMark(): void
     {
         $id = self::queued(7, ['cursor' => '5', 'mark' => '5', 'outcomes' => '{"1":"f","3":"s","2":"u"}']);
