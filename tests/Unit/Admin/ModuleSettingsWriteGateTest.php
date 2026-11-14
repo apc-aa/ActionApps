@@ -18,7 +18,7 @@ final class ModuleSettingsWriteGateTest extends TestCase
     public static function pages(): array
     {
         return [
-            'alerts' => ['modules/alerts/modedit.php', 'MODEDIT_ALERTS_TOKEN', ['CreateNewOwner', 'WriteModuleFields', 'update', 'doInsert'], [
+            'alerts' => ['modules/alerts/modedit.php', 'MODEDIT_ALERTS_TOKEN', ['CreateNewOwner', 'WriteModuleFields', 'doUpdate', 'doInsert'], [
                 '$write     = $is_add ? $insert : $update;',
                 '$expired   = $write && !$may_write;',
                 '$redisplay     = $expired || count($err);',

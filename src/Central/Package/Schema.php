@@ -71,7 +71,7 @@ final class Schema
             'mailman_field_lists', 'mlxctrl',
         ],
         'site'              => ['state_file', 'flag'],
-        'alerts_collection' => ['emailid_welcome', 'emailid_alert', 'slice_id'],
+        'alerts_collection' => ['emailid_welcome', 'emailid_alert', 'slice_id', 'stat_slice_id'],
     ];
 
     /** value types other than by the column type: packed ids joined without a separator */

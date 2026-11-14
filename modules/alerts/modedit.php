@@ -33,6 +33,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\Package\Importer;
 use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\Util\FormToken;
@@ -52,8 +53,29 @@ require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/modutils.php";
 require_once __DIR__ . "/../../include/perm_core.php";
 require_once __DIR__ . "/util.php";
+require_once __DIR__ . "/alerts_sending.php";
 
 const MODEDIT_ALERTS_TOKEN = 'aa-modedit-alerts';
+
+/** Slices the user may choose as the statistics slice - those whose settings they may change - plus the
+ *  stored one, which another admin may have chosen.
+ *  @return array<string, string> long id => name */
+function alertsStatSliceOptions(string $stored): array
+{
+    $slices = GetUserSlices(PS_EDIT);   // 'all' for a superadmin
+    $where  = [['type', 'S'], ['deleted', 0, 'i']];
+    if (is_array($slices)) {
+        $where[] = ['id', array_keys($slices) ?: [str_repeat('0', 32)], 'l'];
+    }
+    $options = [];
+    foreach (DB_AA::select([], 'SELECT id, name FROM module', $where, ['name']) as $row) {
+        $options[unpack_id($row['id'])] = $row['name'];
+    }
+    if (($stored !== '') && !isset($options[$stored])) {
+        $options[$stored] = (string) DB_AA::select1('name', 'SELECT name FROM module', [['id', $stored, 'l']]);
+    }
+    return $options;
+}
 
 try {
     $name            = InputVars::stringPOST('name');
@@ -63,6 +85,7 @@ try {
     $deleted         = InputVars::boolPOST('deleted');
     $emailid_welcome = InputVars::intPOST('emailid_welcome');
     $emailid_alert   = InputVars::intPOST('emailid_alert');
+    $stat_slice_id   = InputVars::idPOST('stat_slice_id');   // '' = nothing measured
     $owner           = InputVars::idPOST('owner');           // empty for new owner
     $new_owner       = InputVars::stringPOST('new_owner');
     $new_owner_email = InputVars::stringPOST('new_owner_email');
@@ -110,6 +133,12 @@ if ($expired) {
     $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
 }
 
+// SELECT *: until sql_update adds stat_slice_id, the page works without the statistics slice
+$coll          = (!$is_add && $module_id) ? (array) DB_AA::select1([], 'SELECT * FROM alerts_collection', [['module_id', $module_id, 'l']]) : [];
+$collection_id = (string) ($coll['id'] ?? '');
+$has_stat      = $coll ? array_key_exists('stat_slice_id', $coll) : DB_AA::exists_column('alerts_collection', 'stat_slice_id');
+$stored_stat   = ((string) ($coll['stat_slice_id'] ?? '') === '') ? '' : unpack_id($coll['stat_slice_id']);
+
 if ($write && $may_write) {
     do {
         if (!$owner) {  // insert new owner
@@ -120,6 +149,13 @@ if ($write && $may_write) {
 
         ValidateModuleFields($name, $slice_url, $priority, $lang_file, $owner, $err);
         $deleted = ($deleted ? 1 : 0);
+        if ($has_stat && ($stat_slice_id !== '')) {
+            if (($stat_slice_id !== $stored_stat) && !isset(alertsStatSliceOptions($stored_stat)[$stat_slice_id])) {
+                $err[] = _m('You may not choose this statistics slice');
+            } elseif ($refusal = AA_Collection::statSliceRefusal($stat_slice_id, $collection_id)) {
+                $err[] = $refusal;
+            }
+        }
         if (count($err)) {
             break;
         }
@@ -132,14 +168,14 @@ if ($write && $may_write) {
         AA::$module_id = $module_id;
 
         // alerts_collection satellite (1:1 by module_id)
-        if (!$is_add && DB_AA::test('alerts_collection', [['module_id', $module_id, 'l']])) {
-            DB_AA::update(
-                'alerts_collection',
-                [['emailid_welcome', $emailid_welcome, 'i'], ['emailid_alert', $emailid_alert, 'i']],
-                [['module_id', $module_id, 'l']],
-            );
+        $collection = ['emailid_welcome' => $emailid_welcome, 'emailid_alert' => $emailid_alert];
+        if ($has_stat) {
+            $collection['stat_slice_id'] = $stat_slice_id;
+        }
+        if (!$is_add && ($collection_id !== '')) {
+            AA::Metabase()->doUpdate('alerts_collection', ['id' => $collection_id] + $collection);
         } else {
-            AA::Metabase()->doInsert('alerts_collection', ['id' => new_collection_id(), 'module_id' => $module_id, 'emailid_welcome' => $emailid_welcome, 'emailid_alert' => $emailid_alert]);
+            AA::Metabase()->doInsert('alerts_collection', ['id' => new_collection_id(), 'module_id' => $module_id] + $collection);
         }
 
         AA::Pagecache()->invalidateFor($module_id);  // invalidate cached values for this slice
@@ -158,13 +194,11 @@ if ($write && $may_write) {
 
 $redisplay     = $expired || count($err);   // show the submitted values, not the stored ones
 $source_id     = $module_id;
-$collection_id = '';
 
 if (!$redisplay && !$is_add && $module_id) {   // fresh edit - load current collection values
-    $coll            = (array) DB_AA::select1('', "SELECT id, emailid_welcome, emailid_alert FROM alerts_collection", [['module_id', $module_id, 'l']]);
-    $collection_id   = $coll['id'] ?? '';
     $emailid_welcome = $coll['emailid_welcome'] ?? 0;
     $emailid_alert   = $coll['emailid_alert'] ?? 0;
+    $stat_slice_id   = $stored_stat;
 }
 
 if ($is_add) {
@@ -199,6 +233,19 @@ $alert_hlp  = (int) $emailid_alert && isset($alert_opts[(int) $emailid_alert])
     ? '<a href="' . StateUrl(self_base() . "emails.php?id=" . (int) $emailid_alert) . '">' . _m("Edit '%1'", [safe($alert_opts[(int) $emailid_alert])]) . '</a>'
     : '';
 FrmInputSelect("emailid_alert", _m("alert email"), $alert_opts, $emailid_alert, false, $alert_hlp);
+
+if ($has_stat) {
+    $stat_hlp = [_m('The slice where the opens and clicks of the mailings are counted; empty = nothing is measured. Each list needs its own slice.')];
+    if ($superadmin && Importer::hasInstallPermission((string) AuthGetUid())) {
+        $stat_hlp[] = '<a href="' . safe(AA_INSTAL_PATH . 'central/appstore.php') . '">' . _m('Install from the App store') . '</a>';
+    }
+    // the unsubscribe link is built on the list's URL, and AA_Collection::unsubscribeHeaders() needs it https
+    if (!AA_Collection::unsubscribeHeaders(get_url((string) ($marr[1] ?? ''), ['au' => 'x', 'c' => 'x']))) {
+        $stat_hlp[] = _m('The URL of this list is not https - the mails go without the one-click unsubscribe header.');
+    }
+    FrmTabSeparator(_m("Statistics"));
+    FrmInputSelect("stat_slice_id", _m("Statistics slice"), alertsStatSliceOptions($stored_stat), $stat_slice_id, false, implode('<br>', $stat_hlp));
+}
 
 if (!$is_add && $collection_id !== '') {
     FrmStaticText(_m("alerts ID"), safe($collection_id));

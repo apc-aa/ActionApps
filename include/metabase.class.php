@@ -1047,7 +1047,7 @@ class AA_Metabase
     public static function getPacked($tablename): array
     {
         static $PACKED = [
-            'alerts_collection'   => ['module_id','slice_id'],
+            'alerts_collection'   => ['module_id','slice_id','stat_slice_id'],
             'constant'            => ['id','ancestors'], // ancestors are multiple - joined!
             'constant_slice'      => ['slice_id'],
             'content'             => ['item_id'],

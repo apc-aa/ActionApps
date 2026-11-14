@@ -267,6 +267,9 @@ namespace Tests\Unit\Legacy {
         /** @var array<string, array<string, string>> reader item => field => text; a missing key = no content row */
         private array $readers = [];
 
+        /** alerts_collection.stat_slice_id as the database gives it (packed, NULL, '') */
+        private ?string $statSlice = null;
+
         /** AA_Module keeps every module it loaded for the request */
         private static function forgetReaderSlice(): void
         {
@@ -280,7 +283,7 @@ namespace Tests\Unit\Legacy {
         {
             RecordingDb::$answer = function (string $sql): array {
                 if (str_starts_with($sql, 'SELECT * FROM alerts_collection ')) {
-                    return [['id' => 'sQjwa', 'slice_id' => pack_id(self::READERS), 'module_id' => pack_id(self::MODULE), 'emailid_welcome' => '1', 'emailid_alert' => '2']];
+                    return [['id' => 'sQjwa', 'slice_id' => pack_id(self::READERS), 'module_id' => pack_id(self::MODULE), 'emailid_welcome' => '1', 'emailid_alert' => '2', 'stat_slice_id' => $this->statSlice]];
                 }
                 if (str_contains($sql, 'FROM `module`')) {
                     return [['unpackid' => self::READERS, 'type' => 'S']];
@@ -677,6 +680,81 @@ namespace Tests\Unit\Legacy {
 
             $this->assertSame('sQjwa', $collection->getId());
             $this->assertSame(self::MODULE, $collection->getModuleId());
+        }
+
+        // ---------------------------------------------------------------- the statistics slice
+
+        private const STATS = 'e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5';
+
+        public static function storedStatSlices(): array
+        {
+            return [
+                'set'          => [pack_id(self::STATS), self::STATS],
+                'NULL'         => [null, ''],
+                'empty'        => ['', ''],
+            ];
+        }
+
+        #[DataProvider('storedStatSlices')]
+        public function test_getStatSliceId(?string $stored, string $expected): void
+        {
+            $this->statSlice = $stored;
+            $this->readerSlice();
+
+            $this->assertSame($expected, (new AA_Collection('sQjwa'))->getStatSliceId());
+        }
+
+        public function test_statSlice_missingFields_areNamed(): void
+        {
+            $this->assertSame(['relation.......1', 'source_href.....'], AA_Collection::missingStatFields(['headline........', 'relation........', 'category........']));
+            $this->assertSame([], AA_Collection::missingStatFields(array_merge(['headline........'], AA_Collection::STAT_FIELDS)));
+        }
+
+        /** RecordingDb answers the fields of the slice and the collection already measuring into it (null = none) */
+        private static function statSliceWorld(array $fields, ?array $other): void
+        {
+            RecordingDb::$answer = static fn(string $sql): array => match (true) {
+                str_starts_with($sql, 'SELECT id FROM field ')                 => array_map(static fn(string $id): array => ['id' => $id], $fields),
+                str_contains($sql, 'FROM alerts_collection AS c')             => $other ? [$other] : [],
+                default                                                       => [],
+            };
+        }
+
+        public function test_statSlice_usedByAnotherCollection_isRefused(): void
+        {
+            self::statSliceWorld(AA_Collection::STAT_FIELDS, ['id' => 'Other', 'name' => 'Newsletter']);
+
+            $refusal = AA_Collection::statSliceRefusal(self::STATS, 'sQjwa');
+
+            $this->assertStringContainsString('Newsletter', $refusal);
+            $sql = (string) end(RecordingDb::$log);
+            $this->assertStringContainsString('c.stat_slice_id = 0x' . self::STATS, $sql);
+            $this->assertStringContainsString("c.id <> 'sQjwa'", $sql, 'its own collection does not count');
+        }
+
+        public function test_statSlice_freeWithAllFields_isAccepted(): void
+        {
+            self::statSliceWorld(AA_Collection::STAT_FIELDS, null);
+
+            $this->assertSame('', AA_Collection::statSliceRefusal(self::STATS, 'sQjwa'));
+            $this->assertSame('', AA_Collection::statSliceRefusal(self::STATS, ''), 'a list being created has no collection yet');
+        }
+
+        public function test_statSlice_missingFields_isRefusedByName(): void
+        {
+            self::statSliceWorld(['relation........', 'category........'], null);
+
+            $refusal = AA_Collection::statSliceRefusal(self::STATS, 'sQjwa');
+
+            $this->assertStringContainsString('relation.......1', $refusal);
+            $this->assertStringContainsString('source_href.....', $refusal);
+            $this->assertStringNotContainsString('category........', $refusal);
+        }
+
+        public function test_statSlice_malformedId_isRefusedWithoutAsking(): void
+        {
+            $this->assertNotSame('', AA_Collection::statSliceRefusal("0123' #", 'sQjwa'));
+            $this->assertSame([], RecordingDb::$log);
         }
     }
 }

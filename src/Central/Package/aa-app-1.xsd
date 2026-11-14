@@ -861,6 +861,7 @@
       <xs:element name="emailid_welcome" type="intValue" minOccurs="0"/>
       <xs:element name="emailid_alert" type="intValue" minOccurs="0"/>
       <xs:element name="slice_id" type="idValue" minOccurs="0"/>
+      <xs:element name="stat_slice_id" type="idValue" minOccurs="0"/>
     </xs:all>
     <xs:attribute name="id" type="collectionId" use="required"/>
   </xs:complexType>

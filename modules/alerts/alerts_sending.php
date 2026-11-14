@@ -51,6 +51,10 @@ class AA_Collection
     public $email_id_welcome = null;   /** Id of welcome email template */
     public $email_id_alert = null;     /** Id of alert email template */
     public $slice_url = null;          /** Used for caching of slice_url */
+    public $stat_slice_id = null;      /** Slice id of the statistics slice, '' = nothing measured */
+
+    /** fields a statistics slice must have: the mailing, the recipient, the action (open/click), the link */
+    public const STAT_FIELDS = ['relation........', 'relation.......1', 'category........', 'source_href.....'];
 
     public function __construct($collection_id)
     {
@@ -139,8 +143,43 @@ class AA_Collection
             $this->alerts_module_id = unpack_id($data['module_id']);
             $this->email_id_welcome = $data['emailid_welcome'];
             $this->email_id_alert   = $data['emailid_alert'];
+            $this->stat_slice_id    = ((string) ($data['stat_slice_id'] ?? '') === '') ? '' : unpack_id($data['stat_slice_id']);
         }
         return $this->$property;
+    }
+
+    /** @return string long id of the statistics slice, '' when the list measures nothing */
+    public function getStatSliceId(): string
+    {
+        return (string) $this->getProp('stat_slice_id');
+    }
+
+    /** @param string[] $field_ids fields of a slice
+     *  @return string[] STAT_FIELDS the slice lacks */
+    public static function missingStatFields(array $field_ids): array
+    {
+        return array_values(array_diff(self::STAT_FIELDS, $field_ids));
+    }
+
+    /** Why the slice cannot be the statistics slice of the collection (HTML); '' when it can.
+     *  One slice per list: an event names the mailing item, not the list, so two lists over one slice would
+     *  mix their numbers on an item both sent.
+     *  @param string $slice_id      long id
+     *  @param string $collection_id '' for a list being created */
+    public static function statSliceRefusal(string $slice_id, string $collection_id): string
+    {
+        if (!is_long_id($slice_id)) {
+            return _m('Statistics slice: no such slice');
+        }
+        $missing = self::missingStatFields(DB_AA::select('id', 'SELECT id FROM field', [['slice_id', $slice_id, 'l']]));
+        if ($missing) {
+            return _m('The statistics slice lacks the fields %1', [implode(', ', $missing)]);
+        }
+        $other = DB_AA::select1([], 'SELECT c.id, m.name FROM alerts_collection AS c LEFT JOIN module AS m ON m.id = c.module_id', [['c.stat_slice_id', $slice_id, 'l'], ['c.id', $collection_id, 's<>']]);
+        if ($other) {
+            return _m('The slice keeps the statistics of another list already (%1) - each list needs its own', [safe((string) ($other['name'] ?? $other['id']))]);
+        }
+        return '';
     }
 
     public function getReaderSlice(): ?AA_Module

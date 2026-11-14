@@ -18,6 +18,7 @@ return [
             'emailid_welcome' => ['emailid_welcome', 'int(11)', true, '', null, '', ''],
             'emailid_alert' => ['emailid_alert', 'int(11)', true, '', null, '', ''],
             'slice_id' => ['slice_id', 'varbinary(16)', true, '', null, '', ''],
+            'stat_slice_id' => ['stat_slice_id', 'varbinary(16)', true, '', null, '', ''],
         ],
         'f' => null,
     ],
