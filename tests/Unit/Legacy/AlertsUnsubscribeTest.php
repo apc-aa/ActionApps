@@ -213,5 +213,69 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([], RecordingDb::$content);
             $this->assertSame([], $this->writes());
         }
+
+        private const GET       = ['REQUEST_METHOD' => 'GET'];
+        private const POST      = ['REQUEST_METHOD' => 'POST'];
+        private const ONE_CLICK = ['List-Unsubscribe' => 'One-Click'];
+
+        /** the link in the mail body works as it always did, whatever the method */
+        #[WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_unsubscribe_request_bodyLinkByGet_unsubscribes(): void
+        {
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+
+            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '', self::GET, []));
+
+            $this->assertStringStartsWith('unsubscribed:', $this->frequencies()[0]);
+        }
+
+        /** mail services and link scanners open the header link by GET - that must not unsubscribe */
+        public function test_unsubscribe_request_headerLinkByGet_asks(): void
+        {
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+
+            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::GET, []));
+
+            $this->assertSame(['weekly'], $this->frequencies());
+            $this->assertSame([], RecordingDb::$log, 'not even the reader is looked up');
+        }
+
+        /** RFC 8058: the mail service posts List-Unsubscribe=One-Click with no cookies */
+        #[WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_unsubscribe_request_headerLinkOneClickPost_unsubscribes(): void
+        {
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+
+            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::POST, self::ONE_CLICK));
+
+            $this->assertStringStartsWith('unsubscribed:', $this->frequencies()[0]);
+        }
+
+        public function test_unsubscribe_request_headerLinkPostWithoutTheBody_asks(): void
+        {
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+
+            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::POST, []));
+
+            $this->assertSame(['weekly'], $this->frequencies());
+        }
+
+        public function test_unsubscribe_request_headerLinkOneClickPostUnknownCode_isFalse(): void
+        {
+            $this->readers = [];
+
+            $this->assertFalse(@unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::POST, self::ONE_CLICK));   // warn() about the count
+        }
+
+        /** the button posts the RFC 8058 body to the very address it was opened at */
+        public function test_unsubscribe_ask_postsTheOneClickBodyToTheSameAddress(): void
+        {
+            $html = unsubscribe_ask();
+
+            $this->assertMatchesRegularExpression('~<form method="post"[^>]*>~', $html);
+            $this->assertStringNotContainsString('action=', $html, 'no action - the form posts to the URL of the page, au and c included');
+            $this->assertStringContainsString('<input type="hidden" name="List-Unsubscribe" value="One-Click">', $html);
+            $this->assertStringContainsString('<button type="submit">', $html);
+        }
     }
 }

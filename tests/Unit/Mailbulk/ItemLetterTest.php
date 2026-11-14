@@ -440,7 +440,7 @@ namespace Tests\Unit\Mailbulk {
             $message = self::letter($this->list())->messageFor(self::ANNA);
 
             self::assertNotNull($message);
-            self::assertSame(['List-Unsubscribe' => '<' . self::URL . '?au=codeAnna&c=abcde>', 'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click'], $message->headers);
+            self::assertSame(['List-Unsubscribe' => '<' . self::URL . '?one=1&au=codeAnna&c=abcde>', 'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click'], $message->headers);
         }
 
         public function test_messageFor_httpList_noHeaders(): void

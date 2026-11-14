@@ -9552,9 +9552,15 @@ class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
             return '<div class="aa-ok">'._m('E-mail confirmed.').'</div>';
             // @todo get messages from alerts module
         }
-        if ($_GET["au"] && unsubscribe_reader($reader_slice_id, $_GET["au"], $_GET["c"])) {
-            return '<div class="aa-ok">'._m('E-mail unsubscribed').'</div>';
-            // @todo get messages from alerts module
+        if ($_GET['au'] ?? '') {
+            $unsubscribed = unsubscribe_request($reader_slice_id, $_GET['au'], $_GET['c'] ?? '', $_GET[ALERTS_ONE_CLICK_PARAM] ?? '', $_SERVER, $_POST);
+            if ($unsubscribed === null) {
+                return unsubscribe_ask();
+            }
+            if ($unsubscribed) {
+                return '<div class="aa-ok">'._m('E-mail unsubscribed').'</div>';
+                // @todo get messages from alerts module
+            }
         }
         return '';
     }

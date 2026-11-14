@@ -735,7 +735,7 @@ namespace Tests\Unit\Legacy {
         public function test_unsubscribeHeaders_https_bothHeaders(): void
         {
             $this->assertSame([
-                'List-Unsubscribe'      => '<https://example.org/news?au=k3y5x&c=sQjwa>',
+                'List-Unsubscribe'      => '<https://example.org/news?one=1&au=k3y5x&c=sQjwa>',
                 'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
             ], AA_Collection::unsubscribeHeaders('https://example.org/news?au=k3y5x&c=sQjwa'));
         }
@@ -773,7 +773,7 @@ namespace Tests\Unit\Legacy {
             self::quietly(static fn() => $collection->sendEmails('daily', [], false, '', self::ANNA));
 
             $headers = self::headersOf(self::queuedMails()[0]);
-            $this->assertSame('<' . self::SLICE_URL . '?au=' . self::ACCESS_CODE . '&c=sQjwa>', $headers['List-Unsubscribe'] ?? null);
+            $this->assertSame('<' . self::SLICE_URL . '?one=1&au=' . self::ACCESS_CODE . '&c=sQjwa>', $headers['List-Unsubscribe'] ?? null);
             $this->assertSame('List-Unsubscribe=One-Click', $headers['List-Unsubscribe-Post'] ?? null);
         }
 
