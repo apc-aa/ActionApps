@@ -555,6 +555,10 @@ aa-code .cm-aa-hint b { color: #1a4d8f; }
 aa-code .cm-aa-hint span { margin-left: 1em; }
 /* blank while the focus is elsewhere: it would stick to the window bottom over the text */
 aa-code .cm-panels-bottom:has(> .cm-aa-hint:only-child:empty) { position: static; }
+/* command names only, so as narrow as they are: it hides less of the text */
+aa-code .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul { min-width: 0; }
+/* screen readers only: the line under the editor is not read out */
+aa-code .cm-completionDetail { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 aa-code[invalid], aa-richtext[invalid] { outline: 2px solid #c00; outline-offset: 1px; }
 aa-code[disabled] .cm-editor { background: #f2f2f2; opacity: .7; }
 .aa-invalid-msg { color: #c00; margin: .25em 0; }

@@ -134,6 +134,29 @@ const SUBSCRIPT = '₀₁₂₃₄₅₆₇₈₉';
 const numbered = (name, n) => name + [...String(n)].map(d => SUBSCRIPT[d]).join('');
 
 /**
+ * The command a name being typed stands for: the one so named, else the first one starting with it that
+ * is not deprecated. A bare "_" stands for none - "{_" starts an "{_#ALIAS" far more often than "{_:".
+ * @param {string} typed  lower-cased
+ * @param {Map<string, {deprecated?: boolean}>} commands  from the catalog
+ * @return {?string}
+ */
+export function commandFor(typed, commands) {
+    if (typed === '_') {
+        return null;
+    }
+    if (commands.has(typed)) {
+        return typed;
+    }
+    let first = null;
+    for (const [name, cmd] of commands) {
+        if (!cmd.deprecated && name.startsWith(typed) && ((first === null) || (name < first))) {
+            first = name;
+        }
+    }
+    return first;
+}
+
+/**
  * The parameters of a command for the hint, the one at the cursor current. A repeated group shows
  * once, numbered - the one the cursor is in; where a group may start, the parameter after the
  * groups may stand there instead ({ifeq:x:a:A:else}), so both are current.

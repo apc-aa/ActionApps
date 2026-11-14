@@ -1,7 +1,7 @@
 // The parameter hint of the code editor: which parameter of {command:...} the cursor is in.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { signature } from '../../dev/codemirror6/aa-syntax.js';
+import { signature, commandFor } from '../../dev/codemirror6/aa-syntax.js';
 
 const IFSET = { params: ['condition', 'text', 'else_text'] };
 const IFEQ  = { params: ['etalon'], repeat: ['option', 'text'], tail: ['else_text'] };
@@ -39,4 +39,15 @@ test('a group without anything after it', () => {
     assert.equal(show(JOIN, 3), 'delimiter:…:[value₃]:…');
     assert.equal(show(ASOC, 0), '[key₁]:value₁:…');
     assert.equal(show(ASOC, 3), '…:key₂:[value₂]:…');
+});
+
+test('the command a name being typed stands for', () => {
+    const commands = new Map([['ifeqfield', {}], ['ifeq', {}], ['if', {}], ['_', {}], ['old', { deprecated: true }], ['older', {}]]);
+    assert.equal(commandFor('ife', commands), 'ifeq');
+    assert.equal(commandFor('if', commands), 'if');
+    assert.equal(commandFor('ifeqf', commands), 'ifeqfield');
+    assert.equal(commandFor('old', commands), 'old');        // named, though deprecated
+    assert.equal(commandFor('ol', commands), 'older');       // not offered when deprecated
+    assert.equal(commandFor('x', commands), null);
+    assert.equal(commandFor('_', commands), null);           // an {_#ALIAS being typed
 });

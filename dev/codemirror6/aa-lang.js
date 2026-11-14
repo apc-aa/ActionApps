@@ -6,9 +6,9 @@
  */
 import { ViewPlugin, Decoration, EditorView, showPanel } from '@codemirror/view';
 import { RangeSetBuilder, StateEffect, StateField } from '@codemirror/state';
-import { autocompletion, pickedCompletion } from '@codemirror/autocomplete';
+import { autocompletion, pickedCompletion, selectedCompletion } from '@codemirror/autocomplete';
 import { bracketMatching } from '@codemirror/language';
-import { scan, contextAt, pairedBrace, signature } from './aa-syntax.js';
+import { scan, contextAt, pairedBrace, signature, commandFor } from './aa-syntax.js';
 
 const commentMark = Decoration.mark({ class: 'cm-aa-comment' });
 
@@ -85,11 +85,16 @@ function loadCommands() {
     return loading;
 }
 
-/** the parameter the cursor is in, -1 in the name or outside an expression */
-function paramAt(state, pos) {
+/** the command the cursor is in, with the parameter it is in (-1: in the name) */
+function commandAt(state, pos) {
     // two characters more: the ":" of "http://" is told by the "//" after it
     const ctx = contextAt(state.sliceDoc(0, pos + 2), pos);
-    return (ctx && (ctx.param >= 0)) ? ctx : null;
+    if (!ctx || (ctx.param >= 0)) {
+        return ctx;
+    }
+    // the whole name when the cursor is inside one
+    const name = commandFor(ctx.name + state.sliceDoc(pos, state.doc.lineAt(pos).to).match(/^\w*/)[0].toLowerCase(), commands);
+    return name && { ...ctx, name };
 }
 
 /** {name: or {name} - the "}" right away for a command without parameters */
@@ -110,13 +115,14 @@ function applyCommand(name, cmd) {
 let options = null;
 
 /**
- * "{" and a letter; a bare "{" or "{_" only on Ctrl+Space - "{_#ALIAS" is typed far more often than "{_:".
+ * The list opens only on Ctrl+Space - while typing, the line under the editor names the command. After "{"
+ * or "{" and a letter: "{_" closes it, as "{_#ALIAS" is typed far more often than "{_:".
  * Names starting with what is typed, not CodeMirror's fuzzy match: in CSS and JavaScript ("a{color",
  * "){return") a loose match would keep the list open and Enter would take a command instead of a newline.
  */
 async function aaCompletions(context) {
-    const word = context.matchBefore(/\{(?:[A-Za-z_]\w*)?$/);
-    if (!word || (!context.explicit && !/^\{[A-Za-z]/.test(word.text))) {
+    const word = context.matchBefore(/\{(?:[A-Za-z]\w*)?$/);
+    if (!word) {
         return null;
     }
     const all = await loadCommands();
@@ -125,8 +131,7 @@ async function aaCompletions(context) {
     }
     options ??= [...all].filter(([, cmd]) => !cmd.deprecated).map(([name, cmd]) => ({
         label:  name,
-        detail: signature(cmd, -1).map(p => p.text).join(':'),
-        info:   cmd.desc || undefined,
+        detail: signature(cmd, -1).map(p => p.text).join(':'),     // for screen readers, hidden on screen
         apply:  applyCommand(name, cmd),
     }));
     const typed = word.text.slice(1).toLowerCase();
@@ -136,7 +141,7 @@ async function aaCompletions(context) {
 const commandsLoaded = StateEffect.define();   // a transaction, so the hint field sees the catalog
 const focusChanged   = StateEffect.define();
 
-const TIP = '{ + letter: AA commands · Ctrl+Space: suggestions';
+const TIP = '{ + name: help here · { + Ctrl+Space: list of commands';
 
 /** {name:param:…} with the parameter the cursor is in bold, and what the command does */
 function hintContent({ name, param }, cmd) {
@@ -162,14 +167,18 @@ class HintPanel {
     }
 
     update(update) {
-        if (update.docChanged || update.selectionSet || update.focusChanged) {
+        if (update.docChanged || update.selectionSet || update.focusChanged
+            || (update.transactions.length && (selectedCompletion(update.state) !== selectedCompletion(update.startState)))) {
             this.render(update.view);
         }
     }
 
     render(view) {
-        const sel = view.state.selection.main;
-        const ctx = (view.hasFocus && sel.empty) ? paramAt(view.state, sel.head) : null;
+        // the command picked in the list, else the one the cursor is in
+        const picked = view.hasFocus ? selectedCompletion(view.state) : null;
+        const sel    = view.state.selection.main;
+        const ctx    = picked ? { name: picked.label, param: -1 }
+            : ((view.hasFocus && sel.empty) ? commandAt(view.state, sel.head) : null);
         const cmd = ctx ? commands.get(ctx.name) : null;
         const key = view.hasFocus ? (cmd ? `${ctx.name}:${ctx.param}` : 'tip') : '';
         if (key === this.key) {
@@ -228,8 +237,9 @@ export function aaSyntax() {
     return [
         comments,
         bracketMatching({ renderMatch: renderBracketMatch }),   // CodeMirror 5's matchBrackets + matchTags
-        // instead of the language's own completion: HTML tags were never offered here
-        autocompletion({ override: [aaCompletions], icons: false }),
+        // instead of the language's own completion: HTML tags were never offered here. Above the cursor,
+        // so as not to cover the line under the editor, which describes the command picked.
+        autocompletion({ override: [aaCompletions], icons: false, activateOnTyping: false, aboveCursor: true }),
         hint,
         hintLoader,
         EditorView.focusChangeEffect.of((state, focusing) => focusChanged.of(focusing)),
