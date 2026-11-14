@@ -139,6 +139,25 @@ function confirm_email($slice_id, $aw): bool
     return true;
 }
 
+/** The page of the current Alerts module the user lands on - see AlertsLandingPageFor()
+ *  @return string a page of modules/alerts/; '' = none for the user */
+function AlertsLandingPage(): string
+{
+    return AlertsLandingPageFor(AA_Module_Alerts::getOwnModule(AA::$module_id) !== null, IfSlPerm(PS_USERS), IfSlPerm(PS_ALERTS_STATS));
+}
+
+/** The settings for one who may change them, the mailings for an Editor of the module. The type before the
+ *  right: in another module type the letter of the mailings means something else.
+ *  @return string a page of modules/alerts/; '' = none for the user */
+function AlertsLandingPageFor(bool $is_alerts, bool $may_settings, bool $may_mailings): string
+{
+    return match (true) {
+        $may_settings               => 'modedit.php',
+        $is_alerts && $may_mailings => 'mailings.php',
+        default                     => '',
+    };
+}
+
 /** The query parameter that marks the List-Unsubscribe header link (AA_Collection::unsubscribeHeaders()) */
 const ALERTS_ONE_CLICK_PARAM = 'one';
 

@@ -28,6 +28,7 @@ https://www.apc.org/
 */
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/go_url.php";
-// the type before the right: in another module type the letter of the editor's right means something else
-$page = (AA_Module_Alerts::getOwnModule(AA::$module_id) && !IfSlPerm(PS_USERS) && IfSlPerm(PS_ALERTS_STATS)) ? 'mailings.php' : 'modedit.php';
+require_once __DIR__ . "/util.php";
+// with no page for the user, the settings say why
+$page = AlertsLandingPage() ?: 'modedit.php';
 go_url(AA_INSTAL_PATH . "modules/alerts/$page?module_id=" . AA::$module_id);

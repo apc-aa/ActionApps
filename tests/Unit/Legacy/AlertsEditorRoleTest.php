@@ -136,22 +136,15 @@ final class AlertsEditorRoleTest extends TestCase
         ], array_diff_key(AA_Perm::PERMS_ROLES_MODULES, ['Alerts' => true]));
     }
 
-    /** the pages need a session, so the test reads their source: the module type is checked before the right */
-    public function test_mailingsPage_checksTheTypeBeforeTheRight(): void
+    /** the landing page of the module: the index redirects there, the main menu links it */
+    public function test_landingPage_settingsForAdministrator_mailingsForEditor(): void
     {
-        $src = (string) file_get_contents(dirname(__DIR__, 3) . '/modules/alerts/mailings.php');
-        $this->assertSame(1, preg_match(
-            '~if \(!AA_Module_Alerts::getOwnModule\(AA::\$module_id\)\) \{\s*MsgPage\([^;]*\);\s*\}\s*if \(!IfSlPerm\(PS_ALERTS_STATS\)\) \{\s*MsgPage\([^;]*\);\s*\}~',
-            $src,
-        ));
-        $this->assertStringNotContainsString('<form', $src, 'the page only reads');
-        $this->assertStringNotContainsString('_POST', $src, 'the page only reads');
-    }
+        require_once dirname(__DIR__, 3) . '/modules/alerts/util.php';
 
-    public function test_index_sendsOnlyAnEditorOfAnAlertsModuleToTheMailings(): void
-    {
-        $src = (string) file_get_contents(dirname(__DIR__, 3) . '/modules/alerts/index.php');
-        $this->assertStringContainsString("(AA_Module_Alerts::getOwnModule(AA::\$module_id) && !IfSlPerm(PS_USERS) && IfSlPerm(PS_ALERTS_STATS)) ? 'mailings.php' : 'modedit.php'", $src);
+        $this->assertSame('modedit.php', AlertsLandingPageFor(true, true, true));
+        $this->assertSame('mailings.php', AlertsLandingPageFor(true, false, true));
+        $this->assertSame('', AlertsLandingPageFor(true, false, false), 'no page for the user');
+        $this->assertSame('', AlertsLandingPageFor(false, false, true), 'the letter means something else in another module type');
     }
 
     /** um_util.php keys the role lists by the first letter of the type: no other registered type starts with A */

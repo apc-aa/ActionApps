@@ -47,11 +47,13 @@ function get_aamenus(): array
     global $slice_id;
 
     // an editor of the module sees only the mailings
+    $landing = AlertsLandingPage();
+    $label   = ($landing === 'mailings.php') ? _m("Mailings and statistics") : _m("Alerts Settings");
     $aamenus["admin"] = [
-        "label" => _m("Alerts Settings"),
-        "title" => _m("Alerts Settings"),
-        "href" => IfSlPerm(PS_USERS) ? "modules/alerts/modedit.php" : "modules/alerts/mailings.php",
-        "cond" => IfSlPerm(PS_USERS) || IfSlPerm(PS_ALERTS_STATS),
+        "label" => $label,
+        "title" => $label,
+        "href" => "modules/alerts/" . ($landing ?: 'modedit.php'),
+        "cond" => $landing !== '',
         "level" => "main",
         "submenu" => "admin_submenu",
     ];
