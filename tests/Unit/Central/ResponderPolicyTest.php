@@ -34,6 +34,7 @@ final class ResponderPolicyTest extends TestCase
             'Item_History_Diff'      => ['Item_History_Diff', false, false],
             'Optimize4id'            => ['Optimize4id', false, true],
             'Alertitem'              => ['Alertitem', false, true],
+            'Mailbulk'               => ['Mailbulk', false, true],
             'unknown'                => ['Foo_Bar', false, false],
             'removed'                => ['Do_Import_Module_Chunk', false, false],
             'empty'                  => ['', false, false],

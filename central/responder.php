@@ -28,6 +28,7 @@ use AA\Central\Package\DbSource;
 use AA\Central\ResponderPolicy;
 use AA\FormArray;
 use AA\IO\DB\DB_AA;
+use AA\Mailbulk\Gate;
 use AA\Optimize\CheckSessionidUse;
 use AA\Security\LoginThrottle;
 use AA\Util\Langs;
@@ -736,6 +737,38 @@ class AA_Responder_Alertitem extends AA_Responder
         }
         // item_id is a long id - isPerm() checked it
         return new AA_Response(send_emails("irregular", [$this->collection_id], $test_emails, true, $this->item_id));
+    }
+}
+
+/** An action of the control of a sending ({mailbulk}): AA\Mailbulk\Gate::act() */
+class AA_Responder_Mailbulk extends AA_Responder
+{
+    /** prefixed: the params come from $_REQUEST, where a cookie of the site beats POST */
+    protected string $action;
+    protected string $list;
+    protected string $item_id;
+
+    public function __construct($param = null)
+    {
+        $this->action  = is_string($param['mb_action'] ?? null) ? $param['mb_action'] : '';
+        $this->list    = is_string($param['mb_list'] ?? null) ? $param['mb_list'] : '';
+        $this->item_id = is_string($param['mb_item'] ?? null) ? $param['mb_item'] : '';
+    }
+
+    public function isPerm(): bool
+    {
+        if (!is_long_id($this->item_id)) {
+            return false;
+        }
+        $item = AA_Items::getItem(new zids($this->item_id, 'l'));
+        // the list is checked by the Gate - it must be related to this slice
+        return $item && IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID());
+    }
+
+    public function run(): AA_Response
+    {
+        [$text, $error] = (new Gate())->act($this->action, $this->list, $this->item_id);
+        return new AA_Response($text, $error);
     }
 }
 

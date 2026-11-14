@@ -29,7 +29,7 @@ class ResponderPolicy
 
     /** Admin AJAX commands with a side effect, sent only by the JS AA_Response() helper, which POSTs;
      *  a GET of them can only be a forged cross-site link. */
-    public const POST_ONLY_COMMANDS = ['Optimize4id', 'Alertitem'];
+    public const POST_ONLY_COMMANDS = ['Optimize4id', 'Alertitem', 'Mailbulk'];
 
     /** responder.php has no such command - also what every older AA answers to a newer one */
     public const ERR_UNKNOWN_COMMAND = 103;
