@@ -17,6 +17,9 @@ final class TransientAaMail extends \AA_Mail
 {
     public bool $transient = false;
 
+    /** the transient failure came after the body went out */
+    public bool $afterBody = false;
+
     /** @var array<string, string> */
     public array $captured = [];
 
@@ -24,7 +27,7 @@ final class TransientAaMail extends \AA_Mail
     protected function generateMessageId(): string
     {
         if ($this->transient) {
-            throw new TransientSmtpException('SmtpTransport[rcptTo] 451: try later');
+            throw new TransientSmtpException('SmtpTransport[rcptTo] 451: try later', afterBody: $this->afterBody);
         }
         return parent::generateMessageId();
     }
@@ -73,6 +76,28 @@ final class AaMailSendTest extends TestCase
         self::assertStringStartsWith('AA_Mail_retry:', (string) $queued[0]['selector']);
         self::assertStringEndsWith(':1', (string) $queued[0]['selector']);
         self::assertSame([['reader@example.org']], unserialize((string) $queued[0]['params']));
+    }
+
+    public function test_send_transientAfterBody_returnsZeroAndQueuesNothing(): void
+    {
+        $mail            = self::mail('News');
+        $mail->transient = true;
+        $mail->afterBody = true;
+        $warnings        = [];
+        set_error_handler(static function (int $no, string $text) use (&$warnings): bool {
+            $warnings[] = $text;
+            return true;
+        }, E_USER_WARNING);
+        try {
+            $sent = $mail->send(['reader@example.org']);
+        } finally {
+            restore_error_handler();
+        }
+
+        self::assertSame(0, $sent);
+        self::assertSame([], RecordingDb::inserts('toexecute'));
+        self::assertCount(1, $warnings);
+        self::assertStringContainsString('may have the mail', $warnings[0]);
     }
 
     public function test_send_subjectWithALineBreak_addsNoHeader(): void

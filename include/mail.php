@@ -254,6 +254,11 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
         try {
             return $this->sendOnce($recipients);
         } catch (\AA\Mail\TransientSmtpException $e) {
+            if ($e->afterBody()) {
+                // the server may have the mail already - a requeue could deliver it twice
+                trigger_error('AA_Mail: not queued again, the server may have the mail: '.$e->getMessage(), E_USER_WARNING);
+                return 0;
+            }
             $this->retry_attempts++;
             if ($this->retry_attempts > self::MAX_SMTP_RETRIES) {
                 trigger_error(
