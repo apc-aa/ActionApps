@@ -150,6 +150,11 @@ function unsubscribe_reader($slice_id, $au, $c): bool
         warn("AU not OK: " . count($readers) . " items");
         return false;
     }
+    // c comes from the link and names the field written below - a foreign c could name any reader field
+    if (!is_string($c) || ($c === '') || !DB_AA::test('alerts_collection', [['id', $c], ['slice_id', $slice_id, 'l']])) {
+        warn("Collection not OK for the reader slice");
+        return false;
+    }
     $item_id   = reset($readers);
     $field_id  = getAlertsField(FIELDID_HOWOFTEN, $c);
     $frequency = DB_AA::select1('text', 'SELECT `text` FROM `content`', [['item_id', $item_id, 'l'], ['field_id', $field_id]]);

@@ -52,6 +52,12 @@ namespace Tests\Unit\Legacy {
         /** the readers whose access code is CODE */
         private array $readers = [self::READER];
 
+        /** the collections whose reader slice is SLICE */
+        private array $collections = [self::COLLECTION];
+
+        /** the SQL of the look-ups in alerts_collection */
+        private array $collectionQueries = [];
+
         public static function setUpBeforeClass(): void
         {
             require_once __DIR__ . '/fixtures/store_fixtures.php';
@@ -67,6 +73,11 @@ namespace Tests\Unit\Legacy {
             self::$slice->setFields(new FakeFields(self::SLICE, [$this->field(self::FREQUENCY)]));
 
             RecordingDb::$answer = function (string $sql): array {
+                if (str_contains($sql, 'alerts_collection')) {
+                    $this->collectionQueries[] = $sql;
+                    $own = str_contains($sql, self::SLICE) && array_filter($this->collections, static fn($c) => str_contains($sql, "'$c'"));
+                    return $own ? [['id' => self::COLLECTION]] : [];
+                }
                 if (str_contains($sql, 'LOWER(HEX(item.id))')) {
                     return array_map(static fn($id) => ['iid' => $id], $this->readers);
                 }
@@ -175,6 +186,29 @@ namespace Tests\Unit\Legacy {
             self::$slice->setFields(new FakeFields(self::SLICE, []));
 
             $this->assertFalse(unsubscribe_reader(self::SLICE, self::CODE, self::COLLECTION));
+
+            $this->assertSame([], RecordingDb::$content);
+            $this->assertSame([], $this->writes());
+        }
+
+        public function test_unsubscribe_collectionOfAnotherSlice_isFalse(): void
+        {
+            $this->collections    = [];
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+
+            $this->assertFalse(@unsubscribe_reader(self::SLICE, self::CODE, self::COLLECTION));   // warn() about the collection
+
+            $this->assertCount(1, $this->collectionQueries, 'the collection is checked against the reader slice');
+            $this->assertSame(['weekly'], $this->frequencies());
+            $this->assertSame([], $this->writes());
+        }
+
+        /** a 16 characters long c would be the whole field id - here the confirmation flag of the reader */
+        public function test_unsubscribe_cNamingAnotherField_isFalse(): void
+        {
+            self::$slice->setFields(new FakeFields(self::SLICE, [$this->field(self::FREQUENCY), $this->field('switch..........')]));
+
+            $this->assertFalse(@unsubscribe_reader(self::SLICE, self::CODE, 'switch..........'));
 
             $this->assertSame([], RecordingDb::$content);
             $this->assertSame([], $this->writes());
