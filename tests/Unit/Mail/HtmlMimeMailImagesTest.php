@@ -23,6 +23,9 @@ final class FetchRecordingMail extends \htmlMimeMail
 
     public static string $image = 'image bytes';
 
+    /** what a file of the sites reads as - '' = not readable */
+    public static string $localImage = '';
+
     /** the message body handed to mail() */
     public string $sent = '';
 
@@ -30,7 +33,7 @@ final class FetchRecordingMail extends \htmlMimeMail
     {
         $this->fetched[] = $filename;
         ++self::$calls;
-        return str_starts_with($filename, 'http') ? self::$image : '';
+        return str_starts_with($filename, 'http') ? self::$image : self::$localImage;
     }
 
     protected function nativeMail(string $to, string $subject, string $body, string $headers, string $params = ''): bool
@@ -232,6 +235,25 @@ final class HtmlMimeMailImagesTest extends TestCase
         [$html, $images] = self::parts($queued->sent);
         self::assertSame('<p><img src="1a.png"></p>', $html);
         self::assertSame([FetchRecordingMail::$image], array_map(base64_decode(...), array_values($images)));
+    }
+
+    /** a queued mail built first without its image (not readable then) is multipart when built again -
+     *  the encoding of the lone html part of the first build must not stay on the multipart top level */
+    public function test_rebuild_dropsHeadersOfThePreviousBuild(): void
+    {
+        $mail = new FetchRecordingMail();
+        $mail->setHtml('<p><img src="a.png"></p>', null, '/srv/site/files/up/');
+        $mail->buildMessage();
+        $headers = new \ReflectionProperty(\htmlMimeMail::class, 'headers');
+        self::assertStringStartsWith('text/html', $headers->getValue($mail)['Content-Type']);
+        self::assertArrayHasKey('Content-Transfer-Encoding', $headers->getValue($mail));
+
+        FetchRecordingMail::$localImage = 'image bytes';
+        $queued = unserialize(serialize($mail));
+        $queued->buildMessage();
+
+        self::assertStringStartsWith('multipart/related', $headers->getValue($queued)['Content-Type']);
+        self::assertArrayNotHasKey('Content-Transfer-Encoding', $headers->getValue($queued));
     }
 
     /** a file of the sites may change between two mails, and reading it costs no network */

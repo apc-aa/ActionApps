@@ -27,7 +27,7 @@ class htmlMimeMail {
     /**
      * Where relative image paths of the html are read from
      */
-	private ?string $images_dir = null;
+    private ?string $images_dir = null;
     /**
      * The text part of the message(only used in TEXT only messages)
      * @var string
@@ -381,7 +381,7 @@ class htmlMimeMail {
      * @author Dan Allen
      * @return array{0: string, 1: list<array>} the html with each found src replaced by the image name, the images
      */
-	private function _findHtmlImages(string $html, ?string $images_dir): array
+    private function _findHtmlImages(string $html, ?string $images_dir): array
     {
         // Build the list of image extensions
         $extensions = array_keys($this->image_types);
@@ -713,7 +713,9 @@ class htmlMimeMail {
         if (isset($message)) {
             $output = $message->encode();
             $this->output   = $output['body'];
-            $this->headers  = array_merge($this->headers, $output['headers']);
+            // a queued mail is built again - the part headers of the previous build may not fit this structure
+            $part_headers   = ['Content-Type', 'Content-Transfer-Encoding', 'Content-ID', 'Content-Disposition', 'Content-Description'];
+            $this->headers  = array_merge(array_diff_key($this->headers, array_flip($part_headers)), $output['headers']);
 
             /* Self-set Date so DKIM canonicalization on the relay is stable.
              * mail() and most MTAs would add one, but a self-set Date avoids
