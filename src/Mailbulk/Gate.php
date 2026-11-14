@@ -131,8 +131,8 @@ class Gate
             $denial = $this->denial($list, $itemId, $toSend);
             if ($denial !== null) {
                 $slice = $this->sliceOf($itemId);
-                if ($toSend && ($slice !== null) && ($this->denial($list, $itemId, false) === null)) {
-                    // a list not of the slice - for State Check
+                if ($toSend && ($action !== 'stats') && ($slice !== null) && ($this->denial($list, $itemId, false) === null)) {
+                    // a refused sending of a list not of the slice - for State Check; the statistics send nothing
                     $this->logRefusal($list, $slice, $itemId);
                 }
                 return [$denial, self::ERR_DENIED];

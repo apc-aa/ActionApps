@@ -685,6 +685,7 @@ namespace Tests\Unit\Mailbulk {
             TestGate::$mayEdit = true;
             TestGate::$relates = false;
             self::assertSame(Gate::ERR_DENIED, (new TestGate())->act('stats', self::LIST, self::ITEM)[1], 'a list not of the slice');
+            self::assertSame([], TestGate::$refusals, 'no refused sending logged - the statistics send nothing');
         }
 
         public function test_act_unknownAction_isError(): void
