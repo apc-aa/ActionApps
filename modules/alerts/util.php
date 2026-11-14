@@ -155,7 +155,12 @@ function unsubscribe_reader($slice_id, $au, $c): bool
     $frequency = DB_AA::select1('text', 'SELECT `text` FROM `content`', [['item_id', $item_id, 'l'], ['field_id', $field_id]]);
 
     if ($frequency === false) {
-        return false;
+        // most readers never chose a frequency; the store creates the row, but silently skips a field the slice lacks
+        $slice = AA_Slice::getModule($slice_id);
+        if (!($slice instanceof AA_Slice) || !$slice->isField($field_id)) {
+            return false;
+        }
+        $frequency = '';
     }
 
     if (!str_starts_with($frequency, 'unsub')) {  // left old unsub message and date
