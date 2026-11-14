@@ -6,6 +6,8 @@ namespace AA\Mailbulk;
 
 use AA\IO\DB\DB_AA;
 use AA\Later\BatchFailed;
+use AA\Later\Toexecute;
+use AA_Log;
 
 /**
  * The sending of one item to one list: all its runs together. A later run (Continue, new readers)
@@ -20,34 +22,40 @@ class Campaign
     public const BUSY    = 'BUSY';
     public const NOBODY  = 'NOBODY';
     public const EMPTY   = 'EMPTY';
+    public const LOCK    = 'LOCK';
+    public const RENDER  = 'RENDER';
 
     /** the overviews keep the name of a sending this long */
     private const TITLE_LENGTH = 250;
+    /** readers the test mail is made for at most, until one is still valid */
+    private const TEST_READERS = 5;
+
+    /** @var ?list<Run> read once - a page asks for state, figures and the runs */
+    private ?array $runs = null;
 
     final private function __construct(private readonly string $list, private readonly string $itemId) {}
 
+    /** @throws \InvalidArgumentException $itemId is no long id */
     public static function of(string $list, string $itemId): static
     {
+        // the runs are found by the item id as stored: another case would be another sending
+        $itemId = strtolower($itemId);
+        if (!preg_match('/^[0-9a-f]{32}\z/', $itemId)) {
+            throw new \InvalidArgumentException('A sending is of an item given by its long id');
+        }
         return new static($list, $itemId);
     }
 
     /** @return list<Run> the oldest first */
     public function runs(): array
     {
-        $class = static::runClass();
-        $runs  = array_filter($class::ofSubject($this->itemId, PHP_INT_MAX), fn(Run $run): bool => (string) $run->getProperty('list') === $this->list);
-        return array_reverse(array_values($runs));
+        return $this->runs ??= static::runClass()::ofPair($this->itemId, $this->list);
     }
 
     /** the run not finished yet - sending, or in error till Continue */
     public function active(): ?Run
     {
-        foreach ($this->runs() as $run) {
-            if (in_array($run->state(), [Run::SENDING, Run::ERROR], true)) {
-                return $run;
-            }
-        }
-        return null;
+        return self::activeOf($this->runs());
     }
 
     /** the state of the newest run; '' = never sent */
@@ -57,21 +65,30 @@ class Campaign
         return $runs ? end($runs)->state() : '';
     }
 
-    /** @return array{total: int, sent: int, failed: int, skipped: int, uncertain: int, date: int}
-     *          over all runs; date = when the last run done finished, 0 = none is */
+    /**
+     * The figures of the sending, each reader counted once over all runs. A reader frozen again into a
+     * later run (failed or skipped before) counts by what came of it there, or only in the total while
+     * that run has not tried it yet. total = the readers a finished or stopped run tried and all readers
+     * of an unfinished one.
+     * @return array{total: int, sent: int, failed: int, skipped: int, uncertain: int, date: int}
+     *         date = when the last run done finished, 0 = none is
+     */
     public function counts(): array
     {
-        $sum = ['total' => 0, 'sent' => 0, 'failed' => 0, 'skipped' => 0, 'uncertain' => 0, 'date' => 0];
+        $latest = [];
+        $date   = 0;
         foreach ($this->runs() as $run) {
-            $sum['total'] += (int) $run->getProperty('total');
-            foreach ($run->outcomes() as $outcome => $n) {
-                $sum[$outcome] += $n;
-            }
+            $latest = $run->readerOutcomes() + $latest;
             if ($run->state() === Run::DONE) {
-                $sum['date'] = max($sum['date'], (int) $run->getProperty('finished'));
+                $date = max($date, (int) $run->getProperty('finished'));
             }
         }
-        return $sum;
+        $tally = array_count_values($latest);
+        $sum   = ['total' => count($latest)];
+        foreach ([Outcome::Sent, Outcome::Failed, Outcome::Skipped, Outcome::Uncertain] as $outcome) {
+            $sum[$outcome->value] = $tally[$outcome->value] ?? 0;
+        }
+        return $sum + ['date' => $date];
     }
 
     /** @return list<string> the readers of $letter no run of the pair has sent the mail to, nor may have */
@@ -85,8 +102,9 @@ class Campaign
      * held till after the commit - two clicks never freeze one reader twice. No rights checked: the caller has.
      * @param string $base the base of the tracked addresses
      * @throws BatchFailed PROBLEM the letter cannot be sent; ACTIVE a run is not finished, or a step of an
-     *                     ended one may still be sending; BUSY another request is starting it; NOBODY no
-     *                     one is pending; EMPTY the mail of the first one has no subject or no body
+     *                     ended one may still be sending; BUSY another request is starting it; LOCK the
+     *                     database gives no lock; NOBODY no one is pending; EMPTY the mail of the first
+     *                     valid one has no subject or no body; RENDER making it failed
      */
     public function start(Letter $letter, string $uid, string $base = ''): Run
     {
@@ -96,23 +114,27 @@ class Campaign
         if ($letter->problem() !== null) {
             throw new BatchFailed(self::PROBLEM);
         }
-        if (!static::lockPair($this->list, $this->itemId)) {
-            throw new BatchFailed(self::BUSY);
+        $holder = null;
+        if (!static::lockPair($this->list, $this->itemId, $holder)) {
+            throw new BatchFailed(($holder !== null) ? self::BUSY : self::LOCK);
         }
         try {
-            $runs  = $this->runs();
-            $class = static::runClass();
-            $ours  = array_map(static fn(Run $run): string => (string) $run->getId(), $runs);
-            if ($this->active() || array_intersect($class::leasedOf($this->itemId), $ours)) {
+            // what others started before the lock
+            $this->runs = null;
+            $runs       = $this->runs();
+            $class      = static::runClass();
+            $ours       = array_map(static fn(Run $run): string => (string) $run->getId(), $runs);
+            if (self::activeOf($runs) || array_intersect($class::leasedOf($this->itemId), $ours)) {
                 throw new BatchFailed(self::ACTIVE);
             }
             $pending = $this->pendingOf($letter, $runs);
             if (!$pending) {
                 throw new BatchFailed(self::NOBODY);
             }
-            if (!self::hasContent($letter->messageFor($pending[0], true))) {
+            if (!self::hasContent($this->testMessage($letter, $pending))) {
                 throw new BatchFailed(self::EMPTY);
             }
+            $this->runs = null;
             return DB_AA::transaction(fn(): Run => $class::start([
                 'subject'    => $this->itemId,
                 'user'       => $uid,
@@ -137,10 +159,11 @@ class Campaign
         return Run::class;
     }
 
-    /** @return bool got it - unlockPair() then; false also when the database gives no lock at all */
-    protected static function lockPair(string $list, string $itemId): bool
+    /** @param ?int $holder when not got: the connection that holds it, null = no lock at all (DB_AA::lock())
+     *  @return bool got it - unlockPair() then */
+    protected static function lockPair(string $list, string $itemId, ?int &$holder = null): bool
     {
-        return DB_AA::lock(self::lockName($list, $itemId));
+        return DB_AA::lock(self::lockName($list, $itemId), 0, $holder);
     }
 
     protected static function unlockPair(string $list, string $itemId): void
@@ -153,6 +176,37 @@ class Campaign
         return "mailbulk:$list:$itemId";
     }
 
+    /** @param list<Run> $runs */
+    private static function activeOf(array $runs): ?Run
+    {
+        foreach ($runs as $run) {
+            if (in_array($run->state(), [Run::SENDING, Run::ERROR], true)) {
+                return $run;
+            }
+        }
+        return null;
+    }
+
+    /** the mail of the first of $pending still valid - a reader who left since the selection has none
+     *  @param list<string> $pending
+     *  @throws BatchFailed RENDER the letter failed to make it; the log has where */
+    private function testMessage(Letter $letter, array $pending): ?Message
+    {
+        foreach (array_slice($pending, 0, self::TEST_READERS) as $readerId) {
+            try {
+                $message = $letter->messageFor($readerId, true);
+            } catch (\Throwable $e) {
+                // never the text, which may carry data or a secret
+                AA_Log::write(Toexecute::FAILED_EVENT, "Mailbulk_{$this->list}_{$this->itemId}", Toexecute::failureParams($this->itemId, $e));
+                throw new BatchFailed(self::RENDER);
+            }
+            if ($message !== null) {
+                return $message;
+            }
+        }
+        return null;
+    }
+
     /** @param list<Run> $runs
      *  @return list<string> */
     private function pendingOf(Letter $letter, array $runs): array
@@ -161,13 +215,15 @@ class Campaign
         return array_values(array_filter($letter->selection(), static fn(string $id): bool => !isset($reached[$id])));
     }
 
-    /** a template that renders to nothing must not go to thousands; an image alone is content */
+    /** a template that renders to nothing must not go to thousands; the text of the mail counts as the
+     *  plain-text part shows it (no head, style nor script), and an image alone is content */
     private static function hasContent(?Message $message): bool
     {
-        if ($message === null) {
+        if (($message === null) || (trim($message->subject) === '')) {
             return false;
         }
-        $text = trim(html_entity_decode(strip_tags($message->html, '<img>'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), " \t\n\r\0\x0B\u{a0}");
-        return (trim($message->subject) !== '') && ($text !== '');
+        require_once constant('AA_BASE_PATH') . 'include/mail.php';
+        $text = trim(html2text($message->html), " \t\n\r\0\x0B\u{a0}");
+        return ($text !== '') || (preg_match('/<img\b/i', $message->html) === 1);
     }
 }

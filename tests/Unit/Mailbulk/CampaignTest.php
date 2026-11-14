@@ -6,11 +6,13 @@ namespace Tests\Unit\Mailbulk;
 
 use AA\IO\DB\DB_AA;
 use AA\Later\BatchFailed;
+use AA\Later\Toexecute;
 use AA\Mailbulk\Campaign;
 use AA\Mailbulk\Message;
 use AA\Mailbulk\Recipients;
 use AA\Mailbulk\Run;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Later\Fixtures\BatchRunTables;
 use Tests\Unit\Mailbulk\Fixtures\FakeLetter;
 use Tests\Unit\Mailbulk\Fixtures\TestCampaign;
@@ -61,8 +63,9 @@ final class CampaignTest extends TestCase
         return array_map(self::reader(...), $indexes);
     }
 
-    /** a run of the pair that went as far as $props say, in $state, started at $at; its id */
-    private static function sending(int $n, string $state, array $props = [], int $at = self::NOW - 1000, string $list = self::LIST, string $item = self::ITEM): string
+    /** a run of the pair to readers 0 to $n - 1 (or $readers) that went as far as $props say, in $state, started at $at; its id
+     *  @param ?list<int> $readers */
+    private static function sending(int $n, string $state, array $props = [], int $at = self::NOW - 1000, string $list = self::LIST, string $item = self::ITEM, ?array $readers = null): string
     {
         TestRun::$now = $at;
         $id           = DB_AA::transaction(static fn(): string => TestRun::start($props + [
@@ -71,7 +74,7 @@ final class CampaignTest extends TestCase
             'position'   => ['i' => 0],
             'list'       => $list,
             'title'      => 'Newsletter',
-            'recipients' => Recipients::freeze($item, self::readers(...range(0, $n - 1))),
+            'recipients' => Recipients::freeze($item, self::readers(...($readers ?? range(0, $n - 1)))),
             'total'      => (string) $n,
             'cursor'     => '0',
         ])->getId());
@@ -156,6 +159,75 @@ final class CampaignTest extends TestCase
         self::assertSame([], self::runIds());
     }
 
+    public function test_start_noLockAtAll_isLOCK(): void
+    {
+        TestCampaign::$lockedByOthers = true;
+        TestCampaign::$holder         = null;
+
+        self::assertSame(Campaign::LOCK, self::refusal(self::letter(0, 1)));
+    }
+
+    public function test_start_firstReadersNoLongerValid_testRendersTheNext(): void
+    {
+        $letter                             = self::letter(0, 1, 2);
+        $letter->messages[self::reader(0)] = null;
+        $letter->messages[self::reader(1)] = null;
+
+        self::campaign()->start($letter, self::USER);
+
+        self::assertSame(self::readers(0, 1, 2), $letter->asked);
+    }
+
+    public function test_start_noneOfFiveRenders_isEmpty(): void
+    {
+        $letter = self::letter(0, 1, 2, 3, 4, 5, 6);
+        foreach (range(0, 6) as $i) {
+            $letter->messages[self::reader($i)] = null;
+        }
+
+        self::assertSame(Campaign::EMPTY, self::refusal($letter));
+        self::assertSame(self::readers(0, 1, 2, 3, 4), $letter->asked);
+    }
+
+    public function test_start_renderThrows_isRENDER_logged(): void
+    {
+        $letter                             = self::letter(0, 1);
+        $letter->messages[self::reader(0)] = new \RuntimeException('Unknown alias secret');
+
+        self::assertSame(Campaign::RENDER, self::refusal($letter));
+
+        $logged = array_values(array_filter(TableDb::rows('log'), static fn(array $r): bool => $r['type'] === Toexecute::FAILED_EVENT));
+        self::assertCount(1, $logged);
+        self::assertStringNotContainsString('secret', $logged[0]['params']);
+        self::assertSame([], self::runIds());
+    }
+
+    public function test_of_lowerCasesTheItem_refusesOtherIds(): void
+    {
+        $mine = self::sending(1, Run::DONE, ['cursor' => '1']);
+
+        self::assertSame([$mine], array_map(static fn(Run $r): string => (string) $r->getId(), TestCampaign::of(self::LIST, strtoupper(self::ITEM))->runs()));
+        $this->expectException(\InvalidArgumentException::class);
+        TestCampaign::of(self::LIST, '42');
+    }
+
+    public function test_runs_readOncePerInstance_startReadsAgain(): void
+    {
+        $campaign = self::campaign();
+        self::assertSame([], $campaign->runs());
+
+        self::sending(1, Run::DONE, ['cursor' => '1']);
+        self::assertSame([], $campaign->runs(), 'one snapshot');
+        self::assertSame(Campaign::NOBODY, (static function () use ($campaign): string {
+            try {
+                $campaign->start(self::letter(0), self::USER);
+            } catch (BatchFailed $e) {
+                return $e->reason;
+            }
+            return 'started';
+        })(), 'the run started meanwhile is seen under the lock');
+    }
+
     public function test_start_nobody_isRefused(): void
     {
         self::assertSame(Campaign::NOBODY, self::refusal(self::letter()));
@@ -167,7 +239,13 @@ final class CampaignTest extends TestCase
 
     public function test_start_emptySubjectOrBody_isRefused(): void
     {
-        foreach ([['', '<p>Hello</p>'], [' ', '<p>Hello</p>'], ['News', ''], ['News', "<html><body>\n<p> </p></body></html>"]] as [$subject, $html]) {
+        foreach ([
+            ['', '<p>Hello</p>'],
+            [' ', '<p>Hello</p>'],
+            ['News', ''],
+            ['News', "<html><body>\n<p> </p></body></html>"],
+            ['News', "<!DOCTYPE html><html><head><title>News</title><style>p { color: red }</style></head><body>\n<p>&ensp;&nbsp;</p><script>var a = 1;</script></body></html>"],
+        ] as [$subject, $html]) {
             $letter                                = self::letter(0, 1);
             $letter->messages[self::reader(0)]    = new Message('a@example.org', $subject, $html, 'news@example.org');
             self::assertSame(Campaign::EMPTY, self::refusal($letter), "subject '$subject', body '$html'");
@@ -189,20 +267,29 @@ final class CampaignTest extends TestCase
         self::assertSame([], TestCampaign::$lockLog);
     }
 
-    public function test_counts_sumOverRuns(): void
+    public function test_counts_eachReaderOnceByItsLatestOutcome(): void
     {
         self::assertSame(['total' => 0, 'sent' => 0, 'failed' => 0, 'skipped' => 0, 'uncertain' => 0, 'date' => 0], self::campaign()->counts());
         self::assertSame('', self::campaign()->state());
 
         $first = self::sending(5, Run::DONE, ['cursor' => '5', 'outcomes' => '{"1":"f","2":"s","3":"u"}'], self::NOW - 3000);
         self::storedSet($first, 'finished', (string) (self::NOW - 2900));
-        $second = self::sending(3, Run::DONE, ['cursor' => '3'], self::NOW - 2000);
+        // the failed and the skipped one again, and a new reader
+        $second = self::sending(3, Run::DONE, ['cursor' => '3'], self::NOW - 2000, readers: [1, 2, 5]);
         self::storedSet($second, 'finished', (string) (self::NOW - 1900));
-        $third = self::sending(4, Run::SENDING, ['cursor' => '2', 'outcomes' => '{"0":"f"}'], self::NOW - 1000);
+        $third = self::sending(4, Run::SENDING, ['cursor' => '2', 'outcomes' => '{"0":"f"}'], self::NOW - 1000, readers: [6, 7, 8, 9]);
 
-        self::assertSame(['total' => 12, 'sent' => 6, 'failed' => 2, 'skipped' => 1, 'uncertain' => 1, 'date' => self::NOW - 1900], self::campaign()->counts());
+        self::assertSame(['total' => 10, 'sent' => 6, 'failed' => 1, 'skipped' => 0, 'uncertain' => 1, 'date' => self::NOW - 1900], self::campaign()->counts(), 'the two not tried yet only in the total');
         self::assertSame([$first, $second, $third], self::runIds(), 'the oldest first');
         self::assertSame(Run::SENDING, self::campaign()->state());
+    }
+
+    public function test_counts_stoppedRun_countsOnlyWhomItTried(): void
+    {
+        self::sending(4, Run::ENDED, ['cursor' => '2', 'mark' => '2'], self::NOW - 2000);
+        self::sending(1, Run::SENDING, [], self::NOW - 1000, readers: [3]);
+
+        self::assertSame(['total' => 4, 'sent' => 2, 'failed' => 0, 'skipped' => 0, 'uncertain' => 1, 'date' => 0], self::campaign()->counts(), 'its mark may have gone; the rest went to the next run');
     }
 
     public function test_of_ignoresRunsOfAnotherList(): void

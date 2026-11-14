@@ -210,6 +210,14 @@ class Run extends BatchRun
         return ($recorded === null) ? null : $this->goesOn($total);
     }
 
+    /** The runs of $itemId to $list, the oldest first; those of other lists are not read.
+     *  @return list<static> */
+    public static function ofPair(string $itemId, string $list): array
+    {
+        $ids = array_keys(array_filter(static::recordsOfSubject($itemId, ['list']), static fn(array $r): bool => ($r['list'] ?? '') === $list));
+        return array_reverse(array_values(array_filter(array_map(static fn($id): ?static => static::get((string) $id), $ids))));
+    }
+
     /** @return array{sent: int, failed: int, skipped: int, uncertain: int} */
     public function outcomes(): array
     {
