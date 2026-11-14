@@ -1,7 +1,7 @@
 // The control of {mailbulk}: a send asks first, an answer replaces the control, a sending refreshes itself.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ANSWER_WAIT, POLL_EVERY, act, init, pollDelay, replaceControl, watch } from '../../javascript/mailbulk.js';
+import { ANSWER_WAIT, POLL_EVERY, act, init, insertStats, pollDelay, replaceControl, watch } from '../../javascript/mailbulk.js';
 import { POLL_FOR } from '../../javascript/aa-poll.js';
 
 const LIST = 'ab00000000000000000000000000000c';
@@ -38,6 +38,14 @@ const fakeEnv = ({ confirm = true } = {}) => {
             return fresh;
         },
         note: (where, html) => env.notes.push({ where, html }),
+        /** control => the statistics block below it */
+        blocks: new Map(),
+        statsOf: c => env.blocks.get(c) ?? null,
+        insertStats: (c, html) => {
+            const block = { html, remove: () => env.blocks.delete(c) };
+            env.blocks.set(c, block);
+            return block;
+        },
     };
     return env;
 };
@@ -230,6 +238,47 @@ test('the control of the answer is taken, not a notice before it; the focused bu
     replacedBy = null;
     assert.equal(replaceControl(old, '<b>Fatal error</b>', doc), null);
     assert.equal(replacedBy, null, 'an answer without a control leaves the old one');
+});
+
+test('stats button inserts the block once and hides it on the second click', () => {
+    const env = fakeEnv();
+    const el = control('done');
+    act(el, 'stats', env);
+    act(el, 'stats', env);
+    assert.deepEqual(actions(env), ['stats'], 'one request while its answer is on its way');
+    env.requests[0].ok('<div class="aa-mailbulk-stats">runs</div>');
+    assert.equal(env.blocks.get(el)?.html, '<div class="aa-mailbulk-stats">runs</div>');
+    assert.equal(env.swapped.length, 0, 'the control stays');
+
+    act(el, 'stats', env);
+    assert.equal(env.blocks.size, 0, 'hidden');
+    assert.deepEqual(actions(env), ['stats'], 'hiding asks nothing');
+
+    act(el, 'stats', env);
+    assert.deepEqual(actions(env), ['stats', 'stats'], 'shown again, with fresh figures');
+});
+
+test('the block of the answer is taken, not a notice before it; it goes right after the control', () => {
+    let after = null;
+    const old = { after: (el) => { after = el; } };
+    const doc = {
+        createElement: () => {
+            const template = {};
+            Object.defineProperty(template, 'innerHTML', {
+                set: (html) => {
+                    template.content = {
+                        querySelector: sel => ((sel === '.aa-mailbulk-stats') && html.includes('<div class="aa-mailbulk-stats"')) ? { html } : null,
+                    };
+                },
+            });
+            return template;
+        },
+    };
+    const block = insertStats(old, '<b>Notice</b>: x<div class="aa-mailbulk-stats">runs</div>', doc);
+    assert.equal(after, block);
+    after = null;
+    assert.equal(insertStats(old, '', doc), null, 'never sent: nothing to show');
+    assert.equal(after, null);
 });
 
 test('init_twice_bindsOnce', () => {

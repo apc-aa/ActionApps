@@ -115,8 +115,9 @@ class Gate
     }
 
     /**
-     * An action of the control: prepare (the question before a send), send, test, stop, resume, state.
-     * @return array{string, int} [HTML of the control or of the question; on an error its plain text, the error]
+     * An action of the control: prepare (the question before a send), send, test, stop, resume, state, and
+     * stats - the block of the sending's statistics, '' when it was never sent; it changes nothing.
+     * @return array{string, int} [HTML of the control, the question or the block; on an error its plain text, the error]
      */
     public function act(string $action, string $list, string $itemId): array
     {
@@ -139,6 +140,7 @@ class Gate
                 'stop'    => $this->change($list, $itemId, fn(Run $run) => $run->end($this->uid())),
                 'resume'  => $this->change($list, $itemId, fn(Run $run) => $run->resume($this->uid())),
                 'state'   => [$this->render($list, $itemId), 0],
+                'stats'   => [$this->statsView()->mailing($this->collectionOf($list), $itemId), 0],
                 default   => [_m('Unknown action'), self::ERR_UNKNOWN_ACTION],
             };
         } catch (BatchFailed $e) {
@@ -217,6 +219,11 @@ class Gate
     protected function userEmail(): string
     {
         return (string) (AA::$perm->getIDsInfo($this->uid())['mail'] ?? '');
+    }
+
+    protected function statsView(): StatsView
+    {
+        return new StatsView();
     }
 
     protected function noStore(): void
@@ -441,6 +448,10 @@ class Gate
             // a sending that cannot go says so in place of the buttons that would fail
             $parts[] = $problem;
             $buttons = [];
+        }
+        if ($runs && ($this->denial($list, $itemId, true) === null)) {
+            // read on a click only - a listing of many items computes no statistics
+            $buttons['stats'] = _m('Statistics');
         }
         $html = '';
         foreach (array_filter([...$parts, $note], static fn(string $p): bool => $p !== '') as $part) {

@@ -1,4 +1,5 @@
-// The control of {mailbulk}: its buttons post to central/responder.php and the answer replaces the whole control.
+// The control of {mailbulk}: its buttons post to central/responder.php and the answer replaces the whole control;
+// only Statistics shows its answer below the control.
 
 /** the module next to this one, with its ?v= - a cached older one must not mix with this one */
 const sibling = (path) => {
@@ -45,6 +46,17 @@ export const replaceControl = (control, html, doc) => {
     return fresh;
 };
 
+/** The statistics block of the answer right after the control - outside it, so a refreshed control keeps it. */
+export const insertStats = (control, html, doc) => {
+    const template = doc.createElement('template');
+    template.innerHTML = String(html);
+    const block = template.content.querySelector('.aa-mailbulk-stats');
+    if (block) {
+        control.after(block);
+    }
+    return block ?? null;
+};
+
 /** what the module does in a browser; tests give their own */
 const browserEnv = () => ({
     respond: (params, ok, err) => globalThis.AA_Response('Mailbulk', params, ok, err),
@@ -55,6 +67,11 @@ const browserEnv = () => ({
     all: () => document.querySelectorAll('[data-aa-mailbulk]'),
     plain: html => new DOMParser().parseFromString(html, 'text/html').documentElement.textContent ?? '',
     swap: (control, html) => replaceControl(control, html, document),
+    statsOf: (control) => {
+        const next = control.nextElementSibling;
+        return next?.classList.contains('aa-mailbulk-stats') ? next : null;
+    },
+    insertStats: (control, html) => insertStats(control, html, document),
     note: (control, html) => {
         let note = control.querySelector('.aa-mailbulk-error');
         if (!note) {
@@ -181,7 +198,8 @@ export const watch = (control, env) => {
 
 /**
  * Runs an action of a button. A send asks the server for the number of recipients first and goes only
- * when the user confirms its question. It wins over a poll on its way, whose answer is then left out.
+ * when the user confirms its question. Statistics shown already are hidden, else asked for.
+ * An action wins over a poll on its way, whose answer is then left out.
  */
 export const act = (control, action, env) => {
     if (inFlight.get(control)?.poll === false) {
@@ -190,10 +208,20 @@ export const act = (control, action, env) => {
     // a person acted: the sending is followed from now on, as after a load
     Object.assign(pollOf(control, env), { since: env.now(), failures: 0 });
     const lost = () => refresh(control, env, '');
+    const shown = (action === 'stats') ? env.statsOf(control) : null;
+    if (shown) {
+        shown.remove();
+        return;
+    }
     const run = (mb_action) => {
         const id = begin(control, env, false, lost);
         env.respond({ mb_action, ...params(control) }, (html) => {
-            if (settle(control, id)) {
+            if (!settle(control, id)) {
+                return;
+            }
+            if (mb_action === 'stats') {
+                env.insertStats(control, html);
+            } else {
                 show(control, html, env);
             }
         }, (data) => {

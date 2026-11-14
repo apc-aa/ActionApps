@@ -35,6 +35,7 @@ namespace Tests\Unit\Mailbulk {
     use AA\Mailbulk\Outcome;
     use AA\Mailbulk\Recipients;
     use AA\Mailbulk\Run;
+    use AA\Mailbulk\StatsView;
     use AA_Collection;
     use Closure;
     use PHPUnit\Framework\Attributes\DataProvider;
@@ -107,6 +108,15 @@ namespace Tests\Unit\Mailbulk {
         public function testReader(string $address): ?string
         {
             return self::$selection[0] ?? null;
+        }
+    }
+
+    /** The statistics block over the test's runs. */
+    final class GateStatsView extends StatsView
+    {
+        protected function campaign(string $list, string $itemId): Campaign
+        {
+            return TestCampaign::of($list, $itemId);
         }
     }
 
@@ -211,6 +221,11 @@ namespace Tests\Unit\Mailbulk {
         protected function siteUrl(string $list): string
         {
             return self::$siteUrl;
+        }
+
+        protected function statsView(): StatsView
+        {
+            return new GateStatsView();
         }
     }
 
@@ -392,10 +407,10 @@ namespace Tests\Unit\Mailbulk {
         {
             return [
                 'never sent' => [null, [], ['test', 'send'], []],
-                'sending'    => [Run::SENDING, ['cursor' => '2', 'outcomes' => '{"1":"f"}'], ['stop'], ['Sending 2 / 4']],
-                'stopped'    => [Run::ENDED, ['cursor' => '2'], ['send'], ['Stopped 2 / 4']],
-                'error'      => [Run::ERROR, ['cursor' => '1', 'note' => 'SMTP is down'], ['resume', 'stop'], ['SMTP is down', '1 / 4']],
-                'done'       => [Run::DONE, ['cursor' => '4', 'outcomes' => '{"3":"s"}', 'finished' => '1900000000'], ['send'], [date('Y-m-d H:i', 1900000000), 'sent 3, skipped 1']],
+                'sending'    => [Run::SENDING, ['cursor' => '2', 'outcomes' => '{"1":"f"}'], ['stop', 'stats'], ['Sending 2 / 4']],
+                'stopped'    => [Run::ENDED, ['cursor' => '2'], ['send', 'stats'], ['Stopped 2 / 4']],
+                'error'      => [Run::ERROR, ['cursor' => '1', 'note' => 'SMTP is down'], ['resume', 'stop', 'stats'], ['SMTP is down', '1 / 4']],
+                'done'       => [Run::DONE, ['cursor' => '4', 'outcomes' => '{"3":"s"}', 'finished' => '1900000000'], ['send', 'stats'], [date('Y-m-d H:i', 1900000000), 'sent 3, skipped 1']],
             ];
         }
 
@@ -505,7 +520,7 @@ namespace Tests\Unit\Mailbulk {
             [$html, $error] = (new TestGate())->act('send', self::LIST, self::ITEM);
 
             self::assertSame(0, $error);
-            self::assertSame(['stop'], self::actions($html));
+            self::assertSame(['stop', 'stats'], self::actions($html));
             $ids = self::runIds();
             self::assertCount(1, $ids);
             $stored = self::stored($ids[0]);
@@ -586,7 +601,7 @@ namespace Tests\Unit\Mailbulk {
 
             self::assertSame(0, $error);
             self::assertSame(Run::ENDED, self::stored($id)['state']);
-            self::assertSame(['send'], self::actions($html));
+            self::assertSame(['send', 'stats'], self::actions($html));
             self::assertSame(Gate::ERR_FAILED, (new TestGate())->act('stop', self::LIST, self::ITEM)[1], 'nothing left to stop');
         }
 
@@ -599,6 +614,48 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame(0, $error);
             self::assertSame(Run::SENDING, self::stored($id)['state']);
             self::assertSame([$id], self::runIds());
+        }
+
+        public function test_control_withoutRuns_hasNoStatsButton(): void
+        {
+            self::assertSame(['test', 'send'], self::actions((new TestGate())->control(self::LIST, self::ITEM)));
+
+            self::sending(2, Run::DONE, ['cursor' => '2']);
+            self::assertSame(['send', 'stats'], self::actions((new TestGate())->control(self::LIST, self::ITEM)));
+
+            TestGate::$relates = false;
+            self::assertSame([], self::actions((new TestGate())->control(self::LIST, self::ITEM)), 'a list that left the slice offers nothing but stopping');
+        }
+
+        // the same block as the Alerts page shows
+        public function test_act_stats_returnsTheBlock(): void
+        {
+            TableDb::$tables['alerts_collection'] = [['id' => self::LIST, 'slice_id' => '', 'module_id' => '', 'emailid_welcome' => null, 'emailid_alert' => null, 'stat_slice_id' => '']];
+            self::assertSame(['', 0], (new TestGate())->act('stats', self::LIST, self::ITEM), 'nothing sent yet');
+
+            $id   = self::sending(2, Run::DONE, ['cursor' => '2', 'outcomes' => '{"1":"f"}', 'finished' => '1900000000']);
+            $list = new AA_Collection(self::LIST);
+            $list->stat_slice_id = '';
+
+            [$html, $error] = (new TestGate())->act('stats', self::LIST, strtoupper(self::ITEM));
+
+            self::assertSame(0, $error);
+            self::assertStringStartsWith('<div class="aa-mailbulk-stats">', $html);
+            self::assertSame((new GateStatsView())->mailing($list, self::ITEM), $html);
+            self::assertSame(Run::DONE, self::stored($id)['state'], 'nothing changed');
+            self::assertSame([], TestGate::$opened, 'no letter made');
+        }
+
+        public function test_act_stats_withoutRight_isError(): void
+        {
+            self::sending(2, Run::DONE, ['cursor' => '2']);
+
+            TestGate::$mayEdit = false;
+            self::assertSame(['You may not send this item', Gate::ERR_DENIED], (new TestGate())->act('stats', self::LIST, self::ITEM));
+
+            TestGate::$mayEdit = true;
+            TestGate::$relates = false;
+            self::assertSame(Gate::ERR_DENIED, (new TestGate())->act('stats', self::LIST, self::ITEM)[1], 'a list not of the slice');
         }
 
         public function test_act_unknownAction_isError(): void
