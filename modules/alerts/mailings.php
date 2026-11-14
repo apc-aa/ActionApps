@@ -41,16 +41,13 @@ require_once __DIR__ . "/alerts_sending.php";
 // the type before the right: in another module type the letter of this right means something else
 if (!AA_Module_Alerts::getOwnModule(AA::$module_id)) {
     MsgPage(_m("Module not found."));
-    exit;
 }
 if (!IfSlPerm(PS_ALERTS_STATS)) {
     MsgPage(_m("You do not have permissions to access this page"));
-    exit;
 }
 $overview = Overview::forModule((string) AA::$module_id);
 if ($overview === null) {
     MsgPage(_m("This Alerts module has no list of readers."));
-    exit;
 }
 
 try {

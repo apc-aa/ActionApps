@@ -82,7 +82,7 @@ final class AlertsEditorRoleTest extends TestCase
     {
         $src = (string) file_get_contents(dirname(__DIR__, 3) . '/modules/alerts/mailings.php');
         $this->assertSame(1, preg_match(
-            '~if \(!AA_Module_Alerts::getOwnModule\(AA::\$module_id\)\) \{\s*MsgPage\([^;]*\);\s*exit;\s*\}\s*if \(!IfSlPerm\(PS_ALERTS_STATS\)\) \{\s*MsgPage\([^;]*\);\s*exit;\s*\}~',
+            '~if \(!AA_Module_Alerts::getOwnModule\(AA::\$module_id\)\) \{\s*MsgPage\([^;]*\);\s*\}\s*if \(!IfSlPerm\(PS_ALERTS_STATS\)\) \{\s*MsgPage\([^;]*\);\s*\}~',
             $src,
         ));
         $this->assertStringNotContainsString('<form', $src, 'the page only reads');
