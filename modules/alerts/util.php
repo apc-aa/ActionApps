@@ -146,12 +146,15 @@ const ALERTS_ONE_CLICK_PARAM = 'one';
  *  Mail services and link scanners open the header link by GET, so that link unsubscribes only by POST:
  *  RFC 8058 posts List-Unsubscribe=One-Click with no cookies, the button of unsubscribe_ask() posts the same.
  *  The link in the mail body unsubscribes on GET, as it always did.
+ *  On a fillform (SSI) page the header link never unsubscribes: GET only asks and a POST does not reach the include.
  *  @param string $one    the ALERTS_ONE_CLICK_PARAM of the URL; never from $_REQUEST, a cookie would override it
  *  @param array  $server $_SERVER
  *  @param array  $post   $_POST
  *  @return bool|null     null = the header link opened by GET: show unsubscribe_ask() */
 function unsubscribe_request($slice_id, $au, $c, $one, array $server, array $post): ?bool
 {
+    // the page cache keys by the address and the POST body - a stored answer would skip the next unsubscribe
+    AA::Pagecache()->switchCacheNostore();
     $one_click = (strtoupper((string) ($server['REQUEST_METHOD'] ?? '')) === 'POST') && (($post['List-Unsubscribe'] ?? '') === 'One-Click');
     if (!empty($one) && !$one_click) {
         return null;
@@ -162,7 +165,8 @@ function unsubscribe_request($slice_id, $au, $c, $one, array $server, array $pos
 /** The button for the header link opened by GET. No action - the form posts to the URL of the page, au and c included. */
 function unsubscribe_ask(): string
 {
-    return '<form method="post" class="aa-unsubscribe"><input type="hidden" name="List-Unsubscribe" value="One-Click">'
+    return '<form method="post" class="aa-unsubscribe"><p>' . safe(_m('Do you want to stop receiving the mails of this list?')) . '</p>'
+        . '<input type="hidden" name="List-Unsubscribe" value="One-Click">'
         . '<button type="submit">' . safe(_m('Unsubscribe')) . '</button></form>';
 }
 

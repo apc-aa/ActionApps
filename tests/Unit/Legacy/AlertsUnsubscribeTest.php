@@ -26,6 +26,8 @@ namespace {
 
 namespace Tests\Unit\Legacy {
 
+    use AA;
+    use AA\Cache\PageCache;
     use AA_Field;
     use PHPUnit\Framework\Attributes\WithoutErrorHandler;
     use PHPUnit\Framework\TestCase;
@@ -65,8 +67,12 @@ namespace Tests\Unit\Legacy {
             self::$slice = new FakeSlice(self::SLICE);
         }
 
+        private ?PageCache $pagecache = null;
+
         protected function setUp(): void
         {
+            $this->pagecache = (new \ReflectionProperty(AA::class, 'pagecache'))->getValue();
+            (new \ReflectionProperty(AA::class, 'pagecache'))->setValue(null, new PageCache(600));
             RecordingDb::reset();
             $GLOBALS['spareDBs'] = [new RecordingDb()];
             $GLOBALS['err']      = [];
@@ -94,6 +100,7 @@ namespace Tests\Unit\Legacy {
 
         protected function tearDown(): void
         {
+            (new \ReflectionProperty(AA::class, 'pagecache'))->setValue(null, $this->pagecache);
             $GLOBALS['spareDBs'] = [];
             RecordingDb::reset();
         }
@@ -267,6 +274,32 @@ namespace Tests\Unit\Legacy {
             $this->assertFalse(@unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::POST, self::ONE_CLICK));   // warn() about the count
         }
 
+        private function pageStorable(): bool
+        {
+            return !(new \ReflectionProperty(PageCache::class, 'cache_nostore'))->getValue(AA::Pagecache());
+        }
+
+        /** the page cache keys a page by its address and POST body - a stored "unsubscribed" would answer
+         *  the next identical request without unsubscribing a reader who subscribed again meanwhile */
+        #[WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_unsubscribe_request_anyAnswer_isNotStoredInThePageCache(): void
+        {
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+            $this->assertTrue($this->pageStorable());
+
+            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::POST, self::ONE_CLICK));
+            $this->assertFalse($this->pageStorable(), 'one-click POST');
+
+            (new \ReflectionProperty(AA::class, 'pagecache'))->setValue(null, new PageCache(600));
+            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::GET, []));
+            $this->assertFalse($this->pageStorable(), 'the question of the header link');
+
+            (new \ReflectionProperty(AA::class, 'pagecache'))->setValue(null, new PageCache(600));
+            $this->readers = [];
+            $this->assertFalse(@unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '', self::GET, []));
+            $this->assertFalse($this->pageStorable(), 'an unknown code');
+        }
+
         /** the button posts the RFC 8058 body to the very address it was opened at */
         public function test_unsubscribe_ask_postsTheOneClickBodyToTheSameAddress(): void
         {
@@ -276,6 +309,7 @@ namespace Tests\Unit\Legacy {
             $this->assertStringNotContainsString('action=', $html, 'no action - the form posts to the URL of the page, au and c included');
             $this->assertStringContainsString('<input type="hidden" name="List-Unsubscribe" value="One-Click">', $html);
             $this->assertStringContainsString('<button type="submit">', $html);
+            $this->assertStringContainsString('<p>Do you want to stop receiving the mails of this list?</p>', $html, 'the button says what it does');
         }
     }
 }
