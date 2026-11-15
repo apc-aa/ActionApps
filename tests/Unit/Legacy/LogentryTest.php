@@ -251,6 +251,17 @@ final class LogentryTest extends TestCase
         $this->assertSame('cron.php>alerts_sending.php:175', $back->origin);
     }
 
+    /** A mailing names its run in place of the template - no link to a template that is not there */
+    public function test_mail_selector_runOfAMailing_printsNoTemplateLink(): void
+    {
+        $run  = (new AA_Logentry_Mailid(['cls' => 'AA_Mail', 'template' => 'c24ef6d6bb4b339d6dafb266c66e66e8', 'reader' => 'a0000000000000000000000000000001']))->getPrintRow();
+        $tmpl = (new AA_Logentry_Mailid(['cls' => 'AA_Mail', 'template' => '30']))->getPrintRow();
+
+        $this->assertStringContainsString('c24ef6d6bb4b339d6dafb266c66e66e8', $run);
+        $this->assertStringNotContainsString('aa_emails.php', $run);
+        $this->assertStringContainsString('aa_emails.php?id=30', $tmpl);
+    }
+
     // --- AA_Logentry_Csn: the feed row's `params` -------------------------
 
     /** `detail` is whatever the remote end sent instead of XML. Stored raw it

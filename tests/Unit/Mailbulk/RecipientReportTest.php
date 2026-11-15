@@ -30,8 +30,9 @@ namespace Tests\Unit\Mailbulk {
     use AA\Mailbulk\RecipientReport;
     use AA\Mailbulk\Run;
     use AA\Mailbulk\Stats;
+    use AA\Later\LogCleanup;
     use AA_Collection;
-    use AA_Logentry_Ms;
+    use AA_Logentry_Mailid;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Later\Fixtures\BatchRunTables;
     use Tests\Unit\Mailbulk\Fixtures\TestCampaign;
@@ -43,6 +44,7 @@ namespace Tests\Unit\Mailbulk {
     require_once __DIR__ . '/Fixtures/TestRun.php';
     require_once __DIR__ . '/Fixtures/TestCampaign.php';
     require_once __DIR__ . '/../../../modules/alerts/alerts_sending.php';
+    require_once __DIR__ . '/../../../include/mail.php';
 
     /** The events per reader the test says, and whether anyone asked. */
     final class ReaderStats extends Stats
@@ -64,9 +66,9 @@ namespace Tests\Unit\Mailbulk {
     {
         /** @var array<string, string> reader => address */
         public static array $emails = [];
-        /** @var list<array{time: int, params: string}> */
+        /** @var list<array{time: int, selector: string}> */
         public static array $log = [];
-        /** @var list<list<array{int, int}>> the windows of each read of the log */
+        /** @var list<string> the run of each read of the log */
         public static array $logReads = [];
         /** @var list<int> how many readers each read of the addresses asked for */
         public static array $emailReads = [];
@@ -87,10 +89,11 @@ namespace Tests\Unit\Mailbulk {
             return array_intersect_key(self::$emails, array_flip($ids));
         }
 
-        protected function sendLog(array $windows): array
+        protected function sendLog(string $runId): array
         {
-            self::$logReads[] = $windows;
-            return self::$log;
+            self::$logReads[] = $runId;
+            $start            = \AA_Mail::logSelectorStart($runId);
+            return array_values(array_filter(self::$log, static fn(array $row): bool => str_starts_with($row['selector'], $start)));
         }
 
         protected function stats(): Stats
@@ -177,19 +180,23 @@ namespace Tests\Unit\Mailbulk {
             return $id;
         }
 
-        /** the first run: 0 sent, 1 failed, 2 skipped, 3 uncertain; the second: 1 sent, 2 failed */
-        private static function twoRuns(): void
+        /** the first run: 0 sent, 1 failed, 2 skipped, 3 uncertain; the second: 1 sent, 2 failed
+         *  @return array{string, string} the ids of the runs */
+        private static function twoRuns(): array
         {
-            self::sending([0, 1, 2, 3], Run::DONE, ['cursor' => '4', 'outcomes' => '{"1":"f","2":"s","3":"u"}'], self::FIRST);
-            self::sending([1, 2], Run::DONE, ['cursor' => '2', 'outcomes' => '{"1":"f"}'], self::SECOND);
+            $first  = self::sending([0, 1, 2, 3], Run::DONE, ['cursor' => '4', 'outcomes' => '{"1":"f","2":"s","3":"u"}'], self::FIRST);
+            $second = self::sending([1, 2], Run::DONE, ['cursor' => '2', 'outcomes' => '{"1":"f"}'], self::SECOND);
             foreach ([0, 1, 2, 3, 4] as $i) {
                 TestRecipientReport::$emails[self::reader($i)] = "r$i@example.org";
             }
+            return [$first, $second];
         }
 
-        private static function logged(int $time, string $to): array
+        /** the MAIL_SEND row of a mail of run $run to reader $i, as AaMailer names it */
+        private static function logged(int $time, string $run, int $i): array
         {
-            return ['time' => $time, 'params' => AA_Logentry_Ms::make('smtp', 1, '250 Ok', $to, 'Newsletter')->serializeToString()];
+            $selector = new AA_Logentry_Mailid(['cls' => 'AA_Mail', 'template' => $run, 'reader' => self::reader($i), 'origin' => 'toexecute.php>Run.php:400']);
+            return ['time' => $time, 'selector' => $selector->serializeToString(true)];
         }
 
         /** @return list<list<string>> the text of the cells of each row of the table of $class */
@@ -235,27 +242,36 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame([4], TestRecipientReport::$emailReads, 'the addresses of the four readers in one read');
         }
 
-        public function test_rows_timeFromTheLogInTheWindowOfTheRun_elseTheRunStart(): void
+        public function test_rows_timeFromTheLogRowsOfTheRun_elseTheRunStart(): void
         {
-            self::twoRuns();
-            $long = 'a.very.long.name.of.a.reader@sub.example.org';
-            TestRecipientReport::$emails[self::reader(0)] = $long;
+            [$first, $second] = self::twoRuns();
             TestRecipientReport::$log = [
-                self::logged(self::FIRST + 10, $long),                       // a try before - the later one counts
-                self::logged(self::FIRST + 20, strtoupper($long)),
-                self::logged(self::NOW + 9000, $long),                      // another mail, long after the run
-                self::logged(self::SECOND + 5, 'r2@example.org'),
-                self::logged(self::FIRST + 30, 'r1@example.org'),           // the first run: not the last of r1
-                self::logged(self::FIRST + 40, 'r1@example.org+1'),         // a mail to more people
+                self::logged(self::FIRST + 10, $first, 0),               // a try before - the later one counts
+                self::logged(self::FIRST + 20, $first, 0),
+                self::logged(self::SECOND + 5, $second, 2),
+                self::logged(self::FIRST + 30, $first, 1),               // the first run: not the last of r1
+                self::logged(self::FIRST + 40, 'feedfeedfeedfeedfeedfeedfeedfeed', 3),   // another run
             ];
 
             $rows = array_column(self::report()->rows(), null, 'email');
 
-            self::assertSame([self::FIRST + 20, true], [$rows[$long]['sent'], $rows[$long]['logged']], 'the log keeps 36 bytes of the address, in any case');
-            self::assertSame([self::SECOND, false], [$rows['r1@example.org']['sent'], $rows['r1@example.org']['logged']], 'no row in the window of the second run: its start');
+            self::assertSame([self::FIRST + 20, true], [$rows['r0@example.org']['sent'], $rows['r0@example.org']['logged']], 'the last attempt');
+            self::assertSame([self::SECOND, false], [$rows['r1@example.org']['sent'], $rows['r1@example.org']['logged']], 'no row of the second run: its start');
             self::assertSame([self::SECOND + 5, true], [$rows['r2@example.org']['sent'], $rows['r2@example.org']['logged']], 'a failed mail at its attempt');
             self::assertSame([self::FIRST, false], [$rows['r3@example.org']['sent'], $rows['r3@example.org']['logged']]);
-            self::assertSame([[[self::FIRST - 60, self::FIRST + 160], [self::SECOND - 60, self::SECOND + 160]]], TestRecipientReport::$logReads, 'one read, the windows of both runs');
+            self::assertSame([$first, $second], TestRecipientReport::$logReads, 'one read for each run a mail went in');
+        }
+
+        /** a mail that could not be made was never sent - no time, not even of the run */
+        public function test_rows_mailNotMade_hasNoTime(): void
+        {
+            self::sending([0, 1], Run::DONE, ['cursor' => '2', 'outcomes' => '{"1":"f"}', 'notes' => '{"1":"The mail could not be rendered."}'], self::FIRST);
+            TestRecipientReport::$emails = [self::reader(0) => 'r0@example.org', self::reader(1) => 'r1@example.org'];
+
+            $rows = array_column(self::report()->rows(), null, 'email');
+
+            self::assertSame(['failed', 0], [$rows['r1@example.org']['outcome'], $rows['r1@example.org']['sent']]);
+            self::assertSame(self::FIRST, $rows['r0@example.org']['sent']);
         }
 
         public function test_rows_skippedOrNotTriedYet_haveNoTime(): void
@@ -322,6 +338,7 @@ namespace Tests\Unit\Mailbulk {
                 ['r0@example.org', 'Sent', '≈ ' . date('Y-m-d H:i', self::FIRST), date('Y-m-d H:i', self::FIRST + 500),
                     date('Y-m-d H:i', self::FIRST + 600) . ' https://example.org/a ' . date('Y-m-d H:i', self::FIRST + 700) . ' https://example.org/b'],
             ], $cells, 'a time from the start of the run is marked');
+            self::assertStringContainsString('title="When the run started: the log keeps the time of each mail for ' . LogCleanup::KEEP_DAYS . ' days"', $report->table($report->rows('clicked')));
         }
 
         public function test_table_withoutStatSlice_deliveryOnly(): void
@@ -392,7 +409,7 @@ namespace Tests\Unit\Mailbulk {
                 self::reader(1) => '@SUM(1+1)@example.org',
                 self::reader(2) => "\t-2+3@example.org",
             ];
-            TestRecipientReport::$log = [self::logged(self::FIRST + 10, '@SUM(1+1)@example.org')];
+            TestRecipientReport::$log = [self::logged(self::FIRST + 10, TestRun::ofPair(self::ITEM, self::LIST)[0]->getId(), 1)];
             ReaderStats::$readers = [self::reader(1) => ['opened' => self::FIRST + 50, 'clicks' => [
                 ['url' => '+https://example.org/a', 'time' => self::FIRST + 60],
                 ['url' => 'https://example.org/b', 'time' => self::FIRST + 70],
@@ -418,9 +435,9 @@ namespace Tests\Unit\Mailbulk {
                 'one line per click in one cell',
             );
             self::assertSame(
-                ["'=HYPERLINK(\"https://evil.example\")@example.org", 'Sent', date('Y-m-d H:i', self::FIRST), '', ''],
+                ["'=HYPERLINK(\"https://evil.example\")@example.org", 'Sent', '≈ ' . date('Y-m-d H:i', self::FIRST), '', ''],
                 $byEmail["'=HYPERLINK(\"https://evil.example\")@example.org"],
-                'a formula is only text; a time from the run is plain in the file',
+                'a formula is only text; a time from the run is marked as in the table',
             );
             self::assertSame("'\t-2+3@example.org", $lines[1][0], 'a tab in front is neutralised too');
             self::assertSame('Failed', $lines[1][1]);

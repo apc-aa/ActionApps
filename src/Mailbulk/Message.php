@@ -17,13 +17,15 @@ final class Message
         'to', 'cc', 'bcc', 'from', 'subject', 'sender', 'reply-to', 'errors-to', 'return-path', 'mime-version', 'message-id', 'date',
     ];
 
-    /** @param array<string, string> $headers name => value, e.g. List-Unsubscribe */
+    /** @param array<string, string> $headers name => value, e.g. List-Unsubscribe
+     *  @param string $readerId the long id of the reader the mail is for - the log names it; '' = none */
     public function __construct(
         public readonly string $to,
         public readonly string $subject,
         public readonly string $html,
         public readonly string $from,
         public readonly array $headers = [],
+        public readonly string $readerId = '',
     ) {
         if (preg_match('/[\r\n\x00,;]/', $to)) {
             throw new InvalidArgumentException('Message: one recipient address expected');

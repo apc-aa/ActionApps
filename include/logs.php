@@ -998,14 +998,15 @@ class AA_Logentry_Mailid extends AA_Logentry
     }
 
     /** Same key-value table as the parent, except the template id links to the
-     *  template it names. Both this page and admin/aa_emails.php are
-     *  superadmin-only, so the link needs no extra permission check. */
+     *  template it names - a mailing puts the id of its run there, no template.
+     *  Both this page and admin/aa_emails.php are superadmin-only, so the link
+     *  needs no extra permission check. */
     public function getPrintRow(): string
     {
         $arr = [];
         foreach (static::getClassProperties() as $id => $prop) {
             $value = trim($this->$id);
-            $arr[safe($prop->name)] = ($id === 'template' && $value !== '')
+            $arr[safe($prop->name)] = ($id === 'template' && ctype_digit($value))
                 ? '<a href="' . safe(AA_INSTAL_PATH . 'admin/aa_emails.php?id=' . $value) . '">' . safe($value) . '</a>'
                 : safe($value);
         }
@@ -1024,7 +1025,7 @@ class AA_Logentry_Ms extends AA_Logentry
      *  one because a whole SMTP reply is what makes the mail findable in the MTA
      *  log: `250 2.0.0 67VCcxIC4029086 Message accepted for delivery` is 54 B,
      *  and the queue id in the middle of it is worthless if the tail is cut. */
-    public const VALUE_MAX = ['resp' => 64, 'to' => 36, 'subj' => 44];
+    private const VALUE_MAX = ['resp' => 64, 'to' => 36, 'subj' => 44];
 
     /** Which property gives up its tail first when the row still does not fit.
      *  `subj` leads: a shortened subject still identifies the mail, and where a

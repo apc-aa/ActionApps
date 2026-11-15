@@ -99,6 +99,34 @@ final class AaMailerTest extends TestCase
         return [$mailer->send(), $mailer->detail()];
     }
 
+    /** the log row of a mail of a run names the run and the reader - the recipients of a mailing are found by it */
+    public function test_prepare_ofARun_namesTheRunAndTheReaderInTheLog(): void
+    {
+        $mail   = new ScriptedAaMail();
+        $mailer = new AaMailer(static fn(): \AA_Mail => $mail, 'c24ef6d6bb4b339d6dafb266c66e66e8');
+        $mailer->prepare(new Message('reader@example.org', 'News', '<p>Hello</p>', 'news@example.org', readerId: 'a0000000000000000000000000000001'));
+
+        $selector = $mail->logSelector();
+        self::assertSame(['c24ef6d6bb4b339d6dafb266c66e66e8', 'a0000000000000000000000000000001'], [$selector->template, $selector->reader]);
+    }
+
+    /** the start of the selector is what the log index searches the mails of a run by */
+    public function test_logSelectorStart_isTheStartOfTheSelectorOfTheRun(): void
+    {
+        $selector = (new \AA_Logentry_Mailid(['cls' => 'AA_Mail', 'template' => 'c24ef6d6bb4b339d6dafb266c66e66e8', 'reader' => 'a0000000000000000000000000000001', 'origin' => 'toexecute.php>Run.php:400']))->serializeToString(true);
+
+        self::assertStringStartsWith(\AA_Mail::logSelectorStart('c24ef6d6bb4b339d6dafb266c66e66e8'), $selector);
+        self::assertSame('AA_Mail:c24ef6d6bb4b339d6dafb266c66e66e8:', \AA_Mail::logSelectorStart('c24ef6d6bb4b339d6dafb266c66e66e8'));
+    }
+
+    public function test_prepare_withoutARun_namesNothing(): void
+    {
+        $mail = new ScriptedAaMail();
+        (new AaMailer(static fn(): \AA_Mail => $mail))->prepare(new Message('reader@example.org', 'News', '<p>Hello</p>', 'news@example.org', readerId: 'a0000000000000000000000000000001'));
+
+        self::assertSame(['', ''], [$mail->logSelector()->template, $mail->logSelector()->reader]);
+    }
+
     public function test_send_ok_isSent(): void
     {
         self::assertSame(Outcome::Sent, self::sendAnswered(1)[0]);

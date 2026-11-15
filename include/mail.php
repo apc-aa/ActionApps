@@ -182,6 +182,18 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
         return $this->template_id.':'.$this->reader_id;
     }
 
+    /** Names a mail not made from a template in the log - a mailing gives its run and the reader */
+    public function setLogIds(string $template_id, string $reader_id): void {
+        $this->template_id = $template_id;
+        $this->reader_id   = $reader_id;
+    }
+
+    /** The start of the log selector of the mails named by $template_id - a prefix the index type_selector_time
+     *  finds them by (logSelector() writes the class first, then the template) */
+    public static function logSelectorStart(string $template_id): string {
+        return get_class_name(static::class) . ':' . ParamImplode([$template_id]) . ':';
+    }
+
     /** How this mail identifies itself in the log - picked up by AA_Log::selector(),
      *  so the MAIL_SEND row and the TOEXECUTE row of the same queued mail carry
      *  the identical selector. */

@@ -59,9 +59,9 @@ class ScheduleAaTasks implements LaterInterface
         // we plan this tasks for future (tomorrow)
         // it should be enough to clean the logs once a day
 
-        // clean all older than 40 days
+        // clean all older than LogCleanup::KEEP_DAYS
         //                                                                what to clean                                                                       when to run
-        $toexecute->laterOnce(new LogCleanup(now() - (60 * 60 * 24 * 40), [], ['LOGIN', 'BM_CREATE', 'BM_DELETE', 'BM_RENAME', 'BM_UPDATE', 'SYS_STAT', StateCheck::EVENT, LoginLatch::LOG_EVENT, LdapPermsToSql::LOG_TYPE]), [], "LogCleanup", 10, now() + (60 * 60 * 24));  // delete all log entries older than 40 days except LOGINs and Bookmark opperations
+        $toexecute->laterOnce(new LogCleanup(now() - (60 * 60 * 24 * LogCleanup::KEEP_DAYS), [], ['LOGIN', 'BM_CREATE', 'BM_DELETE', 'BM_RENAME', 'BM_UPDATE', 'SYS_STAT', StateCheck::EVENT, LoginLatch::LOG_EVENT, LdapPermsToSql::LOG_TYPE]), [], "LogCleanup", 10, now() + (60 * 60 * 24));  // delete all log entries older than KEEP_DAYS except LOGINs and Bookmark opperations
 
         $toexecute->laterOnce(new LogSystemstatus(), [], "LogSystemstatus", 10, now() + 600);  // log system status every 10 minutes
 

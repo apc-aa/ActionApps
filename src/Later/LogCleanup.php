@@ -32,6 +32,9 @@ namespace AA\Later;
 
 class LogCleanup implements LaterInterface
 {
+    /** the log keeps most rows this many days (ScheduleAaTasks) */
+    public const KEEP_DAYS = 40;
+
     /** @var int delete older than $time in seconds */
     protected int   $time;
 

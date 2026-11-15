@@ -110,6 +110,7 @@ class ItemLetter implements Letter
             $html,
             $this->from($item),
             $headers,
+            $readerId,
         );
     }
 

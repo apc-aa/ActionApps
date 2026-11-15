@@ -165,7 +165,7 @@ class Run extends BatchRun
 
     protected function mailer(): Mailer
     {
-        return new AaMailer();
+        return new AaMailer(null, (string) $this->getId());
     }
 
     /** the slices of the readers and of the item, open only during a step: a queue process runs other tasks after it
@@ -317,6 +317,19 @@ class Run extends BatchRun
             $upto[(int) $this->mark] = $ids[(int) $this->mark] ?? '';
         }
         return array_values(array_filter(array_diff_key($upto, $not), static fn(string $id): bool => $id !== ''));
+    }
+
+    /** The readers no mail could be made for (notMade()) - none went to them. Known while their note is kept
+     *  (MAX_NOTES); a reader past it counts as one a mail went to.
+     *  @return array<string, true> long id => true */
+    public function notMadeFor(): array
+    {
+        $notes = ((string) $this->notes === '') ? [] : json_decode((string) $this->notes, true);
+        $at    = is_array($notes) ? array_keys($notes, self::NOT_MADE, true) : [];
+        if (!$at) {
+            return [];
+        }
+        return array_fill_keys(array_values(array_intersect_key(Recipients::ids((string) $this->recipients), array_flip($at))), true);
     }
 
     /** What came of each reader, for figures over several runs: an Outcome value; '' = not tried yet in a

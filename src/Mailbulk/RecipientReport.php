@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace AA\Mailbulk;
 
 use AA\IO\DB\DB_AA;
+use AA\Later\LogCleanup;
 use AA_Collection;
 use AA_Logentry;
-use AA_Logentry_Ms;
+use AA_Logentry_Mailid;
 use zids;
 
 /**
@@ -29,8 +30,8 @@ class RecipientReport
     public const PER_PAGE = 100;
     /** readers whose addresses one GetItemContent() call reads */
     private const CHUNK = 500;
-    /** the log row of a mail is written after the run noted its start, and before the run noted its end */
-    private const MARGIN = 60;
+    /** in front of a time that is the start of the run, not of the mail */
+    private const ROUGHLY = '≈ ';
     /** the start of a CSV file that tells a spreadsheet it is UTF-8 */
     private const BOM = "\u{FEFF}";
 
@@ -60,7 +61,8 @@ class RecipientReport
 
     /**
      * The recipients $filter keeps, by address. sent = when the mail went (the last attempt in the log), or the
-     * start of the run when the log has no row (it keeps 40 days) - logged says which; 0 = no mail went.
+     * start of the run when the log has no row (it keeps LogCleanup::KEEP_DAYS days) - logged says which; 0 = no
+     * mail went (skipped, not tried yet, or the mail could not be made).
      * @return list<array{reader: string, email: string, outcome: string, sent: int, logged: bool, opened: int,
      *         clicks: list<array{url: string, time: int}>}> email '' = the reader is gone; outcome '' = not tried yet
      */
@@ -92,7 +94,7 @@ class RecipientReport
             $cells = [
                 ($row['email'] === '') ? '<em>' . safe(_m('Not in the list any more')) . '</em>' : safe($row['email']),
                 safe(self::outcome($row['outcome'])),
-                (($row['sent'] > 0) && !$row['logged']) ? '<span title="' . safe(_m('When the run started: the log keeps the time of each mail for 40 days')) . "\">≈ $sent</span>" : $sent,
+                (($row['sent'] > 0) && !$row['logged']) ? '<span title="' . safe(_m('When the run started: the log keeps the time of each mail for %1 days', [LogCleanup::KEEP_DAYS])) . '">' . self::ROUGHLY . "$sent</span>" : $sent,
             ];
             if ($this->measured()) {
                 $clicks = '';
@@ -146,7 +148,8 @@ class RecipientReport
         fwrite($out, self::BOM);
         fputcsv($out, array_map(self::csvCell(...), $this->labels()), ',', '"', '');
         foreach ($rows as $row) {
-            $line = [$row['email'], self::outcome($row['outcome']), StatsView::date($row['sent'])];
+            $sent = StatsView::date($row['sent']);
+            $line = [$row['email'], self::outcome($row['outcome']), (($row['sent'] > 0) && !$row['logged']) ? self::ROUGHLY . $sent : $sent];
             if ($this->measured()) {
                 $clicks = array_map(static fn(array $c): string => StatsView::date($c['time']) . ' ' . $c['url'], $row['clicks']);
                 array_push($line, StatsView::date($row['opened']), implode("\n", $clicks));
@@ -190,13 +193,12 @@ class RecipientReport
         return $emails;
     }
 
-    /** the MAIL_SEND rows of the log within the windows - one query on the index type_time
-     *  @param list<array{int, int}> $windows from, to (both included)
-     *  @return list<array{time: int|string, params: string}> */
-    protected function sendLog(array $windows): array
+    /** the MAIL_SEND rows of the mails of a run - AaMailer names the run in the selector, so the index
+     *  type_selector_time finds them by its start
+     *  @return list<array{time: int|string, selector: string}> */
+    protected function sendLog(string $runId): array
     {
-        $within = array_map(static fn(array $w): array => [['time', $w[0], '>='], ['time', $w[1], '<=']], $windows);
-        return DB_AA::select([], 'SELECT `time`, `params` FROM `log`', [['type', 'MAIL_SEND'], [null, $within, 'OR']]);
+        return DB_AA::select([], 'SELECT `time`, `selector` FROM `log`', [['type', 'MAIL_SEND'], ['selector', \AA_Mail::logSelectorStart($runId), 'BEGIN']]);
     }
 
     protected function stats(): Stats
@@ -222,13 +224,14 @@ class RecipientReport
             return [];
         }
         $emails = $this->emails(array_map('strval', array_keys($readers)));
-        $logged = $this->sendTimes($readers, $emails);
+        $logged = $this->sendTimes($readers);
         $events = $this->measured() ? $this->stats()->readers($this->list->getStatSliceId(), $this->campaign->itemId()) : [];
+        $unmade = [];
         $rows   = [];
         foreach ($readers as $id => ['outcome' => $outcome, 'run' => $run]) {
             $id     = (string) $id;
             $time   = $logged[$id] ?? 0;
-            $tried  = self::mailWent($outcome);
+            $tried  = self::mailWent($outcome) && !isset(($unmade[$run->getId()] ??= $run->notMadeFor())[$id]);
             $rows[] = [
                 'reader'  => $id,
                 'email'   => $emails[$id] ?? '',
@@ -245,51 +248,29 @@ class RecipientReport
     }
 
     /**
-     * When the mail of each reader went, from the MAIL_SEND rows in the window of the last run the reader was
-     * in - the last attempt there (a retry first fails). The row keeps the start of the address only.
+     * When the mail of each reader went: the last attempt (a retry first fails) among the MAIL_SEND rows of the
+     * run the reader was last in. A run made before the log named runs has none.
      * @param array<string, array{outcome: string, run: Run}> $readers
-     * @param array<string, string> $emails
      * @return array<string, int> long id => time; a reader without a row is not in it
      */
-    private function sendTimes(array $readers, array $emails): array
+    private function sendTimes(array $readers): array
     {
-        $windows = [];
-        foreach ($readers as ['outcome' => $outcome, 'run' => $run]) {
+        $runs = [];
+        foreach ($readers as $id => ['outcome' => $outcome, 'run' => $run]) {
             if (self::mailWent($outcome)) {
-                $windows[(string) $run->getId()] ??= self::window($run);
-            }
-        }
-        if (!$windows) {
-            return [];
-        }
-        $logged = [];
-        foreach ($this->sendLog(array_values($windows)) as $row) {
-            $entry = AA_Logentry::factoryByString((string) $row['params']);
-            if ($entry instanceof AA_Logentry_Ms) {
-                $logged[strtolower($entry->to)][] = (int) $row['time'];
+                $runs[$run->getId()][$id] = true;
             }
         }
         $times = [];
-        foreach ($readers as $id => ['outcome' => $outcome, 'run' => $run]) {
-            $address = strtolower(mb_strcut($emails[(string) $id] ?? '', 0, AA_Logentry_Ms::VALUE_MAX['to']));
-            if (!self::mailWent($outcome) || ($address === '') || !isset($logged[$address])) {
-                continue;
-            }
-            [$from, $to] = $windows[(string) $run->getId()];
-            $within      = array_filter($logged[$address], static fn(int $t): bool => ($t >= $from) && ($t <= $to));
-            if ($within) {
-                $times[(string) $id] = max($within);
+        foreach ($runs as $runId => $ids) {
+            foreach ($this->sendLog((string) $runId) as $row) {
+                $entry = AA_Logentry::factoryByStringReversed((string) $row['selector']);
+                if (($entry instanceof AA_Logentry_Mailid) && isset($ids[$entry->reader])) {
+                    $times[$entry->reader] = max($times[$entry->reader] ?? 0, (int) $row['time']);
+                }
             }
         }
         return $times;
-    }
-
-    /** @return array{int, int} the time a run sent in; one not finished yet till now */
-    private static function window(Run $run): array
-    {
-        $started  = (int) $run->getProperty('started');
-        $finished = (int) $run->getProperty('finished');
-        return [$started - self::MARGIN, (($finished > 0) ? $finished : max($started, time())) + self::MARGIN];
     }
 
     /** a mail went, or may have gone */

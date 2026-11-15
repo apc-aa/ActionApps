@@ -384,6 +384,7 @@ namespace Tests\Unit\Mailbulk {
             self::assertInstanceOf(Message::class, $bob);
             self::assertSame('anna@example.org', $anna->to);
             self::assertSame('bob@example.org', $bob->to);
+            self::assertSame([self::ANNA, self::BOB], [$anna->readerId, $bob->readerId], 'the log of the mail names the reader');
             self::assertSame('<p>Hi Anna</p><a href="' . self::URL . '?one=1&au=codeAnna&c=abcde">out</a> <a href="' . self::URL . '?ac=codeAnna">form</a>', $anna->html);
             self::assertSame('<p>Hi Bob</p><a href="' . self::URL . '?one=1&au=codeBob&c=abcde">out</a> <a href="' . self::URL . '?ac=codeBob">form</a>', $bob->html);
         }

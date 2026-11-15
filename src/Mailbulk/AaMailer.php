@@ -28,8 +28,9 @@ final class AaMailer implements Mailer
     private string $to     = '';
     private string $detail = '';
 
-    /** @param ?Closure(): AA_Mail $newMail a seam for the tests */
-    public function __construct(private readonly ?Closure $newMail = null) {}
+    /** @param ?Closure(): AA_Mail $newMail a seam for the tests
+     *  @param string $runId the run the mails go in - the log names it and the reader of each mail; '' = none */
+    public function __construct(private readonly ?Closure $newMail = null, private readonly string $runId = '') {}
 
     public function prepare(Message $message): void
     {
@@ -48,6 +49,9 @@ final class AaMailer implements Mailer
             'bcc'         => '',
             'attachments' => '',
         ]);
+        if ($this->runId !== '') {
+            $mail->setLogIds($this->runId, $message->readerId);
+        }
         if ($built) {
             foreach ($message->headers as $name => $value) {
                 $mail->setHeader($name, $value);
