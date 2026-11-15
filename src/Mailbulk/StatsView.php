@@ -32,7 +32,7 @@ class StatsView
         $statSlice = $list->getStatSliceId();
         if ($statSlice !== '') {
             $stats   = $this->stats();
-            $counts  = $stats->counts($statSlice, $itemId);
+            $counts  = $stats->counts($statSlice, $list->getId(), $itemId);
             $html   .= '<p class="aa-mailbulk-text">' . safe(_m('Opened %1, clicked %2', [$counts['opened'], $counts['clicked']])) . '</p>';
             $html   .= self::linksTable($stats->links($statSlice, $itemId));
         }
@@ -59,7 +59,8 @@ class StatsView
     private static function runsTable(array $runs, array $counts): string
     {
         $head = '';
-        foreach ([_m('Started'), _m('Finished'), _m('State'), _m('Recipients'), _m('Sent'), _m('Failed'), _m('Skipped'), _m('Uncertain')] as $label) {
+        $outcomes = array_map(static fn(Outcome $o): string => self::outcome($o->value), [Outcome::Sent, Outcome::Failed, Outcome::Skipped, Outcome::Uncertain]);
+        foreach ([_m('Started'), _m('Finished'), _m('State'), _m('Recipients'), ...$outcomes] as $label) {
             $head .= '<th scope="col">' . safe($label) . '</th>';
         }
         $body = '';
@@ -82,7 +83,7 @@ class StatsView
             $sums = [$counts['total'], $counts['sent'], $counts['failed'], $counts['skipped'], $counts['uncertain']];
             $foot = '<tfoot><tr><th scope="row" colspan="3">' . safe(_m('Total')) . '</th><td>' . implode('</td><td>', $sums) . '</td></tr></tfoot>';
         }
-        return '<table class="aa-mailbulk-runs"><thead><tr>' . $head . '</tr></thead><tbody>' . $body . '</tbody>' . $foot . '</table>';
+        return '<table class="aa-table aa-mailbulk-runs"><thead><tr>' . $head . '</tr></thead><tbody>' . $body . '</tbody>' . $foot . '</table>';
     }
 
     /** @param list<array{url: string, readers: int}> $links */
@@ -95,7 +96,7 @@ class StatsView
         foreach ($links as $link) {
             $rows .= '<tr><td>' . self::link($link['url']) . '</td><td>' . $link['readers'] . '</td></tr>';
         }
-        return '<table class="aa-mailbulk-links"><thead><tr><th scope="col">' . safe(_m('Link')) . '</th><th scope="col">' . safe(_m('Readers clicked')) . '</th></tr></thead><tbody>' . $rows . '</tbody></table>';
+        return '<table class="aa-table aa-mailbulk-links"><thead><tr><th scope="col">' . safe(_m('Link')) . '</th><th scope="col">' . safe(_m('Readers clicked')) . '</th></tr></thead><tbody>' . $rows . '</tbody></table>';
     }
 
     /** a clicked address as HTML: only a web address becomes a link - an event item may be edited by hand */
@@ -109,6 +110,19 @@ class StatsView
     public static function date(int $time): string
     {
         return ($time > 0) ? date('Y-m-d H:i', $time) : '';
+    }
+
+    /** the name of an Outcome value for people; '' = not tried yet */
+    public static function outcome(string $outcome): string
+    {
+        return match ($outcome) {
+            Outcome::Sent->value      => _m('Sent'),
+            Outcome::Failed->value    => _m('Failed'),
+            Outcome::Skipped->value   => _m('Skipped'),
+            Outcome::Uncertain->value => _m('Uncertain'),
+            ''                        => _m('Not sent yet'),
+            default                   => $outcome,
+        };
     }
 
     /** the name of a run state for people */

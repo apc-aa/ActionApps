@@ -91,10 +91,11 @@ const PS_MODP_EDIT_DESIGN    = "B";   // slice | change polls design
 // super         - possibly letters 'QRSTUVW'
 
 //---------- Alerts -----------------
-// The other pages of the module want PS_USERS or PS_FULLTEXT, so an editor sees only the mailings;
+// The other pages of the module want PS_USERS or PS_FULLTEXT, so an editor sees only the mailings with their
+// recipients (addresses and CSV included);
 // AA_Perm::MODULE_ROLES gives the Editor of the module no other letter.
 // editor        - possibly letters 'hijklmnopqrs'
-const PS_ALERTS_STATS          = "h";   // slice | see the mailings of the list and their statistics
+const PS_ALERTS_STATS          = "h";   // slice | see the mailings of the list, their statistics and recipients
 
 //---------- Links -----------------
 // author        - possibly letters 'abcdefg'

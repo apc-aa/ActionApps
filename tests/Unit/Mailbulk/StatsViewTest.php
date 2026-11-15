@@ -61,9 +61,9 @@ namespace Tests\Unit\Mailbulk {
             self::$asked  = [];
         }
 
-        public function counts(string $statSliceId, string $itemId): array
+        public function counts(string $statSliceId, string $list, string $itemId): array
         {
-            self::$asked[] = "$statSliceId $itemId";
+            self::$asked[] = "$statSliceId $list $itemId";
             return self::$counts;
         }
 
@@ -158,7 +158,7 @@ namespace Tests\Unit\Mailbulk {
             $doc = new \DOMDocument();
             @$doc->loadHTML('<?xml encoding="utf-8"?>' . $html);
             $rows = [];
-            foreach ((new \DOMXPath($doc))->query("//table[@class='$class']//tr") as $tr) {
+            foreach ((new \DOMXPath($doc))->query("//table[contains(concat(' ', @class, ' '), ' $class ')]//tr") as $tr) {
                 $cells = [];
                 foreach ($tr->childNodes as $cell) {
                     if ($cell instanceof \DOMElement) {
@@ -185,6 +185,7 @@ namespace Tests\Unit\Mailbulk {
                 ['Total', '5', '2', '1', '0', '1'],
             ], self::rows($html, 'aa-mailbulk-runs'), 'reader 1 got it in the second run, reader 2 failed there, reader 4 not tried yet counts in the total only');
             self::assertStringContainsString('<h3 class="aa-mailbulk-title">Newsletter</h3>', $html);
+            self::assertStringContainsString('<table class="aa-table aa-mailbulk-runs">', $html, 'the look of the other admin tables');
         }
 
         public function test_mailing_oneRun_hasNoTotal_andAnotherListOrNoRun_showsNothing(): void
@@ -226,7 +227,7 @@ namespace Tests\Unit\Mailbulk {
                 ['javascript:alert(1)', '1'],
             ], self::rows($html, 'aa-mailbulk-links'));
             self::assertStringContainsString('Opened 3, clicked 2', $html);
-            self::assertSame([self::STAT_SLICE . ' ' . self::ITEM], FixedStats::$asked);
+            self::assertSame([self::STAT_SLICE . ' ' . self::LIST . ' ' . self::ITEM], FixedStats::$asked);
         }
 
         public function test_mailing_withoutStatSlice_showsDeliveryOnly(): void

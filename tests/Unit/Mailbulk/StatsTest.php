@@ -7,59 +7,16 @@ namespace Tests\Unit\Mailbulk;
 use AA;
 use AA\Mailbulk\Stats;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Mailbulk\Fixtures\MemoryStats;
 
-/** Stats over events in memory: what AA_Set would find and what GetItemContent() would read.
- *  Static, as the request cache keys the call by the object too. */
-final class MemoryStats extends Stats
-{
-    /** @var array<string, array{slice: string, item: string, kind: string, url: string, reader: string, time: int}> id => event */
-    public static array $events = [];
-    /** @var list<string> each search and each read */
-    public static array $reads = [];
+require_once __DIR__ . '/Fixtures/MemoryStats.php';
 
-    public static function reset(): void
-    {
-        self::$events = [];
-        self::$reads  = [];
-    }
-
-    public static function add(string $kind, string $reader, string $url = '', string $item = StatsTest::ITEM, int $time = 0): void
-    {
-        $id                = md5(implode("\n", [$item, $reader, $kind, $url]));
-        self::$events[$id] = ['slice' => StatsTest::STAT_SLICE, 'item' => $item, 'kind' => $kind, 'url' => $url, 'reader' => $reader, 'time' => $time];
-    }
-
-    protected function events(string $statSliceId, array $itemIds, string $kind): array
-    {
-        self::$reads[] = 'events ' . (($kind === '') ? 'all' : $kind);
-        return array_keys(array_filter(
-            self::$events,
-            static fn(array $e): bool => ($e['slice'] === $statSliceId) && in_array($e['item'], $itemIds, true) && (($kind === '') || ($e['kind'] === $kind)),
-        ));
-    }
-
-    protected function content(array $ids, array $fields): array
-    {
-        self::$reads[] = 'content ' . implode(',', $fields);
-        $content       = [];
-        foreach ($ids as $id) {
-            $content[$id] = array_intersect_key([
-                'relation........' => [['value' => self::$events[$id]['item']]],
-                'source_href.....' => [['value' => self::$events[$id]['url']]],
-                'relation.......1' => [['value' => self::$events[$id]['reader']]],
-                'category........' => [['value' => self::$events[$id]['kind']]],
-                'post_date.......' => [['value' => self::$events[$id]['time']]],
-            ], array_flip($fields));
-        }
-        return $content;
-    }
-}
-
-/** Opened is the open events, clicked the readers with a click; the links by how many readers clicked them. */
+/** Opened is the readers with an open or a click, clicked the readers with a click; the links by how many readers clicked them. */
 final class StatsTest extends TestCase
 {
-    public const STAT_SLICE = '5555aaaa5555aaaa5555aaaa5555aaaa';
-    public const ITEM       = '0123456789abcdef0123456789abcdef';
+    public const STAT_SLICE = MemoryStats::STAT_SLICE;
+    public const ITEM       = MemoryStats::ITEM;
+    private const LIST_ID   = MemoryStats::LIST;
     private const OTHER     = 'ffff456789abcdef0123456789abcdef';
 
     public static function setUpBeforeClass(): void
@@ -95,13 +52,24 @@ final class StatsTest extends TestCase
         MemoryStats::add('open', self::reader(9), '', self::OTHER);
         MemoryStats::add('click', self::reader(9), 'https://example.org/a', self::OTHER);
 
-        self::assertSame(['opened' => 3, 'clicked' => 2], $stats->counts(self::STAT_SLICE, self::ITEM), 'three clicks of two readers');
-        self::assertSame(['opened' => 3, 'clicked' => 2], $stats->counts(self::STAT_SLICE, strtoupper(self::ITEM)));
+        self::assertSame(['opened' => 3, 'clicked' => 2], $stats->counts(self::STAT_SLICE, self::LIST_ID, self::ITEM), 'three clicks of two readers');
+        self::assertSame(['opened' => 3, 'clicked' => 2], $stats->counts(self::STAT_SLICE, self::LIST_ID, strtoupper(self::ITEM)));
         $stats->links(self::STAT_SLICE, self::ITEM);
-        self::assertSame(['events open', 'events click', 'content source_href.....,relation.......1'], MemoryStats::$reads, 'one read of each per request');
+        self::assertSame(['events open', 'events click', 'content source_href.....,relation.......1,post_date.......'], MemoryStats::$reads, 'one read of each per request');
     }
 
-    /** a page of sendings: the opens counted by ids per sending, only the clicks read - once, whatever the number of the sendings */
+    /** a click proves the mail was read - opened counts it when its open was thrown out, as the table of the recipients does */
+    public function test_counts_clickWithoutItsOpen_isOpenedToo(): void
+    {
+        MemoryStats::add('open', self::reader(1));
+        MemoryStats::add('click', self::reader(1), 'https://example.org/a');
+        MemoryStats::add('click', self::reader(2), 'https://example.org/a');
+
+        self::assertSame(['opened' => 2, 'clicked' => 2], (new MemoryStats())->counts(self::STAT_SLICE, self::LIST_ID, self::ITEM));
+        self::assertSame([self::ITEM => ['opened' => 2, 'clicked' => 2]], (new MemoryStats())->countsFor(self::STAT_SLICE, self::LIST_ID, [self::ITEM]));
+    }
+
+    /** a page of sendings: the opens by their ids per sending, only the clicks read - once, whatever the number of the sendings */
     public function test_countsFor_manyItemsInOneGo(): void
     {
         $stats = new MemoryStats();
@@ -115,18 +83,18 @@ final class StatsTest extends TestCase
         MemoryStats::add('click', self::reader(9), 'https://example.org/a', self::OTHER);
         MemoryStats::add('open', self::reader(7), '', '2222456789abcdef0123456789abcdef');
 
-        $figures = $stats->countsFor(self::STAT_SLICE, [self::ITEM, strtoupper(self::OTHER), '3333456789abcdef0123456789abcdef']);
+        $figures = $stats->countsFor(self::STAT_SLICE, self::LIST_ID, [self::ITEM, strtoupper(self::OTHER), '3333456789abcdef0123456789abcdef']);
 
         self::assertSame([
             self::ITEM                         => ['opened' => 3, 'clicked' => 2],
             self::OTHER                        => ['opened' => 1, 'clicked' => 1],
             '3333456789abcdef0123456789abcdef' => ['opened' => 0, 'clicked' => 0],
         ], $figures, 'the same figures as counts() of each');
-        self::assertSame(['events open', 'events open', 'events open', 'events click', 'content relation........,relation.......1'], MemoryStats::$reads, 'no open read');
+        self::assertSame(['events click', 'content relation........,relation.......1', 'events open', 'events open', 'events open'], MemoryStats::$reads, 'no open read');
         MemoryStats::$reads = [];
-        $stats->counts(self::STAT_SLICE, self::ITEM);
-        self::assertSame(['events click', 'content source_href.....,relation.......1'], MemoryStats::$reads, 'the opens of the chosen sending counted once per request');
-        self::assertSame([], $stats->countsFor(self::STAT_SLICE, []));
+        $stats->counts(self::STAT_SLICE, self::LIST_ID, self::ITEM);
+        self::assertSame(['events click', 'content source_href.....,relation.......1,post_date.......'], MemoryStats::$reads, 'the opens of the chosen sending searched once per request');
+        self::assertSame([], $stats->countsFor(self::STAT_SLICE, self::LIST_ID, []));
     }
 
     public function test_links_countsReadersPerUrl_sortedDesc(): void
@@ -148,21 +116,18 @@ final class StatsTest extends TestCase
         self::assertSame([], $stats->links(self::STAT_SLICE, '1111456789abcdef0123456789abcdef'), 'no clicks, no rows');
     }
 
-    /** the table of the recipients: per reader the first open and each click with its time, from one search */
-    public function test_readers_firstOpenAndEachClickWithTime(): void
+    /** the table of the recipients: the opens of its readers computed and only those read; the clicks with their time */
+    public function test_openTimes_onlyTheEventsOfTheReaders_andClicksWithTime(): void
     {
         $stats = new MemoryStats();
         MemoryStats::add('open', self::reader(1), '', self::ITEM, 100);
+        MemoryStats::add('open', self::reader(2), '', self::ITEM, 200, 'other');   // the same item through another list
+        MemoryStats::add('open', self::reader(4), '', self::ITEM, 400);
         MemoryStats::add('click', self::reader(1), 'https://example.org/a', self::ITEM, 300);
-        MemoryStats::add('click', self::reader(1), 'https://example.org/b', self::ITEM, 200);
-        MemoryStats::add('click', strtoupper(self::reader(2)), 'https://example.org/a', self::ITEM, 400);
-        MemoryStats::add('open', self::reader(3), '', self::OTHER, 500);
 
-        self::assertSame([
-            self::reader(1) => ['opened' => 100, 'clicks' => [['url' => 'https://example.org/b', 'time' => 200], ['url' => 'https://example.org/a', 'time' => 300]]],
-            self::reader(2) => ['opened' => 0, 'clicks' => [['url' => 'https://example.org/a', 'time' => 400]]],
-        ], $stats->readers(self::STAT_SLICE, strtoupper(self::ITEM)), 'the clicks of a reader by time; reader ids in lower case; another sending left out');
-        self::assertSame(['events all', 'content category........,relation.......1,source_href.....,post_date.......'], MemoryStats::$reads, 'one search of both kinds, one read');
+        self::assertSame([self::reader(1) => 100], $stats->openTimes(self::STAT_SLICE, self::LIST_ID, strtoupper(self::ITEM), [self::reader(1), self::reader(2), self::reader(3)]));
+        self::assertSame(['dates 3'], MemoryStats::$reads, 'no search of all the opens');
+        self::assertSame([['url' => 'https://example.org/a', 'reader' => self::reader(1), 'time' => 300]], $stats->clicks(self::STAT_SLICE, self::ITEM));
     }
 
     public function test_links_capsAt50(): void

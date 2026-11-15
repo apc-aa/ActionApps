@@ -883,7 +883,7 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date = false, bool
  *                                    is not so big)
  *                                    like: ['headline........', 'category.......1']
  * @param null  $crypted_additional_slice_pwd
- * @param null  $bin
+ * @param int|string|null $bin        only the items in this bin (AA_BIN_*, see CreateBinCondition()); null = any
  *
  * @return array
  */

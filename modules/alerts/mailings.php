@@ -6,7 +6,7 @@
  * The items the list of this module was sent, one row per item (its runs together), with what came
  * of them and - when the list has a statistics slice - how many opened and clicked; a chosen mailing
  * shows its runs, its links and its recipients below (also as CSV). Only reads: the Editor role of the
- * module sees this page alone.
+ * module sees this page alone, the recipients with their addresses included.
  *
  * @package Alerts
  */
@@ -29,6 +29,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Mailbulk\Outcome;
 use AA\Mailbulk\Overview;
 use AA\Mailbulk\RecipientReport;
 use AA\Mailbulk\Stats;
@@ -77,7 +78,7 @@ $filter = $report?->filter($asked) ?? RecipientReport::ALL;
 if ($report && $csv) {
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="mailing-' . strtolower($mailing) . "-$filter.csv\"");
-    $report->csv($report->rows($filter), fopen('php://output', 'w'));
+    $report->csv($filter, fopen('php://output', 'w'));
     exit;
 }
 
@@ -93,13 +94,13 @@ if ($statSlice === '') {
     echo "<p>$text</p>";
 }
 
-$head = [_m("Date"), _m("Name"), _m("State"), _m("Recipients"), _m("Sent"), _m("Failed"), _m("Uncertain")];
+$head = [_m("Date"), _m("Name"), _m("State"), _m("Recipients"), StatsView::outcome(Outcome::Sent->value), StatsView::outcome(Outcome::Failed->value), StatsView::outcome(Outcome::Uncertain->value)];
 if ($statSlice !== '') {
     array_push($head, _m("Opened"), _m("Clicked"));
 }
 $table = [array_map(safe(...), $head)];
 $rows  = $overview->page($page_no, MAILINGS_PER_PAGE);
-$opens = ($statSlice !== '') ? (new Stats())->countsFor($statSlice, array_column($rows, 'item')) : [];
+$opens = ($statSlice !== '') ? (new Stats())->countsFor($statSlice, $list->getId(), array_column($rows, 'item')) : [];
 foreach ($rows as $row) {
     $link  = get_url(AA_INSTAL_PATH . 'modules/alerts/mailings.php', ['scr_mb_Go' => $page_no, 'mailing' => $row['item']], true) . '#aa-mailing';
     $cells = [
@@ -130,7 +131,7 @@ if ($report) {
     // the table pages within the chosen mailing and filter
     $url       = get_url(AA_INSTAL_PATH . 'modules/alerts/mailings.php', ['scr_mb_Go' => $page_no, 'mailing' => $mailing], true);
     $rows      = $report->rows($filter);
-    $rscroller = new AA_Scroller_Easy('rc', RecipientReport::PER_PAGE, count($rows), get_url($url, ['rcpt' => $filter]));
+    $rscroller = new AA_Scroller_Easy('rc', RecipientReport::PER_PAGE, count($rows), get_url($url, ['rcpt' => $filter]) . RecipientReport::ANCHOR);
     $rscroller->update();
     echo '<h3 id="aa-recipients">' . safe(_m('Recipients')) . '</h3>' . $report->filterBar($filter, $url);
     echo $rows ? $report->table($rows, $rscroller->getCurrent()) . $rscroller->getNavbar() : '<p>' . safe(_m('No recipient matches the filter.')) . '</p>';

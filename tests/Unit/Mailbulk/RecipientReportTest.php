@@ -25,6 +25,7 @@ namespace {
 
 namespace Tests\Unit\Mailbulk {
 
+    use AA;
     use AA\IO\DB\DB_AA;
     use AA\Mailbulk\Recipients;
     use AA\Mailbulk\RecipientReport;
@@ -35,29 +36,39 @@ namespace Tests\Unit\Mailbulk {
     use AA_Logentry_Mailid;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Later\Fixtures\BatchRunTables;
+    use Tests\Unit\Mailbulk\Fixtures\MemoryStats;
     use Tests\Unit\Mailbulk\Fixtures\TestCampaign;
     use Tests\Unit\Mailbulk\Fixtures\TestRun;
 
     require_once __DIR__ . '/../Later/Fixtures/BatchRunTables.php';
     require_once __DIR__ . '/Fixtures/FakeLetter.php';
+    require_once __DIR__ . '/Fixtures/MemoryStats.php';
     require_once __DIR__ . '/Fixtures/ScriptedMailer.php';
     require_once __DIR__ . '/Fixtures/TestRun.php';
     require_once __DIR__ . '/Fixtures/TestCampaign.php';
     require_once __DIR__ . '/../../../modules/alerts/alerts_sending.php';
     require_once __DIR__ . '/../../../include/mail.php';
 
-    /** The events per reader the test says, and whether anyone asked. */
+    /** The opens and clicks the test says, and whether anyone asked. */
     final class ReaderStats extends Stats
     {
-        /** @var array<string, array{opened: int, clicks: list<array{url: string, time: int}>}> */
-        public static array $readers = [];
+        /** @var array<string, int> reader => the time of the open */
+        public static array $opens = [];
+        /** @var list<array{url: string, reader: string, time: int}> */
+        public static array $clicks = [];
         /** @var list<string> */
         public static array $asked = [];
 
-        public function readers(string $statSliceId, string $itemId): array
+        public function openTimes(string $statSliceId, string $list, string $itemId, array $readerIds): array
         {
-            self::$asked[] = "$statSliceId $itemId";
-            return self::$readers;
+            self::$asked[] = "opens $statSliceId $list $itemId " . implode(',', $readerIds);
+            return array_intersect_key(self::$opens, array_flip($readerIds));
+        }
+
+        public function clicks(string $statSliceId, string $itemId): array
+        {
+            self::$asked[] = "clicks $statSliceId $itemId";
+            return self::$clicks;
         }
     }
 
@@ -72,6 +83,8 @@ namespace Tests\Unit\Mailbulk {
         public static array $logReads = [];
         /** @var list<int> how many readers each read of the addresses asked for */
         public static array $emailReads = [];
+        /** the events from MemoryStats - the figures above the table read them too */
+        public static bool $memory = false;
 
         public static function reset(): void
         {
@@ -79,8 +92,10 @@ namespace Tests\Unit\Mailbulk {
             self::$log        = [];
             self::$logReads   = [];
             self::$emailReads = [];
-            ReaderStats::$readers = [];
-            ReaderStats::$asked   = [];
+            ReaderStats::$opens  = [];
+            ReaderStats::$clicks = [];
+            ReaderStats::$asked  = [];
+            self::$memory        = false;
         }
 
         protected function emails(array $ids): array
@@ -98,7 +113,7 @@ namespace Tests\Unit\Mailbulk {
 
         protected function stats(): Stats
         {
-            return new ReaderStats();
+            return self::$memory ? new MemoryStats() : new ReaderStats();
         }
     }
 
@@ -116,6 +131,7 @@ namespace Tests\Unit\Mailbulk {
         private const STAT_SLICE = '5555aaaa5555aaaa5555aaaa5555aaaa';
         private const FIRST      = self::NOW - 7200;
         private const SECOND     = self::NOW - 600;
+        private const BASE       = 'https://example.org/aa/';
 
         public static function setUpBeforeClass(): void
         {
@@ -128,6 +144,8 @@ namespace Tests\Unit\Mailbulk {
             TestRun::reset();
             TestCampaign::reset();
             TestRecipientReport::reset();
+            MemoryStats::reset();
+            AA::Contentcache()->clear();
             TestRun::$now      = self::NOW;
             TestRun::$microNow = (float) self::NOW;
         }
@@ -137,6 +155,8 @@ namespace Tests\Unit\Mailbulk {
             TestRun::reset();
             TestCampaign::reset();
             TestRecipientReport::reset();
+            MemoryStats::reset();
+            AA::Contentcache()->clear();
             $this->tablesTearDown();
         }
 
@@ -159,7 +179,8 @@ namespace Tests\Unit\Mailbulk {
             return new TestRecipientReport(self::list($statSlice), TestCampaign::of(self::LIST, self::ITEM));
         }
 
-        /** a run of the item to readers $readers, started at $at and finished 100 s later; its id
+        /** a run of the item to readers $readers, started at $at and finished 100 s later, its mails tracked
+         *  unless $props say base ''; its id
          *  @param list<int> $readers */
         private static function sending(array $readers, string $state, array $props, int $at): string
         {
@@ -173,6 +194,7 @@ namespace Tests\Unit\Mailbulk {
                 'recipients' => Recipients::freeze(self::ITEM, array_map(self::reader(...), $readers)),
                 'total'      => (string) count($readers),
                 'cursor'     => '0',
+                'base'       => self::BASE,
             ])->getId());
             TestRun::$now = self::NOW;
             self::storedSet($id, 'state', $state);
@@ -199,6 +221,20 @@ namespace Tests\Unit\Mailbulk {
             return ['time' => $time, 'selector' => $selector->serializeToString(true)];
         }
 
+        /** opens and clicks per reader, as the table shows them
+         *  @param array<string, array{opened: int, clicks: list<array{url: string, time: int}>}> $byReader */
+        private static function events(array $byReader): void
+        {
+            foreach ($byReader as $reader => $events) {
+                if ($events['opened'] > 0) {
+                    ReaderStats::$opens[$reader] = $events['opened'];
+                }
+                foreach ($events['clicks'] as $click) {
+                    ReaderStats::$clicks[] = $click + ['reader' => $reader];
+                }
+            }
+        }
+
         /** @return list<list<string>> the text of the cells of each row of the table of $class */
         private static function cells(string $html, string $class = 'aa-mailbulk-recipients'): array
         {
@@ -206,7 +242,7 @@ namespace Tests\Unit\Mailbulk {
             @$doc->loadHTML('<?xml encoding="utf-8"?>' . $html);
             $rows = [];
             $xpath = new \DOMXPath($doc);
-            foreach ($xpath->query("//table[@class='$class']//tr") as $tr) {
+            foreach ($xpath->query("//table[contains(concat(' ', @class, ' '), ' $class ')]//tr") as $tr) {
                 $cells = [];
                 foreach ($tr->childNodes as $cell) {
                     if ($cell instanceof \DOMElement) {
@@ -290,29 +326,36 @@ namespace Tests\Unit\Mailbulk {
         {
             self::twoRuns();
             self::sending([4], Run::DONE, ['cursor' => '1'], self::NOW - 300);
-            ReaderStats::$readers = [
+            self::events([
                 self::reader(0) => ['opened' => self::FIRST + 500, 'clicks' => [['url' => 'https://example.org/a', 'time' => self::FIRST + 600]]],
                 self::reader(1) => ['opened' => self::SECOND + 500, 'clicks' => []],
                 self::reader(4) => ['opened' => 0, 'clicks' => [['url' => 'https://example.org/a', 'time' => self::NOW]]],
-            ];
+                'ffff0000000000000000000000000009' => ['opened' => 0, 'clicks' => [['url' => 'https://example.org/a', 'time' => self::NOW]]],
+            ]);
             $report = self::report(self::STAT_SLICE);
 
             self::assertSame(['all', 'opened', 'unopened', 'clicked', 'failed'], $report->filters());
             $emails = static fn(string $filter): array => array_column($report->rows($filter), 'email');
             self::assertSame(['r0@example.org', 'r1@example.org', 'r2@example.org', 'r3@example.org', 'r4@example.org'], $emails('all'));
-            self::assertSame(['r0@example.org', 'r1@example.org'], $emails('opened'));
-            self::assertSame([], $emails('unopened'), 'r4 has no open, but a click: the mail was read');
-            self::assertSame(['r0@example.org', 'r4@example.org'], $emails('clicked'));
+            self::assertSame(['r0@example.org', 'r1@example.org', 'r4@example.org'], $emails('opened'), 'r4 has no open, but a click: the mail was read');
+            self::assertSame(self::NOW, array_column($report->rows(), 'opened', 'email')['r4@example.org'], 'opened by the click');
+            self::assertSame([], $emails('unopened'));
+            self::assertSame(['r0@example.org', 'r4@example.org'], $emails('clicked'), 'the click of a reader of another sending left out');
             self::assertSame(['r2@example.org', 'r3@example.org'], $emails('failed'), 'with the uncertain');
-            self::assertSame([self::STAT_SLICE . ' ' . self::ITEM], ReaderStats::$asked, 'the events read once for all filters');
+            self::assertSame([
+                'opens ' . self::STAT_SLICE . ' ' . self::LIST . ' ' . self::ITEM . ' ' . implode(',', array_map(self::reader(...), [0, 1, 2, 3, 4])),
+                'clicks ' . self::STAT_SLICE . ' ' . self::ITEM,
+            ], ReaderStats::$asked, 'the events read once for all filters');
 
-            ReaderStats::$readers = [];
+            ReaderStats::$opens  = [];
+            ReaderStats::$clicks = [];
             $report = self::report(self::STAT_SLICE);
             self::assertSame(['r0@example.org', 'r1@example.org', 'r4@example.org'], array_column($report->rows('unopened'), 'email'), 'only the sent ones');
         }
 
         public function test_filter_unknownOrUnmeasured_isAll(): void
         {
+            self::sending([0], Run::DONE, ['cursor' => '1'], self::FIRST);
             self::assertSame('all', self::report(self::STAT_SLICE)->filter('<script>'));
             self::assertSame('clicked', self::report(self::STAT_SLICE)->filter('clicked'));
             self::assertSame(['all', 'failed'], self::report()->filters());
@@ -323,12 +366,13 @@ namespace Tests\Unit\Mailbulk {
         public function test_table_clicksOnTwoLinks_withTimes(): void
         {
             self::twoRuns();
-            ReaderStats::$readers = [
+            self::events([
                 self::reader(0) => ['opened' => self::FIRST + 500, 'clicks' => [
                     ['url' => 'https://example.org/a', 'time' => self::FIRST + 600],
                     ['url' => 'https://example.org/b', 'time' => self::FIRST + 700],
+                    ['url' => 'https://example.org/0', 'time' => self::FIRST + 600],
                 ]],
-            ];
+            ]);
             $report = self::report(self::STAT_SLICE);
 
             $cells = self::cells($report->table($report->rows('clicked')));
@@ -336,8 +380,8 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame([
                 ['E-mail', 'Result', 'Time sent', 'First opened', 'Clicked links'],
                 ['r0@example.org', 'Sent', '≈ ' . date('Y-m-d H:i', self::FIRST), date('Y-m-d H:i', self::FIRST + 500),
-                    date('Y-m-d H:i', self::FIRST + 600) . ' https://example.org/a ' . date('Y-m-d H:i', self::FIRST + 700) . ' https://example.org/b'],
-            ], $cells, 'a time from the start of the run is marked');
+                    date('Y-m-d H:i', self::FIRST + 600) . ' https://example.org/0 ' . date('Y-m-d H:i', self::FIRST + 600) . ' https://example.org/a ' . date('Y-m-d H:i', self::FIRST + 700) . ' https://example.org/b'],
+            ], $cells, 'a time from the start of the run is marked; the clicks by time, then address');
             self::assertStringContainsString('title="When the run started: the log keeps the time of each mail for ' . LogCleanup::KEEP_DAYS . ' days"', $report->table($report->rows('clicked')));
         }
 
@@ -376,10 +420,10 @@ namespace Tests\Unit\Mailbulk {
         {
             self::sending([0, 1], Run::DONE, ['cursor' => '2'], self::FIRST);
             TestRecipientReport::$emails = [self::reader(0) => '"><script>alert(1)</script>@example.org'];
-            ReaderStats::$readers = [self::reader(0) => ['opened' => 0, 'clicks' => [
+            self::events([self::reader(0) => ['opened' => 0, 'clicks' => [
                 ['url' => 'https://example.org/?a=1&b="><script>x</script>', 'time' => self::FIRST + 10],
                 ['url' => 'javascript:alert(1)', 'time' => self::FIRST + 20],
-            ]]];
+            ]]]);
             $report = self::report(self::STAT_SLICE);
 
             $html = $report->table($report->rows());
@@ -391,13 +435,28 @@ namespace Tests\Unit\Mailbulk {
             self::assertSame('Not in the list any more', self::cells($html)[2][0], 'a reader deleted since');
         }
 
+        /** a reader whose address was emptied is still in the list - only a deleted one is not */
+        public function test_table_readerWithoutAddress_isNoGoneReader(): void
+        {
+            self::sending([0, 1, 2], Run::DONE, ['cursor' => '3'], self::FIRST);
+            TestRecipientReport::$emails = [self::reader(0) => 'r0@example.org', self::reader(1) => ''];
+            $report = self::report();
+
+            $rows = $report->rows();
+
+            self::assertSame([[self::reader(1), '', false], [self::reader(0), 'r0@example.org', false], [self::reader(2), '', true]], array_map(static fn(array $r): array => [$r['reader'], $r['email'], $r['gone']], $rows), 'the gone ones last');
+            $cells = self::cells($report->table($rows));
+            self::assertSame(['', 'r0@example.org', 'Not in the list any more'], array_column(array_slice($cells, 1), 0));
+        }
+
         public function test_filterBar_linksTheOtherFilters_andTheCsv(): void
         {
+            self::sending([0], Run::DONE, ['cursor' => '1'], self::FIRST);
             $html = self::report(self::STAT_SLICE)->filterBar('opened', '/aa/modules/alerts/mailings.php?mailing=' . self::ITEM);
 
             self::assertStringContainsString('<strong aria-current="true">Opened</strong>', $html);
-            self::assertStringContainsString('href="/aa/modules/alerts/mailings.php?rcpt=clicked&amp;mailing=' . self::ITEM . '"', $html);
-            self::assertStringContainsString('href="/aa/modules/alerts/mailings.php?rcpt=opened&amp;csv=1&amp;mailing=' . self::ITEM . '"', $html, 'the CSV of the same filter');
+            self::assertStringContainsString('href="/aa/modules/alerts/mailings.php?rcpt=clicked&amp;mailing=' . self::ITEM . '#aa-recipients"', $html, 'back to the table');
+            self::assertStringContainsString('href="/aa/modules/alerts/mailings.php?rcpt=opened&amp;csv=1&amp;mailing=' . self::ITEM . '#aa-recipients"', $html, 'the CSV of the same filter');
             self::assertStringNotContainsString('rcpt=opened&amp;mailing', $html, 'the current filter is no link');
         }
 
@@ -410,14 +469,14 @@ namespace Tests\Unit\Mailbulk {
                 self::reader(2) => "\t-2+3@example.org",
             ];
             TestRecipientReport::$log = [self::logged(self::FIRST + 10, TestRun::ofPair(self::ITEM, self::LIST)[0]->getId(), 1)];
-            ReaderStats::$readers = [self::reader(1) => ['opened' => self::FIRST + 50, 'clicks' => [
+            self::events([self::reader(1) => ['opened' => self::FIRST + 50, 'clicks' => [
                 ['url' => '+https://example.org/a', 'time' => self::FIRST + 60],
                 ['url' => 'https://example.org/b', 'time' => self::FIRST + 70],
-            ]]];
+            ]]]);
             $report = self::report(self::STAT_SLICE);
 
             $out = fopen('php://memory', 'w+');
-            $report->csv($report->rows(), $out);
+            $report->csv('all', $out);
             rewind($out);
             self::assertSame("\u{FEFF}", fread($out, 3), 'a BOM: spreadsheets read the file as UTF-8 then');
             $lines = [];
@@ -441,6 +500,59 @@ namespace Tests\Unit\Mailbulk {
             );
             self::assertSame("'\t-2+3@example.org", $lines[1][0], 'a tab in front is neutralised too');
             self::assertSame('Failed', $lines[1][1]);
+        }
+
+        /** a run started without tracking (no statistics slice then) measured nothing: its readers are neither
+         *  opened nor not opened */
+        public function test_rows_runThatTrackedNothing_outOfTheFiltersOfTheEvents(): void
+        {
+            self::sending([0, 1], Run::DONE, ['cursor' => '2'], self::FIRST);
+            self::sending([2, 3], Run::DONE, ['cursor' => '2', 'base' => ''], self::SECOND);
+            TestRecipientReport::$emails = [self::reader(0) => 'r0@example.org', self::reader(1) => 'r1@example.org', self::reader(2) => 'r2@example.org', self::reader(3) => 'r3@example.org'];
+            self::events([
+                self::reader(0) => ['opened' => self::FIRST + 50, 'clicks' => []],
+                self::reader(3) => ['opened' => self::SECOND + 50, 'clicks' => [['url' => 'https://example.org/a', 'time' => self::SECOND + 60]]],
+            ]);
+            $report = self::report(self::STAT_SLICE);
+
+            $rows = array_column($report->rows(), null, 'email');
+
+            self::assertSame(['all', 'opened', 'unopened', 'clicked', 'failed'], $report->filters(), 'one run tracked');
+            self::assertSame([false, 0, []], [$rows['r3@example.org']['tracked'], $rows['r3@example.org']['opened'], $rows['r3@example.org']['clicks']]);
+            self::assertSame(['r0@example.org'], array_column($report->rows('opened'), 'email'));
+            self::assertSame(['r1@example.org'], array_column($report->rows('unopened'), 'email'), 'r2 and r3: nothing was measured');
+            self::assertSame([], array_column($report->rows('clicked'), 'email'));
+            self::assertStringEndsWith(' ' . self::reader(0) . ',' . self::reader(1), ReaderStats::$asked[0], 'the opens of the tracked readers only');
+        }
+
+        public function test_filters_noRunTracked_deliveryOnly(): void
+        {
+            self::sending([0, 1], Run::DONE, ['cursor' => '2', 'base' => ''], self::FIRST);
+            $report = self::report(self::STAT_SLICE);
+
+            self::assertSame(['all', 'failed'], $report->filters());
+            self::assertSame(['E-mail', 'Result', 'Time sent'], self::cells($report->table($report->rows()))[0]);
+            self::assertSame([], ReaderStats::$asked);
+        }
+
+        /** "opened" and "clicked" above the table and the filters of the table count the same readers */
+        public function test_rows_agreeWithTheFiguresAbove(): void
+        {
+            self::sending([0, 1, 2, 3, 4], Run::DONE, ['cursor' => '5'], self::FIRST);
+            TestRecipientReport::$memory = true;
+            MemoryStats::add('open', self::reader(0), '', self::ITEM, self::FIRST + 10);
+            MemoryStats::add('open', self::reader(1), '', self::ITEM, self::FIRST + 20);
+            MemoryStats::add('click', self::reader(1), 'https://example.org/a', self::ITEM, self::FIRST + 30);
+            MemoryStats::add('click', self::reader(2), 'https://example.org/a', self::ITEM, self::FIRST + 40);   // its open thrown out
+            MemoryStats::add('open', self::reader(7), '', 'cafe0000000000000000000000000002', self::FIRST);     // another sending
+
+            $report  = self::report(self::STAT_SLICE);
+            $figures = (new MemoryStats())->counts(self::STAT_SLICE, self::LIST, self::ITEM);
+
+            self::assertSame(['opened' => 3, 'clicked' => 2], $figures);
+            self::assertSame([$figures['opened'], $figures['clicked']], [count($report->rows('opened')), count($report->rows('clicked'))]);
+            self::assertSame([self::FIRST + 10, self::FIRST + 20, self::FIRST + 40], array_slice(array_column($report->rows(), 'opened'), 0, 3), 'r2 opened by its click');
+            self::assertSame(1, count(array_keys(MemoryStats::$reads, 'events click')), 'the clicks searched once for the figures and the table');
         }
 
         public function test_rows_noRun_noRows(): void

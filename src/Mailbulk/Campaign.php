@@ -32,6 +32,8 @@ class Campaign
 
     /** @var ?list<Run> read once - a page asks for state, figures and the runs */
     private ?array $runs = null;
+    /** @var ?array<string, array{outcome: string, run: Run}> of the runs read */
+    private ?array $readers = null;
 
     final private function __construct(private readonly string $list, private readonly string $itemId) {}
 
@@ -81,10 +83,12 @@ class Campaign
                 $date = max($date, (int) $run->getProperty('finished'));
             }
         }
-        $tally = array_count_values(array_column($this->readers(), 'outcome'));
-        $sum   = ['total' => array_sum($tally)];
-        foreach ([Outcome::Sent, Outcome::Failed, Outcome::Skipped, Outcome::Uncertain] as $outcome) {
-            $sum[$outcome->value] = $tally[$outcome->value] ?? 0;
+        $sum = ['total' => 0, Outcome::Sent->value => 0, Outcome::Failed->value => 0, Outcome::Skipped->value => 0, Outcome::Uncertain->value => 0];
+        foreach ($this->readers() as ['outcome' => $outcome]) {
+            ++$sum['total'];
+            if (isset($sum[$outcome])) {
+                ++$sum[$outcome];
+            }
         }
         return $sum + ['date' => $date];
     }
@@ -94,13 +98,15 @@ class Campaign
      *          in a run still sending or in error) and that run */
     public function readers(): array
     {
-        $latest = [];
-        foreach ($this->runs() as $run) {
-            foreach ($run->readerOutcomes() as $id => $outcome) {
-                $latest[(string) $id] = ['outcome' => $outcome, 'run' => $run];
+        if ($this->readers === null) {
+            $this->readers = [];
+            foreach ($this->runs() as $run) {
+                foreach ($run->readerOutcomes() as $id => $outcome) {
+                    $this->readers[$id] = ['outcome' => $outcome, 'run' => $run];
+                }
             }
         }
-        return $latest;
+        return $this->readers;
     }
 
     /** the long id of the item sent, in lower case */
@@ -178,7 +184,7 @@ class Campaign
         }
         try {
             // what others started before the lock
-            $this->runs = null;
+            $this->runs = $this->readers = null;
             if ($this->unfinished()) {
                 throw new BatchFailed(self::ACTIVE);
             }
@@ -190,7 +196,7 @@ class Campaign
             if (!self::hasContent($this->testMessage($letter, $pending))) {
                 throw new BatchFailed(self::EMPTY);
             }
-            $this->runs = null;
+            $this->runs = $this->readers = null;
             return DB_AA::transaction(fn(): Run => $class::start([
                 'subject'    => $this->itemId,
                 'user'       => $uid,

@@ -12,6 +12,9 @@ use zids;
  * The figures of one sending from the statistics slice of its list (events as Tracker stores them).
  * Rights are not checked here - the caller has. The figures are rough: mail clients fetch images and
  * mail checkers follow links on their own.
+ * Opened means the same everywhere: the readers with an open or a click - a click proves the mail was read,
+ * even when its open was thrown out.
+ * @phpstan-type Click array{url: string, reader: string, time: int}
  */
 class Stats
 {
@@ -20,42 +23,36 @@ class Stats
     /** events read by one GetItemContent() call */
     private const CHUNK = 500;
 
-    /** @return array{opened: int, clicked: int} opened = the open events (one per reader),
+    /** @param string $list the id of the list - the events of a reader are found by it
+     *  @return array{opened: int, clicked: int} opened = the readers with an open or a click,
      *                                            clicked = the readers with a click */
-    public function counts(string $statSliceId, string $itemId): array
+    public function counts(string $statSliceId, string $list, string $itemId): array
     {
-        $opened = AA::Contentcache()->get_result([$this, 'opensFromDb'], [$statSliceId, strtolower($itemId)]);
-        $clicks = $this->clicks($statSliceId, $itemId);
-        return ['opened' => (int) $opened, 'clicked' => count(array_unique(array_column($clicks, 'reader')))];
+        $itemId = strtolower($itemId);
+        return self::figures($statSliceId, $list, $itemId, $this->opens($statSliceId, $itemId), $this->clicks($statSliceId, $itemId));
     }
 
-    /** The figures of many sendings at once - a page of them: the opens counted per sending (their ids only,
-     *  shared with counts()), one search of the clicks and one read of them, whatever the number of the sendings.
+    /** The figures of many sendings at once - a page of them: the opens by their ids per sending (shared with
+     *  counts()), one search of the clicks and one read of them, whatever the number of the sendings.
      *  @param list<string> $itemIds
      *  @return array<string, array{opened: int, clicked: int}> item id (lowercase) => figures, every one of $itemIds */
-    public function countsFor(string $statSliceId, array $itemIds): array
+    public function countsFor(string $statSliceId, string $list, array $itemIds): array
     {
         $itemIds = array_values(array_unique(array_map('strtolower', $itemIds)));
         if (!$itemIds) {
             return [];
         }
-        $figures = [];
-        foreach ($itemIds as $itemId) {
-            // opens far outnumber clicks: reading them to learn their sending would cost more than a count each
-            $opened           = AA::Contentcache()->get_result([$this, 'opensFromDb'], [$statSliceId, $itemId]);
-            $figures[$itemId] = ['opened' => (int) $opened, 'clicked' => 0];
-        }
-        $clicked = [];
+        $clicks = [];
         foreach (array_chunk($this->events($statSliceId, $itemIds, 'click'), self::CHUNK) as $chunk) {
             foreach ($this->content($chunk, ['relation........', 'relation.......1']) as $fields) {
-                $item = strtolower((string) ($fields['relation........'][0]['value'] ?? ''));
-                if (isset($figures[$item])) {
-                    $clicked[$item][(string) ($fields['relation.......1'][0]['value'] ?? '')] = true;
-                }
+                $item            = strtolower((string) ($fields['relation........'][0]['value'] ?? ''));
+                $clicks[$item][] = ['reader' => (string) ($fields['relation.......1'][0]['value'] ?? '')];
             }
         }
-        foreach ($clicked as $item => $readers) {
-            $figures[$item]['clicked'] = count($readers);
+        $figures = [];
+        foreach ($itemIds as $itemId) {
+            // opens far outnumber clicks: reading them to learn their sending would cost more than their ids each
+            $figures[$itemId] = self::figures($statSliceId, $list, $itemId, $this->opens($statSliceId, $itemId), $clicks[$itemId] ?? []);
         }
         return $figures;
     }
@@ -75,75 +72,67 @@ class Stats
         return array_slice($rows, 0, self::MAX_LINKS);
     }
 
-    /** The events of one sending by reader, for the table of its recipients: one search of both kinds, read in chunks.
-     *  @return array<string, array{opened: int, clicks: list<array{url: string, time: int}>}> reader (lowercase) =>
-     *          the time of the open event (0 = none) and each click, the first first */
-    public function readers(string $statSliceId, string $itemId): array
+    /** The clicks of one sending, read once per request - the figures, the links and the recipients share them.
+     *  @return list<Click> */
+    public function clicks(string $statSliceId, string $itemId): array
     {
-        $readers = [];
-        $fields  = ['category........', 'relation.......1', 'source_href.....', 'post_date.......'];
-        foreach (array_chunk($this->events($statSliceId, [strtolower($itemId)], ''), self::CHUNK) as $chunk) {
-            foreach ($this->content($chunk, $fields) as $event) {
-                $reader             = strtolower((string) ($event['relation.......1'][0]['value'] ?? ''));
-                $time               = (int) ($event['post_date.......'][0]['value'] ?? 0);
-                $kind               = (string) ($event['category........'][0]['value'] ?? '');
-                $readers[$reader] ??= ['opened' => 0, 'clicks' => []];
-                if ($kind === 'open') {
-                    // one open event per reader; should there be more, the first counts
-                    $opened                      = $readers[$reader]['opened'];
-                    $readers[$reader]['opened'] = ($opened > 0) ? min($opened, $time) : $time;
-                } elseif ($kind === 'click') {
-                    $readers[$reader]['clicks'][] = ['url' => (string) ($event['source_href.....'][0]['value'] ?? ''), 'time' => $time];
-                }
-            }
-        }
-        foreach ($readers as &$events) {
-            usort($events['clicks'], static fn(array $a, array $b): int => [$a['time'], $a['url']] <=> [$b['time'], $b['url']]);
-        }
-        unset($events);
-        return $readers;
+        return AA::Contentcache()->get_result([$this, 'clicksFromDb'], [$statSliceId, strtolower($itemId)]);
     }
 
-    /** the worker of the cache in counts() */
-    public function opensFromDb(string $statSliceId, string $itemId): int
+    /** When the readers opened the mail: their open events computed (Tracker::eventId()), only those read - the
+     *  opens of a big list are many.
+     *  @param list<string> $readerIds long ids in lower case
+     *  @return array<string, int> reader => the time of the open; a reader without one is not in it */
+    public function openTimes(string $statSliceId, string $list, string $itemId, array $readerIds): array
     {
-        return count($this->events($statSliceId, [$itemId], 'open'));
+        $readers = [];
+        foreach ($readerIds as $reader) {
+            $readers[Tracker::eventId($statSliceId, $list, strtolower($itemId), $reader, TrackToken::OPEN, '')] = $reader;
+        }
+        $times = [];
+        foreach (array_chunk(array_keys($readers), self::CHUNK) as $chunk) {
+            foreach ($this->postDates($chunk) as $id => $time) {
+                $times[$readers[$id]] = $time;
+            }
+        }
+        return $times;
+    }
+
+    /** the worker of the cache in opens()
+     *  @return list<string> long ids of the open events */
+    public function opensFromDb(string $statSliceId, string $itemId): array
+    {
+        return $this->events($statSliceId, [$itemId], 'open');
     }
 
     /** the worker of the cache in clicks()
-     *  @return list<array{url: string, reader: string}> */
+     *  @return list<Click> */
     public function clicksFromDb(string $statSliceId, string $itemId): array
     {
         $clicks = [];
         foreach (array_chunk($this->events($statSliceId, [$itemId], 'click'), self::CHUNK) as $chunk) {
-            foreach ($this->content($chunk, ['source_href.....', 'relation.......1']) as $fields) {
+            foreach ($this->content($chunk, ['source_href.....', 'relation.......1', 'post_date.......']) as $fields) {
                 $clicks[] = [
                     'url'    => (string) ($fields['source_href.....'][0]['value'] ?? ''),
                     'reader' => (string) ($fields['relation.......1'][0]['value'] ?? ''),
+                    'time'   => (int) ($fields['post_date.......'][0]['value'] ?? 0),
                 ];
             }
         }
         return $clicks;
     }
 
-    /** both figures read the clicks once per request
-     *  @return list<array{url: string, reader: string}> */
-    private function clicks(string $statSliceId, string $itemId): array
-    {
-        return AA::Contentcache()->get_result([$this, 'clicksFromDb'], [$statSliceId, strtolower($itemId)]);
-    }
-
     // ------------------------------------------------------------ what tests replace
 
     /** @param list<string> $itemIds the sent items
-     *  @return list<string> long ids of their events of $kind (open, click; '' = both) */
+     *  @return list<string> long ids of their events of $kind (open, click) */
     protected function events(string $statSliceId, array $itemIds, string $kind): array
     {
-        // a list of values is one condition, its values joined by OR
-        $conds = [['relation........' => 1, 'operator' => '=', 'value' => $itemIds]];
-        if ($kind !== '') {
-            $conds[] = ['category........' => 1, 'operator' => '==', 'value' => $kind];
-        }
+        $conds = [
+            // a list of values is one condition, its values joined by OR
+            ['relation........' => 1, 'operator' => '=', 'value' => $itemIds],
+            ['category........' => 1, 'operator' => '==', 'value' => $kind],
+        ];
         // an event moved to the trash or held back is one the editor of the slice threw out
         return array_map('strval', (new AA_Set([$statSliceId], $conds, null, \AA_BIN_APPROVED))->query()->longids());
     }
@@ -157,5 +146,42 @@ class Stats
     {
         // a statistics slice may have a reading password; the figures leave no value of it but the links
         return GetItemContent(new zids($ids, 'l'), false, true, $fields);
+    }
+
+    /** @param list<string> $ids long ids of events
+     *  @return array<string, int> id => its time, for those there and not thrown out (as events()) */
+    protected function postDates(array $ids): array
+    {
+        $dates = [];
+        // the item table only; a reading password of the slice hides no time
+        foreach (GetItemContent(new zids($ids, 'l'), false, true, ['post_date.......'], null, \AA_BIN_APPROVED) as $id => $fields) {
+            $dates[(string) $id] = (int) ($fields['post_date.......'][0]['value'] ?? 0);
+        }
+        return $dates;
+    }
+
+    // ------------------------------------------------------------
+
+    /** the open events of a sending by their ids, searched once per request
+     *  @return array<string, true> */
+    private function opens(string $statSliceId, string $itemId): array
+    {
+        return array_fill_keys(AA::Contentcache()->get_result([$this, 'opensFromDb'], [$statSliceId, $itemId]), true);
+    }
+
+    /** @param array<string, true> $opens the open events
+     *  @param list<array{reader: string}> $clicks
+     *  @return array{opened: int, clicked: int} */
+    private static function figures(string $statSliceId, string $list, string $itemId, array $opens, array $clicks): array
+    {
+        $clickers = array_unique(array_map(static fn(array $click): string => strtolower($click['reader']), $clicks));
+        $opened   = count($opens);
+        foreach ($clickers as $reader) {
+            // the open a click stores too - unless it was thrown out
+            if (!isset($opens[Tracker::eventId($statSliceId, $list, $itemId, $reader, TrackToken::OPEN, '')])) {
+                ++$opened;
+            }
+        }
+        return ['opened' => $opened, 'clicked' => count($clickers)];
     }
 }
