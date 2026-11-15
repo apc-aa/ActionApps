@@ -75,6 +75,35 @@ class Stats
         return array_slice($rows, 0, self::MAX_LINKS);
     }
 
+    /** The events of one sending by reader, for the table of its recipients: one search of both kinds, read in chunks.
+     *  @return array<string, array{opened: int, clicks: list<array{url: string, time: int}>}> reader (lowercase) =>
+     *          the time of the open event (0 = none) and each click, the first first */
+    public function readers(string $statSliceId, string $itemId): array
+    {
+        $readers = [];
+        $fields  = ['category........', 'relation.......1', 'source_href.....', 'post_date.......'];
+        foreach (array_chunk($this->events($statSliceId, [strtolower($itemId)], ''), self::CHUNK) as $chunk) {
+            foreach ($this->content($chunk, $fields) as $event) {
+                $reader             = strtolower((string) ($event['relation.......1'][0]['value'] ?? ''));
+                $time               = (int) ($event['post_date.......'][0]['value'] ?? 0);
+                $kind               = (string) ($event['category........'][0]['value'] ?? '');
+                $readers[$reader] ??= ['opened' => 0, 'clicks' => []];
+                if ($kind === 'open') {
+                    // one open event per reader; should there be more, the first counts
+                    $opened                      = $readers[$reader]['opened'];
+                    $readers[$reader]['opened'] = ($opened > 0) ? min($opened, $time) : $time;
+                } elseif ($kind === 'click') {
+                    $readers[$reader]['clicks'][] = ['url' => (string) ($event['source_href.....'][0]['value'] ?? ''), 'time' => $time];
+                }
+            }
+        }
+        foreach ($readers as &$events) {
+            usort($events['clicks'], static fn(array $a, array $b): int => [$a['time'], $a['url']] <=> [$b['time'], $b['url']]);
+        }
+        unset($events);
+        return $readers;
+    }
+
     /** the worker of the cache in counts() */
     public function opensFromDb(string $statSliceId, string $itemId): int
     {
@@ -107,14 +136,14 @@ class Stats
     // ------------------------------------------------------------ what tests replace
 
     /** @param list<string> $itemIds the sent items
-     *  @return list<string> long ids of their events of $kind (open, click) */
+     *  @return list<string> long ids of their events of $kind (open, click; '' = both) */
     protected function events(string $statSliceId, array $itemIds, string $kind): array
     {
-        $conds = [
-            // a list of values is one condition, its values joined by OR
-            ['relation........' => 1, 'operator' => '=', 'value' => $itemIds],
-            ['category........' => 1, 'operator' => '==', 'value' => $kind],
-        ];
+        // a list of values is one condition, its values joined by OR
+        $conds = [['relation........' => 1, 'operator' => '=', 'value' => $itemIds]];
+        if ($kind !== '') {
+            $conds[] = ['category........' => 1, 'operator' => '==', 'value' => $kind];
+        }
         // an event moved to the trash or held back is one the editor of the slice threw out
         return array_map('strval', (new AA_Set([$statSliceId], $conds, null, \AA_BIN_APPROVED))->query()->longids());
     }

@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
  *  Static, as the request cache keys the call by the object too. */
 final class MemoryStats extends Stats
 {
-    /** @var array<string, array{slice: string, item: string, kind: string, url: string, reader: string}> id => event */
+    /** @var array<string, array{slice: string, item: string, kind: string, url: string, reader: string, time: int}> id => event */
     public static array $events = [];
     /** @var list<string> each search and each read */
     public static array $reads = [];
@@ -23,18 +23,18 @@ final class MemoryStats extends Stats
         self::$reads  = [];
     }
 
-    public static function add(string $kind, string $reader, string $url = '', string $item = StatsTest::ITEM): void
+    public static function add(string $kind, string $reader, string $url = '', string $item = StatsTest::ITEM, int $time = 0): void
     {
         $id                = md5(implode("\n", [$item, $reader, $kind, $url]));
-        self::$events[$id] = ['slice' => StatsTest::STAT_SLICE, 'item' => $item, 'kind' => $kind, 'url' => $url, 'reader' => $reader];
+        self::$events[$id] = ['slice' => StatsTest::STAT_SLICE, 'item' => $item, 'kind' => $kind, 'url' => $url, 'reader' => $reader, 'time' => $time];
     }
 
     protected function events(string $statSliceId, array $itemIds, string $kind): array
     {
-        self::$reads[] = "events $kind";
+        self::$reads[] = 'events ' . (($kind === '') ? 'all' : $kind);
         return array_keys(array_filter(
             self::$events,
-            static fn(array $e): bool => ($e['slice'] === $statSliceId) && in_array($e['item'], $itemIds, true) && ($e['kind'] === $kind),
+            static fn(array $e): bool => ($e['slice'] === $statSliceId) && in_array($e['item'], $itemIds, true) && (($kind === '') || ($e['kind'] === $kind)),
         ));
     }
 
@@ -47,6 +47,8 @@ final class MemoryStats extends Stats
                 'relation........' => [['value' => self::$events[$id]['item']]],
                 'source_href.....' => [['value' => self::$events[$id]['url']]],
                 'relation.......1' => [['value' => self::$events[$id]['reader']]],
+                'category........' => [['value' => self::$events[$id]['kind']]],
+                'post_date.......' => [['value' => self::$events[$id]['time']]],
             ], array_flip($fields));
         }
         return $content;
@@ -144,6 +146,23 @@ final class StatsTest extends TestCase
             ['url' => 'https://example.org/a', 'readers' => 1],
         ], $stats->links(self::STAT_SLICE, self::ITEM));
         self::assertSame([], $stats->links(self::STAT_SLICE, '1111456789abcdef0123456789abcdef'), 'no clicks, no rows');
+    }
+
+    /** the table of the recipients: per reader the first open and each click with its time, from one search */
+    public function test_readers_firstOpenAndEachClickWithTime(): void
+    {
+        $stats = new MemoryStats();
+        MemoryStats::add('open', self::reader(1), '', self::ITEM, 100);
+        MemoryStats::add('click', self::reader(1), 'https://example.org/a', self::ITEM, 300);
+        MemoryStats::add('click', self::reader(1), 'https://example.org/b', self::ITEM, 200);
+        MemoryStats::add('click', strtoupper(self::reader(2)), 'https://example.org/a', self::ITEM, 400);
+        MemoryStats::add('open', self::reader(3), '', self::OTHER, 500);
+
+        self::assertSame([
+            self::reader(1) => ['opened' => 100, 'clicks' => [['url' => 'https://example.org/b', 'time' => 200], ['url' => 'https://example.org/a', 'time' => 300]]],
+            self::reader(2) => ['opened' => 0, 'clicks' => [['url' => 'https://example.org/a', 'time' => 400]]],
+        ], $stats->readers(self::STAT_SLICE, strtoupper(self::ITEM)), 'the clicks of a reader by time; reader ids in lower case; another sending left out');
+        self::assertSame(['events all', 'content category........,relation.......1,source_href.....,post_date.......'], MemoryStats::$reads, 'one search of both kinds, one read');
     }
 
     public function test_links_capsAt50(): void

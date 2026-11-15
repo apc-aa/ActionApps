@@ -93,12 +93,16 @@ class StatsView
         }
         $rows = '';
         foreach ($links as $link) {
-            $url = safe($link['url']);
-            // only a web address becomes a link: an event item may be edited by hand
-            $shown = preg_match('~^https?://~i', $link['url']) ? '<a href="' . $url . '" target="_blank" rel="noopener noreferrer">' . $url . '</a>' : $url;
-            $rows .= '<tr><td>' . $shown . '</td><td>' . $link['readers'] . '</td></tr>';
+            $rows .= '<tr><td>' . self::link($link['url']) . '</td><td>' . $link['readers'] . '</td></tr>';
         }
         return '<table class="aa-mailbulk-links"><thead><tr><th scope="col">' . safe(_m('Link')) . '</th><th scope="col">' . safe(_m('Readers clicked')) . '</th></tr></thead><tbody>' . $rows . '</tbody></table>';
+    }
+
+    /** a clicked address as HTML: only a web address becomes a link - an event item may be edited by hand */
+    public static function link(string $url): string
+    {
+        $shown = safe($url);
+        return preg_match('~^https?://~i', $url) ? '<a href="' . $shown . '" target="_blank" rel="noopener noreferrer">' . $shown . '</a>' : $shown;
     }
 
     /** a time of a sending for people; '' = none */

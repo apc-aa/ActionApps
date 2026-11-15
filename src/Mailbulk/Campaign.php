@@ -75,20 +75,38 @@ class Campaign
      */
     public function counts(): array
     {
-        $latest = [];
-        $date   = 0;
+        $date = 0;
         foreach ($this->runs() as $run) {
-            $latest = $run->readerOutcomes() + $latest;
             if ($run->state() === Run::DONE) {
                 $date = max($date, (int) $run->getProperty('finished'));
             }
         }
-        $tally = array_count_values($latest);
-        $sum   = ['total' => count($latest)];
+        $tally = array_count_values(array_column($this->readers(), 'outcome'));
+        $sum   = ['total' => array_sum($tally)];
         foreach ([Outcome::Sent, Outcome::Failed, Outcome::Skipped, Outcome::Uncertain] as $outcome) {
             $sum[$outcome->value] = $tally[$outcome->value] ?? 0;
         }
         return $sum + ['date' => $date];
+    }
+
+    /** Each reader of the sending once, by the last run they were in - the rule of counts().
+     *  @return array<string, array{outcome: string, run: Run}> long id => an Outcome value ('' = not tried yet
+     *          in a run still sending or in error) and that run */
+    public function readers(): array
+    {
+        $latest = [];
+        foreach ($this->runs() as $run) {
+            foreach ($run->readerOutcomes() as $id => $outcome) {
+                $latest[(string) $id] = ['outcome' => $outcome, 'run' => $run];
+            }
+        }
+        return $latest;
+    }
+
+    /** the long id of the item sent, in lower case */
+    public function itemId(): string
+    {
+        return $this->itemId;
     }
 
     /** a run is not finished, or a step of an ended one may still be sending - no new run may start */
