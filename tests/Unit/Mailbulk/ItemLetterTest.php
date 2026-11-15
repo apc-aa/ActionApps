@@ -384,8 +384,8 @@ namespace Tests\Unit\Mailbulk {
             self::assertInstanceOf(Message::class, $bob);
             self::assertSame('anna@example.org', $anna->to);
             self::assertSame('bob@example.org', $bob->to);
-            self::assertSame('<p>Hi Anna</p><a href="' . self::URL . '?au=codeAnna&c=abcde">out</a> <a href="' . self::URL . '?ac=codeAnna">form</a>', $anna->html);
-            self::assertSame('<p>Hi Bob</p><a href="' . self::URL . '?au=codeBob&c=abcde">out</a> <a href="' . self::URL . '?ac=codeBob">form</a>', $bob->html);
+            self::assertSame('<p>Hi Anna</p><a href="' . self::URL . '?one=1&au=codeAnna&c=abcde">out</a> <a href="' . self::URL . '?ac=codeAnna">form</a>', $anna->html);
+            self::assertSame('<p>Hi Bob</p><a href="' . self::URL . '?one=1&au=codeBob&c=abcde">out</a> <a href="' . self::URL . '?ac=codeBob">form</a>', $bob->html);
         }
 
         /** the commands that cache their output per item must not give one reader's links to the next */
@@ -401,8 +401,8 @@ namespace Tests\Unit\Mailbulk {
 
             self::assertNotNull($anna);
             self::assertNotNull($bob);
-            self::assertSame('<a href="' . self::URL . '?au=codeAnna&c=abcde">out</a>|<a href="' . self::URL . '?ac=codeAnna">form</a>', $anna->html);
-            self::assertSame('<a href="' . self::URL . '?au=codeBob&c=abcde">out</a>|<a href="' . self::URL . '?ac=codeBob">form</a>', $bob->html);
+            self::assertSame('<a href="' . self::URL . '?one=1&au=codeAnna&c=abcde">out</a>|<a href="' . self::URL . '?ac=codeAnna">form</a>', $anna->html);
+            self::assertSame('<a href="' . self::URL . '?one=1&au=codeBob&c=abcde">out</a>|<a href="' . self::URL . '?ac=codeBob">form</a>', $bob->html);
         }
 
         public function test_messageFor_itemAliasesExpand(): void
@@ -436,6 +436,7 @@ namespace Tests\Unit\Mailbulk {
             self::assertNotNull($message);
             self::assertStringContainsString('?au=ABCDE&c=abcde', $message->html);
             self::assertStringNotContainsString('codeAnna', $message->html);
+            self::assertStringNotContainsString('one=1', $message->html, 'a test mail unsubscribes nobody, its link needs no button');
             self::assertSame([], $message->headers);
         }
 
@@ -453,6 +454,24 @@ namespace Tests\Unit\Mailbulk {
 
             self::assertNotNull($message);
             self::assertSame([], $message->headers);
+        }
+
+        /** link checkers open the links of a mail - the body link only asks, like the header one */
+        public function test_messageFor_httpsList_bodyLinkIsTheHeaderLink(): void
+        {
+            $message = self::letter($this->list())->messageFor(self::ANNA);
+
+            self::assertNotNull($message);
+            self::assertStringContainsString('<a href="' . substr($message->headers['List-Unsubscribe'], 1, -1) . '">out</a>', $message->html);
+        }
+
+        /** an http list gets no header, so its body link stays as it was */
+        public function test_messageFor_httpList_bodyLinkUnmarked(): void
+        {
+            $message = self::letter($this->list(url: 'http://example.org/news'))->messageFor(self::ANNA);
+
+            self::assertNotNull($message);
+            self::assertStringContainsString('<a href="http://example.org/news?au=codeAnna&c=abcde">out</a>', $message->html);
         }
 
         /** the mail of $reader to a list with a statistics slice, the tracked addresses under $base */
@@ -534,7 +553,7 @@ namespace Tests\Unit\Mailbulk {
         {
             $html = $this->trackedMail('<a href="_#MAILPREF&amp;lang=en">f</a> <a href="_#MAILUNSB#x">u</a> <a href="https://example.org/p?r=_#MAILTOID">p</a> <a href="https://example.org/p/_#MAILTOID/x">q</a> <a href="https://example.org/a?x=codeAnnaX&amp;y=codeAnn">a</a>');
 
-            self::assertStringStartsWith('<a href="' . self::URL . '?ac=codeAnna&amp;lang=en">f</a> <a href="' . self::URL . '?au=codeAnna&c=abcde#x">u</a> <a href="https://example.org/p?r=' . self::ANNA . '">p</a> <a href="https://example.org/p/' . self::ANNA . '/x">q</a> <a href="' . self::BASE, $html);
+            self::assertStringStartsWith('<a href="' . self::URL . '?ac=codeAnna&amp;lang=en">f</a> <a href="' . self::URL . '?one=1&au=codeAnna&c=abcde#x">u</a> <a href="https://example.org/p?r=' . self::ANNA . '">p</a> <a href="https://example.org/p/' . self::ANNA . '/x">q</a> <a href="' . self::BASE, $html);
             self::assertSame(['https://example.org/a?x=codeAnnaX&y=codeAnn', ''], array_map(static fn(TrackToken $t): string => $t->url, self::tokens($html)), 'only a whole query value is the code');
         }
 
@@ -542,7 +561,7 @@ namespace Tests\Unit\Mailbulk {
         {
             $html = $this->trackedMail('<a href="_#MAILUNSB">out</a> <a href="_#MAILPREF">form</a> <a href="https://example.org/a">a</a>');
 
-            self::assertStringStartsWith('<a href="' . self::URL . '?au=codeAnna&c=abcde">out</a> <a href="' . self::URL . '?ac=codeAnna">form</a> <a href="' . self::BASE, $html);
+            self::assertStringStartsWith('<a href="' . self::URL . '?one=1&au=codeAnna&c=abcde">out</a> <a href="' . self::URL . '?ac=codeAnna">form</a> <a href="' . self::BASE, $html);
             self::assertSame([TrackToken::CLICK, TrackToken::OPEN], array_map(static fn(TrackToken $t): string => $t->kind, self::tokens($html)));
         }
 

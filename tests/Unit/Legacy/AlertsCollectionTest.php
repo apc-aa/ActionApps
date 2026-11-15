@@ -765,6 +765,17 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([], AA_Collection::unsubscribeHeaders($url));
         }
 
+        public function test_oneClickUrl_https_marked(): void
+        {
+            $this->assertSame('https://example.org/news?one=1&au=k3y5x&c=sQjwa', AA_Collection::oneClickUrl('https://example.org/news?au=k3y5x&c=sQjwa'));
+        }
+
+        #[DataProvider('urlsWithoutHeaders')]
+        public function test_oneClickUrl_http_null(string $url): void
+        {
+            $this->assertNull(AA_Collection::oneClickUrl($url));
+        }
+
         public function test_sendEmails_readerMail_carriesUnsubscribeHeaders(): void
         {
             $this->mailingWorld();

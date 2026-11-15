@@ -364,18 +364,28 @@ class AA_Collection
         ];
     }
 
-    /** One-click unsubscribe headers (RFC 8058) - mail services post only to https; the marked URL
-     *  unsubscribes only by POST (unsubscribe_request()). The URL is built from
-     *  the admin-set slice_url, so anything that could end the header line or the <...> gives none; nor
-     *  8-bit bytes - the mailer would encode the header and break the URI.
+    /** The unsubscribe URL marked to unsubscribe only by POST (unsubscribe_request()); null when it cannot go
+     *  to the header - mail services post only to https. The URL is built from the admin-set slice_url, so
+     *  anything that could end the header line or the <...> gives none; nor 8-bit bytes - the mailer would
+     *  encode the header and break the URI. */
+    public static function oneClickUrl(string $unsubscribeUrl): ?string
+    {
+        if (!preg_match('~^https://[^\x00-\x20\x7f-\xff<>]+\z~', $unsubscribeUrl)) {
+            return null;
+        }
+        return get_url($unsubscribeUrl, [ALERTS_ONE_CLICK_PARAM => 1]);
+    }
+
+    /** One-click unsubscribe headers (RFC 8058)
      *  @return array<string, string> header name => value */
     public static function unsubscribeHeaders(string $unsubscribeUrl): array
     {
-        if (!preg_match('~^https://[^\x00-\x20\x7f-\xff<>]+\z~', $unsubscribeUrl)) {
+        $url = self::oneClickUrl($unsubscribeUrl);
+        if ($url === null) {
             return [];
         }
         return [
-            'List-Unsubscribe'      => '<' . get_url($unsubscribeUrl, [ALERTS_ONE_CLICK_PARAM => 1]) . '>',
+            'List-Unsubscribe'      => '<' . $url . '>',
             'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
         ];
     }

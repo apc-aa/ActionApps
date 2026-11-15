@@ -94,12 +94,15 @@ class ItemLetter implements Letter
         // a test must count nothing; the base is '' when the list measured nothing at "send" - all mails of a run alike
         $track = !$test && ($this->trackBase !== '');
         $image = $track ? $this->openImage($readerId) : '';
-        $item  = $this->itemWith($readerId, $links['unsubscribe'], $links['form'], $image);
-        // without the code the link would unsubscribe nobody
-        $headers = ($test || ($code === '')) ? [] : AA_Collection::unsubscribeHeaders($links['unsubscribe']);
-        $html    = $this->expand('_#MAILBODY', $item);
+        // without the code the link would unsubscribe nobody; with a header the body link is the header's one - link
+        // checkers open the links of a mail, and this one only shows a button
+        $oneClick    = ($test || ($code === '')) ? null : AA_Collection::oneClickUrl($links['unsubscribe']);
+        $headers     = ($oneClick === null) ? [] : AA_Collection::unsubscribeHeaders($links['unsubscribe']);
+        $unsubscribe = $oneClick ?? $links['unsubscribe'];
+        $item        = $this->itemWith($readerId, $unsubscribe, $links['form'], $image);
+        $html        = $this->expand('_#MAILBODY', $item);
         if ($track) {
-            $html = $this->tracked($html, $readerId, $code, [$links['unsubscribe'], $links['form']], $image);
+            $html = $this->tracked($html, $readerId, $code, [$unsubscribe, $links['form']], $image);
         }
         return new Message(
             trim((string) $reader->getValue(FIELDID_EMAIL)),
