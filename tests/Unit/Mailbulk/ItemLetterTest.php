@@ -465,13 +465,13 @@ namespace Tests\Unit\Mailbulk {
             self::assertStringContainsString('<a href="' . substr($message->headers['List-Unsubscribe'], 1, -1) . '">out</a>', $message->html);
         }
 
-        /** an http list gets no header, so its body link stays as it was */
-        public function test_messageFor_httpList_bodyLinkUnmarked(): void
+        /** an http list gets no header, yet link checkers open its body link too */
+        public function test_messageFor_httpList_bodyLinkMarked(): void
         {
             $message = self::letter($this->list(url: 'http://example.org/news'))->messageFor(self::ANNA);
 
             self::assertNotNull($message);
-            self::assertStringContainsString('<a href="http://example.org/news?au=codeAnna&c=abcde">out</a>', $message->html);
+            self::assertStringContainsString('<a href="http://example.org/news?one=1&au=codeAnna&c=abcde">out</a>', $message->html);
         }
 
         /** the mail of $reader to a list with a statistics slice, the tracked addresses under $base */

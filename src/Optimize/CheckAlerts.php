@@ -119,7 +119,7 @@ class CheckAlerts extends AbstractOptimize
 
         $evidence = [];
         foreach (DB_AA::select([], 'SELECT m.id AS module_id, m.name, m.slice_url FROM alerts_collection c INNER JOIN module m ON m.id = c.module_id', [['m.deleted', 1, '<']], ['m.name']) as $row) {
-            if (!\AA_Collection::unsubscribeHeaders(get_url((string) $row['slice_url'], ['au' => 'x', 'c' => 'x']))) {
+            if (!\AA_Collection::fitsHeader(get_url((string) $row['slice_url'], ['au' => 'x', 'c' => 'x']))) {
                 $evidence[] = [
                     _m('Alerts') => a_href(get_aa_url('modules/alerts/modedit.php', ['module_id' => unpack_id((string) $row['module_id'])], false), safe((string) $row['name'])),
                     _m('URL')    => safe((string) $row['slice_url']),

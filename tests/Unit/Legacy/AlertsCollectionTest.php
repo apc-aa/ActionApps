@@ -737,7 +737,13 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([
                 'List-Unsubscribe'      => '<https://example.org/news?one=1&au=k3y5x&c=sQjwa>',
                 'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
-            ], AA_Collection::unsubscribeHeaders('https://example.org/news?au=k3y5x&c=sQjwa'));
+            ], AA_Collection::unsubscribeHeaders('https://example.org/news?one=1&au=k3y5x&c=sQjwa'));
+        }
+
+        /** a test mail or a reader without a code: the link would unsubscribe nobody */
+        public function test_unsubscribeHeaders_noUrl_none(): void
+        {
+            $this->assertSame([], AA_Collection::unsubscribeHeaders(null));
         }
 
         public static function urlsWithoutHeaders(): array
@@ -770,10 +776,21 @@ namespace Tests\Unit\Legacy {
             $this->assertSame('https://example.org/news?one=1&au=k3y5x&c=sQjwa', AA_Collection::oneClickUrl('https://example.org/news?au=k3y5x&c=sQjwa'));
         }
 
-        #[DataProvider('urlsWithoutHeaders')]
-        public function test_oneClickUrl_http_null(string $url): void
+        /** the body link is marked on http too - only the header needs https */
+        public function test_oneClickUrl_http_markedToo(): void
         {
-            $this->assertNull(AA_Collection::oneClickUrl($url));
+            $this->assertSame('http://example.org/news?one=1&au=k3y5x&c=sQjwa', AA_Collection::oneClickUrl('http://example.org/news?au=k3y5x&c=sQjwa'));
+        }
+
+        public function test_fitsHeader_https_true(): void
+        {
+            $this->assertTrue(AA_Collection::fitsHeader('https://example.org/news?au=x&c=x'));
+        }
+
+        #[DataProvider('urlsWithoutHeaders')]
+        public function test_fitsHeader_http_false(string $url): void
+        {
+            $this->assertFalse(AA_Collection::fitsHeader($url));
         }
 
         public function test_sendEmails_readerMail_carriesUnsubscribeHeaders(): void

@@ -158,30 +158,32 @@ function AlertsLandingPageFor(bool $is_alerts, bool $may_settings, bool $may_mai
     };
 }
 
-/** The query parameter that marks the List-Unsubscribe header link (AA_Collection::unsubscribeHeaders()) */
+/** The query parameter of an unsubscribe link that unsubscribes only by POST where the page can ask (AA_Collection::oneClickUrl()) */
 const ALERTS_ONE_CLICK_PARAM = 'one';
 
 /** Unsubscribes by a link of an Alerts mail - the one decision for every page that reads au.
- *  Mail services and link scanners open the header link by GET, so that link unsubscribes only by POST:
- *  RFC 8058 posts List-Unsubscribe=One-Click with no cookies, the button of unsubscribe_ask() posts the same.
- *  The link in the mail body unsubscribes on GET, as it always did.
- *  On a fillform (SSI) page the header link never unsubscribes: GET only asks and a POST does not reach the include.
- *  @param string $one    the ALERTS_ONE_CLICK_PARAM of the URL; never from $_REQUEST, a cookie would override it
- *  @param array  $server $_SERVER
- *  @param array  $post   $_POST
- *  @return bool|null     null = the header link opened by GET: show unsubscribe_ask() */
-function unsubscribe_request($slice_id, $au, $c, $one, array $server, array $post): ?bool
+ *  Mail services and link scanners open the links of a mail by GET, so a link marked with ALERTS_ONE_CLICK_PARAM
+ *  (the List-Unsubscribe header, the body link of a mailing) unsubscribes only by POST: RFC 8058 posts
+ *  List-Unsubscribe=One-Click with no cookies, the button of unsubscribe_ask() posts the same.
+ *  An unmarked link (an Alerts digest) unsubscribes on GET, as it always did.
+ *  @param string $one     the ALERTS_ONE_CLICK_PARAM of the URL; never from $_REQUEST, a cookie would override it
+ *  @param array  $server  $_SERVER
+ *  @param array  $post    $_POST
+ *  @param bool   $can_ask false on a fillform (SSI) page: it cannot show the button and a POST does not reach the
+ *                         include - there a marked link unsubscribes on GET too
+ *  @return bool|null      null = a marked link opened by GET: show unsubscribe_ask() */
+function unsubscribe_request($slice_id, $au, $c, $one, array $server, array $post, bool $can_ask = true): ?bool
 {
     // the page cache keys by the address and the POST body - a stored answer would skip the next unsubscribe
     AA::Pagecache()->switchCacheNostore();
     $one_click = (strtoupper((string) ($server['REQUEST_METHOD'] ?? '')) === 'POST') && (($post['List-Unsubscribe'] ?? '') === 'One-Click');
-    if (!empty($one) && !$one_click) {
+    if ($can_ask && !empty($one) && !$one_click) {
         return null;
     }
     return unsubscribe_reader($slice_id, $au, $c);
 }
 
-/** The button for the header link opened by GET. No action - the form posts to the URL of the page, au and c included. */
+/** The button for a marked link opened by GET. No action - the form posts to the URL of the page, au and c included. */
 function unsubscribe_ask(): string
 {
     return '<form method="post" class="aa-unsubscribe"><p>' . safe(_m('Do you want to stop receiving the mails of this list?')) . '</p>'

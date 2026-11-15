@@ -364,28 +364,31 @@ class AA_Collection
         ];
     }
 
-    /** The unsubscribe URL marked to unsubscribe only by POST (unsubscribe_request()); null when it cannot go
-     *  to the header - mail services post only to https. The URL is built from the admin-set slice_url, so
-     *  anything that could end the header line or the <...> gives none; nor 8-bit bytes - the mailer would
-     *  encode the header and break the URI. */
-    public static function oneClickUrl(string $unsubscribeUrl): ?string
+    /** The unsubscribe URL marked to unsubscribe only by POST where the page can ask (unsubscribe_request()) - the
+     *  link of the List-Unsubscribe header and the body link of a mailing */
+    public static function oneClickUrl(string $unsubscribeUrl): string
     {
-        if (!preg_match('~^https://[^\x00-\x20\x7f-\xff<>]+\z~', $unsubscribeUrl)) {
-            return null;
-        }
         return get_url($unsubscribeUrl, [ALERTS_ONE_CLICK_PARAM => 1]);
     }
 
-    /** One-click unsubscribe headers (RFC 8058)
-     *  @return array<string, string> header name => value */
-    public static function unsubscribeHeaders(string $unsubscribeUrl): array
+    /** The URL may go to the List-Unsubscribe header: mail services post only to https. It is built from the
+     *  admin-set slice_url, so anything that could end the header line or the <...> fails it; so do 8-bit bytes -
+     *  the mailer would encode the header and break the URI. */
+    public static function fitsHeader(string $url): bool
     {
-        $url = self::oneClickUrl($unsubscribeUrl);
-        if ($url === null) {
+        return (bool) preg_match('~^https://[^\x00-\x20\x7f-\xff<>]+\z~', $url);
+    }
+
+    /** One-click unsubscribe headers (RFC 8058)
+     *  @param ?string $oneClickUrl what oneClickUrl() gave; null = none (a test mail, a reader without a code)
+     *  @return array<string, string> header name => value */
+    public static function unsubscribeHeaders(?string $oneClickUrl): array
+    {
+        if (($oneClickUrl === null) || !self::fitsHeader($oneClickUrl)) {
             return [];
         }
         return [
-            'List-Unsubscribe'      => '<' . $url . '>',
+            'List-Unsubscribe'      => '<' . $oneClickUrl . '>',
             'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
         ];
     }
@@ -457,7 +460,7 @@ class AA_Collection
                     $item         = new AA_Item($readerContent, $aliases);
 
                     // without the code the link would unsubscribe nobody
-                    $headers = ($access_code === '') ? [] : self::unsubscribeHeaders($links['unsubscribe']);
+                    $headers = self::unsubscribeHeaders(($access_code === '') ? null : self::oneClickUrl($links['unsubscribe']));
                     if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item, null, $headers)) {
                         AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'queued', 'collection' => $this->id, 'detail' => $readerContent->getValue(FIELDID_EMAIL)]));
                         $email_count++;

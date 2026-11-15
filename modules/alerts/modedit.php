@@ -220,8 +220,8 @@ FrmTabCaption(_m("Alerts Settings"), $form_buttons);
 
 $marr = RenderModuleFieldsForm($source_id, $superadmin, $is_add, $redisplay, compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
 $lang_file = rtrim((string) ($marr[3] ?? ''), '3');   // trim old php3 lang-file extension
-// the unsubscribe link is built on the list's URL, and AA_Collection::unsubscribeHeaders() needs it https
-if (!AA_Collection::unsubscribeHeaders(get_url((string) ($marr[1] ?? ''), ['au' => 'x', 'c' => 'x']))) {
+// the unsubscribe link is built on the list's URL, and the header needs it https
+if (!AA_Collection::fitsHeader(get_url((string) ($marr[1] ?? ''), ['au' => 'x', 'c' => 'x']))) {
     FrmStaticText('', _m('The URL of this list is not https - the mails go without the one-click unsubscribe header.'));
 }
 

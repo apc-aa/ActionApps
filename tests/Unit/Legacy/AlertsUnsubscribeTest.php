@@ -247,6 +247,17 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([], RecordingDb::$log, 'not even the reader is looked up');
         }
 
+        /** a fillform (SSI) page cannot show the button, nor get its POST - there the link unsubscribes as it always did */
+        #[WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_unsubscribe_request_headerLinkByGetWhereNoButton_unsubscribes(): void
+        {
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+
+            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::GET, [], false));
+
+            $this->assertStringStartsWith('unsubscribed:', $this->frequencies()[0]);
+        }
+
         /** RFC 8058: the mail service posts List-Unsubscribe=One-Click with no cookies */
         #[WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
         public function test_unsubscribe_request_headerLinkOneClickPost_unsubscribes(): void

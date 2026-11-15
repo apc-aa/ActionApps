@@ -122,8 +122,8 @@ function fillForm(): string
         if ($GLOBALS["au"]) {
             $GLOBALS["ac"] = $GLOBALS["au"];
             // these globals come from the query of the page (add_vars()) or a form stored by post2shtml.php
-            // (add_post2shtml_vars()) - never from a cookie of this request
-            if (unsubscribe_request($slice_id, $GLOBALS["au"], $GLOBALS["c"], $GLOBALS[ALERTS_ONE_CLICK_PARAM] ?? '', $_SERVER, $_POST)) {
+            // (add_post2shtml_vars()) - never from a cookie of this request; the page cannot ask
+            if (unsubscribe_request($slice_id, $GLOBALS["au"], $GLOBALS["c"], $GLOBALS[ALERTS_ONE_CLICK_PARAM] ?? '', $_SERVER, $_POST, false)) {
                 $GLOBALS["result"]["unsubscribed"] = "OK";
             }
         }
