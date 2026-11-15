@@ -365,10 +365,11 @@ class AA_Collection
     }
 
     /** The unsubscribe URL marked to unsubscribe only by POST where the page can ask (unsubscribe_request()) - the
-     *  link of the List-Unsubscribe header and the body link of a mailing */
-    public static function oneClickUrl(string $unsubscribeUrl): string
+     *  link of the List-Unsubscribe header and the body link of a mailing
+     *  @param string $mark ALERTS_ONE_CLICK_HEADER or ALERTS_ONE_CLICK_BODY */
+    public static function oneClickUrl(string $unsubscribeUrl, string $mark): string
     {
-        return get_url($unsubscribeUrl, [ALERTS_ONE_CLICK_PARAM => 1]);
+        return get_url($unsubscribeUrl, [ALERTS_ONE_CLICK_PARAM => $mark]);
     }
 
     /** The URL may go to the List-Unsubscribe header: mail services post only to https. It is built from the
@@ -460,7 +461,7 @@ class AA_Collection
                     $item         = new AA_Item($readerContent, $aliases);
 
                     // without the code the link would unsubscribe nobody
-                    $headers = self::unsubscribeHeaders(($access_code === '') ? null : self::oneClickUrl($links['unsubscribe']));
+                    $headers = self::unsubscribeHeaders(($access_code === '') ? null : self::oneClickUrl($links['unsubscribe'], ALERTS_ONE_CLICK_HEADER));
                     if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item, null, $headers)) {
                         AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'queued', 'collection' => $this->id, 'detail' => $readerContent->getValue(FIELDID_EMAIL)]));
                         $email_count++;

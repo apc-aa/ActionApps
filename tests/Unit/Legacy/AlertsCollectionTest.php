@@ -771,15 +771,21 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([], AA_Collection::unsubscribeHeaders($url));
         }
 
-        public function test_oneClickUrl_https_marked(): void
+        public function test_oneClickUrl_header_markedOne(): void
         {
-            $this->assertSame('https://example.org/news?one=1&au=k3y5x&c=sQjwa', AA_Collection::oneClickUrl('https://example.org/news?au=k3y5x&c=sQjwa'));
+            $this->assertSame('https://example.org/news?one=1&au=k3y5x&c=sQjwa', AA_Collection::oneClickUrl('https://example.org/news?au=k3y5x&c=sQjwa', ALERTS_ONE_CLICK_HEADER));
+        }
+
+        /** the body link has its own mark: on a fillform page it unsubscribes by GET, the header link never does */
+        public function test_oneClickUrl_body_markedB(): void
+        {
+            $this->assertSame('https://example.org/news?one=b&au=k3y5x&c=sQjwa', AA_Collection::oneClickUrl('https://example.org/news?au=k3y5x&c=sQjwa', ALERTS_ONE_CLICK_BODY));
         }
 
         /** the body link is marked on http too - only the header needs https */
         public function test_oneClickUrl_http_markedToo(): void
         {
-            $this->assertSame('http://example.org/news?one=1&au=k3y5x&c=sQjwa', AA_Collection::oneClickUrl('http://example.org/news?au=k3y5x&c=sQjwa'));
+            $this->assertSame('http://example.org/news?one=b&au=k3y5x&c=sQjwa', AA_Collection::oneClickUrl('http://example.org/news?au=k3y5x&c=sQjwa', ALERTS_ONE_CLICK_BODY));
         }
 
         public function test_fitsHeader_https_true(): void

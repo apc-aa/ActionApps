@@ -225,13 +225,23 @@ namespace Tests\Unit\Legacy {
         private const POST      = ['REQUEST_METHOD' => 'POST'];
         private const ONE_CLICK = ['List-Unsubscribe' => 'One-Click'];
 
-        /** the link in the mail body works as it always did, whatever the method */
+        /** the unmarked link of an Alerts digest works as it always did, whatever the method */
         #[WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
-        public function test_unsubscribe_request_bodyLinkByGet_unsubscribes(): void
+        public function test_unsubscribe_request_unmarkedLinkByGet_unsubscribes(): void
         {
             RecordingDb::$content = [$this->frequencyRow('weekly')];
 
             $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '', self::GET, []));
+
+            $this->assertStringStartsWith('unsubscribed:', $this->frequencies()[0]);
+        }
+
+        #[WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_unsubscribe_request_unmarkedLinkByGetOnFillform_unsubscribes(): void
+        {
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+
+            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '', self::GET, [], false));
 
             $this->assertStringStartsWith('unsubscribed:', $this->frequencies()[0]);
         }
@@ -241,19 +251,58 @@ namespace Tests\Unit\Legacy {
         {
             RecordingDb::$content = [$this->frequencyRow('weekly')];
 
-            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::GET, []));
+            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, ALERTS_ONE_CLICK_HEADER, self::GET, []));
 
             $this->assertSame(['weekly'], $this->frequencies());
             $this->assertSame([], RecordingDb::$log, 'not even the reader is looked up');
         }
 
-        /** a fillform (SSI) page cannot show the button, nor get its POST - there the link unsubscribes as it always did */
-        #[WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
-        public function test_unsubscribe_request_headerLinkByGetWhereNoButton_unsubscribes(): void
+        /** a fillform (SSI) page cannot ask - the header link still must not unsubscribe by GET (RFC 8058) */
+        #[\PHPUnit\Framework\Attributes\DataProvider('notBodyMarks')]
+        public function test_unsubscribe_request_headerLinkByGetOnFillform_doesNothing(string $one): void
         {
             RecordingDb::$content = [$this->frequencyRow('weekly')];
 
-            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::GET, [], false));
+            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, $one, self::GET, [], false));
+
+            $this->assertSame(['weekly'], $this->frequencies());
+            $this->assertSame([], RecordingDb::$log, 'not even the reader is looked up');
+        }
+
+        public static function notBodyMarks(): array
+        {
+            // literals: a provider runs before setUpBeforeClass() loads the constants
+            return ['header' => ['1'], 'unknown' => ['x']];
+        }
+
+        /** link checkers open the body link of a mailing by GET too - where the page can ask, it only asks */
+        public function test_unsubscribe_request_bodyLinkByGet_asks(): void
+        {
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+
+            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, ALERTS_ONE_CLICK_BODY, self::GET, []));
+
+            $this->assertSame(['weekly'], $this->frequencies());
+        }
+
+        /** the button of unsubscribe_ask() */
+        #[WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_unsubscribe_request_bodyLinkButtonPost_unsubscribes(): void
+        {
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+
+            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, ALERTS_ONE_CLICK_BODY, self::POST, self::ONE_CLICK));
+
+            $this->assertStringStartsWith('unsubscribed:', $this->frequencies()[0]);
+        }
+
+        /** a fillform (SSI) page cannot show the button, nor get its POST - there the body link unsubscribes by GET */
+        #[WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_unsubscribe_request_bodyLinkByGetOnFillform_unsubscribes(): void
+        {
+            RecordingDb::$content = [$this->frequencyRow('weekly')];
+
+            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, ALERTS_ONE_CLICK_BODY, self::GET, [], false));
 
             $this->assertStringStartsWith('unsubscribed:', $this->frequencies()[0]);
         }
@@ -264,7 +313,7 @@ namespace Tests\Unit\Legacy {
         {
             RecordingDb::$content = [$this->frequencyRow('weekly')];
 
-            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::POST, self::ONE_CLICK));
+            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, ALERTS_ONE_CLICK_HEADER, self::POST, self::ONE_CLICK));
 
             $this->assertStringStartsWith('unsubscribed:', $this->frequencies()[0]);
         }
@@ -273,7 +322,7 @@ namespace Tests\Unit\Legacy {
         {
             RecordingDb::$content = [$this->frequencyRow('weekly')];
 
-            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::POST, []));
+            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, ALERTS_ONE_CLICK_HEADER, self::POST, []));
 
             $this->assertSame(['weekly'], $this->frequencies());
         }
@@ -282,7 +331,7 @@ namespace Tests\Unit\Legacy {
         {
             $this->readers = [];
 
-            $this->assertFalse(@unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::POST, self::ONE_CLICK));   // warn() about the count
+            $this->assertFalse(@unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, ALERTS_ONE_CLICK_HEADER, self::POST, self::ONE_CLICK));   // warn() about the count
         }
 
         private function pageStorable(): bool
@@ -298,11 +347,11 @@ namespace Tests\Unit\Legacy {
             RecordingDb::$content = [$this->frequencyRow('weekly')];
             $this->assertTrue($this->pageStorable());
 
-            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::POST, self::ONE_CLICK));
+            $this->assertTrue(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, ALERTS_ONE_CLICK_HEADER, self::POST, self::ONE_CLICK));
             $this->assertFalse($this->pageStorable(), 'one-click POST');
 
             (new \ReflectionProperty(AA::class, 'pagecache'))->setValue(null, new PageCache(600));
-            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, '1', self::GET, []));
+            $this->assertNull(unsubscribe_request(self::SLICE, self::CODE, self::COLLECTION, ALERTS_ONE_CLICK_HEADER, self::GET, []));
             $this->assertFalse($this->pageStorable(), 'the question of the header link');
 
             (new \ReflectionProperty(AA::class, 'pagecache'))->setValue(null, new PageCache(600));

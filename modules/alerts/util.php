@@ -160,6 +160,10 @@ function AlertsLandingPageFor(bool $is_alerts, bool $may_settings, bool $may_mai
 
 /** The query parameter of an unsubscribe link that unsubscribes only by POST where the page can ask (AA_Collection::oneClickUrl()) */
 const ALERTS_ONE_CLICK_PARAM = 'one';
+/** ALERTS_ONE_CLICK_PARAM of the List-Unsubscribe header link: never unsubscribes by GET (RFC 8058) */
+const ALERTS_ONE_CLICK_HEADER = '1';
+/** ALERTS_ONE_CLICK_PARAM of the body link of a mailing: unsubscribes by GET where the page cannot ask */
+const ALERTS_ONE_CLICK_BODY = 'b';
 
 /** Unsubscribes by a link of an Alerts mail - the one decision for every page that reads au.
  *  Mail services and link scanners open the links of a mail by GET, so a link marked with ALERTS_ONE_CLICK_PARAM
@@ -170,14 +174,15 @@ const ALERTS_ONE_CLICK_PARAM = 'one';
  *  @param array  $server  $_SERVER
  *  @param array  $post    $_POST
  *  @param bool   $can_ask false on a fillform (SSI) page: it cannot show the button and a POST does not reach the
- *                         include - there a marked link unsubscribes on GET too
- *  @return bool|null      null = a marked link opened by GET: show unsubscribe_ask() */
+ *                         include - there the body link unsubscribes on GET, the header link never does
+ *  @return bool|null      null = a marked link opened by GET: show unsubscribe_ask() where the page can */
 function unsubscribe_request($slice_id, $au, $c, $one, array $server, array $post, bool $can_ask = true): ?bool
 {
     // the page cache keys by the address and the POST body - a stored answer would skip the next unsubscribe
     AA::Pagecache()->switchCacheNostore();
     $one_click = (strtoupper((string) ($server['REQUEST_METHOD'] ?? '')) === 'POST') && (($post['List-Unsubscribe'] ?? '') === 'One-Click');
-    if ($can_ask && !empty($one) && !$one_click) {
+    $by_get    = empty($one) || (!$can_ask && ((string) $one === ALERTS_ONE_CLICK_BODY));
+    if (!$one_click && !$by_get) {
         return null;
     }
     return unsubscribe_reader($slice_id, $au, $c);

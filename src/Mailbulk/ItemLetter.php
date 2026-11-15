@@ -94,11 +94,12 @@ class ItemLetter implements Letter
         // a test must count nothing; the base is '' when the list measured nothing at "send" - all mails of a run alike
         $track = !$test && ($this->trackBase !== '');
         $image = $track ? $this->openImage($readerId) : '';
-        // without the code the link would unsubscribe nobody; else the body link is the header's one - link checkers
-        // open the links of a mail, and this one only shows a button
-        $oneClick    = ($test || ($code === '')) ? null : AA_Collection::oneClickUrl($links['unsubscribe']);
-        $headers     = AA_Collection::unsubscribeHeaders($oneClick);
-        $unsubscribe = $oneClick ?? $links['unsubscribe'];
+        // without the code the link would unsubscribe nobody; else both links only show a button - link checkers
+        // open the links of a mail - and the body one has its own mark: a fillform page cannot ask, so there it
+        // unsubscribes by GET, which the header link must not (RFC 8058)
+        $marked      = !$test && ($code !== '');
+        $headers     = AA_Collection::unsubscribeHeaders($marked ? AA_Collection::oneClickUrl($links['unsubscribe'], ALERTS_ONE_CLICK_HEADER) : null);
+        $unsubscribe = $marked ? AA_Collection::oneClickUrl($links['unsubscribe'], ALERTS_ONE_CLICK_BODY) : $links['unsubscribe'];
         $item        = $this->itemWith($readerId, $unsubscribe, $links['form'], $image);
         $html        = $this->expand('_#MAILBODY', $item);
         if ($track) {
