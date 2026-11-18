@@ -16,9 +16,31 @@ final class FilWidgetTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
-        if (!defined('AA_INSTAL_URL')) {   // loading Widget pulls in include/constants.php
-            define('AA_INSTAL_URL', 'http://localhost/');
-        }
+        require_once __DIR__ . '/../fixtures/util_shims.php';
+    }
+
+    #[DataProvider('submittedUrls')]
+    public function test_getWidgetValue_url(string $url, array $expected): void
+    {
+        self::assertSame($expected, FilWidget::getWidgetValue(['fil' => ['url' => [$url]]], null)->getValues());
+    }
+
+    public function test_getWidgetValue_arrayUrl_isDropped(): void
+    {
+        self::assertSame([], FilWidget::getWidgetValue(['fil' => ['url' => [['value' => 'javascript:alert(1)']]]], null)->getValues());
+    }
+
+    public static function submittedUrls(): array
+    {
+        return [
+            'https'              => ['https://example.org/a.jpg', ['https://example.org/a.jpg']],
+            'relative'           => ['img_upload/a.jpg', ['img_upload/a.jpg']],
+            'empty'              => ['  ', []],
+            'javascript'         => ['javascript:alert(1)', []],
+            'upload marker'      => ['AA_UPLOAD:a:1:{s:4:"name";s:1:"x";}', []],
+            'thumbnail marker'   => ['AA_UPTHUMB:/etc/passwd', []],
+            'AA expression'      => ['{ifin:{item:{qss:mid}:_#TYP_MUNI}:mesto:https#://www.dataplan.info/a.pdf}', ['{ifin:{item:{qss:mid}:_#TYP_MUNI}:mesto:https#://www.dataplan.info/a.pdf}']],
+        ];
     }
 
     public function test_uploadCallback_formId_callsReloadWithResult(): void

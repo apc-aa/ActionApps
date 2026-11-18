@@ -177,6 +177,20 @@ function IsNavigableUrl(string $url): bool
     return ($scheme === '') || in_array($scheme, ['http', 'https'], true);
 }
 
+/** A URL stored for templates, which print it raw into href/src or a JS string in an attribute: relative or
+ *  http(s), and nothing that ends the attribute or the string. The browser decodes character references
+ *  there (javascript&#58, even without the ;), so they are refused, as is anything a scheme could be read
+ *  from. An AA expression ({ifin:…}) stays: no scheme starts with a brace.
+ */
+function IsAttributeUrl(string $url): bool
+{
+    $probe = (string) preg_replace('/[\x00-\x20]+/', '', $url);
+    if (($probe === '') || (strpbrk($probe, '"\'<>`\\') !== false) || preg_match('/&(#|apos|quot|lt|gt)/i', $probe)) {
+        return false;
+    }
+    return !preg_match('/^[a-z0-9+.-]*[:&]/i', $probe) || preg_match('~^https?://~i', $probe);
+}
+
 /** Move to another page (must be before any output from script)
  * @param $url
  * @param $add_param array|string

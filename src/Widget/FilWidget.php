@@ -92,9 +92,9 @@ class FilWidget extends Widget
     public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
         $data4field = $data4field['fil'];
-        $uploads = (array) $data4field['var'];
-        $urls = (array) $data4field['url'];
-        $add = $data4field['add'] == '1';  // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned
+        $uploads = (array) ($data4field['var'] ?? []);
+        $urls = (array) ($data4field['url'] ?? []);
+        $add = ($data4field['add'] ?? '') == '1';  // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned
 
         // upload could be also multivalue
 
@@ -112,7 +112,8 @@ class FilWidget extends Widget
         }
         if (!$upload_ok || $add) {
             foreach ($urls as $url) {
-                if (strlen(trim($url))) {
+                // an array would slip a value past the test; the upload markers belong to the uploads
+                if (is_string($url) && IsAttributeUrl($url) && !preg_match('/^AA_UP(LOAD|THUMB):/', $url)) {
                     $values[] = $url;
                 }
             }
@@ -150,8 +151,9 @@ class FilWidget extends Widget
         for ($i = 0, $ino = $value->count(); $i < $ino; ++$i) {
             $input_name  = $base_name . "[fil][url][$i]";
             $input_id    = FormArray::formName2Id($input_name);
-            $input_value = safe($value->getValue($i));
-            $link        = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show') . ' ' . $input_value, 16, 16), ['class' => 'aa-fil-link']) : '';
+            $raw_value   = (string) $value->getValue($i);
+            $input_value = safe($raw_value);
+            $link        = IsAttributeUrl($raw_value) ? a_href($raw_value, GetAAImage('external-link.png', _m('Show') . ' ' . $input_value, 16, 16), ['class' => 'aa-fil-link']) : '';
             $widget     .= "\n<div class=aa-fil-file>";
             if ($display_url < 2 && $type === 'normal') {
                 $widget .= "<input type=\"text\" class=aa-w-full maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add> $link";
