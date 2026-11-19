@@ -198,18 +198,23 @@ class FilWidget extends Widget
                 'inline' => 1,
                 'upload_form_id' => $base_id,   // filler.php answers with uploadCallback()
             ];
-            // the URLs go in the form too - filler.php then stores the field just as the item form does
+            // The URLs go along too - filler.php then stores the field just as the item form does.
+            // No <form> here: the widget often sits inside the item editor's form, where the parser drops
+            // a nested <form> together with its handlers. The form is built on submit, outside of it.
+            $send = "const w = document.getElementById('fuf$base_id'), f = document.createElement('form');"
+                  . " f.method = 'post'; f.enctype = 'multipart/form-data'; f.action = w.dataset.aaAction; f.target = 'iframe$base_id'; f.hidden = true;"
+                  . " f.append(...w.querySelectorAll('input:not([type=button])')); document.body.append(f); f.submit();";
             $widget = '
-                <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . safe(get_aa_url('filler.php', $url_params)) . '" target="iframe' . $base_id . '" oninput="document.getElementById(\'' . $base_id . 'upload\').style.display = \'inline-block\'">' . $widget;
+                <div id="fuf' . $base_id . '" data-aa-action="' . safe(get_aa_url('filler.php', $url_params)) . '" oninput="document.getElementById(\'' . $base_id . 'upload\').style.display = \'inline-block\'">' . $widget;
             if ($value->count()) {
                 $widget .= '
-                    <input type="button" value="' . _m('Delete') . '" onclick="const f = document.getElementById(\'fuf' . $base_id . '\'); if (f) { for (const i of f.querySelectorAll(\'.aa-fil-file input, input[type=file]\')) { i.value = \'\'; } f.submit(); }"><br>';
+                    <input type="button" value="' . _m('Delete') . '" onclick="for (const i of document.querySelectorAll(\'#fuf' . $base_id . ' .aa-fil-file input, #fuf' . $base_id . ' input[type=file]\')) { i.value = \'\'; } ' . $send . '"><br>';
             }
             $widget .= '
                 <input type="file" size="' . $width . '"' . $multiple . ' maxlength="' . $max_characters . '" name="' . $input_name . '" id="' . $input_id . '" ' . $accept . '>
                 <input type="hidden" name="ret_code_enc" id="ret_code_enc' . $base_id . '" value="">
-                <input type="submit" name="' . $base_id . 'upload" id="' . $base_id . 'upload" value="' . _m('SAVE CHANGE') . '" style="display:none;">
-                </form>
+                <input type="button" id="' . $base_id . 'upload" value="' . _m('SAVE CHANGE') . '" style="display:none;" onclick="' . $send . '">
+                </div>
                 <iframe id="iframe' . $base_id . '" name="iframe' . $base_id . '" src="" style="width:0;height:0;border:0px solid #fff;visibility:hidden;"></iframe>
                 <script>
                   document.getElementById("ret_code_enc' . $base_id . '").value = document.getElementById("ajaxv_' . $base_id . '").getAttribute(\'data-aa-alias\');

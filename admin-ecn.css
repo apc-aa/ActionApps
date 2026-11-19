@@ -753,7 +753,7 @@ input[type="radio"] {
    finder), field-value dumps, etc. Lives here (always-loaded base sheet) so the markup is styled
    wherever it appears in the admin, without a per-page CSS registration. */
 .aa-log-entry {
-    display: flex; gap: 0.5rem;
+    display: flex; flex-wrap: wrap; gap: 0.3rem 0.5rem;
     div {
         position: relative; display: flex; flex-direction: column; align-items: flex-start;
         label { font-size: 0.7rem; color: rgb(0 0 0 / 70%); margin-bottom: -0.5rem; line-height: 0.9rem; }
@@ -1651,7 +1651,10 @@ table.aa-table table td {
 .aa-table-foot td {
     text-align: center;
 }
+/* the cells hold inputs, text and multi-line controls - align them on the first line */
+.aa-fld-row > td { vertical-align: baseline; }
 .aa-flds-aliases a {
+    white-space: nowrap;   /* the move icon stays with its alias */
     padding: 0 4px;
     border-left: solid 1px rgb(0 0 0 / 18%);
 }

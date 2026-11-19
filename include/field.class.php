@@ -735,7 +735,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         $name = safe($name);
         $pri = safe($pri);
 
-        $rowclass = ((str_starts_with($id, "alerts")) ? 'tabtxt_field_alerts' : '');
+        $rowclass = 'aa-fld-row' . ((str_starts_with($id, "alerts")) ? ' tabtxt_field_alerts' : '');
         if ($separate) {
             $rowclass .= ' separator';
         }

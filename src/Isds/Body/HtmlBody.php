@@ -33,6 +33,10 @@ final class HtmlBody
      *  0.9 GB); a letter has a few hundred */
     private const MAX_TAGS = 200_000;
 
+    /** bytes of a document every libxml reads whole: past 10 MB 2.9-2.13 cut a text node, 2.12 a long
+     *  lookahead (pasted images) and 2.15 an attribute value - the last one with no error that tells it */
+    private const MAX_PARSED = 10_000_000;
+
     /** attributes of one tag: libxml compares each with all before it, outside memory_limit - 100 000 in
      *  one <p> took 22 s */
     private const MAX_ATTRIBUTES = 1000;
@@ -188,9 +192,11 @@ final class HtmlBody
 
     /**
      * libxml errors after which the rest of the letter is missing: 1 (internal) is the depth limit on
-     * libxml 2.9, 2 (no memory) a huge text node; later versions report the depth as fatal
+     * libxml 2.9, 2 no memory, 114 a limit of 2.14+ - also an attribute value under MAX_PARSED that
+     * grows past 10 MB as references like &nGt; (5 bytes, 6 decoded) are read; later versions report the
+     * depth as fatal
      */
-    private const CUT_OFF = [1, 2];
+    private const CUT_OFF = [1, 2, 114];
 
     private const HEAD = "<!DOCTYPE html>\n<html lang=\"cs\">\n<head>\n<meta charset=\"utf-8\">\n"
         . "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n"
@@ -308,28 +314,38 @@ final class HtmlBody
         // ">" there is nothing left anyway. *+ and \z: without PCRE JIT, which AA switches off, [^>]*> would
         // search the rest of the letter for ">" from every "</body", minutes for a few MB
         $html = (string) preg_replace('~</(?:body|html)\b[^>]*+(?:>|\z)~i', '', self::windows1252($html));
+        // the charset first: a <meta> in the letter declaring another one comes too late
+        $document = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>$html</body></html>";
+        if (strlen($document) > self::MAX_PARSED) {
+            throw new \InvalidArgumentException('The letter is too large to process (over ' . intdiv(self::MAX_PARSED, 1_000_000) . ' MB) - upload the images instead of pasting them into the text');
+        }
         if (substr_count($html, '<') > self::MAX_TAGS) {
             throw new \InvalidArgumentException('The letter has more than ' . self::MAX_TAGS . ' tags or lines - attach a long table as a file');
         }
         self::checkAttributes($html);
-        return Libxml::run(static function () use ($html): \DOMElement {
+        return Libxml::run(static function () use ($document): \DOMElement {
             $dom = new \DOMDocument();
-            // the charset first: a <meta> in the letter declaring another one comes too late
-            $dom->loadHTML("<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>$html</body></html>");
-            $errors = libxml_get_errors();
-            foreach ($errors as $error) {
-                // libxml 2.12 stops at about 10 MB, mostly of images pasted as data: URIs
-                if (str_contains($error->message, 'Huge input lookup')) {
-                    throw new \InvalidArgumentException('The letter is too large to process - upload the images instead of pasting them into the text');
-                }
-            }
-            foreach ($errors as $error) {
-                if (($error->level === LIBXML_ERR_FATAL) || in_array($error->code, self::CUT_OFF, true)) {
-                    throw new \InvalidArgumentException('The letter cannot be read whole: ' . Libxml::cut(trim($error->message), 200));
-                }
+            $dom->loadHTML($document);
+            $error = self::cutOff();
+            if (!is_null($error)) {
+                throw new \InvalidArgumentException('The letter cannot be read whole: ' . Libxml::cut(trim($error->message), 200));
             }
             return $dom->documentElement ?? throw new \LogicException('libxml made no <html>');
         });
+    }
+
+    /**
+     * The first libxml error after which the rest of the document is missing; null = read whole. Call it
+     * inside Libxml::run(), right after loadHTML().
+     */
+    public static function cutOff(): ?\LibXMLError
+    {
+        foreach (libxml_get_errors() as $error) {
+            if (($error->level === LIBXML_ERR_FATAL) || in_array($error->code, self::CUT_OFF, true)) {
+                return $error;
+            }
+        }
+        return null;
     }
 
     /**

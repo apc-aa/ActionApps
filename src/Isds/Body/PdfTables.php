@@ -42,7 +42,7 @@ final class PdfTables
      * @return array{grid: int, rows: int, cells: int} grid = rows × columns of each table, the columns of a row
      *                                                 with the cells spanning it from above; cells = colspan × rowspan
      *                                                 of each, and the span of columns
-     * @throws \InvalidArgumentException LONG_CELL
+     * @throws \InvalidArgumentException LONG_CELL, or libxml cannot read it whole
      */
     public static function check(string $markup): array
     {
@@ -50,12 +50,7 @@ final class PdfTables
         if (!str_contains($markup, '<table')) {
             return $count;
         }
-        $xpath = Libxml::run(static function () use ($markup): \DOMXPath {
-            $dom = new \DOMDocument();
-            // HtmlBody writes the charset first
-            $dom->loadHTML($markup);
-            return new \DOMXPath($dom);
-        });
+        $xpath = new \DOMXPath(self::load($markup));
         foreach (self::elements($xpath, '//table') as $t => $table) {
             // flow() makes blocks of it: its text runs over pages
             if (self::oneCell($table)) {
@@ -93,6 +88,25 @@ final class PdfTables
     }
 
     /**
+     * $markup as libxml reads it. HtmlBody read the header and the body each whole, but libxml 2.12 may stop
+     * on the two together: past some 10 MB of attributes, which the tokens of links and images do not shorten
+     * @throws \InvalidArgumentException
+     */
+    private static function load(string $markup): \DOMDocument
+    {
+        return Libxml::run(static function () use ($markup): \DOMDocument {
+            $dom = new \DOMDocument();
+            // HtmlBody writes the charset first
+            $dom->loadHTML($markup);
+            $error = HtmlBody::cutOff();
+            if (!is_null($error)) {
+                throw new \InvalidArgumentException('The letter cannot be laid out as a PDF whole: ' . Libxml::cut(trim($error->message), 200));
+            }
+            return $dom;
+        });
+    }
+
+    /**
      * The document as dompdf is to lay it out. A table of one cell a row, the frame of a letter from an e-mail
      * or Word, becomes blocks, so that its text runs over pages; display:block would not do, dompdf adds a
      * <tbody> of its own to it and fails. A template wider than a line, like e-mails of 700-800 px, is made
@@ -101,6 +115,7 @@ final class PdfTables
      * @return array{string, list<int>} the document and the number of each table it keeps, as check() counts them
      *                                  in $document - a refusal names the table the editor sees
      * @throws ServerException PCRE or libxml failed, or a link or image did not come back
+     * @throws \InvalidArgumentException libxml cannot read it whole
      */
     public static function flow(string $document): array
     {
@@ -118,11 +133,8 @@ final class PdfTables
         if ($markup === null) {
             throw new ServerException('The letter cannot be measured for a PDF');
         }
-        [$dom, $xpath] = Libxml::run(static function () use ($markup): array {
-            $dom = new \DOMDocument();
-            $dom->loadHTML($markup);
-            return [$dom, new \DOMXPath($dom)];
-        });
+        $dom   = self::load($markup);
+        $xpath = new \DOMXPath($dom);
         $tables  = self::elements($xpath, '//table');
         $changed = self::narrow($xpath);
         $kept    = [];
