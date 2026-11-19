@@ -1,12 +1,13 @@
 <?php
 
 /**
- * Optimize runs: one Optimize task - a class, or the whole sql_update of each AA's own version - on chosen
- * AAs of the Central list. The task queue asks the AAs one after another (AA\Central\OptimizeRun); this
- * page starts the run and shows its results. Superadmins only, as the whole Central.
+ * Optimize runs: Optimize tasks - a class, or the whole sql_update of each AA's own version - on chosen
+ * AAs of the Central list, a run for each task. The task queue asks the AAs one after another
+ * (AA\Central\OptimizeRun); this page starts the runs and shows their results. Superadmins only, as the
+ * whole Central.
  *
  * GET               the form (aa=<id>,<id> - the AAs chosen in the Central list) and the last runs
- * POST start        task, method, aa[] - starts a run
+ * POST start        task[], method, aa[] - starts a run for each task
  * GET run=<id>      the results of a run; the page reloads itself while the run goes on
  * POST continue|end run=<id>
  *
@@ -51,7 +52,7 @@ try {
     $token  = InputVars::stringPOST('token');
     $chosen = InputVars::stringGET('aa');
     $posted = array_filter(InputVars::arrayPOST('aa'), 'is_string');
-    $task   = InputVars::stringPOST('task');
+    $tasks  = array_filter(InputVars::arrayPOST('task'), 'is_string');
     $method = InputVars::stringPOST('method');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
@@ -65,14 +66,25 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST') && (ResponderPolicy::isForeignBrowse
     AA_Adminpageutil::MsgPageMenu(optimize_url(), _m('The form has expired; reload the page and try again.'), 'admin');
 }
 
-$err = '';
-if ($action === 'start') {
+$err   = '';
+$tasks = $tasks ? optimize_tasks($tasks) : [];
+if (($action === 'start') && (count($tasks) > OptimizeRun::KEEP)) {
+    $err = _m('Choose at most %1 tasks - only the last %1 runs keep their results.', [OptimizeRun::KEEP]);
+} elseif ($action === 'start') {
     try {
         $listed = Actionapps::getArray();          // the approved bin, as the form offers
-        $run    = OptimizeRun::begin($task, $method, array_filter(array_map('intval', $posted), static fn(int $id): bool => isset($listed[$id])), $uid);
-        go_url(optimize_url(['run' => $run->getId()]));
+        $aas    = array_values(array_filter(array_map('intval', $posted), static fn(int $id): bool => isset($listed[$id])));
+        if (!$tasks || !in_array($method, OptimizeRun::METHODS, true)) {
+            throw new InvalidArgumentException('No task or no method');
+        }
+        $runs = [];
+        foreach ($tasks as $task) {
+            $runs[] = OptimizeRun::begin($task, OptimizeRun::methodFor($task, $method), $aas, $uid)->getId();
+        }
+        // several runs: their list, and the same AAs chosen for the next start
+        go_url((count($runs) === 1) ? optimize_url(['run' => $runs[0]]) : optimize_url(['aa' => implode(',', $aas)]) . '#aa-optimize-runs');
     } catch (InvalidArgumentException) {
-        $err = _m('Choose a task, a method the task has and at least one AA of the list.');
+        $err = _m('Choose at least one task and at least one AA of the list.');
     } catch (BatchFailed $e) {
         $err = _m('A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1', [safe($e->where)]);
     }
@@ -96,7 +108,30 @@ $apage->addRequire('
     .aa-optimize td, .aa-optimize th { padding: 0.3em 0.6em; text-align: left; vertical-align: top; border-bottom: 1px solid var(--clr-border, #ddd); }
     .aa-optimize-ok { color: var(--clr-green, #1a7f5a); font-weight: bold; }
     .aa-optimize-bad { color: var(--clr-red, #b3261e); font-weight: bold; }
+    .aa-optimize tr:has(+ .aa-optimize-reports) td { border-bottom: 0; }
+    .aa-optimize-reports > td { padding-top: 0; }
 ', 'AA_Req_CSScode');
+if ($run_id === '') {
+    // select2 brings jQuery - the prototype of aa-jslib@1 would take its $; manager.js has its own AA_$$
+    $apage->addRequire(get_aa_url('javascript/manager.min.js', ['v' => AA_JS_VERSION]));
+    $apage->addRequire('select2@4');
+    $apage->addRequire('jQuery("#aa-optimize-tasks").select2({width: "100%", closeOnSelect: false});', 'AA_Req_Load');
+    $apage->addRequire('AA_AllowMultiselect(\'input[name="aa[]"]\', \'' . escape4js(_m('Hold Shift and click to select multiple rows')) . '\');', 'AA_Req_Load');
+    // the box in the head of the list checks all the AAs and shows whether all or some are checked
+    $apage->addRequire(<<<'JS'
+        const all = AA_$('#aa-optimize-all'), boxes = AA_$$('input[name="aa[]"]');
+        if (all) {
+            const sync = () => {
+                const n = boxes.filter(b => b.checked).length;
+                all.checked = (n > 0) && (n === boxes.length);
+                all.indeterminate = (n > 0) && (n < boxes.length);
+            };
+            all.addEventListener('change', () => boxes.forEach(b => { b.checked = all.checked; }));
+            boxes.forEach(b => b.addEventListener('change', sync));
+            sync();
+        }
+        JS, 'AA_Req_Load');
+}
 $apage->printHead($err);
 
 if ($run_id !== '') {
@@ -104,7 +139,7 @@ if ($run_id !== '') {
 } else {
     // a refused start keeps what was chosen
     $checked = ($action === 'start') ? $posted : explode(',', $chosen);
-    optimize_form(array_map('intval', array_filter($checked, 'ctype_digit')), $task ?: OptimizeRun::SQL_UPDATE, $method ?: 'test');
+    optimize_form(array_map('intval', array_filter($checked, 'ctype_digit')), $tasks ?: [OptimizeRun::SQL_UPDATE], $method ?: 'test');
     optimize_recent();
 }
 
@@ -123,13 +158,22 @@ function optimize_methods(): array
     return ['test' => _m('Test only'), 'repair' => _m('Repair where the test fails')];
 }
 
+/** the chosen tasks the form offers, in its order - the whole sql_update before the single classes
+ *  @param array<string> $posted
+ *  @return list<string> */
+function optimize_tasks(array $posted): array
+{
+    return array_values(array_intersect(array_keys(OptimizeRun::tasks()), $posted));
+}
+
 function optimize_title(OptimizeRun $run): string
 {
     return OptimizeRun::taskName($run->task()) . ' - ' . (optimize_methods()[$run->method()] ?? $run->method());
 }
 
-/** @param list<int> $checked the AAs chosen in the Central list */
-function optimize_form(array $checked, string $task, string $method): void
+/** @param list<int> $checked the AAs chosen in the Central list
+ *  @param list<string> $tasks tasks of OptimizeRun::tasks() */
+function optimize_form(array $checked, array $tasks, string $method): void
 {
     $aas = Actionapps::getArray();
     if (!$aas) {
@@ -139,25 +183,23 @@ function optimize_form(array $checked, string $task, string $method): void
     echo '<form method="post" action="' . safe(optimize_url()) . '">' . FormToken::field(OptimizeRun::FORM_TOKEN) . '<input type="hidden" name="action" value="start">';
     FrmTabCaption(_m('Run an Optimize task on several AAs'));
     $options = [];
-    foreach (OptimizeRun::taskGroups() as $group => $tasks) {
+    foreach (OptimizeRun::taskGroups() as $group => $group_tasks) {
         $options['AA_OPTGROUP ' . $group] = $group;
-        $options += $tasks;
+        $options += $group_tasks;
     }
-    // a task this AA does not offer is not chosen again
-    $task  = (isset($options[$task]) && !str_starts_with($task, 'AA_OPTGROUP')) ? $task : OptimizeRun::SQL_UPDATE;
-    $input = new AA_Inputfield(getFrmSelectEasy('task', $options, $task, ['aria-label' => _m('Task'), 'required' => 'required']), false, 'normal', '', _m('Task'), '', true, _m('Each AA runs the task of its own version; an AA without it says so.'));
+    $input = new AA_Inputfield(getFrmSelectEasy('task[]', $options, $tasks, ['id' => 'aa-optimize-tasks', 'multiple' => 'multiple', 'size' => 10, 'aria-label' => _m('Tasks')]), false, 'normal', '', _m('Tasks'), '', true, _m('Each task is a run of its own; the runs go on side by side, in no set order. Each AA runs the task of its own version; an AA without it says so.'));
     $input->staticText(false);
     echo $input->get_result();
-    FrmInputRadio('method', _m('Do'), optimize_methods(), $method, true, _m('Repair tests first, repairs only where the test fails, then tests again.'));
+    FrmInputRadio('method', _m('Do'), optimize_methods(), $method, true, _m('Repair tests first, repairs only where the test fails, then tests again. A task without a repair is only tested.'));
     FrmTabEnd();
-    echo '<table class="aa-optimize"><tr><th></th><th>' . _m('AA') . '</th><th>' . _m('Auth') . '</th></tr>';
+    echo '<table class="aa-optimize"><tr><th><input type="checkbox" id="aa-optimize-all" aria-label="' . safe(_m('Select all')) . '"></th><th>' . _m('AA') . '</th><th>' . _m('Auth') . '</th></tr>';
     foreach ($aas as $id => $aa) {
         $badge = $aa->credentialBadge();
         echo '<tr><td><input type="checkbox" name="aa[]" value="' . (int) $id . '" id="aa-optimize-' . (int) $id . '"' . (in_array((int) $id, $checked, true) ? ' checked' : '') . '></td>'
             . '<td><label for="aa-optimize-' . (int) $id . '">' . safe($aa->getName()) . '</label></td><td><span class="aa-auth aa-auth-' . safe($badge['state']) . '">' . safe($badge['text']) . '</span></td></tr>';
     }
     echo '</table><p>' . _m('An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day).') . '</p>'
-        . '<p><button class="btn-l" type="submit">' . _m('Start') . '</button></p></form>';
+        . '<p><button class="btn-l aa-once" type="submit">' . _m('Start') . '</button></p></form>';
 }
 
 /** the last runs, newest first */
@@ -168,7 +210,7 @@ function optimize_recent(): void
         return;
     }
     $now = OptimizeRun::clock();
-    echo '<h2>' . _m('Last runs') . '</h2><table class="aa-optimize"><tr><th>' . _m('Started') . '</th><th>' . _m('Task') . '</th><th>' . _m('State') . '</th><th>' . _m('Results') . '</th></tr>';
+    echo '<h2 id="aa-optimize-runs">' . _m('Last runs') . '</h2><table class="aa-optimize"><tr><th>' . _m('Started') . '</th><th>' . _m('Task') . '</th><th>' . _m('State') . '</th><th>' . _m('Results') . '</th></tr>';
     foreach ($runs as $run) {
         $counts = array_count_values(array_column($run->results(), 's'));
         $summary = implode(', ', array_map(static fn(string $s, int $n): string => optimize_status($s, $run->method()) . " {$n}×", array_keys($counts), $counts));
@@ -207,7 +249,10 @@ function optimize_run(string $run_id, string $uid): void
             . '<button class="btn-l btn-secondary" type="submit" name="action" value="end">' . _m('End') . '</button></div></form>'
             . '<p class="tabhlp">' . _m('The run goes on in the task queue of this AA - you may close this page.') . '</p>';
     }
-    echo '<table class="aa-optimize"><tr><th>' . _m('AA') . '</th><th>' . _m('Result') . '</th><th>' . _m('Report') . '</th></tr>';
+    if (!$open && ($run->method() === 'test')) {
+        optimize_repair_button($run->task(), $results);
+    }
+    echo '<table class="aa-optimize"><tr><th>' . _m('AA') . '</th><th>' . _m('Result') . '</th><th>' . _m('Message') . '</th></tr>';
     foreach ($run->aas() as $id) {
         $name = isset($aas[$id]) ? $aas[$id]->getName() : "#$id";
         $r    = $results[$id] ?? null;
@@ -224,14 +269,13 @@ function optimize_run(string $run_id, string $uid): void
         if (($id === $current) && ($next === 'check')) {
             echo '<div>' . _m('The test after the repair comes next.') . '</div>';
         }
-        // the AA's own HTML - only in a sandbox
-        if ($r['r'] !== '') {
-            echo '<details><summary>' . _m('Report') . '</summary>' . RemoteHtml::sandboxed($name, $r['r']) . '</details>';
-        }
-        if ($r['c'] !== '') {
-            echo '<details><summary>' . _m('The test after the repair') . '</summary>' . RemoteHtml::sandboxed($name, $r['c']) . '</details>';
-        }
         echo '</td></tr>';
+        // the AA's own HTML - only in a sandbox, over the whole width: its tables are wide
+        $reports = (($r['r'] !== '') ? '<details><summary>' . _m('Report') . '</summary>' . RemoteHtml::sandboxed(_m('Report') . " - $name", $r['r']) . '</details>' : '')
+            . (($r['c'] !== '') ? '<details><summary>' . _m('The test after the repair') . '</summary>' . RemoteHtml::sandboxed(_m('The test after the repair') . " - $name", $r['c']) . '</details>' : '');
+        if ($reports !== '') {
+            echo '<tr class="aa-optimize-reports"><td colspan="3">' . $reports . '</td></tr>';
+        }
     }
     echo '</table>';
     if (($run->state() === OptimizeRun::RUNNING) && !$run->isStuck($now)) {
@@ -240,6 +284,22 @@ function optimize_run(string $run_id, string $uid): void
         echo '<script>setInterval(() => { if (!document.querySelector("details[open]")) { location.replace(' . json_encode(optimize_url(['run' => $run_id]), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '); } }, ' . ($seconds * 1000) . ');</script>';
     }
     echo '<p>' . a_href(optimize_url(), _m('Another run')) . '</p>';
+}
+
+/** A finished test run: a button that starts the repair of the task on the AAs whose test failed
+ *  @param array<int, array{s: string, m: string, r: string, c: string}> $results */
+function optimize_repair_button(string $task, array $results): void
+{
+    $problems = array_keys(array_filter($results, static fn(array $r): bool => $r['s'] === OptimizeRun::PROBLEM));
+    // a class gone or renamed by an update of this AA is no task any more
+    if (!$problems || !isset(OptimizeRun::tasks()[$task]) || (OptimizeRun::methodFor($task, 'repair') !== 'repair')) {
+        return;
+    }
+    echo '<form method="post" action="' . safe(optimize_url()) . '">' . FormToken::field(OptimizeRun::FORM_TOKEN)
+        . '<input type="hidden" name="action" value="start"><input type="hidden" name="method" value="repair">'
+        . '<input type="hidden" name="task[]" value="' . safe($task) . '">'
+        . implode('', array_map(static fn($id): string => '<input type="hidden" name="aa[]" value="' . (int) $id . '">', $problems))
+        . '<p><button class="btn-l aa-once" type="submit">' . _m('Repair the AAs with a problem (%1)', [count($problems)]) . '</button></p></form>';
 }
 
 function optimize_status(string $status, string $method): string

@@ -29,10 +29,14 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
+
+/** the same in se_import2.php, which checks it */
+const FEEDING_TOKEN = 'aa-feeding';
 
 try {
     $cancel = InputVars::boolPOST('cancel');
@@ -103,7 +107,7 @@ function InitPage() {
 }
 
 function UpdateImportExport(slice_id) {
-  var url = "'. StateUrl(self_base() . "se_import2.php") .'"
+  var url = '. json_encode(StateUrl('se_import2.php')) .'
   url += "&slice_id=" + slice_id
   url += "&to_all=" + (document.f.export_to_all.checked ? \'1\' : \'0\')
   for (let i = 0; i < document.f.import_y.options.length; i++) {
@@ -114,7 +118,7 @@ function UpdateImportExport(slice_id) {
     if (document.f.export_y.options[i].value != "0")    // exported to slices
       url += "&E%5B" + i + "%5D=" + encodeURIComponent(document.f.export_y.options[i].value)
   }
-  window.location=url
+  AA_PostForm(url, {token: '. json_encode(FormToken::get(FEEDING_TOKEN)) .'})
 }
 </script>';
 
@@ -123,6 +127,7 @@ $apage->setTitle(_m("Admin - configure Content Pooling"));
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->addRequire(get_aa_url('/javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false));
+$apage->addRequire(get_aa_url('javascript/manager.min.js', ['v' => AA_JS_VERSION]));   // AA_PostForm()
 $apage->printHead($err, $Msg);
 
 

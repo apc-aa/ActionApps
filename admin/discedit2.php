@@ -29,11 +29,15 @@
 //             $d_id
 // optionally   $update
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
+
+const DISCEDIT2_TOKEN = 'aa-discedit2';
 
 try {
     // array ( 'ddd' => 9, )
@@ -65,6 +69,7 @@ try {
     // array ( '' => 9, )
     $url_description = InputVars::stringPOST('url_description'); // empty
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -85,7 +90,21 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/discussion.php";
 require_once __DIR__ . "/../include/item.php";
 
+// the right is to this slice, the ids come in the URL
+if (!DiscussionInSlice($item_id, $d_id, AA::$module_id)) {
+    MsgPage(_m("You do not have permission to edit items in this slice"));
+    exit;
+}
+$item_id_hex = $item_id;   // RestoreVariables() below puts the packed id of the row into $item_id
+
 $err = [];          // error array (Init - just for initializing variable
+
+// the comment changes only from this page's own form
+$foreign = ResponderPolicy::isForeignBrowserRequest($_SERVER);
+$expired = $update && ($foreign || !FormToken::checkPost(DISCEDIT2_TOKEN, $token, $_SERVER));
+if ($expired) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
 
 if ($update) {
     //update discussion table
@@ -104,7 +123,7 @@ if ($update) {
     $date     = $datectrl->get_date();
 
 
-    if (!count($err)) {
+    if (!count($err) && !$expired) {
         DB_AA::update('discussion', [
             ['subject', $subject, 's'],
             ['author', $author, 's'],
@@ -124,8 +143,8 @@ if ($update) {
     }
 }
 
-// set variables from table discussion
-if ($row = DB_AA::select1([], 'SELECT * FROM discussion', [['id', $d_id, 'l']])) {
+// set variables from table discussion - a sent form keeps the edited values, unless they came from another site
+if ((!$update || $foreign) && ($row = DB_AA::select1([], 'SELECT * FROM discussion', [['id', $d_id, 'l']]))) {
     RestoreVariables($row);
 }
 
@@ -138,7 +157,8 @@ $form_buttons = [
     "update"  => ['type' => 'submit'],
     "cancel"  => ['url'  => $cancel_url],
     "d_id"    => ['type' => 'hidden', 'value' => $d_id],
-    "item_id" => ['type' => 'hidden', 'value' => unpack_id($item_id)],
+    "item_id" => ['type' => 'hidden', 'value' => $item_id_hex],
+    "token"   => ['type' => 'hidden', 'value' => FormToken::get(DISCEDIT2_TOKEN)],
 ];
 
 FrmTabCaption(_m("Edit comment"), $form_buttons);

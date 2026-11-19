@@ -59,7 +59,7 @@ LOGIN           uid:module_id:ip:uri:Qa         user name as typed             /
 FREE_LOGIN      user name                                                      // a login of a module's public account (?free=&freepwd=), once a day instead of a LOGIN row per visit (AA_Auth, LogOnce)
 UNKNOWN_ID      uid:module_id:ip:uri:Qa         user name                      // a session logged out as no permission system knows its user id - after a change of PERM_LIB (AA_Auth::is_authenticated())
 OTHER_DB        uid:module_id:ip:uri:Qa         DB_NAME of the session         // a session logged out as it logged in to another database sharing the session files - many rows: a host serving two databases (AA_Auth::is_authenticated())
-LOGIN_TPL       :module_id:ip:uri:Qa            user name                      // a failed check of credentials a template passed ({jwtencode}, {setsecret}) - LoginThrottle counts it for the name, and for the address only against template checks
+LOGIN_TPL       :module_id:ip:uri:Qa            user name                      // a failed check of credentials a template passed ({jwtencode}) - LoginThrottle counts it for the name, and for the address only against template checks
 LOGIN_THR       refused|allowed:client IP                                      // a login made to wait after repeated failures (allowed: the protection is off), once a day (AA\Security\LoginThrottle, ProtectionLog)
 LOGIN_CLR       uid:module_id:ip:uri:Qa         user name                      // a superadmin let the name in (Security page): its failures before stop counting, from any address (LoginThrottle::allow())
 PASSKEY         add|delete|reset:uid            host:name | count              // a passkey of the account (uid as AA_Perm::passkeyId()) added or deleted, or all of them deleted by a user manager; the user column says who (AA\Passkey\Notice)
@@ -998,14 +998,15 @@ class AA_Logentry_Mailid extends AA_Logentry
     }
 
     /** Same key-value table as the parent, except the template id links to the
-     *  template it names. Both this page and admin/aa_emails.php are
-     *  superadmin-only, so the link needs no extra permission check. */
+     *  template it names - a mailing puts the id of its run there, no template.
+     *  Both this page and admin/aa_emails.php are superadmin-only, so the link
+     *  needs no extra permission check. */
     public function getPrintRow(): string
     {
         $arr = [];
         foreach (static::getClassProperties() as $id => $prop) {
             $value = trim($this->$id);
-            $arr[safe($prop->name)] = ($id === 'template' && $value !== '')
+            $arr[safe($prop->name)] = ($id === 'template' && ctype_digit($value))
                 ? '<a href="' . safe(AA_INSTAL_PATH . 'admin/aa_emails.php?id=' . $value) . '">' . safe($value) . '</a>'
                 : safe($value);
         }

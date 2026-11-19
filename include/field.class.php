@@ -840,9 +840,10 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         $empty_text  = ($items_field['cnt'] == $empty && $items > 0) ? "<b title=\"All empty - maybe you can delete the field\">Empty fields</b>" : "Empty fields";
 
         $text_vals = '';
-        if ($items_field['cntval'] < 5) {
+        // samples of the values - never of a password or a secret
+        if (($items_field['cntval'] < 5) && !$this->isProtected()) {
             $arr       = DB_AA::select('txt', 'SELECT `text`, SUBSTRING(text,1,12) as txt FROM content, item ', [['content.item_id', 'item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['field_id', $id]], null, ['text']);
-            $text_vals = ' (' . implode(', ', array_map(static fn($str) => '"' . ((strlen($str) === 12) ? substr($str, 0, 11) . '…' : $str) . '"', $arr)) . ')';
+            $text_vals = ' (' . implode(', ', array_map(static fn($str) => '"' . safe((strlen($str) === 12) ? substr($str, 0, 11) . '…' : $str) . '"', $arr)) . ')';
         }
         $distinct_val  = $text_stored ? "<u title='field is marked as text stored'>text:$items_field[cntval]</u>$text_vals,num:$items_field[cntnum]"
                                         : "text:$items_field[cntval]$text_vals,<u title='field is marked as number stored'>num:$items_field[cntnum]</u>";
@@ -1433,6 +1434,12 @@ class AA_Fields implements IteratorAggregate, Countable
             // a field bound to an item column (slice_id, status_code, ...) must stay the only one
             if (!$template || !in_array((string) ($template['in_item_tbl'] ?? ''), ['', '0'], true)) {
                 $err['DB'] = MsgErr(_m("Can't copy field"));
+                continue;
+            }
+            // editors of this slice may edit the items a related-item field edits - the same rule as se_inputform.php
+            $edit_target = (($template['input_show_func'] ?? '') === '') ? '' : RelatedItemEditTarget((new AA_Field($template))->getWidget());
+            if (($edit_target !== '') && !IfSlPerm(PS_EDIT_ALL_ITEMS, $edit_target)) {
+                $err['DB'] = MsgErr(_m("You can relate only to a slice where you may edit all items"));
                 continue;
             }
             // AA_Core_Fields.. identifies its templates by bare type ('text'), user added templates by full id

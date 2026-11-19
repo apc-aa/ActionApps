@@ -46,11 +46,14 @@ function get_aamenus(): array
 {
     global $slice_id;
 
+    // an editor of the module sees only the mailings
+    $landing = AlertsLandingPage();
+    $label   = ($landing === 'mailings.php') ? _m("Mailings and statistics") : _m("Alerts Settings");
     $aamenus["admin"] = [
-        "label" => _m("Alerts Settings"),
-        "title" => _m("Alerts Settings"),
-        "href" => "modules/alerts/modedit.php",
-        "cond" => IfSlPerm(PS_USERS),
+        "label" => $label,
+        "title" => $label,
+        "href" => "modules/alerts/" . ($landing ?: 'modedit.php'),
+        "cond" => $landing !== '',
         "level" => "main",
         "submenu" => "admin_submenu",
     ];
@@ -60,6 +63,12 @@ function get_aamenus(): array
         "level" => "submenu",
         "items" => [
             "header1" => _m("Alerts Admin"),
+            "mailings" => [
+                "cond" => IfSlPerm(PS_ALERTS_STATS),
+                "href" => "modules/alerts/mailings.php",
+                "label" => _m("Mailings and statistics"),
+                'ico' => 'ico-statistics.png',
+            ],
             //      "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
             "settings" => ["cond" => IfSlPerm(PS_USERS),
                 "href" => "modules/alerts/modedit.php",

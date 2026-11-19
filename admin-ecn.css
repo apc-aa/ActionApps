@@ -834,6 +834,8 @@ table.aa-history-fields thead th {
 .aa-auth { display: inline-block; border-radius: 3px; padding: 1px 6px; }
 .aa-auth-ok { background: var(--clr-diff-ins-bg); color: var(--clr-diff-ins-text); }
 .aa-auth-get-token { background: var(--clr-diff-del-bg); color: var(--clr-diff-del-text); }
+/* Central: HTML of a remote AA, sandboxed */
+.aa-remote-html { display: block; width: 100%; height: min(70vh, 40em); margin-top: .4em; border: 1px solid var(--clr-border); border-radius: 3px; resize: vertical; background: #fff; }
 /* Per-event view toggle (Diff / Version A / Version B) + raw-value code blocks for copy-paste. */
 .aa-h-viewtoggle { display: inline-flex; border: 1px solid var(--clr-border); border-radius: 6px; overflow: hidden; }
 .aa-h-vbtn {

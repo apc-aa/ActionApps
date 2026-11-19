@@ -2,7 +2,7 @@
 /** se_inter_import.php - Inter node feed import settings
  *
  *           $slice_id
- *           $feed_id - if set, then delete this feed
+ *           $feed_id - POST with the page's token: delete this feed
  *
  * optionally $Msg to show under <h1>Headline</h1> (typically: Fields' mapping update)
  *
@@ -31,13 +31,18 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 
+const INTER_IMPORT_TOKEN = 'aa-inter-import';
+
 try {
-    $feed_id = InputVars::intGET('feed_id');
+    $feed_id = InputVars::intPOST('feed_id');
+    $token   = InputVars::stringPOST('token');
     $Msg     = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -47,16 +52,17 @@ if (!IfSlPerm(PS_FEEDING)) {
 }
 require_once __DIR__ . "/../include/formutil.php";
 
-if (isset($feed_id)) {
-    // delete mode
-
-    // delete mapping from feedmap table
-    if ($feed = DB_AA::select1([], 'SELECT remote_slice_id FROM external_feeds', [['feed_id', $feed_id], ['slice_id', pack_id(AA::$module_id), 'b']])) {
-        $remote_slice_id = quote($feed['remote_slice_id']);
-        $db->query("DELETE FROM feedmap WHERE from_slice_id='$remote_slice_id' AND to_slice_id='$p_slice_id'");
+if ($feed_id > 0) {
+    // an import is deleted only by the Delete button of this page, and only an import into this slice
+    if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(INTER_IMPORT_TOKEN, $token, $_SERVER)) {
+        $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));
+    } elseif ($feed = DB_AA::select1([], 'SELECT remote_slice_id FROM external_feeds', [['feed_id', $feed_id, 'i'], ['slice_id', AA::$module_id, 'l']])) {
+        DB_AA::transaction(static function () use ($feed, $feed_id): void {
+            DB_AA::delete('feedmap', [['from_slice_id', $feed['remote_slice_id'], 'b'], ['to_slice_id', AA::$module_id, 'l']]);
+            DB_AA::delete('ef_categories', [['feed_id', $feed_id, 'i']]);
+            DB_AA::delete('external_feeds', [['feed_id', $feed_id, 'i']]);
+        });
     }
-    $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");      // delete categories
-    $db->query("DELETE FROM external_feeds WHERE feed_id='$feed_id'");     // delete feed
 }
 
 
@@ -85,6 +91,7 @@ $err = [];          // error array (Init - just for initializing variable
 $apage = new AA_Adminpageutil('sliceadmin','n_import');
 $apage->setTitle(_m("Inter node import settings"));
 $apage->setForm(['action'=>'se_inter_import2.php','onsubmit'=>"return Submit()"]);
+$apage->addRequire(get_aa_url('javascript/manager.min.js', ['v' => AA_JS_VERSION]));   // AA_PostForm()
 $apage->printHead($err, $Msg);
 
 $form_buttons = [
@@ -113,9 +120,7 @@ echo '<br><br>';
 
     function Delete(sel) {
         if (confirm('<?php echo _m("Are you sure you want to delete the import?"); ?>')) {
-            let url = "<?php echo StateUrl(self_base() . "se_inter_import.php"); ?>";
-            url += "&feed_id=" + sel
-            window.location = url
+            AA_PostForm(<?php echo json_encode(StateUrl('se_inter_import.php')); ?>, {feed_id: sel, token: <?php echo json_encode(FormToken::get(INTER_IMPORT_TOKEN)); ?>});
         }
     }
 

@@ -5301,7 +5301,7 @@ class AA_Stringexpand_Edit extends AA_Stringexpand_Nevercache {
                 }
                 //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
                 $aa_property = $field->getAaProperty($widget_prop);
-                $ret         = $widget?->$type($aa_property, $itemcontent, $function) ?? '';
+                $ret         = $widget?->withAliasesAsText()->$type($aa_property, $itemcontent, $function) ?? '';
                 // $widget->registerRequires(); // now in _finalizeHtml
                 AA::Stringexpander()->addRequire('aa-jslib');  // for {live...} - maybe we should distinguish
             }
@@ -5502,8 +5502,10 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                     $pholder = strlen($placeholder) ? 'placeholder="'.$placeholder.'"' : '';
                     $iid     = $item->getItemID();
                     $tag     = $field->isMultiline() ? 'div' : 'span';
+                    // the editor saves back what it is shown - this and every enclosing template would substitute an _#ALIAS of the text
+                    $source  = Txt::aliasesAsText($item->f_h($field_id, 'AA_DashOrLanG'));
                     // do not change the string: contenteditable=true id=... we are using it in AA__SiteUpdateParts() (aajslib-jquery.php)
-                    $ret     = AA::Un("<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
+                    $ret     = "<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">$source</$tag>";
 
                     AA::Stringexpander()->addRequire('aa-editable@1');
                     AA::Stringexpander()->addRequire('aa-jslib');  // AA_Toolbar(), AA_SaveEditors()
@@ -8169,6 +8171,7 @@ class AA_Requires {
             'aa-isds@1'                   => new AA_Req_Lib(get_aa_url('javascript/aa-isds.js', ['v'=>AA_JS_VERSION],false).' module', '', ['_css-aa-isds@1', 'aa-richtext@1']),
             '_css-aa-isds@1'              => new AA_Req_Css(get_aa_url('css/aa-isds.css', ['v'=>AA_JS_VERSION],false)),
             'aa-passkey@1'                => new AA_Req_Lib(get_aa_url('javascript/aa-passkey.js', ['v'=>AA_JS_VERSION],false).' module'),
+            'aa-mailbulk@1'               => new AA_Req_Lib(get_aa_url('javascript/mailbulk.js', ['v'=>AA_JS_VERSION],false).' module', '', ['aa-jslib@3|aa-jslib@2|aa-jslib@1']),
             'aa-richtext@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-richtext.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
             'aa-editable@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-editable.js', ['v'=>AA_JS_VERSION],false).' module'),
             'aa-speech@1'                 => new AA_Req_Lib(get_aa_url('javascript/aa-speech/aa-speech.js', ['v'=>AA_JS_VERSION],false), '', ['_css-aa-speech@1']),
@@ -8492,8 +8495,8 @@ class AA_Stringexpand_Expand extends AA_Stringexpand {
      */
     function additionalCacheParam(array $params= []): string
     {
-        /** output is different for different items - place item id into cache search */
-        return is_object($this->item) ? $this->item->getId() : '';
+        /** output is different for different items - its text aliases count as well (AA_Item::getCacheId()) */
+        return is_object($this->item) ? $this->item->getCacheId() : '';
     }
 
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -8935,14 +8938,15 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
         $size  = get_if($size, 48);
         $title = str_contains($name, '@') ? aa_substr($name,0,aa_strpos($name,'@')) : $name;
 
-        if ($img = AA::Un("{img:$image:w=$size&h=$size&iar=1:imgb:$title}")) {
+        // the name is item content - passed as a parameter, never parsed as an expression
+        if ($img = StrExp('img', [$image, "w=$size&h=$size&iar=1", 'imgb', $title])) {
             return $img;
         }
         $nplus    = $title . '--';
         $match    = [];
         $initials = aa_substr($nplus,0,1). (preg_match('/.[ ._-]+([^ ._-])/u', $title, $match) ? $match[1] : aa_substr($nplus,1,1))  ;
         $color    = (crc32($name) % 8) + 1;
-        return "<div class=\"dis-color$color\" title=\"$title\">$initials</div>";
+        return "<div class=\"dis-color$color\" title=\"" . safe($title) . '">' . safe($initials) . '</div>';
     }
 }
 
@@ -9364,6 +9368,8 @@ class AA_Stringexpand_Qrcode extends AA_Stringexpand {
 class AA_Stringexpand_Qrpay extends AA_Stringexpand {
     function expand($account='', $amount='', $currency='', $reference_number='', $message='', $due_date='', $specific_symbol='', $recipient_name=''): string
     {
+        // "*" separates the fields of the payment string - a value ends there, as a reader of the string ends it
+        [$reference_number, $message, $specific_symbol, $recipient_name] = array_map(static fn($value): string => explode('*', (string) $value, 2)[0], [$reference_number, $message, $specific_symbol, $recipient_name]);
         if (!$account || !$amount) {
             return '';
         }
@@ -9546,9 +9552,15 @@ class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
             return '<div class="aa-ok">'._m('E-mail confirmed.').'</div>';
             // @todo get messages from alerts module
         }
-        if ($_GET["au"] && unsubscribe_reader($reader_slice_id, $_GET["au"], $_GET["c"])) {
-            return '<div class="aa-ok">'._m('E-mail unsubscribed').'</div>';
-            // @todo get messages from alerts module
+        if ($_GET['au'] ?? '') {
+            $unsubscribed = unsubscribe_request($reader_slice_id, $_GET['au'], $_GET['c'] ?? '', $_GET[ALERTS_ONE_CLICK_PARAM] ?? '', $_SERVER, $_POST);
+            if ($unsubscribed === null) {
+                return unsubscribe_ask();
+            }
+            if ($unsubscribed) {
+                return '<div class="aa-ok">'._m('E-mail unsubscribed').'</div>';
+                // @todo get messages from alerts module
+            }
         }
         return '';
     }
@@ -9707,7 +9719,7 @@ class AA_Stringexpand__ extends AA_Stringexpand {
      */
     function additionalCacheParam(array $params= []): string {
         // is it necessary to have $this->item here?
-        return serialize([is_object($this->item) ? $this->item->getId() : '']);
+        return serialize([is_object($this->item) ? $this->item->getCacheId() : '']);
     }
 
     /** Do not qoute results - it is just shortcut, so we need to expand
@@ -9972,36 +9984,15 @@ class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
     }
 }
 
-/**  */
+/** Does nothing - it was a debugging command. Kept empty, so a template still calling it does not print
+ *  its parameters, a user name and a password, as the text of an unknown command.
+ *  @deprecated
+ */
 class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
-    /**
-     * @param string $text
-     * @return string|void
-     */
-    function expand($username='', $password='', $code2fa=''): string
+    function expand(): string
     {
-        if (!strlen($username) || !strlen($password) || !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa, true)) || $uid !== AuthGetUid()) {
-            return '';
-        }
-        $ga = new PHPGangsta_GoogleAuthenticator();
-        $secret = $ga->createSecret();
-
-
-        $qrCodeUrl = $ga->getQRCodeGoogleUrl('Blog', $secret);
-        echo "Google Charts URL for the QR-Code: ".$qrCodeUrl."\n\n";
-
-        $oneCode = $ga->getCode($secret);
-        echo "Checking Code '$oneCode' and Secret '$secret':\n";
-
-        $checkResult = $ga->verifyCode($secret, $oneCode, 2);    // 2 = 2*30sec clock tolerance
-        if ($checkResult) {
-            echo 'OK';
-        } else {
-            echo 'FAILED';
-        }
         return '';
     }
-
 }
 
 /** computes MD5 hash */
@@ -10338,7 +10329,7 @@ class AA_Password_Manager_Reader {
         $user_info = AA_Reader::getReaderItemContent($user_id);
 
         $email     = (string) $user_info->getValue(FIELDID_EMAIL);
-        $pwdkey    = self::resetKey($user_id, $email, (int) round(now()/60));
+        $pwdkey    = self::resetKey($user_id, $email, (string) $user_info->getValue(FIELDID_PASSWORD), (int) round(now()/60));
         $pwd_param = "aapwd2=$pwdkey-$user_id";
 
         // send it via email
@@ -10433,22 +10424,23 @@ class AA_Password_Manager_Reader {
         if (($user_info = AA_Reader::getReaderItemContent($user_id))->isEmpty()) {
             return false;
         }
-        return self::keyMatches((string) $key, $user_id, (string) $user_info->getValue(FIELDID_EMAIL), (int) round(now()/60));
+        return self::keyMatches((string) $key, $user_id, (string) $user_info->getValue(FIELDID_EMAIL), (string) $user_info->getValue(FIELDID_PASSWORD), (int) round(now()/60));
     }
 
-    /** the key was issued for this user and e-mail in one of the last KEY_TIMEOUT minutes */
-    public static function keyMatches(string $key, string $user_id, string $email, int $minute): bool {
+    /** the key was issued for this user, e-mail and password in one of the last KEY_TIMEOUT minutes */
+    public static function keyMatches(string $key, string $user_id, string $email, string $pwd_hash, int $minute): bool {
         for ($i=0; $i< self::KEY_TIMEOUT; $i++) {
-            if (hash_equals(self::resetKey($user_id, $email, $minute - $i), $key)) {
+            if (hash_equals(self::resetKey($user_id, $email, $pwd_hash, $minute - $i), $key)) {
                 return true;
             }
         }
         return false;
     }
 
-    /** the key of the password reset link, valid in the minute it names */
-    private static function resetKey(string $user_id, string $email, int $minute): string {
-        return hash_hmac('sha256', "$user_id\0$email\0$minute", Secret::key('reader-reset'));
+    /** the key of the password reset link, valid in the minute it names
+     *  @param $pwd_hash the stored password hash - a changed password ends the key, so the link works once */
+    private static function resetKey(string $user_id, string $email, string $pwd_hash, int $minute): string {
+        return hash_hmac('sha256', "$user_id\0$email\0$pwd_hash\0$minute", Secret::key('reader-reset'));
     }
 
     private static function bad($text) : string {
@@ -10619,8 +10611,8 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand {
      */
     function additionalCacheParam(array $params= []): string
     {
-        /** output is different for different items - place item id into cache search */
-        return is_object($this->item) ? $this->item->getId() : '';
+        /** output is different for different items - its text aliases count as well (AA_Item::getCacheId()) */
+        return is_object($this->item) ? $this->item->getCacheId() : '';
     }
 
     /**
@@ -10846,6 +10838,42 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
         ";
         AA::Stringexpander()->addRequire('aa-jslib');  // for AA_AjaxSendForm
         return $ret;
+    }
+}
+
+/** Prints the control of the sending of an item to a list of readers (Alerts), or one value of that sending.
+ *    {mailbulk:<list id>:<item id>} - the control: its buttons test, send, stop and continue the sending
+ *    {mailbulk:info:<list id>:<item id>:<what>} - state ('' not sent, sending, stopped, error, done), total,
+ *        sent, failed, skipped, uncertain or date (unix time of the end of the last run), summed over the runs
+ *  Both give nothing without the right to edit all items of the item's slice, or for a list of another slice
+ *  (the control then shows only a sending started before, to stop it). A page with the command is never
+ *  page-cached. The buttons post to central/responder.php - the template sends nothing.
+ */
+class AA_Stringexpand_Mailbulk extends AA_Stringexpand_Nevercache {
+
+    /** one per request: it keeps what it read of each item and list for the next control */
+    private static ?\AA\Mailbulk\Gate $gate = null;
+
+    // the names say both forms: {mailbulk:<list>:<item>} and {mailbulk:info:<list>:<item>:<what>}
+    function expand($list_or_info='', $item_or_list='', $item='', $what=''): string
+    {
+        // mostly the item of the control: its slice is known without a read (u_slice_id...... comes from the item table, not a form)
+        if (($this->item instanceof AA_Item) && is_long_id($slice = (string)$this->item->getval('u_slice_id......'))) {
+            $this->gate()->itemSeen($this->item->getItemId(), $slice);
+        }
+        if ((string)$list_or_info === 'info') {
+            return $this->gate()->info((string)$item_or_list, (string)$item, (string)$what);
+        }
+        $control = $this->gate()->control((string)$list_or_info, (string)$item_or_list);
+        if ($control !== '') {
+            AA::Stringexpander()->addRequire('aa-mailbulk@1');
+        }
+        return $control;
+    }
+
+    protected function gate(): \AA\Mailbulk\Gate
+    {
+        return self::$gate ??= new \AA\Mailbulk\Gate();
     }
 }
 
@@ -11507,6 +11535,18 @@ class AA_Stringexpand_Formedit extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
 
+    /** id of the item to edit, from the URL - only an item of the managed slices
+     * @param string[] $slices_arr
+     */
+    private static function editId(string $cmdvar, array $slices_arr): string
+    {
+        $edit_id = $_GET[$cmdvar] ?? '';
+        if (!is_string($edit_id) || !is_long_id($edit_id)) {
+            return '';
+        }
+        return (new zids($edit_id, 'l'))->itemFilter($slices_arr)->isEmpty() ? '' : $edit_id;
+    }
+
     /**
      * @param string $slices
      * @param string $field
@@ -11582,10 +11622,9 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
         $inner_code = '';
         $standard_mgr = true;
 //      if ($edit_code AND (is_long_id($_GET['aaedit']) OR (is_long_id($_GET[$cmdvar])) )) {
-        if ($edit_code && is_long_id($_GET[$cmdvar])) {
+        if ($edit_code && ($edit_id = self::editId($cmdvar, $slices_arr))) {
 
-            // @todo check slice of edited item to match $slices
-            $inner_code = StrExp('item', [$_GET[$cmdvar], $edit_code]);
+            $inner_code = StrExp('item', [$edit_id, $edit_code]);
             $footer     = '';
             if ( $mode_arr['B'] ) {
                 $footer .= $mode_arr['X'] ? '<footer><article><i class="ico back" onclick="history.back();">' . $mode_arr['B'] . '</i></article></footer>'
@@ -11776,8 +11815,8 @@ class AA_Stringexpand_Validate extends AA_Stringexpand {
      */
     function additionalCacheParam(array $params= []): string
     {
-        /** output is different for different items - place item id into cache search */
-        return is_object($this->item) ? $this->item->getId() : '';
+        /** output is different for different items - its text aliases count as well (AA_Item::getCacheId()) */
+        return is_object($this->item) ? $this->item->getCacheId() : '';
     }
 
     /** expand function

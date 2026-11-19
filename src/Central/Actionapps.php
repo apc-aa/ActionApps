@@ -233,11 +233,12 @@ class Actionapps
     }
 
     /** Authenticate to remote AA and get JWT token
+     *  @param int $timeout seconds the answer may take
      *  @return string JWT token on success, empty string on failure (getLastError() says why)
      */
-    public function requestJwt(string $username, string $password): string
+    public function requestJwt(string $username, #[\SensitiveParameter] string $password, int $timeout = RemoteSource::TIMEOUT): string
     {
-        $response = $this->send(new AA_Request('Get_Jwt'), ['username' => $username, 'password' => $password], '', RemoteSource::TIMEOUT);
+        $response = $this->send(new AA_Request('Get_Jwt'), ['username' => $username, 'password' => $password], '', $timeout);
         $jwt      = $response->getResponse();
         $this->last_error = match (true) {
             // a failed password check leaves the remote request anonymous, so it answers the generic 101
@@ -249,6 +250,23 @@ class Actionapps
             default                                              => null,
         };
         return ($this->last_error === null) ? $jwt : '';
+    }
+
+    /** Get Token: logs in to the AA and keeps the admin token it gives
+     *  @param int $timeout seconds the answer may take
+     *  @return ?string null when done, else why not - plain text, partly written by the remote AA */
+    public function authenticate(string $username, #[\SensitiveParameter] string $password, int $timeout = RemoteSource::TIMEOUT): ?string
+    {
+        $jwt = $this->requestJwt($username, $password, $timeout);
+        if ($jwt === '') {
+            return (string) $this->last_error;
+        }
+        try {
+            $this->saveAuthToken($jwt);
+        } catch (RuntimeException|LogicException $e) {
+            return $e->getMessage();
+        }
+        return null;
     }
 
     /** get value from locally stored data (central_conf) */

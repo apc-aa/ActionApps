@@ -30,7 +30,9 @@
  * @param $chb[] - array of selected users (in reader management slice)
 */
 
+use AA\Central\ResponderPolicy;
 use AA\Mail\RepeatedBulkMail;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 
@@ -38,6 +40,8 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../modules/alerts/util.php";
 require_once __DIR__ . "/../include/varset.php";
+
+const WRITE_MAIL_TOKEN = 'aa-write-mail';
 
 try {
     // $chb - arr send to selected users
@@ -84,6 +88,7 @@ try {
     $testemail = InputVars::stringPOST('testemail');
     $cancel = InputVars::boolPOST('cancel');
     $resend = InputVars::boolPOST('resend');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -107,6 +112,8 @@ AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
 $slice       = AA_Slice::getModule(AA::$module_id);
 
+$user_templates = GetUserEmails("user template");  // id => description
+
 if (!$send) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
     unset($r_wm_state);       // clear if it was filled
@@ -117,6 +124,11 @@ if (!$send) {               // for the first time - directly from item manager
     $items     = $r_wm_state['items'];  // session variable holds selected items fmom item manager
     // we really want to send email - so store template
     do {
+        // a sent email cannot be recalled - only from the form of this page
+        if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(WRITE_MAIL_TOKEN, $token, $_SERVER)) {
+            $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+            break;
+        }
         // --- write the e-mail template to the table ---
         $description     = date('Y-m-d H:i:s') . ', ' . AuthGetUid();
         $type            = 'bulk email';
@@ -178,8 +190,9 @@ if (!$send) {               // for the first time - directly from item manager
             'html'            => $html,
         ];
 
-        if ($template_id && !($mailtemplate = new AA_Mailtemplate((int) $template_id))->isEmpty()) {
-            $email['body'] = str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']], $mailtemplate['body']);
+        // only a template the form offers - the others belong to modules the user has no role in
+        if ($template_id && isset($user_templates[$template_id]) && !($mailtemplate = new AA_Mailtemplate((int) $template_id))->isEmpty()) {
+            $email['body'] = str_replace(['_#BODYTEXT','_#SUBJECT_'], [$body, $subject], $mailtemplate['body']);
         } else {
             $email['body'] = $body;
         }
@@ -205,6 +218,10 @@ if (!$send) {               // for the first time - directly from item manager
         } else {
             // get reader's zids
             $zids = getZidsFromGroupSelect($group, $items, $searchbar);
+            if ((string) $group === 'sel_item') {
+                // picked ids come with the request; the bins and stored searches are queried in this slice already
+                $zids = $zids->itemFilter([AA::$module_id]);
+            }
             // the following functionality could be extended by adding third
             // parameter $recipient (for testing e-mail)
             $mails_sent  = AA_Mail::sendToReader($mail_id, $zids, AA::$module_id);
@@ -250,28 +267,27 @@ if ($queued) {
 }
 echo '
   <form name="mailform" method="post" enctype="multipart/form-data">';
+echo FormToken::field(WRITE_MAIL_TOKEN);
 
 
 FrmTabCaption((is_array($items) ? _m("Recipients") : (_m("Stored searches for ") . $slice->getName())));
 
 $messages['view_items']     = _m("View Recipients");
 $messages['selected_items'] = _m('Selected users');
-$additional[]               = ['text' => '<input type="text" name="testemail" value="' . $testemail . '" size="80"> ' . _m('Test email address(es)'), 'varname' => 'testuser'];
-
-$user_templates = GetUserEmails("user template");  // false or array['id']=>'name'
+$additional[]               = ['text' => '<input type="text" name="testemail" value="' . safe($testemail) . '" size="80"> ' . _m('Test email address(es)'), 'varname' => 'testuser'];
 
 FrmItemGroupSelect($items, $searchbar, $group, 'users', $messages, $additional);
 
 FrmTabSeparator(_m('Write the email'));
 
-FrmInputText('subject', _m('Subject'), $_POST['subject'], 254, 80, true);
+FrmInputText('subject', _m('Subject'), $subject, 254, 80, true);
 //FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true, '', '', '', true);  // enable rich text area
 
 if ($user_templates) {
-    FrmInputSelect('template_id', _m('Email template'), $user_templates, $_POST['template_id']);
+    FrmInputSelect('template_id', _m('Email template'), $user_templates, $template_id ?: '');   // 0 would show as a missing option
 }
 
-FrmTextarea('body', _m('Body'), $_POST['body'], 30, 80, true, '', '', '', true);  // enable rich text area
+FrmTextarea('body', _m('Body'), $body, 30, 80, true, '', '', '', true);  // enable rich text area
 FrmInputEmail('header_from', _m('From (email)'), $_POST['header_from'], 254, 80, true);
 FrmInputEmail('reply_to', _m('Reply to (email)'), $_POST['reply_to'], 254, 80);
 FrmInputEmail('errors_to', _m('Errors to (email)'), $_POST['errors_to'], 254, 80);

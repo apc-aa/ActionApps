@@ -498,7 +498,8 @@ class AA_Validate_Email extends AA_Validate_Regexp
     public function __construct($param = [])
     {
         parent::__construct($param);
-        $this->pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,6}$/';
+        // D: a bare $ also lets a final new line through
+        $this->pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(?:[A-Za-z]{2,63}|xn--[A-Za-z0-9-]{1,59})$/D';   // xn--: a national top-level domain
         $this->empty_expression = '/^\s*$/';
     }
 

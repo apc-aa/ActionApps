@@ -40,12 +40,12 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/um_util.php";
 
 try {
-    $user_firstname = InputVars::stringSlashedPOST('user_firstname'); // alpha
-    $user_mail1 = InputVars::stringSlashedPOST('user_mail1');
-    $user_password1 = InputVars::stringSlashedPOST('user_password1'); // alpha
-    $user_password2 = InputVars::stringSlashedPOST('user_password2'); // alpha
-    $user_password_old = InputVars::stringSlashedPOST('user_password_old'); // alpha
-    $user_surname = InputVars::stringSlashedPOST('user_surname'); // alpha
+    $user_firstname = InputVars::stringPOST('user_firstname'); // alpha
+    $user_mail1 = InputVars::stringPOST('user_mail1');
+    $user_password1 = InputVars::stringPOST('user_password1'); // alpha
+    $user_password2 = InputVars::stringPOST('user_password2'); // alpha
+    $user_password_old = InputVars::stringPOST('user_password_old'); // alpha
+    $user_surname = InputVars::stringPOST('user_surname'); // alpha
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
     $token = InputVars::stringPOST('token');

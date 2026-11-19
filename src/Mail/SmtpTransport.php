@@ -59,6 +59,18 @@ class SmtpTransport
     public const RESULT_PERMANENT = 0;
     public const RESULT_TRANSIENT = -1;
 
+    /** lastFailure() values: what a failed sendRaw() means for the mail. */
+    public const FAILURE_NONE = 0;
+    /** nothing sent, the cause is not this mail - connection, TLS, login, sender, size limit */
+    public const FAILURE_SENDING = 1;
+    /** the server answered that it does not take this mail - at RCPT or to the message itself */
+    public const FAILURE_MAIL = 2;
+    /** the message was on its way and no answer came - the server may have it */
+    public const FAILURE_UNCERTAIN = 3;
+
+    /** the timeout without AA_SMTP_TIMEOUT */
+    private const DEFAULT_TIMEOUT = 15;
+
     private string $host;
     private int    $port;
     private string $helo;
@@ -70,6 +82,7 @@ class SmtpTransport
 
     private string $lastError    = '';
     private string $lastResponse = '';
+    private int    $lastFailure  = self::FAILURE_NONE;
 
     public function __construct()
     {
@@ -78,7 +91,7 @@ class SmtpTransport
         $this->encryption = defined('AA_SMTP_ENCRYPTION') ? (string) AA_SMTP_ENCRYPTION : self::ENC_TLS;
         $this->user       = defined('AA_SMTP_USER') ? (string) AA_SMTP_USER : '';
         $this->pass       = defined('AA_SMTP_PASS') ? (string) AA_SMTP_PASS : '';
-        $this->timeout    = defined('AA_SMTP_TIMEOUT') ? max(1, (int) AA_SMTP_TIMEOUT) : 15;
+        $this->timeout    = self::timeout();
         $this->cafile     = defined('AA_SMTP_CAFILE') ? (string) AA_SMTP_CAFILE : '';
         $this->helo       = self::resolveHostname();
 
@@ -128,6 +141,18 @@ class SmtpTransport
         return 'localhost';
     }
 
+    /** Seconds each connect, read and write of the dialogue may wait. */
+    public static function timeout(): int
+    {
+        return defined('AA_SMTP_TIMEOUT') ? max(1, (int) constant('AA_SMTP_TIMEOUT')) : self::DEFAULT_TIMEOUT;
+    }
+
+    /** One of self::FAILURE_* for the last sendRaw(). */
+    public function lastFailure(): int
+    {
+        return $this->lastFailure;
+    }
+
     public function getLastError(): string
     {
         return $this->lastError;
@@ -146,12 +171,18 @@ class SmtpTransport
      * @param string   $envelopeFrom MAIL FROM address (bare addr, no brackets)
      * @param string[] $rcpts        RCPT TO addresses; To+Cc+Bcc merged by caller
      * @param string   $rfc822       Full headers + blank line + body
-     * @return int one of self::RESULT_*
+     * @return int one of self::RESULT_*; on a failure lastFailure() says what it means
      */
     public function sendRaw(string $envelopeFrom, array $rcpts, string $rfc822): int
     {
-        if ($envelopeFrom === '' || $rcpts === []) {
-            return self::RESULT_PERMANENT;
+        $this->lastFailure  = self::FAILURE_NONE;
+        $this->lastError    = '';
+        $this->lastResponse = '';
+        if ($envelopeFrom === '') {
+            return $this->failed(self::FAILURE_SENDING, 'SmtpTransport: no envelope sender');
+        }
+        if ($rcpts === []) {
+            return $this->failed(self::FAILURE_MAIL, 'SmtpTransport: no recipient');
         }
         self::assertNoControl($envelopeFrom, 'envelopeFrom');
         foreach ($rcpts as $r) {
@@ -170,14 +201,17 @@ class SmtpTransport
             $sslOptions['cafile'] = $this->cafile;
         }
 
+        $smtp = $this->newSmtp($connectHost, $sslOptions);
         /* Debug stream of Net_SMTP logs base64 PLAIN credentials -- never enable. */
-        $smtp = new Net_SMTP($connectHost, $this->port, $this->helo, false, $this->timeout, ['ssl' => $sslOptions]);
         $smtp->setDebug(false);
 
+        $stage       = 'connect';
+        $bodyStarted = false;
         try {
             $this->check($smtp->connect($this->timeout), 'connect', $smtp);
 
             if ($this->encryption === self::ENC_TLS) {
+                $stage    = 'starttls';
                 $starttls = $smtp->starttls();
                 /* Net_SMTP returns boolean false (not a PEAR_Error) when STARTTLS is not
                  * advertised by the server -- the classic MitM strip scenario. Treat as
@@ -192,36 +226,77 @@ class SmtpTransport
 
             if ($this->user !== '') {
                 /* $tls=false because we already called starttls() above. */
+                $stage = 'auth';
                 $this->check($smtp->auth($this->user, $this->pass, '', false), 'auth', $smtp);
             }
 
+            $stage = 'mailFrom';
             $this->check($smtp->mailFrom($envelopeFrom), 'mailFrom', $smtp);
+            $stage = 'rcptTo';
             foreach ($rcpts as $rcpt) {
                 $this->check($smtp->rcptTo($rcpt), 'rcptTo', $smtp);
             }
+
+            /* Net_SMTP checks SIZE inside data() with no reply code, which would read as a lost
+             * answer; every mail of a sending is about as big, so it is the sending's failure. */
+            $stage = 'size';
+            $limit = (int) ($smtp->getServiceExtensions()['SIZE'] ?? 0);
+            if (($limit > 0) && (strlen($rfc822) >= $limit)) {
+                throw new PermanentSmtpException("SmtpTransport[size] the message exceeds the server limit of $limit bytes");
+            }
+
+            // data() sends DATA and the body in one call - from here on a lost answer may follow a taken message
+            $stage       = 'data';
+            $bodyStarted = true;
             $this->check($smtp->data($rfc822), 'data', $smtp);
 
             /* Read the final 250 before disconnect() -- QUIT would overwrite it.
              * Index-safe on purpose: anything throwing here would be caught below
-             * as "transient" and requeue a message the server already accepted. */
+             * as an uncertain send of a message the server already accepted. */
             $response           = $smtp->getResponse();
             $this->lastResponse = trim(((string) ($response[0] ?? '')) . ' ' . self::stripControl((string) ($response[1] ?? '')));
-        } catch (TransientSmtpException $e) {
-            $this->lastError = $e->getMessage();
-            $this->safeDisconnect($smtp);
-            return self::RESULT_TRANSIENT;
-        } catch (PermanentSmtpException $e) {
-            $this->lastError = $e->getMessage();
-            $this->safeDisconnect($smtp);
-            return self::RESULT_PERMANENT;
         } catch (\Throwable $e) {
-            $this->lastError = $e->getMessage();
             $this->safeDisconnect($smtp);
-            return self::RESULT_TRANSIENT;
+            $this->lastFailure = self::failureOf($stage, ($e instanceof SmtpException) ? (int) $e->getCode() : 0, $bodyStarted);
+            $this->lastError   = $e->getMessage();
+            return ($e instanceof PermanentSmtpException) ? self::RESULT_PERMANENT : self::RESULT_TRANSIENT;
         }
 
         $this->safeDisconnect($smtp);
         return self::RESULT_SENT;
+    }
+
+    /**
+     * A seam for the tests - they script the server's answers.
+     *
+     * @param array<string, mixed> $sslOptions
+     */
+    protected function newSmtp(string $connectHost, array $sslOptions): Net_SMTP
+    {
+        return new Net_SMTP($connectHost, $this->port, $this->helo, false, $this->timeout, ['ssl' => $sslOptions]);
+    }
+
+    private function failed(int $failure, string $error): int
+    {
+        $this->lastFailure = $failure;
+        $this->lastError   = $error;
+        return self::RESULT_PERMANENT;
+    }
+
+    /**
+     * A reply code means the server answered and refused - so it does not have the message; only an
+     * answer lost after the body started leaves it unknown.
+     */
+    private static function failureOf(string $stage, int $code, bool $bodyStarted): int
+    {
+        $replied = ($code >= 400) && ($code < 600);
+        if ($code === 421) {
+            return self::FAILURE_SENDING;   // the server closes the connection, whatever the command was
+        }
+        if ($bodyStarted) {
+            return $replied ? self::FAILURE_MAIL : self::FAILURE_UNCERTAIN;
+        }
+        return (($stage === 'rcptTo') && $replied) ? self::FAILURE_MAIL : self::FAILURE_SENDING;
     }
 
     /**

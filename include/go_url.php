@@ -161,12 +161,34 @@ function get_help_url($href, $anchor): string
  */
 function GoUrlScript(string $url): string
 {
-    // the browser drops tabs, newlines and leading controls before it reads the scheme
-    $scheme = preg_match('/^([a-z][a-z0-9+.-]*):/i', (string) preg_replace('/[\x00-\x20]+/', '', $url), $m) ? strtolower($m[1]) : '';
-    if (($scheme !== '') && !in_array($scheme, ['http', 'https'], true)) {
+    if (!IsNavigableUrl($url)) {
         return '';
     }
     return "<script>window.location = '" . escape4js($url) . "';</script>";
+}
+
+/** A URL from the request may be followed by a link, window.location or a redirect: relative or http(s).
+ *  Any other scheme is refused - in a link or window.location javascript: and data: run as a script.
+ */
+function IsNavigableUrl(string $url): bool
+{
+    // the browser drops tabs, newlines and leading controls before it reads the scheme
+    $scheme = preg_match('/^([a-z][a-z0-9+.-]*):/i', (string) preg_replace('/[\x00-\x20]+/', '', $url), $m) ? strtolower($m[1]) : '';
+    return ($scheme === '') || in_array($scheme, ['http', 'https'], true);
+}
+
+/** A URL stored for templates, which print it raw into href/src or a JS string in an attribute: relative or
+ *  http(s), and nothing that ends the attribute or the string. The browser decodes character references
+ *  there (javascript&#58, even without the ;), so they are refused, as is anything a scheme could be read
+ *  from. An AA expression ({ifin:…}) stays: no scheme starts with a brace.
+ */
+function IsAttributeUrl(string $url): bool
+{
+    $probe = (string) preg_replace('/[\x00-\x20]+/', '', $url);
+    if (($probe === '') || (strpbrk($probe, '"\'<>`\\') !== false) || preg_match('/&(#|apos|quot|lt|gt)/i', $probe)) {
+        return false;
+    }
+    return !preg_match('/^[a-z0-9+.-]*[:&]/i', $probe) || preg_match('~^https?://~i', $probe);
 }
 
 /** Move to another page (must be before any output from script)

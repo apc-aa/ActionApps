@@ -137,14 +137,14 @@ function getHierConstBoxes($hcid, int $levelCount, bool $horizontal = false, str
             $buttonSelect = "<input type=\"button\" value=\"" . _m("Select") . "\" onClick=\"hcSelectItem($hcid,$i,1)\">";
         } else {
             $buttonAdd = "";
-            $buttonSelect = $minLevelSelect > $i ? "" : "<input type=\"button\" value=\"" . _m("Select") . "\" onClick=\"hcAddItemTo($hcid,$i,'$targetBox'); " . $add_button_trigger . "\">";
+            $buttonSelect = $minLevelSelect > $i ? "" : "<input type=\"button\" value=\"" . _m("Select") . "\" onClick=\"hcAddItemTo($hcid,$i,'" . safe(escape4js($targetBox)) . "'); " . $add_button_trigger . "\">";
         }
         if (!$levelNames[$i]) {
             $levelNames[$i] = _m("Level") . " $i";
         }
         // if ($horizontal) { ...
         $out .= "<div>
-              <label class=\"aa-label-above\" for=\"hclevel{$i}_{$hcid}\">" . $levelNames[$i] . "</label>
+              <label class=\"aa-label-above\" for=\"hclevel{$i}_{$hcid}\">" . safe($levelNames[$i]) . "</label>
               <select id=\"hclevel{$i}_{$hcid}\" name=\"hclevel{$i}_{$hcid}\" multiple size=\"10\" onChange=\"hcSelectItem($hcid,$i,$admin)\">
                 <option>$widthTxt
               </select>

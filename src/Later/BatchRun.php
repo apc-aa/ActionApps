@@ -41,6 +41,8 @@ abstract class BatchRun extends AA_Object
     public const FORBIDDEN = 'FORBIDDEN';
     /** BatchFailed reason: a table the run writes in one transaction is not InnoDB; the place is the table */
     public const NO_TRANSACTION = 'NO_TRANSACTION';
+    /** BatchStepResult::$retry of a step that kept dying: work() did not run */
+    public const STEP_DIED = 'STEP_DIED';
 
     /** what the queue row of an ended run expects instead of a fingerprint: it runs afterClose() after
      *  the end has committed - late, and more than once when the queue repeats a row whose process died */
@@ -928,6 +930,21 @@ abstract class BatchRun extends AA_Object
         return $records;
     }
 
+    /** The runs whose $property is exactly $value, newest first (newerFirst()), as records - no run read,
+     *  however many. The database compares text in any case; the value of an id tells case apart.
+     *  @param list<string> $props further properties to read
+     *  @return array<string, array<string, string>> id => $property, started, finished and $props
+     *  @throws \InvalidArgumentException $property or $props name the sealed secret */
+    final protected static function recordsOf(string $property, string $value, array $props = []): array
+    {
+        $records = array_filter(
+            self::records($property, $value, array_values(array_unique([$property, 'started', 'finished', ...$props]))),
+            static fn(array $r): bool => ($r[$property] ?? '') === $value,
+        );
+        uksort($records, static fn($a, $b): int => self::newerFirst((string) $a, $records[$a], (string) $b, $records[$b]));
+        return $records;
+    }
+
     /** Newest first: by start, then by end (an unfinished run is the newer), then by id. One order for
      *  the lists and cleanup(), so what a page calls the newest run is never what cleanup() takes for an
      *  old one - runs of a subject can start in one second, and ids are random.
@@ -1197,7 +1214,7 @@ abstract class BatchRun extends AA_Object
         $worked  = null;
         try {
             if ($died) {
-                $result = new BatchStepResult($from, false, retry: 'STEP_DIED');
+                $result = new BatchStepResult($from, false, retry: self::STEP_DIED);
             } elseif ($budget->spent()) {
                 // the claim took what was left - a request now would get no timeout
                 $result = self::spentResult($from);

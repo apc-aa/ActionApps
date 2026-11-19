@@ -34,6 +34,7 @@ use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\Manager;
 use AA\Manageraction\Central_DeleteTrash;
+use AA\Manageraction\Central_GetToken;
 use AA\Manageraction\Central_Linkcheck;
 use AA\Manageraction\Central_MoveItem;
 use AA\Manageraction\Central_OptimizeRun;
@@ -82,19 +83,14 @@ if ($auth_aa_id && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormT
     $auth_username = InputVars::stringPOST('auth_username');
     $auth_password = InputVars::stringPOST('auth_password');
     if ($auth_username && $auth_password) {
-        $aa  = Actionapps::getActionapps($auth_aa_id);
-        $jwt = $aa->requestJwt($auth_username, $auth_password);
+        $aa      = Actionapps::getActionapps($auth_aa_id);
+        $failure = $aa->authenticate($auth_username, $auth_password);
         unset($auth_password, $_POST['auth_password']);   // used once, kept nowhere
-        if ($jwt) {
-            try {
-                $aa->saveAuthToken($jwt);
-                $Msg = _m("Successfully authenticated to %1", [safe($aa->getName())]);
-            } catch (RuntimeException|LogicException $e) {
-                $err = _m("Authentication failed for %1: %2", [safe($aa->getName()), safe($e->getMessage())]);
-            }
+        if ($failure === null) {
+            $Msg = _m("Successfully authenticated to %1", [safe($aa->getName())]);
         } else {
             // the text comes from the remote AA
-            $err = _m("Authentication failed for %1: %2", [safe($aa->getName()), safe((string) $aa->getLastError())]);
+            $err = _m("Authentication failed for %1: %2", [safe($aa->getName()), safe($failure)]);
         }
     }
 }
@@ -106,6 +102,7 @@ $actions   = new Manageractions;
 $actions->addAction(new Central_MoveItem('Activate', 1));
 $actions->addAction(new Central_MoveItem('Folder2',  2));
 $actions->addAction(new Central_MoveItem('Folder3',  3));
+$actions->addAction(new Central_GetToken('GetToken'));
 $actions->addAction(new Central_OptimizeRun('Optimize'));
 $actions->addAction(new Central_Linkcheck('AA\Util\Linkcheck'));
 $actions->addAction(new Central_DeleteTrash('DeleteTrashAction',true));
@@ -203,13 +200,26 @@ function aaCentralAuth(btn, aaId) {
     document.body.appendChild(f);
     f.submit();
 }
-// Enter in the login fields asks for the token, not submits the surrounding manager form
+// Enter in the login fields asks for the token, in the settings of a bulk action runs it - the list
+// form itself ignores Enter
 document.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && e.target.matches('.aa-auth-cell input')) {
+    if (e.key !== 'Enter') {
+        return;
+    }
+    if (e.target.matches('.aa-auth-cell input')) {
         e.preventDefault();
         e.target.closest('details').querySelector('button').click();
+    } else if (e.target.matches('#markedactionparams input')) {
+        e.preventDefault();
+        MarkedActionGo();
     }
 });
+// Authenticate opens the login with the cursor in the name; toggle does not bubble - caught on the way down
+document.addEventListener('toggle', function (e) {
+    if (e.target.open && e.target.matches('.aa-auth-cell details')) {
+        e.target.querySelector('.aa-auth-user').focus();
+    }
+}, true);
 </script>
 HTML;
 $html .= str_replace('__TOKEN__', FormToken::get(CENTRAL_AUTH_TOKEN), $script);   // hex - safe in the JS string

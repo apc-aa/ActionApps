@@ -571,6 +571,13 @@ class Toexecute
             return 'Toexecute:execute_one: No object: ' . serialize($object); // Error
         }
         set_time_limit(max(30, ini_get('max_execution_time')));   // 30 seconds (at least) for each task
-        return $object->toexecutelater((array) $params);
+        // the next task in this process must not read with the slice passwords this one learned
+        $credentials = \AA_Credentials::singleton();
+        $known       = $credentials->snapshot();
+        try {
+            return $object->toexecutelater((array) $params);
+        } finally {
+            $credentials->restore($known);
+        }
     }
 } // end of toexecute class

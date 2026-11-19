@@ -94,6 +94,13 @@ class Txt
         return htmlspecialchars((string) ($var ?? ''), ENT_QUOTES | ENT_SUBSTITUTE | ENT_XML1, 'UTF-8');
     }
 
+    /** HTML in which no enclosing template substitutes an _#ALIAS - the browser shows '_#' again
+     *  (not inside <script> or <style>, which it does not decode) */
+    public static function aliasesAsText(string $html): string
+    {
+        return str_replace('_#', '_&#35;', $html);
+    }
+
     /** small key -> value table for logs, ... (styled by .aa-log-entry in admin-ecn.css) */
     public static function keyValTable(array $arr, bool $html = false): string
     {

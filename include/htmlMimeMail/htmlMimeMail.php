@@ -20,10 +20,14 @@ require_once __DIR__."/mimePart.php";
 
 class htmlMimeMail {
     /**
-     * The html part of the message
+     * The html part of the message as given - images are found and embedded only when it is built
      * @var string
      */
 	private string $html;
+    /**
+     * Where relative image paths of the html are read from
+     */
+    private ?string $images_dir = null;
     /**
      * The text part of the message(only used in TEXT only messages)
      * @var string
@@ -40,9 +44,17 @@ class htmlMimeMail {
      */
 	private $html_text;
     /**
-     * An array of embedded images/objects
+     * Images embedded by addHtmlImage(); those of the html are added by buildMessage()
      */
 	private array $html_images = [];
+    /**
+     * Images fetched from the web, by url, for all mails of the process - a bulk mail builds one
+     * message per reader. A failed fetch is remembered too, so a dead server is not asked again.
+     * @var array<string, string>
+     */
+    private static array $fetched = [];
+    private static int $fetched_bytes = 0;
+    private const FETCHED_MAX_BYTES = 64 * 1024 * 1024;
     /**
      * An array of recognised image types for the findHtmlImages() method
      * @var array
@@ -314,28 +326,34 @@ class htmlMimeMail {
      */
 	public function setHtml($html, $text = null, $images_dir = null): void
     {
-        $this->html      = self::srcOnly((string)$html);
-        $this->html_text = $text;
-        $this->_findHtmlImages($images_dir);
-        // original code from the library, but not OK for us - we are looking for much more image sources, than original, so it makes sense to call it even without $images_dir - HM 2024-03-15
-        // if (isset($images_dir)) {
-        //     $this->_findHtmlImages($images_dir);
-        // }
+        $this->html       = self::srcOnly((string)$html);
+        $this->html_text  = $text;
+        $this->images_dir = isset($images_dir) ? (string)$images_dir : null;
+    }
 
+    /**
+     * A queued mail is this object serialized - it keeps the html, not the built message with the
+     * image bodies; send() builds it again.
+     */
+    public function __sleep(): array
+    {
+        $built = ["\0" . self::class . "\0output", "\0" . self::class . "\0is_built"];
+        return array_values(array_diff(array_keys((array) $this), $built));
     }
 
     /** whitespace as HTML knows it - PCRE's \s takes a vertical tab too, which HTML keeps in a name or value */
-    private const SPACE = '\t\n\f\r ';
+    public const SPACE = '\t\n\f\r ';
 
     /**
      * The rest of a tag after its name, attributes in group 1. A quote opens a value only right after '='
      * (alt="a > b" stays one value, alt=a"b does not open one). Possessive: a scan never backtracks, so
-     * even hostile markup costs linear time.
+     * even hostile markup costs linear time. Public: AA\Mailbulk\Links reads <a> the same way.
      */
-    private const TAG_REST = '(?=[' . self::SPACE . '/>])((?:[^<>=]++|=[' . self::SPACE . ']*+(?:"[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '<>]*+))*+)>';
+    public const TAG_REST = '(?=[' . self::SPACE . '/>])((?:[^<>=]++|=[' . self::SPACE . ']*+(?:"[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '<>]*+))*+)>';
 
-    /** One attribute (name in group 1) or one stray character, read in order, so a 'srcset=' inside a value never counts. */
-    private const ATTRIBUTE = '~\G[' . self::SPACE . ']*+(?:(=[^' . self::SPACE . '/>=]*+|[^' . self::SPACE . '/>=]++)(?:[' . self::SPACE . ']*+=[' . self::SPACE . ']*+("[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '>]*+))?|.)~s';
+    /** One attribute (name in group 1, value with its quotes in group 2) or one stray character, read in order,
+     *  so a 'srcset=' inside a value never counts. */
+    public const ATTRIBUTE = '~\G[' . self::SPACE . ']*+(?:(=[^' . self::SPACE . '/>=]*+|[^' . self::SPACE . '/>=]++)(?:[' . self::SPACE . ']*+=[' . self::SPACE . ']*+("[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '>]*+))?|.)~s';
 
     /**
      * Renames srcset and sizes of <img> and <source> to data-srcset and data-sizes. The mail embeds only
@@ -362,15 +380,16 @@ class htmlMimeMail {
      * If the file exists it will read it in and embed it, (not an attachment).
      *
      * @author Dan Allen
+     * @return array{0: string, 1: list<array>} the html with each found src replaced by the image name, the images
      */
-	private function _findHtmlImages($images_dir): void
+    private function _findHtmlImages(string $html, ?string $images_dir): array
     {
         // Build the list of image extensions
         $extensions = array_keys($this->image_types);
 
         // str_ireplace make the regexp not match <a href="some-image.jpg"> (otherwise it add such image into the mail),
         // nor a data-srcset left by srcOnly()
-        $sanit_text = str_ireplace(['href="', "href='", 'srcset="', "srcset='"], '', $this->html);
+        $sanit_text = str_ireplace(['href="', "href='", 'srcset="', "srcset='"], '', $html);
         preg_match_all('/["\']([^"\']+\.('.implode('|', $extensions).'))["\']/Ui', $sanit_text, $images); // (?:x) - non capturing parentheses - matches, but not in the result
         preg_match_all('~["\']([^"\']+/img\.php\?src=[^"\']+)["\']~Ui', $sanit_text, $images2);
 
@@ -406,29 +425,41 @@ class htmlMimeMail {
             }
 
             if (!isset($img_content[$image_path])) {
-                $img_content[$image_path] = $this->getFile(str_replace('&amp;', '&', $image_path));
+                $img_content[$image_path] = $this->fetchImage(str_replace('&amp;', '&', $image_path));
             }
             if ($img_content[$image_path]) {
                 $html_images[$image_path] = $image_path;   // one attachment for an image linked in two spellings
                 // the quoted value only - the same path may stand inside another url, as the src of img.php
                 $name       = $img_name[$image_path];
-                $this->html = str_replace(["\"$img\"", "'$img'"], ["\"$name\"", "'$name'"], $this->html);
+                $html       = str_replace(["\"$img\"", "'$img'"], ["\"$name\"", "'$name'"], $html);
             }
         }
 
-        if (!empty($html_images)) {
-            // // If duplicate images are embedded, they may show up as attachments, so remove them.
-            // $html_images = array_unique($html_images);
-            sort($html_images);
-
-            foreach ($html_images as $iValue) {
-                $image        = $img_content[$iValue];
-                $ext          = strpos($iValue,'/img.php?src=') ? 'jpg' : substr($iValue, strrpos($iValue, '.') + 1);
-                $content_type = $this->image_types[strtolower($ext)];
-                $this->addHtmlImage($image, $img_name[$iValue], $content_type);
-            }
+        $embedded = [];
+        sort($html_images);
+        foreach ($html_images as $iValue) {
+            $ext        = strpos($iValue,'/img.php?src=') ? 'jpg' : substr($iValue, strrpos($iValue, '.') + 1);
+            $embedded[] = self::htmlImage($img_content[$iValue], $img_name[$iValue], $this->image_types[strtolower($ext)]);
         }
+        return [$html, $embedded];
+    }
 
+    /** A web image comes from the memory of the process; a local file is read every time - it costs no network. */
+    private function fetchImage(string $path): string
+    {
+        if (!preg_match('~^https?://~i', $path)) {
+            return $this->getFile($path);
+        }
+        if (!isset(self::$fetched[$path])) {
+            $body = $this->getFile($path);
+            if (self::$fetched_bytes + strlen($body) > self::FETCHED_MAX_BYTES) {
+                self::$fetched       = [];
+                self::$fetched_bytes = 0;
+            }
+            self::$fetched[$path]  = $body;
+            self::$fetched_bytes  += strlen($body);
+        }
+        return self::$fetched[$path];
     }
 
     /**
@@ -436,7 +467,12 @@ class htmlMimeMail {
      */
 	public function addHtmlImage($file, $name = '', $c_type='application/octet-stream'): void
     {
-        $this->html_images[] = [
+        $this->html_images[] = self::htmlImage($file, $name, $c_type);
+    }
+
+    private static function htmlImage($file, $name, $c_type): array
+    {
+        return [
             'body'   => $file,
             'name'   => $name,
             'c_type' => $c_type,
@@ -475,16 +511,16 @@ class htmlMimeMail {
     /**
      * Adds a html subpart to a mime_part object
      */
-   private function &_addHtmlPart($obj)
+   private function &_addHtmlPart($obj, string $html)
     {
         $params['content_type'] = 'text/html';
         $params['encoding']     = $this->build_params['html_encoding'];
         $params['charset']      = $this->build_params['html_charset'];
         if (is_object($obj)) {
-            return $obj->addSubpart($this->html, $params);
+            return $obj->addSubpart($html, $params);
         }
 
-        $ret = new Mail_mimePart($this->html, $params);
+        $ret = new Mail_mimePart($html, $params);
         return $ret;
     }
 
@@ -579,18 +615,19 @@ class htmlMimeMail {
             }
         }
 
-        if (!empty($this->html_images)) {
-            foreach ($this->html_images as $value) {
-                $quoted = preg_quote($value['name'], '/');
-                $cid    = $value['cid']; // Do not preg_quote the CID - it is just hexadecimals
-                $this->html = (string)preg_replace( "/(src|background)=(\"|')$quoted\\2/i", "$1=$2cid:$cid$2", $this->html);
-            }
+        // over a copy - the html stays as given, so the message can be built again (after unserialize())
+        [$html_source, $images] = isset($this->html) ? $this->_findHtmlImages($this->html, $this->images_dir) : ['', []];
+        $images = array_merge($this->html_images, $images);
+        foreach ($images as $value) {
+            $quoted      = preg_quote($value['name'], '/');
+            $cid         = $value['cid']; // Do not preg_quote the CID - it is just hexadecimals
+            $html_source = (string)preg_replace( "/(src|background)=(\"|')$quoted\\2/i", "$1=$2cid:$cid$2", $html_source);
         }
 
         $null        = null;
         $attachments = !empty($this->attachments);
-        $html_images = !empty($this->html_images);
-        $html        = !empty($this->html);
+        $html_images = !empty($images);
+        $html        = !empty($html_source);
         $text        = isset($this->text);
 
         switch (true) {
@@ -619,9 +656,9 @@ class htmlMimeMail {
                 if (!is_null($this->html_text)) {
                     $message = &$this->_addAlternativePart($null);
                     $this->_addTextPart($message, $this->html_text);
-                    $this->_addHtmlPart($message);
+                    $this->_addHtmlPart($message, $html_source);
                 } else {
-                    $message = &$this->_addHtmlPart($null);
+                    $message = &$this->_addHtmlPart($null, $html_source);
                 }
                 break;
 
@@ -634,8 +671,8 @@ class htmlMimeMail {
                     $message = &$this->_addRelatedPart($null);
                     $related = &$message;
                 }
-                $this->_addHtmlPart($related);
-                foreach ($this->html_images as $i => $html_image) {
+                $this->_addHtmlPart($related, $html_source);
+                foreach ($images as $i => $html_image) {
                     $this->_addHtmlImagePart($related, $html_image);
                 }
                 break;
@@ -645,9 +682,9 @@ class htmlMimeMail {
                 if (!is_null($this->html_text)) {
                     $alt = &$this->_addAlternativePart($message);
                     $this->_addTextPart($alt, $this->html_text);
-                    $this->_addHtmlPart($alt);
+                    $this->_addHtmlPart($alt, $html_source);
                 } else {
-                    $this->_addHtmlPart($message);
+                    $this->_addHtmlPart($message, $html_source);
                 }
                 foreach ($this->attachments as $i => $attachment) {
                     $this->_addAttachmentPart($message, $attachment);
@@ -663,8 +700,8 @@ class htmlMimeMail {
                 } else {
                     $rel = &$this->_addRelatedPart($message);
                 }
-                $this->_addHtmlPart($rel);
-                foreach ($this->html_images as $i => $html_image) {
+                $this->_addHtmlPart($rel, $html_source);
+                foreach ($images as $i => $html_image) {
                     $this->_addHtmlImagePart($rel, $html_image);
                 }
                 foreach ($this->attachments as $i => $attachment) {
@@ -677,7 +714,9 @@ class htmlMimeMail {
         if (isset($message)) {
             $output = $message->encode();
             $this->output   = $output['body'];
-            $this->headers  = array_merge($this->headers, $output['headers']);
+            // a queued mail is built again - the part headers of the previous build may not fit this structure
+            $part_headers   = ['Content-Type', 'Content-Transfer-Encoding', 'Content-ID', 'Content-Disposition', 'Content-Description'];
+            $this->headers  = array_merge(array_diff_key($this->headers, array_flip($part_headers)), $output['headers']);
 
             /* Self-set Date so DKIM canonicalization on the relay is stable.
              * mail() and most MTAs would add one, but a self-set Date avoids
@@ -740,7 +779,7 @@ class htmlMimeMail {
      * Sends the mail. Transport is chosen from AA_MAIL_TRANSPORT.
      *
      * @param  string[]  $recipients
-     * @throws \AA\Mail\TransientSmtpException on retryable SMTP failure
+     * @throws \AA\Mail\SmtpException when the SMTP server refused the mail or the dialogue failed
      */
     public function send($recipients): int
     {
@@ -832,7 +871,7 @@ class htmlMimeMail {
 
     /**
      * @param string[] $recipients
-     * @throws \AA\Mail\TransientSmtpException
+     * @throws \AA\Mail\SmtpException transient or permanent - it tells whether the cause is the sending
      */
     private function sendViaSmtp(array $recipients): int
     {
@@ -840,23 +879,30 @@ class htmlMimeMail {
         $envelopeFrom = $this->resolveEnvelopeFrom();
         $rfc822       = $this->assembleRfc822($recipients);
 
-        $transport = new \AA\Mail\SmtpTransport();
+        $transport = $this->smtpTransport();
         $result    = $transport->sendRaw($envelopeFrom, $rcpts, $rfc822);
 
         $this->last_transport          = \AA\Mail\SmtpTransport::TRANSPORT_SMTP;
         $this->last_transport_response = $transport->getLastResponse();
 
-        switch ($result) {
-            case \AA\Mail\SmtpTransport::RESULT_SENT:
-                return count($recipients);
-            case \AA\Mail\SmtpTransport::RESULT_TRANSIENT:
-                throw new \AA\Mail\TransientSmtpException(
-                    'SMTP transient failure: ' . $transport->getLastError()
-                );
-            case \AA\Mail\SmtpTransport::RESULT_PERMANENT:
-            default:
-                return 0;
+        if ($result === \AA\Mail\SmtpTransport::RESULT_SENT) {
+            return count($recipients);
         }
+        $sendingWide = ($transport->lastFailure() === \AA\Mail\SmtpTransport::FAILURE_SENDING);
+        if ($result === \AA\Mail\SmtpTransport::RESULT_TRANSIENT) {
+            throw new \AA\Mail\TransientSmtpException(
+                'SMTP transient failure: ' . $transport->getLastError(),
+                sendingWide: $sendingWide,
+                afterBody: $transport->lastFailure() === \AA\Mail\SmtpTransport::FAILURE_UNCERTAIN
+            );
+        }
+        throw new \AA\Mail\PermanentSmtpException('SMTP permanent failure: ' . $transport->getLastError(), sendingWide: $sendingWide);
+    }
+
+    /** A seam for the tests - they script the server's answers. */
+    protected function smtpTransport(): \AA\Mail\SmtpTransport
+    {
+        return new \AA\Mail\SmtpTransport();
     }
 
     /**

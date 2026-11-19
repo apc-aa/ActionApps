@@ -592,7 +592,7 @@ class Run extends BatchRun
             // a check() at the start that never answered leaves no job to skip; a step that passed it
             // (its cursor stayed, see stopped()) or died may have got past it
             $passed = (($last->extra['check'] ?? null) instanceof CheckResult);
-            if (!($source instanceof Checkable) || ($this->checksAtStart($source, $pos) && !$passed && ($last->retry !== 'STEP_DIED'))) {
+            if (!($source instanceof Checkable) || ($this->checksAtStart($source, $pos) && !$passed && ($last->retry !== self::STEP_DIED))) {
                 return null;
             }
             // the step's budget may be spent by now; the lease must outlast the decision

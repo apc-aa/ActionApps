@@ -139,6 +139,63 @@ function confirm_email($slice_id, $aw): bool
     return true;
 }
 
+/** The page of the current Alerts module the user lands on - see AlertsLandingPageFor()
+ *  @return string a page of modules/alerts/; '' = none for the user */
+function AlertsLandingPage(): string
+{
+    return AlertsLandingPageFor(AA_Module_Alerts::getOwnModule(AA::$module_id) !== null, IfSlPerm(PS_USERS), IfSlPerm(PS_ALERTS_STATS));
+}
+
+/** The settings for one who may change them, the mailings for an Editor of the module. The type before the
+ *  right: in another module type the letter of the mailings means something else.
+ *  @return string a page of modules/alerts/; '' = none for the user */
+function AlertsLandingPageFor(bool $is_alerts, bool $may_settings, bool $may_mailings): string
+{
+    return match (true) {
+        $may_settings               => 'modedit.php',
+        $is_alerts && $may_mailings => 'mailings.php',
+        default                     => '',
+    };
+}
+
+/** The query parameter of an unsubscribe link that unsubscribes only by POST where the page can ask (AA_Collection::oneClickUrl()) */
+const ALERTS_ONE_CLICK_PARAM = 'one';
+/** ALERTS_ONE_CLICK_PARAM of the List-Unsubscribe header link: never unsubscribes by GET (RFC 8058) */
+const ALERTS_ONE_CLICK_HEADER = '1';
+/** ALERTS_ONE_CLICK_PARAM of the body link of a mailing: unsubscribes by GET where the page cannot ask */
+const ALERTS_ONE_CLICK_BODY = 'b';
+
+/** Unsubscribes by a link of an Alerts mail - the one decision for every page that reads au.
+ *  Mail services and link scanners open the links of a mail by GET, so a link marked with ALERTS_ONE_CLICK_PARAM
+ *  (the List-Unsubscribe header, the body link of a mailing) unsubscribes only by POST: RFC 8058 posts
+ *  List-Unsubscribe=One-Click with no cookies, the button of unsubscribe_ask() posts the same.
+ *  An unmarked link (an Alerts digest) unsubscribes on GET, as it always did.
+ *  @param string $one     the ALERTS_ONE_CLICK_PARAM of the URL; never from $_REQUEST, a cookie would override it
+ *  @param array  $server  $_SERVER
+ *  @param array  $post    $_POST
+ *  @param bool   $can_ask false on a fillform (SSI) page: it cannot show the button and a POST does not reach the
+ *                         include - there the body link unsubscribes on GET, the header link never does
+ *  @return bool|null      null = a marked link opened by GET: show unsubscribe_ask() where the page can */
+function unsubscribe_request($slice_id, $au, $c, $one, array $server, array $post, bool $can_ask = true): ?bool
+{
+    // the page cache keys by the address and the POST body - a stored answer would skip the next unsubscribe
+    AA::Pagecache()->switchCacheNostore();
+    $one_click = (strtoupper((string) ($server['REQUEST_METHOD'] ?? '')) === 'POST') && (($post['List-Unsubscribe'] ?? '') === 'One-Click');
+    $by_get    = empty($one) || (!$can_ask && ((string) $one === ALERTS_ONE_CLICK_BODY));
+    if (!$one_click && !$by_get) {
+        return null;
+    }
+    return unsubscribe_reader($slice_id, $au, $c);
+}
+
+/** The button for a marked link opened by GET. No action - the form posts to the URL of the page, au and c included. */
+function unsubscribe_ask(): string
+{
+    return '<form method="post" class="aa-unsubscribe"><p>' . safe(_m('Do you want to stop receiving the mails of this list?')) . '</p>'
+        . '<input type="hidden" name="List-Unsubscribe" value="One-Click">'
+        . '<button type="submit">' . safe(_m('Unsubscribe')) . '</button></form>';
+}
+
 /** unsubscribe_reader function
  */
 function unsubscribe_reader($slice_id, $au, $c): bool
@@ -150,12 +207,22 @@ function unsubscribe_reader($slice_id, $au, $c): bool
         warn("AU not OK: " . count($readers) . " items");
         return false;
     }
+    // c comes from the link and names the field written below - a foreign c could name any reader field
+    if (!is_string($c) || ($c === '') || !DB_AA::test('alerts_collection', [['id', $c], ['slice_id', $slice_id, 'l']])) {
+        warn("Collection not OK for the reader slice");
+        return false;
+    }
     $item_id   = reset($readers);
     $field_id  = getAlertsField(FIELDID_HOWOFTEN, $c);
     $frequency = DB_AA::select1('text', 'SELECT `text` FROM `content`', [['item_id', $item_id, 'l'], ['field_id', $field_id]]);
 
     if ($frequency === false) {
-        return false;
+        // most readers never chose a frequency; the store creates the row, but silently skips a field the slice lacks
+        $slice = AA_Slice::getModule($slice_id);
+        if (!($slice instanceof AA_Slice) || !$slice->isField($field_id)) {
+            return false;
+        }
+        $frequency = '';
     }
 
     if (!str_starts_with($frequency, 'unsub')) {  // left old unsub message and date

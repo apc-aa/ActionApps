@@ -182,6 +182,18 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
         return $this->template_id.':'.$this->reader_id;
     }
 
+    /** Names a mail not made from a template in the log - a mailing gives its run and the reader */
+    public function setLogIds(string $template_id, string $reader_id): void {
+        $this->template_id = $template_id;
+        $this->reader_id   = $reader_id;
+    }
+
+    /** The start of the log selector of the mails named by $template_id - a prefix the index type_selector_time
+     *  finds them by (logSelector() writes the class first, then the template) */
+    public static function logSelectorStart(string $template_id): string {
+        return get_class_name(static::class) . ':' . ParamImplode([$template_id]) . ':';
+    }
+
     /** How this mail identifies itself in the log - picked up by AA_Log::selector(),
      *  so the MAIL_SEND row and the TOEXECUTE row of the same queued mail carry
      *  the identical selector. */
@@ -224,17 +236,43 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
     }
 
     /**
+     * Sends and logs, with no retry of its own: an SMTP failure is thrown to the caller, which knows
+     * from it whether the cause is the sending and whether the server may already have the mail.
+     *
+     * @param string[] $recipients
+     * @throws \AA\Mail\SmtpException
+     */
+    public function sendOnce(array $recipients): int
+    {
+        try {
+            $sent = parent::send($recipients);
+        } catch (\AA\Mail\SmtpException $e) {
+            $this->logSend(0, $recipients);
+            throw $e;
+        }
+        $this->logSend($sent, $recipients);
+        return $sent;
+    }
+
+    /**
      * Catch transient SMTP failures (4xx / network blip) and requeue via
      * Toexecute.
      */
     public function send($recipients): int
     {
+        if (!is_array($recipients)) {
+            return 0;
+        }
         try {
-            $sent = parent::send($recipients);
-            $this->logSend($sent, (array) $recipients);
-            return $sent;
+            return $this->sendOnce($recipients);
+        } catch (\AA\Mail\PermanentSmtpException) {
+            return 0;   // logged by sendOnce(); a retry would fail again
         } catch (\AA\Mail\TransientSmtpException $e) {
-            $this->logSend(0, (array) $recipients);
+            if ($e->afterBody()) {
+                // the server may have the mail already - a requeue could deliver it twice
+                trigger_error('AA_Mail: not queued again, the server may have the mail: '.$e->getMessage(), E_USER_WARNING);
+                return 0;
+            }
             $this->retry_attempts++;
             if ($this->retry_attempts > self::MAX_SMTP_RETRIES) {
                 trigger_error(
@@ -454,15 +492,19 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
      * @param $to   string|array
      * @param $item
      * @param $later bool|null
+     * @param array<string, string> $headers  added to the template's headers (name => value)
      *
      * Called as AA_Mail::sendTemplate($mail_id,$to,$item=null)
      */
-     static function sendTemplate($mail_id, $to, $item=null, $later=null): int
+     static function sendTemplate($mail_id, $to, $item=null, $later=null, array $headers = []): int
      {
         // email has the templates in it
         $mail = new AA_Mail;
         if (!$mail->setFromTemplate($mail_id, $item)) {
             return 0;
+        }
+        foreach ($headers as $name => $value) {
+            $mail->setHeader($name, $value);
         }
 
          if (is_null($later)) {

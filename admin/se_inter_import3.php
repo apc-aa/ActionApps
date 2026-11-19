@@ -31,11 +31,17 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
+
+/** the same in se_inter_import2.php, which sends it */
+const INTER_IMPORT_TOKEN = 'aa-inter-import';
+
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You do not have permissions to change feeding setting"));
     exit;
@@ -47,9 +53,14 @@ try {
     $remote_node_name = InputVars::stringPOST('remote_node_name');
     $exact_copy       = InputVars::boolPOST('exact_copy');
     $aa_rss           = unserialize(InputVars::stringPOST('aa'), ['allowed_classes' => false]);
-
+    $token            = InputVars::stringPOST('token');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
+}
+
+// an import is created only from the form of se_inter_import2.php
+if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(INTER_IMPORT_TOKEN, $token, $_SERVER)) {
+    MsgPage(_m('The form has expired; reload the page and try again.'), StateUrl(self_base() . "se_inter_import.php"));
 }
 
 

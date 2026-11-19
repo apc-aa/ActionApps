@@ -87,10 +87,11 @@ define("AA_ID", "990111222333444555666777888999A9");
  */
 // define('AA_SETUP_ENABLED', true);
 
-/** Server secret - the key for login tokens of Central, mail forms and password
- *  reset links. At least 32 bytes, a shorter one is ignored. Without it the keys are
- *  derived from DB_PASSWORD, so a change of DB_PASSWORD invalidates them, as does a
- *  change of AA_SECRET: the Centrals have to authenticate again.
+/** Server secret - the key for login tokens of Central, mail forms, password reset
+ *  links and tracked links of mails. At least 32 bytes, a shorter one is ignored.
+ *  Without it the keys are derived from DB_PASSWORD, so a change of DB_PASSWORD
+ *  invalidates them, as does a change of AA_SECRET: the Centrals have to authenticate
+ *  again and the tracked links in mails already sent stop working.
  */
 // define('AA_SECRET', '');  // any long random string, e.g. bin2hex(random_bytes(32))
 

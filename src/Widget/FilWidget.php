@@ -92,9 +92,9 @@ class FilWidget extends Widget
     public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
         $data4field = $data4field['fil'];
-        $uploads = (array) $data4field['var'];
-        $urls = (array) $data4field['url'];
-        $add = $data4field['add'] == '1';  // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned
+        $uploads = (array) ($data4field['var'] ?? []);
+        $urls = (array) ($data4field['url'] ?? []);
+        $add = ($data4field['add'] ?? '') == '1';  // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned
 
         // upload could be also multivalue
 
@@ -112,14 +112,14 @@ class FilWidget extends Widget
         }
         if (!$upload_ok || $add) {
             foreach ($urls as $url) {
-                if (strlen(trim($url))) {
+                // an array would slip a value past the test; the upload markers belong to the uploads
+                if (is_string($url) && IsAttributeUrl($url) && !preg_match('/^AA_UP(LOAD|THUMB):/', $url)) {
                     $values[] = $url;
                 }
             }
         }
         return new AA_Value($values, FLAG_HTML);
     }
-
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajax
      *  or normal decorations (added by _finalize*Html)
@@ -141,19 +141,22 @@ class FilWidget extends Widget
 
         $widget = '';
         $width = ""; // $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
-        $max_characters = (int) $this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
+        $max_characters = 254;  // not a property of this widget
         $allowed_ftypes = $this->getProperty('allowed_ftypes', '');
-        $display_url = (int) $this->getProperty('display_url', 0);
+        $display_url_raw = (string) $this->getProperty('display_url');
+        // {ajax} on public pages and terminals edits the URL only where the field asks for it by an explicit 0
+        $display_url = (($type === 'normal') || ($display_url_raw === '0')) ? (int) $display_url_raw : 2;
         $multiple = (int) $this->getProperty('multiple', 0) ? ' multiple' : '';
         $value = $content->getAaValue($aa_property->getId());
 
         for ($i = 0, $ino = $value->count(); $i < $ino; ++$i) {
             $input_name  = $base_name . "[fil][url][$i]";
             $input_id    = FormArray::formName2Id($input_name);
-            $input_value = safe($value->getValue($i));
-            $link        = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show') . ' ' . $input_value, 16, 16), ['class' => 'aa-fil-link']) : '';
+            $raw_value   = (string) $value->getValue($i);
+            $input_value = safe($raw_value);
+            $link        = IsAttributeUrl($raw_value) ? a_href($raw_value, GetAAImage('external-link.png', _m('Show') . ' ' . $input_value, 16, 16), ['class' => 'aa-fil-link']) : '';
             $widget     .= "\n<div class=aa-fil-file>";
-            if ($display_url < 2 && $type === 'normal') {
+            if ($display_url < 2) {
                 $widget .= "<input type=\"text\" class=aa-w-full maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add> $link";
             } else {
                 $widget .= "<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">$link";
@@ -162,7 +165,8 @@ class FilWidget extends Widget
         }
 
         // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned unless you say so
-        if ($widget && $multiple) {
+        // {ajax} adds to the files only where the URLs are shown - elsewhere a single file could not be removed
+        if ($widget && $multiple && (($type === 'normal') || ($display_url < 2))) {
             $input_name = $base_name . "[fil][add]";
             $input_id = FormArray::formName2Id($input_name);
             $widget .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"1\">";
@@ -194,16 +198,17 @@ class FilWidget extends Widget
                 'inline' => 1,
                 'upload_form_id' => $base_id,   // filler.php answers with uploadCallback()
             ];
-            $widget .= '
-                <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . safe(get_aa_url('filler.php', $url_params)) . '" target="iframe' . $base_id . '">';
-            if ($link) {
+            // the URLs go in the form too - filler.php then stores the field just as the item form does
+            $widget = '
+                <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . safe(get_aa_url('filler.php', $url_params)) . '" target="iframe' . $base_id . '" oninput="document.getElementById(\'' . $base_id . 'upload\').style.display = \'inline-block\'">' . $widget;
+            if ($value->count()) {
                 $widget .= '
-                    <input type="button" value="' . _m('Delete') . '" onclick="document.getElementById(\'fuf' . $base_id . '\').submit()"><br>';
+                    <input type="button" value="' . _m('Delete') . '" onclick="const f = document.getElementById(\'fuf' . $base_id . '\'); if (f) { for (const i of f.querySelectorAll(\'.aa-fil-file input, input[type=file]\')) { i.value = \'\'; } f.submit(); }"><br>';
             }
             $widget .= '
-                <input type="file" size="' . $width . '"' . $multiple . ' maxlength="' . $max_characters . '" name="' . $input_name . '" id="' . $input_id . '" ' . $accept . ' onchange="document.getElementById(\'' . $base_id . 'upload\').style.display = ((this.value == \'\') ? \'none\' : \'inline-block\');">
+                <input type="file" size="' . $width . '"' . $multiple . ' maxlength="' . $max_characters . '" name="' . $input_name . '" id="' . $input_id . '" ' . $accept . '>
                 <input type="hidden" name="ret_code_enc" id="ret_code_enc' . $base_id . '" value="">
-                <input type="submit" name="' . $base_id . 'upload" id="' . $base_id . 'upload" value="' . _m('Upload') . '" style="display:none;">
+                <input type="submit" name="' . $base_id . 'upload" id="' . $base_id . 'upload" value="' . _m('SAVE CHANGE') . '" style="display:none;">
                 </form>
                 <iframe id="iframe' . $base_id . '" name="iframe' . $base_id . '" src="" style="width:0;height:0;border:0px solid #fff;visibility:hidden;"></iframe>
                 <script>

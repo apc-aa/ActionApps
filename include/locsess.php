@@ -791,6 +791,20 @@ class AA_Session extends Session
     }
 }
 
+/** Admin pages are never addressed with a path after the script (admin/index.php/x/y), yet PHP_SELF
+ *  holds that path and the pages build links and form actions from it - keep just the script there.
+ *  The same for DOCUMENT_URI, which nginx fills with the whole path; the page of an SSI include keeps it.
+ */
+function NormalizePhpSelf(): void
+{
+    $script = (string) ($_SERVER['SCRIPT_NAME'] ?? '');
+    foreach (['PHP_SELF', 'DOCUMENT_URI'] as $key) {
+        if (($script !== '') && str_starts_with((string) ($_SERVER[$key] ?? ''), $script)) {
+            $_SERVER[$key] = $script;
+        }
+    }
+}
+
 function pageOpen($type = ''): void
 {
     global $sess;

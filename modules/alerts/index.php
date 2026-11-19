@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Redirects to the main Alerts page.
- * Kept only for compatibility with the modules interface.
+ * Redirects to the main Alerts page: the settings, or the mailings for an editor of the module.
  *
  * @package Alerts
  * @version $Id$
@@ -29,4 +28,7 @@ https://www.apc.org/
 */
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/go_url.php";
-go_url(AA_INSTAL_PATH . "modules/alerts/modedit.php?module_id=" . AA::$module_id);
+require_once __DIR__ . "/util.php";
+// with no page for the user, the settings say why
+$page = AlertsLandingPage() ?: 'modedit.php';
+go_url(AA_INSTAL_PATH . "modules/alerts/$page?module_id=" . AA::$module_id);

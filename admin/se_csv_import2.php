@@ -33,8 +33,11 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\IO\ImportFile;
+use AA\Security\ViewSlices;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\Paramwizard;
@@ -47,6 +50,8 @@ mgettext_bind(Langs::currentLang(), 'param_wizard');   // texts of the import ac
 require_once __DIR__ . "/../include/constants_param_wizard.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/feeding.php";
+
+const CSV_IMPORT_TOKEN = 'aa-csv-import';
 
 try {
     // array ( 'insert_new' => 1, 'overwrite' => 1, )
@@ -80,7 +85,8 @@ try {
     $preview = InputVars::boolPOST('preview');
     $upload = InputVars::boolPOST('upload');
     $cancel = InputVars::boolPOST('cancel');
-    
+    $token  = InputVars::stringPOST('token');
+
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -285,6 +291,9 @@ class AA_Csv_Importer {
             // huhl($csvRec, $fieldNames, $trans_actions, $slice->getFields(), $itemContent);
 
             if (!$err) {
+                $err = $this->foreignItemError($itemContent);
+            }
+            if (!$err) {
                 $itemContent->setSliceID($this->slice_id);
                 $added_to_db = $itemContent->storeItem($this->actionIfItemExists, $this->insertSilent ? ItemContent::FLAG_JUST_STORE : [false]);     // not invalidate cache
                 if (!$added_to_db) {
@@ -315,6 +324,30 @@ class AA_Csv_Importer {
 
         $msg = _m("Added to slice"). $this->slice_id ." :<br><br>\n". $msg." <br><br>\n";
         MsgPage($msg . $logMsg, StateUrl(self_base() . "se_csv_import.php"));
+    }
+
+    /** The import rewrites by id only items of its own slice - storing would move an item of another slice
+     *  here. The modes that store a row with a taken id under a new id, or skip it, never touch such an item.
+     *  @return string the error for the row, '' when it may be stored
+     */
+    private function foreignItemError(ItemContent $content): string
+    {
+        if ($this->itemId === 'new') {
+            return '';    // the id is a new one
+        }
+        if (in_array($this->actionIfItemExists, ['insert_new', 'insert_if_new', 'insert_as_new'], true)) {
+            return '';
+        }
+        $id = $content->getItemID();
+        if ($id === '') {
+            return '';    // storeItem() refuses it, or stores the item with a new id
+        }
+        // the item table would cut a longer hexadecimal id to the id of some existing item
+        if (!is_long_id($id)) {
+            return _m("Bad item ID %1", [safe($id)]);
+        }
+        $slices = ViewSlices::itemSlicesFromDb('l', [$id]);
+        return ($slices && strcasecmp((string) reset($slices), (string) $this->slice_id)) ? _m('The item %1 belongs to another slice', [$id]) : '';
     }
 
 /** preview function
@@ -406,6 +439,7 @@ class AA_Csv_Importer {
 
 
         echo '<form enctype="multipart/form-data" method=post name="f" action="'. StateUrl(self_base() . "se_csv_import2.php") .'">';
+        echo FormToken::field(CSV_IMPORT_TOKEN);
 
         FrmTabCaption(_m("Mapping settings"));
         ?>
@@ -423,18 +457,20 @@ class AA_Csv_Importer {
                foreach ( $outFields as $f_id => $f_name) {
                    echo "<tr><th>$f_name</th>\n";
                    echo "<td>";
-                   FrmSelectEasy("mapping[$f_id]", $inFields, $set_default ? findNearestText($f_id, $f_name, $inFields) : $this->mapping[$f_id]);		// todo - multiple
+                   // a field added to the slice after the setting was saved has no mapping - no source and the
+                   // default action leave it untouched (the browser would select the first option otherwise)
+                   FrmSelectEasy("mapping[$f_id]", $inFields, $set_default ? findNearestText($f_id, $f_name, $inFields) : ($this->mapping[$f_id] ?? '__empty__'));		// todo - multiple
                    echo "</td>";
                    echo "<td>";
-                   FrmSelectEasy("actions[$f_id]", $actionList, $set_default ? "default" : $this->actions[$f_id]);
+                   FrmSelectEasy("actions[$f_id]", $actionList, $set_default ? "default" : ($this->actions[$f_id] ?? 'default'));
                    echo "</td>";
 
-                   echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default && $this->html[$f_id]) {
+                   echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default && ($this->html[$f_id] ?? false)) {
                        echo "checked";
                    }
                    echo  "></td>";
                    echo "<td><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) {
-                       echo safe(stripslashes($this->params[$f_id]));
+                       echo safe(stripslashes($this->params[$f_id] ?? ''));
                    }
                    echo "\"></td>";
                    echo "<td class=\"tabhlp\"><aa-params" . htmlattr(['list' => 'TRANS_ACTIONS', 'type-name' => "actions[$f_id]", 'view' => 'help']) . "></aa-params></td>";
@@ -522,7 +558,13 @@ if ( $load ) {
 // before saving - the setting is stored for the slice the importer names
 $importer->check();
 
-if ( $save ) {
+// the setting is saved and the items stored only from the form of this page; Preview and Load only show
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(CSV_IMPORT_TOKEN, $token, $_SERVER);
+if (($save || $upload) && !$may_write) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));
+}
+
+if ($save && $may_write) {
     $obj_id = new_id();
     AA::Metabase()->doInsertMulti('object_text', [
         ['object_id' => $obj_id, 'property' => 'type',     'value' => 'AA_Csv_Importer'],
@@ -532,7 +574,7 @@ if ( $save ) {
     ]);
 }
 
-if ($upload) {
+if ($upload && $may_write) {
     $importer->upload();
 }
 
@@ -547,6 +589,6 @@ if ($preview) {
     $importer->preview();
 }
 
-$importer->printForm(!($preview || $load || $save));
+$importer->printForm(!($preview || $load || $save || $upload));   // a refused Finish keeps the mapping
 
 $apage->printFoot();

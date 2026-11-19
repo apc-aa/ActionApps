@@ -28,12 +28,17 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/logs.php";
 require_once __DIR__ . "/../include/varset.php";
+
+/** the same in se_import.php, which sends it */
+const FEEDING_TOKEN = 'aa-feeding';
 
 try {
     // array ( )
@@ -43,6 +48,7 @@ try {
     // array ( 0 => 3, )
     $to_all = InputVars::boolGET('to_all', true);
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -51,6 +57,10 @@ try {
 if (!IfSlPerm(PS_FEEDING)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change feeding setting"), "admin");
     exit;
+}
+// the imports and exports change only by the Update button of se_import.php
+if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(FEEDING_TOKEN, $token, $_SERVER)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base() . "se_import.php"), MsgErr(_m('The form has expired; reload the page and try again.')), "admin");
 }
 
 $err = [];          // error array (Init - just for initializing variable
@@ -66,13 +76,6 @@ if (($slice->getProperty('export_to_all') ? 1 : 0) !== ($to_all ? 1 : 0)) {
 // ------------------------ Export --------------------------
 // feeding lookup
 $feedto = DB_AA::select(['unid' => true], "SELECT LOWER(HEX(`to_id`)) AS unid FROM `feedperms`", [['from_id',AA::$module_id,'l']]);
-
-//$feedto["Init"] = false;  // create array
-//$SQL= "SELECT to_id FROM feedperms WHERE from_id='$p_slice_id'";
-//$db->query($SQL);
-//while ($db->next_record()) {
-//    $feedto[unpack_id($db->f('to_id'))] = true;
-//}
 
 do {
     if (isset($E) && is_array($E)) {  // Export to any slice
@@ -94,8 +97,7 @@ do {
     }
     foreach ($feedto as $to => $val) {
         if ($val) {
-            $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id=" . xpack_id($to);
-            $db->query($SQL);
+            DB_AA::delete('feedperms', [['from_id', AA::$module_id, 'l'], ['to_id', $to, 'l']]);
             AA_Log::write("FEED_DSBLE", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $to]));   // $to is the target id ($val is the loop's keep/remove flag)
         }
     }
@@ -128,8 +130,7 @@ do {
 
     foreach ($feedfrom as $from => $val) {  // delete removed feeds
         if ($val) {
-            $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id=" . xpack_id($from);
-            $db->query($SQL);
+            DB_AA::delete('feeds', [['to_id', AA::$module_id, 'l'], ['from_id', $from, 'l']]);
             AA_Log::write("FEED_DEL", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $from]));   // $from is the source id ($val is the loop's keep/remove flag)
         }
     }

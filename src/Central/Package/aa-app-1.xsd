@@ -855,7 +855,7 @@
     <xs:attribute name="module" type="longId" use="required"/>
   </xs:complexType>
 
-  <!-- table `alerts_collection`; not in the package: module_id -->
+  <!-- table `alerts_collection`; not in the package: module_id, stat_slice_id -->
   <xs:complexType name="row_alerts_collection">
     <xs:all>
       <xs:element name="emailid_welcome" type="intValue" minOccurs="0"/>

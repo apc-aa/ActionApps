@@ -1100,6 +1100,8 @@ class Manager extends AA_Storable
      *  of a page of this site which this session rendered: a link runs for a prefetch, a crawler or
      *  an <img src>, SameSite=Lax still lets a sibling subdomain POST with the session cookie, and
      *  the token (FORM_TOKEN; JS adds it from data-aa-token) stops a form of another page.
+     *  Call it before any output: for display_params it answers only the settings of that action
+     *  (manager.js loads them from the page of the manager).
      */
     public function performActions(): void
     {

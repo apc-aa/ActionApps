@@ -25,7 +25,7 @@ class CheckAlerts extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Checks that every frequency readers can subscribe to is really swept, and that no collection is so far behind that the next sweep would skip items instead of mailing them.');
+        return _m('Checks that every frequency readers can subscribe to is really swept, that no collection is so far behind that the next sweep would skip items instead of mailing them, and that the mails can carry the one-click unsubscribe header.');
     }
 
     public static function types(): array
@@ -106,8 +106,37 @@ class CheckAlerts extends AbstractOptimize
             );
         }
 
-        $findings = array_merge($findings, $this->missingSelections($links));
+        $findings = array_merge($findings, $this->missingSelections($links), $this->withoutUnsubscribeHeader());
         return $findings ?: [new Finding(Finding::OK, _m('Every alert collection is swept on time and all its selections exist'))];
+    }
+
+    /** Gmail and Yahoo expect one-click unsubscribe on bulk mail, and the mail services post it only to https -
+     *  a list on an http URL mails without it and its mails may land in spam.
+     *  @return Finding[] at most one */
+    private function withoutUnsubscribeHeader(): array
+    {
+        require_once constant('AA_BASE_PATH') . 'modules/alerts/alerts_sending.php';   // AA_Collection is not autoloaded
+
+        $evidence = [];
+        foreach (DB_AA::select([], 'SELECT m.id AS module_id, m.name, m.slice_url FROM alerts_collection c INNER JOIN module m ON m.id = c.module_id', [['m.deleted', 1, '<']], ['m.name']) as $row) {
+            if (!\AA_Collection::fitsHeader(get_url((string) $row['slice_url'], ['au' => 'x', 'c' => 'x']))) {
+                $evidence[] = [
+                    _m('Alerts') => a_href(get_aa_url('modules/alerts/modedit.php', ['module_id' => unpack_id((string) $row['module_id'])], false), safe((string) $row['name'])),
+                    _m('URL')    => safe((string) $row['slice_url']),
+                ];
+            }
+        }
+        if (!$evidence) {
+            return [];
+        }
+        return [new Finding(
+            Finding::WARNING,
+            _m('%1 Alerts lists mail without the one-click unsubscribe header', [count($evidence)]),
+            count: count($evidence),
+            evidence: $evidence,
+            advice: _m('The header is built from the URL in the Alerts settings, and mail services use it only when the URL is https. Set an https URL there.'),
+            key: 'not-https',
+        )];
     }
 
     /** A selection is a filter of a view (alerts_filter); deleting the filter or its view leaves the

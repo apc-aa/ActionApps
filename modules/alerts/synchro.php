@@ -27,7 +27,9 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../../include/init_page.php";
@@ -35,6 +37,8 @@ require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../modules/alerts/synchro2.php";
+
+const SYNCHRO_TOKEN = 'aa-alerts-synchro';
 
 try {
     // array ( 'Přidat neb…' => 1, )
@@ -46,10 +50,16 @@ try {
     // array ( 'on' => 5, )
     $change_to_delete = InputVars::boolPOST('change_to_delete');
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
+}
+
+if (!IfSlPerm(PS_USERS)) {
+    MsgPage(_m("You do not have permissions to access this page"));
+    exit;
 }
 
 // -------------------------------------------------------------------
@@ -60,6 +70,19 @@ if ($collectionprop) {
     $collectionid = $collectionprop['id'];
 } else {
     echo "Can't find collection with module_id=$slice_id. Bailing out.<br>";
+}
+
+$err = [];
+if ($add_fields || $change_to_cmd) {
+    // both change the fields of a reader slice - only from the forms of this page
+    if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(SYNCHRO_TOKEN, $token, $_SERVER)) {
+        $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+        $add_fields = $change_to_cmd = false;
+    } elseif ($change_to_cmd && !array_key_exists($change_to, getReaderManagementSlices())) {
+        // only a slice the form offers - a Reader Management slice the user works in
+        $err['change_to'] = MsgErr(_m("You do not have permissions to access this page"));
+        $change_to_cmd = false;
+    }
 }
 
 $apage = new AA_Adminpageutil('admin', 'synchro');
@@ -98,7 +121,7 @@ if ($row = DB_AA::select1([], 'SELECT name FROM slice', [['id', $collectionprop[
 // Choose Reader Management Slice
 
 echo '
-<form method="post" name="form_choose" action="' . StateUrl("synchro.php") . '">
+<form method="post" name="form_choose" action="' . StateUrl("synchro.php") . '">' . FormToken::field(SYNCHRO_TOKEN) . '
 <table width="440">
     <tr><td>
     <h2>' . _m("Choose Reader Management Slice") . '</h2>
@@ -126,7 +149,7 @@ echo '
 // Add Alerts-specific fields to Reader Management
 
 echo '
-<form method="post" name="form_add" action="' . StateUrl("synchro.php") . '">
+<form method="post" name="form_add" action="' . StateUrl("synchro.php") . '">' . FormToken::field(SYNCHRO_TOKEN) . '
 <table0" width="440">
     <tr><td>
     <h2>' . _m(

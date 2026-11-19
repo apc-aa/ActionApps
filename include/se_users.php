@@ -51,6 +51,10 @@ function CanChangeRole($user_perm, $editor_perm, $role_perm): bool
 function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role): void
 {
     if ($UsrAdd) {
+        // the role name comes from the request; SUPER is a right to the whole AA, not to a slice
+        if (!in_array($role, AA_Perm::PERMS_ROLES_MODULES['S'], true)) {
+            return;
+        }
         if (CanChangeRole(AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, AA_Perm::ROLES[$role]['perm'])) {
             AA::$perm->addPerm($UsrAdd, $slice_id, "slice", AA_Perm::ROLES[$role]['id']);
             AA::$perm->invalidateCache();
@@ -105,9 +109,9 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr = true): void
     echo "<td>" . (safe($usr['mail'] ?? '') ?: "&nbsp;") . "</td>\n";
     echo "<td>" . UserTypeLabel($usrinfo, $usr_id) . "</td>\n";
 
-    echo IfLink(($editor_role > AA_Perm::ROLES["AUTHOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'AUTHOR'], true), _m("Author"));
-    echo IfLink(($editor_role > AA_Perm::ROLES["EDITOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'EDITOR'], true), _m("Editor"));
-    echo IfLink(($editor_role > AA_Perm::ROLES["ADMINISTRATOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'ADMINISTRATOR'], true), _m("Administrator"));
+    echo IfRoleButton(($editor_role > AA_Perm::ROLES["AUTHOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'AUTHOR'], true), _m("Author"));
+    echo IfRoleButton(($editor_role > AA_Perm::ROLES["EDITOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'EDITOR'], true), _m("Editor"));
+    echo IfRoleButton(($editor_role > AA_Perm::ROLES["ADMINISTRATOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'ADMINISTRATOR'], true), _m("Administrator"));
     echo "</tr>\n";
 }
 

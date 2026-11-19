@@ -29,12 +29,16 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/se_users.php";
+
+const SE_USERS_TOKEN = 'aa-se-users';
 
 try {
     // array ( 2 => 16, )
@@ -52,6 +56,7 @@ try {
     // array ( '' => 2, )
     $usr = InputVars::stringPOST('usr'); // empty
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -67,14 +72,15 @@ $editor_perms = AA::$perm->getModulePerms(AuthGetUid(), $slice_id);
 // profiles belong to slices - a module type may keep se_profile.php from its users (mayRunPage())
 $show_profiles = AA_Module::mayRunPageOn('admin/se_profile.php', AA::$module_id);
 
-/** function shows link only if condition is true
+/** function shows the role button only if condition is true
+ *  The button sends the token form printed under the page head, to $url with the role change in its query.
  * @param $cond
  * @param $url
  * @param $txt
  */
-function IfLink($cond, $url, $txt, $class = 'btn btn-secondary'): string
+function IfRoleButton($cond, $url, $txt, $class = 'btn btn-secondary'): string
 {
-    return '<td>' . ($cond ? "<a href=\"$url\" class='$class'>$txt</a>" : $txt) . "</td>\n";
+    return '<td>' . ($cond ? '<button type="submit" form="aa-role-form" formaction="' . safe($url) . "\" class='$class'>$txt</button>" : $txt) . "</td>\n";
 }
 
 /** PrintUser function
@@ -125,10 +131,10 @@ function PrintUser($perm, $usr_id, $editor_perm, bool $show_profiles): void
     echo "<td>" . (safe($usrinfo['mail'] ?? '') ?: "&nbsp;") . "</td>\n";
     echo "<td>" . UserTypeLabel($usrinfo, $usr_id) . "</td>\n";
 
-    echo IfLink(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "AUTHOR"], true), _m("Author"));
-    echo IfLink(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["EDITOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "EDITOR"], true), _m("Editor"));
-    echo IfLink(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["ADMINISTRATOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "ADMINISTRATOR"], true), _m("Administrator"));
-    echo IfLink(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']), get_url('', ['UsrDel' => $usr_id, 'role' => "AUTHOR"], true), _m("Revoke"), 'aa-button-delete');
+    echo IfRoleButton(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "AUTHOR"], true), _m("Author"));
+    echo IfRoleButton(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["EDITOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "EDITOR"], true), _m("Editor"));
+    echo IfRoleButton(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["ADMINISTRATOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "ADMINISTRATOR"], true), _m("Administrator"));
+    echo IfRoleButton(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']), get_url('', ['UsrDel' => $usr_id, 'role' => "AUTHOR"], true), _m("Revoke"), 'aa-button-delete');
 
     // show profile button also for groups
     if ($show_profiles) {
@@ -148,14 +154,23 @@ $show_adduser = $adduser || $GrpSrch || $UsrSrch;    // show add user form?
 $apage = new AA_Adminpageutil('sliceadmin', $show_adduser ? "addusers" : "users");
 $apage->setTitle(_m("Admin - Permissions"));
 $apage->setForm();
+
+// rights change only from this page's own buttons
+$may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER) && FormToken::checkPost(SE_USERS_TOKEN, $token, $_SERVER);
+if (!$show_adduser && ($UsrAdd || $UsrDel) && !$may_write) {
+    $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));   // on the page, not a passing popup
+}
 $apage->printHead($err, $Msg);
+
+// the role buttons in both tables send this form (by their form= attribute), so the add form may hold them
+echo '<form id="aa-role-form" method="post">' . FormToken::field(SE_USERS_TOKEN) . '</form>';
 
 $continue = true;
 
 if ($show_adduser) {
     AddUserForm($usr, $grp, $GrpSrch, $UsrSrch, $editor_perms);
     $continue = false;
-} elseif ($UsrAdd || $UsrDel) {
+} elseif ($may_write && ($UsrAdd || $UsrDel)) {
     ChangeRole($UsrAdd, $UsrDel, AA::$module_id, $editor_perms, $role); // in include/se_users.php
 }
 

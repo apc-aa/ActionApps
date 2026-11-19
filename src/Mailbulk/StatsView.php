@@ -1,0 +1,139 @@
+<?php
+
+declare(strict_types=1);
+
+namespace AA\Mailbulk;
+
+use AA_Collection;
+
+/**
+ * One block of the statistics of one sending: its runs with what came of them and, when the list has
+ * a statistics slice, how many opened and clicked and which links. The same block on the Alerts page
+ * and under the control of the sending. Rights are not checked here - the caller has.
+ */
+class StatsView
+{
+    /** @param ?Campaign $campaign the sending, when the caller has read it already
+     *  @return string HTML; '' when the item was never sent to the list */
+    public function mailing(AA_Collection $list, string $itemId, ?Campaign $campaign = null): string
+    {
+        $itemId = strtolower($itemId);
+        if (!is_long_id($itemId)) {
+            return '';
+        }
+        $campaign ??= $this->campaign($list->getId(), $itemId);
+        $runs     = $campaign->runs();
+        if (!$runs) {
+            return '';
+        }
+        $titles = array_map(static fn(Run $run): string => (string) $run->getProperty('title'), array_reverse($runs));
+        $html   = '<h3 class="aa-mailbulk-title">' . safe(Run::titleOf($titles, $itemId)) . '</h3>' . self::runsTable($runs, $campaign->counts());
+
+        $statSlice = $list->getStatSliceId();
+        if ($statSlice !== '') {
+            $stats   = $this->stats();
+            $counts  = $stats->counts($statSlice, $list->getId(), $itemId);
+            $html   .= '<p class="aa-mailbulk-text">' . safe(_m('Opened %1, clicked %2', [$counts['opened'], $counts['clicked']])) . '</p>';
+            $html   .= self::linksTable($stats->links($statSlice, $itemId));
+        }
+        return '<div class="aa-mailbulk-stats">' . $html . '</div>';
+    }
+
+    // ------------------------------------------------------------ what tests replace
+
+    protected function campaign(string $list, string $itemId): Campaign
+    {
+        return Campaign::of($list, $itemId);
+    }
+
+    protected function stats(): Stats
+    {
+        return new Stats();
+    }
+
+    // ------------------------------------------------------------ rendering
+
+    /** each run, and with more of them the sending as a whole - each reader counted once
+     *  @param list<Run> $runs
+     *  @param array{total: int, sent: int, failed: int, skipped: int, uncertain: int, date: int} $counts */
+    private static function runsTable(array $runs, array $counts): string
+    {
+        $head = '';
+        $outcomes = array_map(static fn(Outcome $o): string => self::outcome($o->value), [Outcome::Sent, Outcome::Failed, Outcome::Skipped, Outcome::Uncertain]);
+        foreach ([_m('Started'), _m('Finished'), _m('State'), _m('Recipients'), ...$outcomes] as $label) {
+            $head .= '<th scope="col">' . safe($label) . '</th>';
+        }
+        $body = '';
+        foreach ($runs as $run) {
+            $outcomes = $run->outcomes();
+            $cells    = [
+                self::date((int) $run->getProperty('started')),
+                self::date((int) $run->getProperty('finished')),
+                self::state($run->state()),
+                (string) (int) $run->getProperty('total'),
+                (string) $outcomes['sent'],
+                (string) $outcomes['failed'],
+                (string) $outcomes['skipped'],
+                (string) $outcomes['uncertain'],
+            ];
+            $body .= '<tr><td>' . implode('</td><td>', array_map(safe(...), $cells)) . '</td></tr>';
+        }
+        $foot = '';
+        if (count($runs) > 1) {
+            $sums = [$counts['total'], $counts['sent'], $counts['failed'], $counts['skipped'], $counts['uncertain']];
+            $foot = '<tfoot><tr><th scope="row" colspan="3">' . safe(_m('Total')) . '</th><td>' . implode('</td><td>', $sums) . '</td></tr></tfoot>';
+        }
+        return '<table class="aa-table aa-mailbulk-runs"><thead><tr>' . $head . '</tr></thead><tbody>' . $body . '</tbody>' . $foot . '</table>';
+    }
+
+    /** @param list<array{url: string, readers: int}> $links */
+    private static function linksTable(array $links): string
+    {
+        if (!$links) {
+            return '';
+        }
+        $rows = '';
+        foreach ($links as $link) {
+            $rows .= '<tr><td>' . self::link($link['url']) . '</td><td>' . $link['readers'] . '</td></tr>';
+        }
+        return '<table class="aa-table aa-mailbulk-links"><thead><tr><th scope="col">' . safe(_m('Link')) . '</th><th scope="col">' . safe(_m('Readers clicked')) . '</th></tr></thead><tbody>' . $rows . '</tbody></table>';
+    }
+
+    /** a clicked address as HTML: only a web address becomes a link - an event item may be edited by hand */
+    public static function link(string $url): string
+    {
+        $shown = safe($url);
+        return preg_match('~^https?://~i', $url) ? '<a href="' . $shown . '" target="_blank" rel="noopener noreferrer">' . $shown . '</a>' : $shown;
+    }
+
+    /** a time of a sending for people; '' = none */
+    public static function date(int $time): string
+    {
+        return ($time > 0) ? date('Y-m-d H:i', $time) : '';
+    }
+
+    /** the name of an Outcome value for people; '' = not tried yet */
+    public static function outcome(string $outcome): string
+    {
+        return match ($outcome) {
+            Outcome::Sent->value      => _m('Sent'),
+            Outcome::Failed->value    => _m('Failed'),
+            Outcome::Skipped->value   => _m('Skipped'),
+            Outcome::Uncertain->value => _m('Uncertain'),
+            ''                        => _m('Not sent yet'),
+            default                   => $outcome,
+        };
+    }
+
+    /** the name of a run state for people */
+    public static function state(string $state): string
+    {
+        return match ($state) {
+            Run::SENDING => _m('Sending'),
+            Run::ERROR   => _m('Stopped on an error'),
+            Run::DONE    => _m('Done'),
+            Run::ENDED   => _m('Stopped'),
+            default      => $state,
+        };
+    }
+}

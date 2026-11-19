@@ -156,13 +156,15 @@ class AA_Adminpageutil {
 
     public function getPageBegin(): string
     {
+        // printHead() expands the page begin as a template; a name in the title (import, file) is not an expression
+        $title = strtr($this->title, ['{' => '&#123;', '}' => '&#125;']);
         return '<!DOCTYPE html>
 <html>
 <head>
   <link rel="SHORTCUT ICON" href="' . AA_INSTAL_PATH . 'images/favicon.ico">
   <meta charset="' . AA::$encoding . '">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>' . $this->title . '</title>
+  <title>' . $title . '</title>
   {generate:HEAD}
   </head>
   <body>

@@ -20,4 +20,17 @@ namespace AA\Mail;
 /**
  * Base SMTP failure. Callers that don't care about retryability catch this.
  */
-abstract class SmtpException extends \RuntimeException {}
+abstract class SmtpException extends \RuntimeException
+{
+    /** @param bool $sendingWide the cause is not this mail - another mail of the same sending fails the same way */
+    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null, private readonly bool $sendingWide = false)
+    {
+        parent::__construct($message, $code, $previous);
+    }
+
+    /** Nothing was sent, and the next mail would fail the same way (connection, login, sender, size limit). */
+    public function sendingWide(): bool
+    {
+        return $this->sendingWide;
+    }
+}

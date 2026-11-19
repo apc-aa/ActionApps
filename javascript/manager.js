@@ -40,7 +40,10 @@ function MarkedActionSelect(sb) {
     // which contain serialized state of the AA object, which should be
     // instatnionated in AA and asked for displaying htmlSetting of the action
     if( sb.value && (sb.value != 'nothing') && (markedactionsetting[sb.selectedIndex] != null) ) {
-        AA_Ajax('markedactionparams', AA_GetConf('path') + 'admin/index.php?display_params='+markedactionsetting[sb.selectedIndex]);
+        // the page of this manager knows its actions - admin/index.php only those of the items
+        const url = new URL(document.itemsform.getAttribute('action') || location.href, document.baseURI);
+        url.searchParams.set('display_params', markedactionsetting[sb.selectedIndex]);
+        AA_Ajax('markedactionparams', url.href);
     } else {
         document.getElementById('markedactionparams').innerHTML = '';
     }

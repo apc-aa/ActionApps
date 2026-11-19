@@ -985,6 +985,23 @@ class AA_Set extends AA_Object
         return $this->conds;
     }
 
+    /** The conditions query() leaves out, fully or in part, so it finds more items than asked: a field the
+     *  first slice lacks, an empty value, a value or operator the search cannot parse... Asks for no item.
+     *  @return list<string> the conditions as getAsString() writes them */
+    public function droppedConditions(): array
+    {
+        $own   = array_values($this->conds);   // getConds() numbers them from 0
+        $conds = $this->getConds();
+        ParseEasyConds($conds);   // leaves out a condition without a value
+        $dropped = array_keys(array_diff_key($own, $conds));
+        $fields  = $conds ? AA_Slice::getOwnModule((string) reset($this->slices))?->getFields() : null;
+        if ($fields) {
+            $dropped = array_merge($dropped, (new QueryZidsHelper($fields, $conds, null, null, $this->slices))->dropped());
+        }
+        sort($dropped);
+        return array_map(fn(int|string $k): string => $own[$k]->getAsString(), $dropped);
+    }
+
     /** getConds function
      *  @retrun array $conds[] array - mainly for backward compatibility
      */
@@ -1786,6 +1803,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     ParseMultiSelectConds($conds);
     ParseEasyConds($conds, $defaultCondsOperator);
+    $fields = $slice = null;
 
     // we need fields just in case we use sort or conds. Not necessary for
     // restrict_zids queries, where we often do not have slice id
@@ -1795,7 +1813,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
         }
 
         // get the fields for the first slice (used as template - we expect that all slices in the query has the same structure)
-        if (!empty($slices) && ($slice = AA_Slice::getModule(reset($slices)))) {
+        if (!empty($slices) && ($slice = AA_Slice::getOwnModule(reset($slices)))) {
             // @todo convert whole $slices to AA_Slice
             // access the fields through slice - it is better for caching of values
             $fields = $slice->getFields();
@@ -1839,6 +1857,9 @@ class QueryZidsHelper
     /** @var string[] the listed slices - the first one describes the fields */
     private array $slices;
 
+    /** @var array<int|string, true> keys of the conds left out of the search, fully or in part */
+    private array $dropped = [];
+
 
     public function __construct(?AA_Fields $fields, $conds, $sort, ?zids $restrict_zids, array $slices)
     {
@@ -1851,6 +1872,12 @@ class QueryZidsHelper
         $this->prepareSort($sort, $restrict_zids);
     }
 
+    /** @return list<int|string> keys of the conds the search leaves out, fully or in part - it finds more than asked */
+    public function dropped(): array
+    {
+        return array_keys($this->dropped);
+    }
+
     /**
      * @param  array  $conds
      *
@@ -1860,7 +1887,8 @@ class QueryZidsHelper
     {
         $this->ignore_expiry_date = false;
 
-        foreach ($conds as $cond) {
+        foreach ($conds as $k => $cond) {
+            $applied     = count($this->select_conds);
             // fill arrays according to this condition
             $field_count = 0;
             $cond_flds   = '';
@@ -1922,11 +1950,13 @@ class QueryZidsHelper
                         $field = $this->fields->getField($rel_fld);
                         if (!is_object($field)) {
                             AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$rel_fld' is not field.");
+                            $this->dropped[$k] = true;
                             continue;            // bad field_id or not defined condition - skip
                         }
                         [$rel_f_type, $rel_f_slice] = $field->getRelation();
                         if ($rel_f_type !== 'relation') {
                             AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$rel_fld' is not relation field.");
+                            $this->dropped[$k] = true;
                             continue;            // bad field_id or not defined condition - skip
                         }
                         // the values come only from items of the declared slice, as the stored ids may point anywhere;
@@ -1945,6 +1975,7 @@ class QueryZidsHelper
                         $cond_field = $all_fields ? null : $rel_slice->getField($cf);
                         if (!$all_fields && !is_object($cond_field)) {
                             AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$fid' is not field.");
+                            $this->dropped[$k] = true;
                             continue;            // bad field_id or not defined condition - skip
                         }
                         if (!$asks_filled && isset($rel_slice->protectedFieldIds()[$cf])) {
@@ -1969,7 +2000,7 @@ class QueryZidsHelper
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text)$one_field
                                                                      AND EXISTS (SELECT 1 FROM item AS $rtbl WHERE $rtbl.id=$tbl2.item_id AND $rtbl.slice_id=$packed))";
                         }
-                        $cur_cond = (new AA_Dbcondition($tbl2, $cond_field?->storageColumn() ?? 'text', $cond['operator'], $cond['value']))->getWhereExp();
+                        $cur_cond = $this->whereOf($k, new AA_Dbcondition($tbl2, $cond_field?->storageColumn() ?? 'text', $cond['operator'], $cond['value']));
                         $this->select_conds[] = $cur_cond;
                         $this->sortable[$cf]  = $tbl;  // @todo - test if it works
                         $cond_flds      = '';
@@ -2005,11 +2036,13 @@ class QueryZidsHelper
                     $cond_field = $rel_slice->getField($cond_fld_id);
                     if (!is_object($cond_field)) {
                         AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $cond_fld_id is not field of $rel_slice_id.");
+                        $this->dropped[$k] = true;
                         continue;            // bad field_id or not defined condition - skip
                     }
                     $rel_field = $rel_slice->getField($rel_fld_id);
                     if (!is_object($rel_field)) {
                         AA::$debug && AA::$dbg->warn("Skipping $fid in conds[]: $rel_fld_id is not field of $rel_slice_id.");
+                        $this->dropped[$k] = true;
                         continue;            // bad field_id or not defined condition - skip
                     }
                     // the relation field is compared with the id of the listed item, so it may be no protected one either
@@ -2036,7 +2069,7 @@ class QueryZidsHelper
                     } else {
                         $this->select_tabs[] = "$rel_join LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                     }
-                    $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
+                    $cur_cond = $this->whereOf($k, new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']));
                     //                        if (in_array($cond_flds, ['id..............', 'slice_id........'])) {
                     //                            $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
                     //                        }
@@ -2056,6 +2089,7 @@ class QueryZidsHelper
 
                 if (is_null($field) || $v == "") {
                     AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: not known.");
+                    $this->dropped[$k] = true;
                     continue;            // bad field_id or not defined condition - skip
                 }
                 if (!$asks_filled && ($protected_in = $this->protectedIn($field)) !== '') {
@@ -2068,7 +2102,7 @@ class QueryZidsHelper
 
                 if ($field->storageTable() === 'item') {   // field is stored in table 'item'
                     // Long ID in conds should be specified as unpacked, but in db it is packed
-                    $cur_cond = (new AA_Dbcondition('item', $field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();  // 'text' is maybe not correct, but it worked this way so far - no need to change - HM - 2024-05-17
+                    $cur_cond = $this->whereOf($k, new AA_Dbcondition('item', $field->storageColumn(), $cond['operator'], $cond['value']));  // 'text' is maybe not correct, but it worked this way so far - no need to change - HM - 2024-05-17
                     if ($fid === 'expiry_date.....') {
                         $this->ignore_expiry_date = true;
                     }
@@ -2083,7 +2117,20 @@ class QueryZidsHelper
             if ($cond_flds !== '') {
                 $this->addTableCondition($store, $cond['operator'], $cond['value'], $cond_flds, $fid_langs);
             }
+            // a name that is no field, or a value the search cannot use, adds nothing
+            if (count($this->select_conds) === $applied) {
+                $this->dropped[$k] = true;
+            }
         }
+    }
+
+    /** the SQL of the condition; one that would take every item (a value it cannot parse) is noted as dropped */
+    private function whereOf(int|string $k, AA_Dbcondition $condition): string
+    {
+        if ($condition->getJoinType() === 'ALL') {
+            $this->dropped[$k] = true;
+        }
+        return $condition->getWhereExp();
     }
 
     /** Adds condition to select_tabs, select_conds and updates sortable and tbl_count
@@ -2356,7 +2403,7 @@ class QueryZidsHelper
         }
 
         if (!$slice && $slices) {
-            $slice = AA_Slice::getModule(reset($slices));
+            $slice = AA_Slice::getOwnModule(reset($slices));
         }
 
         /** @todo deal with no slice id for restrict_zids without conds */

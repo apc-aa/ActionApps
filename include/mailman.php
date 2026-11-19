@@ -36,6 +36,14 @@ require_once __DIR__ . "/util.php";
 
 class AA_Mailman
 {
+    /** The characters Mailman itself allows in a list name. The name is also a file name
+     *  in $MAILMAN_SYNCHRO_DIR, where the dot files are ours (.mailman, .mailman_lock),
+     *  and an argument of the Mailman command, which reads a leading dash as an option. */
+    public static function isListName(string $name): bool
+    {
+        return (bool) preg_match('/^[+_=a-z0-9][-+_.=a-z0-9]*\z/i', $name);
+    }
+
     /** AA_Mailman::createSynchroFiles function
      *   Finds all reader-mailing list assignments for the given slice.
      *   Creates one file for each mailing list, named the same as the list.
@@ -79,7 +87,13 @@ class AA_Mailman
     private static function _createOneFile($slice_id, $field_id, $listname): void
     {
         global $MAILMAN_SYNCHRO_DIR;
-        if ($slice_id && $field_id && $listname) {
+        if (!self::isListName((string) $listname)) {
+            if ((string) $listname !== '') {
+                warn('Error: mailman list name');
+            }
+            return;
+        }
+        if ($slice_id && $field_id) {
             $mails = implode("\n", AA_Validate::filter(explode('|', str_replace([' ', "\t"], ['', ''], AA::Un("{item:{ids:$slice_id:d-$field_id-=-" . str_replace('-', '--', $listname) . "}:" . FIELDID_EMAIL . ":|}"))), 'email'));
 
             if ($fd = fopen($MAILMAN_SYNCHRO_DIR . $listname, 'wb')) {

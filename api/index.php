@@ -12,6 +12,7 @@
 
 use AA\Api\Controller\ExpressionsController;
 use AA\Api\Controller\FilesController;
+use AA\Api\Controller\MailHitController;
 use AA\Api\Controller\SpeechController;
 use AA\Api\Controller\TranslateController;
 use AA\Api\JsonResponse;
@@ -25,14 +26,6 @@ ob_start();
 require_once __DIR__ . '/../include/config.php';
 require_once __DIR__ . '/../include/locsess.php';
 require_once __DIR__ . '/../include/util.php';
-
-// Start session + auth without triggering the HTML login form on anonymous
-// requests. The per-endpoint handler is responsible for checking $auth->is_user()
-// and returning JsonResponse::error(401, ...) when authentication is required.
-pageOpen('nobody');
-
-// Scrub anything AA's bootstrap printed (usually empty, but defensive).
-ob_end_clean();
 
 $router = new Router();
 
@@ -62,5 +55,24 @@ $router->register('GET', '/v1/files', static function (): JsonResponse {
 $router->register('GET', '/v1/expressions', static function (): JsonResponse {
     return (new ExpressionsController())->list();
 });
+
+// the address of an image or a link in a mail: no session, no cookie for the reader
+$router->register('GET', '/v1/mail/hit', static function (): void {
+    (new MailHitController())->respond();
+}, false);
+// link checkers probe the links with HEAD: the answer of GET without the body, nothing counted
+$router->register('HEAD', '/v1/mail/hit', static function (): void {
+    (new MailHitController())->respond(false);
+}, false);
+
+// Start session + auth without triggering the HTML login form on anonymous
+// requests. The per-endpoint handler is responsible for checking $auth->is_user()
+// and returning JsonResponse::error(401, ...) when authentication is required.
+if ($router->needsSession()) {
+    pageOpen('nobody');
+}
+
+// Scrub anything AA's bootstrap printed (usually empty, but defensive).
+ob_end_clean();
 
 $router->dispatch();

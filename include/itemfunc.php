@@ -1724,6 +1724,13 @@ class AA_Inserter_2fa extends AA_Inserter
 {
     protected $crypt_phrase;            // see getClassProperties
 
+    /** the logged-in user whose password (and 2FA code) a 2FA field of this request proved - secretQr() */
+    private static string $verified_uid = '';
+
+    /** [username, password, code] of Get Secret - secretQr() checks them, so a whole form saved with a filled
+     *  (or autofilled) password is no login attempt */
+    private static array $get_secret = [];
+
     public static function name(): string
     {
         return _m("2FA Secret");
@@ -1747,10 +1754,15 @@ class AA_Inserter_2fa extends AA_Inserter
     {
         [$aa_const, $username, $password, $code2fa] = ParamExplode($value);
 
+        if ($aa_const === 'AA_doNotGenerate') {
+            self::$get_secret = [$username, $password, $code2fa];   // the stored secret stays
+            return;
+        }
         if ($aa_const === 'AA_2FASECRET') {
-            if ($username === '' || !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) || ($uid != AuthGetUid())) {
+            if (($uid = self::authenticatedUid($username, $password, $code2fa)) === '') {
                 return;
             }
+            self::$verified_uid = $uid;
             $ga = new PHPGangsta_GoogleAuthenticator();
             $secret = $ga->createSecret();
 
@@ -1773,6 +1785,36 @@ class AA_Inserter_2fa extends AA_Inserter
             parent::execute($fieldwriter, $item_id, $value, $order, $flag);
         }
         // nothing stored. The field should be safefield, so not cleared
+    }
+
+    /** the logged-in user's id when the login data are his, '' otherwise */
+    private static function authenticatedUid($username, $password, $code2fa): string
+    {
+        $uid = ((string) $username === '') ? false : AA::$perm->authenticateUsername($username, $password, $code2fa);
+        return ($uid && ($uid == AuthGetUid())) ? (string) $uid : '';
+    }
+
+    /** The logged-in user's 2FA secret as a QR code <img> - only when this request proved his password (and 2FA
+     *  code) by Generate New Secret or Get Secret. Drawn here, so the secret never leaves for a QR service. */
+    public static function secretQr(): string
+    {
+        $uid = (string) AuthGetUid();
+        if ($uid === '') {
+            return '--';
+        }
+        [$username, $password, $code2fa] = self::$get_secret + ['', '', ''];
+        if ((self::$verified_uid !== $uid) && ((string) $password !== '')) {
+            self::$verified_uid = self::authenticatedUid($username, $password, $code2fa);
+        }
+        if (self::$verified_uid !== $uid) {
+            return _m('Wrong password or code');
+        }
+        $secret = DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', $uid, 'l']]);
+        if (!$secret) {
+            return '--';
+        }
+        // the otpauth URI authenticator apps read
+        return '<img src="' . StrExp('qrcode', ['otpauth://totp/' . rawurlencode((string) ($_SERVER['SERVER_NAME'] ?? '')) . '?secret=' . $secret, '200']) . '">';
     }
 
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)

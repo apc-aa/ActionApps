@@ -63,7 +63,7 @@ function AddslashesDeep($value): array|string
 require_once __DIR__ . '/../src/Util/InputVars.php';   // the autoloader comes later
 foreach ($_REQUEST as $k => $v) {
     if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
-        $$k = AddslashesDeep($v);
+        $$k = AddslashesDeep(\AA\Util\InputVars::requestGlobal((string) $k, $v));
     }
 }
 // ----- input variables normalization - end ----------------------------------

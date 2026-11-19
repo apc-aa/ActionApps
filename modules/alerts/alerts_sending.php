@@ -51,6 +51,12 @@ class AA_Collection
     public $email_id_welcome = null;   /** Id of welcome email template */
     public $email_id_alert = null;     /** Id of alert email template */
     public $slice_url = null;          /** Used for caching of slice_url */
+    public $stat_slice_id = null;      /** Slice id of the statistics slice, '' = nothing measured */
+    /** @var array<string, list<string>> conds => what droppedConds() found */
+    private array $dropped = [];
+
+    /** fields a statistics slice must have: the mailing, the recipient, the action (open/click), the link */
+    public const STAT_FIELDS = ['relation........', 'relation.......1', 'category........', 'source_href.....'];
 
     public function __construct($collection_id)
     {
@@ -139,8 +145,67 @@ class AA_Collection
             $this->alerts_module_id = unpack_id($data['module_id']);
             $this->email_id_welcome = $data['emailid_welcome'];
             $this->email_id_alert   = $data['emailid_alert'];
+            $this->stat_slice_id    = ((string) ($data['stat_slice_id'] ?? '') === '') ? '' : unpack_id($data['stat_slice_id']);
         }
         return $this->$property;
+    }
+
+    /** @return string long id of the statistics slice, '' when the list measures nothing */
+    public function getStatSliceId(): string
+    {
+        return (string) $this->getProp('stat_slice_id');
+    }
+
+    /** @param string[] $field_ids fields of a slice
+     *  @return string[] STAT_FIELDS the slice lacks */
+    public static function missingStatFields(array $field_ids): array
+    {
+        return array_values(array_diff(self::STAT_FIELDS, $field_ids));
+    }
+
+    /** Why the slice cannot be the statistics slice of the collection (HTML); '' when it can.
+     *  One slice per list: an event names the mailing item, not the list, so two lists over one slice would
+     *  mix their numbers on an item both sent.
+     *  @param string $slice_id      long id
+     *  @param string $collection_id '' for a list being created */
+    public static function statSliceRefusal(string $slice_id, string $collection_id): string
+    {
+        if (!is_long_id($slice_id) || !DB_AA::test('module', [['id', $slice_id, 'l'], ['type', 'S'], ['deleted', 0, 'i']])) {
+            return _m('Statistics slice: no such slice');
+        }
+        // the events would land among the readers
+        if (($collection_id !== '') && DB_AA::test('alerts_collection', [['id', $collection_id], ['slice_id', $slice_id, 'l']])) {
+            return _m('The statistics slice cannot be the slice of the readers');
+        }
+        $missing = self::missingStatFields(DB_AA::select('id', 'SELECT id FROM field', [['slice_id', $slice_id, 'l']]));
+        if ($missing) {
+            return _m('The statistics slice lacks the fields %1', [implode(', ', $missing)]);
+        }
+        $other = DB_AA::select1([], 'SELECT c.id, m.name FROM alerts_collection AS c LEFT JOIN module AS m ON m.id = c.module_id', [['c.stat_slice_id', $slice_id, 'l'], ['c.id', $collection_id, 's<>']]);
+        if ($other) {
+            return _m('The slice keeps the statistics of another list already (%1) - each list needs its own', [safe((string) ($other['name'] ?? $other['id']))]);
+        }
+        if (self::statSliceKeepsHistory($slice_id)) {
+            return _m('The statistics slice keeps the history of its items - set "Store item history for N days" to 0 in its slice settings');
+        }
+        return '';
+    }
+
+    /** Each new event of a slice with history writes a row of the log, with the address of the request: the
+     *  measuring keeps no address of a reader only when the statistics slice keeps no history. */
+    public static function statSliceKeepsHistory(string $slice_id): bool
+    {
+        return (string) AA_Slice::getModule($slice_id)?->getProperty('historylog') !== '0';
+    }
+
+    /** What to fix on a statistics slice that still measures (HTML-free); '' when nothing. */
+    public static function statSliceWarning(string $slice_id): string
+    {
+        // the readers and the links they clicked are in its items, which slice.php and view.php show without one
+        if (!DB_AA::test('slice', [['id', $slice_id, 'l'], ['reading_password', '', 'NOT LIKE']])) {
+            return _m('The statistics slice has no reading password - set one in its slice settings, so its items are not shown on the web');
+        }
+        return '';
     }
 
     public function getReaderSlice(): ?AA_Module
@@ -176,6 +241,109 @@ class AA_Collection
         return $aa_set->query();
     }
 
+    /** Readers a mailing of this collection may go to: active, confirmed and not unsubscribed. A reader
+     *  without the frequency field (or with an empty one) is subscribed - AA_Set cannot match "does not begin
+     *  with" on a missing field, hence the second selection and the difference.
+     *  @param string $conds  the conds of {ids} (d-<field>-<operator>-<value>...) - only readers matching them;
+     *                        nobody when the search would leave any of them out (droppedConds()) */
+    public function validReaders(string $conds = ''): zids
+    {
+        if (!(($slice = $this->getReaderSlice()) instanceof AA_Slice)) {
+            return new zids();
+        }
+        [$set, $dropped] = self::readerSet($slice, $conds);
+        if ($dropped) {
+            return new zids();
+        }
+        $readers  = $set->query();
+        $howoften = getAlertsField(FIELDID_HOWOFTEN, $this->id);
+        if ($readers->isEmpty() || !$slice->isField($howoften)) {
+            return $readers;   // without the field nobody has unsubscribed
+        }
+        $unsubscribed = (new AA_Set($slice->getId(), new AA_Condition($howoften, 'BEGIN', 'unsub')))->query();
+        return new zids(array_values(array_diff($readers->longids(), $unsubscribed->longids())), 'l');
+    }
+
+    /** What the search of validReaders() would leave out - with any of it, validReaders() finds nobody, as the
+     *  mailing would go to more readers than asked: conditions on fields the reader slice lacks, with an empty
+     *  value, a value it cannot parse... (AA_Set::droppedConditions()), the confirmation of the readers when
+     *  the slice has no such field, and $conds itself when it gives no condition at all.
+     *  @param string $conds the conds of {ids}
+     *  @return list<string> */
+    public function droppedConds(string $conds): array
+    {
+        // the letters of a listing of items share the collection, and mostly their conds
+        if (!isset($this->dropped[$conds])) {
+            $slice                 = $this->getReaderSlice();
+            $this->dropped[$conds] = ($slice instanceof AA_Slice) ? self::readerSet($slice, $conds)[1] : [];
+        }
+        return $this->dropped[$conds];
+    }
+
+    /** @return array{AA_Set, list<string>} the search of the confirmed readers matching $conds, what it leaves out */
+    private static function readerSet(AA_Slice $slice, string $conds): array
+    {
+        $set  = new AA_Set($slice->getId(), ($conds === '') ? null : $conds);
+        // a missing "d-" or a mere AAnoCONDITION - every reader
+        $none = (trim($conds) !== '') && !$set->getConditions();
+        $set->addCondition(new AA_Condition(FIELDID_MAIL_CONFIRMED, '==', 1));
+        $dropped = $set->droppedConditions();
+        return [$set, $none ? [$conds, ...$dropped] : $dropped];
+    }
+
+    /** The rule of validReaders() for one loaded reader - checked again right before the mail goes out,
+     *  as the reader may have unsubscribed meanwhile; and a reader without an address gets nothing. */
+    public function isValidReader(ItemContent $reader): bool
+    {
+        return $reader->isActive()
+            && ($reader->getSliceID() === $this->getProp('reader_slice_id'))
+            && ((string) $reader->getValue(FIELDID_MAIL_CONFIRMED) === '1')
+            && (strncasecmp((string) $reader->getValue(getAlertsField(FIELDID_HOWOFTEN, $this->id)), 'unsub', 5) !== 0)   // as LIKE in validReaders()
+            && (trim((string) $reader->getValue(FIELDID_EMAIL)) !== '');
+    }
+
+    public function getId(): string
+    {
+        return (string) $this->id;
+    }
+
+    /** the language of the mails of the collection - of its Alerts module, two letters; '' without the module */
+    public function lang(): string
+    {
+        $module = AA_Module_Alerts::getOwnModule($this->getProp('alerts_module_id'));
+        return ($module instanceof AA_Module_Alerts) ? substr($module->getLang(), 0, 2) : '';
+    }
+
+    /** $fn run with the language $lang for the template commands - set back after, as the process may go on with
+     *  other tasks; '' leaves the language as it is
+     *  @template T
+     *  @param callable(): T $fn
+     *  @return T */
+    public static function inLang(string $lang, callable $fn): mixed
+    {
+        if ($lang === '') {
+            return $fn();
+        }
+        $had = array_key_exists('xlang', $GLOBALS['apc_state'] ?? []);
+        $old = $GLOBALS['apc_state']['xlang'] ?? null;
+        $GLOBALS['apc_state']['xlang'] = $lang;
+        try {
+            return $fn();
+        } finally {
+            if ($had) {
+                $GLOBALS['apc_state']['xlang'] = $old;
+            } else {
+                unset($GLOBALS['apc_state']['xlang']);
+            }
+        }
+    }
+
+    /** @return string long id of the Alerts module */
+    public function getModuleId(): string
+    {
+        return (string) $this->getProp('alerts_module_id');
+    }
+
     public function getReadersSelectArray($how_often = null): array
     {
         $ret = [];
@@ -186,6 +354,46 @@ class AA_Collection
         return $ret;
     }
 
+    /** Links in a reader's mail: unsubscribe from this collection, and the reader's settings form.
+     *  @return array{unsubscribe: string, form: string} */
+    public function readerLinks(string $accessCode): array
+    {
+        return [
+            'unsubscribe' => get_url($this->getSliceUrl(), ['au' => $accessCode, 'c' => $this->id]),
+            'form'        => get_url($this->getSliceUrl(), ['ac' => $accessCode]),
+        ];
+    }
+
+    /** The unsubscribe URL marked to unsubscribe only by POST where the page can ask (unsubscribe_request()) - the
+     *  link of the List-Unsubscribe header and the body link of a mailing
+     *  @param string $mark ALERTS_ONE_CLICK_HEADER or ALERTS_ONE_CLICK_BODY */
+    public static function oneClickUrl(string $unsubscribeUrl, string $mark): string
+    {
+        return get_url($unsubscribeUrl, [ALERTS_ONE_CLICK_PARAM => $mark]);
+    }
+
+    /** The URL may go to the List-Unsubscribe header: mail services post only to https. It is built from the
+     *  admin-set slice_url, so anything that could end the header line or the <...> fails it; so do 8-bit bytes -
+     *  the mailer would encode the header and break the URI. */
+    public static function fitsHeader(string $url): bool
+    {
+        return (bool) preg_match('~^https://[^\x00-\x20\x7f-\xff<>]+\z~', $url);
+    }
+
+    /** One-click unsubscribe headers (RFC 8058)
+     *  @param ?string $oneClickUrl what oneClickUrl() gave; null = none (a test mail, a reader without a code)
+     *  @return array<string, string> header name => value */
+    public static function unsubscribeHeaders(?string $oneClickUrl): array
+    {
+        if (($oneClickUrl === null) || !self::fitsHeader($oneClickUrl)) {
+            return [];
+        }
+        return [
+            'List-Unsubscribe'      => '<' . $oneClickUrl . '>',
+            'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+        ];
+    }
+
     /**
      * @param string        $ho = how often
      * @param string|array  $emails (email, email, ...)
@@ -193,7 +401,7 @@ class AA_Collection
      * @param bool $update    decides whether alerts_filter_howoften.last would be updated,
      *                        i.e. whether this is only a debug trial or the real life
      * @param string $item_id
-     * @param null   $reader_id
+     * @param string|null $reader_id  long id - mail just this reader
      * @return int - count of emails sent
      */
     public function sendEmails($ho, $emails, $update, $item_id, $reader_id): int
@@ -202,7 +410,8 @@ class AA_Collection
         // allow to access Reader data (and the data of all the slices with the same password)
         AA_Credentials::singleton()->loadFromSlice($this->getProp('reader_slice_id'));
 
-        $GLOBALS['apc_state']['xlang'] = substr(AA_Module_Alerts::getModule($this->getProp('alerts_module_id'))->getLang(), 0, 2);
+        // for the rest of the request, as the mails always had it
+        $GLOBALS['apc_state']['xlang'] = $this->lang();
 
         // get array of all filters of current collection ($collection_id)
         // !if $update is set (default), then it updates date for lastsent - for
@@ -242,14 +451,18 @@ class AA_Collection
                     $als = new AA_Aliases();
                     $als->addTextAlias("_#FILTERS_", $user_text);
                     $als->addTextAlias("_#HOWOFTEN", $ho);
-                    $als->addTextAlias("_#COLLFORM", get_url($this->getSliceUrl(), ['ac' => $readerContent->getValue(FIELDID_ACCESS_CODE)]));
-                    $als->addTextAlias("_#UNSBFORM", get_url($this->getSliceUrl(), ['au' => $readerContent->getValue(FIELDID_ACCESS_CODE),'c' => $this->id]));
+                    $access_code = (string) $readerContent->getValue(FIELDID_ACCESS_CODE);
+                    $links       = $this->readerLinks($access_code);
+                    $als->addTextAlias("_#COLLFORM", $links['form']);
+                    $als->addTextAlias("_#UNSBFORM", $links['unsubscribe']);
 
                     $reader_slice = $this->getReaderSlice();
                     $aliases      = array_merge($reader_slice->aliases(), $als->getArray());
                     $item         = new AA_Item($readerContent, $aliases);
 
-                    if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item)) {
+                    // without the code the link would unsubscribe nobody
+                    $headers = self::unsubscribeHeaders(($access_code === '') ? null : self::oneClickUrl($links['unsubscribe'], ALERTS_ONE_CLICK_HEADER));
+                    if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item, null, $headers)) {
                         AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'queued', 'collection' => $this->id, 'detail' => $readerContent->getValue(FIELDID_EMAIL)]));
                         $email_count++;
                     }
@@ -263,8 +476,10 @@ class AA_Collection
             //          $als->addAlias(new AA_Alias("_#FILTERS_", "id..............", 'f_t', array(get_filter_text_4_reader(null, $filters, $this->id))));
             $als->addTextAlias("_#FILTERS_", $this->getFilterText4Reader(null, $filters));
             $als->addTextAlias("_#HOWOFTEN", $ho);
-            $als->addTextAlias("_#COLLFORM", get_url($this->getSliceUrl(), ['ac' => 'ABCDE']));
-            $als->addTextAlias("_#UNSBFORM", get_url($this->getSliceUrl(), ['au' => 'ABCDE','c' => $this->id]));
+            // no reader has the code ABCDE - a test mail gets no unsubscribe headers
+            $links = $this->readerLinks('ABCDE');
+            $als->addTextAlias("_#COLLFORM", $links['form']);
+            $als->addTextAlias("_#UNSBFORM", $links['unsubscribe']);
             $item = new AA_Item('', $als);
             foreach ((array) $emails as $email) {
                 if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $email, $item)) {
