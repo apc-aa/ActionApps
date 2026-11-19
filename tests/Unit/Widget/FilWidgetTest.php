@@ -27,14 +27,14 @@ final class FilWidgetTest extends TestCase
     {
         $html = self::html(new FilWidget(['display_url' => '0']), ['https://example.org/a.jpg'], 'ajax');
 
-        self::assertMatchesRegularExpression('~<form id="fuf[^>]*>.*<input type="text"[^>]*name="aa\\[n1_[^"]*\\[fil\\]\\[url\\]\\[0\\]"[^>]*value="https://example.org/a.jpg".*</form>~s', $html);
+        self::assertMatchesRegularExpression('~<div id="fuf[^>]*>.*<input type="text"[^>]*name="aa\\[n1_[^"]*\\[fil\\]\\[url\\]\\[0\\]"[^>]*value="https://example.org/a.jpg".*</div>\s*<iframe~s', $html);
     }
 
     public function test_getRawHtml_ajaxEmpty_offersUrlInsideTheUploadForm(): void
     {
         $html = self::html(new FilWidget(['display_url' => '0']), [], 'ajax');
 
-        self::assertMatchesRegularExpression('~<form id="fuf[^>]*>.*<input type="text"[^>]*\\[fil\\]\\[url\\]\\[0\\]".*</form>~s', $html);
+        self::assertMatchesRegularExpression('~<div id="fuf[^>]*>.*<input type="text"[^>]*\\[fil\\]\\[url\\]\\[0\\]".*</div>\s*<iframe~s', $html);
         self::assertStringNotContainsString('Delete', $html, 'nothing to delete');
     }
 
@@ -44,8 +44,17 @@ final class FilWidgetTest extends TestCase
         $empty  = self::html(new FilWidget([]), [], 'ajax');
 
         self::assertStringNotContainsString('type="text"', $filled . $empty);
-        self::assertMatchesRegularExpression('~<form id="fuf[^>]*>.*type="hidden"[^>]*\\[fil\\]\\[url\\]\\[0\\]".*</form>~s', $filled);
+        self::assertMatchesRegularExpression('~<div id="fuf[^>]*>.*type="hidden"[^>]*\\[fil\\]\\[url\\]\\[0\\]".*</div>\s*<iframe~s', $filled);
         self::assertStringNotContainsString('[fil][url]', $empty);
+    }
+
+    public function test_getRawHtml_ajax_hasNoNestedForm(): void
+    {
+        // the widget lands inside the item editor's form, where the parser would drop a nested <form>
+        $html = self::html(new FilWidget(['display_url' => '0']), ['https://example.org/a.jpg'], 'ajax');
+
+        self::assertStringNotContainsString('<form', $html);
+        self::assertStringContainsString("document.createElement('form')", $html);
     }
 
     public function test_getRawHtml_normalUnsetDisplayUrl_showsUrl(): void
@@ -58,7 +67,7 @@ final class FilWidgetTest extends TestCase
         $html = self::html(new FilWidget(['display_url' => 2, 'multiple' => 1]), ['https://example.org/a.jpg'], 'ajax');
 
         self::assertStringNotContainsString('type="text"', $html);
-        self::assertMatchesRegularExpression('~<form id="fuf[^>]*>.*type="hidden"[^>]*\\[fil\\]\\[url\\]\\[0\\]".*</form>~s', $html);
+        self::assertMatchesRegularExpression('~<div id="fuf[^>]*>.*type="hidden"[^>]*\\[fil\\]\\[url\\]\\[0\\]".*</div>\s*<iframe~s', $html);
         self::assertStringNotContainsString('[fil][add]', $html, 'no way to remove one of the added files');
     }
 
@@ -66,7 +75,7 @@ final class FilWidgetTest extends TestCase
     {
         $html = self::html(new FilWidget(['display_url' => '0', 'multiple' => 1]), ['https://example.org/a.jpg'], 'ajax');
 
-        self::assertMatchesRegularExpression('~<form id="fuf[^>]*>.*\\[fil\\]\\[add\\]".*</form>~s', $html);
+        self::assertMatchesRegularExpression('~<div id="fuf[^>]*>.*\\[fil\\]\\[add\\]".*</div>\s*<iframe~s', $html);
     }
 
     public function test_getRawHtml_normal_unchanged(): void
