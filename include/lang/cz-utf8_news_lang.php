@@ -4434,6 +4434,9 @@ return [
 // admin/write_mail.php, row 214
 "The email is queued for %1 recipients. AA sends it in the background, so the first copies may take several minutes to arrive." => "E-mail je zařazen do fronty, příjemců: %1. AA ho rozesílá na pozadí, takže první kopie mohou dorazit až za několik minut.", // ai 2026-11
 
+// admin/write_mail.php, row 231
+"You can close the window and log out; it does not stop the sending." => "Okno můžete zavřít a odhlásit se, rozesílání to nepřeruší.", // ai 2026-11
+
 // admin/write_mail.php, row 215
 "The selected group has no recipients - nothing was sent." => "Vybraná skupina nemá žádné příjemce - nic nebylo odesláno.", // ai 2026-11
 
