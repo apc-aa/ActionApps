@@ -464,15 +464,8 @@ class Managed_Object extends Managed
     /** the object $id is stored, owned by $owner and of $class */
     private static function isOwn(string $id, string $owner, string $class): bool
     {
-        $stored = self::stored($id);
+        $stored = AA_Object::storedIdentity($id);
         return ($stored['aa_owner'] === $owner) && ($stored['aa_type'] === $class);
-    }
-
-    /** @return array{aa_owner: string, aa_type: string} of the stored object $id; '' - none stored */
-    private static function stored(string $id): array
-    {
-        $rows = DB_AA::select(['property' => 'value'], 'SELECT property, value FROM `object_text`', [['object_id', $id], ['property', ['aa_owner', 'aa_type']]]);
-        return ['aa_owner' => (string) ($rows['aa_owner'] ?? ''), 'aa_type' => (string) ($rows['aa_type'] ?? '')];
     }
 
     /** a form of $module posted another object - a forged request, or a page with a stale id */
@@ -484,7 +477,7 @@ class Managed_Object extends Managed
 
     private function logObject(string $module, string $object_id): void
     {
-        $stored = self::stored($object_id);
+        $stored = AA_Object::storedIdentity($object_id);
         self::logRefusal($module, $object_id, $this->class, is_long_id($object_id) ? $stored['aa_type'] : '', $stored['aa_owner']);
     }
 

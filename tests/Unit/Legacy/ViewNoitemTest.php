@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Legacy;
 
+use AA\Security\Settings;
 use AA\Security\UrlValue;
 use AA\Util\LogOnce;
 use AA_Aliases;
@@ -128,7 +129,8 @@ final class ViewNoitemTest extends TestCase
         $_SERVER['HTTP_HOST']   = 'example.org';
         $_SERVER['REQUEST_URI'] = '/aa/view.php?vid=' . self::VID . '&set[' . self::VID . ']=noitem-x';
         RecordingDb::$answer = static fn(string $sql): array => match (true) {
-            str_contains($sql, '`object_text`') => $off ? [['tbl' => 'object_text', 'property' => 'off', 'value' => 'url_values_as_text', 'priority' => 0]] : [],
+            // the switch as saved: a load takes only an object stored as AA\Security\Settings
+            str_contains($sql, '`object_text`') => $off ? [['tbl' => 'object_text', 'property' => 'aa_type', 'value' => Settings::class, 'priority' => 0], ['tbl' => 'object_text', 'property' => 'off', 'value' => 'url_values_as_text', 'priority' => 0]] : [],
             str_contains($sql, 'count(*)')      => [['cnt' => 0]],
             default                             => [],
         };

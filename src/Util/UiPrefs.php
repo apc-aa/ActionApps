@@ -123,6 +123,20 @@ class UiPrefs
         return is_file(__DIR__ . '/../../include/lang/' . $candidate) ? $candidate : $module_lang_file;
     }
 
+    /** The same section in the UTF-8 file of the language (cz_news_lang.php -> cz-utf8_news_lang.php), for
+     *  output that is UTF-8 whatever the module's file is, such as JSON; the file unchanged when it is UTF-8
+     *  already or its language has no UTF-8 file.
+     */
+    public static function utf8LangFile(string $lang_file): string
+    {
+        $code = Langs::getLang($lang_file);
+        if (Langs::getCharset($code) === 'utf-8') {
+            return $lang_file;
+        }
+        $candidate = $code . '-utf8_' . self::sectionOf($lang_file) . '_lang.php';
+        return is_file(__DIR__ . '/../../include/lang/' . $candidate) ? $candidate : $lang_file;
+    }
+
     /** Extract the section ('news', 'site', ...) from a {lang}_{section}_lang.php name. */
     private static function sectionOf(string $lang_file): string
     {
