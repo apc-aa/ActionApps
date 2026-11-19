@@ -85,6 +85,12 @@ $p_module_id = pack_id($module_id);   // AA_Condition quotes it itself
 
 $managed  = AA::Metabase()->getManagerConf('polls', $actions, $switches, ['edit_url' => get_aa_url('modules/polls/polledit.php?poll_id=_#id')]);
 $managed->setModule($module_id);   // its forms and row actions change only the polls of this module
+$managed->setColumn('publish_date', '{date:j.n.Y H#:i:{publish_date}}');
+$managed->setColumn('expiry_date', '{date:j.n.Y H#:i:{expiry_date}}');
+$managed->setWidgetSetting('headline', ['name' => _m('Question')]);
+$managed->setWidgetSetting('publish_date', ['name' => _m('Publish Date')]);
+$managed->setWidgetSetting('expiry_date', ['name' => _m('Expiry Date')]);
+$managed->setColumns2show(['headline', 'publish_date', 'expiry_date']);
 
 // function - we need translate _m() on use (not at include time)
 
