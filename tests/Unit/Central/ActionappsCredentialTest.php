@@ -14,6 +14,7 @@ namespace Tests\Unit\Central;
 
 use AA\Central\Actionapps;
 use AA\Central\OptimizeRun;
+use AA\Central\RemoteSource;
 use AA\Central\ResponderPolicy;
 use AA\Central\SourceFailed;
 use AA\Util\Txt;
@@ -25,6 +26,8 @@ use ItemContent;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 use Tests\Unit\Legacy\Fixtures\CentralConfDb;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
 use Tests\Unit\Legacy\Fixtures\StubbedActionapps;
@@ -496,6 +499,52 @@ final class ActionappsCredentialTest extends TestCase
 
         self::assertSame('', $aa->requestJwt('central', 'pw'));
         self::assertNotSame('', (string) $aa->getLastError());
+    }
+
+    public function test_authenticate_saves_the_token_of_the_row(): void
+    {
+        self::row('');
+        $token = self::tokenFor(24 * 3600);
+        $aa    = self::stubbed([new AA_Response($token)], ['id' => '12']);
+
+        self::assertNull($aa->authenticate('central', 'pw'));
+        self::assertSame(['central', 'pw'], [$aa->posted()['username'], $aa->posted()['password']]);
+        self::assertCount(1, CentralConfDb::updates());
+        self::assertSame($token, $aa->getAuthToken());
+    }
+
+    public function test_authenticate_refused_saves_nothing_and_says_why(): void
+    {
+        self::row('');
+        $aa = self::stubbed([new AA_Response('(nobody)', ResponderPolicy::ERR_NO_PERMISSION)], ['id' => '12']);
+
+        self::assertStringContainsString('wrong username or password', (string) $aa->authenticate('central', 'bad'));
+        self::assertSame([], CentralConfDb::updates());
+    }
+
+    public function test_authenticate_aTokenThatCannotBeKept_saysWhy(): void
+    {
+        self::row('');
+        $answer = serialize(new AA_Response(self::tokenFor(24 * 3600)));
+        $aa     = new class (self::content(['id' => '12']), $answer) extends Actionapps {
+            public function __construct(ItemContent $content, private string $answer)
+            {
+                parent::__construct($content);
+            }
+
+            protected static function aesGcmAvailable(): bool
+            {
+                return false;
+            }
+
+            protected function remote(int $timeout): RemoteSource
+            {
+                return new RemoteSource($this->getComunicatorUrl(), timeout: $timeout, transport: new MockHttpClient(new MockResponse($this->answer)));
+            }
+        };
+
+        self::assertStringContainsString('AES-GCM', (string) $aa->authenticate('central', 'pw'));
+        self::assertSame([], CentralConfDb::updates());
     }
 
     public function test_requestJwt_keeps_the_error_of_the_remote(): void

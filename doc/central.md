@@ -24,6 +24,8 @@ Columns and actions:
   older Central) is "not authenticated" and never sent - Get Token overwrites it. A row without a
   valid token answers nothing (the pages say why). The form
   sends no 2FA code, so a superadmin with two-factor login cannot get a row token this way.
+  The bulk action "Get Token - one login for the selected AAs" does the same for each selected row
+  with one username and password (AAs that share a superadmin account) and lists the result per AA.
 - **Apps** - "Install an app from this AA..." opens `installapp.php?aa=<row id>` (approved bin only).
   The link carries the row id, never a URL.
 - Bulk actions: Optimize (opens `optimize.php` with the selected AAs, below), link check, moving
