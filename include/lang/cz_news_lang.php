@@ -4433,6 +4433,9 @@ return [
 // admin/write_mail.php, row 214
 "The email is queued for %1 recipients. AA sends it in the background, so the first copies may take several minutes to arrive." => "E-mail je za\xF8azen do fronty, p\xF8\xEDjemc\xF9: %1. AA ho rozes\xEDl\xE1 na pozad\xED, tak\x9Ee prvn\xED kopie mohou dorazit a\x9E za n\xECkolik minut.", // ai 2026-11
 
+// admin/write_mail.php, row 231
+"You can close the window and log out; it does not stop the sending." => "Okno m\xF9\x9Eete zav\xF8\xEDt a odhl\xE1sit se, rozes\xEDl\xE1n\xED to nep\xF8eru\x9A\xED.", // ai 2026-11
+
 // admin/write_mail.php, row 215
 "The selected group has no recipients - nothing was sent." => "Vybran\xE1 skupina nem\xE1 \x9E\xE1dn\xE9 p\xF8\xEDjemce - nic nebylo odesl\xE1no.", // ai 2026-11
 

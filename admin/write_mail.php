@@ -228,7 +228,7 @@ if (!$send) {               // for the first time - directly from item manager
             $users_count = $zids->count();
             $queued      = ($users_count > 0);
             $Msg         = $queued
-                ? MsgOk(_m("The email is queued for %1 recipients. AA sends it in the background, so the first copies may take several minutes to arrive.", [$users_count]))
+                ? MsgOk(_m("The email is queued for %1 recipients. AA sends it in the background, so the first copies may take several minutes to arrive.", [$users_count]) . ' ' . _m("You can close the window and log out; it does not stop the sending."))
                 : MsgErr(_m("The selected group has no recipients - nothing was sent."));
         }
         $resend = false;    // a next send asks again
