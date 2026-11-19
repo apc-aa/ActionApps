@@ -12,8 +12,7 @@ env:
 
 jobs:
   check:
-    # the ISDS body tests pin libxml's limits; libxml of ubuntu-26.04 fails three of them
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     # a normal run takes ~8 min; a stuck one would otherwise hold for GitHub's 6 h default
     timeout-minutes: 20
     steps:

@@ -7,6 +7,7 @@ namespace Tests\Unit\Isds\Body;
 use AA\Isds\Body\HtmlBody;
 use AA\Isds\Body\PdfBody;
 use AA\Isds\Body\PdfTables;
+use AA\Util\Libxml;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Isds\Fixtures\PdfText;
@@ -141,6 +142,21 @@ final class PdfTablesTest extends TestCase
         self::assertSame([1], PdfTables::flow(self::doc('<table><tr></tr></table><p>a</p>'))[1], 'no cell, no frame');
     }
 
+    // HtmlBody reads the header and the body each whole, libxml 2.12 stops on some 10 MB of attributes of
+    // the two together; other versions read it. Either way nothing may go missing silently
+    public function test_flow_neverCutsSilently(): void
+    {
+        $title = '<p title="' . str_repeat('a', 6_000_000) . '">x</p>';
+        $doc   = (new HtmlBody())->document('Pozvánka', '<table><tr><td>a</td></tr></table>' . $title . '<p>konec</p>', true, $title, PdfBody::CSS);
+        try {
+            $flowed = PdfTables::flow($doc)[0];
+        } catch (\InvalidArgumentException $e) {
+            self::assertStringContainsString('cannot be laid out as a PDF whole', $e->getMessage());
+            return;
+        }
+        self::assertSame(1, substr_count($flowed, '<p>konec</p>'));
+    }
+
     // only the token of flow() is put back: a text that looks like one stays
     public function test_flow_imagesKept(): void
     {
@@ -151,13 +167,20 @@ final class PdfTablesTest extends TestCase
 
         [$flowed, $kept] = PdfTables::flow($doc);
 
+        // counts, not assertStringContains: a failure would diff the whole 1 MB document for many minutes
         foreach ($uris as $uri) {
             self::assertSame(1, substr_count($flowed, " src=\"$uri\""));
         }
         self::assertSame(3, substr_count($flowed, '<img'));
-        self::assertStringContainsString('src="data:,0"</td>', $flowed);
-        // libxml writes a value with " in apostrophes: a src of no token in it stays text
-        self::assertStringContainsString("alt='\" src=\"data:,1\"' title=' href=\"0\"'", $flowed);
+        self::assertSame(1, substr_count($flowed, 'src="data:,0"</td>'));
+        // libxml up to 2.13 writes a value with " in apostrophes, 2.14 with &quot;: either way a src of no
+        // token in it stays the text of alt
+        $img = Libxml::run(static function () use ($flowed): \DOMElement {
+            $dom = new \DOMDocument();
+            $dom->loadHTML($flowed);
+            return $dom->getElementsByTagName('img')->item(2) ?? throw new \LogicException('no third <img>');
+        });
+        self::assertSame(['" src="data:,1"', ' href="0"', $uris[2]], [$img->getAttribute('alt'), $img->getAttribute('title'), $img->getAttribute('src')]);
         self::assertSame([2], $kept);
     }
 

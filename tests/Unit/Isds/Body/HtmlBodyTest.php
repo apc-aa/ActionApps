@@ -438,23 +438,50 @@ final class HtmlBodyTest extends TestCase
         ];
     }
 
-    // made here, not in a data provider: PHPUnit keeps those for the whole run
-    public function test_document_refusesHugeTextNode(): void
+    // past 10 MB each libxml loses another part: 2.9-2.13 a text node, 2.12 pasted images, 2.15 an attribute
+    // value. Made here, not in a data provider: PHPUnit keeps those for the whole run
+    public function test_document_refusesOver10MB(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('cannot be read whole');
-        (new HtmlBody())->document('Pozvánka', '<p>' . str_repeat('a', 11_000_000) . '</p><p>po</p>');
+        $image   = static fn(int $bytes): string => '<p><img src="data:image/png;base64,' . str_repeat('A', $bytes) . '"></p>';
+        $letters = [
+            'text node'     => ['<p>' . str_repeat('a', 10_000_000) . '</p><p>po</p>', ''],
+            'pasted images' => ['<p>a</p>' . str_repeat($image(3_400_000), 3), ''],
+            'one attribute' => [$image(10_000_000) . '<p>po</p>', ''],
+            'header'        => ['<p>a</p>', $image(10_000_000)],
+        ];
+        foreach ($letters as $what => [$body, $header]) {
+            try {
+                (new HtmlBody())->document('Pozvánka', $body, true, $header);
+                self::fail("$what: read");
+            } catch (\InvalidArgumentException $e) {
+                self::assertStringContainsString('too large to process', $e->getMessage(), $what);
+            }
+        }
     }
 
-    // libxml 2.12 gives up on about 10 MB, mostly of pasted images; earlier versions read them
-    public function test_document_refusesWhatLibxmlCannotLookUp(): void
+    // the paragraph after a long one is there; a failure compares lengths - a diff of 10 MB takes many minutes
+    public function test_document_readsJustUnder10MB(): void
     {
-        if (LIBXML_VERSION < 21200) {
-            self::markTestSkipped('libxml ' . LIBXML_DOTTED_VERSION . ' has no such limit');
+        $body = self::body('<p>' . str_repeat('a', 9_999_800) . '</p><p>po</p>');
+        self::assertSame(9_999_800, substr_count($body, 'a'));
+        self::assertSame('</p><p>po</p>', substr($body, -13));
+        // libxml 2.15 cuts an attribute value of 10 MB with no error that tells it
+        $body = self::body('<p title="' . str_repeat('a', 9_999_800) . '">x</p><p>po</p>');
+        self::assertSame(9_999_800, substr_count($body, 'a'));
+        self::assertSame('</p><p>po</p>', substr($body, -13));
+    }
+
+    // libxml 2.14+ reads &nGt; (5 bytes) as 6: under MAX_PARSED, a value grows past its limit of 10 MB.
+    // Older versions read it whole; either way nothing of the letter may go missing silently
+    public function test_document_neverCutsSilently(): void
+    {
+        try {
+            $body = self::body('<p title="' . str_repeat('&nGt;', 1_700_000) . '">x</p><p>po</p>');
+        } catch (\InvalidArgumentException $e) {
+            self::assertStringContainsString('cannot be read whole', $e->getMessage());
+            return;
         }
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('too large to process - upload the images');
-        (new HtmlBody())->document('Pozvánka', '<p>a</p>' . str_repeat('<p><img src="data:image/png;base64,' . str_repeat('A', 3_600_000) . '"></p>', 3));
+        self::assertSame('</p><p>po</p>', substr($body, -13));
     }
 
     // libxml leaves out everything after </body> or </html>
