@@ -194,6 +194,25 @@ namespace Tests\Unit\Central {
             OptimizeRun::begin($task, $method, $aas, self::USER);
         }
 
+        /** @return array<string, array{string, string, string}> */
+        public static function methodsFor(): array
+        {
+            return [
+                'a test'                  => ['AA\Optimize\ChangeQte2Trm', 'test', 'test'],
+                'a repair'                => ['AA\Optimize\ChangeQte2Trm', 'repair', 'repair'],
+                'the whole sql_update'    => [OptimizeRun::SQL_UPDATE, 'repair', 'repair'],
+                'a repair of a test only' => ['AA\Optimize\CheckInstallRuns', 'repair', 'test'],
+            ];
+        }
+
+        #[DataProvider('methodsFor')]
+        public function test_methodFor_a_repair_of_a_test_only_is_its_test(string $task, string $method, string $runs): void
+        {
+            // several tasks chosen with Repair - begin() refuses a repair the task has not
+            $this->assertSame($runs, OptimizeRun::methodFor($task, $method));
+            $this->assertInstanceOf(OptimizeRun::class, OptimizeRun::begin($task, OptimizeRun::methodFor($task, $method), [1], self::USER));
+        }
+
         public function test_task_groups_put_the_recommended_and_the_repairs_first(): void
         {
             $groups = OptimizeRun::taskGroups();

@@ -29,7 +29,7 @@ final class RemoteHtmlTest extends TestCase
     {
         $out = RemoteHtml::sandboxed('Remote', '<p>report</p>');
 
-        $this->assertMatchesRegularExpression('/<iframe sandbox srcdoc="/', $out);
+        $this->assertMatchesRegularExpression('/^<iframe sandbox class="aa-remote-html" srcdoc="/', $out);
         $this->assertStringNotContainsString('allow-', $out);
     }
 
@@ -37,16 +37,16 @@ final class RemoteHtmlTest extends TestCase
     {
         $out = RemoteHtml::sandboxed('Remote', '<img src="https://tracker.example/x.png">');
 
-        $this->assertStringContainsString('srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &apos;none&apos;; style-src &apos;unsafe-inline&apos;; img-src data:&quot;&gt;&lt;img', $out);
+        $this->assertStringContainsString('srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &apos;none&apos;; style-src &apos;unsafe-inline&apos;; img-src data:&quot;&gt;&lt;style&gt;', $out);
+        $this->assertStringEndsWith('&lt;/style&gt;&lt;img src=&quot;https://tracker.example/x.png&quot;&gt;" title="Remote"></iframe>', $out, 'the remote HTML after the own style - its CSS may override it');
     }
 
-    public function test_sandboxed_escapes_title_in_heading_and_attribute(): void
+    public function test_sandboxed_escapes_title_in_attribute(): void
     {
         $out = RemoteHtml::sandboxed('Org "<i>" (https://x/)', '<p>r</p>');
 
         $this->assertStringNotContainsString('<i>', $out);
         $this->assertStringContainsString('title="Org &quot;&lt;i&gt;&quot; (https://x/)"', $out);
-        $this->assertStringContainsString('<h3>Org &quot;&lt;i&gt;&quot; (https://x/)</h3>', $out);
     }
 
     /** @return array<string, array{string}> */
@@ -61,7 +61,7 @@ final class RemoteHtmlTest extends TestCase
         $out = RemoteHtml::sandboxed('<Remote>', $html);
 
         $this->assertStringNotContainsString('<iframe', $out);
-        $this->assertSame('<h3>&lt;Remote&gt;</h3><p>(no output)</p>', $out);
+        $this->assertSame('<p>(no output)</p>', $out);
     }
 
     /** @return array<string, array{string}> */

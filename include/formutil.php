@@ -2783,7 +2783,7 @@ function FrmSelectEasy($name, $arr, $selected="", array $add=[]): void
 /** getFrmSelectEasy function
  * @param        $name
  * @param        $arr
- * @param string $selected
+ * @param string|list<string> $selected the chosen value; a list of them for <select multiple>
  * @param array  $add
  * @param bool   $showempty - display select even if is empty (for two boxes of user admin... )
  * @return string
@@ -2797,17 +2797,18 @@ function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=
     if (is_array($add)) {
         $add = htmlattr($add);
     }
-    $retval       = "\n<select name=\"$name\" $add>";
-    $selectedused = false;
+    $retval = "\n<select name=\"$name\" $add>";
+    $chosen = array_unique(array_map('strval', is_array($selected) ? $selected : [$selected]));
+    $used   = [];
     foreach ((array)$arr as $k => $v) {
         if (str_starts_with($k, 'AA_OPTGROUP')) {  // begins with AA_OPTGROUP
             $retval .= "\n<optgroup label=\"".safe($v).'">';
             continue;
         }
         $retval .= "\n <option value=\"". safe($k)."\"";
-        if ((string)$selected === (string)$k) {
+        if (in_array((string)$k, $chosen, true)) {
             $retval .= ' selected class="sel_on"';
-            $selectedused = true;
+            $used[]  = (string)$k;
         }
         $title = '';
         $val = is_array($v) ? $v['name'] : $v;
@@ -2822,8 +2823,10 @@ function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=
     }
 
     // now add all values, which is not in the array, but field has this value
-    if ($selected && !$selectedused) {
-        $retval .= "\n <option value=\"". safe($selected) ."\" selected class=\"sel_missing\">".safe($selected);
+    foreach (array_diff($chosen, $used) as $missing) {
+        if ($missing) {
+            $retval .= "\n <option value=\"". safe($missing) ."\" selected class=\"sel_missing\">".safe($missing);
+        }
     }
 
     $retval .= "</select>\n";

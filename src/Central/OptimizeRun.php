@@ -57,8 +57,8 @@ final class OptimizeRun extends CentralRun
     /** what the form of central/optimize.php sends with its token */
     public const FORM_TOKEN = 'central-optimize';
 
-    /** finished runs kept for their results */
-    private const KEEP = 20;
+    /** finished runs kept for their results - also the most runs one start makes */
+    public const KEEP = 20;
     /** AAs one run asks at most */
     private const MAX_AAS = 100;
     /** a request after the first of a step only with this much of the step left - less is no fair chance
@@ -166,6 +166,14 @@ final class OptimizeRun extends CentralRun
             }
         }
         return $groups;
+    }
+
+    /** The method $task runs when $method is chosen for several tasks: Repair of a task that has no
+     *  repair runs its test.
+     *  @param string $task a task of tasks() */
+    public static function methodFor(string $task, string $method): string
+    {
+        return (($method === 'repair') && ($task !== self::SQL_UPDATE) && !in_array('repair', $task::actions(), true)) ? 'test' : $method;
     }
 
     /** the name of a task as tasks() gives it - without reading all the classes */

@@ -39,7 +39,11 @@ redirects (below).
 ## Optimize on several AAs
 
 `optimize.php` (the bulk action "Optimize - run a test or repair..." or the menu), superadmin only:
-one task on chosen AAs of the approved bin. The task is the whole sql_update of each AA's own version
+chosen tasks on chosen AAs of the approved bin, a run for each task - the runs go on side by side in
+the task queue, in no set order (a box in the head of the list checks all the AAs, Shift+click a
+range). At most 20 tasks a start (`OptimizeRun::KEEP` - only the last 20 runs keep their results).
+Repair of a task that has no repair runs its test. A finished Test run with problems offers "Repair the
+AAs with a problem (N)" - the same task as Repair on those AAs. A task is the whole sql_update of each AA's own version
 (`Do_Optimize_Type`) or any `AA\Optimize\*` class with a name and a test (`Do_Optimize`) - Trim text
 fields, f_t to f__, the hit duration log, … The list comes from this AA's classes; an AA without the
 class says so. It is grouped by `types()` and whether the class has a repair, the recommended first:
