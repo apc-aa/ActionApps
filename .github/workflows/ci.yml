@@ -13,6 +13,8 @@ env:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # a normal run takes ~8 min; a stuck one would otherwise hold for GitHub's 6 h default
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
