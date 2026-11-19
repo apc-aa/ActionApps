@@ -77,6 +77,12 @@ final class Settings extends AA_Object
         return $current;
     }
 
+    /** @inheritDoc */
+    protected function ownsItsId(): bool
+    {
+        return $this->getId() === self::id();
+    }
+
     /** one object per install; derived from AA_ID so it cannot meet a random object id */
     private static function id(): string
     {

@@ -127,6 +127,19 @@ final class UiPrefsTest extends TestCase
         $this->assertSame('en-utf8_news_lang.php', UiPrefs::langOverrideFile('en-utf8_news_lang.php'));
     }
 
+    /** JSON is always UTF-8: a module on a single-byte file is read in the UTF-8 file of its language */
+    public function testUtf8LangFileSwapsALegacyFileForItsUtf8Twin(): void
+    {
+        $this->assertSame('cz-utf8_news_lang.php', UiPrefs::utf8LangFile('cz_news_lang.php'));
+        $this->assertSame('en-utf8_site_lang.php', UiPrefs::utf8LangFile('en_site_lang.php'));
+    }
+
+    public function testUtf8LangFileKeepsUtf8Files(): void
+    {
+        $this->assertSame('cz-utf8_news_lang.php', UiPrefs::utf8LangFile('cz-utf8_news_lang.php'));
+        $this->assertSame('vn_news_lang.php', UiPrefs::utf8LangFile('vn_news_lang.php'));
+    }
+
     /* ---- form token ----------------------------------------------------- */
 
     public function testFormTokenIsStableForTheSameSession(): void

@@ -30,12 +30,17 @@
  *
 */
 
+use AA\Central\ResponderPolicy;
+use AA\Managed;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
+
+const SETS_TOKEN = 'aa-sets';
 
 try {
     // array ( )
@@ -51,6 +56,7 @@ try {
     // array ( ' Změnit [^…' => 23, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -71,6 +77,13 @@ $err = [];          // error array (Init - just for initializing variable
 
 if ($update) {
     do {
+        // a set may grant its readers rights on slices - no write from a link or a page of another site
+        if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(SETS_TOKEN, $token, $_SERVER)) {
+            $err['token'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+            break;
+        }
+        // the posted ids may name any object - only the sets of this slice are written over
+        $own = AA_Object::querySet('AA_Set', new AA_Set([AA::$module_id]))->longids();
         for ($k = 1; $k <= $_POST['setcount']; $k++) {
             $name  = $_POST['name'][$k];
             $sli   = $_POST['sli'][$k];
@@ -85,6 +98,14 @@ if ($update) {
             ValidateInput("objid$k", _m("Object ID %1", [$k]), $objid, $err, false, "text");
 
             if (count($err)) {
+                break;
+            }
+            if ((($objid ?? '') !== '') && !in_array($objid, $own, true)) {
+                // State Check lists it with the refused object forms
+                $objid  = is_string($objid) ? $objid : '';
+                $stored = AA_Object::storedIdentity($objid);
+                Managed::logRefusal((string) AA::$module_id, $objid, 'AA_Set', $stored['aa_type'], $stored['aa_owner']);
+                $err["objid$k"] = MsgErr(_m('Set %1 is not a set of this slice', [$k]));
                 break;
             }
 
@@ -141,6 +162,7 @@ FrmTextarea("sli[$k]", _m("Slices %1", [$k]), '', 2, 60, false, _m('possibly das
 FrmTextarea("cond[$k]", _m("Conditions %1", [$k]), '', 4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
 FrmInputText("sort[$k]", _m("Sort %1", [$k]), '', 500, 60, false, _m('Use "headline........,publish_date....-" or "sort[]" conditions'));
 FrmHidden("setcount", $k);
+echo FormToken::field(SETS_TOKEN);
 
 
 FrmTabEnd($form_buttons);

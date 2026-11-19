@@ -25,7 +25,7 @@ use RuntimeException;
  *  As MySQL: a column the INSERT leaves out gets its default (include/metabase_schema.php), AUTO_INCREMENT
  *  columns numbers from $next (per table; default 1); PRIMARY and UNIQUE indexes hold (a duplicate fails);
  *  conditions compare binary columns byte for byte, the others case-insensitively without trailing spaces
- *  (the usual *_ci collations, PAD SPACE). $sent keeps each INSERT as the statement had it. A transaction
+ *  (the usual *_ci collations, PAD SPACE); an UPDATE affects only the rows it changes. $sent keeps each INSERT as the statement had it. A transaction
  *  snapshots the tables and a rollback restores them (InnoDB); $transactions = false makes
  *  beginTransaction() fail, $commitFails commit(). $fail decides which statement fails: with halting (query()) it throws, with
  *  query_halt(.., 'no') it returns false - as DB_PDO. The real handle pool of
@@ -262,11 +262,13 @@ final class TableDb extends DB_PDO
         $kept = [];
         foreach (self::$tables[$table] ?? [] as $row) {
             if (self::matches($table, $row, $where)) {
-                ++$this->affected;
                 if ($change === null) {
+                    ++$this->affected;
                     continue;
                 }
-                $row = $change($row);
+                $new             = $change($row);
+                $this->affected += (array_map('strval', $new) != array_map('strval', $row)) ? 1 : 0;    // MySQL counts changed rows, not matched ones
+                $row             = $new;
             }
             $kept[] = $row;
         }

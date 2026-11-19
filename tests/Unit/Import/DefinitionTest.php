@@ -332,7 +332,8 @@ final class DefinitionTest extends TestCase
 
         self::assertSame($id, $def->save());
 
-        $reads = array_values(array_filter(TableDb::$log, static fn(string $s): bool => str_starts_with($s, 'SELECT') && str_contains($s, "property, value FROM `object_text`")));
+        // AA_Object::update() checks the stored class once more - not a read the definition decides by
+        $reads = array_values(array_filter(TableDb::$log, static fn(string $s): bool => str_starts_with($s, 'SELECT') && str_contains($s, "property, value FROM `object_text`") && !str_contains($s, "property IN ('aa_type','aa_owner')")));
         self::assertCount(1, $reads, 'one read decides');
         self::assertStringEndsWith(' FOR UPDATE', $reads[0]);
         self::assertStringContainsString($id, $reads[0]);

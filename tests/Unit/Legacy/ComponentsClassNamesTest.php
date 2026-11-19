@@ -45,13 +45,13 @@ namespace Tests\Unit\Legacy {
             self::assertSame('AA\\IO\\Grabber\\CSV', $classes['csv'] ?? null);
         }
 
-        public function test_getClassNames_missingDirectory_returnsEmptyArrayWithoutForeachWarning(): void
+        public function test_getClassNames_missingDirectory_returnsEmptyArrayWithoutWarning(): void
         {
             $warnings = [];
             set_error_handler(static function (int $no, string $str) use (&$warnings): bool {
                 $warnings[] = $str;
                 return true;
-            });
+            }, E_WARNING);   // the foreach(false) was a warning; a deprecation in an unrelated helper must not fail this test
             try {
                 $classes = AA_Components::getClassNames('AA\\NoSuchDir\\Nothing\\');
             } finally {
@@ -59,7 +59,7 @@ namespace Tests\Unit\Legacy {
             }
 
             self::assertSame([], $classes);
-            self::assertSame([], array_values(array_filter($warnings, static fn(string $w): bool => str_contains($w, 'foreach'))));
+            self::assertSame([], $warnings);
         }
     }
 }

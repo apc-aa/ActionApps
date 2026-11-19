@@ -94,5 +94,64 @@ namespace Tests\Unit\Legacy {
         {
             self::assertSame($expected, AA_Module::getFallbackModuleId($modules, $type));
         }
+
+        /** @return array<string, array{string, string, bool}> */
+        public static function refusals(): array
+        {
+            $own = 'modules/site/index.php';
+            return [
+                'a generic page: to the module page' => ['admin/se_tasks.php', '/aa/admin/se_tasks.php', false],
+                'the module page itself'             => [$own, "/aa/$own", true],
+                'a page that could not be named'     => ['', '/aa/admin/se_tasks.php', true],
+                // an auto_prepend_file inside the AA tree is resolved first - the server still runs the module page
+                'a prepend in the tree, module page' => ['waf-prepend.php', "/aa/$own", true],
+                'a prepend in the tree, other page'  => ['waf-prepend.php', '/aa/admin/se_tasks.php', false],
+                'a look-alike address'               => ['admin/se_tasks.php', '/aa/xmodules/site/index.php', false],
+            ];
+        }
+
+        /**
+         * A refused page goes to the module's own page - unless it is that page, as resolved or as
+         * the server runs it: sent there, it would be refused again, in a circle. Both answers
+         * refuse, so a wrong SCRIPT_NAME opens nothing.
+         */
+        #[DataProvider('refusals')]
+        public function testRefuseInPlace_whenTheRedirectWouldComeBack(string $script, string $script_name, bool $expected): void
+        {
+            self::assertSame($expected, AA_Module::refuseInPlace($script, $script_name, 'modules/site/index.php'));
+        }
+
+        /**
+         * The page init_page.php runs for is the first included file inside the AA tree, not the
+         * first included file: under php-cgi an auto_prepend_file comes before the page, and a
+         * page taken for "somewhere else" has no module type - a site page opened with no module
+         * chosen would run on the first slice rather than on a site module.
+         */
+        public function testPageScript_isTheFirstIncludedFileInsideTheAaTree(): void
+        {
+            $base  = sys_get_temp_dir() . '/aa-pagescript-' . getmypid();
+            $root  = $base . '/aa';
+            $files = ['prepend.php', 'aa-other/admin/x.php', 'aa/admin/se_users.php', 'aa/include/init_page.php'];
+            foreach ($files as $file) {
+                @mkdir(dirname("$base/$file"), 0777, true);
+                touch("$base/$file");
+            }
+            @symlink($root, "$base/link");
+            $root = (string) realpath($root);   // what init_page.php passes: dirname(__DIR__), symlinks resolved
+            try {
+                $included = ["$base/prepend.php", "$base/aa-other/admin/x.php", "$base/aa/admin/se_users.php", "$base/aa/include/init_page.php"];
+                self::assertSame('admin/se_users.php', AA_Module::pageScript($included, $root), 'a prepend and a look-alike directory are not the page');
+                self::assertSame('admin/se_users.php', AA_Module::pageScript(["$base/link/admin/se_users.php"], $root), 'a path through a symlink is the same page');
+                self::assertSame('', AA_Module::pageScript(["$base/prepend.php", "$base/missing.php"], $root), 'nothing inside AA - no page to name');
+            } finally {
+                @unlink("$base/link");
+                foreach ($files as $file) {
+                    @unlink("$base/$file");
+                }
+                foreach (['aa-other/admin', 'aa-other', 'aa/admin', 'aa/include', 'aa', ''] as $dir) {
+                    @rmdir("$base/$dir");
+                }
+            }
+        }
     }
 }
