@@ -109,7 +109,6 @@ $apage->addRequire('aa-jslib');   // just for MarkedActionSelect() in manager.mi
 $apage->addRequire(get_aa_url('javascript/manager.min.js', ['v'=>AA_JS_VERSION] ));
 //$apage->addRequire(get_aa_url('/javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false ));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
-$apage->printHead($err, $Msg);
 
 
 $actions   = new Manageractions;
@@ -165,7 +164,9 @@ $manager->setRestrictionConds([
     new AA_Condition('slice_id', '==', pack_id(AA::$module_id)),
 ]);
 
+// before any output: it answers the settings of an action alone
 $manager->performActions();
+$apage->printHead($err, $Msg);
 
 $aa_set  = $manager->getSet();
 
