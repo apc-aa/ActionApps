@@ -691,6 +691,10 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties, co
                         case "Escape": el.querySelector('input.cancel-button')?.click(); break;
                         case "Enter":  el.querySelector('input.save-button')?.click(); break;
                         case "Tab":
+                            // Vivaldi passes its Ctrl+Tab tab switching to the page too
+                            if (event.ctrlKey || event.altKey || event.metaKey) {
+                                break;
+                            }
                             const current = event.target.closest('div.ajax_container');
                             if (current) {
                                 const containers = [...document.querySelectorAll('div.ajax_container')];
