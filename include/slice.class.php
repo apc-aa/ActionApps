@@ -1438,7 +1438,7 @@ class AA_Module_Site extends AA_Module
     {
         // get translation table name -> id within all slices of curent sitemodule. Must be ordered by id, in order we return the same id even if the same view name is used
         $views = AA::Contentcache()->get_result(['AA\IO\DB\DB_AA','select'], [['field3' => 'id'], 'SELECT id, field3 FROM view', [['slice_id', self::getRelatedModules([$module_id]), 'l'], ['field3', '', 'FILLED']], 'id']);
-        return (int) $views[$vid] ?: 0;
+        return (int) ($views[$vid] ?? 0);
     }
 
     /** AA_Module_Site::_deleteModules() function - called automatically form AA_Module::deleteModules()

@@ -266,6 +266,8 @@ if (!$slice_info || $slice_info['deleted'] > 0) {
 if ($slice_info['d_listlen'] == 0) {
     ExitPage(_m("slice.php output forbidden for this slice"));
 }
+// the module of the page: {view:<name>} in the slice templates finds the views of this slice by name
+AA::$slice_id = strtolower($slice_id);
 
 // Use right language (from slice settings) - languages are used for scroller (Next, ...)
 mgettext_bind($slice->getLang(), 'output');
@@ -278,8 +280,8 @@ if (!$slice_info['even_odd_differ']) {
 // see fview and iview url parameters for this file (slice.php)
 if ($fview || $iview) {
     if ($fview) {                       // use formating from view for fulltext
-        $fview_info = AA_Views::getViewNumeric($fview);
-        if ($fview_info->f('deleted') < 1) {
+        $fview_info = is_scalar($fview) ? AA_Views::getView($fview, $slice_id) : null;
+        if ($fview_info && ($fview_info->f('deleted') < 1)) {
             $slice_info['fulltext_format']        = $fview_info->f('odd');
             $slice_info['fulltext_format_top']    = $fview_info->f('before');
             $slice_info['fulltext_format_bottom'] = $fview_info->f('after');
@@ -287,8 +289,8 @@ if ($fview || $iview) {
         }
     }
     if ($iview) {                       // use formating from view for index
-        $iview_info = AA_Views::getViewNumeric($iview);
-        if ($iview_info->f('deleted') < 1) {
+        $iview_info = is_scalar($iview) ? AA_Views::getView($iview, $slice_id) : null;
+        if ($iview_info && ($iview_info->f('deleted') < 1)) {
             $slice_info['group_by']        = $iview_info->f('group_by1');
             $slice_info['gb_direction']    = AA_View::VIEW_SORT_DIRECTIONS[$iview_info->f('g1_direction')];  // views uses different sort codes (historical reasons)
             $slice_info['category_format'] = $iview_info->f('group_title');
@@ -379,6 +381,9 @@ if ($sh_itm || $x || $o || $seo) {
 
     // show discussion if assigned
     $discussion_vid = ($dview ?? $slice_info['vid']);
+    if (is_string($discussion_vid) && preg_match('/[^\s\d]/', $discussion_vid)) {   // a view name
+        $discussion_vid = AA_Views::getView($discussion_vid, $slice_id)?->getId() ?? 0;
+    }
     // you can set dview=0 to not show discussion
     if ($discussion_vid > 0) {
         if ($row = DB_AA::select1([], 'SELECT view.*, slice.flag FROM view, slice', [['slice.id', $slice_id, 'l'], ['view.id', (int) $discussion_vid, 'i']])) {

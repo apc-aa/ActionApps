@@ -257,7 +257,7 @@ final class ViewBannerParamTest extends TestCase
         $this->fakeView(9017, 'list', self::LOCKED, '1');     // deleted slice - renders nothing
         $this->fakeView(9018, 'list', self::OPEN);
         $context = [AA::$site_id, AA::$module_id, AA::$slice_id];
-        AA::$site_id = AA::$module_id = AA::$slice_id = null;  // slice.php: a row's view sets AA::$slice_id only later
+        AA::$site_id = AA::$module_id = AA::$slice_id = null;  // view.php: its first view sets AA::$slice_id only later
 
         try {
             $banners = AA_View::parseBannerParam(['0-009015', '1-9016', '2-9017', '3-9018-norandom', '4-news_box'], true)['banners'];

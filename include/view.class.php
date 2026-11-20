@@ -671,23 +671,31 @@ class AA_Views
     }
 
     /** Main factory static method - allows numeric and named views. Do not create view for non existing/accessible views
+     *  A name is unique only within a slice, or within the slices of a site, so it is looked up in $module_id,
+     *  else in the module of the request (the site, the admin module, the slice of the outer view).
      * @param int|string $vid
+     * @param string     $module_id the slice or site to look a view name up in
      * @return AA_View|null
      */
-    public static function getView($vid): ?AA_View
+    public static function getView($vid, string $module_id = ''): ?AA_View
     {
-        if (ctype_digit((string) $vid)) {
+        if (ctype_digit($vid = trim((string) $vid))) {
             $vid = (int) $vid;
-        } elseif (AA::$site_id) {
+        } elseif ($vid === '') {
+            return null;
+        } elseif (($module_id === '') && AA::$site_id) {
             $vid = AA_Module_Site::findViewId($vid, AA::$site_id);
-        } elseif (is_long_id($m = AA::$module_id ?: AA::$slice_id) && strlen($vid)) {  // for planned tasks, for example
+        } elseif (is_long_id($m = $module_id ?: AA::$module_id ?: AA::$slice_id)) {  // for planned tasks, for example
             if (AA_Module::getModuleType($m) === 'W') {
                 $vid = AA_Module_Site::findViewId($vid, $m);
             } else {
-                $vid = DB_AA::select1('id', 'SELECT id FROM view', [['slice_id', $m, 'l'], ['field3', $vid]]);
+                $vid = AA::Contentcache()->get_result(['AA\IO\DB\DB_AA', 'select1'], ['id', 'SELECT id FROM view', [['slice_id', $m, 'l'], ['field3', $vid]]]);
             }
         } else {
             return null;
+        }
+        if (!$vid) {
+            return null;   // no such name - view 0 would be asked for again on every call
         }
 
         $view = self::singleton()->_getView((int) $vid);

@@ -102,7 +102,7 @@ class inputform {
     private string $cancel_url;
     private array $messages;
 
-    private int $template; // if you want to display alternate form design, template holds view_id of such template view type 'inputform'
+    private string $template; // if you want to display alternate form design, template holds the id or the name of such template view type 'inputform'
     private string $formheading;     // add extra form heading here (default none, used by MLX)
     private array $hidden;          //
     private bool $show_conditions;         // display conditions apply - only the admin item form, which also applies them on save
@@ -129,7 +129,7 @@ class inputform {
         $this->show_preview_button  = (bool)$settings['show_preview_button'];
         $this->cancel_url           = (string)$settings['cancel_url'];
         $this->messages             = (array)$settings['messages'];
-        $this->template             = (int)$settings['template'];  // most probably it is int
+        $this->template             = is_scalar($settings['template'] ?? null) ? trim((string) $settings['template']) : '';
         $this->formheading          = (string)$settings['formheading']; //aded for MLX
         $this->hidden               = (array)$settings['hidden'];      // array of hidden fields to be added to the form
         $this->show_conditions      = (bool) ($settings['show_conditions'] ?? false);
@@ -166,6 +166,10 @@ class inputform {
     {
         $slice_id = $slice->getId();
         $profile  = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
+        $template = ($this->template !== '') ? AA_Views::getView($this->template, $slice_id) : null;
+        if (!$template) {
+            $this->template = '';   // a name of no view of the slice - the default form, static conditions included
+        }
 
         if ($this->show_conditions && !$slice_fields) {
             $this->showConditions($content4id, $slice, (bool) $edit, $profile);
@@ -177,10 +181,10 @@ class inputform {
         $remove_string = '';
 
         // design of form could be customized by view
-        if ( $this->template && ($view = AA_Views::getViewNumeric($this->template))) {
+        if ($template) {
             // we can use different forms for 'EDIT' and 'ADD' item => (even/odd)
-            $form          = ($edit && $view->f('even_odd_differ')) ? $view->f('even') : $view->f('odd');
-            $remove_string = $view->f('remove_string');
+            $form          = ($edit && $template->f('even_odd_differ')) ? $template->f('even') : $template->f('odd');
+            $remove_string = $template->f('remove_string');
         }
 
         // Profile rules "UI - inputform - hide": menu_top / menu_left hide the admin top bar
