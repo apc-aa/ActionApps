@@ -290,45 +290,70 @@ namespace Tests\Unit\Central {
             }
         }
 
-        public function test_each_aa_shows_its_result_once_it_is_done(): void
+        public function test_work_records_each_aa_once_it_is_done(): void
         {
             $id   = '';
             $seen = [];
             $this->remote([1 => [self::ok()], 2 => [self::err()]]);
             $real = (new \ReflectionProperty(OptimizeRun::class, 'testRemote'))->getValue();
             OptimizeRun::setTestRemote(static function (int $aa, string $task, string $method, int $timeout) use ($real, &$id, &$seen): ?AA_Response {
-                $seen[$aa] = array_keys(OptimizeRun::get($id)->results());
+                $run       = OptimizeRun::get($id);
+                $seen[$aa] = [array_keys($run->results()), $run->done(), $run->asking(OptimizeRun::clock())];
                 return $real($aa, $task, $method, $timeout);
             });
             $id = OptimizeRun::begin(OptimizeRun::SQL_UPDATE, 'test', [1, 2], self::USER)->getId();
 
             $this->assertSame(OptimizeRun::DONE, self::runQueued($id), 'both AAs in one step');
 
-            $this->assertSame([1 => [], 2 => [1]], $seen, 'the first AA stored before the second is asked');
+            $this->assertSame([1 => [[], 0, 1], 2 => [[1], 1, 2]], $seen, 'the first AA stored, counted done and no more asked before the second is asked');
             $this->assertSame([1 => OptimizeRun::OK, 2 => OptimizeRun::PROBLEM], self::statuses($id));
+            $this->assertNull(OptimizeRun::get($id)->asking(OptimizeRun::clock()), 'no step works');
         }
 
-        public function test_the_page_runs_the_steps_one_right_after_another(): void
+        public function test_work_goes_on_after_an_aa_whose_result_is_stored_already(): void
+        {
+            // the test after the repair passes in a step of its own: the result is the stored one, unchanged
+            $this->remote([1 => [self::err(), self::ok('<p>repaired</p>'), self::SPENT, self::ok()], 2 => [self::ok()]]);
+            $id = OptimizeRun::begin(self::CLASS_, 'repair', [1, 2], self::USER)->getId();
+            self::runQueued($id);
+            $this->assertSame(['i' => 0, 'next' => 'check'], OptimizeRun::get($id)->position());
+
+            $this->assertSame(OptimizeRun::DONE, self::runQueued($id), 'the next AA in the same step');
+
+            $this->assertSame([1 => OptimizeRun::REPAIRED, 2 => OptimizeRun::OK], self::statuses($id));
+        }
+
+        public function test_asking_is_the_aa_at_the_position_while_it_waits_for_the_test_after_its_repair(): void
+        {
+            $this->remote([1 => [self::err(), self::ok('<p>repaired</p>'), self::SPENT]]);
+            $id = OptimizeRun::begin(self::CLASS_, 'repair', [1, 2], self::USER)->getId();
+            self::runQueued($id);
+            $run = OptimizeRun::get($id);
+            $this->assertNull($run->asking(OptimizeRun::clock()), 'no step works');
+
+            (new \ReflectionProperty($run, 'lease_tok'))->setValue($run, 'working');
+            (new \ReflectionProperty($run, 'lease'))->setValue($run, (string) (OptimizeRun::clock() + 60));
+
+            $this->assertSame(1, $run->asking(OptimizeRun::clock()), 'it has its result already, yet the test after the repair is asked');
+        }
+
+        public function test_pageLook_runs_the_steps_one_right_after_another(): void
         {
             $this->remote([1 => [self::late(), self::ok()], 2 => [self::ok()]]);
             $id = OptimizeRun::begin(OptimizeRun::SQL_UPDATE, 'test', [1, 2], self::USER)->getId();
 
-            $this->assertTrue(OptimizeRun::stepNow($id, self::USER));
-            $this->assertSame(OptimizeRun::RUNNING, OptimizeRun::get($id)->state(), 'the first AA did not answer');
-            $wait = OptimizeRun::get($id)->nextLookIn(OptimizeRun::clock());
-            $this->assertGreaterThanOrEqual(59, $wait, 'it is asked again only after its wait');
-            $this->assertFalse(OptimizeRun::stepNow($id, self::USER), 'not before');
+            $this->assertSame(OptimizeRun::LOOK_AGAIN, OptimizeRun::pageLook([$id], self::USER), 'the first AA did not answer - asked again after its wait');
+            $this->assertSame([1], array_column($this->asked, 0));
+            OptimizeRun::pageLook([$id], self::USER);
+            $this->assertSame([1], array_column($this->asked, 0), 'not before');
 
             foreach (TableDb::$tables['toexecute'] as $n => $row) {
                 TableDb::$tables['toexecute'][$n]['execute_after'] = OptimizeRun::clock();
             }
-            $this->assertTrue(OptimizeRun::stepNow($id, self::USER));
+            $this->assertNull(OptimizeRun::pageLook([$id], self::USER), 'finished');
 
-            $this->assertSame(OptimizeRun::DONE, OptimizeRun::get($id)->state());
             $this->assertSame([1 => OptimizeRun::OK, 2 => OptimizeRun::OK], self::statuses($id));
             $this->assertSame([1, 1, 2], array_column($this->asked, 0));
-            $this->assertNull(OptimizeRun::get($id)->nextLookIn(OptimizeRun::clock()));
-            $this->assertFalse(OptimizeRun::stepNow($id, self::USER));
         }
 
         // ---------------------------------------------------------------- repair

@@ -291,8 +291,10 @@ final class OptimizeRun extends CentralRun
             if ($next === null) {
                 $i++;
                 $next = '';
-                // the page shows each AA once it is done, not only at the end of the step
-                if ($this->recordResult(static fn(self $run): bool => $run->mergeResults([$aa => $results[$aa]])) !== true) {
+                // the page shows each AA once it is done, not only at the end of the step; null = Continue or
+                // another step took the run, false = it was ended
+                $done = [$aa => $results[$aa]];
+                if ((($stored[$aa] ?? null) !== $results[$aa]) && ($this->recordResult(static fn(self $run): bool => $run->mergeResults($done)) !== true)) {
                     break;
                 }
             }
@@ -365,18 +367,18 @@ final class OptimizeRun extends CentralRun
     protected function commitStep(BatchStepResult $r): void
     {
         $new = $r->extra['results'] ?? [];
-        if ($new) {
-            $this->mergeResults($new);
+        if ($new && $this->mergeResults($new)) {
             $this->update(['results']);
         }
     }
 
     /** @param array<int, array{s: string, m: string, r: string, c: string}> $new results of AAs, over the stored ones
-     *  @return true for recordResult() */
+     *  @return bool true = changed, as recordResult() wants it */
     private function mergeResults(array $new): bool
     {
+        $old           = (string) $this->results;
         $this->results = json_encode(array_replace($this->results(), $new), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        return true;
+        return $this->results !== $old;
     }
 
     /** @return array{kind: string, text: string} kind OK, PROBLEM, REFUSED, AA_BUSY or AA_NO_ANSWER
@@ -445,10 +447,38 @@ final class OptimizeRun extends CentralRun
         return (int) $this->started;
     }
 
-    /** the AAs done - an AA tested after its repair has its result already, yet is not done */
+    /** the AAs done: those before the position, and those from it on a step running now has finished -
+     *  but not the AA at the position that waits for its repair or the test after it, though it has a result */
     public function done(): int
     {
-        return min((int) ($this->position()['i'] ?? 0), count($this->aas()));
+        $i    = min((int) ($this->position()['i'] ?? 0), count($this->aas()));
+        $from = ((string) ($this->position()['next'] ?? '') === '') ? $i : $i + 1;
+        return $i + count(array_intersect_key($this->results(), array_flip(array_slice($this->aas(), $from))));
+    }
+
+    /** The AA a step asks right now, null while no step works. A step records each AA once it is done, so
+     *  it is the first AA from the position on without a result - or the AA at the position, waiting for
+     *  its repair or the test after it, until an AA after it is done. */
+    public function asking(int $now): ?int
+    {
+        if (!$this->hasLiveLease($now)) {
+            return null;
+        }
+        $results = $this->results();
+        $i       = (int) ($this->position()['i'] ?? 0);
+        $rest    = array_slice($this->aas(), $i);
+        foreach ($rest as $n => $aa) {
+            if (($n === 0) && (($this->position()['next'] ?? '') !== '')) {
+                if (!array_intersect_key($results, array_flip(array_slice($rest, 1)))) {
+                    return $aa;
+                }
+                continue;
+            }
+            if (!isset($results[$aa])) {
+                return $aa;
+            }
+        }
+        return null;
     }
 
     /** the AA asked now and what it is asked ('' the test, 'repair', 'check'); null when none is
