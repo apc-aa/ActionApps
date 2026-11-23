@@ -44,7 +44,7 @@ class ScriptedBatchRun extends BatchRun
     /** @var array<int, int> failures => seconds; a missing count = the core's own */
     public static array $retryDelays = [];
     /** @var array<string, mixed> hook => value that replaces the core's own, or a Throwable it throws
-     *                           (overrun, minStepSeconds, stepPriority, budgetLimits, sealPurpose, transactionalTables) */
+     *                           (overrun, minStepSeconds, stepsFromPage, stepPriority, budgetLimits, sealPurpose, transactionalTables) */
     public static array $hookValues = [];
     /** @var list<int> the times expireExtra() was called with - kept out of $calls, start() calls it */
     public static array $expiredAt = [];
@@ -209,6 +209,11 @@ class ScriptedBatchRun extends BatchRun
     protected function minStepSeconds(): int
     {
         return self::hookValue('minStepSeconds') ?? parent::minStepSeconds();
+    }
+
+    protected function stepsFromPage(): bool
+    {
+        return self::hookValue('stepsFromPage') ?? parent::stepsFromPage();
     }
 
     protected function stepPriority(): int

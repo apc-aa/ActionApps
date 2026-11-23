@@ -290,6 +290,47 @@ namespace Tests\Unit\Central {
             }
         }
 
+        public function test_each_aa_shows_its_result_once_it_is_done(): void
+        {
+            $id   = '';
+            $seen = [];
+            $this->remote([1 => [self::ok()], 2 => [self::err()]]);
+            $real = (new \ReflectionProperty(OptimizeRun::class, 'testRemote'))->getValue();
+            OptimizeRun::setTestRemote(static function (int $aa, string $task, string $method, int $timeout) use ($real, &$id, &$seen): ?AA_Response {
+                $seen[$aa] = array_keys(OptimizeRun::get($id)->results());
+                return $real($aa, $task, $method, $timeout);
+            });
+            $id = OptimizeRun::begin(OptimizeRun::SQL_UPDATE, 'test', [1, 2], self::USER)->getId();
+
+            $this->assertSame(OptimizeRun::DONE, self::runQueued($id), 'both AAs in one step');
+
+            $this->assertSame([1 => [], 2 => [1]], $seen, 'the first AA stored before the second is asked');
+            $this->assertSame([1 => OptimizeRun::OK, 2 => OptimizeRun::PROBLEM], self::statuses($id));
+        }
+
+        public function test_the_page_runs_the_steps_one_right_after_another(): void
+        {
+            $this->remote([1 => [self::late(), self::ok()], 2 => [self::ok()]]);
+            $id = OptimizeRun::begin(OptimizeRun::SQL_UPDATE, 'test', [1, 2], self::USER)->getId();
+
+            $this->assertTrue(OptimizeRun::stepNow($id, self::USER));
+            $this->assertSame(OptimizeRun::RUNNING, OptimizeRun::get($id)->state(), 'the first AA did not answer');
+            $wait = OptimizeRun::get($id)->nextLookIn(OptimizeRun::clock());
+            $this->assertGreaterThanOrEqual(59, $wait, 'it is asked again only after its wait');
+            $this->assertFalse(OptimizeRun::stepNow($id, self::USER), 'not before');
+
+            foreach (TableDb::$tables['toexecute'] as $n => $row) {
+                TableDb::$tables['toexecute'][$n]['execute_after'] = OptimizeRun::clock();
+            }
+            $this->assertTrue(OptimizeRun::stepNow($id, self::USER));
+
+            $this->assertSame(OptimizeRun::DONE, OptimizeRun::get($id)->state());
+            $this->assertSame([1 => OptimizeRun::OK, 2 => OptimizeRun::OK], self::statuses($id));
+            $this->assertSame([1, 1, 2], array_column($this->asked, 0));
+            $this->assertNull(OptimizeRun::get($id)->nextLookIn(OptimizeRun::clock()));
+            $this->assertFalse(OptimizeRun::stepNow($id, self::USER));
+        }
+
         // ---------------------------------------------------------------- repair
 
         public function test_repair_repairs_only_where_the_test_fails_and_tests_again(): void

@@ -20,7 +20,7 @@ use InvalidArgumentException;
 use LogicException;
 
 /** One Optimize task (a class, or the whole sql_update) run on chosen AAs of the Central list, one AA
- *  after another in the task queue; the page central/optimize.php only shows the results.
+ *  after another in steps of the task queue; while central/optimize.php shows the run, it runs them at once.
  *  Test asks each AA for the test. Repair asks for the test first, for the repair only where it fails,
  *  then for the test again in a new request (the caches of the repair's request could lie). Each of the
  *  three requests may come in a step of its own (position: i and next), and one repair is sent at most:
@@ -248,8 +248,15 @@ final class OptimizeRun extends CentralRun
         return 20;
     }
 
-    /** Asks the AAs from $from on while the budget lasts. The results go into the run at the end of the
-     *  step (commitStep()). Should the step die, the next one asks again from the stored position - a test,
+    /** The steps only ask other AAs and write this run - nothing here a step one right after another
+     *  would hold up; an AA itself refuses a second sql_update at a time (AA_BUSY). */
+    protected function stepsFromPage(): bool
+    {
+        return true;
+    }
+
+    /** Asks the AAs from $from on while the budget lasts. The result of each AA goes into the run once
+     *  the AA is done, the position only at the end of the step (commitStep()). Should the step die, the next one asks again from the stored position - a test,
      *  or a repair, which the AA runs only where its own test fails (Chain::repair()); a repair done in the
      *  dead step then shows as OK. */
     protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult
@@ -284,6 +291,10 @@ final class OptimizeRun extends CentralRun
             if ($next === null) {
                 $i++;
                 $next = '';
+                // the page shows each AA once it is done, not only at the end of the step
+                if ($this->recordResult(static fn(self $run): bool => $run->mergeResults([$aa => $results[$aa]])) !== true) {
+                    break;
+                }
             }
         }
         return new BatchStepResult(self::at($i, $next), $i >= count($aas), done: $i, total: count($aas), extra: ['results' => $results]);
@@ -355,9 +366,17 @@ final class OptimizeRun extends CentralRun
     {
         $new = $r->extra['results'] ?? [];
         if ($new) {
-            $this->results = json_encode(array_replace($this->results(), $new), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            $this->mergeResults($new);
             $this->update(['results']);
         }
+    }
+
+    /** @param array<int, array{s: string, m: string, r: string, c: string}> $new results of AAs, over the stored ones
+     *  @return true for recordResult() */
+    private function mergeResults(array $new): bool
+    {
+        $this->results = json_encode(array_replace($this->results(), $new), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        return true;
     }
 
     /** @return array{kind: string, text: string} kind OK, PROBLEM, REFUSED, AA_BUSY or AA_NO_ANSWER

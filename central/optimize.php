@@ -8,8 +8,10 @@
  *
  * GET               the form (aa=<id>,<id> - the AAs chosen in the Central list) and the last runs
  * POST start        task[], method, aa[] - starts a run for each task
- * GET run=<id>      the results of a run; the page reloads itself while the run goes on
+ * GET run=<id>      the results of a run; while it goes on, the page runs its steps (step)
  * POST continue|end run=<id>
+ * POST step [run=<id>] [look=1] JSON: the due step of the run - of the list: of its oldest open run with
+ *                   one; look=1 none - and what the page shows anew
  *
  * PHP version 8.2+
  *
@@ -63,7 +65,16 @@ if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permission to manage ActionApps installations"), 'admin');
 }
 if (($_SERVER['REQUEST_METHOD'] === 'POST') && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::check(OptimizeRun::FORM_TOKEN, $token))) {
+    if ($action === 'step') {
+        optimize_json(['html' => '', 'wait' => null, 'ran' => false], 403);
+    }
     AA_Adminpageutil::MsgPageMenu(optimize_url(), _m('The form has expired; reload the page and try again.'), 'admin');
+}
+if ($action === 'step') {
+    // the step may take half a minute - the other pages of this session must not wait for it
+    Session::page_close();
+    session_write_close();
+    optimize_json(optimize_step($run_id, $uid, InputVars::stringPOST('look') === '1'));
 }
 
 $err   = '';
@@ -132,15 +143,72 @@ if ($run_id === '') {
         }
         JS, 'AA_Req_Load');
 }
+// while a run is open, the page runs its steps one right after another; while a step runs, it shows
+// each AA as it is done
+$apage->addRequire(<<<'JS'
+    const box = document.getElementById('aa-optimize-live');
+    if (box?.dataset.open) {
+        let stepping = false, steps = 0;
+        const ask = async (look) => {
+            const body = new URLSearchParams({action: 'step', token: box.dataset.token, run: box.dataset.run, look: look ? '1' : ''});
+            const response = await fetch(box.dataset.url, {method: 'POST', body, credentials: 'same-origin', headers: {Accept: 'application/json'}, signal: AbortSignal.timeout?.(look ? 20000 : 120000)});
+            return (response.status === 403) ? null : response.json();
+        };
+        // a report being read is not replaced under the reader - it waits till it is closed
+        const show = s => {
+            const reading = box.querySelector('details[open]');
+            if (!reading) {
+                box.innerHTML = s.html;
+            }
+            return !reading;
+        };
+        const watch = setInterval(async () => {
+            const at = steps;
+            try {
+                const s = stepping ? await ask(true) : null;
+                if (s && stepping && (at === steps)) {
+                    show(s);
+                }
+            } catch {
+                // the next look tries again
+            }
+        }, 3000);
+        const step = async () => {
+            let wait = 30;
+            stepping = true;
+            try {
+                const s = await ask(false);
+                if (s === null) {
+                    clearInterval(watch);
+                    return;
+                }
+                const shown = show(s);
+                if ((s.wait === null) && shown) {
+                    clearInterval(watch);
+                    return;
+                }
+                // nothing ran although a step is due: another page or the queue has it
+                wait = (s.wait === null) ? 10 : (s.wait > 0) ? Math.min(s.wait, 10) : (s.ran ? 0 : 2);
+            } catch {
+                // a lost connection: the queue goes on meanwhile
+            } finally {
+                stepping = false;
+                steps++;
+            }
+            setTimeout(step, wait * 1000);
+        };
+        step();
+    }
+    JS, 'AA_Req_Load');
 $apage->printHead($err);
 
 if ($run_id !== '') {
-    optimize_run($run_id, $uid);
+    optimize_live($run_id, $uid, static fn() => optimize_run($run_id, $uid));
 } else {
     // a refused start keeps what was chosen
     $checked = ($action === 'start') ? $posted : explode(',', $chosen);
     optimize_form(array_map('intval', array_filter($checked, 'ctype_digit')), $tasks ?: [OptimizeRun::SQL_UPDATE], $method ?: 'test');
-    optimize_recent();
+    optimize_live('', $uid, static fn() => optimize_recent());
 }
 
 $apage->printFoot();
@@ -150,6 +218,55 @@ $apage->printFoot();
 function optimize_url(array $params = []): string
 {
     return StateUrl(get_url(self_base() . 'optimize.php', $params));
+}
+
+/** what the page shows anew on each look (optimize_step()), and whether it looks: a run that goes on
+ *  @param string $run_id the run shown, '' = the list of the last runs */
+function optimize_live(string $run_id, string $uid, Closure $show): void
+{
+    $open = array_filter(optimize_open_runs($run_id), static fn(OptimizeRun $run): bool => $run->mayControl($uid));
+    echo '<div id="aa-optimize-live" data-url="' . safe(optimize_url()) . '" data-run="' . safe($run_id) . '" data-token="' . safe(FormToken::get(OptimizeRun::FORM_TOKEN)) . '"' . ($open ? ' data-open="1"' : '') . '>';
+    $show();
+    echo '</div>';
+}
+
+/** the runs that go on of those a page shows - the run, or the last runs, the oldest first
+ *  @return list<OptimizeRun> */
+function optimize_open_runs(string $run_id): array
+{
+    $runs = ($run_id !== '') ? array_filter([OptimizeRun::get($run_id)]) : array_reverse(OptimizeRun::recent());
+    return array_values(array_filter($runs, static fn(OptimizeRun $run): bool => $run->state() === OptimizeRun::RUNNING));
+}
+
+/** A look of the page: the due step of the run shown - of the list, of its oldest open run with one, so the
+ *  runs go one after another - and what the page shows now
+ *  @param bool $only_look no step - the page looks while its step runs
+ *  @return array{html: string, wait: ?int, ran: bool} wait: seconds till the next look, null = no run goes on */
+function optimize_step(string $run_id, string $uid, bool $only_look): array
+{
+    $runs = array_filter(optimize_open_runs($run_id), static fn(OptimizeRun $run): bool => $run->mayControl($uid));
+    $ran  = false;
+    foreach ($only_look ? [] : $runs as $run) {
+        if (OptimizeRun::stepNow($run->getId(), $uid)) {
+            $ran = true;
+            break;
+        }
+    }
+    $now   = OptimizeRun::clock();
+    $waits = array_filter(array_map(static fn(OptimizeRun $run): ?int => OptimizeRun::get($run->getId())?->nextLookIn($now), $runs), 'is_int');
+    ob_start();
+    ($run_id !== '') ? optimize_run($run_id, $uid) : optimize_recent();
+    return ['html' => (string) ob_get_clean(), 'wait' => $waits ? min($waits) : null, 'ran' => $ran];
+}
+
+function optimize_json(array $data, int $status = 200): never
+{
+    http_response_code($status);
+    header('Content-Type: application/json; charset=utf-8');
+    header('X-Content-Type-Options: nosniff');
+    header('Cache-Control: no-store');
+    echo json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES);
+    exit;
 }
 
 /** @return array<string, string> method => its name */
@@ -187,7 +304,7 @@ function optimize_form(array $checked, array $tasks, string $method): void
         $options['AA_OPTGROUP ' . $group] = $group;
         $options += $group_tasks;
     }
-    $input = new AA_Inputfield(getFrmSelectEasy('task[]', $options, $tasks, ['id' => 'aa-optimize-tasks', 'multiple' => 'multiple', 'size' => 10, 'aria-label' => _m('Tasks')]), false, 'normal', '', _m('Tasks'), '', true, _m('Each task is a run of its own; the runs go on side by side, in no set order. Each AA runs the task of its own version; an AA without it says so.'));
+    $input = new AA_Inputfield(getFrmSelectEasy('task[]', $options, $tasks, ['id' => 'aa-optimize-tasks', 'multiple' => 'multiple', 'size' => 10, 'aria-label' => _m('Tasks')]), false, 'normal', '', _m('Tasks'), '', true, _m('Each task is a run of its own. While a page of the runs is open, it runs them one after another, the oldest first; otherwise the task queue runs them side by side. Each AA runs the task of its own version; an AA without it says so.'));
     $input->staticText(false);
     echo $input->get_result();
     FrmInputRadio('method', _m('Do'), optimize_methods(), $method, true, _m('Repair tests first, repairs only where the test fails, then tests again. A task without a repair is only tested.'));
@@ -235,6 +352,8 @@ function optimize_run(string $run_id, string $uid): void
     $open    = in_array($run->state(), [OptimizeRun::RUNNING, OptimizeRun::ERROR], true);
     $again   = $run->isWaiting($now) ? $run->progress($uid)['next_at'] : 0;
     [$current, $next] = ($open ? $run->current() : null) ?? [0, ''];
+    // each AA shows its result once it is done, so the first one without it is the one asked now
+    $asking  = $run->hasLiveLease($now) ? current(array_diff($run->aas(), array_keys($results))) : false;
     echo '<h2>' . safe(optimize_title($run)) . '</h2>'
         . '<p>' . _m('Started %1 by %2', [safe(date('Y-m-d H:i', $run->started())), safe(perm_username($run->user()))]) . '</p>'
         . '<p><strong>' . safe(optimize_state($run, $now)) . '</strong> ' . safe(_m('%1 of %2 AAs done', [$run->done(), count($run->aas())])) . '</p>';
@@ -247,7 +366,7 @@ function optimize_run(string $run_id, string $uid): void
         echo '<form method="post" action="' . safe(optimize_url()) . '"><div>' . FormToken::field(OptimizeRun::FORM_TOKEN) . '<input type="hidden" name="run" value="' . safe($run_id) . '">'
             . ($run->mayResume($now) ? '<button class="btn-l" type="submit" name="action" value="continue">' . _m('Continue') . '</button> ' : '')
             . '<button class="btn-l btn-secondary" type="submit" name="action" value="end">' . _m('End') . '</button></div></form>'
-            . '<p class="tabhlp">' . _m('The run goes on in the task queue of this AA - you may close this page.') . '</p>';
+            . '<p class="tabhlp">' . _m('While this page is open, it runs the steps one right after another. Closed, the run goes on in the task queue of this AA.') . '</p>';
     }
     if (!$open && ($run->method() === 'test')) {
         optimize_repair_button($run->task(), $results);
@@ -258,7 +377,7 @@ function optimize_run(string $run_id, string $uid): void
         $r    = $results[$id] ?? null;
         echo '<tr><td>' . safe($name) . '</td>';
         if ($r === null) {
-            echo '<td>' . safe($open ? _m('Waiting') : _m('Not asked')) . '</td><td></td></tr>';
+            echo '<td>' . safe(!$open ? _m('Not asked') : (($id === $asking) ? _m('Asking now…') : _m('Waiting'))) . '</td><td></td></tr>';
             continue;
         }
         $good = in_array($r['s'], [OptimizeRun::OK, OptimizeRun::REPAIRED], true);
@@ -278,11 +397,6 @@ function optimize_run(string $run_id, string $uid): void
         }
     }
     echo '</table>';
-    if (($run->state() === OptimizeRun::RUNNING) && !$run->isStuck($now)) {
-        // a new look after the next step - not while a report is open
-        $seconds = $again ? max(10, $again - $now + 5) : 10;
-        echo '<script>setInterval(() => { if (!document.querySelector("details[open]")) { location.replace(' . json_encode(optimize_url(['run' => $run_id]), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '); } }, ' . ($seconds * 1000) . ');</script>';
-    }
     echo '<p>' . a_href(optimize_url(), _m('Another run')) . '</p>';
 }
 

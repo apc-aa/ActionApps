@@ -62,6 +62,9 @@ abstract class BatchRun extends AA_Object
     /** a run without progress this long past its retries hangs (isStuck()) */
     private const STUCK_GRACE = 3600;
 
+    /** seconds a page that shows an active run waits for its next look when no step of it is queued */
+    public const LOOK_AGAIN = 10;
+
     /** the longest step: a cron round lasts about 30 s */
     private const STEP_SECONDS = 30;
     /** left of the budget for the end of the step */
@@ -242,6 +245,14 @@ abstract class BatchRun extends AA_Object
         return 10;
     }
 
+    /** true = the page that shows the run may run its due step at once (stepNow()), so the steps go one
+     *  right after another instead of one a queue round. Only for a run whose steps may come any time and
+     *  in any request: what they do is not slowed down by the round on purpose, and they fit a web request. */
+    protected function stepsFromPage(): bool
+    {
+        return false;
+    }
+
     /** false = what the run stands on is gone (import: its definition); the run ends for good */
     protected function stillValid(): bool
     {
@@ -392,6 +403,42 @@ abstract class BatchRun extends AA_Object
             return 'stale';
         }
         return $run->stepAt($expected);
+    }
+
+    /** The step of the run that is due now, run in this request as the queue would run it - the page
+     *  that shows the run drives it so (stepsFromPage()); without the page the queue goes on. A step that
+     *  waits (a retry), one another runner holds and the rows of an ended run are left alone; two pages
+     *  run the row once (the queue's claim). Call it outside any transaction, with the session closed:
+     *  the step may take a whole STEP_SECONDS.
+     *  @return bool true = the row ran (its step may still have found it had nothing to do)
+     *  @throws BatchFailed FORBIDDEN when $uid may not control the run, or there is no such run */
+    final public static function stepNow(string $id, string $uid): bool
+    {
+        $run = static::get($id);
+        if (($run === null) || !$run->mayControl($uid)) {
+            throw new BatchFailed(self::FORBIDDEN);
+        }
+        if (!$run->stepsFromPage() || ($run->state !== static::states()->active)) {
+            return false;
+        }
+        $row = DB_AA::select1([], 'SELECT `id`, `priority` FROM `toexecute`', [['selector', $run->selector()], ['priority', 0, '>'], ['execute_after', static::now() + 1, '<']]);
+        if (!$row) {
+            return false;
+        }
+        (new Toexecute())->executeTask([(int) $row['id']], [(int) $row['id'] => (int) $row['priority']]);
+        return true;
+    }
+
+    /** Seconds till a page that shows the run should look at it again: 0 = a step is due now, more =
+     *  its retry or another runner's step - the page caps that, so it shows the progress meanwhile;
+     *  LOOK_AGAIN when no step is queued. null = the run is not active - nothing comes without Continue. */
+    final public function nextLookIn(int $now): ?int
+    {
+        if ($this->state !== static::states()->active) {
+            return null;
+        }
+        $due = $this->queuedUntil();
+        return ($due === 0) ? self::LOOK_AGAIN : max(0, $due - $now);
     }
 
     /** From the own state $state to active, its step queued in the caller's transaction (it commits
