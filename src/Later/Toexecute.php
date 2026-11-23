@@ -288,7 +288,7 @@ class Toexecute
     {
 
         // MoreTimeLimit();  // try to set 5 minutes to run
-        $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME') ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time') > 0) ? ini_get('max_execution_time') - 9 : 16.0));
+        $allowed_time = self::allowedTime();
 
         /** there we store the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
@@ -342,7 +342,7 @@ class Toexecute
         }
 
         set_time_limit(360);   // try to set 360 seconds to run
-        $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME') ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time') > 0) ? ini_get('max_execution_time') - 9 : 16.0));
+        $allowed_time = self::allowedTime();
         /** there we store the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
          *  run one more such task or if we left it for next time */
@@ -386,6 +386,35 @@ class Toexecute
             self::$round = $outer_round;
         }
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
+    }
+
+    /** Runs the due row of $selector now, in this request - a page that drives its own batch run
+     *  (BatchRun::pageLook()). The row is claimed as a round claims it, so it runs once even when the
+     *  queue takes it up meanwhile. No round row is logged: CheckQueue must not take the page for a
+     *  running queue.
+     *  @param int $now the time the row must be due by
+     *  @return bool true = the row ran (or failed and waits for the queue's retry) */
+    public function runDue(string $selector, int $now): bool
+    {
+        $task = DB_AA::select1('', 'SELECT * FROM `toexecute`', [['selector', $selector], ['priority', 0, '>'], ['execute_after', $now + 1, '<']]);
+        if (!$task) {
+            return false;
+        }
+        set_time_limit(360);
+        $execute_times = [];
+        $outer_round   = self::$round;
+        self::$round   = [microtime(true), self::allowedTime()];
+        try {
+            return $this->_exeOne($task, $execute_times, self::$round[0], self::$round[1]) === 1;
+        } finally {
+            self::$round = $outer_round;
+        }
+    }
+
+    /** seconds a round may take: max_execution_time less a reserve for the end of the request */
+    private static function allowedTime(): float
+    {
+        return (float) (defined('TOEXECUTE_ALLOWED_TIME') ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time') > 0) ? ini_get('max_execution_time') - 9 : 16.0));
     }
 
     /** @return int 1 = task executed (or failed and left for a retry), 0 = out of

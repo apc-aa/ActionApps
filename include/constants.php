@@ -637,7 +637,7 @@ function getViewTypes(): array
 {
     $field3def = [
         "label" => _m("vid"),
-        "help"  => _m("now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_]."),
+        "help"  => _m("Name of the view, usable instead of its number: {view:photo_list}, {view.php?vid=photo_list}, slice.php?iview=photo_list (also fview, dview). The name is looked up in the slices of the site or of the page, so a URL that loads view.php directly (lazy, AJAX) still needs the number. Use only small letters and _, starting with a letter."),
     ];
 
     $common = [

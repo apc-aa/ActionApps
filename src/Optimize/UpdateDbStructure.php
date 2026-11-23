@@ -9,7 +9,6 @@ use AA_MbC;
 use AA_MbI;
 use AA_MbT;
 use AA_Metabase;
-use RuntimeException;
 
 /** Brings the database structure to the AA template (include/metabase_schema.php): creates a missing
  *  table and changes a differing one by ALTER TABLE in place. The server keeps the rows and the writes
@@ -21,9 +20,6 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
 {
     /** a table of up to so many bytes (data and indexes) is changed even when it has to be locked meanwhile - seconds */
     private const LOCKED_SIZE = 32 * 1024 * 1024;
-
-    /** seconds an ALTER waits for the queries running on the table - the queries coming meanwhile wait for the ALTER */
-    private const LOCK_WAIT = 5;
 
     /** @var array<string, array{action: string, alter: string[], extra: string[], kept: string[], live: string, template: string}>|null */
     private ?array $plan = null;
@@ -69,12 +65,14 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
     public function test(): bool
     {
         $different = false;
+        $css       = true;   // once a report - Central keeps only its first 100 kB
         foreach ($this->plan() as $tablename => $plan) {
             if ($plan['action'] === 'create') {
                 $this->message(_m('Table %1 is missing.', [safe($tablename)]));
             } elseif ($plan['action'] === 'alter') {
                 $this->message(_m('Table %1 differs: %2', [safe($tablename), safe(implode(', ', $plan['alter']))]));
-                $this->message(Difftext::renderHtml($plan['live'], $plan['template']));
+                $this->message(Difftext::renderHtml($plan['live'], $plan['template'], $css));
+                $css = false;
             }
             $this->reportLeft($tablename, $plan);
             $different = $different || in_array($plan['action'], ['create', 'alter'], true);
@@ -156,32 +154,6 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
             ? _m('Table %1 not changed - other queries are using it. Try it again later.', [safe($tablename)])
             : _m('Table %1 not changed - the database refused the change: %2', [safe($tablename), safe($error)]));
         return false;
-    }
-
-    /** the ALTER waited for the queries running on the table longer than LOCK_WAIT */
-    private static function busy(string $error): bool
-    {
-        return str_contains($error, 'Lock wait timeout');
-    }
-
-    /** The statement in strict SQL mode, so a value that does not fit the new definition (a NULL for NOT NULL,
-     *  a too long text) stops it instead of being changed, and with a short wait for the table: the queries
-     *  coming meanwhile queue behind a waiting ALTER, the site would stand. The connection settings are set
-     *  back - it may be persistent and serve the next request.
-     *  A failed SET (the connection lost) is reported for the table, the next tables are still tried.
-     * @return string the error, '' when done */
-    private function strictly(string $sql): string
-    {
-        try {
-            $this->query("SET @aa_sql_mode = @@SESSION.sql_mode, @aa_lock_wait = @@SESSION.lock_wait_timeout, SESSION sql_mode = 'STRICT_ALL_TABLES', SESSION lock_wait_timeout = " . self::LOCK_WAIT);
-            try {
-                return $this->tryQuery($sql);
-            } finally {
-                $this->query('SET SESSION sql_mode = @aa_sql_mode, SESSION lock_wait_timeout = @aa_lock_wait');
-            }
-        } catch (RuntimeException) {
-            return 'the connection to the database failed - check whether the table changed';
-        }
     }
 
     /** What each table needs: action none|alter|create|unknown (not in the template) - one plan for test()

@@ -26,6 +26,9 @@ abstract class AbstractOptimize implements NamedInterface
     public const CHECK_SLOW = 'check_slow';
     public const CHECK_SECURITY = 'check_security';
 
+    /** seconds an ALTER (strictly()) waits for the queries running on the table - the queries coming meanwhile wait for the ALTER */
+    protected const LOCK_WAIT = 5;
+
     /** @var array used in the manager to store test results in order we can use it in alias _#RESULT__ */
     public static array $action_results = [];
     public static array $action_results_text = [];
@@ -236,6 +239,32 @@ abstract class AbstractOptimize implements NamedInterface
     {
         $this->message(safe($SQL));
         return self::justPrint() ? '' : $this->queryDb()->tryQuery($SQL);
+    }
+
+    /** the ALTER waited for the queries running on the table longer than LOCK_WAIT */
+    protected static function busy(string $error): bool
+    {
+        return str_contains($error, 'Lock wait timeout');
+    }
+
+    /** The statement (an ALTER) in strict SQL mode, so a value that does not fit the new definition (a NULL for
+     *  NOT NULL, a too long text) stops it instead of being changed, and with a short wait for the table: the
+     *  queries coming meanwhile queue behind a waiting ALTER, the site would stand. The connection settings are
+     *  set back - it may be persistent and serve the next request.
+     *  A failed SET (the connection lost) comes back as the error, so the caller may go on with other tables.
+     * @return string the error, '' when done */
+    protected function strictly(string $sql): string
+    {
+        try {
+            $this->query("SET @aa_sql_mode = @@SESSION.sql_mode, @aa_lock_wait = @@SESSION.lock_wait_timeout, SESSION sql_mode = 'STRICT_ALL_TABLES', SESSION lock_wait_timeout = " . self::LOCK_WAIT);
+            try {
+                return $this->tryQuery($sql);
+            } finally {
+                $this->query('SET SESSION sql_mode = @aa_sql_mode, SESSION lock_wait_timeout = @aa_lock_wait');
+            }
+        } catch (RuntimeException) {
+            return 'the connection to the database failed - check whether the table changed';
+        }
     }
 
     /** Runs $work as ONE transaction (DB_AA::transaction()) on the handle query() uses: one commit

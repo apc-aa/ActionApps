@@ -188,14 +188,16 @@ class Difftext
      * code/structure diffs - e.g. UpdateDbStructure comparing SQL table definitions - where the
      * monospaced, line-by-line table form is appropriate. For PROSE (item history) use
      * renderInline() instead.
+     * $css false leaves out the stylesheet - when an earlier diff on the same page already brought it
+     * (each copy is ~4 kB, a report of many diffs would be mostly CSS).
      */
-    public static function renderHtml($from_text, $to_text): string
+    public static function renderHtml($from_text, $to_text, bool $css = true): string
     {
         // HTML renderers: Combined, Inline, JsonHtml, SideBySide. "Combined" merges old+new lines.
         $differ   = new Differ(explode("\n", (string) $from_text), explode("\n", (string) $to_text), self::DIFFER_OPTIONS);
         $renderer = RendererFactory::make('Combined', self::RENDER_OPTIONS);
 
-        return '<style>' . self::CSS . '</style><div class="difftext">' . $renderer->render($differ) . '</div>';
+        return ($css ? '<style>' . self::CSS . '</style>' : '') . '<div class="difftext">' . $renderer->render($differ) . '</div>';
     }
 
     /**

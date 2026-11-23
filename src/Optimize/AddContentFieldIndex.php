@@ -62,8 +62,15 @@ class AddContentFieldIndex extends AbstractOptimize
             $this->message(_m('The index %1 of the content table already contains the field', [self::INDEX]));
             return true;
         }
-        // one ALTER: InnoDB builds it in place and keeps the table writable meanwhile, MyISAM copies and locks it
-        $this->query('ALTER TABLE `content` ' . implode(', ', $changes));
+        // one ALTER: InnoDB builds it in place and keeps the table writable meanwhile, MyISAM copies and locks it;
+        // the ALTER locks the table for a moment at its start and end, so it must not wait long behind a slow query
+        $error = $this->strictly('ALTER TABLE `content` ' . implode(', ', $changes));
+        if ($error !== '') {
+            $this->message(self::busy($error)
+                ? _m('The content table not changed - other queries are using it. Try it again later.')
+                : _m('The content table not changed - the database refused the change: %1', [safe($error)]));
+            return false;
+        }
         $this->message(_m('The index %1 of the content table changed', [self::INDEX]));
         return true;
     }

@@ -20,7 +20,7 @@ use InvalidArgumentException;
 use LogicException;
 
 /** One Optimize task (a class, or the whole sql_update) run on chosen AAs of the Central list, one AA
- *  after another in the task queue; the page central/optimize.php only shows the results.
+ *  after another in steps of the task queue; while central/optimize.php shows the run, it runs them at once.
  *  Test asks each AA for the test. Repair asks for the test first, for the repair only where it fails,
  *  then for the test again in a new request (the caches of the repair's request could lie). Each of the
  *  three requests may come in a step of its own (position: i and next), and one repair is sent at most:
@@ -248,8 +248,15 @@ final class OptimizeRun extends CentralRun
         return 20;
     }
 
-    /** Asks the AAs from $from on while the budget lasts. The results go into the run at the end of the
-     *  step (commitStep()). Should the step die, the next one asks again from the stored position - a test,
+    /** The steps only ask other AAs and write this run - nothing here a step one right after another
+     *  would hold up; an AA itself refuses a second sql_update at a time (AA_BUSY). */
+    protected function stepsFromPage(): bool
+    {
+        return true;
+    }
+
+    /** Asks the AAs from $from on while the budget lasts. The result of each AA goes into the run once
+     *  the AA is done, the position only at the end of the step (commitStep()). Should the step die, the next one asks again from the stored position - a test,
      *  or a repair, which the AA runs only where its own test fails (Chain::repair()); a repair done in the
      *  dead step then shows as OK. */
     protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult
@@ -284,6 +291,13 @@ final class OptimizeRun extends CentralRun
             if ($next === null) {
                 $i++;
                 $next = '';
+                // the page shows each AA once it is done, not only at the end of the step; the step stops when
+                // End, Continue or another step has taken the run - before it asks the next AA
+                $done  = [$aa => $results[$aa]];
+                $taken = (($stored[$aa] ?? null) === $results[$aa]) ? !$this->ownsRun() : ($this->recordResult(static fn(self $run): bool => $run->mergeResults($done)) !== true);
+                if ($taken) {
+                    break;
+                }
             }
         }
         return new BatchStepResult(self::at($i, $next), $i >= count($aas), done: $i, total: count($aas), extra: ['results' => $results]);
@@ -354,10 +368,18 @@ final class OptimizeRun extends CentralRun
     protected function commitStep(BatchStepResult $r): void
     {
         $new = $r->extra['results'] ?? [];
-        if ($new) {
-            $this->results = json_encode(array_replace($this->results(), $new), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if ($new && $this->mergeResults($new)) {
             $this->update(['results']);
         }
+    }
+
+    /** @param array<int, array{s: string, m: string, r: string, c: string}> $new results of AAs, over the stored ones
+     *  @return bool true = changed, as recordResult() wants it */
+    private function mergeResults(array $new): bool
+    {
+        $old           = (string) $this->results;
+        $this->results = json_encode(array_replace($this->results(), $new), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        return $this->results !== $old;
     }
 
     /** @return array{kind: string, text: string} kind OK, PROBLEM, REFUSED, AA_BUSY or AA_NO_ANSWER
@@ -426,10 +448,40 @@ final class OptimizeRun extends CentralRun
         return (int) $this->started;
     }
 
-    /** the AAs done - an AA tested after its repair has its result already, yet is not done */
+    /** the AAs done: those before the position, and those from it on a step running now has finished -
+     *  but not the AA at the position that waits for its repair or the test after it, though it has a result */
     public function done(): int
     {
-        return min((int) ($this->position()['i'] ?? 0), count($this->aas()));
+        $i    = min((int) ($this->position()['i'] ?? 0), count($this->aas()));
+        $from = ((string) ($this->position()['next'] ?? '') === '') ? $i : $i + 1;
+        return $i + count(array_intersect_key($this->results(), array_flip(array_slice($this->aas(), $from))));
+    }
+
+    /** The AA a step asks right now, null while no step works. A step records each AA once it is done, so
+     *  it is the first AA from the position on without a result - or the AA at the position, waiting for
+     *  its repair or the test after it, until an AA after it is done. An AA asked again with the result it
+     *  has (the test after a repair that passes in a step of its own, a step repeated after one that died)
+     *  shows done only once the step records an AA after it, or ends. */
+    public function asking(int $now): ?int
+    {
+        if (!$this->hasLiveLease($now)) {
+            return null;
+        }
+        $results = $this->results();
+        $i       = (int) ($this->position()['i'] ?? 0);
+        $rest    = array_slice($this->aas(), $i);
+        foreach ($rest as $n => $aa) {
+            if (($n === 0) && (($this->position()['next'] ?? '') !== '')) {
+                if (!array_intersect_key($results, array_flip(array_slice($rest, 1)))) {
+                    return $aa;
+                }
+                continue;
+            }
+            if (!isset($results[$aa])) {
+                return $aa;
+            }
+        }
+        return null;
     }
 
     /** the AA asked now and what it is asked ('' the test, 'repair', 'check'); null when none is

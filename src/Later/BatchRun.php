@@ -62,6 +62,11 @@ abstract class BatchRun extends AA_Object
     /** a run without progress this long past its retries hangs (isStuck()) */
     private const STUCK_GRACE = 3600;
 
+    /** seconds a page that drives runs (pageLook()) waits for its next look at most, and when no step
+     *  of them is queued; the shortest wait, when the due step has just been taken by another runner */
+    public const LOOK_AGAIN = 10;
+    public const LOOK_TAKEN = 2;
+
     /** the longest step: a cron round lasts about 30 s */
     private const STEP_SECONDS = 30;
     /** left of the budget for the end of the step */
@@ -242,6 +247,14 @@ abstract class BatchRun extends AA_Object
         return 10;
     }
 
+    /** true = the page that shows the run may run its due step at once (pageLook()), so the steps go one
+     *  right after another instead of one a queue round. Only for a run whose steps may come any time and
+     *  in any request: what they do is not slowed down by the round on purpose, and they fit a web request. */
+    protected function stepsFromPage(): bool
+    {
+        return false;
+    }
+
     /** false = what the run stands on is gone (import: its definition); the run ends for good */
     protected function stillValid(): bool
     {
@@ -392,6 +405,39 @@ abstract class BatchRun extends AA_Object
             return 'stale';
         }
         return $run->stepAt($expected);
+    }
+
+    /** One look of a page that shows runs of this class and drives them: the step of the first of $ids
+     *  that has one due now, run in this request as the queue would run it - so the runs go one right
+     *  after another, in the order of $ids; without the page the queue goes on. Only runs that allow
+     *  it (stepsFromPage()) and that $uid may control; a step that waits (a retry) or that another runner
+     *  holds is left alone, and two pages run a row once (the queue's claim). Call it outside any
+     *  transaction, with the session closed: the step may take a whole STEP_SECONDS.
+     *  @param list<string> $ids
+     *  @return ?int seconds till the next look: 0 = at once, at most LOOK_AGAIN, so the page shows the
+     *               progress of a step another runner works meanwhile; null = none of the runs goes on */
+    final public static function pageLook(array $ids, string $uid): ?int
+    {
+        $runs   = array_values(array_filter(array_map(static fn(string $id): ?static => static::get($id), $ids), static fn(?self $run): bool => ($run !== null) && $run->mayControl($uid)));
+        $active = static::states()->active;
+        $ran    = false;
+        foreach ($runs as $n => $run) {
+            if ($run->stepsFromPage() && ($run->state === $active) && (new Toexecute())->runDue($run->selector(), static::now())) {
+                $runs[$n] = static::get($run->getId());
+                $ran      = true;
+                break;
+            }
+        }
+        $waits = [];
+        foreach ($runs as $run) {
+            if ($run?->state === $active) {
+                $due     = $run->queuedUntil();
+                $wait    = ($due === 0) ? self::LOOK_AGAIN : min(self::LOOK_AGAIN, max(0, $due - static::now()));
+                // due, yet nothing ran: another page or the queue has just taken it, or the run is the queue's
+                $waits[] = (($wait === 0) && !$ran) ? ($run->stepsFromPage() ? self::LOOK_TAKEN : self::LOOK_AGAIN) : $wait;
+            }
+        }
+        return $waits ? min($waits) : null;
     }
 
     /** From the own state $state to active, its step queued in the caller's transaction (it commits

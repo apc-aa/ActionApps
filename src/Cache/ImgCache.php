@@ -61,6 +61,12 @@ final class ImgCache
         return rtrim((string) self::value('IMG_UPLOAD_PATH'), '/') . '/' . self::SEGMENT;
     }
 
+    /** AA_MISSCACHE_MAX_BYTES as written in the config, null when it is not; MissCachePurge::cap() decides */
+    public static function maxBytes(): mixed
+    {
+        return self::configured() ? (self::config()['AA_MISSCACHE_MAX_BYTES'] ?? null) : null;
+    }
+
     /** IMG_UPLOAD_DIR_MODE - for a configured() cache only */
     public static function dirMode(): int
     {
@@ -120,6 +126,7 @@ final class ImgCache
                 $config[$name] = constant($name);
             }
             $config['AA_MISSCACHE_IMG_DISABLE'] = defined('AA_MISSCACHE_IMG_DISABLE') && constant('AA_MISSCACHE_IMG_DISABLE');
+            $config['AA_MISSCACHE_MAX_BYTES']   = defined('AA_MISSCACHE_MAX_BYTES') ? constant('AA_MISSCACHE_MAX_BYTES') : null;
             self::$config = self::derive($config);
         }
         return self::$config;

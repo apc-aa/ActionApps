@@ -56,33 +56,60 @@ class MissCachePurge implements LaterInterface
     {
         // outside an initialised AA context the constants are undefined and the cache root bogus
         if (!ImgCache::configured()) {
-            return 'MissCache purge skipped: AA config constants are not defined';
+            return 'skipped, AA config constants are not defined';
         }
 
-        $s = ImgCache::get()->purge(['maxAge' => $this->maxAge, 'maxBytes' => $this->maxBytes]);
+        $s = ImgCache::get()->purge(['maxAge' => $this->maxAge, 'maxBytes' => self::cap(ImgCache::maxBytes(), $this->maxBytes)]);
 
-        return sprintf(
-            'MissCache purge: scanned %d, deleted %d (age) + %d (size cap) + %d (stray tmp) + %d (stored blank), freed %s, pruned %d dirs, %s remains',
-            $s['scanned'],
-            $s['deleted_age'],
+        return self::summary($s, @disk_free_space(ImgCache::root()));
+    }
+
+    /** The size cap: AA_MISSCACHE_MAX_BYTES of the config over the planned one. Read when the purge
+     *  runs, so a config edit applies to the next purge, also of a row queued before it.
+     *
+     * @param mixed $configured the constant's value, null when undefined; 0 = no cap; a number
+     *                          (1.5 * 1024 ** 3 is a float) counts in whole bytes, anything else is ignored
+     */
+    public static function cap(mixed $configured, ?int $planned): ?int
+    {
+        // a float past PHP_INT_MAX would cast to a negative cap, which deletes the whole cache
+        if (!(is_int($configured) || is_float($configured)) || ($configured < 0) || ($configured >= PHP_INT_MAX)) {
+            return $planned;
+        }
+        return ($configured == 0) ? null : max(1, (int) $configured);
+    }
+
+    /** One line for the queue log, which keeps only its first 40 bytes: what the cap and the age
+     *  deleted, what is left and the free disk come first - enough to size the cap; the rest may
+     *  be cut. No ":", the log escapes it to "#:".
+     *
+     * @param array<string, int> $s    MissCache::purge() statistics
+     * @param float|false        $free free bytes on the cache's disk, false = unknown
+     */
+    public static function summary(array $s, float|false $free): string
+    {
+        $line = sprintf(
+            '-%dcap -%dold =%s free %s',
             $s['deleted_size'],
-            $s['deleted_tmp'],
-            $s['deleted_stale'],
-            self::humanBytes($s['bytes_freed']),
-            $s['dirs_removed'],
+            $s['deleted_age'],
             self::humanBytes($s['total_after']),
+            ($free === false) ? '?' : self::humanBytes((int) $free),
         );
+        if ($s['deleted_tmp'] || $s['deleted_stale']) {
+            $line .= sprintf(' -%dtmp -%dblank', $s['deleted_tmp'], $s['deleted_stale']);
+        }
+        return $line . sprintf(' freed %s of %d files', self::humanBytes($s['bytes_freed']), $s['scanned']);
     }
 
     private static function humanBytes(int $n): string
     {
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $units = ['B', 'K', 'M', 'G', 'T'];
         $i     = 0;
         $v     = (float) $n;
         while ($v >= 1024 && $i < count($units) - 1) {
             $v /= 1024;
             $i++;
         }
-        return ($i === 0 ? (string) $n : sprintf('%.1f', $v)) . ' ' . $units[$i];
+        return (($i === 0) ? (string) $n : sprintf(($v < 10) ? '%.1f' : '%.0f', $v)) . $units[$i];   // 1.8G, 210G - short for the log
     }
 }

@@ -58,16 +58,12 @@ class OptimizeTables implements LaterInterface
 
     private const MIN_FREE_SHARE = 0.1;
 
-    /** a run starts up to NIGHT_SPREAD seconds after NIGHT_START_HOUR, at a moment of its own for
-     *  each database, so the databases of one DB server mostly do not rebuild at once. A follow-up
-     *  outside the night waits for the next one. A run that comes late still runs: where the queue
-     *  runs only on visits (CronFallback), a quiet site would never get to it at night - and by
-     *  day it has no traffic to disturb. */
-    private const NIGHT_START_HOUR = 1;
-
+    /** a run starts at the database's NightSlot, so the databases of one DB server mostly do not
+     *  rebuild at once. A follow-up outside the night (NightSlot::START_HOUR to NIGHT_END_HOUR) waits
+     *  for the next one. A run that comes late still runs: where the queue runs only on visits
+     *  (CronFallback), a quiet site would never get to it at night - and by day it has no traffic
+     *  to disturb. */
     private const NIGHT_END_HOUR = 5;
-
-    private const NIGHT_SPREAD = 3 * 3600;
 
     /** fixed when the run is planned, so a run that comes late or is started by hand does not
      *  skip or add the month's full rebuild; a default, as rows queued by older code lack it */
@@ -105,7 +101,7 @@ class OptimizeTables implements LaterInterface
     /** start of the weekly run: the coming Sunday night */
     public static function weeklyAt(int $now, string $db_name): int
     {
-        return self::nightStart('next sunday', $now, $db_name);
+        return NightSlot::on('next sunday', $now, $db_name);
     }
 
     /** start of a follow-up: CONTINUE_AFTER later while it is night, otherwise the next night */
@@ -113,15 +109,10 @@ class OptimizeTables implements LaterInterface
     {
         $at   = $now + self::CONTINUE_AFTER;
         $hour = (int) date('G', $at);
-        if ($hour >= self::NIGHT_START_HOUR && $hour < self::NIGHT_END_HOUR) {
+        if ($hour >= NightSlot::START_HOUR && $hour < self::NIGHT_END_HOUR) {
             return $at;
         }
-        return self::nightStart(((int) date('G', $now) < self::NIGHT_START_HOUR) ? 'today' : 'tomorrow', $now, $db_name);
-    }
-
-    private static function nightStart(string $day, int $now, string $db_name): int
-    {
-        return (int) strtotime(sprintf('%s %02d:00', $day, self::NIGHT_START_HOUR), $now) + crc32($db_name) % self::NIGHT_SPREAD;
+        return NightSlot::on(((int) date('G', $now) < NightSlot::START_HOUR) ? 'today' : 'tomorrow', $now, $db_name);
     }
 
     /** a run planned for the first Sunday of a month rebuilds every table */
