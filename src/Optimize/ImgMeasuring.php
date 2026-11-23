@@ -95,9 +95,10 @@ class ImgMeasuring extends AbstractOptimize
     /** Every {img:...} in $code with its arguments, split the way the expansion splits them:
      *  on ":" outside nested {...}, except "#:" and the colon of "http://" / "https://". The
      *  command name in any case, {# comments} dropped - the expansion does both. A nested
-     *  {img:...} inside the arguments is listed on its own, too.
+     *  {img:...} inside the arguments is listed on its own, too. $first: only the first call (none
+     *  when it is unclosed) - for a caller asking about one call, without parsing the rest.
      *  @return list<array{0: string, 1: list<string>}> [expression, arguments] */
-    public static function calls(string $code): array
+    public static function calls(string $code, bool $first = false): array
     {
         $calls  = [];
         $code   = (string) preg_replace('~\{#[^{}]*\}~', '', $code);
@@ -113,6 +114,9 @@ class ImgMeasuring extends AbstractOptimize
                 if ($char === '}' && $depth === 0) {
                     $args[]  = $arg;
                     $calls[] = [substr($code, $start, $i - $start + 1), $args];
+                    if ($first) {
+                        return $calls;
+                    }
                     continue 2;
                 }
                 if ($char === ':' && $depth === 0 && !self::isLiteralColon($code, $i)) {
@@ -124,6 +128,9 @@ class ImgMeasuring extends AbstractOptimize
                 $arg   .= $char;
             }
             // unclosed: the expansion leaves this one as text, but still expands every later one
+            if ($first) {
+                return [];
+            }
         }
         return $calls;
     }

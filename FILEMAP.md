@@ -322,6 +322,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Optimize/CheckCkeditorUse.php | State Check: where CKEditor 4 is still required | CheckCkeditorUse | S |
 | Optimize/CheckCron.php | State Check: cron table rows unreadable, doubled, stale or belonging to the queue | CheckCron | S |
 | Optimize/CheckEnvironment.php | State Check: AA, PHP and database versions and when they changed | CheckEnvironment | S |
+| Optimize/CheckImgHostPrefix.php | State Check (extended): templates writing a web address in front of {img:...}, which now gives the whole address (doubled address, broken image) | CheckImgHostPrefix | S |
 | Optimize/CheckImports.php | State Check: imports stopped, stuck, unable to run, damaged keys, leftovers | CheckImports | M |
 | Optimize/CheckImportStores.php | State Check: unreadable import stream states and catalogs | CheckImportStores | S |
 | Optimize/CheckInstallRuns.php | State Check: hanging or failed app transfers | CheckInstallRuns | S |
