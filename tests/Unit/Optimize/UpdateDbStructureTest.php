@@ -517,6 +517,16 @@ namespace Tests\Unit\Optimize {
             self::assertStringContainsString('the template does not know - left as they are; delete them manually, if nothing uses them: note', $optimize->report());
         }
 
+        public function test_test_twoTablesDiffer_diffStylesheetOnce(): void
+        {
+            // one stylesheet a report: Central keeps only its first 100 kB, ~4 kB a diff would push the rest out
+            $optimize = self::optimize(['content' => self::content(['text' => null]), 'cron' => AA_MbT::fromArray(['t' => 'cron', 'k' => [], 'i' => [], 'c' => ['id' => ['id', 'int(11)', false, '', null, '', '']], 'f' => null])]);
+
+            self::assertFalse($optimize->test());
+            self::assertSame(2, substr_count($optimize->report(), 'class="difftext"'));
+            self::assertSame(1, substr_count($optimize->report(), '<style>'));
+        }
+
         public function test_repair_asTheChainRunsIt_listsWhatStays(): void
         {
             // Chain::repair() clears the report of test() - the repair report must list the kept parts itself

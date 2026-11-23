@@ -103,6 +103,42 @@ namespace Tests\Unit\Optimize {
             self::assertSame(["ALTER TABLE `content` $changes"], self::alters());
         }
 
+        public function test_repair_shortLockWaitAroundTheAlter_thenSetBack(): void
+        {
+            // the server waits a day for a lock by default - the queries queued behind the ALTER would stop the site
+            $this->liveIndexes(self::PLAIN_TEXT + self::OTHERS);
+
+            self::assertTrue((new AddContentFieldIndex())->repair());
+            $log = array_values(array_filter(RecordingDb::$log, static fn($s) => !preg_match('/^(SELECT|SHOW)\s/', $s)));
+            self::assertStringContainsString('SESSION lock_wait_timeout = 5', $log[0]);
+            self::assertStringStartsWith('ALTER TABLE `content`', $log[1]);
+            self::assertSame('SET SESSION sql_mode = @aa_sql_mode, SESSION lock_wait_timeout = @aa_lock_wait', $log[2]);
+        }
+
+        public function test_repair_tableInUse_failsTryLater(): void
+        {
+            // a long query holds the table: the ALTER gives up after seconds, the test after it fails again
+            $this->liveIndexes(self::PLAIN_TEXT + self::OTHERS);
+            RecordingDb::$fail_on    = 'ALTER TABLE `content`';
+            RecordingDb::$fail_error = 'SQLSTATE[HY000]: General error: 1205 Lock wait timeout exceeded; try restarting transaction';
+            $optimize = new AddContentFieldIndex();
+
+            self::assertFalse($optimize->repair());
+            self::assertStringContainsString('other queries are using it. Try it again later.', $optimize->report());
+            self::assertSame(1, RecordingDb::count('SET SESSION sql_mode = @aa_sql_mode'));
+        }
+
+        public function test_repair_refused_failsWithTheError(): void
+        {
+            $this->liveIndexes(self::PLAIN_TEXT + self::OTHERS);
+            RecordingDb::$fail_on    = 'ALTER TABLE `content`';
+            RecordingDb::$fail_error = 'SQLSTATE[HY000]: General error: 1799 Creating index text required more than innodb_online_alter_log_max_size';
+            $optimize = new AddContentFieldIndex();
+
+            self::assertFalse($optimize->repair());
+            self::assertStringContainsString('the database refused the change: SQLSTATE[HY000]: General error: 1799', $optimize->report());
+        }
+
         public function test_repair_done_altersNothing(): void
         {
             // the ALTER takes minutes on a big database - a second run must not repeat it
