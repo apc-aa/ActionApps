@@ -73,6 +73,7 @@ export class Driver {
     }
 
     lost() {
+        this.pending = null;     // it would replace the note
         const note = this.el.ownerDocument.createElement('div');
         note.className = 'aa-err';
         note.textContent = this.el.getAttribute('lost') ?? '';

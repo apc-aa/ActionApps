@@ -291,10 +291,11 @@ final class OptimizeRun extends CentralRun
             if ($next === null) {
                 $i++;
                 $next = '';
-                // the page shows each AA once it is done, not only at the end of the step; null = Continue or
-                // another step took the run, false = it was ended
-                $done = [$aa => $results[$aa]];
-                if ((($stored[$aa] ?? null) !== $results[$aa]) && ($this->recordResult(static fn(self $run): bool => $run->mergeResults($done)) !== true)) {
+                // the page shows each AA once it is done, not only at the end of the step; the step stops when
+                // End, Continue or another step has taken the run - before it asks the next AA
+                $done  = [$aa => $results[$aa]];
+                $taken = (($stored[$aa] ?? null) === $results[$aa]) ? !$this->ownsRun() : ($this->recordResult(static fn(self $run): bool => $run->mergeResults($done)) !== true);
+                if ($taken) {
                     break;
                 }
             }
@@ -458,7 +459,9 @@ final class OptimizeRun extends CentralRun
 
     /** The AA a step asks right now, null while no step works. A step records each AA once it is done, so
      *  it is the first AA from the position on without a result - or the AA at the position, waiting for
-     *  its repair or the test after it, until an AA after it is done. */
+     *  its repair or the test after it, until an AA after it is done. An AA asked again with the result it
+     *  has (the test after a repair that passes in a step of its own, a step repeated after one that died)
+     *  shows done only once the step records an AA after it, or ends. */
     public function asking(int $now): ?int
     {
         if (!$this->hasLiveLease($now)) {

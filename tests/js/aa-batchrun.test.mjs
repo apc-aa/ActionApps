@@ -130,6 +130,22 @@ test('an answer that is no JSON or a refusal stops it with a word to reload', as
     }
 });
 
+test('the note of a lost connection stays when an open report is closed', async () => {
+    const { el, timers, d } = driver([() => new Promise(() => {}), { sum: 'a', html: 'new' }]);
+    el.open = true;
+    const stepping = d.step();
+    await timers.fire();
+    assert.equal(d.pending, 'new');
+
+    d.lost();
+    el.open = false;
+    el.toggle();
+
+    assert.equal(el.innerHTML, 'first');
+    assert.deepEqual(el.notes, ['Reload the page']);
+    void stepping;
+});
+
 test('a failed connection is tried again later', async () => {
     const { el, d } = driver([new Error('offline')]);
 
