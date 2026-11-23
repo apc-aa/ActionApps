@@ -59,9 +59,24 @@ class MissCachePurge implements LaterInterface
             return 'skipped, AA config constants are not defined';
         }
 
-        $s = ImgCache::get()->purge(['maxAge' => $this->maxAge, 'maxBytes' => $this->maxBytes]);
+        $s = ImgCache::get()->purge(['maxAge' => $this->maxAge, 'maxBytes' => self::cap(ImgCache::maxBytes(), $this->maxBytes)]);
 
         return self::summary($s, @disk_free_space(ImgCache::root()));
+    }
+
+    /** The size cap: AA_MISSCACHE_MAX_BYTES of the config over the planned one. Read when the purge
+     *  runs, so a config edit applies to the next purge, also of a row queued before it.
+     *
+     * @param mixed $configured the constant's value, null when undefined; 0 = no cap; a number
+     *                          (1.5 * 1024 ** 3 is a float) counts in whole bytes, anything else is ignored
+     */
+    public static function cap(mixed $configured, ?int $planned): ?int
+    {
+        // a float past PHP_INT_MAX would cast to a negative cap, which deletes the whole cache
+        if (!(is_int($configured) || is_float($configured)) || ($configured < 0) || ($configured >= PHP_INT_MAX)) {
+            return $planned;
+        }
+        return ($configured == 0) ? null : max(1, (int) $configured);
     }
 
     /** One line for the queue log, which keeps only its first 40 bytes: what the cap and the age

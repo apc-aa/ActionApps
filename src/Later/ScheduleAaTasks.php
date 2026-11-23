@@ -86,7 +86,7 @@ class ScheduleAaTasks implements LaterInterface
         $toexecute->laterOnce(new FeedsRun(), [], 'FeedsRun', 100, time() + 900);
         $toexecute->laterOnce(new LinkcheckRun(), [], 'LinkcheckRun', 10, time() + 3600);
 
-        // purge MissCache forge-on-miss image cache: files unused > 30 days, plus a 2 GB size cap
+        // purge MissCache forge-on-miss image cache: files unused for 30 days, plus a size cap (AA_MISSCACHE_MAX_BYTES, 2 GB)
         $toexecute->laterOnce(new MissCachePurge(), [], "MissCachePurge", 10, $night('MissCachePurge'));
         // {img} emits cache urls without checking that a miss reaches the dispatcher - put the
         // routing .htaccess back within minutes of an update, not a day (one stat when it is there).

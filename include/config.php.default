@@ -285,6 +285,17 @@ define("IMG_UPLOAD_DIR_MODE",  octdec('0774'));
  *  Default is: commented out */
 // define('AA_MISSCACHE_IMG_DISABLE', true);
 
+/** The resized images in <IMG_UPLOAD_PATH>/mC/ are purged every night: files
+ *  unused for 30 days, and when the cache is bigger than this many bytes, the
+ *  least recently used ones down to 90 % of it. "Used" is the last read where the
+ *  disk records it; where it does not (noatime, some network file systems), the
+ *  time the image was made - a much-used image then goes as soon as an unused one.
+ *  Raise it when there is disk to spare and the cache keeps hitting it (the purge
+ *  row in the queue log starts with what the cap deleted). 0 = no cap, the 30 days
+ *  only.
+ *  Default is: 2 GB */
+// define('AA_MISSCACHE_MAX_BYTES', 8 * 1024 ** 3);
+
 //-----------------------------------------------------------------------------
 // Folloving section contains not so important config options and you will
 // probably left it as it is

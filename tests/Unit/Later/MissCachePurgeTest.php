@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Later;
 
+use AA\Cache\ImgCache;
 use AA\Later\MissCachePurge;
 use PHPUnit\Framework\TestCase;
 
@@ -35,5 +36,34 @@ final class MissCachePurgeTest extends TestCase
     {
         $line = MissCachePurge::summary(['deleted_tmp' => 2, 'deleted_stale' => 1] + self::STATS, false);
         $this->assertSame('-0cap -0old =0B free ? -2tmp -1blank freed 0B of 0 files', $line);
+    }
+
+    public function test_cap_from_the_config_wins_and_zero_means_none(): void
+    {
+        $planned = 2 * 1024 ** 3;
+        $this->assertSame($planned, MissCachePurge::cap(null, $planned), 'not configured');
+        $this->assertSame(8 * 1024 ** 3, MissCachePurge::cap(8 * 1024 ** 3, $planned));
+        $this->assertNull(MissCachePurge::cap(0, $planned), '0 = the 30 days only');
+        $this->assertSame($planned, MissCachePurge::cap(-1, $planned), 'a negative number is a typo');
+        $this->assertSame($planned, MissCachePurge::cap('8G', $planned), 'a string is not a size');
+        $this->assertSame(1_610_612_736, MissCachePurge::cap(1.5 * 1024 ** 3, $planned), 'a float counts in whole bytes');
+        $this->assertSame($planned, MissCachePurge::cap(INF, $planned));
+        $this->assertSame($planned, MissCachePurge::cap(1e19, $planned), 'past PHP_INT_MAX the cast turns negative');
+        $this->assertSame(1, MissCachePurge::cap(0.5, $planned), 'only 0 switches the cap off');
+    }
+
+    public function test_cap_is_read_from_the_image_cache_config(): void
+    {
+        $config = ['IMG_UPLOAD_URL' => 'https://x/img_upload/', 'IMG_UPLOAD_PATH' => '/x/', 'IMG_UPLOAD_DIR_MODE' => 0o775, 'AA_INSTAL_URL' => 'https://x/', 'AA_MISSCACHE_IMG_DISABLE' => false];
+        try {
+            ImgCache::useConfig($config + ['AA_MISSCACHE_MAX_BYTES' => 8 * 1024 ** 3]);
+            $this->assertSame(8 * 1024 ** 3, MissCachePurge::cap(ImgCache::maxBytes(), 2 * 1024 ** 3));
+            ImgCache::useConfig($config);
+            $this->assertNull(ImgCache::maxBytes(), 'not in the config');
+            ImgCache::useConfig(false);
+            $this->assertNull(ImgCache::maxBytes(), 'no image cache');
+        } finally {
+            ImgCache::useConfig(null);
+        }
     }
 }
