@@ -56,7 +56,7 @@ class ScheduleAaTasks implements LaterInterface
         $computedfields_updater = new ComputedfieldsUpdater();
         $computedfields_updater->plan();
 
-        $toexecute->laterOnce(new AA_Mysqlauth_Maintain(), [], 'AA_Mysqlauth_Maintain', 10, now() + (60 * 60 * 24));
+        $toexecute->laterOnce(new AA_Mysqlauth_Maintain(), [], 'AA_Mysqlauth_Maintain', 10, $night('AA_Mysqlauth_Maintain'));
 
         // we plan this tasks for future (tomorrow)
         // it should be enough to clean the logs once a day
@@ -70,7 +70,7 @@ class ScheduleAaTasks implements LaterInterface
         // daily State Check snapshot - the STATE_CHK rows behind admin/aa_statecheck.php
         $toexecute->laterOnce(new StateCheck(), [], 'StateCheck', 10, $night('StateCheck'));
 
-        $toexecute->laterOnce(new Post2shtmlCleanup(now() - (60 * 60 * 24 * 40)), [], "Post2shtmlCleanup", 10, now() + (60 * 60 * 24));
+        $toexecute->laterOnce(new Post2shtmlCleanup(now() - (60 * 60 * 24 * 40)), [], "Post2shtmlCleanup", 10, $night('Post2shtmlCleanup'));
 
         // OPTIMIZE TABLE over the AA tables in the Sunday night
         $optimize_at = OptimizeTables::weeklyAt(now(), constant('DB_NAME'));

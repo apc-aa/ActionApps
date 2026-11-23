@@ -70,7 +70,7 @@ final class NightSlotTest extends TestCase
     {
         $registry = (string) file_get_contents(self::REGISTRY);
         $this->assertStringContainsString("NightSlot::next(now(), constant('DB_NAME')", $registry, 'a moment of its own per database');
-        foreach (['LogCleanup', 'StateCheck', 'ToexecuteCleanup', 'MissCachePurge'] as $task) {
+        foreach (['LogCleanup', 'StateCheck', 'ToexecuteCleanup', 'MissCachePurge', 'AA_Mysqlauth_Maintain', 'Post2shtmlCleanup'] as $task) {
             $this->assertMatchesRegularExpression("/[\"']{$task}[\"'], \\d+, \\\$night\\('{$task}'\\)\\);/", $registry, "$task runs in the night");
         }
     }
