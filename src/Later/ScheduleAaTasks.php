@@ -43,6 +43,8 @@ class ScheduleAaTasks implements LaterInterface
     public function planAaTasks(): void
     {
         $toexecute = new Toexecute();
+        // daily maintenance runs at a moment of its own in the night, not "a day after the last run"
+        $night = static fn(string $selector): int => NightSlot::next(now(), constant('DB_NAME') . ":$selector");
 
         $display_counter = new HitcounterUpdate();
         $toexecute->laterOnce($display_counter, [], 'HitcounterUpdate', 100, time() + 300);  // run it once in 5 minutes
@@ -61,12 +63,12 @@ class ScheduleAaTasks implements LaterInterface
 
         // clean all older than LogCleanup::KEEP_DAYS
         //                                                                what to clean                                                                       when to run
-        $toexecute->laterOnce(new LogCleanup(now() - (60 * 60 * 24 * LogCleanup::KEEP_DAYS), [], ['LOGIN', 'BM_CREATE', 'BM_DELETE', 'BM_RENAME', 'BM_UPDATE', 'SYS_STAT', StateCheck::EVENT, LoginLatch::LOG_EVENT, LdapPermsToSql::LOG_TYPE]), [], "LogCleanup", 10, now() + (60 * 60 * 24));  // delete all log entries older than KEEP_DAYS except LOGINs and Bookmark opperations
+        $toexecute->laterOnce(new LogCleanup(now() - (60 * 60 * 24 * LogCleanup::KEEP_DAYS), [], ['LOGIN', 'BM_CREATE', 'BM_DELETE', 'BM_RENAME', 'BM_UPDATE', 'SYS_STAT', StateCheck::EVENT, LoginLatch::LOG_EVENT, LdapPermsToSql::LOG_TYPE]), [], "LogCleanup", 10, $night('LogCleanup'));  // delete all log entries older than KEEP_DAYS except LOGINs and Bookmark opperations
 
         $toexecute->laterOnce(new LogSystemstatus(), [], "LogSystemstatus", 10, now() + 600);  // log system status every 10 minutes
 
         // daily State Check snapshot - the STATE_CHK rows behind admin/aa_statecheck.php
-        $toexecute->laterOnce(new StateCheck(), [], 'StateCheck', 10, now() + (60 * 60 * 24));
+        $toexecute->laterOnce(new StateCheck(), [], 'StateCheck', 10, $night('StateCheck'));
 
         $toexecute->laterOnce(new Post2shtmlCleanup(now() - (60 * 60 * 24 * 40)), [], "Post2shtmlCleanup", 10, now() + (60 * 60 * 24));
 
@@ -74,7 +76,7 @@ class ScheduleAaTasks implements LaterInterface
         $optimize_at = OptimizeTables::weeklyAt(now(), constant('DB_NAME'));
         $toexecute->laterOnce(new OptimizeTables([], OptimizeTables::everyTable($optimize_at)), [], 'OptimizeTables', 10, $optimize_at);
 
-        $toexecute->laterOnce(new ToexecuteCleanup(), [], "ToexecuteCleanup", 10, now() + (60 * 60 * 24));
+        $toexecute->laterOnce(new ToexecuteCleanup(), [], "ToexecuteCleanup", 10, $night('ToexecuteCleanup'));
 
         // the sweeps that were cron table rows until 2026-09: alerts (instant + digests), feeds, link check
         foreach (AlertsSweep::SCHEDULE as $howoften => $when) {
@@ -85,7 +87,7 @@ class ScheduleAaTasks implements LaterInterface
         $toexecute->laterOnce(new LinkcheckRun(), [], 'LinkcheckRun', 10, time() + 3600);
 
         // purge MissCache forge-on-miss image cache: files unused > 30 days, plus a 2 GB size cap
-        $toexecute->laterOnce(new MissCachePurge(), [], "MissCachePurge", 10, now() + (60 * 60 * 24));
+        $toexecute->laterOnce(new MissCachePurge(), [], "MissCachePurge", 10, $night('MissCachePurge'));
         // {img} emits cache urls without checking that a miss reaches the dispatcher - put the
         // routing .htaccess back within minutes of an update, not a day (one stat when it is there).
         // Nothing it could throw may stop the queue; State Check reports a routing that fails.

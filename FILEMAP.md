@@ -143,6 +143,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Later/LogCleanup.php | Clean up log tables | LogCleanup | S |
 | Later/LogSystemstatus.php | Log system status tracking | LogSystemstatus | S |
 | Later/MissCachePurge.php | Daily MissCache purge (TTL, size cap, stored blanks) | MissCachePurge | S |
+| Later/NightSlot.php | Night moment of a maintenance task, its own per database and task, the same every night | NightSlot | S |
 | Later/OptimizeTables.php | Weekly OPTIMIZE TABLE queue task (replaces misc/optimize.php) | OptimizeTables | S |
 | Later/PagecacheDateSweep.php | Invalidate cached pages after item publish/expiry dates pass (periodic sweep) | PagecacheDateSweep | S |
 | Later/PagecachePurge.php | Purge page cache | PagecachePurge | S |
