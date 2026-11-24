@@ -777,7 +777,17 @@ class AA_Session extends Session
         $_SESSION['r_tokens'] = !is_array($_SESSION['r_tokens']) ? [] : array_filter($_SESSION['r_tokens'], static fn($t) => $t > time() - self::AA_FORM_TOKEN_LIFETIME);   // AA_FORM_TOKEN_LIFETIME
     }
 
-    /** Opens the session on the first write - the site module does not open it for anonymous visitors.
+    /** pageOpenVisitor(): the browser sent the session cookie. On a page that logs visitors in ($login) not
+     *  when the request brings a name to log in with - the page takes that login itself, later (the site
+     *  module in its router)
+     */
+    public static function visitorHasOne(array $cookie, array $get, array $post, bool $login): bool
+    {
+        $id = $cookie['AA_Session'] ?? '';
+        return is_string($id) && ($id !== '') && !($login && (isset($get['username']) || isset($post['username'])));
+    }
+
+    /** Opens the session on the first write - public pages do not open it for anonymous visitors.
      *  Must run before the body is sent (the site module renders the page into a string first).
      *  The page then holds what was written (a form token, a connector id), so it belongs to this
      *  visitor's session and must not be cached - also when the session was open already.
@@ -813,6 +823,21 @@ function pageOpen($type = ''): void
 
     if ($type !== 'noauth') {
         authStart($type === 'nobody');
+    }
+}
+
+/** Public pages (site module, view.php): the session only of a visitor who has one - login, form tokens.
+ *  The others get no session file and no cookie; AA_Session::ensureStarted() opens one at the first write.
+ *  The stored login is checked as on any page, "nobody" is allowed.
+ *  @param bool $login false for a page that logs nobody in (Auth::takeNoLogin())
+ */
+function pageOpenVisitor(bool $login = true): void
+{
+    if (!$login) {
+        Auth::takeNoLogin();
+    }
+    if (AA_Session::visitorHasOne($_COOKIE, $_GET, $_POST, $login)) {
+        pageOpen('nobody');
     }
 }
 

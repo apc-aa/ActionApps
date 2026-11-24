@@ -27,8 +27,10 @@ namespace Tests\Unit\Legacy {
     use AA;
     use AA_Auth;
     use AA_Perm;
+    use Auth;
     use AA\Util\LogOnce;
     use PHPUnit\Framework\TestCase;
+    use ReflectionProperty;
     use Tests\Unit\Legacy\Fixtures\FakePermsystem;
     use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
@@ -72,6 +74,7 @@ namespace Tests\Unit\Legacy {
             LogOnce::reset();
             AA::$perm = $this->perm;
             $_POST    = [];
+            (new ReflectionProperty(Auth::class, 'takes_login'))->setValue(null, true);
         }
 
         /** AA_Perm over one backend of these login => password users (uid 7, 8, ...) */
@@ -97,6 +100,17 @@ namespace Tests\Unit\Legacy {
             $this->assertSame(['LOGIN', 'central'], [$type, $params]);
             $this->assertStringStartsWith('7:', $selector);
             $this->assertStringContainsString(':192.0.2.1:', $selector);
+        }
+
+        /** view.php: the right name and password in the request log nobody in, however its session opens */
+        public function test_a_page_that_takes_no_login_reads_no_credentials(): void
+        {
+            Auth::takeNoLogin();
+            $_POST = ['username' => 'central', 'password' => 'pw', 'code2fa' => ''];
+            $this->assertFalse((new AA_Auth())->auth_preauth());
+            $this->assertFalse((new AA_Auth())->auth_validatelogin());
+            $this->assertSame('', AA_Auth::login());
+            $this->assertSame([], self::logRows());
         }
 
         public function test_a_failed_login_logs_the_name_without_a_user(): void

@@ -27,7 +27,9 @@ namespace Tests\Unit\Legacy {
     use AA;
     use AA\Cache\PageCache;
     use AA_Item;
+    use AA_Session;
     use AA_Stringexpand_Sessurl;
+    use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
     use ReflectionProperty;
 
@@ -114,6 +116,31 @@ namespace Tests\Unit\Legacy {
         {
             $this->assertSame('', (new AA_Stringexpand_Sessurl([]))->expand(''));
             $this->assertFalse(self::nostore());
+        }
+
+        public static function visitors(): array
+        {
+            $sid = ['AA_Session' => 'abc'];
+            return [
+                'no cookie'                         => [[], [], [], true, false],
+                'session cookie'                    => [$sid, [], [], true, true],
+                'another cookie'                    => [['lang' => 'cz'], [], [], true, false],
+                'empty cookie'                      => [['AA_Session' => ''], [], [], true, false],
+                'cookie sent as an array'           => [['AA_Session' => ['abc']], [], [], true, false],
+                'login name in the url'             => [$sid, ['username' => 'eva'], [], true, false],
+                'login name posted'                 => [$sid, [], ['username' => 'eva'], true, false],
+                'login name only a cookie'          => [$sid + ['username' => 'eva'], [], [], true, true],
+                'no login here: a name is a filter' => [$sid, ['username' => 'eva'], [], false, true],
+                'no login here: posted name'        => [$sid, [], ['username' => 'eva'], false, true],
+                'no login here: no cookie'          => [[], ['username' => 'eva'], [], false, false],
+            ];
+        }
+
+        /** public pages open the session only for the browser that has one; the site module takes a login by name later, itself */
+        #[DataProvider('visitors')]
+        public function test_visitorHasOne_request(array $cookie, array $get, array $post, bool $login, bool $expected): void
+        {
+            $this->assertSame($expected, AA_Session::visitorHasOne($cookie, $get, $post, $login));
         }
 
         public function test_sessurl_param_withSession_stopsCaching(): void

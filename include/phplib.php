@@ -501,6 +501,21 @@ class Auth
 
     protected $auth = [];            // Data array
 
+    /** false on a page that logs nobody in: a name and password or a passkey answer in its request are
+     *  not read, whenever its session opens */
+    private static bool $takes_login = true;
+
+    /** a public page that never was a login (view.php) - any request can reach it with anybody's credentials */
+    public static function takeNoLogin(): void
+    {
+        self::$takes_login = false;
+    }
+
+    protected static function takesLogin(): bool
+    {
+        return self::$takes_login;
+    }
+
     //
     // Initialization
     //
