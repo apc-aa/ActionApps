@@ -156,7 +156,7 @@ namespace Tests\Unit\Legacy {
                 'token list emptied'              => [$empty + ['r_tokens' => []], 'nobody', true],
                 'broken token list'               => [$empty + ['r_tokens' => 'x'], 'nobody', true],
                 'logged in'                       => [$empty, '7', false],
-                'login form shown'                => [$empty, 'form', false],
+                'any other uid (a shown login form is "nobody" by then: the login check runs first)' => [$empty, 'form', false],
                 'a form waits for its token'      => [$empty + ['r_tokens' => ['a' => $now - 60]], 'nobody', false],
                 'one of the tokens still valid'   => [$empty + ['r_tokens' => ['a' => $now - 200000, 'b' => $now - 172799]], 'nobody', false],
                 'connector of a widget'           => [$empty + ['AA_4ajax' => ['w_mng' => ['x' => 'y']]], 'nobody', false],
