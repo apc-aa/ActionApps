@@ -65,7 +65,9 @@ class Cacheentry
         header("Last-Modified: " . gmdate("D, d M Y H:i:s", $this->t) . " GMT");
         // weak: Apache compresses the body and keeps the ETag
         header("ETag: W/\"$hash\"");
-        header('Cache-Control: ' . self::cacheControl(session_status() === PHP_SESSION_ACTIVE, headers_list()));
+        // $sess: view.php closes the session early, yet the page still is that visitor's
+        $session = is_object($GLOBALS['sess'] ?? null) || (session_status() === PHP_SESSION_ACTIVE);
+        header('Cache-Control: ' . self::cacheControl($session, headers_list()));
         // "expired" agrees with no-cache; and with any Expires here Apache's mod_expires adds no lifetime
         // of its own (three days for scripts on some servers)
         header('Expires: 0');

@@ -830,14 +830,22 @@ function pageOpen($type = ''): void
  *  The others get no session file and no cookie; AA_Session::ensureStarted() opens one at the first write.
  *  The stored login is checked as on any page, "nobody" is allowed.
  *  @param bool $login false for a page that logs nobody in (Auth::takeNoLogin())
+ *  @param bool $close save and close the session at once: it is locked while open, so the visitor's other
+ *                     requests wait for this one. $_SESSION stays readable. What the page writes later is
+ *                     saved only through AA_Session::ensureStarted(), which opens the session again;
+ *                     the rights cached by AA_Perm::cache() are not - they are read again next time
  */
-function pageOpenVisitor(bool $login = true): void
+function pageOpenVisitor(bool $login = true, bool $close = false): void
 {
     if (!$login) {
         Auth::takeNoLogin();
     }
-    if (AA_Session::visitorHasOne($_COOKIE, $_GET, $_POST, $login)) {
-        pageOpen('nobody');
+    if (!AA_Session::visitorHasOne($_COOKIE, $_GET, $_POST, $login)) {
+        return;
+    }
+    pageOpen('nobody');
+    if ($close && (session_status() === PHP_SESSION_ACTIVE)) {
+        session_write_close();
     }
 }
 

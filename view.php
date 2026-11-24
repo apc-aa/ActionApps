@@ -83,7 +83,7 @@ require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 
 add_vars();
 
-pageOpenVisitor(login: false);   // no session file and cookie for every banner, feed and robot
+pageOpenVisitor(login: false, close: true);   // no session file and cookie for every banner, feed and robot
 pageOpenForDebug();   // ?debug of a logged-in superadmin
 
 if (ctype_digit((string) $time_limit)) {
