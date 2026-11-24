@@ -317,7 +317,7 @@ final class PageCacheVaryTest extends TestCase
         'src/Optimize/CheckCookieReads.php' => [1, 'the detector'],
         'include/phplib.php'                => [3, 'the session; its user is keyed as $auth4cache'],
         'modules/site/site.php'             => [1, 'debug log'],
-        'include/locsess.php'               => [3, 'aa_debug -> AA::$debug, never stored; AA_Session -> login for ?debug turns storing off; AA_Session -> pageOpenVisitor(): the login, in the site key as $auth4cache'],
+        'include/locsess.php'               => [4, 'aa_debug -> AA::$debug, never stored; AA_Session -> login for ?debug turns storing off; AA_Session -> pageOpenVisitor(): the login, in the site key as $auth4cache, and forget() drops the cookie of an ended session'],
         'include/util.php'                  => [2, 'debug() log switch; Authorization header'],
         'include/debug.class.php'           => [2, 'PhpConsole, debugging only'],
         'include/request.class.php'         => [5, 'AA_Auth for external PHP pages'],

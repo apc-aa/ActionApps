@@ -143,6 +143,51 @@ namespace Tests\Unit\Legacy {
             $this->assertSame($expected, AA_Session::visitorHasOne($cookie, $get, $post, $login));
         }
 
+        public static function sessions(): array
+        {
+            $now   = 1_800_000_000;
+            $empty = ['auth' => new \stdClass(), 'perm_cache_v' => 2];
+            return [
+                'nothing at all'                  => [[], 'nobody', true],
+                'a visit without login'           => [$empty, 'nobody', true],
+                'no login object'                 => [['perm_cache_v' => 2], '', true],
+                'rights cached for nobody'        => [$empty + ['permission_uid' => 'nobody', 'permission_to' => ['slice' => [], 'aa' => []], 'r_superuser' => []], 'nobody', true],
+                'only tokens too old to be used'  => [$empty + ['r_tokens' => ['a' => $now - 172800, 'b' => $now - 200000]], 'nobody', true],
+                'token list emptied'              => [$empty + ['r_tokens' => []], 'nobody', true],
+                'broken token list'               => [$empty + ['r_tokens' => 'x'], 'nobody', true],
+                'logged in'                       => [$empty, '7', false],
+                'login form shown'                => [$empty, 'form', false],
+                'a form waits for its token'      => [$empty + ['r_tokens' => ['a' => $now - 60]], 'nobody', false],
+                'one of the tokens still valid'   => [$empty + ['r_tokens' => ['a' => $now - 200000, 'b' => $now - 172799]], 'nobody', false],
+                'connector of a widget'           => [$empty + ['AA_4ajax' => ['w_mng' => ['x' => 'y']]], 'nobody', false],
+                'passkey challenge'               => [$empty + ['aa_passkey' => []], 'nobody', false],
+                'state of slice.php'              => [$empty + ['slices' => null], 'nobody', false],
+                'a key this list does not know'   => [$empty + ['anything' => 0], 'nobody', false],
+            ];
+        }
+
+        /** a session that keeps nothing is ended - only the keys every plain visit leaves count as nothing */
+        #[DataProvider('sessions')]
+        public function test_keepsNothing_session(array $session, string $uid, bool $expected): void
+        {
+            $this->assertSame($expected, AA_Session::keepsNothing($session, $uid, 1_800_000_000));
+        }
+
+        /** an ended session takes its own cookie out of the answer (renewal, new id) and no other one */
+        public function test_cookiesExcept_keepsOtherCookies(): void
+        {
+            $headers = [
+                'Content-Type: text/html',
+                'Set-Cookie: AA_Session=abc; path=/; HttpOnly',
+                'Set-Cookie: lang=cz; path=/',
+                'set-cookie:AA_Session=def',
+                'Set-Cookie: AA_Session2=x',
+                'X-Note: Set-Cookie: AA_Session=no',
+            ];
+            $this->assertSame(['Set-Cookie: lang=cz; path=/', 'Set-Cookie: AA_Session2=x'], AA_Session::cookiesExcept($headers, 'AA_Session'));
+            $this->assertSame([], AA_Session::cookiesExcept(['Content-Type: text/html'], 'AA_Session'));
+        }
+
         public function test_sessurl_param_withSession_stopsCaching(): void
         {
             self::fakeSession();
