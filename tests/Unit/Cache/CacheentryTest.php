@@ -8,7 +8,7 @@ use AA\Cache\Cacheentry;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/** Conditional requests (RFC 9110 §13): when a page answers 304 instead of its body */
+/** Conditional requests (RFC 9110 §13): when a page answers 304 instead of its body; and who may keep the page */
 final class CacheentryTest extends TestCase
 {
     private const HASH    = '0123456789abcdef0123456789abcdef';
@@ -64,5 +64,41 @@ final class CacheentryTest extends TestCase
     {
         $server = ['REQUEST_METHOD' => 'GET', 'HTTP_IF_NONE_MATCH' => '"' . self::HASH . '"'];
         $this->assertSame($expected, Cacheentry::notModified($headers, $server, self::HASH, self::LM));
+    }
+
+    public static function responses(): array
+    {
+        return [
+            'visitor without a session'  => [false, ['Content-Type: text/html'], 'no-cache'],
+            'nothing sent yet'           => [false, [], 'no-cache'],
+            'open session'               => [true, [], 'private, no-cache'],
+            'cookie being set'           => [false, ['Content-Type: text/html', 'Set-Cookie: lang=cz; path=/'], 'private, no-cache'],
+            'header names are caseless'  => [false, ['set-cookie: lang=cz'], 'private, no-cache'],
+            'cookie only inside a value' => [false, ['X-Note: Set-Cookie: no'], 'no-cache'],
+        ];
+    }
+
+    /** every copy is checked with the server before reuse; a response that sets a cookie is one visitor's */
+    #[DataProvider('responses')]
+    public function test_cacheControl_response(bool $session, array $sent, string $expected): void
+    {
+        $this->assertSame($expected, Cacheentry::cacheControl($session, $sent));
+    }
+
+    /** the page cache holds entries stored with the cacheability an earlier version kept in the entry */
+    public function test_unserialize_entryWithCacheability(): void
+    {
+        $stored = "O:19:\"AA\\Cache\\Cacheentry\":5:{s:4:\"\0*\0c\";s:4:\"body\";s:4:\"\0*\0h\";a:1:{s:4:\"type\";s:38:\"Content-Type: text/html; charset=utf-8\";}"
+            . "s:4:\"\0*\0i\";s:6:\"itemid\";s:4:\"\0*\0p\";s:7:\"private\";s:4:\"\0*\0t\";i:1800000000;}";
+        // a property the class does not declare would be reported on every page served from the cache
+        set_error_handler(static function (int $no, string $msg): bool {
+            throw new \ErrorException($msg, 0, $no);
+        });
+        try {
+            $entry = unserialize($stored, ['allowed_classes' => [Cacheentry::class]]);
+        } finally {
+            restore_error_handler();
+        }
+        $this->assertInstanceOf(Cacheentry::class, $entry);
     }
 }
