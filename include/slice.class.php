@@ -591,7 +591,10 @@ abstract class AA_Module
      */
     public static function belongsToSites(string $module_id): array
     {
-        return self::filterActive(DB_AA::select('', 'SELECT LOWER(HEX(`source_id`)) AS unpackid FROM relation', [['destination_id', $module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]));
+        // the sites not deleted, the newest first
+        return array_values(array_unique(DB_AA::select('', 'SELECT LOWER(HEX(relation.source_id)) AS unpackid FROM relation, module', [
+            ['relation.destination_id', $module_id, 'l'], ['relation.flag', REL_FLAG_MODULE_DEPEND, 'i'], ['module.id', 'relation.source_id', 'j'], ['module.deleted', 0, 'i'],
+        ], ['module.created_at-'])));
     }
 }
 
