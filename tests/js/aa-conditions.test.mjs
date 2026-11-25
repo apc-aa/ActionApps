@@ -3,27 +3,18 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { NUMBER, nextNumber, numbered } from '../../javascript/widgets/aa-conditions.js';
 
-test('the first row gets the first number', () => {
-    assert.equal(nextNumber([], 4), 4);
-    assert.equal(nextNumber([], 1), 1);
+test('the first row is 1', () => {
+    assert.equal(nextNumber([]), 1);
 });
 
 test('a new row goes above every number used', () => {
-    assert.equal(nextNumber([4, 5], 4), 6);
-    assert.equal(nextNumber([4, 9, 6], 4), 10);
-});
-
-test('a number below the first one does not pull new rows down', () => {
-    assert.equal(nextNumber([2], 4), 4);
-});
-
-test('a row without a number is not counted', () => {
-    assert.equal(nextNumber([NaN, 5], 4), 6);
-    assert.equal(nextNumber([NaN], 4), 4);
+    assert.equal(nextNumber([1, 2]), 3);
+    assert.equal(nextNumber([4, 9, 6]), 10);
 });
 
 test('a row named by letters is not counted', () => {
-    assert.equal(nextNumber([NaN, 4, NaN], 4), 5);
+    assert.equal(nextNumber([NaN, 4, NaN]), 5);
+    assert.equal(nextNumber([NaN]), 1);
 });
 
 test('the template row gets the number for its key and its name', () => {

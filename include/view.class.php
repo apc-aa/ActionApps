@@ -58,8 +58,8 @@ class AA_View
      */
     public const VIEW_SORT_DIRECTIONS = [0 => 'a', 1 => 'd', 2 => '1', 3 => '9'];
 
-    /** the conditions 1 - 3 have their own columns; view.conds keeps those from this number on */
-    public const MORE_CONDS_FROM = 4;
+    /** the conditions 1 - 3 have columns of their own (cond1field, cond1op, cond1cond, ...) */
+    public const COND_COLUMNS = 3;
 
     /** view function
      * @param $id
@@ -237,36 +237,41 @@ class AA_View
         $this->fields = array_merge(array_diff_key((array) $this->fields, ['banners' => 1, 'banners_from_request' => 1]), $banner_param);
     }
 
-    /** @var array{string, StoredConditions}|null the text of view.conds and what it reads as */
-    private ?array $more_conds = null;
+    /** @var array{string, StoredConditions}|null what the conditions were read from, and the conditions */
+    private ?array $conditions = null;
 
-    /** the conditions of the view after its third (view.conds); none in a database without the column */
-    private function moreConds(): StoredConditions
+    /** the bytes the columns of a condition 1 - 3 hold: cond1field, cond1op, cond1cond */
+    public const COND_COLUMN_LIMITS      = ['field' => 100, 'operator' => 10, 'value' => 255];
+    /** a plain field id: all that goes to cond1field of a database whose column is not widened yet */
+    public const COND_COLUMN_FIELD_SHORT = 16;
+
+    /**
+     * The conditions of the view by their numbers and names: 1 - 3 of the columns cond1field, ... (a condition
+     * of one field) or of view.conds (one of more fields), then the named ones of view.conds.
+     */
+    public function conditions(): StoredConditions
     {
-        $text = (string) ($this->fields['conds'] ?? '');
-        if (($this->more_conds[0] ?? null) !== $text) {
-            $this->more_conds = [$text, StoredConditions::fromText($text, self::MORE_CONDS_FROM)];
+        $columns = [];
+        for ($n = 1; $n <= self::COND_COLUMNS; $n++) {
+            $columns[$n] = [(string) $this->f("cond{$n}field"), (string) $this->f("cond{$n}op"), (string) $this->f("cond{$n}cond")];
         }
-        return $this->more_conds[1];
+        $text = (string) ($this->fields['conds'] ?? '');   // none in a database without the column
+        $key  = serialize([$columns, $text]);
+        if (($this->conditions[0] ?? null) !== $key) {
+            $this->conditions = [$key, StoredConditions::fromColumns($columns, $text)];
+        }
+        return $this->conditions[1];
     }
 
     /**
      * The value each condition of the view works with: the one a call gives (cmd[]=c-2-value,
      * cmd[]=c-author-value) or, without it, the one set in the view.
      * @param array $param_conds the values of the call by the numbers and names of the conditions
-     * @return array<int|string, string> by the numbers 1 - 3 and the names of the conditions after them
+     * @return array<int|string, string> by the numbers and names of the conditions
      */
     public function condValues($param_conds = []): array
     {
-        $param_conds = (array) $param_conds;
-        $values      = [];
-        foreach ([1, 2, 3] as $n) {
-            if ($this->f("cond{$n}field") && $this->f("cond{$n}op")) {
-                $given      = (string) ($param_conds[$n] ?? '');
-                $values[$n] = (strlen($given) > 0) ? $given : (string) $this->f("cond{$n}cond");   // the call may give "0"
-            }
-        }
-        return $values + $this->moreConds()->values($param_conds);
+        return $this->conditions()->values((array) $param_conds);
     }
 
     /** the alias with the value of a condition: _#C_ and its number or name, in capitals */
@@ -277,7 +282,7 @@ class AA_View
 
     /**
      * The names a condition should not get: its alias would stand in the templates of the view for
-     * an alias of the same name the slice has for a field.
+     * an alias of the same name the slice has for a field. Numbers are left alone - pages call them.
      * @param list<string> $slice_aliases
      * @return list<string>
      */
@@ -286,7 +291,7 @@ class AA_View
         $names = [];
         foreach ($slice_aliases as $alias) {
             $name = strtolower(rtrim(substr($alias, 4), '_'));
-            if ((preg_match('~^' . StoredConditions::NAME_PATTERN . '$~D', $name) === 1) && (self::condAlias($name) === $alias)) {
+            if ((preg_match('~^' . StoredConditions::NAME_PATTERN . '$~D', $name) === 1) && !ctype_digit($name) && (self::condAlias($name) === $alias)) {
                 $names[] = $name;
             }
         }
@@ -302,16 +307,7 @@ class AA_View
     public function getConds($param_conds = []): array
     {
         AA::$debug & 2 && AA::$dbg->log("(AA_View->getConds) param_conds=", $param_conds);
-        $values = $this->condValues($param_conds);
-        $conds  = [];
-        foreach ([1, 2, 3] as $n) {
-            if (isset($values[$n])) {
-                $conds[] = ['operator' => $this->f("cond{$n}op"), 'value' => $values[$n], $this->f("cond{$n}field") => 1];
-            }
-        }
-        foreach ($this->moreConds()->toConds((array) $param_conds) as $cond) {
-            $conds[] = $cond;
-        }
+        $conds = $this->conditions()->toConds((array) $param_conds);
         AA::$debug & 2 && AA::$dbg->log("(AA_View->getConds) conds=", $conds);
 
         return $conds;

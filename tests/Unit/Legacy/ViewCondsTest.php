@@ -104,6 +104,23 @@ final class ViewCondsTest extends TestCase
         );
     }
 
+    /** a condition 1 - 3 of more fields does not fit its columns: it is in view.conds under its number,
+     *  and takes its place among the first three */
+    public function test_getConds_conditionOfMoreFieldsUnderANumberOfTheColumns(): void
+    {
+        $view = self::view(['cond2field' => '', 'cond2op' => '', 'conds' => "tag\tcategory........\t=\tt\n2\theadline........,abstract........\tLIKE\t\n1\tsource..........\t=\tnot used"]);
+
+        self::assertSame(
+            [
+                ['operator' => '=', 'value' => 'News', 'category........' => 1],
+                ['operator' => 'LIKE', 'value' => 'voda', 'headline........' => 1, 'abstract........' => 1],
+                ['operator' => '=', 'value' => 't', 'category........' => 1],
+            ],
+            $view->getConds([2 => 'voda']),
+        );
+        self::assertSame([1 => 'News', 2 => 'voda', 'tag' => 't'], $view->condValues([2 => 'voda']));
+    }
+
     public function test_getConds_namedConditionOfTheCall(): void
     {
         $view = self::view(['conds' => "author\tcreated_by......\t=\t"]);
@@ -126,7 +143,7 @@ final class ViewCondsTest extends TestCase
     public function test_condNamesTaken_areThoseWhoseAliasTheSliceHas(): void
     {
         self::assertSame(
-            ['date', '4', 'author'],
+            ['date', 'author'],
             AA_View::condNamesTaken(['_#HEADLINE', '_#C_DATE__', '_#C_4_____', '_#C_EMAIL#', '_#C_AUTHOR', '_#C_______', '_#C_Date__', '_#CATEGORY']),
         );
     }

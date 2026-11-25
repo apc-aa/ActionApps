@@ -31,14 +31,14 @@ final class ConditionsInputTest extends TestCase
 
     private static function html(string $stored): string
     {
-        return ConditionsInput::html('conds', StoredConditions::fromText($stored), self::FIELDS, self::OPERATORS, 4);
+        return ConditionsInput::html('conds', StoredConditions::fromText($stored), self::FIELDS, self::OPERATORS);
     }
 
     public function test_html_noConditions_isTheTemplateRowAndTheAddButton(): void
     {
         $html = self::html('');
 
-        self::assertStringStartsWith('<aa-conditions first="4"><template>', $html);
+        self::assertStringStartsWith('<aa-conditions><template>', $html);
         self::assertSame(0, substr_count(explode('<template>', $html)[0], 'aa-conditions-row'));
         self::assertMatchesRegularExpression('~<input type="text" name="conds\[__N__\]\[name\]" value="__N__"[^>]* maxlength="6" pattern="\[a-z0-9\]\{1,6\}" data-aa-name~', $html);
         self::assertStringContainsString('name="conds[__N__][fields][]"', $html);
@@ -99,6 +99,6 @@ final class ConditionsInputTest extends TestCase
             $posted[$row][$part] = html_entity_decode($value[1] ?? '', ENT_QUOTES | ENT_HTML5);
         }
 
-        self::assertSame($stored, StoredConditions::fromForm($posted, 4)->toText());
+        self::assertSame($stored, StoredConditions::fromForm($posted)->toText());
     }
 }

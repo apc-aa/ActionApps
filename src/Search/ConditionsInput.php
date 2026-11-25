@@ -23,16 +23,15 @@ final class ConditionsInput
      * @param string                $name      of the posted array
      * @param array<string, string> $fields    field id => label; a key starting with AA_OPTGROUP is the caption of a group
      * @param array<string, string> $operators operator => label, grouped the same way (AA_Operators::forSelect())
-     * @param int                   $first     the number the first condition the control adds gets for its name
      */
-    public static function html(string $name, StoredConditions $conditions, array $fields, array $operators, int $first): string
+    public static function html(string $name, StoredConditions $conditions, array $fields, array $operators): string
     {
         $fields = ['' => ' '] + $fields;   // no field chosen
         $rows   = '';
         foreach ($conditions->all() as $condition_name => $condition) {
             $rows .= self::row($name, (string) $condition_name, $condition['fields'], $condition['operator'], $condition['value'], $fields, $operators);
         }
-        return '<aa-conditions first="' . $first . '">' . $rows
+        return '<aa-conditions>' . $rows
             . '<template>' . self::row($name, self::NUMBER, [''], 'LIKE', '', $fields, $operators) . '</template>'
             . '<button type="button" data-aa-add>+ ' . safe(_m('Add a condition')) . '</button>'
             . '</aa-conditions>';

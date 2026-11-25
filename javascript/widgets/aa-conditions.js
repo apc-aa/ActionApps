@@ -1,16 +1,16 @@
 // <aa-conditions>: the rows of named conditions that AA\Search\ConditionsInput prints - a name, one
 // field or more, an operator and a value in plain form fields. The element only adds rows and removes them:
 // [data-aa-add] puts in the row of the <template> named by the next number, [data-aa-add-field] another field
-// select into its row, [data-aa-remove] takes its row away. Attribute: first - the lowest number a new row gets.
+// select into its row, [data-aa-remove] takes its row away.
 // A number is never given twice in one editing, also after its row was removed or renamed: calls address
 // a condition by its name.
 
 /** in the <template> row: takes the place of the key of the row and of its name */
 export const NUMBER = '__N__';
 
-/** the number for a new row: above every number the element ever had, and not below the first one
- *  @param {number[]} used names of the rows as numbers - NaN for a name of letters @param {number} first @returns {number} */
-export const nextNumber = (used, first) => Math.max(first - 1, ...used.filter(Number.isFinite)) + 1;
+/** the number for a new row: above every number the element ever had
+ *  @param {number[]} used names of the rows as numbers - NaN for a name of letters @returns {number} */
+export const nextNumber = (used) => Math.max(0, ...used.filter(Number.isFinite)) + 1;
 
 /** the text with the placeholder of the template row replaced by the number */
 export const numbered = (text, number) => text.split(NUMBER).join(String(number));
@@ -46,7 +46,7 @@ if (globalThis.customElements && !customElements.get('aa-conditions')) {
 
         addRow() {
             const template = this.querySelector(':scope > template');
-            const number = nextNumber([...this.used, ...this.names()], Number(this.getAttribute('first') ?? 1));
+            const number = nextNumber([...this.used, ...this.names()]);
             this.used.push(number);
             const holder = this.ownerDocument.createElement('div');
             holder.innerHTML = numbered(template.innerHTML, number);

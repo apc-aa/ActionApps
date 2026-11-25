@@ -578,7 +578,7 @@ function getViewFields(): array
     $VIEW_FIELDS["cond3field"]      = GetViewFieldDef("text", "text", "cond");
     $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text", "text", "none");
     $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text", "text", "none");
-    $VIEW_FIELDS["conds"]           = GetViewFieldDef("", "text", "condlist");   // the conditions after the third
+    $VIEW_FIELDS["conds"]           = GetViewFieldDef("", "text", "condlist");   // the conditions their three older columns do not hold
     $VIEW_FIELDS["show_if"]         = GetViewFieldDef("text", "text", "area");
     $VIEW_FIELDS["show_else"]       = GetViewFieldDef("text", "text", "area");
     $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number", "text", "field");
@@ -647,12 +647,12 @@ function getViewTypes(): array
         "help"  => _m("Name of the view, usable instead of its number: {view:photo_list}, {view.php?vid=photo_list}, slice.php?iview=photo_list (also fview, dview). The name is looked up in the slices of the site or of the page, so a URL that loads view.php directly (lazy, AJAX) still needs the number. Use only small letters and _, starting with a letter."),
     ];
 
-    $more_conds_help  = _m("Further conditions, each under its name: a number, or up to 6 small letters and digits. A call gives a condition its value by the name, as the first three by their numbers: cmd[]=c-4-value, cmd[]=c-author-value. A name used twice or not allowed is replaced by a number. With more fields in one condition, the condition holds when any of the fields matches. A condition without a value waits for the value of the call - without it, it is left out. A dash in a value of a call is written twice (c-4-2020--05).");
-    $more_conds_plain = ["label" => _m("More conditions"), "help" => $more_conds_help];
+    $more_conds_help  = _m("The conditions of the view, each under its name: a number, or up to 6 small letters and digits. A call gives a condition its value by the name: cmd[]=c-1-value, cmd[]=c-author-value. A name used twice or not allowed is replaced by a number. With more fields in one condition, the condition holds when any of the fields matches. A condition without a value waits for the value of the call - without it, it is left out. A dash in a value of a call is written twice (c-4-2020--05).");
+    $more_conds_plain = ["label" => _m("Conditions"), "help" => $more_conds_help];
     // the views that list items give their templates the values of the conditions
     $more_conds = [
-        "label" => _m("More conditions"),
-        "help"  => $more_conds_help . '<br>' . _m("The value a condition works with is in the alias _#C_ followed by the name in capitals, filled with _ to ten characters: _#C_AUTHOR, _#C_4_____, and _#C_1_____ to _#C_3_____ for the first three. A name whose alias the slice has for a field is replaced by a number. The value may come from the call (a URL): print it as {safe:{_#C_AUTHOR}} - with the inner braces, without them it is not escaped."),
+        "label" => _m("Conditions"),
+        "help"  => $more_conds_help . '<br>' . _m("The value a condition works with is in the alias _#C_ followed by the name in capitals, filled with _ to ten characters: _#C_AUTHOR, _#C_1_____. A name whose alias the slice has for a field is replaced by a number. The value may come from the call (a URL): print it as {safe:{_#C_AUTHOR}} - with the inner braces, without them it is not escaped."),
     ];
 
     $common = [

@@ -326,14 +326,33 @@ $view_field_names = getViewTypes()[$view_type];
 $view_field_names = array_diff_key($view_field_names ?? [], array_flip(ViewListingColumns::absent()));   // no type: the page goes back below
 $view_type_info   = getViewTypesInfo($view_type);
 
-// the rows of the conditions after the third as posted, in their stored form
-$conds_posted = StoredConditions::fromForm(InputVars::arrayPOST('conds'), AA_View::MORE_CONDS_FROM, AA_View::condNamesTaken(($slice instanceof AA_Slice) ? $slice->aa_aliases()->getNames() : []))->toText();
+// One control holds all the conditions of the view; a database without view.conds has the older three rows.
+// As posted: the conditions 1 - 3 of one field for their columns, the others for the text. A form printed
+// before the control took the conditions 1 - 3 still posts them in fields of their own - those are kept.
+$conds_control = isset($view_field_names['conds']);
+$conds_form    = StoredConditions::fromForm(InputVars::arrayPOST('conds'), AA_View::condNamesTaken(($slice instanceof AA_Slice) ? $slice->aa_aliases()->getNames() : []));
+$conds_posted  = ['conds' => $conds_form->toText()];
+if ($conds_control && !isset($_POST['cond1field'])) {
+    [$cond_columns, $conds_rest] = $conds_form->toColumns(AA_View::COND_COLUMNS, ['field' => ViewListingColumns::condsWide() ? AA_View::COND_COLUMN_LIMITS['field'] : AA_View::COND_COLUMN_FIELD_SHORT] + AA_View::COND_COLUMN_LIMITS);
+    $conds_posted = ['conds' => $conds_rest->toText()];
+    foreach ($cond_columns as $n => [$cond_field, $cond_op, $cond_value]) {
+        $conds_posted += ["cond{$n}field" => $cond_field, "cond{$n}op" => $cond_op, "cond{$n}cond" => $cond_value];
+    }
+}
 
 if ( $update ) {
     do {
         foreach ($VIEW_FIELDS as $k => $v) {
-            if ( $v["validate"] && [$k] ) {
+            if ( $v["validate"] && !isset($conds_posted[$k]) ) {   // the conditions are checked as they are read
                 ValidateInput($k, $view_field_names[$k], $$k, $err, false, $v["validate"]);
+            }
+        }
+
+        if ($conds_form->unread()) {
+            $err['conds'] = MsgErr(_m('A condition was not read - its field or operator is not allowed here - so the view was not saved. The conditions are shown as they are stored.'));
+            // what was posted lacks that row: the form printed from it would drop the condition with the next save
+            if ($view_id) {
+                $conds_posted = array_intersect_key(DB_AA::select1('', 'SELECT * FROM view', [['id', $view_id, 'i']]) ?: [], $conds_posted) + $conds_posted;
             }
         }
 
@@ -365,8 +384,8 @@ if ( $update ) {
                 if ($k === 'group_limit') {
                     $insval  = max(0, min(65535, $insval));   // what the column holds
                 }
-                if ($v["input"] === "condlist") {
-                    $insval  = $conds_posted;
+                if (isset($conds_posted[$k])) {
+                    $insval  = $conds_posted[$k];
                 }
                 if ($v["max"]) {
                     $insval  = substr($insval, 0, $v["max"]);
@@ -431,8 +450,12 @@ if ( !$update ) {  // set variables from database
         //            take first view of the same type
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['type', $view_type]], ['id']);
         if ($vw_data) {
-            // its templates - not when it shows and what it is marked with
-            $vw_data = ['conds' => '', 'show_if' => '', 'show_else' => '', 'flag' => (int) $vw_data['flag'] & ~(VIEW_FLAG_WATCH | VIEW_FLAG_NOCACHE | VIEW_FLAG_NODIRECT)] + $vw_data;
+            // its templates - not what it selects, when it shows and what it is marked with
+            $no_conds = ['conds' => ''];
+            for ($n = 1; $n <= AA_View::COND_COLUMNS; $n++) {
+                $no_conds += ["cond{$n}field" => '', "cond{$n}op" => '', "cond{$n}cond" => ''];
+            }
+            $vw_data = $no_conds + ['show_if' => '', 'show_else' => '', 'flag' => (int) $vw_data['flag'] & ~(VIEW_FLAG_WATCH | VIEW_FLAG_NOCACHE | VIEW_FLAG_NODIRECT)] + $vw_data;
         }
     } else {        // error - someone switched the slice or so
         go_url($back_url);
@@ -463,7 +486,7 @@ if ( !$update ) {  // set variables from database
 } else {        // updating - load data into vw_data array
     foreach ($VIEW_FIELDS as $k => $v) {
         if ( $view_field_names[$k] ) {
-            $vw_data[$k] = ($v["input"] === "condlist") ? $conds_posted : $$k;
+            $vw_data[$k] = $conds_posted[$k] ?? $$k;
         }
     }
 }
@@ -590,10 +613,18 @@ foreach ($view_field_names as $k => $v) {
         case "chbox":   FrmInputChBox( $k, $label, $value, false, '', 1, false, $help); break;
         case "bitflag": FrmInputChBox( $k, $label, $value, false, '', 1, false, $help); break;
                         // BitFlagFrm( $k, $label, $value); break;
-        case "cond":    ConditionFrm(  $k, $label, $value); break;
+        case "cond":
+            if (!$conds_control) {
+                ConditionFrm($k, $label, $value);
+            }
+            break;
         case "condlist":
+            $cond_columns = [];
+            for ($n = 1; $n <= AA_View::COND_COLUMNS; $n++) {
+                $cond_columns[$n] = [(string) $vw_data["cond{$n}field"], (string) $vw_data["cond{$n}op"], (string) $vw_data["cond{$n}cond"]];
+            }
             echo '<tr><td><b>' . safe($label) . '</b></td><td>'
-                . ConditionsInput::html($k, StoredConditions::fromText((string) $vw_data[$k], AA_View::MORE_CONDS_FROM), $cond_fields, $lookup_op, AA_View::MORE_CONDS_FROM)
+                . ConditionsInput::html($k, StoredConditions::fromColumns($cond_columns, (string) $vw_data[$k]), $cond_fields, $lookup_op)
                 . '<div class="tabhlp">' . $help . '</div></td></tr>';
             break;
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] === 'easy'); break;

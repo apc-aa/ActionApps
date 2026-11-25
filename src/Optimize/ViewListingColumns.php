@@ -10,7 +10,7 @@ use AA\IO\DB\DB_AA;
 /** The columns of `view` behind the newer settings of the view form: a condition on a field of related items
  *  (the name of such a field - two field ids and, for a relation leading here, the slice between them - is
  *  longer than the 32 bytes of old databases; cut without an error it names no field and the condition is
- *  left out), the limit of items in a group, the conditions after the third and the condition of any output
+ *  left out), the limit of items in a group, the conditions with a name or of more fields and the condition of any output
  *  with its text. Until the columns are there, the form offers none of them. */
 class ViewListingColumns extends AbstractOptimize
 {
@@ -25,7 +25,7 @@ class ViewListingColumns extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Widens the columns view.cond1field - cond3field, so a view condition can name a field of related items, and adds view.group_limit for the limit of items in a group, view.conds for the conditions after the third and view.show_if with view.show_else for the condition of any output. Nothing else changes.');
+        return _m('Widens the columns view.cond1field - cond3field, so a view condition can name a field of related items, and adds view.group_limit for the limit of items in a group, view.conds for the conditions with a name or of more fields and view.show_if with view.show_else for the condition of any output. Nothing else changes.');
     }
 
     public static function types(): array
