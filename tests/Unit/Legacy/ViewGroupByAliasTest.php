@@ -17,6 +17,9 @@ final class ViewGroupByAliasTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
+        if (!defined('DEFAULT_LANG_INCLUDE')) {   // the letters are compared and sorted by the language
+            define('DEFAULT_LANG_INCLUDE', 'en-utf8_news_lang.php');
+        }
         // loading locsess.php warns about the missing web request
         set_error_handler(static fn(): bool => true);
         try {
