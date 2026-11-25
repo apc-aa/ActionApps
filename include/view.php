@@ -429,6 +429,10 @@ class AA_Showview
 
         $this->first_use = $view->takeFirstUse();
 
+        if ($view->isNeverCached()) {
+            AA::Pagecache()->switchCacheNostore();
+        }
+
         // Use right language (from slice settings) - languages are used for
         // 'No item found', Next, ... messages
         // Do not load new language if we are in sitemodule - languages are handled

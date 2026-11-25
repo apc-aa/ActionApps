@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Legacy;
 
 use AA;
+use AA\Cache\PageCache;
 use AA_Showview;
 use AA_View;
 use AA_Views;
@@ -14,7 +15,8 @@ use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
 /**
  * What a view decides before it lists anything: a disabled view shows nothing, the first use of a view
- * marked as probably unused is logged and takes the mark off.
+ * marked as probably unused is logged and takes the mark off, a view not to be cached keeps the page out of
+ * the page cache.
  */
 final class ViewGatesTest extends TestCase
 {
@@ -44,6 +46,7 @@ final class ViewGatesTest extends TestCase
         $this->saved = [AA::$site_id, AA::$module_id, AA::$slice_id];
         [AA::$site_id, AA::$module_id, AA::$slice_id] = [null, null, null];
         $_SERVER['REQUEST_URI'] = '/cz/kontakty';
+        (new ReflectionProperty(PageCache::class, 'cache_nostore'))->setValue(AA::Pagecache(), false);
     }
 
     protected function tearDown(): void
@@ -53,6 +56,7 @@ final class ViewGatesTest extends TestCase
         [AA::$site_id, AA::$module_id, AA::$slice_id] = $this->saved;
         $GLOBALS['spareDBs'] = [];
         unset($_SERVER['REQUEST_URI']);
+        (new ReflectionProperty(PageCache::class, 'cache_nostore'))->setValue(AA::Pagecache(), false);
         RecordingDb::reset();
         AA::Contentcache()->clear();
     }
@@ -78,11 +82,17 @@ final class ViewGatesTest extends TestCase
         return array_values(array_filter(RecordingDb::$log, static fn(string $sql): bool => str_starts_with($sql, 'UPDATE view')));
     }
 
+    private static function pageIsKeptOutOfTheCache(): bool
+    {
+        return (new ReflectionProperty(PageCache::class, 'cache_nostore'))->getValue(AA::Pagecache());
+    }
+
     public function test_viewOutput_plainView_writesNothing(): void
     {
         self::view(0);
 
         self::assertSame('shown', self::shown());
+        self::assertFalse(self::pageIsKeptOutOfTheCache());
         self::assertSame([], self::viewUpdates());
         self::assertSame([], RecordingDb::inserts('log'));
     }
@@ -123,6 +133,22 @@ final class ViewGatesTest extends TestCase
         self::assertSame('', self::shown());
         self::assertSame([], self::viewUpdates());
         self::assertSame([], RecordingDb::inserts('log'));
+    }
+
+    public function test_viewOutput_viewNotToBeCached_keepsThePageOutOfTheCache(): void
+    {
+        self::view(VIEW_FLAG_NOCACHE);
+
+        self::assertSame('shown', self::shown());
+        self::assertTrue(self::pageIsKeptOutOfTheCache());
+    }
+
+    public function test_viewOutput_disabledViewNotToBeCached_leavesThePageToTheCache(): void
+    {
+        self::view(VIEW_FLAG_NOCACHE | VIEW_FLAG_DISABLE);
+
+        self::assertSame('', self::shown());
+        self::assertFalse(self::pageIsKeptOutOfTheCache());
     }
 
     public function test_viewOutput_logRowOfALongAddress_fitsTheColumn(): void

@@ -139,6 +139,12 @@ class AA_View
         return $this->f('flag') & VIEW_FLAG_LOG;
     }
 
+    /** the output is never stored in the page cache, nor is a page that includes it */
+    public function isNeverCached(): bool
+    {
+        return (bool) ((int) $this->f('flag') & VIEW_FLAG_NOCACHE);
+    }
+
     /** The first use of a view marked as probably unused takes the mark off - once, also when requests meet.
      *  @return bool this call is the first use */
     public function takeFirstUse(): bool
