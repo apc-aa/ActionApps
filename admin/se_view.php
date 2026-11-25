@@ -352,7 +352,8 @@ if ( $update ) {
             $err['conds'] = MsgErr(_m('A condition was not read - its field or operator is not allowed here - so the view was not saved. The conditions are shown as they are stored.'));
             // what was posted lacks that row: the form printed from it would drop the condition with the next save
             if ($view_id) {
-                $conds_posted = array_intersect_key(DB_AA::select1('', 'SELECT * FROM view', [['id', $view_id, 'i']]) ?: [], $conds_posted) + $conds_posted;
+                // as strings: a NULL column would let the posted value through
+                $conds_posted = array_map('strval', array_intersect_key(DB_AA::select1('', 'SELECT * FROM view', [['id', $view_id, 'i']]) ?: [], $conds_posted)) + $conds_posted;
             }
         }
 
