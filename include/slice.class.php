@@ -1611,10 +1611,46 @@ class AA_Module_Polls extends AA_Module
 /** Module settings */
 abstract class AA_AbstractModulesettings extends AA_Object
 {
+    /** the settings set on a page of their own: the generic form of the settings neither shows nor changes them */
+    public const OWN_PAGE_PROPERTIES = [];
+
     /** check, if the $prop is the property of this object */
     public static function isProperty($prop): bool
     {
         return false;
+    }
+
+    /** @return array<string, AA_Property> the settings of the generic form */
+    protected static function formProperties(): array
+    {
+        return array_diff_key(static::getClassProperties(), array_flip(static::OWN_PAGE_PROPERTIES));
+    }
+
+    /** the generic form of the settings - without OWN_PAGE_PROPERTIES */
+    public static function addFormrows(AA_Form $form): void
+    {
+        if (static::USES_NAME) {
+            self::getPropertyObject('aa_name')?->addPropertyFormrows($form);
+        }
+        foreach (static::formProperties() as $property) {
+            $property->addPropertyFormrows($form);
+        }
+    }
+
+    /** a posted form keeps OWN_PAGE_PROPERTIES as stored, whoever posts them */
+    public static function factoryFromForm($oowner, $otype = null)
+    {
+        $object = parent::factoryFromForm($oowner, $otype ?? static::class);
+        $object->keepOwnPageOf(static::load($object->getId()));
+        return $object;
+    }
+
+    /** takes OWN_PAGE_PROPERTIES of $stored; none stored - not set */
+    public function keepOwnPageOf(?AA_Object $stored): void
+    {
+        foreach (static::OWN_PAGE_PROPERTIES as $name) {
+            $this->$name = ($stored instanceof static) ? $stored->$name : '';
+        }
     }
 
     /** @inheritDoc - the id is AA_Module::getModuleObjectId() of the owner */
@@ -1651,6 +1687,9 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings
     /** do not display Name property on the form by default */
     public const USES_NAME = false;
 
+    /** set on the list of views of the slice (AA_Slice::saveViewNodirect()) */
+    public const OWN_PAGE_PROPERTIES = ['view_nodirect'];
+
     /** check, if the $prop is the property of this object */
     public static function isProperty($prop): bool
     {
@@ -1671,8 +1710,8 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings
             'historylog'      => new AA_Property('historylog', _m("Store item history for N days"), 'string', false, true, '', false, _m("ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted")),
             'nocheck_pending' => new AA_Property('nocheck_pending', _m("No pending items"), 'string', false, true, '', false, _m('1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)')),
             'nocheck_expired' => new AA_Property('nocheck_expired', _m("No expired items"), 'string', false, true, '', false, _m('1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)')),
-            // '1' or '' - AA\Security\ViewDirect
-            'view_nodirect'   => new AA_Property('view_nodirect', _m("Views only inside pages"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m('Yes - the views of this slice work only inside pages and other templates ({view:...}, {view.php?...}); their own addresses (view.php?vid=..., jsview.php?vid=...) show nothing. Also set on the list of views.')),
+            // '1' or '' - AA\Security\ViewDirect; no row of this form (OWN_PAGE_PROPERTIES)
+            'view_nodirect'   => new AA_Property('view_nodirect', _m("Views only inside pages"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]]),
             // do not forget to add new property to  isProperty!
         ];
     }
@@ -1719,6 +1758,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
      *  site to anyone, so only a superadmin sets them, on their own part of the site form - a form of the
      *  settings neither shows nor changes them. */
     public const APP_PROPERTIES = ['app_publish', 'app_description', 'app_version', 'app_modules'];
+    public const OWN_PAGE_PROPERTIES = self::APP_PROPERTIES;
     public const APP_VERSION_PATTERN = '/^[0-9A-Za-z.+-]{0,32}\z/';
     public const APP_DESCRIPTION_MAX = 2000;
 
@@ -1760,32 +1800,16 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
         ];
     }
 
-    /** the generic form of the settings - without the app store settings (APP_PROPERTIES) */
+    /** @inheritDoc - with the note on the page address */
     public static function addFormrows(AA_Form $form): void
     {
-        foreach (array_diff_key(static::getClassProperties(), array_flip(self::APP_PROPERTIES)) as $id => $property) {
+        foreach (static::formProperties() as $id => $property) {
             if ($id === 'web_languages') {
                 $form->addRow(new AA_Formrow_Html(getFrmTabSeparator(_m('Page address (URL)')) . '<tr><td colspan="2">'
                     . _m('<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first "-" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka')
                     . '</td></tr>'));
             }
             $property->addPropertyFormrows($form);
-        }
-    }
-
-    /** a posted form keeps the app store settings as stored, whoever posts them */
-    public static function factoryFromForm($oowner, $otype = null)
-    {
-        $object = parent::factoryFromForm($oowner, $otype);
-        $object->keepAppOf(static::load($object->getId()));
-        return $object;
-    }
-
-    /** the app store settings of $stored; none stored - not published */
-    public function keepAppOf(?AA_Object $stored): void
-    {
-        foreach (self::APP_PROPERTIES as $name) {
-            $this->$name = ($stored instanceof self) ? $stored->$name : '';
         }
     }
 

@@ -87,10 +87,10 @@ namespace Tests\Unit\Legacy {
 
             $posted = new AA_Modulesettings_Site();
             $posted->setApp(true, 'posted', '9', [self::SITE, self::SLICE, str_repeat('c', 32)]);
-            $posted->keepAppOf($stored);
+            $posted->keepOwnPageOf($stored);
             $this->assertSame(['publish' => true, 'description' => 'A web for schools', 'version' => '1.2', 'modules' => [self::SITE, self::SLICE]], $posted->app());
 
-            $posted->keepAppOf(null);
+            $posted->keepOwnPageOf(null);
             $this->assertSame(self::NONE, $posted->app(), 'nothing stored - not published');
         }
 

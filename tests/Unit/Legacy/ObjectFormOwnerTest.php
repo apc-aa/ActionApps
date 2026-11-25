@@ -246,6 +246,20 @@ namespace Tests\Unit\Legacy {
             $this->assertFalse(self::refusalLogged());
         }
 
+        /** "Views only inside pages" of a slice has its own button on the list of views: the form of the
+         *  slice settings does not switch it on, whatever is posted */
+        public function test_the_slice_settings_form_does_not_set_what_has_a_page_of_its_own(): void
+        {
+            $own = string2id(AA_Modulesettings_Slice::class . self::MODULE);
+            self::stored([$own => [self::MODULE, AA_Modulesettings_Slice::class]]);
+            $_POST['aa'] = ['u' . $own => ['historylog' => ['30'], 'view_nodirect' => ['1']]];
+
+            $this->assertNull(AA_Slice::processModuleObject(self::MODULE));
+            $writes = implode("\n", self::objectWrites());
+            $this->assertStringContainsString("'historylog'", $writes);
+            $this->assertStringContainsString("'view_nodirect',0,''", $writes, 'as stored - off');
+        }
+
         /** the tasks Manager of a page of MODULE with an edit form of FormTarget; $state - as a former
          *  request left it in the session */
         private static function manager(?array $state = null): Manager
