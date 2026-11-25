@@ -625,8 +625,8 @@ final class Definition extends AA_Object implements InternalExpandInterface
      * Deletes the definition with what it owns: its runs, its stream state, its catalog and its queued
      * steps - left behind, they would lie orphaned with nothing to show or delete them. One transaction
      * under the lock of the definition, which a starting run takes too, so no run starts meanwhile.
-     * A step working during the delete may still store items until its lease ends (the step's 30 s
-     * plus 60 s); its run is gone, so it writes nothing back. Nothing happens when the definition is
+     * A step working during the delete may still store items until its lease ends (the step's budget,
+     * a minute at most, plus 60 s); its run is gone, so it writes nothing back. Nothing happens when the definition is
      * no longer stored.
      * @throws BatchFailed FORBIDDEN or KEYS (manageRefusal()) when $uid may not delete it
      */

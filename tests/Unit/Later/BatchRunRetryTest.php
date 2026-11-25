@@ -301,6 +301,54 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame('step 1', self::inRound(30.0, 0.0, static fn(): string => self::runNewest()), 'a longer round goes on');
     }
 
+    /** @return array<string, array{?float, bool, ?int, float}> round, step in a transaction, execute_after of
+     *  another task (null = none), the step's budget */
+    public static function stepBudgets(): array
+    {
+        return [
+            'the queue to itself: the rest of the round'      => [60.0, false, null, 52.0],
+            'another task waits: 30 s'                        => [60.0, false, self::NOW, 27.0],
+            'another task later: the rest of the round'       => [60.0, false, self::NOW + 100, 52.0],
+            'in a transaction: 30 s, for the lock waiters'    => [60.0, true, null, 27.0],
+            'a short round: never past it'                    => [20.0, false, null, 17.0],
+            'a round run by hand (360 s): a minute at most'   => [360.0, false, null, 52.0],
+            'no round (a step run by hand): 30 s'             => [null, false, null, 27.0],
+        ];
+    }
+
+    #[DataProvider('stepBudgets')]
+    public function test_step_budget_is_the_rest_of_the_round_when_no_other_task_waits(?float $round, bool $inTransaction, ?int $other, float $expected): void
+    {
+        self::mode($inTransaction);
+        self::start();
+        if ($other !== null) {
+            TableDb::$tables['toexecute'][] = ['id' => 900, 'created' => self::NOW, 'execute_after' => $other, 'aa_user' => '', 'priority' => 100, 'selector' => 'someone_else', 'object' => ''];
+        }
+        $seconds = null;
+        ScriptedBatchRun::$script = [static function (ScriptedBatchRun $run, array $from, BatchBudget $budget) use (&$seconds): BatchStepResult {
+            $seconds = $budget->deadline - self::NOW;
+            return new BatchStepResult(['n' => 1], false);
+        }];
+
+        ($round === null) ? self::runQueued() : self::inRound($round, 0.0, static fn(): string => self::runQueued());
+
+        $this->assertEqualsWithDelta($expected, $seconds, 0.5);
+    }
+
+    /** the queue gives a task max_execution_time (30 s by default) - a step of the whole round gets enough */
+    public function test_whole_round_step_raises_a_shorter_time_limit(): void
+    {
+        self::start();
+        ScriptedBatchRun::$script = [new BatchStepResult(['n' => 1], false)];
+        ini_set('max_execution_time', '30');
+        try {
+            self::inRound(60.0, 0.0, static fn(): string => self::runQueued());
+            $this->assertSame('112', ini_get('max_execution_time'), 'the budget of 52 s and the overrun of 60 s');
+        } finally {
+            set_time_limit(0);
+        }
+    }
+
     public function test_round_end_queue_refusal_does_not_recurse(): void
     {
         self::start();

@@ -12,7 +12,8 @@ use AA_Log;
 use AA_Object;
 use AA_Property;
 
-/** A long run done in queue steps of at most ~30 s, so it goes on without the page that started it.
+/** A long run done in queue steps of 30 s (up to a minute with the queue to itself), so it goes on without
+ *  the page that started it.
  *
  *  The record is an AA_Object whose every property is text, so it is rows of object_text: one locking
  *  read of them (lockForUpdate()) serializes everything that changes the run - which is why start()
@@ -67,10 +68,17 @@ abstract class BatchRun extends AA_Object
     public const LOOK_AGAIN = 10;
     public const LOOK_TAKEN = 2;
 
-    /** the longest step: a cron round lasts about 30 s */
+    /** the longest step while other tasks wait in the queue, or with the run's lock held in a transaction;
+     *  with the queue to itself a step may take the rest of the round (wholeRound()) */
     private const STEP_SECONDS = 30;
     /** left of the budget for the end of the step */
     private const STEP_MARGIN = 3;
+    /** the longest step with the queue to itself: a round may be minutes (a task run by hand sets 360 s)
+     *  and a page waits for its step two minutes at most */
+    private const WHOLE_SECONDS = 60;
+    /** left of a whole round for the end of the step - a job may run a few seconds over the budget, and a
+     *  round past its allowed time counts as overload in the State Check */
+    private const WHOLE_MARGIN = 8;
     /** JSON nesting written - what is stored can always be read back */
     private const JSON_DEPTH = BatchStepResult::MAX_DEPTH;
     /** what toError() changes */
@@ -412,7 +420,7 @@ abstract class BatchRun extends AA_Object
      *  after another, in the order of $ids; without the page the queue goes on. Only runs that allow
      *  it (stepsFromPage()) and that $uid may control; a step that waits (a retry) or that another runner
      *  holds is left alone, and two pages run a row once (the queue's claim). Call it outside any
-     *  transaction, with the session closed: the step may take a whole STEP_SECONDS.
+     *  transaction, with the session closed: the step may take the whole round.
      *  @param list<string> $ids
      *  @return ?int seconds till the next look: 0 = at once, at most LOOK_AGAIN, so the page shows the
      *               progress of a step another runner works meanwhile; null = none of the runs goes on */
@@ -1153,11 +1161,21 @@ abstract class BatchRun extends AA_Object
         return $own;
     }
 
-    /** what one step may spend from now: a cron round's 30 s at most, never past the round running now
-     *  ($left), less a margin for the end of the step */
-    private static function stepSeconds(?float $left): float
+    /** what one step may spend from now: STEP_SECONDS at most, or with the queue to itself ($whole) the rest
+     *  of the round up to WHOLE_SECONDS; never past the round running now ($left), less a margin for the end */
+    private static function stepSeconds(?float $left, bool $whole = false): float
     {
-        return max(0.0, min((float) self::STEP_SECONDS, $left ?? (float) self::STEP_SECONDS) - self::STEP_MARGIN);
+        $step = max(0.0, min((float) self::STEP_SECONDS, $left ?? (float) self::STEP_SECONDS) - self::STEP_MARGIN);
+        return ($whole && ($left !== null)) ? max($step, min((float) self::WHOLE_SECONDS, $left) - self::WHOLE_MARGIN) : $step;
+    }
+
+    /** true = no task of anyone else is due, so the step may take the rest of the round: with 30 s steps
+     *  the round ends after one of them (the next would not fit) and a run works a quarter of the time.
+     *  A step in a transaction stays at STEP_SECONDS - whoever waits for its lock gives up after
+     *  innodb_lock_wait_timeout (50 s). */
+    private function wholeRound(): bool
+    {
+        return !DB_AA::select1('selector', 'SELECT selector FROM `toexecute`', [['execute_after', static::now() + 1, '<'], ['priority', 0, '>'], ['selector', $this->selector(), 's<>']]);
     }
 
     /** a lease covers the budget and the overrun - a shorter one would take a live step for a dead one */
@@ -1193,7 +1211,14 @@ abstract class BatchRun extends AA_Object
             $this->requeue(static::now() + (int) ceil($left) + 1, $priority);
             return (Toexecute::roundSeconds() < $min) ? 'round too short' : 'round end';
         }
-        $budget = new BatchBudget(static::microNow() + self::stepSeconds($left), $limits['items'], $limits['bytes'], static::microNow(...));
+        $whole  = ($left !== null) && !$inTx && $this->wholeRound();
+        $seconds = self::stepSeconds($left, $whole);
+        $budget  = new BatchBudget(static::microNow() + $seconds, $limits['items'], $limits['bytes'], static::microNow(...));
+        $limit   = (int) ini_get('max_execution_time');
+        if ($whole && ($limit > 0) && ($limit < $seconds + $overrun)) {
+            // the queue gives a task max_execution_time, 30 s by default - a longer step would die midway
+            set_time_limit((int) ceil($seconds) + $overrun);
+        }
         $claim  = 'stale';
         $run    = $this->whileLocked(static function (self $run) use ($expected, $budget, $overrun, $priority, &$claim): bool {
             $claim = $run->claim($expected, $budget, $overrun, $priority);
