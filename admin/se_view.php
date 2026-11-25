@@ -321,7 +321,7 @@ $view_field_names = getViewTypes()[$view_type];
 // the settings an older database cannot keep (ViewListingColumns) are not offered
 $columns_ready = ViewListingColumns::ready();
 if (!$columns_ready) {
-    unset($view_field_names['group_limit']);
+    unset($view_field_names['group_limit'], $view_field_names['show_if'], $view_field_names['show_else']);
 }
 $view_type_info   = getViewTypesInfo($view_type);
 

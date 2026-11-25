@@ -139,6 +139,21 @@ class AA_View
         return $this->f('flag') & VIEW_FLAG_LOG;
     }
 
+    /** the expression that decides whether the view shows anything; '' - always, also in a database
+     *  that has no column for it yet */
+    public function getShowIf(): string
+    {
+        $this->load();
+        return trim((string) ($this->fields['show_if'] ?? ''));
+    }
+
+    /** the code shown when getShowIf() does not hold */
+    public function getShowElse(): string
+    {
+        $this->load();
+        return (string) ($this->fields['show_else'] ?? '');
+    }
+
     /** the view itself is set to work only inside pages and templates (AA\Security\ViewDirect) */
     public function isInsideOnly(): bool
     {

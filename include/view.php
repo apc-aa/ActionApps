@@ -485,8 +485,21 @@ class AA_Showview
         // ---- display content in according to view type ----
         AA::$debug & 2 && AA::$dbg->log("getViewOutput:view_info=", $view_info);
 
-        $ret = '';
-        switch ($view_info['type']) {
+        $ret  = '';
+        $type = $view_info['type'];
+        if (($show_if = $view->getShowIf()) !== '') {
+            if ($this->from_request) {
+                // the cache of view.php does not know what the condition asks about (the visitor, other parameters)
+                AA::Pagecache()->switchCacheNostore();
+            }
+            $context = new AA_Item('', $als);
+            $held    = trim($context->unalias($show_if));
+            if (($held === '') || IsAlias($held)) {   // the rule of {ifset}
+                $ret  = $context->unalias($view->getShowElse());
+                $type = '';                           // nothing is listed
+            }
+        }
+        switch ($type) {
             case 'discus':
                 // create array of discussion parameters
                 $disc = [

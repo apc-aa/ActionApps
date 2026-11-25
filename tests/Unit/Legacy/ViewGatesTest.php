@@ -19,7 +19,8 @@ use Tests\Unit\Legacy\Fixtures\RecordingDb;
 /**
  * What a view decides before it lists anything: a disabled view shows nothing, the first use of a view
  * marked as probably unused is logged and takes the mark off, a view not to be cached keeps the page out of
- * the page cache, a view that works only inside pages shows nothing to the address of view.php.
+ * the page cache, a view that works only inside pages shows nothing to the address of view.php, a view with
+ * a condition of its output shows its other code when the condition does not hold.
  */
 final class ViewGatesTest extends TestCase
 {
@@ -189,6 +190,50 @@ final class ViewGatesTest extends TestCase
             self::assertSame(ParamImplode([(string) self::VID, ViewDirect::BY_VIEW, '']), $refusals[0]['selector']);
             self::assertSame(ParamImplode(['example.org' . $script, 'example.org/cz/akce']), $refusals[0]['params']);
         }
+    }
+
+    /** @return array<string, array{array<string, string>, string}> settings of the view, output */
+    public static function outputConditions(): array
+    {
+        return [
+            'database without the columns' => [[], 'shown'],
+            'no condition'                 => [['show_if' => '', 'show_else' => 'other'], 'shown'],
+            'only spaces - no condition'   => [['show_if' => "  \n", 'show_else' => 'other'], 'shown'],
+            'a text'                       => [['show_if' => '1', 'show_else' => 'other'], 'shown'],
+            'zero is a text too'           => [['show_if' => '0', 'show_else' => 'other'], 'shown'],
+            'an expression with a text'    => [['show_if' => '{ifeq:a:a:yes}', 'show_else' => 'other'], 'shown'],
+            'an expression without one'    => [['show_if' => '{ifeq:a:b:yes}', 'show_else' => 'other'], 'other'],
+            'spaces only'                  => [['show_if' => '{ifeq:a:a: }', 'show_else' => 'other'], 'other'],
+            'the other code is a template' => [['show_if' => '{ifeq:a:b:yes}', 'show_else' => '<p>{ifeq:a:a:closed}</p>'], '<p>closed</p>'],
+            'no other code'                => [['show_if' => '{ifeq:a:b:yes}', 'show_else' => ''], ''],
+            'no other code in the database' => [['show_if' => '{ifeq:a:b:yes}'], ''],
+        ];
+    }
+
+    /** @param array<string, string> $settings */
+    #[DataProvider('outputConditions')]
+    public function test_viewOutput_conditionOfTheOutput(array $settings, string $output): void
+    {
+        self::view(0, $settings);
+
+        self::assertSame($output, self::shown());
+        self::assertFalse(self::pageIsKeptOutOfTheCache(), 'a page with the view is cached as with any template');
+    }
+
+    public function test_viewOutput_conditionAskedByTheAddress_isNotCached(): void
+    {
+        self::view(0, ['show_if' => '1']);
+        $_SERVER['SCRIPT_NAME'] = '/aa/view.php';
+
+        self::assertSame('shown', self::shown(['from_request' => true]));
+        self::assertTrue(self::pageIsKeptOutOfTheCache());
+    }
+
+    public function test_viewOutput_otherCodeOfAViewWithComments_isMarkedAsTheView(): void
+    {
+        self::view(VIEW_FLAG_COMMENTS, ['show_if' => '{ifeq:a:b:yes}', 'show_else' => 'other']);
+
+        self::assertStringStartsWith('<!-- ' . self::VID . ' -->other<!-- /' . self::VID, self::shown());
     }
 
     public function test_viewOutput_logRowOfALongAddress_fitsTheColumn(): void

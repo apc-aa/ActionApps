@@ -578,6 +578,8 @@ function getViewFields(): array
     $VIEW_FIELDS["cond3field"]      = GetViewFieldDef("text", "text", "cond");
     $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text", "text", "none");
     $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text", "text", "none");
+    $VIEW_FIELDS["show_if"]         = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["show_else"]       = GetViewFieldDef("text", "text", "area");
     $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number", "text", "field");
     //$VIEW_FIELDS["flag"]          = GetViewFieldDef("", "bool", "chbox");
     $VIEW_FIELDS["flag0"]           = GetViewFieldDef("", "bool", "bitflag"); // Add view ID as HTML comment / Allow HTML tags in the comments
@@ -645,6 +647,14 @@ function getViewTypes(): array
     ];
 
     $common = [
+        "show_if" => [
+            "label" => _m("Show only if"),
+            "help"  => _m("An expression that decides whether the view shows anything. When it gives no text (the rule of {ifset:...}), the view lists nothing, asks the database for no items and shows the code below instead. Empty - always shown. Example: {qs:id} - only when the address has the parameter id. Asked for by its own address (view.php), a view with a condition is not stored in the page cache."),
+        ],
+        "show_else" => [
+            "label" => _m("Shown instead"),
+            "help"  => _m("HTML code shown when the condition above does not hold. Empty - nothing."),
+        ],
         "flag1" => _m("Disabled view"),
         "flag2" => [
             "label" => _m("Log view usage"),
