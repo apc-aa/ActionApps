@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Legacy;
 
+use AA_Condition;
+use AA_Dbcondition;
 use AA_Operators;
 use PHPUnit\Framework\TestCase;
 
@@ -55,6 +57,23 @@ final class OperatorsForSelectTest extends TestCase
         foreach (AA_Operators::forSelect() as $operator => $label) {
             self::assertSame(1, preg_match('/^[\x20-\x7E]+$/', $label), (string) $operator);
         }
+    }
+
+    /** "|" is true for every value, so a condition with it only looks like one */
+    public function test_forSelect_offersNoOperatorThatIsAlwaysTrue(): void
+    {
+        self::assertArrayNotHasKey('|', self::options());
+        self::assertArrayHasKey('&', self::options());
+    }
+
+    /** in a URL "&" would end the parameter: cmd[]=d-highlight.......-BITANY-9 */
+    public function test_normalize_anyBitIsTheNameOfAmpersandForUrls(): void
+    {
+        self::assertSame('&', AA_Operators::normalize('BITANY'));
+        self::assertSame('&', (new AA_Condition(['highlight.......'], 'BITANY', '9'))->getOperator());
+        self::assertSame('&', AA_Dbcondition::normalizeOperator('BITANY'));
+        self::assertSame('BITSET', AA_Dbcondition::normalizeOperator('BITSET'));
+        self::assertStringEndsWith(' & 9)', (new AA_Dbcondition('c0', 'number', 'BITANY', '9', 'number'))->getWhereExp());
     }
 
     public function test_forSelect_groups(): void

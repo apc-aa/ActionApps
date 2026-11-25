@@ -106,9 +106,12 @@ class AA_Operators
         ];
     }
 
-    /** The operators a select does not offer: the second names ("!=" is "<>", "-:" is "m:") and the comparison
-     *  of a date with "now" to the second, which matches nothing in practice. */
-    public const NOT_OFFERED = ['!=', 'd:!=', 'e:!=', 'm:!=', '-:<', '-:>', '-:<=', '-:>=', '-:=', '-:!=', '-:<>', 'm:=', 'm:<>'];
+    /** The operators a select does not offer: the second names ("!=" is "<>", "-:" is "m:"), the comparison
+     *  of a date with "now" to the second, which matches nothing in practice, and "|", true for every value. */
+    public const NOT_OFFERED = ['!=', 'd:!=', 'e:!=', 'm:!=', '-:<', '-:>', '-:<=', '-:>=', '-:=', '-:!=', '-:<>', 'm:=', 'm:<>', '|'];
+
+    /** "&" under a name a URL can carry - there "&" divides the parameters: cmd[]=d-highlight.......-BITANY-9 */
+    public const ANY_BIT = 'BITANY';
 
     /**
      * The operators for the select of a condition kept in settings (view form), in option groups.
@@ -143,9 +146,8 @@ class AA_Operators
             'NOTMAIL'   => $named('NOTMAIL'),
             'AA_OPTGROUP number' => _m('Number'),
             'BETWEEN' => $named('BETWEEN', _m('between two numbers: 1,5')),
-            'BITSET'  => $named('BITSET'),
-            '&'       => '&',
-            '|'       => '|',
+            'BITSET'  => $named('BITSET', _m('all the bits are set')),
+            '&'       => $named('&', _m('any of the bits is set')),
             'AA_OPTGROUP date' => _m('Date'),
         ];
         $dates = [
@@ -169,7 +171,7 @@ class AA_Operators
      */
     public static function normalize(?string $operator): string
     {
-        return str_replace(['eq', 'ne', '&lt;', 'lt', 'le', '&gt;', 'gt', 'ge', '&amp;'], ['==', '<>', '<', '<', '<=', '>', '>', '>=', '&'], $operator ?? '');
+        return str_replace(['eq', 'ne', '&lt;', 'lt', 'le', '&gt;', 'gt', 'ge', '&amp;', self::ANY_BIT], ['==', '<>', '<', '<', '<=', '>', '>', '>=', '&', '&'], $operator ?? '');
     }
 
     /** getJsDefinition function
@@ -1240,7 +1242,7 @@ class AA_Dbcondition
         // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
         // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
         $operator = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<','&'], trim((string) $operator)); // #: - fix mistaken escaping of d#:>...
-        if (strlen($operator) < 4) {
+        if ((strlen($operator) < 4) || ($operator === AA_Operators::ANY_BIT)) {
             $operator = AA_Operators::normalize($operator);  // d-highlight.......-lt-5  - lt, gt, le, ge, ne are allowed as well
         }
         return $operator;

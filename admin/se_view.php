@@ -621,7 +621,9 @@ if ($view) {
     if ($view_conds   = $set->getCondsAsString()) {
         $view_sort    = $set->getSortAsString();
         $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId() . ':'. safe($view_conds) . ($view_sort ? ':'.safe($view_sort): '') . '&rcub;&rcub;';
-        $view_recipe2 = '&lcub;view.php?vid=' . $view_id . '&cmd[' . $view_id . ']=' . safe((new AA_Set(null, $view->getConds()))->getCondsAsString()) . ($view_sort ? '&set[' . $view_id . ']=sort-'.safe($view_sort): '').'&rcub;';
+        // in a query string "&" would end the parameter and "+" would be a space
+        $view_conds2  = strtr((new AA_Set(null, $view->getConds()))->getCondsAsString(), ['%' => '%25', '&' => '%26', '#' => '%23', '+' => '%2B']);
+        $view_recipe2 = '&lcub;view.php?vid=' . $view_id . '&cmd[' . $view_id . ']=' . safe($view_conds2) . ($view_sort ? '&set[' . $view_id . ']=sort-'.safe($view_sort): '').'&rcub;';
     }
 }
 
