@@ -395,6 +395,9 @@ if ( $update ) {
 
     if ( !count($err) ) {
         $Msg = MsgOk(_m("View successfully changed"));
+        // the help under the form quotes the conditions and sort of the view - as just saved, also of a new view
+        $view = AA_Views::getViewNumeric($view_id);
+        $view->load(true);
         // in order we reread the data from the database (see below)
         unset($update);
     }
