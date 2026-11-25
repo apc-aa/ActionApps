@@ -578,6 +578,7 @@ function getViewFields(): array
     $VIEW_FIELDS["cond3field"]      = GetViewFieldDef("text", "text", "cond");
     $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text", "text", "none");
     $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text", "text", "none");
+    $VIEW_FIELDS["conds"]           = GetViewFieldDef("", "text", "condlist");   // the conditions after the third
     $VIEW_FIELDS["show_if"]         = GetViewFieldDef("text", "text", "area");
     $VIEW_FIELDS["show_else"]       = GetViewFieldDef("text", "text", "area");
     $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number", "text", "field");
@@ -646,6 +647,11 @@ function getViewTypes(): array
         "help"  => _m("Name of the view, usable instead of its number: {view:photo_list}, {view.php?vid=photo_list}, slice.php?iview=photo_list (also fview, dview). The name is looked up in the slices of the site or of the page, so a URL that loads view.php directly (lazy, AJAX) still needs the number. Use only small letters and _, starting with a letter."),
     ];
 
+    $more_conds = [
+        "label" => _m("More conditions"),
+        "help"  => _m("Further conditions, each under its number. A call gives a condition its value by the number, as for the first three: cmd[]=c-4-value. With more fields in one condition, the condition holds when any of the fields matches. A condition without a value waits for the value of the call - without it, it is left out."),
+    ];
+
     $common = [
         "show_if" => [
             "label" => _m("Show only if"),
@@ -710,6 +716,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
+            "conds"           => $more_conds,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -739,6 +746,7 @@ function getViewTypes(): array
             "cond2op"       => " ",
             "cond2cond"     => " ",
             "cond3field"    => _m("Condition 3"),
+            "conds"         => $more_conds,
             "cond3op"       => " ",
             "cond3cond"     => " ",
             "noitem_msg"    => _m("HTML code for \"No item found\" message"),
@@ -825,6 +833,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
+            "conds"           => $more_conds,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -851,6 +860,7 @@ function getViewTypes(): array
             "cond2op"      => " ",
             "cond2cond"    => " ",
             "cond3field"   => _m("Condition 3"),
+            "conds"        => $more_conds,
             "cond3op"      => " ",
             "cond3cond"    => " ",
             "listlen"      => _m("Listing length"),
@@ -882,6 +892,7 @@ function getViewTypes(): array
             "cond2op"      => " ",
             "cond2cond"    => " ",
             "cond3field"   => _m("Condition 3"),
+            "conds"        => $more_conds,
             "cond3op"      => " ",
             "cond3cond"    => " ",
             "listlen"      => _m("Listing length"),
@@ -915,6 +926,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
+            "conds"           => $more_conds,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -979,6 +991,7 @@ function getViewTypes(): array
             "cond2op"       => " ",
             "cond2cond"     => " ",
             "cond3field"    => _m("Condition 3"),
+            "conds"         => $more_conds,
             "cond3op"       => " ",
             "cond3cond"     => " ",
             "listlen"       => _m("Listing length"),
@@ -1013,6 +1026,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
+            "conds"           => $more_conds,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -1047,6 +1061,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
+            "conds"           => $more_conds,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),

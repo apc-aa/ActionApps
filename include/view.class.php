@@ -29,6 +29,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Search\StoredConditions;
 use AA\Security\ViewSlices;
 use AA\Util\Langs;
 use AA\Util\SingletonTrait;
@@ -230,6 +231,10 @@ class AA_View
         $this->resolveCondsConflict($conds, $this->f('cond1field'), $this->f('cond1op'), $this->f('cond1cond'), $param_conds[1]);
         $this->resolveCondsConflict($conds, $this->f('cond2field'), $this->f('cond2op'), $this->f('cond2cond'), $param_conds[2]);
         $this->resolveCondsConflict($conds, $this->f('cond3field'), $this->f('cond3op'), $this->f('cond3cond'), $param_conds[3]);
+        // the conditions after the third, each under its number; none in a database without the column
+        foreach (StoredConditions::fromText((string) ($this->fields['conds'] ?? ''))->toConds((array) $param_conds) as $cond) {
+            $conds[] = $cond;
+        }
         if ($param_conds[0]) {
             $conds['valuejoin'] = $param_conds[0];
         }
@@ -602,14 +607,11 @@ class AA_View
                     //
                     //                       }
 
-                    if (AA_Set::check($command_params[0], $command_params[1])) {
-                        $param_conds[$command_params[0]] = stripslashes($command_params[1]);
-                    }
-                    if (AA_Set::check($command_params[2], $command_params[3])) {
-                        $param_conds[$command_params[2]] = stripslashes($command_params[3]);
-                    }
-                    if (AA_Set::check($command_params[4], $command_params[5])) {
-                        $param_conds[$command_params[4]] = stripslashes($command_params[5]);
+                    // pairs of the number of a condition of the view and its value
+                    for ($pair = 0; isset($command_params[$pair]); $pair += 2) {
+                        if (AA_Set::check($command_params[$pair], $command_params[$pair + 1] ?? null)) {
+                            $param_conds[$command_params[$pair]] = stripslashes((string) ($command_params[$pair + 1] ?? ''));
+                        }
                     }
                     break;
 

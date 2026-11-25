@@ -28,6 +28,8 @@
 
 use AA\IO\DB\DB_AA;
 use AA\Optimize\ViewListingColumns;
+use AA\Search\ConditionsInput;
+use AA\Search\StoredConditions;
 use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 
@@ -284,6 +286,9 @@ function BitFlagFrm($name, $txt, $val): void
     FrmInputChBox( $name, $txt, $val & (2**$num));
 }
 
+/** the conditions 1 - 3 have their own columns; view.conds keeps those from this number on */
+const VIEW_MORE_CONDS_FROM = 4;
+
 $view_id = (int) $_REQUEST['view_id'];  // sanitize
 if ($view_id) {
     $view      = AA_Views::getViewNumeric($view_id);
@@ -321,7 +326,7 @@ $view_field_names = getViewTypes()[$view_type];
 // the settings an older database cannot keep (ViewListingColumns) are not offered
 $columns_ready = ViewListingColumns::ready();
 if (!$columns_ready) {
-    unset($view_field_names['group_limit'], $view_field_names['show_if'], $view_field_names['show_else']);
+    unset($view_field_names['group_limit'], $view_field_names['conds'], $view_field_names['show_if'], $view_field_names['show_else']);
 }
 $view_type_info   = getViewTypesInfo($view_type);
 
@@ -360,6 +365,9 @@ if ( $update ) {
                 }
                 if ($k === 'group_limit') {
                     $insval  = max(0, min(65535, $insval));   // what the column holds
+                }
+                if ($v["input"] === "condlist") {
+                    $insval  = StoredConditions::fromForm($_POST[$k] ?? null, VIEW_MORE_CONDS_FROM)->toText();
                 }
                 if ($v["max"]) {
                     $insval  = substr($insval, 0, $v["max"]);
@@ -452,7 +460,8 @@ if ( !$update ) {  // set variables from database
 } else {        // updating - load data into vw_data array
     foreach ($VIEW_FIELDS as $k => $v) {
         if ( $view_field_names[$k] ) {
-            $vw_data[$k] = $$k;
+            // the rows of conditions as posted, in their stored form
+            $vw_data[$k] = ($v["input"] === "condlist") ? StoredConditions::fromForm($_POST[$k] ?? null, VIEW_MORE_CONDS_FROM)->toText() : $$k;
         }
     }
 }
@@ -517,6 +526,9 @@ if ($view_field_names["even_odd_differ"]) {
 }
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->addRequire('aa-code@1');
+if (isset($view_field_names['conds'])) {
+    $apage->addRequire('aa-conditions@1');
+}
 $apage->printHead($err, $Msg);
 
 $form_buttons              = ['update'];
@@ -577,6 +589,11 @@ foreach ($view_field_names as $k => $v) {
         case "bitflag": FrmInputChBox( $k, $label, $value, false, '', 1, false, $help); break;
                         // BitFlagFrm( $k, $label, $value); break;
         case "cond":    ConditionFrm(  $k, $label, $value); break;
+        case "condlist":
+            echo '<tr><td><b>' . safe($label) . '</b></td><td>'
+                . ConditionsInput::html($k, StoredConditions::fromText((string) $vw_data[$k]), array_diff_key($cond_fields, ['' => 1]), $lookup_op, VIEW_MORE_CONDS_FROM)
+                . '<div class="tabhlp">' . $help . '</div></td></tr>';
+            break;
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] === 'easy'); break;
         case "orderal": OrderAliasFrm( $k, $label, $value); break;
         // an alias only for items: the other listings (constants, links, categories...) have no items to expand it for

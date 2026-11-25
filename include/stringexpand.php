@@ -8171,6 +8171,7 @@ class AA_Requires {
             'aa-isds@1'                   => new AA_Req_Lib(get_aa_url('javascript/aa-isds.js', ['v'=>AA_JS_VERSION],false).' module', '', ['_css-aa-isds@1', 'aa-richtext@1']),
             '_css-aa-isds@1'              => new AA_Req_Css(get_aa_url('css/aa-isds.css', ['v'=>AA_JS_VERSION],false)),
             'aa-passkey@1'                => new AA_Req_Lib(get_aa_url('javascript/aa-passkey.js', ['v'=>AA_JS_VERSION],false).' module'),
+            'aa-conditions@1'             => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-conditions.js', ['v'=>AA_JS_VERSION],false).' module'),
             'aa-batchrun@1'               => new AA_Req_Lib(get_aa_url('javascript/aa-batchrun.js', ['v'=>AA_JS_VERSION],false).' module'),
             'aa-mailbulk@1'               => new AA_Req_Lib(get_aa_url('javascript/mailbulk.js', ['v'=>AA_JS_VERSION],false).' module', '', ['aa-jslib@3|aa-jslib@2|aa-jslib@1']),
             'aa-richtext@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-richtext.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
