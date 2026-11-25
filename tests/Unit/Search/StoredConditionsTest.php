@@ -229,6 +229,6 @@ final class StoredConditionsTest extends TestCase
         self::assertSame(['voda', 'les', '0', 'Novak'], array_column($stored->toConds($given), 'value'));
         self::assertSame([4 => 'voda', 6 => 'les', 5 => '0', 'author' => 'Novak'], $stored->values($given));
         self::assertSame([4 => 'voda', 6 => '', 5 => '9', 'author' => ''], $stored->values());
-        self::assertSame('Novak', $stored->values(['Author' => 'Novak'])['author'], 'a call may write the name in capitals, as its alias has it');
+        self::assertSame('', $stored->values(['Author' => 'Novak', 'AUTHOR' => 'Novak'])['author'], 'the name of a call is taken as written, as a field id is');
     }
 }

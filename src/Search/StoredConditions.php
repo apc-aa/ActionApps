@@ -188,12 +188,11 @@ final class StoredConditions
 
     /**
      * The value each condition works with.
-     * @param array<int|string, mixed> $given the values a call gives by the names, in any case of letters; '' or none - the stored one
+     * @param array<int|string, mixed> $given the values a call gives by the names, written as stored (c-AUTHOR- is not c-author-); '' or none - the stored one
      * @return array<int|string, string> by the names
      */
     public function values(array $given = []): array
     {
-        $given  = array_change_key_case($given);
         $values = [];
         foreach ($this->conditions as $name => $condition) {
             $value         = $given[$name] ?? '';
