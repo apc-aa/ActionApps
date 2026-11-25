@@ -652,7 +652,7 @@ function getViewTypes(): array
     // the views that list items give their templates the values of the conditions
     $more_conds = [
         "label" => _m("More conditions"),
-        "help"  => $more_conds_help . '<br>' . _m("The value a condition works with is in the alias _#C_ followed by the name in capitals, filled with _ to ten characters: _#C_AUTHOR, _#C_4_____, and _#C_1_____ to _#C_3_____ for the first three. A name whose alias the slice has for a field is replaced by a number. The value may come from the call (a URL): print it as {safe:_#C_AUTHOR}."),
+        "help"  => $more_conds_help . '<br>' . _m("The value a condition works with is in the alias _#C_ followed by the name in capitals, filled with _ to ten characters: _#C_AUTHOR, _#C_4_____, and _#C_1_____ to _#C_3_____ for the first three. A name whose alias the slice has for a field is replaced by a number. The value may come from the call (a URL): print it as {safe:{_#C_AUTHOR}} - with the inner braces, without them it is not escaped."),
     ];
 
     $common = [
