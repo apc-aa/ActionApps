@@ -47,9 +47,13 @@ final class ViewDirectTest extends TestCase
     /** @param list<string> $forbidding the modules whose settings keep views inside pages */
     private static function database(array $forbidding): void
     {
+        // AA keeps the types of the modules for the whole process (a static of AA_Module::getModuleInfo()):
+        // after another test asked for them, a site of this test is taken for a slice - so its settings
+        // answer under the id of either class
         $settings = [];
         foreach ($forbidding as $module) {
-            $settings[($module === self::SLICE) ? AA_Slice::getModuleObjectId($module) : AA_Module_Site::getModuleObjectId($module)] = $module;
+            $settings[AA_Slice::getModuleObjectId($module)]       = [$module, 'AA_Modulesettings_Slice'];
+            $settings[AA_Module_Site::getModuleObjectId($module)] = [$module, 'AA_Modulesettings_Site'];
         }
         RecordingDb::reset();
         AA::Contentcache()->clear();
@@ -62,10 +66,10 @@ final class ViewDirectTest extends TestCase
                 // the deleted site only when the query does not leave deleted modules out
                 return preg_match('/module\W+deleted\W+= 0/', $sql) ? [['unpackid' => self::SITE]] : [['unpackid' => self::DELETED], ['unpackid' => self::SITE]];
             }
-            foreach ($settings as $object_id => $module) {
+            foreach ($settings as $object_id => [$module, $class]) {
                 if (str_contains($sql, "object_id = '$object_id'")) {
                     return [
-                        ['tbl' => 'object_text', 'property' => 'aa_type', 'value' => ($module === self::SLICE) ? 'AA_Modulesettings_Slice' : 'AA_Modulesettings_Site', 'priority' => 0],
+                        ['tbl' => 'object_text', 'property' => 'aa_type', 'value' => $class, 'priority' => 0],
                         ['tbl' => 'object_text', 'property' => 'aa_owner', 'value' => $module, 'priority' => 0],
                         ['tbl' => 'object_text', 'property' => ViewDirect::PROPERTY, 'value' => '1', 'priority' => 0],
                     ];
@@ -120,28 +124,41 @@ final class ViewDirectTest extends TestCase
         self::assertCount(1, array_filter(RecordingDb::$log, static fn(string $sql): bool => str_contains($sql, 'FROM relation')));
     }
 
-    /** @return array<string, array{string, bool}> */
-    public static function scripts(): array
+    public function test_sitesForbidding_asksOnlySitesNotDeleted(): void
+    {
+        self::database([self::SITE]);
+
+        ViewDirect::sitesForbidding(self::SLICE);
+
+        $asked = array_values(array_filter(RecordingDb::$log, static fn(string $sql): bool => str_contains($sql, 'FROM relation')));
+        self::assertMatchesRegularExpression('/module\W+deleted\W+= 0\b.*ORDER BY module\.created_at DESC/s', $asked[0]);
+        if (getenv('AA_SHOW_SQL')) {
+            fwrite(STDERR, "\n" . $asked[0] . "\n");
+        }
+    }
+
+    /** @return array<string, array{list<string>, list<string>, bool}> sites set so, the slices of the site, the cache is dropped */
+    public static function savedSites(): array
     {
         return [
-            'view.php'       => ['/aaa/view.php', true],
-            'view.php3'      => ['/aaa/view.php3', true],
-            'jsview.php'     => ['/apc-aa/jsview.php', true],
-            'jsview.php3'    => ['/apc-aa/jsview.php3', true],
-            'site module'    => ['/aaa/modules/site/site.php', false],
-            'discussion.php' => ['/aaa/discussion.php', false],
-            'slice.php'      => ['/aaa/slice.php', false],
+            'the site keeps views inside' => [[self::SITE], [self::SLICE], true],
+            'the site does not'           => [[], [self::SLICE], false],
+            'a site without slices'       => [[self::SITE], [], false],
         ];
     }
 
-    #[DataProvider('scripts')]
-    public function test_isDirectCall(string $script, bool $direct): void
+    /**
+     * @param list<string> $forbidding
+     * @param list<string> $slices
+     */
+    #[DataProvider('savedSites')]
+    public function test_siteSaved_dropsTheCachedOutputsOfItsSlices(array $forbidding, array $slices, bool $dropped): void
     {
-        $_SERVER['SCRIPT_NAME'] = $script;
-        try {
-            self::assertSame($direct, ViewDirect::isDirectCall());
-        } finally {
-            unset($_SERVER['SCRIPT_NAME']);
-        }
+        self::database($forbidding);
+
+        ViewDirect::siteSaved(self::SITE, $slices);
+
+        $cache = array_filter(RecordingDb::$log, static fn(string $sql): bool => str_contains($sql, 'pagecache'));
+        self::assertSame($dropped, $cache !== []);
     }
 }

@@ -22,7 +22,7 @@ final class ConditionsInput
      * @param array<string, string> $operators operator => label, grouped the same way (AA_Operators::forSelect())
      * @param int                   $first     the number of the first condition the control adds
      */
-    public static function html(string $name, StoredConditions $conditions, array $fields, array $operators, int $first = 1): string
+    public static function html(string $name, StoredConditions $conditions, array $fields, array $operators, int $first): string
     {
         $fields = ['' => ' '] + $fields;   // no field chosen
         $rows   = '';
@@ -44,7 +44,7 @@ final class ConditionsInput
     {
         $base    = $name . '[' . $number . ']';
         $selects = '';
-        foreach ($chosen ?: [''] as $field) {
+        foreach ($chosen as $field) {
             $selects .= getFrmSelectEasy($base . '[fields][]', $fields, $field);
         }
         return '<div class="aa-conditions-row" data-number="' . safe($number) . '"><b class="aa-conditions-number">' . safe($number) . '</b> '

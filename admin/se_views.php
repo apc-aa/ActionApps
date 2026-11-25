@@ -77,7 +77,6 @@ if ( $del ) {
     }
 }
 
-// returns javascript row for view selection
 const SE_VIEWS_NODIRECT_TOKEN = 'se_views_nodirect';
 if (in_array($nodirect, ['0', '1'], true)) {
     if (FormToken::checkPost(SE_VIEWS_NODIRECT_TOKEN, $token, $_SERVER)) {
@@ -88,6 +87,7 @@ if (in_array($nodirect, ['0', '1'], true)) {
     }
 }
 
+// returns javascript row for view selection
 function GetViewJSArray( $sid, $id, $name, $i ): string {
     $id=safe($id);
     return "\n vs[$i]=\"x$sid\"; vv[$i]=\"$id\"; vn[$i]=\"".safe($name)."\";";
@@ -202,7 +202,7 @@ echo '<form method="post" action="' . safe(StateUrl(self_base() . 'se_views.php'
         ? _m('The views of this slice work only inside pages and other templates ({view:...}, {view.php?...}). Their own addresses (view.php?vid=..., jsview.php?vid=...) show nothing.')
         : _m('Every view of this slice is also shown by its own address (view.php?vid=..., jsview.php?vid=...), unless the view is set otherwise.'))
     . ($site_names ? '<br><b>' . _m('The site %1 uses this slice and lets views work only inside pages, so the addresses show nothing whatever is set here.', [implode(', ', $site_names)]) . '</b>' : '')
-    . '<div class="tabhlp">' . _m('Before you switch it on, check that no page loads a view of this slice by its address (AJAX, lazy loading) and that no RSS or other feed is one of the views. A refused call is listed in State Check.') . '</div>'
+    . '<div class="tabhlp">' . _m('Before you switch it on, check that no page loads a view of this slice by its address (AJAX, lazy loading, an include in an .shtml page) and that no RSS or other feed is one of the views. A refused call is listed in State Check.') . '</div>'
     . '<button type="submit" name="view_nodirect" value="' . ($slice_nodirect ? '0' : '1') . '" class="aa-button-edit">' . ($slice_nodirect ? _m('Show views by their addresses again') : _m('Let views work only inside pages')) . '</button>'
     . '</td></tr></tbody></table></form>';
 

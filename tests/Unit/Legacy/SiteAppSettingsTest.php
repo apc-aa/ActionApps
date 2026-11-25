@@ -142,10 +142,10 @@ namespace Tests\Unit\Legacy {
             $stored = new AA_Modulesettings_Site();
             $stored->setNew($id, self::SLICE);
 
-            $this->assertSame(self::SITE, AA_Modulesettings_Site::ofSite($stored, $id, self::SITE)->getOwnerId());
-            $fresh = AA_Modulesettings_Site::ofSite(null, $id, self::SITE);
+            $this->assertSame(self::SITE, AA_Modulesettings_Site::ofModule($stored, $id, self::SITE)->getOwnerId());
+            $fresh = AA_Modulesettings_Site::ofModule(null, $id, self::SITE);
             $this->assertSame([$id, self::SITE], [$fresh->getId(), $fresh->getOwnerId()]);
-            $this->assertSame(self::SITE, AA_Modulesettings_Site::ofSite(new \AA_Modulesettings_Slice(), $id, self::SITE)->getOwnerId(), 'another class - a new object');
+            $this->assertSame(self::SITE, AA_Modulesettings_Site::ofModule(new \AA_Modulesettings_Slice(), $id, self::SITE)->getOwnerId(), 'another class - a new object');
         }
     }
 }

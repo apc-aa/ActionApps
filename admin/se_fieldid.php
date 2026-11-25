@@ -175,9 +175,9 @@ function ChangeFieldID($old_id, $new_id): void
             if (!$keyfield) {
                 $keyfield = $settings['primary_part'];
             }
-            if (($table === 'view') && !ViewListingColumns::ready()) {
+            if ($table === 'view') {
                 // a database without the newer columns of views: asking for them would be an error
-                $settings['fields'] = array_values(array_diff($settings['fields'], ['conds', 'show_if', 'show_else']));
+                $settings['fields'] = array_values(array_diff($settings['fields'], ViewListingColumns::absent()));
             }
             $SQL = "SELECT `$keyfield`, `" . implode("`, `", $settings['fields']) . "` FROM `$table`";
             $rows = DB_AA::select(['id' => []], $SQL, [[$settings['slice_id'], AA::$module_id, 'l']]);

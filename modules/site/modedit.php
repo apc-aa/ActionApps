@@ -235,7 +235,7 @@ if ($is_add ? $add : $update) {
             AA_Module_Site::saveAppSettings($module_id, $app_publish, $app_description, $app_version, AppStore::approvedModules($app_stored['publish'] ? $app_stored['modules'] : null, $app_used, $app_approve));
         }
         AA::Pagecache()->invalidateFor($module_id);  // invalidate old cached values for this slice
-        ViewDirect::siteSaved($module_id);
+        ViewDirect::siteSaved($module_id, (array) $uses_modules);
     } while(false);
 
     if ( !count($err) ) {

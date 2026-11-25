@@ -54,6 +54,12 @@ class ViewListingColumns extends AbstractOptimize
         return self::lacking() === [];
     }
 
+    /** @return list<string> the columns the table does not have yet: no query may name them, no form offer them */
+    public static function absent(): array
+    {
+        return array_keys(self::lacking(), null, true);
+    }
+
     public function test(): bool
     {
         if ($lacking = self::lacking()) {

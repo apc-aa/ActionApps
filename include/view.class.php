@@ -58,6 +58,9 @@ class AA_View
      */
     public const VIEW_SORT_DIRECTIONS = [0 => 'a', 1 => 'd', 2 => '1', 3 => '9'];
 
+    /** the conditions 1 - 3 have their own columns; view.conds keeps those from this number on */
+    public const MORE_CONDS_FROM = 4;
+
     /** view function
      * @param $id
      * @param $rec
@@ -155,23 +158,28 @@ class AA_View
         return (string) ($this->fields['show_else'] ?? '');
     }
 
+    private function hasFlag(int $bit): bool
+    {
+        return (bool) ((int) $this->f('flag') & $bit);
+    }
+
     /** the view itself is set to work only inside pages and templates (AA\Security\ViewDirect) */
     public function isInsideOnly(): bool
     {
-        return (bool) ((int) $this->f('flag') & VIEW_FLAG_NODIRECT);
+        return $this->hasFlag(VIEW_FLAG_NODIRECT);
     }
 
     /** the output is never stored in the page cache, nor is a page that includes it */
     public function isNeverCached(): bool
     {
-        return (bool) ((int) $this->f('flag') & VIEW_FLAG_NOCACHE);
+        return $this->hasFlag(VIEW_FLAG_NOCACHE);
     }
 
     /** The first use of a view marked as probably unused takes the mark off - once, also when requests meet.
      *  @return bool this call is the first use */
     public function takeFirstUse(): bool
     {
-        if (!((int) $this->f('flag') & VIEW_FLAG_WATCH)) {
+        if (!$this->hasFlag(VIEW_FLAG_WATCH)) {
             return false;
         }
         $this->fields['flag'] = (string) ((int) $this->fields['flag'] & ~VIEW_FLAG_WATCH);
@@ -232,7 +240,7 @@ class AA_View
         $this->resolveCondsConflict($conds, $this->f('cond2field'), $this->f('cond2op'), $this->f('cond2cond'), $param_conds[2]);
         $this->resolveCondsConflict($conds, $this->f('cond3field'), $this->f('cond3op'), $this->f('cond3cond'), $param_conds[3]);
         // the conditions after the third, each under its number; none in a database without the column
-        foreach (StoredConditions::fromText((string) ($this->fields['conds'] ?? ''))->toConds((array) $param_conds) as $cond) {
+        foreach (StoredConditions::fromText((string) ($this->fields['conds'] ?? ''), self::MORE_CONDS_FROM)->toConds((array) $param_conds) as $cond) {
             $conds[] = $cond;
         }
         if ($param_conds[0]) {

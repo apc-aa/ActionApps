@@ -162,11 +162,11 @@ final class ViewGatesTest extends TestCase
     {
         return [
             'view.php'                      => ['/aa/view.php', true, false],
-            'view.php3'                     => ['/aa/view.php3', true, false],
             'jsview.php'                    => ['/aa/jsview.php', true, false],
+            'discussion.php shows any view' => ['/aa/discussion.php', true, false],
+            'a script that includes view.php' => ['/rss.php', true, false],
             '{view.php?...} in view.php'    => ['/aa/view.php', false, true],
             '{view:...} on a page'          => ['/aa/modules/site/site.php', false, true],
-            'discussion.php'                => ['/aa/discussion.php', true, true],
         ];
     }
 
@@ -190,6 +190,17 @@ final class ViewGatesTest extends TestCase
             self::assertSame(ParamImplode([(string) self::VID, ViewDirect::BY_VIEW, '']), $refusals[0]['selector']);
             self::assertSame(ParamImplode(['example.org' . $script, 'example.org/cz/akce']), $refusals[0]['params']);
         }
+    }
+
+    public function test_viewOutput_discussionOnlyInsidePages_isRefusedLikeAnyView(): void
+    {
+        self::view(VIEW_FLAG_NODIRECT, ['type' => 'discus']);
+        $_SERVER['SCRIPT_NAME'] = '/aa/discussion.php';
+        $_SERVER['HTTP_HOST']   = 'example.org';
+        $_SERVER['REQUEST_URI'] = '/aa/discussion.php?vid=' . self::VID;
+
+        self::assertSame('', self::shown(['from_request' => true]));
+        self::assertSame('HTTP/1.0 404 Not Found', AA::$headers['status'] ?? null);
     }
 
     /** @return array<string, array{array<string, string>, string}> settings of the view, output */

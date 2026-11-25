@@ -51,6 +51,7 @@ final class ItemFilterTest extends TestCase
             'XLIKE'                 => ["d-$f-XLIKE-a%", [$c('XLIKE', 'a%')]],
             'BITSET'                => ["d-highlight.......-BITSET-128", [$c('BITSET', '128', ['highlight.......'])]],
             '& of a bit'            => ["d-highlight.......-&-4", [$c('&', '4', ['highlight.......'])]],
+            '& by its name'         => ["d-highlight.......-BITANY-4", [$c('&', '4', ['highlight.......'])]],
             'ISNULL needs no value' => ["d-$f-ISNULL-", [$c('ISNULL', '')]],
             'NOTMAIL'               => ["d-$f-NOTMAIL-", [$c('NOTMAIL', '')]],
             'd: a readable date'    => ["d-publish_date....-d:>-1.1.2020", [$c('d>', '1.1.2020', ['publish_date....'])]],

@@ -684,14 +684,11 @@ class AA_Slice extends AA_Module
      *  the caller checks the right to change the views of the slice */
     public static function saveViewNodirect(string $module_id, bool $on): void
     {
-        $id       = static::getModuleObjectId($module_id);
-        $settings = AA_Modulesettings_Slice::load($id);
-        if ($settings instanceof AA_Modulesettings_Slice) {
-            $settings->setOwnerId($module_id);
-        } else {
-            $settings = new AA_Modulesettings_Slice();
-            $settings->setNew($id, $module_id);
+        if (ViewDirect::moduleForbids($module_id) === $on) {
+            return;
         }
+        $id       = static::getModuleObjectId($module_id);
+        $settings = AA_Modulesettings_Slice::ofModule(AA_Modulesettings_Slice::load($id), $id, $module_id);
         $settings->setProperty(ViewDirect::PROPERTY, $on ? '1' : '');
         $settings->save();
         unset(AA_Module::$_modules[$module_id]);         // the settings are read again
@@ -1214,7 +1211,7 @@ class AA_Module_Site extends AA_Module
     public static function saveAppSettings(string $module_id, bool $publish, string $description, string $version, array $modules): void
     {
         $id       = static::getModuleObjectId($module_id);
-        $settings = AA_Modulesettings_Site::ofSite(AA_Modulesettings_Site::load($id), $id, $module_id);
+        $settings = AA_Modulesettings_Site::ofModule(AA_Modulesettings_Site::load($id), $id, $module_id);
         $settings->setApp($publish, $description, $version, $publish ? $modules : []);
         $settings->save();
     }
@@ -1625,6 +1622,18 @@ abstract class AA_AbstractModulesettings extends AA_Object
     {
         return $this->getId() === string2id(static::class . $this->aa_owner);
     }
+
+    /** the settings object $id of the module to save: $stored, owned by the module again, or a new one */
+    public static function ofModule(?AA_Object $stored, string $id, string $module_id): static
+    {
+        if ($stored instanceof static) {
+            $stored->setOwnerId($module_id);
+            return $stored;
+        }
+        $settings = new static();
+        $settings->setNew($id, $module_id);
+        return $settings;
+    }
 }
 
 /** Slice settings */
@@ -1741,7 +1750,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
             'page404'         => new AA_Property('page404', _m("Page not Found (404)"), 'string', false, true, ['enum',   [1 => _m('Do not care'),2 => _m('Send standard 404 page, when {xid} is empty'),3 => _m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
             'page404_code'    => new AA_Property('page404_code', _m("HTML code for \"Page not Found\" (404)"), 'text', false, true),
             // '1' or '' - AA\Security\ViewDirect
-            'view_nodirect'   => new AA_Property('view_nodirect', _m("Views only inside pages"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m('Yes - the views of all the slices this site uses work only inside pages and other templates ({view:...}, {view.php?...}); their own addresses (view.php?vid=..., jsview.php?vid=...) show nothing and answer 404. Check first that no page loads a view by its address (AJAX, lazy loading) and that no RSS or other feed is a view. A refused call is listed in State Check.')),
+            'view_nodirect'   => new AA_Property('view_nodirect', _m("Views only inside pages"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m('Yes - the views of all the slices this site uses work only inside pages and other templates ({view:...}, {view.php?...}); their own addresses (view.php?vid=..., jsview.php?vid=...) show nothing and answer 404. Check first that no page loads a view by its address (AJAX, lazy loading, an include in an .shtml page) and that no RSS or other feed is a view. A refused call is listed in State Check.')),
             // '1' or '' - a string, so loading the settings on every page still reads object_text only
             'app_publish'     => new AA_Property('app_publish', _m("Publish in the app store"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m("Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too.")),
             'app_description' => new AA_Property('app_description', _m("App description"), 'text', false, true, ['text', ['maxlength' => self::APP_DESCRIPTION_MAX]], false, _m("What the app does, for the list of the app store.")),
@@ -1810,17 +1819,6 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
         return (($stored instanceof self) && ($stored->getOwnerId() === $site)) ? $stored->app() : ['publish' => false, 'description' => '', 'version' => '', 'modules' => []];
     }
 
-    /** the settings object $id of the site to save: $stored, owned by the site again, or a new one */
-    public static function ofSite(?AA_Object $stored, string $id, string $site): self
-    {
-        if ($stored instanceof self) {
-            $stored->setOwnerId($site);
-            return $stored;
-        }
-        $settings = new self();
-        $settings->setNew($id, $site);
-        return $settings;
-    }
 
     /** @inheritDoc */
     protected static function getAdminUrlTemplate(): string

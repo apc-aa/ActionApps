@@ -41,6 +41,14 @@ final class StoredConditionsTest extends TestCase
         self::assertSame($stored->toText(), StoredConditions::fromText(str_replace("\n", "\r\n", $stored->toText()))->toText());
     }
 
+    public function test_fromText_numberBelowTheFirst_isNotRead(): void
+    {
+        $stored = "2\theadline........\t=\tx\n4\theadline........\t=\ty";
+
+        self::assertSame([4], array_keys(StoredConditions::fromText($stored, 4)->all()));
+        self::assertSame([2, 4], array_keys(StoredConditions::fromText($stored)->all()));
+    }
+
     public function test_fromText_empty_isNoCondition(): void
     {
         self::assertSame([], StoredConditions::fromText('')->all());

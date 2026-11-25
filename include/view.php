@@ -428,8 +428,8 @@ class AA_Showview
             return '';
         }
 
-        // the address of view.php or jsview.php asks for a view that works only inside pages
-        if ($this->from_request && ViewDirect::isDirectCall() && ($by = ViewDirect::forbiddenBy($view->isInsideOnly(), unpack_id((string) $view->f('slice_id'))))) {
+        // the request itself asks for a view that works only inside pages
+        if ($this->from_request && ($by = ViewDirect::forbiddenBy($view->isInsideOnly(), unpack_id((string) $view->f('slice_id'))))) {
             ViewDirect::refuse($vid, $by);
             $this->outputEnd($view, $dbgtime, 'The view works only inside pages (' . $by[0] . ')');
             return '';

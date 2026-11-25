@@ -92,6 +92,7 @@ https://www.apc.org/
 
 
 use AA\IO\DB\DB_AA;
+use AA\Security\ViewDirect;
 use AA\Security\ViewSlices;
 use AA\Util\Hitcounter;
 use AA\Util\InputVars;
@@ -279,9 +280,11 @@ if (!$slice_info['even_odd_differ']) {
 // it is possible to redefine the design of fulltext or compact view by the view
 // see fview and iview url parameters for this file (slice.php)
 if ($fview || $iview) {
+    // not of a view that works only inside pages
+    $view_usable = static fn(?AA_View $view): bool => $view && ($view->f('deleted') < 1) && !ViewDirect::forbiddenBy($view->isInsideOnly(), unpack_id((string) $view->f('slice_id')));
     if ($fview) {                       // use formating from view for fulltext
         $fview_info = is_scalar($fview) ? AA_Views::getView($fview, $slice_id) : null;
-        if ($fview_info && ($fview_info->f('deleted') < 1)) {
+        if ($view_usable($fview_info)) {
             $slice_info['fulltext_format']        = $fview_info->f('odd');
             $slice_info['fulltext_format_top']    = $fview_info->f('before');
             $slice_info['fulltext_format_bottom'] = $fview_info->f('after');
@@ -290,7 +293,7 @@ if ($fview || $iview) {
     }
     if ($iview) {                       // use formating from view for index
         $iview_info = is_scalar($iview) ? AA_Views::getView($iview, $slice_id) : null;
-        if ($iview_info && ($iview_info->f('deleted') < 1)) {
+        if ($view_usable($iview_info)) {
             $slice_info['group_by']        = $iview_info->f('group_by1');
             $slice_info['group_desc']      = $iview_info->groupDescending();
             $slice_info['gb_direction']    = AA_View::VIEW_SORT_DIRECTIONS[$iview_info->f('g1_direction')];  // views uses different sort codes (historical reasons)
