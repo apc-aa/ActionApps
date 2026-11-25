@@ -6,7 +6,6 @@ namespace AA\Optimize;
 
 use AA;
 use AA\IO\DB\DB_AA;
-use AA_MbC;
 
 /** The columns of `view` behind two settings of the view form: a condition on a field of related items
  *  (the name of such a field - two field ids and, for a relation leading here, the slice between them - is
@@ -70,8 +69,8 @@ class ViewListingColumns extends AbstractOptimize
             return [new Finding(Finding::OK, _m('Views can keep conditions on related items and the group limit'))];
         }
         $evidence = [];
-        foreach ($lacking as $column => $bytes) {
-            $evidence[] = [_m('Column') => self::TABLE . '.' . $column, _m('Bytes') => ($bytes === null) ? _m('missing') : (string) $bytes];
+        foreach ($lacking as $column => $type) {
+            $evidence[] = [_m('Column') => self::TABLE . '.' . $column, _m('Type') => $type ?? _m('missing')];
         }
         return [new Finding(
             Finding::WARNING,
@@ -89,15 +88,15 @@ class ViewListingColumns extends AbstractOptimize
             return true;
         }
         $changes = [];
-        foreach ($lacking as $column => $bytes) {
-            // a widened varbinary keeps every byte
-            $changes[] = (($bytes === null) ? 'ADD ' : 'MODIFY ') . trim(AA::Metabase()->tables[self::TABLE]->getColumn($column)->getCreateSql());
+        foreach ($lacking as $column => $type) {
+            // a widened column keeps every value
+            $changes[] = (($type === null) ? 'ADD ' : 'MODIFY ') . trim(AA::Metabase()->tables[self::TABLE]->getColumn($column)->getCreateSql());
         }
         return $this->query('ALTER TABLE `' . self::TABLE . '` ' . implode(', ', $changes));   // one rebuild of the table
     }
 
-    /** @return array<string, ?int> the columns to change: null for a missing one, else the bytes of the too short
-     *                              one; [] also without the table - a new install creates it whole */
+    /** @return array<string, ?string> the columns to change: null for a missing one, else the type of the too
+     *                                 narrow one; [] also without the table - a new install creates it whole */
     private static function lacking(): array
     {
         // one query on every load of the view form
@@ -107,24 +106,12 @@ class ViewListingColumns extends AbstractOptimize
         }
         $lacking = [];
         foreach (self::COLUMNS as $column) {
-            $template = AA::Metabase()->tables[self::TABLE]->getColumn($column);
             if (!isset($live[$column])) {
                 $lacking[$column] = null;
-            } elseif ((($wanted = $template->getMaxLength()) > 0) && ($template->getFieldType() !== 'int') && (($bytes = self::bytes($column, (string) $live[$column])) < $wanted)) {
-                $lacking[$column] = $bytes;
+            } elseif (!UpdateDbStructure::holds((string) $live[$column], AA::Metabase()->tables[self::TABLE]->getColumn($column)->c[1])) {
+                $lacking[$column] = (string) $live[$column];
             }
         }
         return $lacking;
-    }
-
-    /** how many bytes a column of this type holds */
-    private static function bytes(string $column, string $type): int
-    {
-        $live = AA_MbC::fromArray([$column, $type, false, '', '', '', '']);
-        if ($live->getFieldType() !== 'text') {
-            return $live->getMaxLength();
-        }
-        // text and blob types state no length: tinytext and tinyblob hold 255 bytes, the others more than a field name
-        return str_starts_with(strtolower($type), 'tiny') ? 255 : PHP_INT_MAX;
     }
 }

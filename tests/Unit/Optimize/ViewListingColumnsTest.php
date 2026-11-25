@@ -94,6 +94,10 @@ namespace Tests\Unit\Optimize {
                     ['cond2field' => 'varbinary(32)'] + self::WIDE,
                     'ALTER TABLE `view` MODIFY `cond2field` varbinary(100)',
                 ],
+                'the limit too small' => [
+                    ['group_limit' => 'tinyint(3) unsigned'] + self::WIDE,
+                    'ALTER TABLE `view` MODIFY `group_limit` smallint(5) unsigned',
+                ],
             ];
         }
 
