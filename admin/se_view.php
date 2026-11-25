@@ -182,7 +182,7 @@ function store_digest_filters(): void
  */
 function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=false): void
 {
-    global $vw_data;
+    global $vw_data, $view_field_names;
     $name=safe($name); $txt=safe($txt);
 
     $order_type = $easy_order ?
@@ -196,6 +196,10 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
     FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
     if ( $group ) {
         FrmSelectEasy("gb_header", getViewGroupFunctions(), $vw_data['gb_header']);
+        if (isset($view_field_names['group_limit'])) {
+            $limit_help = _m('For groups by the whole value of a field, ascending or descending. An item with more values of the field is then listed in each of its groups.');
+            echo ' <label title="' . safe($limit_help) . '">' . _m('max. items in a group') . ' <input type="number" name="group_limit" min="0" max="65535" style="width:6em" value="' . safe((string) ($vw_data['group_limit'] ?: '')) . '"></label>';
+        }
         if (isset($order_fields['AA_OPTGROUP_aliases'])) {
             echo "<div class=tabhlp>"._m("grouping by an alias is slow as well - the alias is computed for all the items of the listing")."</div>";
         }
@@ -314,6 +318,11 @@ $slice = AA_Slice::getModule(AA::$module_id);
 
 $VIEW_FIELDS      = getViewFields();
 $view_field_names = getViewTypes()[$view_type];
+// the settings an older database cannot keep (ViewListingColumns) are not offered
+$columns_ready = ViewListingColumns::ready();
+if (!$columns_ready) {
+    unset($view_field_names['group_limit']);
+}
 $view_type_info   = getViewTypesInfo($view_type);
 
 if ( $update ) {
@@ -345,6 +354,12 @@ if ( $update ) {
                 }
                 if ($v["type"] === "bool") {
                     $insval  = $insval  ? 1 : 0;
+                }
+                if ($v["type"] === "number") {
+                    $insval  = (int) $insval;   // an input left empty is no number for a strict database
+                }
+                if ($k === 'group_limit') {
+                    $insval  = max(0, min(65535, $insval));   // what the column holds
                 }
                 if ($v["max"]) {
                     $insval  = substr($insval, 0, $v["max"]);
@@ -457,9 +472,8 @@ if ( $view_type_info['fields'] ) {
     $lookup_fields = AA_Fields::getFields4Select(AA::$module_id, false, 'name', true, true);
 }
 
-// A condition may also ask a field of related items - once the database can keep the longer name of such a field
-// (ViewListingColumns). Only for views of items: the other field lists above are not fields of a slice.
-$columns_ready = ViewListingColumns::ready();
+// A condition may also ask a field of related items - once the database can keep the longer name of such a field.
+// Only for views of items: the other field lists above are not fields of a slice.
 $cond_fields   = $lookup_fields;
 if (!$view_type_info['fields'] && $columns_ready && $slice && isset($view_field_names['cond1field'])) {   // the list reads the fields of every related slice
     $cond_fields += $slice->getSearchfields()->getRelatedArray();

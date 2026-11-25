@@ -634,6 +634,9 @@ class AA_Showview
                     }
                 }
 
+                if ($zids && !array_key_exists('group_limit', $param_sort)) {
+                    $param_sort['group_limit'] = 0;   // the call chose the items - the limit set in the view would drop some
+                }
                 $sort  = $view->getSort($param_sort);
 
                 AA::$debug & 64 && AA::$dbg->log("viewparams", $aliases, $conds, $sort);

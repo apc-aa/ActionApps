@@ -549,6 +549,7 @@ function getViewFields(): array
     $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text", "text", "group");
     $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("", "number", "none");
     $VIEW_FIELDS["gb_header"]       = GetViewFieldDef("", "number", "none");
+    $VIEW_FIELDS["group_limit"]     = GetViewFieldDef("", "number", "none");
     $VIEW_FIELDS["group_by2"]       = GetViewFieldDef("text", "text", "orderal");
     $VIEW_FIELDS["g2_direction"]    = GetViewFieldDef("", "number", "none");
     $VIEW_FIELDS["group_title"]     = GetViewFieldDef("text", "text", "area");
@@ -673,6 +674,7 @@ function getViewTypes(): array
             "group_by1"       => _m("Group by"),
             "g1_direction"    => " ",
             "gb_header"       => " ",
+            "group_limit"     => " ",
             "group_title"     => _m("Group title format"),
             "group_bottom"    => _m("Group bottom format"),
             //                     "selected_item" => _m("HTML for Selected") ,

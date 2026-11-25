@@ -262,12 +262,29 @@ class AA_View
             }
         }
 
-        // the limit is of the first order, the group - not of an order that only follows an alias group
-        if ($param_sort['group_limit'] && $sort && !$group_alias) {
+        // The limit is of the first order, the group - not of an order that only follows an alias group.
+        $group_limit = array_key_exists('group_limit', $param_sort) ? $param_sort['group_limit'] : $this->ownGroupLimit($param_sort);
+        if ($group_limit && $sort && !$group_alias) {
             reset($sort);   // go to first record
-            $sort[key($sort)]['limit'] = $param_sort['group_limit'];
+            $sort[key($sort)]['limit'] = $group_limit;
         }
         return $sort;
+    }
+
+    /**
+     * The limit of items in a group set in the view - for a call that brings none. It belongs to the view's own
+     * "Group by" as the database sees it: the database counts the items of each value it orders by first, so
+     * not for a call that groups or sorts another way, for groups by the first letters only (the limit would
+     * be of each whole value) or ordered by priority (the limit would be of each priority).
+     */
+    private function ownGroupLimit(array $param_sort): int
+    {
+        $this->load();
+        $own = (string) ($this->fields['group_by1'] ?? '') !== ''
+            && !array_key_exists('group_by', $param_sort) && !array_key_exists('sort', $param_sort)
+            && !(int) ($this->fields['gb_header'] ?? 0)
+            && in_array((int) ($this->fields['g1_direction'] ?? 0), [0, 1], true);
+        return $own ? (int) ($this->fields['group_limit'] ?? 0) : 0;
     }
 
     /** groups from the last one - the direction of a group alias, which has no priority to go by */
