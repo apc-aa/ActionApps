@@ -37,6 +37,8 @@ final class TestRun extends Run
     public static ?SourceInterface $source = null;
     /** @var array<string, string> key values => item id the savers' key lookup finds */
     public static array $existing = [];
+    /** @var array<string, array<string, list<string>>> item id => field => values the savers read as stored */
+    public static array $current = [];
     /** @var list<RecordingSaver> the savers of the jobs, in order */
     public static array $savers = [];
     /** @var list<BatchBudget> the budget of each work() */
@@ -64,6 +66,7 @@ final class TestRun extends Run
         self::$itemSeconds = 0.0;
         self::$source    = null;
         self::$existing  = [];
+        self::$current   = [];
         self::$savers    = [];
         self::$budgets   = [];
         self::$committed = [];
@@ -112,6 +115,7 @@ final class TestRun extends Run
             }
         };
         $saver->existing = self::$existing;
+        $saver->current  = self::$current;
         self::$savers[]  = $saver;
         return $saver;
     }

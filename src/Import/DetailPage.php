@@ -350,7 +350,7 @@ final class DetailPage
         if (!$runs) {
             return self::section('runs', _m('Runs'), '<p class="aa-empty-note">' . _m('No run yet.') . '</p>');
         }
-        $heads = [_m('Outcome'), _m('Started'), _m('Took'), _m('Read'), _m('New'), _m('Updated'), _m('Skipped'), _m('Filtered out'), _m('Item errors')];
+        $heads = [_m('Outcome'), _m('Started'), _m('Took'), _m('Read'), _m('New'), _m('Updated'), _m('Unchanged'), _m('Skipped'), _m('Filtered out'), _m('Item errors')];
         $html  = '<table class="aa-import-runs"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th></tr></thead><tbody>';
         foreach ($runs as $run) {
             $p       = $this->progressOf($run);
@@ -703,7 +703,7 @@ final class DetailPage
         }
         $counts = $run->counts();
         $html   = '';
-        foreach (['read' => _m('Read'), 'new' => _m('New'), 'updated' => _m('Updated'), 'skipped' => _m('Skipped'), 'filtered' => _m('Filtered out'), 'errors' => _m('Item errors')] as $key => $label) {
+        foreach (['read' => _m('Read'), 'new' => _m('New'), 'updated' => _m('Updated'), 'same' => _m('Unchanged'), 'skipped' => _m('Skipped'), 'filtered' => _m('Filtered out'), 'errors' => _m('Item errors')] as $key => $label) {
             $bad   = (($key === 'errors') && ($counts[$key] > 0));
             $html .= '<div' . ($bad ? ' data-kind="warn"' : '') . '><dt>' . $label . '</dt><dd>' . ($bad ? RunView::markHtml('warn') . ' ' : '') . (int) $counts[$key] . '</dd></div>';
         }
@@ -1227,7 +1227,7 @@ final class DetailPage
         }
         $counts = $run->counts();
         $html   = '';
-        foreach (['read', 'new', 'updated', 'skipped', 'filtered', 'errors'] as $i => $key) {
+        foreach (['read', 'new', 'updated', 'same', 'skipped', 'filtered', 'errors'] as $i => $key) {
             $n     = (int) $counts[$key];
             $class = ($n === 0) ? ' class="aa-import-zero"' : (($key === 'errors') ? ' class="aa-import-some"' : '');
             $cell  = (($key === 'errors') && ($n > 0) && ($errorsOf !== '')) ? '<a href="#aa-import-errors-' . safe($errorsOf) . '" data-aa-open>' . $n . '</a>' : (string) $n;
@@ -1279,6 +1279,7 @@ final class DetailPage
         $alone  = is_array($keys) && ($keys === [$key]);
         $html   = '<strong>' . _m('%1 read', [$counts['read']]) . '</strong><small class="aa-import-reason">'
             . _m('%1 new, %2 updated, %3 skipped', [$counts['new'], $counts['updated'], $counts['skipped']])
+            . (($counts['same'] > 0) ? ', ' . _m('%1 unchanged', [$counts['same']]) : '')
             . (($counts['filtered'] > 0) ? ', ' . _m('%1 filtered out', [$counts['filtered']]) : '') . '</small>';
         $note   = $run->isDry() ? _m('dry run - nothing stored') : ($alone ? '' : _m('all streams of the run together'));
         return $html . (($note === '') ? '' : '<small class="aa-import-reason">' . $note . '</small>');

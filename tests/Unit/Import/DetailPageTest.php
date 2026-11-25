@@ -136,7 +136,7 @@ final class DetailPageTest extends TestCase
     {
         self::definition();
         $id = self::start()->runId;
-        self::storedSet($id, 'counts', '{"read":7,"new":3,"updated":2,"skipped":1,"filtered":4,"errors":1}');
+        self::storedSet($id, 'counts', '{"read":7,"new":3,"updated":2,"same":5,"skipped":1,"filtered":4,"errors":1}');
         self::storedSet($id, 'progress', '{"label":"s2","done":1,"total":3}');
         self::storedSet($id, 'state', Run::ERROR);
         self::storedSet($id, 'error_code', 'TRANSPORT');
@@ -146,7 +146,7 @@ final class DetailPageTest extends TestCase
 
         $this->assertStringContainsString('Stopped by an error', $html);
         $this->assertStringContainsString('by hand', $html);
-        $this->assertMatchesRegularExpression('~<dt>Read</dt><dd>7</dd>.*<dt>New</dt><dd>3</dd>.*<dt>Updated</dt><dd>2</dd>.*<dt>Skipped</dt><dd>1</dd>.*<dt>Filtered out</dt><dd>4</dd>.*<dt>Item errors</dt><dd>(?:<span[^>]*>.*?</span> )?1</dd>~s', $html, 'the counts as numbers under their names');
+        $this->assertMatchesRegularExpression('~<dt>Read</dt><dd>7</dd>.*<dt>New</dt><dd>3</dd>.*<dt>Updated</dt><dd>2</dd>.*<dt>Unchanged</dt><dd>5</dd>.*<dt>Skipped</dt><dd>1</dd>.*<dt>Filtered out</dt><dd>4</dd>.*<dt>Item errors</dt><dd>(?:<span[^>]*>.*?</span> )?1</dd>~s', $html, 'the counts as numbers under their names');
         $this->assertStringContainsString('data-kind="bad"', $html, 'a stopped run is marked, not only worded');
         $this->assertStringContainsString('1 of 3', $html, 'how far the open run got');
         $this->assertStringContainsString('TRANSPORT', $html);
@@ -971,13 +971,14 @@ final class DetailPageTest extends TestCase
         self::definition();
         $id = self::start()->runId;
         self::storedSet($id, 'state', Run::DONE);
-        self::storedSet($id, 'counts', '{"read":9,"filtered":9}');
+        self::storedSet($id, 'counts', '{"read":9,"filtered":9,"same":3}');
         self::storedSet($id, 'warnings', json_encode([Run::FILTER_KEPT_NONE => 2], JSON_THROW_ON_ERROR));
 
         $html = self::page()->runsHtml(time());
 
         $this->assertStringContainsString('The filter kept no item of 2 jobs.', $html);
         $this->assertMatchesRegularExpression('~<td data-label="Filtered out">9</td>~', $html, 'a column of its own, apart from Skipped');
+        $this->assertMatchesRegularExpression('~<td data-label="Updated" class="aa-import-zero">0</td><td data-label="Unchanged">3</td>~', $html, 'items found as stored, apart from Updated');
         $this->assertStringNotContainsString('aa-import-some', $html, 'no item error');
     }
 

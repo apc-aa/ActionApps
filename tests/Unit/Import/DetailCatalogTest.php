@@ -89,12 +89,12 @@ final class DetailCatalogTest extends TestCase
         $state->store();
         TableDb::$log = [];
 
-        self::storedSet($run, 'counts', '{"read":31,"new":1,"updated":2,"skipped":3}');
+        self::storedSet($run, 'counts', '{"read":31,"new":1,"updated":2,"same":4,"skipped":3}');
         $html = self::page()->streamsHtml(null, self::NOW);
         $by   = date('Y-m-d H:i', (int) self::stored($run)['started']);
 
         $this->assertSame([
-            ['s1', 'ImportedThe source has not been asked since.', '31 read1 new, 2 updated, 3 skipped', date('Y-m-d H:i', self::NOW - 3600) . '1 h agoby the run started ' . $by, date('Y-m-d H:i', self::NOW - 7200) . '2 h ago', '<i>2026</i>'],
+            ['s1', 'ImportedThe source has not been asked since.', '31 read1 new, 2 updated, 3 skipped, 4 unchanged', date('Y-m-d H:i', self::NOW - 3600) . '1 h agoby the run started ' . $by, date('Y-m-d H:i', self::NOW - 7200) . '2 h ago', '<i>2026</i>'],
             ['s2', 'Checked, not imported yetRun imports it; Run changed only too, as it has no version to compare.', '--', '--', date('Y-m-d H:i', self::NOW - 60) . '1 min ago', 'None yet - an import records it'],
         ], self::tableRows($html, 'aa-import-streams'));
         $this->assertStringNotContainsString('<i>2026', $html);

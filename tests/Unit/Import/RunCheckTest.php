@@ -970,6 +970,41 @@ final class RunCheckTest extends TestCase
 
     // ------------------------------------------------------------ the expression after a stream
 
+    /** items found with the values stored count as same, not as unchanged streams, and are not stored */
+    public function test_work_itemsAsStoredNotStoredAgain(): void
+    {
+        $same    = sprintf('%032x', 101);
+        $changed = sprintf('%032x', 102);
+        $source  = self::source(streams: 1, jobs: 1, items: 2);
+        TestRun::$existing = ['k-s1:a-1' => $same, 'k-s1:a-2' => $changed];
+        TestRun::$current  = [
+            $same    => ['relation........' => ['k-s1:a-1'], 'text...........1' => ['v-s1:a-1']],
+            $changed => ['relation........' => ['k-s1:a-2'], 'text...........1' => ['old']],
+        ];
+        $run = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        $counts = TestRun::get($run->getId())?->counts() ?? [];
+        self::assertSame(['read' => 2, 'new' => 0, 'updated' => 1, 'same' => 1, 'unchanged' => 0], array_intersect_key($counts, array_flip(['read', 'new', 'updated', 'same', 'unchanged'])));
+        self::assertSame(['v-s1:a-2'], TestRun::storedValues('text...........1'));
+    }
+
+    /** a stream whose items were all as stored wrote nothing: its expression is not due */
+    public function test_afterStream_notAfterAStreamOfItemsAsStored(): void
+    {
+        $id = sprintf('%032x', 101);
+        $source = self::source(streams: 1, jobs: 1, items: 1);
+        TestRun::$existing = ['k-s1:a-1' => $id];
+        TestRun::$current  = [$id => ['relation........' => ['k-s1:a-1'], 'text...........1' => ['v-s1:a-1']]];
+        TestRun::$evaluate = static function (): void {};
+        $run               = self::startRun($source, [], ['after_stream' => '{x}']);
+
+        self::runAll($run->getId());
+
+        self::assertSame([[], 1], [TestRun::$evaluated, TestRun::get($run->getId())?->counts()['same']]);
+    }
+
     public function test_afterStream_onlyWhenWroteAndNotDry(): void
     {
         $source                         = self::source(streams: 2, jobs: 1, items: 1);

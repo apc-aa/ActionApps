@@ -517,7 +517,7 @@ namespace Tests\Unit\IO {
             $saver->existing = ['known' => self::ITEM3];
 
             $this->assertSame([2, 0], $saver->run());
-            $this->assertSame(['new' => 1, 'updated' => 1, 'skipped' => 1, 'errors' => 0], $saver->counts(), 'an empty key among keyed items is skipped');
+            $this->assertSame(['new' => 1, 'updated' => 1, 'unchanged' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts(), 'an empty key among keyed items is skipped');
             $this->assertSame([self::ITEM3], $saver->updatedIds());
             $this->assertCount(1, $saver->newIds());
             $this->assertNotSame(self::ITEM3, $saver->newIds()[0]);
@@ -529,7 +529,7 @@ namespace Tests\Unit\IO {
             $saver->existing = ['known' => self::ITEM3];
 
             $this->assertSame([2, 0], $saver->run(false));
-            $this->assertSame(['new' => 1, 'updated' => 1, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 1, 'updated' => 1, 'unchanged' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
             $this->assertSame([], $saver->changedIds(), 'nothing was stored');
         }
 
@@ -539,13 +539,13 @@ namespace Tests\Unit\IO {
             $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['known', 'unknown'])), null, self::SLICE, 'insert_if_new', '["relation........"]'))->setImportMode();
             $saver->existing = ['known' => self::ITEM3];
             $this->assertSame([1, 0], $saver->run());
-            $this->assertSame(['new' => 1, 'updated' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 1, 'updated' => 0, 'unchanged' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
 
             // not found, but the mode only updates
             $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['known', 'unknown'])), null, self::SLICE, 'update', '["relation........"]'))->setImportMode();
             $saver->existing = ['known' => self::ITEM3];
             $this->assertSame([1, 0], $saver->run());
-            $this->assertSame(['new' => 0, 'updated' => 1, 'skipped' => 1, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 0, 'updated' => 1, 'unchanged' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
         }
 
         public function test_clearIds_resetsCountsErrorsAndSamples(): void
@@ -558,7 +558,7 @@ namespace Tests\Unit\IO {
             $this->assertNotSame([], $saver->samples());
 
             $saver->clear_ids();
-            $this->assertSame(['new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 0, 'updated' => 0, 'unchanged' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
             $this->assertSame([], $saver->errors());
             $this->assertSame([], $saver->samples());
         }
@@ -827,7 +827,7 @@ namespace Tests\Unit\IO {
             $saver = $this->territorySaver(['CZ0100', 'CZ9999']);
 
             $this->assertSame([1, 0], $saver->run());
-            $this->assertSame(['new' => 1, 'updated' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 1, 'updated' => 0, 'unchanged' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
             $this->assertSame([], $saver->errors());
             $this->assertSame(1, $saver->emptyKeys());
             $this->assertSame([['geo' => 'CZ9999']], $saver->emptyKeySamples(), 'the source field the key row names; not the job parameter, not other fields');
@@ -840,7 +840,7 @@ namespace Tests\Unit\IO {
             $saver = $this->territorySaver(['CZ9998', 'CZ9999']);
 
             $this->assertSame([0, 0], $saver->run());
-            $this->assertSame(['new' => 0, 'updated' => 0, 'skipped' => 2, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 0, 'updated' => 0, 'unchanged' => 0, 'skipped' => 2, 'errors' => 0], $saver->counts());
             $this->assertSame([], $saver->errors());
             $this->assertSame(2, $saver->emptyKeys());
             $this->assertFalse($saver->keyed());
@@ -929,7 +929,7 @@ namespace Tests\Unit\IO {
             $saver = new RecordingSaver(new ArrayGrabber($items), $this->territoryKey(), self::SLICE, 'update/insert', '["relation........"]');
 
             $this->assertSame([1, 1], $saver->run());
-            $this->assertSame(['new' => 0, 'updated' => 1, 'skipped' => 0, 'errors' => 1], $saver->counts());
+            $this->assertSame(['new' => 0, 'updated' => 1, 'unchanged' => 0, 'skipped' => 0, 'errors' => 1], $saver->counts());
             $this->assertContains('AA\IO\Saver->run(): key condition empty for relation........', $this->texts($saver));
             $this->assertSame(0, $saver->emptyKeys());
             $this->assertSame([], $saver->emptyKeySamples());
@@ -985,6 +985,146 @@ namespace Tests\Unit\IO {
 
             $this->assertSame([2, 0], $saver->run());
             $this->assertSame([[false], [false]], array_column($saver->stored, 'flags'));
+        }
+
+        // ------------------------------------------------------------ items the import finds unchanged
+
+        /**
+         * An import of source rows [key, value] built into new items, as Run does: relation from key,
+         * text...........1 from val. Key "known" finds ITEM3.
+         * @param list<array{string, string|list<string>}> $rows
+         * @param array<string, \AA_Transformation>        $more further transformations
+         */
+        private function importSaver(array $rows, array $more = []): RecordingSaver
+        {
+            $items = [];
+            foreach ($rows as $i => [$key, $value]) {
+                $items[] = $this->sourceItem(sprintf('%032x', $i + 1), ['key' => $key, 'val' => $value]);
+            }
+            $grabber = new class ($items) extends ArrayGrabber {
+                public function isDirectfill(): bool
+                {
+                    return false;
+                }
+            };
+            $t13s  = [
+                'relation........' => new \AA_Transformation_CopyField(['field2copy' => 'key']),
+                'text...........1' => new \AA_Transformation_CopyField(['field2copy' => 'val']),
+            ] + $more;
+            $saver = (new RecordingSaver($grabber, $t13s, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+            $saver->existing = ['known' => self::ITEM3];
+            return $saver;
+        }
+
+        /** ITEM3 as stored: the mapped fields with $value, and a field the mapping does not set */
+        private static function storedItem3(array $value): array
+        {
+            return [self::ITEM3 => ['relation........' => ['known'], 'text...........1' => $value, 'headline........' => ['not mapped']]];
+        }
+
+        public function test_importMode_unchangedItemNotStored(): void
+        {
+            $saver          = $this->importSaver([['known', '9.4'], ['unknown', '1']]);
+            $saver->current = self::storedItem3(['9.4']);
+
+            $this->assertSame([1, 0], $saver->run());
+            $this->assertSame(['new' => 1, 'updated' => 0, 'unchanged' => 1, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertNotContains(self::ITEM3, $saver->storedIds());
+            $this->assertSame([], $saver->updatedIds());
+        }
+
+        public function test_importMode_allUnchanged_noSliceTouched(): void
+        {
+            $saver          = $this->importSaver([['known', '9.4']]);
+            $saver->current = self::storedItem3(['9.4']);
+
+            $this->assertSame([0, 0], $saver->run());
+            $this->assertSame([], $saver->stored);
+            $this->assertSame([[], []], [$saver->changedIds(), $saver->changedModules()], 'nothing to invalidate, nothing written');
+        }
+
+        /** @return array<string, array{string|list<string>, list<string>}> incoming value, stored value */
+        public static function changedValues(): array
+        {
+            return [
+                'another value'             => ['9.5', ['9.4']],
+                'the same number written otherwise' => ['9.4', ['9.40']],
+                'a value more stored'       => ['9.4', ['9.4', '1']],
+                'a second value differs'    => [['9.4', '2'], ['9.4', '1']],
+                'none stored'               => ['9.4', []],
+            ];
+        }
+
+        /** @param string|list<string> $incoming  @param list<string> $stored */
+        #[DataProvider('changedValues')]
+        public function test_importMode_changedValueStored(string|array $incoming, array $stored): void
+        {
+            $saver          = $this->importSaver([['known', $incoming]]);
+            $saver->current = self::storedItem3($stored);
+
+            $this->assertSame([1, 0], $saver->run());
+            $this->assertSame([self::ITEM3], $saver->storedIds());
+            $this->assertSame(['new' => 0, 'updated' => 1, 'unchanged' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
+        }
+
+        public function test_importMode_dryRunCountsUnchanged(): void
+        {
+            $saver          = $this->importSaver([['known', '9.4'], ['unknown', '1']]);
+            $saver->current = self::storedItem3(['9.4']);
+
+            $this->assertSame([1, 0], $saver->run(false));
+            $this->assertSame(['new' => 1, 'updated' => 0, 'unchanged' => 1, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertCount(1, $saver->samples(), 'only what would be stored is shown');
+        }
+
+        public function test_importMode_validationFailsBeforeTheComparison(): void
+        {
+            $saver          = $this->importSaver([['known', '9.4']])->addValidate('{ifeq:{index:text...........1}:9.4:no:1}');
+            $saver->current = self::storedItem3(['9.4']);
+
+            $this->assertSame([0, 1], $saver->run());
+            $this->assertSame(['new' => 0, 'updated' => 0, 'unchanged' => 0, 'skipped' => 0, 'errors' => 1], $saver->counts());
+        }
+
+        public function test_importMode_transformationInPlace_stored(): void
+        {
+            // it changed the item itself: which fields, the saver cannot tell
+            $done  = new class extends \AA_Transformation {
+                public function transform($field_id, $itemcontent, $silent = true): \AA_Value|bool|null
+                {
+                    return true;
+                }
+            };
+            $saver          = $this->importSaver([['known', '9.4']], ['headline........' => $done]);
+            $saver->current = self::storedItem3(['9.4']);
+
+            $saver->run();
+
+            $this->assertSame([self::ITEM3], $saver->storedIds());
+        }
+
+        public function test_unchanged_onlyInImportMode(): void
+        {
+            // a feed or a CSV import stores the item as ever
+            $saver = new RecordingSaver(new ArrayGrabber($this->keyed(['known'])), null, self::SLICE, 'update/insert', '["relation........"]');
+            $saver->existing = ['known' => self::ITEM3];
+            $saver->current  = [self::ITEM3 => ['relation........' => ['known']]];
+
+            $this->assertSame([1, 0], $saver->run());
+            $this->assertSame([self::ITEM3], $saver->storedIds());
+            $this->assertSame(0, $saver->counts()['unchanged']);
+        }
+
+        public function test_unchanged_notForDirectFill(): void
+        {
+            // the grabber hands over the whole item: which fields it sets is not known
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['known'])), null, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+            $saver->existing = ['known' => self::ITEM3];
+            $saver->current  = [self::ITEM3 => ['relation........' => ['known']]];
+
+            $saver->run();
+
+            $this->assertSame([self::ITEM3], $saver->storedIds());
         }
     }
 }

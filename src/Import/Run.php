@@ -50,9 +50,10 @@ class Run extends BatchRun
     public const ENDED   = 'ended';
 
     /** what a run counts, all of them in this order; filtered = left out by the filter of the definition,
-     *  apart from skipped (empty key, store mode), so a filter that keeps nothing shows */
+     *  apart from skipped (empty key, store mode), so a filter that keeps nothing shows; same = items found
+     *  with the values stored, so not stored again - unchanged counts streams the probe called unchanged */
     private const COUNTS = [
-        'read' => 0, 'new' => 0, 'updated' => 0, 'skipped' => 0, 'filtered' => 0, 'errors' => 0,
+        'read' => 0, 'new' => 0, 'updated' => 0, 'same' => 0, 'skipped' => 0, 'filtered' => 0, 'errors' => 0,
         'jobs' => 0, 'streams' => 0, 'unchanged' => 0, 'skipped_jobs' => 0, 'unversioned' => 0,
     ];
 
@@ -279,14 +280,14 @@ class Run extends BatchRun
         return ((string) $this->work_ms === '') ? null : intdiv((int) $this->work_ms, 1000);
     }
 
-    /** @return array{read: int, new: int, updated: int, skipped: int, filtered: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
+    /** @return array{read: int, new: int, updated: int, same: int, skipped: int, filtered: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
     public function counts(): array
     {
         return self::countsOf((string) $this->counts);
     }
 
     /** the counts a stored `counts` value holds - State Check reads them without loading the run
-     *  @return array{read: int, new: int, updated: int, skipped: int, filtered: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
+     *  @return array{read: int, new: int, updated: int, same: int, skipped: int, filtered: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
     public static function countsOf(string $json): array
     {
         $stored = json_decode($json, true);
@@ -1212,7 +1213,8 @@ class Run extends BatchRun
         $base = $grabber->restarted() ? 0 : $offset;
         $this->tally['read'] += $grabber->offset() - $base;
         foreach ($saver->counts() as $name => $count) {
-            $this->tally[$name] += $count;
+            // the run's own unchanged counts streams
+            $this->tally[($name === 'unchanged') ? 'same' : $name] += $count;
         }
         // left out on purpose: no error, the stream keeps its version
         $this->tally['filtered'] += $grabber->filtered();

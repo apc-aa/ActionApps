@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Tests\Unit\IO\Fixtures;
 
 use AA\IO\Saver;
+use AA_Content;
 use AA_Set;
+use AA_Value;
 use ItemContent;
 use zids;
 
-/** Saver whose key lookup answers from $existing and whose store records the item instead of
- *  writing it. Everything else still goes to the database handle - e.g. the relation to the source
- *  item of an item stored under a new id (RecordingDb in the tests). */
+/** Saver whose key lookup answers from $existing, whose stored items are $current and whose store
+ *  records the item instead of writing it. Everything else still goes to the database handle -
+ *  e.g. the relation to the source item of an item stored under a new id (RecordingDb in the tests). */
 class RecordingSaver extends Saver
 {
     /** @var array<string, string> key values joined by "|" in key-field order => long id the lookup finds */
@@ -19,6 +21,10 @@ class RecordingSaver extends Saver
 
     /** @var list<list<string>> the key values of each lookup, in order */
     public array $lookups = [];
+
+    /** @var array<string, array<string, list<string>>> long id => field => values of the stored item; an id
+     *  not listed reads as an empty item */
+    public array $current = [];
 
     /** @var list<array{id: string, mode: string, flags: array, content: ItemContent}> */
     public array $stored = [];
@@ -32,6 +38,15 @@ class RecordingSaver extends Saver
         $this->lookups[] = $key;
         $id              = $this->existing[implode('|', $key)] ?? null;
         return ($id === null) ? new zids() : new zids([$id], 'l');
+    }
+
+    protected function storedContent(string $id): AA_Content
+    {
+        $content = new ItemContent();
+        foreach ($this->current[$id] ?? [] as $field_id => $values) {
+            $content->setAaValue($field_id, new AA_Value($values, 0));
+        }
+        return $content;
     }
 
     protected function store(ItemContent $content, string $mode, array $flags = []): string|false
