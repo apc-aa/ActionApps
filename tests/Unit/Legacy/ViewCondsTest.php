@@ -78,17 +78,18 @@ final class ViewCondsTest extends TestCase
         );
     }
 
-    /** cmd[]=c-OR-1-a-2-b: the OR was put among the conditions under a name, where nothing read it - the
-     *  aliases _#VIEW_C1... and the search took it for a condition and the page ended in an error */
-    public function test_getConds_orOfTheCall_isNoCondition(): void
+    /** what the call names and the view has not - also the pairs the former c-OR-1-a-2-b now reads - changes nothing */
+    public function test_getConds_unknownConditionsOfTheCall(): void
     {
-        $conds = self::view()->getConds([0 => 'OR', 1 => 'a', 2 => 'b']);
+        self::assertSame(self::view()->getConds([]), self::view()->getConds(['OR' => '1', 'a' => '2', 'b' => '', 9 => 'x']));
+    }
 
-        self::assertSame([0, 1], array_keys($conds));
-        self::assertSame(['a', 'b'], array_column($conds, 'value'));
-
+    /** _#VIEW_C1... are numbered by the order of the conditions in use, not by their numbers */
+    public function test_addViewAliases_byTheOrderOfTheConditions(): void
+    {
         $aliases = new AA_Aliases();
-        AA_View::addViewAliases($aliases, $conds);
+        AA_View::addViewAliases($aliases, self::view()->getConds([1 => 'a', 2 => 'b']));
+
         self::assertSame(['_#VIEW_C1_', '_#VIEW_C2_'], array_values($aliases->getNames()));
     }
 
@@ -100,7 +101,7 @@ final class ViewCondsTest extends TestCase
             'three values'     => ['c-1-News-2-Vod-3-x', [1 => 'News', 2 => 'Vod', 3 => 'x']],
             'any order'        => ['c-3-x-1-News', [3 => 'x', 1 => 'News']],
             'a value skipped'  => ['c-1-AAnoCONDITION-2-Vod', [2 => 'Vod']],
-            'or'               => ['c-OR-1-News-2-Vod', [0 => 'OR', 1 => 'News', 2 => 'Vod']],
+            'no OR form'       => ['c-OR-1-News-2-Vod', ['OR' => '1', 'News' => '2', 'Vod' => '']],
             'a dash in a value' => ['c-1-a--b', [1 => 'a-b']],
             'after the third'  => ['c-1-News-2-Vod-3-x-4-voda-12-9', [1 => 'News', 2 => 'Vod', 3 => 'x', 4 => 'voda', 12 => '9']],
             'only a later one' => ['c-5-voda', [5 => 'voda']],

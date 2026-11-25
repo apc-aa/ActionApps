@@ -245,9 +245,6 @@ class AA_View
      */
     public function getConds($param_conds = []): array
     {
-        // param_conds[0] = "OR" (cmd[]=c-OR-...) is not used: nothing ever read it, and put among the
-        // conditions it ended the search in an error
-
         // param_conds - redefines default condition values by url parameter (cmd[]=c)
 
         AA::$debug & 2 && AA::$dbg->log("(AA_View->getConds) param_conds=", $param_conds);
@@ -615,21 +612,8 @@ class AA_View
                     }
                     break;
 
-                case 'c':  // Check for experimental c-OR-1-aaa-2-bbb-3-ccc syntax
-                    // Note param_conds[0] is not otherwise used
-                    // It is converted into conds in AA_View->getConds
-                    // which is consumed in ParseMultiSelectConds
-                    if ($command->getParameter(0) === 'OR') {
-                        $param_conds[0] = 'OR';
-                        $command_params = $command->getParameterArray(1);
-                    } else {
-                        $command_params = $command->getParameterArray();
-                    }
-
-                    //                       if (ctype_digit((string)$command_params[0])) {
-                    //
-                    //                       }
-
+                case 'c':
+                    $command_params = $command->getParameterArray();
                     // pairs of the number of a condition of the view and its value
                     for ($pair = 0; isset($command_params[$pair]); $pair += 2) {
                         if (AA_Set::check($command_params[$pair], $command_params[$pair + 1] ?? null)) {
