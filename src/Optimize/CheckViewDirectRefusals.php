@@ -8,6 +8,7 @@ use AA\IO\DB\DB_AA;
 use AA\Security\ViewDirect;
 use AA\Util\LogOnce;
 use AA_Log;
+use AA_Module_Site;
 use AA_Views;
 
 /** Views asked for by their own address (view.php, jsview.php) in the last 30 days that showed nothing,
@@ -85,6 +86,8 @@ class CheckViewDirectRefusals extends AbstractOptimize
             $links = isset($view_urls[$vid]) ? [_m('View settings') => $view_urls[$vid]] : [];
             if (($by === ViewDirect::BY_SLICE) && is_long_id($module)) {
                 $links[_m('Views of the slice')] = get_admin_url('se_views.php', ['module_id' => $module]);
+            } elseif (($by === ViewDirect::BY_SITE) && is_long_id($module)) {
+                $links[_m('Site settings')] = AA_Module_Site::getModuleUrl($module, 'modules/site/modedit.php');
             }
             $findings[] = new Finding(
                 Finding::WARNING,

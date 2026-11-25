@@ -2,8 +2,8 @@
 // field or more, an operator and a value in plain form fields. The element only adds rows and removes them:
 // [data-add] puts in the row of the <template> under the next number, [data-add-field] another field select
 // into its row, [data-remove] takes its row away. Attribute: first - the lowest number a new row gets.
-// A number is never given twice in one editing and the rows left keep theirs: calls address a condition
-// by its number.
+// The rows left keep their numbers and a number is never given twice in one editing: calls address a
+// condition by its number.
 
 /** takes the place of the number in the <template> row */
 export const NUMBER = '__N__';

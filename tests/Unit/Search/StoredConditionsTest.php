@@ -83,12 +83,12 @@ final class StoredConditionsTest extends TestCase
     public function test_fromForm_value_keepsItsBytesButNoLineBreak(): void
     {
         $latin2 = "Aktu\xE1ln\xED";   // windows-1250, as an older admin page posts it
-        $posted = ['4' => ['fields' => ['category........'], 'operator' => '=', 'value' => $latin2 . "\t-- \"a\" OR 'b'\r\n" . str_repeat('x', 300)]];
+        $long   = str_repeat("\xC5\xBE", 200);   // 400 bytes of UTF-8: no cut, least of all inside a character
+        $posted = ['4' => ['fields' => ['category........'], 'operator' => '=', 'value' => $latin2 . "\t-- \"a\" OR 'b'\r\n" . $long]];
 
         $value = StoredConditions::fromText(StoredConditions::fromForm($posted, 4)->toText())->all()[4]['value'];
 
-        self::assertStringStartsWith($latin2 . " -- \"a\" OR 'b'  xxx", $value);
-        self::assertSame(StoredConditions::VALUE_MAX, strlen($value));
+        self::assertSame($latin2 . " -- \"a\" OR 'b'  " . $long, $value);
     }
 
     public function test_fromForm_sameFieldTwice_isOnce(): void

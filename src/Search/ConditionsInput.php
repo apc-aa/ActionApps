@@ -13,6 +13,9 @@ namespace AA\Search;
  */
 final class ConditionsInput
 {
+    /** as the value of the conditions 1 - 3 of a view */
+    private const VALUE_MAXLENGTH = 254;
+
     /** takes the place of the number in the names of a new row */
     private const NUMBER = '__N__';
 
@@ -51,7 +54,7 @@ final class ConditionsInput
             . '<span class="aa-conditions-fields">' . $selects
             . '<button type="button" data-add-field title="' . safe(_m('Another field - the condition holds when any of the fields matches')) . '">+</button></span> '
             . getFrmSelectEasy($base . '[operator]', $operators, $operator)
-            . ' <input type="text" name="' . safe($base) . '[value]" size="40" maxlength="' . (StoredConditions::VALUE_MAX - 1) . '" value="' . safe($value) . '">'
+            . ' <input type="text" name="' . safe($base) . '[value]" size="40" maxlength="' . self::VALUE_MAXLENGTH . '" value="' . safe($value) . '">'
             . ' <button type="button" data-remove title="' . safe(_m('Remove the condition')) . '">&times;</button></div>';
     }
 }

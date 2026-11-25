@@ -194,7 +194,7 @@ $zids    = AA::Metabase()->queryZids(['table'=>'view'], $aa_set);
 echo $manager->getManagerCode($zids);
 
 // whether view.php shows the views of this slice: the setting of the slice, and the sites that decide it for their slices
-$slice_nodirect = ViewDirect::moduleForbids(AA::$module_id);
+$slice_nodirect = ViewDirect::sliceForbids(AA::$module_id);
 $site_names     = array_map(static fn(string $site): string => safe((string) AA_Module::getModuleName($site)), ViewDirect::sitesForbidding(AA::$module_id));
 echo '<form method="post" action="' . safe(StateUrl(self_base() . 'se_views.php')) . '">' . FormToken::field(SE_VIEWS_NODIRECT_TOKEN)
     . '<table class="aa-table aa-table-simple aa-w-no-full"><thead><tr><th>' . _m('Views only inside pages') . '</th></tr></thead><tbody><tr><td>'

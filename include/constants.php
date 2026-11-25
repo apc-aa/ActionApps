@@ -649,7 +649,7 @@ function getViewTypes(): array
 
     $more_conds = [
         "label" => _m("More conditions"),
-        "help"  => _m("Further conditions, each under its number. A call gives a condition its value by the number, as for the first three: cmd[]=c-4-value. With more fields in one condition, the condition holds when any of the fields matches. A condition without a value waits for the value of the call - without it, it is left out."),
+        "help"  => _m("Further conditions, each under its number. A call gives a condition its value by the number, as for the first three: cmd[]=c-4-value. With more fields in one condition, the condition holds when any of the fields matches. A condition without a value waits for the value of the call - without it, it is left out. A dash in a value of a call is written twice (c-4-2020--05)."),
     ];
 
     $common = [
@@ -678,6 +678,8 @@ function getViewTypes(): array
             "label" => _m("Only inside pages"),
             "help"  => _m("The view works only inside pages and other templates ({view:...}, {view.php?...}). Its own address (view.php?vid=..., jsview.php?vid=..., discussion.php?vid=...) shows nothing and answers 404. Do not check it for a view that a page loads by its address (AJAX, lazy loading, an include in an .shtml page), for RSS and other feeds. The same can be set for all views of the slice on the list of views, or for all slices of a site in the settings of the site. A refused call is listed in State Check."),
         ]];
+    // the views no page shows - a mail of Alerts, the template of an input form - have no output to hold back
+    $common_mail_form = array_diff_key($common, array_flip(['show_if', 'show_else', 'flag3', 'flag4', 'flag5']));
 
     return [
         'list' => [
@@ -966,7 +968,7 @@ function getViewTypes(): array
             "listlen"                 => _m("Max number of items"),
             "noitem_msg"              => _m("HTML code for \"No item found\" message"),
             "flag0"                   => _m("Add view ID as HTML comment"),
-        ] + $common,
+        ] + $common_mail_form,
 
         // View used for listing of ursl - mainly for listing items for index
         // servers (HtDig, MnogoSearch, ...)
@@ -1080,7 +1082,7 @@ function getViewTypes(): array
             "remove_string"   => _m("Remove strings"),
             //                       "after" => _m("Bottom HTML") ,
             "flag0"           => _m("Add view ID as HTML comment"),
-        ] + $common,
+        ] + $common_mail_form,
     ];
 }
 

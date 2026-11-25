@@ -322,15 +322,12 @@ $slice = AA_Slice::getModule(AA::$module_id);
 
 $VIEW_FIELDS      = getViewFields();
 $view_field_names = getViewTypes()[$view_type];
-// the settings an older database cannot keep (ViewListingColumns) are not offered
-$columns_ready = ViewListingColumns::ready();
-if (!$columns_ready) {
-    $view_field_names = array_diff_key($view_field_names, array_flip(ViewListingColumns::absent()));
-}
+// a setting an older database has no column for (ViewListingColumns) is not offered
+$view_field_names = array_diff_key($view_field_names, array_flip(ViewListingColumns::absent()));
 $view_type_info   = getViewTypesInfo($view_type);
 
 // the rows of the conditions after the third as posted, in their stored form
-$conds_posted = StoredConditions::fromForm($_POST['conds'] ?? null, AA_View::MORE_CONDS_FROM)->toText();
+$conds_posted = StoredConditions::fromForm(InputVars::arrayPOST('conds'), AA_View::MORE_CONDS_FROM)->toText();
 
 if ( $update ) {
     do {
@@ -433,6 +430,10 @@ if ( !$update ) {  // set variables from database
         // new view - get default values from view table -
         //            take first view of the same type
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['type', $view_type]], ['id']);
+        if ($vw_data) {
+            // its templates - not when it shows and what it is marked with
+            $vw_data = ['conds' => '', 'show_if' => '', 'show_else' => '', 'flag' => (int) $vw_data['flag'] & ~(VIEW_FLAG_WATCH | VIEW_FLAG_NOCACHE | VIEW_FLAG_NODIRECT)] + $vw_data;
+        }
     } else {        // error - someone switched the slice or so
         go_url($back_url);
     }
@@ -488,7 +489,7 @@ if ( $view_type_info['fields'] ) {
 // A condition may also ask a field of related items - once the database can keep the longer name of such a field.
 // Only for views of items: the other field lists above are not fields of a slice.
 $cond_fields   = $lookup_fields;
-if (!$view_type_info['fields'] && $columns_ready && $slice && isset($view_field_names['cond1field'])) {   // the list reads the fields of every related slice
+if (!$view_type_info['fields'] && $slice && isset($view_field_names['cond1field']) && ViewListingColumns::condsWide()) {   // the list reads the fields of every related slice
     $cond_fields += $slice->getSearchfields()->getRelatedArray();
 }
 
@@ -638,7 +639,7 @@ if ($view) {
     $set = $view->getSet();
     if ($view_conds   = $set->getCondsAsString()) {
         $view_sort    = $set->getSortAsString();
-        $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId() . ':'. safe($view_conds) . ($view_sort ? ':'.safe($view_sort): '') . '&rcub;&rcub;';
+        $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId() . ':'. safe(str_replace(':', '#:', $view_conds)) . ($view_sort ? ':'.safe(str_replace(':', '#:', $view_sort)): '') . '&rcub;&rcub;';
         // in a query string "&" would end the parameter and "+" would be a space
         $view_conds2  = strtr((new AA_Set(null, $view->getConds()))->getCondsAsString(), ['%' => '%25', '&' => '%26', '#' => '%23', '+' => '%2B']);
         $view_recipe2 = '&lcub;view.php?vid=' . $view_id . '&cmd[' . $view_id . ']=' . safe($view_conds2) . ($view_sort ? '&set[' . $view_id . ']=sort-'.safe($view_sort): '').'&rcub;';

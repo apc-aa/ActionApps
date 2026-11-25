@@ -684,7 +684,7 @@ class AA_Slice extends AA_Module
      *  the caller checks the right to change the views of the slice */
     public static function saveViewNodirect(string $module_id, bool $on): void
     {
-        if (ViewDirect::moduleForbids($module_id) === $on) {
+        if (ViewDirect::sliceForbids($module_id) === $on) {
             return;
         }
         $id       = static::getModuleObjectId($module_id);

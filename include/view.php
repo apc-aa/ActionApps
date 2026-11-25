@@ -240,6 +240,13 @@ class AA_Showview
     /** this call is the first use of a view marked as probably unused - logged like a view with "Log view usage" */
     private bool $first_use = false;
 
+    /** the views being rendered now - one inside another */
+    private static int $rendering = 0;
+
+    /** the outermost of them was asked for by its address (view.php...): the page cache then keeps the output
+     *  under the parameters of the view alone, not under the URL as for a page of a site */
+    private static bool $by_address = false;
+
     public function __construct($view_param)
     {
         $this->hits = is_array($view_param['hits'] ?? null) ? $view_param['hits'] : [];
@@ -271,9 +278,7 @@ class AA_Showview
         $vid = $view->getId();
         AA::$debug & 2 && AA::$dbg->groupend("view_$vid" . '_' . ($start_time));
         if ($view->doLog() || $this->first_use) {
-            $entry = new AA_Logentry_W(['time' => (string) round(microtime(true) - $start_time, 4), 'uri' => (string) ($_SERVER['REQUEST_URI'] ?? '')]);
-            $entry->trimToFit(['uri'], AA_Logentry::PARAMS_MAX);   // a longer row fails the INSERT and the page with it
-            AA_Log::write('VIEW', $vid, $entry);
+            AA_View::logUse($vid, $start_time);
         }
     }
 
@@ -343,7 +348,14 @@ class AA_Showview
     public function getViewOutput(): string
     {
         $start = microtime(true);
-        $ret   = $this->viewOutput($start);
+        if (self::$rendering++ === 0) {
+            self::$by_address = $this->from_request;
+        }
+        try {
+            $ret = $this->viewOutput($start);
+        } finally {
+            --self::$rendering;
+        }
         $this->countHits(false, microtime(true) - $start);
         return $ret;
     }
@@ -430,7 +442,7 @@ class AA_Showview
 
         // the request itself asks for a view that works only inside pages
         if ($this->from_request && ($by = ViewDirect::forbiddenBy($view->isInsideOnly(), unpack_id((string) $view->f('slice_id'))))) {
-            ViewDirect::refuse($vid, $by);
+            ViewDirect::refuse($vid, $by, self::$rendering === 1);   // a banner of a view: only the banner is left out
             $this->outputEnd($view, $dbgtime, 'The view works only inside pages (' . $by[0] . ')');
             return '';
         }
@@ -488,8 +500,9 @@ class AA_Showview
         $ret  = '';
         $type = $view_info['type'];
         if (($show_if = $view->getShowIf()) !== '') {
-            if ($this->from_request) {
-                // the cache of view.php does not know what the condition asks about (the visitor, other parameters)
+            if (self::$by_address) {
+                // the cache of view.php does not know what the condition asks about (the visitor, other parameters) -
+                // also when the view is inside the one asked for
                 AA::Pagecache()->switchCacheNostore();
             }
             $context = new AA_Item('', $als);

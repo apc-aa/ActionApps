@@ -111,13 +111,25 @@ namespace Tests\Unit\Optimize {
         {
             $this->liveView($columns);
 
-            self::assertFalse(ViewListingColumns::ready());
             self::assertFalse((new ViewListingColumns())->test());
             $finding = (new ViewListingColumns())->findings()[0];
             self::assertSame(Finding::WARNING, $finding->severity);
             self::assertTrue($finding->repairable);
             self::assertTrue((new ViewListingColumns())->repair());
             self::assertSame([$alter], self::alters());
+        }
+
+        /** Each setting of the form waits only for its own column: a database with the first round of columns
+         *  keeps the group limit and the fields of related items while the newer three are missing. */
+        public function test_absent_condsWide_perColumn(): void
+        {
+            $this->liveView(array_diff_key(self::WIDE, ['conds' => 1, 'show_if' => 1, 'show_else' => 1]));
+            self::assertSame(['conds', 'show_if', 'show_else'], ViewListingColumns::absent());
+            self::assertTrue(ViewListingColumns::condsWide());
+
+            $this->liveView(['cond2field' => 'varbinary(32)'] + array_diff_key(self::WIDE, ['group_limit' => 1]));
+            self::assertSame(['group_limit'], ViewListingColumns::absent());
+            self::assertFalse(ViewListingColumns::condsWide());
         }
 
         /** @return array<string, array{array<string, string>}> */
@@ -136,7 +148,8 @@ namespace Tests\Unit\Optimize {
         {
             $this->liveView($columns);
 
-            self::assertTrue(ViewListingColumns::ready());
+            self::assertSame([], ViewListingColumns::absent());
+            self::assertTrue(ViewListingColumns::condsWide());
             self::assertTrue((new ViewListingColumns())->test());
             self::assertSame(Finding::OK, (new ViewListingColumns())->findings()[0]->severity);
             self::assertTrue((new ViewListingColumns())->repair());

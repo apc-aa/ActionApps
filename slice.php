@@ -279,9 +279,15 @@ if (!$slice_info['even_odd_differ']) {
 
 // it is possible to redefine the design of fulltext or compact view by the view
 // see fview and iview url parameters for this file (slice.php)
+// the view whose templates the request picks (fview, iview, dview): none that works only inside pages
+$view_usable = static function (?AA_View $view): bool {
+    if (!$view || ($view->f('deleted') >= 1) || ViewDirect::forbiddenBy($view->isInsideOnly(), unpack_id((string) $view->f('slice_id')))) {
+        return false;
+    }
+    $view->noteUse();
+    return true;
+};
 if ($fview || $iview) {
-    // not of a view that works only inside pages
-    $view_usable = static fn(?AA_View $view): bool => $view && ($view->f('deleted') < 1) && !ViewDirect::forbiddenBy($view->isInsideOnly(), unpack_id((string) $view->f('slice_id')));
     if ($fview) {                       // use formating from view for fulltext
         $fview_info = is_scalar($fview) ? AA_Views::getView($fview, $slice_id) : null;
         if ($view_usable($fview_info)) {
@@ -389,7 +395,8 @@ if ($sh_itm || $x || $o || $seo) {
         $discussion_vid = AA_Views::getView($discussion_vid, $slice_id)?->getId() ?? 0;
     }
     // you can set dview=0 to not show discussion
-    if ($discussion_vid > 0) {
+    // the discussion view of the slice settings is the slice's own; one the request picks (dview) is checked
+    if (($discussion_vid > 0) && (!isset($dview) || $view_usable(AA_Views::getView((int) $discussion_vid, $slice_id)))) {
         if ($row = DB_AA::select1([], 'SELECT view.*, slice.flag FROM view, slice', [['slice.id', $slice_id, 'l'], ['view.id', (int) $discussion_vid, 'i']])) {
             $view_info = $row;
 

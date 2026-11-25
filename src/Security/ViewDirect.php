@@ -39,7 +39,7 @@ final class ViewDirect
         if ($view_set) {
             return [self::BY_VIEW, ''];
         }
-        if (self::moduleForbids($slice_id)) {
+        if (self::sliceForbids($slice_id)) {
             return [self::BY_SLICE, $slice_id];
         }
         $sites = self::sitesForbidding($slice_id);
@@ -53,23 +53,31 @@ final class ViewDirect
             return [];
         }
         $sites = AA::Contentcache()->get_result([AA_Module::class, 'belongsToSites'], [$slice_id]);
-        return array_values(array_filter((array) $sites, static fn(string $site): bool => self::moduleForbids($site)));
+        return array_values(array_filter((array) $sites, self::siteForbids(...)));
     }
 
     /**
      * A site was saved: the page cache may hold outputs of view.php for the slices the site now keeps inside
-     * pages. The setting is read from the database - the request has it as it was before the save.
+     * pages.
      * @param list<string> $slices the slices the site uses now
      */
     public static function siteSaved(string $site_id, array $slices): void
     {
-        $settings = AA_Modulesettings_Site::load(AA_Module_Site::getModuleObjectId($site_id));
-        if ($slices && ((string) $settings?->getProperty(self::PROPERTY) === '1')) {
+        if ($slices && self::siteForbids($site_id)) {
             AA::Pagecache()->invalidateFor($slices);
         }
     }
 
-    public static function moduleForbids(string $module_id): bool
+    /** The setting of a site, read from its stored settings: building the site module (AA_Module::getModule())
+     *  would make the site a tag of the page being cached, and every save of the site would drop that page. */
+    private static function siteForbids(string $site_id): bool
+    {
+        $settings = AA_Modulesettings_Site::load(AA_Module_Site::getModuleObjectId($site_id));
+        return (string) $settings?->getProperty(self::PROPERTY) === '1';
+    }
+
+    /** the setting of a slice */
+    public static function sliceForbids(string $module_id): bool
     {
         return (string) AA_Module::getModuleProperty($module_id, self::PROPERTY) === '1';
     }
@@ -77,11 +85,14 @@ final class ViewDirect
     /**
      * The answer to a refused call: nothing, as for a view that does not exist - and never from the cache,
      * so the view shows again as soon as the setting is off.
-     * @param array{string, string} $by forbiddenBy()
+     * @param array{string, string} $by    forbiddenBy()
+     * @param bool                  $whole the view is the one the request asked for, not a banner inside it
      */
-    public static function refuse(int $vid, array $by): void
+    public static function refuse(int $vid, array $by, bool $whole = true): void
     {
-        AA::$headers['status'] = 'HTTP/1.0 404 Not Found';
+        if ($whole) {
+            AA::$headers['status'] = 'HTTP/1.0 404 Not Found';
+        }
         AA::Pagecache()->switchCacheNostore();
         LogOnce::daily(self::EVENT, ParamImplode([(string) $vid, $by[0], $by[1]]), [ProtectionLog::requested(), ProtectionLog::referer()]);
     }

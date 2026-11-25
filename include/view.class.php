@@ -163,6 +163,23 @@ class AA_View
         return (bool) ((int) $this->f('flag') & $bit);
     }
 
+    /** A use of the view outside AA_Showview - its templates taken by slice.php, a Manager or an Alerts
+     *  digest: the first one of a view marked as probably unused is logged as there. */
+    public function noteUse(): void
+    {
+        if ($this->takeFirstUse()) {
+            self::logUse($this->id);
+        }
+    }
+
+    /** a row of the usage log of views; $start_time - when the rendering started, if it is to be timed */
+    public static function logUse(int $vid, ?float $start_time = null): void
+    {
+        $entry = new AA_Logentry_W(['time' => ($start_time === null) ? '' : (string) round(microtime(true) - $start_time, 4), 'uri' => (string) ($_SERVER['REQUEST_URI'] ?? '')]);
+        $entry->trimToFit(['uri'], AA_Logentry::PARAMS_MAX);   // a longer row fails the INSERT and the page with it
+        AA_Log::write('VIEW', $vid, $entry);
+    }
+
     /** the view itself is set to work only inside pages and templates (AA\Security\ViewDirect) */
     public function isInsideOnly(): bool
     {
@@ -355,6 +372,7 @@ class AA_View
      */
     public function getViewFormat($selected_item = '', bool $from_request = false): array
     {
+        $this->noteUse();
         $format                        = [];
         $format['group_by']            = $this->fields['group_by1'];
         $format['gb_header']           = $this->fields['gb_header'];

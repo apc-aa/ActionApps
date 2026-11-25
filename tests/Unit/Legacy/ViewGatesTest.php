@@ -30,6 +30,9 @@ final class ViewGatesTest extends TestCase
     /** @var array{mixed, mixed, mixed} AA::$site_id, $module_id and $slice_id before the test */
     private array $saved = [null, null, null];
 
+    /** @var array<string, mixed> $_SERVER as the test found it */
+    private array $server = [];
+
     public static function setUpBeforeClass(): void
     {
         // loading locsess.php warns about the missing web request
@@ -47,7 +50,8 @@ final class ViewGatesTest extends TestCase
     {
         RecordingDb::reset();
         $GLOBALS['spareDBs'] = [new RecordingDb()];
-        $this->saved = [AA::$site_id, AA::$module_id, AA::$slice_id];
+        $this->saved  = [AA::$site_id, AA::$module_id, AA::$slice_id];
+        $this->server = $_SERVER;
         [AA::$site_id, AA::$module_id, AA::$slice_id] = [null, null, null];
         $_SERVER['REQUEST_URI'] = '/cz/kontakty';
         $_SERVER['SCRIPT_NAME'] = '/aa/modules/site/site.php';
@@ -60,7 +64,8 @@ final class ViewGatesTest extends TestCase
         (new ReflectionProperty($views, 'a'))->setValue($views, []);
         [AA::$site_id, AA::$module_id, AA::$slice_id] = $this->saved;
         $GLOBALS['spareDBs'] = [];
-        unset($_SERVER['REQUEST_URI'], $_SERVER['SCRIPT_NAME'], $_SERVER['HTTP_HOST'], $_SERVER['HTTP_REFERER'], AA::$headers['status']);
+        $_SERVER = $this->server;
+        unset(AA::$headers['status']);
         LogOnce::reset();
         (new ReflectionProperty(PageCache::class, 'cache_nostore'))->setValue(AA::Pagecache(), false);
         RecordingDb::reset();
@@ -238,6 +243,57 @@ final class ViewGatesTest extends TestCase
 
         self::assertSame('shown', self::shown(['from_request' => true]));
         self::assertTrue(self::pageIsKeptOutOfTheCache());
+    }
+
+    /** view.php keeps its outputs under the parameters of the view asked for: a view inside it whose condition
+     *  asks about the rest of the URL must keep that output out of the cache too */
+    public function test_viewOutput_conditionOfAViewInsideOneAskedByItsAddress_isNotCached(): void
+    {
+        $inner = self::VID + 1;
+        $views = AA_Views::singleton();
+        $base  = ['slice_id' => pack_id(self::SLICE), 'deleted' => '0', 'type' => 'static', 'flag' => '0', 'scroller' => '0', 'lang_file' => 'en-utf8_news_lang.php'];
+        (new ReflectionProperty($views, 'a'))->setValue($views, [
+            self::VID => new AA_View(self::VID, ['id' => (string) self::VID, 'odd' => 'outer {view:' . $inner . '}'] + $base),
+            $inner    => new AA_View($inner, ['id' => (string) $inner, 'odd' => 'inner', 'show_if' => '1'] + $base),
+        ]);
+
+        self::assertSame('outer inner', self::shown());
+        self::assertFalse(self::pageIsKeptOutOfTheCache(), 'on a page the URL is in the key of the cache');
+
+        AA::Contentcache()->clear();   // another request: the output of {view:...} is kept for the request
+        self::assertSame('outer inner', self::shown(['from_request' => true]));
+        self::assertTrue(self::pageIsKeptOutOfTheCache());
+    }
+
+    public function test_refuse_bannerOfAViewAsked_leavesTheAnswerItsStatus(): void
+    {
+        $_SERVER['HTTP_HOST'] = 'example.org';
+
+        ViewDirect::refuse(self::VID, [ViewDirect::BY_VIEW, ''], false);
+
+        self::assertNull(AA::$headers['status'] ?? null);
+        self::assertTrue(self::pageIsKeptOutOfTheCache());
+        self::assertCount(1, RecordingDb::inserts('log'));
+    }
+
+    public function test_getViewFormat_firstUseOutsideAPage_isLoggedAndUnmarked(): void
+    {
+        $view = self::view(VIEW_FLAG_WATCH, ['group_by1' => '', 'gb_header' => '0', 'g1_direction' => '0']);
+        $_SERVER['REQUEST_URI'] = '/aa/cron.php';
+
+        set_error_handler(static fn(): bool => true);   // the settings of a listing this static view does not have
+        try {
+            $view->getViewFormat();
+            $view->getViewFormat();
+        } finally {
+            restore_error_handler();
+        }
+
+        self::assertCount(1, self::viewUpdates());
+        $logged = RecordingDb::inserts('log');
+        self::assertCount(1, $logged);
+        self::assertSame('VIEW', $logged[0]['type']);
+        self::assertStringContainsString('/aa/cron.php', $logged[0]['params']);
     }
 
     public function test_viewOutput_otherCodeOfAViewWithComments_isMarkedAsTheView(): void

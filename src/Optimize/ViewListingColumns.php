@@ -15,7 +15,8 @@ use AA\IO\DB\DB_AA;
 class ViewListingColumns extends AbstractOptimize
 {
     private const TABLE   = 'view';
-    private const COLUMNS = ['cond1field', 'cond2field', 'cond3field', 'group_limit', 'conds', 'show_if', 'show_else'];
+    private const COND_FIELDS = ['cond1field', 'cond2field', 'cond3field'];
+    private const COLUMNS     = [...self::COND_FIELDS, 'group_limit', 'conds', 'show_if', 'show_else'];
 
     public static function name(): string
     {
@@ -48,16 +49,16 @@ class ViewListingColumns extends AbstractOptimize
         return ['test', 'repair'];
     }
 
-    /** the view form may offer the settings */
-    public static function ready(): bool
-    {
-        return self::lacking() === [];
-    }
-
     /** @return list<string> the columns the table does not have yet: no query may name them, no form offer them */
     public static function absent(): array
     {
         return array_keys(self::lacking(), null, true);
+    }
+
+    /** the conditions may name a field of related items - the three columns hold the longer name */
+    public static function condsWide(): bool
+    {
+        return !array_intersect_key(self::lacking(), array_flip(self::COND_FIELDS));
     }
 
     public function test(): bool
@@ -106,7 +107,7 @@ class ViewListingColumns extends AbstractOptimize
      *                                 narrow one; [] also without the table - a new install creates it whole */
     private static function lacking(): array
     {
-        // one query on every load of the view form
+        // a query on every load of the view form
         $live = DB_AA::select(['COLUMN_NAME' => 'COLUMN_TYPE'], 'SELECT COLUMN_NAME, COLUMN_TYPE FROM information_schema.COLUMNS', [['table_schema', (string) constant('DB_NAME')], ['table_name', self::TABLE]]);
         if (!$live) {
             return [];

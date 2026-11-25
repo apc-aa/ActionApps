@@ -8,8 +8,8 @@ use AA_Operators;
 
 /**
  * Numbered conditions kept in one text column - the conditions of a view after its third (view.conds).
- * A condition has its number for good: a call redefines its value by it (cmd[]=c-5-value), so the number
- * is stored with the condition and removing another one does not move it. Unlike the d- form of a URL the
+ * A condition keeps its number while it exists: a call redefines its value by it (cmd[]=c-5-value), so the
+ * number is stored with the condition and removing another one does not move it. Unlike the d- form of a URL the
  * stored text holds also a condition with an empty value - one that waits for the value of the call.
  *
  * One condition a line: number, fields divided by commas (the condition holds when any of them matches),
@@ -18,9 +18,6 @@ use AA_Operators;
  */
 final class StoredConditions
 {
-    /** view.cond1cond is varchar(255) - a value of a later condition is no longer */
-    public const VALUE_MAX = 255;
-
     /** a field id, also of related items: headline........@relation.......1, name@<slice>/relation.......2+ */
     private const FIELD_RE = '~^[A-Za-z0-9_.@/+]{1,100}$~D';
 
@@ -72,7 +69,7 @@ final class StoredConditions
             return;
         }
         // a tab or a line break would be read back as the end of the value
-        $conditions[(int) $number] = ['fields' => $fields, 'operator' => $operator, 'value' => substr(strtr($value, "\t\r\n", '   '), 0, self::VALUE_MAX)];
+        $conditions[(int) $number] = ['fields' => $fields, 'operator' => $operator, 'value' => strtr($value, "\t\r\n", '   ')];
     }
 
     public function toText(): string
