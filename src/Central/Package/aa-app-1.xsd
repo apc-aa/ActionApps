@@ -745,6 +745,7 @@
       <xs:element name="group_by1" type="textValue" minOccurs="0"/>
       <xs:element name="g1_direction" type="intValue" minOccurs="0"/>
       <xs:element name="gb_header" type="intValue" minOccurs="0"/>
+      <xs:element name="group_limit" type="intValue" minOccurs="0"/>
       <xs:element name="group_by2" type="textValue" minOccurs="0"/>
       <xs:element name="g2_direction" type="intValue" minOccurs="0"/>
       <xs:element name="cond1field" type="textValue" minOccurs="0"/>

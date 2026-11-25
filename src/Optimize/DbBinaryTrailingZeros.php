@@ -182,11 +182,11 @@ class DbBinaryTrailingZeros extends AbstractOptimize
         $this->_fixTable('view', 'order2', "varbinary(32)  default NULL");
         $this->_fixTable('view', 'group_by1', "varbinary(32)  default NULL");
         $this->_fixTable('view', 'group_by2', "varbinary(32)  default NULL");
-        $this->_fixTable('view', 'cond1field', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'cond1field', "varbinary(100)  default NULL");
         $this->_fixTable('view', 'cond1op', "varbinary(10)  default NULL");
-        $this->_fixTable('view', 'cond2field', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'cond2field', "varbinary(100)  default NULL");
         $this->_fixTable('view', 'cond2op', "varbinary(10)  default NULL");
-        $this->_fixTable('view', 'cond3field', "varbinary(32)  default NULL");
+        $this->_fixTable('view', 'cond3field', "varbinary(100)  default NULL");
         $this->_fixTable('view', 'cond3op', "varbinary(10)  default NULL");
         $this->_fixTable('view', 'field1', "varbinary(32)  default NULL");
         $this->_fixTable('view', 'field2', "varbinary(32)  default NULL");
