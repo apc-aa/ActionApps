@@ -292,6 +292,7 @@ if ($fview || $iview) {
         $iview_info = is_scalar($iview) ? AA_Views::getView($iview, $slice_id) : null;
         if ($iview_info && ($iview_info->f('deleted') < 1)) {
             $slice_info['group_by']        = $iview_info->f('group_by1');
+            $slice_info['group_desc']      = $iview_info->groupDescending();
             $slice_info['gb_direction']    = AA_View::VIEW_SORT_DIRECTIONS[$iview_info->f('g1_direction')];  // views uses different sort codes (historical reasons)
             $slice_info['category_format'] = $iview_info->f('group_title');
             $slice_info['category_bottom'] = $iview_info->f('group_bottom');
@@ -509,6 +510,7 @@ if ($group_by) {
     $set->addSortFromString($group_by);
     $sort_tmp = $set->getSort();
     $slice_info["group_by"] = key($sort_tmp[0]);
+    $slice_info['group_desc'] = false;   // the direction set in the view belongs to its own "Group by"
 } elseif ($slice_info['category_sort'] && ($tmpobj = $slice->getFields()) && ($group_field = $tmpobj->firstOfTypeFieldId())) {
     $grp_odir    = (($order == $group_field) && ($orderdirection !== 'd')) ? 'a' : 'd';
     $sort_tmp[]  = [$group_field => $grp_odir];

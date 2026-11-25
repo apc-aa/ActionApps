@@ -669,6 +669,7 @@ class AA_Showview
                     $format['group_by'] = $this->from_request
                         ? ViewSlices::requestGroupBy("set[$vid]=group_by-", (string) $this->_view_param['group_by'], $zids ? $zids2 : (is_array($slices) ? $slices : [$slice_id]))
                         : $this->_view_param['group_by'];
+                    $format['group_desc'] = false;   // the direction set in the view belongs to its own "Group by"
                 }
                 if (isset($view_info['group_by2'])) {
                     $format['group_by2']    = $view_info['group_by2'];

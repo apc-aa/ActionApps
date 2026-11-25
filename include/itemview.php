@@ -35,6 +35,7 @@
 use AA\Cache\CacheStr2find;
 use AA\Cache\PageCache;
 use AA\Security\ViewSlices;
+use AA\Util\Langs;
 use AA\Util\Txt;
 
 require_once __DIR__ . "/stringexpand.php";
@@ -546,12 +547,14 @@ class itemview
 
         // fill the foo_ids - ids to itemids to get from database
         if (!$is_random) {
+            if ((strlen($this->slice_info['group_by2'] ?? '') === 10) && (str_starts_with($this->slice_info['group_by2'], '_#'))) {
+                $sort_types = [0 => 'locale', 1 => 'rlocale', 4 => 'numeric', 5 => 'rnumeric'];
+                $this->orderByAlias($this->slice_info['group_by2'], $sort_types[(int) $this->slice_info['g2_direction']] ?? null);
+            }
             if ($this->group_fld && ($grp_al = AA_Alias::isAliasLike($this->group_fld, true))) {
                 $this->group_fld = $grp_al;   // replaces possible ABCDEFGH alias with _#ABCDEFGH
-                $this->zids = new zids(explode_ids(StrExp('order', [implode('-', $this->zids->short_or_longids()), $this->group_fld, 'locale'])));
-            } elseif ((strlen($this->slice_info['group_by2'] ?? '') === 10) && (str_starts_with($this->slice_info['group_by2'], '_#'))) {
-                $sort_types = [0 => 'locale', 1 => 'rlocale', 4 => 'numeric', 5 => 'rnumeric'];
-                $this->zids = new zids(explode_ids(StrExp('order', [implode('-', $this->zids->short_or_longids()), $this->slice_info['group_by2'], $sort_types[(int) $this->slice_info['g2_direction']] ?? null])));
+                // after the sort alias, so its order stays inside a group
+                $this->orderByGroupAlias($grp_al, (int) ($this->slice_info['gb_header'] ?? 0), !empty($this->slice_info['group_desc']));
             }
             $foo_zids = $this->zids->slice($real_from, (($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : $this->num_records));
         } else { // Selecting random record
@@ -826,6 +829,36 @@ class itemview
                 array_pop($GLOBALS['QueryIDsItemGroupIndex']);
         }
         return $out;
+    }
+
+    /** Reorders the listed ids by the value of an alias - it is expanded for every item, shown or not.
+     *  @param string|null $type as in {order}: locale, rlocale, numeric, rnumeric */
+    private function orderByAlias(string $alias, ?string $type): void
+    {
+        $this->zids = new zids(explode_ids(StrExp('order', [implode('-', $this->zids->short_or_longids()), $alias, $type])));
+    }
+
+    /** Reorders the listed ids for groups made by an alias; the order so far stays among equal values.
+     *  @param int $header as in groupKey() */
+    private function orderByGroupAlias(string $alias, int $header, bool $desc): void
+    {
+        // long id => value, as {order} gets them
+        $this->zids = new zids(self::groupOrder(AA_Items::getFormatted($this->zids, $alias, AA_BIN_ALL), $header, $desc), 'l');
+    }
+
+    /**
+     * @param array<string, string> $values id => group value, in the order so far
+     * @return list<string> the ids by the value and, for groups by a part of it, by that part: the locale puts
+     *                      "Ú" among "U", so by the value alone every such change would start a new group
+     */
+    public static function groupOrder(array $values, int $header, bool $desc): array
+    {
+        Langs::sortLocale($values, $desc);
+        if ($header !== 0) {
+            $values = array_map(static fn($value): string => aa_strtolower(self::groupKey((string) $value, $header)), $values);
+            Langs::sortLocale($values, $desc);
+        }
+        return array_map('strval', array_keys($values));
     }
 
     /** The part of the group value the groups are made by.

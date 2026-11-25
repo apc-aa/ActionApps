@@ -235,12 +235,15 @@ class AA_View
         $sort = null;
         // grouping
 
+        // by an alias the listing orders itself, once it has the items
+        $group_by    = (string) (array_key_exists('group_by', $param_sort) ? $param_sort['group_by'] : $this->f('group_by1'));
+        $group_alias = AA_Alias::isAliasLike($group_by, true) !== '';
         if (array_key_exists('group_by', $param_sort)) {
-            if ($param_sort['group_by'] && !AA_Alias::isAliasLike($param_sort['group_by'], true)) { // we can have group_by= to avoid grouping ({view:55::group_by-})
-                $sort = String2Sort('100000' . $param_sort['group_by']);                             // for aliases, we do not want to sort
+            if ($group_by && !$group_alias) { // we can have group_by= to avoid grouping ({view:55::group_by-})
+                $sort = String2Sort('100000' . $group_by);
             }
-        } elseif ($this->f('group_by1')) {
-            $sort[] = [$this->f('group_by1') => self::VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]];
+        } elseif ($group_by && !$group_alias) {
+            $sort[] = [$group_by => self::VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]];
         }
 
         //sorting
@@ -259,11 +262,19 @@ class AA_View
             }
         }
 
-        if ($param_sort['group_limit'] && count($sort)) {
+        // the limit is of the first order, the group - not of an order that only follows an alias group
+        if ($param_sort['group_limit'] && $sort && !$group_alias) {
             reset($sort);   // go to first record
             $sort[key($sort)]['limit'] = $param_sort['group_limit'];
         }
         return $sort;
+    }
+
+    /** groups from the last one - the direction of a group alias, which has no priority to go by */
+    public function groupDescending(): bool
+    {
+        $this->load();
+        return in_array((int) ($this->fields['g1_direction'] ?? 0), [1, 3], true);
     }
 
     /** getViewFormat function
@@ -277,6 +288,7 @@ class AA_View
         $format                        = [];
         $format['group_by']            = $this->fields['group_by1'];
         $format['gb_header']           = $this->fields['gb_header'];
+        $format['group_desc']          = $this->groupDescending();
         $format['category_format']     = $this->fields['group_title'];
         $format['category_bottom']     = $this->fields['group_bottom'];
         $format['compact_top']         = $this->fields['before'];

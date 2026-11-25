@@ -195,9 +195,32 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
     FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
     if ( $group ) {
         FrmSelectEasy("gb_header", getViewGroupFunctions(), $vw_data['gb_header']);
+        if (isset($order_fields['AA_OPTGROUP_aliases'])) {
+            echo "<div class=tabhlp>"._m("grouping by an alias is slow as well - the alias is computed for all the items of the listing")."</div>";
+        }
     }
     //  PrintHelp($hlp);
     echo "</td></tr>\n";
+}
+
+/** The aliases of the slice's item fields as further options of the "Group by" select.
+ * @return array<string, string> alias => label, after the caption of the option group; [] without aliases
+ */
+function GroupAliasOptions(AA_Slice $slice): array
+{
+    $options = [];
+    foreach ($slice->getFields() as $field) {
+        if (str_starts_with($field->getId(), '_')) {   // a setting of the slice, not a value of an item
+            continue;
+        }
+        foreach ($field->getAliases()->getNames() as $alias) {
+            if (AA_Alias::isAliasLike($alias)) {   // the listing takes no other name for an alias
+                $options[$alias] = "$alias - " . $field->getName();
+            }
+        }
+    }
+    ksort($options);
+    return $options ? (['AA_OPTGROUP_aliases' => _m('Aliases')] + $options) : [];
 }
 
 /** OrderFrm function
@@ -544,7 +567,8 @@ foreach ($view_field_names as $k => $v) {
         case "cond":    ConditionFrm(  $k, $label, $value); break;
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] === 'easy'); break;
         case "orderal": OrderAliasFrm( $k, $label, $value); break;
-        case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] === 'easy', true); break;
+        // an alias only for items: the other listings (constants, links, categories...) have no items to expand it for
+        case "group":   OrderFrm(      $k, $label, $value, $lookup_fields + (($view_type === 'list') ? GroupAliasOptions($slice) : []), $view_type_info['order'] === 'easy', true); break;
         case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help); break;
         case "rioscrl": FrmInputRadio($k, $label, [0 => _m("No"), 1 => _m("Accept {xpage}"), 2 => _m("Use infinite scrolling")], $value, false, $help); break;  // Scroller
         case "none":    break;
