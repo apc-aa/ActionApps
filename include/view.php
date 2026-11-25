@@ -646,8 +646,11 @@ class AA_Showview
                     AA::$headers['type'] = 'text/xml';
                 }
 
+                $cond_values = $view->condValues($param_conds);
                 if (!$conds) {        // conds could be defined via cmd[]=d command
                     $conds = $view->getConds($param_conds);
+                } else {
+                    $cond_values = array_fill_keys(array_keys($cond_values), '');   // the conditions of the view are not in use
                 }
                 // merge $conds with $calendar_conds
                 if (is_array($calendar_conds)) {
@@ -661,7 +664,7 @@ class AA_Showview
                     $aa_add_aliases->addFromArray($als);
                 }
                 if (is_array($conds)) {
-                    AA_View::addViewAliases($aa_add_aliases, $conds);
+                    AA_View::addViewAliases($aa_add_aliases, $conds, $cond_values);
                 }
 
                 $slice   = AA_Slice::getModule($slice_id);

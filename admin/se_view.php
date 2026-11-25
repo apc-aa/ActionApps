@@ -327,7 +327,7 @@ $view_field_names = array_diff_key($view_field_names ?? [], array_flip(ViewListi
 $view_type_info   = getViewTypesInfo($view_type);
 
 // the rows of the conditions after the third as posted, in their stored form
-$conds_posted = StoredConditions::fromForm(InputVars::arrayPOST('conds'), AA_View::MORE_CONDS_FROM)->toText();
+$conds_posted = StoredConditions::fromForm(InputVars::arrayPOST('conds'), AA_View::MORE_CONDS_FROM, AA_View::condNamesTaken(($slice instanceof AA_Slice) ? $slice->aa_aliases()->getNames() : []))->toText();
 
 if ( $update ) {
     do {

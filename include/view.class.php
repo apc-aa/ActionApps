@@ -237,6 +237,62 @@ class AA_View
         $this->fields = array_merge(array_diff_key((array) $this->fields, ['banners' => 1, 'banners_from_request' => 1]), $banner_param);
     }
 
+    /** @var array{string, StoredConditions}|null the text of view.conds and what it reads as */
+    private ?array $more_conds = null;
+
+    /** the conditions of the view after its third (view.conds); none in a database without the column */
+    private function moreConds(): StoredConditions
+    {
+        $text = (string) ($this->fields['conds'] ?? '');
+        if (($this->more_conds[0] ?? null) !== $text) {
+            $this->more_conds = [$text, StoredConditions::fromText($text, self::MORE_CONDS_FROM)];
+        }
+        return $this->more_conds[1];
+    }
+
+    /**
+     * The value each condition of the view works with: the one a call gives (cmd[]=c-2-value,
+     * cmd[]=c-author-value) or, without it, the one set in the view.
+     * @param array $param_conds the values of the call by the numbers and names of the conditions
+     * @return array<int|string, string> by the numbers 1 - 3 and the names of the conditions after them
+     */
+    public function condValues($param_conds = []): array
+    {
+        $param_conds = (array) $param_conds;
+        $values      = [];
+        foreach ([1, 2, 3] as $n) {
+            if ($this->f("cond{$n}field") && $this->f("cond{$n}op")) {
+                $given      = (string) ($param_conds[$n] ?? '');
+                $values[$n] = (strlen($given) > 0) ? $given : (string) $this->f("cond{$n}cond");   // the call may give "0"
+            }
+        }
+        return $values + $this->moreConds()->values($param_conds);
+    }
+
+    /** the alias with the value of a condition: _#C_ and its number or name, in capitals */
+    public static function condAlias(int|string $name): string
+    {
+        return '_#C_' . str_pad(strtoupper((string) $name), StoredConditions::NAME_MAXLENGTH, '_');
+    }
+
+    /**
+     * The names a condition should not get: its alias would stand in the templates of the view for
+     * an alias of the same name the slice has for a field.
+     * @param list<string> $slice_aliases
+     * @return list<string>
+     */
+    public static function condNamesTaken(array $slice_aliases): array
+    {
+        $names = [];
+        foreach ($slice_aliases as $alias) {
+            $name = strtolower(rtrim(substr($alias, 4), '_'));
+            if ((preg_match('~^' . StoredConditions::NAME_PATTERN . '$~D', $name) === 1) && (self::condAlias($name) === $alias)) {
+                $names[] = $name;
+            }
+        }
+        return $names;
+    }
+
     /** old GetViewConds function
      * Fills array with conditions defined through
      * 'Slice Admin' -> 'Design View - Edit' -> 'Conditions' setting
@@ -245,16 +301,15 @@ class AA_View
      */
     public function getConds($param_conds = []): array
     {
-        // param_conds - redefines default condition values by url parameter (cmd[]=c)
-
         AA::$debug & 2 && AA::$dbg->log("(AA_View->getConds) param_conds=", $param_conds);
-        $conds = [];
-
-        $this->resolveCondsConflict($conds, $this->f('cond1field'), $this->f('cond1op'), $this->f('cond1cond'), $param_conds[1]);
-        $this->resolveCondsConflict($conds, $this->f('cond2field'), $this->f('cond2op'), $this->f('cond2cond'), $param_conds[2]);
-        $this->resolveCondsConflict($conds, $this->f('cond3field'), $this->f('cond3op'), $this->f('cond3cond'), $param_conds[3]);
-        // the conditions after the third, each under its number; none in a database without the column
-        foreach (StoredConditions::fromText((string) ($this->fields['conds'] ?? ''), self::MORE_CONDS_FROM)->toConds((array) $param_conds) as $cond) {
+        $values = $this->condValues($param_conds);
+        $conds  = [];
+        foreach ([1, 2, 3] as $n) {
+            if (isset($values[$n])) {
+                $conds[] = ['operator' => $this->f("cond{$n}op"), 'value' => $values[$n], $this->f("cond{$n}field") => 1];
+            }
+        }
+        foreach ($this->moreConds()->toConds((array) $param_conds) as $cond) {
             $conds[] = $cond;
         }
         AA::$debug & 2 && AA::$dbg->log("(AA_View->getConds) conds=", $conds);
@@ -269,26 +324,6 @@ class AA_View
     {
         return new AA_Set([$this->getSliceId()], $this->getConds(), $this->getSort());
     }
-
-    /** ResolveCondsConflict function
-     * Helper function for AA_View->getConds() - resolves database x url conds conflict
-     * @param $conds
-     * @param $fld
-     * @param $op
-     * @param $val
-     * @param $param
-     */
-    protected function resolveCondsConflict(&$conds, $fld, $op, $val, $param): void
-    {
-        if ($fld && $op) {
-            $conds[] = [
-                'operator' => $op,
-                'value'    => (strlen((string) $param) > 0 ? $param : $val),  // param could be also "0"
-                $fld       => 1,
-            ];
-        }
-    }
-
 
     /** old GetViewSort function
      * @param array $param_sort
@@ -692,13 +727,19 @@ class AA_View
     }
 
     /**
-     * @param  AA_Aliases  $aliases
-     * @param  array       $conds
+     * The values of the conditions for the templates of the view: _#VIEW_C1_, ... by the order of the
+     * conditions in use, _#C_1_____, _#C_AUTHOR, ... by their numbers and names (condAlias()).
+     * @param  AA_Aliases                 $aliases
+     * @param  array                      $conds
+     * @param  array<int|string, string>  $values  condValues()
      */
-    public static function addViewAliases(AA_Aliases $aliases, array $conds): void
+    public static function addViewAliases(AA_Aliases $aliases, array $conds, array $values = []): void
     {
         foreach ($conds as $k => $v) {
             $aliases->addTextAlias(str_pad('_#VIEW_C' . ($k + 1), 10, '_'), $v['value']);
+        }
+        foreach ($values as $name => $value) {
+            $aliases->addTextAlias(self::condAlias($name), $value);
         }
     }
 

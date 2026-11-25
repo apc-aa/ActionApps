@@ -9,8 +9,8 @@ use AA\Search\StoredConditions;
 use PHPUnit\Framework\TestCase;
 
 /**
- * The form control of numbered conditions posts what StoredConditions::fromForm() reads: plain fields named
- * by the number of their condition, and a template row for the script to add.
+ * The form control of named conditions posts what StoredConditions::fromForm() reads: plain fields of
+ * a row a condition, its name among them, and a template row for the script to add.
  */
 final class ConditionsInputTest extends TestCase
 {
@@ -39,18 +39,22 @@ final class ConditionsInputTest extends TestCase
         $html = self::html('');
 
         self::assertStringStartsWith('<aa-conditions first="4"><template>', $html);
-        self::assertSame(0, substr_count(explode('<template>', $html)[0], 'data-number'));
+        self::assertSame(0, substr_count(explode('<template>', $html)[0], 'aa-conditions-row'));
+        self::assertMatchesRegularExpression('~<input type="text" name="conds\[__N__\]\[name\]" value="__N__"[^>]* maxlength="6" pattern="\[a-z0-9\]\{1,6\}" data-aa-name~', $html);
         self::assertStringContainsString('name="conds[__N__][fields][]"', $html);
         self::assertStringContainsString('name="conds[__N__][operator]"', $html);
         self::assertStringContainsString('name="conds[__N__][value]"', $html);
-        self::assertStringContainsString('data-add>', $html);
+        self::assertStringContainsString('data-aa-add>', $html);
     }
 
-    public function test_html_storedConditions_areRowsUnderTheirNumbers(): void
+    public function test_html_storedConditions_areRowsWithTheirNames(): void
     {
-        $rows = explode('<template>', self::html("4\theadline........,headline........@relation.......1\tLIKE\tvoda\n7\theadline........\t&\t9"))[0];
+        $rows = explode('<template>', self::html("4\theadline........,headline........@relation.......1\tLIKE\tvoda\n7\theadline........\t&\t9\nauthor\theadline........\t=\t"))[0];
 
-        self::assertSame(2, substr_count($rows, 'class="aa-conditions-row"'));
+        self::assertSame(3, substr_count($rows, 'class="aa-conditions-row"'));
+        self::assertMatchesRegularExpression('~name="conds\[4\]\[name\]" value="4"~', $rows);
+        self::assertMatchesRegularExpression('~name="conds\[author\]\[name\]" value="author"~', $rows);
+        self::assertSame(1, substr_count($rows, 'name="conds[author][fields][]"'));
         self::assertSame(2, substr_count($rows, 'name="conds[4][fields][]"'), 'a select for each field of the condition');
         self::assertSame(1, substr_count($rows, 'name="conds[7][fields][]"'));
         self::assertMatchesRegularExpression('~name="conds\[4\]\[value\]"[^>]* value="voda"~', $rows);
@@ -75,11 +79,11 @@ final class ConditionsInputTest extends TestCase
 
     public function test_html_whatItShowsIsReadBackTheSame(): void
     {
-        $stored = "4\theadline........,headline........@relation.......1\tLIKE\tvoda\n7\theadline........\t&\t";
+        $stored = "4\theadline........,headline........@relation.......1\tLIKE\tvoda\nauthor\theadline........\t=\tNov\xC3\xA1k\n7\theadline........\t&\t";
         $html   = explode('<template>', self::html($stored))[0];
         // the fields a browser would post: the selected options and the values of the inputs
         $posted = [];
-        preg_match_all('~<select name="conds\[(\d+)\]\[(fields|operator)\](\[\])?"[^>]*>(.*?)</select>~s', $html, $selects, PREG_SET_ORDER);
+        preg_match_all('~<select name="conds\[(\w+)\]\[(fields|operator)\](\[\])?"[^>]*>(.*?)</select>~s', $html, $selects, PREG_SET_ORDER);
         foreach ($selects as [, $number, $part, $multi, $options]) {
             preg_match('~<option value="([^"]*)" selected~', $options, $selected);
             $value = html_entity_decode($selected[1] ?? '', ENT_QUOTES | ENT_HTML5);
@@ -89,9 +93,10 @@ final class ConditionsInputTest extends TestCase
                 $posted[$number][$part] = $value;
             }
         }
-        preg_match_all('~name="conds\[(\d+)\]\[value\]"[^>]* value="([^"]*)"~', $html, $inputs, PREG_SET_ORDER);
-        foreach ($inputs as [, $number, $value]) {
-            $posted[$number]['value'] = html_entity_decode($value, ENT_QUOTES | ENT_HTML5);
+        preg_match_all('~<input [^>]*name="conds\[(\w+)\]\[(name|value)\]"[^>]*>~', $html, $inputs, PREG_SET_ORDER);
+        foreach ($inputs as [$input, $row, $part]) {
+            preg_match('~ value="([^"]*)"~', $input, $value);
+            $posted[$row][$part] = html_entity_decode($value[1] ?? '', ENT_QUOTES | ENT_HTML5);
         }
 
         self::assertSame($stored, StoredConditions::fromForm($posted, 4)->toText());

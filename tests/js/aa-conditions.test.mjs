@@ -1,4 +1,4 @@
-// <aa-conditions>: a new row gets a number no row of the editing had, and the names of its fields carry it.
+// <aa-conditions>: a new row is named by a number no row of the editing had, and the names of its fields carry it.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { NUMBER, nextNumber, numbered } from '../../javascript/widgets/aa-conditions.js';
@@ -22,7 +22,11 @@ test('a row without a number is not counted', () => {
     assert.equal(nextNumber([NaN], 4), 4);
 });
 
-test('the template row is numbered in every name', () => {
-    const row = `<div data-number="${NUMBER}"><select name="conds[${NUMBER}][fields][]"></select><input name="conds[${NUMBER}][value]"></div>`;
-    assert.equal(numbered(row, 7), '<div data-number="7"><select name="conds[7][fields][]"></select><input name="conds[7][value]"></div>');
+test('a row named by letters is not counted', () => {
+    assert.equal(nextNumber([NaN, 4, NaN], 4), 5);
+});
+
+test('the template row gets the number for its key and its name', () => {
+    const row = `<div><input name="conds[${NUMBER}][name]" value="${NUMBER}"><select name="conds[${NUMBER}][fields][]"></select><input name="conds[${NUMBER}][value]"></div>`;
+    assert.equal(numbered(row, 7), '<div><input name="conds[7][name]" value="7"><select name="conds[7][fields][]"></select><input name="conds[7][value]"></div>');
 });

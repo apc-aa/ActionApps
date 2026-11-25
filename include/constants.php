@@ -401,7 +401,7 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable
 /** any string - used as parameter to included JS files in order browser can
  *  use a newer version of JS libs. Feel free to increase it
  */
-const AA_JS_VERSION = 118;
+const AA_JS_VERSION = 119;
 
 /** API url used for JS libs updates */
 const JS_UPDATE_API_URL = 'https://data.jsdelivr.com/v1/package/';
@@ -647,9 +647,12 @@ function getViewTypes(): array
         "help"  => _m("Name of the view, usable instead of its number: {view:photo_list}, {view.php?vid=photo_list}, slice.php?iview=photo_list (also fview, dview). The name is looked up in the slices of the site or of the page, so a URL that loads view.php directly (lazy, AJAX) still needs the number. Use only small letters and _, starting with a letter."),
     ];
 
+    $more_conds_help  = _m("Further conditions, each under its name: a number, or up to 6 small letters and digits. A call gives a condition its value by the name, as the first three by their numbers: cmd[]=c-4-value, cmd[]=c-author-value. A name used twice or not allowed is replaced by a number. With more fields in one condition, the condition holds when any of the fields matches. A condition without a value waits for the value of the call - without it, it is left out. A dash in a value of a call is written twice (c-4-2020--05).");
+    $more_conds_plain = ["label" => _m("More conditions"), "help" => $more_conds_help];
+    // the views that list items give their templates the values of the conditions
     $more_conds = [
         "label" => _m("More conditions"),
-        "help"  => _m("Further conditions, each under its number. A call gives a condition its value by the number, as for the first three: cmd[]=c-4-value. With more fields in one condition, the condition holds when any of the fields matches. A condition without a value waits for the value of the call - without it, it is left out. A dash in a value of a call is written twice (c-4-2020--05)."),
+        "help"  => $more_conds_help . '<br>' . _m("The value a condition works with is in the alias _#C_ followed by the name in capitals, filled with _ to ten characters: _#C_AUTHOR, _#C_4_____, and _#C_1_____ to _#C_3_____ for the first three. A name whose alias the slice has for a field is replaced by a number. The value may come from the call (a URL): print it as {safe:_#C_AUTHOR}."),
     ];
 
     $common = [
@@ -748,7 +751,7 @@ function getViewTypes(): array
             "cond2op"       => " ",
             "cond2cond"     => " ",
             "cond3field"    => _m("Condition 3"),
-            "conds"         => $more_conds,
+            "conds"         => $more_conds_plain,
             "cond3op"       => " ",
             "cond3cond"     => " ",
             "noitem_msg"    => _m("HTML code for \"No item found\" message"),
@@ -835,7 +838,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
-            "conds"           => $more_conds,
+            "conds"           => $more_conds_plain,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -894,7 +897,7 @@ function getViewTypes(): array
             "cond2op"      => " ",
             "cond2cond"    => " ",
             "cond3field"   => _m("Condition 3"),
-            "conds"        => $more_conds,
+            "conds"        => $more_conds_plain,
             "cond3op"      => " ",
             "cond3cond"    => " ",
             "listlen"      => _m("Listing length"),
@@ -1028,7 +1031,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
-            "conds"           => $more_conds,
+            "conds"           => $more_conds_plain,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -1063,7 +1066,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
-            "conds"           => $more_conds,
+            "conds"           => $more_conds_plain,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
