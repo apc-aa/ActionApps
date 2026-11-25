@@ -27,6 +27,7 @@
 // expected $view_id for editing specified view or $new
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\ViewListingColumns;
 use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 
@@ -249,11 +250,11 @@ function OrderAliasFrm($name, $txt, $val): void
  */
 function ConditionFrm($name, $txt, $val): void
 {
-    global $lookup_fields, $lookup_op, $vw_data;
+    global $cond_fields, $lookup_op, $vw_data;
     $name=safe($name); $txt=safe($txt);
     echo "<tr><td><b>$txt</b> ";
     echo "</td>\n<td>";
-    FrmSelectEasy($name, $lookup_fields, $val);
+    FrmSelectEasy($name, $cond_fields, $val);
     // direction variable name - construct from $name
     $opvarname = substr($name,0,5)."op";
     FrmSelectEasy($opvarname, $lookup_op, $vw_data[$opvarname]);
@@ -454,6 +455,14 @@ if ( $view_type_info['fields'] ) {
 } else {
     // $serchbar = new AA_Searchbar();
     $lookup_fields = AA_Fields::getFields4Select(AA::$module_id, false, 'name', true, true);
+}
+
+// A condition may also ask a field of related items - once the database can keep the longer name of such a field
+// (ViewListingColumns). Only for views of items: the other field lists above are not fields of a slice.
+$columns_ready = ViewListingColumns::ready();
+$cond_fields   = $lookup_fields;
+if (!$view_type_info['fields'] && $columns_ready && $slice && isset($view_field_names['cond1field'])) {   // the list reads the fields of every related slice
+    $cond_fields += $slice->getSearchfields()->getRelatedArray();
 }
 
 $headcode = <<<'EOT'
