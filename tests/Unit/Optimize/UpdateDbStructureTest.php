@@ -54,6 +54,7 @@ namespace Tests\Unit\Optimize {
         {
             $GLOBALS['spareDBs'] = [];
             AbstractOptimize::justPrint(false);
+            UpdateDbStructure::allowLongLocks(false);
             RecordingDb::reset();
         }
 
@@ -303,19 +304,62 @@ namespace Tests\Unit\Optimize {
             return array_values(array_filter(RecordingDb::$log, static fn($s) => str_starts_with($s, 'ALTER')));
         }
 
-        public function test_repair_bigTableNeedingALock_listedNotRun(): void
+        /** the server refuses LOCK=NONE for the content table, as for another type of a column */
+        private static function noLockRefused(): void
         {
-            // another column type cannot be changed while writes go on - on 8 million rows that stops the e-shop for minutes
-            RecordingDb::$fail_on    = 'ALTER TABLE `content`';
-            RecordingDb::$fail_error = 'SQLSTATE[0A000]: Feature not supported: 1846 LOCK=NONE is not supported. Reason: Cannot change column type. Try LOCK=SHARED';
+            RecordingDb::$fail_if = static fn(string $sql): ?string => (str_starts_with($sql, 'ALTER TABLE `content`') && str_ends_with($sql, ', LOCK=NONE'))
+                ? 'SQLSTATE[0A000]: Feature not supported: 1846 LOCK=NONE is not supported. Reason: Cannot change column type. Try LOCK=SHARED'
+                : null;
+        }
+
+        public function test_repair_tableNeedingALock_changedWithTheWritesWaiting(): void
+        {
+            // a log of 130 MB: its writes wait tens of seconds - the update ends done, with no ALTER left for an admin
+            self::noLockRefused();
+            self::tableSize(130 * 1048576);
+            $optimize = self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()]);
+
+            self::assertTrue($optimize->repair());
+            self::assertSame(['ALTER TABLE `content` MODIFY COLUMN `text` longtext, LOCK=SHARED'], self::alterLog());   // the refused one is not logged
+            self::assertSame(2, RecordingDb::count('SET SESSION sql_mode = @aa_sql_mode'));
+            self::assertMatchesRegularExpression('/content \(130 MB\) copied - its writes waited \d+ s/', $optimize->report());
+        }
+
+        public function test_repair_hugeTableNeedingALock_notChangedWithoutLongLocks(): void
+        {
+            // on 2.5 GB the writes of an e-shop would wait minutes - only when the one running the update allows it
+            self::noLockRefused();
             self::tableSize(900 * 1048576);
             $optimize = self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()]);
 
             self::assertFalse($optimize->repair());
-            self::assertSame(1, RecordingDb::count('SET SESSION sql_mode = @aa_sql_mode'));
-            self::assertSame(1, RecordingDb::count('SET @aa_sql_mode'));
+            self::assertSame(1, RecordingDb::count('SET @aa_sql_mode'));   // no second try with a lock
             self::assertStringContainsString('(900 MB) not changed: SQLSTATE[0A000]: Feature not supported: 1846 LOCK=NONE is not supported', $optimize->report());
-            self::assertStringContainsString("Run it when the traffic is low: SET SESSION sql_mode = &apos;STRICT_ALL_TABLES&apos;; ALTER TABLE `content` MODIFY COLUMN `text` longtext;", $optimize->report());
+            self::assertStringContainsString('only when long table locks are allowed', $optimize->report());
+        }
+
+        public function test_repair_hugeTableWithLongLocks_changedWithTheWritesWaiting(): void
+        {
+            self::noLockRefused();
+            self::tableSize(900 * 1048576);
+            UpdateDbStructure::allowLongLocks(true);
+
+            self::assertTrue(self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()])->repair());
+            self::assertSame('ALTER TABLE `content` MODIFY COLUMN `text` longtext, LOCK=SHARED', self::alterLog()[0] ?? '');
+        }
+
+        public function test_repair_lockedChangeRefusedForTheData_reportedAsRefused(): void
+        {
+            // the copy stops at a value the new column does not take; the table stays as it was
+            RecordingDb::$fail_if = static fn(string $sql): ?string => str_starts_with($sql, 'ALTER TABLE `content`')
+                ? (str_ends_with($sql, ', LOCK=NONE') ? 'SQLSTATE[0A000]: Feature not supported: 1846 LOCK=NONE is not supported' : 'SQLSTATE[22001]: String data, right truncated: 1406 Data too long')
+                : null;
+            self::tableSize(130 * 1048576);
+            $optimize = self::optimize(['content' => self::content(['text' => ['text', 'mediumtext', true, 'MUL', null, '', '']]), 'cron' => self::cron()]);
+
+            self::assertFalse($optimize->repair());
+            self::assertStringContainsString('content not changed - the database refused the change: SQLSTATE[22001]', $optimize->report());
+            self::assertStringNotContainsString('copied', $optimize->report());
         }
 
         public function test_repair_bigTableRefusedForTheData_notListedForTheNight(): void
@@ -328,7 +372,7 @@ namespace Tests\Unit\Optimize {
 
             self::assertFalse($optimize->repair());
             self::assertStringContainsString('content not changed - the database refused the change: SQLSTATE[22004]', $optimize->report());
-            self::assertStringNotContainsString('Run it when the traffic is low', $optimize->report());
+            self::assertSame(1, RecordingDb::count('SET @aa_sql_mode'));   // no second try with a lock
         }
 
         public function test_repair_tableInUse_notChangedTryLater(): void
@@ -341,7 +385,7 @@ namespace Tests\Unit\Optimize {
 
             self::assertFalse($optimize->repair());
             self::assertStringContainsString('content not changed - other queries are using it', $optimize->report());
-            self::assertStringNotContainsString('Run it when the traffic is low', $optimize->report());
+            self::assertSame(1, RecordingDb::count('SET @aa_sql_mode'));   // no second try with a lock
         }
 
         public function test_repair_smallTable_runWithoutAskingForNoLock(): void

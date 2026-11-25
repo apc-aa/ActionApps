@@ -240,16 +240,19 @@ class AA_Responder_Do_Synchronize extends AA_Responder
  *  Answers as Do_Optimize_Type does: 'OK ' or 'Err ' first, a repair only where the test fails.
  *  $param['class']  - fully qualified Optimize class, e.g. 'AA\Optimize\UpdateDbStructure'
  *  $param['method'] - 'test' or 'repair', one the class has
+ *  $param['long_locks'] - true: a repair may make the writes to a big table wait for minutes (UpdateDbStructure)
  */
 class AA_Responder_Do_Optimize extends AA_Responder
 {
     protected string $class;
     protected string $method;
+    protected bool $long_locks;
 
     public function __construct($param = null)
     {
-        $this->class  = (string) ($param['class']  ?? '');
-        $this->method = (string) ($param['method'] ?? '');
+        $this->class      = (string) ($param['class']  ?? '');
+        $this->method     = (string) ($param['method'] ?? '');
+        $this->long_locks = (bool) ($param['long_locks'] ?? false);
     }
 
     public function run(): AA_Response
@@ -270,6 +273,7 @@ class AA_Responder_Do_Optimize extends AA_Responder
             // Central stops waiting much sooner - this AA finishes the work
             MoreTimeLimit(360);
             ignore_user_abort(true);
+            \AA\Optimize\UpdateDbStructure::allowLongLocks($this->long_locks);
             return new AA_Response(\AA\Optimize\Chain::run($this->method, [$optimizer])[1]);
         } finally {
             $release();
@@ -281,16 +285,19 @@ class AA_Responder_Do_Optimize extends AA_Responder
  *  Optimize runs. This AA picks the classes of its own version (AA\Optimize\Chain).
  *  $param['type']   - 'sql_update'
  *  $param['method'] - 'test' (sql_update.php "Test") or 'repair' ("Install / Update")
+ *  $param['long_locks'] - true: the repair may make the writes to a big table wait for minutes (UpdateDbStructure)
  */
 class AA_Responder_Do_Optimize_Type extends AA_Responder
 {
     protected string $type;
     protected string $method;
+    protected bool $long_locks;
 
     public function __construct($param = null)
     {
-        $this->type   = (string) ($param['type']   ?? '');
-        $this->method = (string) ($param['method'] ?? '');
+        $this->type       = (string) ($param['type']   ?? '');
+        $this->method     = (string) ($param['method'] ?? '');
+        $this->long_locks = (bool) ($param['long_locks'] ?? false);
     }
 
     public function run(): AA_Response
@@ -305,6 +312,7 @@ class AA_Responder_Do_Optimize_Type extends AA_Responder
             // a whole update (table rebuilds) takes minutes - longer than Central waits
             MoreTimeLimit(360);
             ignore_user_abort(true);
+            \AA\Optimize\UpdateDbStructure::allowLongLocks($this->long_locks);
             [, $report] = \AA\Optimize\Chain::run($this->method, \AA\Optimize\Chain::optimizers($this->type));
         } finally {
             $release();

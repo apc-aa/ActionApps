@@ -171,6 +171,23 @@ namespace Tests\Unit\Central {
             $this->assertSame([self::CLASS_, 'repair', self::USER], [$run->task(), $run->method(), $run->user()]);
             $this->assertSame(['i' => 0], $run->position());
             $this->assertCount(1, array_filter(TableDb::rows('toexecute'), static fn(array $r): bool => $r['selector'] === 'Optimize_' . $run->getId()));
+            $this->assertFalse($run->longLocks());
+        }
+
+        public function test_begin_keeps_the_long_locks_for_the_steps(): void
+        {
+            $id = OptimizeRun::begin(OptimizeRun::SQL_UPDATE, 'repair', [1], self::USER, true)->getId();
+
+            $this->assertTrue(OptimizeRun::get($id)?->longLocks());
+        }
+
+        public function test_request_long_locks_go_with_a_repair_only(): void
+        {
+            $this->assertSame(['type' => OptimizeRun::SQL_UPDATE, 'method' => 'repair', 'long_locks' => true], OptimizeRun::request(OptimizeRun::SQL_UPDATE, 'repair', true)->params);
+            $this->assertSame(['class' => self::CLASS_, 'method' => 'repair', 'long_locks' => true], OptimizeRun::request(self::CLASS_, 'repair', true)->params);
+            // the test before and after the repair changes nothing
+            $this->assertSame(['type' => OptimizeRun::SQL_UPDATE, 'method' => 'test'], OptimizeRun::request(OptimizeRun::SQL_UPDATE, 'test', true)->params);
+            $this->assertSame(['type' => OptimizeRun::SQL_UPDATE, 'method' => 'repair'], OptimizeRun::request(OptimizeRun::SQL_UPDATE, 'repair')->params);
         }
 
         /** @return array<string, array{string, string, list<int>}> */
