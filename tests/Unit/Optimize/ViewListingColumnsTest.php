@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * ViewListingColumns widens view.cond1field - cond3field for the name of a field of related items and adds
- * view.group_limit; the view form asks it whether it may offer the two settings.
+ * the columns of the newer view settings; the view form asks it whether it may offer them.
  */
 
 namespace {
@@ -36,7 +36,7 @@ namespace Tests\Unit\Optimize {
 
     final class ViewListingColumnsTest extends TestCase
     {
-        private const WIDE = ['cond1field' => 'varbinary(100)', 'cond2field' => 'varbinary(100)', 'cond3field' => 'varbinary(100)', 'group_limit' => 'smallint(5) unsigned'];
+        private const WIDE = ['cond1field' => 'varbinary(100)', 'cond2field' => 'varbinary(100)', 'cond3field' => 'varbinary(100)', 'group_limit' => 'smallint(5) unsigned', 'conds' => 'text', 'show_if' => 'text', 'show_else' => 'longtext'];
 
         public static function setUpBeforeClass(): void
         {
@@ -84,7 +84,11 @@ namespace Tests\Unit\Optimize {
             return [
                 'before the change' => [
                     $short,
-                    'ALTER TABLE `view` MODIFY `cond1field` varbinary(100), MODIFY `cond2field` varbinary(100), MODIFY `cond3field` varbinary(100), ADD `group_limit` smallint(5) unsigned',
+                    'ALTER TABLE `view` MODIFY `cond1field` varbinary(100), MODIFY `cond2field` varbinary(100), MODIFY `cond3field` varbinary(100), ADD `group_limit` smallint(5) unsigned, ADD `conds` text, ADD `show_if` text, ADD `show_else` longtext',
+                ],
+                'with the first round of columns' => [
+                    array_diff_key(self::WIDE, ['conds' => 1, 'show_if' => 1, 'show_else' => 1]),
+                    'ALTER TABLE `view` ADD `conds` text, ADD `show_if` text, ADD `show_else` longtext',
                 ],
                 'only the limit missing' => [
                     array_diff_key(self::WIDE, ['group_limit' => 1]),

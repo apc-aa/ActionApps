@@ -757,6 +757,7 @@
       <xs:element name="cond3field" type="textValue" minOccurs="0"/>
       <xs:element name="cond3op" type="textValue" minOccurs="0"/>
       <xs:element name="cond3cond" type="textValue" minOccurs="0"/>
+      <xs:element name="conds" type="textValue" minOccurs="0"/>
       <xs:element name="listlen" type="intValue" minOccurs="0"/>
       <xs:element name="scroller" type="intValue" minOccurs="0"/>
       <xs:element name="selected_item" type="intValue" minOccurs="0"/>
@@ -774,6 +775,8 @@
       <xs:element name="aditional5" type="textValue" minOccurs="0"/>
       <xs:element name="aditional6" type="textValue" minOccurs="0"/>
       <xs:element name="noitem_msg" type="textValue" minOccurs="0"/>
+      <xs:element name="show_if" type="textValue" minOccurs="0"/>
+      <xs:element name="show_else" type="textValue" minOccurs="0"/>
       <xs:element name="group_bottom" type="textValue" minOccurs="0"/>
       <xs:element name="field1" type="textValue" minOccurs="0"/>
       <xs:element name="field2" type="textValue" minOccurs="0"/>

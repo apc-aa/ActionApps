@@ -7,23 +7,24 @@ namespace AA\Optimize;
 use AA;
 use AA\IO\DB\DB_AA;
 
-/** The columns of `view` behind two settings of the view form: a condition on a field of related items
+/** The columns of `view` behind the newer settings of the view form: a condition on a field of related items
  *  (the name of such a field - two field ids and, for a relation leading here, the slice between them - is
  *  longer than the 32 bytes of old databases; cut without an error it names no field and the condition is
- *  left out) and the limit of items in a group. Until the columns are there, the form offers neither. */
+ *  left out), the limit of items in a group, the conditions after the third and the condition of any output
+ *  with its text. Until the columns are there, the form offers none of them. */
 class ViewListingColumns extends AbstractOptimize
 {
     private const TABLE   = 'view';
-    private const COLUMNS = ['cond1field', 'cond2field', 'cond3field', 'group_limit'];
+    private const COLUMNS = ['cond1field', 'cond2field', 'cond3field', 'group_limit', 'conds', 'show_if', 'show_else'];
 
     public static function name(): string
     {
-        return _m('Columns for the conditions and groups of views');
+        return _m('Columns for the newer settings of views');
     }
 
     public static function description(): string
     {
-        return _m('Widens the columns view.cond1field - cond3field, so a view condition can name a field of related items, and adds view.group_limit for the limit of items in a group. Nothing else changes.');
+        return _m('Widens the columns view.cond1field - cond3field, so a view condition can name a field of related items, and adds view.group_limit for the limit of items in a group, view.conds for the conditions after the third and view.show_if with view.show_else for the condition of any output. Nothing else changes.');
     }
 
     public static function types(): array
@@ -47,7 +48,7 @@ class ViewListingColumns extends AbstractOptimize
         return ['test', 'repair'];
     }
 
-    /** the view form may offer the two settings */
+    /** the view form may offer the settings */
     public static function ready(): bool
     {
         return self::lacking() === [];
@@ -66,7 +67,7 @@ class ViewListingColumns extends AbstractOptimize
     public function findings(): array
     {
         if (!$lacking = self::lacking()) {
-            return [new Finding(Finding::OK, _m('Views can keep conditions on related items and the group limit'))];
+            return [new Finding(Finding::OK, _m('Views can keep their newer settings (conditions on related items, more conditions, group limit, output condition)'))];
         }
         $evidence = [];
         foreach ($lacking as $column => $type) {
@@ -74,9 +75,9 @@ class ViewListingColumns extends AbstractOptimize
         }
         return [new Finding(
             Finding::WARNING,
-            _m('The view form offers no conditions on related items and no group limit'),
+            _m('The view form does not offer its newer settings (conditions on related items, more conditions, group limit, output condition)'),
             evidence: $evidence,
-            advice: _m('The database is older than the code. Repair adds the columns; the view form then offers both settings.'),
+            advice: _m('The database is older than the code. Repair adds the columns; the view form then offers the settings.'),
             repairable: true,
             key: 'columns',
         )];
