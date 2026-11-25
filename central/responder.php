@@ -393,7 +393,12 @@ class AA_Responder_Get_Widget extends AA_Responder
 
     public function run(): AA_Response
     {
-
+        // {ajax} sends the long id; a short one is a counter anyone could walk to read every item.
+        // Refused before any lookup, so the answer does not tell whether such an item exists.
+        if (!is_long_id($this->item_id)) {
+            \AA\Util\LogOnce::daily(\AA\Widget\AjaxSignature::EVENT_SHORT_ID, 'short id', [$this->field_id, (string) ($_SERVER['HTTP_REFERER'] ?? '')]);
+            return new AA_Response('Item not found', ResponderPolicy::ERR_UNKNOWN_ITEM);
+        }
         $item         = AA_Item::getItem(new zids($this->item_id));
         $slice_id     = $item?->getSliceID() ?? '';
         $slice        = AA_Slice::getOwnModule($slice_id);

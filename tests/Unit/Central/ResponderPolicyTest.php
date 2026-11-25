@@ -347,6 +347,14 @@ final class ResponderPolicyTest extends TestCase
         $this->assertGreaterThan($guard, strpos($m[1], '$slice->'), 'no call on the slice before the check');
     }
 
+    /** a short numeric item id would let an anonymous request walk all items of the database one by one */
+    public function test_get_widget_refuses_a_short_item_id_before_it_renders_the_widget(): void
+    {
+        $this->assertSame(1, preg_match('/\nclass AA_Responder_Get_Widget extends AA_Responder\s*\{(.*?)\nclass /s', self::responderSource(), $m));
+        $this->assertMatchesRegularExpression('/if \(!is_long_id\(\$this->item_id\)\) \{(?:(?!\n        \}).)*?return new AA_Response\([^;]*ResponderPolicy::ERR_UNKNOWN_ITEM\);/s', $m[1]);
+        $this->assertLessThan(strpos($m[1], 'getWidgetAjaxHtml('), strpos($m[1], 'is_long_id($this->item_id)'));
+    }
+
     private static function responderSource(): string
     {
         return (string) file_get_contents(dirname(__DIR__, 3) . '/central/responder.php');

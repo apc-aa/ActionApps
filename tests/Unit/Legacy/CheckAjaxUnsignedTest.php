@@ -97,16 +97,40 @@ namespace Tests\Unit\Legacy {
 
         public function test_findings_query_the_log_and_the_slice_names(): void
         {
-            RecordingDb::$answer = static fn(string $sql) => str_contains($sql, 'FROM `log`')
-                ? [self::logRow(self::SLICE, 'relation........')]
-                : [['unpackid' => self::SLICE, 'name' => 'News']];
+            RecordingDb::$answer = static fn(string $sql) => match (true) {
+                str_contains($sql, "type = '" . AjaxSignature::EVENT . "'")          => [self::logRow(self::SLICE, 'relation........')],
+                str_contains($sql, "type = '" . AjaxSignature::EVENT_SHORT_ID . "'") => [self::shortRow('headline........', 'https://example.org/page')],
+                default                                                             => [['unpackid' => self::SLICE, 'name' => 'News']],
+            };
 
             $findings = (new CheckAjaxUnsigned())->findings();
 
-            $this->assertCount(2, RecordingDb::$log);
+            $this->assertCount(3, RecordingDb::$log);
             $this->assertStringContainsString("FROM `log` WHERE type = '" . AjaxSignature::EVENT . "' AND time >= ", RecordingDb::$log[0]);
             $this->assertSame('SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module` WHERE id = 0x' . self::SLICE, RecordingDb::$log[1]);
-            $this->assertStringContainsString('in slice News', $findings[0]->title);
+            $this->assertStringContainsString("FROM `log` WHERE type = '" . AjaxSignature::EVENT_SHORT_ID . "' AND time >= ", RecordingDb::$log[2]);
+            $titles = array_map(static fn(Finding $f) => $f->title, $findings);
+            $this->assertCount(2, $titles);
+            $this->assertStringContainsString('in slice News', implode('|', $titles));
+            $this->assertContains('{ajax} edit asked for an item by its short id and was refused', $titles);
+        }
+
+        /** @return array<string, string> a LogOnce::recent() row of a refused short item id */
+        private static function shortRow(string $field, string $referer, int $days = 1): array
+        {
+            return ['selector' => 'short id', 'days' => (string) $days, 'first' => '1758000000', 'last' => '1758700000', 'params' => ParamImplode([$field, $referer])];
+        }
+
+        public function test_short_id_refusals_are_their_own_warning(): void
+        {
+            [$finding] = CheckAjaxUnsigned::findingsFor([], [], [self::shortRow('headline........', 'https://example.org/a?b=<c>', 4)]);
+
+            $this->assertSame(Finding::WARNING, $finding->severity);
+            $this->assertSame('{ajax} edit asked for an item by its short id and was refused', $finding->title);
+            $this->assertSame(4, $finding->count);
+            $this->assertSame('headline........', $finding->evidence[0]['Field']);
+            $this->assertSame('https://example.org/a?b=&lt;c&gt;', $finding->evidence[0]['Page'], 'the referer comes from the request - escaped');
+            $this->assertArrayHasKey('Log rows', $finding->links);
         }
     }
 }
