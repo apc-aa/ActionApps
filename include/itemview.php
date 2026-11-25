@@ -35,6 +35,7 @@
 use AA\Cache\CacheStr2find;
 use AA\Cache\PageCache;
 use AA\Security\ViewSlices;
+use AA\Util\Txt;
 
 require_once __DIR__ . "/stringexpand.php";
 
@@ -729,13 +730,7 @@ class itemview
                         // it shouldn't be set, but just in case - we do not want to redefine it
                         // @todo move it outside else - there it is just for first testing
                         $CurItem->addAlias(new AA_Alias('_#GRP_NAME', ParamImplode(["f__", $catname]), 'id..............', _m("exact group name")));
-                        if ($this->slice_info['gb_header']) {
-                            if ($this->slice_info['gb_header'] == 127) {  // all before ~
-                                $catname = strtok($catname, '~');
-                            } else {
-                                $catname = substr($catname, 0, $this->slice_info['gb_header']);
-                            }
-                        }
+                        $catname = self::groupKey((string) $catname, (int) $this->slice_info['gb_header']);
                     }
 
                     // get top HTML code, unalias it and add scroller, if needed
@@ -750,7 +745,7 @@ class itemview
                     $print_delimiter = ($i > 0 && isset($this->slice_info['row_delimiter']));
 
                     // print category name if needed
-                    if ($this->group_fld && strcasecmp($catname, $oldcat)) {
+                    if ($this->group_fld && !self::sameGroup((string) $catname, (string) $oldcat)) {
                         if ($this->num_records >= 0) {
                             if ($oldcat !== "_No CaTeg") {
                                 // print bottom category code for previous category
@@ -831,6 +826,23 @@ class itemview
                 array_pop($GLOBALS['QueryIDsItemGroupIndex']);
         }
         return $out;
+    }
+
+    /** The part of the group value the groups are made by.
+     *  @param int $header 0 the whole text, 127 the text before "~", else that many first letters */
+    public static function groupKey(string $name, int $header): string
+    {
+        return match ($header) {
+            0       => $name,
+            127     => explode('~', $name, 2)[0],
+            default => Txt::substr($name, 0, $header),   // letters, not bytes: half of "Č" is the same as half of "Ď"
+        };
+    }
+
+    /** the same group also in other case of letters - the database sorts "čaj" next to "Čaj" */
+    public static function sameGroup(string $a, string $b): bool
+    {
+        return ($a === $b) || (aa_strtolower($a) === aa_strtolower($b));
     }
 
     /** Decides the banners the URL chose and keeps those to draw (AA_View::decideBanners()) - only the compact
