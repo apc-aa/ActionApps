@@ -106,6 +106,61 @@ class AA_Operators
         ];
     }
 
+    /** The operators a select does not offer: the second names ("!=" is "<>", "-:" is "m:") and the comparison
+     *  of a date with "now" to the second, which matches nothing in practice. */
+    public const NOT_OFFERED = ['!=', 'd:!=', 'e:!=', 'm:!=', '-:<', '-:>', '-:<=', '-:>=', '-:=', '-:!=', '-:<>', 'm:=', 'm:<>'];
+
+    /**
+     * The operators for the select of a condition kept in settings (view form), in option groups.
+     * The date operators are named in words: getFrmSelectEasy() strips tags from a label, so "<=" or "<>" would
+     * go with the text after it, and a sign like "≤" is not in the charsets of the older language files.
+     * @return array<string, string> operator => label; a key starting with AA_OPTGROUP is the caption of a group
+     */
+    public static function forSelect(): array
+    {
+        $name   = self::getEnum()[1];
+        $named  = static fn(string $operator, ?string $label = null): string => ($label ?? $name[$operator]) . " ($operator)";
+        $select = [
+            '<'       => '<',
+            '<='      => '<=',
+            '='       => '=',
+            '=='      => $named('==', _m('exact match')),
+            '<>'      => '<>',
+            '>'       => '>',
+            '>='      => '>=',
+            'ISNULL'  => $named('ISNULL'),
+            'NOTNULL' => $named('NOTNULL'),
+            'AA_OPTGROUP text' => _m('Text'),
+            'LIKE'      => $named('LIKE'),
+            'RLIKE'     => $named('RLIKE'),
+            'LLIKE'     => $named('LLIKE', _m('ends with')),
+            'XLIKE'     => 'XLIKE',
+            'CONTAIN'   => $named('CONTAIN', _m('contains, as written')),
+            'BEGIN'     => $named('BEGIN', _m('begins with, as written')),
+            'REGEXP'    => $named('REGEXP'),
+            'NOTREGEXP' => $named('NOTREGEXP'),
+            'ISMAIL'    => $named('ISMAIL'),
+            'NOTMAIL'   => $named('NOTMAIL'),
+            'AA_OPTGROUP number' => _m('Number'),
+            'BETWEEN' => $named('BETWEEN', _m('between two numbers: 1,5')),
+            'BITSET'  => $named('BITSET'),
+            '&'       => '&',
+            '|'       => '|',
+            'AA_OPTGROUP date' => _m('Date'),
+        ];
+        $dates = [
+            'd' => _m('date as 12/31/2001 or -1 week'),
+            'e' => _m('date as 24. 12. 2001'),
+            'm' => _m('now - x [in seconds]'),
+        ];
+        foreach ($dates as $function => $label) {
+            foreach (['<' => _m('before'), '<=' => _m('not after'), '=' => _m('is'), '<>' => _m('is not'), '>' => _m('after'), '>=' => _m('not before')] as $operator => $word) {
+                $select["$function:$operator"] = "$word - $label";
+            }
+        }
+        return array_diff_key($select, array_flip(self::NOT_OFFERED));
+    }
+
     /** Returns standard operator for database OR AA_Condition conditions
      *
      * @param  string|null  $operator

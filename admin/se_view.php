@@ -438,22 +438,8 @@ if ( !$update ) {  // set variables from database
     }
 }
 
-// operators array
-$lookup_op = [
-    "<"  => "<",
-    "<=" => "<=",
-    "="  => "=",
-    "==" => "== (exact match)",
-    "<>" => "<>",
-    ">"  => ">",
-    ">=" => ">=",
-    "LIKE"  => "substring (LIKE)",
-    "RLIKE"  => "begins with ... (RLIKE)",
-    "ISNULL"  => "not set",
-    "NOTNULL"  => "is set",
-    "m:<" => "< now() - x [in seconds]",
-    "m:>" => "> now() - x [in seconds]"
-];
+// all the operators a condition may have, not a choice of them kept here
+$lookup_op = AA_Operators::forSelect();
 
 // lookup group of constatnts
 $lookup_groups = GetConstants('lt_groupNames', 'name');
