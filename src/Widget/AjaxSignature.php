@@ -23,6 +23,9 @@ final class AjaxSignature
     /** log.type of the dropped widget settings - selector slice:field, params unsigned|bad signature */
     public const EVENT = 'WIDGET_KEY';
 
+    /** log.type of Get_Widget requests refused for a short item id - one row a day, params field:referer */
+    public const EVENT_SHORT_ID = 'WIDGET_SID';
+
     public static function sign(string $item_id, string $field_id, string $widget_type, string $widget_properties): string
     {
         return hash_hmac('sha256', $item_id . "\0" . $field_id . "\0" . $widget_type . "\0" . $widget_properties, Secret::key('ajax-widget'));

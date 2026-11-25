@@ -112,6 +112,26 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable
     }
 
     /**
+     * The fields of related items a condition may ask (remote@relation, remote@slice/relation) - for a select
+     * that lists the fields of the slice itself in its own way.
+     * @return array<string, string> field => name; a key starting with AA_OPTGROUP is the caption of a group
+     */
+    public function getRelatedArray(): array
+    {
+        $related = [];
+        $caption = [];
+        foreach ($this->generateArray('search', false, false) as $id => $name) {
+            if (str_starts_with((string) $id, 'AA_OPTGROUP')) {
+                $caption = [$id => $name];   // kept only with a field under it
+            } elseif (str_contains((string) $id, '@')) {
+                $related += $caption + [$id => $name];
+                $caption  = [];
+            }
+        }
+        return $related;
+    }
+
+    /**
      * @param bool $add_alltext
      * @param bool $add_allnum
      * @return array

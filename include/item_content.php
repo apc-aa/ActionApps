@@ -809,15 +809,16 @@ class ItemContent extends AA_Content
      * Set by item ID (zid or unpacked or short)
      * @param string|zids $item_id
      * @param bool        $ignore_reading_password
+     * @param string[]    $fields2get only these fields (and the ids) - all when empty
      * @return bool
      */
-    public function setByItemID($item_id, bool $ignore_reading_password = false): bool
+    public function setByItemID($item_id, bool $ignore_reading_password = false, array $fields2get = []): bool
     {
         if (!$item_id) {
             return false;
         }
         $zid           = is_object($item_id) ? $item_id : new zids($item_id);
-        $content       = GetItemContent($zid, false, $ignore_reading_password);
+        $content       = GetItemContent($zid, false, $ignore_reading_password, $fields2get);
         $this->content = $content ? reset($content) : [];
         return true;
     }

@@ -29,6 +29,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Search\StoredConditions;
 use AA\Security\ViewSlices;
 use AA\Util\Langs;
 use AA\Util\SingletonTrait;
@@ -56,6 +57,9 @@ class AA_View
      *  '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
      */
     public const VIEW_SORT_DIRECTIONS = [0 => 'a', 1 => 'd', 2 => '1', 3 => '9'];
+
+    /** the conditions 1 - 3 have columns of their own (cond1field, cond1op, cond1cond, ...) */
+    public const COND_COLUMNS = 3;
 
     /** view function
      * @param $id
@@ -139,6 +143,68 @@ class AA_View
         return $this->f('flag') & VIEW_FLAG_LOG;
     }
 
+    /** the expression that decides whether the view shows anything; '' - always, also in a database
+     *  that has no column for it yet */
+    public function getShowIf(): string
+    {
+        $this->load();
+        return trim((string) ($this->fields['show_if'] ?? ''));
+    }
+
+    /** the code shown when getShowIf() does not hold */
+    public function getShowElse(): string
+    {
+        $this->load();
+        return (string) ($this->fields['show_else'] ?? '');
+    }
+
+    private function hasFlag(int $bit): bool
+    {
+        return (bool) ((int) $this->f('flag') & $bit);
+    }
+
+    /** A use of the view outside AA_Showview - its templates taken by slice.php, a Manager or an Alerts
+     *  digest: the first one of a view marked as probably unused is logged as there. */
+    public function noteUse(): void
+    {
+        if ($this->takeFirstUse()) {
+            self::logUse($this->id);
+        }
+    }
+
+    /** a row of the usage log of views; $start_time - when the rendering started, if it is to be timed */
+    public static function logUse(int $vid, ?float $start_time = null): void
+    {
+        $entry = new AA_Logentry_W(['time' => ($start_time === null) ? '' : (string) round(microtime(true) - $start_time, 4), 'uri' => (string) ($_SERVER['REQUEST_URI'] ?? '')]);
+        $entry->trimToFit(['uri'], AA_Logentry::PARAMS_MAX);   // a longer row fails the INSERT and the page with it
+        AA_Log::write('VIEW', $vid, $entry);
+    }
+
+    /** the view itself is set to work only inside pages and templates (AA\Security\ViewDirect) */
+    public function isInsideOnly(): bool
+    {
+        return $this->hasFlag(VIEW_FLAG_NODIRECT);
+    }
+
+    /** the output is never stored in the page cache, nor is a page that includes it */
+    public function isNeverCached(): bool
+    {
+        return $this->hasFlag(VIEW_FLAG_NOCACHE);
+    }
+
+    /** The first use of a view marked as probably unused takes the mark off - once, also when requests meet.
+     *  @return bool this call is the first use */
+    public function takeFirstUse(): bool
+    {
+        if (!$this->hasFlag(VIEW_FLAG_WATCH)) {
+            return false;
+        }
+        $this->fields['flag'] = (string) ((int) $this->fields['flag'] & ~VIEW_FLAG_WATCH);
+        // The bit alone, in one statement: a form saved at the same moment keeps its settings. No history row
+        // and no cache to drop - the output is the same with the mark and without it.
+        return DB_AA::sql('UPDATE view SET flag = flag & ~' . VIEW_FLAG_WATCH, [['id', $this->id, 'i'], ['flag', VIEW_FLAG_WATCH, 'set']]) === 1;
+    }
+
     /** Generates link to view edit
      * @param $name
      */
@@ -171,6 +237,67 @@ class AA_View
         $this->fields = array_merge(array_diff_key((array) $this->fields, ['banners' => 1, 'banners_from_request' => 1]), $banner_param);
     }
 
+    /** @var array{string, StoredConditions}|null what the conditions were read from, and the conditions */
+    private ?array $conditions = null;
+
+    /** the bytes the columns of a condition 1 - 3 hold: cond1field, cond1op, cond1cond */
+    public const COND_COLUMN_LIMITS      = ['field' => 100, 'operator' => 10, 'value' => 255];
+    /** a plain field id: all that goes to cond1field of a database whose column is not widened yet */
+    public const COND_COLUMN_FIELD_SHORT = 16;
+
+    /**
+     * The conditions of the view by their numbers and names: 1 - 3 of the columns cond1field, ... (a condition
+     * of one field) or of view.conds (one of more fields), then the named ones of view.conds.
+     */
+    public function conditions(): StoredConditions
+    {
+        $columns = [];
+        for ($n = 1; $n <= self::COND_COLUMNS; $n++) {
+            $columns[$n] = [(string) $this->f("cond{$n}field"), (string) $this->f("cond{$n}op"), (string) $this->f("cond{$n}cond")];
+        }
+        $text = (string) ($this->fields['conds'] ?? '');   // none in a database without the column
+        $key  = serialize([$columns, $text]);
+        if (($this->conditions[0] ?? null) !== $key) {
+            $this->conditions = [$key, StoredConditions::fromColumns($columns, $text)];
+        }
+        return $this->conditions[1];
+    }
+
+    /**
+     * The value each condition of the view works with: the one a call gives (cmd[]=c-2-value,
+     * cmd[]=c-author-value) or, without it, the one set in the view.
+     * @param array $param_conds the values of the call by the numbers and names of the conditions
+     * @return array<int|string, string> by the numbers and names of the conditions
+     */
+    public function condValues($param_conds = []): array
+    {
+        return $this->conditions()->values((array) $param_conds);
+    }
+
+    /** the alias with the value of a condition: _#C_ and its number or name, in capitals */
+    public static function condAlias(int|string $name): string
+    {
+        return '_#C_' . str_pad(strtoupper((string) $name), StoredConditions::NAME_MAXLENGTH, '_');
+    }
+
+    /**
+     * The names a condition should not get: its alias would stand in the templates of the view for
+     * an alias of the same name the slice has for a field. Numbers are left alone - pages call them.
+     * @param list<string> $slice_aliases
+     * @return list<string>
+     */
+    public static function condNamesTaken(array $slice_aliases): array
+    {
+        $names = [];
+        foreach ($slice_aliases as $alias) {
+            $name = strtolower(rtrim(substr($alias, 4), '_'));
+            if ((preg_match('~^' . StoredConditions::NAME_PATTERN . '$~D', $name) === 1) && !ctype_digit($name) && (self::condAlias($name) === $alias)) {
+                $names[] = $name;
+            }
+        }
+        return $names;
+    }
+
     /** old GetViewConds function
      * Fills array with conditions defined through
      * 'Slice Admin' -> 'Design View - Edit' -> 'Conditions' setting
@@ -179,20 +306,8 @@ class AA_View
      */
     public function getConds($param_conds = []): array
     {
-        // If param_conds[0] = "OR" as set by ParseViewParameters then set valuejoin
-        // used by ParseMultiSelectConds
-
-        // param_conds - redefines default condition values by url parameter (cmd[]=c)
-
         AA::$debug & 2 && AA::$dbg->log("(AA_View->getConds) param_conds=", $param_conds);
-        $conds = [];
-
-        $this->resolveCondsConflict($conds, $this->f('cond1field'), $this->f('cond1op'), $this->f('cond1cond'), $param_conds[1]);
-        $this->resolveCondsConflict($conds, $this->f('cond2field'), $this->f('cond2op'), $this->f('cond2cond'), $param_conds[2]);
-        $this->resolveCondsConflict($conds, $this->f('cond3field'), $this->f('cond3op'), $this->f('cond3cond'), $param_conds[3]);
-        if ($param_conds[0]) {
-            $conds['valuejoin'] = $param_conds[0];
-        }
+        $conds = $this->conditions()->toConds((array) $param_conds);
         AA::$debug & 2 && AA::$dbg->log("(AA_View->getConds) conds=", $conds);
 
         return $conds;
@@ -206,26 +321,6 @@ class AA_View
         return new AA_Set([$this->getSliceId()], $this->getConds(), $this->getSort());
     }
 
-    /** ResolveCondsConflict function
-     * Helper function for AA_View->getConds() - resolves database x url conds conflict
-     * @param $conds
-     * @param $fld
-     * @param $op
-     * @param $val
-     * @param $param
-     */
-    protected function resolveCondsConflict(&$conds, $fld, $op, $val, $param): void
-    {
-        if ($fld && $op) {
-            $conds[] = [
-                'operator' => $op,
-                'value'    => (strlen((string) $param) > 0 ? $param : $val),  // param could be also "0"
-                $fld       => 1,
-            ];
-        }
-    }
-
-
     /** old GetViewSort function
      * @param array $param_sort
      * @return array|null
@@ -235,12 +330,15 @@ class AA_View
         $sort = null;
         // grouping
 
+        // by an alias the listing orders itself, once it has the items
+        $group_by    = (string) (array_key_exists('group_by', $param_sort) ? $param_sort['group_by'] : $this->f('group_by1'));
+        $group_alias = AA_Alias::isAliasLike($group_by, true) !== '';
         if (array_key_exists('group_by', $param_sort)) {
-            if ($param_sort['group_by'] && !AA_Alias::isAliasLike($param_sort['group_by'], true)) { // we can have group_by= to avoid grouping ({view:55::group_by-})
-                $sort = String2Sort('100000' . $param_sort['group_by']);                             // for aliases, we do not want to sort
+            if ($group_by && !$group_alias) { // we can have group_by= to avoid grouping ({view:55::group_by-})
+                $sort = String2Sort('100000' . $group_by);
             }
-        } elseif ($this->f('group_by1')) {
-            $sort[] = [$this->f('group_by1') => self::VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]];
+        } elseif ($group_by && !$group_alias) {
+            $sort[] = [$group_by => self::VIEW_SORT_DIRECTIONS[$this->f('g1_direction')]];
         }
 
         //sorting
@@ -259,11 +357,36 @@ class AA_View
             }
         }
 
-        if ($param_sort['group_limit'] && count($sort)) {
+        // The limit is of the first order, the group - not of an order that only follows an alias group.
+        $group_limit = array_key_exists('group_limit', $param_sort) ? $param_sort['group_limit'] : $this->ownGroupLimit($param_sort);
+        if ($group_limit && $sort && !$group_alias) {
             reset($sort);   // go to first record
-            $sort[key($sort)]['limit'] = $param_sort['group_limit'];
+            $sort[key($sort)]['limit'] = $group_limit;
         }
         return $sort;
+    }
+
+    /**
+     * The limit of items in a group set in the view - for a call that brings none. It belongs to the view's own
+     * "Group by" as the database sees it: the database counts the items of each value it orders by first, so
+     * not for a call that groups or sorts another way, for groups by the first letters only (the limit would
+     * be of each whole value) or ordered by priority (the limit would be of each priority).
+     */
+    private function ownGroupLimit(array $param_sort): int
+    {
+        $this->load();
+        $own = (string) ($this->fields['group_by1'] ?? '') !== ''
+            && !array_key_exists('group_by', $param_sort) && !array_key_exists('sort', $param_sort)
+            && !(int) ($this->fields['gb_header'] ?? 0)
+            && in_array((int) ($this->fields['g1_direction'] ?? 0), [0, 1], true);
+        return $own ? (int) ($this->fields['group_limit'] ?? 0) : 0;
+    }
+
+    /** groups from the last one - the direction of a group alias, which has no priority to go by */
+    public function groupDescending(): bool
+    {
+        $this->load();
+        return in_array((int) ($this->fields['g1_direction'] ?? 0), [1, 3], true);
     }
 
     /** getViewFormat function
@@ -274,9 +397,11 @@ class AA_View
      */
     public function getViewFormat($selected_item = '', bool $from_request = false): array
     {
+        $this->noteUse();
         $format                        = [];
         $format['group_by']            = $this->fields['group_by1'];
         $format['gb_header']           = $this->fields['gb_header'];
+        $format['group_desc']          = $this->groupDescending();
         $format['category_format']     = $this->fields['group_title'];
         $format['category_bottom']     = $this->fields['group_bottom'];
         $format['compact_top']         = $this->fields['before'];
@@ -518,29 +643,13 @@ class AA_View
                     }
                     break;
 
-                case 'c':  // Check for experimental c-OR-1-aaa-2-bbb-3-ccc syntax
-                    // Note param_conds[0] is not otherwise used
-                    // It is converted into conds in AA_View->getConds
-                    // which is consumed in ParseMultiSelectConds
-                    if ($command->getParameter(0) === 'OR') {
-                        $param_conds[0] = 'OR';
-                        $command_params = $command->getParameterArray(1);
-                    } else {
-                        $command_params = $command->getParameterArray();
-                    }
-
-                    //                       if (ctype_digit((string)$command_params[0])) {
-                    //
-                    //                       }
-
-                    if (AA_Set::check($command_params[0], $command_params[1])) {
-                        $param_conds[$command_params[0]] = stripslashes($command_params[1]);
-                    }
-                    if (AA_Set::check($command_params[2], $command_params[3])) {
-                        $param_conds[$command_params[2]] = stripslashes($command_params[3]);
-                    }
-                    if (AA_Set::check($command_params[4], $command_params[5])) {
-                        $param_conds[$command_params[4]] = stripslashes($command_params[5]);
+                case 'c':
+                    $command_params = $command->getParameterArray();
+                    // pairs of the number of a condition of the view and its value
+                    for ($pair = 0; isset($command_params[$pair]); $pair += 2) {
+                        if (AA_Set::check($command_params[$pair], $command_params[$pair + 1] ?? null)) {
+                            $param_conds[$command_params[$pair]] = stripslashes((string) ($command_params[$pair + 1] ?? ''));
+                        }
                     }
                     break;
 
@@ -614,13 +723,19 @@ class AA_View
     }
 
     /**
-     * @param  AA_Aliases  $aliases
-     * @param  array       $conds
+     * The values of the conditions for the templates of the view: _#VIEW_C1_, ... by the order of the
+     * conditions in use, _#C_1_____, _#C_AUTHOR, ... by their numbers and names (condAlias()).
+     * @param  AA_Aliases                 $aliases
+     * @param  array                      $conds
+     * @param  array<int|string, string>  $values  condValues()
      */
-    public static function addViewAliases(AA_Aliases $aliases, array $conds): void
+    public static function addViewAliases(AA_Aliases $aliases, array $conds, array $values = []): void
     {
         foreach ($conds as $k => $v) {
             $aliases->addTextAlias(str_pad('_#VIEW_C' . ($k + 1), 10, '_'), $v['value']);
+        }
+        foreach ($values as $name => $value) {
+            $aliases->addTextAlias(self::condAlias($name), $value);
         }
     }
 

@@ -367,8 +367,9 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
 
     /** Can the template type hold every value of the live type? A number and a non-number never; a date or an
      *  enum is written into a text, never a text into a date or an enum - a value might not fit; an enum (a set)
-     *  holds the values of its shorter list. */
-    private static function holds(string $template, string $live): bool
+     *  holds the values of its shorter list. Asked the other way round by the classes that add or widen single
+     *  columns: is the live column wide enough for the template's values? */
+    public static function holds(string $template, string $live): bool
     {
         [$t_kind, $t_size, $t_unsigned] = self::kind($template);
         [$l_kind, $l_size, $l_unsigned] = self::kind($live);

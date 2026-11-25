@@ -30,6 +30,7 @@
 
 use AA\Security\RequestCharset;
 use AA\Security\UrlValue;
+use AA\Security\ViewDirect;
 use AA\Security\ViewSlices;
 use AA\Util\Hitcounter;
 use AA\Util\Langs;
@@ -236,6 +237,16 @@ class AA_Showview
      *  name only the slices and items the request may list; those of templates are trusted */
     private bool $from_request;
 
+    /** this call is the first use of a view marked as probably unused - logged like a view with "Log view usage" */
+    private bool $first_use = false;
+
+    /** the views being rendered now - one inside another */
+    private static int $rendering = 0;
+
+    /** the outermost of them was asked for by its address (view.php...): the page cache then keeps the output
+     *  under the parameters of the view alone, not under the URL as for a page of a site */
+    private static bool $by_address = false;
+
     public function __construct($view_param)
     {
         $this->hits = is_array($view_param['hits'] ?? null) ? $view_param['hits'] : [];
@@ -266,8 +277,8 @@ class AA_Showview
         }
         $vid = $view->getId();
         AA::$debug & 2 && AA::$dbg->groupend("view_$vid" . '_' . ($start_time));
-        if ($view->doLog()) {
-            AA_Log::write('VIEW', $vid, new AA_Logentry_W(["time" => microtime(true) - $start_time, 'uri' => $_SERVER["REQUEST_URI"]]));
+        if ($view->doLog() || $this->first_use) {
+            AA_View::logUse($vid, $start_time);
         }
     }
 
@@ -337,7 +348,14 @@ class AA_Showview
     public function getViewOutput(): string
     {
         $start = microtime(true);
-        $ret   = $this->viewOutput($start);
+        if (self::$rendering++ === 0) {
+            self::$by_address = $this->from_request;
+        }
+        try {
+            $ret = $this->viewOutput($start);
+        } finally {
+            --self::$rendering;
+        }
         $this->countHits(false, microtime(true) - $start);
         return $ret;
     }
@@ -422,6 +440,19 @@ class AA_Showview
             return '';
         }
 
+        // the request itself asks for a view that works only inside pages
+        if ($this->from_request && ($by = ViewDirect::forbiddenBy($view->isInsideOnly(), unpack_id((string) $view->f('slice_id'))))) {
+            ViewDirect::refuse($vid, $by, self::$rendering === 1);   // a banner of a view: only the banner is left out
+            $this->outputEnd($view, $dbgtime, 'The view works only inside pages (' . $by[0] . ')');
+            return '';
+        }
+
+        $this->first_use = $view->takeFirstUse();
+
+        if ($view->isNeverCached()) {
+            AA::Pagecache()->switchCacheNostore();
+        }
+
         // Use right language (from slice settings) - languages are used for
         // 'No item found', Next, ... messages
         // Do not load new language if we are in sitemodule - languages are handled
@@ -466,8 +497,22 @@ class AA_Showview
         // ---- display content in according to view type ----
         AA::$debug & 2 && AA::$dbg->log("getViewOutput:view_info=", $view_info);
 
-        $ret = '';
-        switch ($view_info['type']) {
+        $ret  = '';
+        $type = $view_info['type'];
+        if (($show_if = $view->getShowIf()) !== '') {
+            if (self::$by_address) {
+                // the cache of view.php does not know what the condition asks about (the visitor, other parameters) -
+                // also when the view is inside the one asked for
+                AA::Pagecache()->switchCacheNostore();
+            }
+            $context = new AA_Item('', $als);
+            $held    = trim($context->unalias($show_if));
+            if (($held === '') || IsAlias($held)) {   // the rule of {ifset}
+                $ret  = $context->unalias($view->getShowElse());
+                $type = '';                           // nothing is listed
+            }
+        }
+        switch ($type) {
             case 'discus':
                 // create array of discussion parameters
                 $disc = [
@@ -601,8 +646,11 @@ class AA_Showview
                     AA::$headers['type'] = 'text/xml';
                 }
 
+                $cond_values = $view->condValues($param_conds);
                 if (!$conds) {        // conds could be defined via cmd[]=d command
                     $conds = $view->getConds($param_conds);
+                } else {
+                    $cond_values = array_fill_keys(array_keys($cond_values), '');   // the conditions of the view are not in use
                 }
                 // merge $conds with $calendar_conds
                 if (is_array($calendar_conds)) {
@@ -616,7 +664,7 @@ class AA_Showview
                     $aa_add_aliases->addFromArray($als);
                 }
                 if (is_array($conds)) {
-                    AA_View::addViewAliases($aa_add_aliases, $conds);
+                    AA_View::addViewAliases($aa_add_aliases, $conds, $cond_values);
                 }
 
                 $slice   = AA_Slice::getModule($slice_id);
@@ -634,6 +682,9 @@ class AA_Showview
                     }
                 }
 
+                if ($zids && !array_key_exists('group_limit', $param_sort)) {
+                    $param_sort['group_limit'] = 0;   // the call chose the items - the limit set in the view would drop some
+                }
                 $sort  = $view->getSort($param_sort);
 
                 AA::$debug & 64 && AA::$dbg->log("viewparams", $aliases, $conds, $sort);
@@ -669,6 +720,7 @@ class AA_Showview
                     $format['group_by'] = $this->from_request
                         ? ViewSlices::requestGroupBy("set[$vid]=group_by-", (string) $this->_view_param['group_by'], $zids ? $zids2 : (is_array($slices) ? $slices : [$slice_id]))
                         : $this->_view_param['group_by'];
+                    $format['group_desc'] = false;   // the direction set in the view belongs to its own "Group by"
                 }
                 if (isset($view_info['group_by2'])) {
                     $format['group_by2']    = $view_info['group_by2'];

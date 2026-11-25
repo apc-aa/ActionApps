@@ -150,6 +150,9 @@ class AA_Auth extends Auth
      */
     public function auth_validatelogin(): string|false
     {
+        if (!self::takesLogin()) {
+            return false;
+        }
         $username = $_POST["username"] ?? '';  // there was problem with variables
         $password = $_POST["password"] ?? '';  // in cookies - if someone writes
         $code2fa  = $_POST["code2fa"] ?? '';
@@ -279,6 +282,9 @@ class AA_Auth extends Auth
     {
         self::$login = '';
         self::$scope = '';
+        if (!self::takesLogin()) {
+            return false;
+        }
         $answer = $_POST[Ceremony::LOGIN_FIELD] ?? null;
         if (is_string($answer) && ($answer !== '')) {
             $uid = $this->passkeyLogin($answer);

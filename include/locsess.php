@@ -711,6 +711,8 @@ function AuthIsFresh(): bool {
 class AA_Session extends Session
 {
     private const AA_FORM_TOKEN_LIFETIME = 172800; // 2 days = 2*24*60*60 seconds =  172800 seconds
+    /** what every visit leaves in a session: the login ("nobody"), the rights cached for it, the form tokens (spent or not) */
+    private const KEEPS_NOTHING = ['auth', '__session_ip', 'perm_cache_v', 'permission_uid', 'permission_to', 'r_superuser', 'r_tokens'];
 
     function __construct()
     {
@@ -774,10 +776,65 @@ class AA_Session extends Session
 
     private static function tokenStoreClean(): void
     {
-        $_SESSION['r_tokens'] = !is_array($_SESSION['r_tokens']) ? [] : array_filter($_SESSION['r_tokens'], static fn($t) => $t > time() - self::AA_FORM_TOKEN_LIFETIME);   // AA_FORM_TOKEN_LIFETIME
+        $_SESSION['r_tokens'] = self::liveTokens($_SESSION['r_tokens'] ?? null, time());
     }
 
-    /** Opens the session on the first write - the site module does not open it for anonymous visitors.
+    /** the tokens a form may still come back with (token => time it was issued) */
+    private static function liveTokens(mixed $tokens, int $now): array
+    {
+        return !is_array($tokens) ? [] : array_filter($tokens, static fn($t) => $t > $now - self::AA_FORM_TOKEN_LIFETIME);
+    }
+
+    /** The session of a visitor who is not logged in and has no form token waiting keeps nothing and
+     *  pageOpenVisitor() ends it. Only the keys of KEEPS_NOTHING count as nothing: any other one (a
+     *  widget's connector, a passkey challenge, the state of slice.php or of an admin page) keeps the session.
+     *  @param array<string, mixed> $session $_SESSION
+     *  @param string               $uid     AuthGetUid() after the login was checked
+     */
+    public static function keepsNothing(array $session, string $uid, int $now): bool
+    {
+        return in_array($uid, ['', 'nobody'], true)
+            && !array_diff_key($session, array_flip(self::KEEPS_NOTHING))
+            && !self::liveTokens($session['r_tokens'] ?? null, $now);
+    }
+
+    /** Ends the session: its data are removed and this answer does not set its cookie - neither the
+     *  renewal nor a new id - so the cookie in the browser runs out by itself (AA_LOGIN_TIMEOUT, a day
+     *  by default).
+     *  The cookie is not deleted there: a parallel request of the visitor may just be getting a new
+     *  session (a form token, a login), and a delete arriving after it would take that one away.
+     */
+    public function forget(): void
+    {
+        session_destroy();
+        $_SESSION = [];
+        unset($_COOKIE[$this->name]);   // the rest of the request sees a visitor without a session
+        $others = self::cookiesExcept(headers_list(), $this->name);
+        header_remove('Set-Cookie');
+        foreach ($others as $line) {
+            header($line, false);
+        }
+    }
+
+    /** @param  string[] $headers header lines of the answer (headers_list())
+     *  @return string[] its Set-Cookie lines which set another cookie than $name
+     */
+    public static function cookiesExcept(array $headers, string $name): array
+    {
+        return array_values(preg_grep('~^Set-Cookie\s*:\s*+(?!' . preg_quote($name, '~') . '=)~i', $headers));
+    }
+
+    /** pageOpenVisitor(): the browser sent the session cookie. On a page that logs visitors in ($login) not
+     *  when the request brings a name to log in with - the page takes that login itself, later (the site
+     *  module in its router)
+     */
+    public static function visitorHasOne(array $cookie, array $get, array $post, bool $login): bool
+    {
+        $id = $cookie['AA_Session'] ?? '';
+        return is_string($id) && ($id !== '') && !($login && (isset($get['username']) || isset($post['username'])));
+    }
+
+    /** Opens the session on the first write - public pages do not open it for anonymous visitors.
      *  Must run before the body is sent (the site module renders the page into a string first).
      *  The page then holds what was written (a form token, a connector id), so it belongs to this
      *  visitor's session and must not be cached - also when the session was open already.
@@ -813,6 +870,39 @@ function pageOpen($type = ''): void
 
     if ($type !== 'noauth') {
         authStart($type === 'nobody');
+    }
+}
+
+/** Public pages (site module, view.php): the session only of a visitor who has one - login, form tokens.
+ *  The others get no session file and no cookie; AA_Session::ensureStarted() opens one at the first write.
+ *  The stored login is checked as on any page, "nobody" is allowed. A session that keeps nothing
+ *  (AA_Session::keepsNothing()) is ended: its cookie is renewed with every request, so it would never
+ *  end by itself.
+ *  @param bool $login false for a page that logs nobody in (Auth::takeNoLogin())
+ *  @param bool $close save and close the session at once: it is locked while open, so the visitor's other
+ *                     requests wait for this one. $_SESSION stays readable. What the page writes later is
+ *                     saved only through AA_Session::ensureStarted(), which opens the session again;
+ *                     the rights cached by AA_Perm::cache() are not - they are read again next time
+ */
+function pageOpenVisitor(bool $login = true, bool $close = false): void
+{
+    global $sess, $auth;
+
+    if (!$login) {
+        Auth::takeNoLogin();
+    }
+    if (!AA_Session::visitorHasOne($_COOKIE, $_GET, $_POST, $login)) {
+        return;
+    }
+    pageOpen('nobody');
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        return;
+    }
+    if (AA_Session::keepsNothing($_SESSION, AuthGetUid(), time())) {
+        $sess->forget();
+        $sess = $auth = null;   // the visitor goes on as one without a session
+    } elseif ($close) {
+        session_write_close();
     }
 }
 

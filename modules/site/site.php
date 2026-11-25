@@ -51,12 +51,9 @@ if (ImgCache::configured() && str_starts_with($_SERVER['REQUEST_URI'], '/' . Img
 // cookies are not in the cache key - the render reads them only through PageCache::cookie()
 $_REQUEST = PageCache::requestWithoutCookies();
 
-$auth4cache = '';
-if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
-    pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
-    // not logged in = the same page as for a visitor without the cookie, so the same cache entry
-    $auth4cache = (AuthGetUid() === 'nobody') ? '' : AuthGetUid();
-}
+pageOpenVisitor();   // $sess and $auth of a visitor with the session cookie; a login by name waits for the router
+// not logged in = the same page as for a visitor without the cookie, so the same cache entry
+$auth4cache = (AuthGetUid() === 'nobody') ? '' : AuthGetUid();
 
 // -- CACHE -------------------------------------------------------------------
 // CACHE_TTL defines the time in seconds the page will be stored in cache
@@ -371,7 +368,7 @@ if ((AA::$headers['encoding'] !== 'utf-8') && (AA::$encoding !== 'utf-8') && IsA
     AA::$headers['encoding'] = 'utf-8';
 }
 
-$cacheentry = new Cacheentry($page_content, AA::getHeaders(), $hit_lid, ((is_object($auth) && $auth->is_user()) ? 'private' : 'public'));
+$cacheentry = new Cacheentry($page_content, AA::getHeaders(), $hit_lid);
 $cacheentry->processPage();
 
 // changed the way, how to get $slices4cache - now we ask for module ids really

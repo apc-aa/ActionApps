@@ -401,7 +401,7 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable
 /** any string - used as parameter to included JS files in order browser can
  *  use a newer version of JS libs. Feel free to increase it
  */
-const AA_JS_VERSION = 118;
+const AA_JS_VERSION = 119;
 
 /** API url used for JS libs updates */
 const JS_UPDATE_API_URL = 'https://data.jsdelivr.com/v1/package/';
@@ -498,6 +498,9 @@ const REL_FLAG_SOURCE        = 4;  // item is derived from other item ({newitem 
 const VIEW_FLAG_COMMENTS = 1;    // display HTML comments before and after the view
 const VIEW_FLAG_DISABLE  = 2;    // view is disabled - no content showed
 const VIEW_FLAG_LOG      = 4;    // write every use to database
+const VIEW_FLAG_WATCH    = 8;    // probably unused: the first use is logged and takes the flag off
+const VIEW_FLAG_NOCACHE  = 16;   // the output, and a page with it, is not stored in the page cache
+const VIEW_FLAG_NODIRECT = 32;   // works only inside pages and templates, view.php and jsview.php do not show it
 
 
 /** inputFeedModes function
@@ -549,6 +552,7 @@ function getViewFields(): array
     $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text", "text", "group");
     $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("", "number", "none");
     $VIEW_FIELDS["gb_header"]       = GetViewFieldDef("", "number", "none");
+    $VIEW_FIELDS["group_limit"]     = GetViewFieldDef("", "number", "none");
     $VIEW_FIELDS["group_by2"]       = GetViewFieldDef("text", "text", "orderal");
     $VIEW_FIELDS["g2_direction"]    = GetViewFieldDef("", "number", "none");
     $VIEW_FIELDS["group_title"]     = GetViewFieldDef("text", "text", "area");
@@ -574,14 +578,17 @@ function getViewFields(): array
     $VIEW_FIELDS["cond3field"]      = GetViewFieldDef("text", "text", "cond");
     $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text", "text", "none");
     $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text", "text", "none");
+    $VIEW_FIELDS["conds"]           = GetViewFieldDef("", "text", "condlist");   // the conditions their three older columns do not hold
+    $VIEW_FIELDS["show_if"]         = GetViewFieldDef("text", "text", "area");
+    $VIEW_FIELDS["show_else"]       = GetViewFieldDef("text", "text", "area");
     $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number", "text", "field");
     //$VIEW_FIELDS["flag"]          = GetViewFieldDef("", "bool", "chbox");
     $VIEW_FIELDS["flag0"]           = GetViewFieldDef("", "bool", "bitflag"); // Add view ID as HTML comment / Allow HTML tags in the comments
     $VIEW_FIELDS["flag1"]           = GetViewFieldDef("", "bool", "bitflag"); // Disabled view
     $VIEW_FIELDS["flag2"]           = GetViewFieldDef("", "bool", "bitflag"); // Log view usage
-    $VIEW_FIELDS["flag3"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
-    $VIEW_FIELDS["flag4"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
-    $VIEW_FIELDS["flag5"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
+    $VIEW_FIELDS["flag3"]           = GetViewFieldDef("", "bool", "bitflag"); // Probably unused - log the first use
+    $VIEW_FIELDS["flag4"]           = GetViewFieldDef("", "bool", "bitflag"); // Do not cache
+    $VIEW_FIELDS["flag5"]           = GetViewFieldDef("", "bool", "bitflag"); // Only inside pages
     $VIEW_FIELDS["flag6"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
     $VIEW_FIELDS["flag7"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
     $VIEW_FIELDS["scroller"]        = GetViewFieldDef("", "number", "rioscrl");
@@ -640,12 +647,42 @@ function getViewTypes(): array
         "help"  => _m("Name of the view, usable instead of its number: {view:photo_list}, {view.php?vid=photo_list}, slice.php?iview=photo_list (also fview, dview). The name is looked up in the slices of the site or of the page, so a URL that loads view.php directly (lazy, AJAX) still needs the number. Use only small letters and _, starting with a letter."),
     ];
 
+    $more_conds_help  = _m("The conditions of the view, each under its name: a number, or up to 6 small letters and digits. A call gives a condition its value by the name: cmd[]=c-1-value, cmd[]=c-author-value. A name used twice or not allowed is replaced by a number. With more fields in one condition, the condition holds when any of the fields matches. A condition without a value waits for the value of the call - without it, it is left out. A dash in a value of a call is written twice (c-4-2020--05).");
+    $more_conds_plain = ["label" => _m("Conditions"), "help" => $more_conds_help];
+    // the views that list items give their templates the values of the conditions
+    $more_conds = [
+        "label" => _m("Conditions"),
+        "help"  => $more_conds_help . '<br>' . _m("The value a condition works with is in the alias _#C_ followed by the name in capitals, filled with _ to ten characters: _#C_AUTHOR, _#C_1_____. A name whose alias the slice has for a field is replaced by a number. The value may come from the call (a URL): print it as {safe:{_#C_AUTHOR}} - with the inner braces, without them it is not escaped."),
+    ];
+
     $common = [
+        "show_if" => [
+            "label" => _m("Show only if"),
+            "help"  => _m("An expression that decides whether the view shows anything. When it gives no text (the rule of {ifset:...}), the view lists nothing, asks the database for no items and shows the code below instead. Empty - always shown. Example: {qs:id} - only when the address has the parameter id. Asked for by its own address (view.php), a view with a condition is not stored in the page cache."),
+        ],
+        "show_else" => [
+            "label" => _m("Shown instead"),
+            "help"  => _m("HTML code shown when the condition above does not hold. Empty - nothing."),
+        ],
         "flag1" => _m("Disabled view"),
         "flag2" => [
             "label" => _m("Log view usage"),
             "help"  => _m("Be careful with this. It really logs every view use! Good for debugging and checking, if disabled view is not used anymore..."),
+        ],
+        "flag3" => [
+            "label" => _m("Probably unused - log the first use"),
+            "help"  => _m("For a view you think nobody uses. It works as before; its first use is written to the log (\"Last from log\" below shows when and on which page) and unchecks this box. A view still checked after some months is safe to disable or delete. A page served from the cache does not use the view."),
+        ],
+        "flag4" => [
+            "label" => _m("Do not cache"),
+            "help"  => _m("The output is never stored in the page cache, so every request runs the view again - for a view that does something (sends a mail, counts) or must always be fresh. A whole page that includes such a view is not cached either, so it is slower for every visitor."),
+        ],
+        "flag5" => [
+            "label" => _m("Only inside pages"),
+            "help"  => _m("The view works only inside pages and other templates ({view:...}, {view.php?...}). Its own address (view.php?vid=..., jsview.php?vid=..., discussion.php?vid=...) shows nothing and answers 404. Do not check it for a view that a page loads by its address (AJAX, lazy loading, an include in an .shtml page), for RSS and other feeds. The same can be set for all views of the slice on the list of views, or for all slices of a site in the settings of the site. A refused call is listed in State Check."),
         ]];
+    // the template of an input form is no output of a page: nothing to hold back, to keep out of the cache or to ask for by an address
+    $common_form = array_diff_key($common, array_flip(['show_if', 'show_else', 'flag3', 'flag4', 'flag5']));
 
     return [
         'list' => [
@@ -673,6 +710,7 @@ function getViewTypes(): array
             "group_by1"       => _m("Group by"),
             "g1_direction"    => " ",
             "gb_header"       => " ",
+            "group_limit"     => " ",
             "group_title"     => _m("Group title format"),
             "group_bottom"    => _m("Group bottom format"),
             //                     "selected_item" => _m("HTML for Selected") ,
@@ -683,6 +721,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
+            "conds"           => $more_conds,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -712,6 +751,7 @@ function getViewTypes(): array
             "cond2op"       => " ",
             "cond2cond"     => " ",
             "cond3field"    => _m("Condition 3"),
+            "conds"         => $more_conds_plain,
             "cond3op"       => " ",
             "cond3cond"     => " ",
             "noitem_msg"    => _m("HTML code for \"No item found\" message"),
@@ -798,6 +838,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
+            "conds"           => $more_conds_plain,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -824,6 +865,7 @@ function getViewTypes(): array
             "cond2op"      => " ",
             "cond2cond"    => " ",
             "cond3field"   => _m("Condition 3"),
+            "conds"        => $more_conds,
             "cond3op"      => " ",
             "cond3cond"    => " ",
             "listlen"      => _m("Listing length"),
@@ -855,6 +897,7 @@ function getViewTypes(): array
             "cond2op"      => " ",
             "cond2cond"    => " ",
             "cond3field"   => _m("Condition 3"),
+            "conds"        => $more_conds_plain,
             "cond3op"      => " ",
             "cond3cond"    => " ",
             "listlen"      => _m("Listing length"),
@@ -888,6 +931,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
+            "conds"           => $more_conds,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -952,6 +996,7 @@ function getViewTypes(): array
             "cond2op"       => " ",
             "cond2cond"     => " ",
             "cond3field"    => _m("Condition 3"),
+            "conds"         => $more_conds,
             "cond3op"       => " ",
             "cond3cond"     => " ",
             "listlen"       => _m("Listing length"),
@@ -986,6 +1031,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
+            "conds"           => $more_conds_plain,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -1020,6 +1066,7 @@ function getViewTypes(): array
             "cond2op"         => " ",
             "cond2cond"       => " ",
             "cond3field"      => _m("Condition 3"),
+            "conds"           => $more_conds_plain,
             "cond3op"         => " ",
             "cond3cond"       => " ",
             "listlen"         => _m("Listing length"),
@@ -1038,7 +1085,7 @@ function getViewTypes(): array
             "remove_string"   => _m("Remove strings"),
             //                       "after" => _m("Bottom HTML") ,
             "flag0"           => _m("Add view ID as HTML comment"),
-        ] + $common,
+        ] + $common_form,
     ];
 }
 

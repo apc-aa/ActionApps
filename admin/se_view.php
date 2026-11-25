@@ -27,6 +27,9 @@
 // expected $view_id for editing specified view or $new
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\ViewListingColumns;
+use AA\Search\ConditionsInput;
+use AA\Search\StoredConditions;
 use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 
@@ -82,6 +85,8 @@ try {
     $odd = InputVars::stringPOST('odd');
     // array ( '<script Lan…' => 31, )
     $remove_string = InputVars::stringPOST('remove_string');
+    $show_if = InputVars::stringPOST('show_if');
+    $show_else = InputVars::stringPOST('show_else');
     // array ( ' Změnit [^…' => 31, )
     $update = InputVars::boolPOST('update');
     // array ( 3144 => 20, 3076 => 1, )-array ( 3144 => 31, )
@@ -181,7 +186,7 @@ function store_digest_filters(): void
  */
 function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=false): void
 {
-    global $vw_data;
+    global $vw_data, $view_field_names;
     $name=safe($name); $txt=safe($txt);
 
     $order_type = $easy_order ?
@@ -195,9 +200,36 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
     FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
     if ( $group ) {
         FrmSelectEasy("gb_header", getViewGroupFunctions(), $vw_data['gb_header']);
+        if (isset($view_field_names['group_limit'])) {
+            $limit_help = _m('For groups by the whole value of a field, ascending or descending. An item with more values of the field is then listed in each of its groups.');
+            echo ' <label title="' . safe($limit_help) . '">' . _m('max. items in a group') . ' <input type="number" name="group_limit" min="0" max="65535" style="width:6em" value="' . safe((string) ($vw_data['group_limit'] ?: '')) . '"></label>';
+        }
+        if (isset($order_fields['AA_OPTGROUP_aliases'])) {
+            echo "<div class=tabhlp>"._m("grouping by an alias is slow as well - the alias is computed for all the items of the listing")."</div>";
+        }
     }
     //  PrintHelp($hlp);
     echo "</td></tr>\n";
+}
+
+/** The aliases of the slice's item fields as further options of the "Group by" select.
+ * @return array<string, string> alias => label, after the caption of the option group; [] without aliases
+ */
+function GroupAliasOptions(AA_Slice $slice): array
+{
+    $options = [];
+    foreach ($slice->getFields() as $field) {
+        if (str_starts_with($field->getId(), '_')) {   // a setting of the slice, not a value of an item
+            continue;
+        }
+        foreach ($field->getAliases()->getNames() as $alias) {
+            if (AA_Alias::isAliasLike($alias)) {   // the listing takes no other name for an alias
+                $options[$alias] = "$alias - " . $field->getName();
+            }
+        }
+    }
+    ksort($options);
+    return $options ? (['AA_OPTGROUP_aliases' => _m('Aliases')] + $options) : [];
 }
 
 /** OrderFrm function
@@ -226,11 +258,11 @@ function OrderAliasFrm($name, $txt, $val): void
  */
 function ConditionFrm($name, $txt, $val): void
 {
-    global $lookup_fields, $lookup_op, $vw_data;
+    global $cond_fields, $lookup_op, $vw_data;
     $name=safe($name); $txt=safe($txt);
     echo "<tr><td><b>$txt</b> ";
     echo "</td>\n<td>";
-    FrmSelectEasy($name, $lookup_fields, $val);
+    FrmSelectEasy($name, $cond_fields, $val);
     // direction variable name - construct from $name
     $opvarname = substr($name,0,5)."op";
     FrmSelectEasy($opvarname, $lookup_op, $vw_data[$opvarname]);
@@ -290,13 +322,38 @@ $slice = AA_Slice::getModule(AA::$module_id);
 
 $VIEW_FIELDS      = getViewFields();
 $view_field_names = getViewTypes()[$view_type];
+// a setting an older database has no column for (ViewListingColumns) is not offered
+$view_field_names = array_diff_key($view_field_names ?? [], array_flip(ViewListingColumns::absent()));   // no type: the page goes back below
 $view_type_info   = getViewTypesInfo($view_type);
+
+// One control holds all the conditions of the view; a database without view.conds has the older three rows.
+// As posted: the conditions 1 - 3 of one field for their columns, the others for the text. A form printed
+// before the control took the conditions 1 - 3 still posts them in fields of their own - those are kept.
+$conds_control = isset($view_field_names['conds']);
+$conds_form    = StoredConditions::fromForm(InputVars::arrayPOST('conds'), AA_View::condNamesTaken(($slice instanceof AA_Slice) ? $slice->aa_aliases()->getNames() : []));
+$conds_posted  = ['conds' => $conds_form->toText()];
+if ($conds_control && !isset($_POST['cond1field'])) {
+    [$cond_columns, $conds_rest] = $conds_form->toColumns(AA_View::COND_COLUMNS, ['field' => ViewListingColumns::condsWide() ? AA_View::COND_COLUMN_LIMITS['field'] : AA_View::COND_COLUMN_FIELD_SHORT] + AA_View::COND_COLUMN_LIMITS);
+    $conds_posted = ['conds' => $conds_rest->toText()];
+    foreach ($cond_columns as $n => [$cond_field, $cond_op, $cond_value]) {
+        $conds_posted += ["cond{$n}field" => $cond_field, "cond{$n}op" => $cond_op, "cond{$n}cond" => $cond_value];
+    }
+}
 
 if ( $update ) {
     do {
         foreach ($VIEW_FIELDS as $k => $v) {
-            if ( $v["validate"] && [$k] ) {
+            if ( $v["validate"] && !isset($conds_posted[$k]) ) {   // the conditions are checked as they are read
                 ValidateInput($k, $view_field_names[$k], $$k, $err, false, $v["validate"]);
+            }
+        }
+
+        if ($conds_form->unread()) {
+            $err['conds'] = MsgErr(_m('A condition was not read - its field or operator is not allowed here - so the view was not saved. The conditions are shown as they are stored.'));
+            // what was posted lacks that row: the form printed from it would drop the condition with the next save
+            if ($view_id) {
+                // as strings: a NULL column would let the posted value through
+                $conds_posted = array_map('strval', array_intersect_key(DB_AA::select1('', 'SELECT * FROM view', [['id', $view_id, 'i']]) ?: [], $conds_posted)) + $conds_posted;
             }
         }
 
@@ -321,6 +378,15 @@ if ( $update ) {
                 }
                 if ($v["type"] === "bool") {
                     $insval  = $insval  ? 1 : 0;
+                }
+                if ($v["type"] === "number") {
+                    $insval  = (int) $insval;   // an input left empty is no number for a strict database
+                }
+                if ($k === 'group_limit') {
+                    $insval  = max(0, min(65535, $insval));   // what the column holds
+                }
+                if (isset($conds_posted[$k])) {
+                    $insval  = $conds_posted[$k];
                 }
                 if ($v["max"]) {
                     $insval  = substr($insval, 0, $v["max"]);
@@ -356,6 +422,9 @@ if ( $update ) {
 
     if ( !count($err) ) {
         $Msg = MsgOk(_m("View successfully changed"));
+        // the help under the form quotes the conditions and sort of the view - as just saved, also of a new view
+        $view = AA_Views::getViewNumeric($view_id);
+        $view->load(true);
         // in order we reread the data from the database (see below)
         unset($update);
     }
@@ -381,6 +450,14 @@ if ( !$update ) {  // set variables from database
         // new view - get default values from view table -
         //            take first view of the same type
         $vw_data = DB_AA::select1('', 'SELECT * FROM view', [['type', $view_type]], ['id']);
+        if ($vw_data) {
+            // its templates - not what it selects, when it shows and what it is marked with
+            $no_conds = ['conds' => ''];
+            for ($n = 1; $n <= AA_View::COND_COLUMNS; $n++) {
+                $no_conds += ["cond{$n}field" => '', "cond{$n}op" => '', "cond{$n}cond" => ''];
+            }
+            $vw_data = $no_conds + ['show_if' => '', 'show_else' => '', 'flag' => (int) $vw_data['flag'] & ~(VIEW_FLAG_WATCH | VIEW_FLAG_NOCACHE | VIEW_FLAG_NODIRECT)] + $vw_data;
+        }
     } else {        // error - someone switched the slice or so
         go_url($back_url);
     }
@@ -410,27 +487,13 @@ if ( !$update ) {  // set variables from database
 } else {        // updating - load data into vw_data array
     foreach ($VIEW_FIELDS as $k => $v) {
         if ( $view_field_names[$k] ) {
-            $vw_data[$k] = $$k;
+            $vw_data[$k] = $conds_posted[$k] ?? $$k;
         }
     }
 }
 
-// operators array
-$lookup_op = [
-    "<"  => "<",
-    "<=" => "<=",
-    "="  => "=",
-    "==" => "== (exact match)",
-    "<>" => "<>",
-    ">"  => ">",
-    ">=" => ">=",
-    "LIKE"  => "substring (LIKE)",
-    "RLIKE"  => "begins with ... (RLIKE)",
-    "ISNULL"  => "not set",
-    "NOTNULL"  => "is set",
-    "m:<" => "< now() - x [in seconds]",
-    "m:>" => "> now() - x [in seconds]"
-];
+// all the operators a condition may have, not a choice of them kept here
+$lookup_op = AA_Operators::forSelect();
 
 // lookup group of constatnts
 $lookup_groups = GetConstants('lt_groupNames', 'name');
@@ -445,6 +508,13 @@ if ( $view_type_info['fields'] ) {
 } else {
     // $serchbar = new AA_Searchbar();
     $lookup_fields = AA_Fields::getFields4Select(AA::$module_id, false, 'name', true, true);
+}
+
+// A condition may also ask a field of related items - once the database can keep the longer name of such a field.
+// Only for views of items: the other field lists above are not fields of a slice.
+$cond_fields   = $lookup_fields;
+if (!$view_type_info['fields'] && $slice && isset($view_field_names['cond1field']) && ViewListingColumns::condsWide()) {   // the list reads the fields of every related slice
+    $cond_fields += $slice->getSearchfields()->getRelatedArray();
 }
 
 $headcode = <<<'EOT'
@@ -482,6 +552,9 @@ if ($view_field_names["even_odd_differ"]) {
 }
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->addRequire('aa-code@1');
+if (isset($view_field_names['conds'])) {
+    $apage->addRequire('aa-conditions@1');
+}
 $apage->printHead($err, $Msg);
 
 $form_buttons              = ['update'];
@@ -541,10 +614,24 @@ foreach ($view_field_names as $k => $v) {
         case "chbox":   FrmInputChBox( $k, $label, $value, false, '', 1, false, $help); break;
         case "bitflag": FrmInputChBox( $k, $label, $value, false, '', 1, false, $help); break;
                         // BitFlagFrm( $k, $label, $value); break;
-        case "cond":    ConditionFrm(  $k, $label, $value); break;
+        case "cond":
+            if (!$conds_control) {
+                ConditionFrm($k, $label, $value);
+            }
+            break;
+        case "condlist":
+            $cond_columns = [];
+            for ($n = 1; $n <= AA_View::COND_COLUMNS; $n++) {
+                $cond_columns[$n] = [(string) $vw_data["cond{$n}field"], (string) $vw_data["cond{$n}op"], (string) $vw_data["cond{$n}cond"]];
+            }
+            echo '<tr><td><b>' . safe($label) . '</b></td><td>'
+                . ConditionsInput::html($k, StoredConditions::fromColumns($cond_columns, (string) $vw_data[$k]), $cond_fields, $lookup_op)
+                . '<div class="tabhlp">' . $help . '</div></td></tr>';
+            break;
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] === 'easy'); break;
         case "orderal": OrderAliasFrm( $k, $label, $value); break;
-        case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $view_type_info['order'] === 'easy', true); break;
+        // an alias only for items: the other listings (constants, links, categories...) have no items to expand it for
+        case "group":   OrderFrm(      $k, $label, $value, $lookup_fields + (($view_type === 'list') ? GroupAliasOptions($slice) : []), $view_type_info['order'] === 'easy', true); break;
         case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help); break;
         case "rioscrl": FrmInputRadio($k, $label, [0 => _m("No"), 1 => _m("Accept {xpage}"), 2 => _m("Use infinite scrolling")], $value, false, $help); break;  // Scroller
         case "none":    break;
@@ -584,8 +671,10 @@ if ($view) {
     $set = $view->getSet();
     if ($view_conds   = $set->getCondsAsString()) {
         $view_sort    = $set->getSortAsString();
-        $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId() . ':'. safe($view_conds) . ($view_sort ? ':'.safe($view_sort): '') . '&rcub;&rcub;';
-        $view_recipe2 = '&lcub;view.php?vid=' . $view_id . '&cmd[' . $view_id . ']=' . safe((new AA_Set(null, $view->getConds()))->getCondsAsString()) . ($view_sort ? '&set[' . $view_id . ']=sort-'.safe($view_sort): '').'&rcub;';
+        $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId() . ':'. safe(str_replace(':', '#:', $view_conds)) . ($view_sort ? ':'.safe(str_replace(':', '#:', $view_sort)): '') . '&rcub;&rcub;';
+        // in a query string "&" would end the parameter and "+" would be a space
+        $view_conds2  = strtr((new AA_Set(null, $view->getConds()))->getCondsAsString(), ['%' => '%25', '&' => '%26', '#' => '%23', '+' => '%2B']);
+        $view_recipe2 = '&lcub;view.php?vid=' . $view_id . '&cmd[' . $view_id . ']=' . safe($view_conds2) . ($view_sort ? '&set[' . $view_id . ']=sort-'.safe($view_sort): '').'&rcub;';
     }
 }
 

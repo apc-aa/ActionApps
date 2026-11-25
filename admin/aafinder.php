@@ -26,6 +26,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\ViewListingColumns;
 use AA\Manager;
 use AA\Util\Adminlink;
 use AA\Util\ChangesMonitor;
@@ -201,7 +202,8 @@ if (strlen($findtext)) {
     }
 
     if ($findinview) {
-        $fields = ['id', 'before', 'even', 'row_delimiter', 'odd', 'after', 'group_title', 'order1', 'order2', 'group_by1', 'group_by2', 'cond1field', 'cond2field', 'cond3field', 'aditional', 'aditional2', 'aditional3', 'aditional4', 'aditional5', 'aditional6', 'group_bottom', 'field1', 'field2', 'field3'];
+        $fields = ['id', 'before', 'even', 'row_delimiter', 'odd', 'after', 'group_title', 'order1', 'order2', 'group_by1', 'group_by2', 'cond1field', 'cond2field', 'cond3field', 'conds', 'show_if', 'show_else', 'aditional', 'aditional2', 'aditional3', 'aditional4', 'aditional5', 'aditional6', 'group_bottom', 'field1', 'field2', 'field3'];
+        $fields = array_diff($fields, ViewListingColumns::absent());   // an older database has not all the columns to search
 
         $SQL = "SELECT `view`.`id`, `view`.`type`, `view`.`slice_id`, `slice`.`name` FROM `view` INNER JOIN `slice` ON `view`.`slice_id` = `slice`.`id`";
         $rows = DB_AA::select([], $SQL, [[null, array_map(static fn($field) => [["`view`.`$field`", $findtext, 'CONTAIN']], $fields), 'OR']]);

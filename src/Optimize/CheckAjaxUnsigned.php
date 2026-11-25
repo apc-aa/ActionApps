@@ -13,7 +13,7 @@ use AA_Log;
 /** {ajax} edits whose widget type and properties Get_Widget ignored in the last 30 days because they
  *  were not signed (AA\Widget\AjaxSignature) - logged once a day per slice and field. A page cached
  *  before the signing edits with the field's own widget until it is regenerated; a lasting row or a
- *  bad signature means a forged request. Index-only.
+ *  bad signature means a forged request. Also the Get_Widget requests refused for a short item id. Index-only.
  */
 class CheckAjaxUnsigned extends AbstractOptimize
 {
@@ -56,17 +56,37 @@ class CheckAjaxUnsigned extends AbstractOptimize
             }
         }
         $slice_names = $slices ? DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', [['id', array_values($slices), 'l']]) : [];
-        return self::findingsFor($rows, $slice_names);
+        return self::findingsFor($rows, $slice_names, LogOnce::recent(AjaxSignature::EVENT_SHORT_ID, now() - self::WINDOW_SECONDS, self::GROUPS));
     }
 
     /**
      * @param list<array<string, ?string>> $rows         LogOnce::recent() rows
      * @param array<string, string>        $slice_names  slice id => name
+     * @param list<array<string, ?string>> $short_rows   LogOnce::recent() rows of the requests refused for a short item id
      * @return Finding[]
      */
-    public static function findingsFor(array $rows, array $slice_names): array
+    public static function findingsFor(array $rows, array $slice_names, array $short_rows = []): array
     {
         $findings = [];
+        foreach ($short_rows as $row) {
+            [$field_id, $referer] = array_pad(ParamExplode((string) $row['params']), 2, '');
+            $findings[] = new Finding(
+                Finding::WARNING,
+                _m('{ajax} edit asked for an item by its short id and was refused'),
+                count: (int) $row['days'],
+                since: (int) $row['first'],
+                evidence: [[
+                    _m('Field')     => safe($field_id),
+                    _m('Page')      => safe($referer),
+                    _m('Days seen') => (string) (int) $row['days'],
+                    _m('Last')      => date('Y-m-d', (int) $row['last']),
+                ]],
+                advice: _m('{ajax} always sends the long item id. A short one comes from a hand-written displayInput() call - give it the long id (_#ITEM_ID_) - or from someone trying item numbers one by one to read their fields. The evidence shows one of the refused requests; its page is the referer the request sent, which a forged request can make up.'),
+                links: [_m('Log rows') => AA_Log::getAdminUrl(AjaxSignature::EVENT_SHORT_ID, (string) $row['selector'])],
+                key: 'short id',
+                last: (int) $row['last'],
+            );
+        }
         foreach ($rows as $row) {
             $selector = (string) $row['selector'];
             [$slice_id, $field_id] = array_pad(ParamExplode($selector), 2, '');

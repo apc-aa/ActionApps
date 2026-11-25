@@ -166,8 +166,7 @@ final readonly class ItemFilter
     /** the operator as the constructor of AA_Dbcondition reads it (`d>`, `d#:>`, `&gt;`, `lt` …); `!=` as `<>` */
     private static function operator(string $operator): string
     {
-        $normal = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<', '&'], trim($operator));
-        $normal = (strlen($normal) < 4) ? AA_Operators::normalize($normal) : $normal;
+        $normal = AA_Dbcondition::normalizeOperator($operator);
         return ($normal === '!=') ? '<>' : $normal;
     }
 

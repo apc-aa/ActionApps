@@ -7,7 +7,7 @@
 
 /** ms between looks while a step runs */
 export const LOOK_EVERY = 3_000;
-/** ms a step request may take - a step lasts about 30 s; a look ends with its step */
+/** ms a step request may take - a step lasts up to about a minute; a look ends with its step */
 export const STEP_TIMEOUT = 120_000;
 /** ms till the next try after a request that failed on the way */
 export const RETRY = 30_000;

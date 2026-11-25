@@ -35,6 +35,7 @@
 
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\ViewListingColumns;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -149,6 +150,9 @@ function ChangeFieldID($old_id, $new_id): void
                 "cond1field",
                 "cond2field",
                 "cond3field",
+                "conds",
+                "show_if",
+                "show_else",
                 "aditional",
                 "aditional2",
                 "aditional3",
@@ -170,6 +174,10 @@ function ChangeFieldID($old_id, $new_id): void
             $keyfield = $settings['primary'];
             if (!$keyfield) {
                 $keyfield = $settings['primary_part'];
+            }
+            if ($table === 'view') {
+                // a database without the newer columns of views: asking for them would be an error
+                $settings['fields'] = array_values(array_diff($settings['fields'], ViewListingColumns::absent()));
             }
             $SQL = "SELECT `$keyfield`, `" . implode("`, `", $settings['fields']) . "` FROM `$table`";
             $rows = DB_AA::select(['id' => []], $SQL, [[$settings['slice_id'], AA::$module_id, 'l']]);

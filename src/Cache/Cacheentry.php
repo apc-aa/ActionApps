@@ -42,10 +42,10 @@ class Cacheentry
     protected $c = '';      // content
     protected $h = []; // headers array
     protected $i = '';      // item id for page hit
-    protected $p = '';      // Cacheability - private/public/no-cache - private used for pages, where user is logged in
+    protected $p = '';      // unused; stored entries have it and unserialize() reports a property the class lacks
     protected $t = 0;       // timestamp
 
-    public function __construct($content, array $headers = [], $item_id = '', $cacheability = 'public')
+    public function __construct($content, array $headers = [], $item_id = '')
     {
         $this->c = $content;
         $this->h = $headers;
@@ -53,7 +53,6 @@ class Cacheentry
             $this->h['preconnect'] = $preconnect;
         }
         $this->i = $item_id;
-        $this->p = $cacheability;
         // the request start: Apache dates the response by it and Last-Modified must not be later
         $this->t = (int) ($_SERVER['REQUEST_TIME'] ?? time());
     }
@@ -62,13 +61,17 @@ class Cacheentry
     public function processPage(bool $cached = false, zids ...$hits): void
     {
         $hash = hash('md5', 'x' . $this->c . 'q'); // salted, so it differs from the cache key in the db
-        $cacheability = in_array($this->p, ['public', 'private', 'no-cache']) ? $this->p : 'public';
 
         header("Last-Modified: " . gmdate("D, d M Y H:i:s", $this->t) . " GMT");
         // weak: Apache compresses the body and keeps the ETag
         header("ETag: W/\"$hash\"");
-        header("Cache-Control: $cacheability");
-        // maybe we can add max-age=60   (minute helps a lot on big loads (catches 99%), but is nothing for reader)
+        // $sess: view.php closes the session early, yet the page still is that visitor's
+        $session = is_object($GLOBALS['sess'] ?? null) || (session_status() === PHP_SESSION_ACTIVE);
+        header('Cache-Control: ' . self::cacheControl($session, headers_list()));
+        // "expired" agrees with no-cache; and with any Expires here Apache's mod_expires adds no lifetime
+        // of its own (three days for scripts on some servers)
+        header('Expires: 0');
+        header_remove('Pragma');   // sent by PHP with a session; it would only repeat Cache-Control
 
         $not_modified = self::notModified($this->h, $_SERVER, $hash, $this->t);
         if ($not_modified) {
@@ -83,6 +86,20 @@ class Cacheentry
         foreach ($hits as $zids) {
             Hitcounter::hit($zids, $cached, $not_modified);
         }
+    }
+
+    /** Who may keep the page and for how long. no-cache = keep it, but ask before every reuse: a 304 is
+     *  cheap, and a changed page, a login or a changed cookie shows at once. Without it a browser reuses
+     *  the page unasked for a tenth of its age. The answer is decided when the page is sent, not when it
+     *  is stored: one stored page serves visitors with a session and without it.
+     *  private (no proxy may keep it) with a session or any cookie being set - a proxy would hand the
+     *  cookie to the next visitor.
+     *  @param string[] $sent header lines of this response (headers_list())
+     */
+    public static function cacheControl(bool $session, array $sent): string
+    {
+        $private = $session || (bool) preg_grep('~^Set-Cookie\s*:~i', $sent);
+        return $private ? 'private, no-cache' : 'no-cache';
     }
 
     /** Is the client's copy current (RFC 9110 §13)? $hash is the opaque part of our ETag, $headers the page's own.

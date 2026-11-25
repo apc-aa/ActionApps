@@ -92,6 +92,7 @@ https://www.apc.org/
 
 
 use AA\IO\DB\DB_AA;
+use AA\Security\ViewDirect;
 use AA\Security\ViewSlices;
 use AA\Util\Hitcounter;
 use AA\Util\InputVars;
@@ -278,10 +279,23 @@ if (!$slice_info['even_odd_differ']) {
 
 // it is possible to redefine the design of fulltext or compact view by the view
 // see fview and iview url parameters for this file (slice.php)
+// The view whose templates slice.php takes: one the request picks (fview, iview, dview) is none that works only
+// inside pages - the page then keeps the design of the slice, and the refusal is logged as the one of view.php.
+$view_usable = static function (?AA_View $view, bool $picked = true): bool {
+    if (!$view || ($view->f('deleted') >= 1)) {
+        return false;
+    }
+    if ($picked && ($by = ViewDirect::forbiddenBy($view->isInsideOnly(), unpack_id((string) $view->f('slice_id'))))) {
+        ViewDirect::refuse($view->getId(), $by, false);
+        return false;
+    }
+    $view->noteUse();
+    return true;
+};
 if ($fview || $iview) {
     if ($fview) {                       // use formating from view for fulltext
         $fview_info = is_scalar($fview) ? AA_Views::getView($fview, $slice_id) : null;
-        if ($fview_info && ($fview_info->f('deleted') < 1)) {
+        if ($view_usable($fview_info)) {
             $slice_info['fulltext_format']        = $fview_info->f('odd');
             $slice_info['fulltext_format_top']    = $fview_info->f('before');
             $slice_info['fulltext_format_bottom'] = $fview_info->f('after');
@@ -290,8 +304,9 @@ if ($fview || $iview) {
     }
     if ($iview) {                       // use formating from view for index
         $iview_info = is_scalar($iview) ? AA_Views::getView($iview, $slice_id) : null;
-        if ($iview_info && ($iview_info->f('deleted') < 1)) {
+        if ($view_usable($iview_info)) {
             $slice_info['group_by']        = $iview_info->f('group_by1');
+            $slice_info['group_desc']      = $iview_info->groupDescending();
             $slice_info['gb_direction']    = AA_View::VIEW_SORT_DIRECTIONS[$iview_info->f('g1_direction')];  // views uses different sort codes (historical reasons)
             $slice_info['category_format'] = $iview_info->f('group_title');
             $slice_info['category_bottom'] = $iview_info->f('group_bottom');
@@ -385,7 +400,8 @@ if ($sh_itm || $x || $o || $seo) {
         $discussion_vid = AA_Views::getView($discussion_vid, $slice_id)?->getId() ?? 0;
     }
     // you can set dview=0 to not show discussion
-    if ($discussion_vid > 0) {
+    // the discussion view of the slice settings is the slice's own; only one the request picks (dview) may be refused
+    if (($discussion_vid > 0) && $view_usable(AA_Views::getView((int) $discussion_vid, $slice_id), isset($dview))) {
         if ($row = DB_AA::select1([], 'SELECT view.*, slice.flag FROM view, slice', [['slice.id', $slice_id, 'l'], ['view.id', (int) $discussion_vid, 'i']])) {
             $view_info = $row;
 
@@ -509,6 +525,7 @@ if ($group_by) {
     $set->addSortFromString($group_by);
     $sort_tmp = $set->getSort();
     $slice_info["group_by"] = key($sort_tmp[0]);
+    $slice_info['group_desc'] = false;   // the direction set in the view belongs to its own "Group by"
 } elseif ($slice_info['category_sort'] && ($tmpobj = $slice->getFields()) && ($group_field = $tmpobj->firstOfTypeFieldId())) {
     $grp_odir    = (($order == $group_field) && ($orderdirection !== 'd')) ? 'a' : 'd';
     $sort_tmp[]  = [$group_field => $grp_odir];
