@@ -116,9 +116,8 @@ $PHPTHUMB_CONFIG['cache_maxfiles'] = null;          // never delete cached thumb
 
 
 // * Source image cache configuration
-//$PHPTHUMB_CONFIG['cache_source_enabled']   = false;                               // if true, source images obtained via HTTP are cached to $PHPTHUMB_CONFIG['cache_source_directory']
-$PHPTHUMB_CONFIG['cache_source_enabled'] = true;
-//$PHPTHUMB_CONFIG['cache_source_enabled']   = false;                                                                                  // if true, source images obtained via HTTP are cached to $PHPTHUMB_CONFIG['cache_source_directory']
+// off: phpThumb only writes this cache (never reads it), and the raw remote response would land in public img_upload
+$PHPTHUMB_CONFIG['cache_source_enabled'] = false;
 //$PHPTHUMB_CONFIG['cache_source_directory'] =  __DIR__.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'source'.DIRECTORY_SEPARATOR;  // set the cache directory for unprocessed source images
 //$PHPTHUMB_CONFIG['cache_source_directory'] = IMG_UPLOAD_PATH.'phpThumbcachesource/';
 $PHPTHUMB_CONFIG['cache_source_directory'] = IMG_UPLOAD_PATH;
