@@ -31,6 +31,9 @@ final class ViewDirectTest extends TestCase
             require_once __DIR__ . '/../fixtures/util_shims.php';
             require_once __DIR__ . '/../Legacy/fixtures/store_fixtures.php';
             require_once __DIR__ . '/../../../include/view.php';
+            if (!defined('CACHE_TTL')) {
+                define('CACHE_TTL', 600);   // the page cache, asked to drop outputs
+            }
         } finally {
             restore_error_handler();
         }

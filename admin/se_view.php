@@ -323,7 +323,7 @@ $slice = AA_Slice::getModule(AA::$module_id);
 $VIEW_FIELDS      = getViewFields();
 $view_field_names = getViewTypes()[$view_type];
 // a setting an older database has no column for (ViewListingColumns) is not offered
-$view_field_names = array_diff_key($view_field_names, array_flip(ViewListingColumns::absent()));
+$view_field_names = array_diff_key($view_field_names ?? [], array_flip(ViewListingColumns::absent()));   // no type: the page goes back below
 $view_type_info   = getViewTypesInfo($view_type);
 
 // the rows of the conditions after the third as posted, in their stored form

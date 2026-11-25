@@ -678,8 +678,8 @@ function getViewTypes(): array
             "label" => _m("Only inside pages"),
             "help"  => _m("The view works only inside pages and other templates ({view:...}, {view.php?...}). Its own address (view.php?vid=..., jsview.php?vid=..., discussion.php?vid=...) shows nothing and answers 404. Do not check it for a view that a page loads by its address (AJAX, lazy loading, an include in an .shtml page), for RSS and other feeds. The same can be set for all views of the slice on the list of views, or for all slices of a site in the settings of the site. A refused call is listed in State Check."),
         ]];
-    // the views no page shows - a mail of Alerts, the template of an input form - have no output to hold back
-    $common_mail_form = array_diff_key($common, array_flip(['show_if', 'show_else', 'flag3', 'flag4', 'flag5']));
+    // the template of an input form is no output of a page: nothing to hold back, to keep out of the cache or to ask for by an address
+    $common_form = array_diff_key($common, array_flip(['show_if', 'show_else', 'flag3', 'flag4', 'flag5']));
 
     return [
         'list' => [
@@ -968,7 +968,7 @@ function getViewTypes(): array
             "listlen"                 => _m("Max number of items"),
             "noitem_msg"              => _m("HTML code for \"No item found\" message"),
             "flag0"                   => _m("Add view ID as HTML comment"),
-        ] + $common_mail_form,
+        ] + $common,
 
         // View used for listing of ursl - mainly for listing items for index
         // servers (HtDig, MnogoSearch, ...)
@@ -1082,7 +1082,7 @@ function getViewTypes(): array
             "remove_string"   => _m("Remove strings"),
             //                       "after" => _m("Bottom HTML") ,
             "flag0"           => _m("Add view ID as HTML comment"),
-        ] + $common_mail_form,
+        ] + $common_form,
     ];
 }
 
