@@ -699,7 +699,9 @@ class AA_View
     public static function addViewAliases(AA_Aliases $aliases, array $conds): void
     {
         foreach ($conds as $k => $v) {
-            $aliases->addTextAlias(str_pad('_#VIEW_C' . ($k + 1), 10, '_'), $v['value']);
+            if (is_int($k)) {   // 'valuejoin' of cmd[]=c-OR-... is no condition
+                $aliases->addTextAlias(str_pad('_#VIEW_C' . ($k + 1), 10, '_'), $v['value']);
+            }
         }
     }
 

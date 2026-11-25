@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Legacy;
 
+use AA_Aliases;
 use AA_View;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -80,6 +81,16 @@ final class ViewCondsTest extends TestCase
     public function test_getConds_orOfTheCall(): void
     {
         self::assertSame('OR', self::view()->getConds([0 => 'OR', 2 => 'Vod'])['valuejoin']);
+    }
+
+    /** cmd[]=c-OR-1-a-2-b: the OR among the conditions is no condition - reading it as one ended the page in an error */
+    public function test_addViewAliases_orOfTheCall_isNoAlias(): void
+    {
+        $aliases = new AA_Aliases();
+
+        AA_View::addViewAliases($aliases, self::view()->getConds([0 => 'OR', 1 => 'a', 2 => 'b']));
+
+        self::assertSame(['_#VIEW_C1_', '_#VIEW_C2_'], array_values($aliases->getNames()));
     }
 
     /** @return array<string, array{string, array<int|string, string>}> the c command, the values by the numbers */
