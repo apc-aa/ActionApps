@@ -236,6 +236,9 @@ class AA_Showview
      *  name only the slices and items the request may list; those of templates are trusted */
     private bool $from_request;
 
+    /** this call is the first use of a view marked as probably unused - logged like a view with "Log view usage" */
+    private bool $first_use = false;
+
     public function __construct($view_param)
     {
         $this->hits = is_array($view_param['hits'] ?? null) ? $view_param['hits'] : [];
@@ -266,8 +269,10 @@ class AA_Showview
         }
         $vid = $view->getId();
         AA::$debug & 2 && AA::$dbg->groupend("view_$vid" . '_' . ($start_time));
-        if ($view->doLog()) {
-            AA_Log::write('VIEW', $vid, new AA_Logentry_W(["time" => microtime(true) - $start_time, 'uri' => $_SERVER["REQUEST_URI"]]));
+        if ($view->doLog() || $this->first_use) {
+            $entry = new AA_Logentry_W(['time' => (string) round(microtime(true) - $start_time, 4), 'uri' => (string) ($_SERVER['REQUEST_URI'] ?? '')]);
+            $entry->trimToFit(['uri'], AA_Logentry::PARAMS_MAX);   // a longer row fails the INSERT and the page with it
+            AA_Log::write('VIEW', $vid, $entry);
         }
     }
 
@@ -421,6 +426,8 @@ class AA_Showview
             $this->outputEnd($view, $dbgtime, 'Not valid view (deleted slice/disabled view)');
             return '';
         }
+
+        $this->first_use = $view->takeFirstUse();
 
         // Use right language (from slice settings) - languages are used for
         // 'No item found', Next, ... messages

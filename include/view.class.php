@@ -139,6 +139,19 @@ class AA_View
         return $this->f('flag') & VIEW_FLAG_LOG;
     }
 
+    /** The first use of a view marked as probably unused takes the mark off - once, also when requests meet.
+     *  @return bool this call is the first use */
+    public function takeFirstUse(): bool
+    {
+        if (!((int) $this->f('flag') & VIEW_FLAG_WATCH)) {
+            return false;
+        }
+        $this->fields['flag'] = (string) ((int) $this->fields['flag'] & ~VIEW_FLAG_WATCH);
+        // The bit alone, in one statement: a form saved at the same moment keeps its settings. No history row
+        // and no cache to drop - the output is the same with the mark and without it.
+        return DB_AA::sql('UPDATE view SET flag = flag & ~' . VIEW_FLAG_WATCH, [['id', $this->id, 'i'], ['flag', VIEW_FLAG_WATCH, 'set']]) === 1;
+    }
+
     /** Generates link to view edit
      * @param $name
      */

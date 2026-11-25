@@ -689,6 +689,9 @@ class AA_Logentry_H extends AA_Logentry
  */
 class AA_Logentry_W extends AA_Logentry
 {
+    public string $time = '';
+    public string $uri  = '';
+
     public static function getClassProperties(): array
     {
         return [

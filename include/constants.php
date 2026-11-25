@@ -498,6 +498,7 @@ const REL_FLAG_SOURCE        = 4;  // item is derived from other item ({newitem 
 const VIEW_FLAG_COMMENTS = 1;    // display HTML comments before and after the view
 const VIEW_FLAG_DISABLE  = 2;    // view is disabled - no content showed
 const VIEW_FLAG_LOG      = 4;    // write every use to database
+const VIEW_FLAG_WATCH    = 8;    // probably unused: the first use is logged and takes the flag off
 
 
 /** inputFeedModes function
@@ -580,7 +581,7 @@ function getViewFields(): array
     $VIEW_FIELDS["flag0"]           = GetViewFieldDef("", "bool", "bitflag"); // Add view ID as HTML comment / Allow HTML tags in the comments
     $VIEW_FIELDS["flag1"]           = GetViewFieldDef("", "bool", "bitflag"); // Disabled view
     $VIEW_FIELDS["flag2"]           = GetViewFieldDef("", "bool", "bitflag"); // Log view usage
-    $VIEW_FIELDS["flag3"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
+    $VIEW_FIELDS["flag3"]           = GetViewFieldDef("", "bool", "bitflag"); // Probably unused - log the first use
     $VIEW_FIELDS["flag4"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
     $VIEW_FIELDS["flag5"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
     $VIEW_FIELDS["flag6"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
@@ -646,6 +647,10 @@ function getViewTypes(): array
         "flag2" => [
             "label" => _m("Log view usage"),
             "help"  => _m("Be careful with this. It really logs every view use! Good for debugging and checking, if disabled view is not used anymore..."),
+        ],
+        "flag3" => [
+            "label" => _m("Probably unused - log the first use"),
+            "help"  => _m("For a view you think nobody uses. It works as before; its first use is written to the log (\"Last from log\" below shows when and on which page) and unchecks this box. A view still checked after some months is safe to disable or delete. A page served from the cache does not use the view."),
         ]];
 
     return [

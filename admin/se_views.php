@@ -120,6 +120,10 @@ $VIEW_TYPES = getViewTypes();
 
 $view_types_ifeq = array_reduce( array_keys($VIEW_TYPES), static fn($str, $key) => "$str:$key:".str_replace(':','#:', $VIEW_TYPES[$key]['name']));
 
+// the states of a view worth seeing in the list, after its name
+$view_state = static fn(int $flag, string $text): string => '{ifbit:{_#FLAG____}:' . $flag . ': <small>(' . str_replace(':', '#:', safe($text)) . ')</small>}';
+$view_states = $view_state(VIEW_FLAG_DISABLE, _m('disabled')) . $view_state(VIEW_FLAG_WATCH, _m('not used since marked'));
+
 $managed = AA::Metabase()->getManagerConf('view', $actions);
 $managed->setModule(AA::$module_id);   // its forms and actions change only the views of this slice
 $managed->setColumns([]); // reset columns - use format strings bellow
@@ -140,7 +144,7 @@ $managed->settings['itemview']['format']['odd_row_format'] = '
                                       <tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
                                         <td><a href="se_view.php?module_id=_#SLICE_ID&view_id=_#ID______">_#ID______</a></td>
                                         <td>{ifset:{_#FIELD3__}:<a href="se_view.php?module_id=_#SLICE_ID&view_id=_#ID______">_#1</a>}</td>
-                                        <td>_#NAME____</td>
+                                        <td>_#NAME____' . $view_states . '</td>
                                         <td>{ifeq:{_#TYPE____}' . $view_types_ifeq.'}</td>
                                         <td>
                                           <a href="se_view.php?module_id=_#SLICE_ID&view_id=_#ID______" class="aa-button-edit">' . _m('Edit') .'</a>
