@@ -1213,8 +1213,7 @@ class Run extends BatchRun
         $base = $grabber->restarted() ? 0 : $offset;
         $this->tally['read'] += $grabber->offset() - $base;
         foreach ($saver->counts() as $name => $count) {
-            // the run's own unchanged counts streams
-            $this->tally[($name === 'unchanged') ? 'same' : $name] += $count;
+            $this->tally[$name] += $count;
         }
         // left out on purpose: no error, the stream keeps its version
         $this->tally['filtered'] += $grabber->filtered();

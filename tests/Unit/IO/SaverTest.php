@@ -517,7 +517,7 @@ namespace Tests\Unit\IO {
             $saver->existing = ['known' => self::ITEM3];
 
             $this->assertSame([2, 0], $saver->run());
-            $this->assertSame(['new' => 1, 'updated' => 1, 'unchanged' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts(), 'an empty key among keyed items is skipped');
+            $this->assertSame(['new' => 1, 'updated' => 1, 'same' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts(), 'an empty key among keyed items is skipped');
             $this->assertSame([self::ITEM3], $saver->updatedIds());
             $this->assertCount(1, $saver->newIds());
             $this->assertNotSame(self::ITEM3, $saver->newIds()[0]);
@@ -529,7 +529,7 @@ namespace Tests\Unit\IO {
             $saver->existing = ['known' => self::ITEM3];
 
             $this->assertSame([2, 0], $saver->run(false));
-            $this->assertSame(['new' => 1, 'updated' => 1, 'unchanged' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 1, 'updated' => 1, 'same' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
             $this->assertSame([], $saver->changedIds(), 'nothing was stored');
         }
 
@@ -539,13 +539,13 @@ namespace Tests\Unit\IO {
             $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['known', 'unknown'])), null, self::SLICE, 'insert_if_new', '["relation........"]'))->setImportMode();
             $saver->existing = ['known' => self::ITEM3];
             $this->assertSame([1, 0], $saver->run());
-            $this->assertSame(['new' => 1, 'updated' => 0, 'unchanged' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 1, 'updated' => 0, 'same' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
 
             // not found, but the mode only updates
             $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['known', 'unknown'])), null, self::SLICE, 'update', '["relation........"]'))->setImportMode();
             $saver->existing = ['known' => self::ITEM3];
             $this->assertSame([1, 0], $saver->run());
-            $this->assertSame(['new' => 0, 'updated' => 1, 'unchanged' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 0, 'updated' => 1, 'same' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
         }
 
         public function test_clearIds_resetsCountsErrorsAndSamples(): void
@@ -558,7 +558,7 @@ namespace Tests\Unit\IO {
             $this->assertNotSame([], $saver->samples());
 
             $saver->clear_ids();
-            $this->assertSame(['new' => 0, 'updated' => 0, 'unchanged' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 0, 'updated' => 0, 'same' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
             $this->assertSame([], $saver->errors());
             $this->assertSame([], $saver->samples());
         }
@@ -827,7 +827,7 @@ namespace Tests\Unit\IO {
             $saver = $this->territorySaver(['CZ0100', 'CZ9999']);
 
             $this->assertSame([1, 0], $saver->run());
-            $this->assertSame(['new' => 1, 'updated' => 0, 'unchanged' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 1, 'updated' => 0, 'same' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
             $this->assertSame([], $saver->errors());
             $this->assertSame(1, $saver->emptyKeys());
             $this->assertSame([['geo' => 'CZ9999']], $saver->emptyKeySamples(), 'the source field the key row names; not the job parameter, not other fields');
@@ -840,7 +840,7 @@ namespace Tests\Unit\IO {
             $saver = $this->territorySaver(['CZ9998', 'CZ9999']);
 
             $this->assertSame([0, 0], $saver->run());
-            $this->assertSame(['new' => 0, 'updated' => 0, 'unchanged' => 0, 'skipped' => 2, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 0, 'updated' => 0, 'same' => 0, 'skipped' => 2, 'errors' => 0], $saver->counts());
             $this->assertSame([], $saver->errors());
             $this->assertSame(2, $saver->emptyKeys());
             $this->assertFalse($saver->keyed());
@@ -929,7 +929,7 @@ namespace Tests\Unit\IO {
             $saver = new RecordingSaver(new ArrayGrabber($items), $this->territoryKey(), self::SLICE, 'update/insert', '["relation........"]');
 
             $this->assertSame([1, 1], $saver->run());
-            $this->assertSame(['new' => 0, 'updated' => 1, 'unchanged' => 0, 'skipped' => 0, 'errors' => 1], $saver->counts());
+            $this->assertSame(['new' => 0, 'updated' => 1, 'same' => 0, 'skipped' => 0, 'errors' => 1], $saver->counts());
             $this->assertContains('AA\IO\Saver->run(): key condition empty for relation........', $this->texts($saver));
             $this->assertSame(0, $saver->emptyKeys());
             $this->assertSame([], $saver->emptyKeySamples());
@@ -993,13 +993,17 @@ namespace Tests\Unit\IO {
          * An import of source rows [key, value] built into new items, as Run does: relation from key,
          * text...........1 from val. Key "known" finds ITEM3.
          * @param list<array{string, string|list<string>}> $rows
-         * @param array<string, \AA_Transformation>        $more further transformations
+         * @param array<string, \AA_Transformation>        $more  further transformations
+         * @param array<string, string>                    $extra further source fields of each row
+         * @param int                                      $flag  of the val values
          */
-        private function importSaver(array $rows, array $more = []): RecordingSaver
+        private function importSaver(array $rows, array $more = [], array $extra = [], int $flag = 0): RecordingSaver
         {
             $items = [];
             foreach ($rows as $i => [$key, $value]) {
-                $items[] = $this->sourceItem(sprintf('%032x', $i + 1), ['key' => $key, 'val' => $value]);
+                $item = $this->sourceItem(sprintf('%032x', $i + 1), ['key' => $key, 'val' => $value] + $extra);
+                $item->setAaValue('val', new AA_Value($value, $flag));
+                $items[] = $item;
             }
             $grabber = new class ($items) extends ArrayGrabber {
                 public function isDirectfill(): bool
@@ -1028,7 +1032,7 @@ namespace Tests\Unit\IO {
             $saver->current = self::storedItem3(['9.4']);
 
             $this->assertSame([1, 0], $saver->run());
-            $this->assertSame(['new' => 1, 'updated' => 0, 'unchanged' => 1, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 1, 'updated' => 0, 'same' => 1, 'skipped' => 0, 'errors' => 0], $saver->counts());
             $this->assertNotContains(self::ITEM3, $saver->storedIds());
             $this->assertSame([], $saver->updatedIds());
         }
@@ -1064,7 +1068,7 @@ namespace Tests\Unit\IO {
 
             $this->assertSame([1, 0], $saver->run());
             $this->assertSame([self::ITEM3], $saver->storedIds());
-            $this->assertSame(['new' => 0, 'updated' => 1, 'unchanged' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 0, 'updated' => 1, 'same' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
         }
 
         public function test_importMode_dryRunCountsUnchanged(): void
@@ -1073,7 +1077,7 @@ namespace Tests\Unit\IO {
             $saver->current = self::storedItem3(['9.4']);
 
             $this->assertSame([1, 0], $saver->run(false));
-            $this->assertSame(['new' => 1, 'updated' => 0, 'unchanged' => 1, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertSame(['new' => 1, 'updated' => 0, 'same' => 1, 'skipped' => 0, 'errors' => 0], $saver->counts());
             $this->assertCount(1, $saver->samples(), 'only what would be stored is shown');
         }
 
@@ -1083,7 +1087,7 @@ namespace Tests\Unit\IO {
             $saver->current = self::storedItem3(['9.4']);
 
             $this->assertSame([0, 1], $saver->run());
-            $this->assertSame(['new' => 0, 'updated' => 0, 'unchanged' => 0, 'skipped' => 0, 'errors' => 1], $saver->counts());
+            $this->assertSame(['new' => 0, 'updated' => 0, 'same' => 0, 'skipped' => 0, 'errors' => 1], $saver->counts());
         }
 
         public function test_importMode_transformationInPlace_stored(): void
@@ -1112,7 +1116,7 @@ namespace Tests\Unit\IO {
 
             $this->assertSame([1, 0], $saver->run());
             $this->assertSame([self::ITEM3], $saver->storedIds());
-            $this->assertSame(0, $saver->counts()['unchanged']);
+            $this->assertSame(0, $saver->counts()['same']);
         }
 
         public function test_unchanged_notForDirectFill(): void
@@ -1125,6 +1129,82 @@ namespace Tests\Unit\IO {
             $saver->run();
 
             $this->assertSame([self::ITEM3], $saver->storedIds());
+        }
+
+        /** @return array<string, array{int, int, bool}> flag of the incoming value, flag stored, same -
+         *  the numbers of FLAG_HTML (1), FLAG_FEED (2), FLAG_TEXT_STORED (64): a provider runs before
+         *  the constants are loaded */
+        public static function htmlFlags(): array
+        {
+            return [
+                'plain to HTML'                      => [1, 64, false],
+                'HTML to plain'                      => [0, 64 | 1, false],
+                'HTML kept, other bits differ'       => [1, 64 | 1 | 2, true],
+                'a number column reads back as HTML' => [0, 1, true],
+            ];
+        }
+
+        #[DataProvider('htmlFlags')]
+        public function test_importMode_htmlFlagCompared(int $incoming, int $stored, bool $same): void
+        {
+            $saver               = $this->importSaver([['known', '9.4']], flag: $incoming);
+            $saver->current      = self::storedItem3(['9.4']);
+            $saver->currentFlags = [self::ITEM3 => ['text...........1' => $stored]];
+
+            $saver->run();
+
+            $this->assertSame($same ? [] : [self::ITEM3], $saver->storedIds());
+            $this->assertSame((int) $same, $saver->counts()['same']);
+        }
+
+        public function test_importMode_emptyValueAgainstNoneStored_stored(): void
+        {
+            // an empty value may be stored as a row of its own: not the same as no row
+            $saver          = $this->importSaver([['known', '']]);
+            $saver->current = self::storedItem3([]);
+
+            $saver->run();
+
+            $this->assertSame([self::ITEM3], $saver->storedIds());
+        }
+
+        /** @return array<string, array{string, bool}> incoming value of the number column field, same */
+        public static function numberColumn(): array
+        {
+            return [
+                'a whole number reads back as its text' => ['12', true],
+                'a decimal is kept as a whole number'   => ['12.5', false],
+            ];
+        }
+
+        /** the stored item as GetItemContent() reads it: item table field, text and number columns */
+        #[DataProvider('numberColumn')]
+        public function test_storedContent_readsTheMappedFieldsThroughGetItemContent(string $value, bool $same): void
+        {
+            $saver             = $this->importSaver([['known', $value]], ['publish_date....' => new \AA_Transformation_CopyField(['field2copy' => 'date'])], ['date' => '1704063600']);
+            $saver->readStored = true;
+            $queries           = [];
+            RecordingDb::$answer = static function (string $sql) use (&$queries): array {
+                $queries[] = $sql;
+                $item      = pack_id(self::ITEM3);
+                return match (true) {
+                    str_contains($sql, 'FROM item ') => [['id' => $item, 'slice_id' => pack_id(self::SLICE), 'publish_date' => 1704063600]],
+                    str_contains($sql, 'FROM content ') => [
+                        ['item_id' => $item, 'field_id' => 'relation........', 'number' => 0, 'text' => 'known', 'flag' => FLAG_TEXT_STORED],
+                        ['item_id' => $item, 'field_id' => 'text...........1', 'number' => 12, 'text' => null, 'flag' => 0],
+                    ],
+                    default => [],
+                };
+            };
+
+            $saver->run();
+
+            $this->assertSame((int) $same, $saver->counts()['same']);
+            $this->assertSame($same ? [] : [self::ITEM3], $saver->storedIds());
+            $reads = array_values(array_filter($queries, static fn(string $q): bool => str_contains($q, 'FROM item ') || str_contains($q, 'FROM content ')));
+            $this->assertCount(2, $reads);
+            $this->assertStringStartsWith('SELECT publish_date,id,slice_id FROM item ', $reads[0], 'only the mapped field of the item table');
+            $this->assertStringContainsString("field_id IN ( 'relation........','text...........1' )", $reads[1], 'only the mapped fields');
         }
     }
 }

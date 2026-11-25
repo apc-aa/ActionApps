@@ -113,7 +113,7 @@ class Saver implements AA\Later\LaterInterface
     /** @var ?\Closure(string): string masks secrets in the data errors() and samples() show */
     private ?\Closure $redact = null;
 
-    /** @var array{new: int, updated: int, unchanged: int, skipped: int, errors: int} */
+    /** @var array{new: int, updated: int, same: int, skipped: int, errors: int} */
     private array $counts = self::NO_COUNTS;
 
     /** @var list<array{code: string, msg: string}> the first ERRORS_KEPT item errors */
@@ -140,7 +140,7 @@ class Saver implements AA\Later\LaterInterface
     /** @var array<string, list<string>> key field => the source fields its transformation reads */
     private array $key_reads = [];
 
-    private const NO_COUNTS = ['new' => 0, 'updated' => 0, 'unchanged' => 0, 'skipped' => 0, 'errors' => 0];
+    private const NO_COUNTS = ['new' => 0, 'updated' => 0, 'same' => 0, 'skipped' => 0, 'errors' => 0];
 
     /** set by setItemID() and setSliceID(), never by the mapping */
     private const ID_FIELDS = ['id..............', 'unpacked_id.....', 'short_id........', 'slice_id........', 'u_slice_id......'];
@@ -208,7 +208,7 @@ class Saver implements AA\Later\LaterInterface
     /** An import run: an exception from prepare() is thrown, not swallowed - the import tells a
      *  transport failure from the rest; a dry run prints no report, item errors go to errors() only
      *  and samples() keeps examples; new and updated are told apart by the key lookup; an item the
-     *  key finds whose mapped fields hold the values stored is not stored again (unchanged); a store
+     *  key finds whose mapped fields hold the values stored is not stored again (same); a store
      *  does not invalidate the page cache of the slice - the import does it once for its step. */
     public function setImportMode(bool $on = true): static
     {
@@ -250,8 +250,8 @@ class Saver implements AA\Later\LaterInterface
     }
 
     /** skipped = the key lookup found an item the store mode does not update, or found none and it
-     *  does not insert; unchanged = an import found the item with the values it has (see setImportMode())
-     *  @return array{new: int, updated: int, unchanged: int, skipped: int, errors: int} items since clear_ids(), dry runs included */
+     *  does not insert; same = an import found the item with the values it has (see setImportMode())
+     *  @return array{new: int, updated: int, same: int, skipped: int, errors: int} items since clear_ids(), dry runs included */
     public function counts(): array
     {
         return $this->counts;
@@ -498,9 +498,10 @@ class Saver implements AA\Later\LaterInterface
             }
 
             // a repeated import reads mostly what is stored; storeItem() would rewrite it all the same.
-            // A direct-fill item or one changed in place has no known set of fields - it is stored.
+            // A direct-fill item or one changed in place has no known set of fields - it is stored. An
+            // import has neither today (Run refuses direct fill, Mapping offers no recompute): a safeguard.
             if ($this->import_mode && $key_found && !$directfill && !$in_place && $this->sameAsStored($content4id, $mapped)) {
-                $this->counts['unchanged']++;
+                $this->counts['same']++;
                 continue;
             }
 
@@ -730,31 +731,38 @@ class Saver implements AA\Later\LaterInterface
         return (($limit > 0) && ($taken >= $limit)) || ($budget?->spent() ?? false);
     }
 
-    /** The mapped fields of $content hold, value by value as text, what its stored item holds. Another
-     *  form of the same value ("9.40" for "9.4") counts as a change: it only costs a store.
+    /** The mapped fields of $content hold, value by value as text, what its stored item holds, and the
+     *  HTML flag of a value kept in the text column - GetItemContent() marks a number or an item table
+     *  field as HTML whatever was stored. Another form of the same value ("9.40" for "9.4", 9.4 in a
+     *  number column, which keeps 9) counts as a change: it only costs a store.
      *  @param list<string> $fields the fields the transformations set */
     private function sameAsStored(ItemContent $content, array $fields): bool
     {
-        $fields = array_diff($fields, self::ID_FIELDS);
+        $fields = array_values(array_diff($fields, self::ID_FIELDS));
         if (!$fields) {
             return false;
         }
-        $stored = $this->storedContent($content->getItemID());
+        $stored = $this->storedContent($content->getItemID(), $fields);
         $texts  = static fn(array $values): array => array_map(static fn($v): string => (string) $v, $values);
         foreach ($fields as $field_id) {
             if ($texts($content->getValuesArray($field_id)) !== $texts($stored->getValuesArray($field_id))) {
+                return false;
+            }
+            $kept = $stored->getAaValue($field_id)->getFlag();
+            if (($kept & FLAG_TEXT_STORED) && (($content->getAaValue($field_id)->getFlag() ^ $kept) & FLAG_HTML)) {
                 return false;
             }
         }
         return true;
     }
 
-    /** The stored item $id. The reading password of the slice is ignored: the item is only compared,
-     *  never shown, and a value it hid would look changed. */
-    protected function storedContent(string $id): AA_Content
+    /** $fields of the stored item $id. The reading password of the slice is ignored: the item is only
+     *  compared, never shown, and a value it hid would look changed.
+     *  @param list<string> $fields */
+    protected function storedContent(string $id, array $fields): AA_Content
     {
         $content = new ItemContent();
-        $content->setByItemID($id, true);
+        $content->setByItemID($id, true, $fields);
         return $content;
     }
 

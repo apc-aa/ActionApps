@@ -26,6 +26,12 @@ class RecordingSaver extends Saver
      *  not listed reads as an empty item */
     public array $current = [];
 
+    /** @var array<string, array<string, int>> long id => field => flag of its values; FLAG_TEXT_STORED when not listed */
+    public array $currentFlags = [];
+
+    /** the stored item comes from the database handle, as outside the tests - not from $current */
+    public bool $readStored = false;
+
     /** @var list<array{id: string, mode: string, flags: array, content: ItemContent}> */
     public array $stored = [];
 
@@ -40,11 +46,14 @@ class RecordingSaver extends Saver
         return ($id === null) ? new zids() : new zids([$id], 'l');
     }
 
-    protected function storedContent(string $id): AA_Content
+    protected function storedContent(string $id, array $fields): AA_Content
     {
+        if ($this->readStored) {
+            return parent::storedContent($id, $fields);
+        }
         $content = new ItemContent();
-        foreach ($this->current[$id] ?? [] as $field_id => $values) {
-            $content->setAaValue($field_id, new AA_Value($values, 0));
+        foreach (array_intersect_key($this->current[$id] ?? [], array_flip($fields)) as $field_id => $values) {
+            $content->setAaValue($field_id, new AA_Value($values, $this->currentFlags[$id][$field_id] ?? FLAG_TEXT_STORED));
         }
         return $content;
     }
