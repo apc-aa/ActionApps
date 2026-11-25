@@ -189,7 +189,7 @@ final class ObjectWriterTest extends TestCase
             $written  = array_map(static fn(array $r): array => [$back[$r[0]], $r[1], $r[2], $back[$r[3]] ?? $r[3]], self::objectRows($table));
             self::assertSame($expected, $written, $table);
         }
-        self::assertCount(41, $saved['object_text'], 'settings 8, alias 8, set 25 (with the empty `limit` of the sort order, aa_subobjects 3)');
+        self::assertCount(42, $saved['object_text'], 'settings 9, alias 8, set 25 (with the empty `limit` of the sort order, aa_subobjects 3)');
         self::assertCount(1, $saved['object_integer'], 'autofields - a bool');
     }
 

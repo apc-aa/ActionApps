@@ -139,6 +139,12 @@ class AA_View
         return $this->f('flag') & VIEW_FLAG_LOG;
     }
 
+    /** the view itself is set to work only inside pages and templates (AA\Security\ViewDirect) */
+    public function isInsideOnly(): bool
+    {
+        return (bool) ((int) $this->f('flag') & VIEW_FLAG_NODIRECT);
+    }
+
     /** the output is never stored in the page cache, nor is a page that includes it */
     public function isNeverCached(): bool
     {

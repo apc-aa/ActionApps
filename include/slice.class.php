@@ -36,6 +36,7 @@
 // go to the database when something is needed.
 
 use AA\IO\DB\DB_AA;
+use AA\Security\ViewDirect;
 use AA\Util\ArrTrait;
 use AA\Util\ChangesMonitor;
 use AA\Util\FormToken;
@@ -674,6 +675,24 @@ class AA_Slice extends AA_Module
             ];
         }
         $this->dynamic_setting = new ItemContent($content4id);
+    }
+
+    /** keeps the views of the slice inside pages, or lets view.php show them again (AA\Security\ViewDirect);
+     *  the caller checks the right to change the views of the slice */
+    public static function saveViewNodirect(string $module_id, bool $on): void
+    {
+        $id       = static::getModuleObjectId($module_id);
+        $settings = AA_Modulesettings_Slice::load($id);
+        if ($settings instanceof AA_Modulesettings_Slice) {
+            $settings->setOwnerId($module_id);
+        } else {
+            $settings = new AA_Modulesettings_Slice();
+            $settings->setNew($id, $module_id);
+        }
+        $settings->setProperty(ViewDirect::PROPERTY, $on ? '1' : '');
+        $settings->save();
+        unset(AA_Module::$_modules[$module_id]);         // the settings are read again
+        AA::Pagecache()->invalidateFor($module_id);      // the outputs view.php has cached
     }
 
     /** getProperty function
@@ -1615,6 +1634,7 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings
     protected $historylog;
     protected $nocheck_pending;
     protected $nocheck_expired;
+    protected $view_nodirect;
 
     /** do not display Name property on the form by default */
     public const USES_NAME = false;
@@ -1622,7 +1642,7 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings
     /** check, if the $prop is the property of this object */
     public static function isProperty($prop): bool
     {
-        return in_array($prop, ['spamprotect', 'translations', 'autofields', 'fieldslice', 'historylog', 'nocheck_pending', 'nocheck_expired']);
+        return in_array($prop, ['spamprotect', 'translations', 'autofields', 'fieldslice', 'historylog', 'nocheck_pending', 'nocheck_expired', 'view_nodirect']);
     }
 
     /** allows storing object in database
@@ -1639,6 +1659,8 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings
             'historylog'      => new AA_Property('historylog', _m("Store item history for N days"), 'string', false, true, '', false, _m("ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted")),
             'nocheck_pending' => new AA_Property('nocheck_pending', _m("No pending items"), 'string', false, true, '', false, _m('1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)')),
             'nocheck_expired' => new AA_Property('nocheck_expired', _m("No expired items"), 'string', false, true, '', false, _m('1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)')),
+            // '1' or '' - AA\Security\ViewDirect
+            'view_nodirect'   => new AA_Property('view_nodirect', _m("Views only inside pages"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m('Yes - the views of this slice work only inside pages and other templates ({view:...}, {view.php?...}); their own addresses (view.php?vid=..., jsview.php?vid=...) show nothing. Also set on the list of views.')),
             // do not forget to add new property to  isProperty!
         ];
     }
@@ -1673,6 +1695,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
     protected $app_description;
     protected $app_version;
     protected $app_modules;
+    protected $view_nodirect;
 
 
     protected $additional_aliases;
@@ -1690,7 +1713,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
     /** check, if the $prop is the property of this object */
     public static function isProperty($prop): bool
     {
-        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'xcat_pattern', 'xflag_pattern', 'check_xseo', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url', ...self::APP_PROPERTIES]);
+        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'xcat_pattern', 'xflag_pattern', 'check_xseo', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url', 'view_nodirect', ...self::APP_PROPERTIES]);
     }
 
     /** allows storing object in database
@@ -1714,6 +1737,8 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
             'check_xseo'      => new AA_Property('check_xseo', _m("Check the page path"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m('Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when "Page not Found" is set to "Do not care".')),
             'page404'         => new AA_Property('page404', _m("Page not Found (404)"), 'string', false, true, ['enum',   [1 => _m('Do not care'),2 => _m('Send standard 404 page, when {xid} is empty'),3 => _m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
             'page404_code'    => new AA_Property('page404_code', _m("HTML code for \"Page not Found\" (404)"), 'text', false, true),
+            // '1' or '' - AA\Security\ViewDirect
+            'view_nodirect'   => new AA_Property('view_nodirect', _m("Views only inside pages"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m('Yes - the views of all the slices this site uses work only inside pages and other templates ({view:...}, {view.php?...}); their own addresses (view.php?vid=..., jsview.php?vid=...) show nothing and answer 404. Check first that no page loads a view by its address (AJAX, lazy loading) and that no RSS or other feed is a view. A refused call is listed in State Check.')),
             // '1' or '' - a string, so loading the settings on every page still reads object_text only
             'app_publish'     => new AA_Property('app_publish', _m("Publish in the app store"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m("Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too.")),
             'app_description' => new AA_Property('app_description', _m("App description"), 'text', false, true, ['text', ['maxlength' => self::APP_DESCRIPTION_MAX]], false, _m("What the app does, for the list of the app store.")),

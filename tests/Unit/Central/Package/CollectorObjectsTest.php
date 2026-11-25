@@ -352,11 +352,11 @@ namespace Tests\Unit\Central\Package {
         public function test_the_properties_of_the_settings_classes_are_reviewed(): void
         {
             $this->assertSame(
-                ['translate_slice', 'add_aliases', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url', 'web_languages', 'xflag_pattern', 'xcat_pattern', 'check_xseo', 'page404', 'page404_code', 'app_publish', 'app_description', 'app_version', 'app_modules'],
+                ['translate_slice', 'add_aliases', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url', 'web_languages', 'xflag_pattern', 'xcat_pattern', 'check_xseo', 'page404', 'page404_code', 'view_nodirect', 'app_publish', 'app_description', 'app_version', 'app_modules'],
                 array_keys(\AA_Modulesettings_Site::getClassProperties()),
             );
             $this->assertSame(
-                ['translations', 'autofields', 'fieldslice', 'historylog', 'nocheck_pending', 'nocheck_expired'],
+                ['translations', 'autofields', 'fieldslice', 'historylog', 'nocheck_pending', 'nocheck_expired', 'view_nodirect'],
                 array_keys(\AA_Modulesettings_Slice::getClassProperties()),
             );
         }

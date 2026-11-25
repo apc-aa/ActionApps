@@ -6,9 +6,12 @@ namespace Tests\Unit\Legacy;
 
 use AA;
 use AA\Cache\PageCache;
+use AA\Security\ViewDirect;
+use AA\Util\LogOnce;
 use AA_Showview;
 use AA_View;
 use AA_Views;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
@@ -16,7 +19,7 @@ use Tests\Unit\Legacy\Fixtures\RecordingDb;
 /**
  * What a view decides before it lists anything: a disabled view shows nothing, the first use of a view
  * marked as probably unused is logged and takes the mark off, a view not to be cached keeps the page out of
- * the page cache.
+ * the page cache, a view that works only inside pages shows nothing to the address of view.php.
  */
 final class ViewGatesTest extends TestCase
 {
@@ -46,6 +49,7 @@ final class ViewGatesTest extends TestCase
         $this->saved = [AA::$site_id, AA::$module_id, AA::$slice_id];
         [AA::$site_id, AA::$module_id, AA::$slice_id] = [null, null, null];
         $_SERVER['REQUEST_URI'] = '/cz/kontakty';
+        $_SERVER['SCRIPT_NAME'] = '/aa/modules/site/site.php';
         (new ReflectionProperty(PageCache::class, 'cache_nostore'))->setValue(AA::Pagecache(), false);
     }
 
@@ -55,7 +59,8 @@ final class ViewGatesTest extends TestCase
         (new ReflectionProperty($views, 'a'))->setValue($views, []);
         [AA::$site_id, AA::$module_id, AA::$slice_id] = $this->saved;
         $GLOBALS['spareDBs'] = [];
-        unset($_SERVER['REQUEST_URI']);
+        unset($_SERVER['REQUEST_URI'], $_SERVER['SCRIPT_NAME'], $_SERVER['HTTP_HOST'], $_SERVER['HTTP_REFERER'], AA::$headers['status']);
+        LogOnce::reset();
         (new ReflectionProperty(PageCache::class, 'cache_nostore'))->setValue(AA::Pagecache(), false);
         RecordingDb::reset();
         AA::Contentcache()->clear();
@@ -149,6 +154,41 @@ final class ViewGatesTest extends TestCase
 
         self::assertSame('', self::shown());
         self::assertFalse(self::pageIsKeptOutOfTheCache());
+    }
+
+    /** @return array<string, array{string, bool, bool}> script, the URL chose the view, shown */
+    public static function callsOfAViewOnlyInsidePages(): array
+    {
+        return [
+            'view.php'                      => ['/aa/view.php', true, false],
+            'view.php3'                     => ['/aa/view.php3', true, false],
+            'jsview.php'                    => ['/aa/jsview.php', true, false],
+            '{view.php?...} in view.php'    => ['/aa/view.php', false, true],
+            '{view:...} on a page'          => ['/aa/modules/site/site.php', false, true],
+            'discussion.php'                => ['/aa/discussion.php', true, true],
+        ];
+    }
+
+    #[DataProvider('callsOfAViewOnlyInsidePages')]
+    public function test_viewOutput_viewOnlyInsidePages_isShownOnlyToTemplates(string $script, bool $from_request, bool $shown): void
+    {
+        self::view(VIEW_FLAG_NODIRECT | VIEW_FLAG_WATCH);
+        $_SERVER['SCRIPT_NAME']  = $script;
+        $_SERVER['HTTP_HOST']    = 'example.org';
+        $_SERVER['REQUEST_URI']  = $script . '?vid=' . self::VID;
+        $_SERVER['HTTP_REFERER'] = 'https://example.org/cz/akce?x=1';
+
+        self::assertSame($shown ? 'shown' : '', self::shown(['from_request' => $from_request]));
+        self::assertSame(!$shown, self::pageIsKeptOutOfTheCache(), 'a refusal is never cached - the view shows again once the setting is off');
+        self::assertSame($shown ? null : 'HTTP/1.0 404 Not Found', AA::$headers['status'] ?? null);
+        // a refused call is no use of the view: the mark stays
+        self::assertCount($shown ? 1 : 0, self::viewUpdates());
+        $refusals = array_values(array_filter(RecordingDb::inserts('log'), static fn(array $row): bool => $row['type'] === ViewDirect::EVENT));
+        self::assertCount($shown ? 0 : 1, $refusals);
+        if (!$shown) {
+            self::assertSame(ParamImplode([(string) self::VID, ViewDirect::BY_VIEW, '']), $refusals[0]['selector']);
+            self::assertSame(ParamImplode(['example.org' . $script, 'example.org/cz/akce']), $refusals[0]['params']);
+        }
     }
 
     public function test_viewOutput_logRowOfALongAddress_fitsTheColumn(): void

@@ -28,6 +28,8 @@
 use AA\IO\DB\DB_AA;
 use AA\Manager;
 use AA\Manageraction\Manageractions;
+use AA\Security\ViewDirect;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -41,7 +43,9 @@ try {
     $del = InputVars::boolGET('del');
     $vid = InputVars::intGet('vid');
     $cancel = InputVars::boolPOST('cancel');
-    
+    $nodirect = InputVars::stringPOST('view_nodirect');   // '1' or '0' from the form of the slice setting
+    $token    = InputVars::stringPOST('token');
+
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -74,6 +78,16 @@ if ( $del ) {
 }
 
 // returns javascript row for view selection
+const SE_VIEWS_NODIRECT_TOKEN = 'se_views_nodirect';
+if (in_array($nodirect, ['0', '1'], true)) {
+    if (FormToken::checkPost(SE_VIEWS_NODIRECT_TOKEN, $token, $_SERVER)) {
+        AA_Slice::saveViewNodirect(AA::$module_id, $nodirect === '1');
+        $Msg = MsgOk(($nodirect === '1') ? _m('The views of this slice now work only inside pages.') : _m('The views of this slice are shown by their own addresses again.'));
+    } else {
+        $Msg = MsgErr(_m('The form has expired; reload the page and try again.'));
+    }
+}
+
 function GetViewJSArray( $sid, $id, $name, $i ): string {
     $id=safe($id);
     return "\n vs[$i]=\"x$sid\"; vv[$i]=\"$id\"; vn[$i]=\"".safe($name)."\";";
@@ -122,7 +136,7 @@ $view_types_ifeq = array_reduce( array_keys($VIEW_TYPES), static fn($str, $key) 
 
 // the states of a view worth seeing in the list, after its name
 $view_state = static fn(int $flag, string $text): string => '{ifbit:{_#FLAG____}:' . $flag . ': <small>(' . str_replace(':', '#:', safe($text)) . ')</small>}';
-$view_states = $view_state(VIEW_FLAG_DISABLE, _m('disabled')) . $view_state(VIEW_FLAG_WATCH, _m('not used since marked'));
+$view_states = $view_state(VIEW_FLAG_DISABLE, _m('disabled')) . $view_state(VIEW_FLAG_WATCH, _m('not used since marked')) . $view_state(VIEW_FLAG_NODIRECT, _m('only inside pages'));
 
 $managed = AA::Metabase()->getManagerConf('view', $actions);
 $managed->setModule(AA::$module_id);   // its forms and actions change only the views of this slice
@@ -178,6 +192,19 @@ $zids    = AA::Metabase()->queryZids(['table'=>'view'], $aa_set);
 
 //$manager->displayPage($zids, 'aaadmin', 'views');
 echo $manager->getManagerCode($zids);
+
+// whether view.php shows the views of this slice: the setting of the slice, and the sites that decide it for their slices
+$slice_nodirect = ViewDirect::moduleForbids(AA::$module_id);
+$site_names     = array_map(static fn(string $site): string => safe((string) AA_Module::getModuleName($site)), ViewDirect::sitesForbidding(AA::$module_id));
+echo '<form method="post" action="' . safe(StateUrl(self_base() . 'se_views.php')) . '">' . FormToken::field(SE_VIEWS_NODIRECT_TOKEN)
+    . '<table class="aa-table aa-table-simple aa-w-no-full"><thead><tr><th>' . _m('Views only inside pages') . '</th></tr></thead><tbody><tr><td>'
+    . ($slice_nodirect
+        ? _m('The views of this slice work only inside pages and other templates ({view:...}, {view.php?...}). Their own addresses (view.php?vid=..., jsview.php?vid=...) show nothing.')
+        : _m('Every view of this slice is also shown by its own address (view.php?vid=..., jsview.php?vid=...), unless the view is set otherwise.'))
+    . ($site_names ? '<br><b>' . _m('The site %1 uses this slice and lets views work only inside pages, so the addresses show nothing whatever is set here.', [implode(', ', $site_names)]) . '</b>' : '')
+    . '<div class="tabhlp">' . _m('Before you switch it on, check that no page loads a view of this slice by its address (AJAX, lazy loading) and that no RSS or other feed is one of the views. A refused call is listed in State Check.') . '</div>'
+    . '<button type="submit" name="view_nodirect" value="' . ($slice_nodirect ? '0' : '1') . '" class="aa-button-edit">' . ($slice_nodirect ? _m('Show views by their addresses again') : _m('Let views work only inside pages')) . '</button>'
+    . '</td></tr></tbody></table></form>';
 
 
 // -- get all views --
