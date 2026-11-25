@@ -245,8 +245,8 @@ class AA_View
      */
     public function getConds($param_conds = []): array
     {
-        // If param_conds[0] = "OR" as set by ParseViewParameters then set valuejoin
-        // used by ParseMultiSelectConds
+        // param_conds[0] = "OR" (cmd[]=c-OR-...) is not used: nothing ever read it, and put among the
+        // conditions it ended the search in an error
 
         // param_conds - redefines default condition values by url parameter (cmd[]=c)
 
@@ -259,9 +259,6 @@ class AA_View
         // the conditions after the third, each under its number; none in a database without the column
         foreach (StoredConditions::fromText((string) ($this->fields['conds'] ?? ''), self::MORE_CONDS_FROM)->toConds((array) $param_conds) as $cond) {
             $conds[] = $cond;
-        }
-        if ($param_conds[0]) {
-            $conds['valuejoin'] = $param_conds[0];
         }
         AA::$debug & 2 && AA::$dbg->log("(AA_View->getConds) conds=", $conds);
 
@@ -717,9 +714,7 @@ class AA_View
     public static function addViewAliases(AA_Aliases $aliases, array $conds): void
     {
         foreach ($conds as $k => $v) {
-            if (is_int($k)) {   // 'valuejoin' of cmd[]=c-OR-... is no condition
-                $aliases->addTextAlias(str_pad('_#VIEW_C' . ($k + 1), 10, '_'), $v['value']);
-            }
+            $aliases->addTextAlias(str_pad('_#VIEW_C' . ($k + 1), 10, '_'), $v['value']);
         }
     }
 

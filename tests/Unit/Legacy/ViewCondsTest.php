@@ -78,18 +78,17 @@ final class ViewCondsTest extends TestCase
         );
     }
 
-    public function test_getConds_orOfTheCall(): void
+    /** cmd[]=c-OR-1-a-2-b: the OR was put among the conditions under a name, where nothing read it - the
+     *  aliases _#VIEW_C1... and the search took it for a condition and the page ended in an error */
+    public function test_getConds_orOfTheCall_isNoCondition(): void
     {
-        self::assertSame('OR', self::view()->getConds([0 => 'OR', 2 => 'Vod'])['valuejoin']);
-    }
+        $conds = self::view()->getConds([0 => 'OR', 1 => 'a', 2 => 'b']);
 
-    /** cmd[]=c-OR-1-a-2-b: the OR among the conditions is no condition - reading it as one ended the page in an error */
-    public function test_addViewAliases_orOfTheCall_isNoAlias(): void
-    {
+        self::assertSame([0, 1], array_keys($conds));
+        self::assertSame(['a', 'b'], array_column($conds, 'value'));
+
         $aliases = new AA_Aliases();
-
-        AA_View::addViewAliases($aliases, self::view()->getConds([0 => 'OR', 1 => 'a', 2 => 'b']));
-
+        AA_View::addViewAliases($aliases, $conds);
         self::assertSame(['_#VIEW_C1_', '_#VIEW_C2_'], array_values($aliases->getNames()));
     }
 
