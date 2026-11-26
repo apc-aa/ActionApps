@@ -399,6 +399,12 @@ final class FakeSlice extends AA_Slice
         return $this->fake_fields;
     }
 
+    /** no field aliases - the real ones are read with the fields from the database */
+    public function aliases($additional_aliases = null, $type = ''): ?array
+    {
+        return is_array($additional_aliases) ? $additional_aliases : [];
+    }
+
     /** where the file inserter stores uploads - the real one reads settings and config constants */
     public function getUploadBase(): array
     {

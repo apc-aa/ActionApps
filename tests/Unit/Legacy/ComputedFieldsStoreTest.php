@@ -37,7 +37,7 @@ namespace Tests\Unit\Legacy {
 
     /**
      * A recompute that gets the stored value again writes nothing (ItemContent::updateComputedFields()),
-     * so the periodic recompute leaves the page cache alone.
+     * so the periodic recompute leaves the page cache alone; the slice setting fields are recomputed too.
      */
     final class ComputedFieldsStoreTest extends TestCase
     {
@@ -137,6 +137,33 @@ namespace Tests\Unit\Legacy {
             $this->assertTrue($this->storedItem('xOld')->updateComputedFields());
 
             $this->assertSame([$this->row(self::ITEM, self::COMPUTED, 0, 'xHello', FLAG_TEXT_STORED)], RecordingDb::$content);
+        }
+
+        // ------------------------------------------------------------ slice setting fields
+
+        public function test_setting_field_is_computed_from_the_setting_and_stored_with_the_slice(): void
+        {
+            $setting_field = '_price..........';
+            self::$slice->setFields(new FakeFields(self::SLICE, [
+                $this->field('_rate...........', 'qte'),
+                $this->field($setting_field, 'co2:{_rate...........}x:{_rate...........}x::minute'),
+            ]));
+            RecordingDb::$content = [
+                $this->row(self::SLICE, '_rate...........', 0, '25', FLAG_TEXT_STORED),
+                $this->row(self::SLICE, $setting_field, 0, 'old', FLAG_TEXT_STORED),
+            ];
+            // loadsettingfields() reads the setting rows of the slice
+            RecordingDb::$answer = static fn(string $sql): array => str_starts_with($sql, 'SELECT * FROM content')
+                ? array_map(static fn($r) => ['field_id' => $r['field'], 'number' => $r['number'], 'text' => $r['text'], 'flag' => $r['flag']], RecordingDb::$content)
+                : [];
+
+            $this->assertTrue(self::$slice->updateComputedSettingFields());
+            $this->assertContains($this->row(self::SLICE, $setting_field, 0, '25x', FLAG_TEXT_STORED), RecordingDb::$content);
+            $this->assertSame('25x', self::$slice->get_dynamic_setting_content(true)->getValue($setting_field), 'the slice reads the new value');
+
+            RecordingDb::$log = [];
+            $this->assertFalse(self::$slice->updateComputedSettingFields(), 'the second run gets the same value');
+            $this->assertSame(0, RecordingDb::count('DELETE') + RecordingDb::count('INSERT'));
         }
     }
 }
