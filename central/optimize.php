@@ -7,7 +7,7 @@
  * their steps at once (<aa-batchrun>). Superadmins only, as the whole Central.
  *
  * GET               the form (aa=<id>,<id> - the AAs chosen in the Central list) and the last runs
- * POST start        task[], method, aa[] - starts a run for each task
+ * POST start        task[], method, aa[], long_locks - starts a run for each task
  * GET run=<id>      the results of a run; while it goes on, the page runs its steps (step)
  * POST continue|end run=<id>
  * POST step [run=<id>] [look=1] [seen=<sum>] JSON {sum, html?, wait?}: the due step of the run - of the
@@ -42,6 +42,7 @@ use AA\Api\JsonResponse;
 use AA\Central\ResponderPolicy;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
+use AA\Optimize\UpdateDbStructure;
 use AA\Util\FormToken;
 use AA\Util\InputVars;
 
@@ -58,6 +59,7 @@ try {
     $posted = array_filter(InputVars::arrayPOST('aa'), 'is_string');
     $tasks  = array_filter(InputVars::arrayPOST('task'), 'is_string');
     $method = InputVars::stringPOST('method');
+    $long   = InputVars::boolPOST('long_locks');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -100,7 +102,7 @@ if (($action === 'start') && (count($tasks) > OptimizeRun::KEEP)) {
         }
         $runs = [];
         foreach ($tasks as $task) {
-            $runs[] = OptimizeRun::begin($task, OptimizeRun::methodFor($task, $method), $aas, $uid)->getId();
+            $runs[] = OptimizeRun::begin($task, OptimizeRun::methodFor($task, $method), $aas, $uid, $long)->getId();
         }
         // several runs: their list, and the same AAs chosen for the next start
         go_url((count($runs) === 1) ? optimize_url(['run' => $runs[0]]) : optimize_url(['aa' => implode(',', $aas)]) . '#aa-optimize-runs');
@@ -162,7 +164,7 @@ if ($run_id !== '') {
 } else {
     // a refused start keeps what was chosen
     $checked = ($action === 'start') ? $posted : explode(',', $chosen);
-    optimize_form(array_map('intval', array_filter($checked, 'ctype_digit')), $tasks ?: [OptimizeRun::SQL_UPDATE], $method ?: 'test');
+    optimize_form(array_map('intval', array_filter($checked, 'ctype_digit')), $tasks ?: [OptimizeRun::SQL_UPDATE], $method ?: 'test', $long);
     optimize_live('', $uid);
 }
 
@@ -233,7 +235,7 @@ function optimize_title(OptimizeRun $run): string
 
 /** @param list<int> $checked the AAs chosen in the Central list
  *  @param list<string> $tasks tasks of OptimizeRun::tasks() */
-function optimize_form(array $checked, array $tasks, string $method): void
+function optimize_form(array $checked, array $tasks, string $method, bool $long): void
 {
     $aas = Actionapps::getArray();
     if (!$aas) {
@@ -251,6 +253,7 @@ function optimize_form(array $checked, array $tasks, string $method): void
     $input->staticText(false);
     echo $input->get_result();
     FrmInputRadio('method', _m('Do'), optimize_methods(), $method, true, _m('Repair tests first, repairs only where the test fails, then tests again. A task without a repair is only tested.'));
+    FrmInputChBox('long_locks', _m('Allow long table locks'), $long, false, '', 1, false, optimize_long_locks_help());
     FrmTabEnd();
     echo '<table class="aa-optimize"><tr><th><input type="checkbox" id="aa-optimize-all" aria-label="' . safe(_m('Select all')) . '"></th><th>' . _m('AA') . '</th><th>' . _m('Auth') . '</th></tr>';
     foreach ($aas as $id => $aa) {
@@ -297,7 +300,7 @@ function optimize_run(string $run_id, string $uid): void
     [$current, $next] = ($open ? $run->current() : null) ?? [0, ''];
     $asking  = $run->asking($now);
     echo '<h2>' . safe(optimize_title($run)) . '</h2>'
-        . '<p>' . _m('Started %1 by %2', [safe(date('Y-m-d H:i', $run->started())), safe(perm_username($run->user()))]) . '</p>'
+        . '<p>' . _m('Started %1 by %2', [safe(date('Y-m-d H:i', $run->started())), safe(perm_username($run->user()))]) . ($run->longLocks() ? ' - ' . _m('long table locks allowed') : '') . '</p>'
         . '<p><strong>' . safe(optimize_state($run, $now)) . '</strong> ' . safe(_m('%1 of %2 AAs done', [$run->done(), count($run->aas())])) . '</p>';
     $failure = $run->lastFailure();
     if ($failure && ($run->state() !== OptimizeRun::DONE)) {
@@ -324,6 +327,9 @@ function optimize_run(string $run_id, string $uid): void
         }
         $good = in_array($r['s'], [OptimizeRun::OK, OptimizeRun::REPAIRED], true);
         echo '<td class="' . ($good ? 'aa-optimize-ok' : 'aa-optimize-bad') . '">' . safe(optimize_status($r['s'], $run->method())) . '</td><td>';
+        if ($steps = optimize_problem_steps($r)) {
+            echo '<div><strong>' . safe(_m('Failed steps: %1', [implode(', ', $steps)])) . '</strong></div>';
+        }
         if ($r['m'] !== '') {
             echo '<div>' . safe($r['m']) . '</div>';
         }
@@ -355,7 +361,26 @@ function optimize_repair_button(string $task, array $results): void
         . '<input type="hidden" name="action" value="start"><input type="hidden" name="method" value="repair">'
         . '<input type="hidden" name="task[]" value="' . safe($task) . '">'
         . implode('', array_map(static fn($id): string => '<input type="hidden" name="aa[]" value="' . (int) $id . '">', $problems))
+        . '<p><label><input type="checkbox" name="long_locks" value="1"> ' . _m('Allow long table locks') . '</label> <small>' . optimize_long_locks_help() . '</small></p>'
         . '<p><button class="btn-l aa-once" type="submit">' . _m('Repair the AAs with a problem (%1)', [count($problems)]) . '</button></p></form>';
+}
+
+/** the steps a result failed in, as the AA marked them in its report: of a repair the ones the test after it
+ *  still finds, else the ones whose repair failed
+ *  @param array{s: string, m: string, r: string, c: string} $r
+ *  @return list<string> */
+function optimize_problem_steps(array $r): array
+{
+    return match ($r['s']) {
+        OptimizeRun::FAILED  => RemoteHtml::problemSteps($r['c']) ?: RemoteHtml::problemSteps($r['r']),
+        OptimizeRun::PROBLEM => RemoteHtml::problemSteps($r['r']),
+        default              => [],
+    };
+}
+
+function optimize_long_locks_help(): string
+{
+    return _m('A table over %1 MB whose change needs a copy (Update database structure) is changed too - its writes wait minutes meanwhile, the reads go on. Best at night; without it such a table is left as it is and the repair says so.', [UpdateDbStructure::SHARED_SIZE >> 20]);
 }
 
 function optimize_status(string $status, string $method): string

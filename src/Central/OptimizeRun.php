@@ -70,7 +70,7 @@ final class OptimizeRun extends CentralRun
      *  first and the second failure in a row - longer together than a remote sql_update may run (360 s) */
     protected const RETRY = [60, 120, 300];
 
-    /** @var ?Closure(int, string, string, int): ?AA_Response */
+    /** @var ?Closure(int, string, string, int, AA_Request): ?AA_Response */
     private static ?Closure $testRemote = null;
 
     /** JSON list of central_conf ids, in the order they are asked */
@@ -78,6 +78,8 @@ final class OptimizeRun extends CentralRun
     /** self::SQL_UPDATE or an Optimize class */
     protected $task = '';
     protected $method = '';
+    /** '1': a repair may make the writes to a big table wait for minutes (UpdateDbStructure::allowLongLocks()) */
+    protected $long_locks = '';
     /** JSON central_conf id => {s: result, m: message, r: report, c: report of the test after the repair} -
      *  an AA asked for the test after its repair has the result of the repair here already */
     protected $results = '';
@@ -90,7 +92,7 @@ final class OptimizeRun extends CentralRun
     public static function getClassProperties(): array
     {
         $props = parent::getClassProperties();
-        foreach (['aas', 'task', 'method', 'results'] as $id) {
+        foreach (['aas', 'task', 'method', 'long_locks', 'results'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -99,9 +101,10 @@ final class OptimizeRun extends CentralRun
     /** A new run with its first step queued; old finished runs go away on the way. Outside any transaction.
      *  The caller has checked that $user is a superadmin and the AAs are rows of the Central list.
      *  @param array<int> $aas central_conf ids, in the order they are asked
+     *  @param bool $long_locks a repair may make the writes to a big table wait for minutes
      *  @throws InvalidArgumentException an unknown task, a method the task has not, no AA
      *  @throws BatchFailed NO_TRANSACTION a table the run needs is not InnoDB */
-    public static function begin(string $task, string $method, array $aas, string $user): self
+    public static function begin(string $task, string $method, array $aas, string $user, bool $long_locks = false): self
     {
         if (!isset(self::tasks()[$task])) {
             throw new InvalidArgumentException("Unknown optimize task $task");
@@ -115,12 +118,13 @@ final class OptimizeRun extends CentralRun
         }
         self::cleanup(self::subject(), self::KEEP);
         $id = DB_AA::transaction(static fn(): string => self::start([
-            'subject'  => self::subject(),
-            'user'     => $user,
-            'aas'      => json_encode($aas, JSON_THROW_ON_ERROR),
-            'task'     => $task,
-            'method'   => $method,
-            'position' => self::at(0),
+            'subject'    => self::subject(),
+            'user'       => $user,
+            'aas'        => json_encode($aas, JSON_THROW_ON_ERROR),
+            'task'       => $task,
+            'method'     => $method,
+            'long_locks' => ($long_locks && ($method === 'repair')) ? '1' : '',
+            'position'   => self::at(0),
         ])->getId());
         // read again: the instance of start() is not the run as stored
         return self::get($id) ?? throw new LogicException('The new optimize run is gone');
@@ -206,7 +210,7 @@ final class OptimizeRun extends CentralRun
         DB_AA::transaction(static fn() => (self::lockForUpdate($id) ?? throw new BatchFailed(self::FORBIDDEN))->end($uid));
     }
 
-    /** @internal for tests only: what the AAs answer - $ask(central_conf id, task, method, timeout);
+    /** @internal for tests only: what the AAs answer - $ask(central_conf id, task, method, timeout, the command);
      *  null as its answer = no such row; null = the real AAs */
     public static function setTestRemote(?Closure $ask): void
     {
@@ -221,12 +225,13 @@ final class OptimizeRun extends CentralRun
         return ($next === '') ? ['i' => $i] : ['i' => $i, 'next' => $next];
     }
 
-    /** the command that runs $method of $task on an AA */
-    public static function request(string $task, string $method): AA_Request
+    /** the command that runs $method of $task on an AA - an older AA ignores long_locks */
+    public static function request(string $task, string $method, bool $long_locks = false): AA_Request
     {
+        $long = ($long_locks && ($method === 'repair')) ? ['long_locks' => true] : [];
         return ($task === self::SQL_UPDATE)
-            ? new AA_Request('Do_Optimize_Type', ['type' => $task, 'method' => $method])
-            : new AA_Request('Do_Optimize', ['class' => $task, 'method' => $method]);
+            ? new AA_Request('Do_Optimize_Type', ['type' => $task, 'method' => $method] + $long)
+            : new AA_Request('Do_Optimize', ['class' => $task, 'method' => $method] + $long);
     }
 
     // ---------------------------------------------------------------- the steps
@@ -387,9 +392,10 @@ final class OptimizeRun extends CentralRun
     private function ask(int $aa, string $method, BatchBudget $budget): array
     {
         $timeout  = max(1, (int) floor($budget->httpTimeout()));
+        $request  = self::request($this->task(), $method, $this->longLocks());
         $response = self::$testRemote
-            ? (self::$testRemote)($aa, $this->task(), $method, $timeout)
-            : Actionapps::find($aa)?->getResponse(self::request($this->task(), $method), $timeout);
+            ? (self::$testRemote)($aa, $this->task(), $method, $timeout, $request)
+            : Actionapps::find($aa)?->getResponse($request, $timeout);
         return ($response === null) ? ['kind' => self::REFUSED, 'text' => _m('No such AA in the Central list any more')] : self::answer($response);
     }
 
@@ -441,6 +447,11 @@ final class OptimizeRun extends CentralRun
     public function method(): string
     {
         return (string) $this->method;
+    }
+
+    public function longLocks(): bool
+    {
+        return (string) $this->long_locks === '1';
     }
 
     public function started(): int

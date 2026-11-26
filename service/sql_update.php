@@ -26,6 +26,7 @@ https://www.apc.org/
 
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\Chain;
+use AA\Optimize\UpdateDbStructure;
 use AA\Util\InputVars;
 use AA\Util\ReportTrait;
 
@@ -111,6 +112,7 @@ require_once __DIR__ . "/../include/varset.php";
 
 $acccode = InputVars::stringGET('acccode');
 $fire    = InputVars::boolGET('fire');
+$long    = InputVars::boolGET('long_locks');
 
 if (!$silent) {
     // SCRIPT_NAME: PHP_SELF also holds the path info after the script name, which comes from the URL
@@ -120,6 +122,9 @@ if (!$silent) {
 
             Write to database <input type="checkbox" name="fire" value="1"' . ($fire ? ' checked' : '') . '><br>
             <small>Check this for real work with writing to database</small>
+            <br>
+            Allow long table locks <input type="checkbox" name="long_locks" value="1"' . ($long ? ' checked' : '') . '><br>
+            <small>A table over ' . (UpdateDbStructure::SHARED_SIZE >> 20) . ' MB whose change needs a copy is changed too - its writes wait minutes meanwhile; best at night</small>
             <br><br>
 
             <input type="submit" name="dotest" value="Test">
@@ -167,6 +172,7 @@ if (InputVars::stringGET('update')) {
     if (!$fire) {
         AbstractOptimize::justPrint(true);
     }
+    UpdateDbStructure::allowLongLocks($long);
     // the same lock as Central's Do_Optimize_Type - two updates at once would rebuild the same tables
     if (!($release = Chain::tryLock('sql_update', $holder))) {
         echo 'Err ' . Chain::runningMessage('sql_update', $holder);

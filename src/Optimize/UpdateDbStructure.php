@@ -21,7 +21,13 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
     /** a table of up to so many bytes (data and indexes) is changed even when it has to be locked meanwhile - seconds */
     private const LOCKED_SIZE = 32 * 1024 * 1024;
 
-    /** @var array<string, array{action: string, alter: string[], extra: string[], kept: string[], live: string, template: string}>|null */
+    /** a bigger table InnoDB cannot change without a lock is still changed, with its writes waiting meanwhile -
+     *  tens of seconds (a log of 130 MB); a table of gigabytes (change of an e-shop) would stop the writes for minutes */
+    public const SHARED_SIZE = 512 * 1024 * 1024;
+
+    private static bool $long_locks = false;
+
+    /** @var array<string, array{action: string, alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string[]}>, live: string, template: string}>|null */
     private ?array $plan = null;
 
     /** @var array<string, array{ENGINE: ?string, ROW_FORMAT: ?string, size: int|string|null}>|null */
@@ -40,7 +46,14 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
      */
     public static function description(): string
     {
-        return _m('Compares all the tables with the AA template of the database structure. Repair creates the missing tables and changes the differing ones in place (ALTER TABLE) - the data and the writes during the change stay. Tables, columns and indexes the template does not know and columns the template would narrow are only listed. On a big table the change takes minutes - run it when the traffic is low.');
+        return _m('Compares all the tables with the AA template of the database structure. Repair creates the missing tables and changes the differing ones in place (ALTER TABLE) - the data and the writes during the change stay. Tables, columns and indexes the template does not know and columns the template would narrow are only listed. Some changes of a big table make its writes wait until it is done - for a table over %1 MB that takes minutes, so it is done only when long table locks are allowed; run it at night.', [self::SHARED_SIZE >> 20]);
+    }
+
+    /** Lets the repair change a table over SHARED_SIZE with its writes waiting - minutes; asked for by the one who
+     *  runs the update (Central, service/sql_update.php), as justPrint() is */
+    public static function allowLongLocks(bool $allow): void
+    {
+        self::$long_locks = $allow;
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
@@ -94,7 +107,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
             if ($plan['action'] === 'create') {
                 $ok = $this->run($tablename, $this->templateMetabase()->getCreateSql($tablename)) && $ok;
             } elseif ($plan['action'] === 'alter') {
-                $ok = $this->alter($tablename, $plan['alter']) && $ok;
+                $ok = $this->alter($tablename, $plan['alter'], $plan['checks']) && $ok;
             }
         }
         $this->plan = $this->tables = null;
@@ -115,28 +128,63 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
         }
     }
 
-    /** A big table is changed only without locking it (LOCK=NONE), as InnoDB can do it for indexes, NOT NULL,
-     *  a new column or a longer varchar - another type of a column or a MyISAM table would stop the writes for
-     *  minutes, so the server refuses and the ALTER is listed for a manual run when the traffic is low. A small
-     *  table is changed in any way - its lock lasts seconds. A failed ALTER leaves the table as it was. */
-    private function alter(string $tablename, array $clauses): bool
+    /** A big table is changed without locking it (LOCK=NONE) where InnoDB can do it: indexes, NOT NULL, a new
+     *  column, a longer varchar. Another type of a column or a MyISAM table needs a copy of the table, its writes
+     *  wait meanwhile (LOCK=SHARED, the reads go on) - up to SHARED_SIZE always, a bigger table only with
+     *  allowLongLocks(). Before the copy the rows are checked for values the new definition would refuse: the
+     *  copy would stop at the first one after minutes of waiting writes. A small table is changed in any way -
+     *  its lock lasts seconds. A failed ALTER leaves the table as it was.
+     * @param array<string, array{sql: string, kept: string, with: string[]}> $checks of the clauses, not run yet */
+    private function alter(string $tablename, array $clauses, array $checks = []): bool
+    {
+        $size = (int) ($this->liveTables()[$tablename]['size'] ?? 0);
+        if ($size <= self::LOCKED_SIZE) {
+            return $this->result($tablename, $this->tryAlter($tablename, $clauses, ''));
+        }
+        $error = $this->tryAlter($tablename, $clauses, 'NONE');
+        $mb    = round($size / 1048576);
+        if (str_contains($error, ': 1799 ')) {
+            // the writes during the change did not fit the online log - another time they may; a lock would stop them
+            $this->message(_m('Table %1 (%2 MB) not changed: %3. Too many writes came meanwhile - run the repair again when the traffic is low.', [safe($tablename), $mb, safe($error)]));
+            return false;
+        }
+        if (!preg_match('/: (1845|1846) /', $error)) {
+            return $this->result($tablename, $error);   // done, or refused for a reason a lock would not change
+        }
+        if (($size > self::SHARED_SIZE) && !self::$long_locks) {
+            $this->message(_m('Table %1 (%2 MB) not changed: %3. The change makes the writes to the table wait for minutes, so it runs only when long table locks are allowed (Central Optimize, service/sql_update.php) - best at night.', [safe($tablename), $mb, safe($error)]));
+            return false;
+        }
+        if ($checks) {
+            $changes = self::withoutMisfits(['alter' => $clauses, 'extra' => [], 'kept' => [], 'checks' => $checks], static fn(string $sql): bool => (bool) DB_AA::select1('misfit', $sql));
+            if ($changes['kept']) {
+                $this->message(_m('Table %1 keeps the columns the template would narrow or change to another type, and the indexes over them - change them manually, if the data allow it: %2', [safe($tablename), safe(implode(', ', $changes['kept']))]));
+            }
+            if (!($clauses = $changes['alter'])) {
+                return false;
+            }
+        }
+        $start = microtime(true);
+        $error = $this->tryAlter($tablename, $clauses, 'SHARED');
+        if ($error === '') {
+            $this->message(_m('Table %1 (%2 MB) changed - its writes waited %3 s.', [safe($tablename), $mb, round(microtime(true) - $start)]));
+        }
+        return $this->result($tablename, $error);
+    }
+
+    /** ALTER TABLE in strict mode with the lock ('' = none asked for), once more as ROW_FORMAT=DYNAMIC when strict
+     *  InnoDB refuses to rebuild an old Compact table whose row could exceed 8 kB (1118 Row size too large)
+     * @return string the error, '' when done */
+    private function tryAlter(string $tablename, array $clauses, string $lock): string
     {
         $table = $this->liveTables()[$tablename] ?? [];
-        $size  = (int) ($table['size'] ?? 0);
-        $lock  = ($size > self::LOCKED_SIZE) ? ', LOCK=NONE' : '';
         $sql   = "ALTER TABLE `$tablename` " . implode(', ', $clauses);
-        $error = $this->strictly($sql . $lock);
+        $with  = ($lock !== '') ? ", LOCK=$lock" : '';
+        $error = $this->strictly($sql . $with);
         if (str_contains($error, ': 1118 ') && (($table['ENGINE'] ?? '') === 'InnoDB') && in_array($table['ROW_FORMAT'] ?? '', ['Compact', 'Redundant'], true)) {
-            // strict InnoDB refuses to rebuild an old table whose row could exceed 8 kB (Row size too large)
-            $sql  .= ', ROW_FORMAT=DYNAMIC';
-            $error = $this->strictly($sql . $lock);
+            $error = $this->strictly($sql . ', ROW_FORMAT=DYNAMIC' . $with);
         }
-        if (($lock === '') || !preg_match('/: (1845|1846|1799) /', $error)) {
-            // 1845, 1846: not without a lock; 1799: too many writes meanwhile - a data error would stay at night
-            return $this->result($tablename, $error);
-        }
-        $this->message(_m('Table %1 (%2 MB) not changed: %3. Run it when the traffic is low: %4', [safe($tablename), round($size / 1048576), safe($error), safe("SET SESSION sql_mode = 'STRICT_ALL_TABLES'; $sql;")]));
-        return false;
+        return $error;
     }
 
     private function run(string $tablename, string $sql): bool
@@ -158,7 +206,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
 
     /** What each table needs: action none|alter|create|unknown (not in the template) - one plan for test()
      *  and the repair() after it
-     * @return array<string, array{action: string, alter: string[], extra: string[], kept: string[], live: string, template: string}>
+     * @return array<string, array{action: string, alter: string[], extra: string[], kept: string[], checks: array<string, array{sql: string, kept: string, with: string[]}>, live: string, template: string}>
      */
     private function plan(): array
     {
@@ -175,19 +223,21 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
             $myisam  = ($tables[$tablename]['ENGINE'] ?? '') === 'MyISAM';
             $changes = $current ? self::changes($table, $current, $collations[$tablename] ?? [], $myisam) : ['alter' => [], 'extra' => [], 'kept' => [], 'checks' => []];
             if ($changes['checks'] && ((int) ($tables[$tablename]['size'] ?? 0) <= self::LOCKED_SIZE)) {
-                $changes = self::withoutMisfits($changes, static fn(string $sql): bool => (bool) DB_AA::select1('misfit', $sql));
+                $changes           = self::withoutMisfits($changes, static fn(string $sql): bool => (bool) DB_AA::select1('misfit', $sql));
+                $changes['checks'] = [];
             }
             $this->plan[$tablename] = [
                 'action'   => $current ? ($changes['alter'] ? 'alter' : 'none') : 'create',
                 'alter'    => $changes['alter'],
                 'extra'    => $changes['extra'],
                 'kept'     => $changes['kept'],
+                'checks'   => $changes['checks'],   // not run yet - the scan of a big table waits for the copy that needs it
                 'live'     => $current ? $current->getCompareSql() : '',
                 'template' => $table->getCompareSql(),
             ];
         }
         foreach (array_diff($live->getTableNames(), $template->getTableNames()) as $tablename) {
-            $this->plan[$tablename] = ['action' => 'unknown', 'alter' => [], 'extra' => [], 'kept' => [], 'live' => '', 'template' => ''];
+            $this->plan[$tablename] = ['action' => 'unknown', 'alter' => [], 'extra' => [], 'kept' => [], 'checks' => [], 'live' => '', 'template' => ''];
         }
         return $this->plan;
     }
