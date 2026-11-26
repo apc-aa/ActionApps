@@ -57,13 +57,26 @@ final class ParamwizardTest extends TestCase
 
         $area = array_column($items['edt']['params'], null, 'id')['area_type'];
         $this->assertSame('enum', $area['type']);
-        $this->assertSame(['class' => 'class', 'iframe' => 'iframe'], $area['options']);
+        $this->assertSame([['class', 'class'], ['iframe', 'iframe']], $area['options']);
 
         foreach ([...$items['sel']['params'], ...$items['edt']['params']] as $param) {
             foreach (['id', 'name', 'type', 'help', 'example'] as $key) {
                 $this->assertArrayHasKey($key, $param);
             }
         }
+    }
+
+    /** Options keep their order, and the older 0 | 1 | 2 of Scope are marked: offered only to a field that has them. */
+    public function test_fromClasses_enumOptionsKeepOrderAndMarkOlderSpelling(): void
+    {
+        $GLOBALS['VALIDATE_TYPES'] = ['name' => 'v', 'items' => ['unique' => ['name' => 'U']]];
+        $params = array_column(Paramwizard::definitions('VALIDATE_TYPES')['items']['unique']['params'], null, 'id');
+
+        $this->assertSame('enum', $params['scope']['type']);
+        $this->assertSame([
+            ['username', 'username'], ['slice', 'slice'], ['allslices', 'allslices'],
+            ['0', 'username', true], ['1', 'slice', true], ['2', 'allslices', true],
+        ], $params['scope']['options']);
     }
 
     /** The form fields take plain values; the examples are written as in the stored string. */

@@ -227,7 +227,9 @@ class AaParamsElement extends HTMLElement {
                 break;
             case 'enum': {
                 input = el('select');
-                const options = [['', labels.default], ...Object.entries(param.options ?? {})];
+                // an older spelling only for the field that still has it, told apart from the current one
+                const offered = (param.options ?? []).filter(([v, , older]) => !older || (v === value));
+                const options = [['', labels.default], ...offered.map(([v, text, older]) => [v, older ? `${text} (${v})` : text])];
                 if (!options.some(([v]) => v === value)) {
                     options.push([value, value]);   // a stored value the type does not offer must not get lost
                 }

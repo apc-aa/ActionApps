@@ -104,7 +104,7 @@ class Paramwizard
                 $param['type'] = 'text';
             } elseif (is_array($options) && $options) {
                 $param['type']    = 'enum';
-                $param['options'] = array_map('strval', $options);
+                $param['options'] = self::enumOptions($options);
             } else {
                 $param['type'] = match ($prop->getType()) {
                     'int', 'bool', 'text' => $prop->getType(),
@@ -114,6 +114,23 @@ class Paramwizard
             $params[] = $param;
         }
         return $params;
+    }
+
+    /** [value, label] pairs - a JS object would put numeric keys first. A value labelled like an earlier one
+     *  is an older spelling of it ([value, label, true]): the form offers it only to a field that still has it.
+     *  @param array<int|string, mixed> $options value => label
+     *  @return array<int, array{0: string, 1: string, 2?: true}>
+     */
+    private static function enumOptions(array $options): array
+    {
+        $ret  = [];
+        $seen = [];
+        foreach ($options as $value => $label) {
+            $label = (string) $label;
+            $ret[] = isset($seen[$label]) ? [(string) $value, $label, true] : [(string) $value, $label];
+            $seen[$label] = true;
+        }
+        return $ret;
     }
 
     /** @param array $wizard an array as in include/constants_param_wizard.php
