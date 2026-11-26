@@ -2,8 +2,8 @@
 
 /**
  * Notes endpoint - the POST target of AA\Util\Notes forms: add a note to a
- * resource, resolve a State Check finding, unresolve or delete a note; then
- * back to the page the form was on. No output of its own.
+ * resource, resolve a State Check finding, edit, unresolve or delete a note;
+ * then back to the page the form was on. No output of its own.
  *
  * PHP version 8.2+
  *
@@ -46,6 +46,7 @@ try {
     $id         = InputVars::stringPOST('id');
     $return     = InputVars::stringPOST('return');
     $token      = InputVars::stringPOST('token');
+    $sig        = InputVars::stringPOST('sig');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -54,7 +55,9 @@ if (!Notes::mayWrite()) {
     MsgPage(_m("You do not have permissions to write notes"));
     exit;
 }
-if (!FormToken::check(Notes::TOKEN, $token)) {
+// a new note goes only to the resource its form was rendered for - the POST alone could name any
+$unsigned = in_array($action, ['add', 'resolve'], true) && !Notes::isSigned($action, $resource, $sig);
+if ($unsigned || !FormToken::check(Notes::TOKEN, $token)) {
     MsgPage(_m('The form has expired; reload the page and try again.'));
     exit;
 }
@@ -76,6 +79,16 @@ switch ($action) {
         // only a superadmin decides what State Check stops showing
         if (IsSuperadmin() && str_starts_with($resource, 'finding:')) {
             Note::create($owner, $resource, $text, Note::AUDIENCE_ALL, Note::STATE_RESOLVED, Note::untilFromChoice($until, $until_date, now()));
+        }
+        break;
+    case 'edit':
+        // typos and the like: the text only, only by who wrote it, and from the edit form of that
+        // very note (signed for the module it was shown on - a kept note id alone is not enough).
+        // An empty text only where it was optional from the start - the reason of a resolution.
+        $note = AA_Object::load($id, Note::class);
+        if ($note instanceof Note && ($note->author === AuthGetUid()) && Notes::isSigned($action, (string) $note->resource, $sig)
+            && (($note->state === Note::STATE_RESOLVED) || (($note->state === Note::STATE_VALID) && (trim($text) !== '')))) {
+            $note->setText($text);
         }
         break;
     case 'unresolve':

@@ -24,6 +24,7 @@ namespace {
 namespace Tests\Unit\Util {
 
     use AA;
+    use AA\Util\Note;
     use AA\Util\Notes;
     use AA_Perm;
     use PHPUnit\Framework\TestCase;
@@ -94,6 +95,78 @@ namespace Tests\Unit\Util {
 
             self::on(self::OWN, '', true);
             self::assertTrue(Notes::mayWrite());
+        }
+
+        /** aa_note.php takes the resource from the POST - it writes only where the form was rendered */
+        public function test_isSigned_onlyTheFormTheUserWasShownOnThisModule(): void
+        {
+            self::on(self::SLICE, 'EDITOR');
+            $resource = 'page:' . self::SLICE . ':admin/index.php';
+            $sig      = Notes::sign('u1', self::SLICE, 'add', $resource);
+
+            self::assertTrue(Notes::isSigned('add', $resource, $sig));
+            self::assertFalse(Notes::isSigned('add', 'page:' . self::SLICE . ':admin/se_fields.php', $sig), 'another page of the module');
+            self::assertFalse(Notes::isSigned('add', 'page:' . self::OWN . ':admin/index.php', $sig), 'a page of another module');
+            self::assertFalse(Notes::isSigned('edit', $resource, $sig), 'the signature of another form on that resource');
+            self::assertFalse(Notes::isSigned('add', $resource, ''), 'a form from before the signature');
+            self::assertFalse(Notes::isSigned('add', $resource, Notes::sign('u2', self::SLICE, 'add', $resource)), 'signed for somebody else');
+
+            self::on(self::OWN, '', true);
+            self::assertFalse(Notes::isSigned('add', $resource, $sig), 'posted on another module - the superadmin too');
+        }
+
+        /** the signature a rendered form carries is the one the endpoint asks for */
+        public function test_isSigned_theSignatureOfARenderedForm(): void
+        {
+            self::on(self::SLICE, '', true);
+            self::assertSame(1, preg_match('/name="sig" value="([0-9a-f]{64})"/', Notes::resolveForm('finding:Check:key', '/aa/admin/aa_statecheck.php'), $m));
+            self::assertTrue(Notes::isSigned('resolve', 'finding:Check:key', $m[1]));
+            self::assertFalse(Notes::isSigned('add', 'finding:Check:key', $m[1]));
+        }
+
+        /** the slice wizard has no module: its form posts without one and runs on the user's fallback module */
+        public function test_isSigned_aFormOfAPageWithoutModule_onAnyModule(): void
+        {
+            self::on(self::SLICE, '', true);
+            AA::$module_id = null;
+            self::assertSame(1, preg_match('/name="sig" value="([0-9a-f]{64})"/', Notes::resolveForm('page::admin/slicewiz.php', '/aa/admin/slicewiz.php'), $m));
+
+            self::on(self::SLICE, '', true);
+            self::assertTrue(Notes::isSigned('resolve', 'page::admin/slicewiz.php', $m[1]));
+        }
+
+        public function test_render_theEditFormIsForTheAuthorOnly(): void
+        {
+            self::on(self::SLICE, 'EDITOR');
+            // the note head asks for the author's name - no user database here
+            $perm     = AA::$perm;
+            AA::$perm = new class {
+                public function getUserName(string $uid): string
+                {
+                    return "name of $uid";
+                }
+            };
+            try {
+                $this->assertEditFormOnlyForTheAuthor();
+            } finally {
+                AA::$perm = $perm;
+            }
+        }
+
+        private function assertEditFormOnlyForTheAuthor(): void
+        {
+            $note = new Note(['resource' => 'page:' . self::SLICE . ':admin/index.php', 'author' => 'u1', 'created' => 1, 'text' => 'a <b>typo</b></textarea><script>']);
+
+            $own = Notes::render($note, '/aa/admin/index.php');
+            self::assertStringContainsString('name="action" value="edit"', $own);
+            self::assertStringContainsString('<textarea name="text" rows="3" required>a &lt;b&gt;typo&lt;/b&gt;&lt;/textarea&gt;&lt;script&gt;</textarea>', $own, 'the stored text, escaped');
+
+            $note->state = Note::STATE_RESOLVED;
+            self::assertStringContainsString('<textarea name="text" rows="3">a &lt;b&gt;', Notes::render($note, '/aa/admin/index.php'), 'the reason of a resolution may be emptied');
+            $note->state = Note::STATE_VALID;
+
+            $note->author = 'u2';
+            self::assertStringNotContainsString('value="edit"', Notes::render($note, '/aa/admin/index.php'));
         }
     }
 }
