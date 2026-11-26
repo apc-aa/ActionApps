@@ -38,7 +38,10 @@ final class Context
 
     private const REDIRECTS = 3;
 
-    private const IDLE_SECONDS = 10.0;
+    public const DEFAULT_IDLE_SECONDS = 10;
+
+    /** a source computing its answer is not down, but a step must not hang on one request */
+    public const IDLE_SECONDS_CAP = 120;
 
     /** what a remark's code must look like - the page shows it as it is */
     public const REMARK_PATTERN = '/^[A-Z][A-Z0-9_]{1,30}$/';
@@ -59,6 +62,8 @@ final class Context
     public const REMARKS_COUNTED = 1000;
 
     private readonly int $maxBytes;
+
+    private readonly int $idleSeconds;
 
     /** @var array<string, array{string, string}> "vendor\0context" => [vendor, context] the source declared */
     private array $declared = [];
@@ -93,8 +98,12 @@ final class Context
      * @param ?HttpClientInterface $transport the connection under the guard; another one for tests only
      * @param ?\Closure(string): list<string> $resolver IP addresses of a host name; another one for tests only
      */
-    public function __construct(array $credentials, private readonly BatchBudget $budget, int $maxBytes = self::DEFAULT_MAX_BYTES, private readonly ?HttpClientInterface $transport = null, ?\Closure $resolver = null)
+    public function __construct(array $credentials, private readonly BatchBudget $budget, int $maxBytes = self::DEFAULT_MAX_BYTES, private readonly ?HttpClientInterface $transport = null, ?\Closure $resolver = null, int $idleSeconds = self::DEFAULT_IDLE_SECONDS)
     {
+        if ($idleSeconds < 1) {
+            throw new InvalidArgumentException('idleSeconds must be positive');
+        }
+        $this->idleSeconds = min($idleSeconds, self::IDLE_SECONDS_CAP);
         $this->resolver = $resolver ?? self::lookup(...);
         // 0 means "no limit" to Client
         if ($maxBytes < 1) {
@@ -114,7 +123,7 @@ final class Context
      */
     public static function forSource(SourceInterface $source, array $credentials, BatchBudget $budget, ?HttpClientInterface $transport = null, ?\Closure $resolver = null): self
     {
-        return new self($credentials, $budget, $source->maxBytes(), $transport, $resolver);
+        return new self($credentials, $budget, $source->maxBytes(), $transport, $resolver, $source->idleSeconds());
     }
 
     /**
@@ -254,7 +263,7 @@ final class Context
             throw $this->failure(false, 'Only http(s) addresses are imported', $url, TransportException::ADDRESS);
         }
         $this->connection ??= $this->transport ?? HttpClient::create();
-        $client = Client::publicOnly(timeout: $seconds, idle: min(self::IDLE_SECONDS, $seconds), agent: Client::agent('import'), redirects: $redirects, transport: $this->connection, maxBytes: $this->maxBytes);
+        $client = Client::publicOnly(timeout: $seconds, idle: min((float) $this->idleSeconds, $seconds), agent: Client::agent('import'), redirects: $redirects, transport: $this->connection, maxBytes: $this->maxBytes);
 
         try {
             $answer = $client->request($method, $url, $body, $headers);
