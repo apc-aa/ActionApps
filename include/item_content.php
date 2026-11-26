@@ -1557,7 +1557,6 @@ class ItemContent extends AA_Content
     /** Recomputes the computed fields (seo, com, co2) and stores those whose value differs from the
      *  stored one - an unchanged field is not written, so the caller need not invalidate any cache.
      *  The content must be the stored one (read from the database), it is compared with it.
-     *  A field stored in the `item` table is not compared - it is always written.
      * @param AA_Fields|null $fields  the slice fields by default; the slice setting fields
      *                                (AA_Slice::getFields(true)) for the slice setting content
      * @param string         $mode
@@ -1659,7 +1658,8 @@ class ItemContent extends AA_Content
             $item->setAaValue($fid, $aa_val);
 
             // a periodic recompute mostly gets the stored value again - writing it would only invalidate caches
-            if (!$field->getProperty('in_item_tbl') && AA_Field_Writer::storesSame((bool) $field->getProperty('text_stored'), $aa_val, $this->getAaValue($fid))) {
+            $column = $field->getProperty('in_item_tbl');
+            if ($column ? AA_Field_Writer::itemColumnSame($column, $aa_val, $this->getAaValue($fid)) : AA_Field_Writer::storesSame((bool) $field->getProperty('text_stored'), $aa_val, $this->getAaValue($fid))) {
                 continue;
             }
             $changed = true;

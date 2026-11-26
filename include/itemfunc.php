@@ -945,22 +945,9 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface
         }
 
         if ($fid = $this->field->getProperty("in_item_tbl")) {
-            // Mitra thinks that this might want to be 'expiry_date.....' ...
-            // ... which is not correct because in 'in_item_tbl' database field
-            // we store REAL database field names from aadb.item table (honzam)
-
-            if (($fid === 'expiry_date') && (date("Hi", ($v = (int) $value)) == "0000")) {
-                // $value += 86399;
-                // if time is not specified, take end of day 23:59:59
-                // !!it is not working for daylight saving change days !!!
-                $value = mktime(23, 59, 59, date("m", $v), date("d", $v), date("Y", $v));
-            }
-            // field in item table  - check, if numeric...
-            if (in_array($fid, ['short_id','status_code','post_date','publish_date','expiry_date','highlight','last_edit','display_count','disc_count','disc_app','moved2active'])) {
-                $fieldwriter->addItemField($fid, "number", (int) $value);
-            } else {
-                $fieldwriter->addItemField($fid, "text", $value);
-            }
+            // in_item_tbl holds the REAL column name of the item table, not a field id
+            [$type, $value] = AA_Field_Writer::itemColumn($fid, $value);
+            $fieldwriter->addItemField($fid, $type, $value);
             return;
         }
 
@@ -1961,6 +1948,32 @@ class AA_Field_Writer
             $flags  = [$value->getFlag() & ~(FLAG_TEXT_STORED | FLAG_HTML), $stored->getFlag() & ~FLAG_HTML];
         }
         return ($flags[0] === $flags[1]) && ($expect === array_map('strval', $stored->getValues()));
+    }
+
+    /** The type and the value an `item` table column gets of $value: [type, value]. */
+    public static function itemColumn(string $column, $value): array
+    {
+        if (($column === 'expiry_date') && (date("Hi", ($v = (int) $value)) == "0000")) {
+            // if time is not specified, take end of day 23:59:59
+            // !!it is not working for daylight saving change days !!!
+            $value = mktime(23, 59, 59, date("m", $v), date("d", $v), date("Y", $v));
+        }
+        if (in_array($column, ['short_id','status_code','post_date','publish_date','expiry_date','highlight','last_edit','display_count','disc_count','disc_app','moved2active'])) {
+            return ['number', (int) $value];
+        }
+        return ['text', $value];
+    }
+
+    /** Would the `item` table column get the value it already holds ($stored)? Then storing $value
+     *  changes nothing. Of more values the column keeps the last one.
+     */
+    public static function itemColumnSame(string $column, AA_Value $value, AA_Value $stored): bool
+    {
+        $values = $value->getValues();
+        if (!$values) {
+            return true;                          // nothing is written
+        }
+        return (string) self::itemColumn($column, end($values))[1] === (string) $stored->getValue();
     }
 
     /** Queues the removal of every `content` row of the (item, field) pair. Rows already

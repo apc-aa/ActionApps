@@ -92,6 +92,27 @@ namespace Tests\Unit\Legacy {
             $this->assertSame($same, AA_Field_Writer::storesSame($text_stored, $value, $stored));
         }
 
+        public static function itemColumnSameProvider(): array
+        {
+            $midnight = mktime(0, 0, 0, 12, 1, 2026);
+            return [
+                'number, same'               => ['status_code', new AA_Value('1', 0), new AA_Value(1, 0), true],
+                'number, other value'        => ['status_code', new AA_Value('2', 0), new AA_Value(1, 0), false],
+                'expiry at midnight ends the day' => ['expiry_date', new AA_Value((string) $midnight, 0), new AA_Value(mktime(23, 59, 59, 12, 1, 2026), 0), true],
+                'expiry stored at midnight'  => ['expiry_date', new AA_Value((string) $midnight, 0), new AA_Value($midnight, 0), false],
+                'the last of more values'    => ['highlight', new AA_Value(['1', '0'], 0), new AA_Value(0, 0), true],
+                'empty, nothing written'     => ['status_code', new AA_Value([], 0), new AA_Value(1, 0), true],
+                'text column'                => ['posted_by', new AA_Value('Anna', 0), new AA_Value('Anna', 0), true],
+                'text column, other value'   => ['posted_by', new AA_Value('Anna', 0), new AA_Value('Ann', 0), false],
+            ];
+        }
+
+        #[DataProvider('itemColumnSameProvider')]
+        public function test_itemColumnSame_compares_with_the_column_value(string $column, AA_Value $value, AA_Value $stored, bool $same): void
+        {
+            $this->assertSame($same, AA_Field_Writer::itemColumnSame($column, $value, $stored));
+        }
+
         // ------------------------------------------------------------ updateComputedFields()
 
         private function field(string $id, string $insert, array $data = []): AA_Field
@@ -138,6 +159,34 @@ namespace Tests\Unit\Legacy {
             $this->assertTrue($this->storedItem('xOld')->updateComputedFields());
 
             $this->assertSame([$this->row(self::ITEM, self::COMPUTED, 0, 'xHello', FLAG_TEXT_STORED)], RecordingDb::$content);
+        }
+
+        /** an item whose expiry_date is computed */
+        private function storedExpiry(int $stored): ItemContent
+        {
+            self::$slice->setFields(new FakeFields(self::SLICE, [$this->field('expiry_date.....', 'co2:2000000000:2000000000::', ['in_item_tbl' => 'expiry_date', 'text_stored' => 0])]));
+            $ic = new ItemContent();
+            $ic->setItemID(self::ITEM);
+            $ic->setSliceID(self::SLICE);
+            $ic->setAaValue('headline........', new AA_Value('Hello', 0));
+            $ic->setAaValue('expiry_date.....', new AA_Value($stored, 0));
+            return $ic;
+        }
+
+        public function test_updateComputedFields_unchanged_item_column_is_not_written(): void
+        {
+            $this->assertFalse($this->storedExpiry(2000000000)->updateComputedFields());
+
+            $this->assertSame(0, RecordingDb::count('UPDATE') + RecordingDb::count('DELETE'), implode("\n", RecordingDb::$log));
+        }
+
+        public function test_updateComputedFields_changed_item_column_is_written(): void
+        {
+            $this->assertTrue($this->storedExpiry(1900000000)->updateComputedFields());
+
+            $updates = array_values(array_filter(RecordingDb::$log, static fn($sql) => str_starts_with($sql, 'UPDATE')));
+            $this->assertCount(1, $updates, implode("\n", RecordingDb::$log));
+            $this->assertStringContainsString('2000000000', $updates[0]);
         }
 
         // ------------------------------------------------------------ slice setting fields
