@@ -1496,16 +1496,19 @@ class ItemContent extends AA_Content
         $itemContent = new ItemContent();
         $itemContent->setByItemID($id, true);     // ignore reading password
 
-        // look for computed fields and update it (based on the stored item)
-        if (!$silent && $itemContent->updateComputedFields($fields, $mode)) {
-            // if computed fields are updated, reread the content
-            $itemContent->setByItemID($id, true);
-            // ignore reading password
-        }
-
-        // after the computed fields - a page rendered while they were computed would keep their old values
-        if ($invalidatecache) {
-            AA::Pagecache()->invalidateFor($slice_id);
+        try {
+            // look for computed fields and update it (based on the stored item)
+            if (!$silent && $itemContent->updateComputedFields($fields, $mode)) {
+                // if computed fields are updated, reread the content
+                $itemContent->setByItemID($id, true);
+                // ignore reading password
+            }
+        } finally {
+            // after the computed fields - a page rendered while they were computed would keep their old values;
+            // the stored item is invalidated even when a computed expression throws
+            if ($invalidatecache) {
+                AA::Pagecache()->invalidateFor($slice_id);
+            }
         }
 
         $zid = new zids($id, 'l');
