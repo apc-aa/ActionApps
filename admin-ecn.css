@@ -2815,7 +2815,7 @@ h1:has(+form[name="inputform"]) {
     flex: none;
     width: 36px;
     height: 33px;
-    background: transparent url(/aa-dev/images/ico-notes.png) center no-repeat;
+    background: transparent url(images/ico-notes.png) center no-repeat;
 }
 .aa-notes-trigger:hover, .aa-notes-some {
     color: var(--clr-dark, #1f1f1f);
