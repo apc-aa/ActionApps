@@ -107,17 +107,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Quản lý bộ lọc", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Lỗi: Thiếu mật khẩu đọc", // ai 2026-06
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "Thông báo tin tức Toolkit", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 // modules/links/check_url.php, row 52
 "Back" => "Quay lại", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "Đăng nhập lại", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114
@@ -550,6 +550,7 @@ return [
 "No permissions to edit links" => "Bạn không có quyền sửa liên kết", // ai 2026-06
 
 // modules/links/index.php, row 178
+// modules/links/modedit.php, row 115
 "Module not found." => "Không tìm thấy mô-đun.", // ai 2026-06
 
 // modules/links/index.php, row 210
@@ -798,30 +799,33 @@ return [
 // modules/links/menu.php, row 178
 "New Link View" => "Khung hiển thị liên kết mới", // ai 2026-06
 
-// modules/links/modedit.php, row 106
+// modules/links/modedit.php, row 111
 "No permission to add module" => "Không có quyền thêm mô-đun", // ai 2026-06
 
-// modules/links/modedit.php, row 111
+// modules/links/modedit.php, row 119
 "No permission to edit module" => "Không có quyền sửa mô-đun", // ai 2026-06
 
-// modules/links/modedit.php, row 128, 217, 220
+// modules/links/modedit.php, row 128
+"The form has expired; reload the page and try again." => "Biểu mẫu đã hết hạn; hãy tải lại trang và thử lại.", // ai 2026-10
+
+// modules/links/modedit.php, row 144, 229, 232
 "Start category id" => "Id danh mục khởi đầu", // ai 2026-06
 
-// modules/links/modedit.php, row 129, 223, 226
+// modules/links/modedit.php, row 145, 235, 238
 "Tree start id" => "Id gốc cây", // ai 2026-06
 
-// modules/links/modedit.php, row 130, 224, 227
+// modules/links/modedit.php, row 146, 236, 239
 "Select start id" => "Chọn id khởi đầu", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Add Links module" => "Thêm mô-đun Liên kết", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Edit Links module" => "Sửa mô-đun Liên kết", // ai 2026-06
 
-// modules/links/modedit.php, row 208
+// modules/links/modedit.php, row 220
 "Module Links data" => "Dữ liệu mô-đun Liên kết", // ai 2026-06
 
-// modules/links/modedit.php, row 213
+// modules/links/modedit.php, row 225
 "Used Language File" => "Tệp ngôn ngữ được dùng", // ai 2026-06
 ];

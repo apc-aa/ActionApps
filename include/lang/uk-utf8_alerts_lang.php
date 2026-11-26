@@ -23,7 +23,7 @@ return [
 // End of unused messages
 
 // modules/alerts/acf.php, row 45
-// modules/alerts/modedit.php, row 89
+// modules/alerts/modedit.php, row 121
 "You do not have permissions to add slice" => "Ви не маєте права додавати рубрику", // ai 2026-06
 
 // modules/alerts/acf.php, row 109
@@ -62,79 +62,97 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Вибірки не визначені. Потрібно якісь визначити.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 174
+"Statistics slice: no such slice" => "Рубрика статистики: такої рубрики немає", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 178
+"The statistics slice cannot be the slice of the readers" => "Рубрика статистики не може бути рубрикою читачів", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 182
+"The statistics slice lacks the fields %1" => "У рубриці статистики бракує полів %1", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 186
+"The slice keeps the statistics of another list already (%1) - each list needs its own" => "Рубрика вже зберігає статистику іншого списку (%1) – кожен список потребує власної", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 189
+"The statistics slice keeps the history of its items - set \"Store item history for N days\" to 0 in its slice settings" => "Рубрика статистики зберігає історію своїх статей – у налаштуваннях рубрики встановіть «Зберігати історію статей N днів» на 0", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 206
+"The statistics slice has no reading password - set one in its slice settings, so its items are not shown on the web" => "Рубрика статистики не має пароля для читання – задайте його в налаштуваннях рубрики, щоб її статті не показувалися на вебі", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 721
 "alerts alert" => "сповіщення - повідомлення", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 722
 "alerts welcome" => "сповіщення - вітання", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 723
 "slice wizard welcome" => "помічник рубрики - вітання", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 724
 "user template" => "шаблон користувача", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 725
 "password change" => "зміна пароля", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 511
+// modules/alerts/alerts_sending.php, row 726
 "other" => "інше", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 522
+// modules/alerts/alerts_sending.php, row 737
 "Aliases for Alerts Alert" => "Аліаси для повідомлення сповіщень", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 524
+// modules/alerts/alerts_sending.php, row 739
 "complete filter text" => "повний текст фільтра", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 525, 534
+// modules/alerts/alerts_sending.php, row 740, 749
 "howoften" => "як часто", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 741
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL анонімної форми (налаштовується в Адміністрації сповіщень - Налаштування)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 527
+// modules/alerts/alerts_sending.php, row 742
 "Unsubscribe Form URL" => "URL форми відписки", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 532
+// modules/alerts/alerts_sending.php, row 747
 "Aliases for Alerts Welcome" => "Аліаси для вітання сповіщень", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 750
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL форми збору (налаштовується в Адміністрації сповіщень - Налаштування)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 751
 "email confirmed" => "e-mail підтверджено", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 542
+// modules/alerts/alerts_sending.php, row 757
 "Aliases for Slice Wizard Welcome" => "Аліаси для вітання помічника рубрики", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 759, 771
 "Slice name" => "Назва рубрики", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 545, 557
+// modules/alerts/alerts_sending.php, row 760, 772
 "New user name" => "Ім'я нового користувача", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 761
 "New user login name" => "Логін нового користувача", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 762
 "New user role (editor / admin)" => "Роль нового користувача (редактор / адмін)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 763
 "My name" => "Моє ім'я", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 549
+// modules/alerts/alerts_sending.php, row 764
 "My email" => "Мій e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 554
+// modules/alerts/alerts_sending.php, row 769
 "Aliases for User Templates (you can use also all aliases of the user)" => "Аліаси для шаблонів користувача (можна використовувати також усі аліаси користувача)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 562
+// modules/alerts/alerts_sending.php, row 777
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Аліаси для e-mailу про зміну пароля (можна використовувати також усі аліаси користувача)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 779
 "HTML link to the password change page for current user" => "HTML-посилання на сторінку зміни пароля для поточного користувача", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 565
+// modules/alerts/alerts_sending.php, row 780
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Параметр URL, що використовується для посилання на зміну пароля в _#PWD_LINK (можна його використати, якщо хочете застосувати власну URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42
@@ -170,63 +188,126 @@ return [
 "Owner" => "Власник", // ai 2026-06
 
 // modules/alerts/emails.php, row 66
-// modules/alerts/menu.php, row 86
+// modules/alerts/menu.php, row 95
 "Email templates" => "Шаблони e-mail", // ai 2026-06
 
-// modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 160, 163
-"Alerts Settings" => "Налаштування сповіщень", // ai 2026-06
+// modules/alerts/mailings.php, row 48
+// modules/alerts/modedit.php, row 125
+"Module not found." => "Модуль не знайдено.", // ai 2026-06
 
-// modules/alerts/menu.php, row 62
-"Alerts Admin" => "Адміністрація сповіщень", // ai 2026-06
+// modules/alerts/mailings.php, row 51
+// modules/alerts/send.php, row 44
+// modules/alerts/synchro.php, row 61, 83
+"You do not have permissions to access this page" => "Ви не маєте права доступу до цієї сторінки", // ai 2026-06
 
-// modules/alerts/menu.php, row 66
+// modules/alerts/mailings.php, row 55
+"This Alerts module has no list of readers." => "Цей модуль сповіщень не має списку читачів.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 86
+// modules/alerts/menu.php, row 51, 69
+"Mailings and statistics" => "Розсилки та статистика", // ai 2026-11
+
+// modules/alerts/mailings.php, row 90
+"Opens and clicks are not measured: the list has no statistics slice." => "Відкриття й кліки не вимірюються: список не має рубрики статистики.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 92
+// modules/alerts/menu.php, row 75
 "Settings" => "Налаштування", // ai 2026-06
 
-// modules/alerts/menu.php, row 70
+// modules/alerts/mailings.php, row 97
+"Date" => "Дата", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97
+"Name" => "Назва", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97
+"State" => "Стан", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97, 136
+"Recipients" => "Одержувачі", // ai 2026-06
+
+// modules/alerts/mailings.php, row 99
+"Opened" => "Відкрили", // ai 2026-11
+
+// modules/alerts/mailings.php, row 99
+"Clicked" => "Клацнули", // ai 2026-11
+
+// modules/alerts/mailings.php, row 124
+"The list has sent nothing yet." => "Список ще нічого не надіслав.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 137
+"No recipient matches the filter." => "Жоден одержувач не відповідає фільтру.", // ai 2026-11
+
+// modules/alerts/menu.php, row 51
+// modules/alerts/modedit.php, row 216, 219
+"Alerts Settings" => "Налаштування сповіщень", // ai 2026-06
+
+// modules/alerts/menu.php, row 65
+"Alerts Admin" => "Адміністрація сповіщень", // ai 2026-06
+
+// modules/alerts/menu.php, row 79
 // modules/alerts/send_emails.php, row 153
 // modules/alerts/synchro2.php, row 77
 "Selections" => "Вибірки", // ai 2026-06
 
-// modules/alerts/menu.php, row 74
+// modules/alerts/menu.php, row 83
 "Send emails" => "Надіслати e-mail", // ai 2026-06
 
-// modules/alerts/menu.php, row 79
+// modules/alerts/menu.php, row 88
 "Reader management" => "Керування читачами", // ai 2026-06
 
-// modules/alerts/menu.php, row 82
+// modules/alerts/menu.php, row 91
 "Documentation" => "Документація", // ai 2026-06
 
-// modules/alerts/menu.php, row 84
+// modules/alerts/menu.php, row 93
 "Common" => "Спільне", // ai 2026-06
 
-// modules/alerts/modedit.php, row 93
+// modules/alerts/modedit.php, row 128
 "You do not have permissions to edit this Alerts module" => "Ви не маєте прав редагувати цей модуль сповіщень", // ai 2026-10
 
-// modules/alerts/modedit.php, row 160
+// modules/alerts/modedit.php, row 137
+// modules/alerts/synchro.php, row 79
+"The form has expired; reload the page and try again." => "Термін дії форми минув; оновіть сторінку й спробуйте ще раз.", // ai 2026-10
+
+// modules/alerts/modedit.php, row 159
+"You may not choose this statistics slice" => "Ви не можете вибрати цю рубрику статистики", // ai 2026-11
+
+// modules/alerts/modedit.php, row 216
 "Add Alerts" => "Додати сповіщення", // ai 2026-10
 
-// modules/alerts/modedit.php, row 168
+// modules/alerts/modedit.php, row 225
+"The URL of this list is not https - the mails go without the one-click unsubscribe header." => "URL цього списку не https – листи йдуть без заголовка відписки одним клацанням.", // ai 2026-11
+
+// modules/alerts/modedit.php, row 228
 "language" => "мова", // ai 2026-06
 
-// modules/alerts/modedit.php, row 172
+// modules/alerts/modedit.php, row 232
 "Alert emails" => "Листи сповіщень", // ai 2026-10
 
-// modules/alerts/modedit.php, row 176, 182
+// modules/alerts/modedit.php, row 236, 242
 "Edit '%1'" => "Редагувати '%1'", // ai 2026-10
 
-// modules/alerts/modedit.php, row 178
+// modules/alerts/modedit.php, row 238
 "welcome email" => "вітальний лист", // ai 2026-06
 
-// modules/alerts/modedit.php, row 184
+// modules/alerts/modedit.php, row 244
 // modules/alerts/send.php, row 76
 "alert email" => "e-mail сповіщення", // ai 2026-06
 
-// modules/alerts/modedit.php, row 187
-"alerts ID" => "ID сповіщень", // ai 2026-06
+// modules/alerts/modedit.php, row 247
+"The slice where the opens and clicks of the mailings are counted; empty = nothing is measured. Each list needs its own slice." => "Рубрика, у якій підраховуються відкриття й кліки розсилок; порожнє = нічого не вимірюється. Кожен список потребує власної рубрики.", // ai 2026-11
 
-// modules/alerts/send.php, row 44
-"You do not have permissions to access this page" => "Ви не маєте права доступу до цієї сторінки", // ai 2026-06
+// modules/alerts/modedit.php, row 249
+"Install from the App store" => "Установити з каталогу застосунків", // ai 2026-11
+
+// modules/alerts/modedit.php, row 254
+"Statistics" => "Статистика", // ai 2026-06
+
+// modules/alerts/modedit.php, row 255
+"Statistics slice" => "Рубрика статистики", // ai 2026-11
+
+// modules/alerts/modedit.php, row 259
+"alerts ID" => "ID сповіщень", // ai 2026-06
 
 // modules/alerts/send.php, row 69
 "Send Emails" => "Надсилання e-mailів", // ai 2026-06
@@ -279,46 +360,46 @@ return [
  => "Визначте вибірки в рубриках, з яких хочете надсилати сповіщення,\n"
    ."        у виглядах типу Alerts Selection Set", // ai 2026-06
 
-// modules/alerts/synchro.php, row 66
+// modules/alerts/synchro.php, row 89
 "Synchronization with Reader Management Slice" => "Синхронізація з рубрикою керування читачами", // ai 2026-06
 
-// modules/alerts/synchro.php, row 95
+// modules/alerts/synchro.php, row 118
 "Not Yet Set" => "Ще не налаштовано", // ai 2026-06
 
-// modules/alerts/synchro.php, row 104
+// modules/alerts/synchro.php, row 127
 "Choose Reader Management Slice" => "Виберіть рубрику керування читачами", // ai 2026-06
 
-// modules/alerts/synchro.php, row 105
+// modules/alerts/synchro.php, row 128
 "This Alerts Collection takes user data from the slice" => "Це сповіщення бере дані користувачів з рубрики", // ai 2026-06
 
-// modules/alerts/synchro.php, row 112
+// modules/alerts/synchro.php, row 135
 "Change to: " => "Змінити на:", // ai 2026-06
 
-// modules/alerts/synchro.php, row 118
+// modules/alerts/synchro.php, row 141
 "and delete the %1-specific fields from %2" => "і видалити поля, специфічні для %1, з %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 122
+// modules/alerts/synchro.php, row 145
 "Change" => "Змінити", // ai 2026-06
 
-// modules/alerts/synchro.php, row 133
+// modules/alerts/synchro.php, row 156
 "Add %1-specific fields to %2" => "Додати поля, специфічні для %1, до %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 136
+// modules/alerts/synchro.php, row 159
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
  => "Додає лише поля, ID яких ще не існують у рубриці.\n"
    ."    Оновлює групу констант з вибірками, якщо вона вже існує.", // ai 2026-06
 
-// modules/alerts/synchro.php, row 142
+// modules/alerts/synchro.php, row 165
 "Field Name" => "Назва поля", // ai 2026-06
 
-// modules/alerts/synchro.php, row 143
+// modules/alerts/synchro.php, row 166
 "Field ID" => "ID поля", // ai 2026-06
 
-// modules/alerts/synchro.php, row 152
+// modules/alerts/synchro.php, row 175
 "Add or refresh fields" => "Додати або оновити поля", // ai 2026-06
 
-// modules/alerts/synchro.php, row 154
+// modules/alerts/synchro.php, row 177
 "This command can not be used until you choose the Reader Management Slice." => "Цю команду не можна використати, доки не виберете рубрику керування читачами.", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
@@ -374,4 +455,10 @@ return [
 
 // modules/alerts/util.php, row 100
 "Trash bin" => "Кошик", // ai 2026-06
+
+// modules/alerts/util.php, row 194
+"Do you want to stop receiving the mails of this list?" => "Бажаєте більше не отримувати листи цього списку?", // ai 2026-11
+
+// modules/alerts/util.php, row 196
+"Unsubscribe" => "Відписатися", // ai 2026-11
 ];

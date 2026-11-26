@@ -22,54 +22,59 @@ return [
 // modules/site/aliases.php, row 41
 "Manage %1" => "Керування %1", // ai 2026-06
 
-// modules/site/index.php, row 64
+// modules/site/index.php, row 67
 "You do not have permission to edit items in this slice" => "Ви не маєте права редагувати статті в цій рубриці", // ai 2026-06
 
-// modules/site/index.php, row 69
+// modules/site/index.php, row 72
 "Starting spot not found" => "Початковий спот не знайдено", // ai 2026-06
 
-// modules/site/index.php, row 152
+// modules/site/index.php, row 91
+// modules/site/moddelete.php, row 53
+// modules/site/modedit.php, row 218
+"The form has expired; reload the page and try again." => "Термін дії форми минув; оновіть сторінку та спробуйте ще раз.", // ai 2026-10
+
+// modules/site/index.php, row 163
 "Editor window - site code manager" => "Вікно редагування - менеджер коду сайту", // ai 2026-06
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 175
 "Add&nbsp;spot" => "Додати&nbsp;спот", // ai 2026-06
 
-// modules/site/index.php, row 165
+// modules/site/index.php, row 176
 "Add&nbsp;choice" => "Додати&nbsp;вибір", // ai 2026-06
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 179
 "Move&nbsp;up" => "Перемістити&nbsp;вгору", // ai 2026-06
 
-// modules/site/index.php, row 169
+// modules/site/index.php, row 180
 "Move&nbsp;down" => "Перемістити&nbsp;вниз", // ai 2026-06
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 183
 "Move&nbsp;left" => "Перемістити&nbsp;ліворуч", // ai 2026-06
 
-// modules/site/index.php, row 173
+// modules/site/index.php, row 184
 "Move&nbsp;right" => "Перемістити&nbsp;праворуч", // ai 2026-06
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 187
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Видалити", // ai 2026-06
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 187
 "Are you sure you want to delete the spot?" => "Ви дійсно хочете видалити цей спот?", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 190
 "Enable" => "Увімкнути", // ai 2026-06
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 191
 "Disable" => "Вимкнути", // ai 2026-06
 
-// modules/site/index.php, row 201
+// modules/site/index.php, row 212
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Можливі системні require - &lcub;require:...&rcub; або &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47
 "View site" => "Переглянути сайт", // ai 2026-06
 
 // modules/site/menu.php, row 55
-// modules/site/modedit.php, row 298
+// modules/site/modedit.php, row 305
 "Site" => "Сайт", // ai 2026-06
 
 // modules/site/menu.php, row 80
@@ -84,92 +89,89 @@ return [
 // modules/site/moddelete.php, row 48
 "You don't have permissions to delete a site." => "У Вас немає прав видалити сайт.", // ai 2026-06
 
-// modules/site/moddelete.php, row 53
-// modules/site/modedit.php, row 212
-"The form has expired; reload the page and try again." => "Термін дії форми минув; оновіть сторінку та спробуйте ще раз.", // ai 2026-10
-
 // modules/site/moddelete.php, row 56
+// modules/site/modedit.php, row 119
 "Module not found." => "Модуль не знайдено.", // ai 2026-06
 
 // modules/site/moddelete.php, row 76
 "Slice successfully deleted, tables are optimized" => "Рубрику успішно видалено, таблиці оптимізовано", // ai 2026-06
 
-// modules/site/modedit.php, row 112
+// modules/site/modedit.php, row 115
 "You do not have permissions to add slice" => "Ви не маєте права додавати рубрику", // ai 2026-06
 
-// modules/site/modedit.php, row 117
+// modules/site/modedit.php, row 123
 "You do not have permissions to edit this slice" => "Ви не маєте прав на редагування цієї рубрики", // ai 2026-06
 
-// modules/site/modedit.php, row 125
+// modules/site/modedit.php, row 131
 "The settings and the other fields of this page were not saved." => "Налаштування та інші поля цієї сторінки не збережено.", // ai 2026-10
 
-// modules/site/modedit.php, row 140
+// modules/site/modedit.php, row 146
 "State file" => "Файл стану", // ai 2026-06
 
-// modules/site/modedit.php, row 141, 306
+// modules/site/modedit.php, row 147, 313
 "Router" => "Маршрутизатор", // ai 2026-06
 
-// modules/site/modedit.php, row 142, 320
+// modules/site/modedit.php, row 148, 327
 "Uses modules" => "Використовує модулі", // ai 2026-06
 
-// modules/site/modedit.php, row 152
+// modules/site/modedit.php, row 158
 "You can not use these modules in the site - you have no permission to them: %1" => "Ви не можете використовувати ці модулі на сайті — у Вас немає прав до них: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 223
+// modules/site/modedit.php, row 229
 "The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "Налаштування каталогу застосунків не збережено — каталог не пропонуватиме сайт, доки не буде виправлено ці помилки:", // ai 2026-10
 
-// modules/site/modedit.php, row 285
+// modules/site/modedit.php, row 292
 "Add Site" => "Додати сайт", // ai 2026-06
 
-// modules/site/modedit.php, row 285
+// modules/site/modedit.php, row 292
 "Edit Site" => "Редагувати сайт", // ai 2026-06
 
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 312
 "Used Language File" => "Використовуваний мовний файл", // ai 2026-06
 
-// modules/site/modedit.php, row 306
+// modules/site/modedit.php, row 313
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Використовуйте AA_Router_Seo. Інакше Ви будете використовувати старий підхід модуля site з 'керуючим файлом', чого ми не рекомендуємо.", // ai 2026-06
 
-// modules/site/modedit.php, row 307
+// modules/site/modedit.php, row 314
 "Home or State file" => "Домашня сторінка або файл стану", // ai 2026-06
 
-// modules/site/modedit.php, row 307
+// modules/site/modedit.php, row 314
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Для AA_Router_Seo заповніть <b>типову url</b> (домашню сторінку) - наприклад <em>/en/home</em>, або залиште порожнім<br><br>Для старіших сайтів без AA_Router_Seo введіть назву <b>керуючого файлу сайту</b> - буде розміщений у каталозі /modules/site/sites/. До вказаної назви буде додано префікс 'site_', тож якщо Ви, наприклад, назвете файл 'apc.php', керуючий файл сайту буде /modules/site/sites/site_apc.php.", // ai 2026-06
 
-// modules/site/modedit.php, row 322
+// modules/site/modedit.php, row 332
 "Additional setting" => "Додаткове налаштування", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 337
 "App store" => "Каталог застосунків", // ai 2026-10
 
-// modules/site/modedit.php, row 329
+// modules/site/modedit.php, row 339
 "A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Опублікований сайт може встановити з цієї AA будь-яка інша AA — разом з рубриками та сповіщеннями, які він використовує: їхніми шаблонами, полями, виглядами та константами, але ніколи не статтями. Налаштувати це може лише суперадміністратор.", // ai 2026-10
 
-// modules/site/modedit.php, row 333
+// modules/site/modedit.php, row 343
 "The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "Модулі сайту змінилися після публікації: %1 — каталог застосунків не пропонуватиме сайт, доки їх не схвалить суперадміністратор.", // ai 2026-10
 
-// modules/site/modedit.php, row 334
+// modules/site/modedit.php, row 344
 "Approve the changed modules: %1" => "Схвалити змінені модулі: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 334
+// modules/site/modedit.php, row 344
 "Their templates, fields, views and constants then go to the app store with the site." => "Їхні шаблони, поля, вигляди та константи тоді потраплять до каталогу застосунків разом із сайтом.", // ai 2026-10
 
-// modules/site/modedit.php, row 336
+// modules/site/modedit.php, row 346
 "Publish in the app store" => "Опублікувати в каталозі застосунків", // ai 2026-10
 
-// modules/site/modedit.php, row 336
+// modules/site/modedit.php, row 346
 "The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "Опублікований застосунок не має попереджень: кожне попередження його експорту вважається помилкою. Його також зупинить група констант, що належить рубриці поза всіма опублікованими сайтами.", // ai 2026-10
 
-// modules/site/modedit.php, row 337
+// modules/site/modedit.php, row 347
 "App description" => "Опис застосунку", // ai 2026-10
 
-// modules/site/modedit.php, row 337
+// modules/site/modedit.php, row 347
 "What the app does, for the list of the app store." => "Що робить застосунок — для списку в каталозі застосунків.", // ai 2026-10
 
-// modules/site/modedit.php, row 338
+// modules/site/modedit.php, row 348
 "App version" => "Версія застосунку", // ai 2026-10
 
-// modules/site/modedit.php, row 338
+// modules/site/modedit.php, row 348
 "Like 1.2.0." => "Наприклад, 1.2.0.", // ai 2026-10
 
 // modules/site/sitetree.php, row 1005

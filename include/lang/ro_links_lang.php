@@ -104,17 +104,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Administrare filtre", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Eroare: Lipseste parola de citire", // ai 2026-06
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "Mesaj stiri toolkit",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 // modules/links/check_url.php, row 52
 "Back" => "\xCEnapoi",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "Reautentificare", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114
@@ -547,6 +547,7 @@ return [
 "No permissions to edit links" => "Nu aveti dreptul s\xE3 editati leg\xE3turi", // ai 2026-06
 
 // modules/links/index.php, row 178
+// modules/links/modedit.php, row 115
 "Module not found." => "Modulul nu a fost g\xE3sit.", // ai 2026-06
 
 // modules/links/index.php, row 210
@@ -802,30 +803,33 @@ return [
 // modules/links/menu.php, row 178
 "New Link View" => "Vedere nou\xE3 de leg\xE3turi", // ai 2026-06
 
-// modules/links/modedit.php, row 106
+// modules/links/modedit.php, row 111
 "No permission to add module" => "Nu aveti dreptul s\xE3 ad\xE3ugati modul", // ai 2026-06
 
-// modules/links/modedit.php, row 111
+// modules/links/modedit.php, row 119
 "No permission to edit module" => "Nu aveti dreptul s\xE3 editati modulul", // ai 2026-06
 
-// modules/links/modedit.php, row 128, 217, 220
+// modules/links/modedit.php, row 128
+"The form has expired; reload the page and try again." => "Formularul a expirat; re\xEEnc\xE3rcati pagina si \xEEncercati din nou.", // ai 2026-10
+
+// modules/links/modedit.php, row 144, 229, 232
 "Start category id" => "Id categorie initial\xE3", // ai 2026-06
 
-// modules/links/modedit.php, row 129, 223, 226
+// modules/links/modedit.php, row 145, 235, 238
 "Tree start id" => "Id \xEEnceput arbore", // ai 2026-06
 
-// modules/links/modedit.php, row 130, 224, 227
+// modules/links/modedit.php, row 146, 236, 239
 "Select start id" => "Selectati id-ul initial", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Add Links module" => "Ad\xE3ugare modul Leg\xE3turi", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Edit Links module" => "Editare modul Leg\xE3turi", // ai 2026-06
 
-// modules/links/modedit.php, row 208
+// modules/links/modedit.php, row 220
 "Module Links data" => "Date modul Leg\xE3turi", // ai 2026-06
 
-// modules/links/modedit.php, row 213
+// modules/links/modedit.php, row 225
 "Used Language File" => "Fi\xBAier limb\xE3 utilizat\xE3",
 ];

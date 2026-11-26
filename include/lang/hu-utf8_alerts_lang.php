@@ -23,7 +23,7 @@ return [
 // End of unused messages
 
 // modules/alerts/acf.php, row 45
-// modules/alerts/modedit.php, row 89
+// modules/alerts/modedit.php, row 121
 "You do not have permissions to add slice" => "Nincs jogosultsága rovat hozzáadásához", // ai 2026-06
 
 // modules/alerts/acf.php, row 109
@@ -62,79 +62,97 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Nincsenek definiált válogatások. Definiálnia kell legalább egyet.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 174
+"Statistics slice: no such slice" => "Statisztikai rovat: nincs ilyen rovat", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 178
+"The statistics slice cannot be the slice of the readers" => "A statisztikai rovat nem lehet azonos az olvasói rovattal", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 182
+"The statistics slice lacks the fields %1" => "A statisztikai rovatból hiányoznak a következő mezők: %1", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 186
+"The slice keeps the statistics of another list already (%1) - each list needs its own" => "A rovat már egy másik lista statisztikáit tárolja (%1) – minden listának saját rovat kell", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 189
+"The statistics slice keeps the history of its items - set \"Store item history for N days\" to 0 in its slice settings" => "A statisztikai rovat tárolja cikkei előzményeit – a rovat beállításaiban állítsa a „Cikk-előzmények tárolása N napig” értékét 0-ra", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 206
+"The statistics slice has no reading password - set one in its slice settings, so its items are not shown on the web" => "A statisztikai rovatnak nincs olvasási jelszava – állítson be egyet a rovat beállításaiban, hogy cikkei ne jelenjenek meg a weben", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 721
 "alerts alert" => "értesítő e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 722
 "alerts welcome" => "üdvözlő e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 723
 "slice wizard welcome" => "rovatvarázsló üdvözlője", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 724
 "user template" => "felhasználói sablon", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 725
 "password change" => "jelszómódosítás", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 511
+// modules/alerts/alerts_sending.php, row 726
 "other" => "egyéb", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 522
+// modules/alerts/alerts_sending.php, row 737
 "Aliases for Alerts Alert" => "Aliasok az értesítő e-mailhez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 524
+// modules/alerts/alerts_sending.php, row 739
 "complete filter text" => "a szűrő teljes szövege", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 525, 534
+// modules/alerts/alerts_sending.php, row 740, 749
 "howoften" => "milyen gyakran", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 741
 "Anonym Form URL (set in Alerts Admin - Settings)" => "Anonim űrlap URL-je (az Értesítések adminisztrációja – Beállítások alatt állítható be)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 527
+// modules/alerts/alerts_sending.php, row 742
 "Unsubscribe Form URL" => "Leiratkozási űrlap URL-je", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 532
+// modules/alerts/alerts_sending.php, row 747
 "Aliases for Alerts Welcome" => "Aliasok az üdvözlő e-mailhez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 750
 "Collection Form URL (set in Alerts Admin - Settings)" => "Gyűjteményűrlap URL-je (az Értesítések adminisztrációja – Beállítások alatt állítható be)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 751
 "email confirmed" => "e-mail megerősítve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 542
+// modules/alerts/alerts_sending.php, row 757
 "Aliases for Slice Wizard Welcome" => "Aliasok a rovatvarázsló üdvözlőjéhez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 759, 771
 "Slice name" => "Rovat neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 545, 557
+// modules/alerts/alerts_sending.php, row 760, 772
 "New user name" => "Új felhasználó neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 761
 "New user login name" => "Új felhasználó bejelentkezési neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 762
 "New user role (editor / admin)" => "Új felhasználó szerepköre (editor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 763
 "My name" => "Nevem", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 549
+// modules/alerts/alerts_sending.php, row 764
 "My email" => "E-mail-címem", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 554
+// modules/alerts/alerts_sending.php, row 769
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasok a felhasználói sablonokhoz (a felhasználó összes aliasa is használható)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 562
+// modules/alerts/alerts_sending.php, row 777
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasok a jelszómódosítási e-mailhez (a felhasználó összes aliasa is használható)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 779
 "HTML link to the password change page for current user" => "HTML-hivatkozás az aktuális felhasználó jelszómódosítási oldalára", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 565
+// modules/alerts/alerts_sending.php, row 780
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "A _#PWD_LINK jelszómódosítási hivatkozásában használt URL-paraméter (használhatja, ha saját URL-t szeretne használni hozzá)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42
@@ -170,63 +188,126 @@ return [
 "Owner" => "Tulajdonos", // ai 2026-06
 
 // modules/alerts/emails.php, row 66
-// modules/alerts/menu.php, row 86
+// modules/alerts/menu.php, row 95
 "Email templates" => "E-mail-sablonok", // ai 2026-06
 
-// modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 160, 163
-"Alerts Settings" => "Értesítések beállításai", // ai 2026-06
+// modules/alerts/mailings.php, row 48
+// modules/alerts/modedit.php, row 125
+"Module not found." => "A modul nem található.", // ai 2026-06
 
-// modules/alerts/menu.php, row 62
-"Alerts Admin" => "Értesítések adminisztrációja", // ai 2026-06
+// modules/alerts/mailings.php, row 51
+// modules/alerts/send.php, row 44
+// modules/alerts/synchro.php, row 61, 83
+"You do not have permissions to access this page" => "Nincs jogosultsága az oldal eléréséhez", // ai 2026-06
 
-// modules/alerts/menu.php, row 66
+// modules/alerts/mailings.php, row 55
+"This Alerts module has no list of readers." => "Ennek az Értesítések modulnak nincs olvasólistája.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 86
+// modules/alerts/menu.php, row 51, 69
+"Mailings and statistics" => "Kiküldések és statisztikák", // ai 2026-11
+
+// modules/alerts/mailings.php, row 90
+"Opens and clicks are not measured: the list has no statistics slice." => "A megnyitásokat és kattintásokat a rendszer nem méri: a listának nincs statisztikai rovata.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 92
+// modules/alerts/menu.php, row 75
 "Settings" => "Beállítások", // ai 2026-06
 
-// modules/alerts/menu.php, row 70
+// modules/alerts/mailings.php, row 97
+"Date" => "Dátum", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97
+"Name" => "Név", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97
+"State" => "Állapot", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97, 136
+"Recipients" => "Címzettek", // ai 2026-06
+
+// modules/alerts/mailings.php, row 99
+"Opened" => "Megnyitások", // ai 2026-11
+
+// modules/alerts/mailings.php, row 99
+"Clicked" => "Kattintások", // ai 2026-11
+
+// modules/alerts/mailings.php, row 124
+"The list has sent nothing yet." => "A lista még semmit sem küldött ki.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 137
+"No recipient matches the filter." => "Egyetlen címzett sem felel meg a szűrőnek.", // ai 2026-11
+
+// modules/alerts/menu.php, row 51
+// modules/alerts/modedit.php, row 216, 219
+"Alerts Settings" => "Értesítések beállításai", // ai 2026-06
+
+// modules/alerts/menu.php, row 65
+"Alerts Admin" => "Értesítések adminisztrációja", // ai 2026-06
+
+// modules/alerts/menu.php, row 79
 // modules/alerts/send_emails.php, row 153
 // modules/alerts/synchro2.php, row 77
 "Selections" => "Válogatások", // ai 2026-06
 
-// modules/alerts/menu.php, row 74
+// modules/alerts/menu.php, row 83
 "Send emails" => "E-mailek küldése", // ai 2026-06
 
-// modules/alerts/menu.php, row 79
+// modules/alerts/menu.php, row 88
 "Reader management" => "Olvasók kezelése", // ai 2026-06
 
-// modules/alerts/menu.php, row 82
+// modules/alerts/menu.php, row 91
 "Documentation" => "Dokumentáció", // ai 2026-06
 
-// modules/alerts/menu.php, row 84
+// modules/alerts/menu.php, row 93
 "Common" => "Általános", // ai 2026-06
 
-// modules/alerts/modedit.php, row 93
+// modules/alerts/modedit.php, row 128
 "You do not have permissions to edit this Alerts module" => "Nincs jogosultsága ennek az Értesítések modulnak a szerkesztéséhez", // ai 2026-10
 
-// modules/alerts/modedit.php, row 160
+// modules/alerts/modedit.php, row 137
+// modules/alerts/synchro.php, row 79
+"The form has expired; reload the page and try again." => "Az űrlap lejárt; töltse újra az oldalt, és próbálja meg ismét.", // ai 2026-10
+
+// modules/alerts/modedit.php, row 159
+"You may not choose this statistics slice" => "Ezt a statisztikai rovatot nem választhatja", // ai 2026-11
+
+// modules/alerts/modedit.php, row 216
 "Add Alerts" => "Értesítések hozzáadása", // ai 2026-10
 
-// modules/alerts/modedit.php, row 168
+// modules/alerts/modedit.php, row 225
+"The URL of this list is not https - the mails go without the one-click unsubscribe header." => "A lista URL-je nem https – a levelek az egykattintásos leiratkozási fejléc nélkül mennek ki.", // ai 2026-11
+
+// modules/alerts/modedit.php, row 228
 "language" => "nyelv", // ai 2026-06
 
-// modules/alerts/modedit.php, row 172
+// modules/alerts/modedit.php, row 232
 "Alert emails" => "Értesítő e-mailek", // ai 2026-10
 
-// modules/alerts/modedit.php, row 176, 182
+// modules/alerts/modedit.php, row 236, 242
 "Edit '%1'" => "'%1' szerkesztése", // ai 2026-10
 
-// modules/alerts/modedit.php, row 178
+// modules/alerts/modedit.php, row 238
 "welcome email" => "üdvözlő e-mail", // ai 2026-06
 
-// modules/alerts/modedit.php, row 184
+// modules/alerts/modedit.php, row 244
 // modules/alerts/send.php, row 76
 "alert email" => "értesítő e-mail", // ai 2026-06
 
-// modules/alerts/modedit.php, row 187
-"alerts ID" => "értesítés ID", // ai 2026-06
+// modules/alerts/modedit.php, row 247
+"The slice where the opens and clicks of the mailings are counted; empty = nothing is measured. Each list needs its own slice." => "A rovat, amelyben a rendszer a kiküldések megnyitásait és kattintásait számolja; üres = semmit sem mér. Minden listának saját rovat kell.", // ai 2026-11
 
-// modules/alerts/send.php, row 44
-"You do not have permissions to access this page" => "Nincs jogosultsága az oldal eléréséhez", // ai 2026-06
+// modules/alerts/modedit.php, row 249
+"Install from the App store" => "Telepítés az Alkalmazástárból", // ai 2026-11
+
+// modules/alerts/modedit.php, row 254
+"Statistics" => "Statisztika", // ai 2026-06
+
+// modules/alerts/modedit.php, row 255
+"Statistics slice" => "Statisztikai rovat", // ai 2026-11
+
+// modules/alerts/modedit.php, row 259
+"alerts ID" => "értesítés ID", // ai 2026-06
 
 // modules/alerts/send.php, row 69
 "Send Emails" => "E-mailek küldése", // ai 2026-06
@@ -279,46 +360,46 @@ return [
  => "Definiálja a válogatásokat azokban a rovatokban, amelyekből értesítéseket szeretne küldeni,\n"
    ."        az Alerts Selection Set típusú nézetekben", // ai 2026-06
 
-// modules/alerts/synchro.php, row 66
+// modules/alerts/synchro.php, row 89
 "Synchronization with Reader Management Slice" => "Szinkronizálás az olvasókat kezelő rovattal", // ai 2026-06
 
-// modules/alerts/synchro.php, row 95
+// modules/alerts/synchro.php, row 118
 "Not Yet Set" => "Még nincs beállítva", // ai 2026-06
 
-// modules/alerts/synchro.php, row 104
+// modules/alerts/synchro.php, row 127
 "Choose Reader Management Slice" => "Válassza ki az olvasókat kezelő rovatot", // ai 2026-06
 
-// modules/alerts/synchro.php, row 105
+// modules/alerts/synchro.php, row 128
 "This Alerts Collection takes user data from the slice" => "Ez az értesítési gyűjtemény a felhasználói adatokat a következő rovatból veszi", // ai 2026-06
 
-// modules/alerts/synchro.php, row 112
+// modules/alerts/synchro.php, row 135
 "Change to: " => "Módosítás erre:", // ai 2026-06
 
-// modules/alerts/synchro.php, row 118
+// modules/alerts/synchro.php, row 141
 "and delete the %1-specific fields from %2" => "és a(z) %1-specifikus mezők törlése innen: %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 122
+// modules/alerts/synchro.php, row 145
 "Change" => "Módosítás", // ai 2026-06
 
-// modules/alerts/synchro.php, row 133
+// modules/alerts/synchro.php, row 156
 "Add %1-specific fields to %2" => "%1-specifikus mezők hozzáadása ide: %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 136
+// modules/alerts/synchro.php, row 159
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
  => "Csak azokat a mezőket adja hozzá, amelyek azonosítói még nem léteznek a rovatban.\n"
    ."    Frissíti a válogatásokat tartalmazó konstanscsoportot, ha az már létezik.", // ai 2026-06
 
-// modules/alerts/synchro.php, row 142
+// modules/alerts/synchro.php, row 165
 "Field Name" => "Mező neve", // ai 2026-06
 
-// modules/alerts/synchro.php, row 143
+// modules/alerts/synchro.php, row 166
 "Field ID" => "Mezőazonosító", // ai 2026-06
 
-// modules/alerts/synchro.php, row 152
+// modules/alerts/synchro.php, row 175
 "Add or refresh fields" => "Mezők hozzáadása vagy frissítése", // ai 2026-06
 
-// modules/alerts/synchro.php, row 154
+// modules/alerts/synchro.php, row 177
 "This command can not be used until you choose the Reader Management Slice." => "Ez a parancs nem használható, amíg ki nem választja az olvasókat kezelő rovatot.", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
@@ -374,4 +455,10 @@ return [
 
 // modules/alerts/util.php, row 100
 "Trash bin" => "Lomtár", // ai 2026-06
+
+// modules/alerts/util.php, row 194
+"Do you want to stop receiving the mails of this list?" => "Le szeretne iratkozni a lista leveleiről?", // ai 2026-11
+
+// modules/alerts/util.php, row 196
+"Unsubscribe" => "Leiratkozás", // ai 2026-11
 ];

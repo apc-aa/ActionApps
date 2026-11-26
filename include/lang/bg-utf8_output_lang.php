@@ -13,29 +13,29 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// ./slice.php, row 239
+// ./slice.php, row 240
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Грешен параметър inc - включваният файл трябва да съдържа само буквено-цифрови знаци", // ai 2026-06
 
-// ./slice.php, row 243
+// ./slice.php, row 244
 "No such file" => "Няма такъв файл", // ai 2026-06
 
-// ./slice.php, row 264
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "Невалиден номер на рубрика или рубриката е изтрита", // ai 2026-06
 
-// ./slice.php, row 267
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "Изходът през slice.php е забранен за тази рубрика", // ai 2026-06
 
-// ./slice.php, row 322
+// ./slice.php, row 339
 "session id" => "id на сесията", // ai 2026-06
 
-// ./slice.php, row 585
+// ./slice.php, row 607
 "number of current page (on pagescroller)" => "номер на текущата страница (при странициране)", // ai 2026-06
 
-// ./slice.php, row 586
+// ./slice.php, row 608
 "page length (number of items)" => "дължина на страницата (брой статии)", // ai 2026-06
 
-// ./slice.php, row 621
-// include/view.php, row 373
+// ./slice.php, row 643
+// include/view.php, row 391
 "No item found" => "Не е намерена статия", // ai 2026-06
 
 // include/discussion.php, row 211
@@ -173,19 +173,19 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Ниво на константата (използва се за йерархични константи)", // ai 2026-06
 
-// include/item.php, row 830
+// include/item.php, row 852
 "Error: wrong alias function %1 for %2" => "Грешка: грешна функция за алиас %1 за %2", // ai 2026-06
 
-// include/itemview.php, row 123
+// include/itemview.php, row 125
 "Selected item" => "Избрана статия", // ai 2026-06
 
-// include/itemview.php, row 130
+// include/itemview.php, row 132
 "number of found items" => "брой намерени статии", // ai 2026-06
 
-// include/itemview.php, row 378
+// include/itemview.php, row 380
 "No comment was selected" => "Не е избран коментар", // ai 2026-06
 
-// include/itemview.php, row 723, 731
+// include/itemview.php, row 727, 735
 "exact group name" => "точно име на група", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -197,13 +197,13 @@ return [
 // include/scroller.php, row 88
 "All" => "Всички", // ai 2026-06
 
-// include/scroller.php, row 296
+// include/scroller.php, row 306
 "found" => "намерени", // ai 2026-06
 
-// include/scroller.php, row 452
+// include/scroller.php, row 462
 "&raquo;" => "",
 
-// include/scroller.php, row 453
+// include/scroller.php, row 463
 "&laquo;" => "",
 
 // include/slice.php, row 69
@@ -212,16 +212,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Всички категории", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Грешка: Липсва парола за четене", // ai 2026-06
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "Съобщение от приложението", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Back" => "Назад", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "Повторно влизане", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -230,6 +230,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Получава данните за връзките на статията, изпратени от формуляра (POST)", // ai 2026-06
 
-// modules/site/site.php, row 308
+// modules/site/site.php, row 311
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Сайтът е настроен неправилно: %1 не съществува или не може да бъде прочетен. Добавете този файл или поправете настройката „State file“ на този модул за сайт.", // ai 2026-10
 ];

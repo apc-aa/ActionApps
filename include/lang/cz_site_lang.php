@@ -21,54 +21,59 @@ return [
 // modules/site/aliases.php, row 41
 "Manage %1" => "Spr\xE1va %1",
 
-// modules/site/index.php, row 64
+// modules/site/index.php, row 67
 "You do not have permission to edit items in this slice" => "Nem\xE1te opr\xE1vn\xECn\xED upravovat \xE8l\xE1nky v tomto web\xEDku",
 
-// modules/site/index.php, row 69
+// modules/site/index.php, row 72
 "Starting spot not found" => "V\xFDchoz\xED spot nebyl nalezen",
 
-// modules/site/index.php, row 152
+// modules/site/index.php, row 91
+// modules/site/moddelete.php, row 53
+// modules/site/modedit.php, row 218
+"The form has expired; reload the page and try again." => "Platnost formul\xE1\xF8e vypr\x9Aela; obnovte str\xE1nku a zkuste to znovu.", // ai 2026-10
+
+// modules/site/index.php, row 163
 "Editor window - site code manager" => "Edita\xE8n\xED okno - spr\xE1vce k\xF3du webu",
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 175
 "Add&nbsp;spot" => "P\xF8idat&nbsp;spot",
 
-// modules/site/index.php, row 165
+// modules/site/index.php, row 176
 "Add&nbsp;choice" => "P\xF8idat&nbsp;volbu",
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 179
 "Move&nbsp;up" => "Posunout&nbsp;nahoru",
 
-// modules/site/index.php, row 169
+// modules/site/index.php, row 180
 "Move&nbsp;down" => "Posunout&nbsp;dol\xF9",
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 183
 "Move&nbsp;left" => "Posunout&nbsp;doleva",
 
-// modules/site/index.php, row 173
+// modules/site/index.php, row 184
 "Move&nbsp;right" => "Posunout&nbsp;doprava",
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 187
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Smazat",
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 187
 "Are you sure you want to delete the spot?" => "Opravdu chcete tento spot smazat?",
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 190
 "Enable" => "Povolit",
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 191
 "Disable" => "Zak\xE1zat",
 
-// modules/site/index.php, row 201
+// modules/site/index.php, row 212
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Mo\x9En\xE9 syst\xE9mov\xE9 require - &lcub;require:...&rcub; nebo &lcub;require:[\"...\",\"...\"]&rcub;",
 
 // modules/site/menu.php, row 47
 "View site" => "Zobrazit web",
 
 // modules/site/menu.php, row 55
-// modules/site/modedit.php, row 298
+// modules/site/modedit.php, row 305
 "Site" => "Web",
 
 // modules/site/menu.php, row 80
@@ -83,92 +88,89 @@ return [
 // modules/site/moddelete.php, row 48
 "You don't have permissions to delete a site." => "Nem\xE1te opr\xE1vn\xECn\xED smazat web.",
 
-// modules/site/moddelete.php, row 53
-// modules/site/modedit.php, row 212
-"The form has expired; reload the page and try again." => "Platnost formul\xE1\xF8e vypr\x9Aela; obnovte str\xE1nku a zkuste to znovu.", // ai 2026-10
-
 // modules/site/moddelete.php, row 56
+// modules/site/modedit.php, row 119
 "Module not found." => "Modul nebyl nalezen.",
 
 // modules/site/moddelete.php, row 76
 "Slice successfully deleted, tables are optimized" => "Web\xEDk byl \xFAsp\xEC\x9An\xEC smaz\xE1n, tabulky jsou optimalizov\xE1ny",
 
-// modules/site/modedit.php, row 112
+// modules/site/modedit.php, row 115
 "You do not have permissions to add slice" => "Nem\xE1te opr\xE1vn\xECn\xED p\xF8idat web\xEDk",
 
-// modules/site/modedit.php, row 117
+// modules/site/modedit.php, row 123
 "You do not have permissions to edit this slice" => "Nem\xE1te opr\xE1vn\xECn\xED upravovat tento web\xEDk",
 
-// modules/site/modedit.php, row 125
+// modules/site/modedit.php, row 131
 "The settings and the other fields of this page were not saved." => "Nastaven\xED ani ostatn\xED pol\xED\xE8ka t\xE9to str\xE1nky nebyla ulo\x9Eena.", // ai 2026-10
 
-// modules/site/modedit.php, row 140
+// modules/site/modedit.php, row 146
 "State file" => "Stavov\xFD soubor",
 
-// modules/site/modedit.php, row 141, 306
+// modules/site/modedit.php, row 147, 313
 "Router" => "Router",
 
-// modules/site/modedit.php, row 142, 320
+// modules/site/modedit.php, row 148, 327
 "Uses modules" => "Pou\x9E\xEDv\xE1 moduly",
 
-// modules/site/modedit.php, row 152
+// modules/site/modedit.php, row 158
 "You can not use these modules in the site - you have no permission to them: %1" => "Tyto moduly nem\xF9\x9Eete na webu pou\x9E\xEDt - nem\xE1te k nim opr\xE1vn\xECn\xED: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 223
+// modules/site/modedit.php, row 229
 "The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "Nastaven\xED katalogu aplikac\xED nebylo ulo\x9Eeno - katalog web nenab\xEDdne, dokud nebudou opraveny tyto chyby:", // ai 2026-10
 
-// modules/site/modedit.php, row 285
+// modules/site/modedit.php, row 292
 "Add Site" => "P\xF8idat web",
 
-// modules/site/modedit.php, row 285
+// modules/site/modedit.php, row 292
 "Edit Site" => "Upravit web",
 
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 312
 "Used Language File" => "Pou\x9Eit\xFD jazykov\xFD soubor",
 
-// modules/site/modedit.php, row 306
+// modules/site/modedit.php, row 313
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Pou\x9Eijte AA_Router_Seo. Jinak budete pou\x9E\xEDvat star\xFD p\xF8\xEDstup modulu site s '\xF8\xEDdic\xEDm souborem', co\x9E nedoporu\xE8ujeme.",
 
-// modules/site/modedit.php, row 307
+// modules/site/modedit.php, row 314
 "Home or State file" => "Domovsk\xE1 str\xE1nka nebo stavov\xFD soubor",
 
-// modules/site/modedit.php, row 307
+// modules/site/modedit.php, row 314
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Pro AA_Router_Seo vypl\xF2te <b>v\xFDchoz\xED url</b> (domovskou str\xE1nku) - nap\xF8. <em>/en/home</em>, nebo ponechte pr\xE1zdn\xE9<br><br>Pro star\x9A\xED weby bez AA_Router_Seo vypl\xF2te n\xE1zev <b>\xF8\xEDdic\xEDho souboru webu</b> - bude um\xEDst\xECn v adres\xE1\xF8i /modules/site/sites/. K zadan\xE9mu n\xE1zvu se p\xF8id\xE1 p\xF8edpona 'site_', tak\x9Ee pokud soubor pojmenujete nap\xF8. 'apc.php', \xF8\xEDdic\xED soubor webu bude /modules/site/sites/site_apc.php.",
 
-// modules/site/modedit.php, row 322
+// modules/site/modedit.php, row 332
 "Additional setting" => "Dal\x9A\xED nastaven\xED",
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 337
 "App store" => "Katalog aplikac\xED", // ai 2026-10
 
-// modules/site/modedit.php, row 329
+// modules/site/modedit.php, row 339
 "A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Zve\xF8ejn\xECn\xFD web si z tohoto AA m\xF9\x9Ee nainstalovat kter\xE9koli AA - i s web\xEDky a moduly Zas\xEDl\xE1n\xED, kter\xE9 web pou\x9E\xEDv\xE1: jejich \x9Aablony, pol\xED\xE8ka, pohledy a hodnoty, nikdy v\x9Aak \xE8l\xE1nky. Nastavit to m\xF9\x9Ee jen superadmin.", // ai 2026-10
 
-// modules/site/modedit.php, row 333
+// modules/site/modedit.php, row 343
 "The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "Moduly webu se od zve\xF8ejn\xECn\xED zm\xECnily: %1 - katalog aplikac\xED web nenab\xEDdne, dokud je neschv\xE1l\xED superadmin.", // ai 2026-10
 
-// modules/site/modedit.php, row 334
+// modules/site/modedit.php, row 344
 "Approve the changed modules: %1" => "Schv\xE1lit zm\xECn\xECn\xE9 moduly: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 334
+// modules/site/modedit.php, row 344
 "Their templates, fields, views and constants then go to the app store with the site." => "Jejich \x9Aablony, pol\xED\xE8ka, pohledy a hodnoty pak p\xF9jdou do katalogu aplikac\xED spolu s webem.", // ai 2026-10
 
-// modules/site/modedit.php, row 336
+// modules/site/modedit.php, row 346
 "Publish in the app store" => "Zve\xF8ejnit v katalogu aplikac\xED", // ai 2026-10
 
-// modules/site/modedit.php, row 336
+// modules/site/modedit.php, row 346
 "The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "Zve\xF8ejn\xECn\xE1 aplikace nem\xE1 varov\xE1n\xED: ka\x9Ed\xE9 varov\xE1n\xED jej\xEDho exportu je chybou. Zastav\xED ji i skupina hodnot, kterou vlastn\xED web\xEDk mimo v\x9Aechny zve\xF8ejn\xECn\xE9 weby.", // ai 2026-10
 
-// modules/site/modedit.php, row 337
+// modules/site/modedit.php, row 347
 "App description" => "Popis aplikace", // ai 2026-10
 
-// modules/site/modedit.php, row 337
+// modules/site/modedit.php, row 347
 "What the app does, for the list of the app store." => "Co aplikace d\xECl\xE1 - pro seznam v katalogu aplikac\xED.", // ai 2026-10
 
-// modules/site/modedit.php, row 338
+// modules/site/modedit.php, row 348
 "App version" => "Verze aplikace", // ai 2026-10
 
-// modules/site/modedit.php, row 338
+// modules/site/modedit.php, row 348
 "Like 1.2.0." => "Nap\xF8. 1.2.0.", // ai 2026-10
 
 // modules/site/sitetree.php, row 1005

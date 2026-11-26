@@ -10,29 +10,29 @@ $mgettext_lang = "hu";
 
 return [
 
-// ./slice.php, row 239
+// ./slice.php, row 240
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Hib\xE1s inc param\xE9ter - a beillesztend\xF5 f\xE1jl neve csak alfanumerikus karaktereket tartalmazhat", // ai 2026-06
 
-// ./slice.php, row 243
+// ./slice.php, row 244
 "No such file" => "A f\xE1jl nem tal\xE1lhat\xF3", // ai 2026-06
 
-// ./slice.php, row 264
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "\xC9rv\xE9nytelen rovatsz\xE1m, vagy a rovatot t\xF6r\xF6lt\xE9k", // ai 2026-06
 
-// ./slice.php, row 267
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "A slice.php kimenet enn\xE9l a rovatn\xE1l tiltott", // ai 2026-06
 
-// ./slice.php, row 322
+// ./slice.php, row 339
 "session id" => "munkamenet-azonos\xEDt\xF3", // ai 2026-06
 
-// ./slice.php, row 585
+// ./slice.php, row 607
 "number of current page (on pagescroller)" => "az aktu\xE1lis oldal sz\xE1ma (a lapoz\xF3ban)", // ai 2026-06
 
-// ./slice.php, row 586
+// ./slice.php, row 608
 "page length (number of items)" => "oldalhossz (cikkek sz\xE1ma)", // ai 2026-06
 
-// ./slice.php, row 621
-// include/view.php, row 373
+// ./slice.php, row 643
+// include/view.php, row 391
 "No item found" => "Nem tal\xE1lhat\xF3 cikk", // ai 2026-06
 
 // include/discussion.php, row 211
@@ -170,19 +170,19 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Konstans szintje (hierarchikus konstansokn\xE1l haszn\xE1latos)", // ai 2026-06
 
-// include/item.php, row 830
+// include/item.php, row 852
 "Error: wrong alias function %1 for %2" => "Hiba: hib\xE1s %1 aliasf\xFCggv\xE9ny ehhez: %2", // ai 2026-06
 
-// include/itemview.php, row 123
+// include/itemview.php, row 125
 "Selected item" => "Kijel\xF6lt cikk", // ai 2026-06
 
-// include/itemview.php, row 130
+// include/itemview.php, row 132
 "number of found items" => "a megtal\xE1lt cikkek sz\xE1ma", // ai 2026-06
 
-// include/itemview.php, row 378
+// include/itemview.php, row 380
 "No comment was selected" => "Nincs kijel\xF6lt hozz\xE1sz\xF3l\xE1s", // ai 2026-06
 
-// include/itemview.php, row 723, 731
+// include/itemview.php, row 727, 735
 "exact group name" => "pontos csoportn\xE9v", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -194,13 +194,13 @@ return [
 // include/scroller.php, row 88
 "All" => "\xD6sszes", // ai 2026-06
 
-// include/scroller.php, row 296
+// include/scroller.php, row 306
 "found" => "\xF6sszesen", // ai 2026-10
 
-// include/scroller.php, row 452
+// include/scroller.php, row 462
 "&raquo;" => "",
 
-// include/scroller.php, row 453
+// include/scroller.php, row 463
 "&laquo;" => "",
 
 // include/slice.php, row 69
@@ -209,16 +209,16 @@ return [
 // include/slice.php, row 71
 "All categories" => "Minden kateg\xF3ria", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Hiba: hi\xE1nyzik az olvas\xE1si jelsz\xF3", // ai 2026-06
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "Toolkit h\xEDr\xFCzenet", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Back" => "Vissza", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "\xDAjra bejelentkez\xE9s", // ai 2026-06
 
 // misc/proposefieldchange.php, row 110
@@ -227,6 +227,6 @@ return [
 // misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Feldolgozza az \xFBrlap \xE1ltal POST-tal k\xFCld\xF6tt cikk-kapcsolati adatokat", // ai 2026-06
 
-// modules/site/site.php, row 308
+// modules/site/site.php, row 311
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "A webhely hib\xE1san van be\xE1ll\xEDtva: a(z) %1 nem l\xE9tezik vagy nem olvashat\xF3. Hozza l\xE9tre ezt a f\xE1jlt, vagy jav\xEDtsa ki a webhelymodul ,,\xC1llapotf\xE1jl\" be\xE1ll\xEDt\xE1s\xE1t.", // ai 2026-10
 ];

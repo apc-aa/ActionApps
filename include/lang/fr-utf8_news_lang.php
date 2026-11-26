@@ -26,6 +26,39 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Checked - a visit to an Alternate URL is permanently redirected (301) to the same page on the URL of the site, so each page has one address. Form submissions (POST) are not redirected. The www. form of the site URL is left to the web server." => "Coché - une visite sur une « URL alternative » est redirigée de façon permanente (301) vers la même page à l'URL du site ; chaque page a ainsi une seule adresse. Les envois de formulaires (POST) ne sont pas redirigés. La forme www. de l'URL du site est laissée au serveur web.", // ai 2026-11
+// "Each task is a run of its own; the runs go on side by side, in no set order. Each AA runs the task of its own version; an AA without it says so." => "Chaque tâche est une exécution à part; les exécutions se déroulent en parallèle, sans ordre fixe. Chaque AA exécute la tâche de sa propre version; un AA qui ne l'a pas le signale.", // ai 2026-11
+// "The run goes on in the task queue of this AA - you may close this page." => "L'exécution se poursuit dans la file des tâches de cet AA - vous pouvez fermer cette page.", // ai 2026-11
+// "Running in the task queue" => "En cours dans la file des tâches", // ai 2026-11
+// "now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_]." => "il est désormais possible d'utiliser un vid non numérique - p. ex. photo_list, utilisé comme {view:photo_list:...} ou ..?vid=photo_list... Utilisez uniquement des minuscules - [a-z_].", // ai 2026-06
+// "Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "Autre(s) domaine(s) sur lesquels le site doit être visible. Envisagez toutefois une redirection côté serveur vers un domaine unique, plus favorable au référencement (SEO).", // ai 2026-06
+// "Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "Crée les tables du nouveau module Sondages et ajoute les premiers sondages modèles. Supprime tous les sondages existants !", // ai 2026-06
+// "Polls module created" => "Module Sondages créé", // ai 2026-06
+// "Compares all the tables with the AA template of the database structure. Repair creates the missing tables and changes the differing ones in place (ALTER TABLE) - the data and the writes during the change stay. Tables, columns and indexes the template does not know and columns the template would narrow are only listed. On a big table the change takes minutes - run it when the traffic is low." => "Compare toutes les tables avec le modèle AA de la structure de la base de données. «Réparer» crée les tables manquantes et modifie sur place celles qui diffèrent (ALTER TABLE) - les données et les écritures pendant la modification sont conservées. Les tables, colonnes et index que le modèle ne connaît pas et les colonnes que le modèle rétrécirait sont seulement listés. Sur une grande table, la modification prend des minutes - lancez-la quand le trafic est faible.", // ai 2026-11
+// "Table %1 (%2 MB) not changed: %3. Run it when the traffic is low: %4" => "Table %1 (%2 Mo) non modifiée: %3. Exécutez cette commande quand le trafic est faible: %4", // ai 2026-11
+// "Choose a task, a method the task has and at least one AA of the list." => "Choisissez une tâche, une méthode qu'elle propose et au moins un AA de la liste.", // ai 2026-11
+// "Each AA runs the task of its own version; an AA without it says so." => "Chaque AA exécute la tâche de sa propre version ; un AA qui ne l'a pas le signale.", // ai 2026-11
+// "Repair tests first, repairs only where the test fails, then tests again." => "La réparation teste d'abord, ne répare que là où le test échoue, puis teste à nouveau.", // ai 2026-11
+// "Checks that every frequency readers can subscribe to is really swept, and that no collection is so far behind that the next sweep would skip items instead of mailing them." => "Vérifie que chaque fréquence à laquelle les lecteurs peuvent s'abonner est réellement envoyée, et qu'aucune collection n'est en retard au point que le prochain envoi sauterait des items au lieu de les envoyer.", // ai 2026-10
+// "Add to include/config.php: define('AA_SECRET', '...'); with any long random string, e.g. the output of php -r \"echo bin2hex(random_bytes(32));\". Do it when you update AA, so the Centrals authenticate to this AA again only once. Without AA_SECRET a change of DB_PASSWORD has the same effect as a new secret. Centrals keep the database passwords of their AAs in central_conf - another reason for AA_SECRET." => "Ajoutez à include/config.php : define('AA_SECRET', '...'); avec une longue chaîne aléatoire quelconque, p. ex. la sortie de php -r \"echo bin2hex(random_bytes(32));\". Faites-le lors de la mise à jour d'AA, afin que les Centrals ne doivent se réauthentifier auprès de cet AA qu'une seule fois. Sans AA_SECRET, un changement de DB_PASSWORD a le même effet qu'un nouveau secret. Les Centrals conservent les mots de passe de base de données de leurs AA dans central_conf – une raison de plus pour AA_SECRET.", // ai 2026-10
+// "Convert old database collation utf8 (or utf8mb3) to utf8mb4 for all tables and set database default to utf8mb4" => "Convertit l'ancienne collation utf8 (ou utf8mb3) en utf8mb4 pour toutes les tables et définit utf8mb4 comme collation par défaut de la base", // ai 2026-06
+// "Restore data from backup tables" => "Restaurer les données depuis les tables de sauvegarde", // ai 2026-06
+// "Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "Supprime toutes les tables actuelles (slice, item, ...) pour lesquelles une table bck_ existe et renomme toutes les tables de sauvegarde (bck_slice, bck_item, ...) avec leurs noms corrects (slice, item, ...).", // ai 2026-06
+// "The bck_ tables do not exist (or at least bck_content table)" => "Les tables bck_ n'existent pas (ou au moins la table bck_content)", // ai 2026-06
+// "There is no bck_%1 table - %1 not restored." => "La table bck_%1 n'existe pas - %1 non restaurée.", // ai 2026-06
+// "Replace table bck_%1 -> %1" => "Remplacement de la table bck_%1 -> %1", // ai 2026-06
+// "Updates the database structure for AA. It checks all the tables in current system and compares them with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)" => "Met à jour la structure de la base de données d'AA. Vérifie toutes les tables du système actuel et les compare avec la structure de base de données la plus récente. La nouvelle table est créée sous le nom tmp_*, puis le contenu de l'ancienne table est copié et, si tout est OK, l'ancienne table est renommée en bck_* et tmp_* est renommée en nouvelle table. (nouvelle version basée sur la structure metabase)", // ai 2026-06
+// "<em>Tables %1 are identical.</em><br>" => "<em>Les tables %1 sont identiques.</em><br>", // ai 2026-06
+// "<em>Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it.</em><br>" => "<em>La table <b>%1</b> n'est <b>pas nécessaire</b>. Vous pouvez la supprimer <b>manuellement</b>.</em><br>", // ai 2026-06
+// "<em>Table <b>%1</b> is <b>new</b>.</em><br>" => "<em>La table <b>%1</b> est <b>nouvelle</b>.</em><br>", // ai 2026-06
+// "Tables %1 are identical. Skipping." => "Les tables %1 sont identiques. Ignoré.", // ai 2026-06
+// "Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it. Skipping.</em><br>" => "La table <b>%1</b> n'est <b>pas nécessaire</b>. Vous pouvez la supprimer <b>manuellement</b>. Ignoré.</em><br>", // ai 2026-06
+// "<em>Updating table <b>%1</b>.</em><br>" => "<em>Mise à jour de la table <b>%1</b>.</em><br>", // ai 2026-06
+// "Deleting temporary table tmp_%1, if it exists." => "Suppression de la table temporaire tmp_%1, si elle existe.", // ai 2026-06
+// "Creating temporary table tmp_%1." => "Création de la table temporaire tmp_%1.", // ai 2026-06
+// "Creating \"old\" data table %1 if not exists." => "Création de l'« ancienne » table de données %1 si elle n'existe pas.", // ai 2026-06
+// "copying old values to new table %1 -> tmp_%1" => "copie des anciennes valeurs vers la nouvelle table %1 -> tmp_%1", // ai 2026-06
+// "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "sauvegarde de l'ancienne table %1 -> bck_%1 et utilisation des nouvelles tables à la place tmp_%1 -> %1", // ai 2026-06
 // "\"is\" holds when one of the field's values is among the checked values, \"is not\" when none is. \"is filled\" holds for any value other than empty and 0, so also for a checked checkbox." => "« est » est vrai lorsqu'une des valeurs du champ figure parmi les valeurs cochées, « n'est pas » lorsqu'aucune n'y figure. « est rempli » est vrai pour toute valeur autre que vide et 0, donc aussi pour une case cochée.", // ai 2026-11
 // "None - the import is disabled" => "Aucune - l'import est désactivé", // ai 2026-10
 // "The import is switched off." => "L'import est désactivé.", // ai 2026-10
@@ -395,7 +428,8 @@ return [
 "never" => "jamais", // ai 2026-06
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 767
+// admin/se_views.php, row 139
+// include/field.class.php, row 770
 // src/Util/Adminlink.php, row 31
 "disabled" => "désactivé", // ai 2026-06
 
@@ -456,28 +490,52 @@ return [
 // include/menu_util.php, row 77
 "View Log" => "Voir le journal", // ai 2026-06
 
-// admin/aa_note.php, row 54
+// admin/aa_note.php, row 55
 "You do not have permissions to write notes" => "Vous n'avez pas la permission d'écrire des notes", // ai 2026-10
 
-// admin/aa_note.php, row 58
+// admin/aa_note.php, row 61
 // admin/aa_security.php, row 64, 72
 // admin/aa_statecheck.php, row 197, 259
-// admin/aafinder.php, row 98
+// admin/aafinder.php, row 99
 // admin/console.php, row 73
+// admin/discedit.php, row 78
+// admin/discedit2.php, row 106
 // admin/fileman.php, row 110
+// admin/mailman_create_list.php, row 97
+// admin/se_constant.php, row 116
+// admin/se_constant_import.php, row 77
+// admin/se_csv_import2.php, row 564
+// admin/se_fields.php, row 102
+// admin/se_filters2.php, row 75
 // admin/se_fulltext.php, row 80
+// admin/se_import2.php, row 63
+// admin/se_inter_import.php, row 58
+// admin/se_inter_import3.php, row 63
+// admin/se_profile.php, row 75
+// admin/se_sets.php, row 82
+// admin/se_users.php, row 161
+// admin/se_views.php, row 86
+// admin/search_replace.php, row 122
 // admin/slicedel2.php, row 70
+// admin/slicedit.php, row 194
+// admin/sliceimp.php, row 285
+// admin/um_gedit.php, row 107
 // admin/um_passkeys.php, row 73
 // admin/um_passwd.php, row 80
+// admin/um_uedit.php, row 123
+// admin/write_mail.php, row 129
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
-// central/optimize.php, row 65
+// central/optimize.php, row 76
+// modules/jump/modedit.php, row 91
 // src/Import/DetailPage.php, row 548
 // src/Isds/Registry/Page.php, row 323
 "The form has expired; reload the page and try again." => "Le formulaire a expiré ; rechargez la page et réessayez.", // ai 2026-10
 
 // admin/aa_optimize.php, row 50
+// admin/xmlclient.php, row 130
 // include/feeding.php, row 451, 487
+// src/Mailbulk/Gate.php, row 481
 "Test" => "Tester", // ai 2026-06
 
 // admin/aa_optimize.php, row 65
@@ -491,6 +549,7 @@ return [
 
 // admin/aa_optimize.php, row 129
 // admin/aa_statecheck.php, row 139
+// central/index.php, row 175
 "Repair" => "Réparer", // ai 2026-06
 
 // admin/aa_optimize.php, row 145
@@ -522,8 +581,8 @@ return [
 // admin/setup.php, row 102, 239
 // admin/slicewiz.php, row 84
 // admin/um_passwd.php, row 128
-// admin/um_uedit.php, row 314, 328
-// include/itemfunc.php, row 613, 1202
+// admin/um_uedit.php, row 326, 340
+// include/itemfunc.php, row 613, 1189
 // include/um_util.php, row 296
 "Login name" => "nom d'utilisateur",
 
@@ -532,11 +591,11 @@ return [
 // admin/aa_statistics.php, row 103
 // admin/anonym_wizard.php, row 223
 // admin/console.php, row 66
-// admin/se_fields.php, row 361
+// admin/se_fields.php, row 384
 // admin/se_statistics.php, row 82
-// admin/se_views.php, row 148
-// include/formutil.php, row 1475, 1478, 2064
-// src/Widget/FilWidget.php, row 154, 233
+// admin/se_views.php, row 165
+// include/formutil.php, row 1479, 1482, 2068
+// src/Widget/FilWidget.php, row 157, 243
 // src/Widget/FldWidget.php, row 156
 "Show" => "Montrer",
 
@@ -586,7 +645,7 @@ return [
 "Last %1 days: %2 refused, %3 run (counted once per page and day)." => "%1 derniers jours : refusées : %2, exécutées : %3 (comptées une fois par page et par jour).", // ai 2026-10
 
 // admin/aa_security.php, row 133
-// src/Optimize/CheckAjaxUnsigned.php, row 87
+// src/Optimize/CheckAjaxUnsigned.php, row 85, 107
 // src/Optimize/CheckAlertitemRefusals.php, row 105
 // src/Optimize/CheckAnonymousEditRefusals.php, row 94
 // src/Optimize/CheckBlockedRequests.php, row 94
@@ -600,7 +659,7 @@ return [
 // src/Optimize/CheckIsdsViews.php, row 132
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 97
 // src/Optimize/CheckLoginAddresses.php, row 90, 103
-// src/Optimize/CheckObjectFormRefusals.php, row 106
+// src/Optimize/CheckObjectFormRefusals.php, row 108
 // src/Optimize/CheckPasskeys.php, row 89
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
@@ -611,6 +670,7 @@ return [
 // src/Optimize/CheckTrustedProxies.php, row 109
 // src/Optimize/CheckUploadRefusals.php, row 106
 // src/Optimize/CheckUserAliasFunctionLog.php, row 75
+// src/Optimize/CheckViewDirectRefusals.php, row 105
 // src/Optimize/CheckViewSliceRefusals.php, row 167, 199
 "Log rows" => "Lignes du journal", // ai 2026-10
 
@@ -644,13 +704,14 @@ return [
 "State Check reminds you until it is on again." => "La Vérification de l'état vous le rappellera jusqu'à ce qu'elle soit réactivée.", // ai 2026-10
 
 // admin/aa_security.php, row 206
-// admin/se_csv_import2.php, row 395
+// admin/se_csv_import2.php, row 428
 // admin/se_showif.php, row 184
 // include/searchbar.class.php, row 769
+// src/Util/Notes.php, row 140
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
-// src/Widget/TxtWidget.php, row 110
-// src/Widget/Widget.php, row 444
+// src/Widget/TxtWidget.php, row 116
+// src/Widget/Widget.php, row 467
 "Save" => "Enregistrer", // ai 2026-06
 
 // admin/aa_statecheck.php, row 72
@@ -669,6 +730,7 @@ return [
 
 // admin/aa_statecheck.php, row 133
 // central/installapp.php, row 1343
+// src/Optimize/CheckImgHostPrefix.php, row 89
 // src/Optimize/CheckIsdsAccounts.php, row 205
 // src/Optimize/CheckPerVisitorReads.php, row 72
 // src/Optimize/CheckUniversalAnalytics.php, row 97
@@ -679,7 +741,7 @@ return [
 "Recheck" => "Revérifier", // ai 2026-10
 
 // admin/aa_statecheck.php, row 177
-// admin/discedit.php, row 165
+// admin/discedit.php, row 200
 "Hide" => "cacher",
 
 // admin/aa_statecheck.php, row 199
@@ -845,10 +907,10 @@ return [
 "Sites" => "Sites", // ai 2026-10
 
 // admin/aa_statistics.php, row 147
-// admin/aafinder.php, row 484, 497
+// admin/aafinder.php, row 486, 499
 // admin/se_inputform.php, row 295
 // central/appstore.php, row 164
-// include/searchlib.php, row 1103
+// include/searchlib.php, row 1177
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Sections", // ai 2026-06
 
@@ -931,7 +993,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1700
+// include/metabase.class.php, row 1672
 "Manage %1" => "Gérer %1", // ai 2026-06
 
 // admin/aa_tasks.php, row 46
@@ -959,29 +1021,30 @@ return [
 // admin/aa_wizardtemplate.php, row 75
 "Wizard Templates" => "Modèles d'assistant", // ai 2026-10
 
-// admin/aafinder.php, row 90
+// admin/aafinder.php, row 91
 "You don't have permissions to do search." => "Vous n'avez pas la permission d'effectuer une recherche.", // ai 2026-06
 
-// admin/aafinder.php, row 109
+// admin/aafinder.php, row 110
 "Show results with string" => "Afficher les résultats contenant la chaîne", // ai 2026-06
 
-// admin/aafinder.php, row 111
+// admin/aafinder.php, row 112
 // src/Isds/Registry/Page.php, row 510
 // src/Optimize/CheckAlertitemRefusals.php, row 89, 100
+// src/Optimize/CheckMailbulkRuns.php, row 91
 "Item" => "Item", // ai 2026-10
 
-// admin/aafinder.php, row 135
+// admin/aafinder.php, row 136
 // admin/feed_to.php, row 65
-// admin/se_fields.php, row 113
-// admin/slicedit.php, row 249
+// admin/se_fields.php, row 123
+// admin/slicedit.php, row 263
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1224
+// include/logs.php, row 1229
 // include/menu.php, row 134
-// include/slice.class.php, row 590
+// include/slice.class.php, row 649
 // include/sliceadd.php, row 54, 79
 // src/Central/FindingText.php, row 496
-// src/Optimize/CheckAjaxUnsigned.php, row 80
+// src/Optimize/CheckAjaxUnsigned.php, row 100
 // src/Optimize/CheckAlertitemRefusals.php, row 98
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
 // src/Optimize/CheckDiscussionRefusals.php, row 74
@@ -991,6 +1054,7 @@ return [
 // src/Optimize/CheckIsdsRegistry.php, row 179
 // src/Optimize/CheckIsdsViews.php, row 163
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 87
+// src/Optimize/CheckRelatedFieldsWithoutSlice.php, row 82
 // src/Optimize/CheckRelatedSlices.php, row 76
 // src/Optimize/CheckUploadRefusals.php, row 91
 // src/Optimize/CheckUserAliasFunctionLog.php, row 85
@@ -999,149 +1063,149 @@ return [
 // src/Optimize/Convert2innodb.php, row 69
 "Slice" => "Section",
 
-// admin/aafinder.php, row 139
+// admin/aafinder.php, row 140
 // central/installapp.php, row 1271
 // src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckCkeditorUse.php, row 98
-// src/Optimize/CheckObjectFormRefusals.php, row 96
+// src/Optimize/CheckObjectFormRefusals.php, row 98
 "Module" => "Module", // ai 2026-10
 
-// admin/aafinder.php, row 144, 145, 146, 147
+// admin/aafinder.php, row 145, 146, 147, 148
 // include/um_util.php, row 102
-// src/Optimize/CheckObjectFormRefusals.php, row 97
+// src/Optimize/CheckObjectFormRefusals.php, row 99
 "Object" => "Objet",
 
-// admin/aafinder.php, row 150
+// admin/aafinder.php, row 151
 // include/itemfunc.php, row 306
-// include/logs.php, row 365
+// include/logs.php, row 366
 // src/AA_Plannedtask.php, row 204
 "Log" => "Journal", // ai 2026-06
 
-// admin/aafinder.php, row 172
+// admin/aafinder.php, row 173
 // include/menu_util.php, row 79
 "AA finder" => "Localisateur AA",
 
-// admin/aafinder.php, row 244
+// admin/aafinder.php, row 246
 "Jump" => "Sautez",
 
-// admin/aafinder.php, row 451, 503
+// admin/aafinder.php, row 453, 505
 // admin/itemhistory.php, row 47
 // include/itemfunc.php, row 82, 83, 286, 408
 // include/menu.php, row 164
 // include/menu_util.php, row 84
 "History" => "Historique", // ai 2026-06
 
-// admin/aafinder.php, row 463
+// admin/aafinder.php, row 465
 "Manage" => "Gérer", // ai 2026-06
 
-// admin/aafinder.php, row 466
+// admin/aafinder.php, row 468
 "Manage User:" => "Gérer l'utilisateur:", // ai 2026-06
 
-// admin/aafinder.php, row 468, 474, 490, 518, 531
+// admin/aafinder.php, row 470, 476, 492, 520, 533
 "Go!" => "Allez",
 
-// admin/aafinder.php, row 472
+// admin/aafinder.php, row 474
 "Manage Group:" => "Gérer le groupe:", // ai 2026-06
 
-// admin/aafinder.php, row 478, 508
-// admin/um_gedit.php, row 207, 324
-// admin/um_uedit.php, row 249
-// include/se_users.php, row 138, 143
+// admin/aafinder.php, row 480, 510
+// admin/um_gedit.php, row 218, 342
+// admin/um_uedit.php, row 260
+// include/se_users.php, row 142, 147
 // include/searchbar.class.php, row 566, 567, 607
-// include/transformation.class.php, row 829, 910
+// include/transformation.class.php, row 830, 911
 // include/um_gsrch.php, row 47
 // src/Widget/GpsWidget.php, row 434
 // src/Widget/RichtextMarkup.php, row 85
 "Search" => "Rechercher",
 
-// admin/aafinder.php, row 481
+// admin/aafinder.php, row 483
 "Find in" => "Chercher dans", // ai 2026-06
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 484
 "ID & SEO" => "ID et SEO", // ai 2026-06
 
-// admin/aafinder.php, row 483, 496
+// admin/aafinder.php, row 485, 498
 // include/itemfunc.php, row 195
 // include/menu.php, row 145
 "Views" => "Vues",
 
-// admin/aafinder.php, row 485, 498
+// admin/aafinder.php, row 487, 500
 // admin/anonym_wizard.php, row 217
 // include/exporter.class.php, row 550
 // include/itemfunc.php, row 383
 // include/menu.php, row 135
-// include/searchlib.php, row 173
+// include/searchlib.php, row 230
 // src/Isds/SliceRules.php, row 176
 "Fields" => "Champs",
 
-// admin/aafinder.php, row 486, 499
+// admin/aafinder.php, row 488, 501
 "Site spots" => "Emplacements du site", // ai 2026-06
 
-// admin/aafinder.php, row 487, 504
+// admin/aafinder.php, row 489, 506
 "Discussion comments" => "Commentaires de discussion", // ai 2026-06
 
-// admin/aafinder.php, row 495
+// admin/aafinder.php, row 497
 "Search and Replace in" => "Rechercher et remplacer dans", // ai 2026-06
 
-// admin/aafinder.php, row 500
+// admin/aafinder.php, row 502
 "Objects" => "Objets", // ai 2026-06
 
-// admin/aafinder.php, row 501
+// admin/aafinder.php, row 503
 "Items from slices with 'Slice Type' like Code... " => "Items des sections dont le 'Slice Type' contient Code...", // ai 2026-06
 
-// admin/aafinder.php, row 501
+// admin/aafinder.php, row 503
 "Code Items" => "Items de code", // ai 2026-06
 
-// admin/aafinder.php, row 502
+// admin/aafinder.php, row 504
 "All Items" => "Tous les items", // ai 2026-06
 
-// admin/aafinder.php, row 506
+// admin/aafinder.php, row 508
 "minimum 2 characters for replace function" => "minimum 2 caractères pour la fonction de remplacement", // ai 2026-06
 
-// admin/aafinder.php, row 507
+// admin/aafinder.php, row 509
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "minimum 6 caractères pour la fonction de remplacement (ou utilisez la valeur {#AAA} qui sera remplacée par une chaîne vide)", // ai 2026-06
 
-// admin/aafinder.php, row 509
+// admin/aafinder.php, row 511
 "Replace!" => "Remplacer!", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 518
 "Get all information about the ITEM" => "Obtenir toutes les informations sur l'ITEM", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 525
 "Shortcut to edit ITEM" => "Raccourci pour modifier l'ITEM", // ai 2026-06
 
-// admin/aafinder.php, row 526
+// admin/aafinder.php, row 528
 // admin/se_showif.php, row 116
 // include/searchbar.class.php, row 576
-// include/searchlib.php, row 50, 51, 129, 138
+// include/searchlib.php, row 50, 51, 186, 195
 "contains" => "Contien",
 
-// admin/aafinder.php, row 527
+// admin/aafinder.php, row 529
 // admin/se_showif.php, row 116
 // include/searchbar.class.php, row 584
-// include/searchlib.php, row 129, 138
+// include/searchlib.php, row 159, 186, 195
 "is" => "est",
 
-// admin/aafinder.php, row 528
-// admin/se_profile.php, row 97
+// admin/aafinder.php, row 530
+// admin/se_profile.php, row 108
 "Item number" => "Numéro d'item", // ai 2026-10
 
-// admin/aafinder.php, row 529
+// admin/aafinder.php, row 531
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
-// admin/se_filters.php, row 51
-// admin/se_filters2.php, row 64
-// admin/se_import.php, row 48
-// admin/se_import2.php, row 52
+// admin/se_filters.php, row 55
+// admin/se_filters2.php, row 70
+// admin/se_import.php, row 52
+// admin/se_import2.php, row 58
 // admin/se_inter_export.php, row 52
-// admin/se_inter_import.php, row 45
-// admin/se_inter_import2.php, row 38
-// admin/se_inter_import3.php, row 40
+// admin/se_inter_import.php, row 50
+// admin/se_inter_import2.php, row 43
+// admin/se_inter_import3.php, row 46
 // admin/se_mapping.php, row 49
 // admin/se_mapping2.php, row 55
 // admin/se_rssfeeds.php, row 37
-// admin/xmlclient.php, row 107
+// admin/xmlclient.php, row 112
 "You do not have permissions to change feeding setting" => "Vous n'avez pas la permission de changer la configuration de l'information",
 
 // admin/aarsstest.php, row 46
@@ -1152,17 +1216,17 @@ return [
 "ActionApps Anonymous form" => "Formulaire anonyme ActionApps", // ai 2026-06
 
 // admin/anonym_wizard.php, row 129
-// admin/write_mail.php, row 290
+// admin/write_mail.php, row 306
 // include/menu_util.php, row 630
-// include/stringexpand.php, row 10316, 10395
+// include/stringexpand.php, row 10309, 10388
 "Send" => "Envoyer",
 
 // admin/anonym_wizard.php, row 151
-// admin/mailman_create_list.php, row 69
-// admin/se_constant.php, row 87
-// admin/se_constant_import.php, row 63
-// admin/se_fieldid.php, row 89
-// admin/se_fields.php, row 89
+// admin/mailman_create_list.php, row 74
+// admin/se_constant.php, row 92
+// admin/se_constant_import.php, row 68
+// admin/se_fieldid.php, row 90
+// admin/se_fields.php, row 93
 // admin/se_inputform.php, row 131
 // admin/se_javascript.php, row 50
 // admin/se_showif.php, row 55
@@ -1184,8 +1248,8 @@ return [
 "Show Form" => "Montrer le formulaire",
 
 // admin/anonym_wizard.php, row 211
-// admin/se_csv_import2.php, row 418
-// src/Util/Paramwizard.php, row 166
+// admin/se_csv_import2.php, row 452
+// src/Util/Paramwizard.php, row 183
 "Help" => "Assistance",
 
 // admin/anonym_wizard.php, row 211
@@ -1204,19 +1268,20 @@ return [
 "Use a PHP script to show the result on the OK and Error pages:" => "Utiliser un script PHP pour montrer les résultats sur les pages d'erreurs et OK", // ai 2026-10
 
 // admin/anonym_wizard.php, row 221
-// admin/se_fieldid.php, row 296
-// admin/se_fields.php, row 357
+// admin/se_fieldid.php, row 307
+// admin/se_fields.php, row 380
 // admin/se_javascript.php, row 86
-// admin/se_profile.php, row 207
+// admin/se_profile.php, row 221
 // admin/se_showif.php, row 124
-// admin/search_replace.php, row 176
+// admin/search_replace.php, row 198
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1405, 1409
+// include/field.class.php, row 1453, 1457
 // include/form.class.php, row 211
-// include/searchlib.php, row 446
-// src/Optimize/CheckAjaxUnsigned.php, row 81
+// include/searchlib.php, row 503
+// src/Optimize/CheckAjaxUnsigned.php, row 79, 101
 // src/Optimize/CheckAnonymousEditRefusals.php, row 86
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 89
+// src/Optimize/CheckRelatedFieldsWithoutSlice.php, row 83
 // src/Optimize/CheckRelatedSlices.php, row 77
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckUserAliasFunctionLog.php, row 86
@@ -1226,13 +1291,13 @@ return [
 "Field" => "Champ",
 
 // admin/anonym_wizard.php, row 222
-// admin/se_fieldid.php, row 296
-// admin/se_fields.php, row 358
+// admin/se_fieldid.php, row 307
+// admin/se_fields.php, row 381
 // admin/se_history.php, row 140
 // admin/se_javascript.php, row 86
-// admin/slicedit.php, row 282
 // central/installapp.php, row 1271
 // include/constants.php, row 458
+// include/modutils.php, row 146
 // src/Central/FindingText.php, row 186, 192
 // src/Optimize/CheckImports.php, row 220
 "Id" => "Identité", // ai 2026-10
@@ -1267,8 +1332,9 @@ return [
 "HTML output" => "Sortie HTML", // ai 2026-06
 
 // admin/console.php, row 73, 75
-// central/optimize.php, row 209
-// src/Optimize/AbstractOptimize.php, row 178
+// central/optimize.php, row 319
+// src/Mailbulk/RecipientReport.php, row 214
+// src/Optimize/AbstractOptimize.php, row 181
 "Result" => "Résultat", // ai 2026-06
 
 // admin/constants_sel.php, row 62
@@ -1282,159 +1348,164 @@ return [
 
 // admin/constants_sel.php, row 110
 // admin/prev_navigation.php, row 57
-// central/optimize.php, row 247
+// central/optimize.php, row 389
+// src/Manageraction/Central_GetToken.php, row 50
 // src/Manageraction/Central_Linkcheck.php, row 42
-// src/Optimize/StateCheckModel.php, row 222
+// src/Optimize/StateCheckModel.php, row 225
 "OK" => "Confirmer",
 
-// admin/discedit.php, row 59
+// admin/discedit.php, row 63
 // admin/slicefieldsedit.php, row 81
 "You don't have permissions to edit all items." => "Vous n'avez pas la permission de modifier tous les items",
 
-// admin/discedit.php, row 104
+// admin/discedit.php, row 68
+// admin/discedit2.php, row 85, 95
+"You do not have permission to edit items in this slice" => "Vous n'avez pas la permission de mettre à jour les items dans cette section", // ai 2026-10
+
+// admin/discedit.php, row 139
 "Are you sure you want to delete selected comment?" => "Êtes-vous sûr de vouloir supprimer le commentaire sélectionné?", // ai 2026-06
 
-// admin/discedit.php, row 110
+// admin/discedit.php, row 145
 "Are you sure you want to delete ALL comments? There is no way back!" => "Êtes-vous sûr de vouloir supprimer TOUS les commentaires? Cette action est irréversible!", // ai 2026-06
 
-// admin/discedit.php, row 116
+// admin/discedit.php, row 151
 "Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!" => "Êtes-vous sûr de vouloir supprimer TOUS les commentaires non cachés (les commentaires qui ne sont PAS CACHÉS)? Cette action est irréversible!", // ai 2026-06
 
-// admin/discedit.php, row 124
+// admin/discedit.php, row 159
 "Admin - Discussion comments management" => "Administration - Gestion des commentaires de discussion", // ai 2026-06
 
-// admin/discedit.php, row 129
+// admin/discedit.php, row 164
 "Item: " => "Item",
 
-// admin/discedit.php, row 131
-// include/modutils.php, row 75, 176
-// include/slicedit.php, row 187
+// admin/discedit.php, row 166
+// include/modutils.php, row 75, 191
+// include/slicedit.php, row 181
 "Title" => "Titre",
 
-// admin/discedit.php, row 132
-// admin/discedit2.php, row 93, 147
-// admin/se_users.php, row 125, 185
-// include/se_users.php, row 108, 180
+// admin/discedit.php, row 167
+// admin/discedit2.php, row 112, 167
+// admin/se_users.php, row 134, 205
+// include/se_users.php, row 112, 184
 // src/Util/Note.php, row 61
 "Author" => "Auteur",
 
-// admin/discedit.php, row 133
-// include/logs.php, row 905, 1320
+// admin/discedit.php, row 168
+// include/logs.php, row 909, 1325
 "IP Address" => "Adresse IP", // ai 2026-06
 
-// admin/discedit.php, row 134
-// admin/discedit2.php, row 150
+// admin/discedit.php, row 169
+// admin/discedit2.php, row 170
+// include/searchlib.php, row 151
 // src/Widget/DteWidget.php, row 36
 "Date" => "Date", // ai 2026-10
 
-// admin/discedit.php, row 135
-// admin/related_sel.php, row 168
-// admin/se_views.php, row 136
+// admin/discedit.php, row 170
+// admin/related_sel.php, row 170
+// admin/se_views.php, row 153
 // src/Import/DetailPage.php, row 337
 // src/Manager.php, row 230
-// src/Optimize/AbstractOptimize.php, row 175
+// src/Optimize/AbstractOptimize.php, row 178
 "Actions" => "Action",
 
-// admin/discedit.php, row 141
+// admin/discedit.php, row 176
 "No discussion comments" => "Sans commentaire",
 
-// admin/discedit.php, row 164
+// admin/discedit.php, row 199
 // admin/prev_navigation.php, row 47
-// admin/se_views.php, row 147
-// admin/um_gedit.php, row 223
-// admin/um_uedit.php, row 266
-// include/field.class.php, row 749
+// admin/se_views.php, row 164
+// admin/um_gedit.php, row 234
+// admin/um_uedit.php, row 277
+// include/field.class.php, row 752
 // include/filedit.php, row 113
-// include/formutil.php, row 1821, 3428
-// include/metabase.class.php, row 1642
-// include/mlx.php, row 373
-// include/statestore.php, row 1143
+// include/formutil.php, row 1825, 3435
+// include/metabase.class.php, row 1614
+// include/mlx.php, row 371
+// include/statestore.php, row 1208
 // include/um_gsrch.php, row 52
-// modules/jump/modedit.php, row 141
+// modules/jump/modedit.php, row 155
 // src/Optimize/CheckImports.php, row 215
+// src/Util/Notes.php, row 136
 "Edit" => "Modifier",
 
-// admin/discedit.php, row 165
+// admin/discedit.php, row 200
 "Approve" => "Accepter",
 
-// admin/discedit.php, row 166
+// admin/discedit.php, row 201
 // admin/se_inter_export.php, row 132
-// admin/se_inter_import.php, row 76, 96
+// admin/se_inter_import.php, row 82, 103
 // admin/se_showif.php, row 187
-// admin/se_views.php, row 150
+// admin/se_views.php, row 167
 // admin/slicedel.php, row 71
-// admin/um_gedit.php, row 225
+// admin/um_gedit.php, row 237
 // admin/um_passkeys.php, row 158
-// admin/um_uedit.php, row 268
+// admin/um_uedit.php, row 280
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 753
-// include/formutil.php, row 1832, 1969
+// include/field.class.php, row 756
+// include/formutil.php, row 1836, 1973
 // include/menu_util.php, row 61
-// include/profile.php, row 69
+// include/profile.php, row 70
 // include/searchbar.class.php, row 1126
 // include/um_gsrch.php, row 53
 // src/Manageraction/Import_Delete.php, row 25
 // src/Manageraction/Object_Delete.php, row 26
 // src/Manageraction/Table_Row_Delete.php, row 23
-// src/Widget/FilWidget.php, row 201
+// src/Widget/FilWidget.php, row 211
 "Delete" => "Supprimer",
 
-// admin/discedit.php, row 172
-// include/adminpage.class.php, row 395
-// include/se_users.php, row 128
-// include/util.php, row 1368
+// admin/discedit.php, row 207
+// include/adminpage.class.php, row 397
+// include/se_users.php, row 132
+// include/util.php, row 1373
 "Back" => "Retour",
 
-// admin/discedit.php, row 173
+// admin/discedit.php, row 208
 "Delete All" => "Tout supprimer", // ai 2026-06
 
-// admin/discedit.php, row 174
+// admin/discedit.php, row 209
 "Delete All Unhidden" => "Supprimer tous les non cachés", // ai 2026-06
 
-// admin/discedit2.php, row 80
-"You do not have permission to edit items in this slice" => "Vous n'avez pas la permission de mettre à jour les items dans cette section", // ai 2026-10
-
-// admin/discedit2.php, row 92, 146
-// admin/write_mail.php, row 123, 267
-// include/logs.php, row 1071
-// include/mail.php, row 663
+// admin/discedit2.php, row 111, 166
+// admin/write_mail.php, row 135, 283
+// include/logs.php, row 1076
+// include/mail.php, row 751
 // src/Optimize/CheckIsdsAccounts.php, row 272
 "Subject" => "Sujet",
 
-// admin/discedit2.php, row 94, 148
+// admin/discedit2.php, row 113, 168
 // admin/setup.php, row 107, 246
 // admin/slicewiz.php, row 89
 // admin/um_passwd.php, row 140
-// admin/um_uedit.php, row 336
+// admin/um_uedit.php, row 348
 // include/um_util.php, row 308, 309, 310
 // src/Central/FindingText.php, row 106
+// src/Mailbulk/RecipientReport.php, row 214
 "E-mail" => "Courriel",
 
-// admin/discedit2.php, row 95, 149
+// admin/discedit2.php, row 114, 169
 "Text of discussion comment" => "Texte de commentaires",
 
-// admin/discedit2.php, row 96, 151
+// admin/discedit2.php, row 115, 171
 "Author's WWW  - URL" => "Sur les auteurs",
 
-// admin/discedit2.php, row 97, 152
+// admin/discedit2.php, row 116, 172
 "Author's WWW - description" => "Les auteurs sur le Web",
 
-// admin/discedit2.php, row 98, 153
+// admin/discedit2.php, row 117, 173
 "Remote address" => "Adresse distante",
 
-// admin/discedit2.php, row 99
+// admin/discedit2.php, row 118
 "Free1" => "Libre1", // ai 2026-06
 
-// admin/discedit2.php, row 100, 155
+// admin/discedit2.php, row 119, 175
 "Tracking" => "Suivi", // ai 2026-06
 
-// admin/discedit2.php, row 133
+// admin/discedit2.php, row 152
 "Items management - Discussion comments management - Edit comment" => "Gestion des items - Gestion des commentaires - Modification des commentaires",
 
-// admin/discedit2.php, row 144
+// admin/discedit2.php, row 164
 "Edit comment" => "Modifier les commentaires",
 
-// admin/discedit2.php, row 154
+// admin/discedit2.php, row 174
 "Free 1" => "Libre 1", // ai 2026-06
 
 // admin/feed_to.php, row 57
@@ -1446,8 +1517,8 @@ return [
 
 // admin/feed_to.php, row 67
 // admin/se_export.php, row 131
-// admin/se_filters.php, row 183
-// admin/slicedit.php, row 141, 147
+// admin/se_filters.php, row 188
+// admin/slicedit.php, row 146, 152
 // include/exporter.class.php, row 511
 // include/menu.php, row 192
 // include/menu_util.php, row 122
@@ -1509,7 +1580,7 @@ return [
 "Create new directory" => "Créer un nouveau répertoire", // ai 2026-10
 
 // admin/index.php, row 102
-// include/init_page.php, row 117
+// include/init_page.php, row 119
 "You do not have permission to edit items in the slice:" => "Vous n'avez pas la permission de mettre à jour les items dans cette section", // ai 2026-10
 
 // admin/index.php, row 182
@@ -1518,27 +1589,27 @@ return [
 // admin/index.php, row 182
 "ActionApps - Item Manager" => "ActionApps - Gestionnaire des items",
 
-// admin/itemedit.php, row 237, 331
+// admin/itemedit.php, row 237, 334
 "Error: You have no rights to edit item." => "Erreur : vous n'avez pas le droit de modifier l'item.", // ai 2026-06
 
-// admin/itemedit.php, row 323
+// admin/itemedit.php, row 326
 // include/date.php, row 189
-// include/field.class.php, row 1405
+// include/field.class.php, row 1453
 // include/validate.php, row 54, 58
 "Error in" => "Erreur dans",
 
-// admin/itemedit.php, row 382
+// admin/itemedit.php, row 385
 // admin/slicefieldsedit.php, row 131
 "Error: no fields." => "Erreur: pas de champs",
 
-// admin/itemedit.php, row 390
+// admin/itemedit.php, row 393
 // admin/slicefieldsedit.php, row 139
 "Bad item ID id=%1" => "ID d'item incorrect id=%1", // ai 2026-06
 
-// admin/itemedit.php, row 427, 428
+// admin/itemedit.php, row 430, 431
 "Edit Item" => "Modifier les items",
 
-// admin/itemedit.php, row 427, 428
+// admin/itemedit.php, row 430, 431
 // include/menu.php, row 84
 "Add Item" => "Ajouter des items",
 
@@ -1564,63 +1635,69 @@ return [
 // include/itemfunc.php, row 87, 492
 // include/menu.php, row 165
 // include/menu_util.php, row 83
+// src/Mailbulk/Gate.php, row 494
 // src/Util/Adminlink.php, row 137
 "Statistics" => "Statistiques", // ai 2026-06
 
-// admin/mailman_create_list.php, row 74
+// admin/mailman_create_list.php, row 79
 "Admin - Create Mailman List" => "Administration - Créer une liste Mailman", // ai 2026-10
 
-// admin/mailman_create_list.php, row 79
+// admin/mailman_create_list.php, row 84
 "First set Mailman Lists Field in Slice Settings." => "Configurer d'abord les champs de listes Mailman dans les configurations de section",
 
-// admin/mailman_create_list.php, row 100
+// admin/mailman_create_list.php, row 99, 172
+"List name" => "Nom de la liste",
+
+// admin/mailman_create_list.php, row 99, 101, 103
+// include/validate.php, row 437
+"Do not match the pattern" => "Ne correspond pas au motif", // ai 2026-06
+
+// admin/mailman_create_list.php, row 101, 174
+"Admin email" => "Administration courriel",
+
+// admin/mailman_create_list.php, row 103, 176
+"Admin password" => "Mot de passe Administration",
+
+// admin/mailman_create_list.php, row 116
 "Error: This list name is already used." => "Erreur: Ce nom de liste existe déjà", // ai 2026-10
 
-// admin/mailman_create_list.php, row 129
+// admin/mailman_create_list.php, row 145
 "The list was successfully created." => "La liste fut créée avec succès", // ai 2026-10
 
-// admin/mailman_create_list.php, row 151
+// admin/mailman_create_list.php, row 168
 "List Settings" => "Configuration de liste",
 
-// admin/mailman_create_list.php, row 152
+// admin/mailman_create_list.php, row 169
 "The list will be added to mailman and also\n"
    ."    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings."
  => "Cette liste sera ajoutée à Mailman et aussi\n"
    ."    au groupe de valeurs constante %1 sélectionné comme un champ de liste Mailman dans la configuration de la section.", // ai 2026-10
 
-// admin/mailman_create_list.php, row 154
+// admin/mailman_create_list.php, row 171
 "All the fields are required." => "Tous les champs sont requis",
 
-// admin/mailman_create_list.php, row 155
-"List name" => "Nom de la liste",
-
-// admin/mailman_create_list.php, row 157
-"Admin email" => "Administration courriel",
-
-// admin/mailman_create_list.php, row 159
-"Admin password" => "Mot de passe Administration",
-
-// admin/mailman_create_list.php, row 163
+// admin/mailman_create_list.php, row 180
 // admin/setup.php, row 112, 232
-// modules/jump/modedit.php, row 179
+// modules/jump/modedit.php, row 193
 "Create" => "Créer", // ai 2026-10
 
-// admin/preview.php, row 49
+// admin/preview.php, row 46
 "Wrong slice_id." => "slice_id incorrect.", // ai 2026-06
 
-// admin/related_sel.php, row 168
+// admin/related_sel.php, row 170
 // src/Manager.php, row 230
 "Publish date" => "Publier la date",
 
-// admin/related_sel.php, row 168
+// admin/related_sel.php, row 170
 // src/Manager.php, row 230
 "Headline" => "Manchette",
 
-// admin/related_sel.php, row 196
+// admin/related_sel.php, row 198
 "Editor window - item manager, related selection window" => "Fenêtre de l'éditeur - gestionnaire d'items, fenêtre de sélection liée", // ai 2026-10
 
 // admin/rsstest.php, row 36
-// modules/jump/modedit.php, row 63, 68
+// include/init_page.php, row 160
+// modules/jump/modedit.php, row 68, 73
 "You do not have permissions to access this page" => "Vous n'avez pas de permission pour cette page",
 
 // admin/rsstest.php, row 46
@@ -1631,7 +1708,7 @@ return [
 
 // admin/se_admin.php, row 82, 170
 // admin/se_compact.php, row 93, 222
-// include/constants.php, row 654, 704, 724, 778, 813, 844, 868, 911, 940, 966, 1000
+// include/constants.php, row 691, 743, 764, 818, 854, 886, 911, 955, 984, 1011, 1046
 "Top HTML" => "Début  HTML", // ai 2026-10
 
 // admin/se_admin.php, row 83, 183
@@ -1639,27 +1716,27 @@ return [
 
 // admin/se_admin.php, row 84, 196
 // admin/se_compact.php, row 94, 232
-// include/constants.php, row 659, 706, 726, 782, 815, 846, 871, 916, 942, 971, 1005
+// include/constants.php, row 696, 745, 766, 822, 856, 888, 914, 960, 986, 1016, 1051
 "Bottom HTML" => "HTML final",
 
 // admin/se_admin.php, row 85, 209
 // admin/se_compact.php, row 95, 260
-// admin/se_fulltext.php, row 86, 210
-// include/constants.php, row 660, 707, 783, 872, 917, 943, 972, 1006, 1038
+// admin/se_fulltext.php, row 86, 214
+// include/constants.php, row 697, 746, 823, 915, 961, 987, 1017, 1052, 1085
 "Remove strings" => "Enlever la chaine de caractères", // ai 2026-10
 
 // admin/se_admin.php, row 86, 218
-// include/constants.php, row 694, 717, 804, 830, 861, 894, 928, 958, 992, 1026
+// include/constants.php, row 733, 757, 845, 872, 904, 938, 972, 1003, 1038, 1073
 "HTML code for \"No item found\" message" => "Code HTML pour le message \"Aucun item trouvé\"", // ai 2026-10
 
 // admin/se_admin.php, row 87
-// admin/se_fulltext.php, row 87, 218, 222
+// admin/se_fulltext.php, row 87, 222, 226
 "Show discussion" => "Montrer la discussion",
 
 // admin/se_admin.php, row 101
 // admin/se_compact.php, row 128
 // admin/se_fulltext.php, row 107
-// admin/se_view.php, row 170, 339
+// admin/se_view.php, row 175, 405
 "Can't change slice settings" => "Chamgement de configuration de section impossible",
 
 // admin/se_admin.php, row 113
@@ -1670,8 +1747,8 @@ return [
 
 // admin/se_admin.php, row 163
 // admin/se_compact.php, row 212
-// admin/se_fulltext.php, row 163
-// admin/se_inputform.php, row 190, 431
+// admin/se_fulltext.php, row 167
+// admin/se_inputform.php, row 190, 432
 // src/Util/UiPrefs.php, row 56
 "Default" => "Par défaut", // ai 2026-10
 
@@ -1680,12 +1757,12 @@ return [
 
 // admin/se_admin.php, row 175
 // admin/se_compact.php, row 223, 252
-// admin/se_fulltext.php, row 176
+// admin/se_fulltext.php, row 180
 "HTML code which appears at the top of slice area" => "Code HTML apparaissant en haut de la section",
 
 // admin/se_admin.php, row 188
 // admin/se_compact.php, row 226, 255
-// admin/se_fulltext.php, row 189
+// admin/se_fulltext.php, row 193
 "Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"
  => "Mettre ici le code HTML combiné avec les alias des fomulaires au bas de cette\n"
@@ -1694,12 +1771,12 @@ return [
 
 // admin/se_admin.php, row 201
 // admin/se_compact.php, row 233, 258
-// admin/se_fulltext.php, row 202
+// admin/se_fulltext.php, row 206
 "HTML code which appears at the bottom of slice area" => "Code HTML apparaissant au bas de la section",
 
 // admin/se_admin.php, row 214
 // admin/se_compact.php, row 261
-// admin/se_fulltext.php, row 215
+// admin/se_fulltext.php, row 219
 "Removes empty brackets etc. Use ## as delimiter." => "Enlever les crochets vides. Utiliser ## pour limiter",
 
 // admin/se_admin.php, row 223
@@ -1713,22 +1790,22 @@ return [
 
 // admin/se_admin.php, row 241
 // admin/se_compact.php, row 269
-// admin/se_fulltext.php, row 228
-// admin/se_view.php, row 572
+// admin/se_fulltext.php, row 232
+// admin/se_view.php, row 663
 "Use these aliases for database fields" => "Utiliser ces alias pour les champs de la base de données", // ai 2026-10
 
 // admin/se_compact.php, row 84
 "You do not have permissions to change compact view formatting" => "Vous n'avez pas la permission de changer le format de vue rapide",
 
 // admin/se_compact.php, row 92, 225
-// include/constants.php, row 655, 705, 779, 814, 845, 912, 967, 1001
+// include/constants.php, row 692, 744, 819, 855, 887, 956, 1012, 1047
 "Odd Rows" => "Colonnes impaires",
 
 // admin/se_compact.php, row 96, 262
 "'No item found' message" => "Message 'Aucun item trouvé'", // ai 2026-10
 
 // admin/se_compact.php, row 98, 229
-// include/constants.php, row 657, 780, 914, 969, 1003
+// include/constants.php, row 694, 820, 958, 1014, 1049
 "Even Rows" => "Colonnes paires",
 
 // admin/se_compact.php, row 101, 251
@@ -1753,7 +1830,7 @@ return [
 "HTML code for index view" => "Code HTML pour la vue de l'index",
 
 // admin/se_compact.php, row 228
-// include/constants.php, row 656, 805, 913, 968, 1002
+// include/constants.php, row 693, 846, 957, 1013, 1048
 "Use different HTML code for even rows" => "Utiliser différents codes HTML pour les colonnes paires", // ai 2026-10
 
 // admin/se_compact.php, row 230
@@ -1763,27 +1840,27 @@ return [
    ."                         <br>Par exemple les 1eres rouges et les 2emes noires.", // ai 2026-10
 
 // admin/se_compact.php, row 235
-// include/constants.php, row 673, 789, 922, 977, 1011
+// include/constants.php, row 710, 829, 966, 1022, 1057
 "Group by" => "Grouper par",
 
 // admin/se_compact.php, row 242
-// admin/se_profile.php, row 114
-// admin/se_view.php, row 188, 189, 213
+// admin/se_profile.php, row 125
+// admin/se_view.php, row 193, 194, 245
 "Ascending" => "Croissant",
 
 // admin/se_compact.php, row 243
-// admin/se_profile.php, row 114
-// admin/se_view.php, row 188, 189, 213
+// admin/se_profile.php, row 125
+// admin/se_view.php, row 193, 194, 245
 // include/searchbar.class.php, row 637
-// include/searchlib.php, row 447
+// include/searchlib.php, row 504
 "Descending" => "Décroissant", // ai 2026-10
 
 // admin/se_compact.php, row 244
-// admin/se_view.php, row 189
+// admin/se_view.php, row 194
 "Ascending by Priority" => "Croissant par priorité", // ai 2026-10
 
 // admin/se_compact.php, row 245
-// admin/se_view.php, row 189
+// admin/se_view.php, row 194
 "Descending by Priority" => "Décroissant par priorité", // ai 2026-10
 
 // admin/se_compact.php, row 248
@@ -1792,157 +1869,157 @@ return [
 // admin/se_compact.php, row 263
 "message to show in place of slice.php, if no item matches the query" => "Message à présenter à la place de slice.php, si aucun item n'est trouvé par la requête", // ai 2026-10
 
-// admin/se_constant.php, row 95, 186
-// include/constedit_util.php, row 602, 717
+// admin/se_constant.php, row 100, 200
+// include/constedit_util.php, row 602, 716
 "Wrong constant group id" => "Identifiant de groupe de constantes incorrect", // ai 2026-10
 
-// admin/se_constant.php, row 119
+// admin/se_constant.php, row 133
 "Can't delete constant group" => "Impossible de supprimer le groupe de constantes", // ai 2026-10
 
-// admin/se_constant.php, row 175, 377
+// admin/se_constant.php, row 189, 392
 // admin/se_showif.php, row 162
-// admin/se_users.php, row 185
-// admin/se_views.php, row 134
-// admin/um_gedit.php, row 298, 301
+// admin/se_users.php, row 205
+// admin/se_views.php, row 151
+// admin/um_gedit.php, row 316, 319
 // admin/um_passkeys.php, row 149, 153
 // central/installapp.php, row 831, 846
 // include/constants.php, row 452
 // include/constedit.php, row 73
 // include/fileman.php, row 34
-// include/logs.php, row 1211
-// include/se_users.php, row 180
+// include/logs.php, row 1216
+// include/se_users.php, row 184
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
 // src/Import/DetailCatalog.php, row 169
-// src/Optimize/AbstractOptimize.php, row 173
+// src/Optimize/AbstractOptimize.php, row 176
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckServerRefusals.php, row 67
 "Name" => "Nom",
 
-// admin/se_constant.php, row 176, 378
+// admin/se_constant.php, row 190, 393
 // admin/se_mapping.php, row 179
-// admin/se_profile.php, row 209
+// admin/se_profile.php, row 223
 // admin/se_showif.php, row 133
 // include/constants.php, row 453
 // include/constedit.php, row 76
-// include/searchlib.php, row 177
+// include/searchlib.php, row 234
 // src/Central/FindingText.php, row 94, 98
 "Value" => "Valeur",
 
-// admin/se_constant.php, row 177, 379
-// admin/se_inputform.php, row 523
-// admin/se_view.php, row 153
-// admin/um_gedit.php, row 299, 302
+// admin/se_constant.php, row 191, 394
+// admin/se_inputform.php, row 524
+// admin/se_view.php, row 158
+// admin/um_gedit.php, row 317, 320
 // include/constants.php, row 459
 // include/constedit.php, row 84
 // include/stringexpand.php, row 100
 // include/um_gedit.php, row 33
 // src/Manageraction/Central_Linkcheck.php, row 31
-// src/Optimize/AbstractOptimize.php, row 174
+// src/Optimize/AbstractOptimize.php, row 177
 "Description" => "Description", // ai 2026-10
 
-// admin/se_constant.php, row 178, 380
-// admin/se_fields.php, row 359
+// admin/se_constant.php, row 192, 395
+// admin/se_fields.php, row 382
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1409
-// src/Optimize/AbstractOptimize.php, row 177
+// include/field.class.php, row 1457
+// src/Optimize/AbstractOptimize.php, row 180
 "Priority" => "Priorité", // ai 2026-10
 
-// admin/se_constant.php, row 184, 327
-// admin/se_constant_import.php, row 74, 126
+// admin/se_constant.php, row 198, 342
+// admin/se_constant_import.php, row 85, 137
 // admin/se_inputform.php, row 285
-// include/constants.php, row 784
+// include/constants.php, row 824
 "Constant Group" => "Groupe de valeurs constantes",
 
-// admin/se_constant.php, row 192
+// admin/se_constant.php, row 206
 // include/constedit_util.php, row 606
 "This constant group already exists" => "Ce groupe de valeurs constantes existe déjà", // ai 2026-10
 
-// admin/se_constant.php, row 214
+// admin/se_constant.php, row 228
 "You do not have permissions to change fields settings in the new owner slice" => "Vous n'avez pas la permission de changer les configurations des champs dans la nouvelle section propriétaire", // ai 2026-10
 
-// admin/se_constant.php, row 277
-// admin/se_constant_import.php, row 109
+// admin/se_constant.php, row 291
+// admin/se_constant_import.php, row 120
 "Constants update successful" => "Valeurs constantes mises à jour avec succès", // ai 2026-10
 
-// admin/se_constant.php, row 286
+// admin/se_constant.php, row 300
 "Admin - Constants Setting" => "Administration - Configuration des valeurs constantes",
 
-// admin/se_constant.php, row 288
+// admin/se_constant.php, row 302
 "The constant group can be only viewed here" => "Le groupe de constantes ne peut être que consulté ici", // ai 2026-10
 
-// admin/se_constant.php, row 297
+// admin/se_constant.php, row 311
 "Delete whole group" => "Supprimer tout le groupe",
 
-// admin/se_constant.php, row 301
+// admin/se_constant.php, row 315
 "Edit in Hierarchical editor" => "Modifier dans l'éditeur hiérarchique", // ai 2026-06
 
-// admin/se_constant.php, row 303
+// admin/se_constant.php, row 317
 "Edit in Hierarchical editor (allows to create constant hierarchy)" => "Editer par l'éditeur hiérarchique (permet de créer une hiérarchie de valeurs constantes", // ai 2026-10
 
-// admin/se_constant.php, row 319
-// admin/se_constant_import.php, row 75, 125, 136
-// admin/se_inputform.php, row 410
+// admin/se_constant.php, row 334
+// admin/se_constant_import.php, row 86, 136, 147
+// admin/se_inputform.php, row 411
 "Constants" => "Valeurs constantes",
 
-// admin/se_constant.php, row 333
+// admin/se_constant.php, row 348
 "alphanumeric 5-16 character long identifier" => "identifiant alphanumérique de 5 à 16 caractères", // ai 2026-06
 
-// admin/se_constant.php, row 335
+// admin/se_constant.php, row 350
 "Import Constants..." => "Importer des constantes...", // ai 2026-06
 
-// admin/se_constant.php, row 343
+// admin/se_constant.php, row 358
 "Constants used in slice" => "Valeurs constantes utilisées dans la section", // ai 2026-10
 
-// admin/se_constant.php, row 355
+// admin/se_constant.php, row 370
 "Constant group owner - slice" => "Maître du groupe des valeurs constantes - section", // ai 2026-10
 
-// admin/se_constant.php, row 359
+// admin/se_constant.php, row 374
 "Whoever first updates values becomes owner." => "Est maître celui qui le premier met à jour les valeurs", // ai 2026-10
 
-// admin/se_constant.php, row 369
+// admin/se_constant.php, row 384
 "Change owner" => "Changer le maître", // ai 2026-10
 
-// admin/se_constant.php, row 375
+// admin/se_constant.php, row 390
 "Propagate changes into current items" => "Propager les changements dans les items courants",
 
-// admin/se_constant.php, row 377
+// admin/se_constant.php, row 392
 // include/constedit.php, row 73
 "shown&nbsp;on&nbsp;inputpage" => "affiché&nbsp;dans&nbsp;le&nbsp;formulaire&nbsp;de&nbsp;saisie", // ai 2026-06
 
-// admin/se_constant.php, row 378
+// admin/se_constant.php, row 393
 // include/constedit.php, row 76
 "stored&nbsp;in&nbsp;database" => "stocké&nbsp;en&nbsp;base&nbsp;de&nbsp;données", // ai 2026-06
 
-// admin/se_constant.php, row 379
+// admin/se_constant.php, row 394
 "can be viewed by {constant:&lt;group&gt;:&lt;value&gt;:description}" => "peut être affiché via {constant:&lt;group&gt;:&lt;value&gt;:description}", // ai 2026-06
 
-// admin/se_constant.php, row 380
+// admin/se_constant.php, row 395
 // include/constedit.php, row 82
 "constant&nbsp;order" => "ordre&nbsp;des&nbsp;constantes", // ai 2026-06
 
-// admin/se_constant.php, row 381
+// admin/se_constant.php, row 396
 "Used" => "Utilisé", // ai 2026-06
 
-// admin/se_constant.php, row 381
+// admin/se_constant.php, row 396
 "times" => "fois", // ai 2026-06
 
-// admin/se_constant.php, row 417
+// admin/se_constant.php, row 432
 "Are you sure you want to PERMANENTLY DELETE this group?" => "Êtes-vous sûr de vouloir SUPPRIMER DÉFINITIVEMENT ce groupe ?", // ai 2026-06
 
-// admin/se_constant_import.php, row 82
+// admin/se_constant_import.php, row 93
 // include/constedit_util.php, row 610
 "No constants specified" => "Aucune constante spécifiée", // ai 2026-06
 
-// admin/se_constant_import.php, row 115
+// admin/se_constant_import.php, row 126
 "Admin - Constants Import" => "Administration - Import de constantes", // ai 2026-06
 
-// admin/se_constant_import.php, row 135
+// admin/se_constant_import.php, row 146
 "Name - Value delimiter" => "Délimiteur nom - valeur", // ai 2026-06
 
-// admin/se_constant_import.php, row 136
+// admin/se_constant_import.php, row 147
 "write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)" => "écrivez chaque constante sur une nouvelle ligne sous la forme <name><delimiter><value> (ou seulement <name> si les valeurs doivent être identiques aux noms)", // ai 2026-06
 
 // admin/se_csv_import.php, row 96
@@ -1952,7 +2029,7 @@ return [
 "Missing slice" => "Section manquante",
 
 // admin/se_csv_import.php, row 133
-// admin/se_csv_import2.php, row 217
+// admin/se_csv_import2.php, row 223
 "The data to import are no longer on the server - load them again" => "Les données à importer ne sont plus sur le serveur - chargez-les à nouveau", // ai 2026-10
 
 // admin/se_csv_import.php, row 142
@@ -1972,7 +2049,7 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1241
+// include/logs.php, row 1246
 // src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckFileReadRefusals.php, row 77, 100, 133
 // src/Optimize/CheckIsdsAccounts.php, row 262, 331
@@ -1982,12 +2059,14 @@ return [
 
 // admin/se_csv_import.php, row 239, 244
 // src/Manageraction/Central_Linkcheck.php, row 29
-// src/Widget/Widget.php, row 902
+// src/Optimize/CheckAlerts.php, row 125
+// src/Widget/Widget.php, row 925
 "URL" => "",
 
 // admin/se_csv_import.php, row 240, 245
-// admin/se_inputform.php, row 465, 466
+// admin/se_inputform.php, row 466, 467
 // include/itemfunc.php, row 668, 777, 806
+// include/searchlib.php, row 136
 // src/Util/Note.php, row 63
 "Text" => "Texte", // ai 2026-06
 
@@ -1995,7 +2074,7 @@ return [
 "Source of CSV data" => "Alimentation des information CSV",
 
 // admin/se_csv_import.php, row 277
-// admin/se_csv_import2.php, row 385
+// admin/se_csv_import2.php, row 418
 // central/installapp.php, row 434, 558, 1368
 // src/Manageraction/Item_Preview.php, row 13
 "Preview" => "Aperçu", // ai 2026-10
@@ -2005,124 +2084,131 @@ return [
 // src/Import/DetailPage.php, row 453
 "Next" => "Suivant",
 
-// admin/se_csv_import2.php, row 199
+// admin/se_csv_import2.php, row 205
 "You have not permissions to setting " => "Vous n'avez pas les permissiones de configuration",
 
-// admin/se_csv_import2.php, row 205
+// admin/se_csv_import2.php, row 211
 "Invalid additional parameters for import" => "Paramètres additionnaux invalides pour l'importation", // ai 2026-10
 
-// admin/se_csv_import2.php, row 283
+// admin/se_csv_import2.php, row 289
 "Item:" => "Item",
 
-// admin/se_csv_import2.php, row 291
+// admin/se_csv_import2.php, row 300
 "Cannot store item to DB" => "impossible de ranger l'item dans la base de données", // ai 2026-10
 
-// admin/se_csv_import2.php, row 296
+// admin/se_csv_import2.php, row 305
 "Transformation error:" => "Erreur de transformation",
 
-// admin/se_csv_import2.php, row 298
+// admin/se_csv_import2.php, row 307
 "Ok: Item %1 stored" => "Ok : item %1 enregistré", // ai 2026-06
 
-// admin/se_csv_import2.php, row 316
+// admin/se_csv_import2.php, row 325
 "Added to slice" => "Ajouté à la section", // ai 2026-10
 
-// admin/se_csv_import2.php, row 339
+// admin/se_csv_import2.php, row 347
+// include/mlx.php, row 425
+"Bad item ID %1" => "ID d'item incorrect %1", // ai 2026-06
+
+// admin/se_csv_import2.php, row 350
+"The item %1 belongs to another slice" => "L'item %1 appartient à une autre section", // ai 2026-11
+
+// admin/se_csv_import2.php, row 372
 "Mapping preview" => "Pré-visualisation du repérage", // ai 2026-10
 
-// admin/se_csv_import2.php, row 390
+// admin/se_csv_import2.php, row 423
 "Finish" => "Terminer", // ai 2026-06
 
-// admin/se_csv_import2.php, row 400
+// admin/se_csv_import2.php, row 433
 "Load" => "Charger", // ai 2026-06
 
-// admin/se_csv_import2.php, row 410
+// admin/se_csv_import2.php, row 444
 "Mapping settings" => "Configuration du repérage", // ai 2026-10
 
-// admin/se_csv_import2.php, row 413
-// admin/se_filters.php, row 182
+// admin/se_csv_import2.php, row 447
+// admin/se_filters.php, row 187
 // admin/se_mapping.php, row 177
 "To" => "Vers",
 
-// admin/se_csv_import2.php, row 414
-// admin/se_filters.php, row 181
+// admin/se_csv_import2.php, row 448
+// admin/se_filters.php, row 186
 // admin/se_mapping.php, row 178
 "From" => "De",
 
-// admin/se_csv_import2.php, row 415
-// admin/search_replace.php, row 185
-// include/metabase.class.php, row 1667
-// include/statestore.php, row 1081, 1418
+// admin/se_csv_import2.php, row 449
+// admin/search_replace.php, row 207
+// include/metabase.class.php, row 1639
+// include/statestore.php, row 1146, 1483
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 136, 166
 // src/Import/DetailCatalog.php, row 169
 // src/Optimize/CheckIsdsAccounts.php, row 203
 "Action" => "Action", // ai 2026-10
 
-// admin/se_csv_import2.php, row 416
+// admin/se_csv_import2.php, row 450
 "Html" => "HTML", // ai 2026-06
 
-// admin/se_csv_import2.php, row 417
+// admin/se_csv_import2.php, row 451
 "Action parameters" => "Paramètres d'action", // ai 2026-10
 
-// admin/se_csv_import2.php, row 443
+// admin/se_csv_import2.php, row 479
 "Import options" => "Options d'import", // ai 2026-06
 
-// admin/se_csv_import2.php, row 458
+// admin/se_csv_import2.php, row 494
 "Map item id from" => "Repérer l'identité de l'item de", // ai 2026-10
 
-// admin/se_csv_import2.php, row 462
+// admin/se_csv_import2.php, row 498
 "unpacked long id (32 characters)" => "id long non compacté (32 caractères)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 499
 "packed long id (16 characters)" => "id long compacté (16 caractères)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 500
 "string to be converted (string2id) - with param:" => "chaîne à convertir (string2id) - avec paramètre :", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 508
 "Select, how to store the items" => "Choisissez comment enregistrer les items", // ai 2026-06
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 510
 "Do not store the item" => "Ne pas ranger l'item",
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 511
 "Store the item with new id" => "Ranger l'item avec une nouvelle identité", // ai 2026-10
 
-// admin/se_csv_import2.php, row 476
+// admin/se_csv_import2.php, row 512
 "Update the item (overwrite)" => "Mettre à jour l'item (écraser)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 513
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "Ajouter les valeurs en parallèle aux valeurs actuelles (les multivaleurs sont enregistrées quand c'est possible)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 478
+// admin/se_csv_import2.php, row 514
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Réécrire uniquement les champs pour lesquels l'action est définie et calculer tous les champs calculés, ...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 479
+// admin/se_csv_import2.php, row 515
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Réécrire uniquement les champs pour lesquels l'action est définie (ne pas mettre à jour lastedit, champs calculés, ... = Silencieux)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 480
+// admin/se_csv_import2.php, row 516
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Réécrire uniquement les champs pour lesquels l'action est définie et dont la valeur n'est pas vide (les champs calculés seront calculés)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 519
 "If the item id is already in the slice" => "Si l'identité de l'item est déjà dans la section", // ai 2026-10
 
-// admin/se_csv_import2.php, row 484
-// admin/search_replace.php, row 183
+// admin/se_csv_import2.php, row 520
+// admin/search_replace.php, row 205
 "Silent" => "Silencieux", // ai 2026-06
 
-// admin/se_csv_import2.php, row 484
+// admin/se_csv_import2.php, row 520
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Ne pas effectuer d'autres opérations comme le calcul des champs calculés, l'alimentation, l'envoi d'e-mail aux lecteurs des alertes...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 486
+// admin/se_csv_import2.php, row 522
 "Store settings..." => "Enregistrer la configuration...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 493
+// admin/se_csv_import2.php, row 529
 "Load setting" => "Charger la configuration", // ai 2026-06
 
-// admin/se_csv_import2.php, row 495
+// admin/se_csv_import2.php, row 531
 "Save setting as" => "Enregistrer la configuration sous", // ai 2026-06
 
-// admin/se_csv_import2.php, row 540
+// admin/se_csv_import2.php, row 582
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Administration - Importer le CSV (2/2) - Repérage et Action", // ai 2026-10
 
 // admin/se_dataimport.php, row 59
@@ -2158,7 +2244,7 @@ return [
 "Item Contents" => "Contenu des items", // ai 2026-06
 
 // admin/se_export.php, row 126
-// include/constants.php, row 723
+// include/constants.php, row 763
 // include/exporter.class.php, row 532
 "Discussion" => "Discussion", // ai 2026-10
 
@@ -2166,6 +2252,7 @@ return [
 // include/exporter.class.php, row 510
 // include/scroller.php, row 88
 // src/Isds/Registry/Page.php, row 532
+// src/Mailbulk/RecipientReport.php, row 204
 "All" => "Tout",
 
 // admin/se_export.php, row 132
@@ -2208,16 +2295,17 @@ return [
 
 // admin/se_export.php, row 164
 // admin/se_history.php, row 142
-// admin/se_users.php, row 185
-// admin/se_views.php, row 135
+// admin/se_users.php, row 205
+// admin/se_views.php, row 152
 // admin/sliceexp_text.php, row 365
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
 // include/fileman.php, row 36
-// include/logs.php, row 560
-// include/se_users.php, row 180
+// include/logs.php, row 561
+// include/se_users.php, row 184
 // src/Isds/Registry/Page.php, row 512
-// src/Widget/Widget.php, row 752
+// src/Optimize/ViewListingColumns.php, row 81
+// src/Widget/Widget.php, row 775
 "Type" => "Type", // ai 2026-10
 
 // admin/se_export.php, row 165
@@ -2233,8 +2321,9 @@ return [
 "save as..." => "enregistrer sous...", // ai 2026-06
 
 // admin/se_export.php, row 167
+// include/constants.php, row 651, 654
 // include/exporter.class.php, row 553
-// include/searchlib.php, row 1099
+// include/searchlib.php, row 1173
 "Conditions" => "Conditions", // ai 2026-10
 
 // admin/se_export.php, row 167
@@ -2243,7 +2332,7 @@ return [
 
 // admin/se_export.php, row 168
 // include/exporter.class.php, row 554
-// include/searchlib.php, row 1101
+// include/searchlib.php, row 1175
 "Sort" => "Tri", // ai 2026-06
 
 // admin/se_export.php, row 168
@@ -2257,31 +2346,34 @@ return [
 // admin/se_export.php, row 169
 "Add any AA {expression} as extra column - each row = one column" => "Ajoutez n'importe quelle {expression} AA comme colonne supplémentaire — chaque ligne = une colonne", // ai 2026-06
 
-// admin/se_fieldid.php, row 210
+// admin/se_fieldid.php, row 218
 "The new ID is the same as the old one" => "Le nouvel ID est identique à l'ancien", // ai 2026-06
 
-// admin/se_fieldid.php, row 212
+// admin/se_fieldid.php, row 220
 "The old ID is not valid" => "L'ancien ID n'est pas valide", // ai 2026-06
 
-// admin/se_fieldid.php, row 214
+// admin/se_fieldid.php, row 222
 "The new ID is not valid" => "Le nouvel ID n'est pas valide", // ai 2026-06
 
-// admin/se_fieldid.php, row 216
+// admin/se_fieldid.php, row 224
 "This ID is reserved" => "Cette identité est réservée", // ai 2026-10
 
-// admin/se_fieldid.php, row 218
+// admin/se_fieldid.php, row 227
+"A password or secret field can be renamed only to another password or secret field" => "Un champ de mot de passe ou de secret ne peut être renommé qu'en un autre champ de mot de passe ou de secret", // ai 2026-11
+
+// admin/se_fieldid.php, row 229
 "This ID is already used" => "Cette identité existe déjà", // ai 2026-10
 
-// admin/se_fieldid.php, row 245
+// admin/se_fieldid.php, row 256
 "Admin - change Field IDs" => "Administration - Changer les identités des champs", // ai 2026-10
 
-// admin/se_fieldid.php, row 249
+// admin/se_fieldid.php, row 260
 "field IDs were changed" => "Identités des champs changées", // ai 2026-10
 
-// admin/se_fieldid.php, row 254
+// admin/se_fieldid.php, row 265
 "Change Field IDs" => "Changer les ID des champs", // ai 2026-06
 
-// admin/se_fieldid.php, row 256
+// admin/se_fieldid.php, row 267
 "This page allows to change field IDs. It is a bit dangerous operation and may last long.\n"
    ."    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n"
    ."    Choose a field ID to be changed and the new name and number, the dots ..... will be\n"
@@ -2291,107 +2383,109 @@ return [
    ."    Choisisez une identité de champs à changer puis ses nouveaux nom et chiffre, les points ..... seront\n"
    ."    ajoutés automatiquement.<br>", // ai 2026-10
 
-// admin/se_fieldid.php, row 257
+// admin/se_fieldid.php, row 268
 "Change from" => "Changer de",
 
-// admin/se_fieldid.php, row 269
+// admin/se_fieldid.php, row 280
 // admin/sliceexp.php, row 132
 "to" => "de",
 
-// admin/se_fields.php, row 111
+// admin/se_fields.php, row 121
 "Add new field from template" => "Ajouter un nouveau champ depuis un modèle", // ai 2026-06
 
-// admin/se_fields.php, row 142
+// admin/se_fields.php, row 152
 "Field delete OK" => "Champ supprimé", // ai 2026-10
 
-// admin/se_fields.php, row 150
+// admin/se_fields.php, row 160
 "Invalid move alias parameters" => "Paramètres de déplacement d'alias invalides", // ai 2026-06
 
-// admin/se_fields.php, row 162
+// admin/se_fields.php, row 172
 "No free space for alias in this field" => "Pas de place libre pour l'alias dans ce champ", // ai 2026-06
 
-// admin/se_fields.php, row 173
+// admin/se_fields.php, row 183
 "Alias moved OK" => "Alias déplacé avec succès", // ai 2026-06
 
-// admin/se_fields.php, row 187
+// admin/se_fields.php, row 197
 // admin/se_inputform.php, row 279
 "Fields update successful" => "Champs mis à jour avec succès", // ai 2026-10
 
-// admin/se_fields.php, row 207
+// admin/se_fields.php, row 217
 "Alias <b>%1</b> is duplicated" => "L'alias <b>%1</b> est dupliqué", // ai 2026-06
 
-// admin/se_fields.php, row 214
+// admin/se_fields.php, row 224
 "Do you really want to move alias to another field?" => "Voulez-vous vraiment déplacer l'alias vers un autre champ ?", // ai 2026-06
 
-// admin/se_fields.php, row 237
+// admin/se_fields.php, row 247
 "Do you really want to delete this field from this slice?" => "Voulez-vous vraiment supprimer ce champ de cette section ?", // ai 2026-06
 
-// admin/se_fields.php, row 304
-// admin/se_inputform.php, row 375
+// admin/se_fields.php, row 327
+// admin/se_inputform.php, row 376
 "Admin - configure Fields" => "Administration - Configurer les champs",
 
-// admin/se_fields.php, row 339
+// admin/se_fields.php, row 362
 "change all" => "tout changer", // ai 2026-06
 
-// admin/se_fields.php, row 352
+// admin/se_fields.php, row 375
 "Analyze" => "Analyser", // ai 2026-06
 
-// admin/se_fields.php, row 360
+// admin/se_fields.php, row 383
 "Required" => "Requis",
 
-// admin/se_fields.php, row 363
+// admin/se_fields.php, row 386
+// admin/se_view.php, row 232
 // include/stringexpand.php, row 113
 "Aliases" => "Alias",
 
-// admin/se_filters.php, row 83
+// admin/se_filters.php, row 87
 // admin/se_mapping.php, row 103
 "There are no imported slices" => "Il n'y a pas de sections importées", // ai 2026-10
 
-// admin/se_filters.php, row 101
+// admin/se_filters.php, row 105
 "-- The same --" => "-- Le même --", // ai 2026-10
 
-// admin/se_filters.php, row 155
+// admin/se_filters.php, row 159
 "Admin - Content Pooling - Filters" => "Administration - mise en commun du contenu - Filtre",
 
-// admin/se_filters.php, row 162
-// admin/se_import.php, row 131
+// admin/se_filters.php, row 167
+// admin/se_import.php, row 136
 // admin/se_mapping.php, row 158
-// admin/um_gedit.php, row 280
-// admin/um_uedit.php, row 399
+// admin/um_gedit.php, row 297
+// admin/um_uedit.php, row 411
 // central/include/actionapps.class.php, row 279
-// include/formutil.php, row 202, 2986
-// modules/jump/modedit.php, row 179
+// include/formutil.php, row 206, 2993
+// modules/jump/modedit.php, row 193
 // src/Import/DetailCatalog.php, row 179
 "Update" => "Mise à jour", // ai 2026-10
 
-// admin/se_filters.php, row 169
+// admin/se_filters.php, row 174
 "Content Pooling - Configure Filters" => "Mise en commun du contenu - Filtre",
 
-// admin/se_filters.php, row 172
+// admin/se_filters.php, row 177
 "Filter for imported slice" => "Filtre pour section importée", // ai 2026-10
 
-// admin/se_filters.php, row 176
+// admin/se_filters.php, row 181
 "Categories" => "Catégories", // ai 2026-10
 
-// admin/se_filters.php, row 194
+// admin/se_filters.php, row 199
 "All Categories" => "Toutes les catégories", // ai 2026-10
 
-// admin/se_filters.php, row 201, 225
+// admin/se_filters.php, row 206, 230
 "No category defined" => "Pas de catégories définie", // ai 2026-10
 
-// admin/se_filters.php, row 258
-// src/Manager.php, row 1415
+// admin/se_filters.php, row 263
+// central/optimize.php, row 258
+// src/Manager.php, row 1411
 "Select all" => "Sélectionner tout", // ai 2026-10
 
-// admin/se_filters.php, row 320
+// admin/se_filters.php, row 325
 "No From category selected!" => "Aucune catégorie source sélectionnée !", // ai 2026-06
 
-// admin/se_filters2.php, row 106
+// admin/se_filters2.php, row 117
 // src/IO/Feed.php, row 567
 "Other categories" => "Autres catégories", // ai 2026-06
 
-// admin/se_filters2.php, row 184
-// admin/se_import2.php, row 141, 143
+// admin/se_filters2.php, row 195
+// admin/se_import2.php, row 142, 144
 "Content Pooling update successful" => "Mise en commun du contenu mis à jour avec succès", // ai 2026-10
 
 // admin/se_forms.php, row 37
@@ -2400,13 +2494,13 @@ return [
 // admin/se_fulltext.php, row 70
 "You do not have permissions to change fulltext view formatting" => "Vous n'avez pas la permission de changer la mise en forme de la vue du texte intégral", // ai 2026-11
 
-// admin/se_fulltext.php, row 83, 171
+// admin/se_fulltext.php, row 83, 175
 "Top HTML code" => "Code HTML du début", // ai 2026-10
 
-// admin/se_fulltext.php, row 84, 184
+// admin/se_fulltext.php, row 84, 188
 "Fulltext HTML code" => "Code HTML texte",
 
-// admin/se_fulltext.php, row 85, 197
+// admin/se_fulltext.php, row 85, 201
 "Bottom HTML code" => "Code HTML du bas",
 
 // admin/se_fulltext.php, row 115
@@ -2418,16 +2512,16 @@ return [
 // admin/se_fulltext.php, row 145
 "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item" => "Utiliser ces boites (avec les labels ci-bas ) pour controler la vue texte des chaque item",
 
-// admin/se_fulltext.php, row 168
+// admin/se_fulltext.php, row 172
 "HTML code for fulltext view" => "Code HTML pour la vue texte",
 
-// admin/se_fulltext.php, row 218, 222
+// admin/se_fulltext.php, row 222, 226
 "The template for discussion you can set on \"Design\" -> \"View\" page" => "Vous pouvez définir le modèle de discussion sur la page « Design » -> « Vue »", // ai 2026-06
 
-// admin/se_fulltext.php, row 219
+// admin/se_fulltext.php, row 223
 "Use HTML tags" => "Utiliser les labels HTML",
 
-// admin/se_fulltext.php, row 220
+// admin/se_fulltext.php, row 224
 "New comments disabled" => "Nouveaux commentaires désactivés", // ai 2026-06
 
 // admin/se_history.php, row 57
@@ -2443,12 +2537,12 @@ return [
 "Resource ID" => "ID de la ressource", // ai 2026-06
 
 // admin/se_history.php, row 143, 165, 166
-// admin/um_uedit.php, row 263
+// admin/um_uedit.php, row 274
 // admin/usershow.php, row 89
-// include/perm_sql.php, row 381, 440, 482
+// include/perm_sql.php, row 385, 444, 486
 // src/Optimize/CheckAlertitemRefusals.php, row 99
 // src/Optimize/CheckInstallRuns.php, row 56
-// src/Optimize/CheckObjectFormRefusals.php, row 101
+// src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckOptimizeRuns.php, row 56
 "User" => "Usager",
 
@@ -2472,43 +2566,43 @@ return [
 // admin/se_history.php, row 216, 217
 "ActionApps - History Manager" => "ActionApps - Gestionnaire d'historique", // ai 2026-06
 
-// admin/se_import.php, row 122
+// admin/se_import.php, row 126
 "Admin - configure Content Pooling" => "Adminstration - Configurer la mise en commun de contenu",
 
-// admin/se_import.php, row 137
+// admin/se_import.php, row 142
 "Enable export to slice:" => "Permettre d'exporter vers la section",
 
-// admin/se_import.php, row 140
+// admin/se_import.php, row 145
 "Export disable" => "Exportation interdite",
 
-// admin/se_import.php, row 142
+// admin/se_import.php, row 147
 "Export enable" => "Exportation permise",
 
-// admin/se_import.php, row 176
+// admin/se_import.php, row 181
 "Enable export to any slice" => "Exportation permise vers n'importe quelle sections",
 
-// admin/se_import.php, row 178
+// admin/se_import.php, row 183
 "Currently exported to" => "Actuellement exporté vers", // ai 2026-06
 
-// admin/se_import.php, row 181
+// admin/se_import.php, row 186
 "Wrong export (non-existent slice!):" => "Export incorrect (section inexistante !) :", // ai 2026-06
 
-// admin/se_import.php, row 186
+// admin/se_import.php, row 191
 "Import from slice:" => "Importer de la section",
 
-// admin/se_import.php, row 195
+// admin/se_import.php, row 200
 "Do not import" => "Ne pas importer",
 
-// admin/se_import.php, row 197
+// admin/se_import.php, row 202
 "Import from" => "Importer", // ai 2026-11
 
-// admin/se_inputform.php, row 187, 489
+// admin/se_inputform.php, row 187, 490
 "Before HTML code" => "Code pré-HTML", // ai 2026-10
 
-// admin/se_inputform.php, row 188, 487
+// admin/se_inputform.php, row 188, 488
 "Help for this field" => "Assistance pour ce champ",
 
-// admin/se_inputform.php, row 189, 488
+// admin/se_inputform.php, row 189, 489
 "More help" => "Davantage d'assistance",
 
 // admin/se_inputform.php, row 191
@@ -2517,138 +2611,140 @@ return [
 // admin/se_inputform.php, row 193
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "L'alias doit toujours être _# + 8 lettres MAJUSCULES, par ex. _#<b>SOMTHING</b>.", // ai 2026-06
 
-// admin/se_inputform.php, row 198, 520
+// admin/se_inputform.php, row 198, 521
 // include/stringexpand.php, row 98
 // src/Optimize/CheckUserAliasFunctions.php, row 89
 "Alias" => "Alias", // ai 2026-10
 
-// admin/se_inputform.php, row 202, 521
-// admin/se_profile.php, row 208
+// admin/se_inputform.php, row 202, 522
+// admin/se_profile.php, row 222
 "Function" => "Founction",
 
 // admin/se_inputform.php, row 258
+// include/field.class.php, row 1489
 "You can relate only to a slice where you may edit all items" => "Vous ne pouvez créer une relation qu'avec une section dans laquelle vous pouvez modifier tous les items", // ai 2026-11
 
-// admin/se_inputform.php, row 306
+// admin/se_inputform.php, row 307
 "No field found" => "Aucun champ trouvé", // ai 2026-06
 
-// admin/se_inputform.php, row 353
+// admin/se_inputform.php, row 354
 "You selected slice and not constant group. It is impossible to create slice from here." => "Vous avez sélectionné une section et non un groupe de constantes. Il est impossible de créer une section d'ici.", // ai 2026-06
 
-// admin/se_inputform.php, row 376
+// admin/se_inputform.php, row 377
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "ATTENTION : ne changez pas ce réglage si vous n'êtes pas sûr de ce que vous faites !", // ai 2026-06
 
-// admin/se_inputform.php, row 392
-// include/formutil.php, row 203
+// admin/se_inputform.php, row 393
+// include/formutil.php, row 207
 "Update & Edit" => "Actualiser & modifier", // ai 2026-06
 
-// admin/se_inputform.php, row 393
-// admin/se_view.php, row 485
-// include/slice.class.php, row 1327
+// admin/se_inputform.php, row 394
+// admin/se_view.php, row 562
+// include/slice.class.php, row 1500
 "Show History" => "Montrer l'historique", // ai 2026-06
 
-// admin/se_inputform.php, row 397
+// admin/se_inputform.php, row 398
 "Field properties" => "Propriétés des champs", // ai 2026-10
 
-// admin/se_inputform.php, row 405
-// src/Widget/Widget.php, row 764
+// admin/se_inputform.php, row 406
+// src/Widget/Widget.php, row 787
 "Input type" => "Type d'entrée", // ai 2026-10
 
-// admin/se_inputform.php, row 408
+// admin/se_inputform.php, row 409
 "Input field type in Add / Edit item." => "Type de champ d,entrée pour Ajouter / modifier item.", // ai 2026-10
 
-// admin/se_inputform.php, row 413
+// admin/se_inputform.php, row 414
 "Edit|Use as new|New" => "Modifier|Utiliser comme nouveau|Nouveau",
 
-// admin/se_inputform.php, row 415
+// admin/se_inputform.php, row 416
 "Choose a Constant Group or a Slice." => "Choisir un groupe de valeurs constantes ou une section",
 
-// admin/se_inputform.php, row 424, 440, 451, 479, 522
-// include/logs.php, row 640
+// admin/se_inputform.php, row 425, 441, 452, 480, 523
+// include/logs.php, row 641
 // src/Import/DetailConfig.php, row 360
-// src/Util/Paramwizard.php, row 154
+// src/Util/Paramwizard.php, row 171
 "Parameters" => "Paramètres", // ai 2026-10
 
-// admin/se_inputform.php, row 429
+// admin/se_inputform.php, row 430
 "Allow translation" => "Autoriser la traduction", // ai 2026-06
 
-// admin/se_inputform.php, row 429
+// admin/se_inputform.php, row 430
 "Only Text Area and Text Field widgets allow translation. Languages should be set on Slice Setting page." => "Seuls les widgets Zone de texte et Champ texte permettent la traduction. Les langues doivent être définies sur la page Réglages de la section.", // ai 2026-06
 
-// admin/se_inputform.php, row 438
+// admin/se_inputform.php, row 439
 "How to generate the default value" => "Comment générer les valeurs par défaut", // ai 2026-10
 
-// admin/se_inputform.php, row 446
+// admin/se_inputform.php, row 447
 // include/feeding.php, row 453
 "Validate" => "Valider",
 
-// admin/se_inputform.php, row 458
+// admin/se_inputform.php, row 459
 "Stored as" => "Stocké comme", // ai 2026-06
 
-// admin/se_inputform.php, row 461
+// admin/se_inputform.php, row 462
 "Stored in <em>item</em> table - it is not possible to change store method" => "Stocké dans la table <em>item</em> - il n'est pas possible de changer la méthode de stockage", // ai 2026-06
 
-// admin/se_inputform.php, row 465, 466
+// admin/se_inputform.php, row 466, 467
+// include/searchlib.php, row 147
 // src/Central/FindingText.php, row 176, 186
 "Number" => "Nombre", // ai 2026-06
 
-// admin/se_inputform.php, row 474
-// admin/sliceimp.php, row 425
+// admin/se_inputform.php, row 475
+// admin/sliceimp.php, row 436
 // include/form.class.php, row 474, 476
-// include/formutil.php, row 221, 2996
+// include/formutil.php, row 225, 3003
 "Insert" => "Insérer", // ai 2026-10
 
-// admin/se_inputform.php, row 477
+// admin/se_inputform.php, row 478
 "Defines how value is stored in database." => "Définir comment les valeurs sont sauvées dans la base de données", // ai 2026-10
 
-// admin/se_inputform.php, row 485
+// admin/se_inputform.php, row 486
 "Show 'HTML' / 'plain text' option" => "Montrer le 'HTML' / option 'texte'",
 
-// admin/se_inputform.php, row 486
+// admin/se_inputform.php, row 487
 "'HTML' as default" => "HTML par défaut", // ai 2026-10
 
-// admin/se_inputform.php, row 486
+// admin/se_inputform.php, row 487
 "HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least." => "L'option HTML signifie que le champ est affiché tel que saisi avec l'alias {field...........}. Texte brut signifie que les sauts de ligne sont convertis en &lt;br&gt; etc. HTML est au moins un bon choix pour toute donnée non textuelle.", // ai 2026-06
 
-// admin/se_inputform.php, row 487
+// admin/se_inputform.php, row 488
 "Shown help for this field" => "Montrer l'assistant pour ce champ",
 
-// admin/se_inputform.php, row 488
+// admin/se_inputform.php, row 489
 "Text shown after user click on '?' in input form" => "Le texte qui apparaîtra quand l'usager cliquera sur '?' dans le formulaire d'entrée", // ai 2026-10
 
-// admin/se_inputform.php, row 489
+// admin/se_inputform.php, row 490
 "Code shown in input form before this field" => "Code montré dans le formulaire d'entrée devant ce champs", // ai 2026-10
 
-// admin/se_inputform.php, row 491
+// admin/se_inputform.php, row 492
 "Searchable in AA Item Manager" => "Recherchable dans le Gestionnaire d'item AA", // ai 2026-06
 
-// admin/se_inputform.php, row 491
+// admin/se_inputform.php, row 492
 "The field is shown in Search box in Item Manager." => "Le champ est affiché dans la boîte de recherche du Gestionnaire d'item.", // ai 2026-06
 
-// admin/se_inputform.php, row 492
+// admin/se_inputform.php, row 493
 "Feeding mode" => "Mode alimentation",
 
-// admin/se_inputform.php, row 492
+// admin/se_inputform.php, row 493
 "Should the content of this field be copied to another slice if it is fed?" => "Le contenu de ce champ doit-il être copié vers une autre section s'il est alimenté?", // ai 2026-10
 
-// admin/se_inputform.php, row 494
+// admin/se_inputform.php, row 495
 "ALIASES used in views to print field content (%1)" => "ALIAS utilisés dans les vues pour afficher le contenu du champ (%1)", // ai 2026-06
 
-// admin/se_inputform.php, row 514
+// admin/se_inputform.php, row 515
 "8 CHARS" => "8 CARACTÈRES", // ai 2026-06
 
-// admin/se_inputform.php, row 514
+// admin/se_inputform.php, row 515
 "8 UPPERCASE letters or _" => "8 lettres MAJUSCULES ou _",
 
-// admin/se_inputform.php, row 515
+// admin/se_inputform.php, row 516
 "Disabled" => "Désactivé", // ai 2026-06
 
-// admin/se_inputform.php, row 516
+// admin/se_inputform.php, row 517
 // src/Util/ChangesMonitor.php, row 509
-// src/Util/Paramwizard.php, row 161
+// src/Util/Paramwizard.php, row 178
 "Copy to clipboard" => "Copier dans le presse-papiers", // ai 2026-06
 
-// admin/se_inputform.php, row 517
+// admin/se_inputform.php, row 518
 "Reset" => "Réinitialiser", // ai 2026-06
 
 // admin/se_inter_export.php, row 97
@@ -2672,89 +2768,90 @@ return [
 // admin/se_inter_export.php, row 148
 "User name" => "Nom d'usager",
 
-// admin/se_inter_import.php, row 74, 96
-// admin/se_inter_import2.php, row 110
+// admin/se_inter_import.php, row 80, 103
+// admin/se_inter_import2.php, row 116
 "Exact copy" => "Copie exacte", // ai 2026-06
 
-// admin/se_inter_import.php, row 75
+// admin/se_inter_import.php, row 81
 "Missing!!!" => "Manquant!!!",
 
-// admin/se_inter_import.php, row 86
-// admin/se_inter_import2.php, row 95
+// admin/se_inter_import.php, row 92
+// admin/se_inter_import2.php, row 100
 "Inter node import settings" => "Configuration d'importation entre les noeuds",
 
-// admin/se_inter_import.php, row 91
+// admin/se_inter_import.php, row 98
 "Create new feed from node" => "Créer une nouvelle source d'alimentation du Noeud", // ai 2026-10
 
-// admin/se_inter_import.php, row 96
+// admin/se_inter_import.php, row 103
 // include/feeding.php, row 527
 "Remote slice" => "Section distante", // ai 2026-06
 
-// admin/se_inter_import.php, row 96
+// admin/se_inter_import.php, row 103
 "Node" => "Nœud", // ai 2026-06
 
-// admin/se_inter_import.php, row 96
-// central/optimize.php, row 170
+// admin/se_inter_import.php, row 103
+// central/optimize.php, row 276
 // misc/datovka/datovka.php, row 158
 // src/Import/DetailConfig.php, row 282
 // src/Import/DetailPage.php, row 401
+// src/Mailbulk/StatsView.php, row 63
 // src/Optimize/CheckIsdsRuns.php, row 310
 // src/Util/Note.php, row 64
 "State" => "État", // ai 2026-06
 
-// admin/se_inter_import.php, row 97
+// admin/se_inter_import.php, row 104
 "Existing remote imports into the slice" => "Importations dans la section", // ai 2026-06
 
-// admin/se_inter_import.php, row 99
+// admin/se_inter_import.php, row 106
 "No remote imports into the slice" => "Aucun import distant dans la section", // ai 2026-06
 
-// admin/se_inter_import.php, row 104
+// admin/se_inter_import.php, row 111
 // include/menu.php, row 154
 "Inter Node Import" => "Importation inter-noeud",
 
-// admin/se_inter_import.php, row 105
+// admin/se_inter_import.php, row 112
 "Add from remote node" => "Ajouter depuis un nœud distant", // ai 2026-06
 
-// admin/se_inter_import.php, row 115
+// admin/se_inter_import.php, row 122
 "Are you sure you want to delete the import?" => "Êtes-vous sûr de vouloir supprimer l'import ?", // ai 2026-06
 
-// admin/se_inter_import.php, row 124
+// admin/se_inter_import.php, row 129
 "No selected node" => "Aucun nœud sélectionné", // ai 2026-06
 
-// admin/se_inter_import2.php, row 62, 67, 84
+// admin/se_inter_import2.php, row 67, 72, 89
 "Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node." => "Imcapable de connecter et/ou de retrouver les information du serveur distant. Contacter l'administrateur du serveur local.",
 
-// admin/se_inter_import2.php, row 74
+// admin/se_inter_import2.php, row 79
 "No slices available. You do not have permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username." => "Pas de section disponible.  Vous n'avez pas la permission d'importer des information de ce serveur.  Contactez l'administrateur de la section distant et vérifiez  qu'il vous a obtenu un nom d'utilisateur valide.", // ai 2026-10
 
-// admin/se_inter_import2.php, row 75
+// admin/se_inter_import2.php, row 80
 "Invalid password for the node name:" => "Mauvais mot de passe sur ce serveur",
 
-// admin/se_inter_import2.php, row 75
+// admin/se_inter_import2.php, row 80
 "Contact the administrator of the local node." => "Contactez l'administrateur du serveur local",
 
-// admin/se_inter_import2.php, row 76
+// admin/se_inter_import2.php, row 81
 "Remote server returns following error:" => "Le serveur distant renvoie l'erreur suivante :", // ai 2026-06
 
-// admin/se_inter_import2.php, row 100
+// admin/se_inter_import2.php, row 106
 "Choose slice" => "Choisir une section", // ai 2026-06
 
-// admin/se_inter_import2.php, row 106
+// admin/se_inter_import2.php, row 112
 "List of available slices from the node " => "Liste des sections disponibles sur le noeud",
 
-// admin/se_inter_import2.php, row 107
+// admin/se_inter_import2.php, row 113
 "Slice to import" => "Section à importer", // ai 2026-06
 
-// admin/se_inter_import2.php, row 116
+// admin/se_inter_import2.php, row 122
 "The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master." => "La section sera une copie exacte de la section distante. Tous les items seront copiés, y compris ceux des dossiers À approuver et Corbeille. De plus, à chaque modification de l'item distant, le contenu sera copié dans la copie locale de l'item. Les items auront les mêmes identifiants longs (pas les courts !). Il est inutile de modifier les items de la copie locale - ils seront écrasés depuis le maître distant.", // ai 2026-06
 
-// admin/se_inter_import3.php, row 71
+// admin/se_inter_import3.php, row 82
 "The import was already created" => "L'importation est déjà créée", // ai 2026-10
 
-// admin/se_inter_import3.php, row 130
+// admin/se_inter_import3.php, row 141
 "The import was successfully created" => "L'importation fut créée avec succès", // ai 2026-10
 
-// admin/se_inter_import3.php, row 133
+// admin/se_inter_import3.php, row 144
 "Can't add external import" => "Impossible d'ajouter l'import externe", // ai 2026-11
 
 // admin/se_isds_registry.php, row 54
@@ -2868,361 +2965,364 @@ return [
 // admin/se_notify.php, row 255
 "<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>Item changé dans le casier approuvé</h4> On peut recevoir un courriel quand un item du casier approuvé est changé. Pour utiliser cette fonction, entrer le courriel ci-bas. Il est possible d'adapter le format du courriel dans les champs suivants.", // ai 2026-10
 
-// admin/se_profile.php, row 60
-// admin/se_users.php, row 62
+// admin/se_profile.php, row 65
+// admin/se_users.php, row 67
 "You do not have permissions to manage users" => "Vous n'avez pas la permission de gérer les usagers", // ai 2026-10
 
-// admin/se_profile.php, row 76
+// admin/se_profile.php, row 87
 // include/profile.class.php, row 359
 "Rule deleted" => "Règle éliminée", // ai 2026-10
 
-// admin/se_profile.php, row 80
+// admin/se_profile.php, row 91
 "Error: Can't add rule" => "Erreur: Impossible d'ajouter la règle", // ai 2026-10
 
-// admin/se_profile.php, row 98
+// admin/se_profile.php, row 109
 "Input view ID" => "Entrée de visualisation d'identité", // ai 2026-10
 
-// admin/se_profile.php, row 99
+// admin/se_profile.php, row 110
 "Item filter" => "Filtre item",
 
-// admin/se_profile.php, row 100
+// admin/se_profile.php, row 111
 "Item order" => "Ordre Item",
 
-// admin/se_profile.php, row 101
+// admin/se_profile.php, row 112
 "Item permissions" => "Permissions d'item", // ai 2026-06
 
-// admin/se_profile.php, row 102
+// admin/se_profile.php, row 113
 "Hide field" => "Cacher les champs",
 
-// admin/se_profile.php, row 103
+// admin/se_profile.php, row 114
 "Show field" => "Montrer le champ", // ai 2026-06
 
-// admin/se_profile.php, row 104
+// admin/se_profile.php, row 115
 "Hide and Fill" => "Cacher et remplir",
 
-// admin/se_profile.php, row 105
-// admin/search_replace.php, row 173
+// admin/se_profile.php, row 116
+// admin/search_replace.php, row 195
 "Fill field" => "Remplir le champ",
 
-// admin/se_profile.php, row 106
+// admin/se_profile.php, row 117
 "Predefine field" => "Definir le champ",
 
-// admin/se_profile.php, row 107
+// admin/se_profile.php, row 118
 "Stored query" => "Requête enregistrée", // ai 2026-10
 
-// admin/se_profile.php, row 108
+// admin/se_profile.php, row 119
 "UI - manager" => "UI - gestionnaire", // ai 2026-06
 
-// admin/se_profile.php, row 109
+// admin/se_profile.php, row 120
 "UI - manager - hide" => "UI - gestionnaire - cacher", // ai 2026-06
 
-// admin/se_profile.php, row 110
+// admin/se_profile.php, row 121
 "UI - inputform" => "UI - formulaire de saisie", // ai 2026-06
 
-// admin/se_profile.php, row 111
+// admin/se_profile.php, row 122
 "UI - inputform - hide" => "UI - formulaire de saisie - cacher", // ai 2026-06
 
-// admin/se_profile.php, row 117
+// admin/se_profile.php, row 128
 "Logo (top)" => "Logo (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 118
+// admin/se_profile.php, row 129
 "View site (top)" => "Voir le site (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 119
+// admin/se_profile.php, row 130
 "Add Item link (top)" => "Lien Ajouter un item (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 120
+// admin/se_profile.php, row 131
 "Item Manager link (top)" => "Lien Gestionnaire d'items (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 121
+// admin/se_profile.php, row 132
 "Slice Admin link (top)" => "Lien Admin de la section (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 122
+// admin/se_profile.php, row 133
 "AA link (top)" => "Lien AA (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 123
+// admin/se_profile.php, row 134
 "Central link (top)" => "Lien Central (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 124
+// admin/se_profile.php, row 135
 "Title (top)" => "Titre (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 125
+// admin/se_profile.php, row 136
 "Logout link (top)" => "Lien Déconnexion (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 126
+// admin/se_profile.php, row 137
 "User Info link (top)" => "Lien Infos utilisateur (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 127
+// admin/se_profile.php, row 138
 "Module Selectbox (top)" => "Sélecteur de module (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 128
+// admin/se_profile.php, row 139
 "Module Switch text (top)" => "Texte de changement de module (haut)", // ai 2026-06
 
-// admin/se_profile.php, row 129
+// admin/se_profile.php, row 140
 "Item Manager Menu: Header (left)" => "Menu Gestionnaire d'items : En-tête (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 130
+// admin/se_profile.php, row 141
 "Item Manager Menu: Add Item (left)" => "Menu Gestionnaire d'items : Ajouter un item (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 131
+// admin/se_profile.php, row 142
 "Item Manager Menu: Active (left)" => "Menu Gestionnaire d'items : Actifs (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 132
+// admin/se_profile.php, row 143
 "Item Manager Menu: Pending (left)" => "Menu Gestionnaire d'items : En attente (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 133
+// admin/se_profile.php, row 144
 "Item Manager Menu: Expired (left)" => "Menu Gestionnaire d'items : Expirés (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 134
+// admin/se_profile.php, row 145
 "Item Manager Menu: Holding (left)" => "Menu Gestionnaire d'items : À approuver (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 135
+// admin/se_profile.php, row 146
 "Item Manager Menu: Trash (left)" => "Menu Gestionnaire d'items : Corbeille (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 136
+// admin/se_profile.php, row 147
 "Item Manager Menu: Bookmarks show (left)" => "Menu Gestionnaire d'items : Afficher les signets (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 137
+// admin/se_profile.php, row 148
 "Item Manager Menu: Additional 1 (left)" => "Menu Gestionnaire d'items : Supplémentaire 1 (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 138
+// admin/se_profile.php, row 149
 "Item Manager Menu: Header 2 (left)" => "Menu Gestionnaire d'items : En-tête 2 (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 139
+// admin/se_profile.php, row 150
 "Item Manager Menu: Slice Setting (left)" => "Menu Gestionnaire d'items : Configuration de la section (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 140
+// admin/se_profile.php, row 151
 "Item Manager Menu: Empty Trash (left)" => "Menu Gestionnaire d'items : Vider la corbeille (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 141
+// admin/se_profile.php, row 152
 "Item Manager Menu: CSV Import (left)" => "Menu Gestionnaire d'items : Import CSV (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 142
+// admin/se_profile.php, row 153
 "Item Manager Menu: Debug (left)" => "Menu Gestionnaire d'items : Débogage (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 143
+// admin/se_profile.php, row 154
 "Item Manager Menu: Additional 2 (left)" => "Menu Gestionnaire d'items : Supplémentaire 2 (gauche)", // ai 2026-06
 
-// admin/se_profile.php, row 144
+// admin/se_profile.php, row 155
 "Add CSS file" => "Ajouter un fichier CSS", // ai 2026-06
 
-// admin/se_profile.php, row 148
+// admin/se_profile.php, row 159
 "Manager Actions" => "Actions du gestionnaire", // ai 2026-06
 
-// admin/se_profile.php, row 149
+// admin/se_profile.php, row 160
 "Searchbar - Search Rows" => "Barre de recherche - lignes de recherche", // ai 2026-06
 
-// admin/se_profile.php, row 150
+// admin/se_profile.php, row 161
 "Searchbar - Order Rows" => "Barre de recherche - lignes de tri", // ai 2026-06
 
-// admin/se_profile.php, row 151
+// admin/se_profile.php, row 162
 "Searchbar - Bookmarks" => "Barre de recherche - signets", // ai 2026-06
 
-// admin/se_profile.php, row 155
+// admin/se_profile.php, row 166
 "Top menu (admin header)" => "Menu du haut (en-tête admin)", // ai 2026-06
 
-// admin/se_profile.php, row 156
+// admin/se_profile.php, row 167
 "Left menu (item context)" => "Menu de gauche (contexte d'item)", // ai 2026-06
 
-// admin/se_profile.php, row 160
+// admin/se_profile.php, row 171
 "Title (add form)" => "Titre (formulaire d'ajout)", // ai 2026-06
 
-// admin/se_profile.php, row 161
+// admin/se_profile.php, row 172
 "Top HTML code (add form)" => "Code HTML du haut (formulaire d'ajout)", // ai 2026-06
 
-// admin/se_profile.php, row 162
+// admin/se_profile.php, row 173
 "Bottom HTML code (add form)" => "Code HTML du bas (formulaire d'ajout)", // ai 2026-06
 
-// admin/se_profile.php, row 163
+// admin/se_profile.php, row 174
 "Button \"Insert\" / \"Insert as new\" (add form)" => "Bouton \"Insérer\" / \"Insérer comme nouveau\" (formulaire d'ajout)", // ai 2026-06
 
-// admin/se_profile.php, row 164
+// admin/se_profile.php, row 175
 "Button \"Insert & Edit\" (add form)" => "Bouton \"Insérer & modifier\" (formulaire d'ajout)", // ai 2026-06
 
-// admin/se_profile.php, row 165
+// admin/se_profile.php, row 176
 "Button \"Insert & View\" (add form)" => "Bouton \"Insérer & voir\" (formulaire d'ajout)", // ai 2026-06
 
-// admin/se_profile.php, row 166
+// admin/se_profile.php, row 177
 "Button \"Cancel\" (add form)" => "Bouton \"Annuler\" (formulaire d'ajout)", // ai 2026-06
 
-// admin/se_profile.php, row 167
+// admin/se_profile.php, row 178
 "Title (edit form)" => "Titre (formulaire d'édition)", // ai 2026-06
 
-// admin/se_profile.php, row 168
+// admin/se_profile.php, row 179
 "Top HTML code (edit form)" => "Code HTML du haut (formulaire d'édition)", // ai 2026-06
 
-// admin/se_profile.php, row 169
+// admin/se_profile.php, row 180
 "Bottom HTML code (edit form)" => "Code HTML du bas (formulaire d'édition)", // ai 2026-06
 
-// admin/se_profile.php, row 170
+// admin/se_profile.php, row 181
 "Button \"Update\" (edit form)" => "Bouton \"Mettre à jour\" (formulaire d'édition)", // ai 2026-06
 
-// admin/se_profile.php, row 171
+// admin/se_profile.php, row 182
 "Button \"Update & Edit\" (edit form)" => "Bouton \"Mettre à jour et modifier\" (formulaire d'édition)", // ai 2026-06
 
-// admin/se_profile.php, row 172
+// admin/se_profile.php, row 183
 "Button \"Update & View\" (edit form)" => "Bouton \"Mettre à jour et afficher\" (formulaire d'édition)", // ai 2026-06
 
-// admin/se_profile.php, row 173
+// admin/se_profile.php, row 184
 "Button \"Reset form\" (edit form)" => "Bouton \"Réinitialiser le formulaire\" (formulaire d'édition)", // ai 2026-06
 
-// admin/se_profile.php, row 174
+// admin/se_profile.php, row 185
 "Button \"Cancel\" (edit form)" => "Bouton \"Annuler\" (formulaire d'édition)", // ai 2026-06
 
-// admin/se_profile.php, row 181
+// admin/se_profile.php, row 192
 "Admin - user Profiles" => "Administration - Profils usagers",
 
-// admin/se_profile.php, row 188
+// admin/se_profile.php, row 202
 "Rules" => "Règles", // ai 2026-10
 
-// admin/se_profile.php, row 196
+// admin/se_profile.php, row 210
 "No rule is set" => "Aucune règle", // ai 2026-10
 
-// admin/se_profile.php, row 203
+// admin/se_profile.php, row 217
 "Add Rule" => "Ajouter règle", // ai 2026-10
 
-// admin/se_profile.php, row 206
+// admin/se_profile.php, row 220
 "Rule" => "Règle", // ai 2026-10
 
-// admin/se_profile.php, row 210
-// include/formutil.php, row 1270
-// include/transformation.class.php, row 192, 381, 454, 548, 738
+// admin/se_profile.php, row 224
+// include/formutil.php, row 1274
+// include/transformation.class.php, row 193, 382, 455, 549, 739
 // include/widget.class.php, row 664
 "HTML" => "",
 
-// admin/se_profile.php, row 217
+// admin/se_profile.php, row 231
 "Author Role" => "Rôle d'auteur", // ai 2026-06
 
-// admin/se_profile.php, row 218
+// admin/se_profile.php, row 232
 "Editor Role" => "Rôle d'éditeur", // ai 2026-06
 
-// admin/se_profile.php, row 219
+// admin/se_profile.php, row 233
 "Administrator Role" => "Rôle d'administrateur", // ai 2026-06
 
-// admin/se_profile.php, row 220
+// admin/se_profile.php, row 234
 "Superadmin Role" => "Rôle de superadmin", // ai 2026-06
 
-// admin/se_profile.php, row 225
+// admin/se_profile.php, row 239
 "number of item displayed in Item Manager" => "Nombre d'item présentés dans le gestionnaire d'items", // ai 2026-10
 
-// admin/se_profile.php, row 226
+// admin/se_profile.php, row 240
 "id of view used for item input" => "Identité de vue utilisée pour l'entrée des items", // ai 2026-10
 
-// admin/se_profile.php, row 227
+// admin/se_profile.php, row 241
 "preset \"Search\" in Item Manager" => "\"Recherche\" prédéfinie dans le Gestionnaire d'items", // ai 2026-06
 
-// admin/se_profile.php, row 228
+// admin/se_profile.php, row 242
 "preset \"Order\" in Item Manager" => "\"Tri\" prédéfini dans le Gestionnaire d'items", // ai 2026-06
 
-// admin/se_profile.php, row 229
+// admin/se_profile.php, row 243
 "ID of \"Item Set\" which defines the permissions for item - see \"Admin - Item Set\"" => "ID de l'\"Ensemble d'items\" qui définit les permissions de l'item - voir \"Admin - Ensembles d'items\"", // ai 2026-06
 
-// admin/se_profile.php, row 230
+// admin/se_profile.php, row 244
 "hide the field in inputform" => "Cacher les champs dans le formulaire d'entrée", // ai 2026-10
 
-// admin/se_profile.php, row 231
+// admin/se_profile.php, row 245
 "show (= unhide) the field in inputform (reverts hide made by group profile,...)" => "afficher (= démasquer) le champ dans le formulaire de saisie (annule le masquage fait par le profil de groupe,...)", // ai 2026-06
 
-// admin/se_profile.php, row 232
+// admin/se_profile.php, row 246
 "hide the field in inputform and fill it by the value" => "Cacher les champs dans le formulaire d'entrée et remplir par la valeur", // ai 2026-10
 
-// admin/se_profile.php, row 233
+// admin/se_profile.php, row 247
 "fill the field in inputform by the value" => "Mettre la valeur dans le champ dans le formulaire d'entrée", // ai 2026-10
 
-// admin/se_profile.php, row 234
+// admin/se_profile.php, row 248
 "predefine value of the field in inputform" => "Définir la valeur du champ dans le formulaire d'entrée", // ai 2026-10
 
-// admin/se_profile.php, row 235
+// admin/se_profile.php, row 249
 "redefine manager UI - (empty values = do not show)" => "redéfinir l'UI du gestionnaire - (valeurs vides = ne pas afficher)", // ai 2026-06
 
-// admin/se_profile.php, row 236
+// admin/se_profile.php, row 250
 "hide this UI element" => "masquer cet élément d'UI", // ai 2026-06
 
-// admin/se_profile.php, row 237
+// admin/se_profile.php, row 251
 "redefine inputform UI - (empty values = do not show)" => "redéfinir l'UI du formulaire de saisie - (valeurs vides = ne pas afficher)", // ai 2026-06
 
-// admin/se_profile.php, row 238
+// admin/se_profile.php, row 252
 "hide this UI element in the inputform" => "masquer cet élément d'UI dans le formulaire de saisie", // ai 2026-06
 
-// admin/se_profile.php, row 265
+// admin/se_profile.php, row 279
 "Copy Profile from" => "Copier le profil depuis", // ai 2026-06
 
-// admin/se_profile.php, row 267
+// admin/se_profile.php, row 281
 // src/Util/ChangesMonitor.php, row 509
 "Copy" => "Copier", // ai 2026-06
 
-// admin/se_sets.php, row 66
+// admin/se_sets.php, row 72
 "You do not have permissions to change sets" => "Vous n'avez pas la permission de modifier les ensembles", // ai 2026-06
 
-// admin/se_sets.php, row 81
+// admin/se_sets.php, row 94
 "Name %1" => "Nom %1", // ai 2026-06
 
-// admin/se_sets.php, row 82
+// admin/se_sets.php, row 95
 "Slice %1" => "Section %1", // ai 2026-06
 
-// admin/se_sets.php, row 83
+// admin/se_sets.php, row 96
 "Condition %1" => "Condition %1", // ai 2026-10
 
-// admin/se_sets.php, row 84, 135, 142
+// admin/se_sets.php, row 97, 156, 163
 "Sort %1" => "Tri %1", // ai 2026-06
 
-// admin/se_sets.php, row 85
+// admin/se_sets.php, row 98
 "Object ID %1" => "ID de l'objet %1", // ai 2026-06
 
-// admin/se_sets.php, row 106
+// admin/se_sets.php, row 108
+"Set %1 is not a set of this slice" => "L'ensemble %1 n'est pas un ensemble de cette section", // ai 2026-11
+
+// admin/se_sets.php, row 127
 "Sets stored successfully" => "Ensembles enregistrés avec succès", // ai 2026-06
 
-// admin/se_sets.php, row 112
+// admin/se_sets.php, row 133
 "Admin - Item Sets" => "Admin - Ensembles d'items", // ai 2026-06
 
-// admin/se_sets.php, row 119
+// admin/se_sets.php, row 140
 "Sets" => "Ensembles", // ai 2026-06
 
-// admin/se_sets.php, row 120
+// admin/se_sets.php, row 141
 "Conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)" => "Les conditions sont au format \"d-...\" ou \"conds[]\" - par exemple :<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (l'opérateur par défaut est ici RLIKE !)", // ai 2026-06
 
-// admin/se_sets.php, row 131
+// admin/se_sets.php, row 152
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 471, 528
-// include/statestore.php, row 1081
+// include/statestore.php, row 1146
 // src/AA_Plannedtask.php, row 182
-// src/Optimize/AbstractOptimize.php, row 172
+// src/Optimize/AbstractOptimize.php, row 175
 "ID" => "",
 
-// admin/se_sets.php, row 132, 139
+// admin/se_sets.php, row 153, 160
 "Set name %1" => "Nom de l'ensemble %1", // ai 2026-06
 
-// admin/se_sets.php, row 132, 139
+// admin/se_sets.php, row 153, 160
 "use alphanumeric characters only" => "utilisez uniquement des caractères alphanumériques", // ai 2026-06
 
-// admin/se_sets.php, row 133, 140
+// admin/se_sets.php, row 154, 161
 "Slices %1" => "Sections %1", // ai 2026-06
 
-// admin/se_sets.php, row 133, 140
+// admin/se_sets.php, row 154, 161
 "possibly dash separated" => "éventuellement séparés par des tirets", // ai 2026-06
 
-// admin/se_sets.php, row 134, 141
+// admin/se_sets.php, row 155, 162
 "Conditions %1" => "Conditions %1", // ai 2026-10
 
-// admin/se_sets.php, row 134, 141
+// admin/se_sets.php, row 155, 162
 "Use \"d-...\" or \"conds[]\" conditions" => "Utilisez les conditions \"d-...\" ou \"conds[]\"", // ai 2026-06
 
-// admin/se_sets.php, row 135
+// admin/se_sets.php, row 156
 "Use \"headline.......,publish_date....-\" or \"sort[]\" conditions" => "Utilisez les conditions \"headline.......,publish_date....-\" ou \"sort[]\"", // ai 2026-06
 
-// admin/se_sets.php, row 142
+// admin/se_sets.php, row 163
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Utilisez les conditions \"headline........,publish_date....-\" ou \"sort[]\"", // ai 2026-06
 
 // admin/se_showif.php, row 77
 "The form has expired. Close it and open it again." => "Le formulaire a expiré. Fermez-le et rouvrez-le.", // ai 2026-11
 
 // admin/se_showif.php, row 116
-// include/searchlib.php, row 129, 138
+// include/searchlib.php, row 159, 186, 195
 "is not" => "n'est pas", // ai 2026-06
 
 // admin/se_showif.php, row 116
 // include/searchbar.class.php, row 580
-// include/searchlib.php, row 53, 56, 129, 138
+// include/searchlib.php, row 53, 56, 186, 195
 "begins with" => "Commence par",
 
 // admin/se_showif.php, row 116
@@ -3247,7 +3347,7 @@ return [
 "Values, one per line" => "Valeurs, une par ligne", // ai 2026-11
 
 // admin/se_showif.php, row 156
-// include/field.class.php, row 797
+// include/field.class.php, row 800
 "Display condition" => "Condition d'affichage", // ai 2026-11
 
 // admin/se_showif.php, row 168
@@ -3282,7 +3382,7 @@ return [
 "Save the changes to this condition. They apply to every field that uses it." => "Enregistrer les modifications de cette condition. Elles s'appliquent à tous les champs qui l'utilisent.", // ai 2026-11
 
 // admin/se_showif.php, row 186
-// admin/se_view.php, row 486
+// admin/se_view.php, row 563
 "Save as new" => "Enregistrer comme nouveau", // ai 2026-06
 
 // admin/se_showif.php, row 186
@@ -3295,7 +3395,7 @@ return [
 "Delete the condition? The fields that use it will be shown always." => "Supprimer la condition ? Les champs qui l'utilisent seront toujours affichés.", // ai 2026-11
 
 // admin/se_showif.php, row 191
-// include/formutil.php, row 219, 224, 3009, 3013
+// include/formutil.php, row 223, 228, 3016, 3020
 // include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Abandonner",
@@ -3366,185 +3466,232 @@ return [
 // admin/se_taskmanager.php, row 77
 "User Tasks" => "Tâches utilisateur", // ai 2026-06
 
-// admin/se_users.php, row 126, 185
+// admin/se_users.php, row 135, 205
 // admin/slicewiz.php, row 81
-// include/se_users.php, row 109, 180
+// include/se_users.php, row 113, 184
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 88
 "Editor" => "Editeur",
 
-// admin/se_users.php, row 127, 185
-// include/se_users.php, row 110, 180
+// admin/se_users.php, row 136, 205
+// include/se_users.php, row 114, 184
 "Administrator" => "Administrateur",
 
-// admin/se_users.php, row 128, 185
+// admin/se_users.php, row 137, 205
 // include/um_util.php, row 104, 155
 "Revoke" => "Retirer",
 
-// admin/se_users.php, row 136, 185, 197
+// admin/se_users.php, row 146, 205, 218
 "Profile" => "Profil",
 
-// admin/se_users.php, row 144
+// admin/se_users.php, row 155
 "Admin - Permissions" => "Administration - Permissions",
 
-// admin/se_users.php, row 158
+// admin/se_users.php, row 178
 "Change current permissions" => "Changer les permission courantes",
 
-// admin/se_users.php, row 185
+// admin/se_users.php, row 205
 // central/index.php, row 133
-// include/se_users.php, row 180
+// include/se_users.php, row 184
+// src/Manageraction/Central_GetToken.php, row 28
 // src/Widget/TfaWidget.php, row 73
 "Username" => "nom d'usager", // ai 2026-06
 
-// admin/se_users.php, row 185
+// admin/se_users.php, row 205
 // admin/usershow.php, row 89
-// include/se_users.php, row 180
+// include/se_users.php, row 184
 "Email" => "Courriel", // ai 2026-06
 
-// admin/se_users.php, row 196
+// admin/se_users.php, row 217
 "Default user profile" => "Profil d'usager par défaut", // ai 2026-10
 
-// admin/se_view.php, row 134
+// admin/se_view.php, row 139
 "Group by selections" => "Groupez par sélection", // ai 2026-10
 
-// admin/se_view.php, row 137
+// admin/se_view.php, row 142
 "Yes. Write sort[] to the conds[] field for each Selection." => "Oui. Ecrivez dans le champs sort[] to the conds[] pour chaque sélection", // ai 2026-10
 
-// admin/se_view.php, row 140
+// admin/se_view.php, row 145
 "No. Use this sort[]:" => "Non.  Utilisez ce tri[]:",
 
-// admin/se_view.php, row 153
+// admin/se_view.php, row 158
 "Alerts Selection" => "Alerte sélection", // ai 2026-10
 
-// admin/se_view.php, row 156
+// admin/se_view.php, row 161
 "If you need more selections, use 'Update' and on next Edit two empty boxes appear." => "Si vous souhaitez faire plus de sélection, Utilisez 'Mise à jour' et deux nouveaux champs apparaîtront", // ai 2026-10
 
-// admin/se_view.php, row 213
+// admin/se_view.php, row 204
+"For groups by the whole value of a field, ascending or descending. An item with more values of the field is then listed in each of its groups." => "Pour les groupes selon la valeur entière d'un champ, par ordre croissant ou décroissant. Un item ayant plusieurs valeurs du champ est alors listé dans chacun de ses groupes.", // ai 2026-11
+
+// admin/se_view.php, row 205
+"max. items in a group" => "max. d'items par groupe", // ai 2026-11
+
+// admin/se_view.php, row 208
+"grouping by an alias is slow as well - the alias is computed for all the items of the listing" => "le regroupement par alias est lent lui aussi - l'alias est calculé pour tous les items de la liste", // ai 2026-11
+
+// admin/se_view.php, row 245
 "Ascending (numeric)" => "Croissant (numérique)", // ai 2026-06
 
-// admin/se_view.php, row 213
+// admin/se_view.php, row 245
 "Descending (numeric)" => "Décroissant (numérique)", // ai 2026-06
 
-// admin/se_view.php, row 218
+// admin/se_view.php, row 250
 "you can sort items by alias instead of fields, but it is very slow (computed for all the items)" => "vous pouvez trier les items par alias au lieu des champs, mais c'est très lent (calculé pour tous les items)", // ai 2026-06
 
-// admin/se_view.php, row 282
-// admin/se_views.php, row 53
+// admin/se_view.php, row 314
+// admin/se_views.php, row 57
 "You do not have permission to change views" => "Vous n'avez pas la permission de changer les vues",
 
-// admin/se_view.php, row 343
+// admin/se_view.php, row 352
+"A condition was not read - its field or operator is not allowed here - so the view was not saved. The conditions are shown as they are stored." => "Une condition n'a pas été lue - son champ ou son opérateur n'est pas autorisé ici - la vue n'a donc pas été enregistrée. Les conditions sont affichées telles qu'elles sont stockées.", // ai 2026-11
+
+// admin/se_view.php, row 409
 // admin/sliceimp_xml.php, row 260
 "Can't insert into view." => "Impossible d'insérer dans la vue", // ai 2026-10
 
-// admin/se_view.php, row 358
+// admin/se_view.php, row 424
 "View successfully changed" => "vue changée avec succès", // ai 2026-10
 
-// admin/se_view.php, row 475
-// admin/se_views.php, row 103
+// admin/se_view.php, row 549
+// admin/se_views.php, row 117
 "Admin - design View" => "Administration - définir la vue", // ai 2026-10
 
-// admin/se_view.php, row 494
+// admin/se_view.php, row 571
 "Defined Views" => "vues définies", // ai 2026-10
 
-// admin/se_view.php, row 530
-// admin/se_views.php, row 148
+// admin/se_view.php, row 607
+// admin/se_views.php, row 165
 "show this view" => "montrer cette vue", // ai 2026-06
 
-// admin/se_view.php, row 545
+// admin/se_view.php, row 636
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1650, 1654
+// include/slice.class.php, row 1811, 1889, 1893, 1895
 // include/stringexpand.php, row 1891
 "No" => "Non", // ai 2026-06
 
-// admin/se_view.php, row 545
+// admin/se_view.php, row 636
 "Accept {xpage}" => "Accepter {xpage}", // ai 2026-06
 
-// admin/se_view.php, row 545
+// admin/se_view.php, row 636
 "Use infinite scrolling" => "Utiliser le défilement infini", // ai 2026-06
 
-// admin/se_view.php, row 588
+// admin/se_view.php, row 681
 "To include view in your sitemodule webpage use" => "Pour inclure la vue dans la page de votre module site, utilisez", // ai 2026-06
 
-// admin/se_view.php, row 594
+// admin/se_view.php, row 687
 "See documentation" => "Voir la documentation", // ai 2026-06
 
-// admin/se_view.php, row 598
+// admin/se_view.php, row 691
 "Last from log" => "Dernières entrées du journal", // ai 2026-06
 
-// admin/se_views.php, row 70
+// admin/se_views.php, row 74
 "View successfully deleted" => "Visualisation supprimée avec succès", // ai 2026-10
 
-// admin/se_views.php, row 72
+// admin/se_views.php, row 76
 "The view was not found in this slice." => "La vue est introuvable dans cette section.", // ai 2026-10
 
-// admin/se_views.php, row 149, 223
+// admin/se_views.php, row 84
+"The views of this slice now work only inside pages." => "Les vues de cette section ne fonctionnent désormais qu'à l'intérieur des pages.", // ai 2026-11
+
+// admin/se_views.php, row 84
+"The views of this slice are shown by their own addresses again." => "Les vues de cette section sont de nouveau affichées par leurs propres adresses.", // ai 2026-11
+
+// admin/se_views.php, row 139
+"not used since marked" => "inutilisée depuis le marquage", // ai 2026-11
+
+// admin/se_views.php, row 139
+"only inside pages" => "uniquement dans les pages", // ai 2026-11
+
+// admin/se_views.php, row 166, 255
 "Create new view from this one" => "Créer une nouvelle vue à partir de celle-ci", // ai 2026-06
 
-// admin/se_views.php, row 149, 203, 223
-// include/formutil.php, row 1818, 1825
+// admin/se_views.php, row 166, 235, 255
+// include/formutil.php, row 1822, 1829
 // src/Import/DetailPage.php, row 353, 706
 // src/Isds/Registry/MatchRow.php, row 85
-// src/Optimize/StateCheckModel.php, row 231
+// src/Optimize/StateCheckModel.php, row 234
 "New" => "Nouveau",
 
-// admin/se_views.php, row 150
+// admin/se_views.php, row 167
 "Are you sure you want to delete selected view?" => "Êtes-vous sûr de vouloir supprimer la vue sélectionnée ?", // ai 2026-06
 
-// admin/se_views.php, row 193
+// admin/se_views.php, row 200
+// include/slice.class.php, row 1811, 1893
+"Views only inside pages" => "Vues uniquement dans les pages", // ai 2026-11
+
+// admin/se_views.php, row 202
+"The views of this slice work only inside pages and other templates ({view:...}, {view.php?...}). Their own addresses (view.php?vid=..., jsview.php?vid=...) show nothing." => "Les vues de cette section ne fonctionnent qu'à l'intérieur des pages et d'autres modèles ({view:...}, {view.php?...}). Leurs propres adresses (view.php?vid=..., jsview.php?vid=...) n'affichent rien.", // ai 2026-11
+
+// admin/se_views.php, row 203
+"Every view of this slice is also shown by its own address (view.php?vid=..., jsview.php?vid=...), unless the view is set otherwise." => "Chaque vue de cette section est aussi affichée par sa propre adresse (view.php?vid=..., jsview.php?vid=...), sauf si la vue est réglée autrement.", // ai 2026-11
+
+// admin/se_views.php, row 204
+"The site %1 uses this slice and lets views work only inside pages, so the addresses show nothing whatever is set here." => "Le site %1 utilise cette section et ne laisse les vues fonctionner qu'à l'intérieur des pages ; les adresses n'affichent donc rien, quel que soit le réglage ici.", // ai 2026-11
+
+// admin/se_views.php, row 205
+"Before you switch it on, check that no page loads a view of this slice by its address (AJAX, lazy loading, an include in an .shtml page) and that no RSS or other feed is one of the views. A refused call is listed in State Check." => "Avant de l'activer, vérifiez qu'aucune page ne charge une vue de cette section par son adresse (AJAX, chargement différé, inclusion dans une page .shtml) et qu'aucun flux RSS ou autre n'est l'une de ces vues. Un appel refusé est listé dans « Vérification de l'état ».", // ai 2026-11
+
+// admin/se_views.php, row 206
+"Show views by their addresses again" => "Afficher de nouveau les vues par leurs adresses", // ai 2026-11
+
+// admin/se_views.php, row 206
+"Let views work only inside pages" => "Limiter les vues à l'intérieur des pages", // ai 2026-11
+
+// admin/se_views.php, row 225
 "Create new view" => "Créer nouvelle visualisation", // ai 2026-10
 
-// admin/se_views.php, row 196
+// admin/se_views.php, row 228
 "by&nbsp;type:" => "par&nbsp;type:", // ai 2026-06
 
-// admin/se_views.php, row 208
+// admin/se_views.php, row 240
 "by&nbsp;template:" => "by&nbsp;template",
 
-// admin/search_replace.php, row 77
+// admin/search_replace.php, row 81, 127
 "You do not have permission to edit items this way in this slice" => "Vous n'avez pas la permission de modifier les items de cette façon dans cette section", // ai 2026-06
 
-// admin/search_replace.php, row 113
-"Items selected: %1, Items successfully updated: %2, Items planned: %3" => "Items sélectionnés: %1, items mis à jour avec succès: %2, items planifiés: %3", // ai 2026-06
-
-// admin/search_replace.php, row 127, 133
-"Modify items" => "Modifier les items", // ai 2026-06
-
-// admin/search_replace.php, row 152
+// admin/search_replace.php, row 102
 "Select field..." => "Sélectionner un champ...", // ai 2026-06
 
-// admin/search_replace.php, row 167
+// admin/search_replace.php, row 156
+"Items selected: %1, Items successfully updated: %2, Items planned: %3" => "Items sélectionnés: %1, items mis à jour avec succès: %2, items planifiés: %3", // ai 2026-06
+
+// admin/search_replace.php, row 171, 177
+"Modify items" => "Modifier les items", // ai 2026-06
+
+// admin/search_replace.php, row 189
 // central/installapp.php, row 832
-// include/slice.class.php, row 677
+// include/slice.class.php, row 751
 // src/Optimize/SeoDuplicates.php, row 148
 "Items" => "Items", // ai 2026-10
 
-// admin/search_replace.php, row 167
-// admin/write_mail.php, row 255
+// admin/search_replace.php, row 189
+// admin/write_mail.php, row 273
 "Stored searches for " => "Recherches enregistrées pour", // ai 2026-10
 
-// admin/search_replace.php, row 169
+// admin/search_replace.php, row 191
 "View items" => "Voir les items", // ai 2026-06
 
-// admin/search_replace.php, row 170
-// src/Manager.php, row 1420
+// admin/search_replace.php, row 192
+// src/Manager.php, row 1416
 "Selected items" => "Item sélectionné", // ai 2026-10
 
-// admin/search_replace.php, row 180
+// admin/search_replace.php, row 202
 "Be very careful with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)." => "Soyez très prudent avec ceci. Les modifications de certains champs (Status Code, Publish Date, Slice ID, ...) peuvent être cruciales pour les données de vos items. Il n'y a aucun contrôle de validité des données - ce que vous saisirez sera écrit dans la base de données.<br>Sachez aussi qu'il n'existe pas d'opération UNDO (du moins pour l'instant).", // ai 2026-06
 
-// admin/search_replace.php, row 183
+// admin/search_replace.php, row 205
 "Just update the field and do not perform any other operations like set-last-edit, evaluate-computed-field, feed, ..." => "Mettre à jour uniquement le champ, sans effectuer d'autres opérations comme set-last-edit, evaluate-computed-field, feed, ...", // ai 2026-06
 
-// admin/search_replace.php, row 187
+// admin/search_replace.php, row 209
 "Run as Tasks - fill number of items in one task" => "Exécuter comme tâches - indiquez le nombre d'items par tâche", // ai 2026-06
 
-// admin/search_replace.php, row 187
+// admin/search_replace.php, row 209
 "If you want to run this operation as tasks, enter the number of items in one task here. The operation will be split into tasks. The tasks will be run in the background. You can check the status of the tasks in the task manager." => "Si vous souhaitez exécuter cette opération sous forme de tâches, indiquez ici le nombre d'items par tâche. L'opération sera divisée en tâches, exécutées en arrière-plan. Vous pouvez suivre l'état des tâches dans le gestionnaire de tâches.", // ai 2026-06
 
-// admin/search_replace.php, row 190
+// admin/search_replace.php, row 212
 "Fill" => "Remplir", // ai 2026-06
 
-// admin/search_replace.php, row 191
+// admin/search_replace.php, row 213
 // admin/usershow.php, row 179
-// admin/write_mail.php, row 291
+// admin/write_mail.php, row 307
 // src/Widget/RichtextMarkup.php, row 87
 "Close" => "Fermer",
 
@@ -3555,28 +3702,29 @@ return [
 "This script can't be used on a configured system." => "Ce script ne peut pas être utilisé sur un système configuré.", // ai 2026-10
 
 // admin/setup.php, row 98
-// admin/um_uedit.php, row 341
+// admin/um_uedit.php, row 353
 "Superadmin account" => "compte super-administrateur",
 
 // admin/setup.php, row 103, 240
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 136
-// admin/um_uedit.php, row 332
+// admin/um_uedit.php, row 344
 // central/index.php, row 134
 // central/installapp.php, row 566
 // include/um_util.php, row 301
+// src/Manageraction/Central_GetToken.php, row 29
 // src/Widget/PwdWidget.php, row 71
 // src/Widget/TfaWidget.php, row 77
 "Password" => "Mot de passe",
 
 // admin/setup.php, row 104, 242
-// include/formutil.php, row 2244
+// include/formutil.php, row 2248
 "Retype Password" => "Retapez le mot de passe",
 
 // admin/setup.php, row 105, 244
 // admin/slicewiz.php, row 87
 // admin/um_passwd.php, row 138
-// admin/um_uedit.php, row 334
+// admin/um_uedit.php, row 346
 // include/um_util.php, row 298
 "First name" => "Prénom", // ai 2026-10
 
@@ -3626,7 +3774,7 @@ return [
 "Use this account to login and add your first slice:" => "Utilisez ce compte pour vous connecter et ajouter votre première section", // ai 2026-10
 
 // admin/setup.php, row 287
-// admin/slicedit.php, row 240
+// admin/slicedit.php, row 254
 "Add Slice" => "Ajouter une section",
 
 // admin/setup.php, row 290
@@ -3639,14 +3787,14 @@ return [
 "Modules" => "module",
 
 // admin/sliceadd.php, row 95
-// admin/um_gedit.php, row 273
-// admin/um_uedit.php, row 389
-// include/formutil.php, row 1815
-// include/mlx.php, row 377
-// include/profile.php, row 170
+// admin/um_gedit.php, row 290
+// admin/um_uedit.php, row 401
+// include/formutil.php, row 1819
+// include/mlx.php, row 375
+// include/profile.php, row 171
 // include/sliceadd.php, row 71, 85
 // src/Import/DetailCatalog.php, row 179
-// src/Manager.php, row 239, 1272
+// src/Manager.php, row 239, 1268
 "Add" => "Ajouter",
 
 // admin/slicedel.php, row 51
@@ -3680,141 +3828,134 @@ return [
 "You don't have permissions to delete slice." => "Vous n'avez pas de permission de supprimer la section",
 
 // admin/slicedel2.php, row 77
-// include/modutils.php, row 268
+// include/modutils.php, row 283
 "No such module." => "Aucun module ainsi",
 
 // admin/slicedel2.php, row 86
 "Slice successfully deleted, tables are optimized" => "Section supprimée.  tables optimisées", // ai 2026-10
 
-// admin/slicedit.php, row 139, 146, 153
+// admin/slicedit.php, row 144, 151, 158
 // src/Isds/SliceRules.php, row 399, 400
 "Not allowed" => "Interdit",
 
-// admin/slicedit.php, row 140
+// admin/slicedit.php, row 145
 // src/Central/FindingText.php, row 416
 "Active with antiSPAM tokens" => "Actifs avec tokens antiSPAM", // ai 2026-06
 
-// admin/slicedit.php, row 142, 148
+// admin/slicedit.php, row 147, 153
 // include/menu.php, row 195
 // include/menu_util.php, row 123
 // src/Central/FindingText.php, row 416
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "Casier de stockage",
 
-// admin/slicedit.php, row 154
-// include/formutil.php, row 3342
+// admin/slicedit.php, row 159
+// include/formutil.php, row 3349
 // src/Central/FindingText.php, row 417
 "All items" => "Tous les items",
 
-// admin/slicedit.php, row 155
+// admin/slicedit.php, row 160
 // src/Central/FindingText.php, row 417
 "Only items posted anonymously" => "Seulement les items postés anonymement", // ai 2026-10
 
-// admin/slicedit.php, row 156
+// admin/slicedit.php, row 161
 // src/Central/FindingText.php, row 417
 "-\"- and not edited in AA" => "-\"- et non édité dans AA", // ai 2026-10
 
-// admin/slicedit.php, row 157
+// admin/slicedit.php, row 162
 // src/Central/FindingText.php, row 418
 "Authorized by a password field" => "Autorisé par le champ mot de passe", // ai 2026-10
 
-// admin/slicedit.php, row 158
+// admin/slicedit.php, row 163
 // src/Central/FindingText.php, row 418
 "Readers, authorized by HTTP auth" => "lecteurs, autorisés par HTTP", // ai 2026-10
 
-// admin/slicedit.php, row 159
+// admin/slicedit.php, row 164
 // src/Central/FindingText.php, row 418
 "Only by Planned tasks (cron-toexecute)" => "Uniquement par tâches planifiées (cron-toexecute)", // ai 2026-06
 
-// admin/slicedit.php, row 240
+// admin/slicedit.php, row 254
 "Admin - Slice settings" => "Administration - Configuration de section",
 
-// admin/slicedit.php, row 258
+// admin/slicedit.php, row 272
 // include/menu_util.php, row 636
 "Language" => "Langue",
 
-// admin/slicedit.php, row 260
-// include/slicedit.php, row 190
+// admin/slicedit.php, row 274
+// include/slicedit.php, row 184
 "Slice Type" => "Type de section", // ai 2026-06
 
-// admin/slicedit.php, row 264
+// admin/slicedit.php, row 278
 // include/sliceadd.php, row 64
 // src/Central/Difference.php, row 106, 191
+// src/Optimize/CentralTokenColumn.php, row 67
 "Template" => "Modèle", // ai 2026-10
 
-// admin/slicedit.php, row 267
+// admin/slicedit.php, row 281
 "Show content of expired items" => "Afficher le contenu des items expirés", // ai 2026-06
 
-// admin/slicedit.php, row 268
+// admin/slicedit.php, row 282
 "Show content of pending items" => "Afficher le contenu des items en attente", // ai 2026-06
 
-// admin/slicedit.php, row 269
-// include/slicedit.php, row 193
+// admin/slicedit.php, row 283
+// include/slicedit.php, row 187
 // src/Central/FindingText.php, row 430
 // src/Isds/SliceRules.php, row 399
 "Allow anonymous posting of items" => "Permettre l'envoi anonyme d'item",
 
-// admin/slicedit.php, row 270
-// include/slicedit.php, row 194
+// admin/slicedit.php, row 284
+// include/slicedit.php, row 188
 // src/Central/FindingText.php, row 431
 // src/Isds/SliceRules.php, row 400
 "Allow anonymous editing of items" => "Permettre d'édition anonyme des items", // ai 2026-10
 
-// admin/slicedit.php, row 271
-// include/slicedit.php, row 195
+// admin/slicedit.php, row 285
+// include/slicedit.php, row 189
 "Allow off-line item filling" => "Permettre le remplissage offline des items ",
 
-// admin/slicedit.php, row 277
+// admin/slicedit.php, row 291
 // src/Central/FindingText.php, row 433
 "Auth Group Field" => "Champs de groupe d'auteurs",
 
-// admin/slicedit.php, row 278
+// admin/slicedit.php, row 292
 "Mailman Lists Field" => "Champ de liste Mailman",
 
-// admin/slicedit.php, row 280
+// admin/slicedit.php, row 294
 "Password for Reading" => "Mot de passe pour lecture",
 
-// admin/slicedit.php, row 286
-// include/itemfunc.php, row 193
-// src/Util/Note.php, row 60
-"Created" => "Création", // ai 2026-06
-
-// admin/slicedit.php, row 286
-"by" => "par", // ai 2026-06
-
-// admin/slicedit.php, row 289
+// admin/slicedit.php, row 299
 "Additional setting" => "Paramètres supplémentaires", // ai 2026-06
 
-// admin/slicedit.php, row 293
+// admin/slicedit.php, row 303
 "Settings for older AA - you will probably not use it for new slices" => "Paramètres pour les anciennes versions d'AA - vous n'en aurez probablement pas besoin pour les nouvelles sections", // ai 2026-06
 
-// admin/slicedit.php, row 294
-// include/constants.php, row 688, 803, 829, 860, 893, 957, 991, 1025
-// include/slicedit.php, row 198
+// admin/slicedit.php, row 304
+// include/constants.php, row 727, 844, 871, 903, 937, 1002, 1037, 1072
+// include/slicedit.php, row 192
 // src/Isds/SliceRules.php, row 398
-// src/Widget/Widget.php, row 809
+// src/Widget/Widget.php, row 832
 "Listing length" => "liste des longueurs",
 
-// admin/slicedit.php, row 294
+// admin/slicedit.php, row 304
 "Used by slice.php. Fill 0 to disable slice.php output for this slice (recommended for all newer slices - they are presented by Site Module)." => "Utilisé par slice.php. Indiquez 0 pour désactiver la sortie slice.php pour cette section (recommandé pour toutes les sections récentes - elles sont présentées par le module Site).", // ai 2026-06
 
-// admin/slicedit.php, row 298
+// admin/slicedit.php, row 308
 "MLX Control Slice for" => "Section de contrôle MLX pour", // ai 2026-06
 
-// admin/slicedit.php, row 301
+// admin/slicedit.php, row 311
 "MLX: Language Control Slice" => "MLX : Section de contrôle des langues", // ai 2026-06
 
-// admin/slicedit.php, row 305
-// include/slicedit.php, row 202
+// admin/slicedit.php, row 315
+// include/slicedit.php, row 196
 // src/Central/FindingText.php, row 432
 "File Manager Access" => "Accès au Gestionnaire de fichiers", // ai 2026-10
 
-// admin/slicedit.php, row 306
-// include/slicedit.php, row 203
+// admin/slicedit.php, row 316
+// include/slicedit.php, row 197
 "File Manager Directory" => "Répertoire du Gestionnaire de fichiers", // ai 2026-10
 
 // admin/sliceexp.php, row 78
-// admin/sliceimp.php, row 64
+// admin/sliceimp.php, row 69
 "You are not allowed to export / import slices" => "Vous n'avez pas la permission d'importer ou exporter des sections",
 
 // admin/sliceexp.php, row 102, 107
@@ -3899,81 +4040,81 @@ return [
 // admin/slicefieldsedit.php, row 151
 "Slice Setting" => "Paramètres de la section", // ai 2026-06
 
-// admin/sliceimp.php, row 80
+// admin/sliceimp.php, row 85
 "Slice_ID (%1) has wrong length (%2, should be 32)" => "Identité_section(%1) mauvaise longueur (%2, doit être 32)", // ai 2026-10
 
-// admin/sliceimp.php, row 103, 144, 424
+// admin/sliceimp.php, row 108, 149, 435
 // admin/sliceimp_xml.php, row 247
 "Overwrite" => "Recouvrez",
 
-// admin/sliceimp.php, row 175, 181, 240, 246, 426
+// admin/sliceimp.php, row 180, 186, 245, 251, 437
 "Insert with new ids" => "Insérer avec de nouvelles identités", // ai 2026-10
 
-// admin/sliceimp.php, row 315
+// admin/sliceimp.php, row 326
 "Import exported data (slice structure and content)" => "Importer les information exportés (structure et information de la section)", // ai 2026-10
 
-// admin/sliceimp.php, row 319
+// admin/sliceimp.php, row 330
 "Import exported data" => "Importer les information exportés", // ai 2026-10
 
-// admin/sliceimp.php, row 324
+// admin/sliceimp.php, row 335
 "Count of imported slices: %d." => "Nombre de sections importées: %d.", // ai 2026-10
 
-// admin/sliceimp.php, row 326, 341
+// admin/sliceimp.php, row 337, 352
 "Added were:" => "Ajoutées furent", // ai 2026-10
 
-// admin/sliceimp.php, row 332, 347
+// admin/sliceimp.php, row 343, 358
 "Overwritten were:" => "Écrasées furent", // ai 2026-10
 
-// admin/sliceimp.php, row 338
+// admin/sliceimp.php, row 349
 "Count of imported stories: %d." => "Nombre d'histoires importées: %d.", // ai 2026-10
 
-// admin/sliceimp.php, row 353
+// admin/sliceimp.php, row 364
 "Failed were:" => "Échecs :", // ai 2026-10
 
-// admin/sliceimp.php, row 364
+// admin/sliceimp.php, row 375
 "Here you can import exported data to ActionApps. You can use two types of import:" => "Ici, vous pouvez importer les information exportées vers le kit d'outils. Vous pouvez utiliser 2 types d'importation", // ai 2026-10
 
-// admin/sliceimp.php, row 370
+// admin/sliceimp.php, row 381
 "Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>" => "Des sections avec certaines identités existent déjà. Changer les identités à la droite de la flèche. <br> Utilisez seulement des caractères hexadecimal 0-9, a-f. Si vous faites quelques chose de mauvais (mauvais caractère, ou si vous changez l'identité à la gauche de la flèche), cette identité ne sera pas changée.</p>", // ai 2026-10
 
-// admin/sliceimp.php, row 388
+// admin/sliceimp.php, row 399
 "<p>Views with some of the same IDs exist already. Please edit on the right-hand side of the arrow</p>" => "<p>Des vues avec certains identités existent déjà. Modifiez à la droite de la flèche</p>", // ai 2026-10
 
-// admin/sliceimp.php, row 403
+// admin/sliceimp.php, row 414
 "<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>" => "<p>Le contenu de la section avec certains identités existent déjà.Changez les identités à la droite de la flèche<br> Utilisez seulement des caractères hexadécimals 0-9,a-f. </p>", // ai 2026-10
 
-// admin/sliceimp.php, row 416
+// admin/sliceimp.php, row 427
 "<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures get new ids and their content too.</p>" => "<p>Si vous choisissez ECRASER, les section et information avec des identités non-changées seront écrasées et les nouvelles ajoutées. <br>Si vous choisissez INSÉRER, les sections et information dont les identités sont conflictuelles seront ignorées et les nouvelles ajoutées.<br>Finalement, si vous choisissez \"Insérer avec de nouvelles identités\", les stuctures et information des section auront de nouvelles identités.</p>", // ai 2026-10
 
-// admin/sliceimp.php, row 427, 473
+// admin/sliceimp.php, row 438, 484
 "cancel" => "annuler", // ai 2026-06
 
-// admin/sliceimp.php, row 436
+// admin/sliceimp.php, row 447
 "1) If you have exported data in file, insert its name here (eg. D:\\data\\apc_aa_slice.aaxml):" => "Si vous avez exporté des information dans un fichier, insérez son nom ici ( ex: D:\\data\\apc_aa_slice.aaxml):", // ai 2026-10
 
-// admin/sliceimp.php, row 439
+// admin/sliceimp.php, row 450
 "Send file with slice structure and data" => "Envoyer le fichier avec la structure et les données de la section", // ai 2026-06
 
-// admin/sliceimp.php, row 446
+// admin/sliceimp.php, row 457
 "2) If you have exported data in browser's window, insert the exported text into the textarea below:" => "Si vous avez exporté des information dans la fenêtre du fureteur, insérer le texte exporté dans la zone de texte ci-bas", // ai 2026-10
 
-// admin/sliceimp.php, row 463
+// admin/sliceimp.php, row 474
 "Here specify, what do you want to import:" => "Spécifiez ici ce que vous souhaitez importer", // ai 2026-10
 
-// admin/sliceimp.php, row 464
+// admin/sliceimp.php, row 475
 "Import slice definition" => "Importer la définition de la section", // ai 2026-10
 
-// admin/sliceimp.php, row 465
+// admin/sliceimp.php, row 476
 "Import slice items" => "Importer les items de la sections",
 
-// admin/sliceimp.php, row 466
+// admin/sliceimp.php, row 477
 "Import into this slice - whatever file says" => "Importez dans cette section - quoi que dise le fichier",
 
-// admin/sliceimp.php, row 467
+// admin/sliceimp.php, row 478
 // src/Import/DetailPage.php, row 327
 "Dry run" => "Simulation", // ai 2026-06
 
-// admin/sliceimp.php, row 469
+// admin/sliceimp.php, row 480
 "Send the slice structure and data" => "Envoyer la structure et les information de la section",
 
 // admin/sliceimp_xml.php, row 86
@@ -4000,18 +4141,18 @@ return [
 "Level of Access" => "Niveau d'accès", // ai 2026-10
 
 // admin/slicewiz.php, row 81
-// include/constants.php, row 1197
+// include/constants.php, row 1244
 "Slice Administrator" => "Administrateur de section",
 
 // admin/slicewiz.php, row 86
 // admin/um_passwd.php, row 137
-// admin/um_uedit.php, row 333
+// admin/um_uedit.php, row 345
 // include/um_util.php, row 302
 "Retype password" => "Retapez le mot de passe",
 
 // admin/slicewiz.php, row 88
 // admin/um_passwd.php, row 139
-// admin/um_uedit.php, row 335
+// admin/um_uedit.php, row 347
 // include/um_util.php, row 297
 "Surname" => "Nom de famille",
 
@@ -4024,86 +4165,86 @@ return [
 // admin/slicewiz.php, row 105
 "Go: Add Slice" => "Allez: Ajouter section",
 
-// admin/um_gedit.php, row 95
-// admin/um_uedit.php, row 111
+// admin/um_gedit.php, row 100
+// admin/um_uedit.php, row 116
 "No permission to create new user" => "Pas de permission pour créer un nouvel usager", // ai 2026-10
 
-// admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 135, 138, 155
+// admin/um_gedit.php, row 124
+// admin/um_uedit.php, row 146, 149, 166
 "Too many groups found." => "Trop de groupes trouvés", // ai 2026-10
 
-// admin/um_gedit.php, row 113
-// admin/um_uedit.php, row 135, 138
+// admin/um_gedit.php, row 124
+// admin/um_uedit.php, row 146, 149
 "No groups found" => "Aucun groupe trouvé", // ai 2026-10
 
-// admin/um_gedit.php, row 120, 128
-// admin/um_uedit.php, row 129, 144, 168
-// include/se_users.php, row 175
+// admin/um_gedit.php, row 131, 139
+// admin/um_uedit.php, row 140, 155, 179
+// include/se_users.php, row 179
 // include/um_gsrch.php, row 31
 "Too many users or groups found." => "Trop d'usagers ou de groupes trouvés", // ai 2026-10
 
-// admin/um_gedit.php, row 120
-// admin/um_uedit.php, row 129, 144
-// include/se_users.php, row 177
+// admin/um_gedit.php, row 131
+// admin/um_uedit.php, row 140, 155
+// include/se_users.php, row 181
 // include/um_gsrch.php, row 34
 "No user (group) found" => "Pas d'usager (groupe) trouvé", // ai 2026-10
 
-// admin/um_gedit.php, row 143
+// admin/um_gedit.php, row 154
 // include/um_gedit.php, row 50
 "Group successfully added to permission system" => "Groupe ajouté avec succès aux permission du système", // ai 2026-10
 
-// admin/um_gedit.php, row 143
+// admin/um_gedit.php, row 154
 "Group successfully updated" => "Groupe mis à jour avec succès", // ai 2026-06
 
-// admin/um_gedit.php, row 157
+// admin/um_gedit.php, row 168
 "Are you sure you want to delete selected group from whole permission system?" => "Êtes-vous sûr de vouloir supprimer le groupe sélectionné de tout le système de permissions ?", // ai 2026-06
 
-// admin/um_gedit.php, row 189, 199
-// admin/um_uedit.php, row 347, 353
+// admin/um_gedit.php, row 200, 210
+// admin/um_uedit.php, row 359, 365
 // include/menu_util.php, row 71
-// include/se_users.php, row 141
+// include/se_users.php, row 145
 // include/um_gsrch.php, row 41
 "Groups" => "Groupe",
 
-// admin/um_gedit.php, row 189
+// admin/um_gedit.php, row 200
 "Add new group" => "Ajouter un nouveau groupe", // ai 2026-06
 
-// admin/um_gedit.php, row 196
+// admin/um_gedit.php, row 207
 "Add group" => "Ajouter le groupe", // ai 2026-06
 
-// admin/um_gedit.php, row 206
+// admin/um_gedit.php, row 217
 "Find group" => "Rechercher un groupe", // ai 2026-06
 
-// admin/um_gedit.php, row 220
+// admin/um_gedit.php, row 231
 // include/constants.php, row 455
-// include/perm_sql.php, row 459
+// include/perm_sql.php, row 463
 // include/um_gsrch.php, row 50
 "Group" => "groupe",
 
-// admin/um_gedit.php, row 256
+// admin/um_gedit.php, row 273
 "Edit group" => "Modifier groupe",
 
-// admin/um_gedit.php, row 258
+// admin/um_gedit.php, row 275
 "New group" => "Nouveau groupe",
 
-// admin/um_gedit.php, row 294
+// admin/um_gedit.php, row 312
 "Group Id" => "Identité de groupe", // ai 2026-10
 
-// admin/um_gedit.php, row 305
+// admin/um_gedit.php, row 323
 "Superadmin group" => "Groupe super-administrateur",
 
-// admin/um_gedit.php, row 312
-// admin/um_uedit.php, row 231, 242
-// include/logs.php, row 922
+// admin/um_gedit.php, row 330
+// admin/um_uedit.php, row 242, 253
+// include/logs.php, row 926
 // include/menu_util.php, row 70
-// include/se_users.php, row 136
+// include/se_users.php, row 140
 // src/Optimize/CheckLoginAddresses.php, row 101
 "Users" => "Usager",
 
-// admin/um_gedit.php, row 320
+// admin/um_gedit.php, row 338
 "All Users" => "tous les usagers",
 
-// admin/um_gedit.php, row 322
+// admin/um_gedit.php, row 340
 "Group's Users" => "usagers groupe",
 
 // admin/um_passkeys.php, row 58
@@ -4138,7 +4279,7 @@ return [
 
 // admin/um_passkeys.php, row 116
 // admin/um_passwd.php, row 130
-// admin/um_uedit.php, row 324
+// admin/um_uedit.php, row 336
 "Passkeys" => "Clés d'accès", // ai 2026-11
 
 // admin/um_passkeys.php, row 128
@@ -4172,7 +4313,7 @@ return [
 "Added" => "Ajoutée", // ai 2026-11
 
 // admin/um_passkeys.php, row 149
-// include/formutil.php, row 3334
+// include/formutil.php, row 3341
 "Last used" => "Dernière utilisation le", // ai 2026-10
 
 // admin/um_passkeys.php, row 149
@@ -4256,18 +4397,18 @@ return [
 "Error in current password - password is not changed" => "Erreur dans le mot de passe actuel - le mot de passe n'a pas été changé", // ai 2026-06
 
 // admin/um_passwd.php, row 98
-// admin/um_uedit.php, row 184
+// admin/um_uedit.php, row 195
 "User data modified" => "Données utilisateur modifiées", // ai 2026-06
 
 // admin/um_passwd.php, row 117
 "Change user data" => "Modifier les données de l'utilisateur", // ai 2026-06
 
 // admin/um_passwd.php, row 127
-// admin/um_uedit.php, row 313
+// admin/um_uedit.php, row 325
 "Edit User" => "Modifier usager",
 
 // admin/um_passwd.php, row 129
-// admin/um_uedit.php, row 315
+// admin/um_uedit.php, row 327
 "User Id" => "Identité de l'usager ", // ai 2026-10
 
 // admin/um_passwd.php, row 130
@@ -4282,40 +4423,40 @@ return [
 // admin/um_passwd.php, row 132
 "Not needed, but log in again first: a change needs a login of the last %1 minutes" => "Inutile, mais reconnectez-vous d'abord : une modification exige une connexion datant de moins de %1 minutes", // ai 2026-11
 
-// admin/um_uedit.php, row 184
+// admin/um_uedit.php, row 195
 // include/um_util.php, row 344
 "User successfully added to permission system" => "Utilisateur ajouté avec succès aux permissions du système", // ai 2026-10
 
-// admin/um_uedit.php, row 199
+// admin/um_uedit.php, row 210
 "Are you sure you want to delete selected user from whole permission system?" => "Voulez-vous vraiment supprimer l'utilisateur sélectionné de tout le système de permissions ?", // ai 2026-06
 
-// admin/um_uedit.php, row 231
+// admin/um_uedit.php, row 242
 "Add new user" => "Ajouter un nouvel utilisateur", // ai 2026-06
 
-// admin/um_uedit.php, row 239
+// admin/um_uedit.php, row 250
 "Add user" => "Ajouter l'utilisateur", // ai 2026-06
 
-// admin/um_uedit.php, row 248
+// admin/um_uedit.php, row 259
 "Find user" => "Rechercher un utilisateur", // ai 2026-06
 
-// admin/um_uedit.php, row 324
+// admin/um_uedit.php, row 336
 "%1 - the account logs in only by them" => "%1 - le compte se connecte uniquement avec elles", // ai 2026-11
 
-// admin/um_uedit.php, row 324
+// admin/um_uedit.php, row 336
 // src/Isds/Registry/Page.php, row 555, 653
 // src/Optimize/MissCacheRouting.php, row 98, 129
 "none" => "aucune", // ai 2026-10
 
-// admin/um_uedit.php, row 327
+// admin/um_uedit.php, row 339
 "New user" => "Nouvel utilisateur",
 
-// admin/um_uedit.php, row 353
+// admin/um_uedit.php, row 365
 "All Writable Groups" => "Tous les groupes modifiables", // ai 2026-06
 
-// admin/um_uedit.php, row 353
+// admin/um_uedit.php, row 365
 "User's Groups" => "Groupes d'usagers",
 
-// admin/um_uedit.php, row 358
+// admin/um_uedit.php, row 370
 "Member of Unwritable Groups" => "Membre de groupes non modifiables", // ai 2026-06
 
 // admin/usershow.php, row 76
@@ -4324,108 +4465,116 @@ return [
 // admin/usershow.php, row 122
 "Show selected users" => "Montrer les usagers sélectionnés", // ai 2026-10
 
-// admin/write_mail.php, row 124, 274
-// include/mail.php, row 666
+// admin/write_mail.php, row 136, 290
+// include/mail.php, row 752
 "Body" => "Corp",
 
-// admin/write_mail.php, row 125, 275
+// admin/write_mail.php, row 137, 291
 "From (email)" => "De (courriel)",
 
-// admin/write_mail.php, row 126, 276
-// include/mail.php, row 668
+// admin/write_mail.php, row 138, 292
+// include/mail.php, row 754
 "Reply to (email)" => "Répondre (Courriel)", // ai 2026-10
 
-// admin/write_mail.php, row 127, 277
-// include/mail.php, row 669
+// admin/write_mail.php, row 139, 293
+// include/mail.php, row 755
 "Errors to (email)" => "Erreur à (Courriel)", // ai 2026-10
 
-// admin/write_mail.php, row 128, 278
+// admin/write_mail.php, row 140, 294
 "Sender (email)" => "Envoyeur (Courriel)",
 
-// admin/write_mail.php, row 129, 279
-// include/mail.php, row 658
+// admin/write_mail.php, row 141, 295
+// include/mail.php, row 746
 "Language (charset)" => "Langue (charset)",
 
-// admin/write_mail.php, row 130, 280
-// include/mail.php, row 656
+// admin/write_mail.php, row 142, 296
+// include/mail.php, row 744
 "Use HTML" => "Utliser HTML",
 
-// admin/write_mail.php, row 131, 271
+// admin/write_mail.php, row 143, 287
 "Email template" => "Modèle de courriel", // ai 2026-10
 
-// admin/write_mail.php, row 158
+// admin/write_mail.php, row 170
 "Manually selected" => "Sélectionnés manuellement", // ai 2026-06
 
-// admin/write_mail.php, row 164
+// admin/write_mail.php, row 176
 // include/searchbar.class.php, row 652
 // src/Import/Definition.php, row 93
 // src/Import/DetailConfig.php, row 385
 "Filter" => "Filtre", // ai 2026-06
 
-// admin/write_mail.php, row 188
+// admin/write_mail.php, row 201
 "This email (the same subject and text) already went to the same group on %1, to %2 recipients. If it should go out once more, tick \"%3\" and send it." => "Ce courriel (même objet et même texte) a déjà été envoyé au même groupe le %1 (destinataires : %2). S'il doit être envoyé encore une fois, cochez « %3 » et envoyez-le.", // ai 2026-11
 
-// admin/write_mail.php, row 188, 285
+// admin/write_mail.php, row 201, 301
 "Send again" => "Envoyer à nouveau", // ai 2026-11
 
-// admin/write_mail.php, row 195
+// admin/write_mail.php, row 208
 "No template set (which is strange - template was just written to the database)" => "Aucun modèle défini (ce qui est étrange — le modèle vient d'être enregistré dans la base de données)", // ai 2026-06
 
-// admin/write_mail.php, row 204
+// admin/write_mail.php, row 217
 "Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "Courriel envoyé avec succès (Utilisateurs : %1, courriels envoyés (adresses valides...) : %2, id du modèle : %3)", // ai 2026-06
 
-// admin/write_mail.php, row 214
+// admin/write_mail.php, row 231
 "The email is queued for %1 recipients. AA sends it in the background, so the first copies may take several minutes to arrive." => "Le courriel est en file d'attente (destinataires : %1). AA l'envoie en arrière-plan, les premiers exemplaires peuvent donc mettre plusieurs minutes à arriver.", // ai 2026-11
 
-// admin/write_mail.php, row 215
+// admin/write_mail.php, row 231
+"You can close the window and log out; it does not stop the sending." => "Vous pouvez fermer la fenêtre et vous déconnecter ; cela n'interrompt pas l'envoi.", // ai 2026-11
+
+// admin/write_mail.php, row 232
 "The selected group has no recipients - nothing was sent." => "Le groupe sélectionné n'a aucun destinataire - rien n'a été envoyé.", // ai 2026-11
 
-// admin/write_mail.php, row 222
+// admin/write_mail.php, row 239
 "Can't update email template" => "Impossible de mettre à jour le modèle de courriel", // ai 2026-06
 
-// admin/write_mail.php, row 229
+// admin/write_mail.php, row 246
 "Bulk Email Wizard" => "Envoyer l'assistant courriel",
 
-// admin/write_mail.php, row 230
+// admin/write_mail.php, row 247
 "Write email to users" => "Ecrire un courriel aux usagers",
 
-// admin/write_mail.php, row 249
+// admin/write_mail.php, row 266
 "Send this email to other recipients" => "Envoyer ce courriel à d'autres destinataires", // ai 2026-11
 
-// admin/write_mail.php, row 255
-// include/logs.php, row 1070
+// admin/write_mail.php, row 273
+// include/logs.php, row 1075
+// src/Mailbulk/StatsView.php, row 63
 "Recipients" => "Destinataires",
 
-// admin/write_mail.php, row 257
+// admin/write_mail.php, row 275
 "View Recipients" => "Voir les Destinataires",
 
-// admin/write_mail.php, row 258
+// admin/write_mail.php, row 276
 "Selected users" => "Usagers sélectionnés", // ai 2026-10
 
-// admin/write_mail.php, row 259
+// admin/write_mail.php, row 277
 "Test email address(es)" => "Adresse(s) courriel de test", // ai 2026-06
 
-// admin/write_mail.php, row 265
+// admin/write_mail.php, row 281
 "Write the email" => "Ecrire le courriel",
 
-// admin/write_mail.php, row 280
+// admin/write_mail.php, row 296
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "no" => "Non",
 
-// admin/write_mail.php, row 280
+// admin/write_mail.php, row 296
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "yes" => "Oui",
 
-// admin/write_mail.php, row 281
+// admin/write_mail.php, row 297
 "Attachment 1" => "Pièce jointe 1", // ai 2026-06
 
-// admin/write_mail.php, row 282
+// admin/write_mail.php, row 298
 "Attachment 2" => "Pièce jointe 2", // ai 2026-06
 
-// admin/write_mail.php, row 283
+// admin/write_mail.php, row 299
 "Attachment 3" => "Pièce jointe 3", // ai 2026-06
+
+// admin/xmlclient.php, row 130
+// include/feeding.php, row 450, 489
+"Run (queue)" => "Exécuter (file d'attente)", // ai 2026-06
 
 // central/appstore.php, row 64
 "Only a superadmin may install apps from the app store." => "Seul un superadmin peut installer des applications depuis le catalogue d'applications.", // ai 2026-10
@@ -4454,7 +4603,7 @@ return [
 
 // central/appstore.php, row 130
 // central/installapp.php, row 387
-// central/optimize.php, row 77
+// central/optimize.php, row 112
 "A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "Une table de cet AA ne gère pas les transactions (pas InnoDB) - convertissez-la dans AA > Optimiser : %1", // ai 2026-10
 
 // central/appstore.php, row 142
@@ -4468,15 +4617,17 @@ return [
 "App" => "Application", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1212
+// include/logs.php, row 1217
 "Version" => "Version", // ai 2026-10
 
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 235
 // include/menu_util.php, row 449, 759
-// include/slice.class.php, row 1415
+// include/slice.class.php, row 1589
 // src/Central/FindingText.php, row 496
+// src/Optimize/CheckAlerts.php, row 124
+// src/Optimize/CheckMailbulkStats.php, row 50
 "Alerts" => "Alerte",
 
 // central/appstore.php, row 166
@@ -4517,6 +4668,7 @@ return [
 "Row %1 skipped - it has %2 fields, the first row has a different number." => "Ligne %1 ignorée - nombre de champs : %2, la première ligne en a un nombre différent.", // ai 2026-10
 
 // central/import_csv.php, row 85
+// src/Mailbulk/StatsView.php, row 134
 "Done" => "Terminé", // ai 2026-06
 
 // central/import_csv.php, row 89
@@ -4538,20 +4690,21 @@ return [
 // include/menu_util.php, row 59
 "Create new" => "Créer nouveau", // ai 2026-10
 
-// central/index.php, row 70
-// central/optimize.php, row 62
+// central/index.php, row 74
+// central/optimize.php, row 69
 "You do not have permission to manage ActionApps installations" => "Vous n'avez pas la permission de gérer les installations ActionApps", // ai 2026-06
 
-// central/index.php, row 77
+// central/index.php, row 81
 "The authentication was not performed - start it from the ActionApps Central page" => "L'authentification n'a pas été effectuée - lancez-la depuis la page ActionApps Central", // ai 2026-10
 
-// central/index.php, row 88
+// central/index.php, row 90
 "Successfully authenticated to %1" => "Authentification réussie auprès de %1", // ai 2026-06
 
-// central/index.php, row 90, 94
+// central/index.php, row 93
 "Authentication failed for %1: %2" => "Échec de l'authentification pour %1 : %2", // ai 2026-06
 
 // central/index.php, row 120
+// src/Optimize/CentralTokenColumn.php, row 69
 // src/Optimize/CheckCentralCredentials.php, row 63
 "ActionApps Central" => "",
 
@@ -4565,7 +4718,8 @@ return [
 "Get Token" => "Obtenir un jeton", // ai 2026-06
 
 // central/index.php, row 139
-// central/optimize.php, row 153
+// central/optimize.php, row 258
+// src/Manageraction/Central_GetToken.php, row 55
 // src/Manageraction/Central_Linkcheck.php, row 32
 "Auth" => "Authentification", // ai 2026-06
 
@@ -4613,7 +4767,7 @@ return [
 
 // central/installapp.php, row 451
 // include/feeding.php, row 452, 488
-// include/logs.php, row 1213
+// include/logs.php, row 1218
 // src/Import/Definition.php, row 86, 114
 // src/Import/DetailConfig.php, row 171, 185
 // src/Optimize/CheckImports.php, row 177, 179
@@ -4642,7 +4796,7 @@ return [
 "slices and Alerts" => "des sections et des modules Alerte", // ai 2026-10
 
 // central/installapp.php, row 484, 1357
-// include/slice.class.php, row 1150
+// include/slice.class.php, row 1288
 // src/Central/FindingText.php, row 496
 // src/Optimize/CheckIsdsRegistry.php, row 88
 // src/Optimize/SeoDuplicates.php, row 66
@@ -4658,7 +4812,7 @@ return [
 "Hold Ctrl to choose more of them." => "Maintenez Ctrl pour en choisir plusieurs.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 797, 1255
+// include/logs.php, row 801, 1260
 "Mode" => "Mode", // ai 2026-10
 
 // central/installapp.php, row 506
@@ -4668,6 +4822,7 @@ return [
 "Transfer - a copy with the items and readers" => "Transfert - copie avec les items et les lecteurs", // ai 2026-10
 
 // central/installapp.php, row 508
+// src/Optimize/CheckRelatedFieldsWithoutSlice.php, row 84
 "Items of" => "Items", // ai 2026-10
 
 // central/installapp.php, row 509
@@ -4895,7 +5050,7 @@ return [
 // central/installapp.php, row 1087
 // src/Optimize/CheckIsdsRunItems.php, row 93
 // src/Optimize/CheckIsdsRuns.php, row 185, 206
-// src/Util/Paramwizard.php, row 167
+// src/Util/Paramwizard.php, row 184
 "Examples" => "Exemples", // ai 2026-10
 
 // central/installapp.php, row 1088
@@ -4905,7 +5060,7 @@ return [
 "Operators" => "Opérateurs", // ai 2026-10
 
 // central/installapp.php, row 1089
-// include/searchlib.php, row 175
+// include/searchlib.php, row 232
 "Operator" => "Opérateur", // ai 2026-06
 
 // central/installapp.php, row 1089
@@ -4941,12 +5096,12 @@ return [
 
 // central/installapp.php, row 1123
 // include/modutils.php, row 45, 93
-// include/slicedit.php, row 172
+// include/slicedit.php, row 166
 "New Owner" => "Nouveau maître", // ai 2026-10
 
 // central/installapp.php, row 1124
 // include/modutils.php, row 46, 94
-// include/slicedit.php, row 173
+// include/slicedit.php, row 167
 "New Owner's E-mail" => "Courriel du nouveau maître", // ai 2026-10
 
 // central/installapp.php, row 1126
@@ -4959,7 +5114,7 @@ return [
 "keep the value of the app" => "garder la valeur de l'application", // ai 2026-10
 
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1650, 1654
+// include/slice.class.php, row 1811, 1889, 1893, 1895
 // include/stringexpand.php, row 1891
 "Yes" => "Oui", // ai 2026-06
 
@@ -5045,19 +5200,20 @@ return [
 "Transferring the items" => "Transfert des items", // ai 2026-10
 
 // central/installapp.php, row 1368
-// central/optimize.php, row 260
+// central/optimize.php, row 402
 // src/Import/RunView.php, row 61, 63
 "Stopped by an error" => "Arrêté par une erreur", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 258
-// include/logs.php, row 799
+// central/optimize.php, row 400
+// include/logs.php, row 803
 // src/Import/RunView.php, row 60
+// src/Mailbulk/StatsView.php, row 63
 // src/Optimize/CheckImports.php, row 207, 210
 "Finished" => "Terminé", // ai 2026-10
 
 // central/installapp.php, row 1369
-// central/optimize.php, row 259
+// central/optimize.php, row 401
 "Ended" => "Interrompu", // ai 2026-10
 
 // central/installapp.php, row 1380
@@ -5121,12 +5277,13 @@ return [
 "Show the final check" => "Afficher la vérification finale", // ai 2026-10
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 205
+// central/optimize.php, row 312
 // src/Import/DetailPage.php, row 989, 998
+// src/Mailbulk/Gate.php, row 468
 "Continue" => "Continuer", // ai 2026-06
 
 // central/installapp.php, row 1436
-// central/optimize.php, row 206
+// central/optimize.php, row 313
 // src/Import/DetailPage.php, row 1009
 "End" => "Terminer", // ai 2026-10
 
@@ -5145,191 +5302,232 @@ return [
 // central/installapp.php, row 1479
 "Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it." => "Les fichiers téléversés ne sont pas transférés – copiez-les à la main. Ne basculez le domaine vers le nouveau site qu'après l'avoir vérifié.", // ai 2026-10
 
-// central/optimize.php, row 75
-"Choose a task, a method the task has and at least one AA of the list." => "Choisissez une tâche, une méthode qu'elle propose et au moins un AA de la liste.", // ai 2026-11
+// central/optimize.php, row 95
+"Choose at most %1 tasks - only the last %1 runs keep their results." => "Choisissez au plus %1 tâches - seules les %1 dernières exécutions conservent leurs résultats.", // ai 2026-11
 
-// central/optimize.php, row 85
+// central/optimize.php, row 110
+"Choose at least one task and at least one AA of the list." => "Choisissez au moins une tâche et au moins un AA de la liste.", // ai 2026-11
+
+// central/optimize.php, row 120
 "An AA may still be asked - press Continue again in a few minutes." => "Un AA peut encore être interrogé - appuyez de nouveau sur « Continuer » dans quelques minutes.", // ai 2026-11
 
-// central/optimize.php, row 86, 186
+// central/optimize.php, row 121, 292
 "No such run." => "Exécution introuvable.", // ai 2026-11
 
-// central/optimize.php, row 87
+// central/optimize.php, row 122
 "The run has moved on meanwhile - see its state below." => "L'exécution a avancé entre-temps - voir son état ci-dessous.", // ai 2026-11
 
-// central/optimize.php, row 93
+// central/optimize.php, row 128
 "Optimize on several AAs" => "Optimiser sur plusieurs AA", // ai 2026-11
 
-// central/optimize.php, row 123
+// central/optimize.php, row 143
+// src/Manager.php, row 1282
+"Hold Shift and click to select multiple rows" => "Maintenez Maj et cliquez pour sélectionner plusieurs lignes", // ai 2026-06
+
+// central/optimize.php, row 184
+"This page has lost the connection to the run - reload it. The run goes on in the task queue." => "Cette page a perdu la connexion à l'exécution - rechargez-la. L'exécution se poursuit dans la file des tâches.", // ai 2026-11
+
+// central/optimize.php, row 220
 "Test only" => "Tester uniquement", // ai 2026-11
 
-// central/optimize.php, row 123
+// central/optimize.php, row 220
 "Repair where the test fails" => "Réparer là où le test échoue", // ai 2026-11
 
-// central/optimize.php, row 136
+// central/optimize.php, row 242
 "The Central list holds no active AA." => "La liste de Central ne contient aucun AA actif.", // ai 2026-11
 
-// central/optimize.php, row 140
+// central/optimize.php, row 246
 "Run an Optimize task on several AAs" => "Lancer une tâche « Optimiser » sur plusieurs AA", // ai 2026-11
 
-// central/optimize.php, row 148, 170
+// central/optimize.php, row 252
+"Tasks" => "Tâches", // ai 2026-11
+
+// central/optimize.php, row 252
+"Each task is a run of its own. While a page of the runs is open, it runs their steps at once, the oldest run first; the task queue runs them too. Each AA runs the task of its own version; an AA without it says so." => "Chaque tâche est une exécution distincte. Tant qu'une page des exécutions est ouverte, elle lance leurs étapes immédiatement, l'exécution la plus ancienne en premier ; la file des tâches les lance aussi. Chaque installation AA exécute la tâche de sa propre version ; une installation qui ne l'a pas le signale.", // ai 2026-11
+
+// central/optimize.php, row 255
+"Do" => "Faire", // ai 2026-11
+
+// central/optimize.php, row 255
+"Repair tests first, repairs only where the test fails, then tests again. A task without a repair is only tested." => "«Réparer» teste d'abord, ne répare que là où le test échoue, puis teste à nouveau. Une tâche sans réparation est seulement testée.", // ai 2026-11
+
+// central/optimize.php, row 256, 364
+"Allow long table locks" => "Autoriser les verrous de table longs", // ai 2026-11
+
+// central/optimize.php, row 258, 319
+// include/logs.php, row 727
+// include/menu_util.php, row 45
+// src/Manageraction/Central_GetToken.php, row 55
+// src/Optimize/CheckCentralCredentials.php, row 51
+// src/Optimize/CheckEnvironment.php, row 50
+"AA" => "",
+
+// central/optimize.php, row 264
+"An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "Un AA sans jeton valide ne répond rien - obtenez d'abord son jeton dans la liste de Central (il est valable un jour).", // ai 2026-11
+
+// central/optimize.php, row 265
+"Start" => "Démarrer", // ai 2026-11
+
+// central/optimize.php, row 276
+"Last runs" => "Dernières exécutions", // ai 2026-11
+
+// central/optimize.php, row 276
+// include/logs.php, row 802
+// src/Import/DetailPage.php, row 353
+// src/Mailbulk/StatsView.php, row 63
+// src/Optimize/CheckImports.php, row 151, 155
+// src/Optimize/CheckInstallRuns.php, row 54
+// src/Optimize/CheckIsdsRuns.php, row 310
+// src/Optimize/CheckMailbulkRuns.php, row 94
+// src/Optimize/CheckOptimizeRuns.php, row 54
+"Started" => "Début", // ai 2026-10
+
+// central/optimize.php, row 276
 // src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckOptimizeRuns.php, row 55
 // src/Optimize/CheckQueue.php, row 98, 178
 "Task" => "Tâche", // ai 2026-06
 
-// central/optimize.php, row 148
-"Each AA runs the task of its own version; an AA without it says so." => "Chaque AA exécute la tâche de sa propre version ; un AA qui ne l'a pas le signale.", // ai 2026-11
-
-// central/optimize.php, row 151
-"Do" => "Faire", // ai 2026-11
-
-// central/optimize.php, row 151
-"Repair tests first, repairs only where the test fails, then tests again." => "La réparation teste d'abord, ne répare que là où le test échoue, puis teste à nouveau.", // ai 2026-11
-
-// central/optimize.php, row 153, 209
-// include/logs.php, row 723
-// include/menu_util.php, row 45
-// src/Optimize/CheckCentralCredentials.php, row 51
-// src/Optimize/CheckEnvironment.php, row 50
-"AA" => "",
-
-// central/optimize.php, row 158
-"An AA without a valid token answers nothing - get its token in the Central list first (it lasts a day)." => "Un AA sans jeton valide ne répond rien - obtenez d'abord son jeton dans la liste de Central (il est valable un jour).", // ai 2026-11
-
-// central/optimize.php, row 159
-"Start" => "Démarrer", // ai 2026-11
-
-// central/optimize.php, row 170
-"Last runs" => "Dernières exécutions", // ai 2026-11
-
-// central/optimize.php, row 170
-// include/logs.php, row 798
-// src/Import/DetailPage.php, row 353
-// src/Optimize/CheckImports.php, row 151, 155
-// src/Optimize/CheckInstallRuns.php, row 54
-// src/Optimize/CheckIsdsRuns.php, row 310
-// src/Optimize/CheckOptimizeRuns.php, row 54
-"Started" => "Début", // ai 2026-10
-
-// central/optimize.php, row 170
+// central/optimize.php, row 276
 "Results" => "Résultats", // ai 2026-11
 
-// central/optimize.php, row 196
+// central/optimize.php, row 303
 "Started %1 by %2" => "Lancée le %1 par %2", // ai 2026-11
 
-// central/optimize.php, row 197
+// central/optimize.php, row 303
+"long table locks allowed" => "verrous de table longs autorisés", // ai 2026-11
+
+// central/optimize.php, row 304
 "%1 of %2 AAs done" => "%1 AA sur %2 terminés", // ai 2026-11
 
-// central/optimize.php, row 207
-"The run goes on in the task queue of this AA - you may close this page." => "L'exécution se poursuit dans la file des tâches de cet AA - vous pouvez fermer cette page.", // ai 2026-11
+// central/optimize.php, row 314
+"While this page is open, it runs the steps one right after another. Closed, the run goes on in the task queue of this AA." => "Tant que cette page est ouverte, elle lance les étapes l'une après l'autre. Une fois la page fermée, l'exécution se poursuit dans la file des tâches de cette installation AA.", // ai 2026-11
 
-// central/optimize.php, row 209, 228
-"Report" => "Rapport", // ai 2026-11
+// central/optimize.php, row 319
+// include/logs.php, row 1100
+// src/Import/DetailPage.php, row 1076
+// src/Optimize/CheckPhpFatals.php, row 64
+"Message" => "Message", // ai 2026-10
 
-// central/optimize.php, row 215
-"Waiting" => "En attente", // ai 2026-11
-
-// central/optimize.php, row 215
+// central/optimize.php, row 325
 "Not asked" => "Non interrogé", // ai 2026-11
 
-// central/optimize.php, row 224
+// central/optimize.php, row 325
+"Asking now…" => "Interrogation en cours…", // ai 2026-11
+
+// central/optimize.php, row 325
+"Waiting" => "En attente", // ai 2026-11
+
+// central/optimize.php, row 331
+"Failed steps: %1" => "Étapes échouées : %1", // ai 2026-11
+
+// central/optimize.php, row 337
 "The test after the repair comes next." => "Le test après la réparation vient ensuite.", // ai 2026-11
 
-// central/optimize.php, row 231
+// central/optimize.php, row 341
+"Report" => "Rapport", // ai 2026-11
+
+// central/optimize.php, row 342
 "The test after the repair" => "Le test après la réparation", // ai 2026-11
 
-// central/optimize.php, row 241
+// central/optimize.php, row 348
 "Another run" => "Nouvelle exécution", // ai 2026-11
 
-// central/optimize.php, row 247
+// central/optimize.php, row 365
+"Repair the AAs with a problem (%1)" => "Réparer les AA ayant un problème (%1)", // ai 2026-11
+
+// central/optimize.php, row 383
+"A table over %1 MB whose change needs a copy (Update database structure) is changed too - its writes wait minutes meanwhile, the reads go on. Best at night; without it such a table is left as it is and the repair says so." => "Une table de plus de %1 Mo dont la modification nécessite une copie (« Mettre à jour la structure de la base de données ») est aussi modifiée - ses écritures attendent alors plusieurs minutes, les lectures continuent. De préférence la nuit ; sans cette option, une telle table est laissée telle quelle et la réparation le signale.", // ai 2026-11
+
+// central/optimize.php, row 389
 "OK - nothing to repair" => "OK - rien à réparer", // ai 2026-11
 
-// central/optimize.php, row 248
-// src/Optimize/CheckAlerts.php, row 145
+// central/optimize.php, row 390
+// src/Optimize/CheckAlerts.php, row 174
 // src/Optimize/CheckIsds.php, row 142, 154
 // src/Optimize/CheckIsdsAccounts.php, row 132, 169, 226, 282, 405
 // src/Optimize/CheckIsdsConf.php, row 104, 107, 156
 // src/Optimize/CheckIsdsRegistry.php, row 119, 172
-// src/Optimize/StateCheckModel.php, row 219
+// src/Optimize/StateCheckModel.php, row 222
 "Problem" => "Problème", // ai 2026-10
 
-// central/optimize.php, row 249
+// central/optimize.php, row 391
 "Repaired" => "Réparé", // ai 2026-11
 
-// central/optimize.php, row 250
+// central/optimize.php, row 392
 "Repair failed" => "Échec de la réparation", // ai 2026-11
 
-// central/optimize.php, row 251
+// central/optimize.php, row 393
 "Not done" => "Non effectué", // ai 2026-11
 
-// central/optimize.php, row 261
+// central/optimize.php, row 403
 "No step has come for a long time - is the task queue of this AA running? Continue tries at once." => "Aucune étape depuis longtemps - la file des tâches de cet AA tourne-t-elle ? « Continuer » réessaie immédiatement.", // ai 2026-11
 
-// central/optimize.php, row 262
+// central/optimize.php, row 404
 "Waiting to ask an AA again" => "En attente pour interroger de nouveau un AA", // ai 2026-11
 
-// central/optimize.php, row 263
-"Running in the task queue" => "En cours dans la file des tâches", // ai 2026-11
+// central/optimize.php, row 405
+// src/Import/RunView.php, row 75, 177
+"Running" => "En cours", // ai 2026-10
 
-// central/optimize.php, row 273
+// central/optimize.php, row 415
 "%1 runs another update now." => "%1 exécute une autre mise à jour en ce moment.", // ai 2026-11
 
-// central/optimize.php, row 274
+// central/optimize.php, row 416
 "%1 did not answer in time." => "%1 n'a pas répondu à temps.", // ai 2026-11
 
-// central/optimize.php, row 275
+// central/optimize.php, row 417
 "The user who started the run is no superadmin any more." => "L'utilisateur qui a lancé l'exécution n'est plus superadmin.", // ai 2026-11
 
-// central/optimize.php, row 276
+// central/optimize.php, row 418
 "Error %1" => "Erreur %1", // ai 2026-11
 
-// central/optimize.php, row 278
+// central/optimize.php, row 420
 "Asked again at %1 - Continue asks now." => "Nouvelle interrogation à %1 - « Continuer » interroge maintenant.", // ai 2026-11
 
-// central/responder.php, row 112
+// central/responder.php, row 114
 "Get_Jwt needs ttl as seconds and scope admin or apps" => "Get_Jwt requiert ttl en secondes et scope admin ou apps", // ai 2026-10
 
-// central/responder.php, row 118
+// central/responder.php, row 120
 "A token needs a login by the username and password in this request, of a user whose password change this AA can detect" => "Un jeton requiert une connexion avec le nom d'utilisateur et le mot de passe fournis dans cette requête, par un utilisateur dont cet AA peut détecter le changement de mot de passe", // ai 2026-10
 
-// central/responder.php, row 198
+// central/responder.php, row 200
 "Unknown module type" => "Type de module inconnu", // ai 2026-10
 
-// central/responder.php, row 226
+// central/responder.php, row 228
 "Wrong command - not a synchronization action" => "Commande erronée – ce n'est pas une action de synchronisation", // ai 2026-10
 
-// central/responder.php, row 230
+// central/responder.php, row 232
 "Wrong command - %1" => "Commande erronée – %1", // ai 2026-10
 
-// central/responder.php, row 788
+// central/responder.php, row 835
 "Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central" => "Jeton de connexion refusé (il est valable un jour et un changement de mot de passe l'annule) – authentifiez de nouveau cet AA dans Central", // ai 2026-10
 
-// central/responder.php, row 819
+// central/responder.php, row 866
 "No request sent for responder.php" => "Aucune requête envoyée à responder.php", // ai 2026-06
 
-// central/responder.php, row 825
+// central/responder.php, row 872
 "Bad request sent for responder.php - %1" => "Requête incorrecte envoyée à responder.php - %1", // ai 2026-06
 
-// central/responder.php, row 832
+// central/responder.php, row 879
 "This command is not accepted in the URL" => "Cette commande n'est pas acceptée dans l'URL", // ai 2026-10
 
-// central/responder.php, row 836
+// central/responder.php, row 883
 "This command must be sent by POST" => "Cette commande doit être envoyée par POST", // ai 2026-10
 
-// central/responder.php, row 842
+// central/responder.php, row 889
 "Request from another site refused" => "Requête provenant d'un autre site refusée", // ai 2026-10
 
-// central/responder.php, row 859
+// central/responder.php, row 906
 "The login token does not allow %1" => "Le jeton de connexion ne permet pas %1", // ai 2026-10
 
-// central/responder.php, row 860
+// central/responder.php, row 907
 "The app store account may not run %1" => "Le compte du catalogue d'applications ne peut pas exécuter %1", // ai 2026-10
 
-// central/responder.php, row 861
+// central/responder.php, row 908
 "The app store is busy - try again later" => "Le catalogue d'applications est surchargé – réessayez plus tard", // ai 2026-10
 
-// central/responder.php, row 862
+// central/responder.php, row 909
 "You (%2) don't have permissions to run %1" => "Vous (%2) n'avez pas la permission d'exécuter %1", // ai 2026-06
 
 // central/synchronize.php, row 31
@@ -5399,11 +5597,11 @@ return [
 "Compared and Updated ActionApps" => "ActionApps comparées et mises à jour", // ai 2026-06
 
 // filldisc.php, row 106, 156
-// filler.php, row 311, 427
+// filler.php, row 303, 419
 "Not accepted, sorry. Looks like spam." => "Refusé, désolé. Cela ressemble à du spam.", // ai 2026-06
 
 // filldisc.php, row 113
-// filler.php, row 301
+// filler.php, row 293
 "Wrong result, not possible to post comments." => "Résultat incorrect, impossible de publier des commentaires.", // ai 2026-06
 
 // filldisc.php, row 122
@@ -5418,25 +5616,25 @@ return [
 // filldisc.php, row 207
 "Not accepted, item is not published or does not exist." => "Refusé, l'item n'est pas publié ou n'existe pas.", // ai 2026-06
 
-// filler.php, row 295
+// filler.php, row 287
 "Not allowed to post comments" => "Non autorisé à publier des commentaires", // ai 2026-06
 
-// filler.php, row 340, 386
+// filler.php, row 332, 378
 "Bad Token. Not allowed to post comments" => "Jeton invalide. Non autorisé à publier des commentaires", // ai 2026-06
 
-// filler.php, row 366
+// filler.php, row 358
 "Slice ID not defined" => "L'identité  de la section n'est pas définie", // ai 2026-10
 
-// filler.php, row 372
+// filler.php, row 364
 "Bad slice ID" => "Mauvaise identité sur cette section", // ai 2026-10
 
-// filler.php, row 401, 490
+// filler.php, row 393, 482
 "You are not allowed to update this item." => "Vous n'avez pas les permissions pour mettre à  jour cet item", // ai 2026-10
 
-// filler.php, row 448
+// filler.php, row 440
 "Anonymous posting not admitted." => "Les soumissions anonymes ne sont pas permises",
 
-// filler.php, row 503
+// filler.php, row 495
 "Some error in store item." => "Erreur lors de l'enregistrement de l'item", // ai 2026-10
 
 // include/adminpage.class.php, row 67
@@ -5446,7 +5644,7 @@ return [
 "Short Id" => "Courte Identité", // ai 2026-10
 
 // include/constants.php, row 456
-// include/logs.php, row 961, 993
+// include/logs.php, row 965, 997
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Classe",
 
@@ -5454,285 +5652,321 @@ return [
 // include/constedit_util.php, row 143
 "Level" => "Niveau",
 
-// include/constants.php, row 509
-// include/logs.php, row 1172
+// include/constants.php, row 512
+// include/logs.php, row 1177
 "Feed" => "Alimentation",
 
-// include/constants.php, row 510
+// include/constants.php, row 513
 "Do not feed" => "N'alimentez pas",
 
-// include/constants.php, row 511
+// include/constants.php, row 514
 "Feed locked" => "Alimentation verrouillée", // ai 2026-10
 
-// include/constants.php, row 512
+// include/constants.php, row 515
 "Feed & update" => "Alimentation et mise à jour", // ai 2026-10
 
-// include/constants.php, row 513
+// include/constants.php, row 516
 "Feed & update & lock" => "Alimentation et mise à jour et verrou", // ai 2026-10
 
-// include/constants.php, row 599
+// include/constants.php, row 606
 "Month List" => "Liste de mois",
 
-// include/constants.php, row 600
+// include/constants.php, row 607
 "Month Table" => "Table de mois",
 
-// include/constants.php, row 608
+// include/constants.php, row 615
 "Whole text" => "Tout le texte",
 
-// include/constants.php, row 609
+// include/constants.php, row 616
 "1st letter" => "1ere lettre",
 
-// include/constants.php, row 610, 611, 612, 613, 614, 615, 616, 617
+// include/constants.php, row 617, 618, 619, 620, 621, 622, 623, 624
 "letters" => "lettres",
 
-// include/constants.php, row 618
+// include/constants.php, row 625
 "all before " => "tout avant", // ai 2026-06
 
-// include/constants.php, row 639
+// include/constants.php, row 646
 "vid" => "",
 
-// include/constants.php, row 640
-"now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_]." => "il est désormais possible d'utiliser un vid non numérique - p. ex. photo_list, utilisé comme {view:photo_list:...} ou ..?vid=photo_list... Utilisez uniquement des minuscules - [a-z_].", // ai 2026-06
+// include/constants.php, row 647
+"Name of the view, usable instead of its number: {view:photo_list}, {view.php?vid=photo_list}, slice.php?iview=photo_list (also fview, dview). The name is looked up in the slices of the site or of the page, so a URL that loads view.php directly (lazy, AJAX) still needs the number. Use only small letters and _, starting with a letter." => "Nom de la vue, utilisable à la place de son numéro : {view:photo_list}, {view.php?vid=photo_list}, slice.php?iview=photo_list (aussi fview, dview). Le nom est cherché dans les sections du site ou de la page ; une URL qui charge directement view.php (chargement différé, AJAX) a donc toujours besoin du numéro. N'utilisez que des minuscules et _, en commençant par une lettre.", // ai 2026-11
 
-// include/constants.php, row 644
+// include/constants.php, row 650
+"The conditions of the view, each under its name: a number, or up to 6 small letters and digits. A call gives a condition its value by the name: cmd[]=c-1-value, cmd[]=c-author-value. A name used twice or not allowed is replaced by a number. With more fields in one condition, the condition holds when any of the fields matches. A condition without a value waits for the value of the call - without it, it is left out. A dash in a value of a call is written twice (c-4-2020--05)." => "Les conditions de la vue, chacune sous son nom : un numéro, ou jusqu'à 6 lettres minuscules et chiffres. Un appel donne sa valeur à une condition par son nom : cmd[]=c-1-valeur, cmd[]=c-author-valeur. Un nom utilisé deux fois ou non autorisé est remplacé par un numéro. Avec plusieurs champs dans une condition, la condition est remplie quand l'un des champs correspond. Une condition sans valeur attend la valeur de l'appel - sans elle, elle est ignorée. Un tiret dans une valeur d'un appel s'écrit deux fois (c-4-2020--05).", // ai 2026-11
+
+// include/constants.php, row 655
+"The value a condition works with is in the alias _#C_ followed by the name in capitals, filled with _ to ten characters: _#C_AUTHOR, _#C_1_____. A name whose alias the slice has for a field is replaced by a number. The value may come from the call (a URL): print it as {safe:{_#C_AUTHOR}} - with the inner braces, without them it is not escaped." => "La valeur avec laquelle travaille une condition se trouve dans l'alias _#C_ suivi du nom en majuscules, complété par _ jusqu'à dix caractères : _#C_AUTHOR, _#C_1_____. Un nom dont la section a déjà l'alias pour un champ est remplacé par un numéro. La valeur peut venir de l'appel (une URL) : affichez-la avec {safe:{_#C_AUTHOR}} - avec les accolades intérieures ; sans elles, elle n'est pas échappée.", // ai 2026-11
+
+// include/constants.php, row 660
+"Show only if" => "Afficher seulement si", // ai 2026-11
+
+// include/constants.php, row 661
+"An expression that decides whether the view shows anything. When it gives no text (the rule of {ifset:...}), the view lists nothing, asks the database for no items and shows the code below instead. Empty - always shown. Example: {qs:id} - only when the address has the parameter id. Asked for by its own address (view.php), a view with a condition is not stored in the page cache." => "Une expression qui décide si la vue affiche quelque chose. Quand elle ne donne aucun texte (la règle de {ifset:...}), la vue ne liste rien, ne demande aucun item à la base de données et affiche à la place le code ci-dessous. Vide - toujours affichée. Exemple : {qs:id} - seulement quand l'adresse contient le paramètre id. Appelée par sa propre adresse (view.php), une vue avec une condition n'est pas stockée dans le cache de pages.", // ai 2026-11
+
+// include/constants.php, row 664
+"Shown instead" => "Affiché à la place", // ai 2026-11
+
+// include/constants.php, row 665
+"HTML code shown when the condition above does not hold. Empty - nothing." => "Code HTML affiché quand la condition ci-dessus n'est pas remplie. Vide - rien.", // ai 2026-11
+
+// include/constants.php, row 667
 "Disabled view" => "Vue désactivée", // ai 2026-06
 
-// include/constants.php, row 646
+// include/constants.php, row 669
 "Log view usage" => "Journaliser l'utilisation de la vue", // ai 2026-06
 
-// include/constants.php, row 647
+// include/constants.php, row 670
 "Be careful with this. It really logs every view use! Good for debugging and checking, if disabled view is not used anymore..." => "Soyez prudent avec ceci. Chaque utilisation de la vue est réellement journalisée ! Utile pour le débogage et pour vérifier qu'une vue désactivée n'est plus utilisée...", // ai 2026-06
 
-// include/constants.php, row 653
-"Item listing" => "Liste d'item",
+// include/constants.php, row 673
+"Probably unused - log the first use" => "Probablement inutilisée - journaliser la première utilisation", // ai 2026-11
 
-// include/constants.php, row 658, 781, 915, 970, 1004
-"Row Delimiter" => "Délimiteur de ligne", // ai 2026-06
+// include/constants.php, row 674
+"For a view you think nobody uses. It works as before; its first use is written to the log (\"Last from log\" below shows when and on which page) and unchecks this box. A view still checked after some months is safe to disable or delete. A page served from the cache does not use the view." => "Pour une vue que vous pensez inutilisée. Elle fonctionne comme avant ; sa première utilisation est écrite dans le journal (« Dernières entrées du journal » ci-dessous indique quand et sur quelle page) et décoche cette case. Une vue encore cochée après quelques mois peut être désactivée ou supprimée sans risque. Une page servie depuis le cache n'utilise pas la vue.", // ai 2026-11
 
-// include/constants.php, row 667, 785, 816, 847, 873, 918, 944, 973, 1007
-"Sort primary" => "Tri primaire",
+// include/constants.php, row 677
+"Do not cache" => "Ne pas mettre en cache", // ai 2026-11
 
-// include/constants.php, row 669, 787, 818, 849, 875, 920, 946, 975, 1009
-"Sort secondary" => "Tri secondaire",
+// include/constants.php, row 678
+"The output is never stored in the page cache, so every request runs the view again - for a view that does something (sends a mail, counts) or must always be fresh. A whole page that includes such a view is not cached either, so it is slower for every visitor." => "La sortie n'est jamais stockée dans le cache de pages ; chaque requête exécute donc la vue à nouveau - pour une vue qui fait quelque chose (envoie un courriel, compte) ou doit toujours être à jour. Une page entière qui inclut une telle vue n'est pas non plus mise en cache ; elle est donc plus lente pour chaque visiteur.", // ai 2026-11
 
-// include/constants.php, row 671
-"Sort alias" => "Alias de tri", // ai 2026-06
+// include/constants.php, row 681
+"Only inside pages" => "Uniquement dans les pages", // ai 2026-11
 
-// include/constants.php, row 676, 792, 925, 980, 1014
-"Group title format" => "Grouper les formats de titre",
-
-// include/constants.php, row 677, 793, 926, 981, 1015
-"Group bottom format" => "Grouper les format finaux",
-
-// include/constants.php, row 679, 708, 794, 820, 851, 884, 948, 982, 1016
-"Condition 1" => "Condition 1", // ai 2026-10
-
-// include/constants.php, row 682, 711, 797, 823, 854, 887, 951, 985, 1019
-"Condition 2" => "Condition 2", // ai 2026-10
-
-// include/constants.php, row 685, 714, 800, 826, 857, 890, 954, 988, 1022
-"Condition 3" => "Condition 2",
+// include/constants.php, row 682
+"The view works only inside pages and other templates ({view:...}, {view.php?...}). Its own address (view.php?vid=..., jsview.php?vid=..., discussion.php?vid=...) shows nothing and answers 404. Do not check it for a view that a page loads by its address (AJAX, lazy loading, an include in an .shtml page), for RSS and other feeds. The same can be set for all views of the slice on the list of views, or for all slices of a site in the settings of the site. A refused call is listed in State Check." => "La vue ne fonctionne qu'à l'intérieur des pages et d'autres modèles ({view:...}, {view.php?...}). Sa propre adresse (view.php?vid=..., jsview.php?vid=..., discussion.php?vid=...) n'affiche rien et répond 404. Ne cochez pas cette case pour une vue qu'une page charge par son adresse (AJAX, chargement différé, inclusion dans une page .shtml), ni pour les flux RSS et autres. Le même réglage existe pour toutes les vues de la section dans la liste des vues, et pour toutes les sections d'un site dans les paramètres du site. Un appel refusé est listé dans « Vérification de l'état ».", // ai 2026-11
 
 // include/constants.php, row 690
-"Accept site module paging - {xpage}" => "Accepter la pagination du module site - {xpage}", // ai 2026-06
+"Item listing" => "Liste d'item",
 
-// include/constants.php, row 691
-"if 'Accept {xpage}', no need to pass page-{xpage} param to the view<br>if 'Use infinite...' the invisible scroller is added to the view and the content is loaded by AJAX by observing the scroll position" => "avec « Accepter {xpage} », inutile de passer le paramètre page-{xpage} à la vue<br>avec « Utiliser infini... », un défileur invisible est ajouté à la vue et le contenu est chargé par AJAX en observant la position de défilement", // ai 2026-06
+// include/constants.php, row 695, 821, 959, 1015, 1050
+"Row Delimiter" => "Délimiteur de ligne", // ai 2026-06
 
-// include/constants.php, row 695
-"use {#} if you do not want print anything" => "utilisez {#} si vous ne voulez rien afficher", // ai 2026-06
+// include/constants.php, row 704, 825, 857, 889, 916, 962, 988, 1018, 1053
+"Sort primary" => "Tri primaire",
 
-// include/constants.php, row 697, 718, 806, 837, 895, 929, 959, 993, 1027, 1040
-"Add view ID as HTML comment" => "Ajouter l'ID de la vue en commentaire HTML", // ai 2026-06
+// include/constants.php, row 706, 827, 859, 891, 918, 964, 990, 1020, 1055
+"Sort secondary" => "Tri secondaire",
 
-// include/constants.php, row 703
-"Fulltext view" => "Vue de tout le texte",
+// include/constants.php, row 708
+"Sort alias" => "Alias de tri", // ai 2026-06
 
-// include/constants.php, row 725
-"HTML code for index view of the comment" => "Code HTML pour la vue de l'index et commentaire",
+// include/constants.php, row 714, 832, 969, 1025, 1060
+"Group title format" => "Grouper les formats de titre",
 
-// include/constants.php, row 727
-"HTML code for \"Show selected\" button" => "Code HTML pour le bouton \"Montrer sélection\"", // ai 2026-10
+// include/constants.php, row 715, 833, 970, 1026, 1061
+"Group bottom format" => "Grouper les format finaux",
 
-// include/constants.php, row 728
-"HTML code for \"Show all\" button" => "Code HTML pour \"Montrer tout\\bouton",
+// include/constants.php, row 717, 747, 834, 861, 893, 927, 992, 1027, 1062
+"Condition 1" => "Condition 1", // ai 2026-10
+
+// include/constants.php, row 720, 750, 837, 864, 896, 930, 995, 1030, 1065
+"Condition 2" => "Condition 2", // ai 2026-10
+
+// include/constants.php, row 723, 753, 840, 867, 899, 933, 998, 1033, 1068
+"Condition 3" => "Condition 2",
 
 // include/constants.php, row 729
-"HTML code for \"Add\" button" => "Code HTML pour\"Ajouter\\bouton",
+"Accept site module paging - {xpage}" => "Accepter la pagination du module site - {xpage}", // ai 2026-06
 
 // include/constants.php, row 730
-"Show images" => "MOntrer image",
-
-// include/constants.php, row 731
-"Order by" => "Ordonner par",
-
-// include/constants.php, row 732
-"View image 1" => "Voir image 1",
-
-// include/constants.php, row 733
-"View image 2" => "Voir image 2",
+"if 'Accept {xpage}', no need to pass page-{xpage} param to the view<br>if 'Use infinite...' the invisible scroller is added to the view and the content is loaded by AJAX by observing the scroll position" => "avec « Accepter {xpage} », inutile de passer le paramètre page-{xpage} à la vue<br>avec « Utiliser infini... », un défileur invisible est ajouté à la vue et le contenu est chargé par AJAX en observant la position de défilement", // ai 2026-06
 
 // include/constants.php, row 734
-"View image 3" => "Voir image 3",
+"use {#} if you do not want print anything" => "utilisez {#} si vous ne voulez rien afficher", // ai 2026-06
 
-// include/constants.php, row 735
-"View image 4" => "Voir image 4",
-
-// include/constants.php, row 736
-"HTML code for fulltext view of the comment" => "Code HTML pour vue de texte de commentaire",
-
-// include/constants.php, row 737
-"HTML code for space before comment" => "Code HTML pour l'espace devant le commentaire",
-
-// include/constants.php, row 738
-"HTML code of the form for posting comment" => "Code HTML pour le formulaire de commentaire",
-
-// include/constants.php, row 740
-"E-mail template" => "Modèle de courriel", // ai 2026-06
+// include/constants.php, row 736, 758, 847, 879, 939, 973, 1004, 1039, 1074, 1087
+"Add view ID as HTML comment" => "Ajouter l'ID de la vue en commentaire HTML", // ai 2026-06
 
 // include/constants.php, row 742
-"Number of e-mail template used for posting new comments to users" => "Numéro du modèle de courriel utilisé pour l'envoi des nouveaux commentaires aux utilisateurs", // ai 2026-06
+"Fulltext view" => "Vue de tout le texte",
 
-// include/constants.php, row 744
-"Allow HTML tags in the comments" => "Autoriser les balises HTML dans les commentaires", // ai 2026-06
+// include/constants.php, row 765
+"HTML code for index view of the comment" => "Code HTML pour la vue de l'index et commentaire",
 
-// include/constants.php, row 750
-"Discussion To Mail" => "Discussion vers courrier",
+// include/constants.php, row 767
+"HTML code for \"Show selected\" button" => "Code HTML pour le bouton \"Montrer sélection\"", // ai 2026-10
 
-// include/constants.php, row 751
-"From: (email header)" => "De: (entête courriel)", // ai 2026-10
+// include/constants.php, row 768
+"HTML code for \"Show all\" button" => "Code HTML pour \"Montrer tout\\bouton",
 
-// include/constants.php, row 752
-"Reply-To:" => "Répondre à", // ai 2026-10
+// include/constants.php, row 769
+"HTML code for \"Add\" button" => "Code HTML pour\"Ajouter\\bouton",
 
-// include/constants.php, row 753
-"Errors-To:" => "Erreur-à", // ai 2026-10
+// include/constants.php, row 770
+"Show images" => "MOntrer image",
 
-// include/constants.php, row 754
-"Sender:" => "Ebnvoyeur",
+// include/constants.php, row 771
+"Order by" => "Ordonner par",
 
-// include/constants.php, row 755
-"Mail Subject:" => "Sujet de courriel",
+// include/constants.php, row 772
+"View image 1" => "Voir image 1",
 
-// include/constants.php, row 756
-"Mail Body:" => "Corp du courriel",
+// include/constants.php, row 773
+"View image 2" => "Voir image 2",
+
+// include/constants.php, row 774
+"View image 3" => "Voir image 3",
+
+// include/constants.php, row 775
+"View image 4" => "Voir image 4",
+
+// include/constants.php, row 776
+"HTML code for fulltext view of the comment" => "Code HTML pour vue de texte de commentaire",
 
 // include/constants.php, row 777
+"HTML code for space before comment" => "Code HTML pour l'espace devant le commentaire",
+
+// include/constants.php, row 778
+"HTML code of the form for posting comment" => "Code HTML pour le formulaire de commentaire",
+
+// include/constants.php, row 780
+"E-mail template" => "Modèle de courriel", // ai 2026-06
+
+// include/constants.php, row 782
+"Number of e-mail template used for posting new comments to users" => "Numéro du modèle de courriel utilisé pour l'envoi des nouveaux commentaires aux utilisateurs", // ai 2026-06
+
+// include/constants.php, row 784
+"Allow HTML tags in the comments" => "Autoriser les balises HTML dans les commentaires", // ai 2026-06
+
+// include/constants.php, row 790
+"Discussion To Mail" => "Discussion vers courrier",
+
+// include/constants.php, row 791
+"From: (email header)" => "De: (entête courriel)", // ai 2026-10
+
+// include/constants.php, row 792
+"Reply-To:" => "Répondre à", // ai 2026-10
+
+// include/constants.php, row 793
+"Errors-To:" => "Erreur-à", // ai 2026-10
+
+// include/constants.php, row 794
+"Sender:" => "Ebnvoyeur",
+
+// include/constants.php, row 795
+"Mail Subject:" => "Sujet de courriel",
+
+// include/constants.php, row 796
+"Mail Body:" => "Corp du courriel",
+
+// include/constants.php, row 817
 "View of Constants" => "Voir les valeurs constantes",
 
-// include/constants.php, row 812
+// include/constants.php, row 853
 "RSS exchange" => "Échange RSS", // ai 2026-10
 
-// include/constants.php, row 835
+// include/constants.php, row 877
 "Static page" => "Page statique",
 
-// include/constants.php, row 836
+// include/constants.php, row 878
 "HTML code" => "Code HTML",
 
-// include/constants.php, row 843
+// include/constants.php, row 885
 "Javascript item exchange" => "Échange d'item JavaScript", // ai 2026-10
 
-// include/constants.php, row 866
+// include/constants.php, row 909
 "Calendar" => "Calendrier",
 
-// include/constants.php, row 867
+// include/constants.php, row 910
 "Calendar Type" => "Type de calendrier",
 
-// include/constants.php, row 869
+// include/constants.php, row 912
 "Additional attribs to the TD event tag" => "Attributions additionnelles pour les labels d'événements TD", // ai 2026-10
 
-// include/constants.php, row 870
+// include/constants.php, row 913
 "Event format" => "Format d'événement", // ai 2026-10
 
-// include/constants.php, row 877
+// include/constants.php, row 920
 "Start date field" => "Commencer le champ de date",
 
-// include/constants.php, row 878
+// include/constants.php, row 921
 "End date field" => "Terminer le champ de datee",
 
-// include/constants.php, row 879
+// include/constants.php, row 922
 "Day cell top format" => "Début Format cellule jour", // ai 2026-10
 
-// include/constants.php, row 880
+// include/constants.php, row 923
 "Day cell bottom format" => "Fin Format cellule jour",
 
-// include/constants.php, row 881
+// include/constants.php, row 924
 "Use other header for empty cells" => "Utiliser autre entête pour les cellules vides", // ai 2026-10
 
-// include/constants.php, row 882
+// include/constants.php, row 925
 "Empty day cell top format" => "Vider le Format de Début de la cellule jour", // ai 2026-10
 
-// include/constants.php, row 883
+// include/constants.php, row 926
 "Empty day cell bottom format" => "Vider le Format de fin de la cellule jour",
 
-// include/constants.php, row 903
+// include/constants.php, row 947
 "Alerts Selection Set" => "Alerte à l'ensemble de sélection", // ai 2026-10
 
-// include/constants.php, row 906
+// include/constants.php, row 950
 "Fulltext URL" => "Texte URL",
 
-// include/constants.php, row 908
+// include/constants.php, row 952
 "Link to the .shtml page used\n"
    ."                                 to create headline links."
  => "Lien à la page .shtml utilisée\n"
    ."                                 pour créer le lien en manchette.", // ai 2026-10
 
-// include/constants.php, row 927
+// include/constants.php, row 971
 "Max number of items" => "Nombre maximum de vues",
 
-// include/constants.php, row 939
+// include/constants.php, row 983
 "URL listing" => "Liste URL",
 
-// include/constants.php, row 941
+// include/constants.php, row 985
 "Row HTML" => "Rangée HTML", // ai 2026-10
 
-// include/constants.php, row 965
+// include/constants.php, row 1010
 "Link listing" => "Liste de liens",
 
-// include/constants.php, row 999
+// include/constants.php, row 1045
 "Category listing" => "Liste de catégories", // ai 2026-10
 
-// include/constants.php, row 1033
+// include/constants.php, row 1080
 "Input Form" => "Formulaire d'entrée", // ai 2026-10
 
-// include/constants.php, row 1035
+// include/constants.php, row 1082
 "New item form template" => "Nouveau modèle de formulaire d'item", // ai 2026-10
 
-// include/constants.php, row 1036
+// include/constants.php, row 1083
 "Use different template for editing" => "Utiliser différent modèle pour les modifications", // ai 2026-10
 
-// include/constants.php, row 1037
+// include/constants.php, row 1084
 "Edit item form template" => "modifier le modèle pour les modifications des items", // ai 2026-10
 
-// include/constants.php, row 1086
+// include/constants.php, row 1133
 // include/discussion.php, row 211
 "Show selected" => "Montrer sélection", // ai 2026-10
 
-// include/constants.php, row 1087
+// include/constants.php, row 1134
 // include/discussion.php, row 212
 "Show all" => "Montrer tout",
 
-// include/constants.php, row 1088
+// include/constants.php, row 1135
 // include/constedit_util.php, row 136
 // include/discussion.php, row 213
 "Add new" => "Ajouter nouveau",
 
-// include/constants.php, row 1123
+// include/constants.php, row 1170
 "Calendar: Time stamp at 0:00 of processed cell" => "Calendrier: Marquer le temps à 0:00 de la cellule procédée", // ai 2026-10
 
-// include/constants.php, row 1124
+// include/constants.php, row 1171
 "Calendar: Time stamp at 24:00 of processed cell" => "Calendrier: Marquer le temps à 24:00 de la cellule procédée", // ai 2026-10
 
-// include/constants.php, row 1125
+// include/constants.php, row 1172
 "Calendar: Day in month of processed cell" => "Calendrier: jour du mois de la cellule procédée", // ai 2026-10
 
-// include/constants.php, row 1126
+// include/constants.php, row 1173
 "Calendar: Month number of processed cell" => "Calendrier: numéro du mois de la cellule procédée", // ai 2026-10
 
-// include/constants.php, row 1127
+// include/constants.php, row 1174
 "Calendar: Year number of processed cell" => "Calendrier: année de la cellule procédée", // ai 2026-10
 
-// include/constants.php, row 1195
+// include/constants.php, row 1242
 "Superadmin" => "Super-administrateur",
 
 // include/constedit.php, row 55
@@ -5751,6 +5985,7 @@ return [
 "Save all changes to database" => "Enregistrer tous les changements dans la base de données", // ai 2026-06
 
 // include/constedit.php, row 96
+// src/Optimize/CheckViewDirectRefusals.php, row 86
 // src/Optimize/CheckViewSliceRefusals.php, row 132
 "View settings" => "Voir les configurations",
 
@@ -5764,7 +5999,7 @@ return [
 "Levels horizontal" => "Niveaux horizontaux",
 
 // include/constedit.php, row 102
-// src/Widget/Widget.php, row 869
+// src/Widget/Widget.php, row 892
 "Level count" => "Comptage de niveau",
 
 // include/constedit_util.php, row 137, 140
@@ -5774,16 +6009,16 @@ return [
 // include/constedit_util.php, row 599
 "No group id specified" => "Aucun id de groupe spécifié", // ai 2026-06
 
-// include/constedit_util.php, row 720
+// include/constedit_util.php, row 719
 "This constant group is used by ActionApps itself and can't be changed here" => "Ce groupe de constantes est utilisé par ActionApps lui-même et ne peut pas être modifié ici", // ai 2026-10
 
-// include/constedit_util.php, row 723
+// include/constedit_util.php, row 722
 "You do not have permissions to change fields settings for the slice owning this group" => "Vous n'avez pas la permission de changer les configurations des champs pour la section possédant ce groupe", // ai 2026-10
 
-// include/constedit_util.php, row 728
+// include/constedit_util.php, row 727
 "The constant group is used also in slice you do not have permissions to change fields settings" => "Le groupe de constantes est aussi utilisé dans une section où vous n'avez pas la permission de modifier la configuration des champs", // ai 2026-10
 
-// include/constedit_util.php, row 784
+// include/constedit_util.php, row 783
 " items changed to new value " => " items changés pour la nouvelle valeur ", // ai 2026-10
 
 // include/date.php, row 36
@@ -5840,9 +6075,6 @@ return [
 // include/feeding.php, row 449, 490
 "Map" => "Mapper", // ai 2026-06
 
-// include/feeding.php, row 450, 489
-"Run (queue)" => "Exécuter (file d'attente)", // ai 2026-06
-
 // include/feeding.php, row 463, 469, 526
 "Local slice" => "Section locale", // ai 2026-06
 
@@ -5873,93 +6105,93 @@ return [
 // include/feeding.php, row 525
 "Remote node" => "Nœud distant", // ai 2026-06
 
-// include/field.class.php, row 204
+// include/field.class.php, row 207
 "unique value - it is checked before it is trimmed, so a duplicate could slip through" => "valeur unique – elle est vérifiée avant la suppression des espaces, un doublon pourrait donc passer", // ai 2026-10
 
-// include/field.class.php, row 209
+// include/field.class.php, row 212
 "code - its indentation and the last new line are kept on purpose" => "code – son indentation et le dernier saut de ligne sont conservés à dessein", // ai 2026-10
 
-// include/field.class.php, row 213
+// include/field.class.php, row 216
 "multi-line text - its new lines at the start or end may be relied on" => "texte multiligne - les modèles peuvent dépendre de ses sauts de ligne en début ou en fin", // ai 2026-11
 
-// include/field.class.php, row 220
+// include/field.class.php, row 223
 "stores the text of the selected items" => "enregistre le texte des items sélectionnés", // ai 2026-10
 
-// include/field.class.php, row 226
+// include/field.class.php, row 229
 "constants of a group" => "constantes d'un groupe", // ai 2026-10
 
-// include/field.class.php, row 233
+// include/field.class.php, row 236
 "the constant \"%1\" has spaces or new lines around - trim the constants first" => "la constante « %1 » est entourée d'espaces ou de sauts de ligne – nettoyez d'abord les constantes", // ai 2026-10
 
-// include/field.class.php, row 762
+// include/field.class.php, row 765
 "Move to another field" => "Déplacer vers un autre champ", // ai 2026-06
 
-// include/field.class.php, row 789
+// include/field.class.php, row 792
 "always" => "toujours", // ai 2026-11
 
-// include/field.class.php, row 794
+// include/field.class.php, row 797
 "(missing condition)" => "(condition manquante)", // ai 2026-11
 
-// include/field.class.php, row 798
+// include/field.class.php, row 801
 "Edit the condition" => "Modifier la condition", // ai 2026-11
 
-// include/field.class.php, row 1156
-// include/itemview.php, row 130
+// include/field.class.php, row 1204
+// include/itemview.php, row 132
 "number of found items" => "Nombre d'items trouvés", // ai 2026-10
 
-// include/field.class.php, row 1157
+// include/field.class.php, row 1205
 "index of item within whole listing (begins with 0)" => "index de l'item dans la liste complète (commence à 0)", // ai 2026-06
 
-// include/field.class.php, row 1158
+// include/field.class.php, row 1206
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "index de l'item dans une page (commence à 0 sur chaque page affichée par le pagescroller)", // ai 2026-06
 
-// include/field.class.php, row 1159
+// include/field.class.php, row 1207
 "index of a group on page (it begins from 0 on each page)" => "index d'un groupe sur la page (commence à 0 sur chaque page)", // ai 2026-06
 
-// include/field.class.php, row 1160
+// include/field.class.php, row 1208
 "index of item within a group on page (it begins from 0 on each group)" => "index de l'item dans un groupe sur la page (commence à 0 dans chaque groupe)", // ai 2026-06
 
-// include/field.class.php, row 1161
+// include/field.class.php, row 1209
 "alias for Item ID" => "alia pour l'identité des items", // ai 2026-10
 
-// include/field.class.php, row 1162
+// include/field.class.php, row 1210
 "alias for Short Item ID" => "alais pour les courtes identité des items", // ai 2026-10
 
-// include/field.class.php, row 1170, 1171
+// include/field.class.php, row 1218, 1219
 "alias used on admin page index.php for itemedit url" => "Alias utilisé sur la page administrative index.php pour itemedit url", // ai 2026-10
 
-// include/field.class.php, row 1172
+// include/field.class.php, row 1220
 "Alias used on admin page index.php for edit discussion url" => "Alias utilisé sur la page administrative index.php pour modifier l'URL de la discussion", // ai 2026-10
 
-// include/field.class.php, row 1173
+// include/field.class.php, row 1221
 "Title of Slice for RSS" => "Titre de la section pour RSS", // ai 2026-10
 
-// include/field.class.php, row 1174
+// include/field.class.php, row 1222
 "Link to the Slice for RSS" => "lien vers la section pour RSS", // ai 2026-10
 
-// include/field.class.php, row 1175
+// include/field.class.php, row 1223
 "Short description (owner and name) of slice for RSS" => "Courte description (maître et nom) de la section pour RSS", // ai 2026-10
 
-// include/field.class.php, row 1176
+// include/field.class.php, row 1224
 "Date RSS information is generated, in RSS date format" => "Date de génération de l'information RSS, au format de date RSS", // ai 2026-10
 
-// include/field.class.php, row 1177
+// include/field.class.php, row 1225
 "Slice name" => "Nom de la section",
 
-// include/field.class.php, row 1179
+// include/field.class.php, row 1227
 "Current MLX language" => "Langue MLX actuelle", // ai 2026-06
 
-// include/field.class.php, row 1180
+// include/field.class.php, row 1228
 "HTML markup direction tag (e.g. DIR=RTL)" => "Balise HTML de direction du texte (ex. DIR=RTL)", // ai 2026-06
 
-// include/field.class.php, row 1263, 1554
-// src/Util/Searchfields.php, row 179
+// include/field.class.php, row 1311, 1608
+// src/Util/Searchfields.php, row 199
 "-- any text field --" => "-- n'importe quel champ texte --", // ai 2026-06
 
-// include/field.class.php, row 1372
+// include/field.class.php, row 1420
 " (this)" => " (celui-ci)", // ai 2026-06
 
-// include/field.class.php, row 1435, 1448, 1462
+// include/field.class.php, row 1483, 1502, 1516
 "Can't copy field" => "Impossible de copier le champ", // ai 2026-10
 
 // include/filedit.php, row 82
@@ -6027,7 +6259,7 @@ return [
 "Unable to create file" => "Incapable de créer le fichier", // ai 2026-10
 
 // include/fileman.php, row 397
-// include/slicedit.php, row 205
+// include/slicedit.php, row 199
 "Wrong directory name." => "mauvais nom de répertoire", // ai 2026-10
 
 // include/fileman.php, row 403
@@ -6109,7 +6341,7 @@ return [
 "Widget" => "",
 
 // include/form.class.php, row 212
-// include/logs.php, row 1305
+// include/logs.php, row 1310
 // src/Manageraction/Item_Move2Slice.php, row 54
 "Slice ID" => "ID de la section", // ai 2026-06
 
@@ -6117,147 +6349,147 @@ return [
 "Form Row - special widget for form setting" => "Ligne de formulaire - widget spécial pour la configuration du formulaire", // ai 2026-06
 
 // include/form.class.php, row 248
-// src/Widget/Widget.php, row 749
+// src/Widget/Widget.php, row 772
 "Values array" => "Tableau de valeurs", // ai 2026-06
 
 // include/form.class.php, row 248
 "Directly specified array of values (do not use Constants, if filled)" => "Tableau de valeurs indiqué directement (s'il est rempli, n'utilisez pas les Constantes)", // ai 2026-06
 
 // include/form.class.php, row 332
-// src/Widget/Widget.php, row 737
+// src/Widget/Widget.php, row 760
 "Rows" => "Lignes", // ai 2026-06
 
 // include/form.class.php, row 343
 // include/menu.php, row 148
 "Forms" => "Formulaires", // ai 2026-06
 
-// include/formutil.php, row 205
+// include/formutil.php, row 209
 "Update & View" => "Mise à jour et vue", // ai 2026-10
 
-// include/formutil.php, row 212
+// include/formutil.php, row 216
 "Insert as new" => "Insérer comme nouveau", // ai 2026-10
 
-// include/formutil.php, row 216, 3017
+// include/formutil.php, row 220, 3024
 "Reset form" => "Effacer le formulaire",
 
-// include/formutil.php, row 222
+// include/formutil.php, row 226
 "Insert & Edit" => "Insérer et modifier", // ai 2026-06
 
-// include/formutil.php, row 223
+// include/formutil.php, row 227
 "Insert & View" => "insérer et voir", // ai 2026-10
 
-// include/formutil.php, row 317
+// include/formutil.php, row 321
 "Part" => "Partie", // ai 2026-06
 
-// include/formutil.php, row 410
+// include/formutil.php, row 414
 "No fields defined for this slice" => "Aucun champ n'est défini  sur cette section", // ai 2026-10
 
-// include/formutil.php, row 963
+// include/formutil.php, row 967
 "set" => "activé", // ai 2026-10
 
-// include/formutil.php, row 963
+// include/formutil.php, row 967
 "unset" => "désactivé", // ai 2026-10
 
-// include/formutil.php, row 1093
+// include/formutil.php, row 1097
 "Unable to find tagprefix table %1" => "Incapable de trouver tagprefix table %1",
 
-// include/formutil.php, row 1245
+// include/formutil.php, row 1249
 "import" => "importer",
 
-// include/formutil.php, row 1260
+// include/formutil.php, row 1264
 // src/Widget/RichtextMarkup.php, row 83
-// src/Widget/TxtWidget.php, row 226
+// src/Widget/TxtWidget.php, row 232
 "Edit in Editor" => "Modifier dans la zone HTML",
 
-// include/formutil.php, row 1273
-// include/transformation.class.php, row 193, 382, 455, 549, 739
+// include/formutil.php, row 1277
+// include/transformation.class.php, row 194, 383, 456, 550, 740
 // include/widget.class.php, row 665
 "Plain text" => "texte",
 
-// include/formutil.php, row 1315
-// include/transformation.class.php, row 661
+// include/formutil.php, row 1319
+// include/transformation.class.php, row 662
 "Translate" => "Traduire", // ai 2026-06
 
-// include/formutil.php, row 1825, 1829
+// include/formutil.php, row 1829, 1833
 "Enter the value" => "Saisissez la valeur", // ai 2026-06
 
-// include/formutil.php, row 1829
+// include/formutil.php, row 1833
 // include/menu.php, row 141
 // src/Import/DetailCatalog.php, row 140
 // src/Util/ChangesMonitor.php, row 450
 "Change" => "Changer",
 
-// include/formutil.php, row 1972, 2159
+// include/formutil.php, row 1976, 2163
 // src/Widget/MchWidget.php, row 135
-// src/Widget/Widget.php, row 836
+// src/Widget/Widget.php, row 859
 "Selected" => "Sélectionné", // ai 2026-10
 
-// include/formutil.php, row 2158
+// include/formutil.php, row 2162
 "Offer" => "Offrir",
 
-// include/formutil.php, row 2223
-// include/stringexpand.php, row 11543, 11566
+// include/formutil.php, row 2227
+// include/stringexpand.php, row 11585, 11608
 // src/Import/DetailCatalog.php, row 178
 // src/Widget/MflWidget.php, row 144
 // src/Widget/RimWidget.php, row 288
 "new" => "nouveau", // ai 2026-06
 
-// include/formutil.php, row 2243
+// include/formutil.php, row 2247
 "Change Password" => "Changer le mot de passe",
 
-// include/formutil.php, row 2245
+// include/formutil.php, row 2249
 "Delete Password" => "Supprimer le mot de passe",
 
-// include/formutil.php, row 2254
-// include/searchlib.php, row 61, 129, 132, 135, 138, 141
+// include/formutil.php, row 2258
+// include/searchlib.php, row 61, 186, 189, 192, 195, 198
 // src/Central/FindingText.php, row 412
 // src/Credential/Store.php, row 53
 "not set" => "non défini", // ai 2026-10
 
-// include/formutil.php, row 3020
+// include/formutil.php, row 3027
 "Submit" => "Porposer",
 
-// include/formutil.php, row 3328
+// include/formutil.php, row 3335
 "Group Name" => "Nom du groupe",
 
-// include/formutil.php, row 3329
-// include/logs.php, row 754, 854, 1122
+// include/formutil.php, row 3336
+// include/logs.php, row 758, 858, 1127
 // src/Optimize/CheckNightly.php, row 146, 153
-// src/Optimize/StateCheckModel.php, row 270
+// src/Optimize/StateCheckModel.php, row 273
 "Count" => "Nombre", // ai 2026-06
 
-// include/formutil.php, row 3330
+// include/formutil.php, row 3337
 "Created on" => "Créé le", // ai 2026-10
 
-// include/formutil.php, row 3331
+// include/formutil.php, row 3338
 "Created by" => "Créé par", // ai 2026-10
 
-// include/formutil.php, row 3332
+// include/formutil.php, row 3339
 "Last updated" => "Mis à jour le", // ai 2026-10
 
-// include/formutil.php, row 3333
+// include/formutil.php, row 3340
 "Updated by" => "Mis à jour par", // ai 2026-06
 
-// include/formutil.php, row 3341
+// include/formutil.php, row 3348
 "All active items" => "Tous les items actifs", // ai 2026-06
 
-// include/formutil.php, row 3343
+// include/formutil.php, row 3350
 "All pending items" => "Tous les items en attente", // ai 2026-06
 
-// include/formutil.php, row 3344
+// include/formutil.php, row 3351
 "All expired items" => "Tous les items expirés", // ai 2026-06
 
-// include/formutil.php, row 3345
+// include/formutil.php, row 3352
 "All items in holding bin" => "Tous les items à approuver", // ai 2026-06
 
-// include/formutil.php, row 3346
+// include/formutil.php, row 3353
 "All items in trash bin" => "Tous les items de la corbeille", // ai 2026-06
 
-// include/init_page.php, row 84
+// include/init_page.php, row 85
 // include/locauth.php, row 137
 "Either your username or your password is not valid" => "Votre nom d'usager ou votre mot de passe ne sont pas valides",
 
-// include/init_page.php, row 136
+// include/init_page.php, row 138
 "No slice found for you" => "Aucune section trouvée pour vous", // ai 2026-10
 
 // include/item.php, row 113
@@ -6386,28 +6618,28 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Niveau constant (utilisé pour les constantes hierarchiques)", // ai 2026-10
 
-// include/item.php, row 830
+// include/item.php, row 852
 "Error: wrong alias function %1 for %2" => "Erreur : fonction d'alias %1 incorrecte pour %2", // ai 2026-06
 
-// include/item_content.php, row 1134, 1192
+// include/item_content.php, row 1136, 1194
 "No Slice Id specified" => "Aucun ID de section spécifié", // ai 2026-06
 
-// include/item_content.php, row 1180
+// include/item_content.php, row 1182
 "No Permission to insert Item for user %1" => "Pas de permission d'insérer un item pour l'utilisateur %1", // ai 2026-06
 
-// include/item_content.php, row 1196
+// include/item_content.php, row 1198
 "Bad Item Id" => "ID d'item incorrect", // ai 2026-06
 
-// include/item_content.php, row 1337
+// include/item_content.php, row 1339
 "No Id specified (%1 - %2)" => "Aucun ID spécifié (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1342
+// include/item_content.php, row 1344
 "Duplicated ID - skipped (%1 - %2)" => "ID dupliqué - ignoré (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1367
+// include/item_content.php, row 1369
 "StoreItem for slice %1 - failed parameter check for id = '%2'" => "StoreItem pour la section %1 - échec du contrôle des paramètres pour id = '%2'", // ai 2026-06
 
-// include/item_content.php, row 1377
+// include/item_content.php, row 1379
 "No Status code" => "Aucun code de statut", // ai 2026-06
 
 // include/itemfunc.php, row 67
@@ -6442,6 +6674,11 @@ return [
 
 // include/itemfunc.php, row 192
 "Expires" => "Expire", // ai 2026-06
+
+// include/itemfunc.php, row 193
+// include/modutils.php, row 149
+// src/Util/Note.php, row 60
+"Created" => "Création", // ai 2026-06
 
 // include/itemfunc.php, row 194
 "Last edited" => "Dernière modification", // ai 2026-06
@@ -6559,200 +6796,203 @@ return [
 "Multivalue" => "Multivaleur", // ai 2026-06
 
 // include/itemfunc.php, row 807
-// include/transformation.class.php, row 572
+// include/transformation.class.php, row 573
 "Delimiter" => "Délimiteur", // ai 2026-06
 
-// include/itemfunc.php, row 982
+// include/itemfunc.php, row 969
 // src/Isds/SliceRules.php, row 303, 382
 "Text = don't modify" => "Texte = ne pas modifier", // ai 2026-06
 
-// include/itemfunc.php, row 986
+// include/itemfunc.php, row 973
 "Does not modify the value." => "Ne modifie pas la valeur.", // ai 2026-06
 
-// include/itemfunc.php, row 995
+// include/itemfunc.php, row 982
 "Date = don't modify" => "Date = ne pas modifier", // ai 2026-06
 
-// include/itemfunc.php, row 999, 1015
+// include/itemfunc.php, row 986, 1002
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "Ne modifie pas la valeur (comme Texte), mais il vaut mieux la distinguer pour un usage futur.", // ai 2026-06
 
-// include/itemfunc.php, row 1011
+// include/itemfunc.php, row 998
 "Number = don't modify" => "Nombre = ne pas modifier", // ai 2026-06
 
-// include/itemfunc.php, row 1024
+// include/itemfunc.php, row 1011
 "Boolean = store 0 or 1" => "Booléen = enregistre 0 ou 1", // ai 2026-06
 
-// include/itemfunc.php, row 1042
+// include/itemfunc.php, row 1029
 "Float" => "Flottant", // ai 2026-06
 
-// include/itemfunc.php, row 1046
+// include/itemfunc.php, row 1033
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "Vrai flottant - peut convertir les grands nombres en notation scientifique (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 1060
+// include/itemfunc.php, row 1047
 "Decimal" => "Décimal", // ai 2026-06
 
-// include/itemfunc.php, row 1064
+// include/itemfunc.php, row 1051
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "Identique à Flottant, mais ne convertit pas les grands nombres en notation scientifique (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 1078
+// include/itemfunc.php, row 1065
 "Trim" => "Rogner", // ai 2026-06
 
-// include/itemfunc.php, row 1082
+// include/itemfunc.php, row 1069
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Supprime les espaces au début et à la fin et normalise aussi l'UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 1105
+// include/itemfunc.php, row 1092
 "Item IDs" => "ID d'items", // ai 2026-06
 
-// include/itemfunc.php, row 1140
+// include/itemfunc.php, row 1127
 "The tag '%1' could not be stored: %2" => "L'étiquette « %1 » n'a pas pu être enregistrée : %2", // ai 2026-10
 
-// include/itemfunc.php, row 1174
+// include/itemfunc.php, row 1161
 "User ID = always store current user ID" => "ID utilisateur = enregistre toujours l'ID de l'utilisateur actuel", // ai 2026-06
 
-// include/itemfunc.php, row 1178
+// include/itemfunc.php, row 1165
 "Inserts the identity of the current user, no matter what the user sets." => "Insère l'identité de l'utilisateur actuel, quelle que soit la valeur saisie par l'utilisateur.", // ai 2026-06
 
-// include/itemfunc.php, row 1230
+// include/itemfunc.php, row 1217
 "Now = always store current time" => "Maintenant = toujours enregistrer l'heure actuelle", // ai 2026-06
 
-// include/itemfunc.php, row 1234
+// include/itemfunc.php, row 1221
 "Inserts the current time, no matter what the user sets." => "Insère l'heure actuelle, quelle que soit la valeur saisie par l'utilisateur.", // ai 2026-06
 
-// include/itemfunc.php, row 1268
+// include/itemfunc.php, row 1255
 "Computed field for INSERT/UPDATE" => "Champ calculé pour INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1272
+// include/itemfunc.php, row 1259
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Le champ est le résultat de l'expression écrite dans \"Code de résolution des alias\". C'est une bonne solution pour toutes les valeurs qui peuvent être précalculées, car leur calcul au moment de l'affichage de l'item serait lent. Oui, vous pouvez utiliser ici {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1281
+// include/itemfunc.php, row 1268
 "Code for unaliasing (INSERT)" => "Code de résolution des alias (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1281, 1317
+// include/itemfunc.php, row 1268, 1304
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Vous pouvez y écrire n'importe quelle chaîne. Les alias de la chaîne seront résolus lors de l'enregistrement de l'item, vous pouvez donc utiliser ici toute construction {...} ainsi que les alias de champs", // ai 2026-06
 
-// include/itemfunc.php, row 1282
+// include/itemfunc.php, row 1269
 "Code for unaliasing (UPDATE)" => "Code de résolution des alias (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1282
+// include/itemfunc.php, row 1269
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Identique à ci-dessus, mais uniquement pour l'opération UPDATE. Si non rempli, la valeur du champ reste inchangée", // ai 2026-06
 
-// include/itemfunc.php, row 1283
+// include/itemfunc.php, row 1270
 "Multivalue delimiter" => "Séparateur multi-valeurs", // ai 2026-06
 
-// include/itemfunc.php, row 1283
+// include/itemfunc.php, row 1270
 "Character or string, which will split the computed string into multiple values (the same field)" => "Caractère ou chaîne qui divisera la chaîne calculée en plusieurs valeurs (du même champ)", // ai 2026-06
 
-// include/itemfunc.php, row 1284
+// include/itemfunc.php, row 1271
 "Recompute every" => "Recalculer chaque", // ai 2026-06
 
-// include/itemfunc.php, row 1284
+// include/itemfunc.php, row 1271
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "Le champ sera recalculé chaque minute, heure, ... (à l'aide du code UPDATE ci-dessus). Les délais ne sont pas exacts - une minute signifie environ 1 à 10 minutes. Si non rempli, le champ ne sera recalculé que lors de l'insertion/mise à jour de l'item.", // ai 2026-06
 
-// include/itemfunc.php, row 1304
+// include/itemfunc.php, row 1291
 "Computed field" => "Champ calculé", // ai 2026-06
 
-// include/itemfunc.php, row 1308
+// include/itemfunc.php, row 1295
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Le champ est le résultat de l'expression écrite dans \\\"Code de résolution des alias\\\". C'est une bonne solution pour toutes les valeurs qui peuvent être précalculées, car leur calcul au moment de l'affichage de l'item serait lent. Oui, vous pouvez utiliser ici {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1317
+// include/itemfunc.php, row 1304
 "Code for unaliasing (INSERT+UPDATE)" => "Code de résolution des alias (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1339
+// include/itemfunc.php, row 1326
 "SEO Name" => "Nom SEO", // ai 2026-06
 
-// include/itemfunc.php, row 1343
+// include/itemfunc.php, row 1330
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Si le champ n'est pas rempli, calcule le seoname à partir de l'alias _#HEADLINE (ou d'un autre si spécifié), unique parmi toutes les sections des modules site où la section figure dans le paramètre \"Uses slices\". L'alias Nom SEO est en fait un raccourci pour un champ calculé avec {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1352
+// include/itemfunc.php, row 1339
 "Alias to compute from" => "Alias à partir duquel calculer", // ai 2026-06
 
-// include/itemfunc.php, row 1352
+// include/itemfunc.php, row 1339
 "if not specified, the _#HEADLINE is used" => "si non spécifié, _#HEADLINE est utilisé", // ai 2026-06
 
-// include/itemfunc.php, row 1372
+// include/itemfunc.php, row 1359
 "Unique number for this field (from 1,..)" => "Numéro unique pour ce champ (à partir de 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1376
+// include/itemfunc.php, row 1363
 "A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "Un nouvel item reçoit le plus grand numéro de ce champ dans la section + 1 (1 pour le premier item). Les items de tous les casiers comptent, Corbeille comprise, si bien qu'un numéro n'est jamais attribué deux fois. Toute valeur apportée par le nouvel item (copie d'un autre item, import, sauvegarde de section restaurée) est remplacée. Un item existant garde son numéro lorsque le champ arrive vide et lorsqu'une alimentation le met à jour. Nécessite des tables InnoDB – avec MyISAM, deux insertions simultanées peuvent recevoir le même numéro.", // ai 2026-10
 
-// include/itemfunc.php, row 1502
+// include/itemfunc.php, row 1489
 "File = uploaded file" => "Fichier = fichier téléversé", // ai 2026-06
 
-// include/itemfunc.php, row 1506
+// include/itemfunc.php, row 1493
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Enregistre le fichier téléversé et un lien vers celui-ci ; les paramètres ne s'appliquent que si le type est image/quelque chose.", // ai 2026-06
 
-// include/itemfunc.php, row 1515
+// include/itemfunc.php, row 1502
 "Mime types accepted" => "Types MIME acceptés", // ai 2026-06
 
-// include/itemfunc.php, row 1515
+// include/itemfunc.php, row 1502
 "Only files of matching mime types will be accepted" => "Seuls les fichiers dont le type MIME correspond seront acceptés", // ai 2026-06
 
-// include/itemfunc.php, row 1516
+// include/itemfunc.php, row 1503
 "Maximum image width" => "Largeur maximale de l'image", // ai 2026-06
 
-// include/itemfunc.php, row 1517
+// include/itemfunc.php, row 1504
 "Maximum image height" => "Hauteur maximale de l'image", // ai 2026-06
 
-// include/itemfunc.php, row 1517
+// include/itemfunc.php, row 1504
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "L'image sera rééchantillonnée pour respecter ces limites, tout en conservant ses proportions.", // ai 2026-06
 
-// include/itemfunc.php, row 1518
+// include/itemfunc.php, row 1505
 "Other fields" => "Autres champs", // ai 2026-06
 
-// include/itemfunc.php, row 1518
+// include/itemfunc.php, row 1505
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Liste des autres champs devant recevoir cette image, séparés par ##. Fonctionne mal avec les téléversements multiples.", // ai 2026-06
 
-// include/itemfunc.php, row 1519
+// include/itemfunc.php, row 1506
 "Upload policy" => "Politique de téléversement", // ai 2026-06
 
-// include/itemfunc.php, row 1519
+// include/itemfunc.php, row 1506
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Ce paramètre détermine ce qui se passe si le fichier téléversé existe déjà :<br>new - AA crée un nouveau nom de fichier (en ajoutant le suffixe _x) et l'enregistre sous ce nouveau nom (par défaut)<br>overwrite - l'ancien fichier du même nom est écrasé<br>backup - l'ancien fichier est copié vers un nouveau fichier (inexistant) et le fichier actuel est enregistré sous son nom actuel.<br>Dans tous les cas, le nom de fichier est échappé : tout caractère non alphanumérique sera remplacé par un tiret bas.", // ai 2026-06
 
-// include/itemfunc.php, row 1520
+// include/itemfunc.php, row 1507
 "Exact dimensions" => "Dimensions exactes", // ai 2026-06
 
-// include/itemfunc.php, row 1520
+// include/itemfunc.php, row 1507
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Si la valeur est 1, l'image sera réduite exactement aux dimensions spécifiées (et recadrée si nécessaire). Par défaut 0 ou vide : les proportions de l'image sont conservées lors du redimensionnement.", // ai 2026-06
 
-// include/itemfunc.php, row 1521
+// include/itemfunc.php, row 1508
 "Filename template" => "Modèle de nom de fichier", // ai 2026-06
 
-// include/itemfunc.php, row 1521
+// include/itemfunc.php, row 1508
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Renomme le fichier selon le modèle. Vous pouvez utiliser des expressions AA ainsi que les alias spéciaux _#name et _#ext ou _#full (nom du fichier, extension et nom complet). Les alias d'item dans les expressions AA ne fonctionnent pas lors d'un INSERT (l'item n'existe pas encore au moment de l'écriture du fichier). Ils fonctionneront lors d'un UPDATE.", // ai 2026-06
 
-// include/itemfunc.php, row 1682
+// include/itemfunc.php, row 1669
 "Password and Change Password" => "Mot de passe et changement de mot de passe", // ai 2026-06
 
-// include/itemfunc.php, row 1686
+// include/itemfunc.php, row 1673
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Enregistre la valeur d'un champ de type \"Mot de passe et changement de mot de passe\". Vérifie d'abord que le nouveau mot de passe correspond au nouveau mot de passe ressaisi et, si c'est le cas, chiffre le nouveau mot de passe et l'enregistre.", // ai 2026-06
 
-// include/itemfunc.php, row 1695
+// include/itemfunc.php, row 1682
 "Copy of password" => "Copie du mot de passe", // ai 2026-06
 
-// include/itemfunc.php, row 1695
+// include/itemfunc.php, row 1682
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id où stocker la copie du mot de passe. Parfois utile si vous voulez permettre aux utilisateurs de récupérer leur ancien mot de passe. Il est fortement recommandé de ne pas le stocker en clair mais de le chiffrer. Voir le second paramètre.", // ai 2026-06
 
-// include/itemfunc.php, row 1696, 1742
+// include/itemfunc.php, row 1683, 1736
 "Encrypt phrase" => "Phrase de chiffrement", // ai 2026-06
 
-// include/itemfunc.php, row 1696
+// include/itemfunc.php, row 1683
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Si vous spécifiez le champ « Copie du mot de passe », il est recommandé de chiffrer le mot de passe dans la base de données. Saisissez ici une chaîne quelconque. Si vous avez ensuite besoin du mot de passe, vous pouvez le déchiffrer depuis le champ en utilisant la même phrase - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1729
+// include/itemfunc.php, row 1723
 "2FA Secret" => "Secret 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1733
+// include/itemfunc.php, row 1727
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Génère et stocke le secret pour l'authentification à deux facteurs, éventuellement chiffré par mot de passe", // ai 2026-06
 
-// include/itemfunc.php, row 1742
+// include/itemfunc.php, row 1736
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Mot de passe utilisé pour chiffrer la valeur de ce champ. Peut contenir des expressions ou alias AA (pour l'item utilisateur dans la section Gestion des lecteurs)", // ai 2026-06
 
-// include/itemview.php, row 123
+// include/itemfunc.php, row 1797
+"Wrong password or code" => "Mot de passe ou code incorrect", // ai 2026-11
+
+// include/itemview.php, row 125
 "Selected item" => "Item sélectionné", // ai 2026-06
 
-// include/itemview.php, row 378
+// include/itemview.php, row 380
 "No comment was selected" => "Aucun commentaire sélectionné", // ai 2026-10
 
-// include/itemview.php, row 723, 731
+// include/itemview.php, row 727, 735
 "exact group name" => "nom exact du groupe", // ai 2026-06
 
 // include/locauth.php, row 134
@@ -6764,13 +7004,14 @@ return [
 // include/locauth.php, row 140
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Si vous êtes certain d'avoir tapé le bon mot de passe, envoyez un courriel à <a href=mailto:%1>%1</a>", // ai 2026-10
 
-// include/logs.php, row 548
+// include/logs.php, row 549
 "Created time" => "Date de création", // ai 2026-06
 
-// include/logs.php, row 549
+// include/logs.php, row 550
 "Readers to be emailed" => "Lecteurs à qui envoyer le courriel", // ai 2026-06
 
-// include/logs.php, row 561
+// include/logs.php, row 562
+// src/Optimize/CheckAjaxUnsigned.php, row 80
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckFormRobotRefusals.php, row 75
 // src/Optimize/CheckNightly.php, row 144, 153
@@ -6778,250 +7019,246 @@ return [
 // src/Optimize/CheckServerRefusals.php, row 68
 "Page" => "Page", // ai 2026-10
 
-// include/logs.php, row 636, 680, 695
+// include/logs.php, row 637, 681, 699
 "Time [s]" => "Temps [s]", // ai 2026-06
 
-// include/logs.php, row 637, 682
+// include/logs.php, row 638, 683
 "Memory usage [MB]" => "Mémoire utilisée [Mo]", // ai 2026-06
 
-// include/logs.php, row 638
+// include/logs.php, row 639
 "Memory peak [MB]" => "Pic mémoire [Mo]", // ai 2026-06
 
-// include/logs.php, row 639
+// include/logs.php, row 640
 "Return code" => "Code de retour", // ai 2026-06
 
-// include/logs.php, row 655
+// include/logs.php, row 656
 "Tasks done" => "Tâches terminées", // ai 2026-06
 
-// include/logs.php, row 656
+// include/logs.php, row 657
 "Tasks started" => "Tâches lancées", // ai 2026-06
 
-// include/logs.php, row 657
+// include/logs.php, row 658
 "Duration [s]" => "Durée [s]", // ai 2026-06
 
-// include/logs.php, row 658
+// include/logs.php, row 659
 "Allowed [s]" => "Autorisé [s]", // ai 2026-06
 
-// include/logs.php, row 678
+// include/logs.php, row 679
 "Cached" => "En cache", // ai 2026-06
 
-// include/logs.php, row 679
+// include/logs.php, row 680
 "Not Modified (304)" => "Non modifié (304)", // ai 2026-06
 
-// include/logs.php, row 681
+// include/logs.php, row 682
 "Time + Cached + 304" => "Temps + cache + 304", // ai 2026-06
 
-// include/logs.php, row 683, 696, 906, 1096
+// include/logs.php, row 684, 700, 910, 1101
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 724
+// include/logs.php, row 728
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 725
+// include/logs.php, row 729
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 726
+// include/logs.php, row 730
 "DB" => "BD", // ai 2026-06
 
-// include/logs.php, row 727
+// include/logs.php, row 731
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Mémoire", // ai 2026-06
 
-// include/logs.php, row 728
+// include/logs.php, row 732
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 729
+// include/logs.php, row 733
 // src/Optimize/CheckEnvironment.php, row 64
 "Server settings" => "Paramètres du serveur", // ai 2026-10
 
-// include/logs.php, row 753, 852
+// include/logs.php, row 757, 856
 "Severity" => "Gravité", // ai 2026-10
 
-// include/logs.php, row 755, 850, 879
+// include/logs.php, row 759, 854, 883
 "Finding" => "Constat", // ai 2026-10
 
-// include/logs.php, row 773
+// include/logs.php, row 777
 "Problems" => "Problèmes", // ai 2026-10
 
-// include/logs.php, row 774
+// include/logs.php, row 778
 "Warnings" => "Avertissements", // ai 2026-10
 
-// include/logs.php, row 775
+// include/logs.php, row 779
 "Recommendations" => "Recommandations", // ai 2026-10
 
-// include/logs.php, row 776
+// include/logs.php, row 780
 "Checks" => "Vérifications", // ai 2026-10
 
-// include/logs.php, row 796, 827
+// include/logs.php, row 800, 831
 // src/Import/DetailPage.php, row 324, 391, 840
 // src/Manageraction/Import_Run.php, row 29
 // src/Optimize/CheckIsdsRuns.php, row 309
+// src/Optimize/CheckMailbulkRuns.php, row 90
 "Run" => "Lancer", // ai 2026-10
 
-// include/logs.php, row 800
+// include/logs.php, row 804
 "Last full run" => "Dernière exécution complète", // ai 2026-10
 
-// include/logs.php, row 801
+// include/logs.php, row 805
 "Last full run started" => "Début de la dernière exécution complète", // ai 2026-10
 
-// include/logs.php, row 826, 851
+// include/logs.php, row 830, 855
 "Pair" => "Paire", // ai 2026-10
 
-// include/logs.php, row 828
+// include/logs.php, row 832
 // src/Optimize/CheckNightly.php, row 89
 "Ran" => "Exécuté", // ai 2026-10
 
-// include/logs.php, row 829, 853
+// include/logs.php, row 833, 857
 "Known issue" => "Problème connu", // ai 2026-10
 
-// include/logs.php, row 855
+// include/logs.php, row 859
 // src/Optimize/CheckNightly.php, row 147, 153
 "First seen" => "Première détection", // ai 2026-10
 
-// include/logs.php, row 856
+// include/logs.php, row 860
 // src/Optimize/CheckNightly.php, row 148, 153
 "Runs in a row" => "Exécutions consécutives", // ai 2026-10
 
-// include/logs.php, row 880
+// include/logs.php, row 884
 "Evidence" => "Preuves", // ai 2026-10
 
-// include/logs.php, row 903
+// include/logs.php, row 907
 "Identifier" => "Identifiant", // ai 2026-06
 
-// include/logs.php, row 904, 1272, 1287
-// modules/jump/modedit.php, row 177
-// src/Manager.php, row 816
+// include/logs.php, row 908, 1277, 1292
+// modules/jump/modedit.php, row 191
+// src/Manager.php, row 810
 "Module ID" => "ID du module", // ai 2026-06
 
-// include/logs.php, row 921
+// include/logs.php, row 925
 "Template id" => "Id du modèle", // ai 2026-06
 
-// include/logs.php, row 923
+// include/logs.php, row 927
 "Emails sent" => "Courriels envoyés", // ai 2026-06
 
-// include/logs.php, row 962
+// include/logs.php, row 966
 "Object id" => "Id de l'objet", // ai 2026-10
 
-// include/logs.php, row 994
+// include/logs.php, row 998
 "Mail template" => "Modèle de courriel", // ai 2026-10
 
-// include/logs.php, row 995
+// include/logs.php, row 999
 "Reader item" => "Item du lecteur", // ai 2026-10
 
-// include/logs.php, row 996
+// include/logs.php, row 1000
 "Origin" => "Origine", // ai 2026-10
 
-// include/logs.php, row 1067
+// include/logs.php, row 1072
 "Transport" => "Transport", // ai 2026-10
 
-// include/logs.php, row 1068
+// include/logs.php, row 1073
 "Recipients sent" => "Destinataires atteints", // ai 2026-10
 
-// include/logs.php, row 1069
+// include/logs.php, row 1074
 "Server response" => "Réponse du serveur", // ai 2026-10
 
-// include/logs.php, row 1082
+// include/logs.php, row 1087
 "Items selected" => "Items sélectionnés", // ai 2026-06
 
-// include/logs.php, row 1083
+// include/logs.php, row 1088
 "Items updated" => "Items mis à jour", // ai 2026-06
 
-// include/logs.php, row 1084
+// include/logs.php, row 1089
 "Items planned" => "Items planifiés", // ai 2026-06
 
-// include/logs.php, row 1095
-// src/Import/DetailPage.php, row 1076
-// src/Optimize/CheckPhpFatals.php, row 64
-"Message" => "Message", // ai 2026-10
-
-// include/logs.php, row 1097
+// include/logs.php, row 1102
 "Referer" => "Référent", // ai 2026-06
 
-// include/logs.php, row 1108
+// include/logs.php, row 1113
 "New name" => "Nouveau nom", // ai 2026-06
 
-// include/logs.php, row 1109
+// include/logs.php, row 1114
 "Old name" => "Ancien nom", // ai 2026-06
 
-// include/logs.php, row 1120, 1185
+// include/logs.php, row 1125, 1190
 // src/Optimize/CheckIsdsRuns.php, row 175
 "Phase" => "Phase", // ai 2026-10
 
-// include/logs.php, row 1121
+// include/logs.php, row 1126
 // src/Optimize/CheckAlertitemRefusals.php, row 97
 // src/Optimize/CheckAlerts.php, row 76
 "Collection" => "Collection", // ai 2026-10
 
-// include/logs.php, row 1123, 1174, 1186, 1321
+// include/logs.php, row 1128, 1179, 1191, 1326
 // src/Import/Definition.php, row 155
 // src/Optimize/CheckPasskeys.php, row 84
 // src/Optimize/CheckUploadRefusals.php, row 94
 "Detail" => "Détail", // ai 2026-06
 
-// include/logs.php, row 1173
+// include/logs.php, row 1178
 // src/Import/Definition.php, row 136, 163
 // src/Isds/Registry/Page.php, row 514
 "Status" => "État", // ai 2026-06
 
-// include/logs.php, row 1225
+// include/logs.php, row 1230
 "Processed" => "Traités", // ai 2026-06
 
-// include/logs.php, row 1226
+// include/logs.php, row 1231
 "Stored" => "Stockés", // ai 2026-06
 
-// include/logs.php, row 1227
+// include/logs.php, row 1232
 "Errors" => "Erreurs", // ai 2026-06
 
-// include/logs.php, row 1240
+// include/logs.php, row 1245
 // src/Import/DetailPage.php, row 353
 "Outcome" => "Résultat", // ai 2026-06
 
-// include/logs.php, row 1256
+// include/logs.php, row 1261
 "Flags" => "Indicateurs", // ai 2026-06
 
-// include/logs.php, row 1257
+// include/logs.php, row 1262
 "Context" => "Contexte", // ai 2026-06
 
-// include/logs.php, row 1273
+// include/logs.php, row 1278
 "Feed counterpart" => "Contrepartie d'alimentation", // ai 2026-06
 
-// include/logs.php, row 1288
+// include/logs.php, row 1293
 "Field ID" => "ID du champ", // ai 2026-06
 
-// include/logs.php, row 1306
-// src/Optimize/CheckAjaxUnsigned.php, row 82
+// include/logs.php, row 1311
+// src/Optimize/CheckAjaxUnsigned.php, row 102
 // src/Optimize/CheckFileReadRefusals.php, row 78
 // src/Optimize/CheckHttp.php, row 62
 // src/Optimize/CheckPasskeys.php, row 83
 // src/Optimize/CheckUploadRefusals.php, row 92
 "Reason" => "Raison", // ai 2026-10
 
-// include/mail.php, row 657
+// include/mail.php, row 745
 "Email type" => "Type de courriel", // ai 2026-06
 
-// include/mail.php, row 661
+// include/mail.php, row 749
 "— all modules (global) —" => "— tous les modules (global) —", // ai 2026-10
 
-// include/mail.php, row 661
-// include/modutils.php, row 88, 177
-// include/slicedit.php, row 188
-// include/statestore.php, row 1081
-// src/Optimize/CheckObjectFormRefusals.php, row 100
+// include/mail.php, row 749
+// include/modutils.php, row 88, 192
+// include/slicedit.php, row 182
+// include/statestore.php, row 1146
+// src/Optimize/CheckObjectFormRefusals.php, row 102
 "Owner" => "Propriétaire", // ai 2026-10
 
-// include/mail.php, row 662
+// include/mail.php, row 750
 "Description/Result" => "Description/Résultat", // ai 2026-06
 
-// include/mail.php, row 667
+// include/mail.php, row 753
 "From (email) " => "De (courriel)", // ai 2026-06
 
-// include/mail.php, row 670
+// include/mail.php, row 756
 "Envelop sender (email)" => "Expéditeur de l'enveloppe (courriel)", // ai 2026-06
 
-// include/mail.php, row 671
+// include/mail.php, row 757
 // misc/datovka/datovka.php, row 156
 "Attachments" => "Pièces jointes", // ai 2026-06
 
@@ -7254,7 +7491,7 @@ return [
 "Jump inside control panel" => "Aller au panneau de contrôle", // ai 2026-10
 
 // include/menu_util.php, row 451
-// include/slice.class.php, row 1450
+// include/slice.class.php, row 1624
 // src/Central/FindingText.php, row 311
 "Links" => "Liens",
 
@@ -7263,7 +7500,7 @@ return [
 
 // include/menu_util.php, row 453
 // src/Module/Poll/Menu.php, row 83
-"Polls" => "mise en commun",
+"Polls" => "Sondages", // ai 2026-11
 
 // include/menu_util.php, row 474
 "New slice" => "Nouvelle section",
@@ -7294,7 +7531,7 @@ return [
 "Feedback" => "Retour d'information", // ai 2026-06
 
 // include/menu_util.php, row 763
-// include/slice.class.php, row 678
+// include/slice.class.php, row 752
 "Reader management" => "gestion des lecteurs",
 
 // include/menu_util.php, row 775
@@ -7309,25 +7546,22 @@ return [
 // include/menu_util.php, row 872
 "Collapse / expand menu" => "Replier / déplier le menu", // ai 2026-06
 
-// include/metabase.class.php, row 1662
+// include/metabase.class.php, row 1634
 "More" => "Plus", // ai 2026-06
 
-// include/mlx.php, row 387
+// include/mlx.php, row 385
 // src/Central/FindingText.php, row 456
 "view" => "voir", // ai 2026-06
 
-// include/mlx.php, row 427
-"Bad item ID %1" => "ID d'item incorrect %1", // ai 2026-06
-
-// include/mlx.php, row 432
+// include/mlx.php, row 430
 "No ID for MLX" => "Aucun ID pour MLX", // ai 2026-06
 
-// include/modutils.php, row 76, 178
-// include/slicedit.php, row 189
+// include/modutils.php, row 76, 193
+// include/slicedit.php, row 183
 "URL of .shtml page (often leave blank)" => "URL de la page .shtml (souvent vide)",
 
-// include/modutils.php, row 77, 179
-// include/slicedit.php, row 192
+// include/modutils.php, row 77, 194
+// include/slicedit.php, row 186
 "Priority (order in slice-menu)" => "Priorité (ordre dans le menu des sections)", // ai 2026-06
 
 // include/modutils.php, row 83
@@ -7336,23 +7570,26 @@ return [
 // include/modutils.php, row 133
 "Deleted" => "Supprimée", // ai 2026-10
 
-// include/modutils.php, row 180
-// include/slicedit.php, row 196
+// include/modutils.php, row 149
+"by" => "par", // ai 2026-06
+
+// include/modutils.php, row 195
+// include/slicedit.php, row 190
 "Used Language File" => "Fichier de langue utilisé", // ai 2026-10
 
-// include/modutils.php, row 251
+// include/modutils.php, row 266
 "Select owner" => "Sélectionner Maître", // ai 2026-10
 
-// include/perm_core.php, row 1414, 1444
+// include/perm_core.php, row 1451, 1481
 "Reader Slice" => "Section de lecteurs", // ai 2026-06
 
-// include/perm_core.php, row 1429, 1446
+// include/perm_core.php, row 1466, 1483
 "Reader Set" => "Ensemble de lecteurs", // ai 2026-06
 
 // include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
 "Rule added" => "Règle ajoutée", // ai 2026-10
 
-// include/profile.php, row 111
+// include/profile.php, row 112
 "--disabled-- (added by \"Show field\" rule)" => "--désactivé-- (ajouté par la règle \"Show field\")", // ai 2026-06
 
 // include/request.class.php, row 107
@@ -7362,35 +7599,35 @@ return [
 // src/Import/DetailPage.php, row 451
 "Previous" => "Précédent", // ai 2026-10
 
-// include/scroller.php, row 296
+// include/scroller.php, row 306
 "found" => "trouvés", // ai 2026-06
 
-// include/scroller.php, row 452
+// include/scroller.php, row 462
 "&raquo;" => "",
 
-// include/scroller.php, row 453
+// include/scroller.php, row 463
 "&laquo;" => "",
 
-// include/se_users.php, row 76
+// include/se_users.php, row 80
 "deleted user" => "utilisateur supprimé", // ai 2026-10
 
-// include/se_users.php, row 81
+// include/se_users.php, row 85
 "Reader" => "Lecteur", // ai 2026-06
 
-// include/se_users.php, row 84
+// include/se_users.php, row 88
 "ReaderGroup" => "Groupe de lecteurs", // ai 2026-06
 
-// include/se_users.php, row 133
+// include/se_users.php, row 137
 "Search user or group" => "Recherche usager ou groupe",
 
-// include/se_users.php, row 148
+// include/se_users.php, row 152
 // include/um_util.php, row 108
 "Assign new permissions" => "Assignez de nouvelles permissions",
 
-// include/se_users.php, row 175
+// include/se_users.php, row 179
 "Try to be more specific." => "Soyez plus précis", // ai 2026-10
 
-// include/se_users.php, row 192
+// include/se_users.php, row 196
 "More users found. Refine your search." => "D'autres utilisateurs ont été trouvés. Affinez votre recherche.", // ai 2026-06
 
 // include/searchbar.class.php, row 54
@@ -7466,233 +7703,284 @@ return [
 // include/searchlib.php, row 60
 "bit is set" => "bit activé", // ai 2026-06
 
-// include/searchlib.php, row 62, 129, 132, 135, 138, 141
+// include/searchlib.php, row 62, 186, 189, 192, 195, 198
 "is set" => "est renseigné", // ai 2026-06
 
-// include/searchlib.php, row 63, 129
+// include/searchlib.php, row 63, 186
 "is e-mail" => "est un courriel", // ai 2026-06
 
-// include/searchlib.php, row 64, 129
+// include/searchlib.php, row 64, 186
 "not e-mail" => "n'est pas un courriel", // ai 2026-06
 
-// include/searchlib.php, row 65, 129, 138
+// include/searchlib.php, row 65, 186, 195
 "match (RegExp)" => "correspond (RegExp)", // ai 2026-06
 
-// include/searchlib.php, row 66, 129, 138
+// include/searchlib.php, row 66, 186, 195
 "not match (RegExp)" => "ne correspond pas (RegExp)", // ai 2026-06
 
-// include/searchlib.php, row 138, 141
-// include/statestore.php, row 1367
+// include/searchlib.php, row 130
+"exact match" => "correspondance exacte", // ai 2026-11
+
+// include/searchlib.php, row 139
+"ends with" => "se termine par", // ai 2026-11
+
+// include/searchlib.php, row 141
+"contains, as written" => "contient, tel quel", // ai 2026-11
+
+// include/searchlib.php, row 142
+"begins with, as written" => "commence par, tel quel", // ai 2026-11
+
+// include/searchlib.php, row 148
+"between two numbers: 1,5" => "entre deux nombres : 1,5", // ai 2026-11
+
+// include/searchlib.php, row 149
+"all the bits are set" => "tous les bits sont activés", // ai 2026-11
+
+// include/searchlib.php, row 150
+"any of the bits is set" => "l'un des bits est activé", // ai 2026-11
+
+// include/searchlib.php, row 154
+"date as 12/31/2001 or -1 week" => "date au format 12/31/2001 ou -1 week", // ai 2026-11
+
+// include/searchlib.php, row 155
+"date as 24. 12. 2001" => "date au format 24. 12. 2001", // ai 2026-11
+
+// include/searchlib.php, row 156
+"now - x [in seconds]" => "maintenant - x [en secondes]", // ai 2026-11
+
+// include/searchlib.php, row 159
+"before" => "avant", // ai 2026-11
+
+// include/searchlib.php, row 159
+"not after" => "pas après", // ai 2026-11
+
+// include/searchlib.php, row 159
+"after" => "après", // ai 2026-11
+
+// include/searchlib.php, row 159
+"not before" => "pas avant", // ai 2026-11
+
+// include/searchlib.php, row 195, 198
+// include/statestore.php, row 1432
 "select ..." => "Sélectionner ...", // ai 2026-10
 
-// include/searchlib.php, row 448
+// include/searchlib.php, row 505
 "Limit" => "Limite", // ai 2026-06
 
-// include/slice.class.php, row 428
+// include/slice.class.php, row 484
 "Error while loading module settings form:" => "Erreur lors du chargement du formulaire de configuration du module :", // ai 2026-06
 
-// include/slice.class.php, row 679
+// include/slice.class.php, row 753
 "Code - Pages" => "Code - Pages", // ai 2026-10
 
-// include/slice.class.php, row 680
+// include/slice.class.php, row 754
 "Code - Views / Snippets" => "Code - Vues / Snippets", // ai 2026-06
 
-// include/slice.class.php, row 681
+// include/slice.class.php, row 755
 // src/Optimize/CheckImports.php, row 275
 "Constant" => "Constante", // ai 2026-06
 
-// include/slice.class.php, row 682
-// include/transformation.class.php, row 752
+// include/slice.class.php, row 756
+// include/transformation.class.php, row 753
 "Translations" => "Traductions", // ai 2026-06
 
-// include/slice.class.php, row 683
+// include/slice.class.php, row 757
 "Field definitions" => "Définitions des champs", // ai 2026-06
 
-// include/slice.class.php, row 914
-// include/util.php, row 996
+// include/slice.class.php, row 1031
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Erreur: mot de passe de lecture manquant",
 
-// include/slice.class.php, row 1317
+// include/slice.class.php, row 1490
 "Spot ID" => "ID du spot", // ai 2026-06
 
-// include/slice.class.php, row 1317
+// include/slice.class.php, row 1490
 "You can include this spot code in another spot by using {sitespot:%1}" => "Vous pouvez inclure le code de ce spot dans un autre spot en utilisant {sitespot:%1}", // ai 2026-06
 
-// include/slice.class.php, row 1335
+// include/slice.class.php, row 1509
 "Spot name" => "Nom du spot", // ai 2026-06
 
-// include/slice.class.php, row 1478
+// include/slice.class.php, row 1652
 "Jump inside AA control panel" => "Aller au panneau de contrôle AA", // ai 2026-10
 
-// include/slice.class.php, row 1503
+// include/slice.class.php, row 1677
 "Polls for AA" => "MIse en commun de AA",
 
-// include/slice.class.php, row 1572
+// include/slice.class.php, row 1804
 "Languages for translation" => "Langues de traduction", // ai 2026-06
 
-// include/slice.class.php, row 1572
+// include/slice.class.php, row 1804
 "specify language codes in which you want to translate content - small caps, two letters - like: en, es, de, ..." => "indiquez les codes des langues dans lesquelles vous voulez traduire le contenu - en minuscules, deux lettres - comme : en, es, de, ...", // ai 2026-06
 
-// include/slice.class.php, row 1573
+// include/slice.class.php, row 1805
 "Automatic field creation" => "Création automatique de champs", // ai 2026-06
 
-// include/slice.class.php, row 1573
+// include/slice.class.php, row 1805
 "If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template." => "Si coché, la section permet d'enregistrer des valeurs dans un champ text....*, même si le champ text....* correspondant n'est pas défini dans la section. Le champ sera créé en utilisant le champ text............ comme modèle.", // ai 2026-06
 
-// include/slice.class.php, row 1574
+// include/slice.class.php, row 1806
 "Fields defined by another slice" => "Champs définis par une autre section", // ai 2026-06
 
-// include/slice.class.php, row 1574
+// include/slice.class.php, row 1806
 "You can use special slice for additional fields definition. There you can write slice ID, which defines the fields.<br>Could be used for data slice, which stores values for user created forms." => "Vous pouvez utiliser une section spéciale pour la définition de champs supplémentaires. Indiquez ici l'ID de la section qui définit les champs.<br>Utile pour une section de données qui stocke les valeurs de formulaires créés par les utilisateurs.", // ai 2026-06
 
-// include/slice.class.php, row 1575
+// include/slice.class.php, row 1807
 "Store item history for N days" => "Conserver l'historique des items pendant N jours", // ai 2026-06
 
-// include/slice.class.php, row 1575
+// include/slice.class.php, row 1807
 "ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted" => "ALL - ne pas supprimer l'historique (par défaut)<br>0 - ne pas conserver l'historique des items (ni les événements ITEM_UPD/ITEM_NEW dans le Journal)<br><em>nombre</em> - nombre de jours après lesquels l'historique des items sera supprimé", // ai 2026-06
 
-// include/slice.class.php, row 1576
+// include/slice.class.php, row 1808
 "No pending items" => "Pas d'items en attente", // ai 2026-06
 
-// include/slice.class.php, row 1576
+// include/slice.class.php, row 1808
 "1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - désactive complètement le dossier « En attente » dans cette section (le champ publish_date se comporte comme un champ normal)<br>{aa-expression} - si évaluée à 1, désactive le contrôle « en attente » (pour view, slice, {ids...}) (utilisez ici une expression {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
-// include/slice.class.php, row 1577
+// include/slice.class.php, row 1809
 "No expired items" => "Pas d'items expirés", // ai 2026-06
 
-// include/slice.class.php, row 1577
+// include/slice.class.php, row 1809
 "1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - désactive complètement le dossier « Expirés » dans cette section (le champ expiry_date se comporte comme un champ normal)<br>{aa-expression} - si évaluée à 1, désactive le contrôle de la date d'expiration (pour view, slice, {ids...}) (utilisez ici une expression {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
-// include/slice.class.php, row 1639
+// include/slice.class.php, row 1876
 "Slice with translations" => "Section avec traductions", // ai 2026-06
 
-// include/slice.class.php, row 1639
+// include/slice.class.php, row 1876
 "the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')" => "la section utilisée pour les traductions {tr:text...} (la section doit avoir uniquement le champ headline........ marqué « Autoriser la traduction »)", // ai 2026-06
 
-// include/slice.class.php, row 1640
+// include/slice.class.php, row 1877
 "Additional aliases" => "Alias supplémentaires", // ai 2026-06
 
-// include/slice.class.php, row 1640
+// include/slice.class.php, row 1877
 "Select sitemodule, where we have to look for additional {_:...} aliases" => "Sélectionnez le module site où chercher les alias {_:...} supplémentaires", // ai 2026-06
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1878
 "sitemap.xml alias" => "Alias pour sitemap.xml", // ai 2026-06
 
-// include/slice.class.php, row 1641
+// include/slice.class.php, row 1878
 "The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown." => "Le sitemap.xml sera généré à partir de toutes les sections (dans l'ordre ci-dessus) où l'alias indiqué (par ex. _#SMAP_URL) existe. L'alias doit générer l'URL complète de l'item dans chaque section. Pour les items privés/cachés, il doit générer une chaîne vide afin que l'URL ne soit pas affichée.", // ai 2026-06
 
-// include/slice.class.php, row 1642
+// include/slice.class.php, row 1879
 "Permission alias" => "Alias de permission", // ai 2026-06
 
-// include/slice.class.php, row 1642
+// include/slice.class.php, row 1879
 "You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word \"Valid\", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule." => "Vous pouvez définir l'alias qui sera vérifié pour tous les {xid} (=pages) affichés. Si la valeur est le mot \"Valid\", la page sera affichée. Sinon, le formulaire de connexion (voir ci-dessous) sera affiché. Bien sûr, vous n'êtes pas obligé d'utiliser cette fonctionnalité et pouvez procéder à l'ancienne manière - directement dans l'arborescence du sitemodule.", // ai 2026-06
 
-// include/slice.class.php, row 1643
+// include/slice.class.php, row 1880
 "HTML code for \"Login page\"" => "Code HTML pour \"Page de connexion\"", // ai 2026-06
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1881
 // src/Central/FindingText.php, row 434
 "User login databases" => "Bases de données de connexion des utilisateurs", // ai 2026-06
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1881
 // src/Central/FindingText.php, row 409
 "first Reader Management slice listed in Uses slices" => "première section de Gestion des lecteurs listée dans \"Uses slices\"", // ai 2026-06
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1881
 // src/Central/FindingText.php, row 410
 "all Reader Management slices listed in Uses slices" => "toutes les sections de Gestion des lecteurs listées dans \"Uses slices\"", // ai 2026-06
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1881
 // src/Central/FindingText.php, row 411
 // src/Isds/SliceRules.php, row 99
 // src/Optimize/CheckIsdsAccounts.php, row 137
 "AA + all Reader Management slices in AA (old behavior)" => "AA + toutes les sections de Gestion des lecteurs dans AA (ancien comportement)", // ai 2026-06
 
-// include/slice.class.php, row 1644
+// include/slice.class.php, row 1881
 "First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used." => "L'option recommandée est la première section de Gestion des lecteurs - seules les personnes de cette section peuvent se connecter aux pages publiques. Si rien n'est sélectionné, l'option \"AA + toutes les sections de Gestion des lecteurs\" est utilisée.", // ai 2026-06
 
-// include/slice.class.php, row 1645
+// include/slice.class.php, row 1882
 "Google analytics tracking id" => "ID de suivi Google Analytics", // ai 2026-06
 
-// include/slice.class.php, row 1645
+// include/slice.class.php, row 1882
 "If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site." => "Si vous utilisez {generate:HEAD} et {generate:FOOT} dans le code de votre sitemodule, le code Google Analytics est généré avec cet ID de suivi. Le code généré pourra changer à l'avenir si Google modifie son extrait.<br>Pour utiliser la barre de consentement, ajoutez {eucookies} ou {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} dans le site.", // ai 2026-06
 
-// include/slice.class.php, row 1646
+// include/slice.class.php, row 1883
 "Alternate URL" => "URL alternative", // ai 2026-06
 
-// include/slice.class.php, row 1646
-"Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "Autre(s) domaine(s) sur lesquels le site doit être visible. Envisagez toutefois une redirection côté serveur vers un domaine unique, plus favorable au référencement (SEO).", // ai 2026-06
+// include/slice.class.php, row 1883
+"Another domain(s) for which the web should be visible, like https://www.example.org. One address of each page is more SEO friendly - see Redirect to the main URL." => "Autre(s) domaine(s) sur le(s)quel(s) le web doit être visible, par exemple https://www.example.org. Une seule adresse par page est meilleure pour le SEO - voir « Rediriger vers l'URL principale ».", // ai 2026-11
 
-// include/slice.class.php, row 1647
+// include/slice.class.php, row 1885
+"Redirect to the main URL" => "Rediriger vers l'URL principale", // ai 2026-11
+
+// include/slice.class.php, row 1885
+"Checked - a visit to an Alternate URL is permanently redirected (301) to the same page on the URL of the site, so each page has one address. The URL of the site must be filled in with https:// (or http://) and must be the address the web server does not redirect away from - otherwise the redirect does nothing or loops. Browsers remember a 301, so unchecking does not undo it for visitors who already got it. Form submissions (POST) are not redirected; the www. form of the site URL is left to the web server." => "Coché - une visite sur une « URL alternative » est redirigée de façon permanente (301) vers la même page à l'URL du site ; chaque page a ainsi une seule adresse. L'URL du site doit être saisie avec https:// (ou http://) et doit être une adresse que le serveur web ne redirige pas ailleurs - sinon la redirection est sans effet ou tourne en boucle. Les navigateurs mémorisent une redirection 301 : décocher ne l'annule donc pas pour les visiteurs qui l'ont déjà reçue. Les envois de formulaires (POST) ne sont pas redirigés ; la forme www. de l'URL du site est laissée au serveur web.", // ai 2026-11
+
+// include/slice.class.php, row 1886
 "Languages on website" => "Langues du site web", // ai 2026-06
 
-// include/slice.class.php, row 1647
+// include/slice.class.php, row 1886
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Listez toutes les langues pour lesquelles vous voulez utiliser le module site - en, es, cz, ..<br>Veuillez <b>le faire</b>, même si vous n'utilisez qu'une seule langue. <br>C'est indispensable si vous voulez appeler le module site de la manière la plus récente depuis Apache :<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1887
 "Allowed {xflag} values" => "Valeurs {xflag} autorisées", // ai 2026-11
 
-// include/slice.class.php, row 1648
+// include/slice.class.php, row 1887
 "Regular expression the {xflag} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or \"-\" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - \"t\" or \"p\", or nothing<br>(print|pdf)? - one of the listed words, or nothing" => "Expression régulière à laquelle la partie {xflag} de l'URL doit correspondre entièrement (^ et \$ inutiles), sinon la page répond 404. {xflag} désigne les caractères situés juste après la langue et le numéro de page facultatif {xpage} : /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... Elle ne contient jamais de chiffre ni de « - » - ceux-ci la terminent.<br>Les pages sans {xflag} doivent aussi passer - terminez le motif par ? ou ajoutez une alternative vide.<br><b>Vide</b> - toute valeur sans « = ».<br><b>^\$</b> - {xflag} n'est pas utilisé, uniquement les pages sans lui.<br>Exemples :<br>[a-z]? - une lettre, ou rien<br>[tp]? - « t » ou « p », ou rien<br>(print|pdf)? - l'un des mots indiqués, ou rien", // ai 2026-11
 
-// include/slice.class.php, row 1649
+// include/slice.class.php, row 1888
 "Allowed {xcat} values" => "Valeurs {xcat} autorisées", // ai 2026-11
 
-// include/slice.class.php, row 1649
+// include/slice.class.php, row 1888
 "Regular expression the {xcat} part of the URL must match as a whole (no ^ or \$ needed), otherwise the page answers 404. {xcat} is everything after the first \"-\" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but \"/\".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without \"=\".<br><b>^\$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing" => "Expression régulière à laquelle la partie {xcat} de l'URL doit correspondre entièrement (^ et \$ inutiles), sinon la page répond 404. {xcat} désigne tout ce qui suit le premier « - » dans le premier répertoire : /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... Elle peut contenir n'importe quoi sauf « / ».<br>Les pages sans {xcat} doivent aussi passer - terminez le motif par ? ou ajoutez une alternative vide.<br><b>Vide</b> - toute valeur sans « = ».<br><b>^\$</b> - {xcat} n'est pas utilisé, uniquement les pages sans lui.<br>Exemples :<br>[a-z0-9-]* - lettres minuscules, chiffres et tirets, ou rien<br>([0-9]+)? - un nombre, ou rien<br>(bioplyn|kompost)? - l'un des mots indiqués, ou rien", // ai 2026-11
 
-// include/slice.class.php, row 1650
+// include/slice.class.php, row 1889
 "Check the page path" => "Vérifier le chemin de la page", // ai 2026-11
 
-// include/slice.class.php, row 1650
+// include/slice.class.php, row 1889
 "Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when \"Page not Found\" is set to \"Do not care\"." => "Répondre 404 lorsqu'une partie du chemin ({xseo1}, {xseo2}, ...) n'est pas un item publié ; ainsi /cz/nonsense/about-us n'affiche pas la page about-us. La réponse est 404 même si « Page non trouvée » est réglé sur « Sans importance ».", // ai 2026-11
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1890
 "Page not Found (404)" => "Page non trouvée (404)", // ai 2026-06
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1890
 "Do not care" => "Sans importance", // ai 2026-06
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1890
 "Send standard 404 page, when {xid} is empty" => "Envoyer la page 404 standard quand {xid} est vide", // ai 2026-06
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1890
 "Send code below" => "Envoyer le code ci-dessous", // ai 2026-06
 
-// include/slice.class.php, row 1651
+// include/slice.class.php, row 1890
 "When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "Si la première option \"Peu importe\" est sélectionnée (ancien comportement), vous devez tester vous-même les {xid} non remplis dans votre sitemodule", // ai 2026-06
 
-// include/slice.class.php, row 1652
+// include/slice.class.php, row 1891
 "HTML code for \"Page not Found\" (404)" => "Code HTML pour \"Page non trouvée\" (404)", // ai 2026-06
 
-// include/slice.class.php, row 1654
+// include/slice.class.php, row 1893
+"Yes - the views of all the slices this site uses work only inside pages and other templates ({view:...}, {view.php?...}); their own addresses (view.php?vid=..., jsview.php?vid=...) show nothing and answer 404. Check first that no page loads a view by its address (AJAX, lazy loading, an include in an .shtml page) and that no RSS or other feed is a view. A refused call is listed in State Check." => "Oui - les vues de toutes les sections utilisées par ce site ne fonctionnent qu'à l'intérieur des pages et d'autres modèles ({view:...}, {view.php?...}) ; leurs propres adresses (view.php?vid=..., jsview.php?vid=...) n'affichent rien et répondent 404. Vérifiez d'abord qu'aucune page ne charge une vue par son adresse (AJAX, chargement différé, inclusion dans une page .shtml) et qu'aucun flux RSS ou autre n'est une vue. Un appel refusé est listé dans « Vérification de l'état ».", // ai 2026-11
+
+// include/slice.class.php, row 1895
 "Publish in the app store" => "Publier dans le catalogue d'applications", // ai 2026-10
 
-// include/slice.class.php, row 1654
+// include/slice.class.php, row 1895
 "Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too." => "Tout AA pourra alors installer ce site avec les sections et les Alertes qu'il utilise – leurs modèles, champs et vues, jamais les items. Les groupes de constantes d'autres sections doivent aussi appartenir à un site publié.", // ai 2026-10
 
-// include/slice.class.php, row 1655
+// include/slice.class.php, row 1896
 "App description" => "Description de l'application", // ai 2026-10
 
-// include/slice.class.php, row 1655
+// include/slice.class.php, row 1896
 "What the app does, for the list of the app store." => "Ce que fait l'application, pour la liste du catalogue d'applications.", // ai 2026-10
 
-// include/slice.class.php, row 1656
+// include/slice.class.php, row 1897
 "App version" => "Version de l'application", // ai 2026-10
 
-// include/slice.class.php, row 1656
+// include/slice.class.php, row 1897
 "Like 1.2.0." => "Par exemple 1.2.0.", // ai 2026-10
 
-// include/slice.class.php, row 1658
+// include/slice.class.php, row 1899
 "Published modules" => "Modules publiés", // ai 2026-10
 
-// include/slice.class.php, row 1667
+// include/slice.class.php, row 1908
 "Page address (URL)" => "Adresse de la page (URL)", // ai 2026-11
 
-// include/slice.class.php, row 1668
+// include/slice.class.php, row 1909
 "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first \"-\" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka" => "<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} est un nombre, {xflag} les lettres qui le suivent, {xcat} tout ce qui suit le premier « - » - tous trois sont facultatifs. {xlang} peut être omis si « Langues du site web » est réglé.<br>Par exemple /cz2t-bioplyn/zpravy/bioplynka : {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka", // ai 2026-11
 
-// include/slice.class.php, row 1710
+// include/slice.class.php, row 1935
 "The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "La version de l'application compte au plus 32 lettres, chiffres et . + - (par ex. 1.2.0), la description au plus %1 caractères.", // ai 2026-10
 
 // include/slice.php, row 69
@@ -7742,34 +8030,34 @@ return [
 // include/slicedit.php, row 86
 "Error mailing" => "Erreur en envoyant le(les) courriel",
 
-// include/slicedit.php, row 163
+// include/slicedit.php, row 157
 "The settings and the other fields of this page were not saved." => "Les paramètres et les autres champs de cette page n'ont pas été enregistrés.", // ai 2026-10
 
-// include/slicedit.php, row 191
+// include/slicedit.php, row 185
 "Upload URL" => "URL de téléversement", // ai 2026-06
 
-// include/slicedit.php, row 200
+// include/slicedit.php, row 194
 "Language Control Slice" => "Section de contrôle de langue", // ai 2026-06
 
-// include/slicedit.php, row 209
+// include/slicedit.php, row 203
 "This File Manager Directory is already used by another slice." => "Ce dossier gestionnaire de répertoire est déjà utilisé par une autre section", // ai 2026-10
 
-// include/slicedit.php, row 353
+// include/slicedit.php, row 347
 "Error when copying constants." => "Erreur en copiant les constantes",
 
-// include/slicedit.php, row 364
+// include/slicedit.php, row 358
 "Error when copying views." => "erreur en copiant les vues",
 
-// include/slicedit.php, row 372
+// include/slicedit.php, row 366
 "Internal error when changing user role." => "Erreur interne en changeant les rôles des usagers", // ai 2026-10
 
-// include/statestore.php, row 1081
+// include/statestore.php, row 1146
 "Owner ID" => "ID du propriétaire", // ai 2026-06
 
-// include/statestore.php, row 1175
+// include/statestore.php, row 1240
 "No object found" => "Aucun objet trouvé", // ai 2026-06
 
-// include/statestore.php, row 1449
+// include/statestore.php, row 1514
 "Manage components" => "Gérer les composants", // ai 2026-06
 
 // include/stringexpand.php, row 98
@@ -7784,214 +8072,215 @@ return [
 // include/stringexpand.php, row 941
 "Jabber Online Status Indicator" => "Indicateur de statut en ligne Jabber", // ai 2026-06
 
-// include/stringexpand.php, row 5513
+// include/stringexpand.php, row 5515
 "save changes" => "enregistrer les modifications", // ai 2026-06
 
-// include/stringexpand.php, row 5732
+// include/stringexpand.php, row 5734
 "No item ID" => "ID d'item manquant", // ai 2026-06
 
-// include/stringexpand.php, row 5739
+// include/stringexpand.php, row 5741
 "No transformations" => "Aucune transformation", // ai 2026-06
 
-// include/stringexpand.php, row 5753
+// include/stringexpand.php, row 5755
 "No slice for item" => "Aucune section pour l'item", // ai 2026-06
 
-// include/stringexpand.php, row 5754
+// include/stringexpand.php, row 5756
 "No current slice(s)" => "Aucune section courante", // ai 2026-06
 
-// include/stringexpand.php, row 5755
+// include/stringexpand.php, row 5757
 "Item slice is not in list of allowed slices" => "La section de l'item n'est pas dans la liste des sections autorisées", // ai 2026-06
 
-// include/stringexpand.php, row 5760
+// include/stringexpand.php, row 5762
 "No permit_anonymous_edit permission for the slice" => "La section n'a pas la permission permit_anonymous_edit", // ai 2026-06
 
-// include/stringexpand.php, row 6155
+// include/stringexpand.php, row 6157
 "No dictionaries specified for {dictionary}" => "Aucun dictionnaire spécifié pour {dictionary}", // ai 2026-06
 
-// include/stringexpand.php, row 6285
+// include/stringexpand.php, row 6287
 "No module for dictionary slice" => "Aucun module pour la section de dictionnaire", // ai 2026-06
 
-// include/stringexpand.php, row 8208
+// include/stringexpand.php, row 8213
 "version" => "version", // ai 2026-10
 
-// include/stringexpand.php, row 8396
+// include/stringexpand.php, row 8401
 "show" => "montrer", // ai 2026-06
 
-// include/stringexpand.php, row 8397
+// include/stringexpand.php, row 8402
 "hide" => "masquer", // ai 2026-06
 
-// include/stringexpand.php, row 8398
+// include/stringexpand.php, row 8403
 "loading" => "chargement", // ai 2026-06
 
-// include/stringexpand.php, row 9546
+// include/stringexpand.php, row 9554
 "E-mail confirmed." => "Courriel confirmé.", // ai 2026-06
 
-// include/stringexpand.php, row 9550
+// include/stringexpand.php, row 9563
 "E-mail unsubscribed" => "Courriel désabonné", // ai 2026-06
 
-// include/stringexpand.php, row 10311
+// include/stringexpand.php, row 10304
 "Forgot your password? Fill in your email." => "Mot de passe oublié ? Saisissez votre courriel.", // ai 2026-06
 
-// include/stringexpand.php, row 10313
+// include/stringexpand.php, row 10306
 // src/Central/FindingText.php, row 457
 "e-mail" => "courriel", // ai 2026-06
 
-// include/stringexpand.php, row 10331, 10335
+// include/stringexpand.php, row 10324, 10328
 "Unable to find user - please check if it has been misspelled." => "Utilisateur introuvable - veuillez vérifier l'orthographe.", // ai 2026-06
 
-// include/stringexpand.php, row 10349
+// include/stringexpand.php, row 10342
 "Password link" => "Lien de mot de passe", // ai 2026-06
 
-// include/stringexpand.php, row 10350
+// include/stringexpand.php, row 10343
 "Password change url parameter" => "Paramètre d'URL de changement de mot de passe", // ai 2026-06
 
-// include/stringexpand.php, row 10362
+// include/stringexpand.php, row 10355
 "Password change" => "Changement de mot de passe", // ai 2026-06
 
-// include/stringexpand.php, row 10363
+// include/stringexpand.php, row 10356
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Pour changer le mot de passe, veuillez visiter l'adresse suivante :<br>%1<br>Le changement sera possible pendant deux heures - ensuite la clé expirera et vous devrez en demander une nouvelle.", // ai 2026-06
 
-// include/stringexpand.php, row 10372
+// include/stringexpand.php, row 10365
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "Un courriel avec une clé pour changer le mot de passe vient d'être envoyé à l'adresse : %1", // ai 2026-06
 
-// include/stringexpand.php, row 10383, 10412
+// include/stringexpand.php, row 10376, 10405
 "Bad or expired key." => "Clé invalide ou expirée.", // ai 2026-06
 
-// include/stringexpand.php, row 10388
+// include/stringexpand.php, row 10381
 "Fill in the new password" => "Saisissez le nouveau mot de passe", // ai 2026-06
 
-// include/stringexpand.php, row 10390
+// include/stringexpand.php, row 10383
 "New password" => "Nouveau mot de passe", // ai 2026-06
 
-// include/stringexpand.php, row 10391
+// include/stringexpand.php, row 10384
 "Retype New Password" => "Ré-écrivez le nouveau mot de passe", // ai 2026-10
 
-// include/stringexpand.php, row 10415
+// include/stringexpand.php, row 10408
 "Passwords do not match - please try again." => "Les mots de passe ne correspondent pas - veuillez réessayer.", // ai 2026-06
 
-// include/stringexpand.php, row 10418
+// include/stringexpand.php, row 10411
 "The password must be at least 6 characters long." => "Le mot de passe doit comporter au moins 6 caractères.", // ai 2026-06
 
-// include/stringexpand.php, row 10424
+// include/stringexpand.php, row 10417
 "Password changed." => "Mot de passe changé.", // ai 2026-06
 
-// include/stringexpand.php, row 10426
+// include/stringexpand.php, row 10419
 "An error occurred during password change - please contact: %1." => "Une erreur s'est produite lors du changement de mot de passe - veuillez contacter : %1.", // ai 2026-06
 
-// include/stringexpand.php, row 11540, 11563
+// include/stringexpand.php, row 11582, 11605
 "Are you sure you want to permanently DELETE this record?" => "Souhaitez-vous vraiment supprimer de façon permanente cet enregistrement", // ai 2026-10
 
-// include/stringexpand.php, row 11546, 11549, 11569, 11572
+// include/stringexpand.php, row 11588, 11591, 11611, 11614
 // src/Widget/RimWidget.php, row 270
 "edit" => "Modifier",
 
-// include/stringexpand.php, row 11552, 11575
+// include/stringexpand.php, row 11594, 11617
 "back" => "retour", // ai 2026-06
 
-// include/stringexpand.php, row 11555, 11578
+// include/stringexpand.php, row 11597, 11620
 // src/Widget/RimWidget.php, row 297
 "drop files here or click to upload" => "déposez les fichiers ici ou cliquez pour téléverser", // ai 2026-06
 
-// include/transformation.class.php, row 159
+// include/transformation.class.php, row 160
 "Fill by value" => "Remplir avec une valeur", // ai 2026-06
 
-// include/transformation.class.php, row 167
+// include/transformation.class.php, row 168
 "Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ..." => "Renvoie une valeur unique (non multivaleur) créée comme résultat de l'expression AA spécifiée dans Expression. Vous pouvez utiliser n'importe quelle expression AA comme {ifset:{_#HEADLINE}:...}, ...", // ai 2026-06
 
-// include/transformation.class.php, row 194, 456, 550
+// include/transformation.class.php, row 195, 457, 551
 "As for other values of this field" => "Comme pour les autres valeurs de ce champ", // ai 2026-06
 
-// include/transformation.class.php, row 203, 389, 465, 560, 749
+// include/transformation.class.php, row 204, 390, 466, 561, 750
 "Mark as" => "Marquer comme", // ai 2026-06
 
-// include/transformation.class.php, row 206, 274, 468
+// include/transformation.class.php, row 207, 275, 469
 "New content" => "Nouveau contenu", // ai 2026-06
 
-// include/transformation.class.php, row 211, 473, 568
+// include/transformation.class.php, row 212, 474, 569
 "You can use also aliases, so the content \"&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}\" is perfectly OK" => "Vous pouvez aussi utiliser des alias, donc le contenu \"&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}\" est parfaitement valide", // ai 2026-06
 
-// include/transformation.class.php, row 237
+// include/transformation.class.php, row 238
 "Fill by exact values" => "Remplir avec des valeurs exactes", // ai 2026-06
 
-// include/transformation.class.php, row 245
+// include/transformation.class.php, row 246
 "Returns values exactly as specified (no evaluation, ...)" => "Renvoie les valeurs exactement comme spécifiées (sans évaluation, ...)", // ai 2026-06
 
-// include/transformation.class.php, row 274
+// include/transformation.class.php, row 275
 "Exact value only - no AA expressions" => "Valeur exacte uniquement - pas d'expressions AA", // ai 2026-06
 
-// include/transformation.class.php, row 295
+// include/transformation.class.php, row 296
 "Recompute field" => "Recalculer le champ", // ai 2026-06
 
-// include/transformation.class.php, row 303
+// include/transformation.class.php, row 304
 "Just recomputes field as specified in the field setting. Works just for Computed fields, of course. No parameters needed. If the Silent is not checked, all the computed fields are recomputed (just like with other transformations)" => "Recalcule simplement le champ selon les paramètres du champ. Ne fonctionne bien sûr que pour les champs calculés. Aucun paramètre nécessaire. Si Silencieux n'est pas coché, tous les champs calculés sont recalculés (comme pour les autres transformations)", // ai 2026-06
 
-// include/transformation.class.php, row 350
+// include/transformation.class.php, row 351
 "Set HTML/Plain-text flag" => "Définir l'indicateur HTML/Texte brut", // ai 2026-06
 
-// include/transformation.class.php, row 358
+// include/transformation.class.php, row 359
 "Changes the HTML or Plain-text flag for the field." => "Change l'indicateur HTML ou Texte brut du champ.", // ai 2026-06
 
-// include/transformation.class.php, row 420
+// include/transformation.class.php, row 421
 "Add value to field" => "Ajouter une valeur au champ", // ai 2026-06
 
-// include/transformation.class.php, row 428
+// include/transformation.class.php, row 429
 "Add new value to current content of field, so the field becomes multivalue.<br>You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ... for new value." => "Ajoute une nouvelle valeur au contenu actuel du champ, le champ devient donc multivaleur.<br>Vous pouvez utiliser n'importe quelle expression AA comme {ifset:{_#HEADLINE}:...}, ... pour la nouvelle valeur.", // ai 2026-06
 
-// include/transformation.class.php, row 505
+// include/transformation.class.php, row 506
 "Divide the text to multiple values (also for multilingual values)" => "Diviser le texte en plusieurs valeurs (aussi pour les valeurs multilingues)", // ai 2026-06
 
-// include/transformation.class.php, row 513
+// include/transformation.class.php, row 514
 "Parses the input text and looks for the delimiter. Separates the parts and stores them as multiple values to destination field" => "Analyse le texte d'entrée et recherche le délimiteur. Sépare les parties et les enregistre comme valeurs multiples dans le champ de destination", // ai 2026-06
 
-// include/transformation.class.php, row 563
+// include/transformation.class.php, row 564
 "Source text" => "Texte source", // ai 2026-06
 
-// include/transformation.class.php, row 577
+// include/transformation.class.php, row 578
 "use simple delimiter like | or longer like ---ENDTEXT---<br>use AA_LANG constant in delimiter to parse multilingual values like:   delimiter: |AA_LANG|   for Source text: |cz|text jedna|de|Ein text|en|text one" => "utilisez un délimiteur simple comme | ou plus long comme ---ENDTEXT---<br>utilisez la constante AA_LANG dans le délimiteur pour analyser les valeurs multilingues, par exemple :   délimiteur : |AA_LANG|   pour le texte source : |cz|text jedna|de|Ein text|en|text one", // ai 2026-06
 
-// include/transformation.class.php, row 669
+// include/transformation.class.php, row 670
 "Translates one value after other according to translation table. The result is multivalue, since each value of multivalue field is translated separately." => "Traduit les valeurs une à une selon la table de traduction. Le résultat est multivaleur, puisque chaque valeur d'un champ multivaleur est traduite séparément.", // ai 2026-06
 
-// include/transformation.class.php, row 681
+// include/transformation.class.php, row 682
 "No translations specified." => "Aucune traduction spécifiée.", // ai 2026-06
 
-// include/transformation.class.php, row 740
+// include/transformation.class.php, row 741
+// src/Import/DetailPage.php, row 353, 706
 "Unchanged" => "Inchangé", // ai 2026-06
 
-// include/transformation.class.php, row 757
+// include/transformation.class.php, row 758
 "Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src=\"_#0.jpg\"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be \"<code>:regexp:<regular expression>:<output></code>\". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> (\"Bio\" is replaced by two values). You can use any number of values here." => "Chaque traduction sur une nouvelle ligne, les traductions séparées par deux-points : (le caractère d'échappement pour les deux-points est #:).<br>Vous pouvez aussi utiliser des alias dans la traduction. Il existe également l'alias spécial _#0, qui contient le texte correspondant — la traduction suivante est parfaitement valide :<br><code> Bio:&lt;img src=\"_#0.jpg\"&gt; ({publish_date....})</code><br>Vous pouvez aussi utiliser des expressions régulières — dans ce cas la ligne sera \"<code>:regexp:<regular expression>:<output></code>\". Vous pouvez utiliser l'alias _#0 dans <output>, qui contient tout le texte correspondant.<br>Parfois vous souhaitez supprimer une valeur précise. Dans ce cas, utilisez le texte <code>AA_NULL</code> comme traduction :<br> <code>Bio:AA_NULL</code><br>Vous pouvez aussi créer plusieurs valeurs à partir d'une seule. Séparez alors les valeurs par deux-points :<br> <code>Bio:Environment:Ecology</code> (« Bio » est remplacé par deux valeurs). Vous pouvez utiliser ici autant de valeurs que vous voulez.", // ai 2026-06
 
-// include/transformation.class.php, row 784
+// include/transformation.class.php, row 785
 "Search and Replace" => "Rechercher et remplacer", // ai 2026-06
 
-// include/transformation.class.php, row 792
+// include/transformation.class.php, row 793
 "Search the content of text and replaces it with another text. No other transformations/unaliasing are applied - just basic search and replace." => "Recherche dans le contenu du texte et le remplace par un autre texte. Aucune autre transformation ni expansion d'alias n'est appliquée — simple recherche et remplacement.", // ai 2026-06
 
-// include/transformation.class.php, row 803, 876
+// include/transformation.class.php, row 804, 877
 "No searchstring specified." => "Aucune chaîne de recherche spécifiée.", // ai 2026-06
 
-// include/transformation.class.php, row 830, 911
+// include/transformation.class.php, row 831, 912
 "Replace" => "Remplacer", // ai 2026-06
 
-// include/transformation.class.php, row 857
+// include/transformation.class.php, row 858
 "Regular Expressions Search and Replace" => "Rechercher et remplacer par expressions régulières", // ai 2026-06
 
-// include/transformation.class.php, row 865
+// include/transformation.class.php, row 866
 "Search the content of text and replaces it with another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)\$<br> - Replace: {item:\$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)" => "Recherche dans le contenu du texte et le remplace par un autre texte à l'aide d'expressions régulières. Les alias sont développés dans la chaîne résultante.<br>Exemple :<br> - Rechercher : ^.*x=([0-9]*)\$<br> - Remplacer : {item:\$1:_#SEO_URL_}<br> - Développer les alias : Oui<br>Résultat : remplace tous les liens à l'ancien format dans le champ URL par les nouveaux <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)", // ai 2026-06
 
-// include/transformation.class.php, row 912
+// include/transformation.class.php, row 913
 "Unalias" => "Développer les alias", // ai 2026-06
 
-// include/transformation.class.php, row 912
+// include/transformation.class.php, row 913
 "perform unaliasing on result strings" => "développer les alias dans les chaînes résultantes", // ai 2026-06
 
-// include/transformation.class.php, row 935, 976
+// include/transformation.class.php, row 936, 977
 "Copy field" => "Copier le champ", // ai 2026-06
 
-// include/transformation.class.php, row 943, 980
+// include/transformation.class.php, row 944, 981
 "Selected field will be copied to the \"Field\" (including multivalues)" => "Le champ sélectionné sera copié dans « Champ » (y compris les valeurs multiples)", // ai 2026-06
 
-// include/transformation.class.php, row 955
+// include/transformation.class.php, row 956
 "Source or destination field is not specified." => "Le champ source ou destination n'est pas spécifié.", // ai 2026-06
 
 // include/um_gedit.php, row 44
@@ -8012,10 +8301,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Incapable de changer l'usager",
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "message de Kit d'outils de nouvelles",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "Se reconnecter", // ai 2026-06
 
 // include/validate.php, row 54
@@ -8024,25 +8313,25 @@ return [
 // include/validate.php, row 187
 "Bad validator type: %1" => "Type de validateur incorrect : %1", // ai 2026-06
 
-// include/validate.php, row 280, 598, 651
+// include/validate.php, row 280, 599, 652
 "Allowed minimum value" => "Valeur minimale autorisée", // ai 2026-06
 
-// include/validate.php, row 281, 599, 652
+// include/validate.php, row 281, 600, 653
 "Allowed maximum value" => "Valeur maximale autorisée", // ai 2026-06
 
 // include/validate.php, row 282
 "Step" => "Étape", // ai 2026-10
 
-// include/validate.php, row 283, 419, 924
+// include/validate.php, row 283, 419, 928
 "Maximum length" => "Longueur maximale", // ai 2026-06
 
 // include/validate.php, row 296
 "No integer value" => "La valeur n'est pas un nombre entier", // ai 2026-06
 
-// include/validate.php, row 300, 616, 669
+// include/validate.php, row 300, 617, 670
 "Out of range - too big" => "Hors limites - trop grande", // ai 2026-06
 
-// include/validate.php, row 303, 619, 672
+// include/validate.php, row 303, 620, 673
 "Out of range - too small" => "Hors limites - trop petite", // ai 2026-06
 
 // include/validate.php, row 417
@@ -8051,82 +8340,79 @@ return [
 // include/validate.php, row 418
 "Empty expression" => "Expression vide", // ai 2026-06
 
-// include/validate.php, row 432, 729, 759, 937
+// include/validate.php, row 432, 730, 760, 941
 "Too long" => "Trop long", // ai 2026-06
 
-// include/validate.php, row 437
-"Do not match the pattern" => "Ne correspond pas au motif", // ai 2026-06
-
-// include/validate.php, row 543, 576
+// include/validate.php, row 544, 577
 "No ID value" => "La valeur n'est pas un ID", // ai 2026-06
 
-// include/validate.php, row 560
+// include/validate.php, row 561
 "No packed ID value" => "La valeur n'est pas un packed ID", // ai 2026-06
 
-// include/validate.php, row 612
+// include/validate.php, row 613
 "No float value" => "La valeur n'est pas un nombre flottant", // ai 2026-06
 
-// include/validate.php, row 665
+// include/validate.php, row 666
 "No decimal value" => "La valeur n'est pas un nombre décimal", // ai 2026-06
 
-// include/validate.php, row 697
+// include/validate.php, row 698
 "Possible values" => "Valeurs possibles", // ai 2026-06
 
-// include/validate.php, row 709
+// include/validate.php, row 710
 "Out of range - not in the list" => "Hors limites - pas dans la liste", // ai 2026-06
 
-// include/validate.php, row 726, 756
+// include/validate.php, row 727, 757
 "Too short" => "Trop court", // ai 2026-06
 
-// include/validate.php, row 731
+// include/validate.php, row 732
 "Wrong characters - you should use a-z, A-Z and 0-9 characters" => "Caractères incorrects - utilisez les caractères a-z, A-Z et 0-9", // ai 2026-06
 
-// include/validate.php, row 797, 882
+// include/validate.php, row 801, 886
 "Field id" => "ID du champ", // ai 2026-06
 
-// include/validate.php, row 798, 883
+// include/validate.php, row 802, 887
 "Scope" => "Portée", // ai 2026-06
 
-// include/validate.php, row 798
+// include/validate.php, row 802
 "username | slice | allslices" => "",
 
-// include/validate.php, row 799, 884
+// include/validate.php, row 803, 888
 "Item id which we do not count" => "ID de l'item à ne pas compter", // ai 2026-06
 
-// include/validate.php, row 825
+// include/validate.php, row 829
 "Username is not unique" => "Le nom d'utilisateur n'est pas unique", // ai 2026-06
 
-// include/validate.php, row 832, 840
+// include/validate.php, row 836, 844
 "Wrong parameter field_id for unique check" => "Paramètre field_id incorrect pour le contrôle d'unicité", // ai 2026-06
 
-// include/validate.php, row 852
+// include/validate.php, row 856
 "Not unique - value already used" => "Non unique - valeur déjà utilisée", // ai 2026-06
 
-// include/validate.php, row 883
+// include/validate.php, row 887
 "username | slice | <b>allslices</b>" => "",
 
-// include/validate.php, row 970
+// include/validate.php, row 974
 "Not a valid regular expression" => "Expression régulière non valide", // ai 2026-11
 
-// include/validate.php, row 1005
+// include/validate.php, row 1009
 "This field is required." => "Ce champ est requis",
 
-// include/validate.php, row 1005
+// include/validate.php, row 1009
 "This field is required (marked by *)." => "Ce champ est requis (marqué par*)", // ai 2026-10
 
-// include/validate.php, row 1012
+// include/validate.php, row 1016
 "Not a valid integer number." => "Pas un nombre entier valide",
 
-// include/validate.php, row 1015
+// include/validate.php, row 1019
 "Not a valid file name." => "Pas un nom de fichier valide",
 
-// include/validate.php, row 1019
+// include/validate.php, row 1023
 "Not a valid email address." => "PAs un courriel valide",
 
-// include/validate.php, row 1022
+// include/validate.php, row 1026
 "The two password copies differ." => "Les deux mots de passe copiés diffèrent", // ai 2026-10
 
-// include/view.class.php, row 326
+// include/view.class.php, row 452
 "Jump to view:" => "Aller à la vue :", // ai 2026-06
 
 // include/widget.class.php, row 179
@@ -8263,53 +8549,53 @@ return [
 // misc/msconvert/index.php, row 49
 "Experimental feature" => "Fonctionnalité expérimentale", // ai 2026-06
 
-// modules/jump/modedit.php, row 83
+// modules/jump/modedit.php, row 95
 "Edit Jump module" => "Modifier le module Jump", // ai 2026-06
 
-// modules/jump/modedit.php, row 83
+// modules/jump/modedit.php, row 95
 "Create new Jump module" => "Créer un nouveau module Jump", // ai 2026-06
 
-// modules/jump/modedit.php, row 131
+// modules/jump/modedit.php, row 145
 "Choose module to be edited" => "Choisissez le module à modifier", // ai 2026-06
 
-// modules/jump/modedit.php, row 154
+// modules/jump/modedit.php, row 168
 "Edit module" => "Modifier le module", // ai 2026-06
 
-// modules/jump/modedit.php, row 156
+// modules/jump/modedit.php, row 170
 "Module name" => "Nom du module", // ai 2026-06
 
-// modules/jump/modedit.php, row 158
+// modules/jump/modedit.php, row 172
 "Jump to" => "Aller à", // ai 2026-06
 
-// modules/jump/modedit.php, row 160
+// modules/jump/modedit.php, row 174
 "Type in an AA-relative path, e.g." => "Saisissez un chemin relatif à AA, p. ex.", // ai 2026-06
 
-// modules/jump/modedit.php, row 161
+// modules/jump/modedit.php, row 175
 "Jump to slice" => "Aller à la section", // ai 2026-06
 
-// slice.php, row 239
+// slice.php, row 240
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Paramètre inc incorrect - le fichier inclus ne doit contenir que des caractères alphanumériques", // ai 2026-06
 
-// slice.php, row 243
+// slice.php, row 244
 "No such file" => "Fichier introuvable", // ai 2026-06
 
-// slice.php, row 264
+// slice.php, row 265
 "Invalid slice number or slice was deleted" => "Numéro de section invalide ou section supprimée", // ai 2026-06
 
-// slice.php, row 267
+// slice.php, row 268
 "slice.php output forbidden for this slice" => "La sortie via slice.php est interdite pour cette section", // ai 2026-06
 
-// slice.php, row 322
+// slice.php, row 339
 "session id" => "id de session", // ai 2026-06
 
-// slice.php, row 585
+// slice.php, row 607
 "number of current page (on pagescroller)" => "numéro de la page actuelle (dans la pagination)", // ai 2026-06
 
-// slice.php, row 586
+// slice.php, row 608
 "page length (number of items)" => "longueur de page (nombre d'items)", // ai 2026-06
 
-// slice.php, row 621
-// src/Manager.php, row 881
+// slice.php, row 643
+// src/Manager.php, row 875
 "No item found" => "Pas d'item trouvé", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 72
@@ -8420,43 +8706,43 @@ return [
 // src/Api/Controller/FilesController.php, row 137
 "Only editors of the slice can browse its files" => "Seuls les éditeurs de la section peuvent parcourir ses fichiers", // ai 2026-10
 
-// src/Central/Actionapps.php, row 180
+// src/Central/Actionapps.php, row 185
 "This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Ce PHP ne dispose pas d'AES-GCM (sodium) – le jeton de connexion ne peut pas être stocké chiffré", // ai 2026-10
 
-// src/Central/Actionapps.php, row 208
+// src/Central/Actionapps.php, row 215
 "Not configured" => "Non configuré", // ai 2026-06
 
-// src/Central/Actionapps.php, row 208
+// src/Central/Actionapps.php, row 215
 "Not authenticated - get a token" => "Non authentifié – obtenez un jeton", // ai 2026-10
 
-// src/Central/Actionapps.php, row 211
+// src/Central/Actionapps.php, row 218
 "Authenticated until %1" => "Authentifié jusqu'au %1", // ai 2026-10
 
-// src/Central/Actionapps.php, row 211
+// src/Central/Actionapps.php, row 218
 "Expired - get a token" => "Expiré – obtenez un jeton", // ai 2026-10
 
-// src/Central/Actionapps.php, row 236
+// src/Central/Actionapps.php, row 246
 "The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there" => "L'AA distant a refusé la connexion : identifiant ou mot de passe incorrect, compte avec connexion à deux facteurs (Central ne sait pas encore envoyer le code), ou l'utilisateur n'y est pas superadmin", // ai 2026-11
 
-// src/Central/Actionapps.php, row 238
+// src/Central/Actionapps.php, row 248
 "The remote AA gave no login token - update it" => "L'AA distant n'a fourni aucun jeton de connexion – mettez-le à jour", // ai 2026-10
 
-// src/Central/Actionapps.php, row 239
+// src/Central/Actionapps.php, row 249
 "The remote AA gave a token for longer than a day - update the remote AA" => "L'AA distant a fourni un jeton valable plus d'un jour – mettez à jour l'AA distant", // ai 2026-10
 
-// src/Central/Actionapps.php, row 275
+// src/Central/Actionapps.php, row 302
 "Can't get org_name - " => "Impossible d'obtenir org_name -", // ai 2026-06
 
-// src/Central/Actionapps.php, row 329
+// src/Central/Actionapps.php, row 356
 "Unexpected response from remote AA" => "Réponse inattendue de l'AA distant", // ai 2026-10
 
-// src/Central/Actionapps.php, row 332
+// src/Central/Actionapps.php, row 359
 "This AA does not support this command (update it first)" => "Cet AA ne prend pas en charge cette commande (mettez-le d'abord à jour)", // ai 2026-10
 
-// src/Central/Actionapps.php, row 344
+// src/Central/Actionapps.php, row 371
 "The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Le jeton de connexion enregistré est inutilisable (AA_SECRET, le mot de passe de la base de données ou l'adresse de cet AA a changé) – authentifiez de nouveau cet AA sur la page ActionApps Central", // ai 2026-10
 
-// src/Central/Actionapps.php, row 345
+// src/Central/Actionapps.php, row 372
 "No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Aucun jeton de connexion pour cet AA – utilisez « S'authentifier » sur la page ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
@@ -8830,6 +9116,7 @@ return [
 "When the list is renamed (see the notes), change the name in the text after installing." => "Si la liste est renommée (voir les remarques), changez son nom dans le texte après l'installation.", // ai 2026-10
 
 // src/Central/FindingText.php, row 163
+// src/Optimize/CheckMailbulkRuns.php, row 92
 "List" => "Liste", // ai 2026-10
 
 // src/Central/FindingText.php, row 164
@@ -9444,46 +9731,46 @@ return [
 // src/Central/OptimizeRun.php, row 164
 "Recommended" => "Recommandé", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 179
+// src/Central/OptimizeRun.php, row 187
 "Update DB (sql_update) - all its steps" => "Mettre à jour la BD (sql_update) - toutes ses étapes", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 308
+// src/Central/OptimizeRun.php, row 331
 "The repair did not start or its answer is unusable: %1 - run Test to see the state of the AA." => "La réparation n'a pas démarré ou sa réponse est inutilisable : %1 - lancez « Tester uniquement » pour voir l'état de l'AA.", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 309
+// src/Central/OptimizeRun.php, row 332
 "The test after the repair failed: %1" => "Le test après la réparation a échoué : %1", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 310
+// src/Central/OptimizeRun.php, row 333
 "The repair was sent, but: %1 - run Test to see what it did." => "La réparation a été envoyée, mais : %1 - lancez « Tester uniquement » pour voir ce qu'elle a fait.", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 317
+// src/Central/OptimizeRun.php, row 340
 "The repair did not answer in time and the test still fails - it may still work; run Test later." => "La réparation n'a pas répondu à temps et le test échoue toujours - elle peut encore être en cours ; lancez « Tester uniquement » plus tard.", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 339
+// src/Central/OptimizeRun.php, row 362
 "The test fails, but the AA ran another update the whole time - run this again later." => "Le test échoue, mais l'AA a exécuté une autre mise à jour pendant tout ce temps - relancez plus tard.", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 341
+// src/Central/OptimizeRun.php, row 364
 "The test after the repair got no answer - run Test later." => "Le test après la réparation n'a reçu aucune réponse - lancez « Tester uniquement » plus tard.", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 342
+// src/Central/OptimizeRun.php, row 365
 "The repair was sent, but the AA has not answered since - it may still work; run Test later to see the result." => "La réparation a été envoyée, mais l'AA n'a pas répondu depuis - elle peut encore être en cours ; lancez « Tester uniquement » plus tard pour voir le résultat.", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 344
+// src/Central/OptimizeRun.php, row 367
 "The AA ran another update the whole time - run this again later." => "L'AA a exécuté une autre mise à jour pendant tout ce temps - relancez plus tard.", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 345
+// src/Central/OptimizeRun.php, row 368
 "The AA did not answer in time - it may still work; run Test later to see the result." => "L'AA n'a pas répondu à temps - la tâche peut encore être en cours ; lancez « Tester uniquement » plus tard pour voir le résultat.", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 367
+// src/Central/OptimizeRun.php, row 399
 "No such AA in the Central list any more" => "Cet AA ne figure plus dans la liste de Central", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 387
+// src/Central/OptimizeRun.php, row 419
 "The AA answered in an older way - update it first" => "L'AA a répondu dans un ancien format - mettez-le d'abord à jour", // ai 2026-11
 
-// src/Central/OptimizeRun.php, row 399
+// src/Central/OptimizeRun.php, row 431
 "(the report is cut - see the Optimize page of that AA)" => "(le rapport est tronqué - voir la page « Optimiser » de cet AA)", // ai 2026-11
 
-// src/Central/RemoteHtml.php, row 22
+// src/Central/RemoteHtml.php, row 41
 "(no output)" => "(aucune sortie)", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 37
@@ -10075,7 +10362,7 @@ return [
 "The source needs no key." => "La source n'a besoin d'aucune clé.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 282
-// src/Widget/Widget.php, row 848
+// src/Widget/Widget.php, row 871
 "Hint" => "Indication", // ai 2026-06
 
 // src/Import/DetailConfig.php, row 288
@@ -10166,6 +10453,7 @@ return [
 "Read" => "Lus", // ai 2026-10
 
 // src/Import/DetailPage.php, row 353, 706
+// src/Mailbulk/StatsView.php, row 121
 "Skipped" => "Ignorés", // ai 2026-10
 
 // src/Import/DetailPage.php, row 353, 706
@@ -10440,6 +10728,7 @@ return [
 "Passed" => "Réussi", // ai 2026-10
 
 // src/Import/DetailPage.php, row 866, 873
+// src/Mailbulk/StatsView.php, row 120
 "Failed" => "Échoué", // ai 2026-10
 
 // src/Import/DetailPage.php, row 868
@@ -10632,38 +10921,41 @@ return [
 "%1 new, %2 updated, %3 skipped" => "nouveaux : %1, mis à jour : %2, ignorés : %3", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1282
+"%1 unchanged" => "inchangés : %1", // ai 2026-11
+
+// src/Import/DetailPage.php, row 1283
 "%1 filtered out" => "filtrés : %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1283
+// src/Import/DetailPage.php, row 1284
 "dry run - nothing stored" => "simulation - rien d'enregistré", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1283
+// src/Import/DetailPage.php, row 1284
 "all streams of the run together" => "tous les flux de l'exécution ensemble", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1302
+// src/Import/DetailPage.php, row 1303
 "None yet - an import records it" => "Aucune pour l'instant - un import l'enregistre", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1303
+// src/Import/DetailPage.php, row 1304
 "None - the source gives no version" => "Aucune - la source ne fournit pas de version", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1356
+// src/Import/DetailPage.php, row 1357
 "took %1" => "durée %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1356
+// src/Import/DetailPage.php, row 1357
 "took %1, working %2" => "durée %1, dont travail %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1362
+// src/Import/DetailPage.php, row 1363
 "%1 s" => "%1 s", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1365
+// src/Import/DetailPage.php, row 1366
 "%1 min %2 s" => "%1 min %2 s", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1365, 1367
-// src/Optimize/StateCheckModel.php, row 257
+// src/Import/DetailPage.php, row 1366, 1368
+// src/Optimize/StateCheckModel.php, row 260
 "%1 min" => "%1 min", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1367
-// src/Optimize/StateCheckModel.php, row 258
+// src/Import/DetailPage.php, row 1368
+// src/Optimize/StateCheckModel.php, row 261
 "%1 h" => "%1 h", // ai 2026-10
 
 // src/Import/Mapping.php, row 219
@@ -10720,9 +11012,6 @@ return [
 // src/Import/RunView.php, row 74
 "Stuck — see State Check" => "Bloquée — voir « Vérification de l'état »", // ai 2026-10
 
-// src/Import/RunView.php, row 75, 177
-"Running" => "En cours", // ai 2026-10
-
 // src/Import/RunView.php, row 76
 "Waiting to retry" => "En attente d'un nouvel essai", // ai 2026-10
 
@@ -10760,7 +11049,7 @@ return [
 "The source redirected too many times." => "La source a redirigé trop de fois.", // ai 2026-10
 
 // src/Import/RunView.php, row 127
-// src/Optimize/StateCheckModel.php, row 256
+// src/Optimize/StateCheckModel.php, row 259
 "just now" => "à l'instant", // ai 2026-10
 
 // src/Import/RunView.php, row 128
@@ -10956,7 +11245,7 @@ return [
 "http or https only, on a public address, without a user name and password" => "http ou https uniquement, à une adresse publique, sans nom d'utilisateur ni mot de passe", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 56
-// src/Widget/Widget.php, row 743, 812
+// src/Widget/Widget.php, row 766, 835
 "Columns" => "Colonnes", // ai 2026-06
 
 // src/Import/Source/CsvurlSource.php, row 56
@@ -11191,6 +11480,7 @@ return [
 "What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator." => "Ce qui a été figé pour l'envoi - la lettre, ses pièces jointes ou les destinataires - manque ou a changé ; l'envoi ne peut donc pas continuer. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 154
+// src/Mailbulk/Gate.php, row 544
 "The database cannot record the sending safely. Ask the administrator." => "La base de données ne peut pas enregistrer l'envoi de manière sûre. Adressez-vous à l'administrateur.", // ai 2026-11
 
 // src/Isds/Advice.php, row 155
@@ -11304,28 +11594,28 @@ return [
 // src/Isds/Registry/Config.php, row 58
 "Items of these types are paired with the boxes of city districts, the others with those of municipalities" => "Les items de ces types sont appariés avec les boîtes des arrondissements, les autres avec celles des communes", // ai 2026-11
 
-// src/Isds/Registry/Config.php, row 123
+// src/Isds/Registry/Config.php, row 129
 "Choose the field with the name" => "Choisissez le champ du nom", // ai 2026-11
 
-// src/Isds/Registry/Config.php, row 123
+// src/Isds/Registry/Config.php, row 129
 "Choose the field the data box is written to" => "Choisissez le champ dans lequel la boîte de données est écrite", // ai 2026-11
 
-// src/Isds/Registry/Config.php, row 132
+// src/Isds/Registry/Config.php, row 138
 "The slice has no field %1" => "La section n'a pas de champ %1", // ai 2026-11
 
-// src/Isds/Registry/Config.php, row 139
+// src/Isds/Registry/Config.php, row 145
 "The data box needs a field of its own - writing it would overwrite the name, IČO or type" => "La boîte de données a besoin de son propre champ - l'écrire écraserait le nom, l'IČO ou le type", // ai 2026-11
 
-// src/Isds/Registry/Config.php, row 142
+// src/Isds/Registry/Config.php, row 148
 "The lists of types need the type field" => "Les listes de types nécessitent le champ du type", // ai 2026-11
 
-// src/Isds/Registry/Config.php, row 147
+// src/Isds/Registry/Config.php, row 153
 "The types of city districts must be among the types to pair too: %1" => "Les types d'arrondissements doivent aussi figurer parmi les types à apparier : %1", // ai 2026-11
 
-// src/Isds/Registry/Config.php, row 160
+// src/Isds/Registry/Config.php, row 166
 "The field %1 is protected - it is neither shown nor written here" => "Le champ %1 est protégé - il n'est ni affiché ni écrit ici", // ai 2026-11
 
-// src/Isds/Registry/Config.php, row 164
+// src/Isds/Registry/Config.php, row 170
 "The data box cannot be written to %1, a column of the item table" => "La boîte de données ne peut pas être écrite dans %1, une colonne de la table item", // ai 2026-11
 
 // src/Isds/Registry/MatchRow.php, row 86
@@ -11593,6 +11883,7 @@ return [
 // src/Isds/SliceRules.php, row 179
 // src/Optimize/CheckSiteStateFiles.php, row 81
 // src/Optimize/CheckUniversalAnalytics.php, row 71
+// src/Optimize/CheckViewDirectRefusals.php, row 90
 "Site settings" => "Paramètres du site", // ai 2026-10
 
 // src/Isds/SliceRules.php, row 225
@@ -11650,76 +11941,253 @@ return [
 "Slice \"%1\" adds what the sending stores in the fields %2 to constants - turn off \"%3\" in the settings of each field" => "La section « %1 » ajoute aux constantes ce que l'envoi enregistre dans les champs %2 - dans la configuration de chacun de ces champs, désactivez « %3 »", // ai 2026-11
 
 // src/Isds/SliceRules.php, row 385
-// src/Widget/Widget.php, row 785
+// src/Widget/Widget.php, row 808
 "Add to Constant" => "Ajouter aux constantes", // ai 2026-06
 
-// src/Later/ComputedfieldsUpdater.php, row 84
+// src/Later/ComputedfieldsUpdater.php, row 118
 "Planned %1 chunks with %2 items" => "%1 lots planifiés avec %2 items", // ai 2026-06
 
-// src/Later/Toexecute.php, row 362
+// src/Later/Toexecute.php, row 368
 "task is no longer in the queue" => "la tâche n'est plus dans la file", // ai 2026-10
 
-// src/Later/Toexecute.php, row 366
+// src/Later/Toexecute.php, row 372
 "skipped - the task changed meanwhile (reload the list)" => "ignorée - la tâche a changé entre-temps (rechargez la liste)", // ai 2026-10
 
-// src/Later/Toexecute.php, row 462
+// src/Later/Toexecute.php, row 497
 "the task failed with %1" => "la tâche a échoué avec %1", // ai 2026-10
 
-// src/Manager.php, row 430
+// src/Mailbulk/Gate.php, row 91
+"The sending cannot be shown - see the log" => "L'envoi ne peut pas être affiché - voyez le journal", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 148
+"Unknown action" => "Action inconnue", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 154
+"The action failed - see the log" => "L'action a échoué - voyez le journal", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 256
+"Send to %1 recipients?" => "Destinataires : %1. Envoyer ?", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 264
+"The item has not been sent to the list yet" => "L'item n'a pas encore été envoyé à la liste", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 286
+"There is no address to send the test to: fill %1 or your e-mail" => "Aucune adresse à laquelle envoyer le test: remplissez %1 ou votre courriel", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 307
+"The test went to %1." => "Le test a été envoyé à %1.", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 309
+"Not sent to %1." => "Non envoyé à %1.", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 325
+"Nothing is being sent" => "Aucun envoi en cours", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 435, 485
+"The list is not related to the item's slice" => "La liste n'est pas liée à la section de l'item", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 438
+"Invalid list or item" => "Liste ou item non valide", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 440
+"You may not send this item" => "Vous ne pouvez pas envoyer cet item", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 463, 468
+"Stop" => "Arrêter", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 472
+"Continue…" => "Continuer…", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 478
+"Send to new…" => "Envoyer aux nouveaux…", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 481
+"Send…" => "Envoyer…", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 511
+"sent %1" => "envoyés : %1", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 512
+"failed %1" => "échoués : %1", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 513
+"skipped %1" => "ignorés : %1", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 514
+"uncertain %1" => "incertains : %1", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 527
+"The list of the readers of the sending is damaged" => "La liste des lecteurs de l'envoi est endommagée", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 528
+"The sending stopped on an error" => "L'envoi s'est arrêté sur une erreur", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 536
+"A sending of the item to the list is not finished yet" => "Un envoi de l'item à la liste n'est pas encore terminé", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 537
+"Someone else is starting the sending right now" => "Quelqu'un d'autre est en train de lancer l'envoi", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 538
+"The database gives no lock to start the sending - try again later" => "La base de données n'accorde pas de verrou pour lancer l'envoi - réessayez plus tard", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 539
+"Nobody is left to send the item to" => "Il ne reste personne à qui envoyer l'item", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 540
+"The mail has no subject or no text" => "Le courriel n'a pas d'objet ou pas de texte", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 541
+"The mail could not be made - see the log" => "Le courriel n'a pas pu être créé - voyez le journal", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 542
+"The item cannot be sent now" => "L'item ne peut pas être envoyé maintenant", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 543
+"You may not control this sending" => "Vous ne pouvez pas contrôler cet envoi", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 545
+"A step of the sending is still working - try again in a minute" => "Une étape de l'envoi est encore en cours - réessayez dans une minute", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 546
+"The sending is not in a state for this" => "L'envoi n'est pas dans un état permettant cela", // ai 2026-11
+
+// src/Mailbulk/Gate.php, row 547
+"The action failed (%1)" => "L'action a échoué (%1)", // ai 2026-11
+
+// src/Mailbulk/ItemLetter.php, row 56
+"The item does not exist or is not active" => "L'item n'existe pas ou n'est pas actif", // ai 2026-11
+
+// src/Mailbulk/ItemLetter.php, row 59
+"The list has no slice of readers" => "La liste n'a pas de section des lecteurs", // ai 2026-11
+
+// src/Mailbulk/ItemLetter.php, row 63
+"The slice of the item lacks the aliases %1" => "Il manque à la section de l'item les alias %1", // ai 2026-11
+
+// src/Mailbulk/ItemLetter.php, row 66
+"%1 gives no valid sender address" => "%1 ne donne pas d'adresse d'expéditeur valide", // ai 2026-11
+
+// src/Mailbulk/ItemLetter.php, row 71
+"The readers cannot be selected - the slice of the readers cannot check these conditions (of %1 or the confirmation of the readers): %2" => "Les lecteurs ne peuvent pas être sélectionnés - la section des lecteurs ne sait pas vérifier ces conditions (de %1 ou de la confirmation des lecteurs): %2", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 100
+"When the run started: the log keeps the time of each mail for %1 days" => "Heure de début de l'exécution : le journal conserve l'heure de chaque courriel pendant %1 jours", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 105
+"Not in the list any more" => "N'est plus dans la liste", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 132
+"Download CSV" => "Télécharger le CSV", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 139
+"These are personal data: the privacy notice of the web must mention them." => "Ce sont des données personnelles : la politique de confidentialité du site doit les mentionner.", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 141
+"Opens and clicks are indicative: image proxies and link checkers open mails and follow links on their own." => "Les ouvertures et les clics sont indicatifs : les proxys d'images et les vérificateurs de liens ouvrent les courriels et suivent les liens d'eux-mêmes.", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 206
+"Opened" => "Ouverts", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 206
+"Not opened" => "Non ouverts", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 206
+"Clicked" => "Cliqués", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 208
+"Failed or uncertain" => "Échoués ou incertains", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 214
+"Time sent" => "Heure d'envoi", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 215
+"First opened" => "Première ouverture", // ai 2026-11
+
+// src/Mailbulk/RecipientReport.php, row 215
+"Clicked links" => "Liens cliqués", // ai 2026-11
+
+// src/Mailbulk/StatsView.php, row 36
+"Opened %1, clicked %2" => "Ouverts : %1, cliqués : %2", // ai 2026-11
+
+// src/Mailbulk/StatsView.php, row 84
+"Total" => "Total", // ai 2026-11
+
+// src/Mailbulk/StatsView.php, row 99
+"Link" => "Lien", // ai 2026-06
+
+// src/Mailbulk/StatsView.php, row 99
+"Readers clicked" => "Lecteurs ayant cliqué", // ai 2026-11
+
+// src/Mailbulk/StatsView.php, row 119
+"Sent" => "Envoyés", // ai 2026-11
+
+// src/Mailbulk/StatsView.php, row 122
+"Uncertain" => "Incertains", // ai 2026-11
+
+// src/Mailbulk/StatsView.php, row 123
+"Not sent yet" => "Pas encore envoyé", // ai 2026-11
+
+// src/Mailbulk/StatsView.php, row 132
+"Sending" => "Envoi en cours", // ai 2026-11
+
+// src/Mailbulk/StatsView.php, row 133
+"Stopped on an error" => "Interrompu par une erreur", // ai 2026-11
+
+// src/Mailbulk/StatsView.php, row 135
+"Stopped" => "Arrêté", // ai 2026-11
+
+// src/Manager.php, row 431
 "You can not save this object here." => "Vous ne pouvez pas enregistrer cet objet ici.", // ai 2026-10
 
-// src/Manager.php, row 445
+// src/Manager.php, row 446
 "The object was not saved - it changed meanwhile. Reload and try again." => "L'objet n'a pas été enregistré - il a changé entre-temps. Rechargez la page et réessayez.", // ai 2026-10
 
-// src/Manager.php, row 460
+// src/Manager.php, row 461
 "This object can not be edited here - it is not an object of this module." => "Cet objet ne peut pas être modifié ici - ce n'est pas un objet de ce module.", // ai 2026-10
 
-// src/Manager.php, row 481
+// src/Manager.php, row 475
 "The object was not saved - it is not the object of this form in this module." => "L'objet n'a pas été enregistré - ce n'est pas l'objet de ce formulaire dans ce module.", // ai 2026-10
 
-// src/Manager.php, row 606
+// src/Manager.php, row 600
 "Optional" => "Facultatif", // ai 2026-06
 
-// src/Manager.php, row 649
+// src/Manager.php, row 643
 "The row was not saved - it is not the row of this form in this module." => "La ligne n'a pas été enregistrée - ce n'est pas la ligne de ce formulaire dans ce module.", // ai 2026-10
 
-// src/Manager.php, row 668
+// src/Manager.php, row 662
 "You can not save this row here." => "Vous ne pouvez pas enregistrer cette ligne ici.", // ai 2026-10
 
-// src/Manager.php, row 812
+// src/Manager.php, row 806
 "Searchbar" => "Barre de recherche", // ai 2026-06
 
-// src/Manager.php, row 813
+// src/Manager.php, row 807
 "Scroller" => "Pagination", // ai 2026-06
 
-// src/Manager.php, row 814
+// src/Manager.php, row 808
 "Msg" => "Message", // ai 2026-06
 
-// src/Manager.php, row 815
+// src/Manager.php, row 809
 "Bin" => "Dossier", // ai 2026-06
 
-// src/Manager.php, row 817
+// src/Manager.php, row 811
 "Manager ID" => "ID du gestionnaire", // ai 2026-06
 
-// src/Manager.php, row 1191
+// src/Manager.php, row 1187
 "The action was not performed - use the button on the page." => "L'action n'a pas été effectuée - utilisez le bouton de la page.", // ai 2026-10
 
-// src/Manager.php, row 1272
+// src/Manager.php, row 1268
 "Edit id" => "Id pour édition", // ai 2026-06
 
-// src/Manager.php, row 1286
-"Hold Shift and click to select multiple rows" => "Maintenez Maj et cliquez pour sélectionner plusieurs lignes", // ai 2026-06
-
-// src/Manager.php, row 1324
+// src/Manager.php, row 1320
 "Are you sure you want to empty trash?" => "Êtes vous sûr de vouloir vider la corbeille", // ai 2026-10
 
-// src/Manager.php, row 1426
+// src/Manager.php, row 1422
 "Go" => "Allez",
 
-// src/Manager.php, row 1439
+// src/Manager.php, row 1435
 "No item selected. Perform action for all filtered items? " => "Aucun item sélectionné. Exécuter l'action pour tous les items filtrés ?", // ai 2026-06
 
-// src/Manager.php, row 1439
+// src/Manager.php, row 1435
 "Run for %1 items" => "Exécuter pour %1 items", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47
@@ -11740,6 +12208,12 @@ return [
 // src/Manageraction/Item_DeleteTrash.php, row 43
 // src/Manageraction/Taskmanager_Execute.php, row 26
 "You do not have permissions to remove items" => "Vous n,avez pas les permission pour retirer des items",
+
+// src/Manageraction/Central_GetToken.php, row 21
+"Get Token - one login for the selected AAs" => "Obtenir un jeton - une connexion pour les AA sélectionnés", // ai 2026-11
+
+// src/Manageraction/Central_GetToken.php, row 42
+"Fill in the username and the password." => "Remplissez l'identifiant et le mot de passe.", // ai 2026-11
 
 // src/Manageraction/Central_Linkcheck.php, row 17
 "Check the AA availability" => "Vérifier la disponibilité de l'AA", // ai 2026-06
@@ -11966,10 +12440,10 @@ return [
 // src/Module/Poll/Menu.php, row 84
 "Designs" => "Apparences", // ai 2026-06
 
-// src/Optimize/AbstractOptimize.php, row 176
+// src/Optimize/AbstractOptimize.php, row 179
 "Types" => "Types", // ai 2026-10
 
-// src/Optimize/AbstractOptimize.php, row 179
+// src/Optimize/AbstractOptimize.php, row 182
 "Result text" => "Texte du résultat", // ai 2026-06
 
 // src/Optimize/AbstractOptimizeById.php, row 42
@@ -12011,7 +12485,13 @@ return [
 // src/Optimize/AddContentFieldIndex.php, row 62
 "The index %1 of the content table already contains the field" => "L'index %1 de la table content contient déjà le champ", // ai 2026-10
 
-// src/Optimize/AddContentFieldIndex.php, row 67
+// src/Optimize/AddContentFieldIndex.php, row 70
+"The content table not changed - other queries are using it. Try it again later." => "La table content n'a pas été modifiée - d'autres requêtes l'utilisent. Réessayez plus tard.", // ai 2026-11
+
+// src/Optimize/AddContentFieldIndex.php, row 71
+"The content table not changed - the database refused the change: %1" => "La table content n'a pas été modifiée - la base de données a refusé la modification : %1", // ai 2026-11
+
+// src/Optimize/AddContentFieldIndex.php, row 74
 "The index %1 of the content table changed" => "L'index %1 de la table content a été modifié", // ai 2026-10
 
 // src/Optimize/AddCountryFieldTemplate.php, row 12
@@ -12147,13 +12627,19 @@ return [
 "Add Polls tables" => "Ajouter les tables des sondages", // ai 2026-06
 
 // src/Optimize/AddPolls.php, row 39
-"Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "Crée les tables du nouveau module Sondages et ajoute les premiers sondages modèles. Supprime tous les sondages existants !", // ai 2026-06
+"Creates the missing tables of the Polls module and the template poll. The polls already there stay." => "Crée les tables manquantes du module Sondages et le sondage modèle. Les sondages existants sont conservés.", // ai 2026-11
 
-// src/Optimize/AddPolls.php, row 62
+// src/Optimize/AddPolls.php, row 65
+"Table %1 is missing" => "La table %1 est manquante", // ai 2026-11
+
+// src/Optimize/AddPolls.php, row 70
 "Poll module is not installed" => "Le module Sondages n'est pas installé", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 97
-"Polls module created" => "Module Sondages créé", // ai 2026-06
+// src/Optimize/AddPolls.php, row 95
+"The template poll not added - the database refused it: %1" => "Le sondage modèle n'a pas été ajouté - la base de données l'a refusé : %1", // ai 2026-11
+
+// src/Optimize/AddPolls.php, row 101
+"Polls module ready" => "Module Sondages prêt", // ai 2026-11
 
 // src/Optimize/AddRangeFieldTemplate.php, row 12
 "Add range field template" => "Ajouter le modèle de champ range", // ai 2026-06
@@ -12188,19 +12674,30 @@ return [
 // src/Optimize/AddUrlPreviewFieldTemplate.php, row 12
 "Add _url_preview field template" => "Ajouter le modèle de champ _url_preview", // ai 2026-06
 
+// src/Optimize/AlertsStatSliceColumn.php, row 19
+"Column for the statistics slice of Alerts" => "Colonne pour la section des statistiques d'Alerte", // ai 2026-11
+
+// src/Optimize/AlertsStatSliceColumn.php, row 24
+"Adds the column alerts_collection.stat_slice_id, where the Alerts settings keep the slice that counts the opens and clicks of the mailings. Nothing else changes." => "Ajoute la colonne alerts_collection.stat_slice_id, où la «Configuration des alertes» conserve la section qui compte les ouvertures et les clics des envois. Rien d'autre ne change.", // ai 2026-11
+
+// src/Optimize/AlertsStatSliceColumn.php, row 46
+// src/Optimize/CentralTokenColumn.php, row 51
+"The column %1 is missing" => "La colonne %1 manque", // ai 2026-11
+
+// src/Optimize/AlertsStatSliceColumn.php, row 49
+"OK - the column %1 exists" => "OK - la colonne %1 existe", // ai 2026-11
+
 // src/Optimize/BackupTables.php, row 19
 "Backup tables" => "Sauvegarder les tables", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
-// src/Optimize/RestoreBckTables.php, row 30
-// src/Optimize/UpdateDbStructure.php, row 31
 "[experimental] " => "[expérimental] ", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
 "Deletes all the current backup tables (bck_slice, bck_item, ...) and copies there live tables (slice, item, ...)." => "Supprime toutes les tables de sauvegarde actuelles (bck_slice, bck_item, ...) et y copie les tables actives (slice, item, ...).", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 49
-// src/Optimize/DropBackupTables.php, row 51
+// src/Optimize/DropBackupTables.php, row 49
 "Deleting old backup table bck_%1, if it exists." => "Suppression de l'ancienne table de sauvegarde bck_%1, si elle existe.", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 52
@@ -12210,8 +12707,8 @@ return [
 "Copy data from %1 to bck_%1." => "Copie des données de %1 vers bck_%1.", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 60
-// src/Optimize/DropBackupTables.php, row 54
-// src/Optimize/UpdateDbStructure.php, row 147
+// src/Optimize/DropBackupTables.php, row 52
+// src/Optimize/UpdateDbStructure.php, row 198
 "%1 done." => "%1 terminé.", // ai 2026-06
 
 // src/Optimize/CategorySort2groupBy.php, row 17
@@ -12225,6 +12722,34 @@ return [
 
 // src/Optimize/CategorySort2groupBy.php, row 39
 "All slices are already converted" => "Toutes les sections sont déjà converties", // ai 2026-06
+
+// src/Optimize/CentralTokenColumn.php, row 23
+"Column for the Central login tokens" => "Colonne pour les jetons de connexion de Central", // ai 2026-11
+
+// src/Optimize/CentralTokenColumn.php, row 28
+"Widens the column central_conf.AA_ADMIN_PWD to the length of the template, so ActionApps Central can keep the encrypted login tokens of the AAs it manages. A shorter column cuts them and Get Token cannot work." => "Élargit la colonne central_conf.AA_ADMIN_PWD à la longueur du modèle, afin qu'ActionApps Central puisse conserver les jetons de connexion chiffrés des AA qu'il gère. Une colonne plus courte les tronque et «Obtenir un jeton» ne peut pas fonctionner.", // ai 2026-11
+
+// src/Optimize/CentralTokenColumn.php, row 52
+"The column %1 holds %2 bytes, the template %3" => "La colonne %1 contient %2 octets, le modèle %3", // ai 2026-11
+
+// src/Optimize/CentralTokenColumn.php, row 55
+"OK - the column %1 is long enough" => "OK - la colonne %1 est assez longue", // ai 2026-11
+
+// src/Optimize/CentralTokenColumn.php, row 62
+"Central can keep the login tokens" => "Central peut conserver les jetons de connexion", // ai 2026-11
+
+// src/Optimize/CentralTokenColumn.php, row 66
+"Central cannot keep the login tokens" => "Central ne peut pas conserver les jetons de connexion", // ai 2026-11
+
+// src/Optimize/CentralTokenColumn.php, row 67
+// src/Optimize/ViewListingColumns.php, row 81
+"Column" => "Colonne", // ai 2026-11
+
+// src/Optimize/CentralTokenColumn.php, row 67
+"Bytes" => "Octets", // ai 2026-11
+
+// src/Optimize/CentralTokenColumn.php, row 68
+"The column is too short for an encrypted token: Get Token stores it cut and Central cannot log in to the AA. Repair widens the column, then press Get Token again." => "La colonne est trop courte pour un jeton chiffré: «Obtenir un jeton» l'enregistre tronqué et Central ne peut pas se connecter à l'AA. «Réparer» élargit la colonne, puis cliquez à nouveau sur «Obtenir un jeton».", // ai 2026-11
 
 // src/Optimize/ChangeF_h2F_1.php, row 19
 "Optimize f_h alias to f_1" => "Optimiser l'alias f_h en f_1", // ai 2026-06
@@ -12293,10 +12818,10 @@ return [
 // src/Optimize/CheckAjaxUnsigned.php, row 30
 "Lists the fields whose {ajax} edits came without a valid signature of their widget type and properties in the last 30 days, so AA used the field's own widget instead." => "Liste les champs dont les modifications {ajax} sont arrivées ces 30 derniers jours sans signature valide de leur type et de leurs propriétés de widget, si bien qu'AA a utilisé le widget propre au champ.", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 76
-"{ajax} edit of field %1 in slice %2 came without a valid signature" => "La modification {ajax} du champ %1 dans la section %2 est arrivée sans signature valide", // ai 2026-10
+// src/Optimize/CheckAjaxUnsigned.php, row 75
+"{ajax} edit asked for an item by its short id and was refused" => "Modification {ajax} demandée pour un item par son identifiant court, et refusée", // ai 2026-11
 
-// src/Optimize/CheckAjaxUnsigned.php, row 83
+// src/Optimize/CheckAjaxUnsigned.php, row 81, 103
 // src/Optimize/CheckAlertitemRefusals.php, row 101
 // src/Optimize/CheckAnonymousEditRefusals.php, row 90
 // src/Optimize/CheckBlockedRequests.php, row 90
@@ -12308,7 +12833,7 @@ return [
 // src/Optimize/CheckIsdsConf.php, row 156, 189
 // src/Optimize/CheckIsdsViews.php, row 128
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 93
-// src/Optimize/CheckObjectFormRefusals.php, row 102
+// src/Optimize/CheckObjectFormRefusals.php, row 104
 // src/Optimize/CheckPasskeys.php, row 85
 // src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 102
@@ -12317,10 +12842,11 @@ return [
 // src/Optimize/CheckTrustedProxies.php, row 104
 // src/Optimize/CheckUploadRefusals.php, row 95
 // src/Optimize/CheckUserAliasFunctionLog.php, row 88
+// src/Optimize/CheckViewDirectRefusals.php, row 101
 // src/Optimize/CheckViewSliceRefusals.php, row 163, 195
 "Days seen" => "Jours observés", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 84
+// src/Optimize/CheckAjaxUnsigned.php, row 82, 104
 // src/Optimize/CheckAlertitemRefusals.php, row 102
 // src/Optimize/CheckAnonymousEditRefusals.php, row 91
 // src/Optimize/CheckBlockedRequests.php, row 91
@@ -12332,7 +12858,7 @@ return [
 // src/Optimize/CheckIsdsConf.php, row 156, 158, 189
 // src/Optimize/CheckIsdsViews.php, row 129
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 94
-// src/Optimize/CheckObjectFormRefusals.php, row 103
+// src/Optimize/CheckObjectFormRefusals.php, row 105
 // src/Optimize/CheckPasskeys.php, row 86
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
@@ -12342,20 +12868,27 @@ return [
 // src/Optimize/CheckTrustedProxies.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 96
 // src/Optimize/CheckUserAliasFunctionLog.php, row 89
+// src/Optimize/CheckViewDirectRefusals.php, row 102
 // src/Optimize/CheckViewSliceRefusals.php, row 164, 196
-// src/Optimize/StateCheckModel.php, row 270
+// src/Optimize/StateCheckModel.php, row 273
 "Last" => "Dernière fois", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 86
+// src/Optimize/CheckAjaxUnsigned.php, row 84
+"{ajax} always sends the long item id. A short one comes from a hand-written displayInput() call - give it the long id (_#ITEM_ID_) - or from someone trying item numbers one by one to read their fields. The evidence shows one of the refused requests; its page is the referer the request sent, which a forged request can make up." => "{ajax} envoie toujours l'identifiant long de l'item. Un identifiant court vient d'un appel displayInput() écrit à la main - donnez-lui l'identifiant long (_#ITEM_ID_) - ou de quelqu'un qui essaie les numéros d'items un par un pour lire leurs champs. Les preuves montrent l'une des requêtes refusées ; sa page est le referer envoyé par la requête, qu'une requête falsifiée peut inventer.", // ai 2026-11
+
+// src/Optimize/CheckAjaxUnsigned.php, row 96
+"{ajax} edit of field %1 in slice %2 came without a valid signature" => "La modification {ajax} du champ %1 dans la section %2 est arrivée sans signature valide", // ai 2026-10
+
+// src/Optimize/CheckAjaxUnsigned.php, row 106
 "The page sent a widget type or widget properties (5th and 6th parameter of {ajax}) without the signature AA adds since this version, so the field was edited with its own widget. Pages in the page cache stay unsigned until regenerated - flush the cache of the site. If the rows go on after that, someone sends forged requests - or, for a bad signature, the page is in another charset than the slice." => "La page a envoyé un type ou des propriétés de widget (5e et 6e paramètres de {ajax}) sans la signature qu'AA ajoute depuis cette version, si bien que le champ a été modifié avec son propre widget. Les pages du cache de pages restent non signées jusqu'à leur régénération - videz le cache du site. Si des lignes continuent d'apparaître ensuite, quelqu'un envoie des requêtes falsifiées - ou, en cas de mauvaise signature, la page est dans un autre jeu de caractères que la section.", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 87
+// src/Optimize/CheckAjaxUnsigned.php, row 107
 // src/Optimize/CheckAnonymousEditRefusals.php, row 94
 // src/Optimize/CheckItemEditsWithoutPermission.php, row 97
 // src/Optimize/CheckUserAliasFunctionLog.php, row 77
 "Field settings" => "Paramètres du champ", // ai 2026-10
 
-// src/Optimize/CheckAjaxUnsigned.php, row 92
+// src/Optimize/CheckAjaxUnsigned.php, row 112
 "No unsigned {ajax} widget settings in the last 30 days" => "Aucun paramètre de widget {ajax} non signé ces 30 derniers jours", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 29
@@ -12380,7 +12913,7 @@ return [
 "Alerts sending" => "Envoi du module Alerte", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 28
-"Checks that every frequency readers can subscribe to is really swept, and that no collection is so far behind that the next sweep would skip items instead of mailing them." => "Vérifie que chaque fréquence à laquelle les lecteurs peuvent s'abonner est réellement envoyée, et qu'aucune collection n'est en retard au point que le prochain envoi sauterait des items au lieu de les envoyer.", // ai 2026-10
+"Checks that every frequency readers can subscribe to is really swept, that no collection is so far behind that the next sweep would skip items instead of mailing them, and that the mails can carry the one-click unsubscribe header." => "Vérifie que chaque fréquence à laquelle les lecteurs peuvent s'abonner est réellement traitée, qu'aucune collection n'a un retard tel que le prochain passage sauterait des items au lieu de les envoyer, et que les courriels peuvent porter l'en-tête de désabonnement en un clic.", // ai 2026-11
 
 // src/Optimize/CheckAlerts.php, row 77
 "Frequency" => "Fréquence", // ai 2026-10
@@ -12409,31 +12942,37 @@ return [
 // src/Optimize/CheckAlerts.php, row 110
 "Every alert collection is swept on time and all its selections exist" => "Chaque collection d'alertes est envoyée à temps et toutes ses sélections existent", // ai 2026-11
 
-// src/Optimize/CheckAlerts.php, row 144
+// src/Optimize/CheckAlerts.php, row 134
+"%1 Alerts lists mail without the one-click unsubscribe header" => "Listes d'Alerte envoyant sans l'en-tête de désabonnement en un clic: %1", // ai 2026-11
+
+// src/Optimize/CheckAlerts.php, row 137
+"The header is built from the URL in the Alerts settings, and mail services use it only when the URL is https. Set an https URL there." => "L'en-tête est construit à partir de l'URL de la «Configuration des alertes», et les services de messagerie ne l'utilisent que si l'URL est en https. Indiquez-y une URL https.", // ai 2026-11
+
+// src/Optimize/CheckAlerts.php, row 173
 "Selection" => "Sélection", // ai 2026-11
 
-// src/Optimize/CheckAlerts.php, row 146
+// src/Optimize/CheckAlerts.php, row 175
 "the selection was deleted" => "la sélection a été supprimée", // ai 2026-11
 
-// src/Optimize/CheckAlerts.php, row 147
+// src/Optimize/CheckAlerts.php, row 176
 "its view %1 was deleted" => "sa vue %1 a été supprimée", // ai 2026-11
 
-// src/Optimize/CheckAlerts.php, row 153
+// src/Optimize/CheckAlerts.php, row 182
 "Alerts \"%1\" use a selection that no longer exists" => "Les alertes « %1 » utilisent une sélection qui n'existe plus", // ai 2026-11
 
-// src/Optimize/CheckAlerts.php, row 154
+// src/Optimize/CheckAlerts.php, row 183
 "Alerts \"%1\" send nothing: every selection of the collection no longer exists" => "Les alertes « %1 » n'envoient rien : aucune sélection de la collection n'existe plus", // ai 2026-11
 
-// src/Optimize/CheckAlerts.php, row 157
+// src/Optimize/CheckAlerts.php, row 186
 "A selection is a filter of a view of the slice the alert takes its items from. When the filter or the view is deleted, the collection keeps pointing at it and its readers get nothing from it - with no error in the log. On the Selections page remove the selection marked as missing and add an existing one (filters are defined in the view of the type Alerts Selection Set). An Alerts module nobody uses any more can be deleted instead." => "Une sélection est un filtre d'une vue de la section dont l'alerte tire ses items. Lorsque le filtre ou la vue est supprimé, la collection continue d'y renvoyer et ses lecteurs n'en reçoivent rien - sans aucune erreur dans le Journal. Sur la page « Sélections », supprimez la sélection marquée comme manquante et ajoutez-en une existante (les filtres sont définis dans la vue de type « Alerte à l'ensemble de sélection »). Un module « Alerte » que plus personne n'utilise peut aussi être supprimé.", // ai 2026-11
 
-// src/Optimize/CheckAlerts.php, row 159
+// src/Optimize/CheckAlerts.php, row 188
 "Selections" => "Sélections", // ai 2026-06
 
-// src/Optimize/CheckAlerts.php, row 160
+// src/Optimize/CheckAlerts.php, row 189
 "Alerts settings" => "Configuration des alertes", // ai 2026-11
 
-// src/Optimize/CheckAlerts.php, row 163
+// src/Optimize/CheckAlerts.php, row 192
 "Alert selection no longer exists" => "La sélection d'alertes n'existe plus", // ai 2026-11
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 27
@@ -12602,7 +13141,7 @@ return [
 "No comment was refused in the last 30 days" => "Aucun commentaire n'a été refusé au cours des 30 derniers jours", // ai 2026-11
 
 // src/Optimize/CheckEnvironment.php, row 18
-// src/Optimize/StateCheckModel.php, row 295
+// src/Optimize/StateCheckModel.php, row 298
 "Environment" => "Environnement", // ai 2026-06
 
 // src/Optimize/CheckEnvironment.php, row 23
@@ -12726,6 +13265,7 @@ return [
 "The server reaches its own address (HTTP %1)" => "Le serveur atteint sa propre adresse (HTTP %1)", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 85
+// src/Optimize/CheckMailbulkRuns.php, row 77
 // src/Util/Note.php, row 47
 "Note" => "Note", // ai 2026-10
 
@@ -12744,6 +13284,27 @@ return [
 
 // src/Optimize/CheckHttp.php, row 126
 "curl" => "",
+
+// src/Optimize/CheckImgHostPrefix.php, row 33
+"Address written in front of {img}" => "Adresse écrite devant {img}", // ai 2026-11
+
+// src/Optimize/CheckImgHostPrefix.php, row 38
+"Lists the sites and slices whose templates write a web address in front of {img:...}. {img} gives the whole address of the image, so the address doubles and the image does not show." => "Liste les sites et les sections dont les modèles écrivent une adresse web devant {img:...}. {img} donne l'adresse complète de l'image ; l'adresse est donc doublée et l'image ne s'affiche pas.", // ai 2026-11
+
+// src/Optimize/CheckImgHostPrefix.php, row 61
+"The image cache is off - {img} gives a path, an address in front of it is right" => "Le cache d'images est désactivé - {img} donne un chemin, une adresse devant est correcte", // ai 2026-11
+
+// src/Optimize/CheckImgHostPrefix.php, row 90
+"Written before {img}" => "Écrit devant {img}", // ai 2026-11
+
+// src/Optimize/CheckImgHostPrefix.php, row 98
+"%1 writes an address in front of {img} - the images do not show" => "%1 écrit une adresse devant {img} - les images ne s'affichent pas", // ai 2026-11
+
+// src/Optimize/CheckImgHostPrefix.php, row 101
+"Since September 2026 {img:...} gives the whole address of the image (with the domain where the image is stored), so the address written in front of it doubles and the image does not load. In the places listed, delete the address in front of {img:...}, e.g. <img src=\"https://example.org{img:{img_upload......}:w=330}\"> becomes <img src=\"{img:{img_upload......}:w=330}\">. The \":cache\" option of {img} is the default now and can go too. In an RSS feed whose image is not an uploaded file, write {img:...:...:rawurl} instead - it always gives the whole address (unescaped, which is fine in RSS)." => "Depuis septembre 2026, {img:...} donne l'adresse complète de l'image (avec le domaine où l'image est stockée) ; l'adresse écrite devant est donc doublée et l'image ne se charge pas. Aux endroits listés, supprimez l'adresse devant {img:...}, p. ex. <img src=\"https://example.org{img:{img_upload......}:w=330}\"> devient <img src=\"{img:{img_upload......}:w=330}\">. L'option « :cache » de {img} est désormais la valeur par défaut et peut aussi être supprimée. Dans un flux RSS dont l'image n'est pas un fichier téléversé, écrivez plutôt {img:...:...:rawurl} - cela donne toujours l'adresse complète (non échappée, ce qui convient en RSS).", // ai 2026-11
+
+// src/Optimize/CheckImgHostPrefix.php, row 106
+"No template writes an address in front of {img}" => "Aucun modèle n'écrit d'adresse devant {img}", // ai 2026-11
 
 // src/Optimize/CheckImportStores.php, row 19
 "Import stream states and catalogs" => "États des flux et catalogues des imports", // ai 2026-10
@@ -12786,6 +13347,7 @@ return [
 // src/Optimize/CheckInstallRuns.php, row 62
 // src/Optimize/CheckIsdsRegistry.php, row 142
 // src/Optimize/CheckIsdsRuns.php, row 163, 200
+// src/Optimize/CheckMailbulkRuns.php, row 76
 // src/Optimize/CheckOptimizeRuns.php, row 60
 // src/Optimize/CheckQueue.php, row 88, 98
 "Error" => "Erreur", // ai 2026-10
@@ -13451,6 +14013,8 @@ return [
 // src/Optimize/CheckIsdsRunItems.php, row 96
 // src/Optimize/CheckIsdsRuns.php, row 90
 // src/Optimize/CheckIsdsViews.php, row 106
+// src/Optimize/CheckMailbulkRuns.php, row 55
+// src/Optimize/CheckMailbulkStats.php, row 88
 // src/Optimize/CheckNightly.php, row 87
 "%1: nothing found" => "%1 : rien trouvé", // ai 2026-10
 
@@ -13644,6 +14208,87 @@ return [
 // src/Optimize/CheckLoginAddresses.php, row 124
 "If %1 is a proxy in front of AA, add it to AA_TRUSTED_PROXIES in include/config.php: %2 - AA then counts each visitor by their own address." => "Si %1 est un proxy placé devant AA, ajoutez-le à AA_TRUSTED_PROXIES dans include/config.php : %2 - AA compte alors chaque visiteur selon sa propre adresse.", // ai 2026-10
 
+// src/Optimize/CheckMailbulkRuns.php, row 18
+"Mailings to readers" => "Envois aux lecteurs", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 23
+"Warns about mailings of an item to the readers of a list that hang or stopped by an error." => "Signale les envois d'un item aux lecteurs d'une liste qui sont bloqués ou arrêtés par une erreur.", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 52
+"Mailing \"%1\" has not moved on for %2 hours" => "L'envoi «%1» n'avance plus depuis %2 h", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 52
+"No step of the task queue works on it. Check that cron runs the task queue, then choose Continue by the sending. A reader whose mail may have gone is never sent it again." => "Aucune étape de la file des tâches ne s'en occupe. Vérifiez que cron lance la file des tâches, puis choisissez «Continuer» à côté de l'envoi. Un lecteur dont le courriel est peut-être parti ne le recevra jamais une seconde fois.", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 61
+"The mail server did not take the mails: check the SMTP settings of this AA or the relay." => "Le serveur de messagerie n'a pas accepté les courriels: vérifiez les paramètres SMTP de cet AA ou le relais.", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 62
+"The mail cannot be made: the Note says why. Fix the item or the list." => "Le courriel ne peut pas être créé: la «Note» indique pourquoi. Corrigez l'item ou la liste.", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 63
+"The readers frozen for this mailing are missing: ask the administrator." => "Les lecteurs figés pour cet envoi manquent: contactez l'administrateur.", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 64
+"Fix what the error code names." => "Corrigez ce que le code d'erreur indique.", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 67
+"Mailing \"%1\" stopped by an error" => "Envoi «%1» arrêté par une erreur", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 67
+"Nothing more is sent until someone acts: then choose Continue by the sending. A reader whose mail may have gone is never sent it again." => "Plus rien n'est envoyé tant que personne n'intervient: choisissez alors «Continuer» à côté de l'envoi. Un lecteur dont le courriel est peut-être parti ne le recevra jamais une seconde fois.", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 83
+"without a title" => "sans titre", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 93
+"Mailing" => "Envoi", // ai 2026-11
+
+// src/Optimize/CheckMailbulkRuns.php, row 95
+"Tried" => "Traités", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 19
+"Mailing statistics" => "Statistiques des envois", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 24
+"Checks that the statistics slice of every Alerts list that measures opens and clicks exists, has its fields, keeps no item history and has a reading password, and that AA_SECRET is set." => "Vérifie que la section des statistiques de chaque liste d'Alerte qui mesure les ouvertures et les clics existe, possède ses champs, ne conserve pas l'historique de ses items et a un mot de passe de lecture, et que AA_SECRET est défini.", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 51
+"Statistics slice" => "Section des statistiques", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 58
+"Missing fields" => "Champs manquants", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 69
+"%1 Alerts lists measure into a statistics slice that is gone" => "Listes d'Alerte mesurant dans une section des statistiques disparue: %1", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 69
+"Nothing is counted. Choose another statistics slice, or none, in the Alerts settings." => "Rien n'est compté. Choisissez une autre section des statistiques, ou aucune, dans la «Configuration des alertes».", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 70
+"%1 statistics slices lack a field the events need" => "Sections des statistiques auxquelles manque un champ requis par les événements: %1", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 70
+"Nothing is counted. Add the missing fields to the slice, or install the slice anew from the App store and choose it in the Alerts settings." => "Rien n'est compté. Ajoutez les champs manquants à la section, ou réinstallez la section depuis le «Catalogue d'applications» et choisissez-la dans la «Configuration des alertes».", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 71
+"%1 statistics slices keep the history of their items" => "Sections des statistiques conservant l'historique de leurs items: %1", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 71
+"Every first open and click of a reader then writes a row of the log with the address of the request. Set \"Store item history for N days\" to 0 in the slice settings." => "Chaque première ouverture et chaque premier clic d'un lecteur écrit alors une ligne du journal avec l'adresse de la requête. Mettez «Conserver l'historique des items pendant N jours» à 0 dans la configuration de la section.", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 72
+"%1 statistics slices have no reading password" => "Sections des statistiques sans mot de passe de lecture: %1", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 72
+"Set a reading password in the slice settings, so its items are not shown on the web." => "Définissez un mot de passe de lecture dans la configuration de la section, afin que ses items ne s'affichent pas sur le web.", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 83
+"Alerts lists measure opens and clicks while AA_SECRET is not set" => "Des listes d'Alerte mesurent les ouvertures et les clics alors que AA_SECRET n'est pas défini", // ai 2026-11
+
+// src/Optimize/CheckMailbulkStats.php, row 84
+"The tracked links of the mails are signed by a key derived from the database password, so a new DB_PASSWORD would break the links of all mails sent so far. Set AA_SECRET in include/config.php before the next mailing - see the AA_SECRET check." => "Les liens suivis des courriels sont signés par une clé dérivée du mot de passe de la base de données, donc un nouveau DB_PASSWORD casserait les liens de tous les courriels envoyés jusqu'ici. Définissez AA_SECRET dans include/config.php avant le prochain envoi - voyez la vérification AA_SECRET.", // ai 2026-11
+
 // src/Optimize/CheckNightly.php, row 30
 "Nightly test" => "Test nocturne", // ai 2026-10
 
@@ -13836,40 +14481,40 @@ return [
 // src/Optimize/CheckNightly.php, row 235
 "The nightly test reported this on the pages below. The report of the nightly test (test4update) explains the check." => "Le test nocturne a signalé ceci sur les pages ci-dessous. Le rapport du test nocturne (test4update) explique la vérification.", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 34
+// src/Optimize/CheckObjectFormRefusals.php, row 36
 "Refused object forms" => "Formulaires d'objets refusés", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 39
+// src/Optimize/CheckObjectFormRefusals.php, row 41
 "Lists the settings and Manager forms and actions refused in the last 30 days because they posted an object or row of another module, of another type or other than the edited one." => "Liste les formulaires de paramètres et du Gestionnaire et les actions refusés ces 30 derniers jours parce qu'ils ont envoyé un objet ou une ligne d'un autre module, d'un autre type ou différent de celui modifié.", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 88
+// src/Optimize/CheckObjectFormRefusals.php, row 90
 "(no such object)" => "(objet inexistant)", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 92
+// src/Optimize/CheckObjectFormRefusals.php, row 94
 "The Item Manager of %1 tried to export the item %2 of another slice" => "Le Gestionnaire d'Item de %1 a tenté d'exporter l'item %2 d'une autre section", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 92
+// src/Optimize/CheckObjectFormRefusals.php, row 94
 "A form of %1 tried to write the object %2" => "Un formulaire de %1 a tenté d'écrire l'objet %2", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 98
+// src/Optimize/CheckObjectFormRefusals.php, row 100
 "Form type" => "Type de formulaire", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 99
+// src/Optimize/CheckObjectFormRefusals.php, row 101
 "Stored type" => "Type enregistré", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 105
+// src/Optimize/CheckObjectFormRefusals.php, row 107
 "The export to slice posted an item of another slice (Owner) to copy it out of there; it was not exported. The Item Manager lists only the items of its slice, so unless the item was moved meanwhile, the user edited the request, most likely to read or copy the items of a slice he has no rights to. Find out who the user is." => "L'export vers une section a envoyé un item d'une autre section (Propriétaire) pour l'en copier ; il n'a pas été exporté. Le Gestionnaire d'Item ne liste que les items de sa section : à moins que l'item n'ait été déplacé entre-temps, l'utilisateur a modifié la requête, très probablement pour lire ou copier les items d'une section sur laquelle il n'a pas de droits. Identifiez l'utilisateur.", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 105
+// src/Optimize/CheckObjectFormRefusals.php, row 107
 "The form or action posted an object or row other than the one it was opened for, one that belongs to another module (Owner) or one of another type; it was left untouched. The pages post only the edited objects and those of the listed module, so unless the object was moved or deleted meanwhile (an empty owner - it does not exist), the user edited the request, most likely to change the settings of another site or slice. Find out who the user is." => "Le formulaire ou l'action a envoyé un objet ou une ligne autre que celui pour lequel il a été ouvert, appartenant à un autre module (Propriétaire) ou d'un autre type ; il n'a pas été modifié. Les pages n'envoient que les objets modifiés et ceux du module listé : à moins que l'objet n'ait été déplacé ou supprimé entre-temps (propriétaire vide – il n'existe pas), l'utilisateur a modifié la requête, très probablement pour changer les paramètres d'un autre site ou d'une autre section. Identifiez l'utilisateur.", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 109
+// src/Optimize/CheckObjectFormRefusals.php, row 111
 "Export of an item of another slice refused" => "Export d'un item d'une autre section refusé", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 109
+// src/Optimize/CheckObjectFormRefusals.php, row 111
 "Write to an object of another module refused" => "Écriture dans un objet d'un autre module refusée", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 113
+// src/Optimize/CheckObjectFormRefusals.php, row 115
 "No object form was refused in the last 30 days" => "Aucun formulaire d'objet refusé ces 30 derniers jours", // ai 2026-10
 
 // src/Optimize/CheckOptimizeRuns.php, row 16
@@ -14094,6 +14739,24 @@ return [
 // src/Optimize/CheckQueuedClassMissing.php, row 77
 "No queued task with a missing class in the last 30 days" => "Aucune tâche en file d'une classe manquante ces 30 derniers jours", // ai 2026-10
 
+// src/Optimize/CheckRelatedFieldsWithoutSlice.php, row 21
+"Related-item fields without a slice" => "Champs d'items liés sans section", // ai 2026-11
+
+// src/Optimize/CheckRelatedFieldsWithoutSlice.php, row 26
+"Lists related-item fields which should offer the items of a module that is not a slice - an Alerts module, or a module missing in this AA (a removed slice, a slice of another installation). Such a field offers nothing to choose." => "Liste les champs d'items liés qui devraient proposer les items d'un module qui n'est pas une section - un module Alerte, ou un module absent de cet AA (une section supprimée, une section d'une autre installation). Un tel champ ne propose rien à choisir.", // ai 2026-11
+
+// src/Optimize/CheckRelatedFieldsWithoutSlice.php, row 77
+"Every related-item field offers the items of a slice" => "Chaque champ d'items liés propose les items d'une section", // ai 2026-11
+
+// src/Optimize/CheckRelatedFieldsWithoutSlice.php, row 85
+"no such module" => "module inexistant", // ai 2026-11
+
+// src/Optimize/CheckRelatedFieldsWithoutSlice.php, row 91
+"%1 related-item fields should offer the items of a module that is not a slice" => "Champs d'items liés qui devraient proposer les items d'un module qui n'est pas une section: %1", // ai 2026-11
+
+// src/Optimize/CheckRelatedFieldsWithoutSlice.php, row 93
+"The field offers nothing to choose and saving an item may empty it. In the field settings choose the slice whose items the field holds." => "Le champ ne propose rien à choisir et l'enregistrement d'un item peut le vider. Dans la configuration du champ, choisissez la section dont le champ contient les items.", // ai 2026-11
+
 // src/Optimize/CheckRelatedSlices.php, row 20
 "Related slices of another website" => "Sections liées d'un autre site web", // ai 2026-11
 
@@ -14152,7 +14815,7 @@ return [
 "AA_SECRET is set" => "AA_SECRET est défini", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 52
-"Add to include/config.php: define('AA_SECRET', '...'); with any long random string, e.g. the output of php -r \"echo bin2hex(random_bytes(32));\". Do it when you update AA, so the Centrals authenticate to this AA again only once. Without AA_SECRET a change of DB_PASSWORD has the same effect as a new secret. Centrals keep the database passwords of their AAs in central_conf - another reason for AA_SECRET." => "Ajoutez à include/config.php : define('AA_SECRET', '...'); avec une longue chaîne aléatoire quelconque, p. ex. la sortie de php -r \"echo bin2hex(random_bytes(32));\". Faites-le lors de la mise à jour d'AA, afin que les Centrals ne doivent se réauthentifier auprès de cet AA qu'une seule fois. Sans AA_SECRET, un changement de DB_PASSWORD a le même effet qu'un nouveau secret. Les Centrals conservent les mots de passe de base de données de leurs AA dans central_conf – une raison de plus pour AA_SECRET.", // ai 2026-10
+"Add to include/config.php: define('AA_SECRET', '...'); with any long random string, e.g. the output of php -r \"echo bin2hex(random_bytes(32));\". Do it when you update AA, so the Centrals authenticate to this AA again only once. Without AA_SECRET a change of DB_PASSWORD has the same effect as a new secret. Centrals keep the database passwords of their AAs in central_conf - another reason for AA_SECRET. Setting or changing AA_SECRET - or changing DB_PASSWORD while it is unset - breaks the tracked links in mails already sent, so set it before the first mailing with a statistics slice." => "Ajoutez à include/config.php: define('AA_SECRET', '...'); avec une longue chaîne aléatoire quelconque, par exemple la sortie de php -r \"echo bin2hex(random_bytes(32));\". Faites-le lors de la mise à jour d'AA, afin que les Centrals ne se réauthentifient auprès de cet AA qu'une seule fois. Sans AA_SECRET, un changement de DB_PASSWORD a le même effet qu'un nouveau secret. Les Centrals conservent les mots de passe de base de données de leurs AA dans central_conf - une raison de plus pour AA_SECRET. Définir ou changer AA_SECRET - ou changer DB_PASSWORD tant qu'il n'est pas défini - casse les liens suivis dans les courriels déjà envoyés; définissez-le donc avant le premier envoi avec une section des statistiques.", // ai 2026-11
 
 // src/Optimize/CheckSecret.php, row 54
 "AA_SECRET is shorter than %1 bytes, so it is ignored" => "AA_SECRET fait moins de %1 octets, il est donc ignoré", // ai 2026-10
@@ -14452,6 +15115,46 @@ return [
 // src/Optimize/CheckUserAliasFunctions.php, row 157
 "The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "L'alias n'affiche rien : f_u n'appelle que des fonctions de l'installation (usr_* dans include/usr_aliasfnc.php), jamais des fonctions PHP ou AA. Écrivez une fonction usr_* qui fait ce qu'il faut, ou utilisez plutôt une expression AA.", // ai 2026-10
 
+// src/Optimize/CheckViewDirectRefusals.php, row 26
+"Views asked for by their address, set to work only inside pages" => "Vues réglées pour fonctionner uniquement dans les pages, demandées par leur adresse", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 31
+"Lists the views that view.php or jsview.php was asked for in the last 30 days and did not show, because the view, its slice or a site using the slice lets views work only inside pages - with the page that asked." => "Liste les vues demandées à view.php ou jsview.php au cours des 30 derniers jours et non affichées, parce que la vue, sa section ou un site utilisant la section ne laisse les vues fonctionner qu'à l'intérieur des pages - avec la page qui les a demandées.", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 82
+"the slice %1 (list of its views)" => "la section %1 (liste de ses vues)", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 83
+"the site %1 (settings of the site)" => "le site %1 (paramètres du site)", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 84
+"the view (\"Only inside pages\")" => "la vue (« Uniquement dans les pages »)", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 88
+"Views of the slice" => "Vues de la section", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 94
+"View %1 was asked for by its address and showed nothing: it works only inside pages" => "La vue %1 a été demandée par son adresse et n'a rien affiché : elle ne fonctionne qu'à l'intérieur des pages", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 98
+"Set by" => "Réglé par", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 99
+"Address asked for" => "Adresse demandée", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 100
+// src/Optimize/CheckViewSliceRefusals.php, row 194
+"Link on page" => "Lien sur la page", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 104
+"Something asked view.php or jsview.php for the view: a page that loads it by its address (AJAX, lazy loading - see \"Link on page\"), a link, a feed reader or a robot with an old address. If one of your pages needs it, put the view into the template of the page ({view:...}), or let this view be shown by its address again, where \"Set by\" says. If you do not know the page, nothing needs to change." => "Quelque chose a demandé la vue à view.php ou jsview.php : une page qui la charge par son adresse (AJAX, chargement différé - voir « Lien sur la page »), un lien, un lecteur de flux ou un robot avec une ancienne adresse. Si l'une de vos pages en a besoin, placez la vue dans le modèle de la page ({view:...}), ou laissez de nouveau cette vue s'afficher par son adresse, là où l'indique « Réglé par ». Si vous ne connaissez pas la page, rien ne doit changer.", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 108
+"View not shown" => "Vue non affichée", // ai 2026-11
+
+// src/Optimize/CheckViewDirectRefusals.php, row 111
+"No view set to work only inside pages was asked for by its address in the last 30 days" => "Aucune vue réglée pour fonctionner uniquement dans les pages n'a été demandée par son adresse au cours des 30 derniers jours", // ai 2026-11
+
 // src/Optimize/CheckViewSliceRefusals.php, row 35
 "Slices left out of views, charsets ignored" => "Sections exclues des vues, jeux de caractères ignorés", // ai 2026-11
 
@@ -14516,9 +15219,6 @@ return [
 // src/Optimize/CheckViewSliceRefusals.php, row 192
 "Latest charsets" => "Derniers jeux de caractères", // ai 2026-11
 
-// src/Optimize/CheckViewSliceRefusals.php, row 194
-"Link on page" => "Lien sur la page", // ai 2026-11
-
 // src/Optimize/CheckViewSliceRefusals.php, row 198
 "A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change." => "Un lien ou un formulaire a indiqué, pour convertir une vue, une discussion, un sondage ou un formulaire, un jeu de caractères (convertfrom ou convertto de view.php, jsview.php, discussion.php, poll.php et filler.php, ainsi que set[...]=convertfrom-... d'une vue) qu'AA ne reprend pas de l'URL ; il a été ignoré comme s'il n'y était pas. Sont autorisés : %1, sans distinction de casse. Corrigez le jeu de caractères dans le lien ou le formulaire de votre page, ou omettez convertfrom - une vue convertit alors depuis le jeu de caractères de sa section. Si vous ne connaissez pas la page, la requête ne venait pas de vos pages et rien ne doit changer.", // ai 2026-11
 
@@ -14561,7 +15261,7 @@ return [
 "engine for %1 table is %2" => "le moteur de la table %1 est %2", // ai 2026-06
 
 // src/Optimize/Convert2innodb.php, row 50
-// src/Optimize/Convert2utf8mb4.php, row 43, 57
+// src/Optimize/Convert2utf8mb4.php, row 43, 60
 "We found %1 tables which need to be converted" => "Nous avons trouvé %1 tables à convertir", // ai 2026-06
 
 // src/Optimize/Convert2innodb.php, row 71
@@ -14577,21 +15277,24 @@ return [
 "Convert old database collation utf8 to utf8mb4" => "Convertir l'ancienne collation utf8 de la base en utf8mb4", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 31
-"Convert old database collation utf8 (or utf8mb3) to utf8mb4 for all tables and set database default to utf8mb4" => "Convertit l'ancienne collation utf8 (ou utf8mb3) en utf8mb4 pour toutes les tables et définit utf8mb4 comme collation par défaut de la base", // ai 2026-06
+"Convert the utf8 (utf8mb3) tables to utf8mb4 and bring all tables and the database default to one collation - a language one (e.g. Czech) when the database has it" => "Convertir les tables utf8 (utf8mb3) en utf8mb4 et amener toutes les tables et la valeur par défaut de la base de données à une seule collation - une collation de langue (p. ex. tchèque) lorsque la base de données la possède", // ai 2026-11
 
 // src/Optimize/Convert2utf8mb4.php, row 41
 "collation for %1 table is %2" => "la collation de la table %1 est %2", // ai 2026-06
 
-// src/Optimize/Convert2utf8mb4.php, row 65
+// src/Optimize/Convert2utf8mb4.php, row 45
+"The database default collation is %1, the tables are to be in %2" => "La collation par défaut de la base de données est %1, les tables doivent être en %2", // ai 2026-11
+
+// src/Optimize/Convert2utf8mb4.php, row 68
 "Convert table %1 (%2) to %3" => "Convertir la table %1 (%2) en %3", // ai 2026-06
 
-// src/Optimize/Convert2utf8mb4.php, row 69
+// src/Optimize/Convert2utf8mb4.php, row 72
 "Database default set to %1" => "Valeur par défaut de la base de données définie à %1", // ai 2026-06
 
-// src/Optimize/Convert2utf8mb4.php, row 71
+// src/Optimize/Convert2utf8mb4.php, row 74
 "Please do not forget to change DB_CHARACTER_SET to \"utf8mb4\" and DB_COLLATION_CONNECTION to \"%1\" in your config.php" => "N'oubliez pas de remplacer DB_CHARACTER_SET par \"utf8mb4\" et DB_COLLATION_CONNECTION par \"%1\" dans votre config.php", // ai 2026-06
 
-// src/Optimize/Convert2utf8mb4.php, row 136
+// src/Optimize/Convert2utf8mb4.php, row 158
 "Convert the MyISAM tables %1 to InnoDB first - Optimize \"%2\"." => "Convertissez d'abord les tables MyISAM %1 en InnoDB – « Optimiser » : « %2 ».", // ai 2026-10
 
 // src/Optimize/ConvertSliceEncoding.php, row 18
@@ -14736,25 +15439,28 @@ return [
 // src/Optimize/DbInconsistency.php, row 122
 "Data for item id %1 in discussion table deleted" => "Données de l'item id %1 supprimées de la table de discussion", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 29
+// src/Optimize/DbInconsistencyConstants.php, row 31
 "Check for unused constants" => "Vérifier les constantes inutilisées", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 37
+// src/Optimize/DbInconsistencyConstants.php, row 39
 "Test constant table for never used constants groups" => "Teste la table des constantes pour trouver les groupes de constantes jamais utilisés", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 97
+// src/Optimize/DbInconsistencyConstants.php, row 131
 "Non ASCII chars in group_id" => "Caractères non ASCII dans group_id", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 102
+// src/Optimize/DbInconsistencyConstants.php, row 136
 "Found %1 Non ASCII" => "%1 caractères non ASCII trouvés", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 107
+// src/Optimize/DbInconsistencyConstants.php, row 139
+"Spaces around the group name - rename the group" => "Espaces autour du nom du groupe - renommez le groupe", // ai 2026-11
+
+// src/Optimize/DbInconsistencyConstants.php, row 148
 "Not used constant group" => "Groupe de constantes inutilisé", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 112
+// src/Optimize/DbInconsistencyConstants.php, row 153
 "Found %1 unused constant groups" => "%1 groupes de constantes inutilisés trouvés", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 125
+// src/Optimize/DbInconsistencyConstants.php, row 165, 171
 "Deleted %1 constants in %2 (%3) unused constant groups" => "%1 constantes supprimées dans %2 (%3) groupes de constantes inutilisés", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 23
@@ -14800,10 +15506,10 @@ return [
 // src/Optimize/DebuglogLeftover.php, row 67
 "No {debuglog} found in code points, no DEBUG rows logged in the last 24 hours" => "Aucun {debuglog} trouvé dans le code, aucune ligne DEBUG journalisée ces 24 dernières heures", // ai 2026-10
 
-// src/Optimize/DropBackupTables.php, row 20
+// src/Optimize/DropBackupTables.php, row 18
 "Delete backup tables" => "Supprimer les tables de sauvegarde", // ai 2026-06
 
-// src/Optimize/DropBackupTables.php, row 28
+// src/Optimize/DropBackupTables.php, row 26
 "Deletes all the current backup tables (bck_slice, bck_item, ...)." => "Supprime toutes les tables de sauvegarde actuelles (bck_slice, bck_item, ...).", // ai 2026-06
 
 // src/Optimize/FieldDuplicates.php, row 18
@@ -15079,6 +15785,7 @@ return [
 "present" => "présent", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 99
+// src/Optimize/ViewListingColumns.php, row 81
 "missing" => "manquant", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 99
@@ -15162,43 +15869,43 @@ return [
 // src/Optimize/ReadersLogin2id.php, row 98
 "Column item.edited_by updated for %1 (id: %2)." => "Colonne item.edited_by mise à jour pour %1 (id : %2).", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 20
+// src/Optimize/RedefineCoreConstants.php, row 23
 "Redefine core constants" => "Redéfinir les constantes de base", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 28
+// src/Optimize/RedefineCoreConstants.php, row 31
 "Updates core constants - like Code-pages, Language Constants and AA Bins" => "Met à jour les constantes de base - comme les pages de code, les constantes de langues et les Bins AA", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 48
+// src/Optimize/RedefineCoreConstants.php, row 51
 "Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "Les constantes des pages de code (lt_codepages) ne sont pas à jour - trouvées : %1 sur 9", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 55
+// src/Optimize/RedefineCoreConstants.php, row 58
 "Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "Les constantes de langues (lt_languages) ne sont pas à jour - trouvées : %1 sur 46", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 62
+// src/Optimize/RedefineCoreConstants.php, row 65
 "AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "Les constantes des Bins AA (AA_Core_Bins....) ne sont pas à jour - trouvées : %1 sur 3", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 69
+// src/Optimize/RedefineCoreConstants.php, row 72
 "APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "Les catégories communes à APC (lt_apcCategories) ne sont pas à jour - trouvées : %1 sur 82", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 83
+// src/Optimize/RedefineCoreConstants.php, row 86
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "Suppression des pages de code, des constantes de langues, des constantes des Bins AA et des catégories communes à APC", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 87
+// src/Optimize/RedefineCoreConstants.php, row 90
 "Recreate Code-pages" => "Recréer les pages de code", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 98
+// src/Optimize/RedefineCoreConstants.php, row 101
 "Recreate Languages" => "Recréer les langues", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 146
+// src/Optimize/RedefineCoreConstants.php, row 149
 "Recreate AA Bins" => "Recréer les Bins AA", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 151
+// src/Optimize/RedefineCoreConstants.php, row 154
 "APC wide categories" => "Catégories communes à APC", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 235
+// src/Optimize/RedefineCoreConstants.php, row 238
 "Make sure, the constants are registered" => "Vérifier que les constantes sont enregistrées", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 244
+// src/Optimize/RedefineCoreConstants.php, row 247
 "Redefine core constants - done." => "Redéfinition des constantes de base - terminé.", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 45
@@ -15416,21 +16123,6 @@ return [
 // src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "OK - Aucun champ case à cocher obligatoire", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 22
-"Restore data from backup tables" => "Restaurer les données depuis les tables de sauvegarde", // ai 2026-06
-
-// src/Optimize/RestoreBckTables.php, row 30
-"Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "Supprime toutes les tables actuelles (slice, item, ...) pour lesquelles une table bck_ existe et renomme toutes les tables de sauvegarde (bck_slice, bck_item, ...) avec leurs noms corrects (slice, item, ...).", // ai 2026-06
-
-// src/Optimize/RestoreBckTables.php, row 42
-"The bck_ tables do not exist (or at least bck_content table)" => "Les tables bck_ n'existent pas (ou au moins la table bck_content)", // ai 2026-06
-
-// src/Optimize/RestoreBckTables.php, row 61
-"There is no bck_%1 table - %1 not restored." => "La table bck_%1 n'existe pas - %1 non restaurée.", // ai 2026-06
-
-// src/Optimize/RestoreBckTables.php, row 64
-"Replace table bck_%1 -> %1" => "Remplacement de la table bck_%1 -> %1", // ai 2026-06
-
 // src/Optimize/SeoDuplicates.php, row 44
 "SEO name duplicates" => "Doublons de nom SEO", // ai 2026-06
 
@@ -15473,148 +16165,148 @@ return [
 // src/Optimize/StateCheckItem.php, row 73
 "now" => "à l'instant", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 220
+// src/Optimize/StateCheckModel.php, row 223
 "Warning" => "Avertissement", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 221
+// src/Optimize/StateCheckModel.php, row 224
 "Advice" => "Conseil", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 232
+// src/Optimize/StateCheckModel.php, row 235
 "Back again" => "Réapparu", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 233
+// src/Optimize/StateCheckModel.php, row 236
 "Not verified" => "Non vérifié", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 234, 293
+// src/Optimize/StateCheckModel.php, row 237, 296
 "Muted" => "Masqué", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 259
+// src/Optimize/StateCheckModel.php, row 262
 "%1 d" => "%1 j", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 260
+// src/Optimize/StateCheckModel.php, row 263
 "%1 w" => "%1 sem", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 261
+// src/Optimize/StateCheckModel.php, row 264
 "%1 mo" => "%1 mois", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 262
+// src/Optimize/StateCheckModel.php, row 265
 "%1 y" => "%1 a", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 270
+// src/Optimize/StateCheckModel.php, row 273
 "Since" => "Depuis", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 290
+// src/Optimize/StateCheckModel.php, row 293
 "New findings" => "Nouveaux constats", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 291
+// src/Optimize/StateCheckModel.php, row 294
 "Ongoing" => "Persistants", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 292
+// src/Optimize/StateCheckModel.php, row 295
 "Not verified now" => "Non vérifiés à l'instant", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 294
+// src/Optimize/StateCheckModel.php, row 297
 "Passed checks" => "Vérifications réussies", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 305
+// src/Optimize/StateCheckModel.php, row 308
 "Not there at the daily snapshot of %1 (nightly test: at its previous run), or back after it was resolved or had gone." => "Absent lors de l'instantané quotidien du %1 (test nocturne : lors de son exécution précédente), ou réapparu après avoir été résolu ou avoir disparu.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 306
+// src/Optimize/StateCheckModel.php, row 309
 "There is no daily snapshot to compare with yet, so every problem found counts as new." => "Il n'y a pas encore d'instantané quotidien pour comparer, donc chaque problème trouvé compte comme nouveau.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 308
+// src/Optimize/StateCheckModel.php, row 311
 "Already there at the daily snapshot of %1 (nightly test: at its previous run), and still there." => "Déjà présent lors de l'instantané quotidien du %1 (test nocturne : lors de son exécution précédente), et toujours présent.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 309
+// src/Optimize/StateCheckModel.php, row 312
 "Already there at the previous run of the nightly test, and still there." => "Déjà présent lors de l'exécution précédente du test nocturne, et toujours présent.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 311
+// src/Optimize/StateCheckModel.php, row 314
 "Hidden on purpose: resolved by a note, or a known issue of the nightly test. Each says why." => "Masqués volontairement : résolus par une note, ou problème connu du test nocturne. Chacun indique pourquoi.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 312
+// src/Optimize/StateCheckModel.php, row 315
 "Ran now and found nothing." => "Exécutées à l'instant, sans rien trouver.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 313
+// src/Optimize/StateCheckModel.php, row 316
 "What this installation runs on - for reference, nothing to fix." => "Ce sur quoi tourne cette installation - pour information, rien à corriger.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 374
+// src/Optimize/StateCheckModel.php, row 377
 "%1 new" => "Nouveaux : %1", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 374
+// src/Optimize/StateCheckModel.php, row 377
 "Nothing new" => "Rien de nouveau", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 374
+// src/Optimize/StateCheckModel.php, row 377
 "%1 ongoing" => "persistants : %1", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 374
+// src/Optimize/StateCheckModel.php, row 377
 "nothing ongoing" => "rien de persistant", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 375
+// src/Optimize/StateCheckModel.php, row 378
 "%1 problems, %2 warnings, %3 recommendations" => "problèmes : %1, avertissements : %2, recommandations : %3", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 376
+// src/Optimize/StateCheckModel.php, row 379
 "%1 checks not verified now" => "vérifications non exécutées à l'instant : %1", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 376
+// src/Optimize/StateCheckModel.php, row 379
 "every check verified now" => "toutes les vérifications exécutées à l'instant", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 377
+// src/Optimize/StateCheckModel.php, row 380
 "%1 muted" => "masqués : %1", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 377
+// src/Optimize/StateCheckModel.php, row 380
 "nothing muted" => "rien de masqué", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 378
+// src/Optimize/StateCheckModel.php, row 381
 "%1 checks passed" => "vérifications réussies : %1", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 435
+// src/Optimize/StateCheckModel.php, row 438
 "After the fix, press Recheck at this item on the State Check page." => "Après la correction, cliquez sur « Revérifier » pour cette vérification sur la page « Vérification de l'état ».", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 438, 577
+// src/Optimize/StateCheckModel.php, row 441, 580
 "As of %1." => "État au %1.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 535
+// src/Optimize/StateCheckModel.php, row 538
 "Marked resolved by %1 until %2." => "Marqué comme résolu par %1 jusqu'au %2.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 535
+// src/Optimize/StateCheckModel.php, row 538
 "Marked resolved by %1 for good." => "Marqué comme résolu par %1 définitivement.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 576
+// src/Optimize/StateCheckModel.php, row 579
 "Press Recheck to run this check now." => "Cliquez sur « Revérifier » pour lancer cette vérification maintenant.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 585
+// src/Optimize/StateCheckModel.php, row 588
 "These checks did not run on this load; each row shows the problem as it was last known." => "Ces vérifications n'ont pas été exécutées à ce chargement ; chaque ligne montre le problème tel qu'il était connu la dernière fois.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 587
+// src/Optimize/StateCheckModel.php, row 590
 "Extended checks: as the daily snapshot of %1 found them." => "Vérifications étendues : résultats de l'instantané quotidien du %1.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 591
+// src/Optimize/StateCheckModel.php, row 594
 "Nightly test: the types missing from its latest full run, as their own last run found them." => "Test nocturne : les types absents de sa dernière exécution complète, d'après leur propre dernière exécution.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 592
+// src/Optimize/StateCheckModel.php, row 595
 "Nightly test: its latest full run is from %1, older than %2 h, so every type shows its own last run." => "Test nocturne : sa dernière exécution complète date du %1, soit plus de %2 h, donc chaque type affiche sa propre dernière exécution.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 593
+// src/Optimize/StateCheckModel.php, row 596
 "Nightly test: no full run in the last 40 days, so every type shows its own last run." => "Test nocturne : aucune exécution complète au cours des 40 derniers jours, donc chaque type affiche sa propre dernière exécution.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 611
+// src/Optimize/StateCheckModel.php, row 614
 "%1 extended checks did not run now; they passed at the last daily snapshot, %2: %3." => "Vérifications étendues non exécutées à l'instant (%1), réussies lors du dernier instantané quotidien, %2 : %3.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 612
+// src/Optimize/StateCheckModel.php, row 615
 "%1 extended checks did not run now, and there is no daily snapshot yet: %2." => "Vérifications étendues non exécutées à l'instant (%1), et pas encore d'instantané quotidien : %2.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 613
+// src/Optimize/StateCheckModel.php, row 616
 "%1 slow checks did not run now; they are never part of the daily snapshot: %2." => "Vérifications lentes non exécutées à l'instant (%1) ; elles ne font jamais partie de l'instantané quotidien : %2.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 614
+// src/Optimize/StateCheckModel.php, row 617
 "%1 checks of the nightly test found nothing when they last ran: %2." => "Vérifications du test nocturne sans constat lors de leur dernière exécution (%1) : %2.", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 691
+// src/Optimize/StateCheckModel.php, row 694
 "After the fix, open a finding below and press its Recheck." => "Après la correction, ouvrez un constat ci-dessous et cliquez sur son bouton « Revérifier ».", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 708
+// src/Optimize/StateCheckModel.php, row 711
 "%1 — %2 findings" => "%1 — constats : %2", // ai 2026-10
 
-// src/Optimize/StateCheckModel.php, row 709
+// src/Optimize/StateCheckModel.php, row 712
 "%1 — %2 findings, most often on %3" => "%1 — constats : %2, le plus souvent sur %3", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 39
@@ -15641,44 +16333,65 @@ return [
 // src/Optimize/TrimFieldValues.php, row 140
 "%1 items to trim, e.g. %2" => "Items à rogner : %1, p. ex. %2", // ai 2026-10
 
-// src/Optimize/UpdateDbStructure.php, row 23
+// src/Optimize/UpdateDbStructure.php, row 41
 "Update database structure" => "Mettre à jour la structure de la base de données", // ai 2026-06
 
-// src/Optimize/UpdateDbStructure.php, row 31
-"Updates the database structure for AA. It checks all the tables in current system and compares them with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)" => "Met à jour la structure de la base de données d'AA. Vérifie toutes les tables du système actuel et les compare avec la structure de base de données la plus récente. La nouvelle table est créée sous le nom tmp_*, puis le contenu de l'ancienne table est copié et, si tout est OK, l'ancienne table est renommée en bck_* et tmp_* est renommée en nouvelle table. (nouvelle version basée sur la structure metabase)", // ai 2026-06
+// src/Optimize/UpdateDbStructure.php, row 49
+"Compares all the tables with the AA template of the database structure. Repair creates the missing tables and changes the differing ones in place (ALTER TABLE) - the data and the writes during the change stay. Tables, columns and indexes the template does not know and columns the template would narrow are only listed. Some changes of a big table make its writes wait until it is done - for a table over %1 MB that takes minutes, so it is done only when long table locks are allowed; run it at night." => "Compare toutes les tables avec le modèle AA de la structure de la base de données. « Réparer » crée les tables manquantes et modifie sur place celles qui diffèrent (ALTER TABLE) - les données et les écritures pendant la modification sont conservées. Les tables, colonnes et index que le modèle ne connaît pas, ainsi que les colonnes que le modèle rétrécirait, sont seulement listés. Certaines modifications d'une grande table font attendre ses écritures jusqu'à la fin - pour une table de plus de %1 Mo cela prend plusieurs minutes, elles ne sont donc faites que si les verrous de table longs sont autorisés ; lancez la réparation la nuit.", // ai 2026-11
 
-// src/Optimize/UpdateDbStructure.php, row 66
-"<em>Tables %1 are identical.</em><br>" => "<em>Les tables %1 sont identiques.</em><br>", // ai 2026-06
+// src/Optimize/UpdateDbStructure.php, row 84
+"Table %1 is missing." => "La table %1 manque.", // ai 2026-11
 
-// src/Optimize/UpdateDbStructure.php, row 68
-"<em>Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it.</em><br>" => "<em>La table <b>%1</b> n'est <b>pas nécessaire</b>. Vous pouvez la supprimer <b>manuellement</b>.</em><br>", // ai 2026-06
-
-// src/Optimize/UpdateDbStructure.php, row 72, 104
-"<em>Table <b>%1</b> is <b>new</b>.</em><br>" => "<em>La table <b>%1</b> est <b>nouvelle</b>.</em><br>", // ai 2026-06
+// src/Optimize/UpdateDbStructure.php, row 86
+"Table %1 differs: %2" => "La table %1 diffère : %2", // ai 2026-11
 
 // src/Optimize/UpdateDbStructure.php, row 94
-"Tables %1 are identical. Skipping." => "Les tables %1 sont identiques. Ignoré.", // ai 2026-06
+"OK - all the tables have the structure of the template" => "OK - toutes les tables ont la structure du modèle", // ai 2026-11
 
-// src/Optimize/UpdateDbStructure.php, row 99
-"Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it. Skipping.</em><br>" => "La table <b>%1</b> n'est <b>pas nécessaire</b>. Vous pouvez la supprimer <b>manuellement</b>. Ignoré.</em><br>", // ai 2026-06
+// src/Optimize/UpdateDbStructure.php, row 121
+"Table %1 is not in the template - you can delete it manually." => "La table %1 n'est pas dans le modèle - vous pouvez la supprimer manuellement.", // ai 2026-11
 
-// src/Optimize/UpdateDbStructure.php, row 106
-"<em>Updating table <b>%1</b>.</em><br>" => "<em>Mise à jour de la table <b>%1</b>.</em><br>", // ai 2026-06
+// src/Optimize/UpdateDbStructure.php, row 124
+"Table %1 has columns or indexes the template does not know - left as they are; delete them manually, if nothing uses them: %2" => "La table %1 a des colonnes ou des index que le modèle ne connaît pas - laissés tels quels; supprimez-les manuellement si rien ne les utilise: %2", // ai 2026-11
 
-// src/Optimize/UpdateDbStructure.php, row 115
-"Deleting temporary table tmp_%1, if it exists." => "Suppression de la table temporaire tmp_%1, si elle existe.", // ai 2026-06
+// src/Optimize/UpdateDbStructure.php, row 127, 161
+"Table %1 keeps the columns the template would narrow or change to another type, and the indexes over them - change them manually, if the data allow it: %2" => "La table %1 conserve les colonnes que le modèle rétrécirait ou changerait de type, et les index qui les couvrent - modifiez-les manuellement si les données le permettent: %2", // ai 2026-11
 
-// src/Optimize/UpdateDbStructure.php, row 117
-"Creating temporary table tmp_%1." => "Création de la table temporaire tmp_%1.", // ai 2026-06
+// src/Optimize/UpdateDbStructure.php, row 148
+"Table %1 (%2 MB) not changed: %3. Too many writes came meanwhile - run the repair again when the traffic is low." => "Table %1 (%2 Mo) non modifiée : %3. Trop d'écritures sont arrivées entre-temps - relancez la réparation quand le trafic est faible.", // ai 2026-11
 
-// src/Optimize/UpdateDbStructure.php, row 122
-"Creating \"old\" data table %1 if not exists." => "Création de l'« ancienne » table de données %1 si elle n'existe pas.", // ai 2026-06
+// src/Optimize/UpdateDbStructure.php, row 155
+"Table %1 (%2 MB) not changed: %3. The change makes the writes to the table wait for minutes, so it runs only when long table locks are allowed (Central Optimize, service/sql_update.php) - best at night." => "Table %1 (%2 Mo) non modifiée : %3. La modification fait attendre les écritures dans la table plusieurs minutes ; elle n'est donc lancée que si les verrous de table longs sont autorisés (« Optimiser » de Central, service/sql_update.php) - de préférence la nuit.", // ai 2026-11
 
-// src/Optimize/UpdateDbStructure.php, row 127
-"copying old values to new table %1 -> tmp_%1" => "copie des anciennes valeurs vers la nouvelle table %1 -> tmp_%1", // ai 2026-06
+// src/Optimize/UpdateDbStructure.php, row 170
+"Table %1 (%2 MB) changed - its writes waited %3 s." => "Table %1 (%2 Mo) modifiée - ses écritures ont attendu %3 s.", // ai 2026-11
 
-// src/Optimize/UpdateDbStructure.php, row 141
-"backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "sauvegarde de l'ancienne table %1 -> bck_%1 et utilisation des nouvelles tables à la place tmp_%1 -> %1", // ai 2026-06
+// src/Optimize/UpdateDbStructure.php, row 202
+"Table %1 not changed - other queries are using it. Try it again later." => "Table %1 non modifiée - d'autres requêtes l'utilisent. Réessayez plus tard.", // ai 2026-11
+
+// src/Optimize/UpdateDbStructure.php, row 203
+"Table %1 not changed - the database refused the change: %2" => "Table %1 non modifiée - la base de données a refusé la modification: %2", // ai 2026-11
+
+// src/Optimize/ViewListingColumns.php, row 23
+"Columns for the newer settings of views" => "Colonnes pour les nouveaux paramètres des vues", // ai 2026-11
+
+// src/Optimize/ViewListingColumns.php, row 28
+"Widens the columns view.cond1field - cond3field, so a view condition can name a field of related items, and adds view.group_limit for the limit of items in a group, view.conds for the conditions with a name or of more fields and view.show_if with view.show_else for the condition of any output. Nothing else changes." => "Élargit les colonnes view.cond1field - cond3field, pour qu'une condition de vue puisse nommer un champ des items liés, et ajoute view.group_limit pour la limite d'items dans un groupe, view.conds pour les conditions nommées ou à plusieurs champs, et view.show_if avec view.show_else pour la condition d'affichage. Rien d'autre ne change.", // ai 2026-11
+
+// src/Optimize/ViewListingColumns.php, row 67
+"The columns of %1 to add or widen: %2" => "Colonnes de %1 à ajouter ou élargir : %2", // ai 2026-11
+
+// src/Optimize/ViewListingColumns.php, row 70
+"OK - the columns of %1 are as the view form needs them" => "OK - les colonnes de %1 sont telles que le formulaire de vue les requiert", // ai 2026-11
+
+// src/Optimize/ViewListingColumns.php, row 77
+"Views can keep their newer settings (conditions on related items, more conditions, group limit, output condition)" => "Les vues peuvent conserver leurs nouveaux paramètres (conditions sur les items liés, conditions supplémentaires, limite par groupe, condition d'affichage)", // ai 2026-11
+
+// src/Optimize/ViewListingColumns.php, row 85
+"The view form does not offer its newer settings (conditions on related items, more conditions, group limit, output condition)" => "Le formulaire de vue ne propose pas ses nouveaux paramètres (conditions sur les items liés, conditions supplémentaires, limite par groupe, condition d'affichage)", // ai 2026-11
+
+// src/Optimize/ViewListingColumns.php, row 87
+"The database is older than the code. Repair adds the columns; the view form then offers the settings." => "La base de données est plus ancienne que le code. « Réparer » ajoute les colonnes ; le formulaire de vue propose ensuite les paramètres.", // ai 2026-11
 
 // src/Passkey/Notice.php, row 23
 "A passkey was added to your account" => "Une clé d'accès a été ajoutée à votre compte", // ai 2026-11
@@ -15703,6 +16416,18 @@ return [
 
 // src/Passkey/Notice.php, row 61
 "Address: %1, browser: %2" => "Adresse : %1, navigateur : %2", // ai 2026-11
+
+// src/Search/ConditionsInput.php, row 36
+"Add a condition" => "Ajouter une condition", // ai 2026-11
+
+// src/Search/ConditionsInput.php, row 53
+"Name of the condition: a number, or up to 6 small letters and digits" => "Nom de la condition : un numéro, ou jusqu'à 6 lettres minuscules et chiffres", // ai 2026-11
+
+// src/Search/ConditionsInput.php, row 58
+"Another field - the condition holds when any of the fields matches" => "Autre champ - la condition est remplie quand l'un des champs correspond", // ai 2026-11
+
+// src/Search/ConditionsInput.php, row 61
+"Remove the condition" => "Supprimer la condition", // ai 2026-11
 
 // src/Security/LoginThrottle.php, row 156
 "Too many failed login attempts. Try again in %1 min." => "Trop de tentatives de connexion échouées. Réessayez dans %1 min.", // ai 2026-10
@@ -15870,7 +16595,7 @@ return [
 "valid" => "valide", // ai 2026-10
 
 // src/Util/Note.php, row 64
-// src/Util/Notes.php, row 96
+// src/Util/Notes.php, row 122
 "resolved" => "résolue", // ai 2026-10
 
 // src/Util/Note.php, row 64
@@ -15879,88 +16604,88 @@ return [
 // src/Util/Note.php, row 65
 "Until" => "Jusqu'au", // ai 2026-10
 
-// src/Util/Notes.php, row 54
+// src/Util/Notes.php, row 78
 "Notes on this page" => "Notes sur cette page", // ai 2026-10
 
-// src/Util/Notes.php, row 57
+// src/Util/Notes.php, row 81
 "Add a note to this page" => "Ajouter une note à cette page", // ai 2026-10
 
-// src/Util/Notes.php, row 67
+// src/Util/Notes.php, row 91
 "Note text (a little HTML is fine)" => "Texte de la note (un peu de HTML est permis)", // ai 2026-10
 
-// src/Util/Notes.php, row 69
+// src/Util/Notes.php, row 93
 "for everyone" => "pour tout le monde", // ai 2026-10
 
-// src/Util/Notes.php, row 70, 93
+// src/Util/Notes.php, row 94, 119
 "only for me" => "pour moi seul", // ai 2026-10
 
-// src/Util/Notes.php, row 73
+// src/Util/Notes.php, row 97
 "Add note" => "Ajouter une note", // ai 2026-10
 
-// src/Util/Notes.php, row 96
+// src/Util/Notes.php, row 122
 "until %1" => "jusqu'au %1", // ai 2026-10
 
-// src/Util/Notes.php, row 96, 116
+// src/Util/Notes.php, row 122, 154
 "forever" => "pour toujours", // ai 2026-10
 
-// src/Util/Notes.php, row 102
+// src/Util/Notes.php, row 128
 "Unresolve" => "Rouvrir", // ai 2026-10
 
-// src/Util/Notes.php, row 116
+// src/Util/Notes.php, row 154
 "today" => "aujourd'hui", // ai 2026-10
 
-// src/Util/Notes.php, row 116
+// src/Util/Notes.php, row 154
 "a week" => "une semaine", // ai 2026-10
 
-// src/Util/Notes.php, row 116
+// src/Util/Notes.php, row 154
 "a month" => "un mois", // ai 2026-10
 
-// src/Util/Notes.php, row 116, 125
+// src/Util/Notes.php, row 154, 163
 "a date" => "jusqu'à une date", // ai 2026-10
 
-// src/Util/Notes.php, row 123
+// src/Util/Notes.php, row 161
 "Hide for" => "Masquer", // ai 2026-10
 
-// src/Util/Notes.php, row 126
+// src/Util/Notes.php, row 164
 "Why (optional)" => "Pourquoi (facultatif)", // ai 2026-10
 
-// src/Util/Notes.php, row 128
+// src/Util/Notes.php, row 166
 "Mark resolved" => "Marquer comme résolue", // ai 2026-10
 
-// src/Util/Notes.php, row 129
+// src/Util/Notes.php, row 167
 "Resolve" => "Résoudre", // ai 2026-10
 
-// src/Util/Paramwizard.php, row 155
+// src/Util/Paramwizard.php, row 172
 "Other parameters (the type does not describe them)" => "Autres paramètres (non décrits par le type)", // ai 2026-11
 
-// src/Util/Paramwizard.php, row 156
+// src/Util/Paramwizard.php, row 173
 "e.g. %1" => "p. ex. %1", // ai 2026-11
 
-// src/Util/Paramwizard.php, row 157
+// src/Util/Paramwizard.php, row 174
 "(default)" => "(par défaut)", // ai 2026-11
 
-// src/Util/Paramwizard.php, row 158
+// src/Util/Paramwizard.php, row 175
 "more" => "plus", // ai 2026-11
 
-// src/Util/Paramwizard.php, row 159
+// src/Util/Paramwizard.php, row 176
 "less" => "moins", // ai 2026-11
 
-// src/Util/Paramwizard.php, row 160
+// src/Util/Paramwizard.php, row 177
 "As text" => "En texte", // ai 2026-11
 
-// src/Util/Paramwizard.php, row 162
+// src/Util/Paramwizard.php, row 179
 "Copied to clipboard" => "Copié dans le presse-papiers", // ai 2026-11
 
-// src/Util/Paramwizard.php, row 163
+// src/Util/Paramwizard.php, row 180
 "The whole setting: type and parameters. Paste a text copied from another field and the form follows it." => "Tout le réglage : type et paramètres. Collez un texte copié d'un autre champ et le formulaire s'y adapte.", // ai 2026-11
 
-// src/Util/Paramwizard.php, row 164
+// src/Util/Paramwizard.php, row 181
 "The text does not start with a type offered here, taken as parameters of %1." => "Le texte ne commence pas par un type proposé ici ; il est pris comme paramètres de %1.", // ai 2026-11
 
-// src/Util/Paramwizard.php, row 165
+// src/Util/Paramwizard.php, row 182
 "Constant group %1 is not known here, the current one stays." => "Le groupe de constantes %1 n'est pas connu ici, l'actuel est conservé.", // ai 2026-11
 
-// src/Util/Searchfields.php, row 183
+// src/Util/Searchfields.php, row 203
 "-- any numeric field --" => "-- tout champ numérique --", // ai 2026-06
 
 // src/Util/UiPrefs.php, row 55
@@ -15969,7 +16694,7 @@ return [
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Boîte De Contrôle", // ai 2026-10
 
-// src/Widget/CodWidget.php, row 23
+// src/Widget/CodWidget.php, row 26
 "Code editor" => "Éditeur de code", // ai 2026-06
 
 // src/Widget/EdtWidget.php, row 23
@@ -15978,19 +16703,23 @@ return [
 // src/Widget/FilWidget.php, row 38
 "File Upload" => "Téléchargement de fichier", // ai 2026-10
 
-// src/Widget/FilWidget.php, row 206, 236
+// src/Widget/FilWidget.php, row 216
+// src/Widget/Widget.php, row 625
+"SAVE CHANGE" => "ENREGISTRER LA MODIFICATION", // ai 2026-06
+
+// src/Widget/FilWidget.php, row 246
 // src/Widget/RichtextMarkup.php, row 86
 "Upload" => "Téléverser", // ai 2026-06
 
-// src/Widget/FilWidget.php, row 250
-// src/Widget/Widget.php, row 603
+// src/Widget/FilWidget.php, row 260
+// src/Widget/Widget.php, row 626
 "EXIT WITHOUT CHANGE" => "QUITTER SANS MODIFIER", // ai 2026-06
 
 // src/Widget/FldWidget.php, row 34
 "Text Field" => "Champ texte",
 
 // src/Widget/FldWidget.php, row 166
-// src/Widget/TxtWidget.php, row 247
+// src/Widget/TxtWidget.php, row 253
 "translate from" => "traduire de", // ai 2026-06
 
 // src/Widget/GpsWidget.php, row 34
@@ -16040,8 +16769,8 @@ return [
 
 // src/Widget/MflWidget.php, row 103
 // src/Widget/RioWidget.php, row 124
-// src/Widget/TxtWidget.php, row 110
-// src/Widget/Widget.php, row 444
+// src/Widget/TxtWidget.php, row 116
+// src/Widget/Widget.php, row 467
 "To save changes click here or outside the field." => "Pour enregistrer les modifications, cliquez ici ou en dehors du champ.", // ai 2026-06
 
 // src/Widget/MngWidget.php, row 33
@@ -16113,435 +16842,432 @@ return [
 // src/Widget/Wi2Widget.php, row 34
 "Two Boxes" => "Deux boîtes", // ai 2026-10
 
-// src/Widget/Widget.php, row 602
-"SAVE CHANGE" => "ENREGISTRER LA MODIFICATION", // ai 2026-06
-
-// src/Widget/Widget.php, row 740
+// src/Widget/Widget.php, row 763
 "Max characters" => "Caractères max", // ai 2026-06
 
-// src/Widget/Widget.php, row 740
+// src/Widget/Widget.php, row 763
 "max count of characters entered (maxlength parameter)" => "nombre maximal de caractères saisis (paramètre maxlength)", // ai 2026-06
 
-// src/Widget/Widget.php, row 746
+// src/Widget/Widget.php, row 769
 "Constants or slice" => "Constantes ou section", // ai 2026-06
 
-// src/Widget/Widget.php, row 746
+// src/Widget/Widget.php, row 769
 "Constants (or slice) which is used for value selection" => "Constantes (ou section) utilisées pour la sélection des valeurs", // ai 2026-06
 
-// src/Widget/Widget.php, row 749
+// src/Widget/Widget.php, row 772
 "Directly specified array of values like [\"1\",\"2\",\"3\"] or {\"1\":\"Yes\",\"0\":\"No\"}. (do not use Constants, if filled)" => "Tableau de valeurs spécifié directement, comme [\"1\",\"2\",\"3\"] ou {\"1\":\"Yes\",\"0\":\"No\"}. (ne pas utiliser Constantes si rempli)", // ai 2026-06
 
-// src/Widget/Widget.php, row 758
+// src/Widget/Widget.php, row 781
 "type: class (default) / iframe" => "type : class (par défaut) / iframe", // ai 2026-06
 
-// src/Widget/Widget.php, row 761, 975
+// src/Widget/Widget.php, row 784, 998
 "Width" => "Largeur", // ai 2026-06
 
-// src/Widget/Widget.php, row 761
+// src/Widget/Widget.php, row 784
 "width of the field in characters (size parameter)" => "largeur du champ en caractères (paramètre size)", // ai 2026-06
 
-// src/Widget/Widget.php, row 764
+// src/Widget/Widget.php, row 787
 "type of input - email|tel|url|number. Can be used for other types (time), but in most cases it will be better to create new Widget type - like checkbox, password, color" => "type de saisie - email|tel|url|number. Utilisable pour d'autres types (time), mais dans la plupart des cas il vaut mieux créer un nouveau type de widget - comme checkbox, password, color", // ai 2026-06
 
-// src/Widget/Widget.php, row 767, 866
+// src/Widget/Widget.php, row 790, 889
 "Buttons to show" => "Boutons à afficher", // ai 2026-06
 
-// src/Widget/Widget.php, row 767
+// src/Widget/Widget.php, row 790
 "Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important." => "Quels boutons d'action afficher :<br>M - Déplacer (haut et bas)<br>D - Supprimer la valeur,<br>A - Ajouter une nouvelle valeur<br>C - Changer la valeur<br>Utilisez 'MDAC' (par défaut), 'DAC', juste 'M' ou toute autre combinaison. L'ordre des lettres M,D,A,C n'a pas d'importance.", // ai 2026-06
 
-// src/Widget/Widget.php, row 770
+// src/Widget/Widget.php, row 793
 "Row count" => "Nombre de lignes", // ai 2026-06
 
-// src/Widget/Widget.php, row 773
+// src/Widget/Widget.php, row 796
 "Slice field" => "Champ de la section", // ai 2026-06
 
-// src/Widget/Widget.php, row 773
+// src/Widget/Widget.php, row 796
 "field (or format string) that will be displayed in select box. if not specified, headlines or constant name for constants are displayed in select box. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))." => "champ (ou chaîne de format) affiché dans la liste de sélection. si non spécifié, les titres (ou le nom de constante pour les constantes) sont affichés dans la liste. vous pouvez aussi utiliser ici n'importe quelle chaîne de format AA (comme : _#HEADLINE, _#PUB_DATE (pour les sections) ou _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (pour les constantes)).", // ai 2026-06
 
-// src/Widget/Widget.php, row 776
+// src/Widget/Widget.php, row 799
 "Use name" => "Utiliser le nom", // ai 2026-06
 
-// src/Widget/Widget.php, row 776
+// src/Widget/Widget.php, row 799
 "if set (=1), then the name of selected constant is used, instead of the value. Default is 0" => "si défini (=1), le nom de la constante sélectionnée est utilisé au lieu de la valeur. Par défaut 0", // ai 2026-06
 
-// src/Widget/Widget.php, row 779
+// src/Widget/Widget.php, row 802
 "Adding" => "Ajout", // ai 2026-06
 
-// src/Widget/Widget.php, row 779
+// src/Widget/Widget.php, row 802
 "adding the selected items to input field comma separated" => "ajoute les items sélectionnés au champ de saisie, séparés par des virgules", // ai 2026-06
 
-// src/Widget/Widget.php, row 782
+// src/Widget/Widget.php, row 805
 "Second Field" => "Second champ", // ai 2026-06
 
-// src/Widget/Widget.php, row 782
+// src/Widget/Widget.php, row 805
 "field_id of another text field, where value of this selectbox will be propagated too (in main text area will be text and there will be value)" => "field_id d'un autre champ texte où la valeur de cette liste de sélection sera aussi propagée (la zone de texte principale contiendra le texte, et celui-ci la valeur)", // ai 2026-06
 
-// src/Widget/Widget.php, row 785
+// src/Widget/Widget.php, row 808
 "if set to 1, user typed value in inputform is stored into constants (only if the value is not already there)" => "si défini à 1, la valeur saisie par l'utilisateur dans le formulaire est enregistrée dans les constantes (seulement si elle n'y figure pas déjà)", // ai 2026-06
 
-// src/Widget/Widget.php, row 788
+// src/Widget/Widget.php, row 811
 "Show items from bins" => "Afficher les items des dossiers", // ai 2026-06
 
-// src/Widget/Widget.php, row 788
+// src/Widget/Widget.php, row 811
 "(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want to show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13" => "(pour les sections uniquement) Pour afficher les items des dossiers choisis, utilisez les valeurs suivantes :<br>Dossier Actifs - '%1'<br>Dossier En attente - '%2'<br>Dossier Expirés - '%3'<br>Dossier À approuver - '%4'<br>Corbeille - '%5'<br>La valeur se calcule ainsi : par ex. vous voulez afficher les titres des dossiers Actifs, Expirés et À approuver. La valeur de cette combinaison vaut %1+%3+%4&nbsp;=&nbsp;13", // ai 2026-06
 
-// src/Widget/Widget.php, row 797
+// src/Widget/Widget.php, row 820
 "Filtering conditions" => "Conditions de filtrage", // ai 2026-06
 
-// src/Widget/Widget.php, row 797
+// src/Widget/Widget.php, row 820
 "(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array." => "(pour les sections uniquement) Conditions de filtrage des items dans la sélection. Utilisez une condition d-.. ou un tableau conds[].", // ai 2026-06
 
-// src/Widget/Widget.php, row 800
+// src/Widget/Widget.php, row 823
 "Sort by" => "Trier par", // ai 2026-06
 
-// src/Widget/Widget.php, row 800
+// src/Widget/Widget.php, row 823
 "(for slices only) Sort the items in specified order. Use <fld>[+-]<fld>[+-]... or even any alias _#SOME_ALS." => "(pour les sections uniquement) Trie les items dans l'ordre indiqué. Utilisez <fld>[+-]<fld>[+-]... ou même n'importe quel alias _#SOME_ALS.", // ai 2026-06
 
-// src/Widget/Widget.php, row 803
+// src/Widget/Widget.php, row 826
 "Slice password" => "Mot de passe de la section", // ai 2026-06
 
-// src/Widget/Widget.php, row 803
+// src/Widget/Widget.php, row 826
 "(for slices only) If the related slice is protected by 'Slice Password', fill it here" => "(pour les sections uniquement) Si la section liée est protégée par un « Mot de passe de section », indiquez-le ici", // ai 2026-06
 
-// src/Widget/Widget.php, row 806
+// src/Widget/Widget.php, row 829
 "Filtering conditions - changeable" => "Conditions de filtrage - modifiables", // ai 2026-06
 
-// src/Widget/Widget.php, row 806
+// src/Widget/Widget.php, row 829
 "Conditions for filtering items. This conds site admin change through widget_property parameter." => "Conditions de filtrage des items. L'administrateur du site peut les modifier via le paramètre widget_property.", // ai 2026-06
 
-// src/Widget/Widget.php, row 809
+// src/Widget/Widget.php, row 832
 "Items per page. Default is 20." => "Items par page. Par défaut 20.", // ai 2026-06
 
-// src/Widget/Widget.php, row 812
+// src/Widget/Widget.php, row 835
 "Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table." => "Nombre de colonnes. Si vide, les cases à cocher sont toutes sur une seule ligne. Si rempli, elles sont disposées en tableau.", // ai 2026-06
 
-// src/Widget/Widget.php, row 815
+// src/Widget/Widget.php, row 838
 "Move right" => "Déplacement vers la droite", // ai 2026-06
 
-// src/Widget/Widget.php, row 815
+// src/Widget/Widget.php, row 838
 "Should the function move right or down to the next value?" => "La fonction doit-elle passer à la valeur suivante vers la droite ou vers le bas ?", // ai 2026-06
 
-// src/Widget/Widget.php, row 818
+// src/Widget/Widget.php, row 841
 "Starting Year" => "Année de début", // ai 2026-06
 
-// src/Widget/Widget.php, row 818
+// src/Widget/Widget.php, row 841
 "The (relative) start of the year interval" => "Le début (relatif) de l'intervalle d'années", // ai 2026-06
 
-// src/Widget/Widget.php, row 821
+// src/Widget/Widget.php, row 844
 "Ending Year" => "Année de fin", // ai 2026-06
 
-// src/Widget/Widget.php, row 821
+// src/Widget/Widget.php, row 844
 "The (relative) end of the year interval" => "La fin (relative) de l'intervalle d'années", // ai 2026-06
 
-// src/Widget/Widget.php, row 824
+// src/Widget/Widget.php, row 847
 "Relative" => "Relatif", // ai 2026-06
 
-// src/Widget/Widget.php, row 824
+// src/Widget/Widget.php, row 847
 "If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute." => "Si la valeur est 1, les années de début et de fin sont relatives - l'intervalle commence à (année courante - année de début) et finit à (année courante + année de fin). Si la valeur est 0, les années de début et de fin sont absolues.", // ai 2026-06
 
-// src/Widget/Widget.php, row 827
+// src/Widget/Widget.php, row 850
 "Date-time input type" => "Type de saisie date-heure", // ai 2026-06
 
-// src/Widget/Widget.php, row 827
+// src/Widget/Widget.php, row 850
 "0 - three selects for <b>date</b><br>1 - three selects for date + the <b>time</b> input<br>2 - HTML5 <b>input type=date</b>" => "0 - trois listes pour la <b>date</b><br>1 - trois listes pour la date + la saisie de l'<b>heure</b><br>2 - HTML5 <b>input type=date</b>", // ai 2026-06
 
-// src/Widget/Widget.php, row 830
+// src/Widget/Widget.php, row 853
 "Height" => "Hauteur", // ai 2026-06
 
-// src/Widget/Widget.php, row 830
+// src/Widget/Widget.php, row 853
 "Max height of the widget in pixels" => "Hauteur maximale du widget en pixels", // ai 2026-06
 
-// src/Widget/Widget.php, row 833
+// src/Widget/Widget.php, row 856
 "Title of \"Offer\" selectbox" => "Titre de la liste « Offre »", // ai 2026-06
 
-// src/Widget/Widget.php, row 833
+// src/Widget/Widget.php, row 856
 "Our offer" => "Notre offre", // ai 2026-06
 
-// src/Widget/Widget.php, row 836
+// src/Widget/Widget.php, row 859
 "Title of \"Selected\" selectbox" => "Titre de la liste \"Sélectionnés\"", // ai 2026-06
 
-// src/Widget/Widget.php, row 839
+// src/Widget/Widget.php, row 862
 "Add Form" => "Formulaire d'ajout", // ai 2026-06
 
-// src/Widget/Widget.php, row 839
+// src/Widget/Widget.php, row 862
 "(for slices only) ID of the form for adding items into related slice" => "(pour les sections uniquement) ID du formulaire pour ajouter des items dans la section liée", // ai 2026-06
 
-// src/Widget/Widget.php, row 842
+// src/Widget/Widget.php, row 865
 "Allowed file types" => "Types de fichiers autorisés", // ai 2026-06
 
-// src/Widget/Widget.php, row 842
+// src/Widget/Widget.php, row 865
 "Used for accept attribute - image/*,.doc,.docx,.pdf" => "Utilisé pour l'attribut accept - image/*,.doc,.docx,.pdf", // ai 2026-06
 
-// src/Widget/Widget.php, row 845
+// src/Widget/Widget.php, row 868
 "Label" => "Libellé", // ai 2026-06
 
-// src/Widget/Widget.php, row 845
+// src/Widget/Widget.php, row 868
 "To be printed before the file upload field" => "Affiché avant le champ de téléversement de fichier", // ai 2026-06
 
-// src/Widget/Widget.php, row 845
+// src/Widget/Widget.php, row 868
 "File: " => "Dossier:", // ai 2026-06
 
-// src/Widget/Widget.php, row 848
+// src/Widget/Widget.php, row 871
 "appears beneath the file upload field" => "apparaît sous le champ de téléversement de fichier", // ai 2026-06
 
-// src/Widget/Widget.php, row 848
+// src/Widget/Widget.php, row 871
 "You can select a file ..." => "Vous pouvez sélectionner un fichier ...", // ai 2026-06
 
-// src/Widget/Widget.php, row 851
+// src/Widget/Widget.php, row 874
 "Display URL" => "Afficher l'URL", // ai 2026-06
 
-// src/Widget/Widget.php, row 851
+// src/Widget/Widget.php, row 874
 "0 - show, 1 - show if not empty, 2 - do not show" => "0 - afficher, 1 - afficher si non vide, 2 - ne pas afficher", // ai 2026-06
 
-// src/Widget/Widget.php, row 854
+// src/Widget/Widget.php, row 877
 "Multiple" => "Multiple", // ai 2026-10
 
-// src/Widget/Widget.php, row 854
+// src/Widget/Widget.php, row 877
 "Allows to upload multiple files in the field" => "Permet de téléverser plusieurs fichiers dans le champ", // ai 2026-06
 
-// src/Widget/Widget.php, row 857
+// src/Widget/Widget.php, row 880
 "Actions to show" => "Actions à afficher", // ai 2026-06
 
-// src/Widget/Widget.php, row 857
+// src/Widget/Widget.php, row 880
 "Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important." => "Définit les boutons à afficher dans la sélection d'items :<br>A - Ajouter (Add)<br>M - ajouter Mutuel (add Mutual)<br>B - Arrière (Backward)<br> Utilisez 'AMB' (par défaut), 'MA', seulement 'A' ou toute autre combinaison. L'ordre des lettres A,M,B est important.", // ai 2026-06
 
-// src/Widget/Widget.php, row 860
+// src/Widget/Widget.php, row 883
 "Admin design" => "Design admin", // ai 2026-06
 
-// src/Widget/Widget.php, row 860
+// src/Widget/Widget.php, row 883
 "If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)." => "Si défini (=1), les items de la fenêtre de sélection liée seront listés dans le même design que dans le Gestionnaire d'items - les paramètres 'Design - Gestionnaire d'items' seront utilisés. Seule la case à cocher sera remplacée par les boutons (voir ci-dessus). Il est important que la case à cocher soit définie comme :<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (ce qui est la valeur par défaut).<br> Si non défini (=0), seul le titre est affiché (par défaut).", // ai 2026-06
 
-// src/Widget/Widget.php, row 863
+// src/Widget/Widget.php, row 886
 "Tag Prefix" => "Préfixe de tag", // ai 2026-06
 
-// src/Widget/Widget.php, row 863
+// src/Widget/Widget.php, row 886
 "Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details." => "Obsolète : sélectionne le jeu de tags ('AMB' / 'GYR'). Demandez plus de détails à Mitra.", // ai 2026-06
 
-// src/Widget/Widget.php, row 866
+// src/Widget/Widget.php, row 889
 "Which action to show:<br>M - Move (change order)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert New item in related slice and make it related<br>E - Edit related item<br>F - File upload to related slice (just for Related Item Manager Widget)<br><br>Use 'DR' (default), 'MDRNEF', just 'N' or any other combination. The order of letters M,D,R,N,E,F is not important." => "Quelles actions afficher :<br>M - déplacer (Move, changer l'ordre)<br>D - supprimer la relation (Delete),<br>R - ajouter une Relation à un item existant<br>N - insérer un Nouvel item dans la section liée et le rendre lié<br>E - modifier l'item lié (Edit)<br>F - téléversement de Fichier vers la section liée (uniquement pour le widget Gestionnaire d'items liés)<br><br>Utilisez 'DR' (par défaut), 'MDRNEF', seulement 'N' ou toute autre combinaison. L'ordre des lettres M,D,R,N,E,F n'a pas d'importance.", // ai 2026-06
 
-// src/Widget/Widget.php, row 869
+// src/Widget/Widget.php, row 892
 "Count of level boxes" => "Nombre de boîtes de niveau", // ai 2026-06
 
-// src/Widget/Widget.php, row 872
+// src/Widget/Widget.php, row 895
 "Box width" => "Largeur de la boîte", // ai 2026-06
 
-// src/Widget/Widget.php, row 872
+// src/Widget/Widget.php, row 895
 "Width in characters" => "Largeur en caractères", // ai 2026-06
 
-// src/Widget/Widget.php, row 875
+// src/Widget/Widget.php, row 898
 "Size of target" => "Taille de la boîte cible", // ai 2026-06
 
-// src/Widget/Widget.php, row 875
+// src/Widget/Widget.php, row 898
 "Lines in the target select box" => "Nombre de lignes de la liste cible", // ai 2026-06
 
-// src/Widget/Widget.php, row 878
+// src/Widget/Widget.php, row 901
 "Horizontal" => "Horizontal", // ai 2026-10
 
-// src/Widget/Widget.php, row 878
+// src/Widget/Widget.php, row 901
 "Show levels horizontally" => "Afficher les niveaux horizontalement", // ai 2026-06
 
-// src/Widget/Widget.php, row 881
+// src/Widget/Widget.php, row 904
 "First selectable" => "Premier sélectionnable", // ai 2026-06
 
-// src/Widget/Widget.php, row 881
+// src/Widget/Widget.php, row 904
 "First level which will have a Select button" => "Premier niveau qui aura un bouton Sélectionner", // ai 2026-06
 
-// src/Widget/Widget.php, row 884
+// src/Widget/Widget.php, row 907
 "Level names" => "Noms des niveaux", // ai 2026-06
 
-// src/Widget/Widget.php, row 884
+// src/Widget/Widget.php, row 907
 "Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..." => "Noms des boîtes de niveau, séparés par un tilde (~). Remplace les valeurs par défaut Niveau 0, Niveau 1, ...", // ai 2026-06
 
-// src/Widget/Widget.php, row 884
+// src/Widget/Widget.php, row 907
 "Top level~Second level~Keyword" => "Niveau supérieur~Deuxième niveau~Mot-clé", // ai 2026-06
 
-// src/Widget/Widget.php, row 887
+// src/Widget/Widget.php, row 910
 "Label for Change Password" => "Libellé pour Changer le mot de passe", // ai 2026-06
 
-// src/Widget/Widget.php, row 887
+// src/Widget/Widget.php, row 910
 "Replaces the default 'Change Password'" => "Remplace le texte par défaut 'Changer le mot de passe'", // ai 2026-06
 
-// src/Widget/Widget.php, row 887
+// src/Widget/Widget.php, row 910
 "Change your password" => "Changez votre mot de passe", // ai 2026-06
 
-// src/Widget/Widget.php, row 890
+// src/Widget/Widget.php, row 913
 "Label for Retype New Password" => "Libellé pour Retaper le nouveau mot de passe", // ai 2026-06
 
-// src/Widget/Widget.php, row 890
+// src/Widget/Widget.php, row 913
 "Replaces the default \"Retype New Password\"" => "Remplace le texte par défaut \"Retaper le nouveau mot de passe\"", // ai 2026-06
 
-// src/Widget/Widget.php, row 890
+// src/Widget/Widget.php, row 913
 "Retype the new password" => "Retapez le nouveau mot de passe", // ai 2026-06
 
-// src/Widget/Widget.php, row 893
+// src/Widget/Widget.php, row 916
 "Label for Delete Password" => "Libellé pour Supprimer le mot de passe", // ai 2026-06
 
-// src/Widget/Widget.php, row 893
+// src/Widget/Widget.php, row 916
 "Replaces the default \"Delete Password\"" => "Remplace le texte par défaut « Supprimer le mot de passe »", // ai 2026-06
 
-// src/Widget/Widget.php, row 893
+// src/Widget/Widget.php, row 916
 "Delete password (set to empty)" => "Supprimer le mot de passe (le vider)", // ai 2026-06
 
-// src/Widget/Widget.php, row 896
+// src/Widget/Widget.php, row 919
 "Help for Change Password" => "Aide pour « Changer le mot de passe »", // ai 2026-06
 
-// src/Widget/Widget.php, row 896
+// src/Widget/Widget.php, row 919
 "Help text under the Change Password box (default: no text)" => "Texte d'aide sous la case « Changer le mot de passe » (par défaut : aucun texte)", // ai 2026-06
 
-// src/Widget/Widget.php, row 896
+// src/Widget/Widget.php, row 919
 "To change password, enter the new password here and below" => "Pour changer le mot de passe, saisissez le nouveau mot de passe ici et ci-dessous", // ai 2026-06
 
-// src/Widget/Widget.php, row 899
+// src/Widget/Widget.php, row 922
 "Help for Retype New Password" => "Aide pour « Retapez le nouveau mot de passe »", // ai 2026-06
 
-// src/Widget/Widget.php, row 899
+// src/Widget/Widget.php, row 922
 "Help text under the Retype New Password box (default: no text)" => "Texte d'aide sous la case « Retapez le nouveau mot de passe » (par défaut : aucun texte)", // ai 2026-06
 
-// src/Widget/Widget.php, row 899
+// src/Widget/Widget.php, row 922
 "Retype the new password exactly the same as you entered into \"Change Password\"." => "Retapez le nouveau mot de passe exactement comme vous l'avez saisi dans « Changer le mot de passe ».", // ai 2026-06
 
-// src/Widget/Widget.php, row 902
+// src/Widget/Widget.php, row 925
 "The URL of your local web server from where you want to start browsing for a particular URL." => "L'URL de votre serveur web local à partir de laquelle vous voulez commencer la navigation pour trouver une URL particulière.", // ai 2026-06
 
-// src/Widget/Widget.php, row 902
+// src/Widget/Widget.php, row 925
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/articles/solaire.shtml", // ai 2026-10
 
-// src/Widget/Widget.php, row 905
+// src/Widget/Widget.php, row 928
 "Ajax inline" => "Ajax en ligne", // ai 2026-06
 
-// src/Widget/Widget.php, row 905
+// src/Widget/Widget.php, row 928
 "If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "Si appelé comme {ajax...}, cela modifie l'affichage - inline : ancienne méthode (pas dans une fenêtre, mais en ligne)", // ai 2026-06
 
-// src/Widget/Widget.php, row 908
+// src/Widget/Widget.php, row 931
 "Enable voice dictation" => "Activer la dictée vocale", // ai 2026-06
 
-// src/Widget/Widget.php, row 908
+// src/Widget/Widget.php, row 931
 "Show a microphone button next to the textarea. Uses the browser's Web Speech API when available, otherwise falls back to server-side OpenAI transcription (requires AA_APIKEY_OPENAI define)." => "Affiche un bouton microphone à côté de la zone de texte. Utilise l'API Web Speech du navigateur quand elle est disponible, sinon recourt à la transcription OpenAI côté serveur (nécessite la définition AA_APIKEY_OPENAI).", // ai 2026-06
 
-// src/Widget/Widget.php, row 911
+// src/Widget/Widget.php, row 934
 "Max dictation seconds" => "Durée max de dictée (secondes)", // ai 2026-06
 
-// src/Widget/Widget.php, row 911
+// src/Widget/Widget.php, row 934
 "Upper bound for a single dictation recording. Overrides the AA_SPEECH_MAX_SECONDS define. Enforced client-side (auto-stop) and server-side (reject oversized uploads)." => "Limite supérieure d'un enregistrement de dictée. Remplace la définition AA_SPEECH_MAX_SECONDS. Appliquée côté client (arrêt automatique) et côté serveur (rejet des téléversements trop volumineux).", // ai 2026-06
 
-// src/Widget/Widget.php, row 914
+// src/Widget/Widget.php, row 937
 "Dictation language" => "Langue de dictée", // ai 2026-06
 
-// src/Widget/Widget.php, row 914
+// src/Widget/Widget.php, row 937
 "BCP-47 locale code for voice recognition (e.g. cs-CZ, en-US, sk-SK, de-DE). Leave blank to auto-infer from the page's &lt;html lang&gt; attribute — which is usually the admin UI language, not the content language, so setting this explicitly is recommended." => "Code de locale BCP-47 pour la reconnaissance vocale (p. ex. cs-CZ, en-US, sk-SK, de-DE). Laissez vide pour le déduire automatiquement de l'attribut &lt;html lang&gt; de la page — qui est généralement la langue de l'interface d'administration, pas celle du contenu ; il est donc recommandé de le définir explicitement.", // ai 2026-06
 
-// src/Widget/Widget.php, row 917
+// src/Widget/Widget.php, row 940
 "Dictation engine" => "Moteur de dictée", // ai 2026-06
 
-// src/Widget/Widget.php, row 920
+// src/Widget/Widget.php, row 943
 "Auto — browser Web Speech when available, server OpenAI as fallback" => "Auto — Web Speech du navigateur si disponible, OpenAI côté serveur en secours", // ai 2026-06
 
-// src/Widget/Widget.php, row 921
+// src/Widget/Widget.php, row 944
 "Browser Web Speech API only (free, no server key, Chromium-based browsers)" => "API Web Speech du navigateur uniquement (gratuit, sans clé serveur, navigateurs basés sur Chromium)", // ai 2026-06
 
-// src/Widget/Widget.php, row 922
+// src/Widget/Widget.php, row 945
 "Server-side OpenAI gpt-4o-transcribe only (requires AA_APIKEY_OPENAI, better accuracy)" => "OpenAI gpt-4o-transcribe côté serveur uniquement (nécessite AA_APIKEY_OPENAI, meilleure précision)", // ai 2026-06
 
-// src/Widget/Widget.php, row 924
+// src/Widget/Widget.php, row 947
 "Which speech-to-text engine to use." => "Moteur de reconnaissance vocale à utiliser.", // ai 2026-06
 
-// src/Widget/Widget.php, row 927
+// src/Widget/Widget.php, row 950
 "Store audio recording" => "Conserver l'enregistrement audio", // ai 2026-06
 
-// src/Widget/Widget.php, row 927
+// src/Widget/Widget.php, row 950
 "Save the uploaded audio to the slice's upload directory (img_upload/&lt;slice_id&gt;/) as audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Server enforces this flag from the field config — clients cannot opt in by themselves." => "Enregistre l'audio téléversé dans le répertoire de téléversement de la section (img_upload/&lt;slice_id&gt;/) sous le nom audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Le serveur applique ce réglage depuis la configuration du champ — les clients ne peuvent pas l'activer eux-mêmes.", // ai 2026-06
 
-// src/Widget/Widget.php, row 930
+// src/Widget/Widget.php, row 953
 "New item template ID" => "ID de l'item modèle pour les nouveaux items", // ai 2026-06
 
-// src/Widget/Widget.php, row 930
+// src/Widget/Widget.php, row 953
 "The ID of item in destination slice used as Template for new items (probably in Holding bin)" => "L'ID de l'item de la section de destination utilisé comme modèle pour les nouveaux items (probablement dans « À approuver »)", // ai 2026-06
 
-// src/Widget/Widget.php, row 933
+// src/Widget/Widget.php, row 956
 "Code to show" => "Code à afficher", // ai 2026-06
 
-// src/Widget/Widget.php, row 933
+// src/Widget/Widget.php, row 956
 "HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed" => "Code HTML, avec d'éventuelles expressions AA, à afficher. Si non rempli, {_#this} sera affiché", // ai 2026-06
 
-// src/Widget/Widget.php, row 936
+// src/Widget/Widget.php, row 959
 "Disable new tags" => "Désactiver les nouveaux tags", // ai 2026-06
 
-// src/Widget/Widget.php, row 936
+// src/Widget/Widget.php, row 959
 "Disallow creation of new tags - new items in related slice" => "Interdit la création de nouveaux tags - nouveaux items dans la section liée", // ai 2026-06
 
-// src/Widget/Widget.php, row 939
+// src/Widget/Widget.php, row 962
 "Max values" => "Nombre max de valeurs", // ai 2026-06
 
-// src/Widget/Widget.php, row 939
+// src/Widget/Widget.php, row 962
 "Limit the number of values entered. If 0 or empty, the number is unlimited" => "Limite le nombre de valeurs saisies. Si 0 ou vide, le nombre est illimité", // ai 2026-06
 
-// src/Widget/Widget.php, row 942
+// src/Widget/Widget.php, row 965
 "Related field" => "Champ lié", // ai 2026-06
 
-// src/Widget/Widget.php, row 942
+// src/Widget/Widget.php, row 965
 "Field to use for related items (relation........ is default)" => "Champ à utiliser pour les items liés (relation........ par défaut)", // ai 2026-06
 
-// src/Widget/Widget.php, row 945
+// src/Widget/Widget.php, row 968
 "Row Code" => "Code de ligne", // ai 2026-06
 
-// src/Widget/Widget.php, row 945
+// src/Widget/Widget.php, row 968
 "Alias in constant slice or HTML code to use for each related item (_#ROW_CODE is default)" => "Alias dans la section de constantes ou code HTML à utiliser pour chaque item lié (_#ROW_CODE par défaut)", // ai 2026-06
 
-// src/Widget/Widget.php, row 948
+// src/Widget/Widget.php, row 971
 "Row Edit Code" => "Code d'édition de ligne", // ai 2026-06
 
-// src/Widget/Widget.php, row 948
+// src/Widget/Widget.php, row 971
 "Alias in constant slice or HTML code to use for editing related item (_#ROW_EDIT is default)" => "Alias dans la section de constantes ou code HTML à utiliser pour l'édition de l'item lié (_#ROW_EDIT par défaut)", // ai 2026-06
 
-// src/Widget/Widget.php, row 951
+// src/Widget/Widget.php, row 974
 "Buttons to Show" => "Boutons à afficher", // ai 2026-06
 
-// src/Widget/Widget.php, row 951
+// src/Widget/Widget.php, row 974
 "N - new<br>D - delete (with json you can specify also Dconfirm:&lt;question&gt;<br>S - setting (edit item in Toolbox)<br>E - edit - used with \"Row Edit Code\" parameter<br>B - back - used with \"Row Edit Code\" parameter<br>F - file upload to first file...........x or img_upload.....x or img_src........x field<br>- - no manage (just view)<br>Could be also defined as JSON asoc array - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}" => "N - nouveau<br>D - supprimer (avec json vous pouvez aussi spécifier Dconfirm:&lt;question&gt;<br>S - réglage (modification de l'item dans Toolbox)<br>E - modifier - utilisé avec le paramètre « Row Edit Code »<br>B - retour - utilisé avec le paramètre « Row Edit Code »<br>F - téléversement de fichier vers le premier champ file...........x, img_upload.....x ou img_src........x<br>- - pas de gestion (affichage seulement)<br>Peut aussi être défini comme tableau associatif JSON - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}", // ai 2026-06
 
-// src/Widget/Widget.php, row 954
+// src/Widget/Widget.php, row 977
 "Class prefix" => "Préfixe de classe", // ai 2026-06
 
-// src/Widget/Widget.php, row 954
+// src/Widget/Widget.php, row 977
 "Component identifier to select from" => "Identifiant du composant à partir duquel sélectionner", // ai 2026-06
 
-// src/Widget/Widget.php, row 957
+// src/Widget/Widget.php, row 980
 "Address field" => "Champ d'adresse", // ai 2026-06
 
-// src/Widget/Widget.php, row 957
+// src/Widget/Widget.php, row 980
 "field_id of another text field, from which user can grab address search" => "field_id d'un autre champ texte, depuis lequel l'utilisateur peut reprendre l'adresse à rechercher", // ai 2026-06
 
-// src/Widget/Widget.php, row 960
+// src/Widget/Widget.php, row 983
 "Allowed shapes" => "Formes autorisées", // ai 2026-06
 
-// src/Widget/Widget.php, row 960
+// src/Widget/Widget.php, row 983
 "M - Marker (point) - default<br>L - Line<br>P - Polygon<br>R - Rectangle" => "M - Marqueur (point) - défaut<br>L - Ligne<br>P - Polygone<br>R - Rectangle", // ai 2026-06
 
-// src/Widget/Widget.php, row 963
+// src/Widget/Widget.php, row 986
 "Multiple shapes" => "Formes multiples", // ai 2026-06
 
-// src/Widget/Widget.php, row 963
+// src/Widget/Widget.php, row 986
 "Allow multiple shapes at a time" => "Autoriser plusieurs formes à la fois", // ai 2026-06
 
-// src/Widget/Widget.php, row 966
+// src/Widget/Widget.php, row 989
 "Text option for Other" => "Option texte pour « Autre »", // ai 2026-06
 
-// src/Widget/Widget.php, row 966
+// src/Widget/Widget.php, row 989
 "Last option is considered as \"Other\" with the possibility to write text value" => "La dernière option est considérée comme « Autre », avec la possibilité de saisir une valeur texte", // ai 2026-06
 
-// src/Widget/Widget.php, row 969
+// src/Widget/Widget.php, row 992
 "Searchable" => "Avec recherche", // ai 2026-06
 
-// src/Widget/Widget.php, row 969
+// src/Widget/Widget.php, row 992
 "Uses special selectbox widget, which is searchable as substring.<br>Do not rely on current implementation in your possible scripts." => "Utilise un widget de liste déroulante spécial, permettant la recherche par sous-chaîne.<br>Ne vous fiez pas à l'implémentation actuelle dans vos éventuels scripts.", // ai 2026-06
 
-// src/Widget/Widget.php, row 972
+// src/Widget/Widget.php, row 995
 "Placeholder" => "Texte indicatif", // ai 2026-06
 
-// src/Widget/Widget.php, row 972
+// src/Widget/Widget.php, row 995
 "Placeholder for input" => "Placeholder (texte indicatif) pour le champ de saisie", // ai 2026-06
 
-// src/Widget/Widget.php, row 975
+// src/Widget/Widget.php, row 998
 "Width of one displayed item in pixels (300) or in % (50%)<br>Minimum is 150px, default is 250px.<br>For one item per row use 100%." => "Largeur d'un item affiché en pixels (300) ou en % (50%)<br>Minimum 150px, défaut 250px.<br>Pour un item par ligne, utilisez 100%.", // ai 2026-06
 ];

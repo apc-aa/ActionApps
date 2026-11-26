@@ -107,17 +107,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Управление на филтрите", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Грешка: Липсва парола за четене", // ai 2026-06
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "Съобщение от приложението", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 // modules/links/check_url.php, row 52
 "Back" => "Назад", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "Повторно влизане", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114
@@ -550,6 +550,7 @@ return [
 "No permissions to edit links" => "Нямате право да редактирате връзки", // ai 2026-06
 
 // modules/links/index.php, row 178
+// modules/links/modedit.php, row 115
 "Module not found." => "Модулът не е намерен.", // ai 2026-06
 
 // modules/links/index.php, row 210
@@ -798,30 +799,33 @@ return [
 // modules/links/menu.php, row 178
 "New Link View" => "Нов преглед на връзки", // ai 2026-06
 
-// modules/links/modedit.php, row 106
+// modules/links/modedit.php, row 111
 "No permission to add module" => "Нямате право да добавяте модул", // ai 2026-06
 
-// modules/links/modedit.php, row 111
+// modules/links/modedit.php, row 119
 "No permission to edit module" => "Нямате право да редактирате модул", // ai 2026-06
 
-// modules/links/modedit.php, row 128, 217, 220
+// modules/links/modedit.php, row 128
+"The form has expired; reload the page and try again." => "Формулярът е изтекъл; презаредете страницата и опитайте отново.", // ai 2026-10
+
+// modules/links/modedit.php, row 144, 229, 232
 "Start category id" => "Id на начална категория", // ai 2026-06
 
-// modules/links/modedit.php, row 129, 223, 226
+// modules/links/modedit.php, row 145, 235, 238
 "Tree start id" => "Id на началото на дървото", // ai 2026-06
 
-// modules/links/modedit.php, row 130, 224, 227
+// modules/links/modedit.php, row 146, 236, 239
 "Select start id" => "Изберете начален id", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Add Links module" => "Добави модул Връзки", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Edit Links module" => "Редактирай модул Връзки", // ai 2026-06
 
-// modules/links/modedit.php, row 208
+// modules/links/modedit.php, row 220
 "Module Links data" => "Данни на модул Връзки", // ai 2026-06
 
-// modules/links/modedit.php, row 213
+// modules/links/modedit.php, row 225
 "Used Language File" => "Използван езиков файл", // ai 2026-06
 ];

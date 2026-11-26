@@ -778,6 +778,9 @@ class AA_Validate_Pwd extends AA_Validate
  */
 class AA_Validate_Unique extends AA_Validate
 {
+    /** 0 | 1 | 2 are the older spelling, still stored in field settings */
+    public const SCOPES = ['username' => 'username', 'slice' => 'slice', 'allslices' => 'allslices', '0' => 'username', '1' => 'slice', '2' => 'allslices'];
+
     /** Search in which field */
     protected $field_id;
 
@@ -796,7 +799,7 @@ class AA_Validate_Unique extends AA_Validate
     {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => new AA_Property('field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
-            'scope'    => new AA_Property('scope', _m("Scope"), 'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
+            'scope'    => new AA_Property('scope', _m("Scope"), 'string', false, true, ['enum', self::SCOPES], false, _m("username | slice | allslices"), '', 'slice'),
             'item_id'  => new AA_Property('item_id', _m("Item id which we do not count"), 'string', false, true, 'string', false),
         ];
     }
@@ -881,7 +884,7 @@ class AA_Validate_Eunique extends AA_Validate
     {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'field_id' => new AA_Property('field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
-            'scope'    => new AA_Property('scope', _m("Scope"), 'string', false, true, 'string', false, _m("username | slice | <b>allslices</b>"), '', 'slice'),  // or 0 | 1 | 2 for field setting
+            'scope'    => new AA_Property('scope', _m("Scope"), 'string', false, true, ['enum', AA_Validate_Unique::SCOPES], false, _m("username | slice | <b>allslices</b>"), '', 'slice'),
             'item_id'  => new AA_Property('item_id', _m("Item id which we do not count"), 'string', false, true, 'string', false),
         ];
     }

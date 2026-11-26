@@ -51,10 +51,12 @@ return [
 "Prints poll question" => "Извежда въпроса на анкетата", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
+// modules/polls/index.php, row 91
 // modules/polls/polledit.php, row 230, 237
 "Publish Date" => "Дата на публикуване", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
+// modules/polls/index.php, row 92
 // modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "Дата на изтичане", // ai 2026-06
 
@@ -93,6 +95,10 @@ return [
 
 // modules/polls/include/util.php, row 80
 "Sum of all votes. You can use also {poll_sum}." => "Сума на всички гласове. Можете да използвате и {poll_sum}.", // ai 2026-06
+
+// modules/polls/index.php, row 90
+// modules/polls/polledit.php, row 228, 235
+"Question" => "Въпрос", // ai 2026-06
 
 // modules/polls/menu.php, row 59
 "View poll" => "Преглед на анкетата", // ai 2026-06
@@ -147,43 +153,49 @@ return [
 // modules/polls/menu.php, row 119
 "Designs" => "Дизайни", // ai 2026-06
 
-// modules/polls/modedit.php, row 100
+// modules/polls/modedit.php, row 104
 "You do not have permissions to add polls" => "Нямате право да добавяте анкети", // ai 2026-06
 
-// modules/polls/modedit.php, row 105
+// modules/polls/modedit.php, row 108
+"Module not found." => "Модулът не е намерен.", // ai 2026-06
+
+// modules/polls/modedit.php, row 112
 "You do not have permissions to edit this poll" => "Нямате право да редактирате тази анкета", // ai 2026-06
 
-// modules/polls/modedit.php, row 122, 243
+// modules/polls/modedit.php, row 121
+"The form has expired; reload the page and try again." => "Формулярът е изтекъл; презаредете страницата и опитайте отново.", // ai 2026-10
+
+// modules/polls/modedit.php, row 137, 259
 // modules/polls/polledit.php, row 246
 "IP Locking timeout" => "Време на блокиране по IP", // ai 2026-06
 
-// modules/polls/modedit.php, row 123, 245
+// modules/polls/modedit.php, row 138, 261
 "Cookies prefix" => "Префикс за бисквитки", // ai 2026-06
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Add Polls" => "Добавяне на анкети", // ai 2026-06
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Edit Polls" => "Редактиране на анкети", // ai 2026-06
 
-// modules/polls/modedit.php, row 231
+// modules/polls/modedit.php, row 247
 "Polls Module general data" => "Модул анкети - основни настройки", // ai 2026-06
 
-// modules/polls/modedit.php, row 236
+// modules/polls/modedit.php, row 252
 "Used Language File" => "Използван езиков файл", // ai 2026-06
 
-// modules/polls/modedit.php, row 240
+// modules/polls/modedit.php, row 256
 "Defaults for polls in this module" => "Настройки по подразбиране за анкетите в този модул", // ai 2026-06
 
-// modules/polls/modedit.php, row 241
+// modules/polls/modedit.php, row 257
 // modules/polls/polledit.php, row 244
 "Use logging" => "Използване на лог", // ai 2026-06
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 258
 // modules/polls/polledit.php, row 245
 "Use IP locking" => "Използване на блокиране по IP", // ai 2026-06
 
-// modules/polls/modedit.php, row 244
+// modules/polls/modedit.php, row 260
 // modules/polls/polledit.php, row 247
 "Use cookies" => "Използване на бисквитки", // ai 2026-06
 
@@ -207,9 +219,6 @@ return [
 
 // modules/polls/polledit.php, row 228, 235
 "Headline" => "Заглавие", // ai 2026-06
-
-// modules/polls/polledit.php, row 228, 235
-"Question" => "Въпрос", // ai 2026-06
 
 // modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "Въведете нови отговори и изберете реда им", // ai 2026-06

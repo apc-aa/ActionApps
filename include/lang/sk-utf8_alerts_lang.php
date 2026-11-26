@@ -23,7 +23,7 @@ return [
 // End of unused messages
 
 // modules/alerts/acf.php, row 45
-// modules/alerts/modedit.php, row 89
+// modules/alerts/modedit.php, row 121
 "You do not have permissions to add slice" => "Nemáte právo pridávať modul",
 
 // modules/alerts/acf.php, row 109
@@ -62,79 +62,97 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Nie sú definované žiadne výbery. Musíte nejaké definovať.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 174
+"Statistics slice: no such slice" => "Modul štatistiky: taký modul neexistuje", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 178
+"The statistics slice cannot be the slice of the readers" => "Modul štatistiky nemôže byť modul čitateľov", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 182
+"The statistics slice lacks the fields %1" => "Modulu štatistiky chýbajú položky %1", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 186
+"The slice keeps the statistics of another list already (%1) - each list needs its own" => "Modul už uchováva štatistiku iného zoznamu (%1) - každý zoznam potrebuje vlastný", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 189
+"The statistics slice keeps the history of its items - set \"Store item history for N days\" to 0 in its slice settings" => "Modul štatistiky uchováva históriu svojich správ - v jeho nastaveniach nastavte „Uchovávať históriu správ N dní“ na 0", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 206
+"The statistics slice has no reading password - set one in its slice settings, so its items are not shown on the web" => "Modul štatistiky nemá heslo na čítanie - nastavte ho v nastaveniach modulu, aby sa jeho správy nezobrazovali na webe", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 721
 "alerts alert" => "zasielanie - správy", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 722
 "alerts welcome" => "zasielanie - uvítanie", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 723
 "slice wizard welcome" => "sprievodca modulom - uvítanie", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 724
 "user template" => "šablóna užívateľa", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 725
 "password change" => "zmena hesla", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 511
+// modules/alerts/alerts_sending.php, row 726
 "other" => "iné", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 522
+// modules/alerts/alerts_sending.php, row 737
 "Aliases for Alerts Alert" => "Aliasy pre e-mail zasielanie - správy", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 524
+// modules/alerts/alerts_sending.php, row 739
 "complete filter text" => "úplný text filtra", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 525, 534
+// modules/alerts/alerts_sending.php, row 740, 749
 "howoften" => "ako často", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 741
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL anonymného formulára (nastavuje sa v Administrácii zasielania - Nastavenia)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 527
+// modules/alerts/alerts_sending.php, row 742
 "Unsubscribe Form URL" => "URL formulára pre odhlásenie", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 532
+// modules/alerts/alerts_sending.php, row 747
 "Aliases for Alerts Welcome" => "Aliasy pre e-mail zasielanie - uvítanie", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 750
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL formulára kolekcie (nastavuje sa v Administrácii zasielania - Nastavenia)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 751
 "email confirmed" => "e-mail potvrdený", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 542
+// modules/alerts/alerts_sending.php, row 757
 "Aliases for Slice Wizard Welcome" => "Aliasy pre uvítanie sprievodcu modulom", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 759, 771
 "Slice name" => "Názov modulu", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 545, 557
+// modules/alerts/alerts_sending.php, row 760, 772
 "New user name" => "Meno nového užívateľa", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 761
 "New user login name" => "Prihlasovacie meno nového užívateľa", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 762
 "New user role (editor / admin)" => "Rola nového užívateľa (editor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 763
 "My name" => "Moje meno", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 549
+// modules/alerts/alerts_sending.php, row 764
 "My email" => "Môj e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 554
+// modules/alerts/alerts_sending.php, row 769
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasy pre šablóny užívateľa (môžete použiť aj všetky aliasy užívateľa)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 562
+// modules/alerts/alerts_sending.php, row 777
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasy pre e-mail o zmene hesla (môžete použiť aj všetky aliasy užívateľa)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 779
 "HTML link to the password change page for current user" => "HTML odkaz na stránku zmeny hesla pre aktuálneho užívateľa", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 565
+// modules/alerts/alerts_sending.php, row 780
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Parameter URL používaný v odkaze na zmenu hesla v _#PWD_LINK (môžete ho využiť, ak preň chcete použiť vlastnú URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42
@@ -170,63 +188,126 @@ return [
 "Owner" => "Vlastník",
 
 // modules/alerts/emails.php, row 66
-// modules/alerts/menu.php, row 86
+// modules/alerts/menu.php, row 95
 "Email templates" => "Šablóny e-mailov", // ai 2026-06
 
-// modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 160, 163
-"Alerts Settings" => "Nastavenia Zasielania", // ai 2026-06
+// modules/alerts/mailings.php, row 48
+// modules/alerts/modedit.php, row 125
+"Module not found." => "Modul nebol nájdený.", // ai 2026-06
 
-// modules/alerts/menu.php, row 62
-"Alerts Admin" => "Administrácia zasielania", // ai 2026-06
+// modules/alerts/mailings.php, row 51
+// modules/alerts/send.php, row 44
+// modules/alerts/synchro.php, row 61, 83
+"You do not have permissions to access this page" => "Nemáte právo na prístup k tejto stránke", // ai 2026-06
 
-// modules/alerts/menu.php, row 66
+// modules/alerts/mailings.php, row 55
+"This Alerts module has no list of readers." => "Tento modul Zasielania nemá zoznam čitateľov.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 86
+// modules/alerts/menu.php, row 51, 69
+"Mailings and statistics" => "Rozosielania a štatistika", // ai 2026-11
+
+// modules/alerts/mailings.php, row 90
+"Opens and clicks are not measured: the list has no statistics slice." => "Otvorenia a kliknutia sa nemerajú: zoznam nemá modul štatistiky.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 92
+// modules/alerts/menu.php, row 75
 "Settings" => "Nastavenia", // ai 2026-06
 
-// modules/alerts/menu.php, row 70
+// modules/alerts/mailings.php, row 97
+"Date" => "Dátum",
+
+// modules/alerts/mailings.php, row 97
+"Name" => "Názov", // ai 2026-11
+
+// modules/alerts/mailings.php, row 97
+"State" => "Stav", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97, 136
+"Recipients" => "Príjemcovia", // ai 2026-06
+
+// modules/alerts/mailings.php, row 99
+"Opened" => "Otvorené", // ai 2026-11
+
+// modules/alerts/mailings.php, row 99
+"Clicked" => "Kliknuté", // ai 2026-11
+
+// modules/alerts/mailings.php, row 124
+"The list has sent nothing yet." => "Zoznam zatiaľ nič neodoslal.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 137
+"No recipient matches the filter." => "Filtru nevyhovuje žiadny príjemca.", // ai 2026-11
+
+// modules/alerts/menu.php, row 51
+// modules/alerts/modedit.php, row 216, 219
+"Alerts Settings" => "Nastavenia Zasielania", // ai 2026-06
+
+// modules/alerts/menu.php, row 65
+"Alerts Admin" => "Administrácia zasielania", // ai 2026-06
+
+// modules/alerts/menu.php, row 79
 // modules/alerts/send_emails.php, row 153
 // modules/alerts/synchro2.php, row 77
 "Selections" => "Výbery", // ai 2026-06
 
-// modules/alerts/menu.php, row 74
+// modules/alerts/menu.php, row 83
 "Send emails" => "Poslať e-maily", // ai 2026-06
 
-// modules/alerts/menu.php, row 79
+// modules/alerts/menu.php, row 88
 "Reader management" => "Správa čitateľov", // ai 2026-06
 
-// modules/alerts/menu.php, row 82
+// modules/alerts/menu.php, row 91
 "Documentation" => "Dokumentácia", // ai 2026-06
 
-// modules/alerts/menu.php, row 84
+// modules/alerts/menu.php, row 93
 "Common" => "Spoločné", // ai 2026-06
 
-// modules/alerts/modedit.php, row 93
+// modules/alerts/modedit.php, row 128
 "You do not have permissions to edit this Alerts module" => "Nemáte právo upravovať tento modul Zasielanie", // ai 2026-10
 
-// modules/alerts/modedit.php, row 160
+// modules/alerts/modedit.php, row 137
+// modules/alerts/synchro.php, row 79
+"The form has expired; reload the page and try again." => "Platnosť formulára vypršala; obnovte stránku a skúste to znova.", // ai 2026-10
+
+// modules/alerts/modedit.php, row 159
+"You may not choose this statistics slice" => "Tento modul štatistiky nemôžete zvoliť", // ai 2026-11
+
+// modules/alerts/modedit.php, row 216
 "Add Alerts" => "Pridať Zasielanie", // ai 2026-10
 
-// modules/alerts/modedit.php, row 168
+// modules/alerts/modedit.php, row 225
+"The URL of this list is not https - the mails go without the one-click unsubscribe header." => "URL tohto zoznamu nie je https - e-maily idú bez hlavičky na odhlásenie jedným kliknutím.", // ai 2026-11
+
+// modules/alerts/modedit.php, row 228
 "language" => "jazyk", // ai 2026-06
 
-// modules/alerts/modedit.php, row 172
+// modules/alerts/modedit.php, row 232
 "Alert emails" => "E-maily Zasielania", // ai 2026-10
 
-// modules/alerts/modedit.php, row 176, 182
+// modules/alerts/modedit.php, row 236, 242
 "Edit '%1'" => "Upraviť '%1'", // ai 2026-10
 
-// modules/alerts/modedit.php, row 178
+// modules/alerts/modedit.php, row 238
 "welcome email" => "uvítací email", // ai 2026-06
 
-// modules/alerts/modedit.php, row 184
+// modules/alerts/modedit.php, row 244
 // modules/alerts/send.php, row 76
 "alert email" => "email s novinkami", // ai 2026-06
 
-// modules/alerts/modedit.php, row 187
-"alerts ID" => "ID zasielania", // ai 2026-06
+// modules/alerts/modedit.php, row 247
+"The slice where the opens and clicks of the mailings are counted; empty = nothing is measured. Each list needs its own slice." => "Modul, v ktorom sa počítajú otvorenia a kliknutia rozosielaní; prázdne = nič sa nemeria. Každý zoznam potrebuje vlastný modul.", // ai 2026-11
 
-// modules/alerts/send.php, row 44
-"You do not have permissions to access this page" => "Nemáte právo na prístup k tejto stránke", // ai 2026-06
+// modules/alerts/modedit.php, row 249
+"Install from the App store" => "Inštalovať z Katalógu aplikácií", // ai 2026-11
+
+// modules/alerts/modedit.php, row 254
+"Statistics" => "Štatistika", // ai 2026-06
+
+// modules/alerts/modedit.php, row 255
+"Statistics slice" => "Modul štatistiky", // ai 2026-11
+
+// modules/alerts/modedit.php, row 259
+"alerts ID" => "ID zasielania", // ai 2026-06
 
 // modules/alerts/send.php, row 69
 "Send Emails" => "Odoslať emaily", // ai 2026-06
@@ -279,46 +360,46 @@ return [
  => "Definujte výbery v moduloch, z ktorých chcete zasielať správy,\n"
    ."        v pohľadoch typu Alerts Selection Set", // ai 2026-06
 
-// modules/alerts/synchro.php, row 66
+// modules/alerts/synchro.php, row 89
 "Synchronization with Reader Management Slice" => "Synchronizácia s modulom spravujúcim čitateľov", // ai 2026-06
 
-// modules/alerts/synchro.php, row 95
+// modules/alerts/synchro.php, row 118
 "Not Yet Set" => "Ešte nenastavené", // ai 2026-06
 
-// modules/alerts/synchro.php, row 104
+// modules/alerts/synchro.php, row 127
 "Choose Reader Management Slice" => "Zvoľte modul so správou čitateľov", // ai 2026-06
 
-// modules/alerts/synchro.php, row 105
+// modules/alerts/synchro.php, row 128
 "This Alerts Collection takes user data from the slice" => "Toto zasielanie používa údaje o čitateľoch z modulu", // ai 2026-06
 
-// modules/alerts/synchro.php, row 112
+// modules/alerts/synchro.php, row 135
 "Change to: " => "Zmeniť na: ", // ai 2026-06
 
-// modules/alerts/synchro.php, row 118
+// modules/alerts/synchro.php, row 141
 "and delete the %1-specific fields from %2" => "a vymazať položky špecifické pre %1 z %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 122
+// modules/alerts/synchro.php, row 145
 "Change" => "Zmena súčasných práv",
 
-// modules/alerts/synchro.php, row 133
+// modules/alerts/synchro.php, row 156
 "Add %1-specific fields to %2" => "Pridať položky špecifické pre %1 do %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 136
+// modules/alerts/synchro.php, row 159
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
  => "Pridá iba položky, ktorých ID v module ešte neexistujú.\n"
    ."    Obnoví skupinu hodnôt s výbermi, ak už existuje.", // ai 2026-06
 
-// modules/alerts/synchro.php, row 142
+// modules/alerts/synchro.php, row 165
 "Field Name" => "Názov položky", // ai 2026-06
 
-// modules/alerts/synchro.php, row 143
+// modules/alerts/synchro.php, row 166
 "Field ID" => "ID položky", // ai 2026-06
 
-// modules/alerts/synchro.php, row 152
+// modules/alerts/synchro.php, row 175
 "Add or refresh fields" => "Pridať alebo obnoviť položky", // ai 2026-06
 
-// modules/alerts/synchro.php, row 154
+// modules/alerts/synchro.php, row 177
 "This command can not be used until you choose the Reader Management Slice." => "Tento príkaz nie je možné použiť, kým nezvolíte modul so správou čitateľov.", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
@@ -374,4 +455,10 @@ return [
 
 // modules/alerts/util.php, row 100
 "Trash bin" => "Kôš",
+
+// modules/alerts/util.php, row 194
+"Do you want to stop receiving the mails of this list?" => "Chcete prestať dostávať e-maily tohto zoznamu?", // ai 2026-11
+
+// modules/alerts/util.php, row 196
+"Unsubscribe" => "Odhlásiť sa", // ai 2026-11
 ];

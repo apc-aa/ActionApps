@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use AA\Optimize\CodePoints;
 use AA_Property;
 
 /** The objects a module owns, as a package carries them: the module settings, AA_Aliasfunc and AA_Set
@@ -23,7 +24,8 @@ final class ObjectExport
     /** the object store in the order AA_Object::load() merges it */
     public const TABLES = ['object_text', 'object_integer', 'object_float'];
 
-    /** settings properties of the source installation: measuring code, domains; `app_*` travels in meta */
+    /** settings properties of the source installation: measuring code, domains; `app_*` travels in meta.
+     *  alternate_redirect travels - with no Alternate URL it does nothing, and a transfer carries them both */
     private const LEFT_OUT = ['AA_Modulesettings_Site' => ['ga_id', 'alternate_url']];
     private const LEFT_OUT_PREFIX = 'app_';
 
@@ -32,15 +34,6 @@ final class ObjectExport
         'AA_Modulesettings_Site'  => ['translate_slice', 'add_aliases'],
         'AA_Modulesettings_Slice' => ['fieldslice'],
         'AA_Set'                  => ['slices'],
-    ];
-
-    /** properties that are code (templates, AA expressions) - the lint reads these only; the others
-     *  are names, enum values, field ids (a `2` of page404 is no view 2) */
-    private const CODE_PROPS = [
-        'AA_Aliasfunc'            => ['code'],
-        'AA_Condition'            => ['value'],
-        'AA_Modulesettings_Site'  => ['page404_code', 'loginpage_code'],
-        'AA_Modulesettings_Slice' => ['nocheck_pending', 'nocheck_expired'],
     ];
 
     /** @var array<string, array<string, array<string, list<mixed>>>> object id => table => property => values */
@@ -118,10 +111,11 @@ final class ObjectExport
         return in_array($property, self::LEFT_OUT[$class] ?? [], true) || (isset(self::LEFT_OUT[$class]) && str_starts_with($property, self::LEFT_OUT_PREFIX));
     }
 
-    /** true: the property of the class is code - the lint reads it */
+    /** true: the property of the class is code - the lint reads it; the others are names, enum values,
+     *  field ids (a `2` of page404 is no view 2) */
     public static function isCode(string $class, string $property): bool
     {
-        return in_array($property, self::CODE_PROPS[$class] ?? [], true);
+        return in_array($property, CodePoints::OBJECT_CODE[$class] ?? [], true);
     }
 
     /** The properties of the class the object has, as AA_Object::load() reads them.

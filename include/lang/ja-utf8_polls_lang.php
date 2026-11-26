@@ -51,10 +51,12 @@ return [
 "Prints poll question" => "アンケートの質問を表示", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
+// modules/polls/index.php, row 91
 // modules/polls/polledit.php, row 230, 237
 "Publish Date" => "公開日", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
+// modules/polls/index.php, row 92
 // modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "有効期限", // ai 2026-06
 
@@ -93,6 +95,10 @@ return [
 
 // modules/polls/include/util.php, row 80
 "Sum of all votes. You can use also {poll_sum}." => "全投票の合計。{poll_sum} も使用できます。", // ai 2026-06
+
+// modules/polls/index.php, row 90
+// modules/polls/polledit.php, row 228, 235
+"Question" => "質問", // ai 2026-06
 
 // modules/polls/menu.php, row 59
 "View poll" => "アンケートを表示", // ai 2026-06
@@ -147,43 +153,49 @@ return [
 // modules/polls/menu.php, row 119
 "Designs" => "デザイン", // ai 2026-06
 
-// modules/polls/modedit.php, row 100
+// modules/polls/modedit.php, row 104
 "You do not have permissions to add polls" => "アンケートを追加する許可がありません", // ai 2026-06
 
-// modules/polls/modedit.php, row 105
+// modules/polls/modedit.php, row 108
+"Module not found." => "モジュールが見つかりません。", // ai 2026-06
+
+// modules/polls/modedit.php, row 112
 "You do not have permissions to edit this poll" => "このアンケートを編集する許可がありません", // ai 2026-06
 
-// modules/polls/modedit.php, row 122, 243
+// modules/polls/modedit.php, row 121
+"The form has expired; reload the page and try again." => "フォームの有効期限が切れました。ページを再読み込みして、もう一度お試しください。", // ai 2026-10
+
+// modules/polls/modedit.php, row 137, 259
 // modules/polls/polledit.php, row 246
 "IP Locking timeout" => "IPロックのタイムアウト", // ai 2026-06
 
-// modules/polls/modedit.php, row 123, 245
+// modules/polls/modedit.php, row 138, 261
 "Cookies prefix" => "Cookieのプレフィックス", // ai 2026-06
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Add Polls" => "アンケートの追加", // ai 2026-06
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 244
 "Edit Polls" => "アンケートの編集", // ai 2026-06
 
-// modules/polls/modedit.php, row 231
+// modules/polls/modedit.php, row 247
 "Polls Module general data" => "アンケートモジュールの基本設定", // ai 2026-06
 
-// modules/polls/modedit.php, row 236
+// modules/polls/modedit.php, row 252
 "Used Language File" => "使用する言語ファイル", // ai 2026-06
 
-// modules/polls/modedit.php, row 240
+// modules/polls/modedit.php, row 256
 "Defaults for polls in this module" => "このモジュールのアンケートの省略値", // ai 2026-06
 
-// modules/polls/modedit.php, row 241
+// modules/polls/modedit.php, row 257
 // modules/polls/polledit.php, row 244
 "Use logging" => "ログを記録", // ai 2026-06
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 258
 // modules/polls/polledit.php, row 245
 "Use IP locking" => "IPロックを使用", // ai 2026-06
 
-// modules/polls/modedit.php, row 244
+// modules/polls/modedit.php, row 260
 // modules/polls/polledit.php, row 247
 "Use cookies" => "Cookieを使用", // ai 2026-06
 
@@ -207,9 +219,6 @@ return [
 
 // modules/polls/polledit.php, row 228, 235
 "Headline" => "見出し", // ai 2026-06
-
-// modules/polls/polledit.php, row 228, 235
-"Question" => "質問", // ai 2026-06
 
 // modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "新しい回答を入力し、順序を選択してください", // ai 2026-06

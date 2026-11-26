@@ -13,6 +13,7 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Failed" => "Eșuate", // ai 2026-11
 // "Core settings for the Alerts." => "Setări de bază pentru alerte.", // ai 2026-06
 // "form URL" => "URL formular", // ai 2026-06
 // "Use AA Admin / Delete<br>to delete permanently" => "Folosiți AA Admin / Șterge<br>pentru ștergere definitivă", // ai 2026-06
@@ -23,7 +24,7 @@ return [
 // End of unused messages
 
 // modules/alerts/acf.php, row 45
-// modules/alerts/modedit.php, row 89
+// modules/alerts/modedit.php, row 121
 "You do not have permissions to add slice" => "Nu aveţi dreptul să adăugaţi secţiune",
 
 // modules/alerts/acf.php, row 109
@@ -62,79 +63,97 @@ return [
 // modules/alerts/acf.php, row 152
 "No selections defined. You must define some." => "Nu sunt definite selecții. Trebuie să definiți câteva.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 506
+// modules/alerts/alerts_sending.php, row 174
+"Statistics slice: no such slice" => "Secțiunea de statistici: secțiunea nu există", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 178
+"The statistics slice cannot be the slice of the readers" => "Secțiunea de statistici nu poate fi secțiunea cititorilor", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 182
+"The statistics slice lacks the fields %1" => "Secțiunii de statistici îi lipsesc câmpurile %1", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 186
+"The slice keeps the statistics of another list already (%1) - each list needs its own" => "Secțiunea păstrează deja statisticile altei liste (%1) - fiecare listă are nevoie de propria secțiune", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 189
+"The statistics slice keeps the history of its items - set \"Store item history for N days\" to 0 in its slice settings" => "Secțiunea de statistici păstrează istoricul articolelor - setați „Păstrează istoricul articolelor N zile” la 0 în setările secțiunii", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 206
+"The statistics slice has no reading password - set one in its slice settings, so its items are not shown on the web" => "Secțiunea de statistici nu are parolă de citire - setați una în setările secțiunii, ca articolele ei să nu fie afișate pe web", // ai 2026-11
+
+// modules/alerts/alerts_sending.php, row 721
 "alerts alert" => "alerte - mesaj", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 507
+// modules/alerts/alerts_sending.php, row 722
 "alerts welcome" => "alerte - bun venit", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 508
+// modules/alerts/alerts_sending.php, row 723
 "slice wizard welcome" => "asistent secțiune - bun venit", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 509
+// modules/alerts/alerts_sending.php, row 724
 "user template" => "șablon utilizator", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 510
+// modules/alerts/alerts_sending.php, row 725
 "password change" => "schimbare parolă", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 511
+// modules/alerts/alerts_sending.php, row 726
 "other" => "altele", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 522
+// modules/alerts/alerts_sending.php, row 737
 "Aliases for Alerts Alert" => "Aliasuri pentru Alerts Alert",
 
-// modules/alerts/alerts_sending.php, row 524
+// modules/alerts/alerts_sending.php, row 739
 "complete filter text" => "text filtru complet",
 
-// modules/alerts/alerts_sending.php, row 525, 534
+// modules/alerts/alerts_sending.php, row 740, 749
 "howoften" => "cît de des",
 
-// modules/alerts/alerts_sending.php, row 526
+// modules/alerts/alerts_sending.php, row 741
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL formular anonim (se setează în Administrare alerte - Setări)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 527
+// modules/alerts/alerts_sending.php, row 742
 "Unsubscribe Form URL" => "URL formular de dezabonare", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 532
+// modules/alerts/alerts_sending.php, row 747
 "Aliases for Alerts Welcome" => "Aliasuri pentru mesajul de bun venit al alertelor", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 750
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL formular colecție (se setează în Administrare alerte - Setări)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 751
 "email confirmed" => "e-mail confirmat", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 542
+// modules/alerts/alerts_sending.php, row 757
 "Aliases for Slice Wizard Welcome" => "Aliasuri pentru mesajul de bun venit al asistentului de secțiune", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 544, 556
+// modules/alerts/alerts_sending.php, row 759, 771
 "Slice name" => "Denumire secţiune",
 
-// modules/alerts/alerts_sending.php, row 545, 557
+// modules/alerts/alerts_sending.php, row 760, 772
 "New user name" => "Numele noului utilizator", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 546
+// modules/alerts/alerts_sending.php, row 761
 "New user login name" => "Numele de autentificare al noului utilizator", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 547
+// modules/alerts/alerts_sending.php, row 762
 "New user role (editor / admin)" => "Rolul noului utilizator (editor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 548
+// modules/alerts/alerts_sending.php, row 763
 "My name" => "Numele meu", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 549
+// modules/alerts/alerts_sending.php, row 764
 "My email" => "E-mailul meu", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 554
+// modules/alerts/alerts_sending.php, row 769
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasuri pentru șabloanele utilizatorului (puteți folosi și toate aliasurile utilizatorului)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 562
+// modules/alerts/alerts_sending.php, row 777
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasuri pentru e-mailul de schimbare a parolei (puteți folosi și toate aliasurile utilizatorului)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 564
+// modules/alerts/alerts_sending.php, row 779
 "HTML link to the password change page for current user" => "Link HTML către pagina de schimbare a parolei pentru utilizatorul curent", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 565
+// modules/alerts/alerts_sending.php, row 780
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Parametru URL folosit pentru linkul de schimbare a parolei în _#PWD_LINK (îl puteți folosi dacă doriți să utilizați propriul URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42
@@ -170,63 +189,126 @@ return [
 "Owner" => "Proprietar",
 
 // modules/alerts/emails.php, row 66
-// modules/alerts/menu.php, row 86
+// modules/alerts/menu.php, row 95
 "Email templates" => "Șabloane email", // ai 2026-06
 
-// modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 160, 163
-"Alerts Settings" => "Setări alerte", // ai 2026-06
+// modules/alerts/mailings.php, row 48
+// modules/alerts/modedit.php, row 125
+"Module not found." => "Modulul nu a fost găsit.", // ai 2026-06
 
-// modules/alerts/menu.php, row 62
-"Alerts Admin" => "Administrare alerte", // ai 2026-06
+// modules/alerts/mailings.php, row 51
+// modules/alerts/send.php, row 44
+// modules/alerts/synchro.php, row 61, 83
+"You do not have permissions to access this page" => "Nu aveți dreptul să accesați această pagină", // ai 2026-06
 
-// modules/alerts/menu.php, row 66
+// modules/alerts/mailings.php, row 55
+"This Alerts module has no list of readers." => "Acest modul Alerte nu are o listă de cititori.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 86
+// modules/alerts/menu.php, row 51, 69
+"Mailings and statistics" => "Expedieri și statistici", // ai 2026-11
+
+// modules/alerts/mailings.php, row 90
+"Opens and clicks are not measured: the list has no statistics slice." => "Deschiderile și clicurile nu se măsoară: lista nu are secțiune de statistici.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 92
+// modules/alerts/menu.php, row 75
 "Settings" => "Setări", // ai 2026-06
 
-// modules/alerts/menu.php, row 70
+// modules/alerts/mailings.php, row 97
+"Date" => "Data",
+
+// modules/alerts/mailings.php, row 97
+"Name" => "Nume",
+
+// modules/alerts/mailings.php, row 97
+"State" => "Stare", // ai 2026-06
+
+// modules/alerts/mailings.php, row 97, 136
+"Recipients" => "Destinatari", // ai 2026-06
+
+// modules/alerts/mailings.php, row 99
+"Opened" => "Au deschis", // ai 2026-11
+
+// modules/alerts/mailings.php, row 99
+"Clicked" => "Au dat clic", // ai 2026-11
+
+// modules/alerts/mailings.php, row 124
+"The list has sent nothing yet." => "Lista nu a trimis încă nimic.", // ai 2026-11
+
+// modules/alerts/mailings.php, row 137
+"No recipient matches the filter." => "Niciun destinatar nu corespunde filtrului.", // ai 2026-11
+
+// modules/alerts/menu.php, row 51
+// modules/alerts/modedit.php, row 216, 219
+"Alerts Settings" => "Setări alerte", // ai 2026-06
+
+// modules/alerts/menu.php, row 65
+"Alerts Admin" => "Administrare alerte", // ai 2026-06
+
+// modules/alerts/menu.php, row 79
 // modules/alerts/send_emails.php, row 153
 // modules/alerts/synchro2.php, row 77
 "Selections" => "Selecții", // ai 2026-06
 
-// modules/alerts/menu.php, row 74
+// modules/alerts/menu.php, row 83
 "Send emails" => "Trimite emailuri", // ai 2026-06
 
-// modules/alerts/menu.php, row 79
+// modules/alerts/menu.php, row 88
 "Reader management" => "Administrare cititori", // ai 2026-06
 
-// modules/alerts/menu.php, row 82
+// modules/alerts/menu.php, row 91
 "Documentation" => "Documentație", // ai 2026-06
 
-// modules/alerts/menu.php, row 84
+// modules/alerts/menu.php, row 93
 "Common" => "Comune", // ai 2026-06
 
-// modules/alerts/modedit.php, row 93
+// modules/alerts/modedit.php, row 128
 "You do not have permissions to edit this Alerts module" => "Nu aveți dreptul să editați acest modul Alerte", // ai 2026-10
 
-// modules/alerts/modedit.php, row 160
+// modules/alerts/modedit.php, row 137
+// modules/alerts/synchro.php, row 79
+"The form has expired; reload the page and try again." => "Formularul a expirat; reîncărcați pagina și încercați din nou.", // ai 2026-10
+
+// modules/alerts/modedit.php, row 159
+"You may not choose this statistics slice" => "Nu puteți alege această secțiune de statistici", // ai 2026-11
+
+// modules/alerts/modedit.php, row 216
 "Add Alerts" => "Adăugare Alerte", // ai 2026-10
 
-// modules/alerts/modedit.php, row 168
+// modules/alerts/modedit.php, row 225
+"The URL of this list is not https - the mails go without the one-click unsubscribe header." => "URL-ul acestei liste nu este https - e-mailurile pleacă fără antetul de dezabonare cu un clic.", // ai 2026-11
+
+// modules/alerts/modedit.php, row 228
 "language" => "limbă", // ai 2026-06
 
-// modules/alerts/modedit.php, row 172
+// modules/alerts/modedit.php, row 232
 "Alert emails" => "E-mailuri Alerte", // ai 2026-10
 
-// modules/alerts/modedit.php, row 176, 182
+// modules/alerts/modedit.php, row 236, 242
 "Edit '%1'" => "Editare '%1'", // ai 2026-10
 
-// modules/alerts/modedit.php, row 178
+// modules/alerts/modedit.php, row 238
 "welcome email" => "email de bun venit", // ai 2026-06
 
-// modules/alerts/modedit.php, row 184
+// modules/alerts/modedit.php, row 244
 // modules/alerts/send.php, row 76
 "alert email" => "email de alertă", // ai 2026-06
 
-// modules/alerts/modedit.php, row 187
-"alerts ID" => "ID alerte", // ai 2026-06
+// modules/alerts/modedit.php, row 247
+"The slice where the opens and clicks of the mailings are counted; empty = nothing is measured. Each list needs its own slice." => "Secțiunea în care se numără deschiderile și clicurile expedierilor; gol = nu se măsoară nimic. Fiecare listă are nevoie de propria secțiune.", // ai 2026-11
 
-// modules/alerts/send.php, row 44
-"You do not have permissions to access this page" => "Nu aveți dreptul să accesați această pagină", // ai 2026-06
+// modules/alerts/modedit.php, row 249
+"Install from the App store" => "Instalare din Catalogul de aplicații", // ai 2026-11
+
+// modules/alerts/modedit.php, row 254
+"Statistics" => "Statistici", // ai 2026-06
+
+// modules/alerts/modedit.php, row 255
+"Statistics slice" => "Secțiunea de statistici", // ai 2026-11
+
+// modules/alerts/modedit.php, row 259
+"alerts ID" => "ID alerte", // ai 2026-06
 
 // modules/alerts/send.php, row 69
 "Send Emails" => "Trimite emailuri", // ai 2026-06
@@ -279,46 +361,46 @@ return [
  => "Definiți selecțiile în secțiunile din care doriți să trimiteți alerte,\n"
    ."        în vederi de tip Alerts Selection Set", // ai 2026-06
 
-// modules/alerts/synchro.php, row 66
+// modules/alerts/synchro.php, row 89
 "Synchronization with Reader Management Slice" => "Sincronizare cu secțiunea de administrare a cititorilor", // ai 2026-06
 
-// modules/alerts/synchro.php, row 95
+// modules/alerts/synchro.php, row 118
 "Not Yet Set" => "Încă nesetat", // ai 2026-06
 
-// modules/alerts/synchro.php, row 104
+// modules/alerts/synchro.php, row 127
 "Choose Reader Management Slice" => "Alegeți secțiunea de gestionare a cititorilor", // ai 2026-06
 
-// modules/alerts/synchro.php, row 105
+// modules/alerts/synchro.php, row 128
 "This Alerts Collection takes user data from the slice" => "Această colecție de alerte preia datele utilizatorilor din secțiunea", // ai 2026-06
 
-// modules/alerts/synchro.php, row 112
+// modules/alerts/synchro.php, row 135
 "Change to: " => "Schimbă în: ", // ai 2026-06
 
-// modules/alerts/synchro.php, row 118
+// modules/alerts/synchro.php, row 141
 "and delete the %1-specific fields from %2" => "și șterge câmpurile specifice pentru %1 din %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 122
+// modules/alerts/synchro.php, row 145
 "Change" => "Schimbă",
 
-// modules/alerts/synchro.php, row 133
+// modules/alerts/synchro.php, row 156
 "Add %1-specific fields to %2" => "Adaugă câmpurile specifice pentru %1 în %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 136
+// modules/alerts/synchro.php, row 159
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
  => "Adaugă doar câmpurile ale căror ID-uri nu există încă în secțiune.\n"
    ."    Reîmprospătează grupul de constante care conține selecțiile, dacă acesta există deja.", // ai 2026-06
 
-// modules/alerts/synchro.php, row 142
+// modules/alerts/synchro.php, row 165
 "Field Name" => "Nume câmp", // ai 2026-06
 
-// modules/alerts/synchro.php, row 143
+// modules/alerts/synchro.php, row 166
 "Field ID" => "ID câmp", // ai 2026-06
 
-// modules/alerts/synchro.php, row 152
+// modules/alerts/synchro.php, row 175
 "Add or refresh fields" => "Adaugă sau reîmprospătează câmpurile", // ai 2026-06
 
-// modules/alerts/synchro.php, row 154
+// modules/alerts/synchro.php, row 177
 "This command can not be used until you choose the Reader Management Slice." => "Această comandă nu poate fi folosită până nu alegeți secțiunea de gestionare a cititorilor.", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
@@ -374,4 +456,10 @@ return [
 
 // modules/alerts/util.php, row 100
 "Trash bin" => "Coş",
+
+// modules/alerts/util.php, row 194
+"Do you want to stop receiving the mails of this list?" => "Doriți să nu mai primiți e-mailurile acestei liste?", // ai 2026-11
+
+// modules/alerts/util.php, row 196
+"Unsubscribe" => "Dezabonare", // ai 2026-11
 ];

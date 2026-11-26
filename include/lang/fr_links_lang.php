@@ -107,17 +107,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "G\xE9rer les filtres", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Erreur: mot de passe de lecture manquant",
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "message de Kit d'outils de nouvelles",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 // modules/links/check_url.php, row 52
 "Back" => "Retour",
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "Se reconnecter", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114
@@ -550,6 +550,7 @@ return [
 "No permissions to edit links" => "Vous n'avez pas la permission de modifier les liens", // ai 2026-06
 
 // modules/links/index.php, row 178
+// modules/links/modedit.php, row 115
 "Module not found." => "Module introuvable.", // ai 2026-06
 
 // modules/links/index.php, row 210
@@ -798,30 +799,33 @@ return [
 // modules/links/menu.php, row 178
 "New Link View" => "Nouvelle vue de liens", // ai 2026-06
 
-// modules/links/modedit.php, row 106
+// modules/links/modedit.php, row 111
 "No permission to add module" => "Pas de permission pour ajouter un module", // ai 2026-06
 
-// modules/links/modedit.php, row 111
+// modules/links/modedit.php, row 119
 "No permission to edit module" => "Pas de permission pour modifier le module", // ai 2026-06
 
-// modules/links/modedit.php, row 128, 217, 220
+// modules/links/modedit.php, row 128
+"The form has expired; reload the page and try again." => "Le formulaire a expir\xE9 ; rechargez la page et r\xE9essayez.", // ai 2026-10
+
+// modules/links/modedit.php, row 144, 229, 232
 "Start category id" => "Id de la cat\xE9gorie de d\xE9part", // ai 2026-06
 
-// modules/links/modedit.php, row 129, 223, 226
+// modules/links/modedit.php, row 145, 235, 238
 "Tree start id" => "Id de d\xE9part de l'arbre", // ai 2026-06
 
-// modules/links/modedit.php, row 130, 224, 227
+// modules/links/modedit.php, row 146, 236, 239
 "Select start id" => "S\xE9lectionnez l'id de d\xE9part", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Add Links module" => "Ajouter un module Liens", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Edit Links module" => "Modifier le module Liens", // ai 2026-06
 
-// modules/links/modedit.php, row 208
+// modules/links/modedit.php, row 220
 "Module Links data" => "Donn\xE9es du module Liens", // ai 2026-06
 
-// modules/links/modedit.php, row 213
+// modules/links/modedit.php, row 225
 "Used Language File" => "Fichier de langue utilis\xE9", // ai 2026-10
 ];

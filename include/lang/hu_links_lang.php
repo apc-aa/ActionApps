@@ -108,17 +108,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Sz\xFBr\xF5k kezel\xE9se", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Hiba: hi\xE1nyzik az olvas\xE1si jelsz\xF3", // ai 2026-06
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "\xDCzenet a Toolkitb\xF5l", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 // modules/links/check_url.php, row 52
 "Back" => "Vissza", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "\xDAjrabejelentkez\xE9s", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114
@@ -551,6 +551,7 @@ return [
 "No permissions to edit links" => "Nincs jogosults\xE1ga a hivatkoz\xE1sok szerkeszt\xE9s\xE9hez", // ai 2026-06
 
 // modules/links/index.php, row 178
+// modules/links/modedit.php, row 115
 "Module not found." => "A modul nem tal\xE1lhat\xF3.", // ai 2026-06
 
 // modules/links/index.php, row 210
@@ -799,30 +800,33 @@ return [
 // modules/links/menu.php, row 178
 "New Link View" => "\xDAj hivatkoz\xE1sn\xE9zet", // ai 2026-06
 
-// modules/links/modedit.php, row 106
+// modules/links/modedit.php, row 111
 "No permission to add module" => "Nincs jogosults\xE1ga modul hozz\xE1ad\xE1s\xE1hoz", // ai 2026-06
 
-// modules/links/modedit.php, row 111
+// modules/links/modedit.php, row 119
 "No permission to edit module" => "Nincs jogosults\xE1ga a modul szerkeszt\xE9s\xE9hez", // ai 2026-06
 
-// modules/links/modedit.php, row 128, 217, 220
+// modules/links/modedit.php, row 128
+"The form has expired; reload the page and try again." => "Az \xFBrlap lej\xE1rt; t\xF6ltse \xFAjra az oldalt, \xE9s pr\xF3b\xE1lja meg ism\xE9t.", // ai 2026-10
+
+// modules/links/modedit.php, row 144, 229, 232
 "Start category id" => "Kezd\xF5 kateg\xF3ria azonos\xEDt\xF3ja", // ai 2026-06
 
-// modules/links/modedit.php, row 129, 223, 226
+// modules/links/modedit.php, row 145, 235, 238
 "Tree start id" => "Fa kezd\xF5 azonos\xEDt\xF3ja", // ai 2026-06
 
-// modules/links/modedit.php, row 130, 224, 227
+// modules/links/modedit.php, row 146, 236, 239
 "Select start id" => "V\xE1lassza ki a kezd\xF5 azonos\xEDt\xF3t", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Add Links module" => "Hivatkoz\xE1sok modul hozz\xE1ad\xE1sa", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Edit Links module" => "Hivatkoz\xE1sok modul szerkeszt\xE9se", // ai 2026-06
 
-// modules/links/modedit.php, row 208
+// modules/links/modedit.php, row 220
 "Module Links data" => "A Hivatkoz\xE1sok modul adatai", // ai 2026-06
 
-// modules/links/modedit.php, row 213
+// modules/links/modedit.php, row 225
 "Used Language File" => "Haszn\xE1lt nyelvi f\xE1jl", // ai 2026-06
 ];

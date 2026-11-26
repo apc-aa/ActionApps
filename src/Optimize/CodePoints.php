@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace AA\Optimize;
 
 use AA;
+use AA\Import\Definition;
 use AA\IO\DB\DB_AA;
 use AA\Util\Adminlink;
 use AA_Metabase;
 use AA_Object;
 
 /** Where template code lives - the code points admin/aafinder.php searches: views, slice,
- *  module and site settings, fields (alias functions), site spots, object_text and the items
- *  of Code slices - and besides them the item fields shown by the alias function f_y or edited
- *  by the code widget in any slice. The Alerts e-mails only on request ($mails): their code
- *  is no page, a check about pages would report them wrongly. For the checks which look for
- *  an expression in all of them.
+ *  module and site settings, fields (alias functions), site spots, the code properties of
+ *  objects (OBJECT_CODE, OBJECT_PRINTED) and the items of Code slices - and besides them the item fields shown
+ *  by the alias function f_y or edited by the code widget in any slice. The Alerts e-mails only
+ *  on request ($mails): their code is no page, a check about pages would report them wrongly.
+ *  For the checks which look for an expression in all of them.
  */
 final class CodePoints
 {
@@ -28,8 +29,30 @@ final class CodePoints
         'polls'       => ['iid' => 'LOWER(HEX(`module_id`))'],
         'field'       => ['iid' => '`id`', 'sid' => 'LOWER(HEX(`slice_id`))'],
         'site_spot'   => ['iid' => '`spot_id`', 'sid' => 'LOWER(HEX(`site_id`))'],
-        'object_text' => ['iid' => '`object_id`'],
     ];
+
+    /** object class => its properties holding code (templates, AA expressions). Only these are read: the rest
+     *  of object_text is data - runs, crawled pages, notes, an alias's usage example - whose text only mentions
+     *  expressions; taken for code it gives false findings. The package lint (Central\Package\ObjectExport)
+     *  reads the same properties.
+     *  List every property the class gives to the template engine (AA::Un(), unalias, an alias of a fieldset):
+     *  one left out hides its code from the checks, and DbInconsistencyConstants Repair deletes a constant
+     *  group only that code uses. */
+    public const OBJECT_CODE = [
+        'AA_Aliasfunc'            => ['code'],
+        'AA_Condition'            => ['value'],
+        'AA_Exportsetings'        => ['fields', 'expressions', 'filename', 'conds', 'sort'],
+        'AA_Modulesettings_Site'  => ['page404_code', 'loginpage_code'],
+        'AA_Modulesettings_Slice' => ['nocheck_pending', 'nocheck_expired'],
+        'AA_Plannedtask'          => ['task', 'condition'],
+        Definition::class         => ['mapping', 'validate', 'after_stream', 'filter'],
+    ];
+
+    /** settings AA itself prints into the page: {generate:HEAD} writes the analytics snippet with ga_id */
+    private const OBJECT_PRINTED = ['AA_Modulesettings_Site' => ['ga_id']];
+
+    /** the object rows read: o = the property, t = the class of its object */
+    private const OBJECTS_FROM = 'FROM `object_text` AS o, `object_text` AS t';
 
     /** the Alerts e-mails, the same way as TABLES */
     private const MAILS = ['email' => ['iid' => '`id`', 'sid' => 'LOWER(HEX(`owner_module_id`))']];
@@ -53,6 +76,9 @@ final class CodePoints
                 }
             }
         }
+        foreach (DB_AA::select([], 'SELECT o.object_id AS iid, o.value AS txt ' . self::OBJECTS_FROM, [...self::objectWhere(), ['o.value', $needle, 'CONTAIN']]) as $row) {
+            yield self::row('object_text', 'value', $row);
+        }
 
         $query = 'SELECT LOWER(HEX(`content`.`item_id`)) AS iid, LOWER(HEX(`item`.`slice_id`)) AS sid, `content`.`text` AS txt FROM `content`, `item`';
         foreach (self::itemScopes() as $scope) {
@@ -74,6 +100,9 @@ final class CodePoints
                     yield (string) $txt;
                 }
             }
+        }
+        foreach (DB_AA::select('txt', 'SELECT o.value AS txt ' . self::OBJECTS_FROM, [...self::objectWhere(), ['o.value', '', 'FILLED']]) as $txt) {
+            yield (string) $txt;
         }
         foreach (self::itemScopes() as $scope) {
             foreach ($scope['slices'] as $sid) {
@@ -104,6 +133,18 @@ final class CodePoints
         return ($scope['fields'] === null)
             ? [['item.slice_id', $scope['slices'], 'l']]
             : [['item.slice_id', $scope['slices'], 'l'], ['content.field_id', $scope['fields']]];
+    }
+
+    /** @return list<array> the DB_AA $where of OBJECTS_FROM: the properties of OBJECT_CODE and OBJECT_PRINTED */
+    private static function objectWhere(): array
+    {
+        $alternatives = [];
+        foreach ([self::OBJECT_CODE, self::OBJECT_PRINTED] as $registry) {
+            foreach ($registry as $class => $props) {
+                $alternatives[] = [['t.value', $class], ['o.property', $props]];
+            }
+        }
+        return [['t.property', 'aa_type'], ['o.object_id', 't.object_id', 'j'], [null, $alternatives, 'OR']];
     }
 
     /** The item fields holding code: all the fields of the Code slices (slice type "___Code...", the way
@@ -146,6 +187,9 @@ final class CodePoints
                     return true;
                 }
             }
+        }
+        if (DB_AA::select1('', 'SELECT o.id ' . self::OBJECTS_FROM, [...self::objectWhere(), ['o.value', $needle, 'CONTAIN']]) !== false) {
+            return true;
         }
         foreach (self::itemScopes() as $scope) {
             if (DB_AA::test(['content', 'item'], array_merge([['content.text', $needle, 'CONTAIN'], ['content.item_id', 'item.id', 'j']], self::scopeWhere($scope)))) {

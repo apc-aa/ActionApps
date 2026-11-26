@@ -107,17 +107,17 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Керування фільтрами", // ai 2026-06
 
-// include/util.php, row 996
+// include/util.php, row 1001
 "Error: Missing Reading Password" => "Помилка: відсутній пароль для читання", // ai 2026-06
 
-// include/util.php, row 1354
+// include/util.php, row 1359
 "Toolkit news message" => "Повідомлення застосунку", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 // modules/links/check_url.php, row 52
 "Back" => "Назад", // ai 2026-06
 
-// include/util.php, row 1368
+// include/util.php, row 1373
 "Relogin" => "Увійти знову", // ai 2026-06
 
 // modules/links/actions.php, row 48, 90, 114
@@ -550,6 +550,7 @@ return [
 "No permissions to edit links" => "Немає прав редагувати посилання", // ai 2026-06
 
 // modules/links/index.php, row 178
+// modules/links/modedit.php, row 115
 "Module not found." => "Модуль не знайдено.", // ai 2026-06
 
 // modules/links/index.php, row 210
@@ -798,30 +799,33 @@ return [
 // modules/links/menu.php, row 178
 "New Link View" => "Новий огляд посилань", // ai 2026-06
 
-// modules/links/modedit.php, row 106
+// modules/links/modedit.php, row 111
 "No permission to add module" => "Немає права додати модуль", // ai 2026-06
 
-// modules/links/modedit.php, row 111
+// modules/links/modedit.php, row 119
 "No permission to edit module" => "Немає права редагувати модуль", // ai 2026-06
 
-// modules/links/modedit.php, row 128, 217, 220
+// modules/links/modedit.php, row 128
+"The form has expired; reload the page and try again." => "Термін дії форми минув; оновіть сторінку й спробуйте ще раз.", // ai 2026-10
+
+// modules/links/modedit.php, row 144, 229, 232
 "Start category id" => "Id початкової категорії", // ai 2026-06
 
-// modules/links/modedit.php, row 129, 223, 226
+// modules/links/modedit.php, row 145, 235, 238
 "Tree start id" => "Id початку дерева", // ai 2026-06
 
-// modules/links/modedit.php, row 130, 224, 227
+// modules/links/modedit.php, row 146, 236, 239
 "Select start id" => "Виберіть початковий id", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Add Links module" => "Додати модуль Посилання", // ai 2026-06
 
-// modules/links/modedit.php, row 205
+// modules/links/modedit.php, row 217
 "Edit Links module" => "Редагувати модуль Посилання", // ai 2026-06
 
-// modules/links/modedit.php, row 208
+// modules/links/modedit.php, row 220
 "Module Links data" => "Дані модуля Посилання", // ai 2026-06
 
-// modules/links/modedit.php, row 213
+// modules/links/modedit.php, row 225
 "Used Language File" => "Використовуваний мовний файл", // ai 2026-06
 ];

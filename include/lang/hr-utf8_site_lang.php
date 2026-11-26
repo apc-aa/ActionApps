@@ -35,54 +35,59 @@ return [
 // modules/site/aliases.php, row 41
 "Manage %1" => "Upravljanje %1", // ai 2026-06
 
-// modules/site/index.php, row 64
+// modules/site/index.php, row 67
 "You do not have permission to edit items in this slice" => "Nemate dozvolu za uređivanje ovog odsječka",
 
-// modules/site/index.php, row 69
+// modules/site/index.php, row 72
 "Starting spot not found" => "Početna točka nije pronađena",
 
-// modules/site/index.php, row 152
+// modules/site/index.php, row 91
+// modules/site/moddelete.php, row 53
+// modules/site/modedit.php, row 218
+"The form has expired; reload the page and try again." => "Obrazac je istekao; ponovno učitajte stranicu i pokušajte ponovno.", // ai 2026-10
+
+// modules/site/index.php, row 163
 "Editor window - site code manager" => "Prozor za uređivanje koda stranice",
 
-// modules/site/index.php, row 164
+// modules/site/index.php, row 175
 "Add&nbsp;spot" => "Dodajte točku",
 
-// modules/site/index.php, row 165
+// modules/site/index.php, row 176
 "Add&nbsp;choice" => "Dodajte",
 
-// modules/site/index.php, row 168
+// modules/site/index.php, row 179
 "Move&nbsp;up" => "Preselite",
 
-// modules/site/index.php, row 169
+// modules/site/index.php, row 180
 "Move&nbsp;down" => "Pomaknite dolje",
 
-// modules/site/index.php, row 172
+// modules/site/index.php, row 183
 "Move&nbsp;left" => "Pomaknite&nbsp;ulijevo", // ai 2026-06
 
-// modules/site/index.php, row 173
+// modules/site/index.php, row 184
 "Move&nbsp;right" => "Pomaknite&nbsp;udesno", // ai 2026-06
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 187
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Obrišite",
 
-// modules/site/index.php, row 176
+// modules/site/index.php, row 187
 "Are you sure you want to delete the spot?" => "Jeste li sigurni da želite obrisati ovaj spot?", // ai 2026-06
 
-// modules/site/index.php, row 179
+// modules/site/index.php, row 190
 "Enable" => "Omogućite", // ai 2026-06
 
-// modules/site/index.php, row 180
+// modules/site/index.php, row 191
 "Disable" => "Onemogućite", // ai 2026-06
 
-// modules/site/index.php, row 201
+// modules/site/index.php, row 212
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Mogući sustavski require - &lcub;require:...&rcub; ili &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47
 "View site" => "Pogledajte stranicu",
 
 // modules/site/menu.php, row 55
-// modules/site/modedit.php, row 298
+// modules/site/modedit.php, row 305
 "Site" => "Stranice",
 
 // modules/site/menu.php, row 80
@@ -97,92 +102,89 @@ return [
 // modules/site/moddelete.php, row 48
 "You don't have permissions to delete a site." => "Nemate dozvolu za brisanje stranice",
 
-// modules/site/moddelete.php, row 53
-// modules/site/modedit.php, row 212
-"The form has expired; reload the page and try again." => "Obrazac je istekao; ponovno učitajte stranicu i pokušajte ponovno.", // ai 2026-10
-
 // modules/site/moddelete.php, row 56
+// modules/site/modedit.php, row 119
 "Module not found." => "Modul nije pronađen",
 
 // modules/site/moddelete.php, row 76
 "Slice successfully deleted, tables are optimized" => "Stranica je uspješno obrisana, stranice optimizirane",
 
-// modules/site/modedit.php, row 112
+// modules/site/modedit.php, row 115
 "You do not have permissions to add slice" => "Nemate dozvolu za dodavanje stranice",
 
-// modules/site/modedit.php, row 117
+// modules/site/modedit.php, row 123
 "You do not have permissions to edit this slice" => "Nemate dozvolu za uređivanje ove stranice",
 
-// modules/site/modedit.php, row 125
+// modules/site/modedit.php, row 131
 "The settings and the other fields of this page were not saved." => "Postavke ni ostala polja ove stranice nisu spremljeni.", // ai 2026-10
 
-// modules/site/modedit.php, row 140
+// modules/site/modedit.php, row 146
 "State file" => "Status datoteke",
 
-// modules/site/modedit.php, row 141, 306
+// modules/site/modedit.php, row 147, 313
 "Router" => "Router", // ai 2026-10
 
-// modules/site/modedit.php, row 142, 320
+// modules/site/modedit.php, row 148, 327
 "Uses modules" => "Koristi module", // ai 2026-06
 
-// modules/site/modedit.php, row 152
+// modules/site/modedit.php, row 158
 "You can not use these modules in the site - you have no permission to them: %1" => "Ove module ne možete koristiti na webu - nemate dozvolu za njih: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 223
+// modules/site/modedit.php, row 229
 "The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "Postavke kataloga aplikacija nisu spremljene - katalog neće ponuditi web dok se ne isprave ove greške:", // ai 2026-10
 
-// modules/site/modedit.php, row 285
+// modules/site/modedit.php, row 292
 "Add Site" => "Dodajte stranicu",
 
-// modules/site/modedit.php, row 285
+// modules/site/modedit.php, row 292
 "Edit Site" => "Uredite stranicu",
 
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 312
 "Used Language File" => "Korištena jezična datoteka",
 
-// modules/site/modedit.php, row 306
+// modules/site/modedit.php, row 313
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Koristite AA_Router_Seo. U suprotnom ćete koristiti stari pristup site modula s 'kontrolnom datotekom', što ne preporučujemo.", // ai 2026-06
 
-// modules/site/modedit.php, row 307
+// modules/site/modedit.php, row 314
 "Home or State file" => "Početna stranica ili datoteka stanja", // ai 2026-06
 
-// modules/site/modedit.php, row 307
+// modules/site/modedit.php, row 314
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Za AA_Router_Seo upišite <b>zadani url</b> (početnu stranicu) - npr. <em>/en/home</em> - ili ostavite prazno<br><br>Za starije web stranice bez AA_Router_Seo upišite naziv <b>kontrolne datoteke (Site control file)</b> - bit će smještena u direktorij /modules/site/sites/. Navedenom nazivu dodaje se prefiks 'site_', pa ako datoteku nazovete npr. 'apc.php', kontrolna datoteka bit će /modules/site/sites/site_apc.php.", // ai 2026-06
 
-// modules/site/modedit.php, row 322
+// modules/site/modedit.php, row 332
 "Additional setting" => "Dodatne postavke", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 337
 "App store" => "Katalog aplikacija", // ai 2026-10
 
-// modules/site/modedit.php, row 329
+// modules/site/modedit.php, row 339
 "A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Objavljeni web s ovog AA može instalirati bilo koji AA - zajedno sa stranicama i Upozorenjima koje koristi: njihovim predlošcima, poljima, pogledima i konstantama, nikada stavkama. Ovo postavlja samo superadmin.", // ai 2026-10
 
-// modules/site/modedit.php, row 333
+// modules/site/modedit.php, row 343
 "The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "Moduli weba promijenili su se od objave: %1 - katalog aplikacija neće ponuditi web dok ih superadmin ne odobri.", // ai 2026-10
 
-// modules/site/modedit.php, row 334
+// modules/site/modedit.php, row 344
 "Approve the changed modules: %1" => "Odobrite promijenjene module: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 334
+// modules/site/modedit.php, row 344
 "Their templates, fields, views and constants then go to the app store with the site." => "Njihovi predlošci, polja, pogledi i konstante tada idu u katalog aplikacija zajedno s webom.", // ai 2026-10
 
-// modules/site/modedit.php, row 336
+// modules/site/modedit.php, row 346
 "Publish in the app store" => "Objavite u katalogu aplikacija", // ai 2026-10
 
-// modules/site/modedit.php, row 336
+// modules/site/modedit.php, row 346
 "The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "Objavljena aplikacija nema upozorenja: svako upozorenje njezina izvoza je greška. Zaustavlja je i grupa konstanti koju posjeduje stranica izvan svih objavljenih webova.", // ai 2026-10
 
-// modules/site/modedit.php, row 337
+// modules/site/modedit.php, row 347
 "App description" => "Opis aplikacije", // ai 2026-10
 
-// modules/site/modedit.php, row 337
+// modules/site/modedit.php, row 347
 "What the app does, for the list of the app store." => "Što aplikacija radi - za popis u katalogu aplikacija.", // ai 2026-10
 
-// modules/site/modedit.php, row 338
+// modules/site/modedit.php, row 348
 "App version" => "Verzija aplikacije", // ai 2026-10
 
-// modules/site/modedit.php, row 338
+// modules/site/modedit.php, row 348
 "Like 1.2.0." => "Npr. 1.2.0.", // ai 2026-10
 
 // modules/site/sitetree.php, row 1005
