@@ -2901,6 +2901,12 @@ h1:has(+form[name="inputform"]) {
         overflow-y: auto;
         overflow-x: hidden;
     }
+    /* its resting place, kept while the page scrolls */
+    .aa-notes {
+        position: fixed;
+        top: calc(var(--aa-topbar-h, 0px) + 2px);
+        z-index: 40;
+    }
     #sitetree {
         position: sticky;
         top: calc(var(--aa-topbar-h, 0px) + 10px); /* small gap so Add spot isn't glued to the pinned bar */
