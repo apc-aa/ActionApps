@@ -91,4 +91,8 @@ interface SourceInterface extends NamedInterface
     /** Largest answer the source takes: a download stops there, before the answer is held in memory.
      *  Context caps it at Context::MAX_BYTES_CAP. */
     public function maxBytes(): int;
+
+    /** Seconds of silence before a request is given up: longer for a source that computes a big
+     *  answer before it sends the first byte. Context caps it at Context::IDLE_SECONDS_CAP. */
+    public function idleSeconds(): int;
 }
