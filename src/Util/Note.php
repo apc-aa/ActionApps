@@ -209,6 +209,12 @@ class Note extends AA_Object implements NamedInterface
         return (string) AA::$perm->getUserName($this->author);
     }
 
+    public function setText(string $text): void
+    {
+        $this->text = $text;
+        $this->update(['text']);
+    }
+
     public function setState(string $state): void
     {
         $this->state = $state;

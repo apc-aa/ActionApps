@@ -27,6 +27,29 @@ final class Notes
         return IsSuperadmin() || (IfSlPerm(PS_EDIT_ALL_ITEMS) && \AA_Module::mayRunPageOn('admin/aa_note.php', (string) \AA::$module_id));
     }
 
+    /** Signature of a form: its action and resource, for the user and the module it was
+     *  rendered for. admin/aa_note.php writes only what is signed this way, so a note lands
+     *  just where its author was shown the form - never on an address made up in the request.
+     */
+    public static function sign(string $uid, string $module_id, string $action, string $resource): string
+    {
+        return hash_hmac('sha256', $uid . "\0" . $module_id . "\0" . $action . "\0" . $resource, Secret::key('note'));
+    }
+
+    /** Did a form rendered for the current user carry this action and resource? Rendered on the
+     *  current module, or on a page with none (the slice wizard) - its form runs on whatever
+     *  module the user gets there, and its resource belongs to no module.
+     */
+    public static function isSigned(string $action, string $resource, string $sig): bool
+    {
+        if ($sig === '') {
+            return false;
+        }
+        $uid = AuthGetUid();
+        return hash_equals(self::sign($uid, (string) \AA::$module_id, $action, $resource), $sig)
+            || hash_equals(self::sign($uid, '', $action, $resource), $sig);
+    }
+
     /** The corner as an admin page emits it (AA_Adminpageutil::printHead() and the
      *  item-edit head in formutil.php both use this one). Registers the popover
      *  positioner itself, because printForm() builds its head without printHead().
@@ -85,7 +108,9 @@ final class Notes
         return ($cut === $text) ? $text : rtrim($cut) . '…';
     }
 
-    /** one note: who, when, for whom, the text, and delete / unresolve for whoever may */
+    /** one note: who, when, for whom, the text, delete / unresolve for whoever may, and for
+     *  the author a popover with the form to correct the text
+     */
     public static function render(Note $note, string $return_url): string
     {
         $resolved = ($note->state === Note::STATE_RESOLVED);
@@ -102,11 +127,23 @@ final class Notes
         if ($resolved && $superadmin) {
             $actions .= self::form('unresolve', $note->resource, $return_url, $id_field, _m('Unresolve'), 'aa-button-run');
         }
-        if ($superadmin || ($note->author === AuthGetUid())) {
+        $own  = ($note->author === AuthGetUid());
+        $edit = '';
+        if ($own) {
+            // the stored text, escaped: what textHtml() drops must stay editable, and a </textarea> in it must not close the field.
+            // The reason of a resolution is optional, so it may be emptied again.
+            $textarea = '<textarea name="text" rows="3"' . ($resolved ? '' : ' required') . '>' . safe((string) $note->text) . '</textarea>';
+            $label    = safe(_m('Edit'));
+            $id       = 'aa-note-edit-' . (++self::$counter);
+            $actions .= '<button type="button" class="ico aa-note-edit" popovertarget="' . $id . '" title="' . $label . '" aria-label="' . $label . '">✎</button>';
+            $edit     = '<div popover id="' . $id . '" class="aa-overflow-menu aa-notes-pop aa-note-edit">'
+                      . self::form('edit', $note->resource, $return_url, $id_field . $textarea, _m('Save'), 'btn btn-s') . '</div>';
+        }
+        if ($superadmin || $own) {
             $actions .= self::form('delete', $note->resource, $return_url, $id_field, '✕', 'ico delete');
         }
         return '<div class="aa-note"><div class="aa-note-head">' . $head . '</div><div class="aa-note-text">' . $note->textHtml() . '</div>'
-             . ($actions ? '<div class="aa-note-actions">' . $actions . '</div>' : '') . '</div>';
+             . ($actions ? '<div class="aa-note-actions">' . $actions . '</div>' : '') . $edit . '</div>';
     }
 
     /** "Mark resolved" for a State Check finding: a button opening a popover with
@@ -139,6 +176,7 @@ final class Notes
             . FormToken::field(self::TOKEN)
             . '<input type="hidden" name="action" value="' . $action . '">'
             . '<input type="hidden" name="resource" value="' . safe($resource) . '">'
+            . '<input type="hidden" name="sig" value="' . self::sign(AuthGetUid(), (string) \AA::$module_id, $action, $resource) . '">'
             . '<input type="hidden" name="return" value="' . safe($return_url) . '">'
             . $inner . '<div class="aa-notes-row">' . $beside_button . '<button type="submit" class="' . $class . '">' . $button . '</button></div></form>';
     }

@@ -1492,20 +1492,23 @@ class ItemContent extends AA_Content
                     $item_varset->doUpdate('item');  // already inserted above
             }
         });
-        if ($invalidatecache) {
-            // invalidate old cached values
-            AA::Pagecache()->invalidateFor($slice_id);
-        }
-
         // get the content back from database
         $itemContent = new ItemContent();
         $itemContent->setByItemID($id, true);     // ignore reading password
 
-        // look for computed fields and update it (based on the stored item)
-        if (!$silent && $itemContent->updateComputedFields($fields, $mode)) {
-            // if computed fields are updated, reread the content
-            $itemContent->setByItemID($id, true);
-            // ignore reading password
+        try {
+            // look for computed fields and update it (based on the stored item)
+            if (!$silent && $itemContent->updateComputedFields($fields, $mode)) {
+                // if computed fields are updated, reread the content
+                $itemContent->setByItemID($id, true);
+                // ignore reading password
+            }
+        } finally {
+            // after the computed fields - a page rendered while they were computed would keep their old values;
+            // the stored item is invalidated even when a computed expression throws
+            if ($invalidatecache) {
+                AA::Pagecache()->invalidateFor($slice_id);
+            }
         }
 
         $zid = new zids($id, 'l');
@@ -1551,11 +1554,15 @@ class ItemContent extends AA_Content
         return $id;
     } // end of storeItem()
 
-    /** updateComputedFields function
-     * @param AA_Fields|null $fields
+    /** Recomputes the computed fields (seo, com, co2) and stores those whose value differs from the
+     *  stored one - an unchanged field is not written, so the caller need not invalidate any cache.
+     *  The content must be the stored one (read from the database), it is compared with it.
+     *  A field stored in the `item` table is not compared - it is always written.
+     * @param AA_Fields|null $fields  the slice fields by default; the slice setting fields
+     *                                (AA_Slice::getFields(true)) for the slice setting content
      * @param string         $mode
      * @param array          $restrict_fields
-     * @return bool
+     * @return bool  some field got a new value
      */
     public function updateComputedFields(?AA_Fields $fields = null, string $mode = 'update', array $restrict_fields = []): bool
     {
@@ -1573,10 +1580,12 @@ class ItemContent extends AA_Content
 
         $update       = ($mode === 'update' || $mode === 'overwrite' || $mode === 'add');
         $computed_field_exist = false;
+        $changed      = false;
 
         if (!$fields) {
             $fields = $slice->getFields();
         }
+        $setting_fields = $fields->isSettingCollection();
 
         foreach ($fields as $fid => $field) {
 
@@ -1632,7 +1641,13 @@ class ItemContent extends AA_Content
             if ($computed_field_exist === false) {
                 $computed_field_exist = true;
                 // prepare item for computing
-                $item  = new AA_Item($this->getContent(), new AA_Aliases(new AA_Aliasgenerator_Slice($this->getSliceID())));
+                $aliases = new AA_Aliases(new AA_Aliasgenerator_Slice($this->getSliceID()));
+                if ($setting_fields) {
+                    foreach ($fields as $setting_field) {        // the slice aliases know no setting field
+                        $aliases->add($setting_field->getAliases());
+                    }
+                }
+                $item  = new AA_Item($this->getContent(), $aliases);
             }
 
             // compute new value for this computed field
@@ -1642,6 +1657,12 @@ class ItemContent extends AA_Content
             // set this value also to $item in order we can count with it
             // in the next computed field
             $item->setAaValue($fid, $aa_val);
+
+            // a periodic recompute mostly gets the stored value again - writing it would only invalidate caches
+            if (!$field->getProperty('in_item_tbl') && AA_Field_Writer::storesSame((bool) $field->getProperty('text_stored'), $aa_val, $this->getAaValue($fid))) {
+                continue;
+            }
+            $changed = true;
 
             // delete content just for this computed field
             // $this->_clean_updated_fields($id, $fields);
@@ -1660,7 +1681,7 @@ class ItemContent extends AA_Content
             $item_varset->doUpdate('item');
         }
 
-        return $computed_field_exist;
+        return $changed;
     }
 
     /** storeSliceFields function
@@ -1677,6 +1698,7 @@ class ItemContent extends AA_Content
         // we use slice_id as item id here
         $this->_store_fields($slice_id, $fields);
 
+        AA_Slice::getOwnModule($slice_id)?->updateComputedSettingFields();   // the form sent the old value of a computed field
         AA::Pagecache()->invalidateFor($slice_id);
     }
 

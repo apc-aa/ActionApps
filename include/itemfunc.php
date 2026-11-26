@@ -1934,6 +1934,35 @@ class AA_Field_Writer
         return ['item_id' => $item_id, 'field_id' => $field_id, 'number' => (int) $value, 'flag' => $flag & ~FLAG_TEXT_STORED];
     }
 
+    /** Would the rows contentRow() makes of $value read back (GetItemContent()) as $stored?
+     *  Then storing $value changes nothing. A case it cannot tell answers false - the value is written.
+     */
+    public static function storesSame(bool $text_stored, AA_Value $value, AA_Value $stored): bool
+    {
+        $values = $value->getValues();
+        if (!$values) {
+            return !$stored->getValues();         // no row is written, so no flag either
+        }
+        if ($text_stored) {
+            ksort($values);                       // read back in the order of `number`
+            $expect = [];
+            foreach ($values as $order => $v) {
+                if ($order >= AA_Value::MAX_INDEX) {
+                    $expect[$order] = (string) $v;  // a translation keeps its index
+                } else {
+                    $expect[] = (string) $v;
+                }
+            }
+            $flags = [$value->getFlag() | FLAG_TEXT_STORED, $stored->getFlag()];
+        } else {
+            $expect = array_map(static fn($v): string => (string) (int) $v, array_values($values));
+            sort($expect, SORT_NUMERIC);          // `number` holds the value, so it gives the order
+            // a number reads the same as text and as HTML; a row still stored as text must be rewritten
+            $flags  = [$value->getFlag() & ~(FLAG_TEXT_STORED | FLAG_HTML), $stored->getFlag() & ~FLAG_HTML];
+        }
+        return ($flags[0] === $flags[1]) && ($expect === array_map('strval', $stored->getValues()));
+    }
+
     /** Queues the removal of every `content` row of the (item, field) pair. Rows already
      *  queued for that pair are dropped, exactly as the delete would have removed them
      *  had they been written one by one.

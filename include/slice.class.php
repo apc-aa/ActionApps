@@ -993,6 +993,24 @@ class AA_Slice extends AA_Module
         return $this->dynamic_setting;
     }
 
+    /** Recomputes the computed slice setting fields and stores the changed ones; the caller
+     *  invalidates the page cache when it gets true. The expressions see the setting fields and
+     *  the slice id as {id..............} and {slice_id........}.
+     * @return bool  some setting field got a new value
+     */
+    public function updateComputedSettingFields(): bool
+    {
+        $this->loadsettingfields(true);
+        $content = clone $this->dynamic_setting;   // the ids below must not stay in the setting
+        $content->setItemID($this->module_id);
+        $content->setSliceID($this->module_id);
+        if (!$content->updateComputedFields($this->getFields(true))) {
+            return false;
+        }
+        $this->loadsettingfields(true);
+        return true;
+    }
+
     /** Get the base for the file uploads
      */
     public function getUploadBase(): array

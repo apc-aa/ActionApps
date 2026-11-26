@@ -2815,7 +2815,7 @@ h1:has(+form[name="inputform"]) {
     flex: none;
     width: 36px;
     height: 33px;
-    background: transparent url(/aa-dev/images/ico-notes.png) center no-repeat;
+    background: transparent url(images/ico-notes.png) center no-repeat;
 }
 .aa-notes-trigger:hover, .aa-notes-some {
     color: var(--clr-dark, #1f1f1f);
@@ -2851,7 +2851,7 @@ h1:has(+form[name="inputform"]) {
 /* no Popover API: the corner and Mark resolved would be dead buttons; the page-section
    fallbacks (Resolved table, State Check itself) keep working */
 @supports not selector(:popover-open) {
-    .aa-notes, .aa-notes-resolve { display: none; }
+    .aa-notes, .aa-notes-resolve, .aa-note-edit { display: none; }
 }
 /* Media queries stay last so they override the base rules:
    desktop 768px+, tablet up to 1200px, phone up to 767px, print */
@@ -2900,6 +2900,12 @@ h1:has(+form[name="inputform"]) {
         min-height: 0;
         overflow-y: auto;
         overflow-x: hidden;
+    }
+    /* its resting place, kept while the page scrolls */
+    .aa-notes {
+        position: fixed;
+        top: calc(var(--aa-topbar-h, 0px) + 2px);
+        z-index: 40;
     }
     #sitetree {
         position: sticky;
