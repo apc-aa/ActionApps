@@ -44,6 +44,7 @@ use AA\Util\Langs;
 use AA\Util\Searchfields;
 use AA\Util\SingletonTrait;
 use AA\Util\Txt;
+use AA\Widget\ChbWidget;
 use AA\Widget\Widget;
 
 require_once __DIR__ . "/zids.php"; // Pack and unpack ids
@@ -1314,6 +1315,41 @@ class AA_Module_Site extends AA_Module
         );
     }
 
+    /** Address of the same page on the main URL when the visit came to one of the Alternate URLs, else null.
+     *  Hosts compare without "www.", as the page cache keys them - so www. of the main URL, which shares
+     *  the main URL's cached pages, never redirects here. Any other host (admin host with site_id, proxy)
+     *  is not redirected, nor is a POST: a 301 turns it into a GET and the form is lost.
+     *  @param string       $method         REQUEST_METHOD of the request
+     *  @param string       $host           HTTP_HOST of the request
+     *  @param string       $uri            REQUEST_URI of the request
+     *  @param string       $main_url       slice_url of the site
+     *  @param list<string> $alternate_urls alternate_url of the site settings
+     */
+    public static function alternateRedirectUrl(string $method, string $host, string $uri, string $main_url, array $alternate_urls): ?string
+    {
+        if (!in_array(strtoupper($method), ['GET', 'HEAD'], true)) {
+            return null;
+        }
+        // a stored value may lack the scheme; parse_url() finds the host only after "//"
+        $bare_host = static function (string $url): string {
+            $host = strtolower((string) parse_url(str_contains($url, '//') ? $url : "//$url", PHP_URL_HOST));
+            return str_starts_with($host, 'www.') ? substr($host, 4) : $host;
+        };
+        $main = parse_url(trim($main_url));
+        if (!in_array(strtolower($main['scheme'] ?? ''), ['http', 'https'], true) || empty($main['host'])) {
+            return null;
+        }
+        $here = $bare_host(trim($host));
+        if (($here === '') || ($here === $bare_host($main['host']))) {
+            return null;
+        }
+        if (!in_array($here, array_map(static fn($url): string => $bare_host(trim((string) $url)), $alternate_urls), true)) {
+            return null;
+        }
+        $port = isset($main['port']) ? ':' . $main['port'] : '';
+        return strtolower($main['scheme']) . '://' . $main['host'] . $port . (str_starts_with($uri, '/') ? $uri : '/');
+    }
+
 
     /** for translated fields - if not translated, use default language of the module */
     public function getDefaultLang(): string
@@ -1803,6 +1839,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
     protected $perm_mode;
     protected $ga_id;
     protected $alternate_url;
+    protected $alternate_redirect;
     protected $app_publish;
     protected $app_description;
     protected $app_version;
@@ -1826,7 +1863,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
     /** check, if the $prop is the property of this object */
     public static function isProperty($prop): bool
     {
-        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'xcat_pattern', 'xflag_pattern', 'check_xseo', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url', 'view_nodirect', ...self::APP_PROPERTIES]);
+        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'xcat_pattern', 'xflag_pattern', 'check_xseo', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url', 'alternate_redirect', 'view_nodirect', ...self::APP_PROPERTIES]);
     }
 
     /** allows storing object in database
@@ -1843,7 +1880,9 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
             'loginpage_code'  => new AA_Property('loginpage_code', _m("HTML code for \"Login page\""), 'text', false, true),
             'perm_mode'       => new AA_Property('perm_mode', _m("User login databases"), 'string', false, true, ['enum',  [1 => _m('first Reader Management slice listed in Uses slices'),2 => _m('all Reader Management slices listed in Uses slices'),3 => _m('AA + all Reader Management slices in AA (old behavior)')]], false, _m("First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used.")),
             'ga_id'           => new AA_Property('ga_id', _m("Google analytics tracking id"), 'string', false, true, ['text', ['maxlength' => 20]], false, _m("If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site.")),
-            'alternate_url'   => new AA_Property('alternate_url', _m("Alternate URL"), 'string', true, true, '', false, _m("Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly.")),
+            'alternate_url'   => new AA_Property('alternate_url', _m("Alternate URL"), 'string', true, true, '', false, _m("Another domain(s) for which the web should be visible, like https://www.example.org. One address of each page is more SEO friendly - see Redirect to the main URL.")),
+            // '1' or '0' (ChbWidget in addFormrows()) - a string, so it is read from object_text with the other settings
+            'alternate_redirect' => new AA_Property('alternate_redirect', _m("Redirect to the main URL"), 'string', false, true, '', false, _m("Checked - a visit to an Alternate URL is permanently redirected (301) to the same page on the URL of the site, so each page has one address. The URL of the site must be filled in with https:// (or http://) and must be the address the web server does not redirect away from - otherwise the redirect does nothing or loops. Browsers remember a 301, so unchecking does not undo it for visitors who already got it. Form submissions (POST) are not redirected; the www. form of the site URL is left to the web server.")),
             'web_languages'   => new AA_Property('web_languages', _m("Languages on website"), 'string', true, true, ['regexp', ['pattern' => '/^[a-z]{2}$/','maxlength' => 2]], false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>')),
             'xflag_pattern'   => new AA_Property('xflag_pattern', _m("Allowed {xflag} values"), 'string', false, true, ['pattern', ['maxlength' => 255]], false, _m('Regular expression the {xflag} part of the URL must match as a whole (no ^ or $ needed), otherwise the page answers 404. {xflag} are the characters right after the language and the optional page number {xpage}: /cz<b>t</b>/..., /cz2<b>p</b>-bioplyn/... It never holds a digit or "-" - those end it.<br>The pages without {xflag} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without "=".<br><b>^$</b> - {xflag} is not used, only pages without it.<br>Examples:<br>[a-z]? - one letter, or nothing<br>[tp]? - "t" or "p", or nothing<br>(print|pdf)? - one of the listed words, or nothing')),
             'xcat_pattern'    => new AA_Property('xcat_pattern', _m("Allowed {xcat} values"), 'string', false, true, ['pattern', ['maxlength' => 255]], false, _m('Regular expression the {xcat} part of the URL must match as a whole (no ^ or $ needed), otherwise the page answers 404. {xcat} is everything after the first "-" in the first directory: /cz-<b>bioplyn</b>/..., /cz2t-<b>2024-05</b>/... It may hold anything but "/".<br>The pages without {xcat} must pass too - end the pattern with ? or add an empty alternative.<br><b>Empty</b> - any value without "=".<br><b>^$</b> - {xcat} is not used, only pages without it.<br>Examples:<br>[a-z0-9-]* - lowercase letters, digits and dashes, or nothing<br>([0-9]+)? - a number, or nothing<br>(bioplyn|kompost)? - one of the listed words, or nothing')),
@@ -1870,7 +1909,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
                     . _m('<code>/{xlang}{xpage}{xflag}-{xcat}/{xseo1}/{xseo2}/...?{xqs}</code><br>{xpage} is a number, {xflag} the letters after it, {xcat} everything after the first "-" - all three are optional. {xlang} may be left out when Languages on website are set.<br>Like /cz2t-bioplyn/zpravy/bioplynka: {xlang}=cz, {xpage}=2, {xflag}=t, {xcat}=bioplyn, {xseo1}=zpravy, {xseo2}=bioplynka')
                     . '</td></tr>'));
             }
-            $property->addPropertyFormrows($form);
+            $property->addPropertyFormrows($form, ($id === 'alternate_redirect') ? new ChbWidget() : null);
         }
     }
 

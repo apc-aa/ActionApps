@@ -165,6 +165,12 @@ if (!($module = AA_Module_Site::getOwnModule(AA::$site_id))) {
     exit;
 }
 
+// one address per page
+if ($module->getProperty('alternate_redirect')
+    && ($main_page_url = AA_Module_Site::alternateRedirectUrl((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'), (string) ($_SERVER['HTTP_HOST'] ?? ''), (string) ($_SERVER['REQUEST_URI'] ?? ''), (string) $module->getProperty('slice_url'), (array) $module->getProperty('alternate_url')))) {
+    go_url($main_page_url, '', false, 301);
+}
+
 $lang_file    = $module->getProperty('lang_file');
 AA::setEncoding($module->getCharset());
 

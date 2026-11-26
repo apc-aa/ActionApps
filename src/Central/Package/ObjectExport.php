@@ -24,7 +24,8 @@ final class ObjectExport
     /** the object store in the order AA_Object::load() merges it */
     public const TABLES = ['object_text', 'object_integer', 'object_float'];
 
-    /** settings properties of the source installation: measuring code, domains; `app_*` travels in meta */
+    /** settings properties of the source installation: measuring code, domains; `app_*` travels in meta.
+     *  alternate_redirect travels - with no Alternate URL it does nothing, and a transfer carries them both */
     private const LEFT_OUT = ['AA_Modulesettings_Site' => ['ga_id', 'alternate_url']];
     private const LEFT_OUT_PREFIX = 'app_';
 
