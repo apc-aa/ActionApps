@@ -16,12 +16,12 @@ aa-params :is(input, select, textarea, button) {margin-left: 0px;}
 .aa-params-ctl input.aa-params-num { width: 6.5rem; font-variant-numeric: tabular-nums; }
 .aa-params-ctl input[type=checkbox] { width: 16px; height: 16px; margin: 5px 0 2px; accent-color: var(--clr-green, #1eb585); }
 .aa-params-hlp {font-size: var(--sz-s, .955rem);color: rgb(0 0 0 / 70%);max-width: 36rem;box-sizing: border-box;position: relative;padding-right: 10px;}
-.aa-params-hlp em {display: block;letter-spacing: 0.03em;color: rgb(0 0 0 / 51%);user-select: all;}
-.aa-params-hlp em:before {content: "např.";display: inline-block;letter-spacing: normal;margin-right: 7px;font-style: normal;}
+.aa-params-eg {display: block;color: rgb(0 0 0 / 51%);}
+.aa-params-eg em {letter-spacing: 0.03em;user-select: all;}
 .aa-params-more:before {content: "";display: inline-block;border: solid 4px transparent;margin-left: 3px;vertical-align: middle;border-bottom-color: hsl(0deg 0% 0% / 80%);border-top: 0;}
 .aa-params-hlp.is-clamped {display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;}
 .is-clamped .aa-params-more:before {transform: rotate(180deg);}
-.aa-params-more {background: none;border: 0;padding: 0;color: #2f3d99;font-size: var(--sz-s, .955rem);display: inline-block;position: absolute;right: 0;font-size: 0;}
+.aa-params-more {background: none;border: 0;padding: 0;color: #2f3d99;display: inline-block;position: absolute;right: 0;font-size: 0;}
 .aa-params-more:hover {background: transparent;transform: translateY(2px);}
 .aa-params-text {margin-top: 6px;max-width: 60rem;}
 .aa-params-text > summary, .aa-params-help > summary {width: fit-content;border: 0;padding: 0;}

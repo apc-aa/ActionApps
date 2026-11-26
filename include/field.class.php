@@ -748,7 +748,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         $ret .= "
         <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"" . ($required ? " checked" : "") . "></td>
-        <td><input type=\"checkbox\" name=\"shw[$id]\"" . ($show ? " checked" : "") . ">" . $this->showConditionSelect($conds) . "</td>";
+        <td><div class=\"nowrap\"><input type=\"checkbox\" name=\"shw[$id]\"" . ($show ? " checked" : "") . ">" . $this->showConditionSelect($conds) . "</div></td>";
         $ret .= "<td>" . $this->linkToField(_m("Edit"), '', ['class' => 'aa-button-edit']) . "</td>";
         if ($type === "in_item_tbl") {
             $ret .= "<td></td>";
@@ -798,7 +798,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         }
         // raw names - getFrmSelectEasy() safe()s the labels
         return ' ' . getFrmSelectEasy('shwif[' . $this->getId() . ']', $opts, $key, ['class' => 'aa-showif-sel', 'aria-label' => _m('Display condition'), 'title' => _m('Display condition')])
-            . '<button type="button" class="aa-showif-edit" title="' . safe(_m('Edit the condition')) . '" aria-label="' . safe(_m('Edit the condition')) . '">✎</button>';
+            . '<button type="button" class="aa-showif-edit" title="' . safe(_m('Edit the condition')) . '" aria-label="' . safe(_m('Edit the condition')) . '"></button>';
     }
 
     // Array Access implementation is in the DataArrayAccessTrait  --------------------------
