@@ -1957,8 +1957,8 @@ class AA_Field_Writer
         } else {
             $expect = array_map(static fn($v): string => (string) (int) $v, array_values($values));
             sort($expect, SORT_NUMERIC);          // `number` holds the value, so it gives the order
-            $mask   = ~(FLAG_TEXT_STORED | FLAG_HTML);   // a number reads the same as text and as HTML
-            $flags  = [$value->getFlag() & $mask, $stored->getFlag() & $mask];
+            // a number reads the same as text and as HTML; a row still stored as text must be rewritten
+            $flags  = [$value->getFlag() & ~(FLAG_TEXT_STORED | FLAG_HTML), $stored->getFlag() & ~FLAG_HTML];
         }
         return ($flags[0] === $flags[1]) && ($expect === array_map('strval', $stored->getValues()));
     }

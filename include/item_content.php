@@ -1554,6 +1554,7 @@ class ItemContent extends AA_Content
     /** Recomputes the computed fields (seo, com, co2) and stores those whose value differs from the
      *  stored one - an unchanged field is not written, so the caller need not invalidate any cache.
      *  The content must be the stored one (read from the database), it is compared with it.
+     *  A field stored in the `item` table is not compared - it is always written.
      * @param AA_Fields|null $fields  the slice fields by default; the slice setting fields
      *                                (AA_Slice::getFields(true)) for the slice setting content
      * @param string         $mode
@@ -1581,7 +1582,7 @@ class ItemContent extends AA_Content
         if (!$fields) {
             $fields = $slice->getFields();
         }
-        $setting_fields = ($fields === $slice->getFields(true));
+        $setting_fields = AA_Fields::isSliceField((string) ($fields->getPriorityArray()[0] ?? ''));
 
         foreach ($fields as $fid => $field) {
 
@@ -1639,7 +1640,9 @@ class ItemContent extends AA_Content
                 // prepare item for computing
                 $aliases = new AA_Aliases(new AA_Aliasgenerator_Slice($this->getSliceID()));
                 if ($setting_fields) {
-                    $aliases->addFromArray($fields->getAliases());   // the slice aliases know no setting field
+                    foreach ($fields as $setting_field) {        // the slice aliases know no setting field
+                        $aliases->add($setting_field->getAliases());
+                    }
                 }
                 $item  = new AA_Item($this->getContent(), $aliases);
             }
@@ -1692,7 +1695,7 @@ class ItemContent extends AA_Content
         // we use slice_id as item id here
         $this->_store_fields($slice_id, $fields);
 
-        AA_Slice::getModule($slice_id)?->updateComputedSettingFields();   // the form sent the old value of a computed field
+        AA_Slice::getOwnModule($slice_id)?->updateComputedSettingFields();   // the form sent the old value of a computed field
         AA::Pagecache()->invalidateFor($slice_id);
     }
 

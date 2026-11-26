@@ -402,12 +402,6 @@ parameters:
 			path: src/IO/Saver.php
 
 		-
-			message: '#^Method AA\\Later\\ComputedfieldsItemUpdater\:\:toexecutelater\(\) should return string but returns int\<0, max\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Later/ComputedfieldsItemUpdater.php
-
-		-
 			message: '#^Parameter \#1 \$hour of function mktime expects int, string given\.$#'
 			identifier: argument.type
 			count: 1

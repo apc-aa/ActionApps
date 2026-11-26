@@ -71,7 +71,8 @@ class ComputedfieldsUpdater implements LaterInterface
     {
         [$sid, $settings] = $params + [1 => false];
         if ($settings) {
-            if (!AA_Slice::getModule($sid)?->updateComputedSettingFields()) {
+            $slice = AA_Slice::getOwnModule($sid);   // field rows may outlive their slice
+            if (!$slice?->isValid() || !$slice->updateComputedSettingFields()) {
                 return '0';
             }
             AA::Pagecache()->invalidateFor($sid);

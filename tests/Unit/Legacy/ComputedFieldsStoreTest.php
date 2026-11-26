@@ -82,6 +82,7 @@ namespace Tests\Unit\Legacy {
                 'number, decimals cut'          => [false, new AA_Value('12.7', 0), new AA_Value('12', FLAG_HTML), true],
                 'number, other value'           => [false, new AA_Value('13', 0), new AA_Value('12', FLAG_HTML), false],
                 'number, read in value order'   => [false, new AA_Value(['5', '3'], 0), new AA_Value(['3', '5'], FLAG_HTML), true],
+                'number, still stored as text'  => [false, new AA_Value('12', 0), new AA_Value('12', FLAG_TEXT_STORED), false],
             ];
         }
 
@@ -93,9 +94,9 @@ namespace Tests\Unit\Legacy {
 
         // ------------------------------------------------------------ updateComputedFields()
 
-        private function field(string $id, string $insert): AA_Field
+        private function field(string $id, string $insert, array $data = []): AA_Field
         {
-            return new AA_Field([
+            return new AA_Field($data + [
                 'id'                => $id,
                 'text_stored'       => 1,
                 'in_item_tbl'       => '',
@@ -104,7 +105,7 @@ namespace Tests\Unit\Legacy {
                 'content_edit'      => 0,
                 'html_default'      => 0,
                 'multiple'          => 0,
-            ]);
+            ] + array_fill_keys(['alias1', 'alias1_func', 'alias1_help', 'alias2', 'alias2_func', 'alias2_help', 'alias3', 'alias3_func', 'alias3_help'], ''));
         }
 
         private function row(string $item, string $field, int $number, string $text, int $flag): array
@@ -125,14 +126,14 @@ namespace Tests\Unit\Legacy {
             return $ic;
         }
 
-        public function test_unchanged_value_is_not_written(): void
+        public function test_updateComputedFields_unchanged_value_is_not_written(): void
         {
             $this->assertFalse($this->storedItem('xHello')->updateComputedFields());
 
             $this->assertSame(0, RecordingDb::count('DELETE') + RecordingDb::count('INSERT'), implode("\n", RecordingDb::$log));
         }
 
-        public function test_changed_value_is_written(): void
+        public function test_updateComputedFields_changed_value_is_written(): void
         {
             $this->assertTrue($this->storedItem('xOld')->updateComputedFields());
 
@@ -141,12 +142,13 @@ namespace Tests\Unit\Legacy {
 
         // ------------------------------------------------------------ slice setting fields
 
-        public function test_setting_field_is_computed_from_the_setting_and_stored_with_the_slice(): void
+        public function test_updateComputedSettingFields_computes_from_the_setting_and_stores_with_the_slice(): void
         {
             $setting_field = '_price..........';
             self::$slice->setFields(new FakeFields(self::SLICE, [
-                $this->field('_rate...........', 'qte'),
-                $this->field($setting_field, 'co2:{_rate...........}x:{_rate...........}x::minute'),
+                // the alias of a setting field - the slice aliases do not have it
+                $this->field('_rate...........', 'qte', ['alias1' => '_#RATE____', 'alias1_func' => 'f_h', 'alias1_help' => '']),
+                $this->field($setting_field, 'co2:_#RATE____x:_#RATE____x::minute'),
             ]));
             RecordingDb::$content = [
                 $this->row(self::SLICE, '_rate...........', 0, '25', FLAG_TEXT_STORED),
