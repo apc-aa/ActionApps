@@ -1492,11 +1492,6 @@ class ItemContent extends AA_Content
                     $item_varset->doUpdate('item');  // already inserted above
             }
         });
-        if ($invalidatecache) {
-            // invalidate old cached values
-            AA::Pagecache()->invalidateFor($slice_id);
-        }
-
         // get the content back from database
         $itemContent = new ItemContent();
         $itemContent->setByItemID($id, true);     // ignore reading password
@@ -1506,6 +1501,11 @@ class ItemContent extends AA_Content
             // if computed fields are updated, reread the content
             $itemContent->setByItemID($id, true);
             // ignore reading password
+        }
+
+        // after the computed fields - a page rendered while they were computed would keep their old values
+        if ($invalidatecache) {
+            AA::Pagecache()->invalidateFor($slice_id);
         }
 
         $zid = new zids($id, 'l');
