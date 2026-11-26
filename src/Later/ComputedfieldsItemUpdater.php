@@ -17,7 +17,9 @@ class ComputedfieldsItemUpdater implements LaterInterface
         [$sid, $ids] = $params;
         $count = 0;
         foreach ($ids as $item_id) {
-            $count += (new ItemContent($item_id))->updateComputedFields();
+            $content = new ItemContent();
+            $content->setByItemID($item_id, true);   // the queue has no reading password - it would compute from error texts
+            $count += $content->updateComputedFields();
         }
         if ($count) {
             AA::Pagecache()->invalidateFor($sid);
