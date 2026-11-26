@@ -326,6 +326,9 @@ function optimize_run(string $run_id, string $uid): void
         }
         $good = in_array($r['s'], [OptimizeRun::OK, OptimizeRun::REPAIRED], true);
         echo '<td class="' . ($good ? 'aa-optimize-ok' : 'aa-optimize-bad') . '">' . safe(optimize_status($r['s'], $run->method())) . '</td><td>';
+        if ($steps = optimize_problem_steps($r)) {
+            echo '<div><strong>' . safe(_m('Failed steps: %1', [implode(', ', $steps)])) . '</strong></div>';
+        }
         if ($r['m'] !== '') {
             echo '<div>' . safe($r['m']) . '</div>';
         }
@@ -359,6 +362,19 @@ function optimize_repair_button(string $task, array $results): void
         . implode('', array_map(static fn($id): string => '<input type="hidden" name="aa[]" value="' . (int) $id . '">', $problems))
         . '<p><label><input type="checkbox" name="long_locks" value="1"> ' . _m('Allow long table locks') . '</label> <small>' . optimize_long_locks_help() . '</small></p>'
         . '<p><button class="btn-l aa-once" type="submit">' . _m('Repair the AAs with a problem (%1)', [count($problems)]) . '</button></p></form>';
+}
+
+/** the steps a result failed in, as the AA marked them in its report: of a repair the ones the test after it
+ *  still finds, else the ones whose repair failed
+ *  @param array{s: string, m: string, r: string, c: string} $r
+ *  @return list<string> */
+function optimize_problem_steps(array $r): array
+{
+    return match ($r['s']) {
+        OptimizeRun::FAILED  => RemoteHtml::problemSteps($r['c']) ?: RemoteHtml::problemSteps($r['r']),
+        OptimizeRun::PROBLEM => RemoteHtml::problemSteps($r['r']),
+        default              => [],
+    };
 }
 
 function optimize_long_locks_help(): string

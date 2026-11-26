@@ -169,7 +169,7 @@ final class ChainTest extends TestCase
         self::assertFalse($ok);
         self::assertSame(['test'], $passing->calls);
         self::assertSame(['test'], $failing->calls);
-        self::assertSame('<table><tr><td>passing</td><td>OK</td><td>tested</td></tr><tr><td>failing</td><td>Problem</td><td>tested</td></tr></table>', $html);
+        self::assertSame('<table><tr><td>passing</td><td>OK</td><td>tested</td></tr><tr class="problem"><td>failing</td><td>Problem</td><td>tested</td></tr></table>', $html);
     }
 
     public function test_test_allPass_isOk(): void
@@ -190,7 +190,7 @@ final class ChainTest extends TestCase
         self::assertSame(['test'], $passing->calls);
         self::assertSame(['test', 'repair'], $failing->calls);
         // the test() message is cleared, so only the repair shows
-        self::assertSame('<table><tr><td>passing</td><td>test passed - skipping</td></tr><tr><td>failing</td><td>repaired</td></tr></table>', $html);
+        self::assertSame('<table><tr class="skip"><td>passing</td><td>test passed - skipping</td></tr><tr><td>failing</td><td>repaired</td></tr></table>', $html);
     }
 
     public function test_repair_failedRepair_isNotOk_andGoesOn(): void
@@ -198,10 +198,11 @@ final class ChainTest extends TestCase
         $broken  = new ChainFakeBroken();
         $failing = new ChainFakeFailing();
 
-        [$ok] = Chain::repair([$broken, $failing]);
+        [$ok, $html] = Chain::repair([$broken, $failing]);
 
         self::assertFalse($ok);
         self::assertSame(['test', 'repair'], $failing->calls);
+        self::assertStringStartsWith('<table><tr class="problem"><td>', $html);   // Central highlights the step that failed
     }
 
     public function test_run_test_onlyTests_andPrefixesErr(): void
@@ -212,7 +213,7 @@ final class ChainTest extends TestCase
 
         self::assertFalse($ok);
         self::assertSame(['test'], $failing->calls);
-        self::assertStringStartsWith('Err <table><tr><td>failing</td><td>Problem</td>', $report);
+        self::assertStringStartsWith('Err <table><tr class="problem"><td>failing</td><td>Problem</td>', $report);
     }
 
     public function test_run_repair_repairs_andPrefixesOk(): void

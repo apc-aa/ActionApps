@@ -81,19 +81,19 @@ final class Chain
 
     /** test() on each
      * @param AbstractOptimize[] $optimizers
-     * @return array{0: bool, 1: string}  all passed, HTML table: name | OK/Problem | report
+     * @return array{0: bool, 1: string}  all passed, HTML table: name | OK/Problem | report; the row of a failed
+     *         test has class "problem" - Central highlights it and names its step (RemoteHtml::problemSteps())
      */
     public static function test(array $optimizers): array
     {
         $msg    = '<table>';
         $result = true;
         foreach ($optimizers as $optimizer) {
-            $msg .= '<tr><td>' . $optimizer->name() . '</td>';
-            $res  = $optimizer->test();
+            $res = $optimizer->test();
             if (!$res) {
                 $result = false;
             }
-            $msg .= '<td>' . ($res ? 'OK' : 'Problem') . '</td>';
+            $msg .= self::row($optimizer->name(), $res ? '' : 'problem') . '<td>' . ($res ? 'OK' : 'Problem') . '</td>';
             $msg .= '<td>' . $optimizer->report() . '</td></tr>';
         }
         $msg .= "</table>";
@@ -102,27 +102,32 @@ final class Chain
 
     /** repair() on each whose test() fails (sql_update.php "Install / Update")
      * @param AbstractOptimize[] $optimizers
-     * @return array{0: bool, 1: string}  all repairs succeeded, HTML table: name | repair report
+     * @return array{0: bool, 1: string}  all repairs succeeded, HTML table: name | repair report; the row of a
+     *         failed repair has class "problem", of a skipped one "skip"
      */
     public static function repair(array $optimizers): array
     {
         $msg    = '<table>';
         $result = true;
         foreach ($optimizers as $optimizer) {
-            $msg .= '<tr><td>' . $optimizer->name() . '</td>';
-
             if ($optimizer->test()) {
-                $msg .= '<td>test passed - skipping</td></tr>';
+                $msg .= self::row($optimizer->name(), 'skip') . '<td>test passed - skipping</td></tr>';
             } else {
                 $optimizer->clear_report();
                 $res  = $optimizer->repair();
                 if (!$res) {
                     $result = false;
                 }
-                $msg .= '<td>' . $optimizer->report() . '</td></tr>';
+                $msg .= self::row($optimizer->name(), $res ? '' : 'problem') . '<td>' . $optimizer->report() . '</td></tr>';
             }
         }
         $msg .= "</table>";
         return [$result, $msg];
+    }
+
+    /** the start of the report row of a step, up to its name */
+    private static function row(string $name, string $class): string
+    {
+        return '<tr' . (($class !== '') ? " class=\"$class\"" : '') . '><td>' . $name . '</td>';
     }
 }

@@ -89,4 +89,19 @@ final class RemoteHtmlTest extends TestCase
         $this->assertSame(1, substr_count($out, '</iframe>'));
         $this->assertStringNotContainsString('<script', $out);
     }
+
+    public function test_problemSteps_names_the_failed_steps_as_text(): void
+    {
+        $report = '<table><tr class="skip"><td>Add city field template</td><td>test passed - skipping</td></tr>'
+            . '<tr><td>Fix duplicates</td><td>OK</td><td></td></tr>'
+            . '<tr class="problem"><td>Update database structure</td><td>Problem</td><td><table><tr><td>Table log differs</td></tr></table></td></tr>'
+            . '<tr class="problem"><td>A &amp; <b>B</b></td><td>Problem</td><td></td></tr></table>';
+
+        $this->assertSame(['Update database structure', 'A & B'], RemoteHtml::problemSteps($report));
+    }
+
+    public function test_problemSteps_none_in_a_report_of_an_older_aa(): void
+    {
+        $this->assertSame([], RemoteHtml::problemSteps('<table><tr><td>Update database structure</td><td>Problem</td><td></td></tr></table>'));
+    }
 }
