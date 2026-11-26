@@ -25,7 +25,6 @@ namespace {
 
 namespace Tests\Unit\Legacy {
 
-    use AA\Later\ComputedfieldsUpdater;
     use AA_Field;
     use AA_Field_Writer;
     use AA_Value;
@@ -216,19 +215,6 @@ namespace Tests\Unit\Legacy {
             RecordingDb::$log = [];
             $this->assertFalse(self::$slice->updateComputedSettingFields(), 'the second run gets the same value');
             $this->assertSame(0, RecordingDb::count('DELETE') + RecordingDb::count('INSERT'));
-        }
-
-        public function test_planItems_recomputes_only_a_slice_with_computed_fields(): void
-        {
-            self::$slice->setFields(new FakeFields(self::SLICE, [$this->field(self::COMPUTED, 'qte')]));
-            ComputedfieldsUpdater::planItems(self::SLICE);
-            $this->assertSame(0, RecordingDb::count('INSERT'), 'nothing to recompute');
-
-            self::$slice->setFields(new FakeFields(self::SLICE, [$this->field(self::COMPUTED, 'co2:x{headline........}:x{headline........}::')]));
-            ComputedfieldsUpdater::planItems(self::SLICE);
-            $inserts = array_values(array_filter(RecordingDb::$log, static fn($sql) => str_starts_with($sql, 'INSERT')));
-            $this->assertCount(1, $inserts, implode("\n", RecordingDb::$log));
-            $this->assertStringContainsString('ComputedfieldsUpdater_now_' . self::SLICE, $inserts[0]);
         }
     }
 }

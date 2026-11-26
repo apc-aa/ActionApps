@@ -1705,7 +1705,7 @@ class ItemContent extends AA_Content
 
         if ($slice) {
             $slice->updateComputedSettingFields();   // the form sent the old value of a computed field
-            if ($before != $slice->get_dynamic_setting_content(true)->getContent()) {
+            if ($before !== $slice->get_dynamic_setting_content(true)->getContent()) {
                 ComputedfieldsUpdater::planItems($slice_id);
             }
         }

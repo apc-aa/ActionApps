@@ -238,6 +238,12 @@ class Toexecute
         DB_AA::delete('toexecute', [['selector', (string) $selector]]);
     }
 
+    /** removes every queued row whose selector begins with $prefix, parked user-queue rows too */
+    public function cancelBeginning(string $prefix): void
+    {
+        DB_AA::delete('toexecute', [['selector', $prefix, 'BEGIN']]);
+    }
+
     /** One queue run as the cron entry points do it: plan the AA maintenance
      *  tasks, then execute what is due. The single code path behind cron.php,
      *  misc/toexecute.php and CronFallback, single-flight on the fallback's

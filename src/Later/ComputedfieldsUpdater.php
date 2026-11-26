@@ -109,6 +109,9 @@ class ComputedfieldsUpdater implements LaterInterface
 
         $item_updater = new ComputedfieldsItemUpdater();
         $toexecute = new Toexecute();
+        // the chunks still waiting hold other (shuffled) ids - laterOnce() would keep them and skip
+        // the new chunk of the same number, so an item could miss this run
+        $toexecute->cancelBeginning("AA_ComputedfieldsItem_Updater_{$sid}_");
         foreach ($chunks as $k => $ids) {
             $toexecute->laterOnce($item_updater, [$sid, $ids], "AA_ComputedfieldsItem_Updater_" . $sid . '_' . $k, 40, time() + 10);
         }
