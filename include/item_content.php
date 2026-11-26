@@ -1551,11 +1551,13 @@ class ItemContent extends AA_Content
         return $id;
     } // end of storeItem()
 
-    /** updateComputedFields function
+    /** Recomputes the computed fields (seo, com, co2) and stores those whose value differs from the
+     *  stored one - an unchanged field is not written, so the caller need not invalidate any cache.
+     *  The content must be the stored one (read from the database), it is compared with it.
      * @param AA_Fields|null $fields
      * @param string         $mode
      * @param array          $restrict_fields
-     * @return bool
+     * @return bool  some field got a new value
      */
     public function updateComputedFields(?AA_Fields $fields = null, string $mode = 'update', array $restrict_fields = []): bool
     {
@@ -1573,6 +1575,7 @@ class ItemContent extends AA_Content
 
         $update       = ($mode === 'update' || $mode === 'overwrite' || $mode === 'add');
         $computed_field_exist = false;
+        $changed      = false;
 
         if (!$fields) {
             $fields = $slice->getFields();
@@ -1643,6 +1646,12 @@ class ItemContent extends AA_Content
             // in the next computed field
             $item->setAaValue($fid, $aa_val);
 
+            // a periodic recompute mostly gets the stored value again - writing it would only invalidate caches
+            if (!$field->getProperty('in_item_tbl') && AA_Field_Writer::storesSame((bool) $field->getProperty('text_stored'), $aa_val, $this->getAaValue($fid))) {
+                continue;
+            }
+            $changed = true;
+
             // delete content just for this computed field
             // $this->_clean_updated_fields($id, $fields);
             if ($fid) {
@@ -1660,7 +1669,7 @@ class ItemContent extends AA_Content
             $item_varset->doUpdate('item');
         }
 
-        return $computed_field_exist;
+        return $changed;
     }
 
     /** storeSliceFields function
