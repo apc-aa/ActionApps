@@ -29,6 +29,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\ComputedfieldsUpdater;
 use AA\Util\ArrTrait;
 use AA\Util\Langs;
 use AA\Util\ChangeProposal;
@@ -1691,6 +1692,10 @@ class ItemContent extends AA_Content
      */
     public function storeSliceFields($slice_id, $fields): void
     {
+        $slice = AA_Slice::getOwnModule($slice_id);
+        $slice?->loadsettingfields(true);
+        $before = $slice?->get_dynamic_setting_content(true)->getContent();
+
         // delete content of all fields, which are in new content array
         // (this means - all not redefined fields are unchanged)
         (new AA_Field_Cleaner($fields))->clean_updated_fields($this, $slice_id);
@@ -1698,7 +1703,12 @@ class ItemContent extends AA_Content
         // we use slice_id as item id here
         $this->_store_fields($slice_id, $fields);
 
-        AA_Slice::getOwnModule($slice_id)?->updateComputedSettingFields();   // the form sent the old value of a computed field
+        if ($slice) {
+            $slice->updateComputedSettingFields();   // the form sent the old value of a computed field
+            if ($before != $slice->get_dynamic_setting_content(true)->getContent()) {
+                ComputedfieldsUpdater::planItems($slice_id);
+            }
+        }
         AA::Pagecache()->invalidateFor($slice_id);
     }
 
